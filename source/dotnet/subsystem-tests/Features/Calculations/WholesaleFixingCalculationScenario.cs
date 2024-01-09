@@ -299,7 +299,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
 AppTraces
 | where AppRoleName == ""dbr-calculation-engine""
 | where SeverityLevel == 1 // Information
-| where Message startswith_cs ""Job arguments:""
+| where Message startswith_cs ""Calculation arguments:""
 | where OperationId != ""00000000000000000000000000000000""
 | where Properties.Domain == ""wholesale""
 | where Properties.calculation_id == ""{Fixture.ScenarioState.CalculationId}""
