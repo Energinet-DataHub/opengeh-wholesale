@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Globalization;
+using Azure.Monitor.Query;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtures;
@@ -285,6 +286,51 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
 
             using var assertionScope = new AssertionScope();
             actualEvents.Should().HaveCount(1);
+        }
+
+        [ScenarioStep(13)]
+        [SubsystemFact]
+        public async Task AndThen_ACalculationTelemetryLogIsCreated()
+        {
+            var query = $@"
+AppTraces
+| where AppRoleName == ""dbr-calculation-engine""
+| where SeverityLevel == 1 // Information
+| where Message startswith_cs ""Calculation arguments:""
+| where OperationId != ""00000000000000000000000000000000""
+| where Properties.Domain == ""wholesale""
+| where Properties.calculation_id == ""{Fixture.ScenarioState.CalculationId}""
+| where Properties.CategoryName == ""Energinet.DataHub.package.calculator_job""
+| count";
+
+            // Assert
+            var actual = await Fixture.QueryLogAnalyticsAsync(query, new QueryTimeRange(TimeSpan.FromMinutes(60)));
+
+            using var assertionScope = new AssertionScope();
+            actual.Value.Table.Rows[0][0].Should().Be(1); // count == 1
+        }
+
+        [ScenarioStep(14)]
+        [SubsystemFact]
+        public async Task AndThen_ACalculationTelemetryTraceWithASpanIsCreated()
+        {
+            var query = $@"
+AppDependencies
+| where Target == ""net_exchange_per_ga""
+| where Name == ""net_exchange_per_ga""
+| where DependencyType == ""InProc""
+| where Success == true
+| where ResultCode == 0
+| where AppRoleName == ""dbr-calculation-engine""
+| where Properties.Domain == ""wholesale""
+| where Properties.calculation_id == ""{Fixture.ScenarioState.CalculationId}""
+| count";
+
+            // Assert
+            var actual = await Fixture.QueryLogAnalyticsAsync(query, new QueryTimeRange(TimeSpan.FromMinutes(60)));
+
+            using var assertionScope = new AssertionScope();
+            actual.Value.Table.Rows[0][0].Should().Be(1); // count == 1
         }
     }
 }
