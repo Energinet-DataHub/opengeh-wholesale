@@ -31,7 +31,7 @@ from package.constants import Colname
 
 
 @patch.object(calculation_input, TableReader.__name__)
-def test__get_grid_loss_responsible__given_three_metering_point_period_dataframes_on_the_same_grid_area__then_only_return_the_once_in_the_grid_area_responsible_list(
+def test__get_grid_loss_responsible__given_three_metering_point_period_dataframes_on_the_same_grid_area__then_only_return_the_once_in_the_grid_area_metering_points(
     table_reader_mock: TableReader, spark: SparkSession
 ) -> None:
     # Arrange
@@ -56,7 +56,7 @@ def test__get_grid_loss_responsible__given_three_metering_point_period_dataframe
     )
     metering_point_period = factory.create(spark, data=[row1, row2, row3])
 
-    grid_area_responsible = spark.createDataFrame(
+    grid_loss_metering_points = spark.createDataFrame(
         [
             (metering_point_id_1,),
             (metering_point_id_2,),
@@ -66,7 +66,7 @@ def test__get_grid_loss_responsible__given_three_metering_point_period_dataframe
 
     # Act
     table_reader_mock.read_grid_loss_metering_points.return_value = (
-        grid_area_responsible
+        grid_loss_metering_points
     )
     grid_loss_responsible = get_grid_loss_responsible(
         grid_areas,
@@ -116,7 +116,7 @@ def test__get_grid_loss_responsible__given_metering_point_period_with_same_id_in
     )
     metering_point_period = factory.create(spark, data=[row1, row2, row3])
 
-    grid_area_responsible = spark.createDataFrame(
+    grid_loss_metering_points = spark.createDataFrame(
         [
             (metering_point_id_1,),
             (metering_point_id_2,),
@@ -126,7 +126,7 @@ def test__get_grid_loss_responsible__given_metering_point_period_with_same_id_in
 
     # Act
     table_reader_mock.read_grid_loss_metering_points.return_value = (
-        grid_area_responsible
+        grid_loss_metering_points
     )
     grid_loss_responsible = get_grid_loss_responsible(
         grid_areas,

@@ -72,11 +72,11 @@ def _throw_if_no_grid_loss_responsible(
     grid_areas: list[str], grid_loss_responsible_df: DataFrame
 ) -> None:
     for grid_area in grid_areas:
-        current_grid_area_responsible = grid_loss_responsible_df.filter(
+        current_grid_loss_metering_points = grid_loss_responsible_df.filter(
             col(Colname.grid_area) == grid_area
         )
         if (
-            current_grid_area_responsible.filter(
+            current_grid_loss_metering_points.filter(
                 col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value
             ).count()
             == 0
@@ -85,7 +85,7 @@ def _throw_if_no_grid_loss_responsible(
                 f"No responsible for negative grid loss found for grid area {grid_area}"
             )
         if (
-            current_grid_area_responsible.filter(
+            current_grid_loss_metering_points.filter(
                 col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value
             ).count()
             == 0
