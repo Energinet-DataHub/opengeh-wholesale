@@ -27,6 +27,8 @@ from package.calculator_job_args import (
     create_calculation_args,
     get_raw_command_line_args,
 )
+from package.calculator_job_args import get_calculator_args
+from package.common.logger import Logger
 from package.infrastructure import initialize_spark
 from package.infrastructure.storage_account_access import islocked
 
@@ -73,6 +75,9 @@ def start_with_deps(
             # Add calculation_id to structured logging data to be included in every log message.
             config.add_extras({"calculation_id": command_line_args.calculation_id})
             span.set_attributes(config.get_extras())
+
+            logger = Logger(__name__)
+            logger.info(f"Calculation arguments: {repr(args)}")
 
             # Parse the command line arguments into a CalculatorArgs object
             args = create_job_args(command_line_args)
