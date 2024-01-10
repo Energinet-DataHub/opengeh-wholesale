@@ -24,7 +24,7 @@ from package.calculation.preparation.transformations.grid_loss_responsible impor
 import metering_point_periods_factory as factory
 from package.calculation_input import TableReader
 from package.calculation_input.schemas import (
-    grid_loss_responsible_metering_point_schema,
+    grid_loss_metering_point_schema,
 )
 from package.codelists import MeteringPointType
 from package.constants import Colname
@@ -61,11 +61,11 @@ def test__get_grid_loss_responsible__given_three_metering_point_period_dataframe
             (metering_point_id_1,),
             (metering_point_id_2,),
         ],
-        grid_loss_responsible_metering_point_schema,
+        grid_loss_metering_point_schema,
     )
 
     # Act
-    table_reader_mock.read_grid_loss_responsible.return_value = grid_area_responsible
+    table_reader_mock.read_grid_loss_metering_points.return_value = grid_area_responsible
     grid_loss_responsible = get_grid_loss_responsible(
         grid_areas,
         metering_point_period,
@@ -119,11 +119,11 @@ def test__get_grid_loss_responsible__given_metering_point_period_with_same_id_in
             (metering_point_id_1,),
             (metering_point_id_2,),
         ],
-        grid_loss_responsible_metering_point_schema,
+        grid_loss_metering_point_schema,
     )
 
     # Act
-    table_reader_mock.read_grid_loss_responsible.return_value = grid_area_responsible
+    table_reader_mock.read_grid_loss_metering_points.return_value = grid_area_responsible
     grid_loss_responsible = get_grid_loss_responsible(
         grid_areas,
         metering_point_period,
