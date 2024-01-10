@@ -42,9 +42,3 @@ grid_loss_responsible_schema = t.StructType(
         t.StructField(Colname.energy_supplier_id, t.StringType(), False),
     ]
 )
-
-grid_area_responsible_schema = t.StructType(
-    [
-        t.StructField(Colname.metering_point_id, t.StringType(), False),
-    ]
-)

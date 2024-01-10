@@ -52,6 +52,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance.Fixtures
 
             runParameters.PythonParams.Add("--metering_point_periods_table_name=metering_point_periods_performance_test");
             runParameters.PythonParams.Add("--time_series_points_table_name=time_series_points_performance_test");
+            runParameters.PythonParams.Add("--grid_loss_metering_points_table_name=grid_loss_responsible_performance_test");
 
             var runId = await DatabricksClient
                 .Jobs
