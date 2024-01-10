@@ -45,7 +45,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
         {
             Configuration = new WholesaleSubsystemConfiguration();
             ServiceBusAdministrationClient = new ServiceBusAdministrationClient(Configuration.ServiceBus.FullyQualifiedNamespace, new DefaultAzureCredential());
-            ServiceBusClient = new ServiceBusClient(Configuration.ServiceBus.ConnectionString);
+            ServiceBusClient = CreateServiceBusClient(Configuration.ServiceBus.ConnectionString);
             ScenarioState = new CalculationScenarioState();
             LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
         }
@@ -199,6 +199,21 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
         {
             await ServiceBusAdministrationClient.DeleteSubscriptionAsync(Configuration.ServiceBus.SubsystemRelayTopicName, _subscriptionName);
             await ServiceBusClient.DisposeAsync();
+        }
+
+        /// <summary>
+        /// We configure the client to use <see cref="ServiceBusTransportType.AmqpWebSockets"/> to be able to
+        /// pass through the firewall, as it blocks the AMQP ports.
+        /// See https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-faq#what-ports-do-i-need-to-open-on-the-firewall--
+        /// </summary>
+        private static ServiceBusClient CreateServiceBusClient(string connectionString)
+        {
+            return new ServiceBusClient(
+                connectionString,
+                new ServiceBusClientOptions
+                {
+                    TransportType = ServiceBusTransportType.AmqpWebSockets,
+                });
         }
 
         private async Task CreateTopicSubscriptionAsync()
