@@ -54,3 +54,8 @@ variable "ip_restrictions" {
   description = "A list of IP restrictions defining allowed access to domain services. Each entry should include an 'ip_address' representing the allowed IP, a 'name' for identification, and an optional 'priority' for rule order. Defaults to `[]`."
   default     = []
 }
+
+variable "biztalk_hybrid_connection_hostname" {
+  type        = string
+  description = "Hostname of the biztalk hybrid connection"
+}

@@ -72,3 +72,18 @@ data "azurerm_key_vault_secret" "apim_logger_id" {
   name         = "apim-logger-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+data "azurerm_key_vault_secret" "hc_biztalk_id" {
+  name         = "hc-biztalk-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "hc_biztalk_name" {
+  name         = "hc-biztalk-name"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "relay_name" {
+  name         = "relay-name"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
