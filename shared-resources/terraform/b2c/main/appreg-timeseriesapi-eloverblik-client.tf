@@ -11,7 +11,7 @@ resource "azuread_application" "eloverblik_timeseriesapi_client_app" {
   }
 
   required_resource_access {
-    resource_app_id = resource.azuread_application.backend_timeseriesapi_app.application_id
+    resource_app_id = resource.azuread_application.backend_timeseriesapi_app.client_id
 
     resource_access {
       id   = resource.random_uuid.backend_timeseriesapi_app_role.result
@@ -21,7 +21,7 @@ resource "azuread_application" "eloverblik_timeseriesapi_client_app" {
 }
 
 resource "azuread_service_principal" "eloverblik_timeseriesapi_client_app_sp" {
-  application_id               = azuread_application.eloverblik_timeseriesapi_client_app.application_id
+  client_id                    = azuread_application.eloverblik_timeseriesapi_client_app.client_id
   app_role_assignment_required = false
   owners                       = [data.azuread_client_config.current.object_id]
 
@@ -30,9 +30,12 @@ resource "azuread_service_principal" "eloverblik_timeseriesapi_client_app_sp" {
   }
 }
 
+
+# Microsoft is working on an MS Entra provider for ARM / Bicep - until it is ready we cannot use azapi_resource
+# See https://github.com/Azure/bicep/issues/7724 for details
 resource "null_resource" "grant_admin_consent" {
   triggers = {
-    resourceId = azuread_service_principal.backend_timeseriesapi_app_sp.object_id # resource.azuread_application.backend_timeseriesapi_app.application_id
+    resourceId = azuread_service_principal.backend_timeseriesapi_app_sp.object_id
     clientId   = azuread_service_principal.eloverblik_timeseriesapi_client_app_sp.object_id
     appRoleId  = resource.random_uuid.backend_timeseriesapi_app_role.result
   }
@@ -57,3 +60,4 @@ resource "null_resource" "grant_admin_consent" {
     time_sleep.wait_60_seconds
   ]
 }
+

@@ -24,7 +24,7 @@ resource "azuread_application" "backend_b2b_app" {
 }
 
 resource "azuread_service_principal" "backend_b2b_app_sp" {
-  application_id               = azuread_application.backend_b2b_app.application_id
+  client_id                    = azuread_application.backend_b2b_app.client_id
   app_role_assignment_required = false
   owners                       = [data.azuread_client_config.current.object_id]
 

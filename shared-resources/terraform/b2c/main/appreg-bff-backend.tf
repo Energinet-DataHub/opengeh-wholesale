@@ -20,7 +20,7 @@ resource "azuread_application" "backend_bff_app" {
 }
 
 resource "azuread_service_principal" "backend_bff_app_sp" {
-  application_id               = azuread_application.backend_bff_app.application_id
+  client_id               = azuread_application.backend_bff_app.client_id
   app_role_assignment_required = false
   owners                       = [data.azuread_client_config.current.object_id]
 

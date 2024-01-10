@@ -6,7 +6,7 @@ output "frontend_open_id_url" {
 
 output "backend_b2b_app_id" {
   description = "The Application ID of the backend B2B app registration."
-  value       = azuread_application.backend_b2b_app.application_id
+  value       = azuread_application.backend_b2b_app.client_id
   sensitive   = false
 }
 
@@ -24,7 +24,7 @@ output "backend_b2b_app_sp_id" {
 
 output "backend_bff_app_id" {
   description = "The Application ID of the backend BFF app registration."
-  value       = azuread_application.backend_bff_app.application_id
+  value       = azuread_application.backend_bff_app.client_id
   sensitive   = false
 }
 
@@ -66,12 +66,12 @@ output "authentication_mitid_invitation_user_flow_id" {
 
 output "backend_timeseriesapi_app_id" {
   description = "The Application ID of the backend TimeSeriesApi app registration."
-  value       = azuread_application.backend_timeseriesapi_app.application_id
+  value       = azuread_application.backend_timeseriesapi_app.client_id
   sensitive   = false
 }
 
 output "eloverblik_timeseriesapi_client_app_id" {
   description = "The Application ID of the ElOverblik TimeSeriesApi client app registration."
-  value       = azuread_application.eloverblik_timeseriesapi_client_app.application_id
+  value       = azuread_application.eloverblik_timeseriesapi_client_app.client_id
   sensitive   = false
 }
