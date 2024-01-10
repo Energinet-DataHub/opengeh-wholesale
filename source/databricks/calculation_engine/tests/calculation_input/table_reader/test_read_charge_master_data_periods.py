@@ -71,9 +71,10 @@ class TestWhenValidInput:
         self,
         spark: SparkSession,
         tmp_path: pathlib.Path,
+        calculation_input_folder: str,
     ) -> None:
         # Arrange
-        calculation_input_path = f"{str(tmp_path)}/calculation_input"
+        calculation_input_path = f"{str(tmp_path)}/{calculation_input_folder}"
         table_location = f"{calculation_input_path}/charge_masterdata_periods"
         row = _create_charge_master_period_row()
         df = spark.createDataFrame(data=[row], schema=charge_master_data_periods_schema)

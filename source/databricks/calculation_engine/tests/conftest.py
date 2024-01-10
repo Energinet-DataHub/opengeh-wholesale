@@ -40,7 +40,11 @@ from package.datamigration.migration import _apply_migration
 from package.datamigration.migration_script_args import MigrationScriptArgs
 from package.datamigration.uncommitted_migrations import _get_all_migrations
 from package.infrastructure import paths
-from package.infrastructure.paths import OUTPUT_DATABASE_NAME, OUTPUT_FOLDER
+from package.infrastructure.paths import (
+    OUTPUT_DATABASE_NAME,
+    OUTPUT_FOLDER,
+    INPUT_DATABASE_NAME,
+)
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.integration_test_configuration import IntegrationTestConfiguration
 
@@ -165,8 +169,13 @@ def data_lake_path(tests_path: str, worker_id: str) -> str:
 
 
 @pytest.fixture(scope="session")
-def calculation_input_path(data_lake_path: str) -> str:
-    return f"{data_lake_path}/calculation_input"
+def calculation_input_folder(data_lake_path: str) -> str:
+    return "calculation_input"
+
+
+@pytest.fixture(scope="session")
+def calculation_input_path(data_lake_path: str, calculation_input_folder: str) -> str:
+    return f"{data_lake_path}/{calculation_input_folder}"
 
 
 @pytest.fixture(scope="session")
@@ -176,10 +185,15 @@ def calculation_output_path(data_lake_path: str) -> str:
 
 @pytest.fixture(scope="session")
 def migrations_executed(
-    spark: SparkSession, data_lake_path: str, calculation_output_path: str
+    spark: SparkSession,
+    data_lake_path: str,
+    calculation_input_path: str,
+    calculation_output_path: str,
 ) -> None:
     # Clean up to prevent problems from previous test runs
     shutil.rmtree(calculation_output_path, ignore_errors=True)
+    shutil.rmtree(calculation_input_path, ignore_errors=True)
+    spark.sql(f"DROP DATABASE IF EXISTS {INPUT_DATABASE_NAME} CASCADE")
     spark.sql(f"DROP DATABASE IF EXISTS {OUTPUT_DATABASE_NAME} CASCADE")
 
     migration_args = MigrationScriptArgs(
@@ -187,6 +201,7 @@ def migrations_executed(
         data_storage_account_name="foo",
         data_storage_container_name="foo",
         data_storage_credential=ClientSecretCredential("foo", "foo", "foo"),
+        calculation_input_folder=calculation_input_path,
         spark=spark,
     )
     # Overwrite in test
