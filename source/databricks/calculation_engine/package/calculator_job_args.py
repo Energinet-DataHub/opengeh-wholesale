@@ -14,7 +14,6 @@
 
 import sys
 from argparse import Namespace
-from typing import Callable
 
 import configargparse
 from configargparse import argparse
@@ -30,11 +29,7 @@ def get_raw_command_line_args() -> Namespace:
     return _parse_args_or_throw(sys.argv[1:])
 
 
-def create_calculation_args(
-    get_command_line_args: Callable[..., Namespace] = get_raw_command_line_args
-) -> CalculatorArgs:
-    job_args = get_command_line_args()
-
+def create_calculation_args(job_args: Namespace) -> CalculatorArgs:
     with logging_configuration.start_span("calculation.create_calculation_arguments"):
         logger = Logger(__name__)
         logger.info(f"Job arguments: {repr(job_args)}")
