@@ -49,12 +49,7 @@ def test__migrated_table_rejects_invalid_data(
     # Arrange
     results_df = _create_df(spark)
 
-    if isinstance(invalid_column_value, list):
-        invalid_df = results_df.withColumn(
-            column_name, array(*map(lit, invalid_column_value))
-        )
-    else:
-        invalid_df = results_df.withColumn(column_name, lit(invalid_column_value))
+    invalid_df = set_column(results_df, column_name, invalid_column_value)
 
     # Act
     with pytest.raises(Exception) as ex:
