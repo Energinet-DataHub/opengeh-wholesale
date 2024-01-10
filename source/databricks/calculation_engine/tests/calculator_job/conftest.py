@@ -24,8 +24,10 @@ import package.calculation as calculation
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.preparation import PreparedDataReader
 
-from package.calculation.preparation.transformations import grid_loss_responsible
 from package.calculation_input import TableReader
+from package.calculation_input.schemas import (
+    grid_loss_metering_points_schema,
+)
 from package.codelists.process_type import ProcessType
 from package.constants import EnergyResultColumnNames, WholesaleResultColumnNames
 from package.infrastructure import paths
@@ -43,6 +45,7 @@ def calculator_args_balance_fixing(
         calculation_input_path=calculation_input_path,
         time_series_points_table_name=None,
         metering_point_periods_table_name=None,
+        grid_loss_metering_points_table_name=None,
         calculation_id=C.executed_balance_fixing_batch_id,
         calculation_process_type=ProcessType.BALANCE_FIXING,
         calculation_grid_areas=["805", "806"],
@@ -78,7 +81,7 @@ def grid_loss_responsible_test_data(
     return spark.read.csv(
         f"{test_files_folder_path}/GridLossResponsible.csv",
         header=True,
-        schema=grid_loss_responsible.grid_area_responsible_schema,
+        schema=grid_loss_metering_points_schema,
     )
 
 
@@ -98,8 +101,8 @@ def executed_balance_fixing(
     without awaiting the execution in each test."""
 
     with patch.object(
-        grid_loss_responsible,
-        grid_loss_responsible._get_all_grid_loss_responsible.__name__,
+        TableReader,
+        "read_grid_loss_metering_points",
         return_value=grid_loss_responsible_test_data,
     ):
         table_reader = TableReader(
@@ -127,8 +130,8 @@ def executed_wholesale_fixing(
     without awaiting the execution in each test."""
 
     with patch.object(
-        grid_loss_responsible,
-        grid_loss_responsible._get_all_grid_loss_responsible.__name__,
+        TableReader,
+        "read_grid_loss_metering_points",
         return_value=grid_loss_responsible_test_data,
     ):
         table_reader = TableReader(spark, calculation_input_path)
