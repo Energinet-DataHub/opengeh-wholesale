@@ -15,7 +15,6 @@
 By having a conftest.py in this directory, we are able to add all packages
 defined in the geh_stream directory in our tests.
 """
-import datetime
 
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
@@ -26,19 +25,6 @@ from package.calculation.preparation.grid_loss_responsible import (
 from package.codelists import MeteringPointType
 from package.constants import Colname
 from package.calculation_input import TableReader
-
-DEFAULT_FROM_TIME = "2000-01-01"
-
-
-def _utc(date: str | None) -> datetime.datetime | None:
-    """Helper to convert danish date string to UTC date time."""
-
-    if date is None:
-        return None
-
-    danish = datetime.datetime.strptime(date, "%Y-%m-%d")
-    utc = datetime.datetime.fromtimestamp(danish.timestamp(), tz=datetime.timezone.utc)
-    return utc
 
 
 def get_grid_loss_responsible(
