@@ -214,6 +214,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
             };
 
             await ServiceBusAdministrationClient.CreateSubscriptionAsync(options);
+            DiagnosticMessageSink.WriteDiagnosticMessage($"ServiceBus subscription '{options.SubscriptionName}' created for topic '{options.TopicName}'.");
         }
 
         /// <summary>
