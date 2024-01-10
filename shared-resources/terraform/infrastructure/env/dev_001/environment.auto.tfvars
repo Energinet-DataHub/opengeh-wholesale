@@ -8,4 +8,4 @@ private_endpoint_address_space="10.143.2.0/25"
 vnet_integration_address_space="10.143.3.0/25"
 ag_primary_email_address="214a2834.energinet.onmicrosoft.com@emea.teams.ms"
 arm_client_id="903de09f-3f54-4a21-8e0f-54a668982b17"
-
+biztalk_hybrid_connection_hostname="datahub.preproduction.biztalk.energinet.local:443"
