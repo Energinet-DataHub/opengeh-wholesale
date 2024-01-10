@@ -23,7 +23,6 @@ from package.infrastructure.paths import (
     WHOLESALE_CONTAINER_NAME,
     OUTPUT_FOLDER,
     INPUT_DATABASE_NAME,
-    INPUT_FOLDER,
 )
 from package.infrastructure.storage_account_access.data_lake_file_manager import (
     DataLakeFileManager,
@@ -67,9 +66,11 @@ def _substitute_placeholders(
         .replace("{OUTPUT_DATABASE_NAME}", OUTPUT_DATABASE_NAME)  # "wholesale_output"
         .replace("{INPUT_DATABASE_NAME}", INPUT_DATABASE_NAME)  # "wholesale"
         .replace("{OUTPUT_FOLDER}", OUTPUT_FOLDER)  # "calculation-output"
-        .replace("{INPUT_FOLDER}", INPUT_FOLDER)  # "calculation_input"
+        .replace(
+            "{INPUT_FOLDER}", env_vars.get_calculation_input_folder_name()
+        )  # Usually "calculation_input"
         .replace("{TEST}", TEST)
-    )  # ""
+    )
 
 
 def _apply_migration(migration_name: str, migration_args: MigrationScriptArgs) -> None:
