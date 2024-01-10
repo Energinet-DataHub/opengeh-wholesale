@@ -204,7 +204,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
         /// <summary>
         /// We configure the client to use <see cref="ServiceBusTransportType.AmqpWebSockets"/> to be able to
         /// pass through the firewall, as it blocks the AMQP ports.
-        /// See https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-faq#what-ports-do-i-need-to-open-on-the-firewall--
+        /// See "https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-faq#what-ports-do-i-need-to-open-on-the-firewall--"
         /// </summary>
         private static ServiceBusClient CreateServiceBusClient(string connectionString)
         {
