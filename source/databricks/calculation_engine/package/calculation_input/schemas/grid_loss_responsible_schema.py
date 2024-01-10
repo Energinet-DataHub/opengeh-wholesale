@@ -18,7 +18,7 @@ from pyspark.sql.types import (
     StructType,
 )
 
-grid_loss_metering_point_schema = StructType(
+grid_loss_metering_points_schema = StructType(
     [
         StructField("metering_point_id", StringType(), False),
     ]

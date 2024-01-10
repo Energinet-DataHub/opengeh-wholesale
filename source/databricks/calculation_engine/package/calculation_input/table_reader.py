@@ -32,7 +32,7 @@ from .schemas import (
     charge_price_points_schema,
     metering_point_period_schema,
     time_series_point_schema,
-    grid_loss_metering_point_schema,
+    grid_loss_metering_points_schema,
 )
 
 
@@ -141,7 +141,7 @@ class TableReader:
         path = f"{self._calculation_input_path}/{self._grid_loss_metering_points_table_name}"
         df = self._spark.read.format("delta").load(path)
 
-        assert_schema(df.schema, grid_loss_metering_point_schema)
+        assert_schema(df.schema, grid_loss_metering_points_schema)
 
         return df
 
