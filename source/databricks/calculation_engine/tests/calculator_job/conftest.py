@@ -45,6 +45,7 @@ def calculator_args_balance_fixing(
         calculation_input_path=calculation_input_path,
         time_series_points_table_name=None,
         metering_point_periods_table_name=None,
+        grid_loss_metering_points_table_name=None,
         calculation_id=C.executed_balance_fixing_batch_id,
         calculation_process_type=ProcessType.BALANCE_FIXING,
         calculation_grid_areas=["805", "806"],
