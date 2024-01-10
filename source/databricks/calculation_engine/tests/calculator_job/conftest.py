@@ -102,7 +102,7 @@ def executed_balance_fixing(
 
     with patch.object(
         TableReader,
-        "read_grid_loss_responsible",
+        "read_grid_loss_metering_points",
         return_value=grid_loss_responsible_test_data,
     ):
         table_reader = TableReader(
@@ -131,7 +131,7 @@ def executed_wholesale_fixing(
 
     with patch.object(
         TableReader,
-        "read_grid_loss_responsible",
+        "read_grid_loss_metering_points",
         return_value=grid_loss_responsible_test_data,
     ):
         table_reader = TableReader(spark, calculation_input_path)
