@@ -3,6 +3,6 @@ module "func_biztalkshipper" {
     "biztalk:senderCode"                        = "45V0000000000601"
     "biztalk:receiverCode"                      = "44V000000000028C"
     "biztalk:RootUrl"                           = "https://datahub.preproduction.biztalk.energinet.local"
-    "FeatureManagement__EnableBizTalkShipper"   = false
+    "FeatureManagement__EnableBizTalkShipper"   = true
   })
 }
