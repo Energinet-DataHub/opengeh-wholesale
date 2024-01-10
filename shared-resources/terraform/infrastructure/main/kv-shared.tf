@@ -1,5 +1,5 @@
 module "kv_shared" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault?ref=v13"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault?ref=13.32.0"
 
   project_name                    = var.domain_name_short
   environment_short               = var.environment_short
