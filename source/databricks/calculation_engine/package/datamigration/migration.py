@@ -19,7 +19,12 @@ from typing import Any
 from package.infrastructure import paths, initialize_spark
 import package.infrastructure.environment_variables as env_vars
 from .committed_migrations import upload_committed_migration
-from package.infrastructure.paths import WHOLESALE_CONTAINER_NAME, OUTPUT_FOLDER
+from package.infrastructure.paths import (
+    WHOLESALE_CONTAINER_NAME,
+    OUTPUT_FOLDER,
+    INPUT_DATABASE_NAME,
+    INPUT_FOLDER,
+)
 from package.infrastructure.storage_account_access.data_lake_file_manager import (
     DataLakeFileManager,
 )
@@ -60,7 +65,9 @@ def _substitute_placeholders(
             "{CONTAINER_PATH}", migration_args.storage_container_path
         )  # abfss://...
         .replace("{OUTPUT_DATABASE_NAME}", OUTPUT_DATABASE_NAME)  # "wholesale_output"
+        .replace("{INPUT_DATABASE_NAME}", INPUT_DATABASE_NAME)  # "wholesale"
         .replace("{OUTPUT_FOLDER}", OUTPUT_FOLDER)  # "calculation-output"
+        .replace("{INPUT_FOLDER}", INPUT_FOLDER)  # "calculation_input"
         .replace("{TEST}", TEST)
     )  # ""
 
