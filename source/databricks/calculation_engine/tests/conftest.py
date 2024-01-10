@@ -187,6 +187,7 @@ def calculation_output_path(data_lake_path: str) -> str:
 def migrations_executed(
     spark: SparkSession,
     data_lake_path: str,
+    calculation_input_folder: str,
     calculation_input_path: str,
     calculation_output_path: str,
 ) -> None:
@@ -201,7 +202,7 @@ def migrations_executed(
         data_storage_account_name="foo",
         data_storage_container_name="foo",
         data_storage_credential=ClientSecretCredential("foo", "foo", "foo"),
-        calculation_input_folder=calculation_input_path,
+        calculation_input_folder=calculation_input_folder,
         spark=spark,
     )
     # Overwrite in test
