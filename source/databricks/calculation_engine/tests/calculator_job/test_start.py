@@ -22,6 +22,7 @@ import pytest
 from azure.monitor.query import LogsQueryClient, LogsQueryResult
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculator_job import start, start_with_deps
+from package.calculator_job_args import parse_command_line_arguments
 
 from tests.integration_test_configuration import IntegrationTestConfiguration
 
@@ -41,8 +42,8 @@ class TestWhenInvokedWithValidArguments:
         command_line_args.calculation_id = any_calculator_args.calculation_id
 
         start_with_deps(
-            get_command_line_args=lambda: command_line_args,
-            create_job_args=lambda args: any_calculator_args,
+            parse_command_line_args=lambda: command_line_args,
+            create_calculation_args=lambda args: any_calculator_args,
             calculation_executor=lambda args, reader: None,
             is_storage_locked_checker=lambda name, cred: False,
         )
@@ -82,7 +83,7 @@ class TestWhenInvokedWithValidArguments:
 AppTraces
 | where AppRoleName == "dbr-calculation-engine"
 | where SeverityLevel == 1
-| where Message startswith_cs "Job arguments"
+| where Message startswith_cs "Command line arguments"
 | where OperationId != "00000000000000000000000000000000"
 | where Properties.Domain == "wholesale"
 | where Properties.calculation_id == "{any_calculator_args.calculation_id}"
