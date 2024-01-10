@@ -65,7 +65,9 @@ def test__get_grid_loss_responsible__given_three_metering_point_period_dataframe
     )
 
     # Act
-    table_reader_mock.read_grid_loss_metering_points.return_value = grid_area_responsible
+    table_reader_mock.read_grid_loss_metering_points.return_value = (
+        grid_area_responsible
+    )
     grid_loss_responsible = get_grid_loss_responsible(
         grid_areas,
         metering_point_period,
@@ -123,7 +125,9 @@ def test__get_grid_loss_responsible__given_metering_point_period_with_same_id_in
     )
 
     # Act
-    table_reader_mock.read_grid_loss_metering_points.return_value = grid_area_responsible
+    table_reader_mock.read_grid_loss_metering_points.return_value = (
+        grid_area_responsible
+    )
     grid_loss_responsible = get_grid_loss_responsible(
         grid_areas,
         metering_point_period,
