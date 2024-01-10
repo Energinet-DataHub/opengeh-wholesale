@@ -53,7 +53,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Configuration
         /// <summary>
         /// Retrieve secrets from Key Vaults and create configuration.
         /// </summary>
-        /// <param name="secretsConfiguration">A configuration that has been builded so it can retrieve secrets from the shared key vault.</param>
+        /// <param name="secretsConfiguration">A configuration that has been built so it can retrieve secrets from the shared key vault.</param>
         public static ServiceBusConfiguration CreateFromConfiguration(IConfigurationRoot secretsConfiguration)
         {
             var serviceBusNamespace = secretsConfiguration.GetValue<string>("sb-domain-relay-namespace-name")!;
