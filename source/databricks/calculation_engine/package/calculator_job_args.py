@@ -25,15 +25,15 @@ from package.common.logger import Logger
 from package.infrastructure import valid_date, valid_list, paths, logging_configuration
 
 
-def get_raw_command_line_args() -> Namespace:
-    return _parse_args_or_throw(sys.argv[1:])
+def parse_command_line_args() -> Namespace:
+    job_args = _parse_args_or_throw(sys.argv[1:])
+    logger = Logger(__name__)
+    logger.info(f"Command line arguments: {repr(job_args)}")
+    return job_args
 
 
 def create_calculation_args(job_args: Namespace) -> CalculatorArgs:
     with logging_configuration.start_span("calculation.create_calculation_arguments"):
-        logger = Logger(__name__)
-        logger.info(f"Job arguments: {repr(job_args)}")
-
         time_zone = env_vars.get_time_zone()
         storage_account_name = env_vars.get_storage_account_name()
         credential = env_vars.get_storage_account_credential()

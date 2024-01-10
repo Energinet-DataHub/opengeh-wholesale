@@ -18,7 +18,7 @@ import pytest
 from unittest.mock import patch
 from package.calculator_job_args import (
     create_calculation_args,
-    get_raw_command_line_args,
+    parse_command_line_args,
 )
 from package.codelists import ProcessType
 from package.infrastructure.environment_variables import EnvironmentVariable
@@ -73,7 +73,7 @@ class TestWhenInvokedWithIncorrectParameters:
             with patch("sys.argv", ["dummy_script", "--unexpected-arg"]):
                 with patch.dict("os.environ", job_environment_variables):
                     # Act
-                    get_raw_command_line_args()
+                    parse_command_line_args()
 
         # Assert
         assert excinfo.value.code == 2
@@ -92,7 +92,7 @@ class TestWhenInvokedWithValidParameters:
         # Arrange
         with patch("sys.argv", sys_argv_from_contract):
             with patch.dict("os.environ", job_environment_variables):
-                command_line_args = get_raw_command_line_args()
+                command_line_args = parse_command_line_args()
                 # Act
                 actual = create_calculation_args(command_line_args)
 
@@ -139,7 +139,7 @@ class TestWhenInvokedWithValidParameters:
         ]
         with patch("sys.argv", sys_argv_from_contract):
             with patch.dict("os.environ", job_environment_variables):
-                command_line_args = get_raw_command_line_args()
+                command_line_args = parse_command_line_args()
                 # Act
                 actual = create_calculation_args(command_line_args)
 
@@ -154,7 +154,7 @@ class TestWhenInvokedWithValidParameters:
         # Arrange
         with patch("sys.argv", sys_argv_from_contract):
             with patch.dict("os.environ", job_environment_variables):
-                command_line_args = get_raw_command_line_args()
+                command_line_args = parse_command_line_args()
                 # Act
                 actual = create_calculation_args(command_line_args)
 
@@ -180,7 +180,7 @@ class TestWhenUnknownProcessType:
         with patch("sys.argv", sys_argv_from_contract):
             with patch.dict("os.environ", job_environment_variables):
                 with pytest.raises(SystemExit) as error:
-                    command_line_args = get_raw_command_line_args()
+                    command_line_args = parse_command_line_args()
                     # Act
                     create_calculation_args(command_line_args)
 
@@ -203,7 +203,7 @@ class TestWhenMissingEnvVariables:
 
                 with patch.dict("os.environ", env_variables_with_one_missing):
                     with pytest.raises(SystemExit) as error:
-                        command_line_args = get_raw_command_line_args()
+                        command_line_args = parse_command_line_args()
                         # Act
                         create_calculation_args(command_line_args)
 
