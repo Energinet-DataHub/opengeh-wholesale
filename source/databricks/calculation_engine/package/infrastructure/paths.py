@@ -18,7 +18,7 @@ from package.codelists import BasisDataType
 import package.infrastructure.environment_variables as env_vars
 
 # Input database and tables
-INPUT_DATABASE_NAME = "wholesale"
+INPUT_DATABASE_NAME = "wholesale_input"
 METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods"
 TIME_SERIES_POINTS_TABLE_NAME = "time_series_points"
 CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods"
