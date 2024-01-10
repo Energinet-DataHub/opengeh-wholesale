@@ -31,12 +31,12 @@ public class CalculationRepository : ICalculationRepository
 
     public async Task AddAsync(Calculation calculation)
     {
-        await _context.Batches.AddAsync(calculation).ConfigureAwait(false);
+        await _context.Calculations.AddAsync(calculation).ConfigureAwait(false);
     }
 
     public async Task<Calculation> GetAsync(Guid batchId)
     {
-        return await _context.Batches.FirstAsync(x => x.Id == batchId).ConfigureAwait(false);
+        return await _context.Calculations.FirstAsync(x => x.Id == batchId).ConfigureAwait(false);
     }
 
     public Task<List<Calculation>> GetCreatedAsync() => GetByStateAsync(CalculationExecutionState.Created);
@@ -44,7 +44,7 @@ public class CalculationRepository : ICalculationRepository
     public async Task<List<Calculation>> GetByStatesAsync(IEnumerable<CalculationExecutionState> states)
     {
         return await _context
-            .Batches
+            .Calculations
             .Where(b => states.Contains(b.ExecutionState))
             .ToListAsync()
             .ConfigureAwait(false);
@@ -53,7 +53,7 @@ public class CalculationRepository : ICalculationRepository
     public async Task<List<Calculation>> GetCompletedAfterAsync(Instant? completedTime)
     {
         return await _context
-            .Batches
+            .Calculations
             .Where(b => b.ExecutionState == CalculationExecutionState.Completed)
             .Where(b => completedTime == null || b.ExecutionTimeEnd > completedTime)
             .ToListAsync()
@@ -69,7 +69,7 @@ public class CalculationRepository : ICalculationRepository
         Instant? periodEnd)
     {
         var query = _context
-            .Batches
+            .Calculations
             .Where(b => minExecutionTimeStart == null || b.ExecutionTimeStart >= minExecutionTimeStart)
             .Where(b => maxExecutionTimeStart == null || b.ExecutionTimeStart <= maxExecutionTimeStart)
             .Where(b => periodEnd == null || b.PeriodStart < periodEnd)
@@ -86,7 +86,7 @@ public class CalculationRepository : ICalculationRepository
     private async Task<List<Calculation>> GetByStateAsync(CalculationExecutionState state)
     {
         return await _context
-            .Batches
+            .Calculations
             .Where(b => b.ExecutionState == state)
             .ToListAsync()
             .ConfigureAwait(false);
