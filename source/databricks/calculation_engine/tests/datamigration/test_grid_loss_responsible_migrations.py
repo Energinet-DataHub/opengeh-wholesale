@@ -30,7 +30,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
     row = {
         "metering_point_id": "571313180400100657",
     }
-    return spark.createDataFrame(data=[row], schema=[grid_area_responsible_schema])
+    return spark.createDataFrame(data=[row], schema=grid_area_responsible_schema)
 
 
 @pytest.mark.parametrize(
