@@ -21,7 +21,7 @@ from package.calculation.preparation.grid_loss_responsible import (
     grid_area_responsible_schema,
 )
 from package.infrastructure.paths import (
-    GRID_LOSS_RESPONSIBLE_TABLE_NAME,
+    GRID_LOSS_METERING_POINTS_TABLE_NAME,
     INPUT_DATABASE_NAME,
 )
 
@@ -59,7 +59,8 @@ def test__migrated_table_rejects_invalid_data(
     # Act
     with pytest.raises(Exception) as ex:
         invalid_df.write.format("delta").option("mergeSchema", "false").insertInto(
-            f"{INPUT_DATABASE_NAME}.{GRID_LOSS_RESPONSIBLE_TABLE_NAME}", overwrite=False
+            f"{INPUT_DATABASE_NAME}.{GRID_LOSS_METERING_POINTS_TABLE_NAME}",
+            overwrite=False,
         )
 
     # Assert: Do sufficient assertions to be confident that the expected violation has been caught
@@ -87,7 +88,7 @@ def test__migrated_table_accepts_valid_data(
 
     # Act and assert: Expectation is that no exception is raised
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
-        f"{INPUT_DATABASE_NAME}.{GRID_LOSS_RESPONSIBLE_TABLE_NAME}"
+        f"{INPUT_DATABASE_NAME}.{GRID_LOSS_METERING_POINTS_TABLE_NAME}"
     )
 
 
@@ -100,7 +101,7 @@ def test__table__is_not_managed(spark: SparkSession, migrations_executed: None) 
     """
     database_details = spark.sql(f"DESCRIBE DATABASE {INPUT_DATABASE_NAME}")
     table_details = spark.sql(
-        f"DESCRIBE DETAIL {INPUT_DATABASE_NAME}.{GRID_LOSS_RESPONSIBLE_TABLE_NAME}"
+        f"DESCRIBE DETAIL {INPUT_DATABASE_NAME}.{GRID_LOSS_METERING_POINTS_TABLE_NAME}"
     )
 
     database_location = database_details.where(
