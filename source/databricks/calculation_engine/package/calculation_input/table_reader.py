@@ -24,7 +24,6 @@ from package.codelists import (
     SettlementMethod,
 )
 from package.common import assert_schema
-from package.common.logger import Logger
 from package.constants import Colname
 from package.infrastructure import paths
 from .schemas import (
@@ -33,6 +32,7 @@ from .schemas import (
     charge_price_points_schema,
     metering_point_period_schema,
     time_series_point_schema,
+    grid_loss_metering_points_schema,
 )
 
 
@@ -43,6 +43,7 @@ class TableReader:
         calculation_input_path: str,
         time_series_points_table_name: str | None = None,
         metering_point_periods_table_name: str | None = None,
+        grid_loss_metering_points_table_name: str | None = None,
     ) -> None:
         self._spark = spark
         self._calculation_input_path = calculation_input_path
@@ -51,6 +52,10 @@ class TableReader:
         )
         self._metering_point_periods_table_name = (
             metering_point_periods_table_name or paths.METERING_POINT_PERIODS_TABLE_NAME
+        )
+        self._grid_loss_metering_points_table_name = (
+            grid_loss_metering_points_table_name
+            or paths.GRID_LOSS_METERING_POINTS_TABLE_NAME
         )
 
     def read_metering_point_periods(
@@ -130,6 +135,14 @@ class TableReader:
         assert_schema(df.schema, charge_price_points_schema)
 
         df = self._add_charge_key_column(df)
+        return df
+
+    def read_grid_loss_metering_points(self) -> DataFrame:
+        path = f"{self._calculation_input_path}/{self._grid_loss_metering_points_table_name}"
+        df = self._spark.read.format("delta").load(path)
+
+        assert_schema(df.schema, grid_loss_metering_points_schema)
+
         return df
 
     def _add_charge_key_column(self, charge_df: DataFrame) -> DataFrame:
