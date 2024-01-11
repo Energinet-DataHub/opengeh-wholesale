@@ -117,7 +117,7 @@ public class Startup
         serviceCollection.AddApplicationInsightsTelemetry(options => options.EnableAdaptiveSampling = false);
 
         serviceCollection.AddUserAuthentication<FrontendUser, FrontendUserProvider>();
-        ////serviceCollection.AddHttpLoggingScope(SubsystemName);
+        serviceCollection.AddHttpLoggingScope(SubsystemName);
     }
 
     public void Configure(IApplicationBuilder app)
