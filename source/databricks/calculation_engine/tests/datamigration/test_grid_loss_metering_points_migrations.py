@@ -17,9 +17,8 @@ from pyspark.sql.functions import array, col, lit
 import pytest
 
 from helpers.data_frame_utils import set_column
-from package.calculation.preparation.grid_loss_responsible import (
-    grid_area_responsible_schema,
-)
+
+from package.calculation_input.schemas import grid_loss_metering_points_schema
 from package.infrastructure.paths import (
     GRID_LOSS_METERING_POINTS_TABLE_NAME,
     INPUT_DATABASE_NAME,
@@ -30,7 +29,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
     row = {
         "metering_point_id": "571313180400100657",
     }
-    return spark.createDataFrame(data=[row], schema=grid_area_responsible_schema)
+    return spark.createDataFrame(data=[row], schema=grid_loss_metering_points_schema)
 
 
 @pytest.mark.parametrize(

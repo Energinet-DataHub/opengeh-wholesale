@@ -17,17 +17,22 @@ import pytest
 from pyspark.sql import SparkSession
 from unittest.mock import patch
 
+from package import calculation_input
 from package.calculation.preparation.transformations.grid_loss_responsible import (
     get_grid_loss_responsible,
-    grid_area_responsible_schema,
 )
 import metering_point_periods_factory as factory
+from package.calculation_input import TableReader
+from package.calculation_input.schemas import (
+    grid_loss_metering_points_schema,
+)
 from package.codelists import MeteringPointType
 from package.constants import Colname
 
 
-def test__get_grid_loss_responsible__given_three_metering_point_period_dataframes_on_the_same_grid_area__then_only_return_the_once_in_the_grid_area_responsible_list(
-    spark: SparkSession,
+@patch.object(calculation_input, TableReader.__name__)
+def test__get_grid_loss_responsible__given_three_metering_point_period_dataframes_on_the_same_grid_area__then_only_return_the_once_in_the_grid_area_metering_points(
+    table_reader_mock: TableReader, spark: SparkSession
 ) -> None:
     # Arrange
     grid_areas = ["804"]
@@ -51,22 +56,23 @@ def test__get_grid_loss_responsible__given_three_metering_point_period_dataframe
     )
     metering_point_period = factory.create(spark, data=[row1, row2, row3])
 
-    grid_area_responsible = spark.createDataFrame(
+    grid_loss_metering_points = spark.createDataFrame(
         [
             (metering_point_id_1,),
             (metering_point_id_2,),
         ],
-        grid_area_responsible_schema,
+        grid_loss_metering_points_schema,
     )
 
     # Act
-    with patch(
-        "package.calculation.preparation.transformations.grid_loss_responsible._get_all_grid_loss_responsible",
-        return_value=grid_area_responsible,
-    ):
-        grid_loss_responsible = get_grid_loss_responsible(
-            grid_areas, metering_point_period
-        )
+    table_reader_mock.read_grid_loss_metering_points.return_value = (
+        grid_loss_metering_points
+    )
+    grid_loss_responsible = get_grid_loss_responsible(
+        grid_areas,
+        metering_point_period,
+        table_reader_mock,
+    )
 
     # Assert
     assert grid_loss_responsible.df.count() == 2
@@ -80,7 +86,9 @@ def test__get_grid_loss_responsible__given_three_metering_point_period_dataframe
     )
 
 
+@patch.object(calculation_input, TableReader.__name__)
 def test__get_grid_loss_responsible__given_metering_point_period_with_same_id_int_different_time_window__then_return_expected_amount(
+    table_reader_mock: TableReader,
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -108,22 +116,23 @@ def test__get_grid_loss_responsible__given_metering_point_period_with_same_id_in
     )
     metering_point_period = factory.create(spark, data=[row1, row2, row3])
 
-    grid_area_responsible = spark.createDataFrame(
+    grid_loss_metering_points = spark.createDataFrame(
         [
             (metering_point_id_1,),
             (metering_point_id_2,),
         ],
-        grid_area_responsible_schema,
+        grid_loss_metering_points_schema,
     )
 
     # Act
-    with patch(
-        "package.calculation.preparation.transformations.grid_loss_responsible._get_all_grid_loss_responsible",
-        return_value=grid_area_responsible,
-    ):
-        grid_loss_responsible = get_grid_loss_responsible(
-            grid_areas, metering_point_period
-        )
+    table_reader_mock.read_grid_loss_metering_points.return_value = (
+        grid_loss_metering_points
+    )
+    grid_loss_responsible = get_grid_loss_responsible(
+        grid_areas,
+        metering_point_period,
+        table_reader_mock,
+    )
 
     # Assert
     assert grid_loss_responsible.df.count() == 3

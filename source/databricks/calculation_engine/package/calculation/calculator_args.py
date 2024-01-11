@@ -27,6 +27,7 @@ class CalculatorArgs:
     calculation_input_path: str
     time_series_points_table_name: str | None
     metering_point_periods_table_name: str | None
+    grid_loss_metering_points_table_name: str | None
     calculation_id: str
     calculation_grid_areas: list[str]
     calculation_period_start_datetime: datetime
