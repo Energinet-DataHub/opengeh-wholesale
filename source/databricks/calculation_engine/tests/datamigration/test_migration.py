@@ -41,7 +41,7 @@ def test__migrate_datalake__when_script_not_found__raise_exception(
 
     # Act and Assert
     with pytest.raises(Exception):
-        _migrate_data_lake("dummy_storage_name", mock_credential)
+        _migrate_data_lake("dummy_storage_name", mock_credential, "some_folder")
 
 
 @patch.object(migration, initialize_spark.__name__)
@@ -66,7 +66,7 @@ def test__migrate_datalake__upload_called_with_correct_name(
         calls.append(call(ANY, name))
 
     # Act
-    _migrate_data_lake("dummy_storage_name", mock_credential)
+    _migrate_data_lake("dummy_storage_name", mock_credential, "some_folder")
 
     # Assert
     mock_upload_committed_migration.assert_has_calls(calls)
