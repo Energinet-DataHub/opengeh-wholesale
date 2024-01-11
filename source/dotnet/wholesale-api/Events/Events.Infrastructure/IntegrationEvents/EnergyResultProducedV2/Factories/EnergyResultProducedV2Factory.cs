@@ -28,13 +28,6 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.En
 
 public class EnergyResultProducedV2Factory : IEnergyResultProducedV2Factory
 {
-    private readonly ICalculationRepository _calculationRepository;
-
-    public EnergyResultProducedV2Factory(ICalculationRepository calculationRepository)
-    {
-        _calculationRepository = calculationRepository;
-    }
-
     public Contracts.IntegrationEvents.EnergyResultProducedV2 Create(EnergyResult energyResult)
     {
         if (energyResult.EnergySupplierId == null && energyResult.BalanceResponsibleId == null)
