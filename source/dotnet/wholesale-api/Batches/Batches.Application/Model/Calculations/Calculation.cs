@@ -136,7 +136,7 @@ public class Calculation
     /// <summary>
     /// Must be exactly at the beginning (at 00:00:00 o'clock) of the local date.
     /// </summary>
-    public Instant PeriodStart { get; }
+    public Instant PeriodStart { get; private set; }
 
     /// <summary>
     /// Must be exactly 1 ms before the end (midnight) of the local date.
@@ -145,6 +145,11 @@ public class Calculation
     public Instant PeriodEnd { get; }
 
     public bool AreSettlementReportsCreated { get; set; }
+
+    /// <summary>
+    /// The calculation version.
+    /// </summary>
+    public string Version { get; }
 
     /// <summary>
     /// Get the ISO 8601 duration for the given process type.
