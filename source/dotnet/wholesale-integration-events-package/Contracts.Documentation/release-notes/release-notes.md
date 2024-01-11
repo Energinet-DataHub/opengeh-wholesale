@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 6.0.2
+
+No changes.
+
 ## Version 6.0.1
 
 No changes.
