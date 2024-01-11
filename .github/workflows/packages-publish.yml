@@ -56,7 +56,6 @@ jobs:
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v12
         with:
           solution_file_path: ./source/dotnet/wholesale-integration-events-package/Contracts.sln
-          code_coverage_flags: packages
 
       - name: Pack Contracts project
         uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v12
