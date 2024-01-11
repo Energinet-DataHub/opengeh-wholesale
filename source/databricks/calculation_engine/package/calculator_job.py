@@ -15,7 +15,6 @@
 import os
 import sys
 from argparse import Namespace
-from logging import Logger
 from typing import Callable
 
 from opentelemetry.trace import SpanKind, Status, StatusCode, Span
