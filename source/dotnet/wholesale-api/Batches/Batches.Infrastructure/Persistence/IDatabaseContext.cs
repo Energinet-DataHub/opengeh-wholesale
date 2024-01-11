@@ -19,7 +19,7 @@ namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
 
 public interface IDatabaseContext
 {
-    DbSet<Calculation> Calculations { get; }
+    DbSet<Calculation> Batches { get; }
 
     DbSet<Interfaces.GridArea.GridAreaOwner> GridAreaOwners { get; }
 
