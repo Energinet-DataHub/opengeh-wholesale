@@ -38,6 +38,7 @@ public class CalculationResultCompletedFactoryTests
     private readonly string _fromGridArea = "123";
     private readonly Instant _periodStart = SystemClock.Instance.GetCurrentInstant();
     private readonly Instant _periodEnd = SystemClock.Instance.GetCurrentInstant();
+    private readonly string _version = DateTime.Now.Ticks.ToString();
 
     [Theory]
     [InlineAutoMoqData]
@@ -130,7 +131,8 @@ public class CalculationResultCompletedFactoryTests
             Energinet.DataHub.Wholesale.Common.Interfaces.Models.ProcessType.Aggregation,
             _periodStart,
             _periodEnd,
-            _fromGridArea);
+            _fromGridArea,
+            _version);
     }
 
     private CalculationResultCompleted CreateExpected(EnergyResult energyResult)

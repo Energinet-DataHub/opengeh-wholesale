@@ -33,7 +33,8 @@ public class EnergyResultTests
         TimeSeriesType anyTimeSeriesType,
         ProcessType anyProcessType,
         Instant anyPeriodStart,
-        Instant anyPeriodEnd)
+        Instant anyPeriodEnd,
+        string anyVersion)
     {
         // Arrange
         var emptyTimeSeriesPoints = Array.Empty<EnergyTimeSeriesPoint>();
@@ -50,7 +51,8 @@ public class EnergyResultTests
             anyProcessType,
             anyPeriodStart,
             anyPeriodEnd,
-            anyFromGridArea);
+            anyFromGridArea,
+            anyVersion);
 
         // Assert
         act.Should().Throw<ArgumentException>().WithMessage("*empty*");
