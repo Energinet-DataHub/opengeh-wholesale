@@ -36,19 +36,19 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
 
             # Include Esett Exchange model
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-esett-exchange/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACJAEQ6HPGTOIJKFH5DOMK22ZMWRA2Q
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-esett-exchange/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACCM3YJB2QHZXBOF5Q7FSCXSZM74KOA
 
             # Include Migration model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACJAEQ6GIXRKNO3XZPM7L676ZMWRAVA
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACCM3YJB4SGYT574OIAU52BYZM74KVQ
 
             # Include Sauron - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/dh3-operations/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACJAEQ6GDHBR5EG7WEYVL4QWZMWRAOA
+            !include https://raw.githubusercontent.com/Energinet-DataHub/dh3-operations/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACCM3YJB4Z2LLHY2L5PLQV26ZM74KZQ
 
             # Include DH2 Bridge model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/dh2-bridge/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACJAEQ6HNYGHLH6AZGTXWWL6ZMWRAFA
+            !include https://raw.githubusercontent.com/Energinet-DataHub/dh2-bridge/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACCM3YJAY7ZHNXGI5P4M2JKSZM74K5Q
         }
 
         # Deployment model
@@ -137,6 +137,13 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
                     description ""
                     technology "Azure Application Insights"
                     tags "Microsoft Azure - Application Insights"
+                }
+
+                # Azure DNS
+                infrastructureNode "AzureDNS" {
+                    description ""
+                    technology "Microsoft Azure - DNS"
+                    tags "Microsoft Azure - DNS"
                 }
 
                 deploymentNode "Key Vault" {

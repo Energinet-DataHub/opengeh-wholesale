@@ -200,3 +200,9 @@ variable "biztalk_hybrid_connection_hostname" {
   type        = string
   description = "Hostname of the biztalk hybrid connection"
 }
+
+variable "domain_verification_code" {
+  type        = string
+  description = "Domain verification code for the domain name"
+  default     = null
+}
