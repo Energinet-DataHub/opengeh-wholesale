@@ -18,9 +18,11 @@ namespace Energinet.DataHub.Wholesale.DatabaseMigration
     {
         public static int Main(string[] args)
         {
+            // If you are using SQL Server Express use "Server=(LocalDb)\\MSSQLLocalDB;..."
+            // If you are using SQL Server use "Server=localhost;..."
             var connectionString =
                 args.FirstOrDefault()
-                ?? "Server=localhost;Database=Wholesale;Trusted_Connection=True;Encrypt=No;";
+                ?? "Server=localhost;Database=wholesale;Trusted_Connection=True;Encrypt=No;";
 
             Console.WriteLine($"Performing upgrade on {connectionString}");
             var result = Upgrader.DatabaseUpgrade(connectionString);

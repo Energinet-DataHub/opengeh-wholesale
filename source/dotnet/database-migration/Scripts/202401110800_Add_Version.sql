@@ -1,4 +1,4 @@
-﻿ALTER TABLE Batch
-    ADD Version [varchar(16)] NOT NULL DEFAULT("0");
+﻿ALTER TABLE batches.Batch
+    ADD Version [varchar](32) NOT NULL DEFAULT('');
 GO
 

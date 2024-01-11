@@ -30,7 +30,8 @@ public class Calculation
         Instant periodEnd,
         Instant executionTimeStart,
         DateTimeZone dateTimeZone,
-        Guid createdByUserId)
+        Guid createdByUserId,
+        string version)
         : this()
     {
         _gridAreaCodes = gridAreaCodes.ToList();
@@ -46,6 +47,7 @@ public class Calculation
         CreatedByUserId = createdByUserId;
         ExecutionTimeEnd = null;
         AreSettlementReportsCreated = false;
+        Version = version;
     }
 
     /// <summary>
@@ -112,6 +114,7 @@ public class Calculation
     {
         Id = Guid.NewGuid();
         _gridAreaCodes = new List<GridAreaCode>();
+        Version = string.Empty;
     }
 
     // Private setter is used implicitly by tests
@@ -147,9 +150,10 @@ public class Calculation
     public bool AreSettlementReportsCreated { get; set; }
 
     /// <summary>
-    /// The calculation version.
+    /// The calculation version. Represented as the number ticks since 1/1/2020.
+    /// The version is created with the calculation.
     /// </summary>
-    public string Version { get; }
+    public string Version { get; private set; }
 
     /// <summary>
     /// Get the ISO 8601 duration for the given process type.
