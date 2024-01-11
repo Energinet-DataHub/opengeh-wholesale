@@ -5,7 +5,7 @@ resource "azurerm_monitor_action_group" "edi" {
 
   email_receiver {
     name                    = "Alerts-Edi-${lower(var.domain_name_short)}-${lower(var.environment_short)}-${lower(var.environment_instance)}"
-    email_address           = "046adedd.energinet.onmicrosoft.com@emea.teams.ms"
+    email_address           = "7bc69f85.energinet.onmicrosoft.com@emea.teams.ms"
     use_common_alert_schema = true
   }
 }
