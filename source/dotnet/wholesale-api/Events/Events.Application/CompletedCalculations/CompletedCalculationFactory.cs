@@ -35,6 +35,7 @@ public class CompletedCalculationFactory : ICompletedCalculationFactory
             completedCalculationDto.ProcessType,
             completedCalculationDto.PeriodStart.ToInstant(),
             completedCalculationDto.PeriodEnd.ToInstant(),
-            completedTime: completedCalculationDto.ExecutionTimeEnd.Value.ToInstant());
+            completedTime: completedCalculationDto.ExecutionTimeEnd.Value.ToInstant(),
+            completedCalculationDto.Version);
     }
 }

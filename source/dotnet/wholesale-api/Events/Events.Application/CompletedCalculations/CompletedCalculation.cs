@@ -25,7 +25,8 @@ public sealed class CompletedCalculation
         ProcessType processType,
         Instant periodStart,
         Instant periodEnd,
-        Instant completedTime)
+        Instant completedTime,
+        string version)
     {
         Id = id;
         GridAreaCodes = gridAreaCodes;
@@ -33,6 +34,7 @@ public sealed class CompletedCalculation
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
         CompletedTime = completedTime;
+        Version = version;
     }
 
     /// <summary>
@@ -51,4 +53,6 @@ public sealed class CompletedCalculation
     public Instant PeriodEnd { get; init; }
 
     public Instant CompletedTime { get; private set; }
+
+    public string Version { get; init; }
 }

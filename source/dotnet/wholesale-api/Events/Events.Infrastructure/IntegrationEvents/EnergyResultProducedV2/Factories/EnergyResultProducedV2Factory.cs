@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Batches.Application;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.Common;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Common;
@@ -27,6 +28,13 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.En
 
 public class EnergyResultProducedV2Factory : IEnergyResultProducedV2Factory
 {
+    private readonly ICalculationRepository _calculationRepository;
+
+    public EnergyResultProducedV2Factory(ICalculationRepository calculationRepository)
+    {
+        _calculationRepository = calculationRepository;
+    }
+
     public Contracts.IntegrationEvents.EnergyResultProducedV2 Create(EnergyResult energyResult)
     {
         if (energyResult.EnergySupplierId == null && energyResult.BalanceResponsibleId == null)
@@ -105,6 +113,7 @@ public class EnergyResultProducedV2Factory : IEnergyResultProducedV2Factory
             PeriodStartUtc = result.PeriodStart.ToTimestamp(),
             PeriodEndUtc = result.PeriodEnd.ToTimestamp(),
             TimeSeriesType = TimeSeriesTypeMapper.MapTimeSeriesType(result.TimeSeriesType),
+            Version = result.Version,
         };
         if (result.FromGridArea != null)
             energyResultProduced.FromGridAreaCode = result.FromGridArea;

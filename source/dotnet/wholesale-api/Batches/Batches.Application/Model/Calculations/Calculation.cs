@@ -110,6 +110,7 @@ public class Calculation
     // ReSharper disable once UnusedMember.Local
     private Calculation()
     {
+        Version = string.Empty;
         Id = Guid.NewGuid();
         _gridAreaCodes = new List<GridAreaCode>();
     }
@@ -145,6 +146,8 @@ public class Calculation
     public Instant PeriodEnd { get; }
 
     public bool AreSettlementReportsCreated { get; set; }
+
+    public string Version { get; init; }
 
     /// <summary>
     /// Get the ISO 8601 duration for the given process type.

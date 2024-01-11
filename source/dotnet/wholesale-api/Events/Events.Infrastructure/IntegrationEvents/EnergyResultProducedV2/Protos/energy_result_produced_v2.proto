@@ -71,6 +71,8 @@ message EnergyResultProducedV2 {
 
     repeated TimeSeriesPoint time_series_points = 17;
 
+    string version = 18;
+
     enum TimeSeriesType {
         /*
          * Unspecified is unused but according to best practice.
