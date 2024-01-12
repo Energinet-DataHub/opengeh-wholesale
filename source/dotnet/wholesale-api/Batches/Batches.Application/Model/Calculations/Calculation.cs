@@ -112,7 +112,6 @@ public class Calculation
     // ReSharper disable once UnusedMember.Local
     private Calculation()
     {
-        Version = string.Empty;
         Id = Guid.NewGuid();
         _gridAreaCodes = new List<GridAreaCode>();
         Version = string.Empty;
@@ -149,8 +148,6 @@ public class Calculation
     public Instant PeriodEnd { get; }
 
     public bool AreSettlementReportsCreated { get; set; }
-
-    public string Version { get; init; }
 
     /// <summary>
     /// The calculation version. The value of this property represents the number of 100-nanosecond

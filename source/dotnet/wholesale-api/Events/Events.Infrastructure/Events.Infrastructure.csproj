@@ -76,7 +76,6 @@
     </Protobuf>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Batches\Batches.Application\Batches.Application.csproj" />
     <ProjectReference Include="..\..\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
     <ProjectReference Include="..\Events.Application\Events.Application.csproj" />
   </ItemGroup>
