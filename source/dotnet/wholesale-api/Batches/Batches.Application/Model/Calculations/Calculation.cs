@@ -30,7 +30,8 @@ public class Calculation
         Instant periodEnd,
         Instant executionTimeStart,
         DateTimeZone dateTimeZone,
-        Guid createdByUserId)
+        Guid createdByUserId,
+        string version)
         : this()
     {
         _gridAreaCodes = gridAreaCodes.ToList();
@@ -46,6 +47,7 @@ public class Calculation
         CreatedByUserId = createdByUserId;
         ExecutionTimeEnd = null;
         AreSettlementReportsCreated = false;
+        Version = version;
     }
 
     /// <summary>
@@ -112,6 +114,7 @@ public class Calculation
     {
         Id = Guid.NewGuid();
         _gridAreaCodes = new List<GridAreaCode>();
+        Version = string.Empty;
     }
 
     // Private setter is used implicitly by tests
@@ -136,7 +139,7 @@ public class Calculation
     /// <summary>
     /// Must be exactly at the beginning (at 00:00:00 o'clock) of the local date.
     /// </summary>
-    public Instant PeriodStart { get; }
+    public Instant PeriodStart { get; private set; }
 
     /// <summary>
     /// Must be exactly 1 ms before the end (midnight) of the local date.
@@ -145,6 +148,14 @@ public class Calculation
     public Instant PeriodEnd { get; }
 
     public bool AreSettlementReportsCreated { get; set; }
+
+    /// <summary>
+    /// The calculation version. The value of this property represents the number of 100-nanosecond
+    /// intervals that have elapsed since 12:00:00 midnight, January 1, 0001 in the Gregorian calendar.
+    /// https://learn.microsoft.com/en-us/dotnet/api/System.DateTime.Ticks?view=net-7.0
+    /// The version is created with the calculation.
+    /// </summary>
+    public string Version { get; private set; }
 
     /// <summary>
     /// Get the ISO 8601 duration for the given process type.

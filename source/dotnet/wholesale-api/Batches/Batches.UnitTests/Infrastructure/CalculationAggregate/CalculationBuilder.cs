@@ -103,7 +103,8 @@ public class CalculationBuilder
             _periodEnd,
             SystemClock.Instance.GetCurrentInstant(),
             DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
-            Guid.NewGuid());
+            Guid.NewGuid(),
+            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks.ToString());
         var jobRunId = new CalculationId(new Random().Next(1, 1000));
 
         if (_state == CalculationExecutionState.Submitted)

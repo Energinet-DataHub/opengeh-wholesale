@@ -104,4 +104,19 @@ public class CalculationDtoMapperTests
         // Assert
         batchDto.RunId.Should().Be(null);
     }
+
+    [Theory]
+    [AutoMoqData]
+    public void Map_Returns_Version_Not_Null_Or_Empty(
+        CalculationDtoMapper sut)
+    {
+        // Arrange
+        var batch = new CalculationBuilder().Build();
+
+        // Act
+        var batchDto = sut.Map(batch);
+
+        // Assert
+        batchDto.Version.Should().NotBeNullOrWhiteSpace();
+    }
 }
