@@ -34,6 +34,7 @@ DEFAULT_METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
 DEFAULT_SETTLEMENT_METHOD = SettlementMethod.NON_PROFILED
 DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
 DEFAULT_BALANCE_RESPONSIBLE_ID = "9999999999999"
+DEFAULT_METERING_POINT_ID = None
 
 
 def create_row(
@@ -45,6 +46,7 @@ def create_row(
     qualities: None | QuantityQuality | list[QuantityQuality] = None,
     energy_supplier_id: str | None = DEFAULT_ENERGY_SUPPLIER_ID,
     balance_responsible_id: str | None = DEFAULT_BALANCE_RESPONSIBLE_ID,
+    metering_point_id: str | None = DEFAULT_METERING_POINT_ID,
 ) -> Row:
     if isinstance(sum_quantity, int):
         sum_quantity = Decimal(sum_quantity)
@@ -67,6 +69,7 @@ def create_row(
         },
         Colname.sum_quantity: sum_quantity,
         Colname.qualities: qualities,
+        Colname.metering_point_id: metering_point_id,
     }
 
     return Row(**row)
