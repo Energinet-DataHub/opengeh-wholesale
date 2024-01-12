@@ -81,6 +81,7 @@ def calculate_grid_loss(
         Colname.grid_area,
         Colname.time_window,
         Colname.sum_quantity,  # grid loss
+        f.lit(MeteringPointType.CONSUMPTION.value).alias(Colname.metering_point_type),
         # Quality of positive and negative grid loss must always be "calculated" as they become time series
         # that'll be sent to the metering points
         f.array(f.lit(QuantityQuality.CALCULATED.value)).alias(Colname.qualities),
@@ -89,37 +90,31 @@ def calculate_grid_loss(
     return EnergyResults(result)
 
 
-def calculate_negative_grid_loss(
-    grid_loss: EnergyResults, grid_loss_responsible: GridLossResponsible
-) -> EnergyResults:
+def calculate_negative_grid_loss(grid_loss: EnergyResults) -> EnergyResults:
     result = grid_loss.df.select(
         Colname.grid_area,
         Colname.time_window,
         f.when(f.col(Colname.sum_quantity) < 0, -f.col(Colname.sum_quantity))
         .otherwise(0)
         .alias(Colname.sum_quantity),
+        f.lit(MeteringPointType.PRODUCTION.value).alias(Colname.metering_point_type),
         Colname.qualities,
     )
 
-    return _add_grid_loss_responsible_to_grid_loss(
-        EnergyResults(result), grid_loss_responsible, MeteringPointType.PRODUCTION
-    )
+    return EnergyResults(result)
 
 
-def calculate_positive_grid_loss(
-    grid_loss: EnergyResults, grid_loss_responsible: GridLossResponsible
-) -> EnergyResults:
+def calculate_positive_grid_loss(grid_loss: EnergyResults) -> EnergyResults:
     result = grid_loss.df.select(
         Colname.grid_area,
         Colname.time_window,
         f.when(f.col(Colname.sum_quantity) > 0, f.col(Colname.sum_quantity))
         .otherwise(0)
         .alias(Colname.sum_quantity),
+        f.lit(MeteringPointType.CONSUMPTION.value).alias(Colname.metering_point_type),
         Colname.qualities,
     )
-    return _add_grid_loss_responsible_to_grid_loss(
-        EnergyResults(result), grid_loss_responsible, MeteringPointType.CONSUMPTION
-    )
+    return EnergyResults(result)
 
 
 def calculate_total_consumption(
@@ -164,25 +159,27 @@ def calculate_total_consumption(
         Colname.time_window,
         Colname.qualities,
         Colname.sum_quantity,
+        f.lit(MeteringPointType.CONSUMPTION.value).alias(Colname.metering_point_type),
     )
 
     return EnergyResults(result)
 
 
-def _add_grid_loss_responsible_to_grid_loss(
-    grid_loss: EnergyResults,
+def apply_grid_loss_adjustment(
+    results: EnergyResults,
+    grid_loss_result: EnergyResults,
     grid_loss_responsible: GridLossResponsible,
     metering_point_type: MeteringPointType,
 ) -> EnergyResults:
-    grid_loss_df = grid_loss.df
-    grid_loss_responsible_df = grid_loss_responsible.df
-
-    # grid_loss_df's energy supplier is always null
-    grid_loss_df = grid_loss_df.drop(Colname.energy_supplier_id)
-
     grid_loss_responsible_grid_area = "GridLossResponsible_GridArea"
+    adjusted_sum_quantity = "adjusted_sum_quantity"
 
-    grid_loss_responsible_df = grid_loss_responsible_df.where(
+    result_df = results.df
+    grid_loss_result_df = grid_loss_result.df
+    # grid_loss_result_df's energy supplier is always null
+    grid_loss_result_df = grid_loss_result_df.drop(Colname.energy_supplier_id)
+
+    grid_loss_responsible_df = grid_loss_responsible.df.where(
         f.col(Colname.metering_point_type) == metering_point_type.value
     ).select(
         Colname.from_date,
@@ -192,7 +189,7 @@ def _add_grid_loss_responsible_to_grid_loss(
         Colname.metering_point_type,
     )
 
-    joined_grid_loss_result_and_responsible = grid_loss_df.join(
+    joined_grid_loss_result_and_responsible = grid_loss_result_df.join(
         grid_loss_responsible_df,
         f.when(
             f.col(Colname.to_date).isNotNull(),
@@ -210,20 +207,8 @@ def _add_grid_loss_responsible_to_grid_loss(
         Colname.energy_supplier_id,
         Colname.time_window,
         Colname.sum_quantity,
-        Colname.metering_point_type,
         Colname.qualities,
     )
-    return EnergyResults(joined_grid_loss_result_and_responsible)
-
-
-def apply_grid_loss_adjustment(
-    results: EnergyResults,
-    grid_loss_result: EnergyResults,
-) -> EnergyResults:
-    adjusted_sum_quantity = "adjusted_sum_quantity"
-
-    result_df = results.df
-    joined_grid_loss_result_and_responsible = grid_loss_result.df
 
     df = result_df.join(
         joined_grid_loss_result_and_responsible,
@@ -245,8 +230,7 @@ def apply_grid_loss_adjustment(
         )
         .otherwise(
             f.array_union(
-                result_df[Colname.qualities],
-                joined_grid_loss_result_and_responsible[Colname.qualities],
+                result_df[Colname.qualities], grid_loss_result_df[Colname.qualities]
             )
         )
         .alias(Colname.qualities),
