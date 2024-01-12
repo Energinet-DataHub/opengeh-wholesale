@@ -209,5 +209,20 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
                         && Enum.GetName(item.AggregationLevelCase) == tuple.AggregationLevel);
             }
         }
+
+        [ScenarioStep(9)]
+        [SubsystemFact]
+        public void AndThen_OneSpecificEnergyResultProducedEventContainsVersion()
+        {
+            // Assert
+            var actualVersion = Fixture.ScenarioState.ReceivedEnergyResultProducedV2.First().CalculationResultVersion;
+
+            using var assertionScope = new AssertionScope();
+            actualVersion.Should().NotBeNullOrEmpty();
+
+            // Convert version (ticks) to datetime and assert that it is not older than 3 hours
+            var ticks = long.Parse(actualVersion);
+            new DateTime(ticks).Subtract(DateTime.Now).Hours.Should().BeLessThan(3);
+        }
     }
 }
