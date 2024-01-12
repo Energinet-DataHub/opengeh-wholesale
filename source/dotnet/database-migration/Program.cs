@@ -18,8 +18,8 @@ namespace Energinet.DataHub.Wholesale.DatabaseMigration
     {
         public static int Main(string[] args)
         {
-            // If you are using SQL Server Express use "Server=(LocalDb)\\MSSQLLocalDB;..."
-            // If you are using SQL Server use "Server=localhost;..."
+            // If you are migrating to SQL Server Express use connection string "Server=(LocalDb)\\MSSQLLocalDB;..."
+            // If you are migrating to SQL Server use connection string "Server=localhost;..."
             var connectionString =
                 args.FirstOrDefault()
                 ?? "Server=localhost;Database=wholesale;Trusted_Connection=True;Encrypt=No;";
