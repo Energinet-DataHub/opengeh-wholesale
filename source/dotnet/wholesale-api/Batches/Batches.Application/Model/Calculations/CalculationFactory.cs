@@ -41,6 +41,7 @@ public class CalculationFactory : ICalculationFactory
         var periodEnd = Instant.FromDateTimeOffset(endDate);
         // As long as scheduling is not implemented, execution time start is the same as created time
         var executionTimeStart = createdTime;
-        return new Calculation(createdTime, processType, gridAreas, periodStart, periodEnd, executionTimeStart, _dateTimeZone, createdByUserId);
+        var version = _clock.GetCurrentInstant().ToDateTimeUtc().Ticks.ToString();
+        return new Calculation(createdTime, processType, gridAreas, periodStart, periodEnd, executionTimeStart, _dateTimeZone, createdByUserId, version);
     }
 }
