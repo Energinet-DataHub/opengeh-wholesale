@@ -24,3 +24,4 @@ class ResultColumnNames:
     time = "time"
     quantity = "quantity"
     quantity_qualities = "quantity_qualities"
+    metering_point_id = "metering_point_id"
