@@ -13,9 +13,13 @@
 # limitations under the License.
 import datetime
 import re
+
 import pytest
 from unittest.mock import patch
-from package.calculator_job_args import get_calculator_args
+from package.calculator_job_args import (
+    create_calculation_arguments,
+    parse_command_line_arguments,
+)
 from package.codelists import ProcessType
 from package.infrastructure.environment_variables import EnvironmentVariable
 
@@ -69,7 +73,7 @@ class TestWhenInvokedWithIncorrectParameters:
             with patch("sys.argv", ["dummy_script", "--unexpected-arg"]):
                 with patch.dict("os.environ", job_environment_variables):
                     # Act
-                    get_calculator_args()
+                    parse_command_line_arguments()
 
         # Assert
         assert excinfo.value.code == 2
@@ -88,8 +92,9 @@ class TestWhenInvokedWithValidParameters:
         # Arrange
         with patch("sys.argv", sys_argv_from_contract):
             with patch.dict("os.environ", job_environment_variables):
+                command_line_args = parse_command_line_arguments()
                 # Act
-                actual = get_calculator_args()
+                actual = create_calculation_arguments(command_line_args)
 
         # Assert
 
@@ -132,11 +137,11 @@ class TestWhenInvokedWithValidParameters:
         sys_argv_from_contract = sys_argv_from_contract + [
             f"--time_series_points_table_name={expected}"
         ]
-
         with patch("sys.argv", sys_argv_from_contract):
             with patch.dict("os.environ", job_environment_variables):
+                command_line_args = parse_command_line_arguments()
                 # Act
-                actual = get_calculator_args()
+                actual = create_calculation_arguments(command_line_args)
 
         # Assert
         assert actual.time_series_points_table_name == expected
@@ -149,8 +154,9 @@ class TestWhenInvokedWithValidParameters:
         # Arrange
         with patch("sys.argv", sys_argv_from_contract):
             with patch.dict("os.environ", job_environment_variables):
+                command_line_args = parse_command_line_arguments()
                 # Act
-                actual = get_calculator_args()
+                actual = create_calculation_arguments(command_line_args)
 
         # Assert
         assert actual.time_series_points_table_name is None
@@ -174,8 +180,9 @@ class TestWhenUnknownProcessType:
         with patch("sys.argv", sys_argv_from_contract):
             with patch.dict("os.environ", job_environment_variables):
                 with pytest.raises(SystemExit) as error:
+                    command_line_args = parse_command_line_arguments()
                     # Act
-                    get_calculator_args()
+                    create_calculation_arguments(command_line_args)
 
         # Assert
         assert error.value.code != 0
@@ -193,10 +200,12 @@ class TestWhenMissingEnvVariables:
                     for key, value in job_environment_variables.items()
                     if key != excluded_env_var
                 }
+
                 with patch.dict("os.environ", env_variables_with_one_missing):
                     with pytest.raises(SystemExit) as error:
+                        command_line_args = parse_command_line_arguments()
                         # Act
-                        get_calculator_args()
+                        create_calculation_arguments(command_line_args)
 
         # Assert
         assert error.value.code != 0
