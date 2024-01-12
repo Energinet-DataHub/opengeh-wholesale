@@ -74,7 +74,7 @@ message EnergyResultProducedV2 {
     /*
      * The version of the calculation result. It is a positive integer in string format.
      */
-    string result_version = 18;
+    string calculation_result_version = 18;
 
     enum TimeSeriesType {
         /*
