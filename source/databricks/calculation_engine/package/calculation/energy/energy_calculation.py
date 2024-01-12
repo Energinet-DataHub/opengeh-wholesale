@@ -106,13 +106,13 @@ def _calculate(
         temporary_production_per_ga_and_brp_and_es,
         temporary_flex_consumption_per_ga_and_brp_and_es,
         consumption_per_ga_and_brp_and_es,
-        grid_loss_responsible_df,
     )
 
     production_per_ga_and_brp_and_es = (
         _calculate_adjust_production_per_ga_and_brp_and_es(
             temporary_production_per_ga_and_brp_and_es,
             negative_grid_loss,
+            grid_loss_responsible_df,
         )
     )
 
@@ -120,6 +120,7 @@ def _calculate(
         _calculate_adjust_flex_consumption_per_ga_and_brp_and_es(
             temporary_flex_consumption_per_ga_and_brp_and_es,
             positive_grid_loss,
+            grid_loss_responsible_df,
         )
     )
 
@@ -239,7 +240,6 @@ def _calculate_grid_loss(
     temporary_production_per_ga_and_brp_and_es: EnergyResults,
     temporary_flex_consumption_per_ga_and_brp_and_es: EnergyResults,
     consumption_per_ga_and_brp_and_es: EnergyResults,
-    grid_loss_responsible_df: GridLossResponsible,
 ) -> tuple[EnergyResults, EnergyResults]:
     grid_loss = grid_loss_aggr.calculate_grid_loss(
         net_exchange_per_ga,
@@ -256,9 +256,7 @@ def _calculate_grid_loss(
             AggregationLevel.TOTAL_GA,
         )
 
-    positive_grid_loss = grid_loss_aggr.calculate_positive_grid_loss(
-        grid_loss, grid_loss_responsible_df
-    )
+    positive_grid_loss = grid_loss_aggr.calculate_positive_grid_loss(grid_loss)
 
     with logging_configuration.start_span("positive_grid_loss"):
         result_writer.write(
@@ -267,9 +265,7 @@ def _calculate_grid_loss(
             AggregationLevel.TOTAL_GA,
         )
 
-    negative_grid_loss = grid_loss_aggr.calculate_negative_grid_loss(
-        grid_loss, grid_loss_responsible_df
-    )
+    negative_grid_loss = grid_loss_aggr.calculate_negative_grid_loss(grid_loss)
 
     with logging_configuration.start_span("negative_grid_loss"):
         result_writer.write(
@@ -284,10 +280,13 @@ def _calculate_grid_loss(
 def _calculate_adjust_production_per_ga_and_brp_and_es(
     temporary_production_per_ga_and_brp_and_es: EnergyResults,
     negative_grid_loss: EnergyResults,
+    grid_loss_responsible_df: GridLossResponsible,
 ) -> EnergyResults:
     production_per_ga_and_brp_and_es = grid_loss_aggr.apply_grid_loss_adjustment(
         temporary_production_per_ga_and_brp_and_es,
         negative_grid_loss,
+        grid_loss_responsible_df,
+        MeteringPointType.PRODUCTION,
     )
 
     return production_per_ga_and_brp_and_es
@@ -296,10 +295,13 @@ def _calculate_adjust_production_per_ga_and_brp_and_es(
 def _calculate_adjust_flex_consumption_per_ga_and_brp_and_es(
     temporary_flex_consumption_per_ga_and_brp_and_es: EnergyResults,
     positive_grid_loss: EnergyResults,
+    grid_loss_responsible_df: GridLossResponsible,
 ) -> EnergyResults:
     flex_consumption_per_ga_and_brp_and_es = grid_loss_aggr.apply_grid_loss_adjustment(
         temporary_flex_consumption_per_ga_and_brp_and_es,
         positive_grid_loss,
+        grid_loss_responsible_df,
+        MeteringPointType.CONSUMPTION,
     )
 
     return flex_consumption_per_ga_and_brp_and_es
