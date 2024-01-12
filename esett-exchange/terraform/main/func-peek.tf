@@ -28,7 +28,7 @@ module "func_entrypoint_peek" {
     }
   ]
   app_settings = {
-    WEBSITE_LOAD_CERTIFICATES                               = local.ESETT_CERTIFICATE_THUMBPRINT
+    WEBSITE_LOAD_CERTIFICATES                               = local.DH2_CERTIFICATE_THUMBPRINT
     "PublishServiceBusSettings:ConnectionString"            = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-send-connection-string)"
     "PublishServiceBusSettings:HealthCheckConnectionString" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-manage-connection-string)"
     "PublishServiceBusSettings:SharedIntegrationEventTopic" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-shres-integrationevent-received-name)"

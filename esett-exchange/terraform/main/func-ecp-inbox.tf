@@ -28,11 +28,8 @@ module "func_entrypoint_ecp_inbox" {
     }
   ]
   app_settings = {
-    "EnvironmentInstanceName"           = local.ENVIRONMENT_INSTANCE_NAME
     "DatabaseSettings:ConnectionString" = local.MS_ESETT_EXCHANGE_CONNECTION_STRING
     "BlobStorageSettings:AccountUri"    = local.ESETT_DOCUMENT_STORAGE_ACCOUNT_URI
     "BlobStorageSettings:ContainerName" = local.ESETT_DOCUMENT_STORAGE_CONTAINER_NAME
-    "EcpSettings:BootstrapServers"      = local.ECP_BOOTSTRAP_SERVERS
-    "EcpSettings:HealthTopic"           = local.ECP_HEALTH_TOPIC
   }
 }

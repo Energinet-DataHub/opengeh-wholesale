@@ -28,18 +28,18 @@ module "func_entrypoint_ecp_outbox" {
     }
   ]
   app_settings = {
-    "EnvironmentInstanceName"              = local.ENVIRONMENT_INSTANCE_NAME
-    "DatabaseSettings:ConnectionString"    = local.MS_ESETT_EXCHANGE_CONNECTION_STRING
-    "BlobStorageSettings:AccountUri"       = local.ESETT_DOCUMENT_STORAGE_ACCOUNT_URI
-    "BlobStorageSettings:ContainerName"    = local.ESETT_DOCUMENT_STORAGE_CONTAINER_NAME
-    "EcpSettings:BootstrapServers"         = local.ECP_BOOTSTRAP_SERVERS
-    "EcpSettings:HealthTopic"              = local.ECP_HEALTH_TOPIC
-    "EcpSettings:SenderCode"               = local.BIZ_TALK_SENDER_CODE
-    "EcpSettings:ReceiverCode"             = local.BIZ_TALK_RECEIVER_CODE
-    "EcpSettings:BiztalkRootUrl"           = local.BIZ_TALK_BIZ_TALK_ROOT_URL
-    "EcpSettings:BizTalkEndPoint"          = local.BIZ_TALK_BIZ_TALK_END_POINT
-    "EcpSettings:BusinessTypeConsumption"  = local.BIZ_TALK_BUSINESS_TYPE_CONSUMPTION
-    "EcpSettings:BusinessTypeProduction"   = local.BIZ_TALK_BUSINESS_TYPE_PRODUCTION
-    "EcpSettings:BusinessTypeExchange"     = local.BIZ_TALK_BUSINESS_TYPE_EXCHANGE
+    "DatabaseSettings:ConnectionString"                = local.MS_ESETT_EXCHANGE_CONNECTION_STRING
+    "BlobStorageSettings:AccountUri"                   = local.ESETT_DOCUMENT_STORAGE_ACCOUNT_URI
+    "BlobStorageSettings:ContainerName"                = local.ESETT_DOCUMENT_STORAGE_CONTAINER_NAME
+
+    "EcpSettings:SenderCode"                           = local.BIZ_TALK_SENDER_CODE
+    "EcpSettings:ReceiverCode"                         = local.BIZ_TALK_RECEIVER_CODE
+    "EcpSettings:BiztalkRootUrl"                       = "https://${var.biztalk_hybrid_connection_hostname}"
+    "EcpSettings:BizTalkEndPoint"                      = local.BIZ_TALK_BIZ_TALK_END_POINT
+    "EcpSettings:BusinessTypeConsumption"              = local.BIZ_TALK_BUSINESS_TYPE_CONSUMPTION
+    "EcpSettings:BusinessTypeProduction"               = local.BIZ_TALK_BUSINESS_TYPE_PRODUCTION
+    "EcpSettings:BusinessTypeExchange"                 = local.BIZ_TALK_BUSINESS_TYPE_EXCHANGE
+
+    "FeatureManagement__DisableBizTalkConnectionCheck" = var.disable_biztalk_connection_check
   }
 }
