@@ -188,14 +188,11 @@ def migrations_executed(
     spark: SparkSession,
     data_lake_path: str,
     calculation_input_folder: str,
-    # calculation_input_path: str,
     calculation_output_path: str,
     energy_input_data_written_to_delta: None,
 ) -> None:
     # Clean up to prevent problems from previous test runs
     shutil.rmtree(calculation_output_path, ignore_errors=True)
-    # shutil.rmtree(calculation_input_path, ignore_errors=True)
-    # spark.sql(f"DROP DATABASE IF EXISTS {INPUT_DATABASE_NAME} CASCADE")
     spark.sql(f"DROP DATABASE IF EXISTS {OUTPUT_DATABASE_NAME} CASCADE")
 
     migration_args = MigrationScriptArgs(
