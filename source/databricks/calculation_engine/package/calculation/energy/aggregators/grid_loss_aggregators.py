@@ -165,7 +165,6 @@ def calculate_total_consumption(
         Colname.time_window,
         Colname.qualities,
         Colname.sum_quantity,
-        f.lit(MeteringPointType.CONSUMPTION.value).alias(Colname.metering_point_type),
     )
 
     return EnergyResults(result)
