@@ -55,7 +55,8 @@ public class CalculationTests
             Instant.FromDateTimeOffset(DateTimeOffset.Now),
             SystemClock.Instance.GetCurrentInstant(),
             DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
-            Guid.NewGuid()));
+            Guid.NewGuid(),
+            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks.ToString()));
         actual.Message.Should().Contain("Batch must contain at least one grid area code");
     }
 
@@ -135,7 +136,8 @@ public class CalculationTests
             Instant.FromDateTimeOffset(endDate),
             SystemClock.Instance.GetCurrentInstant(),
             DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
-            Guid.NewGuid());
+            Guid.NewGuid(),
+            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks.ToString());
 
         // Assert
         if (isEntireMonth)
@@ -253,7 +255,8 @@ public class CalculationTests
             periodEnd,
             SystemClock.Instance.GetCurrentInstant(),
             DateTimeZoneProviders.Tzdb.GetZoneOrNull(timeZoneId)!,
-            Guid.NewGuid()));
+            Guid.NewGuid(),
+            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks.ToString()));
 
         // Assert
         actual.Message.Should().ContainAll("period", "end");
@@ -278,7 +281,8 @@ public class CalculationTests
             Instant.FromDateTimeOffset(new DateTimeOffset(2023, 02, 01, 23, 0, 0, new TimeSpan(0))),
             SystemClock.Instance.GetCurrentInstant(),
             DateTimeZoneProviders.Tzdb.GetZoneOrNull(timeZoneId)!,
-            Guid.NewGuid()));
+            Guid.NewGuid(),
+            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks.ToString()));
 
         // Assert
         actual.Message.Should().Contain($"The period start '{startPeriod.ToString()}' must be midnight.");

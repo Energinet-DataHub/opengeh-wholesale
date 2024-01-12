@@ -73,4 +73,37 @@ public class CalculationFactoryTests
         // Assert
         batch.ExecutionTimeStart.Should().Be(expected);
     }
+
+    [Theory]
+    [AutoMoqData]
+    public void Create_ReturnsBatchWithCorrectVersion([Frozen] Mock<IClock> clockMock)
+    {
+        // Arrange
+        var instant = SystemClock.Instance.GetCurrentInstant();
+        var expected = instant.ToDateTimeUtc().Ticks.ToString();
+        clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(instant);
+        var sut = new CalculationFactory(clockMock.Object, _timeZone);
+
+        // Act
+        var actual = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid()).Version;
+
+        // Assert
+        actual.Should().Be(expected);
+    }
+
+    [Fact]
+    public void Create_WhenAnotherCalculationCreatedFirst_ReturnsCalculationWithHigherVersion()
+    {
+        // Arrange
+        var sut = new CalculationFactory(SystemClock.Instance, _timeZone);
+        var earlierCalculation = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid());
+        var earlierVersion = long.Parse(earlierCalculation.Version);
+
+        // Act
+        var actual = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid()).Version;
+
+        // Assert
+        var actualVersionNumber = long.Parse(actual);
+        actualVersionNumber.Should().BeGreaterThan(earlierVersion);
+    }
 }
