@@ -147,6 +147,7 @@ public class EnergyResultProducedV2FactoryTests
             PeriodEndUtc = energyResult.PeriodEnd.ToTimestamp(),
             TimeSeriesType = EnergyResultProduced.Types.TimeSeriesType.FlexConsumption,
             FromGridAreaCode = energyResult.FromGridArea,
+            CalculationResultVersion = energyResult.Version,
         };
         energyResultProduced.TimeSeriesPoints.AddRange(
             energyResult.TimeSeriesPoints.Select(p =>
