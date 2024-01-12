@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 6.1.0
+
+Added `CalculationResultVersion` property to `EnergyResultProducedV2`
+
 ## Version 6.0.2
 
 No changes.
