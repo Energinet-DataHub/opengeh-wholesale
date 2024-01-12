@@ -150,7 +150,9 @@ public class Calculation
     public bool AreSettlementReportsCreated { get; set; }
 
     /// <summary>
-    /// The calculation version. Represented as the number ticks since 1/1/2020.
+    /// The calculation version. The value of this property represents the number of 100-nanosecond
+    /// intervals that have elapsed since 12:00:00 midnight, January 1, 0001 in the Gregorian calendar.
+    /// https://learn.microsoft.com/en-us/dotnet/api/System.DateTime.Ticks?view=net-7.0
     /// The version is created with the calculation.
     /// </summary>
     public string Version { get; private set; }
