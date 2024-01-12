@@ -90,4 +90,20 @@ public class CalculationFactoryTests
         // Assert
         actual.Should().Be(expected);
     }
+
+    [Fact]
+    public void Create_WhenAnotherCalculationCreatedFirst_ReturnsCalculationWithHigherVersion()
+    {
+        // Arrange
+        var sut = new CalculationFactory(SystemClock.Instance, _timeZone);
+        var earlierCalculation = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid());
+        var earlierVersion = long.Parse(earlierCalculation.Version);
+
+        // Act
+        var actual = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid()).Version;
+
+        // Assert
+        var actualVersionNumber = long.Parse(actual);
+        actualVersionNumber.Should().BeGreaterThan(earlierVersion);
+    }
 }
