@@ -31,7 +31,7 @@ public class Calculation
         Instant executionTimeStart,
         DateTimeZone dateTimeZone,
         Guid createdByUserId,
-        string version)
+        long version)
         : this()
     {
         _gridAreaCodes = gridAreaCodes.ToList();
@@ -114,7 +114,7 @@ public class Calculation
     {
         Id = Guid.NewGuid();
         _gridAreaCodes = new List<GridAreaCode>();
-        Version = string.Empty;
+        Version = 0;
     }
 
     // Private setter is used implicitly by tests
@@ -155,7 +155,7 @@ public class Calculation
     /// https://learn.microsoft.com/en-us/dotnet/api/System.DateTime.Ticks?view=net-7.0
     /// The version is created with the calculation.
     /// </summary>
-    public string Version { get; private set; }
+    public long Version { get; private set; }
 
     /// <summary>
     /// Get the ISO 8601 duration for the given process type.

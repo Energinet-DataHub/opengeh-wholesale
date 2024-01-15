@@ -80,7 +80,7 @@ public class CalculationFactoryTests
     {
         // Arrange
         var instant = SystemClock.Instance.GetCurrentInstant();
-        var expected = instant.ToDateTimeUtc().Ticks.ToString();
+        var expected = instant.ToDateTimeUtc().Ticks;
         clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(instant);
         var sut = new CalculationFactory(clockMock.Object, _timeZone);
 
@@ -97,13 +97,12 @@ public class CalculationFactoryTests
         // Arrange
         var sut = new CalculationFactory(SystemClock.Instance, _timeZone);
         var earlierCalculation = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid());
-        var earlierVersion = long.Parse(earlierCalculation.Version);
+        var earlierVersion = earlierCalculation.Version;
 
         // Act
         var actual = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid()).Version;
 
         // Assert
-        var actualVersionNumber = long.Parse(actual);
-        actualVersionNumber.Should().BeGreaterThan(earlierVersion);
+        actual.Should().BeGreaterThan(earlierVersion);
     }
 }

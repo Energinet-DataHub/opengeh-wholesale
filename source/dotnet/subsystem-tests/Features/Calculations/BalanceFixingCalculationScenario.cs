@@ -218,11 +218,10 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
             var actualVersion = Fixture.ScenarioState.ReceivedEnergyResultProducedV2.First().CalculationResultVersion;
 
             using var assertionScope = new AssertionScope();
-            actualVersion.Should().NotBeNullOrEmpty();
+            actualVersion.Should().BeGreaterThan(0);
 
             // Convert version (ticks) to datetime and assert that it is not older than 3 hours
-            var ticks = long.Parse(actualVersion);
-            new DateTime(ticks).Subtract(DateTime.Now).Hours.Should().BeLessThan(3);
+            new DateTime(actualVersion).Subtract(DateTime.Now).Hours.Should().BeLessThan(3);
         }
     }
 }

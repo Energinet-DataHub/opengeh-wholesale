@@ -43,7 +43,7 @@ public class DatabricksCalculatorJobParametersFactoryTests
             DateTimeOffset.Parse("2022-06-04T22:00Z").ToInstant(),
             DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
             Guid.NewGuid(),
-            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks.ToString());
+            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks);
 
         using var stream = EmbeddedResources.GetStream<Root>("Infrastructure.Calculations.calculation-job-parameters-reference.txt");
         using var reader = new StreamReader(stream);

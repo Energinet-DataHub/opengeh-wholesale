@@ -58,7 +58,7 @@ public class EnergyResultQueries : IEnergyResultQueries
         return !row[EnergyResultColumnNames.CalculationResultId]!.Equals(otherRow[EnergyResultColumnNames.CalculationResultId]);
     }
 
-    private async IAsyncEnumerable<EnergyResult> GetInternalAsync(EnergyResultQueryStatement statement, Instant periodStart, Instant periodEnd, string version)
+    private async IAsyncEnumerable<EnergyResult> GetInternalAsync(EnergyResultQueryStatement statement, Instant periodStart, Instant periodEnd, long version)
     {
         var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
         DatabricksSqlRow? currentRow = null;

@@ -38,7 +38,7 @@ public class CalculationResultCompletedFactoryTests
     private readonly string _fromGridArea = "123";
     private readonly Instant _periodStart = SystemClock.Instance.GetCurrentInstant();
     private readonly Instant _periodEnd = SystemClock.Instance.GetCurrentInstant();
-    private readonly string _version = DateTime.Now.Ticks.ToString();
+    private readonly long _version = DateTime.Now.Ticks;
 
     [Theory]
     [InlineAutoMoqData]

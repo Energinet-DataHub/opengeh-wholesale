@@ -34,7 +34,7 @@ public class EnergyResultTests
         ProcessType anyProcessType,
         Instant anyPeriodStart,
         Instant anyPeriodEnd,
-        string anyVersion)
+        long anyVersion)
     {
         // Arrange
         var emptyTimeSeriesPoints = Array.Empty<EnergyTimeSeriesPoint>();

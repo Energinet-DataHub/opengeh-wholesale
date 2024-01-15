@@ -33,4 +33,4 @@ public sealed record CalculationDto(
     string[] GridAreaCodes,
     ProcessType ProcessType,
     Guid CreatedByUserId,
-    string Version);
+    long Version);

@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 6.2.0
+
+Changed `CalculationResultVersion` to type int64.
+
 ## Version 6.1.0
 
 Added `CalculationResultVersion` property to `EnergyResultProducedV2`
