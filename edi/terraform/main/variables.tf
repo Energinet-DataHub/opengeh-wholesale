@@ -30,12 +30,6 @@ variable "developer_ad_group_name" {
   default     = ""
 }
 
-variable "allow_test_tokens" {
-  type        = bool
-  description = "(Optional) Enables use of test tokens"
-  default     = false
-}
-
 variable "pim_sql_reader_ad_group_name" {
   type        = string
   description = "Name of the AD group with db_datareader permissions on the SQL database."

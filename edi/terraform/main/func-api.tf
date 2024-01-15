@@ -34,7 +34,6 @@ module "func_receiver" {
     SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_SEND     = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-send-connection-string)"
     INCOMING_MESSAGES_QUEUE_NAME                            = azurerm_servicebus_queue.edi_incoming_messages_queue.name
     FEATUREFLAG_ACTORMESSAGEQUEUE                           = true
-    ALLOW_TEST_TOKENS                                       = var.allow_test_tokens
     INTEGRATION_EVENTS_TOPIC_NAME                           = local.INTEGRATION_EVENTS_TOPIC_NAME
     INTEGRATION_EVENTS_SUBSCRIPTION_NAME                    = module.sbtsub_edi_integration_event_listener.name
   }
