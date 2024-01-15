@@ -104,7 +104,7 @@ public class CalculationBuilder
             SystemClock.Instance.GetCurrentInstant(),
             DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
             Guid.NewGuid(),
-            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks.ToString());
+            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks);
         var jobRunId = new CalculationId(new Random().Next(1, 1000));
 
         if (_state == CalculationExecutionState.Submitted)
