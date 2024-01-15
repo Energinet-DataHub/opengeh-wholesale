@@ -22,16 +22,6 @@ For people on the project please read the internal documentation (Confluence) fo
 
 ![Detailed with OAuth](docs/diagrams/c4-model/views/WholesaleDetailed.png)
 
-## Code of Conduct
-
-Learn about code of conduct for Green Energy Hub [here](https://github.com/Energinet-DataHub/green-energy-hub/blob/main/docs/code-of-conduct.md).
-
-## Where can I get more help?
-
-Read about community for Green Energy Hub [here](https://github.com/Energinet-DataHub/green-energy-hub/blob/main/COMMUNITY.md) and learn about how to get involved and get help.
-
-Please note that we have provided a [Dictionary](https://github.com/Energinet-DataHub/green-energy-hub/tree/main/docs/dictionary-and-concepts) to help understand many of the terms used throughout the repository.
-
 ## Thanks to all the people who already contributed
 
 <a href="https://github.com/Energinet-DataHub/opengeh-wholesale/graphs/contributors">
