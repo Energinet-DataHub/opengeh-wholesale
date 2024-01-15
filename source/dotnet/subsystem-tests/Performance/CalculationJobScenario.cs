@@ -49,7 +49,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance
                 executionTimeStart: createdTime, // As long as scheduling is not implemented, execution time start is the same as created time
                 dateTimeZone: DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
                 createdByUserId: createdByUserId,
-                version: createdTime.ToDateTimeUtc().Ticks.ToString());
+                version: createdTime.ToDateTimeUtc().Ticks);
         }
 
         [ScenarioStep(1)]

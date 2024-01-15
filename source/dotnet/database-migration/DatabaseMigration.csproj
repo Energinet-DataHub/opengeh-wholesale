@@ -48,6 +48,7 @@ limitations under the License.
     <EmbeddedResource Include="Scripts\202305261500_Add_Batch_CreatedTime.sql" />
     <EmbeddedResource Include="Scripts\202311291200_Add_Grid_Area_Owner_Table.sql" />
     <EmbeddedResource Include="Scripts\202311291200_Add_Received_Integration_Event_Table.sql" />
+    <EmbeddedResource Include="Scripts\202401151200_Change_Batch_Version_Type.sql" />
   </ItemGroup>
 
   <ItemGroup>
