@@ -38,6 +38,7 @@ public class EnergyResultProducedV2FactoryTests
     private readonly string _fromGridArea = "123";
     private readonly Instant _periodStart = SystemClock.Instance.GetCurrentInstant();
     private readonly Instant _periodEnd = SystemClock.Instance.GetCurrentInstant();
+    private readonly string _version = DateTime.Now.Ticks.ToString();
 
     [Theory]
     [InlineAutoMoqData]
@@ -130,7 +131,8 @@ public class EnergyResultProducedV2FactoryTests
             ProcessType.Aggregation,
             _periodStart,
             _periodEnd,
-            _fromGridArea);
+            _fromGridArea,
+            _version);
     }
 
     private static EnergyResultProduced CreateExpected(EnergyResult energyResult)
@@ -145,6 +147,7 @@ public class EnergyResultProducedV2FactoryTests
             PeriodEndUtc = energyResult.PeriodEnd.ToTimestamp(),
             TimeSeriesType = EnergyResultProduced.Types.TimeSeriesType.FlexConsumption,
             FromGridAreaCode = energyResult.FromGridArea,
+            CalculationResultVersion = energyResult.Version,
         };
         energyResultProduced.TimeSeriesPoints.AddRange(
             energyResult.TimeSeriesPoints.Select(p =>

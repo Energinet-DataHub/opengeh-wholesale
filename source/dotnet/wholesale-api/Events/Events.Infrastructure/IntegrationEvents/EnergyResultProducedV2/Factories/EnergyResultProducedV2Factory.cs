@@ -105,6 +105,7 @@ public class EnergyResultProducedV2Factory : IEnergyResultProducedV2Factory
             PeriodStartUtc = result.PeriodStart.ToTimestamp(),
             PeriodEndUtc = result.PeriodEnd.ToTimestamp(),
             TimeSeriesType = TimeSeriesTypeMapper.MapTimeSeriesType(result.TimeSeriesType),
+            CalculationResultVersion = result.Version,
         };
         if (result.FromGridArea != null)
             energyResultProduced.FromGridAreaCode = result.FromGridArea;
