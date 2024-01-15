@@ -72,11 +72,10 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
         public async Task Then_TelemetryEventsAreLoggedWithinWaitTime()
         {
             // TODO: Refactor, should log time before we perform the request, and then add filter to the query so we only look at requests performed after
-            // TODO: Refactor, should not be environment specific
             var query = $@"
                 let OperationIds = AppRequests
-                | where AppRoleName == ""app-webapi-wholsal-s-we-002""
-                | where Url contains ""{Fixture.ScenarioState.BatchId}""
+                | where AppRoleName contains ""app-webapi-wholsal-""
+                | where Url contains ""/v3/batches/{Fixture.ScenarioState.BatchId}""
                 | project OperationId;
                 OperationIds
                 | join(union AppRequests, AppDependencies, AppTraces) on OperationId

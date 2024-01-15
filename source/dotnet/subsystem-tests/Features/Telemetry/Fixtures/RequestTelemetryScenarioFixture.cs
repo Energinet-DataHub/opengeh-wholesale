@@ -59,8 +59,6 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures
             TimeSpan waitTimeLimit,
             TimeSpan delay)
         {
-            await Task.Delay(delay);
-
             var actualCount = 0;
             var wasEventsLogged = await Awaiter
                 .TryWaitUntilConditionAsync(
