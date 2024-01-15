@@ -62,9 +62,10 @@ class TestWhenValidInput:
         self,
         spark: SparkSession,
         tmp_path: pathlib.Path,
+        calculation_input_folder: str,
     ) -> None:
         # Arrange
-        calculation_input_path = f"{str(tmp_path)}/calculation_input"
+        calculation_input_path = f"{str(tmp_path)}/{calculation_input_folder}"
         table_location = f"{calculation_input_path}/time_series_points"
         row = _create_time_series_point_row()
         df = spark.createDataFrame(data=[row], schema=time_series_point_schema)

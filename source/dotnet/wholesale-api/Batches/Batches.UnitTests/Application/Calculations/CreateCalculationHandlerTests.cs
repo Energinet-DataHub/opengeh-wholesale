@@ -177,6 +177,7 @@ public class CreateCalculationHandlerTests
             command.EndDate.ToInstant(),
             SystemClock.Instance.GetCurrentInstant(),
             period.DateTimeZone,
-            command.CreatedByUserId);
+            command.CreatedByUserId,
+            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks.ToString());
     }
 }
