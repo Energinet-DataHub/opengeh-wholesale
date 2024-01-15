@@ -35,7 +35,6 @@ TEST = ""
 
 # Paths
 WHOLESALE_CONTAINER_NAME = "wholesale"
-INPUT_FOLDER = "calculation_input"
 OUTPUT_FOLDER = "calculation-output"
 BASIS_DATA_FOLDER = "basis_data"
 

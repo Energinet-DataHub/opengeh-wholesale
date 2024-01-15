@@ -85,9 +85,10 @@ class TestWhenValidInput:
         self,
         spark: SparkSession,
         tmp_path: pathlib.Path,
+        calculation_input_folder: str,
     ) -> None:
         # Arrange
-        calculation_input_path = f"{str(tmp_path)}/calculation_input"
+        calculation_input_path = f"{str(tmp_path)}/{calculation_input_folder}"
         table_location = f"{calculation_input_path}/metering_point_periods"
         row = _create_metering_point_period_row()
         df = spark.createDataFrame(data=[row], schema=metering_point_period_schema)

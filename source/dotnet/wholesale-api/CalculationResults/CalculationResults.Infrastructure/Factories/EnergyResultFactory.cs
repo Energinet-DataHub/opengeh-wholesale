@@ -26,7 +26,8 @@ public class EnergyResultFactory
         DatabricksSqlRow databricksSqlRow,
         List<EnergyTimeSeriesPoint> timeSeriesPoints,
         Instant periodStart,
-        Instant periodEnd)
+        Instant periodEnd,
+        string version)
     {
         var id = databricksSqlRow[EnergyResultColumnNames.CalculationResultId];
         var batchId = databricksSqlRow[EnergyResultColumnNames.BatchId];
@@ -48,6 +49,7 @@ public class EnergyResultFactory
             ProcessTypeMapper.FromDeltaTableValue(processType!),
             periodStart,
             periodEnd,
-            fromGridArea);
+            fromGridArea,
+            version);
     }
 }

@@ -40,7 +40,11 @@ from package.datamigration.migration import _apply_migration
 from package.datamigration.migration_script_args import MigrationScriptArgs
 from package.datamigration.uncommitted_migrations import _get_all_migrations
 from package.infrastructure import paths
-from package.infrastructure.paths import OUTPUT_DATABASE_NAME, OUTPUT_FOLDER
+from package.infrastructure.paths import (
+    OUTPUT_DATABASE_NAME,
+    OUTPUT_FOLDER,
+    INPUT_DATABASE_NAME,
+)
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.integration_test_configuration import IntegrationTestConfiguration
 
@@ -165,8 +169,13 @@ def data_lake_path(tests_path: str, worker_id: str) -> str:
 
 
 @pytest.fixture(scope="session")
-def calculation_input_path(data_lake_path: str) -> str:
-    return f"{data_lake_path}/calculation_input"
+def calculation_input_folder(data_lake_path: str) -> str:
+    return "calculation_input"
+
+
+@pytest.fixture(scope="session")
+def calculation_input_path(data_lake_path: str, calculation_input_folder: str) -> str:
+    return f"{data_lake_path}/{calculation_input_folder}"
 
 
 @pytest.fixture(scope="session")
@@ -176,7 +185,11 @@ def calculation_output_path(data_lake_path: str) -> str:
 
 @pytest.fixture(scope="session")
 def migrations_executed(
-    spark: SparkSession, data_lake_path: str, calculation_output_path: str
+    spark: SparkSession,
+    data_lake_path: str,
+    calculation_input_folder: str,
+    calculation_output_path: str,
+    energy_input_data_written_to_delta: None,
 ) -> None:
     # Clean up to prevent problems from previous test runs
     shutil.rmtree(calculation_output_path, ignore_errors=True)
@@ -187,6 +200,7 @@ def migrations_executed(
         data_storage_account_name="foo",
         data_storage_container_name="foo",
         data_storage_credential=ClientSecretCredential("foo", "foo", "foo"),
+        calculation_input_folder=calculation_input_folder,
         spark=spark,
     )
     # Overwrite in test
@@ -297,22 +311,47 @@ def integration_test_configuration(tests_path: str) -> IntegrationTestConfigurat
 def energy_input_data_written_to_delta(
     spark: SparkSession, test_files_folder_path: str, calculation_input_path: str
 ) -> None:
-    # Metering point periods
+    shutil.rmtree(calculation_input_path, ignore_errors=True)
+    spark.sql(f"DROP DATABASE IF EXISTS {INPUT_DATABASE_NAME} CASCADE")
+
     _write_input_test_data_to_table(
         spark,
         file_name=f"{test_files_folder_path}/MeteringPointsPeriods.csv",
         table_name=paths.METERING_POINT_PERIODS_TABLE_NAME,
         schema=metering_point_period_schema,
-        table_location=f"{calculation_input_path}/metering_point_periods",
+        table_location=f"{calculation_input_path}/{paths.METERING_POINT_PERIODS_TABLE_NAME}",
     )
 
-    # Time series points
     _write_input_test_data_to_table(
         spark,
         file_name=f"{test_files_folder_path}/TimeSeriesPoints.csv",
         table_name=paths.TIME_SERIES_POINTS_TABLE_NAME,
         schema=time_series_point_schema,
-        table_location=f"{calculation_input_path}/time_series_points",
+        table_location=f"{calculation_input_path}/{paths.TIME_SERIES_POINTS_TABLE_NAME}",
+    )
+
+    _write_input_test_data_to_table(
+        spark,
+        file_name=f"{test_files_folder_path}/ChargeMasterDataPeriods.csv",
+        table_name=paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME,
+        schema=charge_master_data_periods_schema,
+        table_location=f"{calculation_input_path}/{paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}",
+    )
+
+    _write_input_test_data_to_table(
+        spark,
+        file_name=f"{test_files_folder_path}/ChargeLinkPeriods.csv",
+        table_name=paths.CHARGE_LINK_PERIODS_TABLE_NAME,
+        schema=charge_link_periods_schema,
+        table_location=f"{calculation_input_path}/{paths.CHARGE_LINK_PERIODS_TABLE_NAME}",
+    )
+
+    _write_input_test_data_to_table(
+        spark,
+        file_name=f"{test_files_folder_path}/ChargePricePoints.csv",
+        table_name=paths.CHARGE_PRICE_POINTS_TABLE_NAME,
+        schema=charge_price_points_schema,
+        table_location=f"{calculation_input_path}/{paths.CHARGE_PRICE_POINTS_TABLE_NAME}",
     )
 
 
