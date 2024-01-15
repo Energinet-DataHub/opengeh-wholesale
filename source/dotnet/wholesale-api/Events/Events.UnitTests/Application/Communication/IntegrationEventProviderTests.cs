@@ -352,7 +352,7 @@ public class IntegrationEventProviderTests
     {
         // Arrange
         const string expectedLogMessage =
-            $"Handled {LoggingConstants.EnergyResultCount} energy results for completed calculation {LoggingConstants.CalculationId}.";
+            $"Published results for succeeded energy calculation {LoggingConstants.CalculationId} to the service bus ({LoggingConstants.EnergyResultCount} integration events).";
         completedCalculationRepositoryMock
             .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
             .ReturnsAsync(completedCalculation)
@@ -383,7 +383,7 @@ public class IntegrationEventProviderTests
     {
         // Arrange
         const string expectedLogMessage =
-            $"Handled {LoggingConstants.WholesaleResultCount} wholesale results for completed calculation {LoggingConstants.CalculationId}.";
+            $"Published results for succeeded wholesale calculation {LoggingConstants.CalculationId} to the service bus ({LoggingConstants.WholesaleResultCount} integration events).";
         completedCalculationRepositoryMock
             .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
             .ReturnsAsync(completedCalculation)
