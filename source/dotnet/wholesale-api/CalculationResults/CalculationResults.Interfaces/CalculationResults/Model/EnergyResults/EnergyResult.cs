@@ -30,7 +30,8 @@ public sealed class EnergyResult : AggregatedTimeSeries
         ProcessType processType,
         Instant periodStart,
         Instant periodEnd,
-        string? fromGridArea)
+        string? fromGridArea,
+        string version)
     : base(gridArea, timeSeriesPoints, timeSeriesType, processType)
     {
         Id = id;
@@ -40,6 +41,7 @@ public sealed class EnergyResult : AggregatedTimeSeries
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
         FromGridArea = fromGridArea;
+        Version = version;
     }
 
     public Guid Id { get; }
@@ -55,4 +57,6 @@ public sealed class EnergyResult : AggregatedTimeSeries
     public Instant PeriodStart { get; }
 
     public Instant PeriodEnd { get; }
+
+    public string Version { get; }
 }

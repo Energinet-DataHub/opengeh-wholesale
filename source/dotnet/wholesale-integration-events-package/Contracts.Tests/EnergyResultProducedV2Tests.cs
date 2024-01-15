@@ -63,7 +63,7 @@ public class EnergyResultProducedV2Tests
         Assert.Equal(LastKnownContentOfContract, actualContent, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
     }
 
-    private const int LastKnownMinorEventVersion = 0;
+    private const int LastKnownMinorEventVersion = 1;
     private const string LastKnownContentOfContract = @"/* Copyright 2020 Energinet DataHub A/S
  *
  * Licensed under the Apache License, Version 2.0 (the ""License2"");
@@ -136,6 +136,11 @@ message EnergyResultProducedV2 {
     google.protobuf.StringValue from_grid_area_code = 16;
 
     repeated TimeSeriesPoint time_series_points = 17;
+
+    /*
+     * The version of the calculation result. It is a positive integer in string format.
+     */
+    string calculation_result_version = 18;
 
     enum TimeSeriesType {
         /*

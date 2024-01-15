@@ -26,6 +26,7 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Scripts\202401110800_Add_Version.sql" />
     <EmbeddedResource Include="Scripts\202302031200_Drop_MessageHub.sql" />
     <EmbeddedResource Include="Scripts\202206161400_Create_Batch_Table.sql" />
     <EmbeddedResource Include="Scripts\202206281330_Create_MessageHub_Process_Table.sql" />

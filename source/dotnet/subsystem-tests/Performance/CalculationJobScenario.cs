@@ -47,8 +47,9 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance
                 periodStart: Instant.FromDateTimeOffset(new DateTimeOffset(2022, 11, 30, 23, 0, 0, TimeSpan.Zero)),
                 periodEnd: Instant.FromDateTimeOffset(new DateTimeOffset(2022, 12, 11, 23, 0, 0, TimeSpan.Zero)),
                 executionTimeStart: createdTime, // As long as scheduling is not implemented, execution time start is the same as created time
-                DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
-                createdByUserId: createdByUserId);
+                dateTimeZone: DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
+                createdByUserId: createdByUserId,
+                version: createdTime.ToDateTimeUtc().Ticks.ToString());
         }
 
         [ScenarioStep(1)]
