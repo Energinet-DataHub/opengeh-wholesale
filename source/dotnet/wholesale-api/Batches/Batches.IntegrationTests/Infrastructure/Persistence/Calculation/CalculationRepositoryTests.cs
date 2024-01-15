@@ -208,7 +208,7 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
             Instant.FromUtc(2022, 5, 1, 0, 0),
             period.DateTimeZone,
             Guid.NewGuid(),
-            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks.ToString());
+            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks);
 
         var sut = new CalculationRepository(writeContext);
         await sut.AddAsync(batch);
@@ -247,6 +247,6 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
             SystemClock.Instance.GetCurrentInstant(),
             period.DateTimeZone,
             Guid.NewGuid(),
-            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks.ToString());
+            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks);
     }
 }
