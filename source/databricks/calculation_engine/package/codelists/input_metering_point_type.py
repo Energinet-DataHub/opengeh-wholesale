@@ -16,7 +16,7 @@ from enum import Enum
 
 
 class InputMeteringPointType(Enum):
-    """This type should be replaced by `MeteringPointType` when the contract with the migration domain has been updated"""
+    """This type should be replaced by `MeteringPointType` when the contract with the migration subsystem has been updated"""
 
     PRODUCTION = "E18"
     CONSUMPTION = "E17"
