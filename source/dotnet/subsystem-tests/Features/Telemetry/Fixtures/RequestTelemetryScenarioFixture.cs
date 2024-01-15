@@ -12,19 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure;
 using Azure.Identity;
 using Azure.Monitor.Query;
-using Azure.Monitor.Query.Models;
+using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3;
-using Energinet.DataHub.Wholesale.SubsystemTests.Features.Requests.States;
+using Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Configuration;
+using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Extensions;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using Microsoft.Extensions.Configuration;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Requests.Fixtures
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures
 {
     public sealed class RequestTelemetryScenarioFixture : LazyFixtureBase
     {
@@ -52,9 +52,35 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Requests.Fixtures
 
         private LogsQueryClient LogsQueryClient { get; }
 
-        public Task<Response<LogsQueryResult>> QueryLogAnalyticsAsync(string query, QueryTimeRange queryTimeRange)
+        public async Task<int> WaitForTelemetryEventsAsync(
+            IReadOnlyCollection<TelemetryQueryResult> expectedEvents,
+            string query,
+            QueryTimeRange queryTimeRange,
+            TimeSpan waitTimeLimit,
+            TimeSpan delay)
         {
-            return LogsQueryClient.QueryWorkspaceAsync(Configuration.LogAnalyticsWorkspaceId, query, queryTimeRange);
+            await Task.Delay(delay);
+
+            var actualCount = 0;
+            var wasEventsLogged = await Awaiter
+                .TryWaitUntilConditionAsync(
+                    async () =>
+                    {
+                        var actualResponse = await LogsQueryClient.QueryWorkspaceAsync<TelemetryQueryResult>(
+                            Configuration.LogAnalyticsWorkspaceId,
+                            query,
+                            queryTimeRange);
+
+                        actualCount = actualResponse.Value.Count;
+                        return ContainsExpectedEvents(expectedEvents, actualResponse.Value);
+                    },
+                    waitTimeLimit,
+                    delay);
+
+            // We can only trust actual count if the events was logged, and the wait didn't timeout
+            return wasEventsLogged
+                ? actualCount
+                : 0;
         }
 
         protected override async Task OnInitializeAsync()
@@ -65,6 +91,59 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Requests.Fixtures
         protected override Task OnDisposeAsync()
         {
             return Task.CompletedTask;
+        }
+
+        private bool ContainsExpectedEvents(IReadOnlyCollection<TelemetryQueryResult> expectedEvents, IReadOnlyList<TelemetryQueryResult> actualResults)
+        {
+            if (actualResults.Count < expectedEvents.Count)
+                return false;
+
+            foreach (var expected in expectedEvents)
+            {
+                switch (expected.Type)
+                {
+                    case "AppRequests":
+                        var appRequestsExists = actualResults.Any(actual =>
+                            actual.Name == expected.Name);
+
+                        if (!appRequestsExists)
+                        {
+                            DiagnosticMessageSink.WriteDiagnosticMessage($"Did not find expected AppRequests: Name='{expected.Name}'");
+                            return false;
+                        }
+
+                        break;
+
+                    case "AppDependencies":
+                        var appDependenciesExists = actualResults.Any(actual =>
+                            actual.Name == expected.Name
+                            && actual.DependencyType == expected.DependencyType);
+
+                        if (!appDependenciesExists)
+                        {
+                            DiagnosticMessageSink.WriteDiagnosticMessage($"Did not find expected AppDependencies: Name='{expected.Name}' DependencyType='{expected.DependencyType}'");
+                            return false;
+                        }
+
+                        break;
+
+                    // "AppTraces"
+                    default:
+                        var appTracesExists = actualResults.Any(actual =>
+                            actual.EventName == expected.EventName
+                            && actual.Message.StartsWith(expected.Message));
+
+                        if (!appTracesExists)
+                        {
+                            DiagnosticMessageSink.WriteDiagnosticMessage($"Did not find expected AppTrace: EventName='{expected.EventName}' Message='{expected.Message}'");
+                            return false;
+                        }
+
+                        break;
+                }
+            }
+
+            return true;
         }
     }
 }

@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3;
-
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Requests.States
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States
 {
     public class RequestTelemetryScenarioState
     {
         public Guid BatchId { get; set; }
+
+        public IList<TelemetryQueryResult> ExpectedTelemetryEvents { get; }
+            = new List<TelemetryQueryResult>();
     }
 }

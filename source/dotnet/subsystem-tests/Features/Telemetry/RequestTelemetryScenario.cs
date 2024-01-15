@@ -13,14 +13,14 @@
 // limitations under the License.
 
 using Azure.Monitor.Query;
-using Energinet.DataHub.Wholesale.SubsystemTests.Features.Requests.Fixtures;
+using Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures;
+using Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using FluentAssertions;
-using FluentAssertions.Execution;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Requests
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
 {
     /// <summary>
     /// Verify telemetry is configured correctly so we can track http request and their dependencies.
@@ -37,16 +37,27 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Requests
 
         [ScenarioStep(0)]
         [SubsystemFact]
-        public void Given_ExistingBatchId()
+        public void Given_BatchId()
         {
             Fixture.ScenarioState.BatchId = Fixture.ExistingBatchId;
         }
 
         [ScenarioStep(1)]
         [SubsystemFact]
-        public void AndGiven_ApplicationInsightsTelemetryIsConfigured()
+        public void AndGiven_ExpectedTelemetryEvents()
         {
-            // Configured in startup
+            Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new TelemetryQueryResult
+            {
+                Type = "AppRequests",
+                Name = "GET Calculation/Get [batchId]",
+            });
+            Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new TelemetryQueryResult
+            {
+                Type = "AppDependencies",
+                // TODO: Refactor, should not be environment specific
+                Name = "SQL: tcp:mssql-shres-s-we-002.database.windows.net,1433 | mssqldb-data-wholsal-s-we-002",
+                DependencyType = "SQL",
+            });
         }
 
         [ScenarioStep(2)]
@@ -56,26 +67,31 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Requests
             await Fixture.WholesaleClient.GetBatchAsync(Fixture.ScenarioState.BatchId);
         }
 
-////        [ScenarioStep(3)]
-////        [SubsystemFact]
-////        public async Task Then_MatchingRequestTelemetryShouldExist()
-////        {
-////            var query = $@"
-////AppTraces
-////| where AppRoleName == ""dbr-calculation-engine""
-////| where SeverityLevel == 1 // Information
-////| where Message startswith_cs ""Calculation arguments:""
-////| where OperationId != ""00000000000000000000000000000000""
-////| where Properties.Domain == ""wholesale""
-////| where Properties.calculation_id == ""{Fixture.ScenarioState.BatchId}""
-////| where Properties.CategoryName == ""Energinet.DataHub.package.calculator_job""
-////| count";
+        [ScenarioStep(3)]
+        [SubsystemFact]
+        public async Task Then_TelemetryEventsAreLoggedWithinWaitTime()
+        {
+            // TODO: Refactor, should log time before we perform the request, and then add filter to the query so we only look at requests performed after
+            // TODO: Refactor, should not be environment specific
+            var query = $@"
+                let OperationIds = AppRequests
+                | where AppRoleName == ""app-webapi-wholsal-s-we-002""
+                | where Url contains ""{Fixture.ScenarioState.BatchId}""
+                | project OperationId;
+                OperationIds
+                | join(union AppRequests, AppDependencies, AppTraces) on OperationId
+                | extend parsedProp = parse_json(Properties)
+                | project TimeGenerated, OperationId, ParentId, Id, Type, Name, DependencyType, EventName=parsedProp.EventName, Message, Url, Properties
+                | order by TimeGenerated asc";
 
-////            // Assert
-////            var actual = await Fixture.QueryLogAnalyticsAsync(query, new QueryTimeRange(TimeSpan.FromMinutes(60)));
+            var actualCount = await Fixture.WaitForTelemetryEventsAsync(
+                Fixture.ScenarioState.ExpectedTelemetryEvents.AsReadOnly(),
+                query,
+                queryTimeRange: new QueryTimeRange(TimeSpan.FromMinutes(10)),
+                waitTimeLimit: TimeSpan.FromMinutes(10),
+                delay: TimeSpan.FromSeconds(30));
 
-////            using var assertionScope = new AssertionScope();
-////            actual.Value.Table.Rows[0][0].Should().Be(1); // count == 1
-////        }
+            actualCount.Should().Be(Fixture.ScenarioState.ExpectedTelemetryEvents.Count);
+        }
     }
 }
