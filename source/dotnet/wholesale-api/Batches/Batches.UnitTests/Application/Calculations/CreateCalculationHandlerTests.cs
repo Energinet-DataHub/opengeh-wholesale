@@ -155,6 +155,23 @@ public class CreateCalculationHandlerTests
         // Assert
         actual.Should().Throw<BusinessValidationException>();
     }
+    
+    [Theory]
+    [AutoMoqData]
+    public async Task Handle_WhenSameCalculationTypeIsProcessing_ThrowValidationBusinessException(
+        [Frozen] Mock<ICalculationRepository> calculationRepositoryMock,
+        CreateCalculationHandler sut)
+    {
+        // Arrange
+        var calculation = CreateCalculationFromCommand(_defaultCreateCalculationCommand);
+        calculationRepositoryMock.Setup(x => x.SearchAsync(calculation.ProcessType, _defaultCreateCalculationCommand.GridAreaCodes, _defaultCreateCalculationCommand.StartDate, _defaultCreateCalculationCommand.EndDate, _defaultCreateCalculationCommand.CreatedByUserId))
+            .Returns(calculation);
+
+        // Act
+        await Assert.ThrowsAsync<BusinessValidationException>(() => sut.HandleAsync(_defaultCreateCalculationCommand));
+
+        // Assert
+    }
 
     private static CreateCalculationCommand CreateCalculationCommand(ProcessType processType, DateTimeOffset periodStart, DateTimeOffset periodEnd, IEnumerable<string> gridAreaCodes)
     {
