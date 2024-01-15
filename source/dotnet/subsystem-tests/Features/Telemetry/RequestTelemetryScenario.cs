@@ -18,12 +18,13 @@ using Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using FluentAssertions;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
 {
     /// <summary>
-    /// Verify telemetry is configured correctly so we can track http request and their dependencies.
+    /// Verify telemetry is configured correctly so we can track http requests and their dependencies.
     /// </summary>
     [TestCaseOrderer(
         ordererTypeName: "Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Orderers.ScenarioStepOrderer",
@@ -46,16 +47,15 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
         [SubsystemFact]
         public void AndGiven_ExpectedTelemetryEvents()
         {
-            Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new TelemetryQueryResult
+            Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new TelemetryEventMatch
             {
                 Type = "AppRequests",
                 Name = "GET Calculation/Get [batchId]",
             });
-            Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new TelemetryQueryResult
+            Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new TelemetryEventMatch
             {
                 Type = "AppDependencies",
-                // TODO: Refactor, should not be environment specific
-                Name = "SQL: tcp:mssql-shres-s-we-002.database.windows.net,1433 | mssqldb-data-wholsal-s-we-002",
+                NameContains = "mssqldb-data-wholsal-",
                 DependencyType = "SQL",
             });
         }
@@ -71,11 +71,12 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
         [SubsystemFact]
         public async Task Then_TelemetryEventsAreLoggedWithinWaitTime()
         {
-            // TODO: Refactor, should log time before we perform the request, and then add filter to the query so we only look at requests performed after
             var query = $@"
                 let OperationIds = AppRequests
                 | where AppRoleName contains ""app-webapi-wholsal-""
                 | where Url contains ""/v3/batches/{Fixture.ScenarioState.BatchId}""
+                | order by TimeGenerated desc
+                | take 1
                 | project OperationId;
                 OperationIds
                 | join(union AppRequests, AppDependencies, AppTraces) on OperationId

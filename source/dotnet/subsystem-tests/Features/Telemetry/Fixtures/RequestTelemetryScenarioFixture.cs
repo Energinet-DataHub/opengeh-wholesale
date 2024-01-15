@@ -53,7 +53,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures
         private LogsQueryClient LogsQueryClient { get; }
 
         public async Task<int> WaitForTelemetryEventsAsync(
-            IReadOnlyCollection<TelemetryQueryResult> expectedEvents,
+            IReadOnlyCollection<TelemetryEventMatch> expectedEvents,
             string query,
             QueryTimeRange queryTimeRange,
             TimeSpan waitTimeLimit,
@@ -91,7 +91,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures
             return Task.CompletedTask;
         }
 
-        private bool ContainsExpectedEvents(IReadOnlyCollection<TelemetryQueryResult> expectedEvents, IReadOnlyList<TelemetryQueryResult> actualResults)
+        private bool ContainsExpectedEvents(IReadOnlyCollection<TelemetryEventMatch> expectedEvents, IReadOnlyList<TelemetryQueryResult> actualResults)
         {
             if (actualResults.Count < expectedEvents.Count)
                 return false;
@@ -113,13 +113,26 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures
                         break;
 
                     case "AppDependencies":
-                        var appDependenciesExists = actualResults.Any(actual =>
-                            actual.Name == expected.Name
-                            && actual.DependencyType == expected.DependencyType);
+                        var appDependenciesExists = false;
+
+                        if (!string.IsNullOrEmpty(expected.NameContains))
+                        {
+                            // Compare using NameContains
+                            appDependenciesExists = actualResults.Any(actual =>
+                                actual.Name.Contains(expected.NameContains)
+                                && actual.DependencyType == expected.DependencyType);
+                        }
+                        else
+                        {
+                            // Compare using Name
+                            appDependenciesExists = actualResults.Any(actual =>
+                                actual.Name == expected.Name
+                                && actual.DependencyType == expected.DependencyType);
+                        }
 
                         if (!appDependenciesExists)
                         {
-                            DiagnosticMessageSink.WriteDiagnosticMessage($"Did not find expected AppDependencies: Name='{expected.Name}' DependencyType='{expected.DependencyType}'");
+                            DiagnosticMessageSink.WriteDiagnosticMessage($"Did not find expected AppDependencies: Name='{expected.Name}' NameContains='{expected.NameContains}' DependencyType='{expected.DependencyType}'");
                             return false;
                         }
 

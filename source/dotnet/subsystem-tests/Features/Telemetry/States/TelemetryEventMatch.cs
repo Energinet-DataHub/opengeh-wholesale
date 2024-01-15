@@ -14,11 +14,30 @@
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States
 {
-    public class RequestTelemetryScenarioState
+    public class TelemetryEventMatch
     {
-        public Guid BatchId { get; set; }
+        public string Type { get; set; }
+            = string.Empty;
 
-        public IList<TelemetryEventMatch> ExpectedTelemetryEvents { get; }
-            = new List<TelemetryEventMatch>();
+        /// <summary>
+        /// Use if Name must match exactly.
+        /// </summary>
+        public string Name { get; set; }
+            = string.Empty;
+
+        /// <summary>
+        /// Use if Name is expected to contain value.
+        /// </summary>
+        public string NameContains { get; set; }
+            = string.Empty;
+
+        public string DependencyType { get; set; }
+            = string.Empty;
+
+        public string EventName { get; set; }
+            = string.Empty;
+
+        public string Message { get; set; }
+            = string.Empty;
     }
 }
