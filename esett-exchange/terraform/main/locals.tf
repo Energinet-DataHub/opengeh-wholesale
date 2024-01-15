@@ -11,6 +11,7 @@ locals {
   NAME_SUFFIX                           = "${lower(var.domain_name_short)}-${lower(var.environment_short)}-we-${lower(var.environment_instance)}"
   ip_restrictions_as_string             = join(",", [for rule in var.ip_restrictions : "${rule.ip_address}"])
 
+  BIZ_TALK_CERTIFICATE_THUMBPRINT       = "none"
   BIZ_TALK_SENDER_CODE                  = ""
   BIZ_TALK_RECEIVER_CODE                = ""
   BIZ_TALK_BIZ_TALK_END_POINT           = "/EL_DataHubService/IntegrationService.svc"

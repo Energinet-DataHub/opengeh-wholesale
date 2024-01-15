@@ -28,6 +28,8 @@ module "func_entrypoint_ecp_outbox" {
     }
   ]
   app_settings = {
+    WEBSITE_LOAD_CERTIFICATES                          = local.BIZ_TALK_CERTIFICATE_THUMBPRINT
+
     "DatabaseSettings:ConnectionString"                = local.MS_ESETT_EXCHANGE_CONNECTION_STRING
     "BlobStorageSettings:AccountUri"                   = local.ESETT_DOCUMENT_STORAGE_ACCOUNT_URI
     "BlobStorageSettings:ContainerName"                = local.ESETT_DOCUMENT_STORAGE_CONTAINER_NAME
