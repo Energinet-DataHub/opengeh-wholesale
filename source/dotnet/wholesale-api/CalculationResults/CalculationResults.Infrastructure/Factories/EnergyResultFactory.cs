@@ -27,7 +27,7 @@ public class EnergyResultFactory
         List<EnergyTimeSeriesPoint> timeSeriesPoints,
         Instant periodStart,
         Instant periodEnd,
-        string version)
+        long version)
     {
         var id = databricksSqlRow[EnergyResultColumnNames.CalculationResultId];
         var batchId = databricksSqlRow[EnergyResultColumnNames.BatchId];

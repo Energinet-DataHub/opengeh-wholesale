@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Fixtures;
 
 public sealed class CalculationResultBuilder
 {
-    private readonly string _version = DateTime.Now.Ticks.ToString();
+    private readonly long _version = DateTime.Now.Ticks;
     private TimeSeriesType _timeSeriesType = TimeSeriesType.Production;
     private EnergyTimeSeriesPoint[] _points = { new(DateTime.Now, 0, new List<QuantityQuality> { QuantityQuality.Measured }) };
     private Guid _batchId = Guid.NewGuid();

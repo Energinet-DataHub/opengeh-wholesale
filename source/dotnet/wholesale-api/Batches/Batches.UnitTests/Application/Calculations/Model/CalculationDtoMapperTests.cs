@@ -107,7 +107,7 @@ public class CalculationDtoMapperTests
 
     [Theory]
     [AutoMoqData]
-    public void Map_Returns_Version_Not_Null_Or_Empty(
+    public void Map_Returns_Version_Greater_Than_Zero(
         CalculationDtoMapper sut)
     {
         // Arrange
@@ -117,6 +117,6 @@ public class CalculationDtoMapperTests
         var batchDto = sut.Map(batch);
 
         // Assert
-        batchDto.Version.Should().NotBeNullOrWhiteSpace();
+        batchDto.Version.Should().BeGreaterThan(0);
     }
 }
