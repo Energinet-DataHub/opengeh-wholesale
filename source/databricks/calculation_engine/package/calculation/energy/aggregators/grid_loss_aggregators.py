@@ -90,8 +90,23 @@ def calculate_grid_loss(
     return EnergyResults(result)
 
 
-def calculate_negative_grid_loss(grid_loss: EnergyResults) -> EnergyResults:
-    result = grid_loss.df.select(
+def calculate_negative_grid_loss(
+    grid_loss: EnergyResults, grid_loss_responsible: GridLossResponsible
+) -> EnergyResults:
+    only_grid_area_and_metering_point_id = (
+        grid_loss_responsible.df.select(
+            Colname.grid_area, Colname.metering_point_id, Colname.metering_point_type
+        )
+        .distinct()
+        .where(
+            grid_loss_responsible.df.metering_point_type
+            == MeteringPointType.PRODUCTION.value
+        )
+    )
+    grid_loss = grid_loss.df.drop_columns([Colname.metering_point_id])
+    result = grid_loss.df.join(
+        only_grid_area_and_metering_point_id, Colname.grid_area, "left"
+    ).select(
         Colname.grid_area,
         Colname.time_window,
         f.when(f.col(Colname.sum_quantity) < 0, -f.col(Colname.sum_quantity))
@@ -104,8 +119,23 @@ def calculate_negative_grid_loss(grid_loss: EnergyResults) -> EnergyResults:
     return EnergyResults(result)
 
 
-def calculate_positive_grid_loss(grid_loss: EnergyResults) -> EnergyResults:
-    result = grid_loss.df.select(
+def calculate_positive_grid_loss(
+    grid_loss: EnergyResults, grid_loss_responsible: GridLossResponsible
+) -> EnergyResults:
+    only_grid_area_and_metering_point_id = (
+        grid_loss_responsible.df.select(
+            Colname.grid_area, Colname.metering_point_id, Colname.metering_point_type
+        )
+        .distinct()
+        .where(
+            grid_loss_responsible.df.metering_point_type
+            == MeteringPointType.CONSUMPTION.value
+        )
+    )
+    grid_loss = grid_loss.df.drop_columns([Colname.metering_point_id])
+    result = grid_loss.df.join(
+        only_grid_area_and_metering_point_id, Colname.grid_area, "left"
+    ).select(
         Colname.grid_area,
         Colname.time_window,
         f.when(f.col(Colname.sum_quantity) > 0, f.col(Colname.sum_quantity))
@@ -113,6 +143,7 @@ def calculate_positive_grid_loss(grid_loss: EnergyResults) -> EnergyResults:
         .alias(Colname.sum_quantity),
         f.lit(MeteringPointType.CONSUMPTION.value).alias(Colname.metering_point_type),
         Colname.qualities,
+        Colname.metering_point_id,
     )
     return EnergyResults(result)
 
