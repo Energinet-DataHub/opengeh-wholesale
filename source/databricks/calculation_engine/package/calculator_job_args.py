@@ -60,7 +60,7 @@ def create_calculation_arguments(job_args: Namespace) -> CalculatorArgs:
 
 def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p = configargparse.ArgParser(
-        description="Performs domain calculations for submitted batches",
+        description="Execute a calculation",
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
     )
 
