@@ -71,6 +71,11 @@ message EnergyResultProducedV2 {
 
     repeated TimeSeriesPoint time_series_points = 17;
 
+    /*
+     * The version of the calculation result. It is a positive integer in string format.
+     */
+    string calculation_result_version = 18;
+
     enum TimeSeriesType {
         /*
          * Unspecified is unused but according to best practice.
