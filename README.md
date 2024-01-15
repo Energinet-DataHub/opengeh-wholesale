@@ -14,9 +14,9 @@
 
 The source code of the repository is provided as-is. We currently do not accept contributions or forks from outside the project driving the current development.
 
-For people on the project please read the internal documentation (Confluence) for details on how to contribute or integrate with the domain.
+For people on the project please read the internal documentation (Confluence) for details on how to contribute or integrate with the subsystem.
 
-## C4 Diagrams of the Domain
+## C4 Diagrams of the Subsystem
 
 ![Simplified](docs/diagrams/c4-model/views/Wholesale.png)
 

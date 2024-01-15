@@ -22,7 +22,7 @@ name: Prepare dotnet outputs
 # Prepared outputs will be zipped and uploaded as the 'dotnet' artifact.
 #
 # All 'apps' must be output into the '\functions\' subfolder, to match
-# how they are later retrieved in the '<domain>-stage-deployment.yml' file.
+# how they are later retrieved in the '<subsystem>-stage-deployment.yml' file.
 #
 
 inputs:
