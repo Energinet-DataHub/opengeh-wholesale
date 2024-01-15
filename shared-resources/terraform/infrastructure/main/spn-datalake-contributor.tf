@@ -17,7 +17,7 @@ resource "azuread_application_password" "spn_datalake_contributor_secret" {
 }
 
 module "kvs_app_datalake_contributor_password" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.32.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.33.2"
 
   name         = "spn-datalake-contributor-secret"
   value        = azuread_application_password.spn_datalake_contributor_secret.value
@@ -25,7 +25,7 @@ module "kvs_app_datalake_contributor_password" {
 }
 
 module "kvs_app_datalake_contributor_app_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.32.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.33.2"
 
   name         = "spn-datalake-contributor-app-id"
   value        = azuread_application.app_datalake_contributor.application_id

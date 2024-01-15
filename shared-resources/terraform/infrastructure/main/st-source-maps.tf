@@ -1,5 +1,5 @@
 module "st_source_maps" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=13.32.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=13.33.2"
 
   name                       = "sourcemaps"
   project_name               = var.domain_name_short
@@ -31,7 +31,7 @@ module "st_source_maps" {
 }
 
 module "kvs_st_source_maps_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.32.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.33.2"
 
   name         = "st-sourcemaps-name"
   value        = module.st_source_maps.name
