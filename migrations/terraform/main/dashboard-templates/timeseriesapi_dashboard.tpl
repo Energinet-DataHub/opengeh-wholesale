@@ -95,37 +95,31 @@
                   "chart": {
                     "metrics": [
                       {
-                        "resourceMetadata": {
-                          "id": "${timeseriesapi_id}"
-                        },
-                        "name": "MemoryWorkingSet",
                         "aggregationType": 4,
-                        "namespace": "microsoft.web/sites",
                         "metricVisualization": {
                           "displayName": "Memory working set"
+                        },
+                        "name": "MemoryWorkingSet",
+                        "namespace": "microsoft.web/sites",
+                        "resourceMetadata": {
+                          "id": "${timeseriesapi_id}"
                         }
                       },
                       {
-                        "resourceMetadata": {
-                          "id": "${timeseriesapi_id}"
-                        },
-                        "name": "MemoryWorkingSet",
                         "aggregationType": 3,
-                        "namespace": "microsoft.web/sites",
                         "metricVisualization": {
                           "displayName": "Memory working set"
+                        },
+                        "name": "MemoryWorkingSet",
+                        "namespace": "microsoft.web/sites",
+                        "resourceMetadata": {
+                          "id": "${timeseriesapi_id}"
                         }
                       }
                     ],
                     "title": "Average memory usage over time",
                     "titleKind": 2,
                     "visualization": {
-                      "chartType": 2,
-                      "legendVisualization": {
-                        "hideSubtitle": false,
-                        "isVisible": true,
-                        "position": 2
-                      },
                       "axisVisualization": {
                         "x": {
                           "axisType": 2,
@@ -136,7 +130,13 @@
                           "isVisible": true
                         }
                       },
-                      "disablePinning": true
+                      "chartType": 2,
+                      "disablePinning": true,
+                      "legendVisualization": {
+                        "hideSubtitle": false,
+                        "isVisible": true,
+                        "position": 2
+                      }
                     }
                   }
                 }
@@ -213,37 +213,31 @@
                   "chart": {
                     "metrics": [
                       {
-                        "resourceMetadata": {
-                          "id": "${timeseriesapi_id}"
-                        },
-                        "name": "CpuTime",
                         "aggregationType": 1,
-                        "namespace": "microsoft.web/sites",
                         "metricVisualization": {
                           "displayName": "CPU Time"
+                        },
+                        "name": "CpuTime",
+                        "namespace": "microsoft.web/sites",
+                        "resourceMetadata": {
+                          "id": "${timeseriesapi_id}"
                         }
                       },
                       {
-                        "resourceMetadata": {
-                          "id": "${timeseriesapi_id}"
-                        },
-                        "name": "CpuTime",
                         "aggregationType": 3,
-                        "namespace": "microsoft.web/sites",
                         "metricVisualization": {
                           "displayName": "CPU Time"
+                        },
+                        "name": "CpuTime",
+                        "namespace": "microsoft.web/sites",
+                        "resourceMetadata": {
+                          "id": "${timeseriesapi_id}"
                         }
                       }
                     ],
                     "title": "CPU consumption",
                     "titleKind": 2,
                     "visualization": {
-                      "chartType": 2,
-                      "legendVisualization": {
-                        "hideSubtitle": false,
-                        "isVisible": true,
-                        "position": 2
-                      },
                       "axisVisualization": {
                         "x": {
                           "axisType": 2,
@@ -254,7 +248,13 @@
                           "isVisible": true
                         }
                       },
-                      "disablePinning": true
+                      "chartType": 2,
+                      "disablePinning": true,
+                      "legendVisualization": {
+                        "hideSubtitle": false,
+                        "isVisible": true,
+                        "position": 2
+                      }
                     }
                   }
                 }
@@ -988,7 +988,7 @@
               },
               {
                 "name": "Query",
-                "value": "requests\n| where cloud_RoleName == \"${timeseriesapi_name}\"\n| summarize p95_response_time = percentile(duration, 95), p99_response_time = percentile(duration, 99) by bin(timestamp, 1d)\n\n",
+                "value": "requests\n| where cloud_RoleName == \"${timeseriesapi_name}\"\n| summarize p95_response_time = percentile(duration, 95), p99_response_time = percentile(duration, 99) by bin(timestamp, 1d)\n",
                 "isOptional": true
               },
               {
@@ -1739,6 +1739,102 @@
         },
         "18": {
           "position": {
+            "x": 21,
+            "y": 9,
+            "colSpan": 3,
+            "rowSpan": 3
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "resourceTypeMode",
+                "isOptional": true
+              },
+              {
+                "name": "ComponentId",
+                "isOptional": true
+              },
+              {
+                "name": "Scope",
+                "value": {
+                  "resourceIds": [
+                    "${appi_sharedres_id}"
+                  ]
+                },
+                "isOptional": true
+              },
+              {
+                "name": "PartId",
+                "value": "8f0fcacf-ea43-4f45-a2f5-e46152745bdc",
+                "isOptional": true
+              },
+              {
+                "name": "Version",
+                "value": "2.0",
+                "isOptional": true
+              },
+              {
+                "name": "TimeRange",
+                "isOptional": true
+              },
+              {
+                "name": "DashboardId",
+                "isOptional": true
+              },
+              {
+                "name": "DraftRequestParameters",
+                "isOptional": true
+              },
+              {
+                "name": "Query",
+                "value": "let requests = requests\n| where timestamp >= ago(1d);\nlet exceptions = exceptions\n| where timestamp >= ago(1d);\nlet totalRequests = toscalar(requests | count);\nlet totalExceptions = toscalar(exceptions | count);\nlet errorRate = todouble(totalExceptions) / totalRequests * 100;\nprint ErrorRate=errorRate\n",
+                "isOptional": true
+              },
+              {
+                "name": "ControlType",
+                "value": "AnalyticsGrid",
+                "isOptional": true
+              },
+              {
+                "name": "SpecificChart",
+                "isOptional": true
+              },
+              {
+                "name": "PartTitle",
+                "value": "Analytics",
+                "isOptional": true
+              },
+              {
+                "name": "PartSubTitle",
+                "value": "${appi_sharedres_name}",
+                "isOptional": true
+              },
+              {
+                "name": "Dimensions",
+                "isOptional": true
+              },
+              {
+                "name": "LegendOptions",
+                "isOptional": true
+              },
+              {
+                "name": "IsQueryContainTimeRange",
+                "value": true,
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+            "settings": {
+              "content": {
+                "Query": "let roleName = \"${timeseriesapi_name}\";\nlet totalRequests = toscalar(requests | count);\nlet exceptionsOnApp = exceptions\n| where cloud_RoleName == roleName;\nlet totalExceptions = toscalar(exceptionsOnApp | count);\nlet errorRate = todouble(totalExceptions) / totalRequests * 100;\nprint ErrorRate=errorRate\n",
+                "PartTitle": "Error rate %",
+                "IsQueryContainTimeRange": false
+              }
+            }
+          }
+        },
+        "19": {
+          "position": {
             "x": 8,
             "y": 11,
             "colSpan": 1,
@@ -1814,7 +1910,7 @@
             "deepLink": "#@energinet.onmicrosoft.com/resource${appi_sharedres_id}/searchV1"
           }
         },
-        "19": {
+        "20": {
           "position": {
             "x": 14,
             "y": 11,
@@ -1909,7 +2005,7 @@
             "deepLink": "#@energinet.onmicrosoft.com/resource${appi_sharedres_id}/searchV1"
           }
         },
-        "20": {
+        "21": {
           "position": {
             "x": 0,
             "y": 12,
@@ -1932,7 +2028,7 @@
             }
           }
         },
-        "21": {
+        "22": {
           "position": {
             "x": 3,
             "y": 12,
@@ -2039,7 +2135,7 @@
             }
           }
         },
-        "22": {
+        "23": {
           "position": {
             "x": 9,
             "y": 12,
@@ -2146,7 +2242,7 @@
             }
           }
         },
-        "23": {
+        "24": {
           "position": {
             "x": 0,
             "y": 15,
@@ -2167,7 +2263,7 @@
             }
           }
         },
-        "24": {
+        "25": {
           "position": {
             "x": 3,
             "y": 15,
@@ -2231,7 +2327,7 @@
             }
           }
         },
-        "25": {
+        "26": {
           "position": {
             "x": 9,
             "y": 15,
@@ -2325,24 +2421,25 @@
               "value": "Past 24 hours"
             },
             "filteredPartIds": [
-              "StartboardPart-MonitorChartPart-c6c705b4-e6dc-480a-9706-9ce45ee558c1",
-              "StartboardPart-MonitorChartPart-c6c705b4-e6dc-480a-9706-9ce45ee558c3",
-              "StartboardPart-MonitorChartPart-c6c705b4-e6dc-480a-9706-9ce45ee558c5",
-              "StartboardPart-MonitorChartPart-c6c705b4-e6dc-480a-9706-9ce45ee558c7",
-              "StartboardPart-MonitorChartPart-c6c705b4-e6dc-480a-9706-9ce45ee558c9",
-              "StartboardPart-MonitorChartPart-c6c705b4-e6dc-480a-9706-9ce45ee558cd",
-              "StartboardPart-MonitorChartPart-c6c705b4-e6dc-480a-9706-9ce45ee558cf",
-              "StartboardPart-MonitorChartPart-c6c705b4-e6dc-480a-9706-9ce45ee558d1",
-              "StartboardPart-MonitorChartPart-c6c705b4-e6dc-480a-9706-9ce45ee558d5",
-              "StartboardPart-MonitorChartPart-c6c705b4-e6dc-480a-9706-9ce45ee558d7",
-              "StartboardPart-MonitorChartPart-c6c705b4-e6dc-480a-9706-9ce45ee558db",
-              "StartboardPart-MonitorChartPart-c6c705b4-e6dc-480a-9706-9ce45ee558dd",
-              "StartboardPart-LogsDashboardPart-c6c705b4-e6dc-480a-9706-9ce45ee558df",
-              "StartboardPart-MonitorChartPart-c6c705b4-e6dc-480a-9706-9ce45ee558e7",
-              "StartboardPart-MonitorChartPart-c6c705b4-e6dc-480a-9706-9ce45ee558e9",
-              "StartboardPart-MonitorChartPart-c6c705b4-e6dc-480a-9706-9ce45ee558ed",
-              "StartboardPart-MonitorChartPart-c6c705b4-e6dc-480a-9706-9ce45ee558ef",
-              "StartboardPart-LogsDashboardPart-c6c705b4-e6dc-480a-9706-9ce45ee558f1"
+              "StartboardPart-MonitorChartPart-d1758d27-820a-462b-b705-f924b823d354",
+              "StartboardPart-MonitorChartPart-d1758d27-820a-462b-b705-f924b823d356",
+              "StartboardPart-MonitorChartPart-d1758d27-820a-462b-b705-f924b823d358",
+              "StartboardPart-MonitorChartPart-d1758d27-820a-462b-b705-f924b823d35a",
+              "StartboardPart-MonitorChartPart-d1758d27-820a-462b-b705-f924b823d35c",
+              "StartboardPart-MonitorChartPart-d1758d27-820a-462b-b705-f924b823d360",
+              "StartboardPart-MonitorChartPart-d1758d27-820a-462b-b705-f924b823d362",
+              "StartboardPart-MonitorChartPart-d1758d27-820a-462b-b705-f924b823d364",
+              "StartboardPart-LogsDashboardPart-d1758d27-820a-462b-b705-f924b823d366",
+              "StartboardPart-MonitorChartPart-d1758d27-820a-462b-b705-f924b823d36a",
+              "StartboardPart-MonitorChartPart-d1758d27-820a-462b-b705-f924b823d36c",
+              "StartboardPart-MonitorChartPart-d1758d27-820a-462b-b705-f924b823d370",
+              "StartboardPart-MonitorChartPart-d1758d27-820a-462b-b705-f924b823d372",
+              "StartboardPart-LogsDashboardPart-d1758d27-820a-462b-b705-f924b823d374",
+              "StartboardPart-LogsDashboardPart-d1758d27-820a-462b-b705-f924b823d376",
+              "StartboardPart-MonitorChartPart-d1758d27-820a-462b-b705-f924b823d37e",
+              "StartboardPart-MonitorChartPart-d1758d27-820a-462b-b705-f924b823d380",
+              "StartboardPart-MonitorChartPart-d1758d27-820a-462b-b705-f924b823d384",
+              "StartboardPart-MonitorChartPart-d1758d27-820a-462b-b705-f924b823d386"
             ]
           }
         }
