@@ -28,9 +28,9 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
     [TestCaseOrderer(
         ordererTypeName: "Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Orderers.ScenarioStepOrderer",
         ordererAssemblyName: "Energinet.DataHub.Wholesale.SubsystemTests")]
-    public class RequestTelemetryScenario : SubsystemTestsBase<RequestTelemetryScenarioFixture>
+    public class RequestTelemetryScenario : SubsystemTestsBase<TelemetryScenarioFixture<RequestTelemetryScenarioState>>
     {
-        public RequestTelemetryScenario(LazyFixtureFactory<RequestTelemetryScenarioFixture> lazyFixtureFactory)
+        public RequestTelemetryScenario(LazyFixtureFactory<TelemetryScenarioFixture<RequestTelemetryScenarioState>> lazyFixtureFactory)
             : base(lazyFixtureFactory)
         {
         }

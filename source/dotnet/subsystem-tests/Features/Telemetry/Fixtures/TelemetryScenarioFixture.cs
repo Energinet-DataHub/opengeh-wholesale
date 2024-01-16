@@ -26,19 +26,20 @@ using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures
 {
-    public sealed class RequestTelemetryScenarioFixture : LazyFixtureBase
+    public sealed class TelemetryScenarioFixture<TState> : LazyFixtureBase
+        where TState : new()
     {
-        public RequestTelemetryScenarioFixture(IMessageSink diagnosticMessageSink)
+        public TelemetryScenarioFixture(IMessageSink diagnosticMessageSink)
             : base(diagnosticMessageSink)
         {
             Configuration = new WholesaleSubsystemConfiguration();
             LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
             ExistingBatchId = Configuration.Root.GetValue<Guid>("EXISTING_BATCH_ID");
 
-            ScenarioState = new RequestTelemetryScenarioState();
+            ScenarioState = new TState();
         }
 
-        public RequestTelemetryScenarioState ScenarioState { get; }
+        public TState ScenarioState { get; }
 
         /// <summary>
         /// Support calling the Wholesale Web API using an authorized Wholesale client.
