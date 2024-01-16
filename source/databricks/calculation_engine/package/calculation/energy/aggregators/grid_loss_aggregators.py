@@ -103,7 +103,7 @@ def calculate_negative_grid_loss(
             == MeteringPointType.PRODUCTION.value
         )
     )
-    grid_loss = grid_loss.df.drop_columns([Colname.metering_point_id])
+    # grid_loss = grid_loss.df.drop_columns([Colname.metering_point_id])
     result = grid_loss.df.join(
         only_grid_area_and_metering_point_id, Colname.grid_area, "left"
     ).select(
@@ -132,7 +132,7 @@ def calculate_positive_grid_loss(
             == MeteringPointType.CONSUMPTION.value
         )
     )
-    grid_loss = grid_loss.df.drop_columns([Colname.metering_point_id])
+    # grid_loss = grid_loss.df.drop_columns([Colname.metering_point_id])
     result = grid_loss.df.join(
         only_grid_area_and_metering_point_id, Colname.grid_area, "left"
     ).select(
