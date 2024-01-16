@@ -99,7 +99,7 @@ def calculate_negative_grid_loss(
         )
         .distinct()
         .where(
-            grid_loss_responsible.df.metering_point_type
+            grid_loss_responsible.df[Colname.metering_point_type]
             == MeteringPointType.PRODUCTION.value
         )
     )
@@ -128,7 +128,7 @@ def calculate_positive_grid_loss(
         )
         .distinct()
         .where(
-            grid_loss_responsible.df.metering_point_type
+            grid_loss_responsible.df[Colname.metering_point_type]
             == MeteringPointType.CONSUMPTION.value
         )
     )
