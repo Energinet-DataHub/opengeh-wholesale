@@ -37,7 +37,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
 
         [ScenarioStep(0)]
         [SubsystemFact]
-        public void Given_BatchId()
+        public void Given_ExistingBatchId()
         {
             Fixture.ScenarioState.BatchId = Fixture.ExistingBatchId;
         }
@@ -78,9 +78,9 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
                 | take 1
                 | project OperationId;
                 OperationIds
-                | join(union AppRequests, AppDependencies, AppTraces) on OperationId
+                | join(union AppRequests, AppDependencies, AppTraces, AppExceptions) on OperationId
                 | extend parsedProp = parse_json(Properties)
-                | project TimeGenerated, OperationId, ParentId, Id, Type, Name, DependencyType, EventName=parsedProp.EventName, Message, Url, Properties
+                | project TimeGenerated, OperationId, ParentId, Id, Type, Name, DependencyType, EventName=parsedProp.EventName, Message, Url, OuterType, OuterMessage, Properties
                 | order by TimeGenerated asc";
 
             var wasEventsLogged = await Fixture.WaitForTelemetryEventsAsync(

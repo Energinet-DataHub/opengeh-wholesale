@@ -39,5 +39,11 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States
 
         public string MessageStartsWith { get; set; }
             = string.Empty;
+
+        public string OuterType { get; set; }
+            = string.Empty;
+
+        public string OuterMessage { get; set; }
+            = string.Empty;
     }
 }

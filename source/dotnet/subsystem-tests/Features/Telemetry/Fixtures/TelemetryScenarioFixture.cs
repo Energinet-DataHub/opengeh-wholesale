@@ -143,6 +143,16 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures
                         }
 
                         break;
+                    case "AppExceptions":
+                        if (!actualResults.Any(actual =>
+                            actual.EventName == expected.EventName
+                            && actual.OuterType == expected.OuterType
+                            && actual.OuterMessage == expected.OuterMessage))
+                        {
+                            return false;
+                        }
+
+                        break;
                     default:
                         throw new InvalidOperationException($"Unknown event type '{expected.Type}'.");
                 }
