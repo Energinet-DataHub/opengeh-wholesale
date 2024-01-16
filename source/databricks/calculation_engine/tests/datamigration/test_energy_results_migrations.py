@@ -172,6 +172,12 @@ def test__migrated_table_accepts_enum_value(
     # Arrange
     result_df = _create_df(spark)
     result_df = set_column(result_df, column_name, column_value)
+    # this is a special case where we need to set the metering point id to a valid value
+    # do to constraints on the table seen in 202401161030_Add_metering_point_id_to_energy_table.sql
+    if column_value == "negative_grid_loss" or column_value == "positive_grid_loss":
+        result_df = set_column(
+            result_df, EnergyResultColumnNames.metering_point_id, "571313180480500149"
+        )
 
     # Act and assert: Expectation is that no exception is raised
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
