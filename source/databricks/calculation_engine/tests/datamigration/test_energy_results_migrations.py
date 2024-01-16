@@ -48,6 +48,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
         ),
         EnergyResultColumnNames.from_grid_area: "843",
         EnergyResultColumnNames.calculation_result_id: "6033ab5c-436b-44e9-8a79-90489d324e53",
+        EnergyResultColumnNames.metering_point_id: "571313180480500149",
     }
     return spark.createDataFrame(data=[row], schema=energy_results_schema)
 
