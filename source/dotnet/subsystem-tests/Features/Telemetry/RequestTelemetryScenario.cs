@@ -18,7 +18,6 @@ using Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using FluentAssertions;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
