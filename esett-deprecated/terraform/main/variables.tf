@@ -31,6 +31,7 @@ variable "cert_pwd_esett_biztalk_authentication_key1" {
 variable "developer_object_ids" {
   type        = list(string)
   description = "List of developer principal IDs"
+  default     = []
 }
 
 variable "pim_sql_reader_ad_group_name" {
