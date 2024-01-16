@@ -53,6 +53,14 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures
 
         private LogsQueryClient LogsQueryClient { get; }
 
+        public async Task<Guid> StartCalculationAsync(BatchRequestDto calculationInput)
+        {
+            var calculationId = await WholesaleClient.CreateBatchAsync(calculationInput);
+            DiagnosticMessageSink.WriteDiagnosticMessage($"Fixture {GetType().Name} - Calculation for {calculationInput.ProcessType} with id '{calculationId}' started.");
+
+            return calculationId;
+        }
+
         public async Task<bool> WaitForTelemetryEventsAsync(
             IReadOnlyCollection<TelemetryEventMatch> expectedEvents,
             string query,
@@ -69,7 +77,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures
                             query,
                             queryTimeRange);
 
-                        return ContainsExpectedEvents(expectedEvents, actualResponse.Value);
+                        return TelemetryScenarioFixture<TState>.ContainsExpectedEvents(expectedEvents, actualResponse.Value);
                     },
                     waitTimeLimit,
                     delay);
@@ -87,7 +95,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures
             return Task.CompletedTask;
         }
 
-        private bool ContainsExpectedEvents(IReadOnlyCollection<TelemetryEventMatch> expectedEvents, IReadOnlyList<TelemetryQueryResult> actualResults)
+        private static bool ContainsExpectedEvents(IReadOnlyCollection<TelemetryEventMatch> expectedEvents, IReadOnlyList<TelemetryQueryResult> actualResults)
         {
             if (actualResults.Count < expectedEvents.Count)
                 return false;
@@ -97,20 +105,14 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures
                 switch (expected.Type)
                 {
                     case "AppRequests":
-                        var appRequestsExists = actualResults.Any(actual =>
-                            actual.Name == expected.Name);
-
-                        if (!appRequestsExists)
+                        if (!actualResults.Any(actual => actual.Name == expected.Name))
                         {
-                            DiagnosticMessageSink.WriteDiagnosticMessage($"Did not find expected AppRequests: Name='{expected.Name}'");
                             return false;
                         }
 
                         break;
-
                     case "AppDependencies":
                         var appDependenciesExists = false;
-
                         if (!string.IsNullOrEmpty(expected.NameContains))
                         {
                             // Compare using NameContains
@@ -128,25 +130,21 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures
 
                         if (!appDependenciesExists)
                         {
-                            DiagnosticMessageSink.WriteDiagnosticMessage($"Did not find expected AppDependencies: Name='{expected.Name}' NameContains='{expected.NameContains}' DependencyType='{expected.DependencyType}'");
                             return false;
                         }
 
                         break;
-
-                    // "AppTraces"
-                    default:
-                        var appTracesExists = actualResults.Any(actual =>
-                            actual.EventName == expected.EventName
-                            && actual.Message.StartsWith(expected.Message));
-
-                        if (!appTracesExists)
+                    case "AppTraces":
+                        if (!actualResults.Any(actual =>
+                            (actual.EventName ?? string.Empty) == expected.EventName
+                            && actual.Message.StartsWith(expected.MessageStartsWith)))
                         {
-                            DiagnosticMessageSink.WriteDiagnosticMessage($"Did not find expected AppTrace: EventName='{expected.EventName}' Message='{expected.Message}'");
                             return false;
                         }
 
                         break;
+                    default:
+                        throw new InvalidOperationException($"Unknown event type '{expected.Type}'.");
                 }
             }
 

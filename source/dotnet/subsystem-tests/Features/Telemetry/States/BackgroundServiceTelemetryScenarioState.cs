@@ -12,32 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3;
+
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States
 {
-    public class TelemetryEventMatch
+    public class BackgroundServiceTelemetryScenarioState
     {
-        public string Type { get; set; }
-            = string.Empty;
+        public BatchRequestDto CalculationInput { get; set; }
+            = new();
 
-        /// <summary>
-        /// Use if Name must match exactly.
-        /// </summary>
-        public string Name { get; set; }
-            = string.Empty;
+        public Guid CalculationId { get; set; }
 
-        /// <summary>
-        /// Use if Name is expected to contain value.
-        /// </summary>
-        public string NameContains { get; set; }
-            = string.Empty;
-
-        public string DependencyType { get; set; }
-            = string.Empty;
-
-        public string EventName { get; set; }
-            = string.Empty;
-
-        public string MessageStartsWith { get; set; }
-            = string.Empty;
+        public IList<TelemetryEventMatch> ExpectedTelemetryEvents { get; }
+            = new List<TelemetryEventMatch>();
     }
 }
