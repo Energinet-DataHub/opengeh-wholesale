@@ -142,11 +142,11 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures
                     default:
                         var appTracesExists = actualResults.Any(actual =>
                             actual.EventName == expected.EventName
-                            && actual.Message.StartsWith(expected.Message));
+                            && actual.Message.StartsWith(expected.MessageStartsWith));
 
                         if (!appTracesExists)
                         {
-                            DiagnosticMessageSink.WriteDiagnosticMessage($"Did not find expected AppTrace: EventName='{expected.EventName}' Message='{expected.Message}'");
+                            DiagnosticMessageSink.WriteDiagnosticMessage($"Did not find expected AppTrace: EventName='{expected.EventName}' Message='{expected.MessageStartsWith}'");
                             return false;
                         }
 
