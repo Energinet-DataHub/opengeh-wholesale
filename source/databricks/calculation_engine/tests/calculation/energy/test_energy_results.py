@@ -78,6 +78,7 @@ class TestCtor:
                 Colname.from_grid_area,
                 Colname.balance_responsible_id,
                 Colname.energy_supplier_id,
+                Colname.metering_point_id,
             ]
             df_with_missing_columns = df.drop(*nullable_columns)
 
