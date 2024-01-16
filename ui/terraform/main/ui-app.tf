@@ -2,6 +2,8 @@ resource "azurerm_static_site" "ui" {
   name                = "stapp-ui-${lower(var.domain_name_short)}-${lower(var.environment_short)}-${lower(var.environment_instance)}"
   resource_group_name = azurerm_resource_group.this.name
   location            = azurerm_resource_group.this.location
+  sku_size            = "Standard"
+  sku_tier            = "Standard"
 
   lifecycle {
     ignore_changes = [
