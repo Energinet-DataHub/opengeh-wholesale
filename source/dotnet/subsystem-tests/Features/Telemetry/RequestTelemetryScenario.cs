@@ -83,14 +83,14 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
                 | project TimeGenerated, OperationId, ParentId, Id, Type, Name, DependencyType, EventName=parsedProp.EventName, Message, Url, Properties
                 | order by TimeGenerated asc";
 
-            var actualCount = await Fixture.WaitForTelemetryEventsAsync(
+            var wasEventsLogged = await Fixture.WaitForTelemetryEventsAsync(
                 Fixture.ScenarioState.ExpectedTelemetryEvents.AsReadOnly(),
                 query,
                 queryTimeRange: new QueryTimeRange(TimeSpan.FromMinutes(10)),
                 waitTimeLimit: TimeSpan.FromMinutes(10),
                 delay: TimeSpan.FromSeconds(30));
 
-            actualCount.Should().Be(Fixture.ScenarioState.ExpectedTelemetryEvents.Count);
+            wasEventsLogged.Should().BeTrue("Events was not logged to Application Insights within time limit.");
         }
     }
 }

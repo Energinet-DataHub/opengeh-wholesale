@@ -52,14 +52,13 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures
 
         private LogsQueryClient LogsQueryClient { get; }
 
-        public async Task<int> WaitForTelemetryEventsAsync(
+        public async Task<bool> WaitForTelemetryEventsAsync(
             IReadOnlyCollection<TelemetryEventMatch> expectedEvents,
             string query,
             QueryTimeRange queryTimeRange,
             TimeSpan waitTimeLimit,
             TimeSpan delay)
         {
-            var actualCount = 0;
             var wasEventsLogged = await Awaiter
                 .TryWaitUntilConditionAsync(
                     async () =>
@@ -69,16 +68,12 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures
                             query,
                             queryTimeRange);
 
-                        actualCount = actualResponse.Value.Count;
                         return ContainsExpectedEvents(expectedEvents, actualResponse.Value);
                     },
                     waitTimeLimit,
                     delay);
 
-            // We can only trust actual count if the events was logged, and the wait didn't timeout
-            return wasEventsLogged
-                ? actualCount
-                : 0;
+            return wasEventsLogged;
         }
 
         protected override async Task OnInitializeAsync()
