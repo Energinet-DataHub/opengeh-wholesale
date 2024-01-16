@@ -48,7 +48,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
         ),
         EnergyResultColumnNames.from_grid_area: "843",
         EnergyResultColumnNames.calculation_result_id: "6033ab5c-436b-44e9-8a79-90489d324e53",
-        EnergyResultColumnNames.metering_point_id: "571313180480500149",
+        EnergyResultColumnNames.metering_point_id: None,
     }
     return spark.createDataFrame(data=[row], schema=energy_results_schema)
 
@@ -235,3 +235,71 @@ def test__result_table__is_not_managed(
     table_location = table_details.collect()[0]["location"]
 
     assert not table_location.startswith(database_location)
+
+
+@pytest.mark.parametrize(
+    "metering_point_id,time_series_type",
+    [
+        ("571313180480500149", "negative_grid_loss"),
+        ("571313180480500149", "positive_grid_loss"),
+        (None, "production"),
+    ],
+)
+def test__migrated_table_special_metering_point_id_constraint_valid_data(
+    spark: SparkSession,
+    metering_point_id: str | None,
+    time_series_type: str,
+    migrations_executed: None,
+) -> None:
+    # Arrange
+    results_df = _create_df(spark)
+
+    results_df = set_column(
+        results_df, EnergyResultColumnNames.time_series_type, time_series_type
+    )
+    results_df = set_column(
+        results_df, EnergyResultColumnNames.metering_point_id, metering_point_id
+    )
+
+    # Act + Assert
+    results_df.write.format("delta").option("mergeSchema", "false").insertInto(
+        f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}"
+    )
+
+
+@pytest.mark.parametrize(
+    "metering_point_id,time_series_type",
+    [
+        ("not_18_length", "negative_grid_loss"),
+        ("not_18_length", "positive_grid_loss"),
+        (None, "negative_grid_loss"),
+        (None, "positive_grid_loss"),
+        ("571313180480500149", "production"),
+    ],
+)
+def test__migrated_table_special_metering_point_id_constraint_invalid_data(
+    spark: SparkSession,
+    metering_point_id: str | None,
+    time_series_type: str,
+    migrations_executed: None,
+) -> None:
+    # Arrange
+    results_df = _create_df(spark)
+
+    results_df = set_column(
+        results_df, EnergyResultColumnNames.time_series_type, time_series_type
+    )
+    results_df = set_column(
+        results_df, EnergyResultColumnNames.metering_point_id, metering_point_id
+    )
+
+    # Act
+    with pytest.raises(Exception) as ex:
+        results_df.write.format("delta").option("mergeSchema", "false").insertInto(
+            f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}", overwrite=False
+        )
+
+    # Assert: Do sufficient assertions to be confident that the expected violation has been caught
+    actual_error_message = str(ex.value)
+    assert "DeltaInvariantViolationException" in actual_error_message
+    assert EnergyResultColumnNames.metering_point_id in actual_error_message
