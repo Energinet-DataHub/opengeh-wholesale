@@ -46,20 +46,17 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
         [SubsystemFact]
         public void AndGiven_ExpectedTelemetryEvents()
         {
-            Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new TelemetryEventMatch
+            Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new AppRequestMatch
             {
-                Type = "AppRequests",
                 Name = "GET Calculation/Get [batchId]",
             });
-            Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new TelemetryEventMatch
+            Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new AppDependencyMatch
             {
-                Type = "AppDependencies",
                 NameContains = "mssqldb-data-wholsal-",
                 DependencyType = "SQL",
             });
-            Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new TelemetryEventMatch
+            Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new AppExceptionMatch
             {
-                Type = "AppExceptions",
                 EventName = "ApplicationError",
                 OuterType = "System.InvalidOperationException",
                 OuterMessage = "Sequence contains no elements.",

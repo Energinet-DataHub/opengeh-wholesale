@@ -12,13 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#pragma warning disable SA1402 // File may only contain a single type
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States
 {
-    public class TelemetryEventMatch
+    /// <summary>
+    /// Marker interface for event match types.
+    /// </summary>
+    public interface ITelemetryEventMatch
     {
-        public string Type { get; set; }
+        public bool IsMatch(TelemetryQueryResult actual);
+    }
+
+    public class AppRequestMatch : ITelemetryEventMatch
+    {
+        /// <summary>
+        /// Use if Name must match exactly.
+        /// </summary>
+        public string Name { get; set; }
             = string.Empty;
 
+        public bool IsMatch(TelemetryQueryResult actual)
+        {
+            return actual.Name.Equals(Name);
+        }
+    }
+
+    public class AppDependencyMatch : ITelemetryEventMatch
+    {
         /// <summary>
         /// Use if Name must match exactly.
         /// </summary>
@@ -34,10 +54,41 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States
         public string DependencyType { get; set; }
             = string.Empty;
 
+        public bool IsMatch(TelemetryQueryResult actual)
+        {
+            if (!string.IsNullOrEmpty(NameContains))
+            {
+                // Compare using NameContains
+                return actual.Name.Contains(NameContains)
+                    && actual.DependencyType == DependencyType;
+            }
+            else
+            {
+                // Compare using Name
+                return actual.Name == Name
+                    && actual.DependencyType == DependencyType;
+            }
+        }
+    }
+
+    public class AppTraceMatch : ITelemetryEventMatch
+    {
         public string EventName { get; set; }
             = string.Empty;
 
-        public string MessageStartsWith { get; set; }
+        public string MessageContains { get; set; }
+            = string.Empty;
+
+        public bool IsMatch(TelemetryQueryResult actual)
+        {
+            return (actual.EventName ?? string.Empty) == EventName
+                && actual.Message.Contains(MessageContains);
+        }
+    }
+
+    public class AppExceptionMatch : ITelemetryEventMatch
+    {
+        public string EventName { get; set; }
             = string.Empty;
 
         public string OuterType { get; set; }
@@ -45,5 +96,13 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States
 
         public string OuterMessage { get; set; }
             = string.Empty;
+
+        public bool IsMatch(TelemetryQueryResult actual)
+        {
+            return (actual.EventName ?? string.Empty) == EventName
+                && actual.OuterType == OuterType
+                && actual.OuterMessage == OuterMessage;
+        }
     }
 }
+#pragma warning restore SA1402 // File may only contain a single type

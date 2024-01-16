@@ -62,17 +62,15 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
         [SubsystemFact]
         public void When_ExpectedTelemetryEvents()
         {
-            // From StartCalculationHandler
-            Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new TelemetryEventMatch
+            // From 'StartCalculationHandler'
+            Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new AppTraceMatch
             {
-                Type = "AppTraces",
-                MessageStartsWith = $"Calculation with id {Fixture.ScenarioState.CalculationId} started",
+                MessageContains = $"Calculation with id {Fixture.ScenarioState.CalculationId} started",
             });
-            // From IntegrationEventProvider
-            Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new TelemetryEventMatch
+            // From 'IntegrationEventProvider'
+            Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new AppTraceMatch
             {
-                Type = "AppTraces",
-                MessageStartsWith = $"Published results for succeeded energy calculation {Fixture.ScenarioState.CalculationId} to the service bus",
+                MessageContains = $"Published results for succeeded energy calculation {Fixture.ScenarioState.CalculationId} to the service bus",
             });
         }
 

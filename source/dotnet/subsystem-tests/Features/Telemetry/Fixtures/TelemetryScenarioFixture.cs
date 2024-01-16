@@ -62,7 +62,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures
         }
 
         public async Task<bool> WaitForTelemetryEventsAsync(
-            IReadOnlyCollection<TelemetryEventMatch> expectedEvents,
+            IReadOnlyCollection<ITelemetryEventMatch> expectedEvents,
             string query,
             QueryTimeRange queryTimeRange,
             TimeSpan waitTimeLimit,
@@ -95,66 +95,16 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures
             return Task.CompletedTask;
         }
 
-        private static bool ContainsExpectedEvents(IReadOnlyCollection<TelemetryEventMatch> expectedEvents, IReadOnlyList<TelemetryQueryResult> actualResults)
+        private static bool ContainsExpectedEvents(IReadOnlyCollection<ITelemetryEventMatch> expectedEvents, IReadOnlyList<TelemetryQueryResult> actualResults)
         {
             if (actualResults.Count < expectedEvents.Count)
                 return false;
 
             foreach (var expected in expectedEvents)
             {
-                switch (expected.Type)
+                if (!actualResults.Any(actual => expected.IsMatch(actual)))
                 {
-                    case "AppRequests":
-                        if (!actualResults.Any(actual => actual.Name == expected.Name))
-                        {
-                            return false;
-                        }
-
-                        break;
-                    case "AppDependencies":
-                        var appDependenciesExists = false;
-                        if (!string.IsNullOrEmpty(expected.NameContains))
-                        {
-                            // Compare using NameContains
-                            appDependenciesExists = actualResults.Any(actual =>
-                                actual.Name.Contains(expected.NameContains)
-                                && actual.DependencyType == expected.DependencyType);
-                        }
-                        else
-                        {
-                            // Compare using Name
-                            appDependenciesExists = actualResults.Any(actual =>
-                                actual.Name == expected.Name
-                                && actual.DependencyType == expected.DependencyType);
-                        }
-
-                        if (!appDependenciesExists)
-                        {
-                            return false;
-                        }
-
-                        break;
-                    case "AppTraces":
-                        if (!actualResults.Any(actual =>
-                            (actual.EventName ?? string.Empty) == expected.EventName
-                            && actual.Message.StartsWith(expected.MessageStartsWith)))
-                        {
-                            return false;
-                        }
-
-                        break;
-                    case "AppExceptions":
-                        if (!actualResults.Any(actual =>
-                            actual.EventName == expected.EventName
-                            && actual.OuterType == expected.OuterType
-                            && actual.OuterMessage == expected.OuterMessage))
-                        {
-                            return false;
-                        }
-
-                        break;
-                    default:
-                        throw new InvalidOperationException($"Unknown event type '{expected.Type}'.");
+                    return false;
                 }
             }
 
