@@ -130,7 +130,6 @@ public class Startup
         });
 
         serviceCollection.AddUserAuthentication<FrontendUser, FrontendUserProvider>();
-        serviceCollection.AddHttpLoggingScope(SubsystemName);
     }
 
     public void Configure(IApplicationBuilder app)
