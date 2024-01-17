@@ -32,8 +32,6 @@ using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks.DataLake;
 using Energinet.DataHub.Wholesale.WebApi.Telemetry;
-using FluentAssertions.Common;
-using Microsoft.ApplicationInsights.AspNetCore.TelemetryInitializers;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Azure;
 using Microsoft.OpenApi.Models;
