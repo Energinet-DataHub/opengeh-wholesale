@@ -41,7 +41,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
         {
             Fixture.ScenarioState.CalculationInput = new Clients.v3.BatchRequestDto
             {
-                ProcessType = Clients.v3.ProcessType.BalanceFixing,
+                ProcessType = Clients.v3.ProcessType.Aggregation,
                 GridAreaCodes = new List<string> { "543" },
                 StartDate = new DateTimeOffset(2022, 1, 13, 23, 0, 0, TimeSpan.Zero),
                 EndDate = new DateTimeOffset(2022, 1, 14, 23, 0, 0, TimeSpan.Zero),
@@ -93,7 +93,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
                 waitTimeLimit: TimeSpan.FromMinutes(15),
                 delay: TimeSpan.FromSeconds(60));
 
-            wasEventsLogged.Should().BeTrue("Events was not logged to Application Insights within time limit.");
+            wasEventsLogged.Should().BeTrue($"{nameof(Fixture.ScenarioState.ExpectedTelemetryEvents)} was not logged to Application Insights within time limit.");
         }
     }
 }

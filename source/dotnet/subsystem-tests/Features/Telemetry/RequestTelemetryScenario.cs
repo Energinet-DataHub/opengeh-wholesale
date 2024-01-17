@@ -88,7 +88,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
                 waitTimeLimit: TimeSpan.FromMinutes(10),
                 delay: TimeSpan.FromSeconds(30));
 
-            wasEventsLogged.Should().BeTrue("Events was not logged to Application Insights within time limit.");
+            wasEventsLogged.Should().BeTrue($"{nameof(Fixture.ScenarioState.ExpectedTelemetryEvents)} was not logged to Application Insights within time limit.");
         }
     }
 }
