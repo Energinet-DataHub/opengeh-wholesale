@@ -27,7 +27,7 @@ target_ts_table_name = "grid_loss_metering_points_performance_test"
 
 # COMMAND ----------
 
-# TODO: Add location?
+# Add location
 query = f"""
 CREATE TABLE IF NOT EXISTS {target_database}.{target_mp_table_name}
 LIKE {target_database}.{source_mp_table_name} 
@@ -37,7 +37,7 @@ spark.sql(query)
 
 # COMMAND ----------
 
-# TODO: Add location?
+# Add location
 query = f"""
 CREATE TABLE IF NOT EXISTS {target_database}.{target_ts_table_name}
 LIKE {target_database}.{source_ts_table_name} 
@@ -47,7 +47,7 @@ spark.sql(query)
 
 # COMMAND ----------
 
-# TODO: Add location?
+# Add location
 query = f"""
 CREATE TABLE IF NOT EXISTS {target_database}.{target_gl_table_name}
 LIKE {target_database}.{source_gl_table_name} 
@@ -57,8 +57,8 @@ spark.sql(query)
 
 # COMMAND ----------
 
-# MAGIC %md 
-# MAGIC ### Step 2: Find and anonymised all metering_point_id's and energy_supplier_ids + balance_supplier_ids 
+# MAGIC %md
+# MAGIC ### Step 2: Find and anonymised all metering_point_id's and energy_supplier_ids + balance_supplier_ids
 
 # COMMAND ----------
 
@@ -74,14 +74,19 @@ all_metering_point_ids = (
 )
 
 w = Window.orderBy(F.rand())
-anonymised_metering_points = all_metering_point_ids.withColumn(
-    "anonymised_mp_id", F.rpad(F.rank().over(w), 18, "0")
-).withColumn(
-    "anonymised_mp_id",
-    F.when(
-        F.col(time_series_wholesale_col_name.metering_point_id).isNull(), F.lit(None)
-    ).otherwise(F.col("anonymised_mp_id")),
-).na.drop()
+anonymised_metering_points = (
+    all_metering_point_ids.withColumn(
+        "anonymised_mp_id", F.rpad(F.rank().over(w), 18, "0")
+    )
+    .withColumn(
+        "anonymised_mp_id",
+        F.when(
+            F.col(time_series_wholesale_col_name.metering_point_id).isNull(),
+            F.lit(None),
+        ).otherwise(F.col("anonymised_mp_id")),
+    )
+    .na.drop()
+)
 
 display(anonymised_metering_points)
 
@@ -96,27 +101,30 @@ all_supplier_and_balancers = (
 )
 
 w = Window.orderBy(F.rand())
-anonymised_suppliers_and_balancers = all_supplier_and_balancers.withColumn(
-    "anonymised_balance_or_supplier_id", F.rpad(F.rank().over(w), 13, "0")
-).withColumn(
-    "anonymised_balance_or_supplier_id",
-    F.when(F.col("energy_supplier_id").isNull(), F.lit(None)).otherwise(
-        F.col("anonymised_balance_or_supplier_id")
-    ),
-).na.drop()
+anonymised_suppliers_and_balancers = (
+    all_supplier_and_balancers.withColumn(
+        "anonymised_balance_or_supplier_id", F.rpad(F.rank().over(w), 13, "0")
+    )
+    .withColumn(
+        "anonymised_balance_or_supplier_id",
+        F.when(F.col("energy_supplier_id").isNull(), F.lit(None)).otherwise(
+            F.col("anonymised_balance_or_supplier_id")
+        ),
+    )
+    .na.drop()
+)
 
 display(anonymised_suppliers_and_balancers)
 
 # COMMAND ----------
 
-# MAGIC %md 
+# MAGIC %md
 # MAGIC ### Create the anonymised metering_point table
 
 # COMMAND ----------
 
 source_mp_table_anonymised = (
-    source_mp_table
-    .join(anonymised_metering_points, ["metering_point_id"], "left")
+    source_mp_table.join(anonymised_metering_points, ["metering_point_id"], "left")
     .withColumn("metering_point_id", F.col("anonymised_mp_id"))
     .drop("anonymised_mp_id")
     .join(
@@ -155,17 +163,18 @@ source_mp_table_anonymised.write.format("delta").mode("append").saveAsTable(
 
 # COMMAND ----------
 
-# MAGIC %md 
-# MAGIC ### Create the anonymised time_series_points table  
-# MAGIC Beware, this might be a very costly operation, and as such might be better done with chunking or something.  
+# MAGIC %md
+# MAGIC ### Create the anonymised time_series_points table
+# MAGIC Beware, this might be a very costly operation, and as such might be better done with chunking or something.
 # MAGIC However, since the current wholesale ts source table isn't partitioned, it is hard to do.
 
 # COMMAND ----------
 
-source_ts_table_anonymised = (source_ts_table
-    .join(anonymised_metering_points, "metering_point_id")
-    .withColumn("metering_point_id", F.col("anonymised_mp_id"))
-    # .withColumn("quantity", F.when(F.col("quantity") <= 0, F.lit(0)).otherwise( (F.rand() * 100).cast("DECIMAL(18,6)") )) 
+source_ts_table_anonymised = (
+    source_ts_table.join(anonymised_metering_points, "metering_point_id").withColumn(
+        "metering_point_id", F.col("anonymised_mp_id")
+    )
+    # .withColumn("quantity", F.when(F.col("quantity") <= 0, F.lit(0)).otherwise( (F.rand() * 100).cast("DECIMAL(18,6)") ))
     .select(source_ts_table.columns)
 )
 
@@ -178,12 +187,12 @@ source_ts_table_anonymised.write.format("delta").mode("append").saveAsTable(
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### Create the anonymised grid_loss_metering_points table  
+# MAGIC ### Create the anonymised grid_loss_metering_points table
 
 # COMMAND ----------
 
-source_gl_table_anonymised = (source_gl_table
-    .join(anonymised_metering_points, "metering_point_id")
+source_gl_table_anonymised = (
+    source_gl_table.join(anonymised_metering_points, "metering_point_id")
     .withColumn("metering_point_id", F.col("anonymised_mp_id"))
     .select(source_gl_table.columns)
 )
