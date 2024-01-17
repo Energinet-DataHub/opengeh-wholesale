@@ -90,20 +90,30 @@ def calculate_grid_loss(
     return EnergyResults(result)
 
 
-def calculate_negative_grid_loss(
-    grid_loss: EnergyResults, grid_loss_responsible: GridLossResponsible
-) -> EnergyResults:
-    only_grid_area_and_metering_point_id = (
+def _get_metering_point_id_and_grid_area_with_specific_metering_point_type(
+    grid_loss_responsible: GridLossResponsible, metering_point_type: MeteringPointType
+):
+    return (
         grid_loss_responsible.df.select(
             Colname.grid_area, Colname.metering_point_id, Colname.metering_point_type
         )
         .distinct()
         .where(
             grid_loss_responsible.df[Colname.metering_point_type]
-            == MeteringPointType.PRODUCTION.value
+            == metering_point_type.value
         )
     )
-    # grid_loss = grid_loss.df.drop_columns([Colname.metering_point_id])
+
+
+def calculate_negative_grid_loss(
+    grid_loss: EnergyResults, grid_loss_responsible: GridLossResponsible
+) -> EnergyResults:
+    only_grid_area_and_metering_point_id = (
+        _get_metering_point_id_and_grid_area_with_specific_metering_point_type(
+            grid_loss_responsible, MeteringPointType.PRODUCTION
+        )
+    )
+
     result = grid_loss.df.join(
         only_grid_area_and_metering_point_id, Colname.grid_area, "left"
     ).select(
@@ -124,16 +134,11 @@ def calculate_positive_grid_loss(
     grid_loss: EnergyResults, grid_loss_responsible: GridLossResponsible
 ) -> EnergyResults:
     only_grid_area_and_metering_point_id = (
-        grid_loss_responsible.df.select(
-            Colname.grid_area, Colname.metering_point_id, Colname.metering_point_type
-        )
-        .distinct()
-        .where(
-            grid_loss_responsible.df[Colname.metering_point_type]
-            == MeteringPointType.CONSUMPTION.value
+        _get_metering_point_id_and_grid_area_with_specific_metering_point_type(
+            grid_loss_responsible, MeteringPointType.CONSUMPTION
         )
     )
-    # grid_loss = grid_loss.df.drop_columns([Colname.metering_point_id])
+
     result = grid_loss.df.join(
         only_grid_area_and_metering_point_id, Colname.grid_area, "left"
     ).select(
