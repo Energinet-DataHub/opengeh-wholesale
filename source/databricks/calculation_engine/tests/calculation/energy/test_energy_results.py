@@ -45,6 +45,7 @@ def dataframe_with_energy_result_schema_factory(
         time_window_end: datetime = DataframeDefaults.default_time_window_end,
         sum_quantity: Decimal = DataframeDefaults.default_sum_quantity,
         quality: str = DataframeDefaults.default_quality,
+        metering_point_id: str | None = None,
     ) -> DataFrame:
         row = {
             Colname.grid_area: grid_area,
@@ -58,6 +59,7 @@ def dataframe_with_energy_result_schema_factory(
             },
             Colname.sum_quantity: sum_quantity,
             Colname.qualities: [quality],
+            Colname.metering_point_id: metering_point_id,
         }
 
         return spark.createDataFrame([Row(**row)], schema=energy_results_schema)
