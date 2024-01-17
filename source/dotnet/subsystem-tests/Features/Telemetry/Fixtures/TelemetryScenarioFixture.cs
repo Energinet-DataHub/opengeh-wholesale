@@ -62,7 +62,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures
         }
 
         public async Task<bool> WaitForTelemetryEventsAsync(
-            IReadOnlyCollection<ITelemetryEventMatch> expectedEvents,
+            IReadOnlyCollection<TelemetryEventMatch> expectedEvents,
             string query,
             QueryTimeRange queryTimeRange,
             TimeSpan waitTimeLimit,
@@ -95,7 +95,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures
             return Task.CompletedTask;
         }
 
-        private static bool ContainsExpectedEvents(IReadOnlyCollection<ITelemetryEventMatch> expectedEvents, IReadOnlyList<TelemetryQueryResult> actualResults)
+        private static bool ContainsExpectedEvents(IReadOnlyCollection<TelemetryEventMatch> expectedEvents, IReadOnlyList<TelemetryQueryResult> actualResults)
         {
             if (actualResults.Count < expectedEvents.Count)
                 return false;
