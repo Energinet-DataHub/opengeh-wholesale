@@ -91,10 +91,11 @@ message GridLossResultProducedV1 {
         google.protobuf.Timestamp time = 1;
 
         /*
-         * 3 digit scale decimal value of the energy quantity.
-         * Value is only set when quality is not set to missing.
+         * 3 digit scale decimal value of the calculated grid loss quantity. All values are either
+         * a) positive or zero
+         * b) negative or zero
          */
-        optional DecimalValue quantity = 2;
+        DecimalValue quantity = 2;
     }
 
     enum Resolution {
