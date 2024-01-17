@@ -17,6 +17,7 @@ using System.Text.Json.Serialization;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.App.Common.Reflection;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
@@ -114,7 +115,15 @@ public class Startup
 
         AddJwtTokenSecurity(serviceCollection);
         AddHealthCheck(serviceCollection);
-        serviceCollection.AddApplicationInsightsTelemetry(options => options.EnableAdaptiveSampling = false);
+        serviceCollection.AddApplicationInsightsTelemetry(options =>
+        {
+            options.EnableAdaptiveSampling = false;
+            options.ApplicationVersion = Assembly
+                .GetEntryAssembly()!
+                .GetAssemblyInformationalVersionAttribute()!
+                .GetSourceVersionInformation()
+                .ToString();
+        });
 
         serviceCollection.AddUserAuthentication<FrontendUser, FrontendUserProvider>();
         serviceCollection.AddHttpLoggingScope(SubsystemName);
