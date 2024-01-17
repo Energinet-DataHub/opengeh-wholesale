@@ -20,7 +20,7 @@ using ModelMeteringPointType = Energinet.DataHub.Wholesale.CalculationResults.In
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.Mappers.AmountPerChargeResultProducedV1;
 
-public class GridLossMeteringPointTypeMapperTests
+public class MeteringPointTypeMapperTests
 {
     [Theory]
     [InlineData(ModelMeteringPointType.Consumption, EventMeteringPointType.Consumption)]
@@ -29,7 +29,7 @@ public class GridLossMeteringPointTypeMapperTests
     public void MapMeteringPointType_WhenCalledWithValidMeteringTypes_MapsCorrectly(ModelMeteringPointType? meteringPointType, EventMeteringPointType expected)
     {
         // Act & Assert
-        GridLossMeteringPointTypeMapper.MapMeteringPointType(meteringPointType).Should().Be(expected);
+        MeteringPointTypeMapper.MapMeteringPointType(meteringPointType).Should().Be(expected);
     }
 
     [Fact]
@@ -39,7 +39,7 @@ public class GridLossMeteringPointTypeMapperTests
         var invalidValue = (ModelMeteringPointType)99;
 
         // Act
-        var act = () => GridLossMeteringPointTypeMapper.MapMeteringPointType(invalidValue);
+        var act = () => MeteringPointTypeMapper.MapMeteringPointType(invalidValue);
 
         // Assert
         act.Should().Throw<ArgumentOutOfRangeException>()
