@@ -12,19 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.WebApi;
+using Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3;
 
-public static class Program
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States
 {
-    public static void Main(string[] args)
+    public class BackgroundServiceTelemetryScenarioState
     {
-        CreateWebHostBuilder(args).Build().Run();
-    }
+        public BatchRequestDto CalculationInput { get; set; }
+            = new();
 
-    private static IHostBuilder CreateWebHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseStartup<Startup>();
-            });
+        public Guid CalculationId { get; set; }
+
+        public IList<ITelemetryEventMatch> ExpectedTelemetryEvents { get; }
+            = new List<ITelemetryEventMatch>();
+    }
 }
