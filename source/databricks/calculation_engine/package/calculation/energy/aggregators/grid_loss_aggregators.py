@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from pyspark.sql import DataFrame
 
 from package.codelists import (
     MeteringPointType,
@@ -92,7 +93,7 @@ def calculate_grid_loss(
 
 def _get_metering_point_id_and_grid_area_with_specific_metering_point_type(
     grid_loss_responsible: GridLossResponsible, metering_point_type: MeteringPointType
-):
+) -> DataFrame:
     return (
         grid_loss_responsible.df.select(
             Colname.grid_area, Colname.metering_point_id, Colname.metering_point_type
