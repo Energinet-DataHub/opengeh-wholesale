@@ -156,7 +156,6 @@ public class Startup
             }
         });
 
-        app.UseLoggingScope();
         app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();
