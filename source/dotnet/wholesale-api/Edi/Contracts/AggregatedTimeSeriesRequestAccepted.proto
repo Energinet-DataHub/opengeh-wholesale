@@ -41,8 +41,8 @@ message TimeSeriesPoint {
    */
   optional DecimalValue quantity = 2;
 
-  // The aggregated quality currently represents a value suitable for creation of RSM-014 CIM XML messages.
-  QuantityQuality quantity_quality = 3;
+  // The quality currently set representing a value suitable for creation of RSM-014 CIM XML messages.
+  repeated QuantityQuality quantity_quality = 3;
 }
 
 /*
@@ -51,11 +51,10 @@ message TimeSeriesPoint {
  */
 enum QuantityQuality{
   QUANTITY_QUALITY_UNSPECIFIED = 0;
-  QUANTITY_QUALITY_MISSING = 1;
-  QUANTITY_QUALITY_ESTIMATED = 2;
-  QUANTITY_QUALITY_MEASURED = 3;
-  QUANTITY_QUALITY_INCOMPLETE = 4;
-  QUANTITY_QUALITY_CALCULATED = 5;
+  QUANTITY_QUALITY_ESTIMATED = 1;
+  QUANTITY_QUALITY_MEASURED = 2;
+  QUANTITY_QUALITY_MISSING = 3;
+  QUANTITY_QUALITY_CALCULATED = 4;
 }
 
 /*

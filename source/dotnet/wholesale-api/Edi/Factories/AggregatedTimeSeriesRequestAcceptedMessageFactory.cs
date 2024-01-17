@@ -28,7 +28,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
     {
         var body = CreateAcceptedResponse(aggregatedTimeSeries);
 
-        var message = new ServiceBusMessage()
+        var message = new ServiceBusMessage
         {
             Body = new BinaryData(body.ToByteArray()),
             Subject = body.GetType().Name,
@@ -38,13 +38,13 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
         return message;
     }
 
-    private static AggregatedTimeSeriesRequestAccepted CreateAcceptedResponse(IReadOnlyCollection<AggregatedTimeSeries> aggregatedTimeSeries)
+    private static AggregatedTimeSeriesRequestAccepted CreateAcceptedResponse(IEnumerable<AggregatedTimeSeries> aggregatedTimeSeries)
     {
         var response = new AggregatedTimeSeriesRequestAccepted();
         foreach (var series in aggregatedTimeSeries)
         {
             var points = CreateTimeSeriesPoints(series);
-            response.Series.Add(new Series()
+            response.Series.Add(new Series
             {
                 GridArea = series.GridArea,
                 QuantityUnit = QuantityUnit.Kwh,
@@ -57,7 +57,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
         return response;
     }
 
-    private static IReadOnlyCollection<TimeSeriesPoint> CreateTimeSeriesPoints(AggregatedTimeSeries aggregatedTimeSeries)
+    private static IEnumerable<TimeSeriesPoint> CreateTimeSeriesPoints(AggregatedTimeSeries aggregatedTimeSeries)
     {
         const decimal nanoFactor = 1_000_000_000;
         var points = new List<TimeSeriesPoint>();
@@ -68,9 +68,10 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
             var point = new TimeSeriesPoint
             {
                 Quantity = new DecimalValue { Units = units, Nanos = nanos },
-                QuantityQuality = QuantityQualityMapper.SelectBestSuitedQuality(timeSeriesPoint.Qualities),
-                Time = new Timestamp() { Seconds = timeSeriesPoint.Time.ToUnixTimeSeconds(), },
+                Time = new Timestamp { Seconds = timeSeriesPoint.Time.ToUnixTimeSeconds(), },
             };
+            point.QuantityQuality.AddRange(timeSeriesPoint.Qualities.Select(QuantityQualityMapper.MapQuantityQuality));
+
             points.Add(point);
         }
 
