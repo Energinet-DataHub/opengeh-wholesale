@@ -21,8 +21,8 @@ option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts.IntegrationEven
 
 
 /*
- * A calculation will result in two grid loss results (positive grid loss, and negative grid loss) per grid area. Each result is
- * published as an instance of this type.
+ * A calculation will result in two grid loss results per grid area (one for the positive part of grid loss and the
+ * other for the negative part). Each result is published as an instance of this type.
  */
 message GridLossResultProducedV1 {
     /*
@@ -87,7 +87,7 @@ message GridLossResultProducedV1 {
 
     message TimeSeriesPoint {
 
-        // The start of the time interval where the energy was produces/consumed.
+        // The start of the time interval
         google.protobuf.Timestamp time = 1;
 
         /*

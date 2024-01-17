@@ -35,7 +35,8 @@ public class GridLossMeteringPointTypeMapperTests
     public void MapFromTimeSeriesType_WhenUnexpectedTimeSeriesType_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
-        var unexpectedValues = Enum.GetValues(typeof(TimeSeriesType)).Cast<TimeSeriesType>().Where(t => t != TimeSeriesType.NegativeGridLoss && t != TimeSeriesType.PositiveGridLoss)
+        var unexpectedValues = Enum.GetValues(typeof(TimeSeriesType)).Cast<TimeSeriesType>().Where(t =>
+            t != TimeSeriesType.NegativeGridLoss && t != TimeSeriesType.PositiveGridLoss);
 
         foreach (var timeSeriesType in unexpectedValues)
         {
