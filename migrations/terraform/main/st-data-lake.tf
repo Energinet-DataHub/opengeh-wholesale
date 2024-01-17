@@ -20,6 +20,12 @@ resource "azurerm_role_assignment" "ra_migrations_contributor" {
   principal_id         = azuread_service_principal.spn_databricks.id
 }
 
+resource "azurerm_storage_container" "schema_migration" {
+  name                  = "schema-migration"
+  storage_account_name  = module.st_migrations.name
+  container_access_type = "private"
+}
+
 resource "azurerm_storage_container" "bronze" {
   name                  = "bronze"
   storage_account_name  = module.st_migrations.name
