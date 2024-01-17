@@ -24,7 +24,6 @@ module "func_biztalkshipper" {
 locals {
   default_biztalkshipper_settings = {
     STORAGE_ACCOUNT_URL                                                   = "https://${module.stor_esett.name}.blob.core.windows.net"
-    WEBSITE_LOAD_CERTIFICATES                                             = resource.azurerm_key_vault_certificate.biztalk_certificate.thumbprint
     BLOB_FILES_ERROR_CONTAINER_NAME                                       = local.blob_files_error_container_name
     BLOB_FILES_SENT_CONTAINER_NAME                                        = local.blob_files_sent_container_name
     BLOB_FILES_CONVERTED_CONTAINER_NAME                                   = local.blob_files_converted_container_name
