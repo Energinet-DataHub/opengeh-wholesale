@@ -15,7 +15,6 @@
 
 syntax = "proto3";
 import "google/protobuf/timestamp.proto";
-
 import "Common/Protos/decimal_value.proto";
 
 option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts.IntegrationEvents";
@@ -46,15 +45,34 @@ message GridLossResultProducedV1 {
      */
     google.protobuf.Timestamp period_end_utc = 4;
 
-    string grid_area = 5;
 
-    string metering_point_id = 6;
+    /*
+     * Id of the metering point that the grid loss result should be assigned to
+     */
+    string metering_point_id = 5;
+
+    /*
+     * The type of the metering point for which the grid loss result should be assigned to.
+     * METERING_POINT_TYPE_CONSUMPTION: the time series points contain the positive values of the grid loss (negative values are set to zero).
+     * METERING_POINT_TYPE_PRODUCTION: the time series points contains the negative values of the grid loss (positive values are set to zero).
+     */
+    MeteringPointType metering_point_type = 6;
 
     Resolution resolution = 7;
 
     QuantityUnit quantity_unit = 8;
 
     repeated TimeSeriesPoint time_series_points = 9;
+
+    enum MeteringPointType {
+        /*
+         * Unspecified is unused but according to best practice.
+         * Read more at https://protobuf.dev/programming-guides/style/#enums.
+         */
+        METERING_POINT_TYPE_UNSPECIFIED = 0;
+        METERING_POINT_TYPE_PRODUCTION = 1;
+        METERING_POINT_TYPE_CONSUMPTION = 2;
+    }
 
     enum QuantityUnit {
         /*

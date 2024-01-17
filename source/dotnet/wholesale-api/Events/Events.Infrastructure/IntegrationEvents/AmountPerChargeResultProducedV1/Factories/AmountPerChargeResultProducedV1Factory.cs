@@ -43,7 +43,7 @@ public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProd
             ChargeOwnerId = result.ChargeOwnerId,
             Resolution = ResolutionMapper.MapResolution(result.Resolution),
             QuantityUnit = QuantityUnitMapper.MapQuantityUnit(result.QuantityUnit),
-            MeteringPointType = MeteringPointTypeMapper.MapMeteringPointType(result.MeteringPointType),
+            MeteringPointType = GridLossMeteringPointTypeMapper.MapMeteringPointType(result.MeteringPointType),
             SettlementMethod = SettlementMethodMapper.MapSettlementMethod(result.SettlementMethod),
             Currency = Contracts.IntegrationEvents.AmountPerChargeResultProducedV1.Types.Currency.Dkk,
             IsTax = result.IsTax,

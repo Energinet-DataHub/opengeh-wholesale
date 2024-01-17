@@ -17,7 +17,7 @@ using ModelMeteringPointType = Energinet.DataHub.Wholesale.CalculationResults.In
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.AmountPerChargeResultProducedV1.Mappers;
 
-public static class MeteringPointTypeMapper
+public static class GridLossMeteringPointTypeMapper
 {
     public static EventMeteringPointType MapMeteringPointType(ModelMeteringPointType? meteringPointType)
     {

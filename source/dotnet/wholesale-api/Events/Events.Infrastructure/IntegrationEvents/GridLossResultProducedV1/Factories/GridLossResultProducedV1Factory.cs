@@ -15,6 +15,7 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.Common;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Common;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.GridLossResultProducedV1.Mappers;
 using Google.Protobuf.WellKnownTypes;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.GridLossResultProducedV1.Factories;
@@ -26,8 +27,8 @@ public class GridLossResultProducedV1Factory : IGridLossResultProducedV1Factory
         var energyResultProduced = new Contracts.IntegrationEvents.GridLossResultProducedV1
         {
             CalculationId = result.BatchId.ToString(),
-            GridArea = result.GridArea,
             MeteringPointId = string.Empty, // TODO: Add metering point id when available in EnergyResult
+            MeteringPointType = GridLossMeteringPointTypeMapper.MapFromTimeSeriesType(result.TimeSeriesType),
             Resolution = Contracts.IntegrationEvents.GridLossResultProducedV1.Types.Resolution.Quarter,
             QuantityUnit = Contracts.IntegrationEvents.GridLossResultProducedV1.Types.QuantityUnit.Kwh,
             PeriodStartUtc = result.PeriodStart.ToTimestamp(),
