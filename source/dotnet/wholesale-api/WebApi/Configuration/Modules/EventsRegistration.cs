@@ -119,8 +119,7 @@ public static class EventsRegistration
         serviceCollection
             .AddHostedService<AggregatedTimeSeriesServiceBusWorker>()
             .AddHostedService<RegisterCompletedCalculationsTrigger>()
-            .AddHostedService<ReceiveIntegrationEventServiceBusWorker>()
-            .AddApplicationInsightsTelemetryWorkerService();
+            .AddHostedService<ReceiveIntegrationEventServiceBusWorker>();
 
         serviceCollection
             .AddHealthChecks()

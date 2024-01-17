@@ -31,8 +31,7 @@ limitations under the License.
     <PackageReference Include="Energinet.DataHub.Core.App.WebApp" Version="8.1.1" />
     <PackageReference Include="Energinet.DataHub.Core.Databricks.Jobs" Version="8.0.1" />
     <PackageReference Include="Energinet.DataHub.Core.Databricks.SqlStatementExecution" Version="8.0.1" />
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
-    <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.22.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
     <PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.1" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="7.0.13" />
     <PackageReference Include="Microsoft.Extensions.Logging.AzureAppServices" Version="7.0.13" />
