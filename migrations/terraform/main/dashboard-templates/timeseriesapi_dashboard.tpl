@@ -1826,7 +1826,7 @@
             "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
             "settings": {
               "content": {
-                "Query": "let roleName = \"${timeseriesapi_name}\";\nlet totalRequests = toscalar(requests | count);\nlet exceptionsOnApp = exceptions\n| where cloud_RoleName == roleName;\nlet totalExceptions = toscalar(exceptionsOnApp | count);\nlet errorRate = todouble(totalExceptions) / totalRequests * 100;\nprint ErrorRate=errorRate\n",
+                "Query": "let roleName = \"${timeseriesapi_name}\";\nlet totalRequests = toscalar(requests | count);\nlet exceptionsOnApp = exceptions\n| where cloud_RoleName == roleName;\nlet totalExceptions = toscalar(exceptionsOnApp | count);\nlet errorRate = round(todouble(totalExceptions) / totalRequests * 100, 8);\nprint ErrorRate=tostring(errorRate)\n",
                 "PartTitle": "Error rate %",
                 "IsQueryContainTimeRange": false
               }
