@@ -23,7 +23,8 @@ using Xunit;
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
 {
     /// <summary>
-    /// Verify telemetry is configured correctly so we can track http requests and their dependencies.
+    /// Verify telemetry is configured correctly so we can track http requests, dependencies, exceptions and traces.
+    /// See also: https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
     /// </summary>
     [TestCaseOrderer(
         ordererTypeName: "Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Orderers.ScenarioStepOrderer",
@@ -37,9 +38,9 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
 
         [ScenarioStep(0)]
         [SubsystemFact]
-        public void Given_ExistingBatchId()
+        public void Given_UnknownBatchId()
         {
-            Fixture.ScenarioState.BatchId = Fixture.ExistingBatchId;
+            Fixture.ScenarioState.BatchId = Guid.NewGuid();
         }
 
         [ScenarioStep(1)]
@@ -55,13 +56,22 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
                 NameContains = "mssqldb-data-wholsal-",
                 DependencyType = "SQL",
             });
+            Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new AppExceptionMatch
+            {
+                EventName = "ApplicationError",
+                OuterType = "System.InvalidOperationException",
+                OuterMessage = "Sequence contains no elements.",
+            });
         }
 
         [ScenarioStep(2)]
         [SubsystemFact]
         public async Task When_RequestingBatchById()
         {
-            await Fixture.WholesaleClient.GetBatchAsync(Fixture.ScenarioState.BatchId);
+            var act = async () => await Fixture.WholesaleClient.GetBatchAsync(Fixture.ScenarioState.BatchId);
+
+            // Assert request is failing
+            await act.Should().ThrowAsync<Clients.v3.ApiException>();
         }
 
         [ScenarioStep(3)]
