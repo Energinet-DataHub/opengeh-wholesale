@@ -114,6 +114,7 @@ def calculate_negative_grid_loss(
         .alias(Colname.sum_quantity),
         f.lit(MeteringPointType.PRODUCTION.value).alias(Colname.metering_point_type),
         Colname.qualities,
+        only_grid_area_and_metering_point_id[Colname.metering_point_id],
     )
 
     return EnergyResults(result)
@@ -143,7 +144,7 @@ def calculate_positive_grid_loss(
         .alias(Colname.sum_quantity),
         f.lit(MeteringPointType.CONSUMPTION.value).alias(Colname.metering_point_type),
         Colname.qualities,
-        Colname.metering_point_id,
+        only_grid_area_and_metering_point_id[Colname.metering_point_id],
     )
     return EnergyResults(result)
 

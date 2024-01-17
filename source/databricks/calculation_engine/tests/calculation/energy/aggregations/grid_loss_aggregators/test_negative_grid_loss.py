@@ -53,6 +53,7 @@ def agg_result_factory(spark: SparkSession) -> Callable[[], EnergyResults]:
                 Colname.time_window: [],
                 Colname.sum_quantity: [],
                 Colname.qualities: [],
+                Colname.metering_point_id: [],
             }
         )
         pandas_df = pandas_df.append(
@@ -95,6 +96,7 @@ def agg_result_factory(spark: SparkSession) -> Callable[[], EnergyResults]:
                     },
                     Colname.sum_quantity: Decimal(0.0),
                     Colname.qualities: [QuantityQuality.ESTIMATED.value],
+                    Colname.metering_point_id: None,
                 },
             ],
             ignore_index=True,
