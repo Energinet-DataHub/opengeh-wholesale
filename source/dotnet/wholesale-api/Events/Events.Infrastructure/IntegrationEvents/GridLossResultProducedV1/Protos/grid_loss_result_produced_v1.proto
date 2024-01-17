@@ -92,8 +92,8 @@ message GridLossResultProducedV1 {
 
         /*
          * 3 digit scale decimal value of the calculated grid loss quantity. All values are either
-         * a) positive or zero
-         * b) negative or zero
+         * a) positive or zero (when metering point type is consumption)
+         * b) negative or zero (when metering point type is production)
          */
         DecimalValue quantity = 2;
     }
