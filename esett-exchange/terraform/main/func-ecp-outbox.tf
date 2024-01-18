@@ -28,7 +28,7 @@ module "func_entrypoint_ecp_outbox" {
     }
   ]
   app_settings = {
-    WEBSITE_LOAD_CERTIFICATES                          = local.BIZ_TALK_CERTIFICATE_THUMBPRINT
+    WEBSITE_LOAD_CERTIFICATES                          = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=cert-esett-biztalk-thumbprint)"
 
     "DatabaseSettings:ConnectionString"                = local.MS_ESETT_EXCHANGE_CONNECTION_STRING
     "BlobStorageSettings:AccountUri"                   = local.ESETT_DOCUMENT_STORAGE_ACCOUNT_URI
