@@ -65,11 +65,15 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
             // From 'StartCalculationHandler' (handled in default http request pipeline)
             Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new AppTraceMatch
             {
+                AppVersionContains = "PR:",
+                Subsystem = "wholesale",
                 MessageContains = $"Calculation with id {Fixture.ScenarioState.CalculationId} started",
             });
             // From 'IntegrationEventProvider' (handled in background service)
             Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new AppTraceMatch
             {
+                AppVersionContains = "PR:",
+                Subsystem = "wholesale",
                 MessageContains = $"Published results for succeeded energy calculation {Fixture.ScenarioState.CalculationId} to the service bus",
             });
         }
@@ -83,7 +87,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
                 | where AppRoleName contains ""app-webapi-wholsal-""
                 | where Message contains ""{Fixture.ScenarioState.CalculationId}""
                 | extend parsedProp = parse_json(Properties)
-                | project TimeGenerated, OperationId, ParentId, Type, EventName=parsedProp.EventName, Message
+                | project TimeGenerated, OperationId, ParentId, Type, AppVersion, Subsystem=parsedProp.Subsystem, EventName=parsedProp.EventName, Message
                 | order by TimeGenerated asc";
 
             var wasEventsLogged = await Fixture.WaitForTelemetryEventsAsync(
