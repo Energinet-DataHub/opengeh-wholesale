@@ -19,21 +19,21 @@ using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.Workers;
 
-public abstract class ServiceBusWorker<TWorkerType> : BackgroundService, IAsyncDisposable
+public abstract class ServiceBusWorker : BackgroundService, IAsyncDisposable
 {
     private readonly ServiceBusProcessor _serviceBusProcessor;
     private readonly string _serviceName;
 
     protected ServiceBusWorker(
         ServiceBusProcessor serviceBusProcessor,
-        ILogger<TWorkerType> logger)
+        ILogger logger)
     {
         _serviceBusProcessor = serviceBusProcessor;
         Logger = logger;
-        _serviceName = typeof(TWorkerType).Name;
+        _serviceName = GetType().Name;
     }
 
-    protected ILogger<TWorkerType> Logger { get; }
+    protected ILogger Logger { get; }
 
     public async ValueTask DisposeAsync()
     {

@@ -24,7 +24,7 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Workers;
 /// <summary>
 /// Responsible for establishing the service bus connection on a background thread.
 /// </summary>
-public class AggregatedTimeSeriesServiceBusWorker : ServiceBusWorker<AggregatedTimeSeriesServiceBusWorker>
+public class AggregatedTimeSeriesServiceBusWorker : ServiceBusWorker
 {
     private readonly IServiceProvider _serviceProvider;
 
