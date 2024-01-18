@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Batches.Application;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
 
@@ -28,5 +29,15 @@ public class UnitOfWork : IUnitOfWork
     public async Task CommitAsync()
     {
         await _databaseContext.SaveChangesAsync().ConfigureAwait(false);
+    }
+
+    public IExecutionStrategy ExecuteStrategy()
+    {
+        return _databaseContext.CreateExecutionStrategy();
+    }
+
+    public Task<IDbContextTransaction> BeginTransactionAsync()
+    {
+        return _databaseContext.BeginTransactionAsync();
     }
 }

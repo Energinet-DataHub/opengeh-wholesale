@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Data;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
 
@@ -29,4 +31,10 @@ public interface IDatabaseContext
     /// Saves changes to the database.
     /// </summary>
     Task<int> SaveChangesAsync();
+
+    IExecutionStrategy CreateExecutionStrategy();
+
+    Task<IDbContextTransaction> BeginTransactionAsync();
+
+    Task<int> ExecuteSqlAsync(FormattableString sql);
 }

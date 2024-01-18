@@ -12,12 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Calculations;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.GridArea;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.ReceivedIntegrationEvent;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
 
@@ -43,6 +46,21 @@ public class DatabaseContext : DbContext, IDatabaseContext
     public virtual DbSet<Application.IntegrationEvents.ReceivedIntegrationEvent> ReceivedIntegrationEvents { get; private set; } = null!;
 
     public Task<int> SaveChangesAsync() => base.SaveChangesAsync();
+
+    public IExecutionStrategy CreateExecutionStrategy()
+    {
+        return Database.CreateExecutionStrategy();
+    }
+
+    public async Task<IDbContextTransaction> BeginTransactionAsync()
+    {
+        return await Database.BeginTransactionAsync().ConfigureAwait(false);
+    }
+
+    public async Task<int> ExecuteSqlAsync(FormattableString sql)
+    {
+        return await Database.ExecuteSqlAsync(sql).ConfigureAwait(false);
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

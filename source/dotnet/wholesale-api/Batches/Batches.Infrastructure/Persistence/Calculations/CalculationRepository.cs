@@ -15,6 +15,7 @@
 using Energinet.DataHub.Wholesale.Batches.Application;
 using Energinet.DataHub.Wholesale.Batches.Application.Model;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 
@@ -40,6 +41,19 @@ public class CalculationRepository : ICalculationRepository
     }
 
     public Task<List<Calculation>> GetCreatedAsync() => GetByStateAsync(CalculationExecutionState.Created);
+
+    public async Task<List<Calculation>> GetRunningCalculationByProcessTypeAsync(ProcessType processType)
+    {
+        return await _context
+            .Batches
+            .Where(b => b.ProcessType == processType)
+            .Where(b => b.ExecutionState != CalculationExecutionState.Completed)
+            .Where(b => b.ExecutionState != CalculationExecutionState.Canceled)
+            .Where(b => b.ExecutionState != CalculationExecutionState.Failed)
+            .Where(b => b.ExecutionTimeEnd == null)
+            .ToListAsync()
+            .ConfigureAwait(false);
+    }
 
     public async Task<List<Calculation>> GetByStatesAsync(IEnumerable<CalculationExecutionState> states)
     {
@@ -81,6 +95,16 @@ public class CalculationRepository : ICalculationRepository
         return foundBatches
             .Where(b => filterByGridAreaCode.Count == 0 || b.GridAreaCodes.Any(filterByGridAreaCode.Contains))
             .ToList();
+    }
+
+    public Task<List<Calculation>> FromSqlRawAsync(string sql, params object[] parameters)
+    {
+        return _context.Batches.FromSqlRaw(sql, parameters).ToListAsync();
+    }
+
+    public Task<int> ExecuteSqlAsync(FormattableString sql)
+    {
+        return _context.ExecuteSqlAsync(sql);
     }
 
     private async Task<List<Calculation>> GetByStateAsync(CalculationExecutionState state)

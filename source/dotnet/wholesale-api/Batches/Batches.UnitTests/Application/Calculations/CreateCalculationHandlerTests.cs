@@ -155,22 +155,27 @@ public class CreateCalculationHandlerTests
         // Assert
         actual.Should().Throw<BusinessValidationException>();
     }
-    
+
     [Theory]
     [AutoMoqData]
-    public async Task Handle_WhenSameCalculationTypeIsProcessing_ThrowValidationBusinessException(
+    public async Task Handle_WhenSameCalculationProcessTypeIsProcessing_ThrowValidationBusinessException(
         [Frozen] Mock<ICalculationRepository> calculationRepositoryMock,
+        [Frozen] Mock<ICalculationFactory> calculationFactoryMock,
         CreateCalculationHandler sut)
     {
         // Arrange
         var calculation = CreateCalculationFromCommand(_defaultCreateCalculationCommand);
-        calculationRepositoryMock.Setup(x => x.SearchAsync(calculation.ProcessType, _defaultCreateCalculationCommand.GridAreaCodes, _defaultCreateCalculationCommand.StartDate, _defaultCreateCalculationCommand.EndDate, _defaultCreateCalculationCommand.CreatedByUserId))
+        calculationFactoryMock.Setup(x => x.Create(calculation.ProcessType, _defaultCreateCalculationCommand.GridAreaCodes, _defaultCreateCalculationCommand.StartDate, _defaultCreateCalculationCommand.EndDate, _defaultCreateCalculationCommand.CreatedByUserId))
             .Returns(calculation);
+        calculationRepositoryMock
+            .Setup(x => x.GetRunningCalculationByProcessTypeAsync(calculation.ProcessType))
+            .ReturnsAsync(new List<Calculation> { calculation });
 
         // Act
-        await Assert.ThrowsAsync<BusinessValidationException>(() => sut.HandleAsync(_defaultCreateCalculationCommand));
+        var actual = await Assert.ThrowsAsync<BusinessValidationException>(() => sut.HandleAsync(_defaultCreateCalculationCommand));
 
         // Assert
+        actual.Message.Should().Be($"There is already a {Enum.GetName(typeof(ProcessType), calculation.ProcessType)} is executing.");
     }
 
     private static CreateCalculationCommand CreateCalculationCommand(ProcessType processType, DateTimeOffset periodStart, DateTimeOffset periodEnd, IEnumerable<string> gridAreaCodes)

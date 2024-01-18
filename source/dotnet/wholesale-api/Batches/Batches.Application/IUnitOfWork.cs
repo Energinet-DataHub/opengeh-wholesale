@@ -12,9 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.EntityFrameworkCore.Storage;
+
 namespace Energinet.DataHub.Wholesale.Batches.Application;
 
 public interface IUnitOfWork
 {
     Task CommitAsync();
+
+    IExecutionStrategy ExecuteStrategy();
+
+    Task<IDbContextTransaction> BeginTransactionAsync();
 }

@@ -14,13 +14,18 @@
 
 using Energinet.DataHub.Wholesale.Batches.Application.Model;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Batches.Application.UseCases;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Calculations;
 using Energinet.DataHub.Wholesale.Batches.IntegrationTests.Fixture.Database;
+using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Moq;
 using NodaTime;
+using NodaTime.Extensions;
 using Test.Core;
 using Xunit;
 
@@ -230,6 +235,116 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
             actual.Should().NotContain(batch);
     }
 
+    [Theory]
+    [InlineData(CalculationExecutionState.Executing, 1)]
+    [InlineData(CalculationExecutionState.Submitted, 1)]
+    [InlineData(CalculationExecutionState.Completed, 0)]
+    [InlineData(CalculationExecutionState.Failed, 0)]
+    [InlineData(CalculationExecutionState.Canceled, 1)]
+    public async Task GetRunningCalculationByProcessTypeAsync_ReturnsExpected(CalculationExecutionState calculationExecutionState, int actualCount)
+    {
+        // Arrange
+        await using var writeContext = _databaseManager.CreateDbContext();
+
+        // When using inline tests added entries are not removed after each test, so we need to remove them manually
+        writeContext.Batches.RemoveRange(writeContext.Batches);
+        await writeContext.SaveChangesAsync();
+
+        var period = Periods.January_EuropeCopenhagen_Instant;
+        var batch = new Application.Model.Calculations.Calculation(
+            SystemClock.Instance.GetCurrentInstant(),
+            ProcessType.BalanceFixing,
+            new List<GridAreaCode> { new("004") },
+            period.PeriodStart,
+            period.PeriodEnd,
+            Instant.FromUtc(2022, 5, 1, 0, 0),
+            period.DateTimeZone,
+            Guid.NewGuid(),
+            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks);
+
+        switch (calculationExecutionState)
+        {
+            case CalculationExecutionState.Executing:
+                batch.MarkAsExecuting();
+                break;
+            case CalculationExecutionState.Submitted:
+                batch.MarkAsSubmitted(new CalculationId(long.MinValue));
+                break;
+            case CalculationExecutionState.Completed:
+                batch.MarkAsCompleted(Instant.FromUtc(2022, 5, 1, 0, 0));
+                break;
+            case CalculationExecutionState.Failed:
+                batch.MarkAsFailed();
+                break;
+            case CalculationExecutionState.Canceled:
+                batch.Reset();
+                break;
+        }
+
+        var sut = new CalculationRepository(writeContext);
+        await sut.AddAsync(batch);
+        await writeContext.SaveChangesAsync();
+
+        // Act
+        var actual = await sut.GetRunningCalculationByProcessTypeAsync(ProcessType.BalanceFixing);
+
+        // Assert
+        actual.Count.Should().Be(actualCount);
+    }
+
+    [Fact]
+    public async Task Todo()
+    {
+        // Arrange
+        // Act
+        var period = Periods.January_EuropeCopenhagen_Instant;
+        var periodStart = period.PeriodStart.ToDateTimeOffset().AddHours(1);
+        var periodEnd = period.PeriodEnd.ToDateTimeOffset().AddHours(1);
+        var gridAreaCodes = new List<string> { "805" };
+
+        var tasks = Enumerable.Range(1, 10)
+            .Select(_ => Task.Run(() =>
+            {
+                var writeContext = _databaseManager.CreateDbContext();
+                var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
+                //var expectedBatch = CreateBatch(ProcessType.Aggregation, someGridAreasIds);
+                var sut = new CalculationRepository(writeContext);
+                var h = new CreateCalculationHandler(new CalculationFactory(new Mock<IClock>().Object, DateTimeZone.Utc), sut, new UnitOfWork(writeContext), new Mock<ILogger<CreateCalculationHandler>>().Object);
+                var defaultCreateCalculationCommand = new CreateCalculationCommand(ProcessType.Aggregation, gridAreaCodes, periodStart, periodEnd, Guid.NewGuid());
+                return h.HandleAsync(defaultCreateCalculationCommand);
+            }));
+
+        var enumerable = tasks.ToList();
+        await Task.WhenAll(enumerable);
+
+        // Assert
+        await using var readContext = _databaseManager.CreateDbContext();
+        var actual = await readContext.Batches.ToListAsync();
+
+        actual.Count.Should().Be(enumerable.Count());
+    }
+
+    [Fact]
+    public async Task Todo2()
+    {
+        // Arrange
+        var period = Periods.January_EuropeCopenhagen_Instant;
+        var periodStart = period.PeriodStart.ToDateTimeOffset().AddHours(1);
+        var periodEnd = period.PeriodEnd.ToDateTimeOffset().AddHours(1);
+        var gridAreaCodes = new List<string> { "805" };
+        var dbContext = _databaseManager.CreateDbContext();
+        var calculationRepository = new CalculationRepository(dbContext);
+        var sut = new CreateCalculationHandler(new CalculationFactory(SystemClock.Instance, DateTimeZone.Utc), calculationRepository, new UnitOfWork(dbContext), new Mock<ILogger<CreateCalculationHandler>>().Object);
+        var createCalculationCommand = new CreateCalculationCommand(ProcessType.Aggregation, gridAreaCodes, periodStart, periodEnd, Guid.NewGuid());
+
+        // Act
+        var actual = await sut.HandleAsync(createCalculationCommand);
+
+        // Assert
+        actual.Should().NotBeEmpty();
+        await Assert.ThrowsAsync<BusinessValidationException>(() => sut.HandleAsync(createCalculationCommand));
+    }
+
     private static Application.Model.Calculations.Calculation CreateBatch(List<GridAreaCode> someGridAreasIds)
     {
         return CreateBatch(ProcessType.BalanceFixing, someGridAreasIds);
@@ -247,6 +362,21 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
             SystemClock.Instance.GetCurrentInstant(),
             period.DateTimeZone,
             Guid.NewGuid(),
+            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks);
+    }
+
+    private static Application.Model.Calculations.Calculation CreateCalculationFromCommand(CreateCalculationCommand command)
+    {
+        var period = Periods.January_EuropeCopenhagen_Instant;
+        return new Application.Model.Calculations.Calculation(
+            SystemClock.Instance.GetCurrentInstant(),
+            command.ProcessType,
+            command.GridAreaCodes.Select(x => new GridAreaCode(x)).ToList(),
+            command.StartDate.ToInstant(),
+            command.EndDate.ToInstant(),
+            SystemClock.Instance.GetCurrentInstant(),
+            period.DateTimeZone,
+            command.CreatedByUserId,
             SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks);
     }
 }

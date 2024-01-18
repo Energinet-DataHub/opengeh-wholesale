@@ -14,6 +14,8 @@
 
 using Energinet.DataHub.Wholesale.Batches.Application.Model;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using Microsoft.Azure.Amqp.Serialization;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Batches.Application;
@@ -30,6 +32,8 @@ public interface ICalculationRepository
 
     Task<List<Calculation>> GetCompletedAfterAsync(Instant? completedTime);
 
+    Task<List<Calculation>> GetRunningCalculationByProcessTypeAsync(ProcessType processType);
+
     Task<IReadOnlyCollection<Calculation>> SearchAsync(
         IReadOnlyCollection<GridAreaCode> filterByGridAreaCode,
         IReadOnlyCollection<CalculationExecutionState> filterByExecutionState,
@@ -37,4 +41,8 @@ public interface ICalculationRepository
         Instant? maxExecutionTimeStart,
         Instant? periodStart,
         Instant? periodEnd);
+
+    Task<List<Calculation>> FromSqlRawAsync(string sql, params object[] parameters);
+
+    Task<int> ExecuteSqlAsync(FormattableString sql);
 }
