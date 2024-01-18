@@ -206,3 +206,8 @@ variable "domain_verification_code" {
   description = "Domain verification code for the domain name"
   default     = null
 }
+
+variable "cert_esett_biztalk_datahub3_password" {
+  type        = string
+  description = "Password for the eSett Biztalk certificate"
+}
