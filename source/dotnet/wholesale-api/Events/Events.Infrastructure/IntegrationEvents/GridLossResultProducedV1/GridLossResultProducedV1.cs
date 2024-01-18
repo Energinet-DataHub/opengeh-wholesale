@@ -22,7 +22,7 @@ public partial class GridLossResultProducedV1 : IEventMessage
     /// <summary>
     /// The message type for transport message meta data in accordance with ADR-008.
     /// </summary>
-    public const string EventName = "GridLossResultProducedV2";
+    public const string EventName = "GridLossResultProducedV1";
 
     public const int EventMinorVersion = 1;
 

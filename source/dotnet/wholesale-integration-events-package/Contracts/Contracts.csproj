@@ -95,6 +95,14 @@ limitations under the License.
       <CompileOutputs>True</CompileOutputs>
       <Generator>MSBuild:Compile</Generator>
     </Protobuf>
+    <Protobuf Include="../../wholesale-api/Events/Events.Infrastructure/IntegrationEvents/GridLossResultProducedV1/Protos/*.proto">
+      <GrpcServices>None</GrpcServices>
+      <Access>Public</Access>
+      <ProtoCompile>True</ProtoCompile>
+      <ProtoRoot>../../wholesale-api/Events/Events.Infrastructure/IntegrationEvents</ProtoRoot>
+      <CompileOutputs>True</CompileOutputs>
+      <Generator>MSBuild:Compile</Generator>
+    </Protobuf>
     <Protobuf Include="../../wholesale-api/Events/Events.Infrastructure/IntegrationEvents/AmountPerChargeResultProducedV1/Protos/*.proto">
       <GrpcServices>None</GrpcServices>
       <Access>Public</Access>
@@ -130,6 +138,9 @@ limitations under the License.
     </Compile>
     <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\EnergyResultProducedV2\EnergyResultProducedV2.cs">
       <Link>Contracts\IntegrationEvents\EnergyResultProducedV2.cs</Link>
+    </Compile>
+    <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\GridLossResultProducedV1\GridLossResultProducedV1.cs">
+      <Link>Contracts\IntegrationEvents\GridLossResultProducedV1.cs</Link>
     </Compile>
     <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\IEventMessage.cs">
       <Link>Contracts\IntegrationEvents\IEventMessage.cs</Link>
