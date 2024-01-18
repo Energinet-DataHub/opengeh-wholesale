@@ -88,8 +88,6 @@ anonymised_metering_points = (
     .na.drop()
 )
 
-display(anonymised_metering_points)
-
 # COMMAND ----------
 
 all_supplier_and_balancers = (
@@ -113,8 +111,6 @@ anonymised_suppliers_and_balancers = (
     )
     .na.drop()
 )
-
-display(anonymised_suppliers_and_balancers)
 
 # COMMAND ----------
 
@@ -153,7 +149,6 @@ source_mp_table_anonymised = (
     .select(source_mp_table.columns)
 )
 
-display(source_mp_table_anonymised)
 
 # COMMAND ----------
 
@@ -174,7 +169,6 @@ source_ts_table_anonymised = (
     source_ts_table.join(anonymised_metering_points, "metering_point_id").withColumn(
         "metering_point_id", F.col("anonymised_mp_id")
     )
-    # .withColumn("quantity", F.when(F.col("quantity") <= 0, F.lit(0)).otherwise( (F.rand() * 100).cast("DECIMAL(18,6)") ))
     .select(source_ts_table.columns)
 )
 
