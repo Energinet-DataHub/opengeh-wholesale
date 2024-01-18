@@ -23,11 +23,6 @@ variable "cert_pwd_esett_dh2_authentication_key1" {
   description = "Password for the DH2certificate"
 }
 
-variable "cert_pwd_esett_biztalk_authentication_key1" {
-  type        = string
-  description = "Password for the Biztalk certificate"
-}
-
 variable "developer_object_ids" {
   type        = list(string)
   description = "List of developer principal IDs"
