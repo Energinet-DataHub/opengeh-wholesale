@@ -23,6 +23,7 @@ using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.GridArea;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.ReceivedIntegrationEvent;
 using Energinet.DataHub.Wholesale.Batches.Interfaces.GridArea;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Application.Triggers;
@@ -94,6 +95,7 @@ public static class EventsRegistration
         serviceCollection
             .AddScoped<ICalculationResultCompletedFactory, CalculationResultCompletedFactory>()
             .AddScoped<IEnergyResultProducedV2Factory, EnergyResultProducedV2Factory>()
+            .AddScoped<IGridLossResultProducedV1, GridLossResultProducedV1>()
             .AddScoped<IAmountPerChargeResultProducedV1Factory, AmountPerChargeResultProducedV1Factory>()
             .AddScoped<IMonthlyAmountPerChargeResultProducedV1Factory, MonthlyAmountPerChargeResultProducedV1Factory>()
             .AddScoped<IEventsDatabaseContext, EventsDatabaseContext>();

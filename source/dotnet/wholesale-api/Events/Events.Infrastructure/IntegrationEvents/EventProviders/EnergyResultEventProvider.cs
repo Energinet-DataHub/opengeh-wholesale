@@ -26,6 +26,7 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ev
         private readonly IEnergyResultQueries _energyResultQueries;
         private readonly ICalculationResultCompletedFactory _calculationResultCompletedFactory;
         private readonly IEnergyResultProducedV2Factory _energyResultProducedV2Factory;
+        private readonly IEnergyResultProducedV2Factory _energyResultProducedV2Factory;
 
         public EnergyResultEventProvider(
             IEnergyResultQueries energyResultQueries,
@@ -43,6 +44,7 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ev
             {
                 yield return CreateIntegrationEvent(_calculationResultCompletedFactory.Create(energyResult)); // Deprecated
                 yield return CreateIntegrationEvent(_energyResultProducedV2Factory.Create(energyResult));
+                yield return CreateIntegrationEvent(.Create(energyResult));
             }
         }
     }
