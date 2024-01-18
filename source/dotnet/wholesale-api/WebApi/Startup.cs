@@ -17,6 +17,7 @@ using System.Text.Json.Serialization;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.App.Common.Reflection;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
@@ -30,6 +31,8 @@ using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks.DataLake;
+using Energinet.DataHub.Wholesale.WebApi.Telemetry;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Azure;
 using Microsoft.OpenApi.Models;
 
@@ -114,10 +117,19 @@ public class Startup
 
         AddJwtTokenSecurity(serviceCollection);
         AddHealthCheck(serviceCollection);
-        serviceCollection.AddApplicationInsightsTelemetry(options => options.EnableAdaptiveSampling = false);
+
+        serviceCollection.AddSingleton<ITelemetryInitializer>(new SubsystemInitializer(SubsystemName));
+        serviceCollection.AddApplicationInsightsTelemetry(options =>
+        {
+            options.EnableAdaptiveSampling = false;
+            options.ApplicationVersion = Assembly
+                .GetEntryAssembly()!
+                .GetAssemblyInformationalVersionAttribute()!
+                .GetSourceVersionInformation()
+                .ToString();
+        });
 
         serviceCollection.AddUserAuthentication<FrontendUser, FrontendUserProvider>();
-        serviceCollection.AddHttpLoggingScope(SubsystemName);
     }
 
     public void Configure(IApplicationBuilder app)
@@ -144,7 +156,6 @@ public class Startup
             }
         });
 
-        app.UseLoggingScope();
         app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();

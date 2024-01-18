@@ -16,14 +16,24 @@
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States
 {
     /// <summary>
-    /// Marker interface for event match types.
+    /// Base class for event match types.
     /// </summary>
-    public interface ITelemetryEventMatch
+    public abstract class TelemetryEventMatch
     {
-        public bool IsMatch(TelemetryQueryResult actual);
+        public string AppVersionContains { get; set; }
+            = string.Empty;
+
+        public string Subsystem { get; set; }
+            = string.Empty;
+
+        public virtual bool IsMatch(TelemetryQueryResult actual)
+        {
+            return actual.AppVersion.Contains(AppVersionContains)
+                && actual.Subsystem.Equals(Subsystem);
+        }
     }
 
-    public class AppRequestMatch : ITelemetryEventMatch
+    public class AppRequestMatch : TelemetryEventMatch
     {
         /// <summary>
         /// Use if Name must match exactly.
@@ -31,13 +41,14 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States
         public string Name { get; set; }
             = string.Empty;
 
-        public bool IsMatch(TelemetryQueryResult actual)
+        public override bool IsMatch(TelemetryQueryResult actual)
         {
-            return actual.Name.Equals(Name);
+            return base.IsMatch(actual)
+                && actual.Name.Equals(Name);
         }
     }
 
-    public class AppDependencyMatch : ITelemetryEventMatch
+    public class AppDependencyMatch : TelemetryEventMatch
     {
         /// <summary>
         /// Use if Name must match exactly.
@@ -54,8 +65,11 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States
         public string DependencyType { get; set; }
             = string.Empty;
 
-        public bool IsMatch(TelemetryQueryResult actual)
+        public override bool IsMatch(TelemetryQueryResult actual)
         {
+            if (!base.IsMatch(actual))
+                return false;
+
             if (!string.IsNullOrEmpty(NameContains))
             {
                 // Compare using NameContains
@@ -71,7 +85,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States
         }
     }
 
-    public class AppTraceMatch : ITelemetryEventMatch
+    public class AppTraceMatch : TelemetryEventMatch
     {
         public string EventName { get; set; }
             = string.Empty;
@@ -79,14 +93,15 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States
         public string MessageContains { get; set; }
             = string.Empty;
 
-        public bool IsMatch(TelemetryQueryResult actual)
+        public override bool IsMatch(TelemetryQueryResult actual)
         {
-            return (actual.EventName ?? string.Empty) == EventName
+            return base.IsMatch(actual)
+                && (actual.EventName ?? string.Empty) == EventName
                 && actual.Message.Contains(MessageContains);
         }
     }
 
-    public class AppExceptionMatch : ITelemetryEventMatch
+    public class AppExceptionMatch : TelemetryEventMatch
     {
         public string EventName { get; set; }
             = string.Empty;
@@ -97,9 +112,10 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States
         public string OuterMessage { get; set; }
             = string.Empty;
 
-        public bool IsMatch(TelemetryQueryResult actual)
+        public override bool IsMatch(TelemetryQueryResult actual)
         {
-            return (actual.EventName ?? string.Empty) == EventName
+            return base.IsMatch(actual)
+                && (actual.EventName ?? string.Empty) == EventName
                 && actual.OuterType == OuterType
                 && actual.OuterMessage == OuterMessage;
         }

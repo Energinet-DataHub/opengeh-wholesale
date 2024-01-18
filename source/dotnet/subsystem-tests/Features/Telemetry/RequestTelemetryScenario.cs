@@ -49,15 +49,21 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
         {
             Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new AppRequestMatch
             {
+                AppVersionContains = "PR:",
+                Subsystem = "wholesale",
                 Name = "GET Calculation/Get [batchId]",
             });
             Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new AppDependencyMatch
             {
+                AppVersionContains = "PR:",
+                Subsystem = "wholesale",
                 NameContains = "mssqldb-data-wholsal-",
                 DependencyType = "SQL",
             });
             Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new AppExceptionMatch
             {
+                AppVersionContains = "PR:",
+                Subsystem = "wholesale",
                 EventName = "ApplicationError",
                 OuterType = "System.InvalidOperationException",
                 OuterMessage = "Sequence contains no elements.",
@@ -88,7 +94,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
                 OperationIds
                 | join(union AppRequests, AppDependencies, AppTraces, AppExceptions) on OperationId
                 | extend parsedProp = parse_json(Properties)
-                | project TimeGenerated, OperationId, ParentId, Id, Type, Name, DependencyType, EventName=parsedProp.EventName, Message, Url, OuterType, OuterMessage, Properties
+                | project TimeGenerated, OperationId, ParentId, Id, Type, AppVersion, Subsystem=parsedProp.Subsystem, Name, DependencyType, EventName=parsedProp.EventName, Message, Url, OuterType, OuterMessage, Properties
                 | order by TimeGenerated asc";
 
             var wasEventsLogged = await Fixture.WaitForTelemetryEventsAsync(
