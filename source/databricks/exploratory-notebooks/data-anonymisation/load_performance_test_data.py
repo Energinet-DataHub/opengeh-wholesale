@@ -1,4 +1,30 @@
 # Databricks notebook source
+# COMMAND ----------
+
+# Copyright 2020 Energinet DataHub A/S
+#
+# Licensed under the Apache License, Version 2.0 (the "License2");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### Load anonymised dataset 
+# MAGIC This notebook loads the anonymised dataset from blobstorage and ensures that our schemas are valid.
+# MAGIC We should keep this notebook for the instance of databricks deletion in the workspace so we can reread the data 
+# MAGIC add it to wholesale database
+
+# COMMAND ----------
+
 import pyspark.sql.functions as F
 from pyspark.sql.window import Window
 import time
@@ -16,20 +42,6 @@ grid_loss_responsible_target_table_name = "grid_loss_responsible_performance_tes
 # MAGIC ### Schemas for MP and TS
 
 # COMMAND ----------
-
-# Copyright 2020 Energinet DataHub A/S
-#
-# Licensed under the Apache License, Version 2.0 (the "License2");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 
 mp_schema_ddl = """(`metering_point_id` string NOT NULL, 
 `type` string NOT NULL, 

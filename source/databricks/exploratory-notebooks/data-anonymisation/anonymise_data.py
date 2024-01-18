@@ -1,9 +1,5 @@
 # Databricks notebook source
-import package.constants.time_series_wholesale_col_name as time_series_wholesale_col_name
-import package.constants.metering_point_wholesale_col_name as metering_point_wholesale_col_name
 
-from pyspark.sql.window import Window
-import pyspark.sql.functions as F
 # COMMAND ----------
 
 # Copyright 2020 Energinet DataHub A/S
@@ -22,10 +18,23 @@ import pyspark.sql.functions as F
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC ### Anoymise dataset for test environments
+# MAGIC This notebook transforms the data from the b001 to an anonymised version that could be transfered to test-001 environment.
+# MAGIC We use this method to ensure we can not recalculate the anonymised ids via any function and the data in the test environment is safe
+# MAGIC We should keep this notebook to ensure we can anonymise data if it should be needed again.
+
+# COMMAND ----------
+import package.constants.time_series_wholesale_col_name as time_series_wholesale_col_name
+import package.constants.metering_point_wholesale_col_name as metering_point_wholesale_col_name
+import pyspark.sql.functions as F
+from pyspark.sql.window import Window
+
 database = "..."
 source_mp_table_name = "metering_point_periods"
 source_ts_table_name = "time_series_points"
 source_gl_table_name = "grid_loss_metering_points"
+
 source_mp_table = spark.read.table(f"{database}.{source_mp_table_name}")
 source_ts_table = spark.read.table(f"{database}.{source_ts_table_name}")
 source_gl_table = spark.read.table(f"{database}.{source_gl_table_name}")
