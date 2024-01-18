@@ -59,7 +59,7 @@ class TestWhenInvokedWithValidArguments:
         - severity level = 1
         - message <the message>
         - operation id has value
-        - custom field "Domain" = "wholesale"
+        - custom field "Subsystem" = "wholesale"
         - custom field "calculation_id" = <the calculation id>
         - custom field "CategoryName" = "Energinet.DataHub." + <logger name>
 
@@ -165,7 +165,7 @@ AppDependencies
         - exception type = <exception type name>
         - outer message <exception message>
         - operation id has value
-        - custom field "Domain" = "wholesale"
+        - custom field "Subsystem" = "wholesale"
         - custom field "calculation_id" = <the calculation id>
         - custom field "CategoryName" = "Energinet.DataHub." + <logger name>
         """
