@@ -1,4 +1,5 @@
-resource "azurerm_monitor_action_group" "edi" {
+resource "azurerm_monitor_action_group" "this" {
+  count               = 1
   name                = "ag-edi-${lower(var.environment_short)}-${lower(var.environment_instance)}"
   resource_group_name = azurerm_resource_group.this.name
   short_name          = "ag-edi"
@@ -10,14 +11,14 @@ resource "azurerm_monitor_action_group" "edi" {
   }
 }
 
-
-resource "azurerm_monitor_scheduled_query_rules_alert" "edi_alert" {
+resource "azurerm_monitor_scheduled_query_rules_alert" "this" {
+  count               = 1
   name                = "alert-edi-${lower(var.domain_name_short)}-${lower(var.environment_short)}-${lower(var.environment_instance)}"
   location            = azurerm_resource_group.this.location
   resource_group_name = data.azurerm_resource_group.shared.name
 
   action {
-    action_group = [azurerm_monitor_action_group.edi.id]
+    action_group = [azurerm_monitor_action_group.this[0].id]
   }
   data_source_id = data.azurerm_key_vault_secret.appi_shared_id.value
   description    = "Alert when total results cross threshold"
