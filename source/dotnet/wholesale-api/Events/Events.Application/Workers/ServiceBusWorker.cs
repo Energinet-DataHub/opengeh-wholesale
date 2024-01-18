@@ -22,7 +22,6 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Workers;
 public abstract class ServiceBusWorker : BackgroundService, IAsyncDisposable
 {
     private readonly ServiceBusProcessor _serviceBusProcessor;
-    private readonly string _serviceName;
 
     protected ServiceBusWorker(
         ServiceBusProcessor serviceBusProcessor,
@@ -30,7 +29,6 @@ public abstract class ServiceBusWorker : BackgroundService, IAsyncDisposable
     {
         _serviceBusProcessor = serviceBusProcessor;
         Logger = logger;
-        _serviceName = GetType().Name;
     }
 
     protected ILogger Logger { get; }
@@ -45,12 +43,12 @@ public abstract class ServiceBusWorker : BackgroundService, IAsyncDisposable
     {
         await _serviceBusProcessor.StopProcessingAsync(cancellationToken).ConfigureAwait(false);
         await base.StopAsync(cancellationToken).ConfigureAwait(false);
-        Logger.LogWarning("{worker} has stopped", _serviceName);
+        Logger.LogWarning("Worker has stopped.");
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        Logger.LogInformation("{worker} started", _serviceName);
+        Logger.LogInformation("Worker started.");
         _serviceBusProcessor.ProcessMessageAsync += ProcessMessageAsync;
         _serviceBusProcessor.ProcessErrorAsync += ProcessErrorAsync;
 
@@ -64,7 +62,7 @@ public abstract class ServiceBusWorker : BackgroundService, IAsyncDisposable
         var stopWatch = Stopwatch.StartNew();
         await ProcessAsync(arg).ConfigureAwait(false);
         stopWatch.Stop();
-        Logger.LogInformation("Processed message with id {message_id} in {elapsed_milliseconds} ms", arg.Message.MessageId, stopWatch.ElapsedMilliseconds);
+        Logger.LogInformation("Processed message with id {message_id} in {elapsed_milliseconds} ms.", arg.Message.MessageId, stopWatch.ElapsedMilliseconds);
 
         await arg.CompleteMessageAsync(arg.Message).ConfigureAwait(false);
     }
@@ -73,7 +71,7 @@ public abstract class ServiceBusWorker : BackgroundService, IAsyncDisposable
     {
         Logger.LogError(
             arg.Exception,
-            "Process message encountered an exception. ErrorSource: {error_source}, Entity Path: {entity_path}",
+            "Process message encountered an exception. ErrorSource: {error_source}, Entity Path: {entity_path}.",
             arg.ErrorSource, // Source of the error. For example, a Message completion operation failed.
             arg.EntityPath); // The entity path for which the exception occurred. For example, the entity path of the queue.
 
