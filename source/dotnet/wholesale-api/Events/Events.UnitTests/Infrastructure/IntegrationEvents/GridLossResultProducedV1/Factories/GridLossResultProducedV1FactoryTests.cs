@@ -18,6 +18,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Common;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.GridLossResultProducedV1.Mappers;
 using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
 using NodaTime;
@@ -35,12 +36,14 @@ public class GridLossResultProducedV1FactoryTests
     private readonly Instant _periodEnd = SystemClock.Instance.GetCurrentInstant();
 
     [Theory]
-    [InlineAutoMoqData]
-    public void Create_WhenForTotalGridArea_ReturnsExpectedObject(
+    [InlineAutoMoqData(TimeSeriesType.NegativeGridLoss)]
+    [InlineAutoMoqData(TimeSeriesType.PositiveGridLoss)]
+    public void Create_WhenNegativeOrPositiveGridLoss_ReturnsExpectedObject(
+        TimeSeriesType timeSeriesType,
         GridLossResultProducedV1Factory sut)
     {
         // Arrange
-        var energyResult = CreateEnergyResult();
+        var energyResult = CreateEnergyResult(timeSeriesType);
         var expected = CreateExpected(energyResult);
 
         // Act
@@ -50,7 +53,7 @@ public class GridLossResultProducedV1FactoryTests
         actual.Should().BeEquivalentTo(expected);
     }
 
-    private EnergyResult CreateEnergyResult()
+    private EnergyResult CreateEnergyResult(TimeSeriesType timeSeriesType)
     {
         var quantityQualities = new Collection<QuantityQuality> { QuantityQuality.Estimated, QuantityQuality.Calculated };
 
@@ -58,9 +61,9 @@ public class GridLossResultProducedV1FactoryTests
             _id,
             _batchId,
             _gridArea,
-            TimeSeriesType.FlexConsumption,
-            "someEnergySupplierId",
-            "someBalanceResponsibleId",
+            timeSeriesType,
+            null,
+            null,
             new EnergyTimeSeriesPoint[]
             {
                 new(new DateTime(2021, 1, 1), 1, quantityQualities),
@@ -81,6 +84,8 @@ public class GridLossResultProducedV1FactoryTests
             CalculationId = energyResult.BatchId.ToString(),
             Resolution = Contracts.IntegrationEvents.GridLossResultProducedV1.Types.Resolution.Quarter,
             QuantityUnit = Contracts.IntegrationEvents.GridLossResultProducedV1.Types.QuantityUnit.Kwh,
+            MeteringPointId = energyResult.MeteringPointId,
+            MeteringPointType = GridLossMeteringPointTypeMapper.MapFromTimeSeriesType(energyResult.TimeSeriesType),
             PeriodStartUtc = energyResult.PeriodStart.ToTimestamp(),
             PeriodEndUtc = energyResult.PeriodEnd.ToTimestamp(),
         };

@@ -41,6 +41,7 @@ public sealed class EnergyResult : AggregatedTimeSeries
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
         FromGridArea = fromGridArea;
+        MeteringPointId = string.Empty; // TODO: use constructor parameter instead
         Version = version;
     }
 
@@ -57,6 +58,8 @@ public sealed class EnergyResult : AggregatedTimeSeries
     public Instant PeriodStart { get; }
 
     public Instant PeriodEnd { get; }
+
+    public string? MeteringPointId { get; private set; }
 
     public long Version { get; }
 }
