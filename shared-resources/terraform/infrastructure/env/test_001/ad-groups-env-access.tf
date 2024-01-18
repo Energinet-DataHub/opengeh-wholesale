@@ -41,3 +41,11 @@ resource "azurerm_role_assignment" "app_config_settings_read_access" {
   role_definition_name = resource.azurerm_role_definition.app_config_settings_read_access[0].name
   principal_id         = var.developers_security_group_object_id
 }
+
+# Allow developers to add and remove APIM users to APIM groups on test_001
+resource "azurerm_role_assignment" "apim_groups_contributor_access" {
+  scope                = data.azurerm_subscription.this.id
+  role_definition_name = resource.azurerm_role_definition.apim_groups_contributor_access.name
+  principal_id         = var.developers_security_group_object_id
+}
+

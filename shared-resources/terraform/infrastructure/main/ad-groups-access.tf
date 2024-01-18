@@ -84,3 +84,16 @@ resource "azurerm_role_assignment" "platformteam_config_settings_read_access" {
   principal_id         = var.platform_team_security_group_object_id
 }
 
+
+# There is no built-in role for managing APIM groups
+resource "azurerm_role_definition" "apim_groups_contributor_access" {
+  name        = "datahub-apim-groups-contributor-access-${var.environment_short}-${var.region_short}-${var.environment_instance}"
+  scope       = data.azurerm_subscription.this.id
+  description = "Allow adding and removing APIM users to APIM groups"
+
+  permissions {
+    actions = [
+        "Microsoft.ApiManagement/service/groups/*"
+    ]
+  }
+}
