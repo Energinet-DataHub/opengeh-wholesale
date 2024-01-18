@@ -27,6 +27,7 @@ module "func_receiver" {
     BACKEND_SERVICE_APP_ID                     = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-b2b-app-id)",
     # Endregion: Default Values
     DB_CONNECTION_STRING                                    = local.CONNECTION_STRING
+    AZURE_STORAGE_ACCOUNT_URL                               = local.AZURE_STORAGE_ACCOUNT_URL
     EDI_INBOX_MESSAGE_QUEUE_NAME                            = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbq-edi-inbox-messagequeue-name)"
     WHOLESALE_INBOX_MESSAGE_QUEUE_NAME                      = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbq-wholesale-inbox-messagequeue-name)"
     SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_LISTENER = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-listen-connection-string)"
@@ -37,6 +38,14 @@ module "func_receiver" {
     INTEGRATION_EVENTS_TOPIC_NAME                           = local.INTEGRATION_EVENTS_TOPIC_NAME
     INTEGRATION_EVENTS_SUBSCRIPTION_NAME                    = module.sbtsub_edi_integration_event_listener.name
   }
+
+  # Role assigments is needed to connect to the storage account (st_documents) using URI
+  role_assignments = [
+    {
+      resource_id          = module.st_documents.id
+      role_definition_name = "Storage Blob Data Contributor"
+    }
+  ]
 }
 
 module "kvs_edi_api_base_url" {

@@ -10,4 +10,7 @@ locals {
 
   # IP Whitelist
   ip_restrictions_as_string = join(",", [for rule in var.ip_restrictions : "${rule.ip_address}"])
+
+  # Data lake
+  AZURE_STORAGE_ACCOUNT_URL = "https://${module.st_documents.name}.blob.core.windows.net"
 }
