@@ -18,6 +18,7 @@ using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.CalculationResultCompleted.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Factories;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.GridLossResultProducedV1.Factories;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders
 {
@@ -26,16 +27,18 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ev
         private readonly IEnergyResultQueries _energyResultQueries;
         private readonly ICalculationResultCompletedFactory _calculationResultCompletedFactory;
         private readonly IEnergyResultProducedV2Factory _energyResultProducedV2Factory;
-        private readonly IEnergyResultProducedV2Factory _energyResultProducedV2Factory;
+        private readonly IGridLossResultProducedV1Factory _gridLossResultProducedV2Factory;
 
         public EnergyResultEventProvider(
             IEnergyResultQueries energyResultQueries,
             ICalculationResultCompletedFactory calculationResultCompletedFactory,
-            IEnergyResultProducedV2Factory energyResultProducedV2Factory)
+            IEnergyResultProducedV2Factory energyResultProducedV2Factory,
+            IGridLossResultProducedV1Factory gridLossResultProducedV2Factory)
         {
             _energyResultQueries = energyResultQueries;
             _calculationResultCompletedFactory = calculationResultCompletedFactory;
             _energyResultProducedV2Factory = energyResultProducedV2Factory;
+            _gridLossResultProducedV2Factory = gridLossResultProducedV2Factory;
         }
 
         public async IAsyncEnumerable<IntegrationEvent> GetAsync(CompletedCalculation calculation)
@@ -44,7 +47,7 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ev
             {
                 yield return CreateIntegrationEvent(_calculationResultCompletedFactory.Create(energyResult)); // Deprecated
                 yield return CreateIntegrationEvent(_energyResultProducedV2Factory.Create(energyResult));
-                yield return CreateIntegrationEvent(.Create(energyResult));
+                yield return CreateIntegrationEvent(_gridLossResultProducedV2Factory.Create(energyResult));
             }
         }
     }
