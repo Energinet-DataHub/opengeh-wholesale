@@ -22,7 +22,7 @@ using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.Workers;
 
-public class ReceiveIntegrationEventServiceBusWorker : ServiceBusWorker<ReceiveIntegrationEventServiceBusWorker>
+public class ReceiveIntegrationEventServiceBusWorker : ServiceBusWorker
 {
     private readonly IServiceProvider _serviceProvider;
 
