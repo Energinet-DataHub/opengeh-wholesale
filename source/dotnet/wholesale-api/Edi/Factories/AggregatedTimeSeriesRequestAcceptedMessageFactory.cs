@@ -38,7 +38,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
         return message;
     }
 
-    private static AggregatedTimeSeriesRequestAccepted CreateAcceptedResponse(IEnumerable<AggregatedTimeSeries> aggregatedTimeSeries)
+    private static AggregatedTimeSeriesRequestAccepted CreateAcceptedResponse(IReadOnlyCollection<AggregatedTimeSeries> aggregatedTimeSeries)
     {
         var response = new AggregatedTimeSeriesRequestAccepted();
         foreach (var series in aggregatedTimeSeries)
@@ -57,7 +57,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
         return response;
     }
 
-    private static IEnumerable<TimeSeriesPoint> CreateTimeSeriesPoints(AggregatedTimeSeries aggregatedTimeSeries)
+    private static IReadOnlyCollection<TimeSeriesPoint> CreateTimeSeriesPoints(AggregatedTimeSeries aggregatedTimeSeries)
     {
         const decimal nanoFactor = 1_000_000_000;
         var points = new List<TimeSeriesPoint>();
@@ -70,7 +70,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
                 Quantity = new DecimalValue { Units = units, Nanos = nanos },
                 Time = new Timestamp { Seconds = timeSeriesPoint.Time.ToUnixTimeSeconds(), },
             };
-            point.QuantityQuality.AddRange(timeSeriesPoint.Qualities.Select(QuantityQualityMapper.MapQuantityQuality));
+            point.QuantityQualities.AddRange(timeSeriesPoint.Qualities.Select(QuantityQualityMapper.MapQuantityQuality));
 
             points.Add(point);
         }

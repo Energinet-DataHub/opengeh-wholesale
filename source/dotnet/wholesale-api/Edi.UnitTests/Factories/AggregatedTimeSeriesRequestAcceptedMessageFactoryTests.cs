@@ -99,7 +99,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
         var responseBody = AggregatedTimeSeriesRequestAccepted.Parser.ParseFrom(actual.Body);
         responseBody.Series.Should().ContainSingle();
         responseBody.Series.Single().TimeSeriesPoints.Should().HaveCount(3);
-        responseBody.Series.Single().TimeSeriesPoints.Select(p => p.QuantityQuality).Should().AllSatisfy(
+        responseBody.Series.Single().TimeSeriesPoints.Select(p => p.QuantityQualities).Should().AllSatisfy(
             qqs =>
             {
                 qqs.Should().HaveCount(expectedQuantityQualities.Count);
