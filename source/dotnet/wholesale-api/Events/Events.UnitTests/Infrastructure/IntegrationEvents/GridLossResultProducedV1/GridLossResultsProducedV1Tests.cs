@@ -24,6 +24,7 @@ public class GridLossResultsProducedV1Tests
     [Fact]
     public void LargestCalculationResult_FitsInServiceBusMessage()
     {
+        // Arrange & Act
         var largestRsm014Result = new Contracts.IntegrationEvents.GridLossResultProducedV1
         {
             Resolution = Contracts.IntegrationEvents.GridLossResultProducedV1.Types.Resolution.Quarter,
