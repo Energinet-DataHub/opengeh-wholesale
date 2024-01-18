@@ -33,6 +33,17 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
     private readonly Instant _periodEnd = Instant.FromUtc(2021, 1, 1, 23, 0);
     private readonly TimeSeriesType _timeSeriesType = TimeSeriesType.Production;
 
+    public static IEnumerable<object[]> QuantityQualitySets()
+    {
+        return new[]
+        {
+            new object[] { new object[] { QuantityQuality.Missing } },
+            new object[] { new object[] { QuantityQuality.Measured } },
+            new object[] { new object[] { QuantityQuality.Estimated, QuantityQuality.Calculated } },
+            new object[] { new object[] { QuantityQuality.Estimated, QuantityQuality.Calculated, QuantityQuality.Missing } },
+        };
+    }
+
     [Fact]
     public void Create_WithCalculationResultFromTotalProductionPerGridArea_CreatesCorrectAcceptedEdiMessage()
     {
@@ -71,9 +82,36 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
         series.TimeSeriesPoints.Count.Should().Be(aggregatedTimeSeries.First().TimeSeriesPoints.Length);
     }
 
-    private IReadOnlyCollection<AggregatedTimeSeries> CreateAggregatedTimeSeries()
+    [Theory]
+    [MemberData(nameof(QuantityQualitySets))]
+    public void Create_DifferentSetsOfQualities_FullSetIsPartOfMessage(QuantityQuality[] quantityQualities)
     {
-        var quantityQualities = new List<QuantityQuality> { QuantityQuality.Estimated };
+        // Arrange
+        const string expectedReferenceId = "123456789";
+        var expectedQuantityQualities = quantityQualities.ToList();
+        var aggregatedTimeSeries = CreateAggregatedTimeSeries(expectedQuantityQualities);
+
+        // Act
+        var actual = AggregatedTimeSeriesRequestAcceptedMessageFactory.Create(aggregatedTimeSeries, expectedReferenceId);
+
+        // Assert
+        actual.Should().NotBeNull();
+        var responseBody = AggregatedTimeSeriesRequestAccepted.Parser.ParseFrom(actual.Body);
+        responseBody.Series.Should().ContainSingle();
+        responseBody.Series.Single().TimeSeriesPoints.Should().HaveCount(3);
+        responseBody.Series.Single().TimeSeriesPoints.Select(p => p.QuantityQuality).Should().AllSatisfy(
+            qqs =>
+            {
+                qqs.Should().HaveCount(expectedQuantityQualities.Count);
+                qqs.Select(qq => qq.ToString())
+                    .Should()
+                    .Contain(expectedQuantityQualities.Select(qq => qq.ToString()));
+            });
+    }
+
+    private IReadOnlyCollection<AggregatedTimeSeries> CreateAggregatedTimeSeries(IReadOnlyCollection<QuantityQuality>? quantityQualities = null)
+    {
+        quantityQualities ??= new List<QuantityQuality> { QuantityQuality.Estimated };
 
         var aggregatedTimeSeries = new AggregatedTimeSeries(
             _gridArea,

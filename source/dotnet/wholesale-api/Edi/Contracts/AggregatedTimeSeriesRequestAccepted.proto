@@ -41,7 +41,7 @@ message TimeSeriesPoint {
    */
   optional DecimalValue quantity = 2;
 
-  // The quality currently set representing a value suitable for creation of RSM-014 CIM XML messages.
+  // The quantity quality set representing a value suitable for creation of RSM-014 CIM XML messages.
   repeated QuantityQuality quantity_quality = 3;
 }
 
