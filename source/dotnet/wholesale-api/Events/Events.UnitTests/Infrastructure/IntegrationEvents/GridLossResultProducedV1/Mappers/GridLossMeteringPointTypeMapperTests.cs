@@ -23,8 +23,8 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
 public class GridLossMeteringPointTypeMapperTests
 {
     [Theory]
-    [InlineData(TimeSeriesType.NegativeGridLoss, MeteringPointType.Consumption)]
-    [InlineData(TimeSeriesType.PositiveGridLoss, MeteringPointType.Production)]
+    [InlineData(TimeSeriesType.NegativeGridLoss, MeteringPointType.Production)]
+    [InlineData(TimeSeriesType.PositiveGridLoss, MeteringPointType.Consumption)]
     public void MapFromTimeSeriesType_WhenCalledWithValidMeteringTypes_MapsCorrectly(TimeSeriesType timeSeriesType, MeteringPointType expected)
     {
         // Act & Assert
