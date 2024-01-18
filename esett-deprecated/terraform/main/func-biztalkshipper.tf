@@ -39,5 +39,6 @@ locals {
     "Logging__ApplicationInsights__LogLevel__Microsoft.Hosting.Lifetime"  = "Information"
     CONNECTION_STRING_SHARED_BLOB                                         = module.stor_esett.primary_connection_string
     CONNECTION_STRING_DATABASE                                            = local.connection_string_database
+    WEBSITE_LOAD_CERTIFICATES                                             = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=cert-esett-biztalk-thumbprint)"
   }
 }
