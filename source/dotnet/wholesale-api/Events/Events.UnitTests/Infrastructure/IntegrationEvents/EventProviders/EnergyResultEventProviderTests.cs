@@ -20,6 +20,7 @@ using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.CalculationResultCompleted.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.GridLossResultProducedV1.Factories;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -36,12 +37,13 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
 #pragma warning disable xUnit1026 // Theory methods should use all of their parameters
             [Frozen(Matching.ImplementedInterfaces)] CalculationResultCompletedFactory calculationResultCompletedFactory,
             [Frozen(Matching.ImplementedInterfaces)] EnergyResultProducedV2Factory energyResultProducedV2Factory,
+            [Frozen(Matching.ImplementedInterfaces)] GridLossResultProducedV1Factory gridLossResultProducedV2Factory,
 #pragma warning restore xUnit1026 // Theory methods should use all of their parameters
             [Frozen] Mock<IEnergyResultQueries> energyResultQueriesMock,
             EnergyResultEventProvider sut)
         {
             // Arrange
-            var expectedEventsPerResult = 2;
+            var expectedEventsPerResult = 3;
             var expectedEventsCount = energyResults.Length * expectedEventsPerResult;
 
             energyResultQueriesMock
