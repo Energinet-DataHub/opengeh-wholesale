@@ -84,7 +84,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
 
     [Theory]
     [MemberData(nameof(QuantityQualitySets))]
-    public void Create_DifferentSetsOfQualities_FullSetIsPartOfMessage(QuantityQuality[] quantityQualities)
+    public void Create_DifferentSetsOfQualities_CreatesCorrectAcceptedEdiMessage(QuantityQuality[] quantityQualities)
     {
         // Arrange
         const string expectedReferenceId = "123456789";
