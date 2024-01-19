@@ -63,7 +63,7 @@ public class GridLossResultProducedV1Tests
         Assert.Equal(LastKnownContentOfContract, actualContent, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
     }
 
-    private const int LastKnownMinorEventVersion = 1;
+    private const int LastKnownMinorEventVersion = 0;
     private const string LastKnownContentOfContract = @"/* Copyright 2020 Energinet DataHub A/S
  *
  * Licensed under the Apache License, Version 2.0 (the ""License2"");
@@ -103,32 +103,32 @@ message GridLossResultProducedV1 {
      * The time is included in the period and is identical to the time of
      * the first time series point in the results.
      */
-    google.protobuf.Timestamp period_start_utc = 3;
+    google.protobuf.Timestamp period_start_utc = 2;
 
     /*
      * The end of the calculation period.
      * The time is excluded from the period.
      */
-    google.protobuf.Timestamp period_end_utc = 4;
+    google.protobuf.Timestamp period_end_utc = 3;
 
 
     /*
      * Id of the metering point that the grid loss result should be assigned to
      */
-    string metering_point_id = 5;
+    string metering_point_id = 4;
 
     /*
      * The type of the metering point for which the grid loss result should be assigned to.
      * METERING_POINT_TYPE_CONSUMPTION: the time series points contain the positive values of the grid loss (negative values are set to zero).
      * METERING_POINT_TYPE_PRODUCTION: the time series points contains the negative values of the grid loss (positive values are set to zero).
      */
-    MeteringPointType metering_point_type = 6;
+    MeteringPointType metering_point_type = 5;
 
-    Resolution resolution = 7;
+    Resolution resolution = 6;
 
-    QuantityUnit quantity_unit = 8;
+    QuantityUnit quantity_unit = 7;
 
-    repeated TimeSeriesPoint time_series_points = 9;
+    repeated TimeSeriesPoint time_series_points = 8;
 
     enum MeteringPointType {
         /*
