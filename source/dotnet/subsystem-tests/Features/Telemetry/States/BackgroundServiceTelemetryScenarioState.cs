@@ -23,7 +23,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States
 
         public Guid CalculationId { get; set; }
 
-        public IList<ITelemetryEventMatch> ExpectedTelemetryEvents { get; }
-            = new List<ITelemetryEventMatch>();
+        public IList<TelemetryEventMatch> ExpectedTelemetryEvents { get; }
+            = new List<TelemetryEventMatch>();
     }
 }

@@ -50,6 +50,19 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States
             = string.Empty;
 
         /// <summary>
+        /// All types.
+        /// </summary>
+        public string AppVersion { get; set; }
+            = string.Empty;
+
+        /// <summary>
+        /// All types.
+        /// Custom property set as global property.
+        /// </summary>
+        public string Subsystem { get; set; }
+            = string.Empty;
+
+        /// <summary>
         /// AppRequests, AppDependencies
         /// </summary>
         public string Name { get; set; }
