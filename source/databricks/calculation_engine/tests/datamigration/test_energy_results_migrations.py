@@ -251,7 +251,7 @@ def test__result_table__is_not_managed(
         (None, "production"),
     ],
 )
-def test__migrated_table_special_metering_point_id_constraint_valid_data(
+def test__migrated_table_constraints_on_metering_point_id_with_valid_data(
     spark: SparkSession,
     metering_point_id: str | None,
     time_series_type: str,
@@ -283,7 +283,7 @@ def test__migrated_table_special_metering_point_id_constraint_valid_data(
         ("571313180480500149", "production"),
     ],
 )
-def test__migrated_table_special_metering_point_id_constraint_invalid_data(
+def test__migrated_table_constraints_on_metering_point_id_with_invalid_data(
     spark: SparkSession,
     metering_point_id: str | None,
     time_series_type: str,
