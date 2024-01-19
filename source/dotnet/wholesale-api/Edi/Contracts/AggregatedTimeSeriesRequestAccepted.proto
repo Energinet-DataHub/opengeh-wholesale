@@ -41,8 +41,12 @@ message TimeSeriesPoint {
    */
   optional DecimalValue quantity = 2;
 
-  // The aggregated quality currently represents a value suitable for creation of RSM-014 CIM XML messages.
-  QuantityQuality quantity_quality = 3;
+  // Reserve the old QuantityQuality enum field. It has been replaced by the repeated quantity_qualities enum field.
+  reserved 3;
+  reserved "quantity_quality";
+
+  // The quantity quality set representing a value suitable for creation of RSM-014 CIM XML messages.
+  repeated QuantityQuality quantity_qualities = 4;
 }
 
 /*
@@ -50,11 +54,14 @@ message TimeSeriesPoint {
  * Read more at https://protobuf.dev/programming-guides/style/#enums.
  */
 enum QuantityQuality{
+  // Reserves the old, now unused, QuantityQuality enum value "Incomplete".
+  reserved 4;
+  reserved "QUANTITY_QUALITY_INCOMPLETE";
+
   QUANTITY_QUALITY_UNSPECIFIED = 0;
   QUANTITY_QUALITY_MISSING = 1;
   QUANTITY_QUALITY_ESTIMATED = 2;
   QUANTITY_QUALITY_MEASURED = 3;
-  QUANTITY_QUALITY_INCOMPLETE = 4;
   QUANTITY_QUALITY_CALCULATED = 5;
 }
 

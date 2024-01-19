@@ -24,7 +24,7 @@ public class GridLossResultProducedV1Factory : IGridLossResultProducedV1Factory
 {
     public Contracts.IntegrationEvents.GridLossResultProducedV1 Create(EnergyResult result)
     {
-        var energyResultProduced = new Contracts.IntegrationEvents.GridLossResultProducedV1
+        var gridLossResultProduced = new Contracts.IntegrationEvents.GridLossResultProducedV1
         {
             CalculationId = result.BatchId.ToString(),
             MeteringPointId = result.MeteringPointId,
@@ -35,7 +35,7 @@ public class GridLossResultProducedV1Factory : IGridLossResultProducedV1Factory
             PeriodEndUtc = result.PeriodEnd.ToTimestamp(),
         };
 
-        energyResultProduced.TimeSeriesPoints
+        gridLossResultProduced.TimeSeriesPoints
             .AddRange(result.TimeSeriesPoints
                 .Select(timeSeriesPoint =>
                 {
@@ -46,6 +46,6 @@ public class GridLossResultProducedV1Factory : IGridLossResultProducedV1Factory
                     };
                     return mappedTimeSeriesPoint;
                 }));
-        return energyResultProduced;
+        return gridLossResultProduced;
     }
 }

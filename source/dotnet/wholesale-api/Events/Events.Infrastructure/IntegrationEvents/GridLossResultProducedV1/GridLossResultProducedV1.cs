@@ -24,7 +24,7 @@ public partial class GridLossResultProducedV1 : IEventMessage
     /// </summary>
     public const string EventName = "GridLossResultProducedV1";
 
-    public const int EventMinorVersion = 1;
+    public const int EventMinorVersion = 0;
 
     string IEventMessage.EventName => EventName;
 

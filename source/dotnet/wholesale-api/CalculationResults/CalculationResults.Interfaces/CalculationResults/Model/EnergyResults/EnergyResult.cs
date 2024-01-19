@@ -41,7 +41,7 @@ public sealed class EnergyResult : AggregatedTimeSeries
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
         FromGridArea = fromGridArea;
-        MeteringPointId = string.Empty; // TODO: use constructor parameter instead
+        MeteringPointId = string.Empty; // TODO: use constructor parameter instead - waiting the columns to be included in the delta table
         Version = version;
     }
 
