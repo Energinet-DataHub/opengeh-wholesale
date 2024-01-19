@@ -47,7 +47,8 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ev
             {
                 yield return CreateIntegrationEvent(_calculationResultCompletedFactory.Create(energyResult)); // Deprecated
                 yield return CreateIntegrationEvent(_energyResultProducedV2Factory.Create(energyResult));
-                yield return CreateIntegrationEvent(_gridLossResultProducedV2Factory.Create(energyResult));
+                if (_gridLossResultProducedV2Factory.CanCreate(energyResult))
+                    yield return CreateIntegrationEvent(_gridLossResultProducedV2Factory.Create(energyResult));
             }
         }
     }
