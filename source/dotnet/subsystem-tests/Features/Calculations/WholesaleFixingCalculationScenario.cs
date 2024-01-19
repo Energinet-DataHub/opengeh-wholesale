@@ -298,7 +298,7 @@ AppTraces
 | where SeverityLevel == 1 // Information
 | where Message startswith_cs ""Command line arguments:""
 | where OperationId != ""00000000000000000000000000000000""
-| where Properties.Domain == ""wholesale""
+| where Properties.Subsystem == ""wholesale""
 | where Properties.calculation_id == ""{Fixture.ScenarioState.CalculationId}""
 | where Properties.CategoryName == ""Energinet.DataHub.package.calculator_job_args""
 | count";
@@ -322,7 +322,7 @@ AppDependencies
 | where Success == true
 | where ResultCode == 0
 | where AppRoleName == ""dbr-calculation-engine""
-| where Properties.Domain == ""wholesale""
+| where Properties.Subsystem == ""wholesale""
 | where Properties.calculation_id == ""{Fixture.ScenarioState.CalculationId}""
 | count";
 
