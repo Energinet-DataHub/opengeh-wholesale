@@ -43,6 +43,11 @@ module "dbw" {
       ip_record     = module.st_dh2data.dfs_private_ip_address
     },
     {
+      resource_name = module.st_dh2data.name
+      dns_zone      = "privatelink.queue.core.windows.net"
+      ip_record     = module.st_dh2data.queue_private_ip_address
+    },
+    {
       resource_name = module.st_migrations.name
       dns_zone      = "privatelink.blob.core.windows.net"
       ip_record     = module.st_migrations.blob_private_ip_address
