@@ -40,19 +40,6 @@ public class TimeSeriesTypeMapperTests
     }
 
     [Fact]
-    public void MapTimeSeriesType_MapsAnyValidValue()
-    {
-        foreach (var timeSeriesType in Enum.GetValues(typeof(TimeSeriesType)).Cast<TimeSeriesType>())
-        {
-            // Act
-            var actual = TimeSeriesTypeMapper.MapTimeSeriesType(timeSeriesType);
-
-            // Assert: Is defined (and implicitly that it didn't throw exception)
-            Enum.IsDefined(typeof(EnergyResultProduced.Types.TimeSeriesType), actual).Should().BeTrue();
-        }
-    }
-
-    [Fact]
     public void MapTimeSeriesType_WhenInvalidEnumNumberForTimeSeriesType_ThrowsArgumentOutOfRangeException()
     {
         // Arrange

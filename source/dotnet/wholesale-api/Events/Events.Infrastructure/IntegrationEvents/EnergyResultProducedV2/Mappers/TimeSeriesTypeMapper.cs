@@ -27,12 +27,7 @@ public static class TimeSeriesTypeMapper
             CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType.NonProfiledConsumption => TimeSeriesType.NonProfiledConsumption,
             CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType.NetExchangePerGa => TimeSeriesType.NetExchangePerGa,
             CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType.NetExchangePerNeighboringGa => TimeSeriesType.NetExchangePerNeighboringGa,
-            CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType.GridLoss => TimeSeriesType.GridLoss,
-            CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType.NegativeGridLoss => TimeSeriesType.NegativeGridLoss,
-            CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType.PositiveGridLoss => TimeSeriesType.PositiveGridLoss,
             CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType.TotalConsumption => TimeSeriesType.TotalConsumption,
-            CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType.TempFlexConsumption => TimeSeriesType.TempFlexConsumption,
-            CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType.TempProduction => TimeSeriesType.TempProduction,
 
             _ => throw new ArgumentOutOfRangeException(
                 nameof(timeSeriesType),
