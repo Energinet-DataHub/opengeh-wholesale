@@ -93,18 +93,14 @@ class TableReader:
     ) -> DataFrame:
         path = f"{self._calculation_input_path}/{self._time_series_points_table_name}"
 
-        mps = self.read_grid_loss_metering_points()
+        grid_loss_metering_points = self.read_grid_loss_metering_points()
 
         df = (
             self._spark.read.format("delta")
             .load(path)
             .where(col(Colname.observation_time) >= period_start_datetime)
             .where(col(Colname.observation_time) < period_end_datetime)
-            .where(
-                col(Colname.metering_point_id).isin(
-                    mps  #  .select(Colname.metering_point_id)
-                )
-            )
+            .where(not col(Colname.metering_point_id).isin(grid_loss_metering_points))
         )
 
         if "observation_year" in df.columns:
