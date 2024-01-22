@@ -45,7 +45,6 @@ def create_row(
     qualities: None | QuantityQuality | list[QuantityQuality] = None,
     energy_supplier_id: str | None = DEFAULT_ENERGY_SUPPLIER_ID,
     balance_responsible_id: str | None = DEFAULT_BALANCE_RESPONSIBLE_ID,
-    metering_point_id: str | None = None,
 ) -> Row:
     if isinstance(sum_quantity, int):
         sum_quantity = Decimal(sum_quantity)
@@ -68,7 +67,6 @@ def create_row(
         },
         Colname.sum_quantity: sum_quantity,
         Colname.qualities: qualities,
-        Colname.metering_point_type: metering_point_id,
     }
 
     return Row(**row)
