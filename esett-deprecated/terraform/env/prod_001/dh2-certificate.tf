@@ -1,16 +1,16 @@
 resource "azurerm_key_vault_certificate" "dh2_certificate" {
   name         = "cert-pwd-esett-dh2-authentication"
-  key_vault_id = module.kv_internal.id
+  key_vault_id = module.kv_esett.id
 
   certificate {
-    contents = filebase64("${path.module}/assets/CERT_PWD_ESETT_DH2_AUTHENTICATION.pfx")
+    contents = filebase64("${path.module}/assets/PROD_CERT_PWD_ESETT_DH2_AUTHENTICATION.pfx")
     password = var.cert_pwd_esett_dh2_authentication_key1
   }
 }
 
 data "azurerm_key_vault_secret" "dh2_certificate_secret" {
   name         = azurerm_key_vault_certificate.dh2_certificate.name
-  key_vault_id = module.kv_internal.id
+  key_vault_id = module.kv_esett.id
 }
 
 resource "azurerm_app_service_certificate" "dh2_certificate_app" {
