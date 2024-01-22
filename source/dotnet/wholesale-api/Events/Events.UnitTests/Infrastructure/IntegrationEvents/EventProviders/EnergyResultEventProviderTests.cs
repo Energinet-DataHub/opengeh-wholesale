@@ -42,7 +42,16 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
         private readonly string? _fromGridArea = null;
         private readonly Instant _periodStart = Instant.FromUtc(2021, 1, 2, 23, 0);
         private readonly Instant _periodEnd = Instant.FromUtc(2021, 1, 3, 23, 0);
-        private readonly long _version = DateTime.Now.Ticks;
+        private CompletedCalculation _completedCalculation;
+
+        public EnergyResultEventProviderTests()
+        {
+            var fixture = new Fixture();
+            _completedCalculation = fixture
+                .Build<CompletedCalculation>()
+                .With(p => p.Id, _calculationId)
+                .Create();
+        }
 
         [Theory]
         [InlineAutoMoqData(TimeSeriesType.NegativeGridLoss)]
@@ -58,7 +67,6 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
             var expectedEventName = Contracts.IntegrationEvents.GridLossResultProducedV1.EventName;
             var energyResult = CreateEnergyResult(positiveOrNegativeGridLoss);
             var energyResults = new[] { energyResult };
-            var completedCalculation = CreateCalculation();
             var sut = new EnergyResultEventProvider(
                 energyResultQueriesMock.Object,
                 calculationResultCompletedFactory,
@@ -66,11 +74,11 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
                 gridLossResultProducedV1Factory);
 
             energyResultQueriesMock
-                .Setup(mock => mock.GetAsync(completedCalculation.Id))
+                .Setup(mock => mock.GetAsync(_completedCalculation.Id))
                 .Returns(energyResults.ToAsyncEnumerable());
 
             // Act
-            var actualIntegrationEvents = await sut.GetAsync(completedCalculation).ToListAsync();
+            var actualIntegrationEvents = await sut.GetAsync(_completedCalculation).ToListAsync();
 
             // Assert
             actualIntegrationEvents.Where(e => e.EventName == expectedEventName).Should().ContainSingle();
@@ -93,7 +101,6 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
                 const string gridLossEventName = Contracts.IntegrationEvents.GridLossResultProducedV1.EventName;
                 var energyResult = CreateEnergyResult(timeSeriesType);
                 var energyResults = new[] { energyResult };
-                var completedCalculation = CreateCalculation();
                 var sut = new EnergyResultEventProvider(
                     energyResultQueriesMock.Object,
                     calculationResultCompletedFactory,
@@ -101,11 +108,11 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
                     gridLossResultProducedV1Factory);
 
                 energyResultQueriesMock
-                    .Setup(mock => mock.GetAsync(completedCalculation.Id))
+                    .Setup(mock => mock.GetAsync(_completedCalculation.Id))
                     .Returns(energyResults.ToAsyncEnumerable());
 
                 // Act
-                var actualIntegrationEvents = await sut.GetAsync(completedCalculation).ToListAsync();
+                var actualIntegrationEvents = await sut.GetAsync(_completedCalculation).ToListAsync();
 
                 // Assert
                 actualIntegrationEvents.Where(e => e.EventName == gridLossEventName).Should().BeEmpty();
@@ -132,17 +139,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
                 _periodStart,
                 _periodEnd,
                 _fromGridArea,
-                _version);
-        }
-
-        private CompletedCalculation CreateCalculation()
-        {
-            var fixture = new Fixture();
-            var wholesaleFixingBatch = fixture
-                .Build<CompletedCalculation>()
-                .With(p => p.Id, _calculationId)
-                .Create();
-            return wholesaleFixingBatch;
+                1);
         }
     }
 }
