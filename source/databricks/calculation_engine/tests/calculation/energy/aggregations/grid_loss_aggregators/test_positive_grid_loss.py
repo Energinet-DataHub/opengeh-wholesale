@@ -21,6 +21,7 @@ import pytest
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
 
+from calculation.energy import grid_loss_responsible_factories
 from package.calculation.energy.energy_results import (
     EnergyResults,
     energy_results_schema,
@@ -30,6 +31,7 @@ from package.calculation.energy.aggregators.grid_loss_aggregators import (
 )
 from package.codelists import (
     QuantityQuality,
+    MeteringPointType,
 )
 from package.constants import Colname
 
@@ -51,6 +53,7 @@ def agg_result_factory(spark: SparkSession) -> Callable[[], EnergyResults]:
                 Colname.time_window: [],
                 Colname.sum_quantity: [],
                 Colname.qualities: [],
+                Colname.metering_point_id: [],
             }
         )
         pandas_df = pandas_df.append(
@@ -93,6 +96,7 @@ def agg_result_factory(spark: SparkSession) -> Callable[[], EnergyResults]:
                     },
                     Colname.sum_quantity: Decimal(0.0),
                     Colname.qualities: [QuantityQuality.ESTIMATED.value],
+                    Colname.metering_point_id: None,
                 },
             ],
             ignore_index=True,
@@ -107,8 +111,15 @@ def agg_result_factory(spark: SparkSession) -> Callable[[], EnergyResults]:
 def call_calculate_grid_loss(
     agg_result_factory: Callable[[], EnergyResults]
 ) -> EnergyResults:
+    spark = SparkSession.builder.getOrCreate()
     df = agg_result_factory()
-    return calculate_positive_grid_loss(df)
+    grid_loss_responsible_row = grid_loss_responsible_factories.create_row(
+        metering_point_type=MeteringPointType.CONSUMPTION,
+    )
+    grid_loss_responsible = grid_loss_responsible_factories.create(
+        spark, [grid_loss_responsible_row]
+    )
+    return calculate_positive_grid_loss(df, grid_loss_responsible)
 
 
 def test_grid_area_grid_loss_has_no_values_below_zero(
