@@ -76,6 +76,24 @@ resource "databricks_secret" "tenant_id_integration_test" {
   scope        = databricks_secret_scope.migration_scope_integration_test.id
 }
 
+resource "databricks_secret" "resource_group_name_integration_test" {
+  key          = "resource_group_name"
+  string_value = azurerm_resource_group.this.name
+  scope        = databricks_secret_scope.migration_scope_integration_test.id
+}
+
+resource "databricks_secret" "subscription_id_integration_test" {
+  key          = "subscription_id"
+  string_value = data.azurerm_client_config.this.subscription_id
+  scope        = databricks_secret_scope.migration_scope_integration_test.id
+}
+
+resource "databricks_secret" "location_integration_test" {
+  key          = "location"
+  string_value = azurerm_resource_group.this.location
+  scope        = databricks_secret_scope.migration_scope_integration_test.id
+}
+
 data "external" "databricks_token_integration_test" {
   program = ["pwsh", "${path.cwd}/scripts/generate-pat-token.ps1", azurerm_databricks_workspace.this.id, "https://${azurerm_databricks_workspace.this.workspace_url}"]
   depends_on = [
