@@ -18,42 +18,35 @@ using Microsoft.DurableTask;
 using Microsoft.DurableTask.Client;
 using Microsoft.Extensions.Logging;
 
-namespace FunctionApp.Orchestrations.Functions
+namespace FunctionApp.Orchestrations.Functions.Calculation
 {
 #pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
-    internal static class HelloSequence
+    internal static class CalculationOrchestration
     {
-        [Function(nameof(StartHelloCities))]
-        public static async Task<HttpResponseData> StartHelloCities(
+        [Function(nameof(StartCalculation))]
+        public static async Task<HttpResponseData> StartCalculation(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req,
             [DurableClient] DurableTaskClient client,
             FunctionContext executionContext)
         {
-            var logger = executionContext.GetLogger(nameof(StartHelloCities));
+            var logger = executionContext.GetLogger(nameof(StartCalculation));
 
-            var instanceId = await client.ScheduleNewOrchestrationInstanceAsync(nameof(HelloCities));
+            var instanceId = await client.ScheduleNewOrchestrationInstanceAsync(nameof(Calculation));
             logger.LogInformation("Created new orchestration with instance ID = {instanceId}", instanceId);
 
             return client.CreateCheckStatusResponse(req, instanceId);
         }
 
-        [Function(nameof(HelloCities))]
-        public static async Task<string> HelloCities([OrchestrationTrigger] TaskOrchestrationContext context)
+        [Function(nameof(Calculation))]
+        public static async Task<string> Calculation(
+            [OrchestrationTrigger] TaskOrchestrationContext context)
         {
             var result = string.Empty;
 
-            result += await context.CallActivityAsync<string>(nameof(SayHello), "Tokyo") + " ";
-            result += await context.CallActivityAsync<string>(nameof(SayHello), "London") + " ";
-            result += await context.CallActivityAsync<string>(nameof(SayHello), "Seattle");
+            result += await context.CallActivityAsync<string>(nameof(CalculationActivities.CreateCalculationMetaActivity), "Tokyo") + " ";
+            result += await context.CallActivityAsync<string>(nameof(CalculationActivities.StartCalculationActivity), "London") + " ";
+            result += await context.CallActivityAsync<string>(nameof(CalculationActivities.UpdateCalculationMetaActivity), "Seattle");
             return result;
-        }
-
-        [Function(nameof(SayHello))]
-        public static string SayHello([ActivityTrigger] string cityName, FunctionContext executionContext)
-        {
-            var logger = executionContext.GetLogger(nameof(SayHello));
-            logger.LogInformation("Saying hello to {name}", cityName);
-            return $"Hello, {cityName}!";
         }
     }
 #pragma warning restore CA2007 // Consider calling ConfigureAwait on the awaited task
