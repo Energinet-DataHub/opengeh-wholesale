@@ -48,6 +48,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
         ),
         EnergyResultColumnNames.from_grid_area: "843",
         EnergyResultColumnNames.calculation_result_id: "6033ab5c-436b-44e9-8a79-90489d324e53",
+        EnergyResultColumnNames.metering_point_id: None,
     }
     return spark.createDataFrame(data=[row], schema=energy_results_schema)
 
@@ -171,6 +172,12 @@ def test__migrated_table_accepts_enum_value(
     # Arrange
     result_df = _create_df(spark)
     result_df = set_column(result_df, column_name, column_value)
+    # this is a special case where we need to set the metering point id to a valid value
+    # do to constraints on the table seen in 202401161030_Add_metering_point_id_to_energy_table.sql
+    if column_value == "negative_grid_loss" or column_value == "positive_grid_loss":
+        result_df = set_column(
+            result_df, EnergyResultColumnNames.metering_point_id, "571313180480500149"
+        )
 
     # Act and assert: Expectation is that no exception is raised
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
@@ -234,3 +241,87 @@ def test__result_table__is_not_managed(
     table_location = table_details.collect()[0]["location"]
 
     assert not table_location.startswith(database_location)
+
+
+@pytest.mark.parametrize(
+    "metering_point_id,time_series_type",
+    [
+        (None, TimeSeriesType.PRODUCTION.value),
+        (None, TimeSeriesType.NON_PROFILED_CONSUMPTION.value),
+        (None, TimeSeriesType.NET_EXCHANGE_PER_NEIGHBORING_GA.value),
+        (None, TimeSeriesType.NET_EXCHANGE_PER_GA.value),
+        (None, TimeSeriesType.FLEX_CONSUMPTION.value),
+        (None, TimeSeriesType.GRID_LOSS.value),
+        ("571313180480500149", TimeSeriesType.NEGATIVE_GRID_LOSS.value),
+        ("571313180480500149", TimeSeriesType.POSITIVE_GRID_LOSS.value),
+        (None, TimeSeriesType.TOTAL_CONSUMPTION.value),
+        (None, TimeSeriesType.TEMP_FLEX_CONSUMPTION.value),
+        (None, TimeSeriesType.TEMP_PRODUCTION.value),
+    ],
+)
+def test__migrated_table_constraints_on_metering_point_id_with_valid_data(
+    spark: SparkSession,
+    metering_point_id: str | None,
+    time_series_type: str,
+    migrations_executed: None,
+) -> None:
+    # Arrange
+    results_df = _create_df(spark)
+
+    results_df = set_column(
+        results_df, EnergyResultColumnNames.time_series_type, time_series_type
+    )
+    results_df = set_column(
+        results_df, EnergyResultColumnNames.metering_point_id, metering_point_id
+    )
+
+    # Act + Assert
+    results_df.write.format("delta").option("mergeSchema", "false").insertInto(
+        f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}"
+    )
+
+
+@pytest.mark.parametrize(
+    "metering_point_id,time_series_type",
+    [
+        ("571313180480500149", TimeSeriesType.PRODUCTION.value),
+        ("571313180480500149", TimeSeriesType.NON_PROFILED_CONSUMPTION.value),
+        ("571313180480500149", TimeSeriesType.NET_EXCHANGE_PER_NEIGHBORING_GA.value),
+        ("571313180480500149", TimeSeriesType.NET_EXCHANGE_PER_GA.value),
+        ("571313180480500149", TimeSeriesType.FLEX_CONSUMPTION.value),
+        ("571313180480500149", TimeSeriesType.GRID_LOSS.value),
+        (None, TimeSeriesType.NEGATIVE_GRID_LOSS.value),
+        (None, TimeSeriesType.POSITIVE_GRID_LOSS.value),
+        ("not_18_length", TimeSeriesType.NEGATIVE_GRID_LOSS.value),
+        ("not_18_length", TimeSeriesType.POSITIVE_GRID_LOSS.value),
+        ("571313180480500149", TimeSeriesType.TOTAL_CONSUMPTION.value),
+        ("571313180480500149", TimeSeriesType.TEMP_FLEX_CONSUMPTION.value),
+        ("571313180480500149", TimeSeriesType.TEMP_PRODUCTION.value),
+    ],
+)
+def test__migrated_table_constraints_on_metering_point_id_with_invalid_data(
+    spark: SparkSession,
+    metering_point_id: str | None,
+    time_series_type: str,
+    migrations_executed: None,
+) -> None:
+    # Arrange
+    results_df = _create_df(spark)
+
+    results_df = set_column(
+        results_df, EnergyResultColumnNames.time_series_type, time_series_type
+    )
+    results_df = set_column(
+        results_df, EnergyResultColumnNames.metering_point_id, metering_point_id
+    )
+
+    # Act
+    with pytest.raises(Exception) as ex:
+        results_df.write.format("delta").option("mergeSchema", "false").insertInto(
+            f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}", overwrite=False
+        )
+
+    # Assert: Do sufficient assertions to be confident that the expected violation has been caught
+    actual_error_message = str(ex.value)
+    assert "DeltaInvariantViolationException" in actual_error_message
+    assert EnergyResultColumnNames.metering_point_id in actual_error_message
