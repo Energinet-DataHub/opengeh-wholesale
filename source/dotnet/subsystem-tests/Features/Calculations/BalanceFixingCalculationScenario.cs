@@ -223,5 +223,22 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
             // Convert version (ticks) to datetime and assert that it is not older than 3 hours
             new DateTime(actualVersion).Subtract(DateTime.Now).Hours.Should().BeLessThan(3);
         }
+
+        [ScenarioStep(10)]
+        [SubsystemFact]
+        public async Task AndThen_OneReceivedEnergyResultProducedEventContainsSpecificMessageWithExpectedTimeSeriesPoints()
+        {
+            // THEN one of the messages contains the expected time series points (positive grid loss and non-profiled)
+            // Arrange
+            var expectedTimeSeriesPoints = await Fixture.ParseTimeSeriesPointsFromCsv2Async("Non_profiled_consumption_es_brp_ga_GA_543 for 5790001102357.csv");
+            var actualEvents = Fixture.ScenarioState.ReceivedCalculationResultCompleted.ToList();
+
+            // Assert
+            using var assertionScope = new AssertionScope();
+            foreach (var @event in actualEvents)
+            {
+                @event.TimeSeriesPoints.Should().BeEquivalentTo(expectedTimeSeriesPoints);
+            }
+        }
     }
 }

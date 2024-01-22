@@ -187,6 +187,40 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
             return parsedTimeSeriesPoints;
         }
 
+        public async Task<IReadOnlyCollection<EnergyResultProducedV2.Types.TimeSeriesPoint>> ParseTimeSeriesPointsFromCsv2Async(string testFileName)
+        {
+            const string ExpectedHeader = "grid_area,energy_supplier_id,balance_responsible_id,quantity,quantity_qualities,time,aggregation_level,time_series_type,calculation_id,calculation_type,calculation_execution_time_start,out_grid_area,calculation_result_id";
+
+            await using var stream = EmbeddedResources.GetStream<Root>($"Features.Calculations.TestData.{testFileName}");
+            using var reader = new StreamReader(stream);
+
+            var hasVerifiedHeader = false;
+            var parsedTimeSeriesPoints = new List<EnergyResultProducedV2.Types.TimeSeriesPoint>();
+            while (!reader.EndOfStream)
+            {
+                var line = await reader.ReadLineAsync();
+                if (!hasVerifiedHeader)
+                {
+                    if (line != ExpectedHeader)
+                    {
+                        throw new Exception($"Cannot parse CSV file. Header is '{line}', expected '{ExpectedHeader}'.");
+                    }
+
+                    hasVerifiedHeader = true;
+                    continue;
+                }
+
+                var columns = line!.Split(',');
+                parsedTimeSeriesPoints.Add(new EnergyResultProducedV2.Types.TimeSeriesPoint
+                {
+                    Time = ParseTimestamp(columns[5]),
+                    Quantity = ParseDecimalValue(columns[3]),
+                });
+            }
+
+            return parsedTimeSeriesPoints;
+        }
+
         protected override async Task OnInitializeAsync()
         {
             await DatabricksClientExtensions.StartWarehouseAsync(Configuration.DatabricksWorkspace);
