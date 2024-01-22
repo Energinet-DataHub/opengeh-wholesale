@@ -16,11 +16,15 @@ using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.AmountPerChargeResultProducedV1.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.CalculationResultCompleted.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.GridLossResultProducedV1.Factories;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1.Factories;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -31,7 +35,73 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
     {
         [Theory]
         [InlineAutoMoqData]
-        public async Task GetAsync_WhenMultipleResults_ReturnsTwoEventsPerResult(
+        public async Task GetAsync_WhenCanCreateEnergyResultProducedV2_ReturnsExpectedEvent(
+            [Frozen] Mock<IEnergyResultProducedV2Factory> energyResultProducedV2FactoryMock,
+            [Frozen] Mock<IEnergyResultQueries> energyResultQueriesMock,
+            EnergyResult energyResult,
+            EnergyResultEventProvider sut)
+        {
+            // Arrange
+            var expectedIntegrationEvent = new Contracts.IntegrationEvents.EnergyResultProducedV2();
+            var amountPerChargeResult = new[] { wholesaleResult };
+            var wholesaleFixingBatch = CreateWholesaleFixingBatch();
+
+            energyResultQueriesMock
+                .Setup(mock => mock.GetAsync(wholesaleFixingBatch.Id))
+                .Returns(amountPerChargeResult.ToAsyncEnumerable());
+
+            energyResultProducedV2FactoryMock
+                .Setup(mock => mock.CanCreate(It.IsAny<EnergyResult>()))
+                .Returns(true);
+            energyResultProducedV2FactoryMock
+                .Setup(mock => mock.Create(It.IsAny<EnergyResult>()))
+                .Returns(expectedIntegrationEvent);
+
+            // Act
+            var actualIntegrationEvents = await sut.GetAsync(wholesaleFixingBatch).ToListAsync();
+
+            // Assert
+            actualIntegrationEvents.Single().EventName.Should().Be(((IEventMessage)expectedIntegrationEvent).EventName);
+        }
+
+        [Theory]
+        [InlineAutoMoqData]
+        public async Task GetAsync_WhenCanCreateMonthlyAmountPerChargeResultProducedV1_ReturnsExpectedEvent(
+            [Frozen] Mock<IAmountPerChargeResultProducedV1Factory> amountPerChargeResultProducedV1FactoryMock,
+            [Frozen] Mock<IMonthlyAmountPerChargeResultProducedV1Factory> monthlyAmountPerChargeResultProducedV1FactoryMock,
+            [Frozen] Mock<IWholesaleResultQueries> wholesaleResultQueriesMock,
+            WholesaleResult wholesaleResult,
+            WholesaleResultEventProvider sut)
+        {
+            // Arrange
+            var expectedIntegrationEvent = new Contracts.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1();
+            var wholesaleFixingBatch = CreateWholesaleFixingBatch();
+            var wholesaleResults = new[] { wholesaleResult };
+
+            wholesaleResultQueriesMock
+                .Setup(mock => mock.GetAsync(wholesaleFixingBatch.Id))
+                .Returns(wholesaleResults.ToAsyncEnumerable());
+
+            amountPerChargeResultProducedV1FactoryMock
+                .Setup(mock => mock.CanCreate(It.IsAny<WholesaleResult>()))
+                .Returns(false);
+            monthlyAmountPerChargeResultProducedV1FactoryMock
+                .Setup(mock => mock.CanCreate(It.IsAny<WholesaleResult>()))
+                .Returns(true);
+            monthlyAmountPerChargeResultProducedV1FactoryMock
+                .Setup(mock => mock.Create(It.IsAny<WholesaleResult>()))
+                .Returns(expectedIntegrationEvent);
+
+            // Act
+            var actualIntegrationEvents = await sut.GetAsync(wholesaleFixingBatch).ToListAsync();
+
+            // Assert
+            actualIntegrationEvents.Single().EventName.Should().Be(((IEventMessage)expectedIntegrationEvent).EventName);
+        }
+
+        [Theory]
+        [InlineAutoMoqData]
+        public async Task GetAsync_WhenNegativeOrPositiveGridLoss_ReturnsTwoEventsPerResult(
             CompletedCalculation completedCalculation,
             EnergyResult[] energyResults,
 #pragma warning disable xUnit1026 // Theory methods should use all of their parameters
@@ -43,7 +113,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
             EnergyResultEventProvider sut)
         {
             // Arrange
-            var expectedEventsPerResult = 3;
+            var expectedEventsPerResult = 2;
             var expectedEventsCount = energyResults.Length * expectedEventsPerResult;
 
             energyResultQueriesMock

@@ -46,7 +46,9 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ev
             await foreach (var energyResult in _energyResultQueries.GetAsync(calculation.Id).ConfigureAwait(false))
             {
                 yield return CreateIntegrationEvent(_calculationResultCompletedFactory.Create(energyResult)); // Deprecated
-                yield return CreateIntegrationEvent(_energyResultProducedV2Factory.Create(energyResult));
+                if (_energyResultProducedV2Factory.CanCreate(energyResult))
+                    yield return CreateIntegrationEvent(_energyResultProducedV2Factory.Create(energyResult));
+
                 if (_gridLossResultProducedV2Factory.CanCreate(energyResult))
                     yield return CreateIntegrationEvent(_gridLossResultProducedV2Factory.Create(energyResult));
             }
