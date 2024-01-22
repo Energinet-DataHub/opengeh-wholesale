@@ -29,7 +29,7 @@
   <ItemGroup>
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.17.2" />
     <PackageReference Include="Azure.Monitor.Query" Version="1.2.0" />
-    <PackageReference Include="Energinet.DataHub.Core.FunctionApp.TestCommon" Version="4.4.2" />
+    <PackageReference Include="Energinet.DataHub.Core.FunctionApp.TestCommon" Version="4.5.0" />
     <PackageReference Include="Microsoft.Azure.Databricks.Client" Version="2.2.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
