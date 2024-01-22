@@ -100,7 +100,7 @@ class TableReader:
             .load(path)
             .where(col(Colname.observation_time) >= period_start_datetime)
             .where(col(Colname.observation_time) < period_end_datetime)
-            .where(not col(Colname.metering_point_id).isin(grid_loss_metering_points))
+            .join(grid_loss_metering_points, Colname.metering_point_id, "left_anti")
         )
 
         if "observation_year" in df.columns:
