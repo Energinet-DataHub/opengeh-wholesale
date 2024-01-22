@@ -23,7 +23,6 @@ using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.GridArea;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.ReceivedIntegrationEvent;
 using Energinet.DataHub.Wholesale.Batches.Interfaces.GridArea;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
-using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Application.Triggers;

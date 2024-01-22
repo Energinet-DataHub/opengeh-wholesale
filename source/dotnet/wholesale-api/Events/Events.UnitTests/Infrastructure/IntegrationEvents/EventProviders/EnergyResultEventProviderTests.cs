@@ -42,7 +42,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
         private readonly string? _fromGridArea = null;
         private readonly Instant _periodStart = Instant.FromUtc(2021, 1, 2, 23, 0);
         private readonly Instant _periodEnd = Instant.FromUtc(2021, 1, 3, 23, 0);
-        private CompletedCalculation _completedCalculation;
+        private readonly CompletedCalculation _completedCalculation;
 
         public EnergyResultEventProviderTests()
         {
