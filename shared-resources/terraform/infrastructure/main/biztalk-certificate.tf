@@ -1,3 +1,4 @@
+# Should be moved to eSett exchange when eSett deprecated is removed
 resource "azurerm_key_vault_certificate" "esett_biztalk_certificate" {
   name         = "cert-esett-biztalk"
   key_vault_id = module.kv_shared.id

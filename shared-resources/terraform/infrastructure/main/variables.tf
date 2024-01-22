@@ -211,3 +211,8 @@ variable "cert_esett_biztalk_datahub3_password" {
   type        = string
   description = "Password for the eSett Biztalk certificate"
 }
+
+variable "cert_esett_dh2_datahub3_password" {
+  type        = string
+  description = "Password for the eSett DH2 certificate"
+}
