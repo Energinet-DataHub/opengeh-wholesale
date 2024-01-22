@@ -218,6 +218,4 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
                 1);
         }
     }
-
-
 }
