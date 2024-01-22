@@ -35,8 +35,8 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
 {
     public class EnergyResultEventProviderTests
     {
+        private const string GridArea = "543";
         private readonly Guid _calculationId = Guid.NewGuid();
-        private readonly string _gridArea = "543";
         private readonly string? _energySupplierId = null;
         private readonly string? _balanceResponsibleId = null;
         private readonly string? _fromGridArea = null;
@@ -154,13 +154,54 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
             actualIntegrationEvents.Where(e => e.EventName == expectedEventName).Should().ContainSingle();
         }
 
+        [Theory]
+        [AutoMoqData]
+        public async Task GetAsync_WhenTimeSeriesTypeNotSupportedForEnergyResultProducedV2Event_ReturnsNoEnergyResultProducedV2Event(
+            [Frozen] Mock<IEnergyResultQueries> energyResultQueriesMock,
+            CalculationResultCompletedFactory calculationResultCompletedFactory,
+            EnergyResultProducedV2Factory energyResultProducedV2Factory,
+            GridLossResultProducedV1Factory gridLossResultProducedV1Factory)
+        {
+            foreach (var timeSeriesType in Enum.GetValues(typeof(TimeSeriesType)).Cast<TimeSeriesType>())
+            {
+                // Arrange
+                if (timeSeriesType
+                    is TimeSeriesType.Production
+                    or TimeSeriesType.FlexConsumption
+                    or TimeSeriesType.NonProfiledConsumption
+                    or TimeSeriesType.TotalConsumption
+                    or TimeSeriesType.NetExchangePerGa
+                    or TimeSeriesType.NetExchangePerNeighboringGa)
+                    continue;
+
+                const string energyResultProducedV2EventName = Contracts.IntegrationEvents.EnergyResultProducedV2.EventName;
+                var energyResult = CreateEnergyResult(timeSeriesType);
+                var energyResults = new[] { energyResult };
+                var sut = new EnergyResultEventProvider(
+                    energyResultQueriesMock.Object,
+                    calculationResultCompletedFactory,
+                    energyResultProducedV2Factory,
+                    gridLossResultProducedV1Factory);
+
+                energyResultQueriesMock
+                    .Setup(mock => mock.GetAsync(_completedCalculation.Id))
+                    .Returns(energyResults.ToAsyncEnumerable());
+
+                // Act
+                var actualIntegrationEvents = await sut.GetAsync(_completedCalculation).ToListAsync();
+
+                // Assert
+                actualIntegrationEvents.Where(e => e.EventName == energyResultProducedV2EventName).Should().BeEmpty();
+            }
+        }
+
         private EnergyResult CreateEnergyResult(TimeSeriesType timeSeriesType)
         {
             var quantityQualities = new Collection<QuantityQuality> { QuantityQuality.Estimated };
             return new EnergyResult(
                 Guid.NewGuid(),
                 _calculationId,
-                _gridArea,
+                GridArea,
                 timeSeriesType,
                 _energySupplierId,
                 _balanceResponsibleId,
@@ -177,4 +218,6 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
                 1);
         }
     }
+
+
 }
