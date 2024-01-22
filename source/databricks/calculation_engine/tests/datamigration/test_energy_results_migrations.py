@@ -246,9 +246,17 @@ def test__result_table__is_not_managed(
 @pytest.mark.parametrize(
     "metering_point_id,time_series_type",
     [
-        ("571313180480500149", "negative_grid_loss"),
-        ("571313180480500149", "positive_grid_loss"),
-        (None, "production"),
+        (None, TimeSeriesType.PRODUCTION.value),
+        (None, TimeSeriesType.NON_PROFILED_CONSUMPTION.value),
+        (None, TimeSeriesType.NET_EXCHANGE_PER_NEIGHBORING_GA.value),
+        (None, TimeSeriesType.NET_EXCHANGE_PER_GA.value),
+        (None, TimeSeriesType.FLEX_CONSUMPTION.value),
+        (None, TimeSeriesType.GRID_LOSS.value),
+        ("571313180480500149", TimeSeriesType.NEGATIVE_GRID_LOSS.value),
+        ("571313180480500149", TimeSeriesType.POSITIVE_GRID_LOSS.value),
+        (None, TimeSeriesType.TOTAL_CONSUMPTION.value),
+        (None, TimeSeriesType.TEMP_FLEX_CONSUMPTION.value),
+        (None, TimeSeriesType.TEMP_PRODUCTION.value),
     ],
 )
 def test__migrated_table_constraints_on_metering_point_id_with_valid_data(
@@ -276,11 +284,19 @@ def test__migrated_table_constraints_on_metering_point_id_with_valid_data(
 @pytest.mark.parametrize(
     "metering_point_id,time_series_type",
     [
-        ("not_18_length", "negative_grid_loss"),
-        ("not_18_length", "positive_grid_loss"),
-        (None, "negative_grid_loss"),
-        (None, "positive_grid_loss"),
-        ("571313180480500149", "production"),
+        ("571313180480500149", TimeSeriesType.PRODUCTION.value),
+        ("571313180480500149", TimeSeriesType.NON_PROFILED_CONSUMPTION.value),
+        ("571313180480500149", TimeSeriesType.NET_EXCHANGE_PER_NEIGHBORING_GA.value),
+        ("571313180480500149", TimeSeriesType.NET_EXCHANGE_PER_GA.value),
+        ("571313180480500149", TimeSeriesType.FLEX_CONSUMPTION.value),
+        ("571313180480500149", TimeSeriesType.GRID_LOSS.value),
+        (None, TimeSeriesType.NEGATIVE_GRID_LOSS.value),
+        (None, TimeSeriesType.POSITIVE_GRID_LOSS.value),
+        ("not_18_length", TimeSeriesType.NEGATIVE_GRID_LOSS.value),
+        ("not_18_length", TimeSeriesType.POSITIVE_GRID_LOSS.value),
+        ("571313180480500149", TimeSeriesType.TOTAL_CONSUMPTION.value),
+        ("571313180480500149", TimeSeriesType.TEMP_FLEX_CONSUMPTION.value),
+        ("571313180480500149", TimeSeriesType.TEMP_PRODUCTION.value),
     ],
 )
 def test__migrated_table_constraints_on_metering_point_id_with_invalid_data(
