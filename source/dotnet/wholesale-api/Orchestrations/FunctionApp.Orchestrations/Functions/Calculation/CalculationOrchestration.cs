@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using FunctionApp.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.DurableTask;
@@ -26,12 +27,13 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
         [Function(nameof(StartCalculation))]
         public static async Task<HttpResponseData> StartCalculation(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req,
+            [FromBody] BatchRequestDto batchRequestDto,
             [DurableClient] DurableTaskClient client,
             FunctionContext executionContext)
         {
             var logger = executionContext.GetLogger(nameof(StartCalculation));
 
-            var instanceId = await client.ScheduleNewOrchestrationInstanceAsync(nameof(Calculation));
+            var instanceId = await client.ScheduleNewOrchestrationInstanceAsync(nameof(Calculation), batchRequestDto);
             logger.LogInformation("Created new orchestration with instance ID = {instanceId}", instanceId);
 
             return client.CreateCheckStatusResponse(req, instanceId);
@@ -41,11 +43,17 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
         public static async Task<string> Calculation(
             [OrchestrationTrigger] TaskOrchestrationContext context)
         {
+            var batchRequestDto = context.GetInput<BatchRequestDto>();
+            if (batchRequestDto == null)
+            {
+                return "Error";
+            }
+
             var result = string.Empty;
 
-            result += await context.CallActivityAsync<string>(nameof(CalculationActivities.CreateCalculationMetaActivity), "Tokyo") + " ";
-            result += await context.CallActivityAsync<string>(nameof(CalculationActivities.StartCalculationActivity), "London") + " ";
-            result += await context.CallActivityAsync<string>(nameof(CalculationActivities.UpdateCalculationMetaActivity), "Seattle");
+            result += await context.CallActivityAsync<string>(nameof(CalculationActivities.CreateCalculationMetaActivity), batchRequestDto.ProcessType.ToString()) + " ";
+            result += await context.CallActivityAsync<string>(nameof(CalculationActivities.StartCalculationActivity), batchRequestDto.StartDate.ToString()) + " ";
+            result += await context.CallActivityAsync<string>(nameof(CalculationActivities.UpdateCalculationMetaActivity), batchRequestDto.EndDate.ToString());
             return result;
         }
     }
