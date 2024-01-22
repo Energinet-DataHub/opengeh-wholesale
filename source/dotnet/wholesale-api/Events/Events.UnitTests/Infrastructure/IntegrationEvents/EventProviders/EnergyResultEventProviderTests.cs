@@ -64,7 +64,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
             GridLossResultProducedV1Factory gridLossResultProducedV1Factory)
         {
             // Arrange
-            var expectedEventName = Contracts.IntegrationEvents.GridLossResultProducedV1.EventName;
+            const string expectedEventName = Contracts.IntegrationEvents.GridLossResultProducedV1.EventName;
             var energyResult = CreateEnergyResult(positiveOrNegativeGridLoss);
             var energyResults = new[] { energyResult };
             var sut = new EnergyResultEventProvider(

@@ -27,24 +27,8 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.En
 
 public class EnergyResultProducedV2Factory : IEnergyResultProducedV2Factory
 {
-    private static readonly IReadOnlyCollection<TimeSeriesType> _supportedTimeSeriesTypes = new[]
-    {
-        TimeSeriesType.Production,
-        TimeSeriesType.FlexConsumption,
-        TimeSeriesType.NonProfiledConsumption,
-        TimeSeriesType.TotalConsumption,
-        TimeSeriesType.NetExchangePerGa,
-        TimeSeriesType.NetExchangePerNeighboringGa,
-    };
-
-    public bool CanCreate(EnergyResult result) =>
-        _supportedTimeSeriesTypes.Contains(result.TimeSeriesType);
-
     public Contracts.IntegrationEvents.EnergyResultProducedV2 Create(EnergyResult energyResult)
     {
-        if (!CanCreate(energyResult))
-            throw new ArgumentException($"Cannot create '{nameof(Contracts.IntegrationEvents.EnergyResultProducedV2)}' from energy result.", nameof(energyResult));
-
         if (energyResult.EnergySupplierId == null && energyResult.BalanceResponsibleId == null)
             return CreateForGridArea(energyResult);
 
