@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using FunctionApp.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
@@ -20,34 +21,100 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
 #pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
     internal static class CalculationActivities
     {
+        /// <summary>
+        /// Create calculation status record in SQL database.
+        /// </summary>
         [Function(nameof(CreateCalculationMetaActivity))]
-        public static string CreateCalculationMetaActivity(
-            [ActivityTrigger] string cityName,
+        public static async Task<CalculationMeta> CreateCalculationMetaActivity(
+            [ActivityTrigger] BatchRequestDto batchRequestDto,
             FunctionContext executionContext)
         {
             var logger = executionContext.GetLogger(nameof(CreateCalculationMetaActivity));
-            logger.LogInformation("Saying hello to {name}", cityName);
-            return $"Hello, {cityName}!";
+            logger.LogInformation($"{nameof(batchRequestDto)}: {batchRequestDto}");
+
+            // TODO: Create new calculation id and create calculation tracking record in SQL database.
+            await Task.Delay(Random.Shared.Next(1, 3) * 1000);
+
+            // TODO: Return calculation status record.
+            return new CalculationMeta
+            {
+                Id = Guid.NewGuid(),
+                Input = batchRequestDto,
+            };
         }
 
-        [Function(nameof(StartCalculationActivity))]
-        public static string StartCalculationActivity(
-            [ActivityTrigger] string cityName,
-            FunctionContext executionContext)
-        {
-            var logger = executionContext.GetLogger(nameof(StartCalculationActivity));
-            logger.LogInformation("Saying hello to {name}", cityName);
-            return $"Hello, {cityName}!";
-        }
-
+        /// <summary>
+        /// Update calculation status record in SQL database.
+        /// </summary>
         [Function(nameof(UpdateCalculationMetaActivity))]
-        public static string UpdateCalculationMetaActivity(
-            [ActivityTrigger] string cityName,
+        public static async Task UpdateCalculationMetaActivity(
+            [ActivityTrigger] CalculationMeta calculationMeta,
             FunctionContext executionContext)
         {
             var logger = executionContext.GetLogger(nameof(UpdateCalculationMetaActivity));
-            logger.LogInformation("Saying hello to {name}", cityName);
-            return $"Hello, {cityName}!";
+            logger.LogInformation($"{nameof(calculationMeta)}: {calculationMeta}");
+
+            // TODO: Update calculation tracking record in SQL database.
+            await Task.Delay(Random.Shared.Next(1, 3) * 1000);
+        }
+
+        /// <summary>
+        /// Start calculation in Databricks.
+        /// </summary>
+        [Function(nameof(StartCalculationActivity))]
+        public static async Task<Guid> StartCalculationActivity(
+            [ActivityTrigger] Guid calculationId,
+            FunctionContext executionContext)
+        {
+            var logger = executionContext.GetLogger(nameof(StartCalculationActivity));
+            logger.LogInformation($"{nameof(calculationId)}: {calculationId}");
+
+            // TODO: Start calculation job with parameters in databricks.
+            await Task.Delay(Random.Shared.Next(1, 5) * 1000);
+
+            // TODO: Return calculation job id.
+            var jobId = Guid.NewGuid();
+            return jobId;
+        }
+
+        /// <summary>
+        /// Request calculation job status in Databricks.
+        /// </summary>
+        [Function(nameof(GetJobStatusActivity))]
+        public static async Task<string> GetJobStatusActivity(
+            [ActivityTrigger] Guid jobId,
+            FunctionContext executionContext)
+        {
+            var logger = executionContext.GetLogger(nameof(GetJobStatusActivity));
+            logger.LogInformation($"{nameof(jobId)} : {jobId}");
+
+            // TODO: Request calculation job status in databricks.
+            var rnd = Random.Shared.Next(1, 5);
+            await Task.Delay(rnd * 1000);
+
+            // TODO: Return calculation job status.
+            var status = "Running";
+            if (rnd > 3)
+            {
+                status = "Completed";
+            }
+
+            return status;
+        }
+
+        /// <summary>
+        /// Retrieve calculation results from Databricks and send them as events using ServiceBus.
+        /// </summary>
+        [Function(nameof(SendCalculationResultsActivity))]
+        public static async Task SendCalculationResultsActivity(
+            [ActivityTrigger] Guid calculationId,
+            FunctionContext executionContext)
+        {
+            var logger = executionContext.GetLogger(nameof(SendCalculationResultsActivity));
+            logger.LogInformation($"{nameof(calculationId)} : {calculationId}");
+
+            // TODO: Retrieve calculation results from Databricks and send them as events using ServiceBus.
+            await Task.Delay(Random.Shared.Next(1, 5) * 1000);
         }
     }
 #pragma warning restore CA2007 // Consider calling ConfigureAwait on the awaited task

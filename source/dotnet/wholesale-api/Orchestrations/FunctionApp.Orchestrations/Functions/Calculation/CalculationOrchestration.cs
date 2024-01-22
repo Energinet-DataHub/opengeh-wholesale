@@ -41,20 +41,50 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
 
         [Function(nameof(Calculation))]
         public static async Task<string> Calculation(
-            [OrchestrationTrigger] TaskOrchestrationContext context)
+            [OrchestrationTrigger] TaskOrchestrationContext context,
+            FunctionContext executionContext)
         {
             var batchRequestDto = context.GetInput<BatchRequestDto>();
             if (batchRequestDto == null)
             {
-                return "Error";
+                return "Error: No input specified.";
             }
 
-            var result = string.Empty;
+            if (!context.IsReplaying)
+            {
+                var logger = executionContext.GetLogger(nameof(Calculation));
+                logger.LogInformation($"{nameof(batchRequestDto)}: {batchRequestDto}.");
+            }
 
-            result += await context.CallActivityAsync<string>(nameof(CalculationActivities.CreateCalculationMetaActivity), batchRequestDto.ProcessType.ToString()) + " ";
-            result += await context.CallActivityAsync<string>(nameof(CalculationActivities.StartCalculationActivity), batchRequestDto.StartDate.ToString()) + " ";
-            result += await context.CallActivityAsync<string>(nameof(CalculationActivities.UpdateCalculationMetaActivity), batchRequestDto.EndDate.ToString());
-            return result;
+            var calculationMeta = await context.CallActivityAsync<CalculationMeta>(nameof(CalculationActivities.CreateCalculationMetaActivity), batchRequestDto);
+            calculationMeta.JobId = await context.CallActivityAsync<Guid>(nameof(CalculationActivities.StartCalculationActivity), calculationMeta.Id);
+
+            // TODO: Adjust polling and expiry
+            var pollingIntervalInSeconds = 5;
+            var expiryTime = context.CurrentUtcDateTime.AddMinutes(1);
+
+            while (context.CurrentUtcDateTime < expiryTime)
+            {
+                calculationMeta.JobStatus = await context.CallActivityAsync<string>(nameof(CalculationActivities.GetJobStatusActivity), calculationMeta.JobId);
+                if (calculationMeta.JobStatus == "Completed")
+                {
+                    await context.CallActivityAsync(nameof(CalculationActivities.SendCalculationResultsActivity), calculationMeta.Id);
+                    break;
+                }
+
+                // Wait for the next checkpoint
+                var nextCheckpoint = context.CurrentUtcDateTime.AddSeconds(pollingIntervalInSeconds);
+                await context.CreateTimer(nextCheckpoint, CancellationToken.None);
+            }
+
+            if (calculationMeta.JobStatus != "Completed")
+            {
+                return "Error: Job monitor expired.";
+            }
+
+            await context.CallActivityAsync(nameof(CalculationActivities.UpdateCalculationMetaActivity), calculationMeta);
+
+            return "Success";
         }
     }
 #pragma warning restore CA2007 // Consider calling ConfigureAwait on the awaited task
