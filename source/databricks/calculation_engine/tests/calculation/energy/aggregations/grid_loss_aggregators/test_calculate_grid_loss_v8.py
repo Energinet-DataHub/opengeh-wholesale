@@ -67,7 +67,6 @@ def agg_result_factory(
                     Colname.time_window: [],
                     Colname.sum_quantity: [],
                     Colname.qualities: [],
-                    Colname.metering_point_id: [],
                 }
             )
             for i in range(10):
@@ -84,7 +83,6 @@ def agg_result_factory(
                         },
                         Colname.sum_quantity: Decimal(20 + i),
                         Colname.qualities: [QuantityQuality.ESTIMATED.value],
-                        Colname.metering_point_id: None,
                     },
                     ignore_index=True,
                 )
@@ -101,7 +99,6 @@ def agg_result_factory(
                     Colname.time_window: [],
                     Colname.sum_quantity: [],
                     Colname.qualities: [],
-                    Colname.metering_point_id: [],
                 }
             )
             for i in range(10):
@@ -118,7 +115,6 @@ def agg_result_factory(
                         },
                         Colname.sum_quantity: Decimal(13 + i),
                         Colname.qualities: [QuantityQuality.ESTIMATED.value],
-                        Colname.metering_point_id: None,
                     },
                     ignore_index=True,
                 )
@@ -135,7 +131,6 @@ def agg_result_factory(
                     Colname.time_window: [],
                     Colname.sum_quantity: [],
                     Colname.qualities: [],
-                    Colname.metering_point_id: [],
                 }
             )
             for i in range(10):
@@ -152,7 +147,6 @@ def agg_result_factory(
                         },
                         Colname.sum_quantity: Decimal(14 + i),
                         Colname.qualities: [QuantityQuality.ESTIMATED.value],
-                        Colname.metering_point_id: None,
                     },
                     ignore_index=True,
                 )
@@ -169,7 +163,6 @@ def agg_result_factory(
                     Colname.time_window: [],
                     Colname.sum_quantity: [],
                     Colname.qualities: [],
-                    Colname.metering_point_id: [],
                 }
             )
             for i in range(10):
@@ -186,7 +179,6 @@ def agg_result_factory(
                         },
                         Colname.sum_quantity: Decimal(50 + i),
                         Colname.qualities: [QuantityQuality.ESTIMATED.value],
-                        Colname.metering_point_id: None,
                     },
                     ignore_index=True,
                 )
@@ -241,7 +233,6 @@ def agg_net_exchange_factory(spark: SparkSession) -> Callable[[], EnergyResults]
                     Decimal(1.0),
                 ],
                 Colname.qualities: [["56"], ["56"], ["56"], ["56"], ["56"], ["56"]],
-                Colname.metering_point_id: [None, None, None, None, None, None],
             }
         )
 
@@ -296,7 +287,6 @@ def agg_flex_consumption_factory(spark: SparkSession) -> Callable[[], EnergyResu
                     Decimal(2.0),
                 ],
                 Colname.qualities: [["56"], ["56"], ["56"], ["56"], ["56"], ["56"]],
-                Colname.metering_point_id: [None, None, None, None, None, None],
             }
         )
 
@@ -351,7 +341,6 @@ def agg_hourly_consumption_factory(spark: SparkSession) -> Callable[[], EnergyRe
                     Decimal(1.0),
                 ],
                 Colname.qualities: [["56"], ["56"], ["56"], ["56"], ["56"], ["56"]],
-                Colname.metering_point_id: [None, None, None, None, None, None],
             }
         )
 
@@ -406,7 +395,6 @@ def agg_hourly_production_factory(spark: SparkSession) -> Callable[[], EnergyRes
                     Decimal(2.0),
                 ],
                 Colname.qualities: [["56"], ["56"], ["56"], ["56"], ["56"], ["56"]],
-                Colname.metering_point_id: [None, None, None, None, None, None],
             }
         )
 

@@ -32,7 +32,6 @@ public class EnergyResultColumnNames
     public const string AggregationLevel = "aggregation_level";
     public const string TimeSeriesType = "time_series_type";
     public const string FromGridArea = "out_grid_area";
-    public const string MeteringPointId = "metering_point_id";
 
     public static IReadOnlyCollection<string> GetAllNames()
     {
@@ -56,7 +55,6 @@ public class EnergyResultColumnNames
              BatchExecutionTimeStart => "timestamp",
              FromGridArea => "string",
              Quantity => "decimal(18,3)",
-             MeteringPointId => "string",
              _ => throw new ArgumentOutOfRangeException(nameof(columnName), actualValue: columnName, "Unexpected column name."),
          };
 }

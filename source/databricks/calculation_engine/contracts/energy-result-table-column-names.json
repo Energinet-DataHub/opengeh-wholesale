@@ -51,10 +51,6 @@
       {
         "name": "calculation_result_id",
         "type": "string"
-      },
-      {
-        "name": "metering_point_id",
-        "type": "string"
       }
     ]
   }

@@ -83,7 +83,6 @@ def _create_result_row(
     quality: e.QuantityQuality = DEFAULT_QUALITY,
     time_window_start: datetime = DEFAULT_TIME_WINDOW_START,
     time_window_end: datetime = DEFAULT_TIME_WINDOW_END,
-    metering_point_id: str | None = None,
 ) -> dict:
     row = {
         Colname.grid_area: grid_area,
@@ -97,8 +96,8 @@ def _create_result_row(
         },
         Colname.sum_quantity: Decimal(quantity),
         Colname.qualities: [quality.value],
+        Colname.metering_point_type: e.MeteringPointType.PRODUCTION.value,
         Colname.settlement_method: [],
-        Colname.metering_point_id: metering_point_id,
     }
 
     return row
@@ -430,7 +429,6 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
         EnergyResultColumnNames.quantity,
         # The field that defines results
         EnergyResultColumnNames.calculation_result_id,
-        EnergyResultColumnNames.metering_point_id,
     ]
     contract_path = f"{contracts_path}/energy-result-table-column-names.json"
     all_columns = get_column_names_from_contract(contract_path)
