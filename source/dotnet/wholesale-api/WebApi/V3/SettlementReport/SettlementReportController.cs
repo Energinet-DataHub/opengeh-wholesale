@@ -64,8 +64,8 @@ public class SettlementReportController : V3ControllerBase
                         periodEnd,
                         energySupplier);
 
-                    Response.Headers.Add("Content-Type", "application/zip");
-                    Response.Headers.Add("Content-Disposition", $"attachment; filename={settlementReportFileName}");
+                    Response.Headers.Append("Content-Type", "application/zip");
+                    Response.Headers.Append("Content-Disposition", $"attachment; filename={settlementReportFileName}");
 
                     return Response.BodyWriter.AsStream();
                 },
