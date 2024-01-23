@@ -18,11 +18,6 @@ variable "domain_name_short" {
   description = "Shortest possible edition of the domain name."
 }
 
-variable "cert_pwd_esett_dh2_authentication_key1" {
-  type        = string
-  description = "Password for the DH2certificate"
-}
-
 variable "developer_object_ids" {
   type        = list(string)
   description = "List of developer principal IDs"
