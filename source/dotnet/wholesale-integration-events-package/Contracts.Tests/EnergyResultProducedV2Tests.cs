@@ -63,7 +63,7 @@ public class EnergyResultProducedV2Tests
         Assert.Equal(LastKnownContentOfContract, actualContent, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
     }
 
-    private const int LastKnownMinorEventVersion = 1;
+    private const int LastKnownMinorEventVersion = 2;
     private const string LastKnownContentOfContract = @"/* Copyright 2020 Energinet DataHub A/S
  *
  * Licensed under the Apache License, Version 2.0 (the ""License2"");
@@ -153,12 +153,7 @@ message EnergyResultProducedV2 {
         TIME_SERIES_TYPE_FLEX_CONSUMPTION = 3;
         TIME_SERIES_TYPE_NET_EXCHANGE_PER_GA = 4;
         TIME_SERIES_TYPE_NET_EXCHANGE_PER_NEIGHBORING_GA = 5;
-        TIME_SERIES_TYPE_GRID_LOSS = 6;
-        TIME_SERIES_TYPE_NEGATIVE_GRID_LOSS = 7;
-        TIME_SERIES_TYPE_POSITIVE_GRID_LOSS = 8;
         TIME_SERIES_TYPE_TOTAL_CONSUMPTION = 9;
-        TIME_SERIES_TYPE_TEMP_FLEX_CONSUMPTION = 10;
-        TIME_SERIES_TYPE_TEMP_PRODUCTION = 11;
     }
 
     message AggregationPerGridArea {
