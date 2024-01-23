@@ -65,7 +65,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
             AzuriteManager.StartAzurite();
             await DatabaseManager.CreateDatabaseAsync();
 
-            Environment.SetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY", IntegrationTestConfiguration.ApplicationInsightsInstrumentationKey);
+            Environment.SetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING", IntegrationTestConfiguration.ApplicationInsightsConnectionString);
 
             // Overwrites the setting so the Web Api app uses the database we have control of in the test
             Environment.SetEnvironmentVariable(
