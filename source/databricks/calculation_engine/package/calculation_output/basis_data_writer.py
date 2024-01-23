@@ -69,7 +69,7 @@ class BasisDataWriter:
             timeseries_hour_df,
         )
 
-        _write_basis_data_to_delta_table(
+        self._write_basis_data_to_delta_table(
             master_basis_data_df,
             timeseries_quarter_df,
             timeseries_hour_df,
@@ -164,12 +164,6 @@ class BasisDataWriter:
                 partition_keys,
             )
 
-
-def _write_df_to_csv(path: str, df: DataFrame, partition_keys: list[str]) -> None:
-    df.repartition(PartitionKeyName.GRID_AREA).write.mode("overwrite").partitionBy(
-        partition_keys
-    ).option("header", True).csv(path)
-
     def _write_basis_data_to_delta_table(
         self,
         master_basis_data_df: DataFrame,
@@ -177,39 +171,85 @@ def _write_df_to_csv(path: str, df: DataFrame, partition_keys: list[str]) -> Non
         timeseries_hour_df: DataFrame,
     ) -> None:
         with logging_configuration.start_span("basis_data_to_delta_table"):
-            master_basis_data_df = master_basis_data_df.select(
-                col("calculation_id").lit(self.calculation_id),
-                col("calculation_type").lit(self.process_type),
-                col(BasisDataColname.grid_area).alias("grid_area"),
-                col(BasisDataColname.metering_point_id).alias("metering_point_id"),
-                col(BasisDataColname.valid_from).alias("from_date"),
-                col(BasisDataColname.valid_to).alias("to_date"),
-                col(BasisDataColname.from_grid_area).alias("out_grid_area"),
-                col(BasisDataColname.to_grid_area).alias("in_grid_area"),
-                col(BasisDataColname.metering_point_type).alias("metering_point_type"),
-                col(BasisDataColname.settlement_method).alias("settlement_method"),
-                col(BasisDataColname.energy_supplier_id).alias("energy_supplier_id"),
-            )
-            _write_to_storage(master_basis_data_df, paths.MASTER_BASIS_DATA_TABLE_NAME)
+            self._write_master_basis_data_to_storage(master_basis_data_df)
 
-            timeseries_quarter_df = timeseries_quarter_df.select(
-                col("calculation_id").lit(self.calculation_id),
-                col("calculation_type").lit(self.process_type),
-                col(BasisDataColname.grid_area).alias("grid_area"),
-                col(BasisDataColname.metering_point_id).alias("metering_point_id"),
-                col(BasisDataColname.start_datetime).alias("start_datetime"),
-                col(BasisDataColname.quantity).alias("quantity"),
-                col(BasisDataColname.quantity_qualities).alias("quantity_qualities"),
-                col(BasisDataColname.grid_area).alias("out_grid_area"),
-                col(BasisDataColname.from_grid_area).alias("in_grid_area"),
-            )
-            _write_to_storage(
+            self._write_time_series_to_storage(
                 timeseries_quarter_df, paths.TIME_SERIES_QUARTER_TABLE_NAME
             )
-            _write_to_storage(timeseries_hour_df, paths.TIME_SERIES_HOUR_TABLE_NAME)
+
+            self._write_time_series_to_storage(
+                timeseries_hour_df, paths.TIME_SERIES_HOUR_TABLE_NAME
+            )
+
+    def _write_master_basis_data_to_storage(
+        self,
+        master_basis_data_df,
+    ) -> None:
+        master_basis_data_df = master_basis_data_df.select(
+            col("calculation_id").lit(self.calculation_id),
+            col("calculation_type").lit(self.process_type),
+            col(BasisDataColname.grid_area).alias("grid_area"),
+            col(BasisDataColname.metering_point_id).alias("metering_point_id"),
+            col(BasisDataColname.valid_from).alias("from_date"),
+            col(BasisDataColname.valid_to).alias("to_date"),
+            col(BasisDataColname.from_grid_area).alias("out_grid_area"),
+            col(BasisDataColname.to_grid_area).alias("in_grid_area"),
+            col(BasisDataColname.metering_point_type).alias("metering_point_type"),
+            col(BasisDataColname.settlement_method).alias("settlement_method"),
+            col(BasisDataColname.energy_supplier_id).alias("energy_supplier_id"),
+        )
+        _write_to_storage(master_basis_data_df, paths.MASTER_BASIS_DATA_TABLE_NAME)
+
+    def _write_time_series_to_storage(
+        self, time_series: DataFrame, table_name: str
+    ) -> None:
+        quantity_columns = _get_quantity_columns(time_series)
+        time_series = time_series.select(
+            col("calculation_id").lit(self.calculation_id),
+            col("calculation_type").lit(self.process_type),
+            col(BasisDataColname.grid_area).alias("grid_area"),
+            col(BasisDataColname.energy_supplier_id).alias("energy_supplier_id"),
+            col(BasisDataColname.metering_point_id).alias("metering_point_id"),
+            col(BasisDataColname.start_datetime).alias("start_datetime"),
+            *quantity_columns,
+        )
+
+        _write_to_storage(time_series, table_name)
+
+
+def _write_df_to_csv(path: str, df: DataFrame, partition_keys: list[str]) -> None:
+    df.repartition(PartitionKeyName.GRID_AREA).write.mode("overwrite").partitionBy(
+        partition_keys
+    ).option("header", True).csv(path)
 
 
 def _write_to_storage(results: DataFrame, table_name: str) -> None:
     results.write.format("delta").mode("append").option(
         "mergeSchema", "false"
     ).insertInto(f"{OUTPUT_DATABASE_NAME}.{table_name}")
+
+
+def rename_quantity_columns(
+    df: DataFrame,
+) -> DataFrame:
+    def extract_numeric(column_name: str):
+        import re
+
+        match = re.search(r"\d+", column_name)
+        if match:
+            return int(match.group())
+        else:
+            return None
+
+    # Rename columns based on the specified pattern
+    for col_name in _get_quantity_columns(df):
+        i = extract_numeric(col_name)
+        if i is not None:
+            new_col_name = f"quantity_{i}"
+            df = df.withColumnRenamed(col_name, new_col_name)
+
+    return df
+
+
+def _get_quantity_columns(df: DataFrame) -> list[str]:
+    return [c for c in df.columns if c.startswith("ENERGYQUANTITY")]
