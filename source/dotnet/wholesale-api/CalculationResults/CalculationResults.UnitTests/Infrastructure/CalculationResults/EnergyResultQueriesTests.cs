@@ -53,15 +53,15 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
         {
             _row0BatchId, "100", "200", "non_profiled_consumption", string.Empty, string.Empty,
             "2022-05-16T22:00:00.000Z", "1.111", "[\"measured\"]", _calculationResultId0,
-            DeltaTableProcessType.Aggregation,
+            DeltaTableProcessType.Aggregation, null,
         };
         var row1 = new[]
         {
             "b78787d5-b544-44ac-87c2-7720aab86ed2", "200", "100", "non_profiled_consumption", string.Empty,
             string.Empty, "2022-05-16T22:00:00.000Z", "2.222", "[\"measured\"]", calculationResultId1,
-            DeltaTableProcessType.BalanceFixing,
+            DeltaTableProcessType.BalanceFixing, null,
         };
-        var rows = new List<string[]> { row0, row1, };
+        var rows = new List<string?[]> { row0, row1, };
 
         // Using the columns from the EnergyResultQueries class to ensure that the test is not broken if the columns are changed
         _tableChunk = new TableChunk(EnergyResultQueryStatement.SqlColumnNames, rows);
