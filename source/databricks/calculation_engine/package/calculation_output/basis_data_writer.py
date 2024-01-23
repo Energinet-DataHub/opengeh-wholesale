@@ -16,18 +16,19 @@ from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
 
 import package.calculation.preparation.transformations.basis_data as basis_data
-from package.codelists import AggregationLevel, BasisDataType
+from package.codelists import AggregationLevel, BasisDataType, ProcessType
 from package.constants import PartitionKeyName, BasisDataColname
 from package.infrastructure import paths, logging_configuration
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME
 
 
 class BasisDataWriter:
-    def __init__(self, container_path: str, batch_id: str):
+    def __init__(self, container_path: str, batch_id: str, process_type: ProcessType):
         self.__master_basis_data_path = f"{container_path}/{paths.get_basis_data_root_path(BasisDataType.MASTER_BASIS_DATA, batch_id)}"
         self.__time_series_quarter_path = f"{container_path}/{paths.get_basis_data_root_path(BasisDataType.TIME_SERIES_QUARTER, batch_id)}"
         self.__time_series_hour_path = f"{container_path}/{paths.get_basis_data_root_path(BasisDataType.TIME_SERIES_HOUR, batch_id)}"
         self.calculation_id = batch_id
+        self.process_type = process_type.value
 
     @logging_configuration.use_span("calculation.basis_data")
     def write(
@@ -169,16 +170,43 @@ def _write_df_to_csv(path: str, df: DataFrame, partition_keys: list[str]) -> Non
         partition_keys
     ).option("header", True).csv(path)
 
+    def _write_basis_data_to_delta_table(
+        self,
+        master_basis_data_df: DataFrame,
+        timeseries_quarter_df: DataFrame,
+        timeseries_hour_df: DataFrame,
+    ) -> None:
+        with logging_configuration.start_span("basis_data_to_delta_table"):
+            master_basis_data_df = master_basis_data_df.select(
+                col("calculation_id").lit(self.calculation_id),
+                col("calculation_type").lit(self.process_type),
+                col(BasisDataColname.grid_area).alias("grid_area"),
+                col(BasisDataColname.metering_point_id).alias("metering_point_id"),
+                col(BasisDataColname.valid_from).alias("from_date"),
+                col(BasisDataColname.valid_to).alias("to_date"),
+                col(BasisDataColname.from_grid_area).alias("out_grid_area"),
+                col(BasisDataColname.to_grid_area).alias("in_grid_area"),
+                col(BasisDataColname.metering_point_type).alias("metering_point_type"),
+                col(BasisDataColname.settlement_method).alias("settlement_method"),
+                col(BasisDataColname.energy_supplier_id).alias("energy_supplier_id"),
+            )
+            _write_to_storage(master_basis_data_df, paths.MASTER_BASIS_DATA_TABLE_NAME)
 
-def _write_basis_data_to_delta_table(
-    master_basis_data_df: DataFrame,
-    timeseries_quarter_df: DataFrame,
-    timeseries_hour_df: DataFrame,
-) -> None:
-    with logging_configuration.start_span("basis_data_to_delta_table"):
-        _write_to_storage(master_basis_data_df, paths.MASTER_BASIS_DATA_TABLE_NAME)
-        _write_to_storage(timeseries_quarter_df, paths.TIME_SERIES_QUARTER_TABLE_NAME)
-        _write_to_storage(timeseries_hour_df, paths.TIME_SERIES_HOUR_TABLE_NAME)
+            timeseries_quarter_df = timeseries_quarter_df.select(
+                col("calculation_id").lit(self.calculation_id),
+                col("calculation_type").lit(self.process_type),
+                col(BasisDataColname.grid_area).alias("grid_area"),
+                col(BasisDataColname.metering_point_id).alias("metering_point_id"),
+                col(BasisDataColname.start_datetime).alias("start_datetime"),
+                col(BasisDataColname.quantity).alias("quantity"),
+                col(BasisDataColname.quantity_qualities).alias("quantity_qualities"),
+                col(BasisDataColname.grid_area).alias("out_grid_area"),
+                col(BasisDataColname.from_grid_area).alias("in_grid_area"),
+            )
+            _write_to_storage(
+                timeseries_quarter_df, paths.TIME_SERIES_QUARTER_TABLE_NAME
+            )
+            _write_to_storage(timeseries_hour_df, paths.TIME_SERIES_HOUR_TABLE_NAME)
 
 
 def _write_to_storage(results: DataFrame, table_name: str) -> None:

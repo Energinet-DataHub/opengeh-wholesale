@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.time_series_hour
     grid_area STRING NOT NULL,
     energy_supplier_id STRING NOT NULL,
     metering_point_id STRING NOT NULL,
-    start_time TIMESTAMP NOT NULL,
+    start_datetime TIMESTAMP NOT NULL,
     quantity_1 DECIMAL(18, 3) NOT NULL,
     quantity_2 DECIMAL(18, 3) NOT NULL,
     quantity_3 DECIMAL(18, 3) NOT NULL,
