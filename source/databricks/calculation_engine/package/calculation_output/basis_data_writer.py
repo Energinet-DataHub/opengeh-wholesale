@@ -19,6 +19,7 @@ import package.calculation.preparation.transformations.basis_data as basis_data
 from package.codelists import AggregationLevel, BasisDataType
 from package.constants import PartitionKeyName, BasisDataColname
 from package.infrastructure import paths, logging_configuration
+from package.infrastructure.paths import OUTPUT_DATABASE_NAME
 
 
 class BasisDataWriter:
@@ -62,6 +63,12 @@ class BasisDataWriter:
         )
 
         self._write_es_basis_data(
+            master_basis_data_df,
+            timeseries_quarter_df,
+            timeseries_hour_df,
+        )
+
+        _write_basis_data_to_delta_table(
             master_basis_data_df,
             timeseries_quarter_df,
             timeseries_hour_df,
@@ -161,3 +168,20 @@ def _write_df_to_csv(path: str, df: DataFrame, partition_keys: list[str]) -> Non
     df.repartition(PartitionKeyName.GRID_AREA).write.mode("overwrite").partitionBy(
         partition_keys
     ).option("header", True).csv(path)
+
+
+def _write_basis_data_to_delta_table(
+    master_basis_data_df: DataFrame,
+    timeseries_quarter_df: DataFrame,
+    timeseries_hour_df: DataFrame,
+) -> None:
+    with logging_configuration.start_span("basis_data_to_delta_table"):
+        _write_to_storage(master_basis_data_df, paths.MASTER_BASIS_DATA_TABLE_NAME)
+        _write_to_storage(timeseries_quarter_df, paths.TIME_SERIES_QUARTER_TABLE_NAME)
+        _write_to_storage(timeseries_hour_df, paths.TIME_SERIES_HOUR_TABLE_NAME)
+
+
+def _write_to_storage(results: DataFrame, table_name: str) -> None:
+    results.write.format("delta").mode("append").option(
+        "mergeSchema", "false"
+    ).insertInto(f"{OUTPUT_DATABASE_NAME}.{table_name}")

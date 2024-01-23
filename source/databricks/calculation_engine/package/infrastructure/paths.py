@@ -30,6 +30,9 @@ GRID_LOSS_METERING_POINTS_TABLE_NAME = "grid_loss_metering_points"
 OUTPUT_DATABASE_NAME = "wholesale_output"
 ENERGY_RESULT_TABLE_NAME = "energy_results"
 WHOLESALE_RESULT_TABLE_NAME = "wholesale_results"
+MASTER_BASIS_DATA_TABLE_NAME = "master_basis_data"
+TIME_SERIES_QUARTER_TABLE_NAME = "time_series_quarter"
+TIME_SERIES_HOUR_TABLE_NAME = "time_series_hour"
 
 TEST = ""
 
