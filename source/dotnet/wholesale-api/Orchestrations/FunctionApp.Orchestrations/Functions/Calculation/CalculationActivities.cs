@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Batches.Application;
+using Energinet.DataHub.Wholesale.Batches.Application.Model;
+using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using FunctionApp.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
@@ -24,13 +28,19 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
     {
         private readonly ILogger<CalculationActivities> _logger;
         private readonly ICreateCalculationHandler _createCalculationHandler;
+        private readonly ICalculationRepository _calculationRepository;
+        private readonly ICalculationEngineClient _calculationEngineClient;
 
         public CalculationActivities(
             ILogger<CalculationActivities> logger,
-            ICreateCalculationHandler createCalculationHandler)
+            ICreateCalculationHandler createCalculationHandler,
+            ICalculationRepository calculationRepository,
+            ICalculationEngineClient calculationEngineClient)
         {
             _logger = logger;
             _createCalculationHandler = createCalculationHandler;
+            _calculationRepository = calculationRepository;
+            _calculationEngineClient = calculationEngineClient;
         }
 
         /// <summary>
@@ -74,16 +84,14 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
         /// Start calculation in Databricks.
         /// </summary>
         [Function(nameof(StartCalculationActivity))]
-        public async Task<Guid> StartCalculationActivity(
-            [ActivityTrigger] Guid calculationId)
+        public async Task<CalculationId> StartCalculationActivity(
+            [ActivityTrigger] Guid calculationdId)
         {
-            _logger.LogInformation($"{nameof(calculationId)}: {calculationId}");
+            _logger.LogInformation($"{nameof(calculationdId)}: {calculationdId}");
 
-            // TODO: Start calculation job with parameters in databricks.
-            await Task.Delay(Random.Shared.Next(1, 5) * 1000);
+            var calculation = await _calculationRepository.GetAsync(calculationdId);
+            var jobId = await _calculationEngineClient.StartAsync(calculation);
 
-            // TODO: Return calculation job id.
-            var jobId = Guid.NewGuid();
             return jobId;
         }
 
@@ -91,23 +99,14 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
         /// Request calculation job status in Databricks.
         /// </summary>
         [Function(nameof(GetJobStatusActivity))]
-        public async Task<string> GetJobStatusActivity(
-            [ActivityTrigger] Guid jobId)
+        public async Task<CalculationState> GetJobStatusActivity(
+            [ActivityTrigger] CalculationId jobId)
         {
             _logger.LogInformation($"{nameof(jobId)} : {jobId}");
 
-            // TODO: Request calculation job status in databricks.
-            var rnd = Random.Shared.Next(1, 5);
-            await Task.Delay(rnd * 1000);
+            var calculationState = await _calculationEngineClient.GetStatusAsync(jobId);
 
-            // TODO: Return calculation job status.
-            var status = "Running";
-            if (rnd > 3)
-            {
-                status = "Completed";
-            }
-
-            return status;
+            return calculationState;
         }
 
         /// <summary>

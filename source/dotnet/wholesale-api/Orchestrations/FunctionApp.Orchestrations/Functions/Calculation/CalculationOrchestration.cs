@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Batches.Application.Model;
+using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using FunctionApp.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
@@ -55,29 +57,36 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
             logger.LogInformation($"{nameof(batchRequestDto)}: {batchRequestDto}.");
 
             var calculationMeta = await context.CallActivityAsync<CalculationMeta>(nameof(CalculationActivities.CreateCalculationMetaActivity), batchRequestDto);
-            calculationMeta.JobId = await context.CallActivityAsync<Guid>(nameof(CalculationActivities.StartCalculationActivity), calculationMeta.Id);
+            calculationMeta.JobId = await context.CallActivityAsync<CalculationId>(nameof(CalculationActivities.StartCalculationActivity), calculationMeta.Id);
 
             // TODO: Adjust polling and expiry
-            var pollingIntervalInSeconds = 5;
-            var expiryTime = context.CurrentUtcDateTime.AddMinutes(1);
+            var pollingIntervalInSeconds = 60;
+            var expiryTime = context.CurrentUtcDateTime.AddMinutes(30);
 
             while (context.CurrentUtcDateTime < expiryTime)
             {
-                calculationMeta.JobStatus = await context.CallActivityAsync<string>(nameof(CalculationActivities.GetJobStatusActivity), calculationMeta.JobId);
-                if (calculationMeta.JobStatus == "Completed")
+                calculationMeta.JobStatus = await context.CallActivityAsync<CalculationState>(nameof(CalculationActivities.GetJobStatusActivity), calculationMeta.JobId);
+
+                if (calculationMeta.JobStatus == CalculationState.Running
+                    || calculationMeta.JobStatus == CalculationState.Pending)
                 {
-                    await context.CallActivityAsync(nameof(CalculationActivities.SendCalculationResultsActivity), calculationMeta.Id);
+                    // Wait for the next checkpoint
+                    var nextCheckpoint = context.CurrentUtcDateTime.AddSeconds(pollingIntervalInSeconds);
+                    await context.CreateTimer(nextCheckpoint, CancellationToken.None);
+                }
+                else
+                {
                     break;
                 }
-
-                // Wait for the next checkpoint
-                var nextCheckpoint = context.CurrentUtcDateTime.AddSeconds(pollingIntervalInSeconds);
-                await context.CreateTimer(nextCheckpoint, CancellationToken.None);
             }
 
-            if (calculationMeta.JobStatus != "Completed")
+            if (calculationMeta.JobStatus == CalculationState.Completed)
             {
-                return "Error: Job monitor expired.";
+                await context.CallActivityAsync(nameof(CalculationActivities.SendCalculationResultsActivity), calculationMeta.Id);
+            }
+            else
+            {
+                return $"Error: Job status '{calculationMeta.JobStatus}'.";
             }
 
             await context.CallActivityAsync(nameof(CalculationActivities.UpdateCalculationMetaActivity), calculationMeta);

@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using System.Text;
+using Energinet.DataHub.Wholesale.Batches.Application.Model;
+using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 
 namespace FunctionApp.Orchestrations.Functions.Calculation.Model
 {
@@ -35,14 +37,14 @@ namespace FunctionApp.Orchestrations.Functions.Calculation.Model
         /// <summary>
         /// Id of started calculation job in Databricks.
         /// </summary>
-        public Guid JobId { get; set; }
-            = Guid.Empty;
+        public CalculationId JobId { get; set; }
+            = new CalculationId(-1);
 
         /// <summary>
         /// Status of calculation job in Databricks.
         /// </summary>
-        public string JobStatus { get; set; }
-            = string.Empty;
+        public CalculationState JobStatus { get; set; }
+            = CalculationState.Pending;
 
         public override string ToString()
         {

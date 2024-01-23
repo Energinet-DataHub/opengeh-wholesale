@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Batches.Application;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Batches.Application.UseCases;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Calculations;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
@@ -26,7 +28,7 @@ using NodaTime;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
-    .ConfigureServices(services =>
+    .ConfigureServices((context, services) =>
     {
         services.AddApplicationInsightsTelemetryWorkerService();
         services.ConfigureFunctionsApplicationInsights();
@@ -51,6 +53,12 @@ var host = new HostBuilder()
                 }));
         services.AddScoped<ICalculationRepository, CalculationRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        // => Databricks
+        services.AddDatabricksJobs(context.Configuration);
+        services.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
+        services.AddScoped<ICalculationParametersFactory, DatabricksCalculationParametersFactory>();
+        services.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
 
         // => Factories
         services.AddScoped<ICalculationFactory, CalculationFactory>();
