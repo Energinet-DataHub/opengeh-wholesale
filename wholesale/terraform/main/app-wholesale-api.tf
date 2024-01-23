@@ -33,6 +33,9 @@ module "app_wholesale_api" {
     INTERNAL_OPEN_ID_URL = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-open-id-url)"
     BACKEND_BFF_APP_ID   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-bff-app-id)"
 
+    # Application Insights
+    APPLICATIONINSIGHTS_CONNECTION_STRING = data.azurerm_key_vault_secret.appi_shared_connection_string.value
+
     # Storage
     STORAGE_CONTAINER_NAME = local.STORAGE_CONTAINER_NAME
     STORAGE_ACCOUNT_URI    = local.STORAGE_ACCOUNT_URI
