@@ -1,5 +1,13 @@
 # Wholesale Contracts Release notes
 
+## Version 7.1.0
+
+Updated NuGet package dependencies.
+
+## Version 7.0.0
+
+Updated .NET framework to .NET 8.
+
 ## Version 6.2.0
 
 Changed `CalculationResultVersion` to type int64.
