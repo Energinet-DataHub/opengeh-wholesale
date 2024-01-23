@@ -6,6 +6,10 @@
     // Time zone
     "TIME_ZONE": "Europe/Copenhagen",
     // Local DB created using WholesaleDatabaseFixture
-    "DB_CONNECTION_STRING": "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=Wholesale;Integrated Security=True;Connect Timeout=60;"
+    "DB_CONNECTION_STRING": "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=Wholesale;Integrated Security=True;Connect Timeout=60;",
+    // Databricks
+    "WorkspaceToken": "<token>",
+    "WorkspaceUrl": "<url>",
+    "WarehouseId": "<id>"
   }
 }
