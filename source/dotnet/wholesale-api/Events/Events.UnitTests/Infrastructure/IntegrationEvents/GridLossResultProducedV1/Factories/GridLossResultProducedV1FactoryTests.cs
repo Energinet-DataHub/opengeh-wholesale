@@ -56,7 +56,7 @@ public class GridLossResultProducedV1FactoryTests
     private EnergyResult CreateEnergyResult(TimeSeriesType timeSeriesType)
     {
         var quantityQualities = new Collection<QuantityQuality> { QuantityQuality.Estimated, QuantityQuality.Calculated };
-
+        var meteringPointId = timeSeriesType is TimeSeriesType.NegativeGridLoss or TimeSeriesType.PositiveGridLoss ? "123" : null;
         return new EnergyResult(
             _id,
             _batchId,
@@ -74,6 +74,7 @@ public class GridLossResultProducedV1FactoryTests
             _periodStart,
             _periodEnd,
             null,
+            meteringPointId,
             1);
     }
 

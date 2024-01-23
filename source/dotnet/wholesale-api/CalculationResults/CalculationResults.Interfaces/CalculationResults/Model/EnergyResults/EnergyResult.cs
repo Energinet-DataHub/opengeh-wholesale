@@ -17,49 +17,37 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 
-public sealed class EnergyResult : AggregatedTimeSeries
+public sealed class EnergyResult(
+    Guid id,
+    Guid batchId,
+    string gridArea,
+    TimeSeriesType timeSeriesType,
+    string? energySupplierId,
+    string? balanceResponsibleId,
+    EnergyTimeSeriesPoint[] timeSeriesPoints,
+    ProcessType processType,
+    Instant periodStart,
+    Instant periodEnd,
+    string? fromGridArea,
+    string? meteringPointId,
+    long version)
+    : AggregatedTimeSeries(gridArea, timeSeriesPoints, timeSeriesType, processType)
 {
-    public EnergyResult(
-        Guid id,
-        Guid batchId,
-        string gridArea,
-        TimeSeriesType timeSeriesType,
-        string? energySupplierId,
-        string? balanceResponsibleId,
-        EnergyTimeSeriesPoint[] timeSeriesPoints,
-        ProcessType processType,
-        Instant periodStart,
-        Instant periodEnd,
-        string? fromGridArea,
-        long version)
-    : base(gridArea, timeSeriesPoints, timeSeriesType, processType)
-    {
-        Id = id;
-        BatchId = batchId;
-        EnergySupplierId = energySupplierId;
-        BalanceResponsibleId = balanceResponsibleId;
-        PeriodStart = periodStart;
-        PeriodEnd = periodEnd;
-        FromGridArea = fromGridArea;
-        MeteringPointId = string.Empty; // TODO: use constructor parameter instead - waiting the columns to be included in the delta table
-        Version = version;
-    }
+    public Guid Id { get; } = id;
 
-    public Guid Id { get; }
+    public Guid BatchId { get; } = batchId;
 
-    public Guid BatchId { get; }
+    public string? FromGridArea { get; } = fromGridArea;
 
-    public string? FromGridArea { get; }
+    public string? EnergySupplierId { get; private set; } = energySupplierId;
 
-    public string? EnergySupplierId { get; private set; }
+    public string? BalanceResponsibleId { get; private set; } = balanceResponsibleId;
 
-    public string? BalanceResponsibleId { get; private set; }
+    public Instant PeriodStart { get; } = periodStart;
 
-    public Instant PeriodStart { get; }
+    public Instant PeriodEnd { get; } = periodEnd;
 
-    public Instant PeriodEnd { get; }
+    public string? MeteringPointId { get; private set; } = meteringPointId;
 
-    public string? MeteringPointId { get; private set; }
-
-    public long Version { get; }
+    public long Version { get; } = version;
 }
