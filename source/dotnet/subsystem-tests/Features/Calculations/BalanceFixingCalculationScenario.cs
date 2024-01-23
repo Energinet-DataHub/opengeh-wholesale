@@ -226,19 +226,20 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
 
         [ScenarioStep(10)]
         [SubsystemFact]
-        public async Task AndThen_OneReceivedEnergyResultProducedEventContainsSpecificMessageWithExpectedTimeSeriesPoints()
+        public async Task AndThen_ReceivedEnergyResultProducedOneEventContainsExpectedTimeSeriesPoints()
         {
-            // THEN one of the messages contains the expected time series points (positive grid loss and non-profiled)
             // Arrange
-            var expectedTimeSeriesPoints = await Fixture.ParseTimeSeriesPointsFromCsv2Async("Non_profiled_consumption_es_brp_ga_GA_543 for 5790001102357.csv");
-            var actualEvents = Fixture.ScenarioState.ReceivedCalculationResultCompleted.ToList();
+            var expectedTimeSeriesPoints = await Fixture.ParseTimeSeriesPointsFromEnergyResultProducedCsvAsync("Non_profiled_consumption_es_brp_ga_GA_543 for 5790001102357.csv");
+            var energyResults = Fixture.ScenarioState.ReceivedEnergyResultProducedV2
+                .Where(x => x.TimeSeriesType == EnergyResultProducedV2.Types.TimeSeriesType.NonProfiledConsumption)
+                .Where(x => x.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea != null)
+                .Where(x => x.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.EnergySupplierId == "5790001102357")
+                .Where(x => x.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.GridAreaCode == "543")
+                .ToList();
 
             // Assert
-            using var assertionScope = new AssertionScope();
-            foreach (var @event in actualEvents)
-            {
-                @event.TimeSeriesPoints.Should().BeEquivalentTo(expectedTimeSeriesPoints);
-            }
+            Assert.Single(energyResults);
+            energyResults.First().TimeSeriesPoints.Should().BeEquivalentTo(expectedTimeSeriesPoints);
         }
     }
 }
