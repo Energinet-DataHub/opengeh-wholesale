@@ -28,12 +28,12 @@ module "func_entrypoint_peek" {
     }
   ]
   app_settings = {
-    WEBSITE_LOAD_CERTIFICATES                               = local.DH2_CERTIFICATE_THUMBPRINT
     "PublishServiceBusSettings:ConnectionString"            = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-send-connection-string)"
     "PublishServiceBusSettings:HealthCheckConnectionString" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-manage-connection-string)"
     "PublishServiceBusSettings:SharedIntegrationEventTopic" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-shres-integrationevent-received-name)"
     "DataHub2Settings:DataHub2Endpoint"                     = local.DH2_ENDPOINT
     "BlobStorageSettings:AccountUri"                        = local.ESETT_DOCUMENT_STORAGE_ACCOUNT_URI
     "BlobStorageSettings:ContainerName"                     = local.ESETT_DOCUMENT_STORAGE_CONTAINER_NAME
+    WEBSITE_LOAD_CERTIFICATES                               = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=cert-esett-dh2-thumbprint)"
   }
 }
