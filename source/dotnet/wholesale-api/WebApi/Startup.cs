@@ -33,6 +33,7 @@ using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks.DataLake;
+using Energinet.DataHub.Wholesale.WebApi.HealthChecks.ServiceBus;
 using Energinet.DataHub.Wholesale.WebApi.Telemetry;
 using HealthChecks.AzureServiceBus;
 using HealthChecks.AzureServiceBus.Configuration;
@@ -203,19 +204,19 @@ public class Startup
             .AddLiveCheck()
             .AddDbContextCheck<EventsDatabaseContext>(
                 name: HealthCheckNames.SqlDatabaseContext)
-            ////.Add(new HealthCheckRegistration(
-            ////    name: HealthCheckNames.IntegrationEventsTopic,
-            ////    sp =>
-            ////    {
-            ////        var options = new AzureServiceBusTopicHealthCheckOptions(serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME)
-            ////        {
-            ////            ConnectionString = serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
-            ////        };
-            ////        return new AzureServiceBusTopicHealthCheck(options);
-            ////    },
-            ////    failureStatus: default,
-            ////    tags: default,
-            ////    timeout: default))
+            .Add(new HealthCheckRegistration(
+                name: HealthCheckNames.IntegrationEventsTopic,
+                sp =>
+                {
+                    var options = new AzureServiceBusTopicHealthCheckOptions(serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME)
+                    {
+                        ConnectionString = serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
+                    };
+                    return new AzureServiceBusTopicHealthCheck(options, new WebSocketServiceBusClientProvider());
+                },
+                failureStatus: default,
+                tags: default,
+                timeout: default))
             ////.AddAzureServiceBusTopic(
             ////    serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
             ////    serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
