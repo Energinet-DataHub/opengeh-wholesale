@@ -168,6 +168,17 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
                 ParseEnergyResultProducedV2TimeSeriesPoint);
         }
 
+        /// <summary>
+        /// Load CSV file and parse each data row into <see cref="EnergyResultProducedV2.Types.TimeSeriesPoint"/>.
+        /// </summary>
+        public async Task<IReadOnlyCollection<EnergyResultProducedV2.Types.TimeSeriesPoint>> ParseTimeSeriesPointsFromEnergyResultProducedV2GridLossCsvAsync(string testFileName)
+        {
+            return await ParseCsvAsync(
+                testFileName,
+                "grid_area,energy_supplier_id,balance_responsible_id,quantity,quantity_qualities,time,aggregation_level,time_series_type,calculation_id,calculation_type,calculation_execution_time_start,out_grid_area,calculation_result_id",
+                ParseEnergyResultProducedV2TimeSeriesPoint);
+        }
+
         protected override async Task OnInitializeAsync()
         {
             await DatabricksClientExtensions.StartWarehouseAsync(Configuration.DatabricksWorkspace);
