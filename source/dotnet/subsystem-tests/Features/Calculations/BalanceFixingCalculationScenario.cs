@@ -229,7 +229,8 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
         public async Task AndThen_ReceivedEnergyResultProducedOneEventContainsExpectedTimeSeriesPoints()
         {
             // Arrange
-            var expectedTimeSeriesPoints = await Fixture.ParseTimeSeriesPointsFromEnergyResultProducedCsvAsync("Non_profiled_consumption_es_brp_ga_GA_543 for 5790001102357.csv");
+            var expectedTimeSeriesPoints = await Fixture.ParseTimeSeriesPointsFromEnergyResultProducedV2CsvAsync("Non_profiled_consumption_es_brp_ga_GA_543 for 5790001102357.csv");
+
             var energyResults = Fixture.ScenarioState.ReceivedEnergyResultProducedV2
                 .Where(x => x.TimeSeriesType == EnergyResultProducedV2.Types.TimeSeriesType.NonProfiledConsumption)
                 .Where(x => x.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea != null)

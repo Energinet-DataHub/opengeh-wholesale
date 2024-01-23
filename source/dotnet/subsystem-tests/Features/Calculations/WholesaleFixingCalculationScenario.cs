@@ -240,7 +240,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
             var expectedChargeType = AmountPerChargeResultProducedV1.Types.ChargeType.Tariff;
             var expectedChargeOwnerId = "5790001330552";
             var expectedSettlementMethod = AmountPerChargeResultProducedV1.Types.SettlementMethod.NonProfiled;
-            var expectedTimeSeriesPoints = await Fixture.ParseTimeSeriesPointsFromCsvAsync("amount_for_es_for_hourly_tarif_40000_for_e17_e02.csv");
+            var expectedTimeSeriesPoints = await Fixture.ParseChargeResultProducedV1TimeSeriesPointCsvAsync("amount_for_es_for_hourly_tarif_40000_for_e17_e02.csv");
 
             // Assert
             var actualEvents = Fixture.ScenarioState.ReceivedAmountPerChargeResultProducedV1.Where(item =>
