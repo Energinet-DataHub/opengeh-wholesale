@@ -226,7 +226,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
 
         [ScenarioStep(10)]
         [SubsystemFact]
-        public async Task AndThen_ReceivedEnergyResultProducedOneEventContainsExpectedTimeSeriesPoints()
+        public async Task AndThen_ReceivedEnergyResultProducedV2EventContainsExpectedTimeSeriesPoints()
         {
             // Arrange
             var expectedTimeSeriesPoints = await Fixture.ParseTimeSeriesPointsFromEnergyResultProducedV2CsvAsync("Non_profiled_consumption_es_brp_ga_GA_543 for 5790001102357.csv");
