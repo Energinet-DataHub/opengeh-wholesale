@@ -4,6 +4,10 @@
 
 Added `GridLossResultProducedV1` integration event
 
+## Version 7.1.0
+
+Updated NuGet package dependencies.
+
 ## Version 7.0.0
 
 Updated .NET framework to .NET 8.

@@ -223,5 +223,24 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
             // Convert version (ticks) to datetime and assert that it is not older than 3 hours
             new DateTime(actualVersion).Subtract(DateTime.Now).Hours.Should().BeLessThan(3);
         }
+
+        [ScenarioStep(10)]
+        [SubsystemFact]
+        public async Task AndThen_ReceivedEnergyResultProducedV2EventContainsExpectedTimeSeriesPoints()
+        {
+            // Arrange
+            var expectedTimeSeriesPoints = await Fixture.ParseTimeSeriesPointsFromEnergyResultProducedV2CsvAsync("Non_profiled_consumption_es_brp_ga_GA_543 for 5790001102357.csv");
+
+            var energyResults = Fixture.ScenarioState.ReceivedEnergyResultProducedV2
+                .Where(x => x.TimeSeriesType == EnergyResultProducedV2.Types.TimeSeriesType.NonProfiledConsumption)
+                .Where(x => x.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea != null)
+                .Where(x => x.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.EnergySupplierId == "5790001102357")
+                .Where(x => x.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.GridAreaCode == "543")
+                .ToList();
+
+            // Assert
+            Assert.Single(energyResults);
+            energyResults.First().TimeSeriesPoints.Should().BeEquivalentTo(expectedTimeSeriesPoints);
+        }
     }
 }
