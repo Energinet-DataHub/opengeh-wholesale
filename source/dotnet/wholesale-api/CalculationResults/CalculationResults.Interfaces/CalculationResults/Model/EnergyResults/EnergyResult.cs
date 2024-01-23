@@ -47,7 +47,7 @@ public sealed class EnergyResult(
 
     public Instant PeriodEnd { get; } = periodEnd;
 
-    public string? MeteringPointId { get; private set; } = meteringPointId;
+    public string? MeteringPointId { get; } = meteringPointId;
 
     public long Version { get; } = version;
 }
