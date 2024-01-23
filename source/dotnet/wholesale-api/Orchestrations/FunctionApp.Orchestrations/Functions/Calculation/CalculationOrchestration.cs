@@ -24,10 +24,6 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
 #pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
     internal class CalculationOrchestration
     {
-        public CalculationOrchestration()
-        {
-        }
-
         [Function(nameof(StartCalculation))]
         public async Task<HttpResponseData> StartCalculation(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req,

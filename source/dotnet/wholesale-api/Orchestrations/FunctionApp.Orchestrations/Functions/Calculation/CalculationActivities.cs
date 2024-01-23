@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using FunctionApp.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
@@ -22,10 +23,14 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
     internal class CalculationActivities
     {
         private readonly ILogger<CalculationActivities> _logger;
+        private readonly ICreateCalculationHandler _createCalculationHandler;
 
-        public CalculationActivities(ILogger<CalculationActivities> logger)
+        public CalculationActivities(
+            ILogger<CalculationActivities> logger,
+            ICreateCalculationHandler createCalculationHandler)
         {
             _logger = logger;
+            _createCalculationHandler = createCalculationHandler;
         }
 
         /// <summary>
@@ -37,13 +42,17 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
         {
             _logger.LogInformation($"{nameof(batchRequestDto)}: {batchRequestDto}");
 
-            // TODO: Create new calculation id and create calculation tracking record in SQL database.
-            await Task.Delay(Random.Shared.Next(1, 3) * 1000);
+            var userId = Guid.NewGuid();
+            var calculationId = await _createCalculationHandler.HandleAsync(new CreateCalculationCommand(
+                batchRequestDto.ProcessType,
+                batchRequestDto.GridAreaCodes,
+                batchRequestDto.StartDate,
+                batchRequestDto.EndDate,
+                userId)).ConfigureAwait(false);
 
-            // TODO: Return calculation status record.
             return new CalculationMeta
             {
-                Id = Guid.NewGuid(),
+                Id = calculationId,
                 Input = batchRequestDto,
             };
         }

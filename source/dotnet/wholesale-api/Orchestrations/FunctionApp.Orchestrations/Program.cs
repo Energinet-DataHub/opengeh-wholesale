@@ -12,9 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Batches.Application;
+using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Batches.Application.UseCases;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Calculations;
+using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NodaTime;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
@@ -22,6 +30,33 @@ var host = new HostBuilder()
     {
         services.AddApplicationInsightsTelemetryWorkerService();
         services.ConfigureFunctionsApplicationInsights();
+
+        // Register dependencies for calculation activities
+        // => NodaTIme
+        services.AddSingleton<IClock>(_ => SystemClock.Instance);
+        services.AddSingleton<DateTimeZone>(_ =>
+        {
+            return DateTimeZoneProviders.Tzdb.GetZoneOrNull(Environment.GetEnvironmentVariable("TIME_ZONE")!)!;
+        });
+
+        // => SQL Database
+        services.AddScoped<IDatabaseContext, DatabaseContext>();
+        services.AddDbContext<DatabaseContext>(
+            options => options.UseSqlServer(
+                Environment.GetEnvironmentVariable("DB_CONNECTION_STRING"),
+                o =>
+                {
+                    o.UseNodaTime();
+                    o.EnableRetryOnFailure();
+                }));
+        services.AddScoped<ICalculationRepository, CalculationRepository>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        // => Factories
+        services.AddScoped<ICalculationFactory, CalculationFactory>();
+
+        // => Handlers
+        services.AddScoped<ICreateCalculationHandler, CreateCalculationHandler>();
     })
     .Build();
 

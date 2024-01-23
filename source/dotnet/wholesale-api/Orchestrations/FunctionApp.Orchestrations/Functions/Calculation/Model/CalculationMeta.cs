@@ -16,6 +16,9 @@ using System.Text;
 
 namespace FunctionApp.Orchestrations.Functions.Calculation.Model
 {
+    /// <summary>
+    /// Contains the state for an instance of the calculation orchestration.
+    /// </summary>
     public class CalculationMeta
     {
         /// <summary>
