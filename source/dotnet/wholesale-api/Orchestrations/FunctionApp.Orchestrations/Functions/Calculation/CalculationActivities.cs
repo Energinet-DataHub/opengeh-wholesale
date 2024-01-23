@@ -19,18 +19,23 @@ using Microsoft.Extensions.Logging;
 namespace FunctionApp.Orchestrations.Functions.Calculation
 {
 #pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
-    internal static class CalculationActivities
+    internal class CalculationActivities
     {
+        private readonly ILogger<CalculationActivities> _logger;
+
+        public CalculationActivities(ILogger<CalculationActivities> logger)
+        {
+            _logger = logger;
+        }
+
         /// <summary>
         /// Create calculation status record in SQL database.
         /// </summary>
         [Function(nameof(CreateCalculationMetaActivity))]
-        public static async Task<CalculationMeta> CreateCalculationMetaActivity(
-            [ActivityTrigger] BatchRequestDto batchRequestDto,
-            FunctionContext executionContext)
+        public async Task<CalculationMeta> CreateCalculationMetaActivity(
+            [ActivityTrigger] BatchRequestDto batchRequestDto)
         {
-            var logger = executionContext.GetLogger(nameof(CreateCalculationMetaActivity));
-            logger.LogInformation($"{nameof(batchRequestDto)}: {batchRequestDto}");
+            _logger.LogInformation($"{nameof(batchRequestDto)}: {batchRequestDto}");
 
             // TODO: Create new calculation id and create calculation tracking record in SQL database.
             await Task.Delay(Random.Shared.Next(1, 3) * 1000);
@@ -47,12 +52,10 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
         /// Update calculation status record in SQL database.
         /// </summary>
         [Function(nameof(UpdateCalculationMetaActivity))]
-        public static async Task UpdateCalculationMetaActivity(
-            [ActivityTrigger] CalculationMeta calculationMeta,
-            FunctionContext executionContext)
+        public async Task UpdateCalculationMetaActivity(
+            [ActivityTrigger] CalculationMeta calculationMeta)
         {
-            var logger = executionContext.GetLogger(nameof(UpdateCalculationMetaActivity));
-            logger.LogInformation($"{nameof(calculationMeta)}: {calculationMeta}");
+            _logger.LogInformation($"{nameof(calculationMeta)}: {calculationMeta}");
 
             // TODO: Update calculation tracking record in SQL database.
             await Task.Delay(Random.Shared.Next(1, 3) * 1000);
@@ -62,12 +65,10 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
         /// Start calculation in Databricks.
         /// </summary>
         [Function(nameof(StartCalculationActivity))]
-        public static async Task<Guid> StartCalculationActivity(
-            [ActivityTrigger] Guid calculationId,
-            FunctionContext executionContext)
+        public async Task<Guid> StartCalculationActivity(
+            [ActivityTrigger] Guid calculationId)
         {
-            var logger = executionContext.GetLogger(nameof(StartCalculationActivity));
-            logger.LogInformation($"{nameof(calculationId)}: {calculationId}");
+            _logger.LogInformation($"{nameof(calculationId)}: {calculationId}");
 
             // TODO: Start calculation job with parameters in databricks.
             await Task.Delay(Random.Shared.Next(1, 5) * 1000);
@@ -81,12 +82,10 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
         /// Request calculation job status in Databricks.
         /// </summary>
         [Function(nameof(GetJobStatusActivity))]
-        public static async Task<string> GetJobStatusActivity(
-            [ActivityTrigger] Guid jobId,
-            FunctionContext executionContext)
+        public async Task<string> GetJobStatusActivity(
+            [ActivityTrigger] Guid jobId)
         {
-            var logger = executionContext.GetLogger(nameof(GetJobStatusActivity));
-            logger.LogInformation($"{nameof(jobId)} : {jobId}");
+            _logger.LogInformation($"{nameof(jobId)} : {jobId}");
 
             // TODO: Request calculation job status in databricks.
             var rnd = Random.Shared.Next(1, 5);
@@ -106,12 +105,10 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
         /// Retrieve calculation results from Databricks and send them as events using ServiceBus.
         /// </summary>
         [Function(nameof(SendCalculationResultsActivity))]
-        public static async Task SendCalculationResultsActivity(
-            [ActivityTrigger] Guid calculationId,
-            FunctionContext executionContext)
+        public async Task SendCalculationResultsActivity(
+            [ActivityTrigger] Guid calculationId)
         {
-            var logger = executionContext.GetLogger(nameof(SendCalculationResultsActivity));
-            logger.LogInformation($"{nameof(calculationId)} : {calculationId}");
+            _logger.LogInformation($"{nameof(calculationId)} : {calculationId}");
 
             // TODO: Retrieve calculation results from Databricks and send them as events using ServiceBus.
             await Task.Delay(Random.Shared.Next(1, 5) * 1000);

@@ -22,16 +22,20 @@ using Microsoft.Extensions.Logging;
 namespace FunctionApp.Orchestrations.Functions.Calculation
 {
 #pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
-    internal static class CalculationOrchestration
+    internal class CalculationOrchestration
     {
+        public CalculationOrchestration()
+        {
+        }
+
         [Function(nameof(StartCalculation))]
-        public static async Task<HttpResponseData> StartCalculation(
+        public async Task<HttpResponseData> StartCalculation(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req,
             [FromBody] BatchRequestDto batchRequestDto,
             [DurableClient] DurableTaskClient client,
             FunctionContext executionContext)
         {
-            var logger = executionContext.GetLogger(nameof(StartCalculation));
+            var logger = executionContext.GetLogger<CalculationOrchestration>();
 
             var instanceId = await client.ScheduleNewOrchestrationInstanceAsync(nameof(Calculation), batchRequestDto);
             logger.LogInformation("Created new orchestration with instance ID = {instanceId}", instanceId);
@@ -40,7 +44,7 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
         }
 
         [Function(nameof(Calculation))]
-        public static async Task<string> Calculation(
+        public async Task<string> Calculation(
             [OrchestrationTrigger] TaskOrchestrationContext context,
             FunctionContext executionContext)
         {
@@ -50,11 +54,9 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
                 return "Error: No input specified.";
             }
 
-            if (!context.IsReplaying)
-            {
-                var logger = executionContext.GetLogger(nameof(Calculation));
-                logger.LogInformation($"{nameof(batchRequestDto)}: {batchRequestDto}.");
-            }
+            // Replay safe logger, only logging when not replaying previous history
+            var logger = context.CreateReplaySafeLogger<CalculationOrchestration>();
+            logger.LogInformation($"{nameof(batchRequestDto)}: {batchRequestDto}.");
 
             var calculationMeta = await context.CallActivityAsync<CalculationMeta>(nameof(CalculationActivities.CreateCalculationMetaActivity), batchRequestDto);
             calculationMeta.JobId = await context.CallActivityAsync<Guid>(nameof(CalculationActivities.StartCalculationActivity), calculationMeta.Id);
