@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.master_basis_data
     calculation_id STRING NOT NULL,
     calculation_type STRING NOT NULL,
     grid_area STRING NOT NULL,
-    energy_supplier_id STRING
+    energy_supplier_id STRING,
     metering_point_id STRING NOT NULL,
     period_start TIMESTAMP NOT NULL,
     period_end TIMESTAMP,
