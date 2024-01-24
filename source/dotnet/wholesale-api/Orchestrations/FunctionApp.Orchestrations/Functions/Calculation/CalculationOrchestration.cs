@@ -82,6 +82,7 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
 
             if (calculationMeta.JobStatus == CalculationState.Completed)
             {
+                // TODO: Wait for warehouse to start (could use retry policy)
                 await context.CallActivityAsync(nameof(CalculationActivities.SendCalculationResultsActivity), calculationMeta.Id);
             }
             else
@@ -91,6 +92,7 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
 
             await context.CallActivityAsync(nameof(CalculationActivities.UpdateCalculationMetaActivity), calculationMeta);
 
+            // TODO: Could wait for an event to notiy us that messages is ready for customer in EDI
             return "Success";
         }
     }
