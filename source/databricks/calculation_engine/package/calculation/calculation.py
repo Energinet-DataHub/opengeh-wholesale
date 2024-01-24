@@ -88,7 +88,9 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
         )
 
     basis_data_writer = BasisDataWriter(
-        args.wholesale_container_path, args.calculation_id
+        args.wholesale_container_path,
+        args.calculation_id,
+        args.calculation_process_type,
     )
     basis_data_writer.write(
         metering_point_periods_df,
