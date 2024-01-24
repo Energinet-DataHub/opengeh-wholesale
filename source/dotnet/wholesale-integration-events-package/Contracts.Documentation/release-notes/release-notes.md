@@ -1,6 +1,6 @@
 # Wholesale Contracts Release notes
 
-## Version 7.1.0
+## Version 7.2.0
 
 Added `GridLossResultProducedV1` integration event
 
