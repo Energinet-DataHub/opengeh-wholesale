@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.master_basis_data
     out_grid_area STRING,
     metering_point_type STRING NOT NULL,
     settlement_method STRING,
-    energy_supplier_id STRING NOT NULL
+    energy_supplier_id STRING
 )
 USING DELTA
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.

@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.time_series_quarter
     calculation_id STRING NOT NULL,
     calculation_type STRING NOT NULL,
     grid_area STRING NOT NULL,
-    energy_supplier_id STRING NOT NULL,
+    energy_supplier_id STRING,
     metering_point_id STRING NOT NULL,
     start_datetime TIMESTAMP NOT NULL,
     quantity_1 DECIMAL(18, 3) NOT NULL,
