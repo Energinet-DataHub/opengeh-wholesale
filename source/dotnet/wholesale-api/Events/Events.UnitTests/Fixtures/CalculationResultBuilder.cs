@@ -72,6 +72,9 @@ public sealed class CalculationResultBuilder
             Instant.FromUtc(2022, 12, 31, 23, 0),
             Instant.FromUtc(2023, 1, 31, 23, 0),
             null,
+            GetMeteringPointId(),
             _version);
     }
+
+    private string? GetMeteringPointId() => _timeSeriesType is TimeSeriesType.NegativeGridLoss or TimeSeriesType.PositiveGridLoss ? "123" : null;
 }

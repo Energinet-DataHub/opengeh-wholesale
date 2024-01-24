@@ -132,6 +132,7 @@ public class CalculationResultCompletedFactoryTests
             _periodStart,
             _periodEnd,
             _fromGridArea,
+            null,
             _version);
     }
 

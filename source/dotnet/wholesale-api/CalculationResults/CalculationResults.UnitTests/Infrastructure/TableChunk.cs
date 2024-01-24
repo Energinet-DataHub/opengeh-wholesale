@@ -24,16 +24,16 @@ public class TableChunk
 {
     private readonly Dictionary<string, int> _columnIndex;
 
-    public TableChunk(string[] columnNames, List<string[]> rows)
+    public TableChunk(string[] columnNames, List<string?[]> rows)
     {
         _columnIndex = columnNames.Select((name, i) => (name, i)).ToDictionary(x => x.name, x => x.i);
         ColumnNames = columnNames;
         Rows = rows.AsReadOnly();
     }
 
-    public string this[Index rowIndex, string columnName] => Rows[rowIndex][_columnIndex[columnName]];
+    public string? this[Index rowIndex, string columnName] => Rows[rowIndex][_columnIndex[columnName]];
 
     public string[] ColumnNames { get; }
 
-    private ReadOnlyCollection<string[]> Rows { get; }
+    private ReadOnlyCollection<string?[]> Rows { get; }
 }
