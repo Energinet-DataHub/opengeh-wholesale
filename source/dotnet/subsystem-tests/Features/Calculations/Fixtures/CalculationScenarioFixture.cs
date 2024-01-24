@@ -211,7 +211,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
                     continue;
                 }
 
-                var columns = line!.Split(',');
+                var columns = line!.Split(',', ';');
                 var result = createResult(columns);
                 resultList.Add(result);
             }
