@@ -30,7 +30,8 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.time_series_hour
     quantity_22 DECIMAL(18, 3) NOT NULL,
     quantity_23 DECIMAL(18, 3) NOT NULL,
     quantity_24 DECIMAL(18, 3) NOT NULL,
-    quantity_25 DECIMAL(18, 3), -- Only used at daylight saving time
+    -- Only used at daylight saving time
+    quantity_25 DECIMAL(18, 3)
 )
 USING DELTA
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
