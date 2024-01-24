@@ -10,6 +10,9 @@
     // Databricks
     "WorkspaceToken": "<token>",
     "WorkspaceUrl": "<url>",
-    "WarehouseId": "<id>"
+    "WarehouseId": "<id>",
+    // ServiceBus
+    "SERVICE_BUS_SEND_CONNECTION_STRING": "<connection string>",
+    "INTEGRATIONEVENTS_TOPIC_NAME": "<topic>"
   }
 }

@@ -12,14 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using Energinet.DataHub.Wholesale.Batches.Application;
-using Energinet.DataHub.Wholesale.Batches.Application.Model;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationState;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using FunctionApp.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using NodaTime;
 
 namespace FunctionApp.Orchestrations.Functions.Calculation
 {
@@ -27,20 +30,41 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
     internal class CalculationActivities
     {
         private readonly ILogger<CalculationActivities> _logger;
+        private readonly IClock _clock;
         private readonly ICreateCalculationHandler _createCalculationHandler;
+        private readonly IUnitOfWork _calculationUnitOfWork;
         private readonly ICalculationRepository _calculationRepository;
         private readonly ICalculationEngineClient _calculationEngineClient;
+        private readonly ICalculationDtoMapper _calculationDtoMapper;
+        private readonly ICompletedCalculationFactory _completedCalculationFactory;
+        private readonly Energinet.DataHub.Wholesale.Events.Application.UseCases.IUnitOfWork _eventsUnitOfWork;
+        private readonly ICompletedCalculationRepository _completedCalculationRepository;
+        private readonly IPublisher _integrationEventsPublisher;
 
         public CalculationActivities(
             ILogger<CalculationActivities> logger,
+            IClock clock,
             ICreateCalculationHandler createCalculationHandler,
+            IUnitOfWork calculationUnitOfWork,
             ICalculationRepository calculationRepository,
-            ICalculationEngineClient calculationEngineClient)
+            ICalculationEngineClient calculationEngineClient,
+            ICalculationDtoMapper calculationDtoMapper,
+            ICompletedCalculationFactory completedCalculationFactory,
+            Energinet.DataHub.Wholesale.Events.Application.UseCases.IUnitOfWork eventsUnitOfWork,
+            ICompletedCalculationRepository completedCalculationRepository,
+            IPublisher integrationEventsPublisher)
         {
             _logger = logger;
+            _clock = clock;
             _createCalculationHandler = createCalculationHandler;
+            _calculationUnitOfWork = calculationUnitOfWork;
             _calculationRepository = calculationRepository;
             _calculationEngineClient = calculationEngineClient;
+            _calculationDtoMapper = calculationDtoMapper;
+            _completedCalculationFactory = completedCalculationFactory;
+            _eventsUnitOfWork = eventsUnitOfWork;
+            _completedCalculationRepository = completedCalculationRepository;
+            _integrationEventsPublisher = integrationEventsPublisher;
         }
 
         /// <summary>
@@ -70,14 +94,59 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
         /// <summary>
         /// Update calculation status record in SQL database.
         /// </summary>
-        [Function(nameof(UpdateCalculationMetaActivity))]
-        public async Task UpdateCalculationMetaActivity(
+        [Function(nameof(UpdateCalculationExecutionStatusActivity))]
+        public async Task UpdateCalculationExecutionStatusActivity(
             [ActivityTrigger] CalculationMeta calculationMeta)
         {
             _logger.LogInformation($"{nameof(calculationMeta)}: {calculationMeta}");
 
-            // TODO: Update calculation tracking record in SQL database.
-            await Task.Delay(Random.Shared.Next(1, 3) * 1000);
+            var calculation = await _calculationRepository.GetAsync(calculationMeta.Id);
+            var executionState = CalculationStateMapper.MapState(calculationMeta.JobStatus);
+
+            if (calculation.ExecutionState != executionState)
+            {
+                switch (executionState)
+                {
+                    case CalculationExecutionState.Pending:
+                        calculation.MarkAsPending();
+                        break;
+                    case CalculationExecutionState.Executing:
+                        calculation.MarkAsExecuting();
+                        break;
+                    case CalculationExecutionState.Completed:
+                        calculation.MarkAsCompleted(_clock.GetCurrentInstant());
+                        break;
+                    case CalculationExecutionState.Failed:
+                        calculation.MarkAsFailed();
+                        break;
+                    case CalculationExecutionState.Canceled:
+                        // Jobs may be cancelled in Databricks for various reasons. For example they can be cancelled due to migrations in CD
+                        // Setting batch state back to "created" ensure they will be picked up and started again
+                        calculation.Reset();
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException($"Unexpected execution state: {executionState.ToString()}.");
+                }
+
+                await _calculationUnitOfWork.CommitAsync();
+            }
+        }
+
+        /// <summary>
+        /// Update calculation status record in SQL database.
+        /// </summary>
+        [Function(nameof(CreateCompletedCalculationActivity))]
+        public async Task CreateCompletedCalculationActivity(
+            [ActivityTrigger] Guid calculationdId)
+        {
+            _logger.LogInformation($"{nameof(calculationdId)}: {calculationdId}");
+
+            var calculation = await _calculationRepository.GetAsync(calculationdId);
+            var calculationDto = _calculationDtoMapper.Map(calculation);
+
+            var completedCalculations = _completedCalculationFactory.CreateFromBatches(new List<Energinet.DataHub.Wholesale.Batches.Interfaces.Models.CalculationDto>() { calculationDto });
+            await _completedCalculationRepository.AddAsync(completedCalculations);
+            await _eventsUnitOfWork.CommitAsync();
         }
 
         /// <summary>
@@ -91,6 +160,8 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
 
             var calculation = await _calculationRepository.GetAsync(calculationdId);
             var jobId = await _calculationEngineClient.StartAsync(calculation);
+            calculation.MarkAsSubmitted(jobId);
+            await _calculationUnitOfWork.CommitAsync();
 
             return jobId;
         }
@@ -99,7 +170,7 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
         /// Request calculation job status in Databricks.
         /// </summary>
         [Function(nameof(GetJobStatusActivity))]
-        public async Task<CalculationState> GetJobStatusActivity(
+        public async Task<Energinet.DataHub.Wholesale.Batches.Application.Model.CalculationState> GetJobStatusActivity(
             [ActivityTrigger] CalculationId jobId)
         {
             _logger.LogInformation($"{nameof(jobId)} : {jobId}");
@@ -118,8 +189,7 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
         {
             _logger.LogInformation($"{nameof(calculationId)} : {calculationId}");
 
-            // TODO: Retrieve calculation results from Databricks and send them as events using ServiceBus.
-            await Task.Delay(Random.Shared.Next(1, 5) * 1000);
+            await _integrationEventsPublisher.PublishAsync(CancellationToken.None);
         }
     }
 #pragma warning restore CA2007 // Consider calling ConfigureAwait on the awaited task

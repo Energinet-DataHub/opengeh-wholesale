@@ -19,7 +19,10 @@
     <ProjectReference Include="..\..\Batches\Batches.Application\Batches.Application.csproj" />
     <ProjectReference Include="..\..\Batches\Batches.Infrastructure\Batches.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Batches\Batches.Interfaces\Batches.Interfaces.csproj" />
+    <ProjectReference Include="..\..\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Common.Interfaces\Common.Interfaces.csproj" />
+    <ProjectReference Include="..\..\Events\Events.Application\Events.Application.csproj" />
+    <ProjectReference Include="..\..\Events\Events.Infrastructure\Events.Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">

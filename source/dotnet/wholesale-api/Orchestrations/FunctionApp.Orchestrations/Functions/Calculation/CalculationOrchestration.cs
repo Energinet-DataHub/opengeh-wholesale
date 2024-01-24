@@ -70,6 +70,8 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
                 if (calculationMeta.JobStatus == CalculationState.Running
                     || calculationMeta.JobStatus == CalculationState.Pending)
                 {
+                    await context.CallActivityAsync(nameof(CalculationActivities.UpdateCalculationExecutionStatusActivity), calculationMeta);
+
                     // Wait for the next checkpoint
                     var nextCheckpoint = context.CurrentUtcDateTime.AddSeconds(pollingIntervalInSeconds);
                     await context.CreateTimer(nextCheckpoint, CancellationToken.None);
@@ -80,9 +82,13 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
                 }
             }
 
+            await context.CallActivityAsync(nameof(CalculationActivities.UpdateCalculationExecutionStatusActivity), calculationMeta);
+
             if (calculationMeta.JobStatus == CalculationState.Completed)
             {
-                // TODO: Wait for warehouse to start (could use retry policy)
+                await context.CallActivityAsync(nameof(CalculationActivities.CreateCompletedCalculationActivity), calculationMeta.Id);
+
+                // TODO: Wait for warehouse to start (could use retry policy); could be done using fan-out/fan-in
                 await context.CallActivityAsync(nameof(CalculationActivities.SendCalculationResultsActivity), calculationMeta.Id);
             }
             else
@@ -90,8 +96,7 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
                 return $"Error: Job status '{calculationMeta.JobStatus}'.";
             }
 
-            await context.CallActivityAsync(nameof(CalculationActivities.UpdateCalculationMetaActivity), calculationMeta);
-
+            // TODO: Update any other status in SQL(?)
             // TODO: Could wait for an event to notiy us that messages is ready for customer in EDI
             return "Success";
         }
