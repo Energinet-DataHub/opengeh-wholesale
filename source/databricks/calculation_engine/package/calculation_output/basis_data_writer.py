@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col
+from pyspark.sql.functions import col, lit
 
 import package.calculation.preparation.transformations.basis_data as basis_data
 from package.codelists import AggregationLevel, BasisDataType, ProcessType
@@ -186,8 +186,8 @@ class BasisDataWriter:
         master_basis_data_df: DataFrame,
     ) -> None:
         master_basis_data_df = master_basis_data_df.select(
-            col("calculation_id").lit(self.calculation_id),
-            col("calculation_type").lit(self.process_type),
+            lit(self.calculation_id).alias("calculation_id"),
+            lit(self.process_type).alias("calculation_type"),
             col(BasisDataColname.grid_area).alias("grid_area"),
             col(BasisDataColname.metering_point_id).alias("metering_point_id"),
             col(BasisDataColname.valid_from).alias("from_date"),
@@ -205,8 +205,8 @@ class BasisDataWriter:
     ) -> None:
         quantity_columns = _get_quantity_columns(time_series)
         time_series = time_series.select(
-            col("calculation_id").lit(self.calculation_id),
-            col("calculation_type").lit(self.process_type),
+            lit(self.calculation_id).alias("calculation_id"),
+            lit(self.process_type).alias("calculation_type"),
             col(BasisDataColname.grid_area).alias("grid_area"),
             col(BasisDataColname.energy_supplier_id).alias("energy_supplier_id"),
             col(BasisDataColname.metering_point_id).alias("metering_point_id"),
