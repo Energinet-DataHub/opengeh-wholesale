@@ -50,14 +50,13 @@ class BasisDataWriter:
             metering_points_periods_df
         )
 
+        self._write(master_basis_data_df, timeseries_quarter_df, timeseries_hour_df)
         if write_to_delta_table:
             self._write_basis_data_to_delta_table(
                 master_basis_data_df,
                 timeseries_quarter_df,
                 timeseries_hour_df,
             )
-        else:
-            self._write(master_basis_data_df, timeseries_quarter_df, timeseries_hour_df)
 
     def _write(
         self,
