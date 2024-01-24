@@ -25,6 +25,7 @@ from package.codelists import (
     MeteringPointType,
     SettlementMethod,
     QuantityQuality,
+    ProcessType,
 )
 from package.constants import Colname
 from package.calculation_output.basis_data_writer import BasisDataWriter
@@ -176,7 +177,7 @@ def test__write__writes_to_paths_that_match_contract(
     # Arrange
     metering_point_period_df = metering_point_period_df_factory()
     metering_point_time_series = metering_point_time_series_factory()
-    sut = BasisDataWriter(str(tmpdir), DEFAULT_BATCH_ID)
+    sut = BasisDataWriter(str(tmpdir), DEFAULT_BATCH_ID, ProcessType.BALANCE_FIXING)
 
     # Act
     sut.write(metering_point_period_df, metering_point_time_series, TIME_ZONE)
