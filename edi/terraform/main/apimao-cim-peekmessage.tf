@@ -7,7 +7,7 @@ module "apimao_cim_peek_message" {
   api_management_name     = data.azurerm_key_vault_secret.apim_instance_name.value
   display_name            = "EDI: CIM Peek Message"
   method                  = "GET"
-  url_template            = "/v1.0/cim/peekMessage/aggregations"
+  url_template            = "/v1.0/cim/aggregations"
   policies = [
     {
       xml_content = <<XML
