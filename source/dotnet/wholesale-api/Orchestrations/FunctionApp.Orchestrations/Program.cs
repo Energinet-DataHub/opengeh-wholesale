@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Configuration;
 using Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.Messaging.Communication;
@@ -97,6 +96,7 @@ var host = new HostBuilder()
         {
             options.ServiceBusConnectionString = Environment.GetEnvironmentVariable("SERVICE_BUS_SEND_CONNECTION_STRING")!;
             options.TopicName = Environment.GetEnvironmentVariable("INTEGRATIONEVENTS_TOPIC_NAME")!;
+            options.TransportType = Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpWebSockets;
         });
         services.AddPublisher<IntegrationEventProvider>()
             .AddScoped<IEnergyResultEventProvider, EnergyResultEventProvider>()

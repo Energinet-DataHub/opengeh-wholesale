@@ -106,7 +106,6 @@ public static class EventsRegistration
         {
             options.ServiceBusConnectionString = serviceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING;
             options.TopicName = serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME;
-            options.TransportType = Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpWebSockets;
         });
         serviceCollection.AddPublisher<IntegrationEventProvider>();
 
