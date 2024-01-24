@@ -252,4 +252,4 @@ def rename_quantity_columns(
 
 
 def _get_quantity_columns(df: DataFrame) -> list[str]:
-    return [c for c in df.columns if c.startswith("ENERGYQUANTITY")]
+    return [c for c in df.columns if c.startswith(BasisDataColname.quantity_prefix)]
