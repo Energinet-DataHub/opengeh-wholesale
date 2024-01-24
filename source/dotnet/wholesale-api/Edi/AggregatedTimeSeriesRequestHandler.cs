@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Wholesale.Batches.Interfaces;
+using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.EDI.Client;
@@ -21,6 +23,7 @@ using Energinet.DataHub.Wholesale.EDI.Mappers;
 using Energinet.DataHub.Wholesale.EDI.Models;
 using Energinet.DataHub.Wholesale.EDI.Validation;
 using Microsoft.Extensions.Logging;
+using NodaTime.Text;
 
 namespace Energinet.DataHub.Wholesale.EDI;
 
@@ -30,6 +33,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     private readonly IValidator<Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest> _validator;
     private readonly IAggregatedTimeSeriesQueries _aggregatedTimeSeriesQueries;
     private readonly ILogger<AggregatedTimeSeriesRequestHandler> _logger;
+    private readonly ICalculationsClient _calculationsClient;
     private static readonly ValidationError _noDataAvailable = new("Ingen data tilgængelig / No data available", "E0H");
     private static readonly ValidationError _noDataForRequestedGridArea = new("Forkert netområde / invalid grid area", "D46");
 
@@ -37,12 +41,14 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         IEdiClient ediClient,
         IValidator<Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest> validator,
         IAggregatedTimeSeriesQueries aggregatedTimeSeriesQueries,
-        ILogger<AggregatedTimeSeriesRequestHandler> logger)
+        ILogger<AggregatedTimeSeriesRequestHandler> logger,
+        ICalculationsClient calculationsClient)
     {
         _ediClient = ediClient;
         _validator = validator;
         _aggregatedTimeSeriesQueries = aggregatedTimeSeriesQueries;
         _logger = logger;
+        _calculationsClient = calculationsClient;
     }
 
     public async Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken)
@@ -58,7 +64,16 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
             return;
         }
 
+        var newestBatchCalculationIdsForPeriod = await _calculationsClient
+            .GetNewestCalculationIdsForPeriodAsync(
+                filterByGridAreaCodes: aggregatedTimeSeriesRequest.HasGridAreaCode ? new[] { aggregatedTimeSeriesRequest.GridAreaCode } : new string[] { },
+                filterByExecutionState: CalculationState.Completed,
+                periodStart: InstantPattern.General.Parse(aggregatedTimeSeriesRequest.Period.Start).Value,
+                periodEnd: InstantPattern.General.Parse(aggregatedTimeSeriesRequest.Period.End).Value)
+            .ConfigureAwait(false);
+
         var aggregatedTimeSeriesRequestMessage = AggregatedTimeSeriesRequestFactory.Parse(aggregatedTimeSeriesRequest);
+
         var results = await GetAggregatedTimeSeriesAsync(
             aggregatedTimeSeriesRequestMessage,
             cancellationToken).ConfigureAwait(false);

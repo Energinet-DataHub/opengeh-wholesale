@@ -42,7 +42,7 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
         var expectedBatch = CreateBatch(ProcessType.Aggregation, someGridAreasIds);
-        var sut = new CalculationRepository(writeContext);
+        var sut = new CalculationRepository(writeContext, DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
 
         // Act
         await sut.AddAsync(expectedBatch);
@@ -64,7 +64,7 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
         var batch = CreateBatch(someGridAreasIds);
-        var sut = new CalculationRepository(writeContext);
+        var sut = new CalculationRepository(writeContext, DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
         batch.MarkAsExecuting(); // This call will ensure ExecutionTimeStart is set
         batch.MarkAsCompleted(
             batch.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2))); // This call will ensure ExecutionTimeEnd is set
@@ -90,7 +90,7 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
         var batch = CreateBatch(someGridAreasIds);
-        var sut = new CalculationRepository(writeContext);
+        var sut = new CalculationRepository(writeContext, DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
 
         // Act
         await sut.AddAsync(batch);
@@ -113,7 +113,7 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
         var batch = CreateBatch(someGridAreasIds);
-        var sut = new CalculationRepository(writeContext);
+        var sut = new CalculationRepository(writeContext, DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
         await sut.AddAsync(batch);
         await writeContext.SaveChangesAsync();
 
@@ -137,7 +137,7 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
         var batch = CreateBatch(someGridAreasIds);
-        var sut = new CalculationRepository(writeContext);
+        var sut = new CalculationRepository(writeContext, DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
         await sut.AddAsync(batch);
         await writeContext.SaveChangesAsync();
 
@@ -169,7 +169,7 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
         var batch = CreateBatch(someGridAreasIds);
-        var sut = new CalculationRepository(writeContext);
+        var sut = new CalculationRepository(writeContext, DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
         await sut.AddAsync(batch);
         await writeContext.SaveChangesAsync();
 
@@ -210,7 +210,48 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
             Guid.NewGuid(),
             SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks);
 
-        var sut = new CalculationRepository(writeContext);
+        var sut = new CalculationRepository(writeContext, DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
+        await sut.AddAsync(batch);
+        await writeContext.SaveChangesAsync();
+
+        // Act
+        var actual = await sut.SearchAsync(
+            Array.Empty<GridAreaCode>(),
+            Array.Empty<CalculationExecutionState>(),
+            Instant.FromDateTimeOffset(start),
+            Instant.FromDateTimeOffset(end),
+            null,
+            null);
+
+        // Assert
+        if (expected)
+            actual.Should().Contain(batch);
+        else
+            actual.Should().NotContain(batch);
+    }
+
+    [Theory]
+    [InlineData("2022-04-01T23:00Z", "2022-06-01T23:00Z", true)] // Execution time inside period
+    [InlineData("2022-05-02T23:00Z", "2022-06-01T23:00Z", false)] // Execution time before period
+    [InlineData("2022-01-01T23:00Z", "2022-04-30T23:00Z", false)] // Execution time after period
+    public async Task GetLatestCompletedBatchCalculationIdsInPeriodAfterAsync_HasExecutionTimeFilter_FiltersAsExpected(DateTimeOffset start, DateTimeOffset end, bool expected)
+    {
+        // Arrange
+        await using var writeContext = _databaseManager.CreateDbContext();
+
+        var period = Periods.January_EuropeCopenhagen_Instant;
+        var batch = new Application.Model.Calculations.Calculation(
+            SystemClock.Instance.GetCurrentInstant(),
+            ProcessType.BalanceFixing,
+            new List<GridAreaCode> { new("004") },
+            period.PeriodStart,
+            period.PeriodEnd,
+            Instant.FromUtc(2022, 5, 1, 0, 0),
+            period.DateTimeZone,
+            Guid.NewGuid(),
+            SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks);
+
+        var sut = new CalculationRepository(writeContext, DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
         await sut.AddAsync(batch);
         await writeContext.SaveChangesAsync();
 

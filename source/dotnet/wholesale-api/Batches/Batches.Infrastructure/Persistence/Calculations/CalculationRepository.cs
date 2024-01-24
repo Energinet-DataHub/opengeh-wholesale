@@ -23,10 +23,12 @@ namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Calcula
 public class CalculationRepository : ICalculationRepository
 {
     private readonly IDatabaseContext _context;
+    private readonly DateTimeZone _dateTimeZone;
 
-    public CalculationRepository(IDatabaseContext context)
+    public CalculationRepository(IDatabaseContext context, DateTimeZone dateTimeZone)
     {
         _context = context;
+        _dateTimeZone = dateTimeZone;
     }
 
     public async Task AddAsync(Calculation calculation)
@@ -80,6 +82,50 @@ public class CalculationRepository : ICalculationRepository
 
         return foundBatches
             .Where(b => filterByGridAreaCode.Count == 0 || b.GridAreaCodes.Any(filterByGridAreaCode.Contains))
+            .ToList();
+    }
+
+    public async Task<IReadOnlyCollection<CalculationId>> GetNewestCalculationIdsForPeriodAsync(
+        IReadOnlyCollection<GridAreaCode> filterByGridAreaCodes,
+        IReadOnlyCollection<CalculationExecutionState> filterByExecutionState,
+        Instant periodStart,
+        Instant periodEnd)
+    {
+        //All batches that overlap the period
+        var query = _context
+            .Batches
+            .Where(b => b.PeriodStart < periodEnd)
+            .Where(b => b.PeriodEnd > periodStart)
+            .Where(b => filterByExecutionState.Count == 0 || filterByExecutionState.Contains(b.ExecutionState))
+            .Where(b => filterByGridAreaCodes.Count == 0 || b.GridAreaCodes.Any(filterByGridAreaCodes.Contains))
+            .Where(b => b.CalculationId != null);
+
+        var foundCalculations = await query.ToListAsync().ConfigureAwait(false);
+
+        //period in days
+        var periodStartInTimeZone = new ZonedDateTime(periodStart, _dateTimeZone);
+        var periodEndInTimeZone = new ZonedDateTime(periodEnd, _dateTimeZone);
+        var period = Period.Between(periodStartInTimeZone.LocalDateTime, periodEndInTimeZone.LocalDateTime, PeriodUnits.Days);
+
+        var datesInPeriod = new List<Instant>();
+        for (var days = 1; days <= period.Days; days++)
+        {
+            datesInPeriod.Add(periodStart.Plus(Duration.FromDays(days)));
+        }
+
+        var newestCalculationIdsPerDay = new List<Calculation>();
+        foreach (var newestCalculation in foundCalculations.OrderByDescending(x => x.CalculationId!.Id))
+        {
+            if (datesInPeriod.Count == 0)
+                break;
+
+            newestCalculationIdsPerDay.Add(newestCalculation);
+            datesInPeriod
+                .RemoveAll(date => date >= newestCalculation.PeriodStart && date <= newestCalculation.PeriodEnd);
+        }
+
+        return newestCalculationIdsPerDay
+            .Select(x => x.CalculationId!)
             .ToList();
     }
 
