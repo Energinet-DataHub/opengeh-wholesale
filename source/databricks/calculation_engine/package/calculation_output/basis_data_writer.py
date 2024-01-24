@@ -183,7 +183,7 @@ class BasisDataWriter:
 
     def _write_master_basis_data_to_storage(
         self,
-        master_basis_data_df,
+        master_basis_data_df: DataFrame,
     ) -> None:
         master_basis_data_df = master_basis_data_df.select(
             col("calculation_id").lit(self.calculation_id),
@@ -232,14 +232,14 @@ def _write_to_storage(results: DataFrame, table_name: str) -> None:
 def rename_quantity_columns(
     df: DataFrame,
 ) -> DataFrame:
-    def extract_numeric(column_name: str):
+    def extract_numeric(column_name: str) -> int:
         import re
 
         match = re.search(r"\d+", column_name)
         if match:
             return int(match.group())
         else:
-            return None
+            raise ValueError(f"Could not extract numeric from {column_name}")
 
     # Rename columns based on the specified pattern
     for col_name in _get_quantity_columns(df):
