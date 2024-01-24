@@ -169,6 +169,7 @@ def test__write__writes_to_paths_that_match_contract(
     tmpdir: Path,
     metering_point_period_df_factory: Callable[..., DataFrame],
     metering_point_time_series_factory,
+    migrations_executed: None,
 ) -> None:
     """
     This test calls 'write' once and then asserts on all file contracts.
