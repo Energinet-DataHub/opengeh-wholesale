@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.time_series_quarter
     quantity_97 DECIMAL(18, 3),
     quantity_98 DECIMAL(18, 3),
     quantity_99 DECIMAL(18, 3),
-    quantity_100 DECIMAL(18, 3),
+    quantity_100 DECIMAL(18, 3)
 )
 USING DELTA
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
