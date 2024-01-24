@@ -37,6 +37,7 @@ public class EnergyResultFactory
         var balanceResponsibleId = databricksSqlRow[EnergyResultColumnNames.BalanceResponsibleId];
         var processType = databricksSqlRow[EnergyResultColumnNames.BatchProcessType];
         var fromGridArea = databricksSqlRow[EnergyResultColumnNames.FromGridArea];
+        var meteringPointId = databricksSqlRow[EnergyResultColumnNames.MeteringPointId];
 
         return new EnergyResult(
             SqlResultValueConverters.ToGuid(id!),
@@ -50,6 +51,7 @@ public class EnergyResultFactory
             periodStart,
             periodEnd,
             fromGridArea,
+            meteringPointId,
             version);
     }
 }
