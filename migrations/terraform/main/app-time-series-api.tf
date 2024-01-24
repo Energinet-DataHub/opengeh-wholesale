@@ -36,9 +36,9 @@ module "app_time_series_api" {
     "DatabricksOptions__HealthCheckEndHour"   = 16
 
     # Logging
-    "Logging__ApplicationInsights__LogLevel__Default"                      = "Warning"
-    "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Migrations" = "Information"
-    "Logging__ApplicationInsights__LogLevel__Energinet.Datahub.Core"       = "Information"
+    "Logging__ApplicationInsights__LogLevel__Default"                      = local.LOGGING_LOGLEVEL_DEFAULT
+    "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Migrations" = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_MIGRATIONS
+    "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Core"       = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE
   }
   role_assignments = [
     {

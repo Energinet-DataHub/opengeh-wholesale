@@ -5,4 +5,11 @@ locals {
   resources_suffix                = "${lower(var.domain_name_short)}-${lower(var.environment_short)}-we-${lower(var.environment_instance)}"
   datahub2_certificate_thumbprint = ""
   ip_restrictions_as_string       = join(",", [for rule in var.ip_restrictions : "${rule.ip_address}"])
+
+  # Logging
+  LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_MIGRATIONS = "Information" # From opengeh-migrations
+  LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE       = "Information" # From geh-core
+  LOGGING_LOGLEVEL_DEFAULT                                  = "Warning"
+  LOGGING_LOGLEVEL_WORKER_DEFAULT                           = "Warning"
+  LOGGING_LOGLEVEL_HOST_DEFAULT                             = "Warning"
 }
