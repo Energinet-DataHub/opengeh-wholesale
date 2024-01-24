@@ -225,7 +225,8 @@ def _write_df_to_csv(path: str, df: DataFrame, partition_keys: list[str]) -> Non
 
 def _write_to_storage(results: DataFrame, table_name: str) -> None:
     results.write.format("delta").mode("append").option(
-        "mergeSchema", "false"
+        "mergeSchema",
+        "true",  # TODO: set to false and add potential missing quantity columns in df
     ).insertInto(f"{OUTPUT_DATABASE_NAME}.{table_name}")
 
 
