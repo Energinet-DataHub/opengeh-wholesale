@@ -36,6 +36,7 @@ class BasisDataWriter:
         metering_points_periods_df: DataFrame,
         metering_point_time_series: DataFrame,
         time_zone: str,
+        write_to_delta_table: bool = True,
     ) -> None:
         with logging_configuration.start_span("prepare"):
             (
@@ -49,7 +50,14 @@ class BasisDataWriter:
             metering_points_periods_df
         )
 
-        self._write(master_basis_data_df, timeseries_quarter_df, timeseries_hour_df)
+        if write_to_delta_table:
+            self._write_basis_data_to_delta_table(
+                master_basis_data_df,
+                timeseries_quarter_df,
+                timeseries_hour_df,
+            )
+        else:
+            self._write(master_basis_data_df, timeseries_quarter_df, timeseries_hour_df)
 
     def _write(
         self,
@@ -64,12 +72,6 @@ class BasisDataWriter:
         )
 
         self._write_es_basis_data(
-            master_basis_data_df,
-            timeseries_quarter_df,
-            timeseries_hour_df,
-        )
-
-        self._write_basis_data_to_delta_table(
             master_basis_data_df,
             timeseries_quarter_df,
             timeseries_hour_df,
@@ -173,10 +175,30 @@ class BasisDataWriter:
         with logging_configuration.start_span("basis_data_to_delta_table"):
             self._write_master_basis_data_to_storage(master_basis_data_df)
 
+            if "quantity_97" not in timeseries_quarter_df.columns:
+                timeseries_quarter_df = timeseries_quarter_df.withColumn(
+                    "quantity_97", lit(None)
+                )
+            if "quantity_98" not in timeseries_quarter_df.columns:
+                timeseries_quarter_df = timeseries_quarter_df.withColumn(
+                    "quantity_98", lit(None)
+                )
+            if "quantity_99" not in timeseries_quarter_df.columns:
+                timeseries_quarter_df = timeseries_quarter_df.withColumn(
+                    "quantity_99", lit(None)
+                )
+            if "quantity_100" not in timeseries_quarter_df.columns:
+                timeseries_quarter_df = timeseries_quarter_df.withColumn(
+                    "quantity_100", lit(None)
+                )
             self._write_time_series_to_storage(
                 timeseries_quarter_df, paths.TIME_SERIES_QUARTER_TABLE_NAME
             )
 
+            if "quantity_25" not in timeseries_hour_df.columns:
+                timeseries_hour_df = timeseries_hour_df.withColumn(
+                    "quantity_25", lit(None)
+                )
             self._write_time_series_to_storage(
                 timeseries_hour_df, paths.TIME_SERIES_HOUR_TABLE_NAME
             )
@@ -226,7 +248,7 @@ def _write_df_to_csv(path: str, df: DataFrame, partition_keys: list[str]) -> Non
 def _write_to_storage(results: DataFrame, table_name: str) -> None:
     results.write.format("delta").mode("append").option(
         "mergeSchema",
-        "true",  # TODO: set to false and add potential missing quantity columns in df
+        "false",
     ).insertInto(f"{OUTPUT_DATABASE_NAME}.{table_name}")
 
 
