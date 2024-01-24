@@ -50,8 +50,10 @@ def get_container_root_path(storage_account_name: str) -> str:
     return f"abfss://{WHOLESALE_CONTAINER_NAME}@{storage_account_name}.dfs.core.windows.net/"
 
 
-def get_calculation_input_path(storage_account_name: str) -> str:
-    input_folder = env_vars.get_calculation_input_folder_name()
+def get_calculation_input_path(
+    storage_account_name: str, input_folder: str | None = None
+) -> str:
+    input_folder = input_folder or env_vars.get_calculation_input_folder_name()
     return f"{get_container_root_path(storage_account_name)}{input_folder}/"
 
 
