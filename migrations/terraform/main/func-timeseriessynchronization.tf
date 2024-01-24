@@ -35,5 +35,13 @@ module "func_timeseriessynchronization" {
     StorageAccountSettings__TimeSeriesContainerName = azurerm_storage_container.dh2_timeseries_synchronization.name
     DataHub2ClientSettings__EndpointAddress         = "https://b2b.te7.datahub.dk",
     FeatureManagement__DataHub2HealthCheck          = var.feature_flag_datahub2_healthcheck
+
+    # Logging Worker
+    "Logging__LogLevel__Default"                      = local.LOGGING_LOGLEVEL_WORKER_DEFAULT
+    "Logging__LogLevel__Energinet.DataHub.Migrations" = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_MIGRATIONS
+    "Logging__LogLevel__Energinet.DataHub.Core"       = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE
+
+    # Logging Host
+    "AzureFunctionsJobHost__Logging__LogLevel__Default" = local.LOGGING_LOGLEVEL_HOST_DEFAULT
   }
 }
