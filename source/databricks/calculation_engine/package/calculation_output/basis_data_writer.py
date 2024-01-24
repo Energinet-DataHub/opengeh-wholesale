@@ -14,6 +14,7 @@
 
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, lit
+from pyspark.sql.types import DecimalType
 
 import package.calculation.preparation.transformations.basis_data as basis_data
 from package.codelists import AggregationLevel, BasisDataType, ProcessType
@@ -174,30 +175,27 @@ class BasisDataWriter:
         with logging_configuration.start_span("basis_data_to_delta_table"):
             self._write_master_basis_data_to_storage(master_basis_data_df)
 
-            if "quantity_97" not in timeseries_quarter_df.columns:
-                timeseries_quarter_df = timeseries_quarter_df.withColumn(
-                    "quantity_97", lit(None)
-                )
-            if "quantity_98" not in timeseries_quarter_df.columns:
-                timeseries_quarter_df = timeseries_quarter_df.withColumn(
-                    "quantity_98", lit(None)
-                )
-            if "quantity_99" not in timeseries_quarter_df.columns:
-                timeseries_quarter_df = timeseries_quarter_df.withColumn(
-                    "quantity_99", lit(None)
-                )
-            if "quantity_100" not in timeseries_quarter_df.columns:
-                timeseries_quarter_df = timeseries_quarter_df.withColumn(
-                    "quantity_100", lit(None)
-                )
+            timeseries_quarter_df = _add_quantity_column_if_missing(
+                timeseries_quarter_df, "ENERGYQUANTITY97"
+            )
+            timeseries_quarter_df = _add_quantity_column_if_missing(
+                timeseries_quarter_df, "ENERGYQUANTITY98"
+            )
+            timeseries_quarter_df = _add_quantity_column_if_missing(
+                timeseries_quarter_df, "ENERGYQUANTITY99"
+            )
+            timeseries_quarter_df = _add_quantity_column_if_missing(
+                timeseries_quarter_df, "ENERGYQUANTITY100"
+            )
+
+            timeseries_quarter_df.printSchema()
             self._write_time_series_to_storage(
                 timeseries_quarter_df, paths.TIME_SERIES_QUARTER_TABLE_NAME
             )
 
-            if "quantity_25" not in timeseries_hour_df.columns:
-                timeseries_hour_df = timeseries_hour_df.withColumn(
-                    "quantity_25", lit(None)
-                )
+            timeseries_hour_df = _add_quantity_column_if_missing(
+                timeseries_hour_df, "ENERGYQUANTITY25"
+            )
             self._write_time_series_to_storage(
                 timeseries_hour_df, paths.TIME_SERIES_HOUR_TABLE_NAME
             )
@@ -275,3 +273,9 @@ def rename_quantity_columns(
 
 def _get_quantity_columns(df: DataFrame) -> list[str]:
     return [c for c in df.columns if c.startswith(BasisDataColname.quantity_prefix)]
+
+
+def _add_quantity_column_if_missing(df: DataFrame, quantity_column: str) -> DataFrame:
+    if quantity_column not in df.columns:
+        df = df.withColumn(quantity_column, lit(None).cast(DecimalType(18, 3)))
+    return df
