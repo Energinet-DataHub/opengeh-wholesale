@@ -39,6 +39,169 @@ namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks.ServiceBus
 #pragma warning restore SA1310 // Field names should not contain underscore
 
         /// <summary>
+        /// Add a health check for specified Azure Service Bus Queue where the ServiceBus transport is set to AmqpOverWebSocket.
+        /// </summary>
+        /// <param name="builder">The <see cref="IHealthChecksBuilder"/>.</param>
+        /// <param name="connectionString">The azure service bus connection string to be used.</param>
+        /// <param name="queueName">The name of the queue to check.</param>
+        /// <param name="configure">An optional action to allow additional Azure Service Bus configuration.</param>
+        /// <param name="name">The health check name. Optional. If <c>null</c> the type name 'azurequeue' will be used for the name.</param>
+        /// <param name="failureStatus">
+        /// The <see cref="HealthStatus"/> that should be reported when the health check fails. Optional. If <c>null</c> then
+        /// the default status of <see cref="HealthStatus.Unhealthy"/> will be reported.
+        /// </param>
+        /// <param name="tags">A list of tags that can be used to filter sets of health checks. Optional.</param>
+        /// <param name="timeout">An optional <see cref="TimeSpan"/> representing the timeout of the check.</param>
+        /// <returns>The specified <paramref name="builder"/>.</returns>
+        public static IHealthChecksBuilder AddAzureServiceBusQueueUsingWebSockets(
+            this IHealthChecksBuilder builder,
+            string connectionString,
+            string queueName,
+            Action<AzureServiceBusQueueHealthCheckOptions>? configure = default,
+            string? name = default,
+            HealthStatus? failureStatus = default,
+            IEnumerable<string>? tags = default,
+            TimeSpan? timeout = default) =>
+            builder.AddAzureServiceBusQueueUsingWebSockets(
+                _ => connectionString,
+                _ => queueName,
+                configure,
+                name,
+                failureStatus,
+                tags,
+                timeout);
+
+        /// <summary>
+        /// Add a health check for specified Azure Service Bus Queue where the ServiceBus transport is set to AmqpOverWebSocket.
+        /// </summary>
+        /// <param name="builder">The <see cref="IHealthChecksBuilder"/>.</param>
+        /// <param name="connectionStringFactory">A factory to build the azure service bus connection string to be used.</param>
+        /// <param name="queueNameFactory">A factory to build the queue name to check.</param>
+        /// <param name="configure">An optional action to allow additional Azure Service Bus configuration.</param>
+        /// <param name="name">The health check name. Optional. If <c>null</c> the type name 'azurequeue' will be used for the name.</param>
+        /// <param name="failureStatus">
+        /// The <see cref="HealthStatus"/> that should be reported when the health check fails. Optional. If <c>null</c> then
+        /// the default status of <see cref="HealthStatus.Unhealthy"/> will be reported.
+        /// </param>
+        /// <param name="tags">A list of tags that can be used to filter sets of health checks. Optional.</param>
+        /// <param name="timeout">An optional <see cref="TimeSpan"/> representing the timeout of the check.</param>
+        /// <returns>The specified <paramref name="builder"/>.</returns>
+        public static IHealthChecksBuilder AddAzureServiceBusQueueUsingWebSockets(
+            this IHealthChecksBuilder builder,
+            Func<IServiceProvider, string> connectionStringFactory,
+            Func<IServiceProvider, string> queueNameFactory,
+            Action<AzureServiceBusQueueHealthCheckOptions>? configure = default,
+            string? name = default,
+            HealthStatus? failureStatus = default,
+            IEnumerable<string>? tags = default,
+            TimeSpan? timeout = default)
+        {
+            Guard.ThrowIfNull(connectionStringFactory);
+            Guard.ThrowIfNull(queueNameFactory);
+
+            return builder.Add(new HealthCheckRegistration(
+                name ?? AZUREQUEUE_NAME,
+                sp =>
+                {
+                    var options = new AzureServiceBusQueueHealthCheckOptions(queueNameFactory(sp))
+                    {
+                        ConnectionString = connectionStringFactory(sp),
+                    };
+
+                    configure?.Invoke(options);
+                    return new AzureServiceBusQueueHealthCheck(options, new WebSocketServiceBusClientProvider());
+                },
+                failureStatus,
+                tags,
+                timeout));
+        }
+
+        /// <summary>
+        /// Add a health check for specified Azure Service Bus Queue where the ServiceBus transport is set to AmqpOverWebSocket.
+        /// </summary>
+        /// <param name="builder">The <see cref="IHealthChecksBuilder"/>.</param>
+        /// <param name="fullyQualifiedNamespace">The azure service bus fully qualified namespace to be used, format sb://myservicebus.servicebus.windows.net/.</param>
+        /// <param name="queueName">The name of the queue to check.</param>
+        /// <param name="tokenCredential">The token credential for authentication.</param>
+        /// <param name="configure">An optional action to allow additional Azure Service Bus configuration.</param>
+        /// <param name="name">The health check name. Optional. If <c>null</c> the type name 'azurequeue' will be used for the name.</param>
+        /// <param name="failureStatus">
+        /// The <see cref="HealthStatus"/> that should be reported when the health check fails. Optional. If <c>null</c> then
+        /// the default status of <see cref="HealthStatus.Unhealthy"/> will be reported.
+        /// </param>
+        /// <param name="tags">A list of tags that can be used to filter sets of health checks. Optional.</param>
+        /// <param name="timeout">An optional <see cref="TimeSpan"/> representing the timeout of the check.</param>
+        /// <returns>The specified <paramref name="builder"/>.</returns>
+        public static IHealthChecksBuilder AddAzureServiceBusQueueUsingWebSockets(
+            this IHealthChecksBuilder builder,
+            string fullyQualifiedNamespace,
+            string queueName,
+            TokenCredential tokenCredential,
+            Action<AzureServiceBusQueueHealthCheckOptions>? configure = default,
+            string? name = default,
+            HealthStatus? failureStatus = default,
+            IEnumerable<string>? tags = default,
+            TimeSpan? timeout = default) =>
+            builder.AddAzureServiceBusQueueUsingWebSockets(
+                _ => fullyQualifiedNamespace,
+                _ => queueName,
+                _ => tokenCredential,
+                configure,
+                name,
+                failureStatus,
+                tags,
+                timeout);
+
+        /// <summary>
+        /// Add a health check for specified Azure Service Bus Queue where the ServiceBus transport is set to AmqpOverWebSocket.
+        /// </summary>
+        /// <param name="builder">The <see cref="IHealthChecksBuilder"/>.</param>
+        /// <param name="fullyQualifiedNamespaceFactory">A factory to build the azure service bus fully qualified namespace to be used, format sb://myservicebus.servicebus.windows.net/.</param>
+        /// <param name="queueNameFactory">A factory to build the name of the queue to check.</param>
+        /// <param name="tokenCredentialFactory">A factory to build the token credential for authentication.</param>
+        /// <param name="configure">An optional action to allow additional Azure Service Bus configuration.</param>
+        /// <param name="name">The health check name. Optional. If <c>null</c> the type name 'azurequeue' will be used for the name.</param>
+        /// <param name="failureStatus">
+        /// The <see cref="HealthStatus"/> that should be reported when the health check fails. Optional. If <c>null</c> then
+        /// the default status of <see cref="HealthStatus.Unhealthy"/> will be reported.
+        /// </param>
+        /// <param name="tags">A list of tags that can be used to filter sets of health checks. Optional.</param>
+        /// <param name="timeout">An optional <see cref="TimeSpan"/> representing the timeout of the check.</param>
+        /// <returns>The specified <paramref name="builder"/>.</returns>
+        public static IHealthChecksBuilder AddAzureServiceBusQueueUsingWebSockets(
+            this IHealthChecksBuilder builder,
+            Func<IServiceProvider, string> fullyQualifiedNamespaceFactory,
+            Func<IServiceProvider, string> queueNameFactory,
+            Func<IServiceProvider, TokenCredential> tokenCredentialFactory,
+            Action<AzureServiceBusQueueHealthCheckOptions>? configure = default,
+            string? name = default,
+            HealthStatus? failureStatus = default,
+            IEnumerable<string>? tags = default,
+            TimeSpan? timeout = default)
+        {
+            Guard.ThrowIfNull(fullyQualifiedNamespaceFactory);
+            Guard.ThrowIfNull(queueNameFactory);
+            Guard.ThrowIfNull(tokenCredentialFactory);
+
+            return builder.Add(new HealthCheckRegistration(
+                name ?? AZUREQUEUE_NAME,
+                sp =>
+                {
+                    var options = new AzureServiceBusQueueHealthCheckOptions(queueNameFactory(sp))
+                    {
+                        FullyQualifiedNamespace = fullyQualifiedNamespaceFactory(sp),
+                        Credential = tokenCredentialFactory(sp),
+                    };
+
+                    configure?.Invoke(options);
+                    return new AzureServiceBusQueueHealthCheck(options, new WebSocketServiceBusClientProvider());
+                },
+                failureStatus,
+                tags,
+                timeout));
+        }
+
+        /// <summary>
         /// Add a health check for Azure Service Bus Topic where the ServiceBus transport is set to AmqpOverWebSocket.
         /// </summary>
         /// <param name="builder">The <see cref="IHealthChecksBuilder"/>.</param>
@@ -63,7 +226,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks.ServiceBus
             IEnumerable<string>? tags = default,
             TimeSpan? timeout = default)
         {
-            return builder.AddAzureServiceBusTopic(
+            return builder.AddAzureServiceBusTopicUsingWebSockets(
                 _ => connectionString,
                 _ => topicName,
                 configure,
@@ -143,7 +306,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks.ServiceBus
             IEnumerable<string>? tags = default,
             TimeSpan? timeout = default)
         {
-            return builder.AddAzureServiceBusTopic(
+            return builder.AddAzureServiceBusTopicUsingWebSockets(
                 _ => fullyQualifiedNamespace,
                 _ => topicName,
                 _ => tokenCredential,
