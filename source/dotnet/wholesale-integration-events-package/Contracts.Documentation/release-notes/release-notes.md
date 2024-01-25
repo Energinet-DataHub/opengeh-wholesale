@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 7.2.0
+
+Removed deprecated `CalculationResultCompleted` event.
+
 ## Version 7.1.0
 
 Updated NuGet package dependencies.

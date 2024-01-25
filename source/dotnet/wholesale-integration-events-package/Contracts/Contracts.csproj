@@ -21,7 +21,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Wholesale.Contracts</PackageId>
-    <PackageVersion>7.1.0$(VersionSuffix)</PackageVersion>
+    <PackageVersion>7.2.0$(VersionSuffix)</PackageVersion>
     <Title>Wholesale Contracts</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -111,20 +111,9 @@ limitations under the License.
       <CompileOutputs>True</CompileOutputs>
       <Generator>MSBuild:Compile</Generator>
     </Protobuf>
-    <Protobuf Include="../../wholesale-api/Events/Events.Infrastructure/IntegrationEvents/CalculationResultCompleted/Protos/*.proto">
-      <GrpcServices>None</GrpcServices>
-      <Access>Public</Access>
-      <ProtoCompile>True</ProtoCompile>
-      <ProtoRoot>../../wholesale-api/Events/Events.Infrastructure/IntegrationEvents</ProtoRoot>
-      <CompileOutputs>True</CompileOutputs>
-      <Generator>MSBuild:Compile</Generator>
-    </Protobuf>
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\CalculationResultCompleted\CalculationResultCompleted.cs">
-      <Link>Contracts\CalculationResultCompleted.cs</Link>
-    </Compile>
     <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\AmountPerChargeResultProducedV1\AmountPerChargeResultProducedV1.cs">
       <Link>Contracts\IntegrationEvents\AmountPerChargeResultProducedV1.cs</Link>
     </Compile>
