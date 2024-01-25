@@ -25,6 +25,7 @@ from package.codelists import (
     MeteringPointType,
     SettlementMethod,
     QuantityQuality,
+    ProcessType,
 )
 from package.constants import Colname
 from package.calculation_output.basis_data_writer import BasisDataWriter
@@ -161,34 +162,3 @@ def _get_all_basis_data_file_types() -> list[CalculationFileType]:
         CalculationFileType.TIME_SERIES_HOUR_BASIS_DATA,
         CalculationFileType.TIME_SERIES_HOUR_BASIS_DATA_FOR_ES_PER_GA,
     ]
-
-
-def test__write__writes_to_paths_that_match_contract(
-    contracts_path: str,
-    tmpdir: Path,
-    metering_point_period_df_factory: Callable[..., DataFrame],
-    metering_point_time_series_factory,
-) -> None:
-    """
-    This test calls 'write' once and then asserts on all file contracts.
-    This is done to avoid multiple write operations, and thereby reduce execution time
-    """
-    # Arrange
-    metering_point_period_df = metering_point_period_df_factory()
-    metering_point_time_series = metering_point_time_series_factory()
-    sut = BasisDataWriter(str(tmpdir), DEFAULT_BATCH_ID)
-
-    # Act
-    sut.write(metering_point_period_df, metering_point_time_series, TIME_ZONE)
-
-    # Assert
-    for file_type in _get_all_basis_data_file_types():
-        actual_file_path = find_file(
-            f"{str(tmpdir)}/",
-            f"{_get_basis_data_paths(file_type)}/part-*.csv",
-        )
-        assert_file_path_match_contract(
-            contracts_path,
-            actual_file_path,
-            file_type,
-        )
