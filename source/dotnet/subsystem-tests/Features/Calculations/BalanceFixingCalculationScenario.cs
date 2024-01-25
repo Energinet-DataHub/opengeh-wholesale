@@ -258,8 +258,8 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
 
             // Assert
             using var assertionScope = new AssertionScope();
-            actualMeteringPointTypesForGridLossProducedV1.Should().ContainSingle(GridLossResultProducedV1.Types.MeteringPointType.Consumption.ToString());
-            actualMeteringPointTypesForGridLossProducedV1.Should().ContainSingle(GridLossResultProducedV1.Types.MeteringPointType.Production.ToString());
+            actualMeteringPointTypesForGridLossProducedV1.Should().ContainSingle(x => x == GridLossResultProducedV1.Types.MeteringPointType.Consumption.ToString());
+            actualMeteringPointTypesForGridLossProducedV1.Should().ContainSingle(x => x == GridLossResultProducedV1.Types.MeteringPointType.Production.ToString());
         }
     }
 }
