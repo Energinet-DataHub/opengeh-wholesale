@@ -12,14 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Net;
 using Energinet.DataHub.Wholesale.Batches.Application.Model;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using FunctionApp.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.DurableTask;
-using Microsoft.DurableTask.Client;
 using Microsoft.Extensions.Logging;
 
 namespace FunctionApp.Orchestrations.Functions.Calculation
@@ -27,31 +24,6 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
 #pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
     internal class CalculationOrchestration
     {
-        [Function(nameof(StartCalculation))]
-        public async Task<HttpResponseData> StartCalculation(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req,
-            [FromBody] BatchRequestDto batchRequestDto,
-            [DurableClient] DurableTaskClient client,
-            FunctionContext executionContext)
-        {
-            var logger = executionContext.GetLogger<CalculationOrchestration>();
-
-            var instanceId = await client.ScheduleNewOrchestrationInstanceAsync(nameof(Calculation), batchRequestDto);
-            logger.LogInformation("Created new orchestration with instance ID = {instanceId}", instanceId);
-
-            var orchestrationMetaData = await client.WaitForInstanceStartAsync(instanceId);
-            while (ReadCalculationId(orchestrationMetaData) == Guid.Empty)
-            {
-                await Task.Delay(200);
-                orchestrationMetaData = await client.GetInstanceAsync(instanceId, getInputsAndOutputs: true);
-            }
-
-            var response = req.CreateResponse(HttpStatusCode.OK);
-            await response.WriteAsJsonAsync(ReadCalculationId(orchestrationMetaData));
-
-            return response;
-        }
-
         [Function(nameof(Calculation))]
         public async Task<string> Calculation(
             [OrchestrationTrigger] TaskOrchestrationContext context,
@@ -130,17 +102,6 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
 
             // TODO: Could wait for an event to notiy us that messages are ready for customer in EDI
             return "Success";
-        }
-
-        private static Guid ReadCalculationId(OrchestrationMetadata? orchestrationMetaData)
-        {
-            if (orchestrationMetaData == null || orchestrationMetaData.SerializedCustomStatus == null)
-                return Guid.Empty;
-
-            var calculationMetaData = orchestrationMetaData.ReadCustomStatusAs<CalculationMetaData>();
-            return calculationMetaData == null || calculationMetaData.Id == Guid.Empty
-                ? Guid.Empty
-                : calculationMetaData.Id;
         }
     }
 #pragma warning restore CA2007 // Consider calling ConfigureAwait on the awaited task
