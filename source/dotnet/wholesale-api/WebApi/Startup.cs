@@ -204,23 +204,10 @@ public class Startup
             .AddLiveCheck()
             .AddDbContextCheck<EventsDatabaseContext>(
                 name: HealthCheckNames.SqlDatabaseContext)
-            .Add(new HealthCheckRegistration(
-                name: HealthCheckNames.IntegrationEventsTopic,
-                sp =>
-                {
-                    var options = new AzureServiceBusTopicHealthCheckOptions(serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME)
-                    {
-                        ConnectionString = serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
-                    };
-                    return new AzureServiceBusTopicHealthCheck(options, new WebSocketServiceBusClientProvider());
-                },
-                failureStatus: default,
-                tags: default,
-                timeout: default))
-            ////.AddAzureServiceBusTopic(
-            ////    serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
-            ////    serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
-            ////    name: HealthCheckNames.IntegrationEventsTopic)
+            .AddAzureServiceBusTopicUsingWebSockets(
+                serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
+                serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
+                name: HealthCheckNames.IntegrationEventsTopic)
             .AddDataLakeHealthCheck(
                 _ => Configuration.Get<DataLakeOptions>()!,
                 name: HealthCheckNames.DataLake)

@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks.ServiceBus
     /// <summary>
     /// Allow us to use the transport type AWMP over WebSocket when communicating with ServiceBus.
     /// </summary>
-    public class WebSocketServiceBusClientProvider : ServiceBusClientProvider
+    internal class WebSocketServiceBusClientProvider : ServiceBusClientProvider
     {
         public override ServiceBusClient CreateClient(string? connectionString)
         {
