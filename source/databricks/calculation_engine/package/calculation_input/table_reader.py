@@ -15,7 +15,7 @@
 from datetime import datetime
 
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import concat_ws, col, when, lit, expr
+from pyspark.sql.functions import concat_ws, col, when, lit
 
 from package.codelists import (
     InputMeteringPointType,
@@ -109,6 +109,11 @@ class TableReader:
             ),
             col(Colname.metering_point_id) == col("mp_id"),
             "left_anti",
+        ).select(
+            df[Colname.metering_point_id],
+            df[Colname.quantity],
+            df[Colname.quality],
+            df[Colname.observation_time],
         )
 
         if "observation_year" in df.columns:
