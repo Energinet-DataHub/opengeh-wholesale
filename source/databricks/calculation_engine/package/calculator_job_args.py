@@ -42,7 +42,9 @@ def create_calculation_arguments(job_args: Namespace) -> CalculatorArgs:
         data_storage_account_name=storage_account_name,
         data_storage_account_credentials=credential,
         wholesale_container_path=paths.get_container_root_path(storage_account_name),
-        calculation_input_path=paths.get_calculation_input_path(storage_account_name),
+        calculation_input_path=paths.get_calculation_input_path(
+            storage_account_name, job_args.calculation_input_folder_name
+        ),
         time_series_points_table_name=job_args.time_series_points_table_name,
         metering_point_periods_table_name=job_args.metering_point_periods_table_name,
         grid_loss_metering_points_table_name=job_args.grid_loss_metering_points_table_name,
@@ -71,6 +73,7 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p.add("--period-end-datetime", type=valid_date, required=True)
     p.add("--process-type", type=ProcessType, required=True)
     p.add("--execution-time-start", type=valid_date, required=True)
+    p.add("--calculation_input_folder_name", type=str, required=False)
     p.add("--time_series_points_table_name", type=str, required=False)
     p.add("--metering_point_periods_table_name", type=str, required=False)
     p.add("--grid_loss_metering_points_table_name", type=str, required=False)

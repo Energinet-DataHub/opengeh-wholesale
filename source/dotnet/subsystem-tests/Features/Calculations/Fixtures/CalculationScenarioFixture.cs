@@ -148,43 +148,24 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
 
         /// <summary>
         /// Load CSV file and parse each data row into <see cref="AmountPerChargeResultProducedV1.Types.TimeSeriesPoint"/>.
-        /// Expects the first row to be a specific header to ensure we read data from the correct columns.
         /// </summary>
-        /// <param name="testFileName">Filename of file located in 'TestData' folder.</param>
-        public async Task<IReadOnlyCollection<AmountPerChargeResultProducedV1.Types.TimeSeriesPoint>> ParseTimeSeriesPointsFromCsvAsync(string testFileName)
+        public async Task<IReadOnlyCollection<AmountPerChargeResultProducedV1.Types.TimeSeriesPoint>> ParseChargeResultProducedV1TimeSeriesPointCsvAsync(string testFileName)
         {
-            const string ExpectedHeader = "grid_area;energy_supplier_id;quantity;time;price;amount;charge_code;";
+            return await ParseCsvAsync(
+                testFileName,
+                "grid_area;energy_supplier_id;quantity;time;price;amount;charge_code;",
+                ParseAmountPerChargeResultProducedV1TimeSeriesPoint);
+        }
 
-            using var stream = EmbeddedResources.GetStream<Root>("Features.Calculations.TestData.amount_for_es_for_hourly_tarif_40000_for_e17_e02.csv");
-            using var reader = new StreamReader(stream);
-
-            var hasVerifiedHeader = false;
-            var parsedTimeSeriesPoints = new List<AmountPerChargeResultProducedV1.Types.TimeSeriesPoint>();
-            while (!reader.EndOfStream)
-            {
-                var line = await reader.ReadLineAsync();
-                if (!hasVerifiedHeader)
-                {
-                    if (line != ExpectedHeader)
-                    {
-                        throw new Exception($"Cannot parse CSV file. Header is '{line}', expected '{ExpectedHeader}'.");
-                    }
-
-                    hasVerifiedHeader = true;
-                    continue;
-                }
-
-                var columns = line!.Split(';');
-                parsedTimeSeriesPoints.Add(new()
-                {
-                    Time = ParseTimestamp(columns[3]),
-                    Quantity = ParseDecimalValue(columns[2]),
-                    Price = ParseDecimalValue(columns[4]),
-                    Amount = ParseDecimalValue(columns[5]),
-                });
-            }
-
-            return parsedTimeSeriesPoints;
+        /// <summary>
+        /// Load CSV file and parse each data row into <see cref="EnergyResultProducedV2.Types.TimeSeriesPoint"/>.
+        /// </summary>
+        public async Task<IReadOnlyCollection<EnergyResultProducedV2.Types.TimeSeriesPoint>> ParseTimeSeriesPointsFromEnergyResultProducedV2CsvAsync(string testFileName)
+        {
+            return await ParseCsvAsync(
+                testFileName,
+                "grid_area,energy_supplier_id,balance_responsible_id,quantity,quantity_qualities,time,aggregation_level,time_series_type,calculation_id,calculation_type,calculation_execution_time_start,out_grid_area,calculation_result_id",
+                ParseEnergyResultProducedV2TimeSeriesPoint);
         }
 
         protected override async Task OnInitializeAsync()
@@ -199,6 +180,65 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
         {
             await ServiceBusAdministrationClient.DeleteSubscriptionAsync(Configuration.ServiceBus.SubsystemRelayTopicName, _subscriptionName);
             await ServiceBusClient.DisposeAsync();
+        }
+
+        /// <summary>
+        /// Load CSV file and parse each data row into T./>.
+        /// Expects the first row to be a specific header to ensure we read data from the correct columns.
+        /// </summary>
+        /// <param name="testFileName">Filename of file located in 'TestData' folder.</param>
+        /// <param name="expectedHeader">The expected headers in the CVS file.</param>
+        /// <param name="createResult">Delegate function that create an specific result object.</param>
+        private static async Task<IReadOnlyCollection<T>> ParseCsvAsync<T>(string testFileName, string expectedHeader, Func<string[], T> createResult)
+        {
+            var hasVerifiedHeader = false;
+            await using var stream = EmbeddedResources.GetStream<Root>($"Features.Calculations.TestData.{testFileName}");
+            using var reader = new StreamReader(stream);
+
+            var resultList = new List<T>();
+
+            while (!reader.EndOfStream)
+            {
+                var line = await reader.ReadLineAsync();
+                if (!hasVerifiedHeader)
+                {
+                    if (line != expectedHeader)
+                    {
+                        throw new Exception($"Cannot parse CSV file. Header is '{line}', expected '{expectedHeader}'.");
+                    }
+
+                    hasVerifiedHeader = true;
+                    continue;
+                }
+
+                var columns = line!.Split(',', ';');
+                var result = createResult(columns);
+                resultList.Add(result);
+            }
+
+            return resultList;
+        }
+
+        private static AmountPerChargeResultProducedV1.Types.TimeSeriesPoint ParseAmountPerChargeResultProducedV1TimeSeriesPoint(IReadOnlyList<string> columns)
+        {
+            return new AmountPerChargeResultProducedV1.Types.TimeSeriesPoint
+            {
+                Time = ParseTimestamp(columns[3]),
+                Quantity = ParseDecimalValue(columns[2]),
+                Price = ParseDecimalValue(columns[4]),
+                Amount = ParseDecimalValue(columns[5]),
+            };
+        }
+
+        private static EnergyResultProducedV2.Types.TimeSeriesPoint ParseEnergyResultProducedV2TimeSeriesPoint(string[] columns)
+        {
+            var result = new EnergyResultProducedV2.Types.TimeSeriesPoint
+            {
+                Time = ParseTimestamp(columns[5]),
+                Quantity = ParseDecimalValue(columns[3]),
+            };
+            result.QuantityQualities.AddRange(ParseEnumValueTo(columns[4]));
+            return result;
         }
 
         /// <summary>
@@ -316,6 +356,22 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
         private static Contracts.IntegrationEvents.Common.DecimalValue? ParseDecimalValue(string value)
         {
             return string.IsNullOrEmpty(value) ? null : new Contracts.IntegrationEvents.Common.DecimalValue(decimal.Parse(value, CultureInfo.InvariantCulture));
+        }
+
+        private static IEnumerable<Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV2.Types.QuantityQuality> ParseEnumValueTo(string value)
+        {
+            value = value.Replace("[", string.Empty).Replace("]", string.Empty).Replace("'", string.Empty);
+            var splits = value.Split(',');
+            var result = new List<Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV2.Types.QuantityQuality>();
+            foreach (var split in splits)
+            {
+                if (split == "measured")
+                {
+                    result.Add(EnergyResultProducedV2.Types.QuantityQuality.Measured);
+                }
+            }
+
+            return result;
         }
     }
 }
