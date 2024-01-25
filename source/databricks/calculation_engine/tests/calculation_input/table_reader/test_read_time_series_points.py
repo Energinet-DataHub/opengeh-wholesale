@@ -86,7 +86,7 @@ class TestWhenValidInput:
         write_dataframe_to_table(
             spark,
             df,
-            "test_database",
+            "the_test_database",
             paths.TIME_SERIES_POINTS_TABLE_NAME,
             time_series_points_table_location,
             time_series_point_schema,
@@ -100,7 +100,7 @@ class TestWhenValidInput:
         write_dataframe_to_table(
             spark,
             df,
-            "test_database",
+            "the_test_database",
             paths.GRID_LOSS_METERING_POINTS_TABLE_NAME,
             grid_loss_table_location,
             grid_loss_metering_points_schema,
