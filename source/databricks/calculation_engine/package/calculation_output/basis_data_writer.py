@@ -176,27 +176,14 @@ class BasisDataWriter:
         with logging_configuration.start_span("basis_data_to_delta_table"):
             self._write_master_basis_data_to_storage(master_basis_data_df)
 
-            timeseries_quarter_df = _add_quantity_column_if_missing(
-                timeseries_quarter_df, "ENERGYQUANTITY97"
+            timeseries_quarter_df = _add_missing_quantity_columns(
+                timeseries_quarter_df, 100
             )
-            timeseries_quarter_df = _add_quantity_column_if_missing(
-                timeseries_quarter_df, "ENERGYQUANTITY98"
-            )
-            timeseries_quarter_df = _add_quantity_column_if_missing(
-                timeseries_quarter_df, "ENERGYQUANTITY99"
-            )
-            timeseries_quarter_df = _add_quantity_column_if_missing(
-                timeseries_quarter_df, "ENERGYQUANTITY100"
-            )
-
-            timeseries_quarter_df.printSchema()
             self._write_time_series_to_storage(
                 timeseries_quarter_df, paths.TIME_SERIES_QUARTER_TABLE_NAME
             )
 
-            timeseries_hour_df = _add_quantity_column_if_missing(
-                timeseries_hour_df, "ENERGYQUANTITY25"
-            )
+            timeseries_hour_df = _add_missing_quantity_columns(timeseries_hour_df, 25)
             self._write_time_series_to_storage(
                 timeseries_hour_df, paths.TIME_SERIES_HOUR_TABLE_NAME
             )
@@ -274,6 +261,11 @@ def rename_quantity_columns(
 
 def _get_quantity_columns(df: DataFrame) -> list[str]:
     return [c for c in df.columns if c.startswith(BasisDataColname.quantity_prefix)]
+
+
+def _add_missing_quantity_columns(df: DataFrame, quantity_count: int) -> DataFrame:
+    for i in range(1, quantity_count):
+        df = _add_quantity_column_if_missing(df, f"ENERGYQUANTITY{i}")
 
 
 def _add_quantity_column_if_missing(df: DataFrame, quantity_column: str) -> DataFrame:
