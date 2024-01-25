@@ -214,14 +214,14 @@ public class Startup
             .AddDatabricksJobsApiHealthCheck(
                 name: HealthCheckNames.DatabricksJobsApi)
             .AddDatabricksSqlStatementApiHealthCheck(
-                name: HealthCheckNames.DatabricksSqlStatementsApi);
-            ////.AddAzureServiceBusQueue(
-            ////    serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
-            ////    serviceBusOptions.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME,
-            ////    name: HealthCheckNames.WholesaleInboxEventsQueue)
-            ////.AddAzureServiceBusQueue(
-            ////    serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
-            ////    serviceBusOptions.EDI_INBOX_MESSAGE_QUEUE_NAME,
-            ////    name: HealthCheckNames.EdiInboxEventsQueue);
+                name: HealthCheckNames.DatabricksSqlStatementsApi)
+            .AddAzureServiceBusQueueUsingWebSockets(
+                serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
+                serviceBusOptions.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME,
+                name: HealthCheckNames.WholesaleInboxEventsQueue)
+            .AddAzureServiceBusQueueUsingWebSockets(
+                serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
+                serviceBusOptions.EDI_INBOX_MESSAGE_QUEUE_NAME,
+                name: HealthCheckNames.EdiInboxEventsQueue);
     }
 }
