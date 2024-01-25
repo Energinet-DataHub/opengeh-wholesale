@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtures;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
@@ -51,7 +50,6 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
         [SubsystemFact]
         public void AndGiven_SubscribedIntegrationEvents()
         {
-            Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(CalculationResultCompleted.EventName);
             Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(EnergyResultProducedV2.EventName);
         }
 
@@ -107,8 +105,6 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
                 Fixture.ScenarioState.SubscribedIntegrationEventNames.AsReadOnly(),
                 waitTimeLimit: TimeSpan.FromMinutes(8));
 
-            Fixture.ScenarioState.ReceivedCalculationResultCompleted =
-                actualReceivedIntegrationEvents.OfType<CalculationResultCompleted>().ToList();
             Fixture.ScenarioState.ReceivedEnergyResultProducedV2 =
                 actualReceivedIntegrationEvents.OfType<EnergyResultProducedV2>().ToList();
             Fixture.ScenarioState.ReceivedAmountPerChargeResultProducedV1 = actualReceivedIntegrationEvents
@@ -119,7 +115,6 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
             // Assert
             using var assertionScope = new AssertionScope();
             // => Not empty
-            Fixture.ScenarioState.ReceivedCalculationResultCompleted.Should().NotBeEmpty();
             Fixture.ScenarioState.ReceivedEnergyResultProducedV2.Should().NotBeEmpty();
             // => Empty
             Fixture.ScenarioState.ReceivedAmountPerChargeResultProducedV1.Should().BeEmpty();
@@ -134,7 +129,6 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
 
             // Assert
             using var assertionScope = new AssertionScope();
-            Fixture.ScenarioState.ReceivedCalculationResultCompleted.Count.Should().Be(expected);
             Fixture.ScenarioState.ReceivedEnergyResultProducedV2.Count.Should().Be(expected);
         }
 
@@ -144,11 +138,6 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
         {
             var expected = Enum.GetNames(typeof(TimeSeriesType)).ToList();
 
-            var actualTimeSeriesTypesForCalculationResultCompleted = Fixture.ScenarioState
-                .ReceivedCalculationResultCompleted
-                .Select(x => Enum.GetName(x.TimeSeriesType))
-                .Distinct()
-                .ToList();
             var actualTimeSeriesTypesForEnergyResultProducedV2 = Fixture.ScenarioState.ReceivedEnergyResultProducedV2
                 .Select(x => Enum.GetName(x.TimeSeriesType))
                 .Distinct()
@@ -158,7 +147,6 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
             using var assertionScope = new AssertionScope();
             foreach (var timeSeriesType in expected)
             {
-                actualTimeSeriesTypesForCalculationResultCompleted.Should().Contain(timeSeriesType);
                 actualTimeSeriesTypesForEnergyResultProducedV2.Should().Contain(timeSeriesType);
             }
         }
@@ -196,12 +184,6 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
             using var assertionScope = new AssertionScope();
             foreach (var tuple in expected)
             {
-                Fixture.ScenarioState.ReceivedCalculationResultCompleted
-                    .Should()
-                    .Contain(item =>
-                        Enum.GetName(item.TimeSeriesType) == tuple.TimeSeriesType
-                        && Enum.GetName(item.AggregationLevelCase) == tuple.AggregationLevel);
-
                 Fixture.ScenarioState.ReceivedEnergyResultProducedV2
                     .Should()
                     .Contain(item =>

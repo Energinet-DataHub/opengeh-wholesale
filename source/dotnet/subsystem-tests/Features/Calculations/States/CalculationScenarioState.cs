@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3;
 
@@ -29,9 +28,6 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.State
         public Guid CalculationId { get; set; }
 
         public BatchDto? Batch { get; set; }
-
-        public IReadOnlyCollection<CalculationResultCompleted> ReceivedCalculationResultCompleted { get; set; }
-            = new List<CalculationResultCompleted>();
 
         public IReadOnlyCollection<EnergyResultProducedV2> ReceivedEnergyResultProducedV2 { get; set; }
             = new List<EnergyResultProducedV2>();
