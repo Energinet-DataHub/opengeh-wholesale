@@ -109,11 +109,6 @@ class TableReader:
             ),
             col(Colname.metering_point_id) == col("mp_id"),
             "left_anti",
-        ).select(
-            df[Colname.metering_point_id],
-            df[Colname.quantity],
-            df[Colname.quality],
-            df[Colname.observation_time],
         )
 
         if "observation_year" in df.columns:
