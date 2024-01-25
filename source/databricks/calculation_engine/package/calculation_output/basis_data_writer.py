@@ -264,8 +264,10 @@ def _get_quantity_columns(df: DataFrame) -> list[str]:
 
 
 def _add_missing_quantity_columns(df: DataFrame, quantity_count: int) -> DataFrame:
-    for i in range(1, quantity_count):
+    for i in range(1, quantity_count + 1):
         df = _add_quantity_column_if_missing(df, f"ENERGYQUANTITY{i}")
+
+    return df
 
 
 def _add_quantity_column_if_missing(df: DataFrame, quantity_column: str) -> DataFrame:
