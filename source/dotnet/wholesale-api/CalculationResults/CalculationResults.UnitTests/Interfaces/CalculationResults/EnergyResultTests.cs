@@ -34,6 +34,7 @@ public class EnergyResultTests
         ProcessType anyProcessType,
         Instant anyPeriodStart,
         Instant anyPeriodEnd,
+        string anyMeteringPointId,
         long anyVersion)
     {
         // Arrange
@@ -52,6 +53,7 @@ public class EnergyResultTests
             anyPeriodStart,
             anyPeriodEnd,
             anyFromGridArea,
+            anyMeteringPointId,
             anyVersion);
 
         // Assert
