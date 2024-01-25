@@ -53,6 +53,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
         {
             Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(CalculationResultCompleted.EventName);
             Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(EnergyResultProducedV2.EventName);
+            Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(GridLossResultProducedV1.EventName);
         }
 
         [ScenarioStep(2)]
@@ -241,6 +242,20 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
             // Assert
             Assert.Single(energyResults);
             energyResults.First().TimeSeriesPoints.Should().BeEquivalentTo(expectedTimeSeriesPoints);
+        }
+
+        [ScenarioStep(11)]
+        [SubsystemFact]
+        public void AndThen_ReceivedGridLossProducedV1ContainsOnlyOneConsumptionAndOneProductionMeteringPointType()
+        {
+            var actualMeteringPointTypesForGridLossProducedV1 = Fixture.ScenarioState.ReceivedGridLossProducedV1
+                .Select(x => Enum.GetName(x.MeteringPointType))
+                .ToList();
+
+            // Assert
+            using var assertionScope = new AssertionScope();
+            actualMeteringPointTypesForGridLossProducedV1.Should().ContainSingle(GridLossResultProducedV1.Types.MeteringPointType.Consumption.ToString());
+            actualMeteringPointTypesForGridLossProducedV1.Should().ContainSingle(GridLossResultProducedV1.Types.MeteringPointType.Production.ToString());
         }
     }
 }

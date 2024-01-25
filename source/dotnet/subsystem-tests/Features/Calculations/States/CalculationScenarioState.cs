@@ -36,6 +36,9 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.State
         public IReadOnlyCollection<EnergyResultProducedV2> ReceivedEnergyResultProducedV2 { get; set; }
             = new List<EnergyResultProducedV2>();
 
+        public IReadOnlyCollection<GridLossResultProducedV1> ReceivedGridLossProducedV1 { get; set; }
+            = new List<GridLossResultProducedV1>();
+
         public IReadOnlyCollection<AmountPerChargeResultProducedV1> ReceivedAmountPerChargeResultProducedV1 { get; set; }
             = new List<AmountPerChargeResultProducedV1>();
 
