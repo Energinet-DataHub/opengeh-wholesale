@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Net;
 using Energinet.DataHub.Wholesale.Batches.Application.Model;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using FunctionApp.Orchestrations.Functions.Calculation.Model;
@@ -28,7 +29,7 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
     {
         [Function(nameof(StartCalculation))]
         public async Task<HttpResponseData> StartCalculation(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req,
             [FromBody] BatchRequestDto batchRequestDto,
             [DurableClient] DurableTaskClient client,
             FunctionContext executionContext)
@@ -38,7 +39,17 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
             var instanceId = await client.ScheduleNewOrchestrationInstanceAsync(nameof(Calculation), batchRequestDto);
             logger.LogInformation("Created new orchestration with instance ID = {instanceId}", instanceId);
 
-            return client.CreateCheckStatusResponse(req, instanceId);
+            var orchestrationMetaData = await client.WaitForInstanceStartAsync(instanceId);
+            while (ReadCalculationId(orchestrationMetaData) == Guid.Empty)
+            {
+                await Task.Delay(200);
+                orchestrationMetaData = await client.GetInstanceAsync(instanceId, getInputsAndOutputs: true);
+            }
+
+            var response = req.CreateResponse(HttpStatusCode.OK);
+            await response.WriteAsJsonAsync(ReadCalculationId(orchestrationMetaData));
+
+            return response;
         }
 
         [Function(nameof(Calculation))]
@@ -56,8 +67,15 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
             var logger = context.CreateReplaySafeLogger<CalculationOrchestration>();
             logger.LogInformation($"{nameof(batchRequestDto)}: {batchRequestDto}.");
 
-            var calculationMeta = await context.CallActivityAsync<CalculationMeta>(nameof(CalculationActivities.CreateCalculationMetaActivity), batchRequestDto);
-            calculationMeta.JobId = await context.CallActivityAsync<CalculationId>(nameof(CalculationActivities.StartCalculationActivity), calculationMeta.Id);
+            // Create calculation (SQL)
+            var calculationMetaData = await context.CallActivityAsync<CalculationMetaData>(nameof(CalculationActivities.CreateCalculationRecordActivity), batchRequestDto);
+            calculationMetaData.OrchestrationProgress = "CalculationCreated";
+            context.SetCustomStatus(calculationMetaData);
+
+            // Start calculation (Databricks)
+            calculationMetaData.JobId = await context.CallActivityAsync<CalculationId>(nameof(CalculationActivities.StartCalculationActivity), calculationMetaData.Id);
+            calculationMetaData.OrchestrationProgress = "CalculationJobQueued";
+            context.SetCustomStatus(calculationMetaData);
 
             // TODO: Adjust polling and expiry
             var pollingIntervalInSeconds = 60;
@@ -65,12 +83,15 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
 
             while (context.CurrentUtcDateTime < expiryTime)
             {
-                calculationMeta.JobStatus = await context.CallActivityAsync<CalculationState>(nameof(CalculationActivities.GetJobStatusActivity), calculationMeta.JobId);
+                // Monitor calculation (Databricks)
+                calculationMetaData.JobStatus = await context.CallActivityAsync<CalculationState>(nameof(CalculationActivities.GetJobStatusActivity), calculationMetaData.JobId);
+                context.SetCustomStatus(calculationMetaData);
 
-                if (calculationMeta.JobStatus == CalculationState.Running
-                    || calculationMeta.JobStatus == CalculationState.Pending)
+                if (calculationMetaData.JobStatus == CalculationState.Running
+                    || calculationMetaData.JobStatus == CalculationState.Pending)
                 {
-                    await context.CallActivityAsync(nameof(CalculationActivities.UpdateCalculationExecutionStatusActivity), calculationMeta);
+                    // Update calculation execution status (SQL)
+                    await context.CallActivityAsync(nameof(CalculationActivities.UpdateCalculationExecutionStatusActivity), calculationMetaData);
 
                     // Wait for the next checkpoint
                     var nextCheckpoint = context.CurrentUtcDateTime.AddSeconds(pollingIntervalInSeconds);
@@ -82,23 +103,44 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
                 }
             }
 
-            await context.CallActivityAsync(nameof(CalculationActivities.UpdateCalculationExecutionStatusActivity), calculationMeta);
+            // Update calculation execution status (SQL)
+            await context.CallActivityAsync(nameof(CalculationActivities.UpdateCalculationExecutionStatusActivity), calculationMetaData);
 
-            if (calculationMeta.JobStatus == CalculationState.Completed)
+            if (calculationMetaData.JobStatus == CalculationState.Completed)
             {
-                await context.CallActivityAsync(nameof(CalculationActivities.CreateCompletedCalculationActivity), calculationMeta.Id);
+                calculationMetaData.OrchestrationProgress = "CalculationJobCompleted";
+                context.SetCustomStatus(calculationMetaData);
 
-                // TODO: Wait for warehouse to start (could use retry policy); could be done using fan-out/fan-in
-                await context.CallActivityAsync(nameof(CalculationActivities.SendCalculationResultsActivity), calculationMeta.Id);
+                // OBSOLETE: Create calculation completed (SQL - Event database)
+                await context.CallActivityAsync(nameof(CalculationActivities.CreateCompletedCalculationActivity), calculationMetaData.Id);
+
+                //// TODO: Wait for warehouse to start (could use retry policy); could be done using fan-out/fan-in
+
+                // Send calculation results (ServiceBus)
+                await context.CallActivityAsync(nameof(CalculationActivities.SendCalculationResultsActivity), calculationMetaData.Id);
+                calculationMetaData.OrchestrationProgress = "CalculationResultsSend";
+                context.SetCustomStatus(calculationMetaData);
             }
             else
             {
-                return $"Error: Job status '{calculationMeta.JobStatus}'.";
+                calculationMetaData.OrchestrationProgress = "CalculationJobFailed";
+                context.SetCustomStatus(calculationMetaData);
+                return $"Error: Job status '{calculationMetaData.JobStatus}'.";
             }
 
-            // TODO: Update any other status in SQL(?)
-            // TODO: Could wait for an event to notiy us that messages is ready for customer in EDI
+            // TODO: Could wait for an event to notiy us that messages are ready for customer in EDI
             return "Success";
+        }
+
+        private static Guid ReadCalculationId(OrchestrationMetadata? orchestrationMetaData)
+        {
+            if (orchestrationMetaData == null || orchestrationMetaData.SerializedCustomStatus == null)
+                return Guid.Empty;
+
+            var calculationMetaData = orchestrationMetaData.ReadCustomStatusAs<CalculationMetaData>();
+            return calculationMetaData == null || calculationMetaData.Id == Guid.Empty
+                ? Guid.Empty
+                : calculationMetaData.Id;
         }
     }
 #pragma warning restore CA2007 // Consider calling ConfigureAwait on the awaited task

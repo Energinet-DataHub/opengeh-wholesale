@@ -70,8 +70,8 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
         /// <summary>
         /// Create calculation status record in SQL database.
         /// </summary>
-        [Function(nameof(CreateCalculationMetaActivity))]
-        public async Task<CalculationMeta> CreateCalculationMetaActivity(
+        [Function(nameof(CreateCalculationRecordActivity))]
+        public async Task<CalculationMetaData> CreateCalculationRecordActivity(
             [ActivityTrigger] BatchRequestDto batchRequestDto)
         {
             _logger.LogInformation($"{nameof(batchRequestDto)}: {batchRequestDto}");
@@ -82,9 +82,9 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
                 batchRequestDto.GridAreaCodes,
                 batchRequestDto.StartDate,
                 batchRequestDto.EndDate,
-                userId)).ConfigureAwait(false);
+                userId));
 
-            return new CalculationMeta
+            return new CalculationMetaData
             {
                 Id = calculationId,
                 Input = batchRequestDto,
@@ -96,12 +96,12 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
         /// </summary>
         [Function(nameof(UpdateCalculationExecutionStatusActivity))]
         public async Task UpdateCalculationExecutionStatusActivity(
-            [ActivityTrigger] CalculationMeta calculationMeta)
+            [ActivityTrigger] CalculationMetaData calculationMetaData)
         {
-            _logger.LogInformation($"{nameof(calculationMeta)}: {calculationMeta}");
+            _logger.LogInformation($"{nameof(calculationMetaData)}: {calculationMetaData}");
 
-            var calculation = await _calculationRepository.GetAsync(calculationMeta.Id);
-            var executionState = CalculationStateMapper.MapState(calculationMeta.JobStatus);
+            var calculation = await _calculationRepository.GetAsync(calculationMetaData.Id);
+            var executionState = CalculationStateMapper.MapState(calculationMetaData.JobStatus);
 
             if (calculation.ExecutionState != executionState)
             {

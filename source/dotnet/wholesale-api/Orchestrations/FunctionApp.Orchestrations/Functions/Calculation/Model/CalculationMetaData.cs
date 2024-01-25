@@ -21,8 +21,14 @@ namespace FunctionApp.Orchestrations.Functions.Calculation.Model
     /// <summary>
     /// Contains the state for an instance of the calculation orchestration.
     /// </summary>
-    public class CalculationMeta
+    public class CalculationMetaData
     {
+        /// <summary>
+        /// Progress of orchestration.
+        /// </summary>
+        public string OrchestrationProgress { get; set; }
+            = string.Empty;
+
         /// <summary>
         /// Calculation id.
         /// </summary>
