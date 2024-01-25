@@ -112,6 +112,8 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
                 actualReceivedIntegrationEvents.OfType<CalculationResultCompleted>().ToList();
             Fixture.ScenarioState.ReceivedEnergyResultProducedV2 =
                 actualReceivedIntegrationEvents.OfType<EnergyResultProducedV2>().ToList();
+            Fixture.ScenarioState.ReceivedGridLossProducedV1 =
+                actualReceivedIntegrationEvents.OfType<GridLossResultProducedV1>().ToList();
             Fixture.ScenarioState.ReceivedAmountPerChargeResultProducedV1 = actualReceivedIntegrationEvents
                 .OfType<AmountPerChargeResultProducedV1>().ToList();
             Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1 = actualReceivedIntegrationEvents
@@ -122,6 +124,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
             // => Not empty
             Fixture.ScenarioState.ReceivedCalculationResultCompleted.Should().NotBeEmpty();
             Fixture.ScenarioState.ReceivedEnergyResultProducedV2.Should().NotBeEmpty();
+            Fixture.ScenarioState.ReceivedGridLossProducedV1.Should().NotBeEmpty();
             // => Empty
             Fixture.ScenarioState.ReceivedAmountPerChargeResultProducedV1.Should().BeEmpty();
             Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1.Should().BeEmpty();
@@ -137,6 +140,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
             using var assertionScope = new AssertionScope();
             Fixture.ScenarioState.ReceivedCalculationResultCompleted.Count.Should().Be(expected);
             Fixture.ScenarioState.ReceivedEnergyResultProducedV2.Count.Should().Be(expected);
+            Fixture.ScenarioState.ReceivedGridLossProducedV1.Count.Should().Be(2);
         }
 
         [ScenarioStep(7)]
