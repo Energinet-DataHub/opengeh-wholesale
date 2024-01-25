@@ -157,6 +157,9 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
         private EnergyResult CreateEnergyResult(TimeSeriesType timeSeriesType)
         {
             var quantityQualities = new Collection<QuantityQuality> { QuantityQuality.Estimated };
+            var meteringPointType = timeSeriesType is TimeSeriesType.NegativeGridLoss or TimeSeriesType.PositiveGridLoss
+                ? "123"
+                : null;
             return new EnergyResult(
                 Guid.NewGuid(),
                 _calculationId,
@@ -174,6 +177,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
                 _periodStart,
                 _periodEnd,
                 _fromGridArea,
+                meteringPointType,
                 1);
         }
     }
