@@ -100,6 +100,17 @@ class TableReader:
             .where(col(Colname.observation_time) < period_end_datetime)
         )
 
+        # Remove time series of grid loss metering points
+        grid_loss_metering_points = self.read_grid_loss_metering_points()
+        df = df.join(
+            grid_loss_metering_points.withColumnRenamed(
+                Colname.metering_point_id,
+                "mp_id",  # Workaround for ambiguous column error
+            ),
+            col(Colname.metering_point_id) == col("mp_id"),
+            "left_anti",
+        )
+
         if "observation_year" in df.columns:
             df = df.drop("observation_year")  # Drop year partition column
 

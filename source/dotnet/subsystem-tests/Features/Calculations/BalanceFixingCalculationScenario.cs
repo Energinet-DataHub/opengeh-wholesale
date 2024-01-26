@@ -51,6 +51,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
         public void AndGiven_SubscribedIntegrationEvents()
         {
             Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(EnergyResultProducedV2.EventName);
+            Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(GridLossResultProducedV1.EventName);
         }
 
         [ScenarioStep(2)]
@@ -107,6 +108,8 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
 
             Fixture.ScenarioState.ReceivedEnergyResultProducedV2 =
                 actualReceivedIntegrationEvents.OfType<EnergyResultProducedV2>().ToList();
+            Fixture.ScenarioState.ReceivedGridLossProducedV1 =
+                actualReceivedIntegrationEvents.OfType<GridLossResultProducedV1>().ToList();
             Fixture.ScenarioState.ReceivedAmountPerChargeResultProducedV1 = actualReceivedIntegrationEvents
                 .OfType<AmountPerChargeResultProducedV1>().ToList();
             Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1 = actualReceivedIntegrationEvents
@@ -116,6 +119,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
             using var assertionScope = new AssertionScope();
             // => Not empty
             Fixture.ScenarioState.ReceivedEnergyResultProducedV2.Should().NotBeEmpty();
+            Fixture.ScenarioState.ReceivedGridLossProducedV1.Should().NotBeEmpty();
             // => Empty
             Fixture.ScenarioState.ReceivedAmountPerChargeResultProducedV1.Should().BeEmpty();
             Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1.Should().BeEmpty();
@@ -130,6 +134,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
             // Assert
             using var assertionScope = new AssertionScope();
             Fixture.ScenarioState.ReceivedEnergyResultProducedV2.Count.Should().Be(expected);
+            Fixture.ScenarioState.ReceivedGridLossProducedV1.Count.Should().Be(2);
         }
 
         [ScenarioStep(7)]
@@ -223,6 +228,20 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
             // Assert
             Assert.Single(energyResults);
             energyResults.First().TimeSeriesPoints.Should().BeEquivalentTo(expectedTimeSeriesPoints);
+        }
+
+        [ScenarioStep(11)]
+        [SubsystemFact]
+        public void AndThen_ReceivedGridLossProducedV1ContainsOnlyOneConsumptionAndOneProductionMeteringPointType()
+        {
+            var actualMeteringPointTypesForGridLossProducedV1 = Fixture.ScenarioState.ReceivedGridLossProducedV1
+                .Select(x => Enum.GetName(x.MeteringPointType))
+                .ToList();
+
+            // Assert
+            using var assertionScope = new AssertionScope();
+            actualMeteringPointTypesForGridLossProducedV1.Should().ContainSingle(x => x == GridLossResultProducedV1.Types.MeteringPointType.Consumption.ToString());
+            actualMeteringPointTypesForGridLossProducedV1.Should().ContainSingle(x => x == GridLossResultProducedV1.Types.MeteringPointType.Production.ToString());
         }
     }
 }
