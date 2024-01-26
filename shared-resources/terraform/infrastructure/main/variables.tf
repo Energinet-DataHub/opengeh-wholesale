@@ -207,6 +207,12 @@ variable "domain_verification_code" {
   default     = null
 }
 
+variable "shared_key_cgi" {
+  type        = string
+  description = "Shared key used to authenticate CGI"
+  default     = null
+}
+
 variable "cert_esett_biztalk_datahub3_password" {
   type        = string
   description = "Password for the eSett Biztalk certificate"
