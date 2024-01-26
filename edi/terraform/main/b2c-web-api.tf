@@ -24,9 +24,18 @@ module "b2c_web_api" {
     BACKEND_BFF_APP_ID                                  = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-bff-app-id)"
     SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_SEND = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-send-connection-string)"
     DB_CONNECTION_STRING                                = local.CONNECTION_STRING
+    AZURE_STORAGE_ACCOUNT_URL                           = local.AZURE_STORAGE_ACCOUNT_URL
     TIME_ZONE                                           = local.TIME_ZONE
     INCOMING_MESSAGES_QUEUE_NAME                        = azurerm_servicebus_queue.edi_incoming_messages_queue.name
   }
+
+  # Role assigments is needed to connect to the storage account (st_documents) using URI
+  role_assignments = [
+    {
+      resource_id          = module.st_documents.id
+      role_definition_name = "Storage Blob Data Contributor"
+    }
+  ]
 }
 
 module "kvs_app_edi_b2cwebapi_base_url" {
