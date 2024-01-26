@@ -3,9 +3,11 @@
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    // Application Insights
+    "APPLICATIONINSIGHTS_CONNECTION_STRING": "<connection string>",
     // Time zone
     "TIME_ZONE": "Europe/Copenhagen",
-    // Local DB created using WholesaleDatabaseFixture
+    // Local DB created using WholesaleDatabaseFixture or DatabaseMigration tool
     "DB_CONNECTION_STRING": "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=Wholesale;Integrated Security=True;Connect Timeout=60;",
     // Databricks
     "WorkspaceToken": "<token>",
