@@ -58,7 +58,6 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
         public async Task GetAsync_WhenNegativeOrPositiveGridLoss_ReturnsExactlyOneGridLossResultProducedV1Event(
             TimeSeriesType positiveOrNegativeGridLoss,
             [Frozen] Mock<IEnergyResultQueries> energyResultQueriesMock,
-            CalculationResultCompletedFactory calculationResultCompletedFactory,
             EnergyResultProducedV2Factory energyResultProducedV2Factory,
             GridLossResultProducedV1Factory gridLossResultProducedV1Factory)
         {
@@ -68,7 +67,6 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
             var energyResults = new[] { energyResult };
             var sut = new EnergyResultEventProvider(
                 energyResultQueriesMock.Object,
-                calculationResultCompletedFactory,
                 energyResultProducedV2Factory,
                 gridLossResultProducedV1Factory);
 
@@ -87,7 +85,6 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
         [AutoMoqData]
         public async Task GetAsync_WhenNotNegativeOrPositiveGridLoss_ReturnsNoGridLossResultProducedV1Event(
             [Frozen] Mock<IEnergyResultQueries> energyResultQueriesMock,
-            CalculationResultCompletedFactory calculationResultCompletedFactory,
             EnergyResultProducedV2Factory energyResultProducedV2Factory,
             GridLossResultProducedV1Factory gridLossResultProducedV1Factory)
         {
@@ -102,7 +99,6 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
                 var energyResults = new[] { energyResult };
                 var sut = new EnergyResultEventProvider(
                     energyResultQueriesMock.Object,
-                    calculationResultCompletedFactory,
                     energyResultProducedV2Factory,
                     gridLossResultProducedV1Factory);
 
@@ -128,7 +124,6 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
         public async Task GetAsync_WhenTimeSeriesTypeIsSupportedForEnergyResultProducedV2Event_ReturnsExactlyOneEnergyResultProducedV2Event(
             TimeSeriesType timeSeriesType,
             [Frozen] Mock<IEnergyResultQueries> energyResultQueriesMock,
-            CalculationResultCompletedFactory calculationResultCompletedFactory,
             EnergyResultProducedV2Factory energyResultProducedV2Factory,
             GridLossResultProducedV1Factory gridLossResultProducedV1Factory)
         {
@@ -138,7 +133,6 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
             var energyResults = new[] { energyResult };
             var sut = new EnergyResultEventProvider(
                 energyResultQueriesMock.Object,
-                calculationResultCompletedFactory,
                 energyResultProducedV2Factory,
                 gridLossResultProducedV1Factory);
 
