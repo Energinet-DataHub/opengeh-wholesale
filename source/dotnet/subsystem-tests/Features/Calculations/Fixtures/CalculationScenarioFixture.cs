@@ -304,6 +304,15 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
                         }
 
                         break;
+                    case GridLossResultProducedV1.EventName:
+                        var gridLossResultProduced = GridLossResultProducedV1.Parser.ParseFrom(data);
+                        if (gridLossResultProduced.CalculationId == calculationId.ToString())
+                        {
+                            eventMessage = gridLossResultProduced;
+                            shouldCollect = true;
+                        }
+
+                        break;
                     case AmountPerChargeResultProducedV1.EventName:
                         var amountPerChargeResultProduced = AmountPerChargeResultProducedV1.Parser.ParseFrom(data);
                         if (amountPerChargeResultProduced.CalculationId == calculationId.ToString())
