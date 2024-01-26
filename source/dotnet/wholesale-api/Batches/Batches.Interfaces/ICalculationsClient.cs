@@ -31,7 +31,7 @@ public interface ICalculationsClient
         DateTimeOffset? periodStart,
         DateTimeOffset? periodEnd);
 
-    Task<IEnumerable<long>> GetNewestCalculationIdsForPeriodAsync(
+    Task<IReadOnlyCollection<CalculationDto>> SearchAsync(
         IEnumerable<string> filterByGridAreaCodes,
         CalculationState filterByExecutionState,
         Instant periodStart,

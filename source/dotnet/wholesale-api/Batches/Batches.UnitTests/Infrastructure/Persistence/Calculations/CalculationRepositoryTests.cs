@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Batches.Application.Model;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Calculations;
@@ -23,7 +22,6 @@ using Microsoft.EntityFrameworkCore;
 using Moq;
 using Moq.EntityFrameworkCore;
 using NodaTime;
-using Test.Core;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.Persistence.Calculations;
@@ -33,14 +31,13 @@ public class CalculationRepositoryTests
     [Theory]
     [InlineAutoMoqData]
     public async Task GetCompletedAfterAsync_WhenCompletedTimeIsNullAndNoBatchMatches_ReturnsNone(
-        Mock<DatabaseContext> databaseContextMock,
-        Mock<DateTimeZone> dateTimeZoneMock)
+        Mock<DatabaseContext> databaseContextMock)
     {
         // Arrange
         databaseContextMock
             .Setup<DbSet<Calculation>>(context => context.Batches)
             .ReturnsDbSet(new List<Calculation>());
-        var sut = new CalculationRepository(databaseContextMock.Object, dateTimeZoneMock.Object);
+        var sut = new CalculationRepository(databaseContextMock.Object);
 
         // Act
         var actual = await sut.GetCompletedAfterAsync(null);
@@ -53,14 +50,13 @@ public class CalculationRepositoryTests
     [InlineAutoMoqData]
     public async Task GetCompletedAfterAsync_WhenCompletedTimeIsNotNullAndNoBatchMatches_ReturnsNone(
         Instant completedTime,
-        Mock<DatabaseContext> databaseContextMock,
-        Mock<DateTimeZone> dateTimeZoneMock)
+        Mock<DatabaseContext> databaseContextMock)
     {
         // Arrange
         databaseContextMock
             .Setup<DbSet<Calculation>>(context => context.Batches)
             .ReturnsDbSet(new List<Calculation>());
-        var sut = new CalculationRepository(databaseContextMock.Object, dateTimeZoneMock.Object);
+        var sut = new CalculationRepository(databaseContextMock.Object);
 
         // Act
         var actual = await sut.GetCompletedAfterAsync(completedTime);
@@ -72,8 +68,7 @@ public class CalculationRepositoryTests
     [Theory]
     [InlineAutoMoqData]
     public async Task GetCompletedAfterAsync_WhenCompletedTimeIsNullAndSomeBatchesExist_ReturnsThem(
-        Mock<DatabaseContext> databaseContextMock,
-        Mock<DateTimeZone> dateTimeZoneMock)
+        Mock<DatabaseContext> databaseContextMock)
     {
         // Arrange
         var batch1 = new CalculationBuilder().WithStateCompleted().Build();
@@ -82,7 +77,7 @@ public class CalculationRepositoryTests
             .Setup<DbSet<Calculation>>(context => context.Batches)
             .ReturnsDbSet(new List<Calculation> { batch1, batch2 });
 
-        var sut = new CalculationRepository(databaseContextMock.Object, dateTimeZoneMock.Object);
+        var sut = new CalculationRepository(databaseContextMock.Object);
 
         // Act
         var actual = await sut.GetCompletedAfterAsync(null);
@@ -95,8 +90,7 @@ public class CalculationRepositoryTests
     [Theory]
     [InlineAutoMoqData]
     public async Task GetCompletedAfterAsync_WhenBatchCompletedBeforeCompletedTime_DoesNotReturnIt(
-        Mock<DatabaseContext> databaseContextMock,
-        Mock<DateTimeZone> dateTimeZoneMock)
+        Mock<DatabaseContext> databaseContextMock)
     {
         // Arrange
         var batch = new CalculationBuilder().WithStateCompleted().Build();
@@ -105,7 +99,7 @@ public class CalculationRepositoryTests
             .ReturnsDbSet(new List<Calculation> { batch });
         var futureCompletedTime = batch.ExecutionTimeEnd!.Value.Plus(Duration.FromMinutes(1));
 
-        var sut = new CalculationRepository(databaseContextMock.Object, dateTimeZoneMock.Object);
+        var sut = new CalculationRepository(databaseContextMock.Object);
 
         // Act
         var actual = await sut.GetCompletedAfterAsync(futureCompletedTime);
@@ -117,8 +111,7 @@ public class CalculationRepositoryTests
     [Theory]
     [InlineAutoMoqData]
     public async Task GetCompletedAfterAsync_WhenBatchIsNotCompleted_DoesNotReturnIt(
-        Mock<DatabaseContext> databaseContextMock,
-        Mock<DateTimeZone> dateTimeZoneMock)
+        Mock<DatabaseContext> databaseContextMock)
     {
         // Arrange
         var nonCompletedBatch = new CalculationBuilder().Build();
@@ -126,170 +119,12 @@ public class CalculationRepositoryTests
             .Setup<DbSet<Calculation>>(context => context.Batches)
             .ReturnsDbSet(new List<Calculation> { nonCompletedBatch });
 
-        var sut = new CalculationRepository(databaseContextMock.Object, dateTimeZoneMock.Object);
+        var sut = new CalculationRepository(databaseContextMock.Object);
 
         // Act
         var actual = await sut.GetCompletedAfterAsync(null);
 
         // Assert
         actual.Should().NotContain(nonCompletedBatch);
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetNewestCalculationIdsForPeriodAsync_WhenMulitpleCalculationForPeriod_ReturnsThem(
-        Mock<DatabaseContext> databaseContextMock)
-    {
-        // Arrange
-        var batch1WithInPeriod = new CalculationBuilder()
-            .WithStateCompleted()
-            .WithPeriodStart(Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022))
-            .WithPeriodEnd(Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022.AddDays(5))).Build();
-        var batch2WithInPeriod = new CalculationBuilder().WithStateCompleted()
-            .WithPeriodStart(Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022.AddDays(6)))
-            .WithPeriodEnd(Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022.AddDays(10))).Build();
-
-        databaseContextMock
-            .Setup<DbSet<Calculation>>(context => context.Batches)
-            .ReturnsDbSet(new List<Calculation> { batch1WithInPeriod, batch2WithInPeriod });
-
-        var sut = new CalculationRepository(databaseContextMock.Object, Periods.January_EuropeCopenhagen_Instant.DateTimeZone);
-
-        // Act
-        var actual = await sut.GetNewestCalculationIdsForPeriodAsync(
-            Array.Empty<GridAreaCode>(),
-            new[] { CalculationExecutionState.Completed },
-            Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022),
-            Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022.AddDays(10)));
-
-        // Assert
-        actual.Should().Contain(new List<CalculationId> { batch1WithInPeriod.CalculationId! });
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetNewestCalculationIdsForPeriodAsync_WhenANewerBatchOverlapsExistingPeriods_ReturnsThem(
-        Mock<DatabaseContext> databaseContextMock)
-    {
-        // Arrange
-        var batch1WithInPeriod = new CalculationBuilder()
-            .WithStateCompleted()
-            .WithPeriodStart(Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022))
-            .WithPeriodEnd(Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022.AddDays(5))).Build();
-        var batch2WithInPeriod = new CalculationBuilder().WithStateCompleted()
-            .WithPeriodStart(Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022.AddDays(6)))
-            .WithPeriodEnd(Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022.AddDays(10))).Build();
-        var newerBatchThatOverlapsBatch1And2 = new CalculationBuilder().WithStateCompleted()
-            .WithPeriodStart(Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022.AddDays(3)))
-            .WithPeriodEnd(Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022.AddDays(10))).Build();
-
-        databaseContextMock
-            .Setup<DbSet<Calculation>>(context => context.Batches)
-            .ReturnsDbSet(new List<Calculation> { batch1WithInPeriod, batch2WithInPeriod, newerBatchThatOverlapsBatch1And2 });
-
-        var sut = new CalculationRepository(databaseContextMock.Object, Periods.January_EuropeCopenhagen_Instant.DateTimeZone);
-
-        // Act
-        var actual = await sut.GetNewestCalculationIdsForPeriodAsync(
-            Array.Empty<GridAreaCode>(),
-            new[] { CalculationExecutionState.Completed },
-            Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022),
-            Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022.AddDays(10)));
-
-        // Assert
-        actual.Should().Contain(new List<CalculationId> { batch1WithInPeriod.CalculationId!, newerBatchThatOverlapsBatch1And2.CalculationId! });
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetNewestCalculationIdsForPeriodAsync_WhenACalculationIsNotCoveringPeriod_ReturnsNOTSUREWHATSHOULDHAPPENHERE(
-        Mock<DatabaseContext> databaseContextMock)
-    {
-        // Arrange
-        var batchWithInPeriod = new CalculationBuilder()
-            .WithStateCompleted()
-            .WithPeriodStart(Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022))
-            .WithPeriodEnd(Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022.AddDays(5))).Build();
-
-        databaseContextMock
-            .Setup<DbSet<Calculation>>(context => context.Batches)
-            .ReturnsDbSet(new List<Calculation> { batchWithInPeriod });
-
-        var sut = new CalculationRepository(databaseContextMock.Object, Periods.January_EuropeCopenhagen_Instant.DateTimeZone);
-
-        // Act
-        var actual = await sut.GetNewestCalculationIdsForPeriodAsync(
-            Array.Empty<GridAreaCode>(),
-            new[] { CalculationExecutionState.Completed },
-            Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022),
-            Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022.AddDays(10)));
-
-        // Assert
-        //actual.Should().Contain(new List<CalculationId> { batchWithInPeriod.CalculationId! });
-        actual.Should().Contain(new List<CalculationId> { });
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetNewestCalculationIdsForPeriodAsync_WhenEdgePeriodEnd_ReturnsThem(
-        Mock<DatabaseContext> databaseContextMock)
-    {
-        // Arrange
-        var batch1WithInPeriod = new CalculationBuilder()
-            .WithStateCompleted()
-            .WithPeriodStart(Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022))
-            .WithPeriodEnd(Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022.AddDays(5))).Build();
-        var batch2WithInPeriod = new CalculationBuilder().WithStateCompleted()
-            .WithPeriodStart(Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022.AddDays(6)))
-            .WithPeriodEnd(Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022.AddDays(10))).Build();
-
-        databaseContextMock
-            .Setup<DbSet<Calculation>>(context => context.Batches)
-            .ReturnsDbSet(new List<Calculation> { batch1WithInPeriod, batch2WithInPeriod });
-
-        var sut = new CalculationRepository(databaseContextMock.Object, Periods.January_EuropeCopenhagen_Instant.DateTimeZone);
-
-        // Act
-        var actual = await sut.GetNewestCalculationIdsForPeriodAsync(
-            Array.Empty<GridAreaCode>(),
-            new[] { CalculationExecutionState.Completed },
-            Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022),
-            Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022.AddDays(5)));
-
-        // Assert
-        actual.Should().Contain(new List<CalculationId> { batch1WithInPeriod.CalculationId! });
-        actual.Should().NotContain(new List<CalculationId> { batch2WithInPeriod.CalculationId! });
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetNewestCalculationIdsForPeriodAsync_WhenEdgePeriodStart_ReturnsThem(
-        Mock<DatabaseContext> databaseContextMock)
-    {
-        // Arrange
-        var batch1WithInPeriod = new CalculationBuilder()
-            .WithStateCompleted()
-            .WithPeriodStart(Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022))
-            .WithPeriodEnd(Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022.AddDays(5))).Build();
-        var batch2WithInPeriod = new CalculationBuilder().WithStateCompleted()
-            .WithPeriodStart(Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022.AddDays(6)))
-            .WithPeriodEnd(Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022.AddDays(10))).Build();
-
-        databaseContextMock
-            .Setup<DbSet<Calculation>>(context => context.Batches)
-            .ReturnsDbSet(new List<Calculation> { batch1WithInPeriod, batch2WithInPeriod });
-
-        var sut = new CalculationRepository(databaseContextMock.Object, Periods.January_EuropeCopenhagen_Instant.DateTimeZone);
-
-        // Act
-        var actual = await sut.GetNewestCalculationIdsForPeriodAsync(
-            Array.Empty<GridAreaCode>(),
-            new[] { CalculationExecutionState.Completed },
-            Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022.AddDays(6)),
-            Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022.AddDays(10)));
-
-        // Assert
-        actual.Should().NotContain(new List<CalculationId> { batch1WithInPeriod.CalculationId! });
-        actual.Should().Contain(new List<CalculationId> { batch2WithInPeriod.CalculationId! });
     }
 }

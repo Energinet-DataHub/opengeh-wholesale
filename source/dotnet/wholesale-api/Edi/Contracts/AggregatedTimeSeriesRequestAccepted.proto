@@ -27,7 +27,11 @@ message Series {
     QuantityUnit quantity_unit = 2;
     repeated TimeSeriesPoint time_series_points = 3;
     TimeSeriesType time_series_type = 4;
-    Resolution resolution = 5;
+    Resolution resolution = 5; 
+    /*
+   * The version of the calculation result. It is a positive integer (int64).
+   */
+    int64 calculation_result_version = 6;
 }
 
 message TimeSeriesPoint {

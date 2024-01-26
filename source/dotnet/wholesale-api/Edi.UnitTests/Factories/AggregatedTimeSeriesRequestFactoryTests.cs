@@ -29,17 +29,19 @@ public class AggregatedTimeSeriesRequestFactoryTests
         var balanceResponsibleId = "1234567891234";
         var energySupplier = "1234567891237";
         var gridAreaCode = null as string;
+        var calculationIds = new[] { Guid.NewGuid() };
         var request = CreateRequest(
             gridAreaCode: gridAreaCode,
             energySupplier: energySupplier,
             balanceResponsible: balanceResponsibleId);
 
         // Act
-        var actual = AggregatedTimeSeriesRequestFactory.Parse(request);
+        var actual = AggregatedTimeSeriesRequestFactory.Parse(request, calculationIds);
 
         // Assert
         using var assertionScope = new AssertionScope();
         var aggregationLevel = actual.AggregationPerRoleAndGridArea;
+        actual.CalculationIds.Count.Should().Be(calculationIds.Length);
         aggregationLevel.BalanceResponsibleId.Should().Be(balanceResponsibleId);
         aggregationLevel.EnergySupplierId.Should().Be(energySupplier);
         aggregationLevel.GridAreaCode.Should().BeNull();
@@ -52,17 +54,19 @@ public class AggregatedTimeSeriesRequestFactoryTests
         var balanceResponsibleId = "1234567891234";
         var energySupplier = null as string;
         var gridAreaCode = "303";
+        var calculationIds = new[] { Guid.NewGuid(), Guid.NewGuid() };
         var request = CreateRequest(
             gridAreaCode: gridAreaCode,
             energySupplier: energySupplier,
             balanceResponsible: balanceResponsibleId);
 
         // Act
-        var actual = AggregatedTimeSeriesRequestFactory.Parse(request);
+        var actual = AggregatedTimeSeriesRequestFactory.Parse(request, calculationIds);
 
         // Assert
         using var assertionScope = new AssertionScope();
         var aggregationLevel = actual.AggregationPerRoleAndGridArea;
+        actual.CalculationIds.Count.Should().Be(calculationIds.Length);
         aggregationLevel.BalanceResponsibleId.Should().Be(balanceResponsibleId);
         aggregationLevel.EnergySupplierId.Should().BeNull();
         aggregationLevel.GridAreaCode.Should().Be(gridAreaCode);
@@ -75,17 +79,19 @@ public class AggregatedTimeSeriesRequestFactoryTests
         var balanceResponsibleId = null as string;
         var energySupplier = "1234567891234";
         var gridAreaCode = "303";
+        var calculationIds = new[] { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
         var request = CreateRequest(
             gridAreaCode: gridAreaCode,
             energySupplier: energySupplier,
             balanceResponsible: balanceResponsibleId);
 
         // Act
-        var actual = AggregatedTimeSeriesRequestFactory.Parse(request);
+        var actual = AggregatedTimeSeriesRequestFactory.Parse(request, calculationIds);
 
         // Assert
         using var assertionScope = new AssertionScope();
         var aggregationLevel = actual.AggregationPerRoleAndGridArea;
+        actual.CalculationIds.Count.Should().Be(calculationIds.Length);
         aggregationLevel.BalanceResponsibleId.Should().BeNull();
         aggregationLevel.EnergySupplierId.Should().Be(energySupplier);
         aggregationLevel.GridAreaCode.Should().Be(gridAreaCode);

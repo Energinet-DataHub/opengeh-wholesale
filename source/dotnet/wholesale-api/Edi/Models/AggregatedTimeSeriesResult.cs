@@ -12,11 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.EDI.Models;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
-public record AggregatedTimeSeriesRequest(
-    Period Period,
+namespace Energinet.DataHub.Wholesale.Edi.Models;
+
+public record AggregatedTimeSeriesResult(
+    long Version,
+    string GridArea,
+    EnergyTimeSeriesPoint[] TimeSeriesPoints,
     TimeSeriesType TimeSeriesType,
-    AggregationPerRoleAndGridArea AggregationPerRoleAndGridArea,
-    RequestedProcessType RequestedProcessType,
-    IReadOnlyCollection<Guid> CalculationIds);
+    ProcessType ProcessType);

@@ -52,18 +52,50 @@ public class CalculationsClient : ICalculationsClient
         DateTimeOffset? periodStart,
         DateTimeOffset? periodEnd)
     {
+        var minExecutionTimeStart = ConvertToInstant(minExecutionTime);
+        var maxExecutionTimeStart = ConvertToInstant(maxExecutionTime);
+        var periodStartInstant = ConvertToInstant(periodStart);
+        var periodEndInstant = ConvertToInstant(periodEnd);
+
+        return await SearchAsync(
+            filterByGridAreaCodes,
+            filterByExecutionState,
+            minExecutionTimeStart,
+            maxExecutionTimeStart,
+            periodStartInstant,
+            periodEndInstant).ConfigureAwait(false);
+    }
+
+    public async Task<IReadOnlyCollection<CalculationDto>> SearchAsync(
+        IEnumerable<string> filterByGridAreaCodes,
+        CalculationState filterByExecutionState,
+        Instant periodStart,
+        Instant periodEnd)
+    {
+        return await SearchAsync(
+            filterByGridAreaCodes,
+            filterByExecutionState,
+            null,
+            null,
+            periodStart,
+            periodEnd).ConfigureAwait(false);
+    }
+
+    private async Task<IReadOnlyCollection<CalculationDto>> SearchAsync(
+        IEnumerable<string> filterByGridAreaCodes,
+        CalculationState? filterByExecutionState,
+        Instant? minExecutionTimeStart,
+        Instant? maxExecutionTimeStart,
+        Instant? periodStartInstant,
+        Instant? periodEndInstant)
+    {
         var executionStateFilter = GetCalculationExecutionStates(filterByExecutionState);
 
         var gridAreaFilter = filterByGridAreaCodes
             .Select(g => new GridAreaCode(g))
             .ToList();
 
-        var minExecutionTimeStart = ConvertToInstant(minExecutionTime);
-        var maxExecutionTimeStart = ConvertToInstant(maxExecutionTime);
-        var periodStartInstant = ConvertToInstant(periodStart);
-        var periodEndInstant = ConvertToInstant(periodEnd);
-
-        var batches = await _calculationRepository
+        var calculations = await _calculationRepository
             .SearchAsync(
                 gridAreaFilter,
                 executionStateFilter,
@@ -73,29 +105,7 @@ public class CalculationsClient : ICalculationsClient
                 periodEndInstant)
             .ConfigureAwait(false);
 
-        return batches.Select(_calculationDtoMapper.Map);
-    }
-
-    public async Task<IEnumerable<long>> GetNewestCalculationIdsForPeriodAsync(
-        IEnumerable<string> filterByGridAreaCodes,
-        CalculationState filterByExecutionState,
-        Instant periodStart,
-        Instant periodEnd)
-    {
-        var executionStateFilter = GetCalculationExecutionStates(filterByExecutionState);
-
-        var gridAreaFilter = filterByGridAreaCodes
-            .Select(g => new GridAreaCode(g))
-            .ToList();
-
-        var newestCalculationIdsForPeriod = await _calculationRepository.GetNewestCalculationIdsForPeriodAsync(
-                filterByGridAreaCodes: gridAreaFilter,
-                filterByExecutionState: executionStateFilter,
-                periodStart: periodStart,
-                periodEnd: periodEnd)
-            .ConfigureAwait(false);
-
-        return newestCalculationIdsForPeriod.Select(x => x.Id);
+        return calculations.Select(_calculationDtoMapper.Map).ToList();
     }
 
     private static CalculationExecutionState[] GetCalculationExecutionStates(CalculationState? filterByExecutionState)

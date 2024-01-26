@@ -17,6 +17,7 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
+using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
@@ -28,9 +29,12 @@ using Energinet.DataHub.Wholesale.EDI.Validation;
 using Google.Protobuf;
 using Microsoft.Extensions.Logging;
 using Moq;
+using NodaTime;
+using NodaTime.Text;
 using Xunit;
 using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
+using QuantityUnit = Energinet.DataHub.Edi.Responses.QuantityUnit;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests;
@@ -52,16 +56,20 @@ public class AggregatedTimeSeriesRequestHandlerTests
     {
         // Arrange
         const string expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestAccepted);
+
         var expectedReferenceId = Guid.NewGuid().ToString();
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
             .Build();
 
+        var periodStart = InstantPattern.General.Parse(request.Period.Start).Value;
+        var periodEnd = InstantPattern.General.Parse(request.Period.End).Value;
+
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(request.ToByteArray()));
 
-        var aggregatedTimeSeries = CreateAggregatedTimeSeries();
+        var aggregatedTimeSeries = CreateAggregatedTimeSeries(periodStart, periodEnd);
         aggregatedTimeSeriesQueries
             .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
             .Returns(() => aggregatedTimeSeries.ToAsyncEnumerable());
@@ -69,13 +77,23 @@ public class AggregatedTimeSeriesRequestHandlerTests
         validator.Setup(vali => vali.ValidateAsync(
                 It.IsAny<AggregatedTimeSeriesRequest>()))
             .ReturnsAsync(() => new List<ValidationError>());
+        calculationsClient
+            .Setup(client => client.SearchAsync(
+                request.HasGridAreaCode
+                    ? new[] { request.GridAreaCode }
+                    : new string[] { },
+                CalculationState.Completed,
+                periodStart,
+                periodEnd))
+            .ReturnsAsync(() => BuildCalculcation(aggregatedTimeSeries));
 
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
             validator.Object,
             aggregatedTimeSeriesQueries.Object,
             logger.Object,
-            calculationsClient.Object);
+            calculationsClient.Object,
+            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
 
         // Act
         await sut.ProcessAsync(
@@ -111,11 +129,14 @@ public class AggregatedTimeSeriesRequestHandlerTests
             .WithBusinessReason("D32")
             .Build();
 
+        var periodStart = InstantPattern.General.Parse(request.Period.Start).Value;
+        var periodEnd = InstantPattern.General.Parse(request.Period.End).Value;
+
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(request.ToByteArray()));
 
-        var aggregatedTimeSeries = CreateAggregatedTimeSeries();
+        var aggregatedTimeSeries = CreateAggregatedTimeSeries(periodStart, periodEnd);
         aggregatedTimeSeriesQueries
             .Setup(parameters => parameters.GetLatestCorrectionForGridAreaAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
             .Returns(() => aggregatedTimeSeries.ToAsyncEnumerable());
@@ -123,13 +144,23 @@ public class AggregatedTimeSeriesRequestHandlerTests
         validator.Setup(vali => vali.ValidateAsync(
                 It.IsAny<AggregatedTimeSeriesRequest>()))
             .ReturnsAsync(() => new List<ValidationError>());
+        calculationsClient
+            .Setup(client => client.SearchAsync(
+                request.HasGridAreaCode
+                    ? new[] { request.GridAreaCode }
+                    : new string[] { },
+                CalculationState.Completed,
+                periodStart,
+                periodEnd))
+            .ReturnsAsync(() => BuildCalculcation(aggregatedTimeSeries));
 
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
             validator.Object,
             aggregatedTimeSeriesQueries.Object,
             logger.Object,
-            calculationsClient.Object);
+            calculationsClient.Object,
+            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
 
         // Act
         await sut.ProcessAsync(
@@ -176,12 +207,28 @@ public class AggregatedTimeSeriesRequestHandlerTests
             .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
             .Returns(() => new List<AggregatedTimeSeries>().ToAsyncEnumerable());
 
+        var periodStart = InstantPattern.General.Parse(request.Period.Start).Value;
+        var periodEnd = InstantPattern.General.Parse(request.Period.End).Value;
+        calculationsClient
+            .Setup(client => client.SearchAsync(
+                request.HasGridAreaCode
+                    ? new[] { request.GridAreaCode }
+                    : new string[] { },
+                CalculationState.Completed,
+                periodStart,
+                periodEnd))
+            .ReturnsAsync(() => new List<CalculationDto>()
+            {
+                BuildCalculcation(periodStart, periodEnd),
+            });
+
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
             validator.Object,
             aggregatedTimeSeriesQueries.Object,
             logger.Object,
-            calculationsClient.Object);
+            calculationsClient.Object,
+            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
 
         // Act
         await sut.ProcessAsync(
@@ -226,13 +273,28 @@ public class AggregatedTimeSeriesRequestHandlerTests
                 It.IsAny<AggregatedTimeSeriesRequest>()))
             .ReturnsAsync(() => new List<ValidationError>());
 
+        var periodStart = InstantPattern.General.Parse(request.Period.Start).Value;
+        var periodEnd = InstantPattern.General.Parse(request.Period.End).Value;
+        calculationsClient
+            .Setup(client => client.SearchAsync(
+                request.HasGridAreaCode
+                    ? new[] { request.GridAreaCode }
+                    : new string[] { },
+                CalculationState.Completed,
+                periodStart,
+                periodEnd))
+            .ReturnsAsync(() => new List<CalculationDto>()
+            {
+                BuildCalculcation(periodStart, periodEnd),
+            });
+
         aggregatedTimeSeriesQueries
             .Setup(parameters =>
                 parameters.GetAsync(
                     It.IsAny<AggregatedTimeSeriesQueryParameters>()))
             .Returns(() => new List<AggregatedTimeSeries>().ToAsyncEnumerable());
 
-        var aggregatedTimeSeries = CreateAggregatedTimeSeries();
+        var aggregatedTimeSeries = CreateAggregatedTimeSeries(periodStart, periodEnd);
         aggregatedTimeSeriesQueries
             .Setup(parameters =>
                 parameters.GetAsync(
@@ -244,7 +306,8 @@ public class AggregatedTimeSeriesRequestHandlerTests
             validator.Object,
             aggregatedTimeSeriesQueries.Object,
             logger.Object,
-            calculationsClient.Object);
+            calculationsClient.Object,
+            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
 
         // Act
         await sut.ProcessAsync(
@@ -289,6 +352,21 @@ public class AggregatedTimeSeriesRequestHandlerTests
                 It.IsAny<AggregatedTimeSeriesRequest>()))
             .ReturnsAsync(() => new List<ValidationError>());
 
+        var periodStart = InstantPattern.General.Parse(request.Period.Start).Value;
+        var periodEnd = InstantPattern.General.Parse(request.Period.End).Value;
+        calculationsClient
+            .Setup(client => client.SearchAsync(
+                request.HasGridAreaCode
+                    ? new[] { request.GridAreaCode }
+                    : new string[] { },
+                CalculationState.Completed,
+                periodStart,
+                periodEnd))
+            .ReturnsAsync(() => new List<CalculationDto>()
+            {
+                BuildCalculcation(periodStart, periodEnd),
+            });
+
         aggregatedTimeSeriesQueries
             .Setup(parameters =>
                 parameters.GetAsync(
@@ -306,7 +384,8 @@ public class AggregatedTimeSeriesRequestHandlerTests
             validator.Object,
             aggregatedTimeSeriesQueries.Object,
             logger.Object,
-            calculationsClient.Object);
+            calculationsClient.Object,
+            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
 
         // Act
         await sut.ProcessAsync(
@@ -326,68 +405,70 @@ public class AggregatedTimeSeriesRequestHandlerTests
             Times.Once);
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task ProcessAsync_WhenRequestHasValidationErrors_SendsRejectedEdiMessage(
-        [Frozen] Mock<IAggregatedTimeSeriesQueries> aggregatedTimeSeriesQueries,
-        [Frozen] Mock<IEdiClient> senderMock,
-        [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
-        [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> logger,
-        [Frozen] Mock<ICalculationsClient> calculationsClient)
+    private IReadOnlyCollection<AggregatedTimeSeries> CreateAggregatedTimeSeries(Instant periodStart, Instant periodEnd)
     {
-        // Arrange
-        const string expectedRejectedSubject = nameof(AggregatedTimeSeriesRequestRejected);
-        var expectedReferenceId = Guid.NewGuid().ToString();
-        var request = AggregatedTimeSeriesRequestBuilder
-            .AggregatedTimeSeriesRequest()
-            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
-            .WithGridArea("303")
-            .Build();
-        var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
-            properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
-            body: new BinaryData(request.ToByteArray()));
+        var energyTimeSeriesPoints = new List<EnergyTimeSeriesPoint>();
+        var currentTime = periodStart;
+        while (currentTime < periodEnd)
+        {
+            energyTimeSeriesPoints.Add(new EnergyTimeSeriesPoint(currentTime.ToDateTimeOffset(), 0, new List<QuantityQuality> { QuantityQuality.Measured }));
+            currentTime = currentTime.Plus(Duration.FromMinutes(15));
+        }
 
-        validator.Setup(vali => vali.ValidateAsync(
-                It.IsAny<AggregatedTimeSeriesRequest>()))
-            .ReturnsAsync(() => new List<ValidationError> { _invalidEnergySupplierField });
-
-        var sut = new AggregatedTimeSeriesRequestHandler(
-            senderMock.Object,
-            validator.Object,
-            aggregatedTimeSeriesQueries.Object,
-            logger.Object,
-            calculationsClient.Object);
-
-        // Act
-        await sut.ProcessAsync(
-            serviceBusReceivedMessage,
-            expectedReferenceId,
-            CancellationToken.None);
-
-        // Assert
-        senderMock.Verify(
-            bus => bus.SendAsync(
-            It.Is<ServiceBusMessage>(message =>
-                message.Subject.Equals(expectedRejectedSubject)
-                && message.WithErrorCode(_invalidEnergySupplierField.ErrorCode)
-                && message.ApplicationProperties.ContainsKey("ReferenceId")
-                && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
-            It.IsAny<CancellationToken>()),
-            Times.Once);
-    }
-
-    private IReadOnlyCollection<AggregatedTimeSeries> CreateAggregatedTimeSeries()
-    {
         return new List<AggregatedTimeSeries>
         {
-            new AggregatedTimeSeries(
+            new(
                 gridArea: "543",
-                timeSeriesPoints: new EnergyTimeSeriesPoint[]
-                {
-                    new(DateTime.Now, 0, new List<QuantityQuality> { QuantityQuality.Measured }),
-                },
+                timeSeriesPoints: energyTimeSeriesPoints.ToArray(),
                 timeSeriesType: TimeSeriesType.Production,
-                processType: ProcessType.Aggregation),
+                processType: ProcessType.Aggregation,
+                batchId: Guid.NewGuid()),
         };
+    }
+
+    private CalculationDto BuildCalculcation(Instant periodStart, Instant periodEnd)
+    {
+        return new CalculationDto(
+            1,
+            Guid.NewGuid(),
+            periodStart.ToDateTimeOffset(),
+            periodEnd.ToDateTimeOffset(),
+            "PT15M",
+            QuantityUnit.Kwh.ToString(),
+            periodStart.ToDateTimeOffset(),
+            periodEnd.ToDateTimeOffset(),
+            CalculationState.Completed,
+            false,
+            new[] { "543" },
+            ProcessType.BalanceFixing,
+            Guid.NewGuid(),
+            1);
+    }
+
+    private IReadOnlyCollection<CalculationDto> BuildCalculcation(IReadOnlyCollection<AggregatedTimeSeries> calculationResults)
+    {
+        var result = new List<CalculationDto>();
+        foreach (var calculationResultsPerCalculation in calculationResults.GroupBy(x => x.BatchId))
+        {
+            var periodStart = calculationResultsPerCalculation.First().TimeSeriesPoints.First().Time;
+            var periodEnd = calculationResultsPerCalculation.First().TimeSeriesPoints.Last().Time;
+            result.Add(new CalculationDto(
+                1,
+                calculationResultsPerCalculation.First().BatchId,
+                periodStart,
+                periodEnd,
+                "PT15M",
+                QuantityUnit.Kwh.ToString(),
+                periodStart,
+                periodEnd,
+                CalculationState.Completed,
+                false,
+                new[] { "543" },
+                ProcessType.BalanceFixing,
+                Guid.NewGuid(),
+                1));
+        }
+
+        return result;
     }
 }

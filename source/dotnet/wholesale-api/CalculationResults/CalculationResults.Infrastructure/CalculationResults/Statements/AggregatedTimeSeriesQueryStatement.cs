@@ -60,6 +60,7 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
             AND t1.{EnergyResultColumnNames.Time} >= '{parameters.StartOfPeriod.ToString()}'
             AND t1.{EnergyResultColumnNames.Time} < '{parameters.EndOfPeriod.ToString()}'
             AND t1.{EnergyResultColumnNames.AggregationLevel} = '{AggregationLevelMapper.ToDeltaTableValue(parameters.TimeSeriesType, parameters.EnergySupplierId, parameters.BalanceResponsibleId)}'
+            AND t1.{EnergyResultColumnNames.BatchId} IN ({string.Join(',', parameters.CalculationIds.Select(batchId => $"'{batchId}'"))})
             ";
         if (!string.IsNullOrWhiteSpace(parameters.GridArea))
         {

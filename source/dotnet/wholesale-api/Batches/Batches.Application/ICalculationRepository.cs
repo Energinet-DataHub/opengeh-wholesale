@@ -37,10 +37,4 @@ public interface ICalculationRepository
         Instant? maxExecutionTimeStart,
         Instant? periodStart,
         Instant? periodEnd);
-
-    Task<IReadOnlyCollection<CalculationId>> GetNewestCalculationIdsForPeriodAsync(
-        IReadOnlyCollection<GridAreaCode> filterByGridAreaCodes,
-        IReadOnlyCollection<CalculationExecutionState> filterByExecutionState,
-        Instant periodStart,
-        Instant periodEnd);
 }

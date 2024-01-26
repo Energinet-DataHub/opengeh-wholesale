@@ -12,11 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.EDI.Models;
+using NodaTime;
 
-public record AggregatedTimeSeriesRequest(
-    Period Period,
-    TimeSeriesType TimeSeriesType,
-    AggregationPerRoleAndGridArea AggregationPerRoleAndGridArea,
-    RequestedProcessType RequestedProcessType,
-    IReadOnlyCollection<Guid> CalculationIds);
+namespace Energinet.DataHub.Wholesale.Edi.Models;
+
+public class LatestCalculationForPeriod
+{
+    public LatestCalculationForPeriod(
+        Instant periodStart,
+        Instant periodEnd,
+        Guid batchId,
+        long calculationVersion)
+    {
+        PeriodStart = periodStart;
+        PeriodEnd = periodEnd;
+        BatchId = batchId;
+        CalculationVersion = calculationVersion;
+    }
+
+    public Instant PeriodStart { get; }
+
+    public Instant PeriodEnd { get; }
+
+    public Guid BatchId { get; }
+
+    public long CalculationVersion { get; }
+}

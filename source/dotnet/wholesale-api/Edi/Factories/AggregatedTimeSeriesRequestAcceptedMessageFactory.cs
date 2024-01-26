@@ -14,8 +14,8 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Edi.Responses;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.EDI.Mappers;
+using Energinet.DataHub.Wholesale.Edi.Models;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using TimeSeriesPoint = Energinet.DataHub.Edi.Responses.TimeSeriesPoint;
@@ -24,7 +24,9 @@ namespace Energinet.DataHub.Wholesale.EDI.Factories;
 
 public class AggregatedTimeSeriesRequestAcceptedMessageFactory
 {
-    public static ServiceBusMessage Create(IReadOnlyCollection<AggregatedTimeSeries> aggregatedTimeSeries, string referenceId)
+    public static ServiceBusMessage Create(
+        IReadOnlyCollection<AggregatedTimeSeriesResult> aggregatedTimeSeries,
+        string referenceId)
     {
         var body = CreateAcceptedResponse(aggregatedTimeSeries);
 
@@ -38,7 +40,8 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
         return message;
     }
 
-    private static AggregatedTimeSeriesRequestAccepted CreateAcceptedResponse(IReadOnlyCollection<AggregatedTimeSeries> aggregatedTimeSeries)
+    private static AggregatedTimeSeriesRequestAccepted CreateAcceptedResponse(
+        IReadOnlyCollection<AggregatedTimeSeriesResult> aggregatedTimeSeries)
     {
         var response = new AggregatedTimeSeriesRequestAccepted();
         foreach (var series in aggregatedTimeSeries)
@@ -51,13 +54,15 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
                 TimeSeriesPoints = { points },
                 TimeSeriesType = CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromCalculationsResult(series.TimeSeriesType),
                 Resolution = Resolution.Pt15M,
+                CalculationResultVersion = series.Version,
             });
         }
 
         return response;
     }
 
-    private static IReadOnlyCollection<TimeSeriesPoint> CreateTimeSeriesPoints(AggregatedTimeSeries aggregatedTimeSeries)
+    private static IReadOnlyCollection<TimeSeriesPoint> CreateTimeSeriesPoints(
+        AggregatedTimeSeriesResult aggregatedTimeSeries)
     {
         const decimal nanoFactor = 1_000_000_000;
         var points = new List<TimeSeriesPoint>();

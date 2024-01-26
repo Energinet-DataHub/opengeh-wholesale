@@ -32,10 +32,9 @@ public sealed class EnergyResult : AggregatedTimeSeries
         Instant periodEnd,
         string? fromGridArea,
         long version)
-    : base(gridArea, timeSeriesPoints, timeSeriesType, processType)
+    : base(gridArea, timeSeriesPoints, timeSeriesType, processType, batchId)
     {
         Id = id;
-        BatchId = batchId;
         EnergySupplierId = energySupplierId;
         BalanceResponsibleId = balanceResponsibleId;
         PeriodStart = periodStart;
@@ -46,8 +45,6 @@ public sealed class EnergyResult : AggregatedTimeSeries
     }
 
     public Guid Id { get; }
-
-    public Guid BatchId { get; }
 
     public string? FromGridArea { get; }
 

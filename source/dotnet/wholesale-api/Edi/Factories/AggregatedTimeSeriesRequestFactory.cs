@@ -19,15 +19,16 @@ using Period = Energinet.DataHub.Wholesale.EDI.Models.Period;
 
 namespace Energinet.DataHub.Wholesale.EDI.Factories;
 
-public class AggregatedTimeSeriesRequestFactory
+public static class AggregatedTimeSeriesRequestFactory
 {
-    public static AggregatedTimeSeriesRequest Parse(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request)
+    public static AggregatedTimeSeriesRequest Parse(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request, IEnumerable<Guid> calculationIds)
     {
         return new AggregatedTimeSeriesRequest(
             MapPeriod(request.Period),
             TimeSeriesTypeMapper.MapTimeSeriesType(request.MeteringPointType, request.SettlementMethod),
             MapAggregationPerRoleAndGridArea(request),
-            RequestedProcessTypeMapper.ToRequestedProcessType(request.BusinessReason, request.HasSettlementSeriesVersion ? request.SettlementSeriesVersion : null));
+            RequestedProcessTypeMapper.ToRequestedProcessType(request.BusinessReason, request.HasSettlementSeriesVersion ? request.SettlementSeriesVersion : null),
+            calculationIds.ToList());
     }
 
     private static AggregationPerRoleAndGridArea MapAggregationPerRoleAndGridArea(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request)
