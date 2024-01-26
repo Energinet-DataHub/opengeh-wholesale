@@ -81,9 +81,17 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
             ChargeResolution.HOUR,
         )
 
+        tariffs_daily_df = prepared_data_reader.get_tariff_charges(
+            metering_points_periods_for_wholesale_calculation_df,
+            metering_point_time_series,
+            charges_df,
+            ChargeResolution.DAY,
+        )
+
         wholesale_calculation.execute(
             wholesale_calculation_result_writer,
             tariffs_hourly_df,
+            tariffs_daily_df,
             args.calculation_period_start_datetime,
         )
 
