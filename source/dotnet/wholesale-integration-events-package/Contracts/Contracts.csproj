@@ -70,56 +70,7 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="../../wholesale-api/Events/Events.Infrastructure/IntegrationEvents/Protos/*.proto">
-      <GrpcServices>None</GrpcServices>
-      <Access>Public</Access>
-      <ProtoCompile>True</ProtoCompile>
-      <ProtoRoot>../../wholesale-api/Events/Events.Infrastructure/IntegrationEvents/Protos/</ProtoRoot>
-      <CompileOutputs>True</CompileOutputs>
-      <OutputDir>obj\contracts</OutputDir>
-      <Generator>MSBuild:Compile</Generator>
-    </Protobuf>
-    <Protobuf Include="../../wholesale-api/Events/Events.Infrastructure/IntegrationEvents/Common/Protos/*.proto">
-      <GrpcServices>None</GrpcServices>
-      <Access>Public</Access>
-      <ProtoCompile>True</ProtoCompile>
-      <CompileOutputs>True</CompileOutputs>
-      <OutputDir>obj\common</OutputDir>
-      <Generator>MSBuild:Compile</Generator>
-    </Protobuf>
-    <Protobuf Include="../../wholesale-api/Events/Events.Infrastructure/IntegrationEvents/EnergyResultProducedV2/Protos/*.proto">
-      <GrpcServices>None</GrpcServices>
-      <Access>Public</Access>
-      <ProtoCompile>True</ProtoCompile>
-      <ProtoRoot>../../wholesale-api/Events/Events.Infrastructure/IntegrationEvents</ProtoRoot>
-      <CompileOutputs>True</CompileOutputs>
-      <Generator>MSBuild:Compile</Generator>
-    </Protobuf>
-    <Protobuf Include="../../wholesale-api/Events/Events.Infrastructure/IntegrationEvents/GridLossResultProducedV1/Protos/*.proto">
-      <GrpcServices>None</GrpcServices>
-      <Access>Public</Access>
-      <ProtoCompile>True</ProtoCompile>
-      <ProtoRoot>../../wholesale-api/Events/Events.Infrastructure/IntegrationEvents</ProtoRoot>
-      <CompileOutputs>True</CompileOutputs>
-      <Generator>MSBuild:Compile</Generator>
-    </Protobuf>
-    <Protobuf Include="../../wholesale-api/Events/Events.Infrastructure/IntegrationEvents/AmountPerChargeResultProducedV1/Protos/*.proto">
-      <GrpcServices>None</GrpcServices>
-      <Access>Public</Access>
-      <ProtoCompile>True</ProtoCompile>
-      <ProtoRoot>../../wholesale-api/Events/Events.Infrastructure/IntegrationEvents</ProtoRoot>
-      <CompileOutputs>True</CompileOutputs>
-      <Generator>MSBuild:Compile</Generator>
-    </Protobuf>
-    <Protobuf Include="../../wholesale-api/Events/Events.Infrastructure/IntegrationEvents/MonthlyAmountPerChargeResultProducedV1/Protos/*.proto">
-      <GrpcServices>None</GrpcServices>
-      <Access>Public</Access>
-      <ProtoCompile>True</ProtoCompile>
-      <ProtoRoot>../../wholesale-api/Events/Events.Infrastructure/IntegrationEvents</ProtoRoot>
-      <CompileOutputs>True</CompileOutputs>
-      <Generator>MSBuild:Compile</Generator>
-    </Protobuf>
-    <Protobuf Include="../../wholesale-api/Events/Events.Infrastructure/IntegrationEvents/CalculationResultCompleted/Protos/*.proto">
+    <Protobuf Include="../../wholesale-api/Events/Events.Infrastructure/IntegrationEvents/**/*.proto">
       <GrpcServices>None</GrpcServices>
       <Access>Public</Access>
       <ProtoCompile>True</ProtoCompile>
