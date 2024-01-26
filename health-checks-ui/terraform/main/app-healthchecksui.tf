@@ -67,6 +67,8 @@ locals {
     "HealthChecksUI__HealthChecks__024__Name" = "shared-resources:::func-healthcheck"
     "HealthChecksUI__HealthChecks__024__Uri"  = "https://func-healthchecks-shres-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
     # Note: 025 is taken by Sauron in test_002 and prod_001 overrides
+    "HealthChecksUI__HealthChecks__026__Name" = "grid-loss-imbalance-prices:::Web API"
+    "HealthChecksUI__HealthChecks__026__Uri"  = "https://app-webapi-gridimbp-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/ready"
 
     # Live - prefix with 2xx
     "HealthChecksUI__HealthChecks__200__Name" = "health-checks-ui:::Health Check UI - live"
@@ -110,6 +112,8 @@ locals {
     "HealthChecksUI__HealthChecks__224__Name" = "shared-resources:::func-healthcheck - live"
     "HealthChecksUI__HealthChecks__224__Uri"  = "https://func-healthchecks-shres-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
     # Note: 225 is taken by Sauron in test_002 and prod_001 overrides
+    "HealthChecksUI__HealthChecks__226__Name" = "grid-loss-imbalance-prices:::Web API - live"
+    "HealthChecksUI__HealthChecks__226__Uri"  = "https://app-webapi-gridimbp-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/live"
 
     # Polling Interval
     "HealthChecksUI__EvaluationTimeinSeconds" = 60
