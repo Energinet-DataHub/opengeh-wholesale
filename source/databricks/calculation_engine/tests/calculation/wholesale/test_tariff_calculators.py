@@ -82,9 +82,9 @@ def _create_tariff_hour_row(
         Colname.metering_point_id: metering_point_id,
         Colname.energy_supplier_id: energy_supplier_id,
         Colname.metering_point_type: metering_point_type.value,
-        Colname.settlement_method: settlement_method.value
-        if settlement_method
-        else None,
+        Colname.settlement_method: (
+            settlement_method.value if settlement_method else None
+        ),
         Colname.grid_area: grid_area,
         Colname.quantity: quantity,
         Colname.qualities: [quality.value],
