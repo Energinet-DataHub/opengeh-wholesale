@@ -662,7 +662,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         string? balanceResponsibleId = null)
     {
         return new AggregatedTimeSeriesQueryParameters(
-            TimeSeriesType: timeSeriesType ?? TimeSeriesType.Production,
+            TimeSeriesTypes: new[] { timeSeriesType ?? TimeSeriesType.Production },
             GridArea: gridArea,
             EnergySupplierId: energySupplierId,
             BalanceResponsibleId: balanceResponsibleId,

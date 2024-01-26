@@ -63,7 +63,8 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
             var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(currentRow);
 
             if (previousRow != null && (BelongsToDifferentGridArea(currentRow, previousRow)
-                                        || DifferentCalculationId(currentRow, previousRow)))
+                                        || DifferentCalculationId(currentRow, previousRow)
+                                        || HaveDifferentTimeSeriesType(currentRow, previousRow)))
             {
                 var calculationForPeriod = GetCalculationForPeriod(previousRow, latestCalculationsForPeriod);
                 yield return AggregatedTimeSeriesFactory.Create(
@@ -105,5 +106,10 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
     private static bool BelongsToDifferentGridArea(DatabricksSqlRow row, DatabricksSqlRow otherRow)
     {
         return row[EnergyResultColumnNames.GridArea] != otherRow[EnergyResultColumnNames.GridArea];
+    }
+
+    private static bool HaveDifferentTimeSeriesType(DatabricksSqlRow row, DatabricksSqlRow otherRow)
+    {
+        return row[EnergyResultColumnNames.TimeSeriesType] != otherRow[EnergyResultColumnNames.TimeSeriesType];
     }
 }
