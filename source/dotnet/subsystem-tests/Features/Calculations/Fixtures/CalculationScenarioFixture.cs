@@ -21,7 +21,6 @@ using Azure.Messaging.ServiceBus.Administration;
 using Azure.Monitor.Query;
 using Azure.Monitor.Query.Models;
 using Energinet.DataHub.Core.TestCommon;
-using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents;
 using Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3;
@@ -286,20 +285,20 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
 
                 switch (message.Subject)
                 {
-                    case CalculationResultCompleted.EventName:
-                        var calculationResultCompleted = CalculationResultCompleted.Parser.ParseFrom(data);
-                        if (calculationResultCompleted.BatchId == calculationId.ToString())
-                        {
-                            eventMessage = calculationResultCompleted;
-                            shouldCollect = true;
-                        }
-
-                        break;
                     case EnergyResultProducedV2.EventName:
                         var energyResultProduced = EnergyResultProducedV2.Parser.ParseFrom(data);
                         if (energyResultProduced.CalculationId == calculationId.ToString())
                         {
                             eventMessage = energyResultProduced;
+                            shouldCollect = true;
+                        }
+
+                        break;
+                    case GridLossResultProducedV1.EventName:
+                        var gridLossResultProduced = GridLossResultProducedV1.Parser.ParseFrom(data);
+                        if (gridLossResultProduced.CalculationId == calculationId.ToString())
+                        {
+                            eventMessage = gridLossResultProduced;
                             shouldCollect = true;
                         }
 
