@@ -48,6 +48,22 @@ namespace FunctionApp.Orchestrations.Functions.Calculation
             return response;
         }
 
+        // TODO: For demo purposes, can be deleted later.
+        [Function(nameof(StartCalculationForDemo))]
+        public async Task<HttpResponseData> StartCalculationForDemo(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req,
+            [FromBody] BatchRequestDto batchRequestDto,
+            [DurableClient] DurableTaskClient client,
+            FunctionContext executionContext)
+        {
+            var logger = executionContext.GetLogger<CalculationOrchestration>();
+
+            var instanceId = await client.ScheduleNewOrchestrationInstanceAsync(nameof(Calculation), batchRequestDto).ConfigureAwait(false);
+            logger.LogInformation("Created new orchestration with instance ID = {instanceId}", instanceId);
+
+            return client.CreateCheckStatusResponse(req, instanceId);
+        }
+
         private static Guid ReadCalculationId(OrchestrationMetadata? orchestrationMetaData)
         {
             if (orchestrationMetaData == null || orchestrationMetaData.SerializedCustomStatus == null)
