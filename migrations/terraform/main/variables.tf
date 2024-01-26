@@ -38,7 +38,7 @@ variable "developers_security_group_object_id" {
 variable "feature_flag_datahub2_healthcheck" {
   type        = bool
   description = "(Optional) Enables datahub2 healthcheck endpoint"
-  default     = true
+  default     = false
 }
 
 variable "datalake_readeraccess_group_name" {
@@ -87,6 +87,12 @@ variable "datahub2_ip_whitelist" {
   type        = string
   description = "Comma-delimited string with IPs / CIDR block with IPs that should be whitelisted for DataHub2"
   default     = null
+}
+
+variable "datahub2_migration_url" {
+  type        = string
+  description = "URL for DataHub2"
+  default     = "https://b2b.te7.datahub.dk/dh3"
 }
 
 variable "developer_object_ids" {
