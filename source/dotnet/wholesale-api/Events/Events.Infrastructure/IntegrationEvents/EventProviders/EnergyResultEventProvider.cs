@@ -16,7 +16,6 @@ using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.CalculationResultCompleted.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.GridLossResultProducedV1.Factories;
 
@@ -24,7 +23,6 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ev
 {
     public class EnergyResultEventProvider(
         IEnergyResultQueries energyResultQueries,
-        ICalculationResultCompletedFactory calculationResultCompletedFactory,
         IEnergyResultProducedV2Factory energyResultProducedV2Factory,
         IGridLossResultProducedV1Factory gridLossResultProducedV2Factory)
         : ResultEventProvider, IEnergyResultEventProvider
@@ -33,7 +31,6 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ev
         {
             await foreach (var energyResult in energyResultQueries.GetAsync(calculation.Id).ConfigureAwait(false))
             {
-                yield return CreateIntegrationEvent(calculationResultCompletedFactory.Create(energyResult)); // Deprecated
                 if (energyResultProducedV2Factory.CanCreate(energyResult))
                     yield return CreateIntegrationEvent(energyResultProducedV2Factory.Create(energyResult));
 

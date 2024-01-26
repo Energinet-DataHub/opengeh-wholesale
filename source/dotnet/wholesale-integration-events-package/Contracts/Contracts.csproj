@@ -81,9 +81,6 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\CalculationResultCompleted\CalculationResultCompleted.cs">
-      <Link>Contracts\CalculationResultCompleted.cs</Link>
-    </Compile>
     <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\AmountPerChargeResultProducedV1\AmountPerChargeResultProducedV1.cs">
       <Link>Contracts\IntegrationEvents\AmountPerChargeResultProducedV1.cs</Link>
     </Compile>
