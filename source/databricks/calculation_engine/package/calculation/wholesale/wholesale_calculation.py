@@ -77,7 +77,7 @@ def _calculate_tariff_charges(
         )
 
     monthly_tariff_from_daily_per_ga_co_es = tariffs.sum_within_month(
-        hourly_tariff_per_ga_co_es, period_start_datetime
+        daily_tariff_per_ga_co_es, period_start_datetime
     )
     with logging_configuration.start_span("monthly_tariff_per_ga_co_es"):
         wholesale_calculation_result_writer.write(
