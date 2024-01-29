@@ -103,11 +103,8 @@ class TableReader:
         # Remove time series of grid loss metering points
         grid_loss_metering_points = self.read_grid_loss_metering_points()
         df = df.join(
-            grid_loss_metering_points.withColumnRenamed(
-                Colname.metering_point_id,
-                "mp_id",  # Workaround for ambiguous column error
-            ),
-            col(Colname.metering_point_id) == col("mp_id"),
+            grid_loss_metering_points,
+            Colname.metering_point_id,
             "left_anti",
         )
 
