@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame
+from pyspark.sql import DataFrame, SparkSession
 import pyspark.sql.functions as F
 import pytest
 from typing import Any
@@ -28,6 +28,7 @@ from package.codelists import (
     WholesaleResultResolution,
 )
 from package.constants import EnergyResultColumnNames, WholesaleResultColumnNames
+from package.infrastructure import paths
 
 
 ENERGY_RESULT_TYPES = {
@@ -219,3 +220,25 @@ def test__wholesale_result__is_created(
 
     # Assert: The result is created if there are rows
     assert result_df.count() > 0
+
+
+def test__monthly_amount__is_created(
+    spark: SparkSession,
+    wholesale_fixing_wholesale_results_df: DataFrame,
+) -> None:
+    # Arrange
+    wholesale_fixing_wholesale_results_df.show()
+    result_df = wholesale_fixing_wholesale_results_df.where(
+        F.col(WholesaleResultColumnNames.charge_type) == ChargeType.TARIFF.value
+    ).where(
+        F.col(WholesaleResultColumnNames.resolution)
+        == WholesaleResultResolution.MONTH.value
+    )
+    result_df.show()
+    path = "test_files/ChargeMasterDataPeriods.csv"
+    df = (
+        spark.read.format("csv")
+        .load(path)
+        .where(F.col(WholesaleResultColumnNames.charge_type) == ChargeType.TARIFF.value)
+    )
+    df.show()
