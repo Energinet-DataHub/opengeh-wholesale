@@ -25,6 +25,7 @@ from package.codelists import (
     SettlementMethod,
     TimeSeriesType,
     ChargeResolution,
+    WholesaleResultResolution,
 )
 from package.constants import EnergyResultColumnNames, WholesaleResultColumnNames
 
@@ -144,28 +145,38 @@ WHOLESALE_RESULT_TYPES = [
         ChargeType.TARIFF,
         MeteringPointType.CONSUMPTION,
         SettlementMethod.FLEX,
-        ChargeResolution.HOUR,
+        WholesaleResultResolution.HOUR,
     ),
     (
         ChargeType.TARIFF,
         MeteringPointType.CONSUMPTION,
         SettlementMethod.NON_PROFILED,
-        ChargeResolution.HOUR,
+        WholesaleResultResolution.HOUR,
     ),
-    (ChargeType.TARIFF, MeteringPointType.PRODUCTION, None, ChargeResolution.HOUR),
+    (
+        ChargeType.TARIFF,
+        MeteringPointType.PRODUCTION,
+        None,
+        WholesaleResultResolution.HOUR,
+    ),
     (
         ChargeType.TARIFF,
         MeteringPointType.CONSUMPTION,
         SettlementMethod.FLEX,
-        ChargeResolution.DAY,
+        WholesaleResultResolution.DAY,
     ),
     (
         ChargeType.TARIFF,
         MeteringPointType.CONSUMPTION,
         SettlementMethod.NON_PROFILED,
-        ChargeResolution.DAY,
+        WholesaleResultResolution.DAY,
     ),
-    (ChargeType.TARIFF, MeteringPointType.PRODUCTION, None, ChargeResolution.DAY),
+    (
+        ChargeType.TARIFF,
+        MeteringPointType.PRODUCTION,
+        None,
+        WholesaleResultResolution.DAY,
+    ),
 ]
 
 
@@ -178,7 +189,7 @@ def test__wholesale_result__is_created(
     charge_type: ChargeType,
     metering_point_type: MeteringPointType,
     settlement_method: SettlementMethod | Any,
-    resolution: ChargeResolution,
+    resolution: WholesaleResultResolution,
 ) -> None:
     # Arrange
     result_df = (
