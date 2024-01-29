@@ -119,6 +119,11 @@ resource "azurerm_storage_queue" "timeseries" {
   storage_account_name = module.st_dh2data.name
 }
 
+resource "azurerm_storage_queue" "timeseries_synchronization" {
+  name                 = azurerm_storage_container.dh2_timeseries_synchronization.name
+  storage_account_name = module.st_dh2data.name
+}
+
 #---- System topic event subscriptions
 
 resource "azurerm_eventgrid_system_topic_event_subscription" "dh2data_charges" {
@@ -128,7 +133,7 @@ resource "azurerm_eventgrid_system_topic_event_subscription" "dh2data_charges" {
   included_event_types = ["Microsoft.Storage.BlobCreated"]
 
   subject_filter {
-    subject_begins_with = "/blobServices/default/containers/${azurerm_storage_container.dh2_charges.name}"
+    subject_begins_with = "/blobServices/default/containers/${azurerm_storage_container.dh2_charges.name}/"
   }
 
   storage_queue_endpoint {
@@ -147,7 +152,7 @@ resource "azurerm_eventgrid_system_topic_event_subscription" "dh2data_charge_lin
   included_event_types = ["Microsoft.Storage.BlobCreated"]
 
   subject_filter {
-    subject_begins_with = "/blobServices/default/containers/${azurerm_storage_container.dh2_charge_links.name}"
+    subject_begins_with = "/blobServices/default/containers/${azurerm_storage_container.dh2_charge_links.name}/"
   }
 
   storage_queue_endpoint {
@@ -166,7 +171,7 @@ resource "azurerm_eventgrid_system_topic_event_subscription" "dh2_metering_point
   included_event_types = ["Microsoft.Storage.BlobCreated"]
 
   subject_filter {
-    subject_begins_with = "/blobServices/default/containers/${azurerm_storage_container.dh2_metering_point_history.name}"
+    subject_begins_with = "/blobServices/default/containers/${azurerm_storage_container.dh2_metering_point_history.name}/"
   }
 
   storage_queue_endpoint {
@@ -185,12 +190,31 @@ resource "azurerm_eventgrid_system_topic_event_subscription" "dh2_timeseries" {
   included_event_types = ["Microsoft.Storage.BlobCreated"]
 
   subject_filter {
-    subject_begins_with = "/blobServices/default/containers/${azurerm_storage_container.dh2_timeseries.name}"
+    subject_begins_with = "/blobServices/default/containers/${azurerm_storage_container.dh2_timeseries.name}/"
   }
 
   storage_queue_endpoint {
     storage_account_id = module.st_dh2data.id
     queue_name         = azurerm_storage_queue.timeseries.name
+  }
+  delivery_identity {
+    type = "SystemAssigned"
+  }
+}
+
+resource "azurerm_eventgrid_system_topic_event_subscription" "dh2_timeseries_synchronization" {
+  name                 = "egsts-${azurerm_storage_queue.timeseries.name}-${local.resources_suffix}"
+  system_topic         = azurerm_eventgrid_system_topic.st_dh2data.name
+  resource_group_name  = azurerm_resource_group.this.name
+  included_event_types = ["Microsoft.Storage.BlobCreated"]
+
+  subject_filter {
+    subject_begins_with = "/blobServices/default/containers/${azurerm_storage_container.dh2_timeseries_synchronization.name}/"
+  }
+
+  storage_queue_endpoint {
+    storage_account_id = module.st_dh2data.id
+    queue_name         = azurerm_storage_queue.timeseries_synchronization.name
   }
   delivery_identity {
     type = "SystemAssigned"
