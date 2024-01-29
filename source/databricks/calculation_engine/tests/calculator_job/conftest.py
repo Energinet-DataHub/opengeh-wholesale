@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from datetime import datetime
-from unittest.mock import patch
 
 import pyspark.sql.functions as F
 import pytest
@@ -25,9 +24,6 @@ from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.preparation import PreparedDataReader
 
 from package.calculation_input import TableReader
-from package.calculation_input.schemas import (
-    grid_loss_metering_points_schema,
-)
 from package.codelists.process_type import ProcessType
 from package.constants import EnergyResultColumnNames, WholesaleResultColumnNames
 from package.infrastructure import paths
@@ -74,24 +70,11 @@ def any_calculator_args(
 
 
 @pytest.fixture(scope="session")
-def grid_loss_responsible_test_data(
-    spark: SparkSession,
-    test_files_folder_path: str,
-) -> DataFrame:
-    return spark.read.csv(
-        f"{test_files_folder_path}/GridLossResponsible.csv",
-        header=True,
-        schema=grid_loss_metering_points_schema,
-    )
-
-
-@pytest.fixture(scope="session")
 def executed_balance_fixing(
     spark: SparkSession,
     calculator_args_balance_fixing: CalculatorArgs,
     migrations_executed: None,
     energy_input_data_written_to_delta: None,
-    grid_loss_responsible_test_data: DataFrame,
     calculation_input_path: str,
 ) -> None:
     """Execute the calculator job.
@@ -100,17 +83,12 @@ def executed_balance_fixing(
     and because lots of assertions can be made and split into separate tests
     without awaiting the execution in each test."""
 
-    with patch.object(
-        TableReader,
-        "read_grid_loss_metering_points",
-        return_value=grid_loss_responsible_test_data,
-    ):
-        table_reader = TableReader(
-            spark,
-            calculation_input_path,
-        )
-        prepared_data_reader = PreparedDataReader(table_reader)
-        calculation.execute(calculator_args_balance_fixing, prepared_data_reader)
+    table_reader = TableReader(
+        spark,
+        calculation_input_path,
+    )
+    prepared_data_reader = PreparedDataReader(table_reader)
+    calculation.execute(calculator_args_balance_fixing, prepared_data_reader)
 
 
 @pytest.fixture(scope="session")
@@ -120,7 +98,6 @@ def executed_wholesale_fixing(
     migrations_executed: None,
     energy_input_data_written_to_delta: None,
     price_input_data_written_to_delta: None,
-    grid_loss_responsible_test_data: DataFrame,
     calculation_input_path: str,
 ) -> None:
     """Execute the calculator job.
@@ -129,14 +106,9 @@ def executed_wholesale_fixing(
     and because lots of assertions can be made and split into seperate tests
     without awaiting the execution in each test."""
 
-    with patch.object(
-        TableReader,
-        "read_grid_loss_metering_points",
-        return_value=grid_loss_responsible_test_data,
-    ):
-        table_reader = TableReader(spark, calculation_input_path)
-        prepared_data_reader = PreparedDataReader(table_reader)
-        calculation.execute(calculator_args_wholesale_fixing, prepared_data_reader)
+    table_reader = TableReader(spark, calculation_input_path)
+    prepared_data_reader = PreparedDataReader(table_reader)
+    calculation.execute(calculator_args_wholesale_fixing, prepared_data_reader)
 
 
 @pytest.fixture(scope="session")
