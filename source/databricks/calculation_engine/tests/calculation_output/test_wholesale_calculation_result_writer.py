@@ -250,8 +250,9 @@ def test__get_column_group_for_calculation_result_id__returns_expected_column_na
         Colname.batch_id,
         Colname.resolution,
         Colname.charge_type,
-        Colname.grid_area,
         Colname.charge_owner,
+        Colname.charge_code,
+        Colname.grid_area,
         Colname.energy_supplier_id,
         Colname.metering_point_type,
         Colname.settlement_method,
@@ -285,7 +286,6 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
         WholesaleResultColumnNames.price,
         WholesaleResultColumnNames.amount,
         WholesaleResultColumnNames.is_tax,
-        WholesaleResultColumnNames.charge_code,
     ]
     all_columns = [
         attr for attr in dir(WholesaleResultColumnNames) if not attr.startswith("__")
