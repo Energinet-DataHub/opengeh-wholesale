@@ -238,7 +238,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
             var actualEvent = actualEvents.First();
             actualEvent.TimeSeriesPoints.Should().HaveCount(expectedTimeSeriesPoints.Count);
 
-            // We clear incomming 'QuantityQualities' before comparing with test data, because we don't have them in our test data file.
+            // We clear incoming 'QuantityQualities' before comparing with test data, because we don't have them in our test data file.
             actualEvent.TimeSeriesPoints
                 .Select(item =>
                 {
@@ -264,7 +264,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
                 && item.ChargeCode == expectedChargeCode
                 && item.ChargeType == expectedChargeType
                 && item.ChargeOwnerId == expectedChargeOwnerId
-                && object.Equals(item.Amount, expectedAmount));
+                && Equals(item.Amount, expectedAmount));
 
             using var assertionScope = new AssertionScope();
             actualEvents.Should().HaveCount(1);
@@ -324,9 +324,9 @@ AppDependencies
 
             var energyResults = Fixture.ScenarioState.ReceivedEnergyResultProducedV2
                 .Where(x => x.TimeSeriesType == EnergyResultProducedV2.Types.TimeSeriesType.NonProfiledConsumption)
-                .Where(x => x.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea != null)
-                .Where(x => x.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.EnergySupplierId == "5790001687137")
-                .Where(x => x.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.GridAreaCode == "804")
+                .Where(x => x.AggregationPerEnergysupplierPerGridarea != null)
+                .Where(x => x.AggregationPerEnergysupplierPerGridarea.EnergySupplierId == "5790001687137")
+                .Where(x => x.AggregationPerEnergysupplierPerGridarea.GridAreaCode == "804")
                 .ToList();
 
             // Assert
@@ -342,8 +342,8 @@ AppDependencies
             var expectedTimeSeriesPoints = await Fixture.ParseTimeSeriesPointsFromEnergyResultProducedV2GridLossCsvAsync("Positive_gridLoss 804.csv");
             var energyResults = Fixture.ScenarioState.ReceivedEnergyResultProducedV2
                 .Where(x => x.TimeSeriesType == EnergyResultProducedV2.Types.TimeSeriesType.PositiveGridLoss)
-                .Where(x => x.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea != null)
-                .Where(x => x.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.GridAreaCode == "804")
+                .Where(x => x.AggregationPerEnergysupplierPerGridarea != null)
+                .Where(x => x.AggregationPerEnergysupplierPerGridarea.GridAreaCode == "804")
                 .ToList();
 
             // Assert

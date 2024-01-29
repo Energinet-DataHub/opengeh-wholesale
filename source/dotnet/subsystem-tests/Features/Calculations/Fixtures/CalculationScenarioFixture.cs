@@ -368,20 +368,24 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
             return string.IsNullOrEmpty(value) ? null : new Contracts.IntegrationEvents.Common.DecimalValue(decimal.Parse(value, CultureInfo.InvariantCulture));
         }
 
-        private static IEnumerable<EnergyResultProducedV2.Types.QuantityQuality> ParseEnumValueTo(string value)
+        private static List<EnergyResultProducedV2.Types.QuantityQuality> ParseEnumValueTo(string value)
         {
             value = value.Replace("[", string.Empty).Replace("]", string.Empty).Replace("'", string.Empty);
-            var splits = value.Split(',');
+            var splits = value.Split(':');
             var result = new List<EnergyResultProducedV2.Types.QuantityQuality>();
             foreach (var split in splits)
             {
-                if (split == "measured")
+                switch (split)
                 {
-                    result.Add(EnergyResultProducedV2.Types.QuantityQuality.Measured);
-                }
-                else if (split == "calculated")
-                {
-                    result.Add(EnergyResultProducedV2.Types.QuantityQuality.Calculated);
+                    case "measured":
+                        result.Add(EnergyResultProducedV2.Types.QuantityQuality.Measured);
+                        break;
+                    case "calculated":
+                        result.Add(EnergyResultProducedV2.Types.QuantityQuality.Calculated);
+                        break;
+                    case "missing":
+                        result.Add(EnergyResultProducedV2.Types.QuantityQuality.Missing);
+                        break;
                 }
             }
 

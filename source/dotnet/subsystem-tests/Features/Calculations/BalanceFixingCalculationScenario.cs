@@ -252,6 +252,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
             var expectedTimeSeriesPoints = await Fixture.ParseTimeSeriesPointsFromEnergyResultProducedV2GridLossCsvAsync("Positive_gridLoss 543.csv");
             var energyResults = Fixture.ScenarioState.ReceivedEnergyResultProducedV2
                 .Where(x => x.TimeSeriesType == EnergyResultProducedV2.Types.TimeSeriesType.PositiveGridLoss)
+                .Where(x => x.AggregationPerGridarea != null)
                 .Where(x => x.AggregationPerGridarea.GridAreaCode == "543")
                 .ToList();
 
