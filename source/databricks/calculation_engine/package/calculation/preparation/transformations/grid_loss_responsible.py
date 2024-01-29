@@ -40,7 +40,7 @@ def get_grid_loss_responsible(
             "inner",
         )
         .select(
-            col(Colname.metering_point_id),
+            metering_point_periods_df[Colname.metering_point_id],
             col(Colname.grid_area),
             col(Colname.from_date),
             col(Colname.to_date),

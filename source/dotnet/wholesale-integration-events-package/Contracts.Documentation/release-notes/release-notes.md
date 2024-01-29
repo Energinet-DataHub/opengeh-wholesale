@@ -1,5 +1,13 @@
 # Wholesale Contracts Release notes
 
+## Version 8.0.0
+
+Removed deprecated `CalculationResultCompleted` event.
+
+## Version 7.2.0
+
+Added `GridLossResultProducedV1` integration event
+
 ## Version 7.1.0
 
 Updated NuGet package dependencies.

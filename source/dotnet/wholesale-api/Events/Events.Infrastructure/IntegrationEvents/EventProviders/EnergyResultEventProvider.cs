@@ -16,33 +16,25 @@ using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.CalculationResultCompleted.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Factories;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.GridLossResultProducedV1.Factories;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders
 {
-    public class EnergyResultEventProvider : ResultEventProvider, IEnergyResultEventProvider
+    public class EnergyResultEventProvider(
+        IEnergyResultQueries energyResultQueries,
+        IEnergyResultProducedV2Factory energyResultProducedV2Factory,
+        IGridLossResultProducedV1Factory gridLossResultProducedV2Factory)
+        : ResultEventProvider, IEnergyResultEventProvider
     {
-        private readonly IEnergyResultQueries _energyResultQueries;
-        private readonly ICalculationResultCompletedFactory _calculationResultCompletedFactory;
-        private readonly IEnergyResultProducedV2Factory _energyResultProducedV2Factory;
-
-        public EnergyResultEventProvider(
-            IEnergyResultQueries energyResultQueries,
-            ICalculationResultCompletedFactory calculationResultCompletedFactory,
-            IEnergyResultProducedV2Factory energyResultProducedV2Factory)
-        {
-            _energyResultQueries = energyResultQueries;
-            _calculationResultCompletedFactory = calculationResultCompletedFactory;
-            _energyResultProducedV2Factory = energyResultProducedV2Factory;
-        }
-
         public async IAsyncEnumerable<IntegrationEvent> GetAsync(CompletedCalculation calculation)
         {
-            await foreach (var energyResult in _energyResultQueries.GetAsync(calculation.Id).ConfigureAwait(false))
+            await foreach (var energyResult in energyResultQueries.GetAsync(calculation.Id).ConfigureAwait(false))
             {
-                yield return CreateIntegrationEvent(_calculationResultCompletedFactory.Create(energyResult)); // Deprecated
-                yield return CreateIntegrationEvent(_energyResultProducedV2Factory.Create(energyResult));
+                yield return CreateIntegrationEvent(energyResultProducedV2Factory.Create(energyResult));
+
+                if (gridLossResultProducedV2Factory.CanCreate(energyResult))
+                    yield return CreateIntegrationEvent(gridLossResultProducedV2Factory.Create(energyResult));
             }
         }
     }

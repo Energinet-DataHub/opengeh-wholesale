@@ -18,5 +18,7 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Gr
 
 public interface IGridLossResultProducedV1Factory
 {
+    bool CanCreate(EnergyResult result);
+
     Contracts.IntegrationEvents.GridLossResultProducedV1 Create(EnergyResult result);
 }
