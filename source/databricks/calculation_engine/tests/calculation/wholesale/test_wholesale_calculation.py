@@ -17,11 +17,12 @@ from unittest.mock import patch
 import pytest
 from pyspark.sql import DataFrame
 
-from calculation.wholesale.test_tariff_calculators import _create_tariff_hour_row
+from calculation.wholesale.test_tariff_calculators import _create_tariff_row
 from package import calculation_output
 from package.calculation.wholesale import execute
 from package.calculation.wholesale.schemas.tariffs_schema import tariff_schema
 from package.calculation_output import WholesaleCalculationResultWriter
+from package.codelists import ChargeResolution
 
 
 @patch.object(calculation_output, WholesaleCalculationResultWriter.__name__)
@@ -31,13 +32,17 @@ def test__execute__when_tariff_schema_is_valid__does_not_raise(
     # Arrange
     period_start_datetime = datetime(2020, 1, 1, 0, 0)
     tariffs_hourly_df = spark.createDataFrame(
-        data=[_create_tariff_hour_row()], schema=tariff_schema
+        data=[_create_tariff_row()], schema=tariff_schema
+    )
+    tariffs_daily_df = spark.createDataFrame(
+        data=[_create_tariff_row(resolution=ChargeResolution.DAY)], schema=tariff_schema
     )
 
     # Act
     execute(
         wholesale_calculation_result_writer_mock,
         tariffs_hourly_df,
+        tariffs_daily_df,
         period_start_datetime,
     )
 
@@ -53,11 +58,13 @@ def test__execute__when_tariff_schema_is_invalid__raises_assertion_error(
     data = [("John", "Dow")]
     period_start_datetime: datetime = datetime(2020, 1, 1, 0, 0)
     tariffs_hourly_df: DataFrame = spark.createDataFrame(data)
+    tariffs_daily_df: DataFrame = spark.createDataFrame(data)
 
     # Act & Assert
     with pytest.raises(AssertionError):
         execute(
             wholesale_calculation_result_writer_mock,
             tariffs_hourly_df,
+            tariffs_daily_df,
             period_start_datetime,
         )

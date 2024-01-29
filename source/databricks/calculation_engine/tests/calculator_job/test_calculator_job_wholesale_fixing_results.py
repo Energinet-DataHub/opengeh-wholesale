@@ -24,6 +24,7 @@ from package.codelists import (
     MeteringPointType,
     SettlementMethod,
     TimeSeriesType,
+    ChargeResolution,
 )
 from package.constants import EnergyResultColumnNames, WholesaleResultColumnNames
 
@@ -139,14 +140,37 @@ def test__energy_result__has_expected_number_of_types(
 
 
 WHOLESALE_RESULT_TYPES = [
-    (ChargeType.TARIFF, MeteringPointType.CONSUMPTION, SettlementMethod.FLEX),
-    (ChargeType.TARIFF, MeteringPointType.CONSUMPTION, SettlementMethod.NON_PROFILED),
-    (ChargeType.TARIFF, MeteringPointType.PRODUCTION, None),
+    (
+        ChargeType.TARIFF,
+        MeteringPointType.CONSUMPTION,
+        SettlementMethod.FLEX,
+        ChargeResolution.HOUR,
+    ),
+    (
+        ChargeType.TARIFF,
+        MeteringPointType.CONSUMPTION,
+        SettlementMethod.NON_PROFILED,
+        ChargeResolution.HOUR,
+    ),
+    (ChargeType.TARIFF, MeteringPointType.PRODUCTION, None, ChargeResolution.HOUR),
+    (
+        ChargeType.TARIFF,
+        MeteringPointType.CONSUMPTION,
+        SettlementMethod.FLEX,
+        ChargeResolution.DAY,
+    ),
+    (
+        ChargeType.TARIFF,
+        MeteringPointType.CONSUMPTION,
+        SettlementMethod.NON_PROFILED,
+        ChargeResolution.DAY,
+    ),
+    (ChargeType.TARIFF, MeteringPointType.PRODUCTION, None, ChargeResolution.DAY),
 ]
 
 
 @pytest.mark.parametrize(
-    "charge_type, metering_point_type, settlement_method",
+    "charge_type, metering_point_type, settlement_method, resolution",
     WHOLESALE_RESULT_TYPES,
 )
 def test__wholesale_result__is_created(
@@ -154,6 +178,7 @@ def test__wholesale_result__is_created(
     charge_type: ChargeType,
     metering_point_type: MeteringPointType,
     settlement_method: SettlementMethod | Any,
+    resolution: ChargeResolution,
 ) -> None:
     # Arrange
     result_df = (
@@ -166,6 +191,7 @@ def test__wholesale_result__is_created(
             F.col(WholesaleResultColumnNames.metering_point_type)
             == metering_point_type.value
         )
+        .where(F.col(WholesaleResultColumnNames.resolution) == resolution.value)
     )
     if settlement_method:
         result_df = result_df.where(
