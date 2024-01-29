@@ -75,7 +75,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
 
         var aggregatedTimeSeriesRequestMessage = AggregatedTimeSeriesRequestFactory.Parse(
             aggregatedTimeSeriesRequest,
-            latestCalculationsForPeriod.CalculationForPeriods
+            latestCalculationsForPeriod.LatestCalculationForPeriods
                 .Select(x => x.BatchId));
 
         var results = await GetAggregatedTimeSeriesAsync(
@@ -83,7 +83,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
             cancellationToken).ConfigureAwait(false);
 
         var latestCalculationResultsForPeriod = latestCalculationsForPeriod.GetLatestCalculationsResultsPerDay(results);
-        if (!results.Any())
+        if (!latestCalculationResultsForPeriod.Any())
         {
             var error = new List<ValidationError> { _noDataAvailable };
             if (await EnergySupplierOrBalanceResponsibleHaveAggregatedTimeSeriesForAnotherGridAreasAsync(aggregatedTimeSeriesRequest, aggregatedTimeSeriesRequestMessage).ConfigureAwait(false))

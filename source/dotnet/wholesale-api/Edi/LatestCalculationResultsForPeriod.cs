@@ -17,6 +17,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.Edi.Exceptions;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using NodaTime;
+using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.Edi;
 
@@ -44,34 +45,33 @@ public class LatestCalculationResultsForPeriod
         FindLatestCalculations();
     }
 
-    public IReadOnlyCollection<LatestCalculationForPeriod> CalculationForPeriods => _latestCalculationsForPeriod.ToList().AsReadOnly();
+    public IReadOnlyCollection<LatestCalculationForPeriod> LatestCalculationForPeriods => _latestCalculationsForPeriod.ToList().AsReadOnly();
 
     public IReadOnlyCollection<AggregatedTimeSeriesResult> GetLatestCalculationsResultsPerDay(IReadOnlyCollection<AggregatedTimeSeries> calculationResults)
     {
         var result = new List<AggregatedTimeSeriesResult>();
-        foreach (var calculationResultsPerDay in calculationResults.GroupBy(x => x.TimeSeriesPoints.First().Time.Date))
+        if (calculationResults.Count == 0)
+            return result;
+
+        foreach (var latestCalculation in LatestCalculationForPeriods.OrderByDescending(x => x.PeriodStart))
         {
-            AggregatedTimeSeriesResult? latestResultForTheDay = null;
-            foreach (var calculationResultPerDay in calculationResultsPerDay)
+            var calculationResult = calculationResults.FirstOrDefault(x => x.BatchId == latestCalculation.BatchId);
+            if (calculationResult == null)
+                throw new MissingCalculationResultException($"No calculation result found for batch {latestCalculation.BatchId}");
+
+            var timeSeriesPointWithinPeriod = GetTimeSeriesPointWithinPeriod(calculationResult.TimeSeriesPoints, latestCalculation.PeriodStart, latestCalculation.PeriodEnd);
+            if (timeSeriesPointWithinPeriod.Count() != 0)
             {
-                var latestCalculationForPeriod = CalculationForPeriods.First(x => x.BatchId == calculationResultPerDay.BatchId);
-                if (latestResultForTheDay == null || latestResultForTheDay.Version < latestCalculationForPeriod.CalculationVersion)
-                {
-                    latestResultForTheDay = new AggregatedTimeSeriesResult(
-                        latestCalculationForPeriod.CalculationVersion,
-                        calculationResultPerDay.GridArea,
-                        calculationResultPerDay.TimeSeriesPoints,
-                        calculationResultPerDay.TimeSeriesType,
-                        calculationResultPerDay.ProcessType);
-                }
+                result.Add(new AggregatedTimeSeriesResult(
+                    latestCalculation.CalculationVersion,
+                    calculationResult.GridArea,
+                    timeSeriesPointWithinPeriod,
+                    calculationResult.TimeSeriesType,
+                    calculationResult.ProcessType));
             }
-
-            if (latestResultForTheDay == null)
-                throw new MissingCalculationResultException($"No calculation found for date {calculationResultsPerDay.Key}");
-
-            result.Add(latestResultForTheDay);
         }
 
+        // if LatestCalculation is missing a calculation, throw an exception
         return result;
     }
 
@@ -90,23 +90,25 @@ public class LatestCalculationResultsForPeriod
                     calculation.Version));
             }
 
-            var earliestStartDate = GetEarliestStartDate();
+            var earliestStartDate = GetEarliestStartDate().Minus(Duration.FromMinutes(15));
             if (calculationPeriodStart < earliestStartDate)
             {
                 var periodStart = calculationPeriodStart > _periodStart ? calculationPeriodStart : _periodStart;
+                var periodEnd = earliestStartDate < calculationPeriodEnd ? earliestStartDate : calculationPeriodEnd;
                 AddPeriod(new LatestCalculationForPeriod(
                     periodStart,
-                    earliestStartDate,
+                    periodEnd,
                     calculation.BatchId,
                     calculation.Version));
             }
 
-            var latestEndDate = GetLatestEndDate();
+            var latestEndDate = GetLatestEndDate().Plus(Duration.FromDays(1));
             if (calculationPeriodEnd > latestEndDate)
             {
+                var periodStart = latestEndDate > calculationPeriodStart ? latestEndDate : calculationPeriodStart;
                 var periodEnd = calculationPeriodEnd < _periodEnd ? calculationPeriodEnd : _periodEnd;
                 AddPeriod(new LatestCalculationForPeriod(
-                    latestEndDate.Plus(Duration.FromDays(1)),
+                    periodStart,
                     periodEnd,
                     calculation.BatchId,
                     calculation.Version));
@@ -115,6 +117,9 @@ public class LatestCalculationResultsForPeriod
             if (_remainingDaysInPeriod.Count == 0)
                 return;
         }
+
+        if (_latestCalculationsForPeriod.Count == 0)
+            return;
 
         throw new MissingCalculationException($"No calculation found for dates: {string.Join(", ", _remainingDaysInPeriod)}");
     }
@@ -147,6 +152,13 @@ public class LatestCalculationResultsForPeriod
             : Instant.FromDateTimeOffset(dateTimeOffset.Value);
     }
 
+    private EnergyTimeSeriesPoint[] GetTimeSeriesPointWithinPeriod(EnergyTimeSeriesPoint[] timeSeriesPoints, Instant periodStart, Instant periodEnd)
+    {
+        return timeSeriesPoints
+            .Where(x => x.Time.ToInstant() >= periodStart && x.Time.ToInstant() <= periodEnd)
+            .ToArray();
+    }
+
     private List<Instant> GetDaysInPeriod(Instant periodStart, Instant periodEnd)
     {
         var periodStartInTimeZone = new ZonedDateTime(periodStart, _dateTimeZone);
@@ -157,10 +169,9 @@ public class LatestCalculationResultsForPeriod
             PeriodUnits.Days);
 
         var datesInPeriod = new List<Instant>();
-        if (period.Days == 0)
-            datesInPeriod.Add(periodStart);
-
-        for (var days = 0; days < period.Days; ++days)
+        // if (period.Days == 0)
+        //     datesInPeriod.Add(periodStart);
+        for (var days = 0; days <= period.Days; ++days)
         {
             datesInPeriod.Add(periodStart.Plus(Duration.FromDays(days)));
         }

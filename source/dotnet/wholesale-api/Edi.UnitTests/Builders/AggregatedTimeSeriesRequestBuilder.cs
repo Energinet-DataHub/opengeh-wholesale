@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Edi.Requests;
 using Energinet.DataHub.Wholesale.EDI.Models;
 using Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 using NodaTime;
@@ -23,7 +22,6 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 public class AggregatedTimeSeriesRequestBuilder
 {
     private string _meteringPointType = MeteringPointType.Production;
-
     private string _start;
     private string _end;
     private string? _energySupplierId;

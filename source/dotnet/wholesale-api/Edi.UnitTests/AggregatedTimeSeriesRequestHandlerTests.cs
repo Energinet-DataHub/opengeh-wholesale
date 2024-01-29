@@ -34,7 +34,6 @@ using NodaTime.Text;
 using Xunit;
 using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
-using QuantityUnit = Energinet.DataHub.Edi.Responses.QuantityUnit;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests;
@@ -69,14 +68,14 @@ public class AggregatedTimeSeriesRequestHandlerTests
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(request.ToByteArray()));
 
-        var aggregatedTimeSeries = CreateAggregatedTimeSeries(periodStart, periodEnd);
-        aggregatedTimeSeriesQueries
-            .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
-            .Returns(() => aggregatedTimeSeries.ToAsyncEnumerable());
-
         validator.Setup(vali => vali.ValidateAsync(
                 It.IsAny<AggregatedTimeSeriesRequest>()))
             .ReturnsAsync(() => new List<ValidationError>());
+
+        var calculation = CalculationDtoBuilder.CalculationDto()
+            .WithPeriodStart(periodStart)
+            .WithPeriodEnd(periodEnd)
+            .Build();
         calculationsClient
             .Setup(client => client.SearchAsync(
                 request.HasGridAreaCode
@@ -85,7 +84,16 @@ public class AggregatedTimeSeriesRequestHandlerTests
                 CalculationState.Completed,
                 periodStart,
                 periodEnd))
-            .ReturnsAsync(() => BuildCalculcation(aggregatedTimeSeries));
+            .ReturnsAsync(() => new List<CalculationDto>() { calculation });
+
+        aggregatedTimeSeriesQueries
+            .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
+            .Returns(() => new List<AggregatedTimeSeries>()
+            {
+                CalculationResultBuilder
+                    .AggregatedTimeSeries(calculation)
+                    .Build(),
+            }.ToAsyncEnumerable());
 
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
@@ -136,14 +144,14 @@ public class AggregatedTimeSeriesRequestHandlerTests
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(request.ToByteArray()));
 
-        var aggregatedTimeSeries = CreateAggregatedTimeSeries(periodStart, periodEnd);
-        aggregatedTimeSeriesQueries
-            .Setup(parameters => parameters.GetLatestCorrectionForGridAreaAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
-            .Returns(() => aggregatedTimeSeries.ToAsyncEnumerable());
-
         validator.Setup(vali => vali.ValidateAsync(
                 It.IsAny<AggregatedTimeSeriesRequest>()))
             .ReturnsAsync(() => new List<ValidationError>());
+
+        var calculation = CalculationDtoBuilder.CalculationDto()
+            .WithPeriodStart(periodStart)
+            .WithPeriodEnd(periodEnd)
+            .Build();
         calculationsClient
             .Setup(client => client.SearchAsync(
                 request.HasGridAreaCode
@@ -152,7 +160,16 @@ public class AggregatedTimeSeriesRequestHandlerTests
                 CalculationState.Completed,
                 periodStart,
                 periodEnd))
-            .ReturnsAsync(() => BuildCalculcation(aggregatedTimeSeries));
+            .ReturnsAsync(() => new List<CalculationDto>() { calculation });
+
+        aggregatedTimeSeriesQueries
+            .Setup(parameters => parameters.GetLatestCorrectionForGridAreaAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
+            .Returns(() => new List<AggregatedTimeSeries>()
+            {
+                CalculationResultBuilder
+                .AggregatedTimeSeries(calculation)
+                .Build(),
+            }.ToAsyncEnumerable());
 
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
@@ -203,10 +220,6 @@ public class AggregatedTimeSeriesRequestHandlerTests
                 It.IsAny<AggregatedTimeSeriesRequest>()))
             .ReturnsAsync(() => new List<ValidationError>());
 
-        aggregatedTimeSeriesQueries
-            .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
-            .Returns(() => new List<AggregatedTimeSeries>().ToAsyncEnumerable());
-
         var periodStart = InstantPattern.General.Parse(request.Period.Start).Value;
         var periodEnd = InstantPattern.General.Parse(request.Period.End).Value;
         calculationsClient
@@ -217,10 +230,11 @@ public class AggregatedTimeSeriesRequestHandlerTests
                 CalculationState.Completed,
                 periodStart,
                 periodEnd))
-            .ReturnsAsync(() => new List<CalculationDto>()
-            {
-                BuildCalculcation(periodStart, periodEnd),
-            });
+            .ReturnsAsync(() => new List<CalculationDto>());
+
+        aggregatedTimeSeriesQueries
+            .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
+            .Returns(() => new List<AggregatedTimeSeries>().ToAsyncEnumerable());
 
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
@@ -275,6 +289,10 @@ public class AggregatedTimeSeriesRequestHandlerTests
 
         var periodStart = InstantPattern.General.Parse(request.Period.Start).Value;
         var periodEnd = InstantPattern.General.Parse(request.Period.End).Value;
+        var calculation = CalculationDtoBuilder.CalculationDto()
+            .WithPeriodStart(periodStart)
+            .WithPeriodEnd(periodEnd)
+            .Build();
         calculationsClient
             .Setup(client => client.SearchAsync(
                 request.HasGridAreaCode
@@ -283,10 +301,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
                 CalculationState.Completed,
                 periodStart,
                 periodEnd))
-            .ReturnsAsync(() => new List<CalculationDto>()
-            {
-                BuildCalculcation(periodStart, periodEnd),
-            });
+            .ReturnsAsync(() => new List<CalculationDto>() { calculation });
 
         aggregatedTimeSeriesQueries
             .Setup(parameters =>
@@ -294,12 +309,16 @@ public class AggregatedTimeSeriesRequestHandlerTests
                     It.IsAny<AggregatedTimeSeriesQueryParameters>()))
             .Returns(() => new List<AggregatedTimeSeries>().ToAsyncEnumerable());
 
-        var aggregatedTimeSeries = CreateAggregatedTimeSeries(periodStart, periodEnd);
         aggregatedTimeSeriesQueries
             .Setup(parameters =>
                 parameters.GetAsync(
                     It.Is<AggregatedTimeSeriesQueryParameters>(x => x.GridArea == null)))
-            .Returns(() => aggregatedTimeSeries.ToAsyncEnumerable());
+            .Returns(() => new List<AggregatedTimeSeries>()
+            {
+                CalculationResultBuilder
+                    .AggregatedTimeSeries(calculation)
+                    .Build(),
+            }.ToAsyncEnumerable());
 
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
@@ -362,10 +381,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
                 CalculationState.Completed,
                 periodStart,
                 periodEnd))
-            .ReturnsAsync(() => new List<CalculationDto>()
-            {
-                BuildCalculcation(periodStart, periodEnd),
-            });
+            .ReturnsAsync(() => new List<CalculationDto>());
 
         aggregatedTimeSeriesQueries
             .Setup(parameters =>
@@ -403,72 +419,5 @@ public class AggregatedTimeSeriesRequestHandlerTests
                 && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
             It.IsAny<CancellationToken>()),
             Times.Once);
-    }
-
-    private IReadOnlyCollection<AggregatedTimeSeries> CreateAggregatedTimeSeries(Instant periodStart, Instant periodEnd)
-    {
-        var energyTimeSeriesPoints = new List<EnergyTimeSeriesPoint>();
-        var currentTime = periodStart;
-        while (currentTime < periodEnd)
-        {
-            energyTimeSeriesPoints.Add(new EnergyTimeSeriesPoint(currentTime.ToDateTimeOffset(), 0, new List<QuantityQuality> { QuantityQuality.Measured }));
-            currentTime = currentTime.Plus(Duration.FromMinutes(15));
-        }
-
-        return new List<AggregatedTimeSeries>
-        {
-            new(
-                gridArea: "543",
-                timeSeriesPoints: energyTimeSeriesPoints.ToArray(),
-                timeSeriesType: TimeSeriesType.Production,
-                processType: ProcessType.Aggregation,
-                batchId: Guid.NewGuid()),
-        };
-    }
-
-    private CalculationDto BuildCalculcation(Instant periodStart, Instant periodEnd)
-    {
-        return new CalculationDto(
-            1,
-            Guid.NewGuid(),
-            periodStart.ToDateTimeOffset(),
-            periodEnd.ToDateTimeOffset(),
-            "PT15M",
-            QuantityUnit.Kwh.ToString(),
-            periodStart.ToDateTimeOffset(),
-            periodEnd.ToDateTimeOffset(),
-            CalculationState.Completed,
-            false,
-            new[] { "543" },
-            ProcessType.BalanceFixing,
-            Guid.NewGuid(),
-            1);
-    }
-
-    private IReadOnlyCollection<CalculationDto> BuildCalculcation(IReadOnlyCollection<AggregatedTimeSeries> calculationResults)
-    {
-        var result = new List<CalculationDto>();
-        foreach (var calculationResultsPerCalculation in calculationResults.GroupBy(x => x.BatchId))
-        {
-            var periodStart = calculationResultsPerCalculation.First().TimeSeriesPoints.First().Time;
-            var periodEnd = calculationResultsPerCalculation.First().TimeSeriesPoints.Last().Time;
-            result.Add(new CalculationDto(
-                1,
-                calculationResultsPerCalculation.First().BatchId,
-                periodStart,
-                periodEnd,
-                "PT15M",
-                QuantityUnit.Kwh.ToString(),
-                periodStart,
-                periodEnd,
-                CalculationState.Completed,
-                false,
-                new[] { "543" },
-                ProcessType.BalanceFixing,
-                Guid.NewGuid(),
-                1));
-        }
-
-        return result;
     }
 }
