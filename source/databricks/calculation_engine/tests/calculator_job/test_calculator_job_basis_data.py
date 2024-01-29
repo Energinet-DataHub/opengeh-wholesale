@@ -11,12 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import pytest
 from pyspark.sql import SparkSession
 from . import configuration as C
 from package.codelists import (
     BasisDataType,
 )
+import package.codelists as e
 from package.infrastructure import paths
 
 
@@ -361,3 +362,30 @@ def test__creates_master_basis_data_per_grid_area(
     assert (
         master_basis_data_806.count() >= 1
     ), "Calculator job failed to write master basis data files for grid area 806"
+
+
+def test__basis_data_contains_all_metering_point_types(
+    spark: SparkSession,
+    data_lake_path: str,
+    executed_balance_fixing: None,
+) -> None:
+    # Arrange
+    basis_data_path = paths.get_basis_data_path(
+        BasisDataType.MASTER_BASIS_DATA,
+        C.executed_balance_fixing_batch_id,
+        "805",
+        C.energy_supplier_gln_a,
+    )
+
+    # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
+
+    # Assert
+    actual = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/{basis_data_path}"
+    )
+
+    # Loop instead of parameterize test for reduced test execution time
+    for metering_point_type in e.MeteringPointType:
+        assert (
+            actual.where(actual["TYPEOFMP"] == metering_point_type.value).count() > 0
+        ), f"Calculator job failed to write master basis data files for metering point type {metering_point_type.value}"
