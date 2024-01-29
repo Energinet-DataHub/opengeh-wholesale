@@ -6,6 +6,7 @@ module "apim_biztalk_inbox" {
           <inbound>
             <base />
             <set-backend-service backend-id="${resource.azurerm_api_management_backend.biztalk_inbox_backend[0].name}" />
+            <rewrite-uri template="/api/BizTalkReceiver" />
             <ip-filter action="allow">
               <address>194.239.2.105</address>
             </ip-filter>
