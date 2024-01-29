@@ -203,7 +203,7 @@ resource "azurerm_eventgrid_system_topic_event_subscription" "dh2_timeseries" {
 }
 
 resource "azurerm_eventgrid_system_topic_event_subscription" "dh2_timeseries_synchronization" {
-  name                 = "egsts-${azurerm_storage_queue.timeseries.name}-${local.resources_suffix}"
+  name                 = "egsts-${azurerm_storage_queue.timeseries_synchronization.name}-${local.resources_suffix}"
   system_topic         = azurerm_eventgrid_system_topic.st_dh2data.name
   resource_group_name  = azurerm_resource_group.this.name
   included_event_types = ["Microsoft.Storage.BlobCreated"]
