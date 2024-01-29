@@ -314,5 +314,41 @@ AppDependencies
             using var assertionScope = new AssertionScope();
             actual.Value.Table.Rows[0][0].Should().Be(1); // count == 1
         }
+
+        [ScenarioStep(15)]
+        [SubsystemFact]
+        public async Task AndThen_ReceivedEnergyResultProducedV2EventContainsExpectedTimeSeriesPoint()
+        {
+            // Arrange
+            var expectedTimeSeriesPoints = await Fixture.ParseTimeSeriesPointsFromEnergyResultProducedV2CsvAsync("Non_profiled_consumption_GA_804 for 5790001687137.csv");
+
+            var energyResults = Fixture.ScenarioState.ReceivedEnergyResultProducedV2
+                .Where(x => x.TimeSeriesType == EnergyResultProducedV2.Types.TimeSeriesType.NonProfiledConsumption)
+                .Where(x => x.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea != null)
+                .Where(x => x.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.EnergySupplierId == "5790001687137")
+                .Where(x => x.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.GridAreaCode == "804")
+                .ToList();
+
+            // Assert
+            Assert.Single(energyResults);
+            energyResults.First().TimeSeriesPoints.Should().BeEquivalentTo(expectedTimeSeriesPoints);
+        }
+
+        [ScenarioStep(16)]
+        [SubsystemFact]
+        public async Task AndThen_ReceivedEnergyResultProducedV2EventContainsExpectedPositiveGridLossTimeSeriesPoints()
+        {
+            // Arrange
+            var expectedTimeSeriesPoints = await Fixture.ParseTimeSeriesPointsFromEnergyResultProducedV2GridLossCsvAsync("Positive_gridLoss 804.csv");
+            var energyResults = Fixture.ScenarioState.ReceivedEnergyResultProducedV2
+                .Where(x => x.TimeSeriesType == EnergyResultProducedV2.Types.TimeSeriesType.PositiveGridLoss)
+                .Where(x => x.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea != null)
+                .Where(x => x.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.GridAreaCode == "804")
+                .ToList();
+
+            // Assert
+            Assert.Single(energyResults);
+            energyResults.First().TimeSeriesPoints.Should().BeEquivalentTo(expectedTimeSeriesPoints);
+        }
     }
 }

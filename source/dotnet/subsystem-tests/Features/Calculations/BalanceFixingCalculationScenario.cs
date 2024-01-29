@@ -213,6 +213,20 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
 
         [ScenarioStep(10)]
         [SubsystemFact]
+        public void AndThen_ReceivedGridLossProducedV1ContainsOnlyOneConsumptionAndOneProductionMeteringPointType()
+        {
+            var actualMeteringPointTypesForGridLossProducedV1 = Fixture.ScenarioState.ReceivedGridLossProducedV1
+                .Select(x => Enum.GetName(x.MeteringPointType))
+                .ToList();
+
+            // Assert
+            using var assertionScope = new AssertionScope();
+            actualMeteringPointTypesForGridLossProducedV1.Should().ContainSingle(x => x == GridLossResultProducedV1.Types.MeteringPointType.Consumption.ToString());
+            actualMeteringPointTypesForGridLossProducedV1.Should().ContainSingle(x => x == GridLossResultProducedV1.Types.MeteringPointType.Production.ToString());
+        }
+
+        [ScenarioStep(11)]
+        [SubsystemFact]
         public async Task AndThen_ReceivedEnergyResultProducedV2EventContainsExpectedTimeSeriesPoints()
         {
             // Arrange
@@ -230,36 +244,20 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
             energyResults.First().TimeSeriesPoints.Should().BeEquivalentTo(expectedTimeSeriesPoints);
         }
 
-        [ScenarioStep(11)]
-        [SubsystemFact]
-        public void AndThen_ReceivedGridLossProducedV1ContainsOnlyOneConsumptionAndOneProductionMeteringPointType()
-        {
-            var actualMeteringPointTypesForGridLossProducedV1 = Fixture.ScenarioState.ReceivedGridLossProducedV1
-                .Select(x => Enum.GetName(x.MeteringPointType))
-                .ToList();
-
-            // Assert
-            using var assertionScope = new AssertionScope();
-            actualMeteringPointTypesForGridLossProducedV1.Should().ContainSingle(x => x == GridLossResultProducedV1.Types.MeteringPointType.Consumption.ToString());
-            actualMeteringPointTypesForGridLossProducedV1.Should().ContainSingle(x => x == GridLossResultProducedV1.Types.MeteringPointType.Production.ToString());
-        }
-
         [ScenarioStep(12)]
         [SubsystemFact]
-        public void AndThen_ReceivedEnergyResultProducedV2EventContainsExpectedPositiveGridLoss()
+        public async Task AndThen_ReceivedEnergyResultProducedV2EventContainsExpectedPositiveGridLossTimeSeriesPoints()
         {
             // Arrange
-            //var expectedTimeSeriesPoints = await Fixture.ParseTimeSeriesPointsFromEnergyResultProducedV2GridLossCsvAsync("Positive_gridLoss 543.csv");
+            var expectedTimeSeriesPoints = await Fixture.ParseTimeSeriesPointsFromEnergyResultProducedV2GridLossCsvAsync("Positive_gridLoss 543.csv");
             var energyResults = Fixture.ScenarioState.ReceivedEnergyResultProducedV2
                 .Where(x => x.TimeSeriesType == EnergyResultProducedV2.Types.TimeSeriesType.PositiveGridLoss)
-                //.Where(x => x.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea != null)
-                //.Where(x => x.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.EnergySupplierId == "5790001102357")
-                //.Where(x => x.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.GridAreaCode == "543")
+                .Where(x => x.AggregationPerGridarea.GridAreaCode == "543")
                 .ToList();
 
             // Assert
             Assert.Single(energyResults);
-            //energyResults.First().TimeSeriesPoints.Should().BeEquivalentTo(expectedTimeSeriesPoints);
+            energyResults.First().TimeSeriesPoints.Should().BeEquivalentTo(expectedTimeSeriesPoints);
         }
     }
 }
