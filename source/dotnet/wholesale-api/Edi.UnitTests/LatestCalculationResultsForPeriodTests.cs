@@ -420,7 +420,7 @@ public class LatestCalculationResultsForPeriodTests
 
             if (currentInstant != periodEnd)
             {
-                timeSeriesPointsPerDay.Count().Should().Be(24 * 4, $"There should be 24 * 4 time series points {currentZonedInstant}");
+                timeSeriesPointsPerDay.Count().Should().Be(96, $"There should be 96 time series points {currentZonedInstant}");
             }
             else
             {
@@ -431,7 +431,7 @@ public class LatestCalculationResultsForPeriodTests
         }
     }
 
-    private void AssertCalculationsAreLatest(IReadOnlyCollection<LatestCalculationForPeriod> actual, List<CalculationDto> calculations)
+    private void AssertCalculationsAreLatest(IReadOnlyCollection<LatestCalculationForPeriod> actual, IReadOnlyCollection<CalculationDto> calculations)
     {
         foreach (var latestCalculation in actual.OrderByDescending(x => x.CalculationVersion))
         {
@@ -442,14 +442,14 @@ public class LatestCalculationResultsForPeriodTests
         }
     }
 
-    private void AssertCalculationResultsAreLatest(IReadOnlyCollection<AggregatedTimeSeriesResult> actual, List<CalculationDto> calculations)
+    private void AssertCalculationResultsAreLatest(IReadOnlyCollection<AggregatedTimeSeriesResult> actual, IReadOnlyCollection<CalculationDto> calculations)
     {
-        foreach (var latestCalculation in actual.OrderByDescending(x => x.Version))
+        foreach (var latestCalculationResult in actual.OrderByDescending(x => x.Version))
         {
             calculations.Should().ContainSingle(x =>
-                x.Version >= latestCalculation.Version
-                && x.PeriodStart.ToInstant() <= latestCalculation.TimeSeriesPoints.Min(x => x.Time.ToInstant())
-                && x.PeriodEnd.ToInstant() >= latestCalculation.TimeSeriesPoints.Max(x => x.Time.ToInstant()));
+                x.Version >= latestCalculationResult.Version
+                && x.PeriodStart.ToInstant() <= latestCalculationResult.TimeSeriesPoints.Min(x => x.Time.ToInstant())
+                && x.PeriodEnd.ToInstant() >= latestCalculationResult.TimeSeriesPoints.Max(x => x.Time.ToInstant()));
         }
     }
 }
