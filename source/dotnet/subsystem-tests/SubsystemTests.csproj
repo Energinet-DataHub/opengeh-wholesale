@@ -11,7 +11,7 @@
       <SwaggerConfiguration>Clients\Wholesale\V3\swagger.json</SwaggerConfiguration>
       <WholesaleClient>Clients\Wholesale\V3\WholesaleClient.cs</WholesaleClient>
     </PropertyGroup>
-    
+
     <PropertyGroup>
       <!-- True if the swagger.json file was updated after the generated client -->
       <SwaggerConfigurationIsNewer>
@@ -73,8 +73,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\wholesale-api\Batches\Batches.Application\Batches.Application.csproj" />
-    <ProjectReference Include="..\wholesale-api\Batches\Batches.Infrastructure\Batches.Infrastructure.csproj" />
+    <ProjectReference Include="..\wholesale-api\Calculations\Calculations.Application\Calculations.Application.csproj" />
+    <ProjectReference Include="..\wholesale-api\Calculations\Calculations.Infrastructure\Calculations.Infrastructure.csproj" />
     <ProjectReference Include="..\wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" />
     <ProjectReference Include="..\wholesale-api\Test.Core\Test.Core.csproj" />
   </ItemGroup>

@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Batches.Interfaces\Batches.Interfaces.csproj" />
+    <ProjectReference Include="..\Calculations.Interfaces\Calculations.Interfaces.csproj" />
   </ItemGroup>
 
 

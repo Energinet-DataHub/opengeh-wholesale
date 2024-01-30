@@ -13,6 +13,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Batches.Application\Batches.Application.csproj" />
+    <ProjectReference Include="..\Calculations.Application\Calculations.Application.csproj" />
   </ItemGroup>
 </Project>
