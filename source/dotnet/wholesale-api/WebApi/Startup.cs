@@ -14,8 +14,10 @@
 
 using System.Reflection;
 using System.Text.Json.Serialization;
+using System.Threading;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
+using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.Common.Reflection;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
@@ -31,9 +33,14 @@ using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks.DataLake;
+using Energinet.DataHub.Wholesale.WebApi.HealthChecks.ServiceBus;
 using Energinet.DataHub.Wholesale.WebApi.Telemetry;
+using HealthChecks.AzureServiceBus;
+using HealthChecks.AzureServiceBus.Configuration;
 using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.Azure.Databricks.Client.Models;
 using Microsoft.Extensions.Azure;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
 
 namespace Energinet.DataHub.Wholesale.WebApi;
@@ -112,7 +119,12 @@ public class Startup
         // ServiceBus
         serviceCollection.AddAzureClients(builder =>
         {
-            builder.AddServiceBusClient(Configuration.Get<ServiceBusOptions>()!.SERVICE_BUS_MANAGE_CONNECTION_STRING);
+            builder
+                .AddServiceBusClient(Configuration.Get<ServiceBusOptions>()!.SERVICE_BUS_MANAGE_CONNECTION_STRING)
+                .ConfigureOptions(options =>
+                {
+                    options.TransportType = ServiceBusTransportType.AmqpWebSockets;
+                });
         });
 
         AddJwtTokenSecurity(serviceCollection);
@@ -192,7 +204,7 @@ public class Startup
             .AddLiveCheck()
             .AddDbContextCheck<EventsDatabaseContext>(
                 name: HealthCheckNames.SqlDatabaseContext)
-            .AddAzureServiceBusTopic(
+            .AddAzureServiceBusTopicUsingWebSockets(
                 serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
                 serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
                 name: HealthCheckNames.IntegrationEventsTopic)
@@ -203,11 +215,11 @@ public class Startup
                 name: HealthCheckNames.DatabricksJobsApi)
             .AddDatabricksSqlStatementApiHealthCheck(
                 name: HealthCheckNames.DatabricksSqlStatementsApi)
-            .AddAzureServiceBusQueue(
+            .AddAzureServiceBusQueueUsingWebSockets(
                 serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
                 serviceBusOptions.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME,
                 name: HealthCheckNames.WholesaleInboxEventsQueue)
-            .AddAzureServiceBusQueue(
+            .AddAzureServiceBusQueueUsingWebSockets(
                 serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
                 serviceBusOptions.EDI_INBOX_MESSAGE_QUEUE_NAME,
                 name: HealthCheckNames.EdiInboxEventsQueue);

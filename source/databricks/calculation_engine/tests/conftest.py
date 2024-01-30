@@ -32,6 +32,7 @@ from pyspark.sql.types import StructType
 from package.calculation_input.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
+    grid_loss_metering_points_schema,
     charge_master_data_periods_schema,
     charge_price_points_schema,
     charge_link_periods_schema,
@@ -328,6 +329,15 @@ def energy_input_data_written_to_delta(
         table_name=paths.TIME_SERIES_POINTS_TABLE_NAME,
         schema=time_series_point_schema,
         table_location=f"{calculation_input_path}/{paths.TIME_SERIES_POINTS_TABLE_NAME}",
+    )
+
+    # grid loss
+    _write_input_test_data_to_table(
+        spark,
+        file_name=f"{test_files_folder_path}/GridLossResponsible.csv",
+        table_name=paths.GRID_LOSS_METERING_POINTS_TABLE_NAME,
+        schema=grid_loss_metering_points_schema,
+        table_location=f"{calculation_input_path}/{paths.GRID_LOSS_METERING_POINTS_TABLE_NAME}",
     )
 
     _write_input_test_data_to_table(

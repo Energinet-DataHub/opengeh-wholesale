@@ -30,6 +30,7 @@ from ...infrastructure import logging_configuration
 def execute(
     wholesale_calculation_result_writer: WholesaleCalculationResultWriter,
     tariffs_hourly_df: DataFrame,
+    tariffs_daily_df: DataFrame,
     period_start_datetime: datetime,
 ) -> None:
     assert_schema(tariffs_hourly_df.schema, tariff_schema)
@@ -38,6 +39,7 @@ def execute(
     _calculate_tariff_charges(
         wholesale_calculation_result_writer,
         tariffs_hourly_df,
+        tariffs_daily_df,
         period_start_datetime,
     )
 
@@ -45,6 +47,7 @@ def execute(
 def _calculate_tariff_charges(
     wholesale_calculation_result_writer: WholesaleCalculationResultWriter,
     tariffs_hourly_df: DataFrame,
+    tariffs_daily_df: DataFrame,
     period_start_datetime: datetime,
 ) -> None:
     hourly_tariff_per_ga_co_es = tariffs.calculate_tariff_price_per_ga_co_es(
@@ -62,4 +65,12 @@ def _calculate_tariff_charges(
     with logging_configuration.start_span("monthly_tariff_per_ga_co_es"):
         wholesale_calculation_result_writer.write(
             monthly_tariff_per_ga_co_es, AmountType.MONTHLY_AMOUNT_PER_CHARGE
+        )
+
+    daily_tariff_per_ga_co_es = tariffs.calculate_tariff_price_per_ga_co_es(
+        tariffs_daily_df
+    )
+    with logging_configuration.start_span("daily_tariff_per_ga_co_es"):
+        wholesale_calculation_result_writer.write(
+            daily_tariff_per_ga_co_es, AmountType.AMOUNT_PER_CHARGE
         )
