@@ -339,16 +339,14 @@ AppDependencies
         public async Task AndThen_ReceivedEnergyResultProducedV2EventContainsExpectedPositiveGridLossTimeSeriesPoints()
         {
             // Arrange
-            var expectedTimeSeriesPoints = await Fixture.ParseTimeSeriesPointsFromEnergyResultProducedV2GridLossCsvAsync("Positive_gridLoss 804.csv");
-            var energyResults = Fixture.ScenarioState.ReceivedEnergyResultProducedV2
-                .Where(x => x.TimeSeriesType == EnergyResultProducedV2.Types.TimeSeriesType.PositiveGridLoss)
-                .Where(x => x.AggregationPerGridarea != null)
-                .Where(x => x.AggregationPerGridarea.GridAreaCode == "804")
+            var expectedTimeSeriesPoints = await Fixture.ParseTimeSeriesPointsFromReceivedGridLossProducedV1GridLossCsvAsync("Positive_gridLoss 804.csv");
+            var energyResults = Fixture.ScenarioState.ReceivedGridLossProducedV1
+                .Select(x => x.TimeSeriesPoints)
                 .ToList();
 
             // Assert
             Assert.Single(energyResults);
-            energyResults.First().TimeSeriesPoints.Should().BeEquivalentTo(expectedTimeSeriesPoints);
+            energyResults.First().Should().BeEquivalentTo(expectedTimeSeriesPoints);
         }
     }
 }

@@ -170,7 +170,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
         /// <summary>
         /// Load CSV file and parse each data row into <see cref="EnergyResultProducedV2.Types.TimeSeriesPoint"/>.
         /// </summary>
-        public async Task<IReadOnlyCollection<EnergyResultProducedV2.Types.TimeSeriesPoint>> ParseTimeSeriesPointsFromEnergyResultProducedV2GridLossCsvAsync(string testFileName)
+        public async Task<IReadOnlyCollection<EnergyResultProducedV2.Types.TimeSeriesPoint>> ParseTimeSeriesPointsFromReceivedGridLossProducedV1GridLossCsvAsync(string testFileName)
         {
             return await ParseCsvAsync(
                 testFileName,
