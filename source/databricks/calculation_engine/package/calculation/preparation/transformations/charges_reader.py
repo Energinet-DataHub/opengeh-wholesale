@@ -34,10 +34,6 @@ def read_charges(
         Colname.to_date,
     )
 
-    charge_prices_df = table_reader.read_charge_price_points(
-        period_start_datetime, period_end_datetime
-    )
-
     charge_links_df = table_reader.read_charge_links_periods(
         period_start_datetime, period_end_datetime
     )
@@ -47,6 +43,10 @@ def read_charges(
         period_end_datetime,
         Colname.from_date,
         Colname.to_date,
+    )
+
+    charge_prices_df = table_reader.read_charge_price_points(
+        period_start_datetime, period_end_datetime
     )
     return _create_charges_df(charge_master_data_df, charge_links_df, charge_prices_df)
 
