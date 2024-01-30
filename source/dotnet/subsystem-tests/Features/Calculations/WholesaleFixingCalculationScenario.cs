@@ -342,8 +342,8 @@ AppDependencies
             var expectedTimeSeriesPoints = await Fixture.ParseTimeSeriesPointsFromEnergyResultProducedV2GridLossCsvAsync("Positive_gridLoss 804.csv");
             var energyResults = Fixture.ScenarioState.ReceivedEnergyResultProducedV2
                 .Where(x => x.TimeSeriesType == EnergyResultProducedV2.Types.TimeSeriesType.PositiveGridLoss)
-                .Where(x => x.AggregationPerEnergysupplierPerGridarea != null)
-                .Where(x => x.AggregationPerEnergysupplierPerGridarea.GridAreaCode == "804")
+                .Where(x => x.AggregationPerGridarea != null)
+                .Where(x => x.AggregationPerGridarea.GridAreaCode == "804")
                 .ToList();
 
             // Assert
