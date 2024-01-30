@@ -339,7 +339,7 @@ AppDependencies
 
         [ScenarioStep(16)]
         [SubsystemFact]
-        public async Task AndThen_ReceivedReceivedGridLossProducedV1EventContainsExpectedTimeSeriesPoints()
+        public async Task AndThen_ReceivedGridLossProducedV1EventContainsExpectedTimeSeriesPoints()
         {
             // Arrange
             var expectedTimeSeriesPoints = await Fixture.ParseGridLossTimeSeriesPointsFromCsvAsync("Positive_gridLoss 804.csv");
