@@ -198,6 +198,100 @@ public class AggregatedTimeSeriesRequestHandlerTests
 
     [Theory]
     [InlineAutoMoqData]
+    public async Task ProcessAsync_WithTotalProductionPerGridAreaRequestForMultipleCalculations_SendsAcceptedEdiMessageWithMultipleSeries(
+        [Frozen] Mock<IAggregatedTimeSeriesQueries> aggregatedTimeSeriesQueries,
+        [Frozen] Mock<IEdiClient> senderMock,
+        [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
+        [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> logger,
+        [Frozen] Mock<ICalculationsClient> calculationsClient)
+    {
+        // Arrange
+        const string expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestAccepted);
+        var periodStart = Instant.FromUtc(2024, 1, 1, 23, 0, 0);
+        var periodEnd = periodStart.Plus(Duration.FromDays(10));
+        var expectedReferenceId = Guid.NewGuid().ToString();
+        var request = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithStartDate(periodStart.ToString())
+            .WithEndDate(periodEnd.ToString())
+            .Build();
+
+        var firstPeriodStart = periodStart;
+        var firstPeriodEnd = periodEnd;
+
+        var secondPeriodStart = periodStart.Plus(Duration.FromDays(2));
+        var secondPeriodEnd = periodEnd.Minus(Duration.FromDays(2));
+
+        var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
+            properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
+            body: new BinaryData(request.ToByteArray()));
+
+        validator.Setup(vali => vali.ValidateAsync(
+                It.IsAny<AggregatedTimeSeriesRequest>()))
+            .ReturnsAsync(() => new List<ValidationError>());
+
+        var firstCalculation = CalculationDtoBuilder.CalculationDto()
+            .WithPeriodStart(firstPeriodStart)
+            .WithPeriodEnd(firstPeriodEnd)
+            .WithVersion(1)
+            .Build();
+
+        var secondCalculation = CalculationDtoBuilder.CalculationDto()
+            .WithPeriodStart(secondPeriodStart)
+            .WithPeriodEnd(secondPeriodEnd)
+            .WithVersion(2)
+            .Build();
+
+        calculationsClient
+            .Setup(client => client.SearchAsync(
+                request.HasGridAreaCode
+                    ? new[] { request.GridAreaCode }
+                    : new string[] { },
+                CalculationState.Completed,
+                periodStart,
+                periodEnd))
+            .ReturnsAsync(() => new List<CalculationDto>() { firstCalculation, secondCalculation });
+
+        aggregatedTimeSeriesQueries
+            .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
+            .Returns(() => new List<AggregatedTimeSeries>()
+            {
+                CalculationResultBuilder
+                    .AggregatedTimeSeries(firstCalculation)
+                    .Build(),
+                CalculationResultBuilder
+                    .AggregatedTimeSeries(secondCalculation)
+                    .Build(),
+            }.ToAsyncEnumerable());
+
+        var sut = new AggregatedTimeSeriesRequestHandler(
+            senderMock.Object,
+            validator.Object,
+            aggregatedTimeSeriesQueries.Object,
+            logger.Object,
+            calculationsClient.Object,
+            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
+
+        // Act
+        await sut.ProcessAsync(
+            serviceBusReceivedMessage,
+            expectedReferenceId,
+            CancellationToken.None);
+
+        // Assert
+        senderMock.Verify(
+            bus => bus.SendAsync(
+            It.Is<ServiceBusMessage>(message =>
+                message.Subject.Equals(expectedAcceptedSubject)
+                && message.ApplicationProperties.ContainsKey("ReferenceId")
+                && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)
+                && AggregatedTimeSeriesRequestAccepted.Parser.ParseFrom(message.Body).Series.Count == 3),
+            It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
     public async Task ProcessAsync_WhenNoAggregatedTimeSeries_SendsRejectedEdiMessage(
         [Frozen] Mock<IAggregatedTimeSeriesQueries> aggregatedTimeSeriesQueries,
         [Frozen] Mock<IEdiClient> senderMock,

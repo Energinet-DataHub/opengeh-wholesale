@@ -32,6 +32,8 @@ message Series {
    * The version of the calculation result. It is a positive integer (int64).
    */
     int64 calculation_result_version = 6;
+    google.protobuf.Timestamp start_of_period = 7;
+    google.protobuf.Timestamp end_of_period = 8;
 }
 
 message TimeSeriesPoint {

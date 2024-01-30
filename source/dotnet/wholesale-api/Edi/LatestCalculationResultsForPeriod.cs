@@ -64,6 +64,8 @@ public class LatestCalculationResultsForPeriod
             {
                 latestCalculationResults.Add(new AggregatedTimeSeriesResult(
                     latestCalculation.CalculationVersion,
+                    latestCalculation.PeriodStart,
+                    latestCalculation.PeriodEnd,
                     calculationResult.GridArea,
                     timeSeriesPointWithinPeriod,
                     calculationResult.TimeSeriesType,

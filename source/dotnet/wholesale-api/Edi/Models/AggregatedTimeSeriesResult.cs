@@ -14,11 +14,14 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Edi.Models;
 
 public record AggregatedTimeSeriesResult(
     long Version,
+    Instant PeriodStart,
+    Instant PeriodEnd,
     string GridArea,
     EnergyTimeSeriesPoint[] TimeSeriesPoints,
     TimeSeriesType TimeSeriesType,

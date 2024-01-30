@@ -22,7 +22,7 @@ using TimeSeriesPoint = Energinet.DataHub.Edi.Responses.TimeSeriesPoint;
 
 namespace Energinet.DataHub.Wholesale.EDI.Factories;
 
-public class AggregatedTimeSeriesRequestAcceptedMessageFactory
+public static class AggregatedTimeSeriesRequestAcceptedMessageFactory
 {
     public static ServiceBusMessage Create(
         IReadOnlyCollection<AggregatedTimeSeriesResult> aggregatedTimeSeries,
@@ -55,6 +55,8 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
                 TimeSeriesType = CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromCalculationsResult(series.TimeSeriesType),
                 Resolution = Resolution.Pt15M,
                 CalculationResultVersion = series.Version,
+                StartOfPeriod = Timestamp.FromDateTimeOffset(series.PeriodStart.ToDateTimeOffset()),
+                EndOfPeriod = Timestamp.FromDateTimeOffset(series.PeriodEnd.ToDateTimeOffset()),
             });
         }
 

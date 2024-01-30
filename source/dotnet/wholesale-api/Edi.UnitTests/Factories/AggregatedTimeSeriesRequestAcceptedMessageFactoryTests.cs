@@ -126,6 +126,8 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
 
         var aggregatedTimeSeries = new AggregatedTimeSeriesResult(
             version,
+            _periodStart,
+            _periodEnd,
             _gridArea,
             new EnergyTimeSeriesPoint[]
             {
