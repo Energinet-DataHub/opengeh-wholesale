@@ -43,7 +43,7 @@ public class GridAreaOwnerRepositoryTests : IClassFixture<WholesaleDatabaseFixtu
         var expectedGridAreaOwner = new GridAreaOwner(
             Id: Guid.NewGuid(),
             OwnerActorNumber: "1234567891234",
-            GridAreaCode: "304",
+            GridAreaCode: "301",
             ValidFrom: Instant.FromUtc(2023, 10, 1, 0, 0, 0),
             SequenceNumber: 1);
 
@@ -76,7 +76,7 @@ public class GridAreaOwnerRepositoryTests : IClassFixture<WholesaleDatabaseFixtu
         var gridAreaOwner = new GridAreaOwner(
             Id: Guid.NewGuid(),
             OwnerActorNumber: "1234567891235",
-            GridAreaCode: "303",
+            GridAreaCode: "302",
             ValidFrom: Instant.FromUtc(2023, 10, 1, 0, 0, 0),
             SequenceNumber: 1);
         sut.Add(gridAreaOwner.GridAreaCode, gridAreaOwner.OwnerActorNumber, gridAreaOwner.ValidFrom, gridAreaOwner.SequenceNumber);
@@ -120,7 +120,7 @@ public class GridAreaOwnerRepositoryTests : IClassFixture<WholesaleDatabaseFixtu
     public async Task GetCurrentOwner_WhenOneOwnerIsValidTomorrow_ReturnsExpectedOwner()
     {
         // Arrange
-        var gridAreaCode = "305";
+        var gridAreaCode = "304";
         var expectedOwner = new GridAreaOwner(
             Id: Guid.NewGuid(),
             OwnerActorNumber: "1234567891237",
@@ -155,7 +155,7 @@ public class GridAreaOwnerRepositoryTests : IClassFixture<WholesaleDatabaseFixtu
     public async Task GetCurrentOwner_WhenTwoValidOwners_ReturnsOwnerWithHighestSequenceNumber()
     {
         // Arrange
-        var gridAreaCode = "303";
+        var gridAreaCode = "305";
         var validGridAreaOwner = new GridAreaOwner(
             Id: Guid.NewGuid(),
             OwnerActorNumber: "1234567891238",
@@ -248,7 +248,7 @@ public class GridAreaOwnerRepositoryTests : IClassFixture<WholesaleDatabaseFixtu
     public async Task GetCurrentOwner_WhenNewGridAreaEventWithExistingGridAreaCodeAndLowerSequenceNumberValidFromTheFuture_ReturnsExistingOwner()
     {
         // Arrange
-        var gridAreaCode = "307";
+        var gridAreaCode = "308";
         var existingGridAreaOwner = new GridAreaOwner(
             Id: Guid.NewGuid(),
             OwnerActorNumber: "1234567891239",
@@ -282,7 +282,7 @@ public class GridAreaOwnerRepositoryTests : IClassFixture<WholesaleDatabaseFixtu
     public async Task GetCurrentOwner_WhenNewGridAreaEventWithExistingGridAreaCodeAndExistingSequenceNumber_ReturnsExistingOwner()
     {
         // Arrange
-        var gridAreaCode = "307";
+        var gridAreaCode = "309";
         var existingGridAreaOwner = new GridAreaOwner(
             Id: Guid.NewGuid(),
             OwnerActorNumber: "1234567891239",
