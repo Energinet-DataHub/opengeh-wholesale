@@ -1,4 +1,4 @@
-grid_area,energy_supplier_id,balance_responsible_id,quantity,quantity_qualities,time,aggregation_level,time_series_type,calculation_id,calculation_type,calculation_execution_time_start,out_grid_area,calculation_result_id
+grid_area,energy_supplier_id,balance_responsible_id,quantity,quantity_qualities,time,aggregation_level,time_series_type,calculation_id,calculation_type,calculation_execution_time_start,out_grid_area,calculation_result_id,metering_point_id
 543,,,482663.130,['calculated'],2022-01-11 23:00:00,total_ga,grid_loss,0bc9fea9-2529-499f-bfc1-bea6f73d210c,BalanceFixing,2024-01-18 15:01:14,,10c0470c-0e12-4c2a-b8ac-f8a2660da968
 543,,,482663.130,['calculated'],2022-01-11 23:15:00,total_ga,grid_loss,0bc9fea9-2529-499f-bfc1-bea6f73d210c,BalanceFixing,2024-01-18 15:01:14,,10c0470c-0e12-4c2a-b8ac-f8a2660da968
 543,,,482663.130,['calculated'],2022-01-11 23:30:00,total_ga,grid_loss,0bc9fea9-2529-499f-bfc1-bea6f73d210c,BalanceFixing,2024-01-18 15:01:14,,10c0470c-0e12-4c2a-b8ac-f8a2660da968
