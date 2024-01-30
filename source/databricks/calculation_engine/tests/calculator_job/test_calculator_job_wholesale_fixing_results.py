@@ -24,11 +24,9 @@ from package.codelists import (
     MeteringPointType,
     SettlementMethod,
     TimeSeriesType,
-    ChargeResolution,
     WholesaleResultResolution,
 )
 from package.constants import EnergyResultColumnNames, WholesaleResultColumnNames
-from package.infrastructure import paths
 
 
 ENERGY_RESULT_TYPES = {
@@ -222,23 +220,33 @@ def test__wholesale_result__is_created(
     assert result_df.count() > 0
 
 
-def test__monthly_amount__is_created(
+@pytest.mark.parametrize(
+    "charge_code",
+    ["40000", "41000"],
+    # charge_code 40000 is for hourly charge resolution
+    # charge_code 41000 is for daily charge resolution
+    # see "test_files/ChargeMasterDataPeriods.csv"
+)
+def test__monthly_amount_for_both_hourly_and_daily__is_created(
     spark: SparkSession,
     wholesale_fixing_wholesale_results_df: DataFrame,
+    charge_code: str,
 ) -> None:
     # Arrange
-    wholesale_fixing_wholesale_results_df.show()
-    result_df = wholesale_fixing_wholesale_results_df.where(
-        F.col(WholesaleResultColumnNames.charge_type) == ChargeType.TARIFF.value
-    ).where(
-        F.col(WholesaleResultColumnNames.resolution)
-        == WholesaleResultResolution.MONTH.value
+
+    result_df = (
+        wholesale_fixing_wholesale_results_df.where(
+            F.col(WholesaleResultColumnNames.charge_type) == ChargeType.TARIFF.value
+        )
+        .where(
+            F.col(WholesaleResultColumnNames.resolution)
+            == WholesaleResultResolution.MONTH.value
+        )
+        .where(F.col(WholesaleResultColumnNames.charge_code) == charge_code)
     )
-    result_df.show()
-    path = "test_files/ChargeMasterDataPeriods.csv"
-    df = (
-        spark.read.format("csv")
-        .load(path)
-        .where(F.col(WholesaleResultColumnNames.charge_type) == ChargeType.TARIFF.value)
-    )
-    df.show()
+
+    # Act: Calculator job is executed just once per session.
+    #      See the fixtures `results_df` and `executed_wholesale_fixing`
+
+    # Assert: The result is created if there are rows
+    assert result_df.count() > 0
