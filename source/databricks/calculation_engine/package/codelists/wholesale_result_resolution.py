@@ -21,7 +21,7 @@ class WholesaleResultResolution(Enum):
     """
 
     MONTH = "P1M"
-    """Applies to tariffs (monthly amount), subscriptions and fees"""
+    """Applies to all (tariffs, subscriptions and fees) for monthly amount and total amount"""
     DAY = "P1D"
     """Applies to tariffs, subscriptions and fees"""
     HOUR = "PT1H"
