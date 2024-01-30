@@ -148,7 +148,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
         /// <summary>
         /// Load CSV file and parse each data row into <see cref="AmountPerChargeResultProducedV1.Types.TimeSeriesPoint"/>.
         /// </summary>
-        public async Task<IReadOnlyCollection<AmountPerChargeResultProducedV1.Types.TimeSeriesPoint>> ParseChargeResultProducedV1TimeSeriesPointCsvAsync(string testFileName)
+        public async Task<IReadOnlyCollection<AmountPerChargeResultProducedV1.Types.TimeSeriesPoint>> ParseCsvWithChargeResultTimeSeriesPointsAsync(string testFileName)
         {
             return await ParseCsvAsync(
                 testFileName,
@@ -159,7 +159,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
         /// <summary>
         /// Load CSV file and parse each data row into <see cref="EnergyResultProducedV2.Types.TimeSeriesPoint"/>.
         /// </summary>
-        public async Task<IReadOnlyCollection<EnergyResultProducedV2.Types.TimeSeriesPoint>> ParseTimeSeriesPointsFromEnergyResultProducedV2CsvAsync(string testFileName)
+        public async Task<IReadOnlyCollection<EnergyResultProducedV2.Types.TimeSeriesPoint>> ParseCsvWithEnergyResultTimeSeriesPointsAsync(string testFileName)
         {
             return await ParseCsvAsync(
                 testFileName,
@@ -168,14 +168,14 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
         }
 
         /// <summary>
-        /// Load CSV file and parse each data row into <see cref="EnergyResultProducedV2.Types.TimeSeriesPoint"/>.
+        /// Load CSV file and parse each data line into a <see cref="GridLossResultProducedV1.Types.TimeSeriesPoint"/>.
         /// </summary>
-        public async Task<IReadOnlyCollection<EnergyResultProducedV2.Types.TimeSeriesPoint>> ParseTimeSeriesPointsFromReceivedGridLossProducedV1GridLossCsvAsync(string testFileName)
+        public async Task<IReadOnlyCollection<GridLossResultProducedV1.Types.TimeSeriesPoint>> ParseCsvWithGridLossTimeSeriesPointsCsvAsync(string testFileName)
         {
             return await ParseCsvAsync(
                 testFileName,
-                "grid_area,energy_supplier_id,balance_responsible_id,quantity,quantity_qualities,time,aggregation_level,time_series_type,calculation_id,calculation_type,calculation_execution_time_start,out_grid_area,calculation_result_id",
-                ParseEnergyResultProducedV2TimeSeriesPoint);
+                "grid_area,energy_supplier_id,balance_responsible_id,quantity,quantity_qualities,time,aggregation_level,time_series_type,calculation_id,calculation_type,calculation_execution_time_start,out_grid_area,calculation_result_id,metering_point_id",
+                ParseGridLossProducedV1TimeSeriesPoint);
         }
 
         protected override async Task OnInitializeAsync()
@@ -238,6 +238,16 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
                 Price = ParseDecimalValue(columns[4]),
                 Amount = ParseDecimalValue(columns[5]),
             };
+        }
+
+        private static GridLossResultProducedV1.Types.TimeSeriesPoint ParseGridLossProducedV1TimeSeriesPoint(string[] columns)
+        {
+            var result = new GridLossResultProducedV1.Types.TimeSeriesPoint
+            {
+                Time = ParseTimestamp(columns[5]),
+                Quantity = ParseDecimalValue(columns[3]),
+            };
+            return result;
         }
 
         private static EnergyResultProducedV2.Types.TimeSeriesPoint ParseEnergyResultProducedV2TimeSeriesPoint(string[] columns)

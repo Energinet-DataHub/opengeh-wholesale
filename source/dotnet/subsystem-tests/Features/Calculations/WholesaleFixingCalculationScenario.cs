@@ -55,6 +55,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
             Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(EnergyResultProducedV2.EventName);
             Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(AmountPerChargeResultProducedV1.EventName);
             Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(MonthlyAmountPerChargeResultProducedV1.EventName);
+            Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(GridLossResultProducedV1.EventName);
         }
 
         [ScenarioStep(2)]
@@ -115,12 +116,15 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
                 .OfType<AmountPerChargeResultProducedV1>().ToList();
             Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1 = actualReceivedIntegrationEvents
                 .OfType<MonthlyAmountPerChargeResultProducedV1>().ToList();
+            Fixture.ScenarioState.ReceivedGridLossProducedV1 = actualReceivedIntegrationEvents
+                .OfType<GridLossResultProducedV1>().ToList();
 
             // Assert
             using var assertionScope = new AssertionScope();
             Fixture.ScenarioState.ReceivedEnergyResultProducedV2.Should().NotBeEmpty();
             Fixture.ScenarioState.ReceivedAmountPerChargeResultProducedV1.Should().NotBeEmpty();
             Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1.Should().NotBeEmpty();
+            Fixture.ScenarioState.ReceivedGridLossProducedV1.Should().NotBeEmpty();
         }
 
         [ScenarioStep(6)]
@@ -222,7 +226,6 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
             var expectedChargeType = AmountPerChargeResultProducedV1.Types.ChargeType.Tariff;
             var expectedChargeOwnerId = "5790001330552";
             var expectedSettlementMethod = AmountPerChargeResultProducedV1.Types.SettlementMethod.NonProfiled;
-            var expectedTimeSeriesPoints = await Fixture.ParseChargeResultProducedV1TimeSeriesPointCsvAsync("amount_for_es_for_hourly_tarif_40000_for_e17_e02.csv");
 
             // Assert
             var actualEvents = Fixture.ScenarioState.ReceivedAmountPerChargeResultProducedV1.Where(item =>
@@ -317,10 +320,10 @@ AppDependencies
 
         [ScenarioStep(15)]
         [SubsystemFact]
-        public async Task AndThen_ReceivedEnergyResultProducedV2EventContainsExpectedTimeSeriesPoint()
+        public async Task AndThen_ReceivedReceivedGridLossProducedV1EventContainsExpectedTimeSeriesPoint()
         {
             // Arrange
-            var expectedTimeSeriesPoints = await Fixture.ParseTimeSeriesPointsFromEnergyResultProducedV2CsvAsync("Non_profiled_consumption_GA_804 for 5790001687137.csv");
+            var expectedTimeSeriesPoints = await Fixture.ParseCsvWithEnergyResultTimeSeriesPointsAsync("Non_profiled_consumption_GA_804 for 5790001687137.csv");
 
             var energyResults = Fixture.ScenarioState.ReceivedEnergyResultProducedV2
                 .Where(x => x.TimeSeriesType == EnergyResultProducedV2.Types.TimeSeriesType.NonProfiledConsumption)
@@ -336,11 +339,13 @@ AppDependencies
 
         [ScenarioStep(16)]
         [SubsystemFact]
-        public async Task AndThen_ReceivedEnergyResultProducedV2EventContainsExpectedPositiveGridLossTimeSeriesPoints()
+        public async Task AndThen_ReceivedReceivedGridLossProducedV1EventContainsExpectedTimeSeriesPoints()
         {
             // Arrange
-            var expectedTimeSeriesPoints = await Fixture.ParseTimeSeriesPointsFromReceivedGridLossProducedV1GridLossCsvAsync("Positive_gridLoss 804.csv");
+            var expectedTimeSeriesPoints = await Fixture.ParseCsvWithGridLossTimeSeriesPointsCsvAsync("Positive_gridLoss 804.csv");
             var energyResults = Fixture.ScenarioState.ReceivedGridLossProducedV1
+                .Where(x => x.MeteringPointType == GridLossResultProducedV1.Types.MeteringPointType.Consumption)
+                .Where(x => x.MeteringPointId == "571313180400100657")
                 .Select(x => x.TimeSeriesPoints)
                 .ToList();
 
