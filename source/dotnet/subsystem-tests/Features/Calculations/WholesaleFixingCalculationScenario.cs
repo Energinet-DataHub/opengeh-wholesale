@@ -320,7 +320,7 @@ AppDependencies
 
         [ScenarioStep(15)]
         [SubsystemFact]
-        public async Task AndThen_ReceivedReceivedGridLossProducedV1EventContainsExpectedTimeSeriesPoint()
+        public async Task AndThen_ReceivedEnergyResultProducedV1EventContainsExpectedTimeSeriesPoint()
         {
             // Arrange
             var expectedTimeSeriesPoints = await Fixture.ParseEnergyResultTimeSeriesPointsFromCsvAsync("Non_profiled_consumption_GA_804 for 5790001687137.csv");
