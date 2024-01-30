@@ -2,7 +2,7 @@
 
 wholesaleDomain = group "Wholesale" {
     wholesaleDataLake = container "Data Lake (Wholesale)" {
-        description "Stores batch results"
+        description "Stores calculation results"
         technology "Azure Data Lake Gen 2"
         tags "Data Storage" "Microsoft Azure - Data Lake Store Gen1" "Mandalorian"
     }
@@ -15,7 +15,7 @@ wholesaleDomain = group "Wholesale" {
         this -> wholesaleDataLake "Read / write"
     }
     wholesaleDb = container "Wholesale Database" {
-        description "Stores batches and operations data"
+        description "Stores calculations and operations data"
         technology "SQL Database Schema"
         tags "Data Storage" "Microsoft Azure - SQL Database" "Mandalorian"
     }
