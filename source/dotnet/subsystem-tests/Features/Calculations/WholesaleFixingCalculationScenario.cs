@@ -226,7 +226,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
             var expectedChargeType = AmountPerChargeResultProducedV1.Types.ChargeType.Tariff;
             var expectedChargeOwnerId = "5790001330552";
             var expectedSettlementMethod = AmountPerChargeResultProducedV1.Types.SettlementMethod.NonProfiled;
-            var expectedTimeSeriesPoints = await Fixture.ParseCsvWithChargeResultTimeSeriesPointsAsync("amount_for_es_for_hourly_tarif_40000_for_e17_e02.csv");
+            var expectedTimeSeriesPoints = await Fixture.ParseChargeResultTimeSeriesPointsFromCsvAsync("amount_for_es_for_hourly_tarif_40000_for_e17_e02.csv");
 
             // Assert
             var actualEvents = Fixture.ScenarioState.ReceivedAmountPerChargeResultProducedV1.Where(item =>
@@ -324,7 +324,7 @@ AppDependencies
         public async Task AndThen_ReceivedReceivedGridLossProducedV1EventContainsExpectedTimeSeriesPoint()
         {
             // Arrange
-            var expectedTimeSeriesPoints = await Fixture.ParseCsvWithEnergyResultTimeSeriesPointsAsync("Non_profiled_consumption_GA_804 for 5790001687137.csv");
+            var expectedTimeSeriesPoints = await Fixture.ParseEnergyResultTimeSeriesPointsFromCsvAsync("Non_profiled_consumption_GA_804 for 5790001687137.csv");
 
             var energyResults = Fixture.ScenarioState.ReceivedEnergyResultProducedV2
                 .Where(x => x.TimeSeriesType == EnergyResultProducedV2.Types.TimeSeriesType.NonProfiledConsumption)
@@ -343,7 +343,7 @@ AppDependencies
         public async Task AndThen_ReceivedReceivedGridLossProducedV1EventContainsExpectedTimeSeriesPoints()
         {
             // Arrange
-            var expectedTimeSeriesPoints = await Fixture.ParseCsvWithGridLossTimeSeriesPointsCsvAsync("Positive_gridLoss 804.csv");
+            var expectedTimeSeriesPoints = await Fixture.ParseGridLossTimeSeriesPointsFromCsvAsync("Positive_gridLoss 804.csv");
             var energyResults = Fixture.ScenarioState.ReceivedGridLossProducedV1
                 .Where(x => x.MeteringPointType == GridLossResultProducedV1.Types.MeteringPointType.Consumption)
                 .Where(x => x.MeteringPointId == "571313180400100657")

@@ -148,7 +148,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
         /// <summary>
         /// Load CSV file and parse each data row into <see cref="AmountPerChargeResultProducedV1.Types.TimeSeriesPoint"/>.
         /// </summary>
-        public async Task<IReadOnlyCollection<AmountPerChargeResultProducedV1.Types.TimeSeriesPoint>> ParseCsvWithChargeResultTimeSeriesPointsAsync(string testFileName)
+        public async Task<IReadOnlyCollection<AmountPerChargeResultProducedV1.Types.TimeSeriesPoint>> ParseChargeResultTimeSeriesPointsFromCsvAsync(string testFileName)
         {
             return await ParseCsvAsync(
                 testFileName,
@@ -159,7 +159,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
         /// <summary>
         /// Load CSV file and parse each data row into <see cref="EnergyResultProducedV2.Types.TimeSeriesPoint"/>.
         /// </summary>
-        public async Task<IReadOnlyCollection<EnergyResultProducedV2.Types.TimeSeriesPoint>> ParseCsvWithEnergyResultTimeSeriesPointsAsync(string testFileName)
+        public async Task<IReadOnlyCollection<EnergyResultProducedV2.Types.TimeSeriesPoint>> ParseEnergyResultTimeSeriesPointsFromCsvAsync(string testFileName)
         {
             return await ParseCsvAsync(
                 testFileName,
@@ -170,7 +170,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
         /// <summary>
         /// Load CSV file and parse each data line into a <see cref="GridLossResultProducedV1.Types.TimeSeriesPoint"/>.
         /// </summary>
-        public async Task<IReadOnlyCollection<GridLossResultProducedV1.Types.TimeSeriesPoint>> ParseCsvWithGridLossTimeSeriesPointsCsvAsync(string testFileName)
+        public async Task<IReadOnlyCollection<GridLossResultProducedV1.Types.TimeSeriesPoint>> ParseGridLossTimeSeriesPointsFromCsvAsync(string testFileName)
         {
             return await ParseCsvAsync(
                 testFileName,
