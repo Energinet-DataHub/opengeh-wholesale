@@ -21,13 +21,13 @@ using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 
-public class CalculationResultBuilder
+public class AggregatedTimeSeriesBuilder
 {
     private readonly string _gridAreaCode;
     private readonly IList<EnergyTimeSeriesPoint> _timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
     private readonly Guid _batchId;
 
-    public CalculationResultBuilder(CalculationDto calculation)
+    private AggregatedTimeSeriesBuilder(CalculationDto calculation)
     {
         _gridAreaCode = calculation.GridAreaCodes.First();
         _batchId = calculation.BatchId;
@@ -39,9 +39,9 @@ public class CalculationResultBuilder
         }
     }
 
-    public static CalculationResultBuilder AggregatedTimeSeries(CalculationDto calculation)
+    public static AggregatedTimeSeriesBuilder AggregatedTimeSeries(CalculationDto calculation)
     {
-        return new CalculationResultBuilder(calculation);
+        return new AggregatedTimeSeriesBuilder(calculation);
     }
 
     public AggregatedTimeSeries Build()

@@ -41,7 +41,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
         // Assert
         using var assertionScope = new AssertionScope();
         var aggregationLevel = actual.AggregationPerRoleAndGridArea;
-        actual.CalculationIds.Count.Should().Be(calculationIds.Length);
+        actual.CalculationIds.Should().Equal(calculationIds);
         aggregationLevel.BalanceResponsibleId.Should().Be(balanceResponsibleId);
         aggregationLevel.EnergySupplierId.Should().Be(energySupplier);
         aggregationLevel.GridAreaCode.Should().BeNull();
@@ -66,7 +66,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
         // Assert
         using var assertionScope = new AssertionScope();
         var aggregationLevel = actual.AggregationPerRoleAndGridArea;
-        actual.CalculationIds.Count.Should().Be(calculationIds.Length);
+        actual.CalculationIds.Should().Equal(calculationIds);
         aggregationLevel.BalanceResponsibleId.Should().Be(balanceResponsibleId);
         aggregationLevel.EnergySupplierId.Should().BeNull();
         aggregationLevel.GridAreaCode.Should().Be(gridAreaCode);
@@ -91,7 +91,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
         // Assert
         using var assertionScope = new AssertionScope();
         var aggregationLevel = actual.AggregationPerRoleAndGridArea;
-        actual.CalculationIds.Count.Should().Be(calculationIds.Length);
+        actual.CalculationIds.Should().Equal(calculationIds);
         aggregationLevel.BalanceResponsibleId.Should().BeNull();
         aggregationLevel.EnergySupplierId.Should().Be(energySupplier);
         aggregationLevel.GridAreaCode.Should().Be(gridAreaCode);

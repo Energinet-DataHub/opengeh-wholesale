@@ -93,10 +93,10 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
     {
         // Arrange
         const string expectedReferenceId = "123456789";
-        var exceptedVersion = 1880;
+        var expectedVersion = 1880;
         var expectedQuantityQualities = quantityQualities.ToList();
         var aggregatedTimeSeries = CreateAggregatedTimeSeries(
-            exceptedVersion,
+            expectedVersion,
             expectedQuantityQualities);
 
         // Act
@@ -106,7 +106,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
         actual.Should().NotBeNull();
         var responseBody = AggregatedTimeSeriesRequestAccepted.Parser.ParseFrom(actual.Body);
         responseBody.Series.Should().ContainSingle();
-        responseBody.Series.Single().CalculationResultVersion.Should().Be(exceptedVersion);
+        responseBody.Series.Single().CalculationResultVersion.Should().Be(expectedVersion);
         responseBody.Series.Single().TimeSeriesPoints.Should().HaveCount(3);
         responseBody.Series.Single().TimeSeriesPoints.Select(p => p.QuantityQualities).Should().AllSatisfy(
             qqs =>

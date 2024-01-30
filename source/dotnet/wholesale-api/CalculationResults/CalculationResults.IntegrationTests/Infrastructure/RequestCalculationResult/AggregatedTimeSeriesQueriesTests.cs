@@ -611,7 +611,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
     }
 
     [Fact]
-    public async Task GetAsync_WhenRequestFromPeriodWithMulipleCalculations_ReturnsResult()
+    public async Task GetAsync_WhenRequestedPeriodWithMultipleCalculations_ReturnsResult()
     {
         // Arrange
         var gridAreaFilter = GridAreaCodeC;

@@ -90,7 +90,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
             .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
             .Returns(() => new List<AggregatedTimeSeries>()
             {
-                CalculationResultBuilder
+                AggregatedTimeSeriesBuilder
                     .AggregatedTimeSeries(calculation)
                     .Build(),
             }.ToAsyncEnumerable());
@@ -166,7 +166,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
             .Setup(parameters => parameters.GetLatestCorrectionForGridAreaAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
             .Returns(() => new List<AggregatedTimeSeries>()
             {
-                CalculationResultBuilder
+                AggregatedTimeSeriesBuilder
                 .AggregatedTimeSeries(calculation)
                 .Build(),
             }.ToAsyncEnumerable());
@@ -258,10 +258,10 @@ public class AggregatedTimeSeriesRequestHandlerTests
             .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
             .Returns(() => new List<AggregatedTimeSeries>()
             {
-                CalculationResultBuilder
+                AggregatedTimeSeriesBuilder
                     .AggregatedTimeSeries(firstCalculation)
                     .Build(),
-                CalculationResultBuilder
+                AggregatedTimeSeriesBuilder
                     .AggregatedTimeSeries(secondCalculation)
                     .Build(),
             }.ToAsyncEnumerable());
@@ -411,7 +411,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
                     It.Is<AggregatedTimeSeriesQueryParameters>(x => x.GridArea == null)))
             .Returns(() => new List<AggregatedTimeSeries>()
             {
-                CalculationResultBuilder
+                AggregatedTimeSeriesBuilder
                     .AggregatedTimeSeries(calculation)
                     .Build(),
             }.ToAsyncEnumerable());

@@ -19,6 +19,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Edi;
 using Energinet.DataHub.Wholesale.EDI.Client;
+using Energinet.DataHub.Wholesale.Edi.Extensions;
 using Energinet.DataHub.Wholesale.EDI.Factories;
 using Energinet.DataHub.Wholesale.EDI.Mappers;
 using Energinet.DataHub.Wholesale.Edi.Models;
@@ -70,20 +71,19 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
             return;
         }
 
-        var latestCalculationsForPeriod = await GetLatestCalculationForPeriodAsync(aggregatedTimeSeriesRequest)
+        var latestCalculationForRequest = await GetLatestCalculationForRequestAsync(aggregatedTimeSeriesRequest)
             .ConfigureAwait(true);
 
         var aggregatedTimeSeriesRequestMessage = AggregatedTimeSeriesRequestFactory.Parse(
             aggregatedTimeSeriesRequest,
-            latestCalculationsForPeriod.LatestCalculationForPeriods
-                .Select(x => x.BatchId));
+            latestCalculationForRequest.Select(x => x.BatchId));
 
         var results = await GetAggregatedTimeSeriesAsync(
             aggregatedTimeSeriesRequestMessage,
             cancellationToken).ConfigureAwait(false);
 
-        var latestCalculationResultsForPeriod = latestCalculationsForPeriod.GetLatestCalculationsResultsPerDay(results);
-        if (!latestCalculationResultsForPeriod.Any())
+        var latestCalculationResultsForPeriod = results.GetLatestCalculationsResultsPerDay(latestCalculationForRequest);
+        if (!results.Any())
         {
             var error = new List<ValidationError> { _noDataAvailable };
             if (await EnergySupplierOrBalanceResponsibleHaveAggregatedTimeSeriesForAnotherGridAreasAsync(aggregatedTimeSeriesRequest, aggregatedTimeSeriesRequestMessage).ConfigureAwait(false))
@@ -100,7 +100,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         await SendAcceptedMessageAsync(latestCalculationResultsForPeriod, referenceId, cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task<LatestCalculationResultsForPeriod> GetLatestCalculationForPeriodAsync(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest aggregatedTimeSeriesRequest)
+    private async Task<IReadOnlyCollection<LatestCalculationForPeriod>> GetLatestCalculationForRequestAsync(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest aggregatedTimeSeriesRequest)
     {
         var periodStart = InstantPattern.General.Parse(aggregatedTimeSeriesRequest.Period.Start).Value;
         var periodEnd = InstantPattern.General.Parse(aggregatedTimeSeriesRequest.Period.End).Value;
@@ -114,7 +114,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
                 periodEnd: periodEnd)
             .ConfigureAwait(false);
 
-        return new LatestCalculationResultsForPeriod(periodStart, periodEnd, _dateTimeZone, calculationsForPeriod);
+        return calculationsForPeriod.FindLatestCalculations(periodStart, periodEnd, _dateTimeZone);
     }
 
     private async Task<IReadOnlyCollection<AggregatedTimeSeries>> GetAggregatedTimeSeriesAsync(

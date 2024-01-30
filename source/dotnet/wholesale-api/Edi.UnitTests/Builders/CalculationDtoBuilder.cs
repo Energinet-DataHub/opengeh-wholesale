@@ -27,7 +27,7 @@ public class CalculationDtoBuilder
     private Guid _batchId;
     private long _version;
 
-    public CalculationDtoBuilder()
+    private CalculationDtoBuilder()
     {
         var now = SystemClock.Instance.GetCurrentInstant();
         _periodStart = DateTimeOffset.Parse("2022-05-01T22:00Z");
