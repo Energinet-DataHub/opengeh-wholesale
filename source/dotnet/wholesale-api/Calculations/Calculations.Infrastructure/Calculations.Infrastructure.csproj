@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <AssemblyName>Energinet.DataHub.Wholesale.Batches.Infrastructure</AssemblyName>
-    <RootNamespace>Energinet.DataHub.Wholesale.Batches.Infrastructure</RootNamespace>
+    <AssemblyName>Energinet.DataHub.Wholesale.Calculations.Infrastructure</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Wholesale.Calculations.Infrastructure</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Energinet.DataHub.Core.Databricks.Jobs" Version="8.2.1" />

@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <AssemblyName>Energinet.DataHub.Wholesale.Batches.Application</AssemblyName>
-    <RootNamespace>Energinet.DataHub.Wholesale.Batches.Application</RootNamespace>
+    <AssemblyName>Energinet.DataHub.Wholesale.Calculations.Application</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Wholesale.Calculations.Application</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

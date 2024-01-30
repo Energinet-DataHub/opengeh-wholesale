@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <AssemblyName>Energinet.DataHub.Wholesale.Batches.Interfaces</AssemblyName>
-    <RootNamespace>Energinet.DataHub.Wholesale.Batches.Interfaces</RootNamespace>
+    <AssemblyName>Energinet.DataHub.Wholesale.Calculations.Interfaces</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Wholesale.Calculations.Interfaces</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="NodaTime" Version="3.1.10" />
