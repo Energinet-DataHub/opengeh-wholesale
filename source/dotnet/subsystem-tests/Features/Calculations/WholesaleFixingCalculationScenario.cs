@@ -73,16 +73,15 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
         [SubsystemFact]
         public async Task Then_CalculationIsCompletedWithinWaitTime()
         {
-            var actualWaitResult = await Fixture.WaitForCalculationStateAsync(
+            var actualWaitResult = await Fixture.WaitForCalculationCompletedOrFailedAsync(
                 Fixture.ScenarioState.CalculationId,
-                waitForState: Clients.v3.BatchState.Completed,
                 waitTimeLimit: TimeSpan.FromMinutes(33));
 
             Fixture.ScenarioState.Batch = actualWaitResult.Batch;
 
             // Assert
             using var assertionScope = new AssertionScope();
-            actualWaitResult.IsState.Should().BeTrue();
+            actualWaitResult.IsCompletedOrFailed.Should().BeTrue();
             actualWaitResult.Batch.Should().NotBeNull();
 
             actualWaitResult.Batch!.ExecutionState.Should().Be(Clients.v3.BatchState.Completed);

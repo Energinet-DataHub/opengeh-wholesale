@@ -69,16 +69,15 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
         [SubsystemFact]
         public async Task Then_CalculationIsCompletedWithinWaitTime()
         {
-            var actualWaitResult = await Fixture.WaitForCalculationStateAsync(
+            var actualWaitResult = await Fixture.WaitForCalculationCompletedOrFailedAsync(
                 Fixture.ScenarioState.CalculationId,
-                waitForState: Clients.v3.BatchState.Completed,
                 waitTimeLimit: TimeSpan.FromMinutes(21));
 
             Fixture.ScenarioState.Batch = actualWaitResult.Batch;
 
             // Assert
             using var assertionScope = new AssertionScope();
-            actualWaitResult.IsState.Should().BeTrue();
+            actualWaitResult.IsCompletedOrFailed.Should().BeTrue();
             actualWaitResult.Batch.Should().NotBeNull();
 
             actualWaitResult.Batch!.ExecutionState.Should().Be(Clients.v3.BatchState.Completed);
@@ -101,19 +100,24 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
         [SubsystemFact]
         public async Task AndThen_IntegrationEventsAreReceivedWithinWaitTime()
         {
-            var actualReceivedIntegrationEvents = await Fixture.WaitForIntegrationEventsAsync(
-                Fixture.ScenarioState.CalculationId,
-                Fixture.ScenarioState.SubscribedIntegrationEventNames.AsReadOnly(),
-                waitTimeLimit: TimeSpan.FromMinutes(8));
+            // Skip waiting if calculation did not complete
+            if (Fixture.ScenarioState.Batch != null
+                && Fixture.ScenarioState.Batch.ExecutionState == Clients.v3.BatchState.Completed)
+            {
+                var actualReceivedIntegrationEvents = await Fixture.WaitForIntegrationEventsAsync(
+                    Fixture.ScenarioState.CalculationId,
+                    Fixture.ScenarioState.SubscribedIntegrationEventNames.AsReadOnly(),
+                    waitTimeLimit: TimeSpan.FromMinutes(8));
 
-            Fixture.ScenarioState.ReceivedEnergyResultProducedV2 =
-                actualReceivedIntegrationEvents.OfType<EnergyResultProducedV2>().ToList();
-            Fixture.ScenarioState.ReceivedGridLossProducedV1 =
-                actualReceivedIntegrationEvents.OfType<GridLossResultProducedV1>().ToList();
-            Fixture.ScenarioState.ReceivedAmountPerChargeResultProducedV1 = actualReceivedIntegrationEvents
-                .OfType<AmountPerChargeResultProducedV1>().ToList();
-            Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1 = actualReceivedIntegrationEvents
-                .OfType<MonthlyAmountPerChargeResultProducedV1>().ToList();
+                Fixture.ScenarioState.ReceivedEnergyResultProducedV2 =
+                    actualReceivedIntegrationEvents.OfType<EnergyResultProducedV2>().ToList();
+                Fixture.ScenarioState.ReceivedGridLossProducedV1 =
+                    actualReceivedIntegrationEvents.OfType<GridLossResultProducedV1>().ToList();
+                Fixture.ScenarioState.ReceivedAmountPerChargeResultProducedV1 = actualReceivedIntegrationEvents
+                    .OfType<AmountPerChargeResultProducedV1>().ToList();
+                Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1 = actualReceivedIntegrationEvents
+                    .OfType<MonthlyAmountPerChargeResultProducedV1>().ToList();
+            }
 
             // Assert
             using var assertionScope = new AssertionScope();
