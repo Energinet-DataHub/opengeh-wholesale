@@ -17,34 +17,6 @@ resource "azuread_service_principal" "spn_azcopy" {
 }
 
 #
-# Key Vault secrets
-#
-
-resource "azurerm_key_vault_secret" "kvs_azcopy_spn_id" {
-  name         = "AZURE-AZCOPY-SPN-ID"
-  value        = azuread_application.app_azcopy.application_id
-  key_vault_id = module.kv_shared.id
-
-  lifecycle {
-    ignore_changes = [
-      tags,
-    ]
-  }
-}
-
-resource "azurerm_key_vault_secret" "kvs_azcopy_spn_object_id" {
-  name         = "AZURE-AZCOPY-SPN-OBJECT-ID"
-  value        = azuread_service_principal.spn_azcopy.object_id
-  key_vault_id = module.kv_shared.id
-
-  lifecycle {
-    ignore_changes = [
-      tags,
-    ]
-  }
-}
-
-#
 # Federated identity credentials for the azcopy service principal
 #
 
