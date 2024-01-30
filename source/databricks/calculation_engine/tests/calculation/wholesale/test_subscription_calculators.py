@@ -20,7 +20,7 @@ from tests.helpers.test_schemas import (
 
 from package.codelists import MeteringPointType, SettlementMethod
 from package.calculation.wholesale.subscription_calculators import (
-    calculate_daily_subscription_price,
+    calculate_daily_subscription_amount,
     calculate_price_per_day,
     filter_on_metering_point_type_and_settlement_method,
     get_count_of_charges_and_total_daily_charge_price,
@@ -67,7 +67,7 @@ def test__calculate_daily_subscription_price__simple(
         charges_df,
         metering_point_df,
     )
-    result = calculate_daily_subscription_price(spark, subscription_charges)
+    result = calculate_daily_subscription_amount(spark, subscription_charges)
     expected = calculate_daily_subscription_price_factory(
         expected_date,
         expected_price_per_day,
@@ -140,7 +140,7 @@ def test__calculate_daily_subscription_price__charge_price_change(
         charges_df,
         metering_point_df,
     )
-    result = calculate_daily_subscription_price(spark, subscription_charges).orderBy(
+    result = calculate_daily_subscription_amount(spark, subscription_charges).orderBy(
         Colname.charge_time
     )
 
@@ -231,7 +231,7 @@ def test__calculate_daily_subscription_price__charge_price_change_with_two_diffe
         charges_df,
         metering_point_df,
     )
-    result = calculate_daily_subscription_price(spark, subscription_charges).orderBy(
+    result = calculate_daily_subscription_amount(spark, subscription_charges).orderBy(
         Colname.charge_time, Colname.charge_key
     )
 

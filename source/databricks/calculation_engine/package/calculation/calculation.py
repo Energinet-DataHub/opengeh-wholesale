@@ -88,10 +88,15 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
             ChargeResolution.DAY,
         )
 
+        subscription_df = prepared_data_reader.get_subscription_charges(
+            charges_df, metering_points_periods_for_wholesale_calculation_df
+        )
+
         wholesale_calculation.execute(
             wholesale_calculation_result_writer,
             tariffs_hourly_df,
             tariffs_daily_df,
+            subscription_df,
             args.calculation_period_start_datetime,
         )
 

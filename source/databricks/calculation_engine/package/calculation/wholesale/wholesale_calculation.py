@@ -14,6 +14,7 @@
 
 
 from pyspark.sql import DataFrame
+import package.calculation.wholesale.subscription_calculators as subscriptions
 import package.calculation.wholesale.tariff_calculators as tariffs
 from .schemas.tariffs_schema import tariff_schema
 from package.calculation_output.wholesale_calculation_result_writer import (
@@ -31,16 +32,22 @@ def execute(
     wholesale_calculation_result_writer: WholesaleCalculationResultWriter,
     tariffs_hourly_df: DataFrame,
     tariffs_daily_df: DataFrame,
+    subscription_charges_df,
     period_start_datetime: datetime,
 ) -> None:
     assert_schema(tariffs_hourly_df.schema, tariff_schema)
 
-    # Calculate and write to storage
+    # Calculate and write tariff charges to storage
     _calculate_tariff_charges(
         wholesale_calculation_result_writer,
         tariffs_hourly_df,
         tariffs_daily_df,
         period_start_datetime,
+    )
+
+    # Calculate and write subscription charges to storage
+    _calculate_subscription_charges(
+        wholesale_calculation_result_writer, subscription_charges_df
     )
 
 
@@ -73,4 +80,18 @@ def _calculate_tariff_charges(
     with logging_configuration.start_span("daily_tariff_per_ga_co_es"):
         wholesale_calculation_result_writer.write(
             daily_tariff_per_ga_co_es, AmountType.AMOUNT_PER_CHARGE
+        )
+
+
+def _calculate_subscription_charges(
+    wholesale_calculation_result_writer: WholesaleCalculationResultWriter,
+    subscription_charges_df: DataFrame,
+) -> None:
+    with logging_configuration.start_span("subscription_charges"):
+        subscription_amount_per_ga_co_es = (
+            subscriptions.calculate_daily_subscription_amount(subscription_charges_df)
+        )
+
+        wholesale_calculation_result_writer.write(
+            subscription_charges_df, AmountType.AMOUNT_PER_CHARGE
         )

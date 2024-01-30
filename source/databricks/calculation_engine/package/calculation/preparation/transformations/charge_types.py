@@ -75,12 +75,6 @@ def get_subscription_charges(
     )
 
 
-def _get_charges_based_on_charge_type(
-    charges_df: DataFrame, charge_type: ChargeType
-) -> DataFrame:
-    return charges_df.filter(f.col(Colname.charge_type) == charge_type.value)
-
-
 def _explode_subscription(charges_df: DataFrame) -> DataFrame:
     charges_df = (
         charges_df.withColumn(
@@ -205,7 +199,7 @@ def _join_properties_on_charges_with_given_charge_type(
     charge_type: ChargeType,
 ) -> DataFrame:
     # filter on charge_type
-    charges_df = _get_charges_based_on_charge_type(charges_df, charge_type)
+    charges_df = charges_df.filter(f.col(Colname.charge_type) == charge_type.value)
 
     if charge_type == ChargeType.SUBSCRIPTION:
         # Explode dataframe: create row for each day the time period from and to date

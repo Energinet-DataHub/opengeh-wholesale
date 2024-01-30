@@ -21,9 +21,7 @@ from package.calculation.wholesale.schemas.calculate_daily_subscription_price_sc
 from package.constants import Colname
 
 
-def calculate_daily_subscription_price(
-    spark: SparkSession, subscription_charges: DataFrame
-) -> DataFrame:
+def calculate_daily_subscription_amount(subscription_charges: DataFrame) -> DataFrame:
     # filter on metering point type and settlement method
     charges_per_day_flex_consumption = (
         filter_on_metering_point_type_and_settlement_method(subscription_charges)
@@ -35,7 +33,9 @@ def calculate_daily_subscription_price(
     # get count of charges and total daily charge price
     df = get_count_of_charges_and_total_daily_charge_price(charges_per_day)
 
-    return spark.createDataFrame(df.rdd, calculate_daily_subscription_price_schema)
+    return df
+
+    # return spark.createDataFrame(df.rdd, calculate_daily_subscription_price_schema)
 
 
 def filter_on_metering_point_type_and_settlement_method(
@@ -53,7 +53,10 @@ def calculate_price_per_day(
     charges_per_day = charges_per_day_flex_consumption.withColumn(
         Colname.price_per_day,
         (
-            col(Colname.charge_price) / dayofmonth(last_day(col(Colname.charge_time)))
+            col(Colname.charge_price)
+            / dayofmonth(
+                last_day(col(Colname.charge_time))
+            )  # ToDo: is charge_time utc? doesn't it cross month boundaries?
         ).cast(DecimalType(14, 8)),
     )
     return charges_per_day
