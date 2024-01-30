@@ -153,7 +153,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
         /// <summary>
         /// Load CSV file and parse each data row into <see cref="AmountPerChargeResultProducedV1.Types.TimeSeriesPoint"/>.
         /// </summary>
-        public async Task<IReadOnlyCollection<AmountPerChargeResultProducedV1.Types.TimeSeriesPoint>> ParseChargeResultProducedV1TimeSeriesPointCsvAsync(string testFileName)
+        public async Task<IReadOnlyCollection<AmountPerChargeResultProducedV1.Types.TimeSeriesPoint>> ParseChargeResultTimeSeriesPointsFromCsvAsync(string testFileName)
         {
             return await ParseCsvAsync(
                 testFileName,
@@ -164,12 +164,23 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
         /// <summary>
         /// Load CSV file and parse each data row into <see cref="EnergyResultProducedV2.Types.TimeSeriesPoint"/>.
         /// </summary>
-        public async Task<IReadOnlyCollection<EnergyResultProducedV2.Types.TimeSeriesPoint>> ParseTimeSeriesPointsFromEnergyResultProducedV2CsvAsync(string testFileName)
+        public async Task<IReadOnlyCollection<EnergyResultProducedV2.Types.TimeSeriesPoint>> ParseEnergyResultTimeSeriesPointsFromCsvAsync(string testFileName)
         {
             return await ParseCsvAsync(
                 testFileName,
                 "grid_area,energy_supplier_id,balance_responsible_id,quantity,quantity_qualities,time,aggregation_level,time_series_type,calculation_id,calculation_type,calculation_execution_time_start,out_grid_area,calculation_result_id",
                 ParseEnergyResultProducedV2TimeSeriesPoint);
+        }
+
+        /// <summary>
+        /// Load CSV file and parse each data line into a <see cref="GridLossResultProducedV1.Types.TimeSeriesPoint"/>.
+        /// </summary>
+        public async Task<IReadOnlyCollection<GridLossResultProducedV1.Types.TimeSeriesPoint>> ParseGridLossTimeSeriesPointsFromCsvAsync(string testFileName)
+        {
+            return await ParseCsvAsync(
+                testFileName,
+                "grid_area,energy_supplier_id,balance_responsible_id,quantity,quantity_qualities,time,aggregation_level,time_series_type,calculation_id,calculation_type,calculation_execution_time_start,out_grid_area,calculation_result_id,metering_point_id",
+                ParseGridLossProducedV1TimeSeriesPoint);
         }
 
         protected override async Task OnInitializeAsync()
@@ -232,6 +243,16 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
                 Price = ParseDecimalValue(columns[4]),
                 Amount = ParseDecimalValue(columns[5]),
             };
+        }
+
+        private static GridLossResultProducedV1.Types.TimeSeriesPoint ParseGridLossProducedV1TimeSeriesPoint(string[] columns)
+        {
+            var result = new GridLossResultProducedV1.Types.TimeSeriesPoint
+            {
+                Time = ParseTimestamp(columns[5]),
+                Quantity = ParseDecimalValue(columns[3]),
+            };
+            return result;
         }
 
         private static EnergyResultProducedV2.Types.TimeSeriesPoint ParseEnergyResultProducedV2TimeSeriesPoint(string[] columns)
@@ -362,16 +383,24 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
             return string.IsNullOrEmpty(value) ? null : new Contracts.IntegrationEvents.Common.DecimalValue(decimal.Parse(value, CultureInfo.InvariantCulture));
         }
 
-        private static IEnumerable<Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV2.Types.QuantityQuality> ParseEnumValueTo(string value)
+        private static List<EnergyResultProducedV2.Types.QuantityQuality> ParseEnumValueTo(string value)
         {
             value = value.Replace("[", string.Empty).Replace("]", string.Empty).Replace("'", string.Empty);
-            var splits = value.Split(',');
-            var result = new List<Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV2.Types.QuantityQuality>();
+            var splits = value.Split(':');
+            var result = new List<EnergyResultProducedV2.Types.QuantityQuality>();
             foreach (var split in splits)
             {
-                if (split == "measured")
+                switch (split)
                 {
-                    result.Add(EnergyResultProducedV2.Types.QuantityQuality.Measured);
+                    case "measured":
+                        result.Add(EnergyResultProducedV2.Types.QuantityQuality.Measured);
+                        break;
+                    case "calculated":
+                        result.Add(EnergyResultProducedV2.Types.QuantityQuality.Calculated);
+                        break;
+                    case "missing":
+                        result.Add(EnergyResultProducedV2.Types.QuantityQuality.Missing);
+                        break;
                 }
             }
 
