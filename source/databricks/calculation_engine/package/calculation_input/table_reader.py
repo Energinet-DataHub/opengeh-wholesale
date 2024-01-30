@@ -118,27 +118,56 @@ class TableReader:
 
         return df
 
-    def read_charge_links_periods(self) -> DataFrame:
+    def read_charge_links_periods(
+        self, period_start_datetime: datetime, period_end_datetime: datetime
+    ) -> DataFrame:
         path = f"{self._calculation_input_path}/{paths.CHARGE_LINK_PERIODS_TABLE_NAME}"
-        df = self._spark.read.format("delta").load(path)
+        df = (
+            self._spark.read.format("delta")
+            .load(path)
+            .where(col(Colname.from_date) < period_end_datetime)
+            .where(
+                col(Colname.to_date).isNull()
+                | (col(Colname.to_date) > period_start_datetime)
+            )
+        )
 
         assert_schema(df.schema, charge_link_periods_schema)
 
         df = self._add_charge_key_column(df)
         return df
 
-    def read_charge_master_data_periods(self) -> DataFrame:
+    def read_charge_master_data_periods(
+        self, period_start_datetime: datetime, period_end_datetime: datetime
+    ) -> DataFrame:
         path = f"{self._calculation_input_path}/{paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}"
-        df = self._spark.read.format("delta").load(path)
+        df = (
+            self._spark.read.format("delta")
+            .load(path)
+            .where(col(Colname.from_date) < period_end_datetime)
+            .where(
+                col(Colname.to_date).isNull()
+                | (col(Colname.to_date) > period_start_datetime)
+            )
+        )
 
         assert_schema(df.schema, charge_master_data_periods_schema)
 
         df = self._add_charge_key_column(df)
         return df
 
-    def read_charge_price_points(self) -> DataFrame:
+    def read_charge_price_points(
+        self,
+        period_start_datetime: datetime,
+        period_end_datetime: datetime,
+    ) -> DataFrame:
         path = f"{self._calculation_input_path}/{paths.CHARGE_PRICE_POINTS_TABLE_NAME}"
-        df = self._spark.read.format("delta").load(path)
+        df = (
+            self._spark.read.format("delta")
+            .load(path)
+            .where(col(Colname.charge_time) >= period_start_datetime)
+            .where(col(Colname.charge_time) < period_end_datetime)
+        )
 
         assert_schema(df.schema, charge_price_points_schema)
 
