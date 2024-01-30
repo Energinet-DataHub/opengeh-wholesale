@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using System.Text.RegularExpressions;
-using Energinet.DataHub.Wholesale.Batches.Interfaces;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 
-namespace Energinet.DataHub.Wholesale.Batches.Application.Model;
+namespace Energinet.DataHub.Wholesale.Calculations.Application.Model;
 
 public sealed record GridAreaCode
 {

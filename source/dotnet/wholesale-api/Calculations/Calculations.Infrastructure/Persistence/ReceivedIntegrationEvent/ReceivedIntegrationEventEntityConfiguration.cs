@@ -15,7 +15,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.ReceivedIntegrationEvent;
+namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.ReceivedIntegrationEvent;
 
 public class ReceivedIntegrationEventEntityConfiguration : IEntityTypeConfiguration<Application.IntegrationEvents.ReceivedIntegrationEvent>
 {

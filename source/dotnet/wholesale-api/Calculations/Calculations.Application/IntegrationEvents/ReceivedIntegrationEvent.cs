@@ -14,7 +14,7 @@
 
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Batches.Application.IntegrationEvents;
+namespace Energinet.DataHub.Wholesale.Calculations.Application.IntegrationEvents;
 
 public record ReceivedIntegrationEvent(
     Guid Id,

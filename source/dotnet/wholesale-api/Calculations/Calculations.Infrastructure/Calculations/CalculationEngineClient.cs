@@ -13,10 +13,10 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.Jobs.Abstractions;
-using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Microsoft.Azure.Databricks.Client.Models;
 
-namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
+namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
 
 public sealed class CalculationEngineClient : ICalculationEngineClient
 {

@@ -13,10 +13,10 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.WebApp.Hosting;
-using Energinet.DataHub.Wholesale.Batches.Interfaces;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace Energinet.DataHub.Wholesale.Batches.Application.Workers;
+namespace Energinet.DataHub.Wholesale.Calculations.Application.Workers;
 
 /// <summary>
 /// Worker invoking starting new batches.

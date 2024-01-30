@@ -14,7 +14,7 @@
 
 using Microsoft.Azure.Databricks.Client.Models;
 
-namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
+namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
 
 public interface IDatabricksCalculatorJobSelector
 {

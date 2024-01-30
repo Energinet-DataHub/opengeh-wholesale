@@ -14,13 +14,13 @@
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
-using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -73,7 +73,7 @@ public class WholesaleResultQueries : IWholesaleResultQueries
             {
                 yield return WholesaleResultFactory.CreateWholesaleResult(currentRow, timeSeriesPoints, periodStart, periodEnd);
                 resultCount++;
-                timeSeriesPoints = new List<WholesaleTimeSeriesPoint>();
+                timeSeriesPoints = [];
             }
 
             timeSeriesPoints.Add(timeSeriesPoint);

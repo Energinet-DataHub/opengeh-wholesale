@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Application;
-using Energinet.DataHub.Wholesale.Batches.Application.Model;
-using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Calculations.Application;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Calculations;
+namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Calculations;
 
 public class CalculationRepository : ICalculationRepository
 {

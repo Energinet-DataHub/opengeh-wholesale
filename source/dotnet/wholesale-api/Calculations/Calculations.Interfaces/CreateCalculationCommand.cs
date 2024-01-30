@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
-namespace Energinet.DataHub.Wholesale.Batches.Interfaces;
+namespace Energinet.DataHub.Wholesale.Calculations.Interfaces;
 
 /// <summary>
 /// An immutable command to create a batch.

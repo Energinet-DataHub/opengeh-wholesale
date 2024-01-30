@@ -13,10 +13,10 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Calculations;
-using Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.CalculationAggregate;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Calculations;
+using Energinet.DataHub.Wholesale.Calculations.UnitTests.Infrastructure.CalculationAggregate;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -24,7 +24,7 @@ using Moq.EntityFrameworkCore;
 using NodaTime;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.Persistence.Calculations;
+namespace Energinet.DataHub.Wholesale.Calculations.UnitTests.Infrastructure.Persistence.Calculations;
 
 public class CalculationRepositoryTests
 {

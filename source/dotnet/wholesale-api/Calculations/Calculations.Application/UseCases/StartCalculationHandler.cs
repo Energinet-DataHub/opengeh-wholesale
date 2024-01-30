@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Interfaces;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace Energinet.DataHub.Wholesale.Batches.Application.UseCases;
+namespace Energinet.DataHub.Wholesale.Calculations.Application.UseCases;
 
 public class StartCalculationHandler : IStartCalculationHandler
 {

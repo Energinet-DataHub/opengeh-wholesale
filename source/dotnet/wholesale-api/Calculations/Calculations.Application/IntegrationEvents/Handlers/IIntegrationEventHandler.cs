@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Core.Messaging.Communication;
 
-namespace Energinet.DataHub.Wholesale.Batches.Application.IntegrationEvents.Handlers;
+namespace Energinet.DataHub.Wholesale.Calculations.Application.IntegrationEvents.Handlers;
 
 public interface IIntegrationEventHandler
 {

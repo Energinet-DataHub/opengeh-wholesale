@@ -13,14 +13,14 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
-using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
-using Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.CalculationAggregate;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Calculations.UnitTests.Infrastructure.CalculationAggregate;
 using FluentAssertions;
 using NodaTime;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Application.Calculations.Model;
+namespace Energinet.DataHub.Wholesale.Calculations.UnitTests.Application.Calculations.Model;
 
 public class CalculationDtoMapperTests
 {

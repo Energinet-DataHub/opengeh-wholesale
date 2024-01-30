@@ -13,13 +13,13 @@
 // limitations under the License.
 
 using System.Diagnostics.CodeAnalysis;
-using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Calculations;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.GridArea;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.ReceivedIntegrationEvent;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Calculations;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.GridArea;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.ReceivedIntegrationEvent;
 using Microsoft.EntityFrameworkCore;
 
-namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
+namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local", Justification = "Private setters are needed by EF Core")]
 public class DatabaseContext : DbContext, IDatabaseContext

@@ -13,12 +13,12 @@
 // limitations under the License.
 
 using System.Text.Json;
-using Energinet.DataHub.Wholesale.Batches.Application.Model;
-using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Calculations;
+namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Calculations;
 
 public class CalculationEntityConfiguration : IEntityTypeConfiguration<Calculation>
 {

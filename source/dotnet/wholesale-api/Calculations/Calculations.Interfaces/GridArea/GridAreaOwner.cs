@@ -14,7 +14,7 @@
 
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Batches.Interfaces.GridArea;
+namespace Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
 
 public record GridAreaOwner(
     Guid Id,

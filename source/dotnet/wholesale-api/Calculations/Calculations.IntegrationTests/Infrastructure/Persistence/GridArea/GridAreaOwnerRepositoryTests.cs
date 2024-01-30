@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.GridArea;
-using Energinet.DataHub.Wholesale.Batches.IntegrationTests.Fixture.Database;
-using Energinet.DataHub.Wholesale.Batches.Interfaces.GridArea;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.GridArea;
+using Energinet.DataHub.Wholesale.Calculations.IntegrationTests.Fixture.Database;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +23,7 @@ using NodaTime;
 using NodaTime.Extensions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Batches.IntegrationTests.Infrastructure.Persistence.GridArea;
+namespace Energinet.DataHub.Wholesale.Calculations.IntegrationTests.Infrastructure.Persistence.GridArea;
 
 public class GridAreaOwnerRepositoryTests : IClassFixture<WholesaleDatabaseFixture<DatabaseContext>>
 {

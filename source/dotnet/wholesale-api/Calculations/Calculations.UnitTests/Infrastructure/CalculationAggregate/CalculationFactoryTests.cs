@@ -14,14 +14,14 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
 using Moq;
 using NodaTime;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.CalculationAggregate;
+namespace Energinet.DataHub.Wholesale.Calculations.UnitTests.Infrastructure.CalculationAggregate;
 
 public class CalculationFactoryTests
 {

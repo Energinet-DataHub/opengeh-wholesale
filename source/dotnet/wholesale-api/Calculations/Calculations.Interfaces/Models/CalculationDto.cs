@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
-namespace Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
+namespace Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 
 /// <summary>
 /// An immutable calculation.

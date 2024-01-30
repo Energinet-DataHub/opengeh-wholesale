@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.using Energinet.DataHub.Wholesale.Common.JobRunner;
 
-using Energinet.DataHub.Wholesale.Batches.Application;
-using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Calculations.Application;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationState;
+namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.CalculationState;
 
 public class CalculationExecutionStateInfrastructureService : ICalculationExecutionStateInfrastructureService
 {

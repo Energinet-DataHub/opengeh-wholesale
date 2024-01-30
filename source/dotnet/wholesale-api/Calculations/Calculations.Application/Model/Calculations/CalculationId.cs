@@ -12,6 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
+namespace Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 
 public sealed record CalculationId(long Id);

@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Application.IntegrationEvents;
+using Energinet.DataHub.Wholesale.Calculations.Application.IntegrationEvents;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.ReceivedIntegrationEvent;
+namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.ReceivedIntegrationEvent;
 
 public class ReceivedIntegrationEventRepository : IReceivedIntegrationEventRepository
 {

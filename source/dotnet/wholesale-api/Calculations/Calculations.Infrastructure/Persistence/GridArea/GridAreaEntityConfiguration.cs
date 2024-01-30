@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Interfaces.GridArea;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.GridArea;
+namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.GridArea;
 
 public class GridAreaEntityConfiguration : IEntityTypeConfiguration<GridAreaOwner>
 {

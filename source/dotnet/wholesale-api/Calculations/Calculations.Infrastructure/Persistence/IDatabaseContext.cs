@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Microsoft.EntityFrameworkCore;
 
-namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
+namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 
 public interface IDatabaseContext
 {

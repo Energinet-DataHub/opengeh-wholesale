@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Interfaces;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 
-namespace Energinet.DataHub.Wholesale.Batches.Application.UseCases;
+namespace Energinet.DataHub.Wholesale.Calculations.Application.UseCases;
 
 public class UpdateCalculationExecutionStateHandler : IUpdateCalculationExecutionStateHandler
 {

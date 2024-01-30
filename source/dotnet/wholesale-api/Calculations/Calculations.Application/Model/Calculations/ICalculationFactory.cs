@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
-namespace Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
+namespace Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 
 public interface ICalculationFactory
 {

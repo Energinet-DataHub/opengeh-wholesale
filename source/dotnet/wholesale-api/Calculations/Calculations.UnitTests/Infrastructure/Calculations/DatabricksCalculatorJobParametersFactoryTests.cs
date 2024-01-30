@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Batches.Application.Model;
-using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
 using Microsoft.Azure.Databricks.Client.Models;
@@ -24,7 +24,7 @@ using NodaTime.Extensions;
 using Test.Core;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.Calculations;
+namespace Energinet.DataHub.Wholesale.Calculations.UnitTests.Infrastructure.Calculations;
 
 public class DatabricksCalculatorJobParametersFactoryTests
 {

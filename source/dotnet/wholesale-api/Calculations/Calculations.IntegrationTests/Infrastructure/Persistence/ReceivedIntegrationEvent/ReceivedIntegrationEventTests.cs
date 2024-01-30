@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.ReceivedIntegrationEvent;
-using Energinet.DataHub.Wholesale.Batches.IntegrationTests.Fixture.Database;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.ReceivedIntegrationEvent;
+using Energinet.DataHub.Wholesale.Calculations.IntegrationTests.Fixture.Database;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Batches.IntegrationTests.Infrastructure.Persistence.ReceivedIntegrationEvent;
+namespace Energinet.DataHub.Wholesale.Calculations.IntegrationTests.Infrastructure.Persistence.ReceivedIntegrationEvent;
 
 public class ReceivedIntegrationEventTests : IClassFixture<WholesaleDatabaseFixture<DatabaseContext>>
 {

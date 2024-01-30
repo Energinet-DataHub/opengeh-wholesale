@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Batches.Interfaces;
+namespace Energinet.DataHub.Wholesale.Calculations.Interfaces;
 
 public interface ICalculationsClient
 {

@@ -14,15 +14,15 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Batches.Application;
-using Energinet.DataHub.Wholesale.Batches.Application.Model;
-using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
-using Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.CalculationAggregate;
+using Energinet.DataHub.Wholesale.Calculations.Application;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Calculations.UnitTests.Infrastructure.CalculationAggregate;
 using FluentAssertions;
 using Moq;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Application.Calculations;
+namespace Energinet.DataHub.Wholesale.Calculations.UnitTests.Application.Calculations;
 
 public class CalculationsClientTests
 {
