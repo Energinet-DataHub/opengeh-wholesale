@@ -91,6 +91,8 @@ def _explode_subscription(charges_df: DataFrame) -> DataFrame:
                 )
             ),
         )
+        .filter((f.year(Colname.date) == f.year(Colname.charge_time)))
+        .filter((f.month(Colname.date) == f.month(Colname.charge_time)))
         .drop(Colname.charge_time)
         .withColumnRenamed(Colname.date, Colname.charge_time)
         .select(
