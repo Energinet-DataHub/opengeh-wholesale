@@ -49,9 +49,9 @@ public class LatestCalculationResultsForPeriod
 
     public IReadOnlyCollection<AggregatedTimeSeriesResult> GetLatestCalculationsResultsPerDay(IReadOnlyCollection<AggregatedTimeSeries> calculationResults)
     {
-        var result = new List<AggregatedTimeSeriesResult>();
+        var latestCalculationResults = new List<AggregatedTimeSeriesResult>();
         if (calculationResults.Count == 0)
-            return result;
+            return latestCalculationResults;
 
         foreach (var latestCalculation in LatestCalculationForPeriods.OrderByDescending(x => x.PeriodStart))
         {
@@ -62,7 +62,7 @@ public class LatestCalculationResultsForPeriod
             var timeSeriesPointWithinPeriod = GetTimeSeriesPointWithinPeriod(calculationResult.TimeSeriesPoints, latestCalculation.PeriodStart, latestCalculation.PeriodEnd);
             if (timeSeriesPointWithinPeriod.Count() != 0)
             {
-                result.Add(new AggregatedTimeSeriesResult(
+                latestCalculationResults.Add(new AggregatedTimeSeriesResult(
                     latestCalculation.CalculationVersion,
                     calculationResult.GridArea,
                     timeSeriesPointWithinPeriod,
@@ -71,8 +71,7 @@ public class LatestCalculationResultsForPeriod
             }
         }
 
-        // if LatestCalculation is missing a calculation, throw an exception
-        return result;
+        return latestCalculationResults;
     }
 
     private void FindLatestCalculations()

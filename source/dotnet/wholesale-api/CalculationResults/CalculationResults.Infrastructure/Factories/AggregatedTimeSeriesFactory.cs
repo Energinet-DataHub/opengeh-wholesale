@@ -28,12 +28,12 @@ public class AggregatedTimeSeriesFactory
         var gridArea = databricksSqlRow[EnergyResultColumnNames.GridArea];
         var timeSeriesType = databricksSqlRow[EnergyResultColumnNames.TimeSeriesType];
         var processType = databricksSqlRow[EnergyResultColumnNames.BatchProcessType];
-        var calculationId = Guid.Parse(databricksSqlRow[EnergyResultColumnNames.BatchId]!);
+        var batchId = Guid.Parse(databricksSqlRow[EnergyResultColumnNames.BatchId]!);
         return new AggregatedTimeSeries(
             gridArea: gridArea!,
             timeSeriesPoints: timeSeriesPoints.ToArray()!,
             timeSeriesType: SqlResultValueConverters.ToTimeSeriesType(timeSeriesType!),
             processType: ProcessTypeMapper.FromDeltaTableValue(processType!),
-            batchId: calculationId);
+            batchId: batchId);
     }
 }

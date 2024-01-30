@@ -633,6 +633,24 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         actual.First()!.BatchId.Should().Be(_secondCalculationId);
     }
 
+    [Fact]
+    public async Task GetAsync_WithoutCalculations_ReturnsEmptyResult()
+    {
+        // Arrange
+        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
+        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        var parameters = CreateQueryParameters(
+            calculationIds: Array.Empty<Guid>(),
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter);
+
+        // Act
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        // Assert
+        actual.Should().BeEmpty();
+    }
+
     private AggregatedTimeSeriesQueryParameters CreateQueryParameters(
         IReadOnlyCollection<Guid> calculationIds,
         TimeSeriesType? timeSeriesType = null,

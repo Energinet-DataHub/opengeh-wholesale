@@ -74,21 +74,9 @@ public class CalculationDtoBuilder
         return this;
     }
 
-    public CalculationDtoBuilder WithPeriodStart(DateTimeOffset periodStart)
+    public CalculationDtoBuilder WithVersion(long version)
     {
-        _periodStart = periodStart;
-        return this;
-    }
-
-    public CalculationDtoBuilder WithPeriodEnd(DateTimeOffset periodEnd)
-    {
-        _periodEnd = periodEnd;
-        return this;
-    }
-
-    public CalculationDtoBuilder WithVersion(long i)
-    {
-        _version = i;
+        _version = version;
         return this;
     }
 }
