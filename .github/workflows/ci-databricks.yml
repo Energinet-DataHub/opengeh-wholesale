@@ -15,7 +15,11 @@
 name: CI Databricks
 
 on:
-  workflow_call: {}
+  workflow_call:
+    inputs:
+      image_tag:
+        type: string
+        default: latest
 
 jobs:
   databricks_ci_build:
@@ -106,7 +110,7 @@ jobs:
           done
 
   python_tests_calculationjob:
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v12
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@mkq/python_ci
     with:
       operating_system: dh3-ubuntu-20.04-4core
       path_static_checks: ./source/databricks/calculation_engine
@@ -119,9 +123,10 @@ jobs:
       azure_integrationtest_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
       azure_integrationtest_spn_id: ${{ vars.integration_test_azure_spn_id_oidc }}
       azure_keyvault_url: ${{ vars.integration_test_azure_keyvault_url }}
+      image_tag: ${{ inputs.image_tag }}
 
   python_tests_other:
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v12
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@mkq/python_ci
     with:
       operating_system: dh3-ubuntu-20.04-4core
       path_static_checks: ./source/databricks/calculation_engine
@@ -129,6 +134,7 @@ jobs:
       ignore_errors_and_warning_flake8: E501,F401,E402,E203,W503
       test_report_path: ./source/databricks/calculation_engine/tests
       tests_filter_expression: not calculator_job
+      image_tag: ${{ inputs.image_tag }}
 
   mypy_check:
     runs-on: ubuntu-latest

@@ -1,6 +1,6 @@
 version: "3.9"
 services:
-  wholesale:
+  python-unit-test:
     image: ghcr.io/energinet-datahub/opengeh-wholesale/databricks-unit-test:latest
     volumes:
       # Forwards the local Docker socket to the container.

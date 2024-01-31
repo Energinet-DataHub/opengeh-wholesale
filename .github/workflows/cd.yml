@@ -28,6 +28,18 @@ jobs:
     uses: ./.github/workflows/detect-changes.yml
 
   #
+  # CD Docker image
+  #
+
+  cd_docker:
+    needs: changes
+    if: ${{ needs.changes.outputs.docker == 'true' }}
+    uses: Energinet-DataHub/.github/.github/workflows/python-build-and-push-docker-image.yml@v12
+    with:
+      docker_changed: ${{ needs.changes.outputs.docker == 'true' }}
+      docker_changed_in_commit: ${{ needs.changes.outputs.docker == 'true' }}
+
+  #
   # CD Databricks
   #
 
