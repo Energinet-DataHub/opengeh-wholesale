@@ -2,6 +2,9 @@
 -- Table
 EXEC sp_rename 'integrationevents.CompletedBatch', 'CompletedCalculation';
 GO
+-- Primary keys
+EXEC sp_rename 'integrationevents.PK_CompletedBatch', 'PK_CompletedCalculation';
+GO
 
 -- Changes to 'batches'
 -- Schema
@@ -17,4 +20,7 @@ DROP SCHEMA batches;
 GO
 -- Table
 EXEC sp_rename 'calculations.Batch', 'Calculation';
+GO
+-- Primary keys
+EXEC sp_rename 'calculations.PK_Batch', 'PK_Calculation';
 GO
