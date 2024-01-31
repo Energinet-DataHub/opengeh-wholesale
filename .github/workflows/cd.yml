@@ -37,6 +37,7 @@ jobs:
     uses: Energinet-DataHub/.github/.github/workflows/python-build-and-push-docker-image.yml@v12
     with:
       docker_changed: ${{ needs.changes.outputs.docker == 'true' }}
+      # 'docker_changed_in_commit' value is same as 'docker_changed' because we want to build and push docker image when docker changed 
       docker_changed_in_commit: ${{ needs.changes.outputs.docker == 'true' }}
 
   #
@@ -67,7 +68,7 @@ jobs:
 
   dispatch_deploment_event:
     runs-on: ubuntu-latest
-    needs: [changes, databricks_promote_prerelease, dotnet_promote_prerelease]
+    needs: [changes, databricks_promote_prerelease, dotnet_promote_prerelease, cd_docker]
     if: |
       always() &&
       !contains(needs.*.result, 'failure') &&
