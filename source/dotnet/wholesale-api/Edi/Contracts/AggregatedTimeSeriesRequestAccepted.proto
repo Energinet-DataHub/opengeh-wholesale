@@ -31,9 +31,8 @@ message Series {
     /*
    * The version of the calculation result. It is a positive integer (int64).
    */
-    int64 calculation_result_version = 6;
-    google.protobuf.Timestamp start_of_period = 7;
-    google.protobuf.Timestamp end_of_period = 8;
+    int64 calculation_result_version = 6;  
+    Period period = 7;
 }
 
 message TimeSeriesPoint {
@@ -124,4 +123,11 @@ enum TimeSeriesType {
   TIME_SERIES_TYPE_NEGATIVE_GRID_LOSS = 7;
   TIME_SERIES_TYPE_POSITIVE_GRID_LOSS = 8;
   TIME_SERIES_TYPE_TOTAL_CONSUMPTION = 9;
+}
+/*
+ * Representation of period for the time series.
+ */
+message Period {
+  google.protobuf.Timestamp start_of_period = 1;
+  google.protobuf.Timestamp end_of_period = 2;
 }
