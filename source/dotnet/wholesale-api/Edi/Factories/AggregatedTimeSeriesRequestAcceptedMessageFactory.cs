@@ -18,6 +18,8 @@ using Energinet.DataHub.Wholesale.EDI.Mappers;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
+using NodaTime;
+using Period = Energinet.DataHub.Edi.Responses.Period;
 using TimeSeriesPoint = Energinet.DataHub.Edi.Responses.TimeSeriesPoint;
 
 namespace Energinet.DataHub.Wholesale.EDI.Factories;
@@ -55,8 +57,7 @@ public static class AggregatedTimeSeriesRequestAcceptedMessageFactory
                 TimeSeriesType = CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromCalculationsResult(series.TimeSeriesType),
                 Resolution = Resolution.Pt15M,
                 CalculationResultVersion = series.Version,
-                StartOfPeriod = Timestamp.FromDateTimeOffset(series.PeriodStart.ToDateTimeOffset()),
-                EndOfPeriod = Timestamp.FromDateTimeOffset(series.PeriodEnd.ToDateTimeOffset()),
+                Period = MapPeriod(series.PeriodStart, series.PeriodEnd),
             });
         }
 
@@ -83,5 +84,14 @@ public static class AggregatedTimeSeriesRequestAcceptedMessageFactory
         }
 
         return points;
+    }
+
+    private static Period MapPeriod(Instant periodStart, Instant periodEnd)
+    {
+        return new Period()
+        {
+            StartOfPeriod = Timestamp.FromDateTimeOffset(periodStart.ToDateTimeOffset()),
+            EndOfPeriod = Timestamp.FromDateTimeOffset(periodEnd.ToDateTimeOffset()),
+        };
     }
 }
