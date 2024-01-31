@@ -44,7 +44,7 @@ def _create_time_series_point_row(
         Colname.quality: "foo",
         Colname.observation_time: DEFAULT_OBSERVATION_TIME,
     }
-..
+
 
 def _create_grid_loss_metering_point_row(
     metering_point_id: str = "a-grid-loss-metering-point-id",
