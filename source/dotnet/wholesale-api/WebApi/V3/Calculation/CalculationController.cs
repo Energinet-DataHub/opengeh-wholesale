@@ -15,7 +15,7 @@
 using System.ComponentModel.DataAnnotations;
 using Asp.Versioning;
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
-using Energinet.DataHub.Wholesale.Batches.Interfaces;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
