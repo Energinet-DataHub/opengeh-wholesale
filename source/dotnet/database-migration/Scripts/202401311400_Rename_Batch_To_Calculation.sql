@@ -1,12 +1,20 @@
 -- Changes to 'integrationevents'
 -- Table
-EXEC sp_rename 'integrationevents.CompletedBatch', 'integrationevents.CompletedCalculation';
+EXEC sp_rename 'integrationevents.CompletedBatch', 'CompletedCalculation';
 GO
 
 -- Changes to 'batches'
 -- Schema
-EXEC sp_rename 'batches', 'calculations';
+CREATE SCHEMA calculations;
+GO
+ALTER SCHEMA calculations TRANSFER batches.Batch;
+GO
+ALTER SCHEMA calculations TRANSFER batches.GridAreaOwner;
+GO
+ALTER SCHEMA calculations TRANSFER batches.ReceivedIntegrationEvent
+GO
+DROP SCHEMA batches;
 GO
 -- Table
-EXEC sp_rename 'calculations.Batch', 'calculations.Calculation';
+EXEC sp_rename 'calculations.Batch', 'Calculation';
 GO
