@@ -37,9 +37,9 @@ public class CalculationEntityConfiguration : IEntityTypeConfiguration<Calculati
         builder.Property(b => b.ExecutionTimeStart);
         builder.Property(b => b.ExecutionTimeEnd);
         builder.Property(b => b.AreSettlementReportsCreated);
-        builder.Property(b => b.CalculationId).HasConversion(
-            calculationId => calculationId == null ? (long?)null : calculationId.Id,
-            calculationId => calculationId == null ? null : new CalculationId(calculationId.Value));
+        builder.Property(b => b.CalculationJobId).HasConversion(
+            calculationJobId => calculationJobId == null ? (long?)null : calculationJobId.Id,
+            calculationJobId => calculationJobId == null ? null : new CalculationJobId(calculationJobId.Value));
         builder.Property(b => b.ProcessType);
         builder.Property(b => b.CreatedTime);
         builder.Property(b => b.CreatedByUserId);

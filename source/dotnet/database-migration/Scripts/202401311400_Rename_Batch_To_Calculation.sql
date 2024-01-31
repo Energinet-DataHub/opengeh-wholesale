@@ -24,3 +24,6 @@ GO
 -- Primary keys
 EXEC sp_rename 'calculations.PK_Batch', 'PK_Calculation';
 GO
+-- Column
+EXEC sp_rename 'calculations.Calculation.CalculationId', 'CalculationJobId';
+GO

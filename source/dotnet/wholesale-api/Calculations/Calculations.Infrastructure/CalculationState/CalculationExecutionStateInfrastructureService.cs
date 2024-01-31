@@ -55,7 +55,7 @@ public class CalculationExecutionStateInfrastructureService : ICalculationExecut
             try
             {
                 var jobState = await _calculationInfrastructureService
-                    .GetStatusAsync(calculation.CalculationId!)
+                    .GetStatusAsync(calculation.CalculationJobId!)
                     .ConfigureAwait(false);
 
                 var executionState = CalculationStateMapper.MapState(jobState);
@@ -66,7 +66,7 @@ public class CalculationExecutionStateInfrastructureService : ICalculationExecut
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Exception caught while trying to update execution state for run ID {calculation_id}", calculation.CalculationId);
+                _logger.LogError(e, "Exception caught while trying to update execution state for run ID {calculation_id}", calculation.CalculationJobId);
             }
         }
     }

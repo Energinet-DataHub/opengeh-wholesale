@@ -14,4 +14,4 @@
 
 namespace Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 
-public sealed record CalculationId(long Id);
+public sealed record CalculationJobId(long Id);

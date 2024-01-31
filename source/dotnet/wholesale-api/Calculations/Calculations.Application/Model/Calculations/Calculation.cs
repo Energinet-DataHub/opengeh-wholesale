@@ -134,7 +134,7 @@ public class Calculation
 
     public Instant? ExecutionTimeEnd { get; private set; }
 
-    public CalculationId? CalculationId { get; private set; }
+    public CalculationJobId? CalculationJobId { get; private set; }
 
     /// <summary>
     /// Must be exactly at the beginning (at 00:00:00 o'clock) of the local date.
@@ -195,16 +195,16 @@ public class Calculation
         }
     }
 
-    public void MarkAsSubmitted(CalculationId calculationId)
+    public void MarkAsSubmitted(CalculationJobId calculationJobId)
     {
-        ArgumentNullException.ThrowIfNull(calculationId);
+        ArgumentNullException.ThrowIfNull(calculationJobId);
         if (ExecutionState is CalculationExecutionState.Submitted or CalculationExecutionState.Pending
             or CalculationExecutionState.Executing or CalculationExecutionState.Completed or CalculationExecutionState.Failed)
         {
             ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Submitted);
         }
 
-        CalculationId = calculationId;
+        CalculationJobId = calculationJobId;
         ExecutionState = CalculationExecutionState.Submitted;
     }
 
