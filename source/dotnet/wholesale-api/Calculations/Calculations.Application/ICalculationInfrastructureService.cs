@@ -21,5 +21,5 @@ public interface ICalculationInfrastructureService
 {
     Task<CalculationState> GetStatusAsync(CalculationId calculationId);
 
-    Task StartAsync(Guid batchId);
+    Task StartAsync(Guid calculationId);
 }
