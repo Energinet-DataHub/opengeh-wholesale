@@ -630,7 +630,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         // Assert
         using var assertionScope = new AssertionScope();
         actual.Should().HaveCount(1);
-        actual.First()!.BatchId.Should().Be(_secondCalculationId);
+        actual.First()!.CalculationId.Should().Be(_secondCalculationId);
     }
 
     [Fact]

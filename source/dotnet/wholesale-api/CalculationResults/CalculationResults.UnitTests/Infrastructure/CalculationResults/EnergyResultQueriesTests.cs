@@ -130,12 +130,12 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
 
         // Assert
         actual.Id.Should().Be(_calculationResultId0);
-        actual.BatchId.Should().Be(Guid.Parse(_row0BatchId));
+        actual.CalculationId.Should().Be(Guid.Parse(_row0BatchId));
         actual.GridArea.Should().Be(_tableChunk[0, EnergyResultColumnNames.GridArea]);
         actual.TimeSeriesType.Should().Be(TimeSeriesType.NonProfiledConsumption);
         actual.BalanceResponsibleId.Should().Be(_tableChunk[0, EnergyResultColumnNames.BalanceResponsibleId]);
         actual.EnergySupplierId.Should().Be(_tableChunk[0, EnergyResultColumnNames.EnergySupplierId]);
-        actual.BatchId.Should().Be(_tableChunk[0, EnergyResultColumnNames.BatchId]);
+        actual.CalculationId.Should().Be(_tableChunk[0, EnergyResultColumnNames.BatchId]);
         actual.ProcessType.Should().Be(calculation.ProcessType);
         actual.PeriodStart.Should().Be(calculation.PeriodStart.ToInstant());
         actual.PeriodEnd.Should().Be(calculation.PeriodEnd.ToInstant());

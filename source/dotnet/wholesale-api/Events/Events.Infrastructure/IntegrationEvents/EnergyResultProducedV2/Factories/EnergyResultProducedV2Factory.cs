@@ -98,7 +98,7 @@ public class EnergyResultProducedV2Factory : IEnergyResultProducedV2Factory
     {
         var energyResultProduced = new Contracts.IntegrationEvents.EnergyResultProducedV2
         {
-            CalculationId = result.BatchId.ToString(),
+            CalculationId = result.CalculationId.ToString(),
             Resolution = Contracts.IntegrationEvents.EnergyResultProducedV2.Types.Resolution.Quarter,
             CalculationType = CalculationTypeMapper.MapCalculationType(result.ProcessType),
             QuantityUnit = QuantityUnit.Kwh,

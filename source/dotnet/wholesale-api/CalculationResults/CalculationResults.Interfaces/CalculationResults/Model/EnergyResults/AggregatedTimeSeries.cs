@@ -23,7 +23,7 @@ public class AggregatedTimeSeries
         EnergyTimeSeriesPoint[] timeSeriesPoints,
         TimeSeriesType timeSeriesType,
         ProcessType processType,
-        Guid batchId)
+        Guid calculationId)
     {
         if (timeSeriesPoints.Length == 0)
             throw new ArgumentException($"{nameof(timeSeriesPoints)} are empty.");
@@ -32,7 +32,7 @@ public class AggregatedTimeSeries
         TimeSeriesPoints = timeSeriesPoints;
         TimeSeriesType = timeSeriesType;
         ProcessType = processType;
-        BatchId = batchId;
+        CalculationId = calculationId;
     }
 
     public string GridArea { get; init; }
@@ -43,5 +43,5 @@ public class AggregatedTimeSeries
 
     public ProcessType ProcessType { get; init; }
 
-    public Guid BatchId { get; init; }
+    public Guid CalculationId { get; init; }
 }

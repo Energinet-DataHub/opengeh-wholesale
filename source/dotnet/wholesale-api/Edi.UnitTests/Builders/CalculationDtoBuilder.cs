@@ -24,17 +24,16 @@ public class CalculationDtoBuilder
     private DateTimeOffset _periodEnd;
     private DateTimeOffset _executionStart;
     private DateTimeOffset __executionEnd;
-    private Guid _batchId;
+    private Guid _calculationId;
     private long _version;
 
     private CalculationDtoBuilder()
     {
-        var now = SystemClock.Instance.GetCurrentInstant();
         _periodStart = DateTimeOffset.Parse("2022-05-01T22:00Z");
         _periodEnd = DateTimeOffset.Parse("2022-05-31T22:00Z");
         _executionStart = DateTimeOffset.Parse("2022-06-01T22:00Z");
         __executionEnd = DateTimeOffset.Parse("2022-06-01T22:00Z");
-        _batchId = Guid.NewGuid();
+        _calculationId = Guid.NewGuid();
         _version = 1;
     }
 
@@ -42,7 +41,7 @@ public class CalculationDtoBuilder
     {
         return new CalculationDto(
             1,
-            _batchId,
+            _calculationId,
             _periodStart,
             _periodEnd,
             "PT15M",

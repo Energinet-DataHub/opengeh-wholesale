@@ -25,12 +25,12 @@ public class AggregatedTimeSeriesBuilder
 {
     private readonly string _gridAreaCode;
     private readonly IList<EnergyTimeSeriesPoint> _timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
-    private readonly Guid _batchId;
+    private readonly Guid _calculationId;
 
     private AggregatedTimeSeriesBuilder(CalculationDto calculation)
     {
         _gridAreaCode = calculation.GridAreaCodes.First();
-        _batchId = calculation.BatchId;
+        _calculationId = calculation.BatchId;
         var currentTime = calculation.PeriodStart.ToInstant();
         while (currentTime < calculation.PeriodEnd.ToInstant())
         {
@@ -51,6 +51,6 @@ public class AggregatedTimeSeriesBuilder
             _timeSeriesPoints.ToArray(),
             TimeSeriesType.Production,
             ProcessType.Aggregation,
-            _batchId);
+            _calculationId);
     }
 }

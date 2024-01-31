@@ -139,7 +139,7 @@ public class CalculationResultCompletedFactoryTests
     {
         var calculationResultCompleted = new CalculationResultCompleted
         {
-            BatchId = energyResult.BatchId.ToString(),
+            BatchId = energyResult.CalculationId.ToString(),
             Resolution = Resolution.Quarter,
             ProcessType = ProcessType.Aggregation,
             QuantityUnit = QuantityUnit.Kwh,

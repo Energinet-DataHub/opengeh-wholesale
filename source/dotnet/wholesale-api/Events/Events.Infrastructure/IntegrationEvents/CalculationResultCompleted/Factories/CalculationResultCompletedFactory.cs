@@ -94,7 +94,7 @@ public class CalculationResultCompletedFactory : ICalculationResultCompletedFact
     {
         var calculationResultCompleted = new Contracts.Events.CalculationResultCompleted
         {
-            BatchId = result.BatchId.ToString(),
+            BatchId = result.CalculationId.ToString(),
             Resolution = Resolution.Quarter,
             ProcessType = ProcessTypeMapper.MapProcessType(result.ProcessType),
             QuantityUnit = QuantityUnit.Kwh,

@@ -21,7 +21,7 @@ public sealed class EnergyResult : AggregatedTimeSeries
 {
     public EnergyResult(
         Guid id,
-        Guid batchId,
+        Guid calculationId,
         string gridArea,
         TimeSeriesType timeSeriesType,
         string? energySupplierId,
@@ -32,7 +32,7 @@ public sealed class EnergyResult : AggregatedTimeSeries
         Instant periodEnd,
         string? fromGridArea,
         long version)
-    : base(gridArea, timeSeriesPoints, timeSeriesType, processType, batchId)
+    : base(gridArea, timeSeriesPoints, timeSeriesType, processType, calculationId)
     {
         Id = id;
         EnergySupplierId = energySupplierId;
