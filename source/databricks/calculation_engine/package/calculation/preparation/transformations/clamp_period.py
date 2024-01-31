@@ -19,7 +19,7 @@ import pyspark.sql.functions as f
 
 
 def clamp_period(
-    df,
+    df: DataFrame,
     clamp_start_datetime: datetime,
     clamp_end_datetime: datetime,
     period_start_column_name: str,
