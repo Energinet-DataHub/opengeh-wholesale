@@ -327,26 +327,26 @@ class TestWhenThreeGridAreasExchangingWithEachOther:
     ) -> None:
         # Arrange
         rows = [
-            factory.create_row(
+            input_factory.create_row(
                 grid_area="111", from_grid_area="111", to_grid_area="222"
             ),
-            factory.create_row(
+            input_factory.create_row(
                 grid_area="222", from_grid_area="222", to_grid_area="111"
             ),
-            factory.create_row(
+            input_factory.create_row(
                 grid_area="333", from_grid_area="111", to_grid_area="222"
             ),
         ]
 
         mock_calculation_input_reader.read_metering_point_periods.return_value = (
-            factory.create(spark, rows)
+            input_factory.create(spark, rows)
         )
 
         # Act
         actual = get_metering_point_periods_df(
             mock_calculation_input_reader,
-            factory.DEFAULT_FROM_DATE,
-            factory.DEFAULT_TO_DATE,
+            input_factory.DEFAULT_FROM_DATE,
+            input_factory.DEFAULT_TO_DATE,
             ["111", "222"],
         )
 
