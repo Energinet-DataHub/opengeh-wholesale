@@ -7,7 +7,7 @@ wholesaleDomain = group "Wholesale" {
         tags "Data Storage" "Microsoft Azure - Data Lake Store Gen1" "Mandalorian"
     }
     wholesaleCalculator = container "Calculation Engine" {
-        description "Executes energy calculations"
+        description "Executes calculations"
         technology "Azure Databricks"
         tags "Microsoft Azure - Azure Databricks" "Mandalorian"
 
