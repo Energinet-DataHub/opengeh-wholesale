@@ -15,10 +15,7 @@
 from datetime import datetime
 
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import (
-    col,
-    when,
-)
+import pyspark.sql.functions as f
 
 
 def clamp_period(
@@ -26,20 +23,28 @@ def clamp_period(
     clamp_start_datetime: datetime,
     clamp_end_datetime: datetime,
     period_start_column_name: str,
-    period_end_date_column_name: str,
+    period_end_column_name: str,
 ) -> DataFrame:
+    """
+    Clamps the period of a dataframe to the given start and end datetimes.
+
+    If the start date is earlier than ´clamp_start_datetime´: set start date equal to ´clamp_start_datetime´.
+
+    If the end date is null or if it is later than ´clamp_end_datetime´: set end date equal to ´clamp_end_datetime´.
+    """
+
     df = df.withColumn(
         period_start_column_name,
-        when(
-            col(period_start_column_name) < clamp_start_datetime, clamp_start_datetime
-        ).otherwise(col(period_start_column_name)),
+        f.when(
+            f.col(period_start_column_name) < clamp_start_datetime, clamp_start_datetime
+        ).otherwise(f.col(period_start_column_name)),
     ).withColumn(
-        period_end_date_column_name,
-        when(
-            col(period_end_date_column_name).isNull()
-            | (col(period_end_date_column_name) > clamp_end_datetime),
+        period_end_column_name,
+        f.when(
+            f.col(period_end_column_name).isNull()
+            | (f.col(period_end_column_name) > clamp_end_datetime),
             clamp_end_datetime,
-        ).otherwise(col(clamp_end_datetime)),
+        ).otherwise(f.col(period_end_column_name)),
     )
 
     return df
