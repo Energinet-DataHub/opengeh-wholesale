@@ -22,22 +22,22 @@ namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.WebApi.V3;
 public class BatchStateMapperTests
 {
     [Theory]
-    [InlineAutoMoqData(Batches.Interfaces.Models.CalculationState.Failed, BatchState.Failed)]
-    [InlineAutoMoqData(Batches.Interfaces.Models.CalculationState.Completed, BatchState.Completed)]
-    [InlineAutoMoqData(Batches.Interfaces.Models.CalculationState.Executing, BatchState.Executing)]
-    [InlineAutoMoqData(Batches.Interfaces.Models.CalculationState.Pending, BatchState.Pending)]
-    public void Map_ReturnsExpectedTypeForWebApi(Batches.Interfaces.Models.CalculationState source, BatchState expected)
+    [InlineAutoMoqData(Calculations.Interfaces.Models.CalculationState.Failed, BatchState.Failed)]
+    [InlineAutoMoqData(Calculations.Interfaces.Models.CalculationState.Completed, BatchState.Completed)]
+    [InlineAutoMoqData(Calculations.Interfaces.Models.CalculationState.Executing, BatchState.Executing)]
+    [InlineAutoMoqData(Calculations.Interfaces.Models.CalculationState.Pending, BatchState.Pending)]
+    public void Map_ReturnsExpectedTypeForWebApi(Calculations.Interfaces.Models.CalculationState source, BatchState expected)
     {
         var actual = CalculationStateMapper.MapState(source);
         actual.Should().Be(expected);
     }
 
     [Theory]
-    [InlineAutoMoqData(BatchState.Failed, Batches.Interfaces.Models.CalculationState.Failed)]
-    [InlineAutoMoqData(BatchState.Completed, Batches.Interfaces.Models.CalculationState.Completed)]
-    [InlineAutoMoqData(BatchState.Executing, Batches.Interfaces.Models.CalculationState.Executing)]
-    [InlineAutoMoqData(BatchState.Pending, Batches.Interfaces.Models.CalculationState.Pending)]
-    public void Map_ReturnsExpectedTypeForBatchModule(BatchState source, Batches.Interfaces.Models.CalculationState expected)
+    [InlineAutoMoqData(BatchState.Failed, Calculations.Interfaces.Models.CalculationState.Failed)]
+    [InlineAutoMoqData(BatchState.Completed, Calculations.Interfaces.Models.CalculationState.Completed)]
+    [InlineAutoMoqData(BatchState.Executing, Calculations.Interfaces.Models.CalculationState.Executing)]
+    [InlineAutoMoqData(BatchState.Pending, Calculations.Interfaces.Models.CalculationState.Pending)]
+    public void Map_ReturnsExpectedTypeForBatchModule(BatchState source, Calculations.Interfaces.Models.CalculationState expected)
     {
         var actual = CalculationStateMapper.MapState(source);
         actual.Should().Be(expected);
@@ -47,7 +47,7 @@ public class BatchStateMapperTests
     public void MapState_WhenInvalidEnumNumberForBatchState_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
-        var invalidValue = (Batches.Interfaces.Models.CalculationState)99;
+        var invalidValue = (Calculations.Interfaces.Models.CalculationState)99;
 
         // Act
         var act = () => CalculationStateMapper.MapState(invalidValue);
