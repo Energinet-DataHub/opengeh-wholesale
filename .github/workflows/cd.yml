@@ -68,7 +68,7 @@ jobs:
 
   dispatch_deploment_event:
     runs-on: ubuntu-latest
-    needs: [changes, databricks_promote_prerelease, dotnet_promote_prerelease, cd_docker]
+    needs: [changes, databricks_promote_prerelease, dotnet_promote_prerelease]
     if: |
       always() &&
       !contains(needs.*.result, 'failure') &&
