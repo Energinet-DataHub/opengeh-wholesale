@@ -71,19 +71,19 @@ jobs:
       tests_dll_file_path: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.UnitTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.UnitTests.dll
       download_attempt_limit: 20
 
-  dotnet_ci_test_integrationtests_batches:
+  dotnet_ci_test_integrationtests_calculations:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v12
     with:
       dotnet_version: 8.0.101
-      tests_dll_file_path: \source\dotnet\wholesale-api\Batches\Batches.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Batches.IntegrationTests.dll
+      tests_dll_file_path: \source\dotnet\wholesale-api\Calculations\Calculations.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Calculations.IntegrationTests.dll
       download_attempt_limit: 20
       use_azure_functions_tools: true
 
-  dotnet_ci_test_calculation_batches:
+  dotnet_ci_test_calculation_calculations:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v12
     with:
       dotnet_version: 8.0.101
-      tests_dll_file_path: \source\dotnet\wholesale-api\Batches\Batches.UnitTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Batches.UnitTests.dll
+      tests_dll_file_path: \source\dotnet\wholesale-api\Calculations\Calculations.UnitTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Calculations.UnitTests.dll
       download_attempt_limit: 20
 
   dotnet_ci_test_integrationtests_events:

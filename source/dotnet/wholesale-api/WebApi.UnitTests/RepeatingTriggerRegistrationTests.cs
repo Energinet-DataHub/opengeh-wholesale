@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using AutoFixture.Xunit2;
-using Energinet.DataHub.Wholesale.Batches.Application.Workers;
+using Energinet.DataHub.Wholesale.Calculations.Application.Workers;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Events.Application.Triggers;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
