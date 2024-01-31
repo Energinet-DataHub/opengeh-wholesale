@@ -23,23 +23,23 @@ from pyspark.sql.functions import (
 
 def clamp_period(
     df,
-    period_start_datetime: datetime,
-    period_end_datetime: datetime,
-    from_date_column_name: str,
-    to_date_column_name: str,
+    clamp_start_datetime: datetime,
+    clamp_end_datetime: datetime,
+    period_start_column_name: str,
+    period_end_date_column_name: str,
 ) -> DataFrame:
     df = df.withColumn(
-        from_date_column_name,
+        period_start_column_name,
         when(
-            col(from_date_column_name) < period_start_datetime, period_start_datetime
-        ).otherwise(col(from_date_column_name)),
+            col(period_start_column_name) < clamp_start_datetime, clamp_start_datetime
+        ).otherwise(col(period_start_column_name)),
     ).withColumn(
-        to_date_column_name,
+        period_end_date_column_name,
         when(
-            col(to_date_column_name).isNull()
-            | (col(to_date_column_name) > period_end_datetime),
-            period_end_datetime,
-        ).otherwise(col(period_end_datetime)),
+            col(period_end_date_column_name).isNull()
+            | (col(period_end_date_column_name) > clamp_end_datetime),
+            clamp_end_datetime,
+        ).otherwise(col(clamp_end_datetime)),
     )
 
     return df

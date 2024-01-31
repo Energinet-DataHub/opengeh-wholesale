@@ -25,7 +25,9 @@ def read_charges(
     period_start_datetime: datetime,
     period_end_datetime: datetime,
 ) -> DataFrame:
-    charge_master_data_df = table_reader.read_charge_master_data_periods()
+    charge_master_data_df = table_reader.read_charge_master_data_periods(
+        period_start_datetime, period_end_datetime
+    )
     charge_master_data_df = clamp_period(
         charge_master_data_df,
         period_start_datetime,
@@ -96,9 +98,9 @@ def _join_with_charge_links(df: DataFrame, charge_links: DataFrame) -> DataFrame
         df[Colname.charge_tax],
         df[Colname.resolution],
         df[Colname.charge_time],
+        df[Colname.from_date],
+        df[Colname.to_date],
         df[Colname.charge_price],
-        charge_links[Colname.from_date],
-        charge_links[Colname.to_date],
         charge_links[Colname.metering_point_id],
     )
     return df
