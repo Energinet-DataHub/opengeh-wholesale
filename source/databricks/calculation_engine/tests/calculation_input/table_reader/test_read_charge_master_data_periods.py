@@ -92,7 +92,9 @@ class TestWhenValidInput:
         reader = TableReader(spark, calculation_input_path)
 
         # Act
-        actual = reader.read_charge_master_data_periods()
+        actual = reader.read_charge_master_data_periods(
+            DEFAULT_FROM_DATE, DEFAULT_TO_DATE
+        )
 
         # Assert
         assert_dataframes_equal(actual, expected)
