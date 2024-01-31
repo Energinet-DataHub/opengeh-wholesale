@@ -110,7 +110,7 @@ jobs:
           done
 
   python_tests_calculationjob:
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@mkq/python_ci
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v12
     with:
       operating_system: dh3-ubuntu-20.04-4core
       path_static_checks: ./source/databricks/calculation_engine
@@ -126,7 +126,7 @@ jobs:
       image_tag: ${{ inputs.image_tag }}
 
   python_tests_other:
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@mkq/python_ci
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v12
     with:
       operating_system: dh3-ubuntu-20.04-4core
       path_static_checks: ./source/databricks/calculation_engine

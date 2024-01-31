@@ -37,7 +37,7 @@ jobs:
     uses: Energinet-DataHub/.github/.github/workflows/python-build-and-push-docker-image.yml@v12
     with:
       docker_changed: ${{ needs.changes.outputs.docker == 'true' }}
-      # 'docker_changed_in_commit' value is same as 'docker_changed' because we want to build and push docker image when docker changed 
+      # 'docker_changed_in_commit' value is same as 'docker_changed' because we want to build and push docker image when docker changed
       docker_changed_in_commit: ${{ needs.changes.outputs.docker == 'true' }}
 
   #
