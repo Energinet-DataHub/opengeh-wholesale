@@ -17,6 +17,7 @@ from pyspark.sql import SparkSession, DataFrame
 
 from package.calculation_input.table_reader import TableReader
 from package.calculation_input.schemas import metering_point_period_schema
+import tests.calculation_input.table_reader.input_metering_point_periods_factory as factory
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 
@@ -31,8 +32,8 @@ class TestWhenValidInput:
         # Arrange
         calculation_input_path = f"{str(tmp_path)}/{calculation_input_folder}"
         table_location = f"{calculation_input_path}/metering_point_periods"
-        row = _create_metering_point_period_row()
-        df = spark.createDataFrame(data=[row], schema=metering_point_period_schema)
+        row = factory.create_row()
+        df = factory.create(spark, row)
         write_dataframe_to_table(
             spark,
             df,
@@ -41,15 +42,10 @@ class TestWhenValidInput:
             table_location,
             metering_point_period_schema,
         )
-        expected = _map_metering_point_type_and_settlement_method(df)
         reader = TableReader(spark, calculation_input_path)
 
         # Act
-        actual = reader.read_metering_point_periods(
-            DEFAULT_FROM_DATE,
-            DEFAULT_TO_DATE,
-            [DEFAULT_GRID_AREA],
-        )
+        actual = reader.read_metering_point_periods()
 
         # Assert
-        assert_dataframes_equal(actual, expected)
+        assert_dataframes_equal(actual, df)
