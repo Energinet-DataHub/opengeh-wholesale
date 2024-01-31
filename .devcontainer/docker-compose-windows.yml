@@ -1,7 +1,7 @@
 version: "3.9"
 services:
-  wholesale:
-    image: ghcr.io/energinet-datahub/opengeh-wholesale/databricks-unit-test:latest
+  python-unit-test:
+    image: ghcr.io/energinet-datahub/opengeh-wholesale/databricks-unit-test:${IMAGE_TAG:-latest}
     volumes:
       # Forwards the local Docker socket to the container.
       - /var/run/docker.sock:/var/run/docker-host.sock
