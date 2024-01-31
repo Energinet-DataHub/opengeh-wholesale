@@ -61,7 +61,7 @@ class TestWhenSchemaMismatch:
             reader._spark.read.format("delta"), "load", return_value=df
         ):
             with pytest.raises(AssertionError) as exc_info:
-                reader.read_charge_price_points()
+                reader.read_charge_price_points(DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
 
             assert "Schema mismatch" in str(exc_info.value)
 

@@ -62,7 +62,7 @@ class TestWhenSchemaMismatch:
             reader._spark.read.format("delta"), "load", return_value=df
         ):
             with pytest.raises(AssertionError) as exc_info:
-                reader.read_charge_links_periods()
+                reader.read_charge_links_periods(DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
 
             assert "Schema mismatch" in str(exc_info.value)
 
@@ -91,7 +91,7 @@ class TestWhenValidInput:
         reader = TableReader(spark, calculation_input_path)
 
         # Act
-        actual = reader.read_charge_links_periods()
+        actual = reader.read_charge_links_periods(DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
 
         # Assert
         assert_dataframes_equal(actual, expected)
