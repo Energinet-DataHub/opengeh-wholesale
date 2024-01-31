@@ -14,8 +14,8 @@
 
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.Edi.Exceptions;
-using Energinet.DataHub.Wholesale.Edi.Extensions;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 using FluentAssertions;
@@ -26,7 +26,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests;
 
-public class GetLatestCalculationsResultsPerDayTests
+public class CalculationResultPeriodCalculatorTests
 {
     private DateTimeZone _dateTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!;
 
@@ -41,21 +41,27 @@ public class GetLatestCalculationsResultsPerDayTests
             .WithPeriodStart(periodStart)
             .WithPeriodEnd(periodEnd)
             .Build();
-
-        var calculationResults = AggregatedTimeSeriesBuilder.AggregatedTimeSeries(calculation)
+        var calculationResults = AggregatedTimeSeriesBuilder
+            .AggregatedTimeSeries(calculation)
             .Build();
 
-        var latestCalculationsForPeriod =
-            new List<CalculationDto>() { calculation, }.FindLatestCalculations(periodStart, periodEnd, _dateTimeZone);
+        var calculationPeriodCalculator = new CalculationPeriodCalculator(_dateTimeZone);
+        var latestCalculations = calculationPeriodCalculator
+            .FindLatestCalculationsForPeriod(
+                periodStart,
+                periodEnd,
+                new List<CalculationDto>() { calculation, });
+
+        var sut = new CalculationResultPeriodCalculator();
 
         // Act
-        var actual =
-            new List<AggregatedTimeSeries>() { calculationResults, }.GetLatestCalculationsResultsPerDay(
-                latestCalculationsForPeriod);
+        var actual = sut.GetLatestCalculationsResultsPerDay(
+            latestCalculations,
+            new List<AggregatedTimeSeries>() { calculationResults });
 
         // Assert
         using var assertionScope = new AssertionScope();
-        AssertCalculationResultsForWholePeriod(actual, periodStart, periodEnd);
+        AssertCalculationResultsCoversWholePeriod(actual, periodStart, periodEnd);
     }
 
     [Fact]
@@ -86,19 +92,23 @@ public class GetLatestCalculationsResultsPerDayTests
             .AggregatedTimeSeries(secondCalculation)
             .Build();
 
-        var latestCalculationsForPeriod =
-            new List<CalculationDto>() { firstCalculation, secondCalculation, }
-                .FindLatestCalculations(firstPeriodStart, secondPeriodEnd, _dateTimeZone);
+        var calculationPeriodCalculator = new CalculationPeriodCalculator(_dateTimeZone);
+        var latestCalculations = calculationPeriodCalculator
+            .FindLatestCalculationsForPeriod(
+                firstPeriodStart,
+                secondPeriodEnd,
+                new List<CalculationDto>() { firstCalculation, secondCalculation });
+
+        var sut = new CalculationResultPeriodCalculator();
 
         // Act
-        var actual = new List<AggregatedTimeSeries>()
-        {
-            calculationResultsFromFirstCalculation, calculationResultsFromSecondCalculation,
-        }.GetLatestCalculationsResultsPerDay(latestCalculationsForPeriod);
+        var actual = sut.GetLatestCalculationsResultsPerDay(
+            latestCalculations,
+            new List<AggregatedTimeSeries>() { calculationResultsFromFirstCalculation, calculationResultsFromSecondCalculation, });
 
         // Assert
         using var assertionScope = new AssertionScope();
-        AssertCalculationResultsForWholePeriod(actual, firstPeriodStart, secondPeriodEnd);
+        AssertCalculationResultsCoversWholePeriod(actual, firstPeriodStart, secondPeriodEnd);
         AssertCalculationResultsAreLatest(actual, new List<CalculationDto>() { firstCalculation, secondCalculation });
     }
 
@@ -113,12 +123,19 @@ public class GetLatestCalculationsResultsPerDayTests
             .WithPeriodEnd(periodEnd)
             .Build();
 
-        var latestCalculationsForPeriod =
-            new List<CalculationDto>() { calculation, }.FindLatestCalculations(periodStart, periodEnd, _dateTimeZone);
+        var calculationPeriodCalculator = new CalculationPeriodCalculator(_dateTimeZone);
+        var latestCalculations = calculationPeriodCalculator
+            .FindLatestCalculationsForPeriod(
+                periodStart,
+                periodEnd,
+                new List<CalculationDto>() { calculation });
+
+        var sut = new CalculationResultPeriodCalculator();
 
         // Act
-        var actual = new List<AggregatedTimeSeries>() { }
-            .GetLatestCalculationsResultsPerDay(latestCalculationsForPeriod);
+        var actual = sut.GetLatestCalculationsResultsPerDay(
+            latestCalculations,
+            new List<AggregatedTimeSeries>() { });
 
         // Assert
         actual.Should().BeEmpty();
@@ -139,13 +156,19 @@ public class GetLatestCalculationsResultsPerDayTests
             .AggregatedTimeSeries(calculation)
             .Build();
 
-        var latestCalculationsForPeriod = new List<CalculationDto>() { }
-            .FindLatestCalculations(periodStart, periodEnd, _dateTimeZone);
+        var calculationPeriodCalculator = new CalculationPeriodCalculator(_dateTimeZone);
+        var latestCalculations = calculationPeriodCalculator
+            .FindLatestCalculationsForPeriod(
+                periodStart,
+                periodEnd,
+                new List<CalculationDto>() { });
+
+        var sut = new CalculationResultPeriodCalculator();
 
         // Act
-        var actual =
-            new List<AggregatedTimeSeries>() { calculationResults, }.GetLatestCalculationsResultsPerDay(
-                latestCalculationsForPeriod);
+        var actual = sut.GetLatestCalculationsResultsPerDay(
+            latestCalculations,
+            new List<AggregatedTimeSeries>() { calculationResults });
 
         // Assert
         actual.Should().BeEmpty();
@@ -163,9 +186,12 @@ public class GetLatestCalculationsResultsPerDayTests
             .WithPeriodEnd(periodEnd)
             .Build();
 
-        var latestCalculationsForPeriod =
-            new List<CalculationDto>() { calculationWithMissingCalculationResults, }
-                .FindLatestCalculations(periodStart, periodEnd, _dateTimeZone);
+        var calculationPeriodCalculator = new CalculationPeriodCalculator(_dateTimeZone);
+        var latestCalculations = calculationPeriodCalculator
+            .FindLatestCalculationsForPeriod(
+                periodStart,
+                periodEnd,
+                new List<CalculationDto>() { calculationWithMissingCalculationResults });
 
         var anotherCalculation = CalculationDtoBuilder.CalculationDto()
             .WithPeriodStart(periodStart)
@@ -176,16 +202,18 @@ public class GetLatestCalculationsResultsPerDayTests
             .AggregatedTimeSeries(anotherCalculation)
             .Build();
 
+        var sut = new CalculationResultPeriodCalculator();
+
         // Act
-        var actual = () =>
-            new List<AggregatedTimeSeries>() { calculationResultFromAnotherCalculation, }
-                .GetLatestCalculationsResultsPerDay(latestCalculationsForPeriod);
+        var actual = () => sut.GetLatestCalculationsResultsPerDay(
+            latestCalculations,
+            new List<AggregatedTimeSeries>() { calculationResultFromAnotherCalculation });
 
         // Assert
         actual.Should().ThrowExactly<MissingCalculationResultException>();
     }
 
-    private void AssertCalculationResultsForWholePeriod(
+    private void AssertCalculationResultsCoversWholePeriod(
         IReadOnlyCollection<AggregatedTimeSeriesResult> actual,
         Instant periodStart,
         Instant periodEnd)

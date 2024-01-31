@@ -17,17 +17,23 @@ using Energinet.DataHub.Wholesale.Edi.Exceptions;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Edi.Extensions;
+namespace Energinet.DataHub.Wholesale.Edi.Calculations;
 
-public static class CalculationExtensions
+public class CalculationPeriodCalculator
 {
-    public static IReadOnlyCollection<LatestCalculationForPeriod> FindLatestCalculations(
-        this IReadOnlyCollection<CalculationDto> calculations,
+    private readonly DateTimeZone _dateTimeZone;
+
+    public CalculationPeriodCalculator(DateTimeZone dateTimeZone)
+    {
+        _dateTimeZone = dateTimeZone;
+    }
+
+    public IReadOnlyCollection<LatestCalculationForPeriod> FindLatestCalculationsForPeriod(
         Instant periodStart,
         Instant periodEnd,
-        DateTimeZone dateTimeZone)
+        IReadOnlyCollection<CalculationDto> calculations)
     {
-        var remainingDaysInPeriod = GetDaysInPeriod(periodStart, periodEnd, dateTimeZone);
+        var remainingDaysInPeriod = GetDaysInPeriod(periodStart, periodEnd);
         var latestCalculationsForPeriod = new List<LatestCalculationForPeriod>();
         foreach (var calculation in calculations.OrderByDescending(x => x.Version))
         {
@@ -36,7 +42,9 @@ public static class CalculationExtensions
 
             foreach (var periodWhereCalculationIsLatest in periodsWhereCalculationIsLatest)
             {
-                var daysInPeriod = GetDaysInPeriod(periodWhereCalculationIsLatest.PeriodStart, periodWhereCalculationIsLatest.PeriodEnd, dateTimeZone);
+                var daysInPeriod = GetDaysInPeriod(
+                    periodWhereCalculationIsLatest.PeriodStart,
+                    periodWhereCalculationIsLatest.PeriodEnd);
                 foreach (var day in daysInPeriod.Where(x => remainingDaysInPeriod.Contains(x)))
                 {
                     remainingDaysInPeriod.Remove(day);
@@ -97,10 +105,10 @@ public static class CalculationExtensions
                       && x.PeriodEnd >= remainDay.Plus(Duration.FromDays(1)));
     }
 
-    private static List<Instant> GetDaysInPeriod(Instant periodStart, Instant periodEnd, DateTimeZone dateTimeZone)
+    private List<Instant> GetDaysInPeriod(Instant periodStart, Instant periodEnd)
     {
-        var periodStartInTimeZone = new ZonedDateTime(periodStart, dateTimeZone);
-        var periodEndInTimeZone = new ZonedDateTime(periodEnd, dateTimeZone);
+        var periodStartInTimeZone = new ZonedDateTime(periodStart, _dateTimeZone);
+        var periodEndInTimeZone = new ZonedDateTime(periodEnd, _dateTimeZone);
         var period = Period.Between(
             periodStartInTimeZone.LocalDateTime,
             periodEndInTimeZone.LocalDateTime,

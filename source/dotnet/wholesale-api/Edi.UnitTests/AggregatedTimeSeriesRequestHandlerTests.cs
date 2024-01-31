@@ -21,6 +21,7 @@ using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.EDI.Client;
 using Energinet.DataHub.Wholesale.EDI.Models;
 using Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
@@ -51,7 +52,9 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
         [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> logger,
-        [Frozen] Mock<ICalculationsClient> calculationsClient)
+        [Frozen] Mock<ICalculationsClient> calculationsClient,
+        [Frozen] Mock<CalculationPeriodCalculator> calculationPeriodCalculator,
+        [Frozen] Mock<CalculationResultPeriodCalculator> calculationResultPeriodCalculator)
     {
         // Arrange
         const string expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestAccepted);
@@ -101,7 +104,8 @@ public class AggregatedTimeSeriesRequestHandlerTests
             aggregatedTimeSeriesQueries.Object,
             logger.Object,
             calculationsClient.Object,
-            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
+            calculationPeriodCalculator.Object,
+            calculationResultPeriodCalculator.Object);
 
         // Act
         await sut.ProcessAsync(
@@ -127,7 +131,9 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
         [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> logger,
-        [Frozen] Mock<ICalculationsClient> calculationsClient)
+        [Frozen] Mock<ICalculationsClient> calculationsClient,
+        [Frozen] Mock<CalculationPeriodCalculator> calculationPeriodCalculator,
+        [Frozen] Mock<CalculationResultPeriodCalculator> calculationResultPeriodCalculator)
     {
         // Arrange
         const string expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestAccepted);
@@ -177,7 +183,8 @@ public class AggregatedTimeSeriesRequestHandlerTests
             aggregatedTimeSeriesQueries.Object,
             logger.Object,
             calculationsClient.Object,
-            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
+            calculationPeriodCalculator.Object,
+            calculationResultPeriodCalculator.Object);
 
         // Act
         await sut.ProcessAsync(
@@ -203,7 +210,9 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
         [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> logger,
-        [Frozen] Mock<ICalculationsClient> calculationsClient)
+        [Frozen] Mock<ICalculationsClient> calculationsClient,
+        [Frozen] Mock<CalculationPeriodCalculator> calculationPeriodCalculator,
+        [Frozen] Mock<CalculationResultPeriodCalculator> calculationResultPeriodCalculator)
     {
         // Arrange
         const string expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestAccepted);
@@ -272,7 +281,8 @@ public class AggregatedTimeSeriesRequestHandlerTests
             aggregatedTimeSeriesQueries.Object,
             logger.Object,
             calculationsClient.Object,
-            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
+            calculationPeriodCalculator.Object,
+            calculationResultPeriodCalculator.Object);
 
         // Act
         await sut.ProcessAsync(
@@ -299,7 +309,9 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
         [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> logger,
-        [Frozen] Mock<ICalculationsClient> calculationsClient)
+        [Frozen] Mock<ICalculationsClient> calculationsClient,
+        [Frozen] Mock<CalculationPeriodCalculator> calculationPeriodCalculator,
+        [Frozen] Mock<CalculationResultPeriodCalculator> calculationResultPeriodCalculator)
     {
         // Arrange
         const string expectedRejectedSubject = nameof(AggregatedTimeSeriesRequestRejected);
@@ -338,7 +350,8 @@ public class AggregatedTimeSeriesRequestHandlerTests
             aggregatedTimeSeriesQueries.Object,
             logger.Object,
             calculationsClient.Object,
-            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
+            calculationPeriodCalculator.Object,
+            calculationResultPeriodCalculator.Object);
 
         // Act
         await sut.ProcessAsync(
@@ -365,7 +378,9 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
         [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> logger,
-        [Frozen] Mock<ICalculationsClient> calculationsClient)
+        [Frozen] Mock<ICalculationsClient> calculationsClient,
+        [Frozen] Mock<CalculationPeriodCalculator> calculationPeriodCalculator,
+        [Frozen] Mock<CalculationResultPeriodCalculator> calculationResultPeriodCalculator)
     {
         // Arrange
         const string expectedRejectedSubject = nameof(AggregatedTimeSeriesRequestRejected);
@@ -422,7 +437,8 @@ public class AggregatedTimeSeriesRequestHandlerTests
             aggregatedTimeSeriesQueries.Object,
             logger.Object,
             calculationsClient.Object,
-            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
+            calculationPeriodCalculator.Object,
+            calculationResultPeriodCalculator.Object);
 
         // Act
         await sut.ProcessAsync(
@@ -449,7 +465,9 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
         [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> logger,
-        [Frozen] Mock<ICalculationsClient> calculationsClient)
+        [Frozen] Mock<ICalculationsClient> calculationsClient,
+        [Frozen] Mock<CalculationPeriodCalculator> calculationPeriodCalculator,
+        [Frozen] Mock<CalculationResultPeriodCalculator> calculationResultPeriodCalculator)
     {
         // Arrange
         const string expectedRejectedSubject = nameof(AggregatedTimeSeriesRequestRejected);
@@ -497,7 +515,8 @@ public class AggregatedTimeSeriesRequestHandlerTests
             aggregatedTimeSeriesQueries.Object,
             logger.Object,
             calculationsClient.Object,
-            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
+            calculationPeriodCalculator.Object,
+            calculationResultPeriodCalculator.Object);
 
         // Act
         await sut.ProcessAsync(

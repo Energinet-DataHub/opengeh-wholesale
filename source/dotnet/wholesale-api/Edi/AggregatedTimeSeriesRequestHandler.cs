@@ -17,16 +17,14 @@ using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.Edi;
+using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.EDI.Client;
-using Energinet.DataHub.Wholesale.Edi.Extensions;
 using Energinet.DataHub.Wholesale.EDI.Factories;
 using Energinet.DataHub.Wholesale.EDI.Mappers;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.EDI.Models;
 using Energinet.DataHub.Wholesale.EDI.Validation;
 using Microsoft.Extensions.Logging;
-using NodaTime;
 using NodaTime.Text;
 
 namespace Energinet.DataHub.Wholesale.EDI;
@@ -38,7 +36,8 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     private readonly IAggregatedTimeSeriesQueries _aggregatedTimeSeriesQueries;
     private readonly ILogger<AggregatedTimeSeriesRequestHandler> _logger;
     private readonly ICalculationsClient _calculationsClient;
-    private readonly DateTimeZone _dateTimeZone;
+    private readonly CalculationPeriodCalculator _calculationPeriodCalculator;
+    private readonly CalculationResultPeriodCalculator _calculationResultPeriodCalculator;
     private static readonly ValidationError _noDataAvailable = new("Ingen data tilgængelig / No data available", "E0H");
     private static readonly ValidationError _noDataForRequestedGridArea = new("Forkert netområde / invalid grid area", "D46");
 
@@ -48,14 +47,16 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         IAggregatedTimeSeriesQueries aggregatedTimeSeriesQueries,
         ILogger<AggregatedTimeSeriesRequestHandler> logger,
         ICalculationsClient calculationsClient,
-        DateTimeZone dateTimeZone)
+        CalculationPeriodCalculator calculationPeriodCalculator,
+        CalculationResultPeriodCalculator calculationResultPeriodCalculator)
     {
         _ediClient = ediClient;
         _validator = validator;
         _aggregatedTimeSeriesQueries = aggregatedTimeSeriesQueries;
         _logger = logger;
         _calculationsClient = calculationsClient;
-        _dateTimeZone = dateTimeZone;
+        _calculationPeriodCalculator = calculationPeriodCalculator;
+        _calculationResultPeriodCalculator = calculationResultPeriodCalculator;
     }
 
     public async Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken)
@@ -71,18 +72,18 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
             return;
         }
 
-        var latestCalculationForRequest = await GetLatestCalculationForRequestAsync(aggregatedTimeSeriesRequest)
+        var latestCalculationsForRequest = await GetLatestCompletedCalculationForRequestAsync(aggregatedTimeSeriesRequest)
             .ConfigureAwait(true);
 
         var aggregatedTimeSeriesRequestMessage = AggregatedTimeSeriesRequestFactory.Parse(
             aggregatedTimeSeriesRequest,
-            latestCalculationForRequest.Select(x => x.BatchId));
+            latestCalculationsForRequest.Select(x => x.BatchId));
 
         var results = await GetAggregatedTimeSeriesAsync(
             aggregatedTimeSeriesRequestMessage,
             cancellationToken).ConfigureAwait(false);
 
-        var latestCalculationResultsForPeriod = results.GetLatestCalculationsResultsPerDay(latestCalculationForRequest);
+        var latestCalculationResultsForPeriod = _calculationResultPeriodCalculator.GetLatestCalculationsResultsPerDay(latestCalculationsForRequest, results);
         if (!results.Any())
         {
             var error = new List<ValidationError> { _noDataAvailable };
@@ -100,11 +101,11 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         await SendAcceptedMessageAsync(latestCalculationResultsForPeriod, referenceId, cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task<IReadOnlyCollection<LatestCalculationForPeriod>> GetLatestCalculationForRequestAsync(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest aggregatedTimeSeriesRequest)
+    private async Task<IReadOnlyCollection<LatestCalculationForPeriod>> GetLatestCompletedCalculationForRequestAsync(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest aggregatedTimeSeriesRequest)
     {
         var periodStart = InstantPattern.General.Parse(aggregatedTimeSeriesRequest.Period.Start).Value;
         var periodEnd = InstantPattern.General.Parse(aggregatedTimeSeriesRequest.Period.End).Value;
-        var calculationsForPeriod = await _calculationsClient
+        var calculations = await _calculationsClient
             .SearchAsync(
                 filterByGridAreaCodes: aggregatedTimeSeriesRequest.HasGridAreaCode
                     ? new[] { aggregatedTimeSeriesRequest.GridAreaCode }
@@ -114,7 +115,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
                 periodEnd: periodEnd)
             .ConfigureAwait(false);
 
-        return calculationsForPeriod.FindLatestCalculations(periodStart, periodEnd, _dateTimeZone);
+        return _calculationPeriodCalculator.FindLatestCalculationsForPeriod(periodStart, periodEnd, calculations);
     }
 
     private async Task<IReadOnlyCollection<AggregatedTimeSeries>> GetAggregatedTimeSeriesAsync(

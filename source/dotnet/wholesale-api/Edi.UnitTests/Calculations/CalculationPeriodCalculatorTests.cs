@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.Edi.Exceptions;
-using Energinet.DataHub.Wholesale.Edi.Extensions;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 using FluentAssertions;
@@ -23,9 +23,9 @@ using NodaTime;
 using NodaTime.Extensions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.EDI.UnitTests;
+namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Calculations;
 
-public class FindLatestCalculationsTests
+public class CalculationPeriodCalculatorTests
 {
     private DateTimeZone _dateTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!;
 
@@ -40,15 +40,16 @@ public class FindLatestCalculationsTests
             .WithPeriodEnd(periodEnd)
             .Build();
 
+        var sut = new CalculationPeriodCalculator(_dateTimeZone);
+
         // Act
-        var actual =
-            new List<CalculationDto>() { calculation }.FindLatestCalculations(periodStart, periodEnd, _dateTimeZone);
+        var actual = sut
+            .FindLatestCalculationsForPeriod(periodStart, periodEnd, new List<CalculationDto>() { calculation });
 
         // Assert
         using var assertionScope = new AssertionScope();
         actual.Count.Should().Be(1);
-        actual.First().PeriodStart.Should().Be(periodStart);
-        actual.First().PeriodEnd.Should().Be(periodEnd);
+        AssertCalculationsCoversWholePeriod(actual, periodStart, periodEnd);
     }
 
     [Fact]
@@ -68,15 +69,19 @@ public class FindLatestCalculationsTests
             .WithPeriodEnd(secondPeriodEnd)
             .Build();
 
+        var sut = new CalculationPeriodCalculator(_dateTimeZone);
+
         // Act
-        var actual =
-            new List<CalculationDto>() { firstCalculation, secondCalculation, }
-                .FindLatestCalculations(firstPeriodStart, secondPeriodEnd, _dateTimeZone);
+        var actual = sut
+            .FindLatestCalculationsForPeriod(
+                firstPeriodStart,
+                secondPeriodEnd,
+                new List<CalculationDto>() { firstCalculation, secondCalculation, });
 
         // Assert
         using var assertionScope = new AssertionScope();
         actual.Count.Should().Be(2);
-        AssertCalculationsForWholePeriod(actual, firstPeriodStart, secondPeriodEnd);
+        AssertCalculationsCoversWholePeriod(actual, firstPeriodStart, secondPeriodEnd);
     }
 
     [Fact]
@@ -96,15 +101,19 @@ public class FindLatestCalculationsTests
             .WithPeriodEnd(secondPeriodEnd)
             .Build();
 
+        var sut = new CalculationPeriodCalculator(_dateTimeZone);
+
         // Act
-        var actual =
-            new List<CalculationDto>() { firstCalculation, secondCalculation, }
-                .FindLatestCalculations(firstPeriodStart, secondPeriodEnd, _dateTimeZone);
+        var actual = sut
+            .FindLatestCalculationsForPeriod(
+                firstPeriodStart,
+                secondPeriodEnd,
+                new List<CalculationDto>() { firstCalculation, secondCalculation, });
 
         // Assert
         using var assertionScope = new AssertionScope();
         actual.Count.Should().Be(2);
-        AssertCalculationsForWholePeriod(actual, firstPeriodStart, secondPeriodEnd);
+        AssertCalculationsCoversWholePeriod(actual, firstPeriodStart, secondPeriodEnd);
     }
 
     [Fact]
@@ -126,15 +135,19 @@ public class FindLatestCalculationsTests
             .WithVersion(2)
             .Build();
 
+        var sut = new CalculationPeriodCalculator(_dateTimeZone);
+
         // Act
-        var actual =
-            new List<CalculationDto>() { firstCalculation, secondCalculation, }
-                .FindLatestCalculations(firstPeriodStart, secondPeriodEnd, _dateTimeZone);
+        var actual = sut
+            .FindLatestCalculationsForPeriod(
+                firstPeriodStart,
+                secondPeriodEnd,
+                new List<CalculationDto>() { firstCalculation, secondCalculation, });
 
         // Assert
         using var assertionScope = new AssertionScope();
         actual.Count.Should().Be(2);
-        AssertCalculationsForWholePeriod(actual, firstPeriodStart, secondPeriodEnd);
+        AssertCalculationsCoversWholePeriod(actual, firstPeriodStart, secondPeriodEnd);
         AssertCalculationsAreLatest(actual, new List<CalculationDto>() { firstCalculation, secondCalculation });
     }
 
@@ -157,15 +170,19 @@ public class FindLatestCalculationsTests
             .WithVersion(1)
             .Build();
 
+        var sut = new CalculationPeriodCalculator(_dateTimeZone);
+
         // Act
-        var actual =
-            new List<CalculationDto>() { firstCalculation, secondCalculation, }.FindLatestCalculations(
-                secondPeriodStart, firstPeriodEnd, _dateTimeZone);
+        var actual = sut
+            .FindLatestCalculationsForPeriod(
+                secondPeriodStart,
+                firstPeriodEnd,
+                new List<CalculationDto>() { firstCalculation, secondCalculation, });
 
         // Assert
         using var assertionScope = new AssertionScope();
         actual.Count.Should().Be(2);
-        AssertCalculationsForWholePeriod(actual, secondPeriodStart, firstPeriodEnd);
+        AssertCalculationsCoversWholePeriod(actual, secondPeriodStart, firstPeriodEnd);
         AssertCalculationsAreLatest(actual, new List<CalculationDto>() { firstCalculation, secondCalculation });
     }
 
@@ -189,15 +206,19 @@ public class FindLatestCalculationsTests
             .WithVersion(2)
             .Build();
 
+        var sut = new CalculationPeriodCalculator(_dateTimeZone);
+
         // Act
-        var actual =
-            new List<CalculationDto>() { firstCalculation, secondCalculation, }
-                .FindLatestCalculations(firstPeriodStart, firstPeriodEnd, _dateTimeZone);
+        var actual = sut
+            .FindLatestCalculationsForPeriod(
+                firstPeriodStart,
+                firstPeriodEnd,
+                new List<CalculationDto>() { firstCalculation, secondCalculation, });
 
         // Assert
         using var assertionScope = new AssertionScope();
         actual.Count.Should().Be(3);
-        AssertCalculationsForWholePeriod(actual, firstPeriodStart, firstPeriodEnd);
+        AssertCalculationsCoversWholePeriod(actual, firstPeriodStart, firstPeriodEnd);
         AssertCalculationsAreLatest(actual, new List<CalculationDto>() { firstCalculation, secondCalculation });
     }
 
@@ -228,15 +249,19 @@ public class FindLatestCalculationsTests
             .WithVersion(3)
             .Build();
 
+        var sut = new CalculationPeriodCalculator(_dateTimeZone);
+
         // Act
-        var actual =
-            new List<CalculationDto>() { firstCalculation, secondCalculation, thirdCalculation, }
-                .FindLatestCalculations(firstPeriodStart, firstPeriodEnd, _dateTimeZone);
+        var actual = sut
+            .FindLatestCalculationsForPeriod(
+                firstPeriodStart,
+                firstPeriodEnd,
+                new List<CalculationDto>() { firstCalculation, secondCalculation, thirdCalculation, });
 
         // Assert
         using var assertionScope = new AssertionScope();
         actual.Count.Should().Be(5);
-        AssertCalculationsForWholePeriod(actual, firstPeriodStart, firstPeriodEnd);
+        AssertCalculationsCoversWholePeriod(actual, firstPeriodStart, firstPeriodEnd);
         AssertCalculationsAreLatest(
             actual,
             new List<CalculationDto>() { firstCalculation, secondCalculation, thirdCalculation, });
@@ -261,10 +286,14 @@ public class FindLatestCalculationsTests
             .WithVersion(2)
             .Build();
 
+        var sut = new CalculationPeriodCalculator(_dateTimeZone);
+
         // Act
-        var actual = () =>
-            new List<CalculationDto>() { firstCalculation, secondCalculation, }
-                .FindLatestCalculations(firstPeriodStart, secondPeriodEnd, _dateTimeZone);
+        var actual = () => sut
+            .FindLatestCalculationsForPeriod(
+                firstPeriodStart,
+                secondPeriodEnd,
+                new List<CalculationDto>() { firstCalculation, secondCalculation, });
 
         // Assert
         actual.Should().ThrowExactly<MissingCalculationException>();
@@ -277,8 +306,14 @@ public class FindLatestCalculationsTests
         var periodStart = Instant.FromUtc(2024, 1, 1, 23, 0, 0);
         var periodEnd = Instant.FromUtc(2024, 1, 14, 23, 0, 0);
 
+        var sut = new CalculationPeriodCalculator(_dateTimeZone);
+
         // Act
-        var actual = new List<CalculationDto> { }.FindLatestCalculations(periodStart, periodEnd, _dateTimeZone);
+        var actual = sut
+            .FindLatestCalculationsForPeriod(
+                periodStart,
+                periodEnd,
+                new List<CalculationDto>() { });
 
         // Assert
         actual.Should().BeEmpty();
@@ -295,7 +330,7 @@ public class FindLatestCalculationsTests
         }
     }
 
-    private void AssertCalculationsForWholePeriod(IReadOnlyCollection<LatestCalculationForPeriod> actual, Instant periodStart, Instant periodEnd)
+    private void AssertCalculationsCoversWholePeriod(IReadOnlyCollection<LatestCalculationForPeriod> actual, Instant periodStart, Instant periodEnd)
     {
         LatestCalculationForPeriod? lastCalculation = null;
         foreach (var calculationForPeriod in actual.OrderBy(x => x.PeriodStart))

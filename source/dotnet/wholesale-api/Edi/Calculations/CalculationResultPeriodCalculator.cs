@@ -18,13 +18,13 @@ using Energinet.DataHub.Wholesale.Edi.Models;
 using NodaTime;
 using NodaTime.Extensions;
 
-namespace Energinet.DataHub.Wholesale.Edi.Extensions;
+namespace Energinet.DataHub.Wholesale.Edi.Calculations;
 
-public static class CalculationResultExtensions
+public class CalculationResultPeriodCalculator
 {
-    public static IReadOnlyCollection<AggregatedTimeSeriesResult> GetLatestCalculationsResultsPerDay(
-        this IReadOnlyCollection<AggregatedTimeSeries> calculationResults,
-        IReadOnlyCollection<LatestCalculationForPeriod> latestCalculationsForPeriod)
+    public IReadOnlyCollection<AggregatedTimeSeriesResult> GetLatestCalculationsResultsPerDay(
+        IReadOnlyCollection<LatestCalculationForPeriod> latestCalculationsForPeriod,
+        IReadOnlyCollection<AggregatedTimeSeries> calculationResults)
     {
         var latestCalculationResults = new List<AggregatedTimeSeriesResult>();
         if (calculationResults.Count == 0)
