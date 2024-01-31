@@ -17,7 +17,7 @@ using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 namespace Energinet.DataHub.Wholesale.Calculations.Interfaces;
 
 /// <summary>
-/// An immutable command to create a batch.
+/// An immutable command to create a calculation.
 /// </summary>
 public sealed record CreateCalculationCommand(
     ProcessType ProcessType,

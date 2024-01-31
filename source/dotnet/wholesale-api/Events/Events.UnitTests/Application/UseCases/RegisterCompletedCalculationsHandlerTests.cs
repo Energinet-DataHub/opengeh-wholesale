@@ -45,7 +45,7 @@ public class RegisterCompletedCalculationsHandlerTests
             .Setup(repository => repository.GetLastCompletedOrNullAsync())
             .ReturnsAsync(lastKnownCompletedCalculation);
         batchesClientMock
-            .Setup(client => client.GetBatchesCompletedAfterAsync(It.IsAny<Instant>()))
+            .Setup(client => client.GetCompletedAfterAsync(It.IsAny<Instant>()))
             .ReturnsAsync(new[] { newBatch1, newBatch2 });
         completedBatchFactoryMock
             .Setup(x => x.CreateFromBatches(It.IsAny<IEnumerable<CalculationDto>>()))

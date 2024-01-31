@@ -19,7 +19,7 @@ using Microsoft.Extensions.Logging;
 namespace Energinet.DataHub.Wholesale.Calculations.Application.Workers;
 
 /// <summary>
-/// Worker invoking updating batch execution states.
+/// Worker invoking updating calculation execution states.
 /// </summary>
 public class UpdateCalculationExecutionStateTrigger : RepeatingTrigger<IUpdateCalculationExecutionStateHandler>
 {
