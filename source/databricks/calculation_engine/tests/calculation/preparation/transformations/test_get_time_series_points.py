@@ -11,10 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import pathlib
+
 from datetime import datetime
 from decimal import Decimal
-from unittest import mock
 from unittest.mock import patch, Mock
 
 import pytest
@@ -29,8 +28,6 @@ from package.calculation_input.schemas import (
     grid_loss_metering_points_schema,
 )
 from package.constants import Colname
-from package.infrastructure import paths
-from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 
 DEFAULT_OBSERVATION_TIME = datetime(2022, 6, 8, 22, 0, 0)
@@ -47,7 +44,7 @@ def _create_time_series_point_row(
         Colname.quality: "foo",
         Colname.observation_time: DEFAULT_OBSERVATION_TIME,
     }
-
+..
 
 def _create_grid_loss_metering_point_row(
     metering_point_id: str = "a-grid-loss-metering-point-id",
