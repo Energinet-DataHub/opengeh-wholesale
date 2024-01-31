@@ -36,7 +36,7 @@ public class DatabaseContext : DbContext, IDatabaseContext
     {
     }
 
-    public virtual DbSet<Calculation> Batches { get; private set; } = null!;
+    public virtual DbSet<Calculation> Calculations { get; private set; } = null!;
 
     public virtual DbSet<Interfaces.GridArea.GridAreaOwner> GridAreaOwners { get; private set; } = null!;
 

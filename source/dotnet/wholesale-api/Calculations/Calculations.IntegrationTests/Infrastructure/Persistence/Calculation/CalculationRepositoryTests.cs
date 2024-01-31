@@ -50,7 +50,7 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
 
         // Assert
         await using var readContext = _databaseManager.CreateDbContext();
-        var actual = await readContext.Batches.SingleAsync(b => b.Id == expectedBatch.Id);
+        var actual = await readContext.Calculations.SingleAsync(b => b.Id == expectedBatch.Id);
 
         actual.Should().BeEquivalentTo(expectedBatch);
         actual.GridAreaCodes.Should().BeEquivalentTo(someGridAreasIds);
@@ -77,7 +77,7 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
 
         // Assert
         await using var readContext = _databaseManager.CreateDbContext();
-        var actual = await readContext.Batches.SingleAsync(b => b.Id == batch.Id);
+        var actual = await readContext.Calculations.SingleAsync(b => b.Id == batch.Id);
 
         Assert.Equal(actual.ExecutionTimeStart, batch.ExecutionTimeStart);
         Assert.Equal(actual.ExecutionTimeEnd, batch.ExecutionTimeEnd);
@@ -98,7 +98,7 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
 
         // Assert
         await using var readContext = _databaseManager.CreateDbContext();
-        var actual = await readContext.Batches.SingleAsync(b => b.Id == batch.Id);
+        var actual = await readContext.Calculations.SingleAsync(b => b.Id == batch.Id);
 
         actual.Should().BeEquivalentTo(batch);
         actual.GridAreaCodes.Should().BeEquivalentTo(someGridAreasIds);

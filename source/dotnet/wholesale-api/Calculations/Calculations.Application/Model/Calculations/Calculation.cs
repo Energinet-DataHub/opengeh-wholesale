@@ -51,7 +51,7 @@ public class Calculation
     }
 
     /// <summary>
-    /// Validate if parameters are valid for a Batch.
+    /// Validate if parameters are valid for a <see cref="Calculation"/>.
     /// </summary>
     /// <param name="gridAreaCodes"></param>
     /// <param name="processType"></param>
@@ -59,7 +59,7 @@ public class Calculation
     /// <param name="periodEnd"></param>
     /// <param name="dateTimeZone"></param>
     /// <param name="validationErrors"></param>
-    /// <returns>If the parameters are valid for a Batch</returns>
+    /// <returns>If the parameters are valid for a <see cref="Calculation"/></returns>
     private static bool IsValid(
         IEnumerable<GridAreaCode> gridAreaCodes,
         ProcessType processType,
@@ -71,7 +71,7 @@ public class Calculation
         var errors = new List<string>();
 
         if (!gridAreaCodes.Any())
-            errors.Add("Batch must contain at least one grid area code.");
+            errors.Add("Calculation must contain at least one grid area code.");
 
         if (periodStart >= periodEnd)
             errors.Add("periodStart is greater or equal to periodEnd");
@@ -247,7 +247,7 @@ public class Calculation
     }
 
     /// <summary>
-    /// Reset a batch. This will ensure that it will be picked up and run again in a new calculation.
+    /// Reset a <see cref="Calculation"/>. This will ensure that it will be picked up and run again in a new calculation.
     /// </summary>
     public void Reset()
     {
@@ -259,6 +259,6 @@ public class Calculation
 
     private void ThrowInvalidStateTransitionException(CalculationExecutionState currentState, CalculationExecutionState desiredState)
     {
-        throw new BusinessValidationException($"Cannot change batchExecutionState from {currentState} to {desiredState}");
+        throw new BusinessValidationException($"Cannot change {nameof(CalculationExecutionState)} from {currentState} to {desiredState}");
     }
 }
