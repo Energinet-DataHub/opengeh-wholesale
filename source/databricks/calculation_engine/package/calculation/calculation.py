@@ -69,9 +69,7 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
             args.calculation_execution_time_start,
         )
 
-        charges_df = prepared_data_reader.get_charges(
-            args.calculation_period_start_datetime, args.calculation_period_end_datetime
-        )
+        charges_df = prepared_data_reader.get_charges()
         metering_points_periods_for_wholesale_calculation_df = (
             _get_production_and_consumption_metering_points(metering_point_periods_df)
         )

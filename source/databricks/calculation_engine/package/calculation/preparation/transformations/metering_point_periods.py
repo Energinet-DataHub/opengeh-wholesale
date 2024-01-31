@@ -12,12 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime
-
 from pyspark.sql import DataFrame
-
-from package.calculation.preparation.transformations.clamp_period import clamp_period
+from pyspark.sql.functions import (
+    col,
+    when,
+)
 from package.constants import Colname
+from datetime import datetime
 from package.calculation_input import TableReader
 
 
@@ -31,12 +32,18 @@ def get_metering_point_periods_df(
         period_start_datetime, period_end_datetime, calculation_grid_areas
     )
 
-    metering_point_periods_df = clamp_period(
-        metering_point_periods_df,
-        period_start_datetime,
-        period_end_datetime,
+    metering_point_periods_df = metering_point_periods_df.withColumn(
         Colname.from_date,
+        when(
+            col(Colname.from_date) < period_start_datetime, period_start_datetime
+        ).otherwise(col(Colname.from_date)),
+    ).withColumn(
         Colname.to_date,
+        when(
+            col(Colname.to_date).isNull()
+            | (col(Colname.to_date) > period_end_datetime),
+            period_end_datetime,
+        ).otherwise(col(Colname.to_date)),
     )
 
     metering_point_periods_df = metering_point_periods_df.select(
