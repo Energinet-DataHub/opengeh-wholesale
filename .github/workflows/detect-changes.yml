@@ -81,11 +81,11 @@ jobs:
               - 'docs/diagrams/c4-model/views.json'
               - 'docs/diagrams/c4-model/model.dsl'
             docker:
-              - .docker/**              
+              - .docker/**
 
       - name: Package content or build has changed
         id: docker_changed
         uses: tj-actions/changed-files@v41
         with:
           since_last_remote_commit: true
-          files: .docker/**              
+          files: .docker/**
