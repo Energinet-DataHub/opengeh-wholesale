@@ -121,7 +121,7 @@ def test__read_changes__returns_expected_joined_row_values(
     )
 
     # Act
-    actual = read_charges(table_reader_mock)
+    actual = read_charges(table_reader_mock, DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
 
     # Assert
     assert actual.count() == 1
@@ -160,7 +160,7 @@ def test__read_changes__when_multiple_charge_keys__returns_only_rows_with_matchi
     )
 
     # Act
-    actual = read_charges(table_reader_mock)
+    actual = read_charges(table_reader_mock, DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
 
     # Assert
     assert actual.count() == 1
@@ -207,6 +207,8 @@ def test__read_changes__when_multiple_charge_keys__returns_only_rows_matching_jo
     expect_empty: bool,
 ) -> None:
     # Arrange
+    period_from_date = min(from_date, charge_time)  # ensure all times are within period
+    period_to_date = max(to_date, charge_time)  # ensure all times are within period
     table_reader_mock.read_charge_master_data_periods.return_value = (
         spark.createDataFrame(data=[_create_charge_master_data_row()])
     )
@@ -220,7 +222,7 @@ def test__read_changes__when_multiple_charge_keys__returns_only_rows_matching_jo
     )
 
     # Act
-    actual = read_charges(table_reader_mock)
+    actual = read_charges(table_reader_mock, period_from_date, period_to_date)
 
     # Assert
     assert actual.isEmpty() == expect_empty
