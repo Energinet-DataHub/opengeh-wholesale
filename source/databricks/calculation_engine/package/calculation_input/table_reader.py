@@ -15,14 +15,8 @@
 from datetime import datetime
 
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import concat_ws, col, when, lit
+from pyspark.sql.functions import concat_ws, col
 
-from package.codelists import (
-    InputMeteringPointType,
-    InputSettlementMethod,
-    MeteringPointType,
-    SettlementMethod,
-)
 from package.common import assert_schema
 from package.constants import Colname
 from package.infrastructure import paths
@@ -30,7 +24,6 @@ from .schemas import (
     charge_link_periods_schema,
     charge_master_data_periods_schema,
     charge_price_points_schema,
-    metering_point_period_schema,
     time_series_point_schema,
     grid_loss_metering_points_schema,
 )
@@ -60,33 +53,11 @@ class TableReader:
 
     def read_metering_point_periods(
         self,
-        period_start_datetime: datetime,
-        period_end_datetime: datetime,
-        calculation_grid_areas: list[str],
     ) -> DataFrame:
         path = (
             f"{self._calculation_input_path}/{self._metering_point_periods_table_name}"
         )
-        df = (
-            self._spark.read.format("delta")
-            .load(path)
-            .where(
-                col(Colname.grid_area).isin(calculation_grid_areas)
-                | col(Colname.from_grid_area).isin(calculation_grid_areas)
-                | col(Colname.to_grid_area).isin(calculation_grid_areas)
-            )
-            .where(col(Colname.from_date) < period_end_datetime)
-            .where(
-                col(Colname.to_date).isNull()
-                | (col(Colname.to_date) > period_start_datetime)
-            )
-        )
-
-        assert_schema(df.schema, metering_point_period_schema)
-
-        df = self._fix_settlement_method(df)
-        df = self._fix_metering_point_type(df)
-        return df
+        return self._spark.read.format("delta").load(path)
 
     def read_time_series_points(
         self, period_start_datetime: datetime, period_end_datetime: datetime
@@ -161,101 +132,5 @@ class TableReader:
                 col(Colname.charge_code),
                 col(Colname.charge_owner),
                 col(Colname.charge_type),
-            ),
-        )
-
-    def _fix_metering_point_type(self, df: DataFrame) -> DataFrame:
-        return df.withColumn(
-            Colname.metering_point_type,
-            when(
-                col(Colname.metering_point_type)
-                == InputMeteringPointType.CONSUMPTION.value,
-                lit(MeteringPointType.CONSUMPTION.value),
-            )
-            .when(
-                col(Colname.metering_point_type)
-                == InputMeteringPointType.PRODUCTION.value,
-                lit(MeteringPointType.PRODUCTION.value),
-            )
-            .when(
-                col(Colname.metering_point_type)
-                == InputMeteringPointType.EXCHANGE.value,
-                lit(MeteringPointType.EXCHANGE.value),
-            )
-            .when(
-                col(Colname.metering_point_type)
-                == InputMeteringPointType.VE_PRODUCTION.value,
-                lit(MeteringPointType.VE_PRODUCTION.value),
-            )
-            .when(
-                col(Colname.metering_point_type)
-                == InputMeteringPointType.NET_PRODUCTION.value,
-                lit(MeteringPointType.NET_PRODUCTION.value),
-            )
-            .when(
-                col(Colname.metering_point_type)
-                == InputMeteringPointType.SUPPLY_TO_GRID.value,
-                lit(MeteringPointType.SUPPLY_TO_GRID.value),
-            )
-            .when(
-                col(Colname.metering_point_type)
-                == InputMeteringPointType.CONSUMPTION_FROM_GRID.value,
-                lit(MeteringPointType.CONSUMPTION_FROM_GRID.value),
-            )
-            .when(
-                col(Colname.metering_point_type)
-                == InputMeteringPointType.WHOLESALE_SERVICES_INFORMATION.value,
-                lit(MeteringPointType.WHOLESALE_SERVICES_INFORMATION.value),
-            )
-            .when(
-                col(Colname.metering_point_type)
-                == InputMeteringPointType.OWN_PRODUCTION.value,
-                lit(MeteringPointType.OWN_PRODUCTION.value),
-            )
-            .when(
-                col(Colname.metering_point_type)
-                == InputMeteringPointType.NET_FROM_GRID.value,
-                lit(MeteringPointType.NET_FROM_GRID.value),
-            )
-            .when(
-                col(Colname.metering_point_type)
-                == InputMeteringPointType.NET_TO_GRID.value,
-                lit(MeteringPointType.NET_TO_GRID.value),
-            )
-            .when(
-                col(Colname.metering_point_type)
-                == InputMeteringPointType.TOTAL_CONSUMPTION.value,
-                lit(MeteringPointType.TOTAL_CONSUMPTION.value),
-            )
-            .when(
-                col(Colname.metering_point_type)
-                == InputMeteringPointType.ELECTRICAL_HEATING.value,
-                lit(MeteringPointType.ELECTRICAL_HEATING.value),
-            )
-            .when(
-                col(Colname.metering_point_type)
-                == InputMeteringPointType.NET_CONSUMPTION.value,
-                lit(MeteringPointType.NET_CONSUMPTION.value),
-            )
-            .when(
-                col(Colname.metering_point_type)
-                == InputMeteringPointType.EFFECT_SETTLEMENT.value,
-                lit(MeteringPointType.EFFECT_SETTLEMENT.value),
-            )
-            .otherwise(lit("Unknown type")),
-            # The otherwise is to avoid changing the nullability of the column.
-        )
-
-    @staticmethod
-    def _fix_settlement_method(df: DataFrame) -> DataFrame:
-        return df.withColumn(
-            Colname.settlement_method,
-            when(
-                col(Colname.settlement_method) == InputSettlementMethod.FLEX.value,
-                lit(SettlementMethod.FLEX.value),
-            ).when(
-                col(Colname.settlement_method)
-                == InputSettlementMethod.NON_PROFILED.value,
-                lit(SettlementMethod.NON_PROFILED.value),
             ),
         )
