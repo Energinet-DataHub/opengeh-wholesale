@@ -30,7 +30,7 @@ public class CalculationRepositoryTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetCompletedAfterAsync_WhenCompletedTimeIsNullAndNoBatchMatches_ReturnsNone(
+    public async Task GetCompletedAfterAsync_WhenCompletedTimeIsNullAndNoCalculationMatches_ReturnsNone(
         Mock<DatabaseContext> databaseContextMock)
     {
         // Arrange
@@ -48,7 +48,7 @@ public class CalculationRepositoryTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetCompletedAfterAsync_WhenCompletedTimeIsNotNullAndNoBatchMatches_ReturnsNone(
+    public async Task GetCompletedAfterAsync_WhenCompletedTimeIsNotNullAndNoCalculationMatches_ReturnsNone(
         Instant completedTime,
         Mock<DatabaseContext> databaseContextMock)
     {
@@ -67,15 +67,15 @@ public class CalculationRepositoryTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetCompletedAfterAsync_WhenCompletedTimeIsNullAndSomeBatchesExist_ReturnsThem(
+    public async Task GetCompletedAfterAsync_WhenCompletedTimeIsNullAndSomeCalculationsExist_ReturnsThem(
         Mock<DatabaseContext> databaseContextMock)
     {
         // Arrange
-        var batch1 = new CalculationBuilder().WithStateCompleted().Build();
-        var batch2 = new CalculationBuilder().WithStateCompleted().Build();
+        var calculation1 = new CalculationBuilder().WithStateCompleted().Build();
+        var calculation2 = new CalculationBuilder().WithStateCompleted().Build();
         databaseContextMock
             .Setup<DbSet<Calculation>>(context => context.Calculations)
-            .ReturnsDbSet(new List<Calculation> { batch1, batch2 });
+            .ReturnsDbSet(new List<Calculation> { calculation1, calculation2 });
 
         var sut = new CalculationRepository(databaseContextMock.Object);
 
@@ -83,21 +83,21 @@ public class CalculationRepositoryTests
         var actual = await sut.GetCompletedAfterAsync(null);
 
         // Assert
-        actual.Should().Contain(batch1);
-        actual.Should().Contain(batch2);
+        actual.Should().Contain(calculation1);
+        actual.Should().Contain(calculation2);
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetCompletedAfterAsync_WhenBatchCompletedBeforeCompletedTime_DoesNotReturnIt(
+    public async Task GetCompletedAfterAsync_WhenCalculationCompletedBeforeCompletedTime_DoesNotReturnIt(
         Mock<DatabaseContext> databaseContextMock)
     {
         // Arrange
-        var batch = new CalculationBuilder().WithStateCompleted().Build();
+        var calculation = new CalculationBuilder().WithStateCompleted().Build();
         databaseContextMock
             .Setup<DbSet<Calculation>>(context => context.Calculations)
-            .ReturnsDbSet(new List<Calculation> { batch });
-        var futureCompletedTime = batch.ExecutionTimeEnd!.Value.Plus(Duration.FromMinutes(1));
+            .ReturnsDbSet(new List<Calculation> { calculation });
+        var futureCompletedTime = calculation.ExecutionTimeEnd!.Value.Plus(Duration.FromMinutes(1));
 
         var sut = new CalculationRepository(databaseContextMock.Object);
 
@@ -105,19 +105,19 @@ public class CalculationRepositoryTests
         var actual = await sut.GetCompletedAfterAsync(futureCompletedTime);
 
         // Assert
-        actual.Should().NotContain(batch);
+        actual.Should().NotContain(calculation);
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetCompletedAfterAsync_WhenBatchIsNotCompleted_DoesNotReturnIt(
+    public async Task GetCompletedAfterAsync_WhenCalculationIsNotCompleted_DoesNotReturnIt(
         Mock<DatabaseContext> databaseContextMock)
     {
         // Arrange
-        var nonCompletedBatch = new CalculationBuilder().Build();
+        var nonCompletedCalculation = new CalculationBuilder().Build();
         databaseContextMock
             .Setup<DbSet<Calculation>>(context => context.Calculations)
-            .ReturnsDbSet(new List<Calculation> { nonCompletedBatch });
+            .ReturnsDbSet(new List<Calculation> { nonCompletedCalculation });
 
         var sut = new CalculationRepository(databaseContextMock.Object);
 
@@ -125,6 +125,6 @@ public class CalculationRepositoryTests
         var actual = await sut.GetCompletedAfterAsync(null);
 
         // Assert
-        actual.Should().NotContain(nonCompletedBatch);
+        actual.Should().NotContain(nonCompletedCalculation);
     }
 }
