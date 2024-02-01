@@ -46,7 +46,7 @@ public class CompletedCalculationRepositoryTests : IClassFixture<WholesaleDataba
 
         // Assert
         await using var readContext = _databaseManager.CreateDbContext();
-        var actual = await readContext.CompletedBatches.SingleAsync(b => b.Id == expectedCalculation.Id);
+        var actual = await readContext.CompletedCalculations.SingleAsync(b => b.Id == expectedCalculation.Id);
 
         actual.Should().BeEquivalentTo(expectedCalculation);
     }
