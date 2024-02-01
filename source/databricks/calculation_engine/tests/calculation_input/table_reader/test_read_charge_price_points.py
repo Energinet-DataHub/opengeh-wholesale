@@ -41,10 +41,6 @@ def _create_change_price_point_row() -> dict:
     }
 
 
-def _add_charge_key(df: DataFrame) -> DataFrame:
-    return df.withColumn(Colname.charge_key, f.lit("foo-foo-foo"))
-
-
 class TestWhenSchemaMismatch:
     def test__raises_assertion_error(
         self,
@@ -61,7 +57,7 @@ class TestWhenSchemaMismatch:
             reader._spark.read.format("delta"), "load", return_value=df
         ):
             with pytest.raises(AssertionError) as exc_info:
-                reader.read_charge_price_points(DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
+                reader.read_charge_price_points()
 
             assert "Schema mismatch" in str(exc_info.value)
 
@@ -86,7 +82,7 @@ class TestWhenValidInput:
             table_location,
             charge_price_points_schema,
         )
-        expected = _add_charge_key(df)
+        expected = df
         reader = TableReader(spark, calculation_input_path)
 
         # Act

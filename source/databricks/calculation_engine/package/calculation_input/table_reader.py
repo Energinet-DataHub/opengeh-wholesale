@@ -79,9 +79,7 @@ class TableReader:
 
         return df
 
-    def read_charge_master_data_periods(
-        self, period_start_datetime: datetime, period_end_datetime: datetime
-    ) -> DataFrame:
+    def read_charge_master_data_periods(self) -> DataFrame:
         path = f"{self._calculation_input_path}/{paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}"
         df = self._spark.read.format("delta").load(path)
 

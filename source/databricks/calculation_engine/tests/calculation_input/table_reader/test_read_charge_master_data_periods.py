@@ -41,10 +41,6 @@ def _create_charge_master_period_row() -> dict:
     }
 
 
-def _add_charge_key(df: DataFrame) -> DataFrame:
-    return df.withColumn(Colname.charge_key, f.lit("foo-foo-foo"))
-
-
 class TestWhenSchemaMismatch:
     def test__raises_assertion_error(
         self,
@@ -61,9 +57,7 @@ class TestWhenSchemaMismatch:
             reader._spark.read.format("delta"), "load", return_value=df
         ):
             with pytest.raises(AssertionError) as exc_info:
-                reader.read_charge_master_data_periods(
-                    DEFAULT_FROM_DATE, DEFAULT_TO_DATE
-                )
+                reader.read_charge_master_data_periods()
 
             assert "Schema mismatch" in str(exc_info.value)
 
@@ -88,13 +82,11 @@ class TestWhenValidInput:
             table_location,
             charge_master_data_periods_schema,
         )
-        expected = _add_charge_key(df)
+        expected = df
         reader = TableReader(spark, calculation_input_path)
 
         # Act
-        actual = reader.read_charge_master_data_periods(
-            DEFAULT_FROM_DATE, DEFAULT_TO_DATE
-        )
+        actual = reader.read_charge_master_data_periods()
 
         # Assert
         assert_dataframes_equal(actual, expected)
