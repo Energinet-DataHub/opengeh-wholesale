@@ -29,7 +29,7 @@ public class CompletedCalculationFactoryTests
     {
         // Arrange
         var expectedCompletedBatch = new CompletedCalculation(
-            calculation.BatchId,
+            calculation.CalculationId,
             calculation.GridAreaCodes.ToList(),
             calculation.CalculationType,
             calculation.PeriodStart.ToInstant(),

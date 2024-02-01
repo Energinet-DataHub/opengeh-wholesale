@@ -30,7 +30,7 @@ public class CompletedCalculationFactory : ICompletedCalculationFactory
             throw new ArgumentNullException($"{nameof(CalculationDto.ExecutionTimeEnd)} should not be null for a completed batch.");
 
         return new CompletedCalculation(
-            completedCalculationDto.BatchId,
+            completedCalculationDto.CalculationId,
             completedCalculationDto.GridAreaCodes.ToList(),
             completedCalculationDto.CalculationType,
             completedCalculationDto.PeriodStart.ToInstant(),

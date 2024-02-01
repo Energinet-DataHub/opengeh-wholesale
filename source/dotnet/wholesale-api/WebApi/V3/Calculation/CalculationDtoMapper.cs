@@ -22,7 +22,7 @@ public static class CalculationDtoMapper
 
         return new CalculationDto(
             calculationDto.RunId,
-            calculationDto.BatchId,
+            calculationDto.CalculationId,
             calculationDto.PeriodStart,
             calculationDto.PeriodEnd,
             calculationDto.Resolution,

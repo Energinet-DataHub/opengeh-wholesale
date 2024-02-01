@@ -81,13 +81,13 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
     {
         // Arrange
         _batchesClientMock
-            .Setup(client => client.GetAsync(calculation.BatchId))
+            .Setup(client => client.GetAsync(calculation.CalculationId))
             .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock.Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
             .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 0));
 
         // Act
-        var actual = await Sut.GetAsync(calculation.BatchId).ToListAsync();
+        var actual = await Sut.GetAsync(calculation.CalculationId).ToListAsync();
 
         // Assert
         actual.Should().BeEmpty();
@@ -99,14 +99,14 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
     {
         // Arrange
         _batchesClientMock
-            .Setup(client => client.GetAsync(calculation.BatchId))
+            .Setup(client => client.GetAsync(calculation.CalculationId))
             .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock
             .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
             .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 1));
 
         // Act
-        var actual = await Sut.GetAsync(calculation.BatchId).ToListAsync();
+        var actual = await Sut.GetAsync(calculation.CalculationId).ToListAsync();
 
         // Assert
         actual.Single().TimeSeriesPoints.Length.Should().Be(1);
@@ -118,14 +118,14 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
     {
         // Arrange
         _batchesClientMock
-            .Setup(client => client.GetAsync(calculation.BatchId))
+            .Setup(client => client.GetAsync(calculation.CalculationId))
             .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock
             .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
             .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 1));
 
         // Act
-        var actual = await Sut.GetAsync(calculation.BatchId).SingleAsync();
+        var actual = await Sut.GetAsync(calculation.CalculationId).SingleAsync();
 
         // Assert
         actual.Id.Should().Be(_calculationResultId0);
@@ -150,14 +150,14 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
     {
         // Arrange
         _batchesClientMock
-            .Setup(client => client.GetAsync(calculation.BatchId))
+            .Setup(client => client.GetAsync(calculation.CalculationId))
             .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock
             .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
             .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 2));
 
         // Act
-        var actual = await Sut.GetAsync(calculation.BatchId).ToListAsync();
+        var actual = await Sut.GetAsync(calculation.CalculationId).ToListAsync();
 
         // Assert
         actual.Count.Should().Be(2);

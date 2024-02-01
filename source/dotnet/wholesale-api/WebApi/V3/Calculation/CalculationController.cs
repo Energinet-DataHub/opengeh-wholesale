@@ -64,7 +64,7 @@ public class CalculationController : V3ControllerBase
     /// Returns a calculation matching <paramref name="calculationId"/>.
     /// </summary>
     /// <param name="calculationId">CalculationId</param>
-    [HttpGet("{batchId}", Name = "GetCalculation")]
+    [HttpGet("{calculationId}", Name = "GetCalculation")]
     [MapToApiVersion(Version)]
     [Produces("application/json", Type = typeof(CalculationDto))]
     [Authorize(Roles = Permissions.CalculationsManage)]
@@ -95,7 +95,7 @@ public class CalculationController : V3ControllerBase
         [FromQuery] DateTimeOffset? periodStart,
         [FromQuery] DateTimeOffset? periodEnd)
     {
-        var batches = await _calculationsClient.SearchAsync(
+        var calculations = await _calculationsClient.SearchAsync(
             gridAreaCodes ?? Array.Empty<string>(),
             CalculationStateMapper.MapState(executionState),
             minExecutionTime,
@@ -103,6 +103,6 @@ public class CalculationController : V3ControllerBase
             periodStart,
             periodEnd).ConfigureAwait(false);
 
-        return Ok(batches);
+        return Ok(calculations);
     }
 }

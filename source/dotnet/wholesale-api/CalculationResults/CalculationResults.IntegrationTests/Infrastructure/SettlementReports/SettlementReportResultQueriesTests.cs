@@ -51,7 +51,7 @@ public class SettlementReportResultQueriesTests : TestBase<SettlementReportResul
     {
         // Arrange
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        var expectedSettlementReportRow = await InsertRowsFromMultipleBatches(deltaTableOptions);
+        var expectedSettlementReportRow = await InsertRowsFromMultipleCalculationsAsync(deltaTableOptions);
 
         // Act
         var actual = await Sut.GetRowsAsync(_gridAreaCodes, DefaultCalculationType, _january1St, _january5Th, null);
@@ -60,7 +60,7 @@ public class SettlementReportResultQueriesTests : TestBase<SettlementReportResul
         actual.Should().BeEquivalentTo(expectedSettlementReportRow);
     }
 
-    private async Task<List<SettlementReportResultRow>> InsertRowsFromMultipleBatches(IOptions<DeltaTableOptions> options)
+    private async Task<List<SettlementReportResultRow>> InsertRowsFromMultipleCalculationsAsync(IOptions<DeltaTableOptions> options)
     {
         const string january1st = "2022-01-01T01:00:00.000Z";
         const string january2nd = "2022-01-02T01:00:00.000Z";
@@ -69,31 +69,31 @@ public class SettlementReportResultQueriesTests : TestBase<SettlementReportResul
         const string may1st = "2022-05-01T01:00:00.000Z";
         const string june1st = "2022-06-01T01:00:00.000Z";
 
-        // Batch 1: Balance fixing, ExecutionTime=june1st, Period: 01/01 to 02/01 (include)
+        // Calculation 1: Balance fixing, ExecutionTime=june1st, Period: 01/01 to 02/01 (include)
         const string quantity11 = "1.100"; // include
         const string quantity12 = "1.200"; // include
-        var batch1Row1 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: may1st, time: january1st, calculationType: DeltaTableCalculationType.BalanceFixing, gridArea: GridAreaA, quantity: quantity11);
-        var batch1Row2 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: may1st, time: january2nd, calculationType: DeltaTableCalculationType.BalanceFixing, gridArea: GridAreaA, quantity: quantity12);
+        var calculation1Row1 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: may1st, time: january1st, calculationType: DeltaTableCalculationType.BalanceFixing, gridArea: GridAreaA, quantity: quantity11);
+        var calculation1Row2 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: may1st, time: january2nd, calculationType: DeltaTableCalculationType.BalanceFixing, gridArea: GridAreaA, quantity: quantity12);
 
-        // Batch 2: Same as batch 1, but for other grid area (include)
+        // Calculation 2: Same as calculation 1, but for other grid area (include)
         const string quantity21 = "2.100"; // include
         const string quantity22 = "2.200"; // include
-        var batch2Row1 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: may1st, time: january1st, calculationType: DeltaTableCalculationType.BalanceFixing, gridArea: GridAreaB, quantity: quantity21);
-        var batch2Row2 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: may1st, time: january2nd, calculationType: DeltaTableCalculationType.BalanceFixing, gridArea: GridAreaB, quantity: quantity22);
+        var calculation2Row1 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: may1st, time: january1st, calculationType: DeltaTableCalculationType.BalanceFixing, gridArea: GridAreaB, quantity: quantity21);
+        var calculation2Row2 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: may1st, time: january2nd, calculationType: DeltaTableCalculationType.BalanceFixing, gridArea: GridAreaB, quantity: quantity22);
 
-        // Batch 3: Same as batch 1, but only partly covering the same period (include the uncovered part)
-        const string quantity31 = "3.100"; // exclude because it's an older batch
-        const string quantity32 = "3.200"; // include because other batches don't cover this date
-        var batch3Row1 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: april1st, time: january2nd, calculationType: DeltaTableCalculationType.BalanceFixing, gridArea: GridAreaA, quantity: quantity31);
-        var batch3Row2 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: april1st, time: january3rd, calculationType: DeltaTableCalculationType.BalanceFixing, gridArea: GridAreaA, quantity: quantity32);
+        // Calculation 3: Same as calculation 1, but only partly covering the same period (include the uncovered part)
+        const string quantity31 = "3.100"; // exclude because it's an older calculation
+        const string quantity32 = "3.200"; // include because other calculations don't cover this date
+        var calculation3Row1 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: april1st, time: january2nd, calculationType: DeltaTableCalculationType.BalanceFixing, gridArea: GridAreaA, quantity: quantity31);
+        var calculation3Row2 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: april1st, time: january3rd, calculationType: DeltaTableCalculationType.BalanceFixing, gridArea: GridAreaA, quantity: quantity32);
 
-        // Batch 4: Same as batch 1, but newer and for Aggregation (exclude)
+        // Calculation 4: Same as calculation 1, but newer and for Aggregation (exclude)
         const string quantity41 = "4.100"; // exclude because it's aggregation
         const string quantity42 = "4.200";  // exclude because it's aggregation
-        var batch4Row1 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: june1st, time: january1st, calculationType: DeltaTableCalculationType.Aggregation, gridArea: GridAreaA, quantity: quantity41);
-        var batch4Row2 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: june1st, time: january2nd, calculationType: DeltaTableCalculationType.Aggregation, gridArea: GridAreaA, quantity: quantity42);
+        var calculation4Row1 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: june1st, time: january1st, calculationType: DeltaTableCalculationType.Aggregation, gridArea: GridAreaA, quantity: quantity41);
+        var calculation4Row2 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: june1st, time: january2nd, calculationType: DeltaTableCalculationType.Aggregation, gridArea: GridAreaA, quantity: quantity42);
 
-        var rows = new List<IReadOnlyCollection<string>> { batch1Row1, batch1Row2, batch2Row1, batch2Row2, batch3Row1, batch3Row2, batch4Row1, batch4Row2, };
+        var rows = new List<IReadOnlyCollection<string>> { calculation1Row1, calculation1Row2, calculation2Row1, calculation2Row2, calculation3Row1, calculation3Row2, calculation4Row1, calculation4Row2, };
         await _fixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(options.Value.ENERGY_RESULTS_TABLE_NAME, rows);
 
         var expectedSettlementReportRows = new List<SettlementReportResultRow>

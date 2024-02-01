@@ -72,14 +72,14 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
     {
         // Arrange
         _batchesClientMock
-            .Setup(client => client.GetAsync(calculation.BatchId))
+            .Setup(client => client.GetAsync(calculation.CalculationId))
             .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock
             .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
             .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 0));
 
         // Act
-        var actual = await Sut.GetAsync(calculation.BatchId).ToListAsync();
+        var actual = await Sut.GetAsync(calculation.CalculationId).ToListAsync();
 
         // Assert
         actual.Should().BeEmpty();
@@ -91,13 +91,13 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
     {
         // Arrange
         _batchesClientMock
-            .Setup(client => client.GetAsync(calculation.BatchId))
+            .Setup(client => client.GetAsync(calculation.CalculationId))
             .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock.Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
             .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 1));
 
         // Act
-        var actual = await Sut.GetAsync(calculation.BatchId).ToListAsync();
+        var actual = await Sut.GetAsync(calculation.CalculationId).ToListAsync();
 
         // Assert
         actual.Single().TimeSeriesPoints.Count.Should().Be(1);
@@ -108,16 +108,16 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
     public async Task GetAsync_WhenCalculationHasOneResult_ReturnsResultRowWithExpectedValues(CalculationDto calculation)
     {
         // Arrange
-        calculation = calculation with { BatchId = Guid.Parse(_row0CalculationId), CalculationType = CalculationType.WholesaleFixing };
+        calculation = calculation with { CalculationId = Guid.Parse(_row0CalculationId), CalculationType = CalculationType.WholesaleFixing };
         _batchesClientMock
-            .Setup(client => client.GetAsync(calculation.BatchId))
+            .Setup(client => client.GetAsync(calculation.CalculationId))
             .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock
             .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
             .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 1));
 
         // Act
-        var actual = await Sut.GetAsync(calculation.BatchId).ToListAsync();
+        var actual = await Sut.GetAsync(calculation.CalculationId).ToListAsync();
 
         // Assert
         using var assertionScope = new AssertionScope();
@@ -144,14 +144,14 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
     {
         // Arrange
         _batchesClientMock
-            .Setup(client => client.GetAsync(calculation.BatchId))
+            .Setup(client => client.GetAsync(calculation.CalculationId))
             .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock
             .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
             .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 2));
 
         // Act
-        var actual = await Sut.GetAsync(calculation.BatchId).ToListAsync();
+        var actual = await Sut.GetAsync(calculation.CalculationId).ToListAsync();
 
         // Assert
         actual.Count.Should().Be(2);

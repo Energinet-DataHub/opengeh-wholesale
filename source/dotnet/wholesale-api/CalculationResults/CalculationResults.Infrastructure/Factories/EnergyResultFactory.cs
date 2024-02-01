@@ -30,7 +30,7 @@ public class EnergyResultFactory
         long version)
     {
         var id = databricksSqlRow[EnergyResultColumnNames.CalculationResultId];
-        var batchId = databricksSqlRow[EnergyResultColumnNames.CalculationId];
+        var calculationId = databricksSqlRow[EnergyResultColumnNames.CalculationId];
         var gridArea = databricksSqlRow[EnergyResultColumnNames.GridArea];
         var timeSeriesType = databricksSqlRow[EnergyResultColumnNames.TimeSeriesType];
         var energySupplierId = databricksSqlRow[EnergyResultColumnNames.EnergySupplierId];
@@ -41,7 +41,7 @@ public class EnergyResultFactory
 
         return new EnergyResult(
             SqlResultValueConverters.ToGuid(id!),
-            Guid.Parse(batchId!),
+            Guid.Parse(calculationId!),
             gridArea!,
             SqlResultValueConverters.ToTimeSeriesType(timeSeriesType!),
             energySupplierId,
