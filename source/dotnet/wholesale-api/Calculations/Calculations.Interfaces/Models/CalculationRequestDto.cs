@@ -17,6 +17,6 @@ using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 namespace Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 
 /// <summary>
-/// An immutable request to create a batch.
+/// An immutable request to create a calculation.
 /// </summary>
 public sealed record CalculationRequestDto(ProcessType ProcessType, IEnumerable<string> GridAreaCodes, DateTimeOffset StartDate, DateTimeOffset EndDate);

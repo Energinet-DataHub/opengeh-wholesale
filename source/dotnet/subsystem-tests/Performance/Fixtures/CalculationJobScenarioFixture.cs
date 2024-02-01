@@ -44,7 +44,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance.Fixtures
         /// </summary>
         private DatabricksClient DatabricksClient { get; set; } = null!;
 
-        public async Task<CalculationId> StartCalculationJobAsync(Calculation calculationJobInput)
+        public async Task<CalculationJobId> StartCalculationJobAsync(Calculation calculationJobInput)
         {
             var calculatorJobId = await DatabricksClient.GetCalculatorJobIdAsync();
             var runParameters = new DatabricksCalculationParametersFactory()
@@ -60,11 +60,11 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance.Fixtures
 
             DiagnosticMessageSink.WriteDiagnosticMessage($"'CalculatorJob' for {calculationJobInput.ProcessType} with id '{runId}' started.");
 
-            return new CalculationId(runId);
+            return new CalculationJobId(runId);
         }
 
         public async Task<(bool IsCompleted, Run? Run)> WaitForCalculationJobCompletedAsync(
-            CalculationId calculationId,
+            CalculationJobId calculationJobId,
             TimeSpan waitTimeLimit)
         {
             var delay = TimeSpan.FromMinutes(2);
@@ -74,7 +74,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance.Fixtures
             var isCondition = await Awaiter.TryWaitUntilConditionAsync(
                 async () =>
                 {
-                    runState = await DatabricksClient.Jobs.RunsGet(calculationId.Id);
+                    runState = await DatabricksClient.Jobs.RunsGet(calculationJobId.Id);
                     calculationState = ConvertToCalculationState(runState.Item1);
 
                     return
@@ -85,7 +85,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance.Fixtures
                 waitTimeLimit,
                 delay);
 
-            DiagnosticMessageSink.WriteDiagnosticMessage($"Wait for 'CalculatorJob' with id '{calculationId.Id}' completed with '{nameof(isCondition)}={isCondition}' and '{nameof(calculationState)}={calculationState}'.");
+            DiagnosticMessageSink.WriteDiagnosticMessage($"Wait for 'CalculatorJob' with id '{calculationJobId.Id}' completed with '{nameof(isCondition)}={isCondition}' and '{nameof(calculationState)}={calculationState}'.");
 
             return (calculationState == CalculationState.Completed, runState.Item1);
         }

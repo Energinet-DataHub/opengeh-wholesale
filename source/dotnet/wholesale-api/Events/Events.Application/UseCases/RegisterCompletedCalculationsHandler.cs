@@ -46,7 +46,7 @@ public class RegisterCompletedCalculationsHandler : IRegisterCompletedCalculatio
     private async Task<IEnumerable<CompletedCalculation>> GetNewCompletedBatchesAsync()
     {
         var lastKnownCompletedBatch = await _completedCalculationRepository.GetLastCompletedOrNullAsync().ConfigureAwait(false);
-        var completedBatchDtos = await _calculationsClient.GetBatchesCompletedAfterAsync(lastKnownCompletedBatch?.CompletedTime).ConfigureAwait(false);
+        var completedBatchDtos = await _calculationsClient.GetCompletedAfterAsync(lastKnownCompletedBatch?.CompletedTime).ConfigureAwait(false);
         return _completedCalculationFactory.CreateFromBatches(completedBatchDtos);
     }
 }

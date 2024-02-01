@@ -57,7 +57,7 @@ public class CalculationTests
             DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
             Guid.NewGuid(),
             SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks));
-        actual.Message.Should().Contain("Batch must contain at least one grid area code");
+        actual.Message.Should().Contain("Calculation must contain at least one grid area code");
     }
 
     [Theory]
