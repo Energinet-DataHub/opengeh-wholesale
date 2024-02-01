@@ -56,10 +56,10 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance
         [SubsystemFact]
         public async Task When_CalculationJobIsStarted()
         {
-            Fixture.ScenarioState.CalculationId = await Fixture.StartCalculationJobAsync(Fixture.ScenarioState.CalculationJobInput);
+            Fixture.ScenarioState.CalculationJobId = await Fixture.StartCalculationJobAsync(Fixture.ScenarioState.CalculationJobInput);
 
             // Assert
-            Fixture.ScenarioState.CalculationId.Should().NotBeNull();
+            Fixture.ScenarioState.CalculationJobId.Should().NotBeNull();
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance
         public async Task Then_CalculationJobIsCompletedWithinWaitTime()
         {
             var actualWaitResult = await Fixture.WaitForCalculationJobCompletedAsync(
-                Fixture.ScenarioState.CalculationId,
+                Fixture.ScenarioState.CalculationJobId,
                 waitTimeLimit: TimeSpan.FromMinutes(75));
 
             Fixture.ScenarioState.Run = actualWaitResult.Run;

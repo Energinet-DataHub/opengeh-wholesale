@@ -39,11 +39,11 @@ public class CreateCalculationHandler : ICreateCalculationHandler
 
     public async Task<Guid> HandleAsync(CreateCalculationCommand command)
     {
-        var batch = _calculationFactory.Create(command.ProcessType, command.GridAreaCodes, command.StartDate, command.EndDate, command.CreatedByUserId);
-        await _calculationRepository.AddAsync(batch).ConfigureAwait(false);
+        var calculation = _calculationFactory.Create(command.ProcessType, command.GridAreaCodes, command.StartDate, command.EndDate, command.CreatedByUserId);
+        await _calculationRepository.AddAsync(calculation).ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
-        _logger.LogInformation("Calculation created with id {calculation_id}", batch.Id);
-        return batch.Id;
+        _logger.LogInformation("Calculation created with id {calculation_id}", calculation.Id);
+        return calculation.Id;
     }
 }

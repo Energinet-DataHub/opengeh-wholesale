@@ -17,7 +17,7 @@ namespace Energinet.DataHub.Wholesale.Calculations.Interfaces;
 public interface IStartCalculationHandler
 {
     /// <summary>
-    /// Start calculations for all created batches.
+    /// Start calculations for all created calculations.
     /// </summary>
     Task StartAsync();
 }
