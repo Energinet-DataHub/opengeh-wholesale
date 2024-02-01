@@ -19,25 +19,25 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.WebApi.V3;
 
-public class BatchStateMapperTests
+public class CalculationStateMapperTests
 {
     [Theory]
-    [InlineAutoMoqData(Calculations.Interfaces.Models.CalculationState.Failed, BatchState.Failed)]
-    [InlineAutoMoqData(Calculations.Interfaces.Models.CalculationState.Completed, BatchState.Completed)]
-    [InlineAutoMoqData(Calculations.Interfaces.Models.CalculationState.Executing, BatchState.Executing)]
-    [InlineAutoMoqData(Calculations.Interfaces.Models.CalculationState.Pending, BatchState.Pending)]
-    public void Map_ReturnsExpectedTypeForWebApi(Calculations.Interfaces.Models.CalculationState source, BatchState expected)
+    [InlineAutoMoqData(Calculations.Interfaces.Models.CalculationState.Failed, CalculationState.Failed)]
+    [InlineAutoMoqData(Calculations.Interfaces.Models.CalculationState.Completed, CalculationState.Completed)]
+    [InlineAutoMoqData(Calculations.Interfaces.Models.CalculationState.Executing, CalculationState.Executing)]
+    [InlineAutoMoqData(Calculations.Interfaces.Models.CalculationState.Pending, CalculationState.Pending)]
+    public void Map_ReturnsExpectedTypeForWebApi(Calculations.Interfaces.Models.CalculationState source, CalculationState expected)
     {
         var actual = CalculationStateMapper.MapState(source);
         actual.Should().Be(expected);
     }
 
     [Theory]
-    [InlineAutoMoqData(BatchState.Failed, Calculations.Interfaces.Models.CalculationState.Failed)]
-    [InlineAutoMoqData(BatchState.Completed, Calculations.Interfaces.Models.CalculationState.Completed)]
-    [InlineAutoMoqData(BatchState.Executing, Calculations.Interfaces.Models.CalculationState.Executing)]
-    [InlineAutoMoqData(BatchState.Pending, Calculations.Interfaces.Models.CalculationState.Pending)]
-    public void Map_ReturnsExpectedTypeForBatchModule(BatchState source, Calculations.Interfaces.Models.CalculationState expected)
+    [InlineAutoMoqData(CalculationState.Failed, Calculations.Interfaces.Models.CalculationState.Failed)]
+    [InlineAutoMoqData(CalculationState.Completed, Calculations.Interfaces.Models.CalculationState.Completed)]
+    [InlineAutoMoqData(CalculationState.Executing, Calculations.Interfaces.Models.CalculationState.Executing)]
+    [InlineAutoMoqData(CalculationState.Pending, Calculations.Interfaces.Models.CalculationState.Pending)]
+    public void Map_ReturnsExpectedTypeForBatchModule(CalculationState source, Calculations.Interfaces.Models.CalculationState expected)
     {
         var actual = CalculationStateMapper.MapState(source);
         actual.Should().Be(expected);
@@ -61,7 +61,7 @@ public class BatchStateMapperTests
     public void MapState_WhenInvalidEnumNumberForV3BatchState_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
-        var invalidValue = (BatchState)99;
+        var invalidValue = (CalculationState)99;
 
         // Act
         var act = () => CalculationStateMapper.MapState(invalidValue);

@@ -14,10 +14,20 @@
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 
-public enum BatchState
-{
-    Pending,
-    Executing,
-    Completed,
-    Failed,
-}
+/// <summary>
+/// An immutable calculation.
+/// </summary>
+public sealed record CalculationDto(
+    long? RunId,
+    Guid BatchId,
+    DateTimeOffset PeriodStart,
+    DateTimeOffset PeriodEnd,
+    string Resolution,
+    string Unit,
+    DateTimeOffset? ExecutionTimeStart,
+    DateTimeOffset? ExecutionTimeEnd,
+    CalculationState ExecutionState,
+    bool AreSettlementReportsCreated,
+    string[] GridAreaCodes,
+    CalculationType CalculationType,
+    Guid CreatedByUserId);

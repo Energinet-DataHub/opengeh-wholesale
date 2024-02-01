@@ -19,7 +19,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.WebApi.V3;
 
-public static class BatchDtoMapperTests
+public static class CalculationDtoMapperTests
 {
     [Theory]
     [InlineAutoMoqData]

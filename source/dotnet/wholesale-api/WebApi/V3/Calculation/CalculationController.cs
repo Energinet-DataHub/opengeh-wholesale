@@ -25,7 +25,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 /// <summary>
 /// Energy suppliers for which batch results have been calculated.
 /// </summary>
-[Route("/v3/batches")]
+[Route("/v3/calculations")]
 public class CalculationController : V3ControllerBase
 {
     private readonly ICalculationsClient _calculationsClient;
@@ -43,38 +43,38 @@ public class CalculationController : V3ControllerBase
     }
 
     /// <summary>
-    /// Create a batch.
+    /// Create a calculation.
     /// </summary>
-    /// <returns>200 Ok with The batch id, or a 400 with an errormessage</returns>
-    [HttpPost(Name = "CreateBatch")]
+    /// <returns>200 Ok with The calculation id, or a 400 with an errormessage</returns>
+    [HttpPost(Name = "CreateCalculation")]
     [MapToApiVersion(Version)]
     [Produces("application/json", Type = typeof(Guid))]
     [Authorize(Roles = Permissions.CalculationsManage)]
-    public async Task<Guid> CreateAsync([FromBody][Required] BatchRequestDto batchRequestDto)
+    public async Task<Guid> CreateAsync([FromBody][Required] CalculationRequestDto calculationRequestDto)
     {
         return await _createCalculationHandler.HandleAsync(new CreateCalculationCommand(
-            CalculationTypeMapper.Map(batchRequestDto.ProcessType),
-            batchRequestDto.GridAreaCodes,
-            batchRequestDto.StartDate,
-            batchRequestDto.EndDate,
+            CalculationTypeMapper.Map(calculationRequestDto.ProcessType),
+            calculationRequestDto.GridAreaCodes,
+            calculationRequestDto.StartDate,
+            calculationRequestDto.EndDate,
             _userContext.CurrentUser.UserId)).ConfigureAwait(false);
     }
 
     /// <summary>
-    /// Returns a batch matching <paramref name="batchId"/>.
+    /// Returns a calculation matching <paramref name="calculationId"/>.
     /// </summary>
-    /// <param name="batchId">BatchId</param>
-    [HttpGet("{batchId}", Name = "GetBatch")]
+    /// <param name="calculationId">CalculationId</param>
+    [HttpGet("{batchId}", Name = "GetCalculation")]
     [MapToApiVersion(Version)]
-    [Produces("application/json", Type = typeof(BatchDto))]
+    [Produces("application/json", Type = typeof(CalculationDto))]
     [Authorize(Roles = Permissions.CalculationsManage)]
-    public async Task<IActionResult> GetAsync([FromRoute] Guid batchId)
+    public async Task<IActionResult> GetAsync([FromRoute] Guid calculationId)
     {
-        return Ok(await _calculationsClient.GetAsync(batchId).ConfigureAwait(false));
+        return Ok(await _calculationsClient.GetAsync(calculationId).ConfigureAwait(false));
     }
 
     /// <summary>
-    /// Get batches that matches the criteria specified
+    /// Get calculations that matches the criteria specified
     /// </summary>
     /// <param name="gridAreaCodes"></param>
     /// <param name="executionState"></param>
@@ -82,14 +82,14 @@ public class CalculationController : V3ControllerBase
     /// <param name="maxExecutionTime"></param>
     /// <param name="periodStart"></param>
     /// <param name="periodEnd"></param>
-    /// <returns>Batches that matches the search criteria. Always 200 OK</returns>
-    [HttpGet(Name = "SearchBatches")]
+    /// <returns>Calculations that matches the search criteria. Always 200 OK</returns>
+    [HttpGet(Name = "SearchCalculations")]
     [MapToApiVersion(Version)]
-    [Produces("application/json", Type = typeof(List<BatchDto>))]
+    [Produces("application/json", Type = typeof(List<CalculationDto>))]
     [Authorize(Roles = Permissions.CalculationsManage)]
     public async Task<IActionResult> SearchAsync(
         [FromQuery] string[]? gridAreaCodes,
-        [FromQuery] BatchState? executionState,
+        [FromQuery] CalculationState? executionState,
         [FromQuery] DateTimeOffset? minExecutionTime,
         [FromQuery] DateTimeOffset? maxExecutionTime,
         [FromQuery] DateTimeOffset? periodStart,

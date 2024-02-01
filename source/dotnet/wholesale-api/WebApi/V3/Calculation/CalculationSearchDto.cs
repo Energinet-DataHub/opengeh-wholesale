@@ -17,4 +17,4 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 /// <summary>
 /// An immutable criteria for batch search.
 /// </summary>
-public sealed record BatchSearchDto(DateTimeOffset MinExecutionTime, DateTimeOffset MaxExecutionTime);
+public sealed record CalculationSearchDto(DateTimeOffset MinExecutionTime, DateTimeOffset MaxExecutionTime);
