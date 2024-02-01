@@ -167,7 +167,7 @@ public class IntegrationEventProviderTests
         var fixture = new Fixture();
         var completedCalculation = fixture
             .Build<CompletedCalculation>()
-            .With(p => p.ProcessType, CalculationType.WholesaleFixing)
+            .With(p => p.CalculationType, CalculationType.WholesaleFixing)
             .Create();
 
         completedCalculationRepositoryMock
@@ -201,7 +201,7 @@ public class IntegrationEventProviderTests
         var fixture = new Fixture();
         var completedCalculation = fixture
             .Build<CompletedCalculation>()
-            .With(p => p.ProcessType, CalculationType.WholesaleFixing)
+            .With(p => p.CalculationType, CalculationType.WholesaleFixing)
             .Create();
 
         completedCalculationRepositoryMock
@@ -245,11 +245,11 @@ public class IntegrationEventProviderTests
         var fixture = new Fixture();
         var aggregationCalculation = fixture
             .Build<CompletedCalculation>()
-            .With(p => p.ProcessType, CalculationType.Aggregation)
+            .With(p => p.CalculationType, CalculationType.Aggregation)
             .Create();
         var wholesaleFixingCalculation = fixture
             .Build<CompletedCalculation>()
-            .With(p => p.ProcessType, CalculationType.WholesaleFixing)
+            .With(p => p.CalculationType, CalculationType.WholesaleFixing)
             .Create();
 
         completedCalculationRepositoryMock

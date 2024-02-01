@@ -175,7 +175,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
             var fixture = new Fixture();
             var batch = fixture
                 .Build<CompletedCalculation>()
-                .With(p => p.ProcessType, processType)
+                .With(p => p.CalculationType, processType)
                 .Create();
 
             var wholesaleResultQueriesStub = Mock.Of<IWholesaleResultQueries>();
@@ -197,7 +197,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
             var fixture = new Fixture();
             var wholesaleFixingBatch = fixture
                 .Build<CompletedCalculation>()
-                .With(p => p.ProcessType, CalculationType.WholesaleFixing)
+                .With(p => p.CalculationType, CalculationType.WholesaleFixing)
                 .Create();
             return wholesaleFixingBatch;
         }

@@ -41,7 +41,7 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ev
 
         public bool CanContainWholesaleResults(CompletedCalculation calculation)
         {
-            return calculation.ProcessType
+            return calculation.CalculationType
                 is CalculationType.WholesaleFixing
                 or CalculationType.FirstCorrectionSettlement
                 or CalculationType.SecondCorrectionSettlement
