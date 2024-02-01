@@ -39,12 +39,12 @@ public class StartCalculationHandler : IStartCalculationHandler
     public async Task StartAsync()
     {
         var calculations = await _calculationRepository.GetCreatedAsync().ConfigureAwait(false);
-        foreach (var batch in calculations)
+        foreach (var calculation in calculations)
         {
-            await _calculationInfrastructureService.StartAsync(batch.Id).ConfigureAwait(false);
+            await _calculationInfrastructureService.StartAsync(calculation.Id).ConfigureAwait(false);
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
-            _logger.LogInformation("Calculation with id {calculation_id} started.", batch.Id);
+            _logger.LogInformation("Calculation with id {calculation_id} started.", calculation.Id);
         }
     }
 }
