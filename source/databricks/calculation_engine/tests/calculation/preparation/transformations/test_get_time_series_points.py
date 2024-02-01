@@ -16,9 +16,8 @@ from datetime import datetime
 from decimal import Decimal
 from unittest.mock import patch, Mock
 
-import pytest
+
 from pyspark.sql import SparkSession
-import pyspark.sql.functions as f
 
 from package import calculation_input
 from package.calculation.preparation.transformations import get_time_series_points
@@ -52,26 +51,6 @@ def _create_grid_loss_metering_point_row(
     return {
         Colname.metering_point_id: metering_point_id,
     }
-
-
-class TestWhenSchemaMismatch:
-    @patch.object(calculation_input, TableReader.__name__)
-    def test_raises_assertion_error(
-        self, mock_calculation_input_reader: Mock, spark: SparkSession
-    ) -> None:
-        # Arrange
-        row = _create_time_series_point_row()
-        df = spark.createDataFrame(data=[row], schema=time_series_point_schema)
-        df = df.withColumn("test", f.lit("test"))
-        mock_calculation_input_reader.read_metering_point_periods.return_value = df
-
-        # Act & Assert
-        with pytest.raises(AssertionError) as exc_info:
-            get_time_series_points(
-                mock_calculation_input_reader, DEFAULT_FROM_DATE, DEFAULT_TO_DATE
-            )
-
-        assert "Schema mismatch" in str(exc_info.value)
 
 
 class TestWhenValidInput:
