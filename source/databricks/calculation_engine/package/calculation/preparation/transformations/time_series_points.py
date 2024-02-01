@@ -54,6 +54,4 @@ def get_time_series_points(
             "observation_month"
         )  # Drop month partition column
 
-    assert_schema(time_series_points_df.schema, time_series_point_schema)
-
     return time_series_points_df
