@@ -19,9 +19,9 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.En
 
 public static class CalculationTypeMapper
 {
-    public static CalculationType MapCalculationType(Wholesale.Common.Interfaces.Models.CalculationType processType)
+    public static CalculationType MapCalculationType(Wholesale.Common.Interfaces.Models.CalculationType calculationType)
     {
-        return processType switch
+        return calculationType switch
         {
             Wholesale.Common.Interfaces.Models.CalculationType.Aggregation => CalculationType.Aggregation,
             Wholesale.Common.Interfaces.Models.CalculationType.BalanceFixing => CalculationType.BalanceFixing,
@@ -31,8 +31,8 @@ public static class CalculationTypeMapper
             Wholesale.Common.Interfaces.Models.CalculationType.ThirdCorrectionSettlement => CalculationType.ThirdCorrectionSettlement,
 
             _ => throw new ArgumentOutOfRangeException(
-                nameof(processType),
-                actualValue: processType,
+                nameof(calculationType),
+                actualValue: calculationType,
                 "Value cannot be mapped to a calculation type."),
         };
     }

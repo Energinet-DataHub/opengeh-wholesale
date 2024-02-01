@@ -29,7 +29,7 @@ public class RequestedCalculationTypeMapperTests
     [InlineData(BusinessReason.Correction, SettlementSeriesVersion.SecondCorrection, RequestedCalculationType.SecondCorrection)]
     [InlineData(BusinessReason.Correction, SettlementSeriesVersion.ThirdCorrection, RequestedCalculationType.ThirdCorrection)]
     [InlineData(BusinessReason.Correction, null, RequestedCalculationType.LatestCorrection)]
-    public void ToRequestedProcessType_WhenValidBusinessReasonAndSettlementSeriesVersion_ReturnsExpectedType(string businessReason, string? settlementSeriesVersion, RequestedCalculationType expectedType)
+    public void ToRequestedCalculationType_WhenValidBusinessReasonAndSettlementSeriesVersion_ReturnsExpectedType(string businessReason, string? settlementSeriesVersion, RequestedCalculationType expectedType)
     {
         // Act
         var actualType = RequestedCalculationTypeMapper.ToRequestedCalculationType(businessReason, settlementSeriesVersion);
@@ -47,7 +47,7 @@ public class RequestedCalculationTypeMapperTests
     [InlineData("", "")]
     [InlineData("random-string", "")]
     [InlineData("random-string", SettlementSeriesVersion.FirstCorrection)]
-    public void ToRequestedProcessType_WhenInvalidBusinessReasonAndSettlementSeriesVersionCombination_ThrowsArgumentOutOfRangeException(string businessReason, string? settlementSeriesVersion)
+    public void ToRequestedCalculationType_WhenInvalidBusinessReasonAndSettlementSeriesVersionCombination_ThrowsArgumentOutOfRangeException(string businessReason, string? settlementSeriesVersion)
     {
         // Act
         var act = () => RequestedCalculationTypeMapper.ToRequestedCalculationType(businessReason, settlementSeriesVersion);
@@ -59,7 +59,7 @@ public class RequestedCalculationTypeMapperTests
     [Theory]
     [InlineData("", null)]
     [InlineData("random-string", null)]
-    public void ToRequestedProcessType_WhenInvalidBusinessReason_ThrowsArgumentOutOfRangeException(string businessReason, string? settlementSeriesVersion)
+    public void ToRequestedCalculationType_WhenInvalidBusinessReason_ThrowsArgumentOutOfRangeException(string businessReason, string? settlementSeriesVersion)
     {
         // Act
         var act = () => RequestedCalculationTypeMapper.ToRequestedCalculationType(businessReason, settlementSeriesVersion);

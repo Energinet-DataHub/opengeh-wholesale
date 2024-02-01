@@ -16,9 +16,9 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 
 public static class CalculationTypeMapper
 {
-    public static Common.Interfaces.Models.CalculationType Map(CalculationType batchDtoProcessType)
+    public static Common.Interfaces.Models.CalculationType Map(CalculationType calculationType)
     {
-        return batchDtoProcessType switch
+        return calculationType switch
         {
             CalculationType.Aggregation => Common.Interfaces.Models.CalculationType.Aggregation,
             CalculationType.BalanceFixing => Common.Interfaces.Models.CalculationType.BalanceFixing,
@@ -28,15 +28,15 @@ public static class CalculationTypeMapper
             CalculationType.ThirdCorrectionSettlement => Common.Interfaces.Models.CalculationType.ThirdCorrectionSettlement,
 
             _ => throw new ArgumentOutOfRangeException(
-                nameof(batchDtoProcessType),
-                actualValue: batchDtoProcessType,
+                nameof(calculationType),
+                actualValue: calculationType,
                 "Value cannot be mapped to a calculation type."),
         };
     }
 
-    public static CalculationType Map(Common.Interfaces.Models.CalculationType batchDtoProcessType)
+    public static CalculationType Map(Common.Interfaces.Models.CalculationType calculationType)
     {
-        return batchDtoProcessType switch
+        return calculationType switch
         {
             Common.Interfaces.Models.CalculationType.Aggregation => CalculationType.Aggregation,
             Common.Interfaces.Models.CalculationType.BalanceFixing => CalculationType.BalanceFixing,
@@ -46,8 +46,8 @@ public static class CalculationTypeMapper
             Common.Interfaces.Models.CalculationType.ThirdCorrectionSettlement => CalculationType.ThirdCorrectionSettlement,
 
             _ => throw new ArgumentOutOfRangeException(
-                nameof(batchDtoProcessType),
-                actualValue: batchDtoProcessType,
+                nameof(calculationType),
+                actualValue: calculationType,
                 "Value cannot be mapped to a calculation type."),
         };
     }

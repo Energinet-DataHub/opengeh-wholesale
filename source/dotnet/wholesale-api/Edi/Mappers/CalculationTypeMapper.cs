@@ -23,17 +23,17 @@ public static class CalculationTypeMapper
     /// Maps a <see cref="RequestedCalculationType"/> to a <see cref="CalculationType"/>. Cannot map <see cref="RequestedCalculationType.LatestCorrection"/> to a <see cref="CalculationType"/>.
     /// </summary>
     /// <exception cref="ArgumentOutOfRangeException">Throws a ArgumentOutOfRangeException if the request calculation type is unknown or has the value LatestCorrection</exception>
-    public static CalculationType FromRequestedCalculationType(RequestedCalculationType requestedProcessType)
+    public static CalculationType FromRequestedCalculationType(RequestedCalculationType requestedCalculationType)
     {
-        if (requestedProcessType == RequestedCalculationType.LatestCorrection)
+        if (requestedCalculationType == RequestedCalculationType.LatestCorrection)
         {
             throw new ArgumentOutOfRangeException(
-                nameof(requestedProcessType),
-                actualValue: requestedProcessType,
+                nameof(requestedCalculationType),
+                actualValue: requestedCalculationType,
                 $"Value of type {nameof(RequestedCalculationType.LatestCorrection)} cannot be mapped to {nameof(CalculationType)}.");
         }
 
-        return requestedProcessType switch
+        return requestedCalculationType switch
         {
             RequestedCalculationType.BalanceFixing => CalculationType.BalanceFixing,
             RequestedCalculationType.PreliminaryAggregation => CalculationType.Aggregation,
@@ -42,8 +42,8 @@ public static class CalculationTypeMapper
             RequestedCalculationType.SecondCorrection => CalculationType.SecondCorrectionSettlement,
             RequestedCalculationType.ThirdCorrection => CalculationType.ThirdCorrectionSettlement,
             _ => throw new ArgumentOutOfRangeException(
-                nameof(requestedProcessType),
-                actualValue: requestedProcessType,
+                nameof(requestedCalculationType),
+                actualValue: requestedCalculationType,
                 $"Value cannot be mapped to a {nameof(CalculationType)}."),
         };
     }

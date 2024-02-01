@@ -100,13 +100,13 @@ public sealed class SettlementReportTests : WebApiTestBase
     {
         // Arrange
         const string gridAreaCode = "567";
-        const string processType = "BalanceFixing";
+        const string calculationType = "BalanceFixing";
         var periodStart = DateTime.Parse("2021-01-01T00:00:00Z").ToUniversalTime();
         var periodEnd = DateTime.Parse("2021-06-15T00:00:00Z").ToUniversalTime();
 
         var url = "/v3/SettlementReport/Download"
                   + $"?gridAreaCodes={gridAreaCode}"
-                  + $"&processType={processType}"
+                  + $"&calculationType={calculationType}"
                   + $"&periodStart={periodStart:O}"
                   + $"&periodEnd={periodEnd:O}";
 
@@ -143,14 +143,14 @@ public sealed class SettlementReportTests : WebApiTestBase
     {
         // Arrange
         const string gridAreaCode = "567";
-        const string processType = "BalanceFixing";
+        const string calculationType = "BalanceFixing";
         const string language = "da-DK";
         var periodStart = DateTime.Parse("2021-01-01T00:00:00Z").ToUniversalTime();
         var periodEnd = DateTime.Parse("2021-06-15T00:00:00Z").ToUniversalTime();
 
         var url = "/v3/SettlementReport/Download"
                   + $"?gridAreaCodes={gridAreaCode}"
-                  + $"&processType={processType}"
+                  + $"&calculationType={calculationType}"
                   + $"&periodStart={periodStart:O}"
                   + $"&periodEnd={periodEnd:O}"
                   + $"&csvFormatLocale={language}";
@@ -188,13 +188,13 @@ public sealed class SettlementReportTests : WebApiTestBase
     {
         // Arrange
         const string gridAreaCode = "567";
-        const string processType = "BalanceFixing";
+        const string calculationType = "BalanceFixing";
         var periodStart = DateTime.Parse("2021-01-01T00:00:00Z").ToUniversalTime();
         var periodEnd = DateTime.Parse("2021-06-15T00:00:00Z").ToUniversalTime();
 
         var url = "/v3/SettlementReport/Download"
                   + $"?gridAreaCodes={gridAreaCode}"
-                  + $"&processType={processType}"
+                  + $"&calculationType={calculationType}"
                   + $"&periodStart={periodStart:O}"
                   + $"&periodEnd={periodEnd:O}";
 
@@ -228,18 +228,18 @@ public sealed class SettlementReportTests : WebApiTestBase
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task HTTP_GET_V3_Download_WithAggregationProcessType_ReturnsBadRequest(
+    public async Task HTTP_GET_V3_Download_WithAggregationCalculationType_ReturnsBadRequest(
         Mock<ISettlementReportClient> settlementReportApplicationService)
     {
         // Arrange
         const string gridAreaCode = "567";
-        const string processType = "Aggregation";
+        const string calculationType = "Aggregation";
         var periodStart = DateTime.Parse("2021-01-01T00:00:00Z").ToUniversalTime();
         var periodEnd = DateTime.Parse("2021-06-15T00:00:00Z").ToUniversalTime();
 
         var url = "/v3/SettlementReport/Download"
                   + $"?gridAreaCodes={gridAreaCode}"
-                  + $"&processType={processType}"
+                  + $"&calculationType={calculationType}"
                   + $"&periodStart={periodStart:O}"
                   + $"&periodEnd={periodEnd:O}";
 

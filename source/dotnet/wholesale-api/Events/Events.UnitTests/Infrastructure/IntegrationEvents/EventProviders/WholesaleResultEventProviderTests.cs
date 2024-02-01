@@ -167,15 +167,15 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
         [InlineData(CalculationType.FirstCorrectionSettlement, true)]
         [InlineData(CalculationType.SecondCorrectionSettlement, true)]
         [InlineData(CalculationType.ThirdCorrectionSettlement, true)]
-        public void CanContainWholesaleResults_WhenProcessTypeCanContainWholesaleResults_ReturnsTrue(
-            CalculationType processType,
+        public void CanContainWholesaleResults_WhenCalculationTypeCanContainWholesaleResults_ReturnsTrue(
+            CalculationType calculationType,
             bool canContainWholesaleResults)
         {
             // Arrange
             var fixture = new Fixture();
             var batch = fixture
                 .Build<CompletedCalculation>()
-                .With(p => p.CalculationType, processType)
+                .With(p => p.CalculationType, calculationType)
                 .Create();
 
             var wholesaleResultQueriesStub = Mock.Of<IWholesaleResultQueries>();

@@ -36,7 +36,7 @@ public class SettlementReportController : V3ControllerBase
     /// Downloads a compressed settlement report for the specified parameters.
     /// </summary>
     /// <param name="gridAreaCodes">A list of grid areas to create the settlement report for.</param>
-    /// <param name="processType">Currently expects BalanceFixing only.</param>
+    /// <param name="calculationType">Currently expects BalanceFixing only.</param>
     /// <param name="periodStart">The start date and time of the period covered by the settlement report.</param>
     /// <param name="periodEnd">The end date and time of the period covered by the settlement report.</param>
     /// <param name="energySupplier">Optional GLN/EIC identifier for an energy supplier.</param>
@@ -47,7 +47,7 @@ public class SettlementReportController : V3ControllerBase
     [Authorize(Roles = Permissions.SettlementReportsManage)]
     public Task DownloadSettlementReportAsync(
         [Required, FromQuery] string[] gridAreaCodes,
-        [Required, FromQuery] CalculationType processType,
+        [Required, FromQuery] CalculationType calculationType,
         [Required, FromQuery] DateTimeOffset periodStart,
         [Required, FromQuery] DateTimeOffset periodEnd,
         [FromQuery] string? energySupplier,
@@ -59,7 +59,7 @@ public class SettlementReportController : V3ControllerBase
                 {
                     var settlementReportFileName = GetSettlementReportFileName(
                         gridAreaCodes,
-                        processType,
+                        calculationType,
                         periodStart,
                         periodEnd,
                         energySupplier);
@@ -70,7 +70,7 @@ public class SettlementReportController : V3ControllerBase
                     return Response.BodyWriter.AsStream();
                 },
                 gridAreaCodes,
-                CalculationTypeMapper.Map(processType),
+                CalculationTypeMapper.Map(calculationType),
                 periodStart,
                 periodEnd,
                 energySupplier,
@@ -114,19 +114,19 @@ public class SettlementReportController : V3ControllerBase
 
     private static string GetSettlementReportFileName(
         string[] gridAreaCode,
-        CalculationType processType,
+        CalculationType calculationType,
         DateTimeOffset periodStart,
         DateTimeOffset periodEnd,
         string? energySupplier)
     {
         var energySupplierString = energySupplier is null ? string.Empty : $"_{energySupplier}";
         var gridAreaCodeString = string.Join("+", gridAreaCode);
-        var processTypeString = processType switch
+        var calculationTypeString = calculationType switch
         {
             CalculationType.BalanceFixing => "D04",
             _ => string.Empty,
         };
 
-        return $"Result_{gridAreaCodeString}{energySupplierString}_{periodStart:dd-MM-yyyy}_{periodEnd:dd-MM-yyyy}_{processTypeString}.zip";
+        return $"Result_{gridAreaCodeString}{energySupplierString}_{periodStart:dd-MM-yyyy}_{periodEnd:dd-MM-yyyy}_{calculationTypeString}.zip";
     }
 }

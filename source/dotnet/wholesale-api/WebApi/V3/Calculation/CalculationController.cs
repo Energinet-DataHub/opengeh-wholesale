@@ -53,7 +53,7 @@ public class CalculationController : V3ControllerBase
     public async Task<Guid> CreateAsync([FromBody][Required] CalculationRequestDto calculationRequestDto)
     {
         return await _createCalculationHandler.HandleAsync(new CreateCalculationCommand(
-            CalculationTypeMapper.Map(calculationRequestDto.ProcessType),
+            CalculationTypeMapper.Map(calculationRequestDto.CalculationType),
             calculationRequestDto.GridAreaCodes,
             calculationRequestDto.StartDate,
             calculationRequestDto.EndDate,

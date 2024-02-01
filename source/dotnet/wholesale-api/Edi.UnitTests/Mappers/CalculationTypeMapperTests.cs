@@ -32,21 +32,21 @@ public class CalculationTypeMapperTests
     public void FromRequestedCalculationType_WhenValidRequestedCalculationType_ReturnsExpectedCalculationType(RequestedCalculationType requestedCalculationType, CalculationType expectedResult)
     {
         // Act
-        var actualProcessType = CalculationTypeMapper.FromRequestedCalculationType(requestedCalculationType);
+        var actualCalculationType = CalculationTypeMapper.FromRequestedCalculationType(requestedCalculationType);
 
         // Assert
-        actualProcessType.Should().Be(expectedResult);
+        actualCalculationType.Should().Be(expectedResult);
     }
 
     [Theory]
     [InlineData(RequestedCalculationType.LatestCorrection)]
     [InlineData((RequestedCalculationType)999999)]
-    public void FromRequestedProcessType_WhenInvalidRequestedProcessType_ThrowsArgumentOutOfRangeException(RequestedCalculationType requestedProcessType)
+    public void FromRequestedCalculationType_WhenInvalidRequestedCalculationType_ThrowsArgumentOutOfRangeException(RequestedCalculationType requestedCalculationType)
     {
         // Act
-        var act = () => CalculationTypeMapper.FromRequestedCalculationType(requestedProcessType);
+        var act = () => CalculationTypeMapper.FromRequestedCalculationType(requestedCalculationType);
 
         // Assert
-        act.Should().ThrowExactly<ArgumentOutOfRangeException>().And.ActualValue.Should().Be(requestedProcessType);
+        act.Should().ThrowExactly<ArgumentOutOfRangeException>().And.ActualValue.Should().Be(requestedCalculationType);
     }
 }

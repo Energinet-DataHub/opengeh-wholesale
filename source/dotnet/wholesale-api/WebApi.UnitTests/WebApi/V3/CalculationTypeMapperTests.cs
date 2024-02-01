@@ -33,14 +33,14 @@ public class CalculationTypeMapperTests
     [Theory]
     [InlineAutoMoqData(CalculationType.BalanceFixing, Energinet.DataHub.Wholesale.Common.Interfaces.Models.CalculationType.BalanceFixing)]
     [InlineAutoMoqData(CalculationType.Aggregation, Energinet.DataHub.Wholesale.Common.Interfaces.Models.CalculationType.Aggregation)]
-    public void MapProcessType_ReturnsExpectedType(CalculationType source, Energinet.DataHub.Wholesale.Common.Interfaces.Models.CalculationType expected)
+    public void MapCalculationType_ReturnsExpectedType(CalculationType source, Energinet.DataHub.Wholesale.Common.Interfaces.Models.CalculationType expected)
     {
         var actual = CalculationTypeMapper.Map(source);
         actual.Should().Be(expected);
     }
 
     [Fact]
-    public void Map_WhenInvalidEnumNumberForProcessType_ThrowsArgumentOutOfRangeException()
+    public void Map_WhenInvalidEnumNumberForCalculationType_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
         var invalidValue = (Energinet.DataHub.Wholesale.Common.Interfaces.Models.CalculationType)99;
@@ -54,7 +54,7 @@ public class CalculationTypeMapperTests
     }
 
     [Fact]
-    public void Map_WhenInvalidEnumNumberForV3ProcessType_ThrowsArgumentOutOfRangeException()
+    public void Map_WhenInvalidEnumNumberForV3CalculationType_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
         var invalidValue = (CalculationType)99;
