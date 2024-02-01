@@ -43,7 +43,6 @@ DEFAULT_METERING_POINT_ID = "123456789012345678901234567"
 
 
 def _create_charge_master_data_row(
-    charge_key: str = DEFAULT_CHARGE_KEY,
     charge_code: str = DEFAULT_CHARGE_CODE,
     charge_owner: str = DEFAULT_CHARGE_OWNER,
     charge_type: str = DEFAULT_CHARGE_TYPE,
@@ -53,7 +52,6 @@ def _create_charge_master_data_row(
     to_date: datetime = DEFAULT_TO_DATE,
 ) -> Row:
     row = {
-        Colname.charge_key: charge_key,
         Colname.charge_code: charge_code,
         Colname.charge_owner: charge_owner,
         Colname.charge_type: charge_type,
@@ -140,7 +138,7 @@ def test__read_changes__returns_expected_joined_row_values(
 
 
 @patch.object(calculation_input, TableReader.__name__)
-def test__read_changes__when_multiple_charge_keys__returns_only_rows_with_matching_values_from_tables(
+def test__read_changes__when_a_charge_is_not_in_charge_links__returns_dataframe_without_that_charge(
     table_reader_mock: TableReader, spark: SparkSession
 ) -> None:
     # Arrange
@@ -148,7 +146,7 @@ def test__read_changes__when_multiple_charge_keys__returns_only_rows_with_matchi
         spark.createDataFrame(
             data=[
                 _create_charge_master_data_row(),
-                _create_charge_master_data_row(charge_key="4001-tariff-5790001330552"),
+                _create_charge_master_data_row(charge_code="not-in-charge-links"),
             ]
         )
     )
