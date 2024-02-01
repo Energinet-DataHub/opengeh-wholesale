@@ -36,7 +36,7 @@ public class CompletedCalculationRepositoryTests
     {
         // Arrange
         databaseContextMock
-            .Setup<DbSet<CompletedCalculation>>(context => context.CompletedBatches)
+            .Setup<DbSet<CompletedCalculation>>(context => context.CompletedCalculations)
             .ReturnsDbSet(new List<CompletedCalculation>());
         var sut = new CompletedCalculationRepository(databaseContextMock.Object);
 
@@ -58,7 +58,7 @@ public class CompletedCalculationRepositoryTests
         calculationCompletedLast.SetPrivateProperty(b => b.CompletedTime, calculationCompletedFirst.CompletedTime.PlusSeconds(1));
 
         databaseContextMock
-            .Setup<DbSet<CompletedCalculation>>(context => context.CompletedBatches)
+            .Setup<DbSet<CompletedCalculation>>(context => context.CompletedCalculations)
             .ReturnsDbSet(new List<CompletedCalculation> { calculationCompletedFirst, calculationCompletedLast });
         var sut = new CompletedCalculationRepository(databaseContextMock.Object);
 
@@ -76,7 +76,7 @@ public class CompletedCalculationRepositoryTests
     {
         // Arrange
         databaseContextMock
-            .Setup<DbSet<CompletedCalculation>>(context => context.CompletedBatches)
+            .Setup<DbSet<CompletedCalculation>>(context => context.CompletedCalculations)
             .ReturnsDbSet(new List<CompletedCalculation>());
         var sut = new CompletedCalculationRepository(databaseContextMock.Object);
 
@@ -100,7 +100,7 @@ public class CompletedCalculationRepositoryTests
         calculationCompletedLast.SetPrivateProperty(b => b.CompletedTime, calculationCompletedFirst.CompletedTime.PlusSeconds(1));
 
         databaseContextMock
-            .Setup<DbSet<CompletedCalculation>>(context => context.CompletedBatches)
+            .Setup<DbSet<CompletedCalculation>>(context => context.CompletedCalculations)
             .ReturnsDbSet(new List<CompletedCalculation> { calculationCompletedFirst, calculationCompletedLast });
         var sut = new CompletedCalculationRepository(databaseContextMock.Object);
 
@@ -119,7 +119,7 @@ public class CompletedCalculationRepositoryTests
     {
         // Arrange
         databaseContextMock
-            .Setup<DbSet<CompletedCalculation>>(context => context.CompletedBatches)
+            .Setup<DbSet<CompletedCalculation>>(context => context.CompletedCalculations)
             .ReturnsDbSet(new List<CompletedCalculation> { publishedCalculation });
         var sut = new CompletedCalculationRepository(databaseContextMock.Object);
 

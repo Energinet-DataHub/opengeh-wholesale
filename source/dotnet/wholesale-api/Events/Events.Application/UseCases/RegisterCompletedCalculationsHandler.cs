@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Interfaces;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.UseCases;
@@ -46,7 +46,7 @@ public class RegisterCompletedCalculationsHandler : IRegisterCompletedCalculatio
     private async Task<IEnumerable<CompletedCalculation>> GetNewCompletedBatchesAsync()
     {
         var lastKnownCompletedBatch = await _completedCalculationRepository.GetLastCompletedOrNullAsync().ConfigureAwait(false);
-        var completedBatchDtos = await _calculationsClient.GetBatchesCompletedAfterAsync(lastKnownCompletedBatch?.CompletedTime).ConfigureAwait(false);
+        var completedBatchDtos = await _calculationsClient.GetCompletedAfterAsync(lastKnownCompletedBatch?.CompletedTime).ConfigureAwait(false);
         return _completedCalculationFactory.CreateFromBatches(completedBatchDtos);
     }
 }

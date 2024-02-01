@@ -31,6 +31,10 @@ on:
         value: ${{ jobs.changes.outputs.packages }}
       render_c4model_views:
         value: ${{ jobs.changes.outputs.render_c4model_views }}
+      docker:
+        value: ${{ jobs.changes.outputs.docker }}
+      docker_in_commit:
+        value: ${{ jobs.changes.outputs.docker_in_commit }}
 
 jobs:
   changes:
@@ -42,11 +46,14 @@ jobs:
       dotnet: ${{ steps.filter.outputs.dotnet }}
       packages: ${{ steps.filter.outputs.packages }}
       render_c4model_views: ${{ steps.filter.outputs.render_c4model_views }}
+      docker: ${{ steps.filter.outputs.docker }}
+      docker_in_commit: ${{ steps.docker_changed.outputs.any_changed }}
     steps:
       # For pull requests it's not necessary to checkout the code because GitHub REST API is used to determine changes
       - name: Checkout repository
-        if: ${{ github.event_name != 'pull_request' }}
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Detect file changes
         uses: dorny/paths-filter@v2
@@ -73,3 +80,12 @@ jobs:
               - 'docs/diagrams/c4-model/views.dsl'
               - 'docs/diagrams/c4-model/views.json'
               - 'docs/diagrams/c4-model/model.dsl'
+            docker:
+              - .docker/**
+
+      - name: Package content or build has changed
+        id: docker_changed
+        uses: tj-actions/changed-files@v41
+        with:
+          since_last_remote_commit: true
+          files: .docker/**
