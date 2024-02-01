@@ -1,6 +1,6 @@
 -- Changes to 'integrationevents'
 -- Column
-EXEC sp_rename 'integrationevents.CompletedBatch.ProcessType', 'CalculationType', 'COLUMN';
+EXEC sp_rename 'integrationevents.CompletedCalculation.ProcessType', 'CalculationType', 'COLUMN';
 GO
 
 -- Changes to 'calculations'
