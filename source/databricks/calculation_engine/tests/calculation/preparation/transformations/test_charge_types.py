@@ -539,3 +539,293 @@ def test__get_tariff_charges__returns_df_with_expected_values(
 
     # Assert
     assert actual.collect() == expected_tariff_charges.collect()
+
+
+@pytest.mark.parametrize(
+    "observation_time, charge_time, expected_rows",
+    [
+        # charge time before metering point from date - not accepted
+        (
+            datetime(2019, 12, 31, 0),
+            datetime(2019, 12, 31, 0),
+            0,
+        ),
+        # charge time equal to metering point from date - accepted
+        (
+            datetime(2020, 1, 1, 0),
+            datetime(2020, 1, 1, 0),
+            1,
+        ),
+        # charge time between metering point from and to date - accepted
+        (
+            datetime(2020, 1, 2, 0),
+            datetime(2020, 1, 2, 0),
+            1,
+        ),
+        # charge time equal to metering point to date - not accepted
+        (
+            datetime(2020, 1, 3, 0),
+            datetime(2020, 1, 3, 0),
+            0,
+        ),
+        # not accepted
+        (
+            datetime(2020, 1, 2, 0),
+            datetime(2020, 1, 1, 0),
+            0,
+        ),
+        (
+            datetime(2020, 1, 1, 0),
+            datetime(2020, 1, 2, 0),
+            0,
+        ),
+        (
+            datetime(2020, 1, 4, 0),
+            datetime(2020, 1, 4, 0),
+            0,
+        ),
+        (
+            datetime(2020, 1, 4, 0),
+            datetime(2020, 1, 2, 0),
+            0,
+        ),
+        (
+            datetime(2020, 1, 2, 0),
+            datetime(2020, 1, 4, 0),
+            0,
+        ),
+    ],
+)
+def test__get_tariff_charges_day2__only_accepts_charges_in_metering_point_period(
+    spark: SparkSession,
+    observation_time: datetime,
+    charge_time: datetime,
+    expected_rows: int,
+) -> None:
+    """
+    Only charges where charge time is greater than or equal to the metering point from date and
+    less than the metering point to date are accepted.
+    """
+    # Arrange
+    metering_point_rows = [
+        _create_metering_point_row(
+            from_date=datetime(2020, 1, 1, 0), to_date=datetime(2020, 1, 3, 0)
+        ),
+    ]
+    time_series_rows = [
+        _create_time_series_row(observation_time=observation_time),
+    ]
+    charges_rows = [
+        _create_tariff_charges_row(
+            from_date=datetime(2026, 1, 1, 0),  # does not matter
+            to_date=datetime(2026, 1, 2, 0),  # does not matter
+            charge_time=charge_time,
+            resolution=e.ChargeResolution.DAY,
+        )
+    ]
+
+    metering_point = spark.createDataFrame(
+        metering_point_rows, metering_point_period_schema
+    )
+    time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
+    charges = spark.createDataFrame(charges_rows, charges_schema)
+
+    # Act
+    actual = get_tariff_charges(
+        metering_point,
+        time_series,
+        charges,
+        e.ChargeResolution.DAY,
+    )
+    actual.show()
+    # Assert
+    assert actual.count() == expected_rows
+
+
+@pytest.mark.parametrize(
+    "observation_time, charge_time, expected_rows",
+    [
+        # charge time before metering point from date - not accepted
+        (
+            datetime(2019, 12, 31, 0),
+            datetime(2019, 12, 31, 0),
+            0,
+        ),
+        # charge time equal to metering point from date - accepted
+        (
+            datetime(2020, 1, 1, 0),
+            datetime(2020, 1, 1, 0),
+            1,
+        ),
+        # charge time between metering point from and to date - accepted
+        (
+            datetime(2020, 1, 2, 0),
+            datetime(2020, 1, 2, 0),
+            1,
+        ),
+        # charge time equal to metering point to date - not accepted
+        (
+            datetime(2020, 1, 3, 0),
+            datetime(2020, 1, 3, 0),
+            0,
+        ),
+        # not accepted
+        (
+            datetime(2020, 1, 2, 0),
+            datetime(2020, 1, 1, 0),
+            0,
+        ),
+        (
+            datetime(2020, 1, 1, 0),
+            datetime(2020, 1, 2, 0),
+            0,
+        ),
+        (
+            datetime(2020, 1, 4, 0),
+            datetime(2020, 1, 4, 0),
+            0,
+        ),
+        (
+            datetime(2020, 1, 4, 0),
+            datetime(2020, 1, 2, 0),
+            0,
+        ),
+        (
+            datetime(2020, 1, 2, 0),
+            datetime(2020, 1, 4, 0),
+            0,
+        ),
+    ],
+)
+def test__get_tariff_charges_day3__only_accepts_charges_in_metering_point_period(
+    spark: SparkSession,
+    observation_time: datetime,
+    charge_time: datetime,
+    expected_rows: int,
+) -> None:
+    """
+    Only charges where charge time is greater than or equal to the metering point from date and
+    less than the metering point to date are accepted.
+    """
+    # Arrange
+    metering_point_rows = [
+        _create_metering_point_row(
+            from_date=datetime(2020, 1, 1, 0), to_date=datetime(2020, 1, 2, 0)
+        ),
+        _create_metering_point_row(
+            from_date=datetime(2020, 1, 2, 0),
+            to_date=datetime(2020, 1, 3, 0),
+            energy_supplier_id="123",
+        ),
+    ]
+    time_series_rows = [
+        _create_time_series_row(observation_time=observation_time),
+    ]
+    charges_rows = [
+        _create_tariff_charges_row(
+            from_date=datetime(2026, 1, 1, 0),  # does not matter
+            to_date=datetime(2026, 1, 2, 0),  # does not matter
+            charge_time=charge_time,
+            resolution=e.ChargeResolution.DAY,
+        )
+    ]
+
+    metering_point = spark.createDataFrame(
+        metering_point_rows, metering_point_period_schema
+    )
+    time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
+    charges = spark.createDataFrame(charges_rows, charges_schema)
+
+    # Act
+    actual = get_tariff_charges(
+        metering_point,
+        time_series,
+        charges,
+        e.ChargeResolution.DAY,
+    )
+    actual.show()
+    # Assert
+    assert actual.count() == expected_rows
+
+
+@pytest.mark.parametrize(
+    "date_time_1, date_time_2, expected_rows",
+    [
+        (
+            datetime(2020, 1, 1, 0),
+            datetime(2020, 1, 2, 0),
+            2,
+        ),
+        (
+            datetime(2020, 1, 1, 0),
+            datetime(2020, 1, 3, 0),
+            1,
+        ),
+        (
+            datetime(2020, 1, 2, 0),
+            datetime(2020, 1, 3, 0),
+            1,
+        ),
+        (
+            datetime(2020, 1, 2, 0),
+            datetime(2020, 1, 4, 0),
+            1,
+        ),
+    ],
+)
+def test__get_tariff_charges_day4__only_accepts_charges_in_metering_point_period(
+    spark: SparkSession,
+    date_time_1: datetime,
+    date_time_2: datetime,
+    expected_rows: int,
+) -> None:
+    """
+    Only charges where charge time is greater than or equal to the metering point from date and
+    less than the metering point to date are accepted.
+    """
+    # Arrange
+    metering_point_rows = [
+        _create_metering_point_row(
+            from_date=datetime(2020, 1, 1, 0), to_date=datetime(2020, 1, 2, 0)
+        ),
+        _create_metering_point_row(
+            from_date=datetime(2020, 1, 2, 0),
+            to_date=datetime(2020, 1, 3, 0),
+            energy_supplier_id="123",
+        ),
+    ]
+    time_series_rows = [
+        _create_time_series_row(observation_time=date_time_1),
+        _create_time_series_row(observation_time=date_time_2),
+    ]
+    charges_rows = [
+        _create_tariff_charges_row(
+            from_date=datetime(2026, 1, 1, 0),  # does not matter
+            to_date=datetime(2026, 1, 2, 0),  # does not matter
+            charge_time=date_time_1,
+            resolution=e.ChargeResolution.DAY,
+        ),
+        _create_tariff_charges_row(
+            from_date=datetime(2026, 1, 1, 0),  # does not matter
+            to_date=datetime(2026, 1, 2, 0),  # does not matter
+            charge_time=date_time_2,
+            resolution=e.ChargeResolution.DAY,
+        ),
+    ]
+
+    metering_point = spark.createDataFrame(
+        metering_point_rows, metering_point_period_schema
+    )
+    time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
+    charges = spark.createDataFrame(charges_rows, charges_schema)
+
+    # Act
+    actual = get_tariff_charges(
+        metering_point,
+        time_series,
+        charges,
+        e.ChargeResolution.DAY,
+    )
+    actual.show()
+    # Assert
+    assert actual.count() == expected_rows
