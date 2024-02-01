@@ -91,7 +91,11 @@ class TableReader:
     def read_time_series_points(self) -> DataFrame:
         path = f"{self._calculation_input_path}/{self._time_series_points_table_name}"
 
-        return self._spark.read.format("delta").load(path)
+        df = self._spark.read.format("delta").load(path)
+
+        assert_schema(df.schema, time_series_point_schema)
+
+        return df
 
     def read_charge_links_periods(self) -> DataFrame:
         path = f"{self._calculation_input_path}/{paths.CHARGE_LINK_PERIODS_TABLE_NAME}"

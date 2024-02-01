@@ -14,7 +14,10 @@
 import pathlib
 from datetime import datetime
 from decimal import Decimal
+from unittest import mock
+import pytest
 from pyspark.sql import SparkSession
+import pyspark.sql.functions as f
 
 from package.calculation_input.table_reader import TableReader
 from package.calculation_input.schemas import time_series_point_schema
@@ -33,6 +36,24 @@ def _create_time_series_point_row(
         Colname.quality: "foo",
         Colname.observation_time: datetime(2022, 6, 8, 22, 0, 0),
     }
+
+
+class TestWhenSchemaMismatch:
+    def test_raises_assertion_error(self, spark: SparkSession) -> None:
+        # Arrange
+        row = _create_time_series_point_row()
+        reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
+        df = spark.createDataFrame(data=[row], schema=time_series_point_schema)
+        df = df.withColumn("test", f.lit("test"))
+
+        # Act & Assert
+        with mock.patch.object(
+            reader._spark.read.format("delta"), "load", return_value=df
+        ):
+            with pytest.raises(AssertionError) as exc_info:
+                reader.read_time_series_points()
+
+            assert "Schema mismatch" in str(exc_info.value)
 
 
 class TestWhenValidInput:
