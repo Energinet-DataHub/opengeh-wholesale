@@ -53,7 +53,7 @@ public class CalculationController : V3ControllerBase
     public async Task<Guid> CreateAsync([FromBody][Required] BatchRequestDto batchRequestDto)
     {
         return await _createCalculationHandler.HandleAsync(new CreateCalculationCommand(
-            ProcessTypeMapper.Map(batchRequestDto.ProcessType),
+            CalculationTypeMapper.Map(batchRequestDto.ProcessType),
             batchRequestDto.GridAreaCodes,
             batchRequestDto.StartDate,
             batchRequestDto.EndDate,

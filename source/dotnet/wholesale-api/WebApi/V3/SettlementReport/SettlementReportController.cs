@@ -47,7 +47,7 @@ public class SettlementReportController : V3ControllerBase
     [Authorize(Roles = Permissions.SettlementReportsManage)]
     public Task DownloadSettlementReportAsync(
         [Required, FromQuery] string[] gridAreaCodes,
-        [Required, FromQuery] ProcessType processType,
+        [Required, FromQuery] CalculationType processType,
         [Required, FromQuery] DateTimeOffset periodStart,
         [Required, FromQuery] DateTimeOffset periodEnd,
         [FromQuery] string? energySupplier,
@@ -70,7 +70,7 @@ public class SettlementReportController : V3ControllerBase
                     return Response.BodyWriter.AsStream();
                 },
                 gridAreaCodes,
-                ProcessTypeMapper.Map(processType),
+                CalculationTypeMapper.Map(processType),
                 periodStart,
                 periodEnd,
                 energySupplier,
@@ -114,7 +114,7 @@ public class SettlementReportController : V3ControllerBase
 
     private static string GetSettlementReportFileName(
         string[] gridAreaCode,
-        ProcessType processType,
+        CalculationType processType,
         DateTimeOffset periodStart,
         DateTimeOffset periodEnd,
         string? energySupplier)
@@ -123,7 +123,7 @@ public class SettlementReportController : V3ControllerBase
         var gridAreaCodeString = string.Join("+", gridAreaCode);
         var processTypeString = processType switch
         {
-            ProcessType.BalanceFixing => "D04",
+            CalculationType.BalanceFixing => "D04",
             _ => string.Empty,
         };
 

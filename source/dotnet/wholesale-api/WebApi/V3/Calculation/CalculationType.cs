@@ -17,7 +17,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 /// <summary>
 /// Defines the wholesale process type
 /// </summary>
-public enum ProcessType
+public enum CalculationType
 {
     /// <summary>
     /// Balance fixing
@@ -30,7 +30,7 @@ public enum ProcessType
     Aggregation = 1,
 
     /// <summary>
-    /// WholesaleFixing.
+    /// Wholesale fixing.
     /// </summary>
     WholesaleFixing = 2,
 
