@@ -32,16 +32,16 @@ public class CalculationsClient : ICalculationsClient
         _calculationDtoMapper = calculationDtoMapper;
     }
 
-    public async Task<IEnumerable<CalculationDto>> GetBatchesCompletedAfterAsync(Instant? completedTime)
+    public async Task<IEnumerable<CalculationDto>> GetCompletedAfterAsync(Instant? completedTime)
     {
-        var batches = await _calculationRepository.GetCompletedAfterAsync(completedTime).ConfigureAwait(false);
-        return batches.Select(_calculationDtoMapper.Map);
+        var calculations = await _calculationRepository.GetCompletedAfterAsync(completedTime).ConfigureAwait(false);
+        return calculations.Select(_calculationDtoMapper.Map);
     }
 
-    public async Task<CalculationDto> GetAsync(Guid batchId)
+    public async Task<CalculationDto> GetAsync(Guid calculationId)
     {
-        var batch = await _calculationRepository.GetAsync(batchId).ConfigureAwait(false);
-        return _calculationDtoMapper.Map(batch);
+        var calculation = await _calculationRepository.GetAsync(calculationId).ConfigureAwait(false);
+        return _calculationDtoMapper.Map(calculation);
     }
 
     public async Task<IEnumerable<CalculationDto>> SearchAsync(
@@ -71,7 +71,7 @@ public class CalculationsClient : ICalculationsClient
         var periodStartInstant = ConvertToInstant(periodStart);
         var periodEndInstant = ConvertToInstant(periodEnd);
 
-        var batches = await _calculationRepository
+        var calculations = await _calculationRepository
             .SearchAsync(
                 gridAreaFilter,
                 executionStateFilter,
@@ -81,7 +81,7 @@ public class CalculationsClient : ICalculationsClient
                 periodEndInstant)
             .ConfigureAwait(false);
 
-        return batches.Select(_calculationDtoMapper.Map);
+        return calculations.Select(_calculationDtoMapper.Map);
     }
 
     private static Instant? ConvertToInstant(DateTimeOffset? dateTimeOffset)

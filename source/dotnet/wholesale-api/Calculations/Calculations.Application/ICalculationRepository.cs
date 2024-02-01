@@ -22,7 +22,7 @@ public interface ICalculationRepository
 {
     Task AddAsync(Calculation calculation);
 
-    Task<Calculation> GetAsync(Guid batchId);
+    Task<Calculation> GetAsync(Guid calculationId);
 
     Task<List<Calculation>> GetCreatedAsync();
 

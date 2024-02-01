@@ -24,7 +24,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance.States
         public Calculation? CalculationJobInput { get; set; }
 
         [NotNull]
-        public CalculationId? CalculationId { get; set; }
+        public CalculationJobId? CalculationJobId { get; set; }
 
         [NotNull]
         public Run? Run { get; set; }
