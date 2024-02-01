@@ -37,9 +37,9 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
         [SubsystemFact]
         public void Given_CalculationInput()
         {
-            Fixture.ScenarioState.CalculationInput = new Clients.v3.BatchRequestDto
+            Fixture.ScenarioState.CalculationInput = new Clients.v3.CalculationRequestDto
             {
-                ProcessType = Clients.v3.ProcessType.BalanceFixing,
+                CalculationType = Clients.v3.CalculationType.BalanceFixing,
                 GridAreaCodes = new List<string> { "543" },
                 StartDate = new DateTimeOffset(2022, 1, 11, 23, 0, 0, TimeSpan.Zero),
                 EndDate = new DateTimeOffset(2022, 1, 12, 23, 0, 0, TimeSpan.Zero),
@@ -73,14 +73,14 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
                 Fixture.ScenarioState.CalculationId,
                 waitTimeLimit: TimeSpan.FromMinutes(21));
 
-            Fixture.ScenarioState.Batch = actualWaitResult.Batch;
+            Fixture.ScenarioState.Calculation = actualWaitResult.Calculation;
 
             // Assert
             using var assertionScope = new AssertionScope();
             actualWaitResult.IsCompletedOrFailed.Should().BeTrue();
-            actualWaitResult.Batch.Should().NotBeNull();
+            actualWaitResult.Calculation.Should().NotBeNull();
 
-            actualWaitResult.Batch!.ExecutionState.Should().Be(Clients.v3.BatchState.Completed);
+            actualWaitResult.Calculation!.ExecutionState.Should().Be(Clients.v3.CalculationState.Completed);
         }
 
         [ScenarioStep(4)]
@@ -89,7 +89,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
         {
             var calculationTimeLimit = TimeSpan.FromMinutes(18);
             var actualCalculationDuration =
-                Fixture.ScenarioState.Batch!.ExecutionTimeEnd - Fixture.ScenarioState.Batch.ExecutionTimeStart;
+                Fixture.ScenarioState.Calculation!.ExecutionTimeEnd - Fixture.ScenarioState.Calculation.ExecutionTimeStart;
 
             // Assert
             actualCalculationDuration.Should().BeGreaterThan(TimeSpan.Zero);
@@ -101,8 +101,8 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
         public async Task AndThen_IntegrationEventsAreReceivedWithinWaitTime()
         {
             // Skip waiting if calculation did not complete
-            if (Fixture.ScenarioState.Batch != null
-                && Fixture.ScenarioState.Batch.ExecutionState == Clients.v3.BatchState.Completed)
+            if (Fixture.ScenarioState.Calculation != null
+                && Fixture.ScenarioState.Calculation.ExecutionState == Clients.v3.CalculationState.Completed)
             {
                 var actualReceivedIntegrationEvents = await Fixture.WaitForIntegrationEventsAsync(
                     Fixture.ScenarioState.CalculationId,

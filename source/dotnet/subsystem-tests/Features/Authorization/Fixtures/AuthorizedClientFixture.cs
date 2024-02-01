@@ -30,7 +30,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Authorization.Fixt
             : base(diagnosticMessageSink)
         {
             Configuration = new WholesaleSubsystemConfiguration();
-            ExistingBatchId = Configuration.Root.GetValue<Guid>("EXISTING_BATCH_ID");
+            ExistingCalculationId = Configuration.Root.GetValue<Guid>("EXISTING_BATCH_ID");
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Authorization.Fixt
         /// </summary>
         public WholesaleClient_V3 WholesaleClient { get; private set; } = null!;
 
-        public Guid ExistingBatchId { get; }
+        public Guid ExistingCalculationId { get; }
 
         private WholesaleSubsystemConfiguration Configuration { get; }
 
