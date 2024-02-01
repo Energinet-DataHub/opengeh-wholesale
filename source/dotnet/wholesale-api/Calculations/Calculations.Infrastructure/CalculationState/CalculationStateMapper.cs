@@ -31,7 +31,7 @@ public class CalculationStateMapper
             _ => throw new ArgumentOutOfRangeException(
                 nameof(calculationState),
                 actualValue: calculationState,
-                "Value cannot be mapped to a batch execution state."),
+                "Value cannot be mapped to a calculation execution state."),
         };
     }
 }

@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
 
 public interface ICalculationEngineClient
 {
-    Task<CalculationId> StartAsync(Calculation calculation);
+    Task<CalculationJobId> StartAsync(Calculation calculation);
 
-    Task<Application.Model.CalculationState> GetStatusAsync(CalculationId calculationId);
+    Task<Application.Model.CalculationState> GetStatusAsync(CalculationJobId calculationJobId);
 }

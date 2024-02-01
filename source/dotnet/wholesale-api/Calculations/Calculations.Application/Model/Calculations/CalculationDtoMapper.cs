@@ -21,7 +21,7 @@ public class CalculationDtoMapper : ICalculationDtoMapper
     public CalculationDto Map(Calculation calculation)
     {
         return new CalculationDto(
-            calculation.CalculationId?.Id,
+            calculation.CalculationJobId?.Id,
             calculation.Id,
             calculation.PeriodStart.ToDateTimeOffset(),
             calculation.PeriodEnd.ToDateTimeOffset(),
@@ -51,7 +51,7 @@ public class CalculationDtoMapper : ICalculationDtoMapper
             _ => throw new ArgumentOutOfRangeException(
                 nameof(state),
                 actualValue: state,
-                "Value cannot be mapped to a batch state."),
+                "Value cannot be mapped to a calculation state."),
         };
     }
 
