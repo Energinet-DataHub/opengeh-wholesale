@@ -36,7 +36,7 @@ public sealed class CompletedCalculation
     }
 
     /// <summary>
-    /// The time when integration events for the batch were published.
+    /// The time when integration events for the calculation were published.
     /// </summary>
     public Instant? PublishedTime { get; set; }
 

@@ -23,7 +23,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 
 /// <summary>
-/// Energy suppliers for which batch results have been calculated.
+/// Energy suppliers for which calculation results have been calculated.
 /// </summary>
 [Route("/v3/calculations")]
 public class CalculationController : V3ControllerBase

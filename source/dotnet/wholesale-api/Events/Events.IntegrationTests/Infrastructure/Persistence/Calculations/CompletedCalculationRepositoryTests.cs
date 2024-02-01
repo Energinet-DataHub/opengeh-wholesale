@@ -34,7 +34,7 @@ public class CompletedCalculationRepositoryTests : IClassFixture<WholesaleDataba
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task AddAsync_AddsCompletedBatchWithExpectedData(CompletedCalculation expectedCalculation)
+    public async Task AddAsync_AddsCompletedCalculationWithExpectedData(CompletedCalculation expectedCalculation)
     {
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();

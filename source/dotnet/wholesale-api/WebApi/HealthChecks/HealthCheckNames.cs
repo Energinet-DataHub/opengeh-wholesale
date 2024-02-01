@@ -22,8 +22,8 @@ public static class HealthCheckNames
     public const string DatabricksSqlStatementsApi = "DatabricksSqlStatementsApiHealthCheck";
     public const string DatabricksJobsApi = "DatabricksJobsApiHealthCheck";
     public const string SqlDatabaseContext = "SqlDatabaseContextHealthCheck";
-    public const string RegisterCompletedBatchesTrigger = nameof(RegisterCompletedBatchesTrigger);
-    public const string UpdateBatchExecutionStateTrigger = nameof(UpdateBatchExecutionStateTrigger);
+    public const string RegisterCompletedCalculationsTrigger = nameof(RegisterCompletedCalculationsTrigger);
+    public const string UpdateCalculationExecutionStateTrigger = nameof(UpdateCalculationExecutionStateTrigger);
     public const string StartCalculationTrigger = nameof(StartCalculationTrigger);
     public const string DataLake = "DataLakeHealthCheck";
 }

@@ -95,7 +95,7 @@ public class CalculationBuilder
 
     public Calculation Build()
     {
-        var batch = new Calculation(
+        var calculation = new Calculation(
             SystemClock.Instance.GetCurrentInstant(),
             _calculationType,
             _gridAreaCodes,
@@ -109,31 +109,31 @@ public class CalculationBuilder
 
         if (_state == CalculationExecutionState.Submitted)
         {
-            batch.MarkAsSubmitted(jobRunId);
+            calculation.MarkAsSubmitted(jobRunId);
         }
         else if (_state == CalculationExecutionState.Pending)
         {
-            batch.MarkAsSubmitted(jobRunId);
-            batch.MarkAsPending();
+            calculation.MarkAsSubmitted(jobRunId);
+            calculation.MarkAsPending();
         }
         else if (_state == CalculationExecutionState.Executing)
         {
-            batch.MarkAsSubmitted(jobRunId);
-            batch.MarkAsPending();
-            batch.MarkAsExecuting();
+            calculation.MarkAsSubmitted(jobRunId);
+            calculation.MarkAsPending();
+            calculation.MarkAsExecuting();
         }
         else if (_state == CalculationExecutionState.Completed)
         {
-            batch.MarkAsSubmitted(jobRunId);
-            batch.MarkAsPending();
-            batch.MarkAsExecuting();
-            batch.MarkAsCompleted(SystemClock.Instance.GetCurrentInstant());
+            calculation.MarkAsSubmitted(jobRunId);
+            calculation.MarkAsPending();
+            calculation.MarkAsExecuting();
+            calculation.MarkAsCompleted(SystemClock.Instance.GetCurrentInstant());
         }
         else if (_state != null)
         {
             throw new NotImplementedException();
         }
 
-        return batch;
+        return calculation;
     }
 }

@@ -28,18 +28,18 @@ public static class CalculationStateMapper
             _ => throw new ArgumentOutOfRangeException(
                 nameof(calculationDtoExecutionState),
                 actualValue: calculationDtoExecutionState,
-                "Value cannot be mapped to a batch state."),
+                "Value cannot be mapped to a calculation state."),
         };
     }
 
-    public static Calculations.Interfaces.Models.CalculationState? MapState(CalculationState? batchDtoExecutionState)
+    public static Calculations.Interfaces.Models.CalculationState? MapState(CalculationState? calculationDtoExecutionState)
     {
-        if (batchDtoExecutionState == null)
+        if (calculationDtoExecutionState == null)
         {
             return null;
         }
 
-        return batchDtoExecutionState switch
+        return calculationDtoExecutionState switch
         {
             CalculationState.Pending => Calculations.Interfaces.Models.CalculationState.Pending,
             CalculationState.Executing => Calculations.Interfaces.Models.CalculationState.Executing,
@@ -47,9 +47,9 @@ public static class CalculationStateMapper
             CalculationState.Failed => Calculations.Interfaces.Models.CalculationState.Failed,
 
             _ => throw new ArgumentOutOfRangeException(
-                nameof(batchDtoExecutionState),
-                actualValue: batchDtoExecutionState,
-                "Value cannot be mapped to a nullable batch state."),
+                nameof(calculationDtoExecutionState),
+                actualValue: calculationDtoExecutionState,
+                "Value cannot be mapped to a nullable calculation state."),
         };
     }
 }

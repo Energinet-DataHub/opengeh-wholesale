@@ -95,12 +95,12 @@ public class CalculationTests
     public void Ctor_PeriodsCombinedWithCalculationTypes_AreValidOrInvalid(CalculationType calculationType, int days, bool isValid)
     {
         // Arrange & Act
-        var batchBuilder = new CalculationBuilder()
+        var calculationBuilder = new CalculationBuilder()
             .WithCalculationType(calculationType)
             .WithPeriodEnd(Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022.AddDays(days)));
 
         // Act
-        var actual = Record.Exception(() => batchBuilder.Build());
+        var actual = Record.Exception(() => calculationBuilder.Build());
 
         // Assert
         Assert.Equal(isValid, actual == null);
@@ -128,7 +128,7 @@ public class CalculationTests
         var someGridAreas = new List<GridAreaCode> { new("004"), new("805") };
 
         // Act
-        Action createBatch = () => new Calculation(
+        var createCalculation = () => new Calculation(
             SystemClock.Instance.GetCurrentInstant(),
             CalculationType.WholesaleFixing,
             someGridAreas,
@@ -142,11 +142,11 @@ public class CalculationTests
         // Assert
         if (isEntireMonth)
         {
-            createBatch();
+            createCalculation();
         }
         else
         {
-            Assert.Throws<BusinessValidationException>(createBatch);
+            Assert.Throws<BusinessValidationException>(createCalculation);
         }
     }
 
@@ -289,7 +289,7 @@ public class CalculationTests
     }
 
     [Fact]
-    public void MarkAsCompleted_WhenExecuting_CompletesBatch()
+    public void MarkAsCompleted_WhenExecuting_CompletesCalculation()
     {
         // Arrange
         var sut = new CalculationBuilder().WithStateExecuting().Build();
@@ -346,7 +346,7 @@ public class CalculationTests
     }
 
     [Fact]
-    public void MarkAsExecuting_WhenPending_ExecutesBatch()
+    public void MarkAsExecuting_WhenPending_ExecutesCalculation()
     {
         var sut = new CalculationBuilder().WithStatePending().Build();
         sut.MarkAsExecuting();

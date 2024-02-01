@@ -44,14 +44,14 @@ public sealed class SettlementReportTests : WebApiTestBase
     {
         // arrange
         const string gridAreaCode = "001";
-        var batchId = Guid.NewGuid();
+        var calculationId = Guid.NewGuid();
 
-        var url = $"/v3/SettlementReport?batchId={batchId}&gridAreaCode={gridAreaCode}";
+        var url = $"/v3/SettlementReport?calculationId={calculationId}&gridAreaCode={gridAreaCode}";
 
         const HttpStatusCode expectedHttpStatusCode = HttpStatusCode.OK;
 
         settlementReportApplicationService
-            .Setup(service => service.GetSettlementReportAsync(batchId, gridAreaCode, Stream.Null));
+            .Setup(service => service.GetSettlementReportAsync(calculationId, gridAreaCode, Stream.Null));
 
         Factory.SettlementReportApplicationServiceMock = settlementReportApplicationService;
 
@@ -69,14 +69,14 @@ public sealed class SettlementReportTests : WebApiTestBase
     {
         // arrange
         const string gridAreaCode = "001";
-        var batchId = Guid.NewGuid();
+        var calculationId = Guid.NewGuid();
 
-        var url = $"/v3/SettlementReport?batchId={batchId}&gridAreaCode={gridAreaCode}";
+        var url = $"/v3/SettlementReport?calculationId={calculationId}&gridAreaCode={gridAreaCode}";
 
         const string expectedContent = "F33B866D-D97A-42B3-9DFF-5BD1EC28885A";
 
         settlementReportApplicationService
-            .Setup(service => service.GetSettlementReportAsync(batchId, gridAreaCode, It.IsAny<Stream>()))
+            .Setup(service => service.GetSettlementReportAsync(calculationId, gridAreaCode, It.IsAny<Stream>()))
             .Callback<Guid, string, Stream>((_, _, outputStream) => outputStream.Write(Encoding.UTF8.GetBytes(expectedContent)));
 
         Factory.SettlementReportApplicationServiceMock = settlementReportApplicationService;

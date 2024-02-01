@@ -40,7 +40,7 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
     private readonly string _row0CalculationId;
     private readonly string _calculationResultId0;
 
-    private readonly Mock<ICalculationsClient> _batchesClientMock;
+    private readonly Mock<ICalculationsClient> _calculationsClientMock;
     private readonly Mock<DatabricksSqlWarehouseQueryExecutor> _databricksSqlWarehouseQueryExecutorMock;
 
     public WholesaleResultQueriesTests()
@@ -60,9 +60,9 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
         // 1. Because DatabricksSqlWarehouseQueryExecutor doesn't implement an interface and the constructor is protected
         // AutoFixture combined with inline is unable to create an instance of it.
         // 2. The many mock parameters are avoided in tests
-        _batchesClientMock = Fixture.Freeze<Mock<ICalculationsClient>>();
+        _calculationsClientMock = Fixture.Freeze<Mock<ICalculationsClient>>();
         _databricksSqlWarehouseQueryExecutorMock = Fixture.Freeze<Mock<DatabricksSqlWarehouseQueryExecutor>>();
-        Fixture.Inject(_batchesClientMock.Object);
+        Fixture.Inject(_calculationsClientMock.Object);
         Fixture.Inject(_databricksSqlWarehouseQueryExecutorMock.Object);
     }
 
@@ -71,7 +71,7 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
     public async Task GetAsync_WhenNoRows_ReturnsNoResults(CalculationDto calculation)
     {
         // Arrange
-        _batchesClientMock
+        _calculationsClientMock
             .Setup(client => client.GetAsync(calculation.CalculationId))
             .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock
@@ -90,7 +90,7 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
     public async Task GetAsync_WhenOneRow_ReturnsSingleResultWithOneTimeSeriesPoint(CalculationDto calculation)
     {
         // Arrange
-        _batchesClientMock
+        _calculationsClientMock
             .Setup(client => client.GetAsync(calculation.CalculationId))
             .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock.Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
@@ -109,7 +109,7 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
     {
         // Arrange
         calculation = calculation with { CalculationId = Guid.Parse(_row0CalculationId), CalculationType = CalculationType.WholesaleFixing };
-        _batchesClientMock
+        _calculationsClientMock
             .Setup(client => client.GetAsync(calculation.CalculationId))
             .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock
@@ -143,7 +143,7 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
     public async Task GetAsync_WhenRowsBelongsToDifferentResults_ReturnsMultipleResults(CalculationDto calculation)
     {
         // Arrange
-        _batchesClientMock
+        _calculationsClientMock
             .Setup(client => client.GetAsync(calculation.CalculationId))
             .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock

@@ -19,7 +19,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationR
 
 public sealed class EnergyResult(
     Guid id,
-    Guid batchId,
+    Guid calculationId,
     string gridArea,
     TimeSeriesType timeSeriesType,
     string? energySupplierId,
@@ -35,7 +35,7 @@ public sealed class EnergyResult(
 {
     public Guid Id { get; } = id;
 
-    public Guid BatchId { get; } = batchId;
+    public Guid CalculationId { get; } = calculationId;
 
     public string? FromGridArea { get; } = fromGridArea;
 

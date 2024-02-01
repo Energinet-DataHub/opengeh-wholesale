@@ -78,37 +78,37 @@ public class SettlementReportController : V3ControllerBase
     }
 
     /// <summary>
-    /// Returns a stream containing the settlement report for batch with <paramref name="batchId" /> and <paramref name="gridAreaCode" />.
+    /// Returns a stream containing the settlement report for calculation with <paramref name="calculationId" /> and <paramref name="gridAreaCode" />.
     /// </summary>
-    /// <param name="batchId">BatchId</param>
+    /// <param name="calculationId">CalculationId</param>
     /// <param name="gridAreaCode">GridAreaCode</param>
     [HttpGet(Name = "GetSettlementReportAsStreamAsync")]
     [MapToApiVersion(Version)]
     [BinaryContent]
     [Authorize(Roles = Permissions.SettlementReportsManage)]
-    public async Task GetAsync([Required] Guid batchId, [Required] string gridAreaCode)
+    public async Task GetAsync([Required] Guid calculationId, [Required] string gridAreaCode)
     {
         var outputStream = Response.BodyWriter.AsStream();
 
         await using (outputStream.ConfigureAwait(false))
         {
             await _settlementReportClient
-                .GetSettlementReportAsync(batchId, gridAreaCode, outputStream)
+                .GetSettlementReportAsync(calculationId, gridAreaCode, outputStream)
                 .ConfigureAwait(false);
         }
     }
 
     /// <summary>
-    /// Returns a stream containing the settlement report for a batch matching <paramref name="batchId"/>
+    /// Returns a stream containing the settlement report for a calculation matching <paramref name="calculationId"/>
     /// </summary>
-    /// <param name="batchId">BatchId</param>
+    /// <param name="calculationId">CalculationId</param>
     [HttpGet("ZippedBasisDataStream")]
     [MapToApiVersion(Version)]
     [BinaryContent]
     [Authorize(Roles = Permissions.SettlementReportsManage)]
-    public async Task<IActionResult> GetSettlementReportAsync([Required] Guid batchId)
+    public async Task<IActionResult> GetSettlementReportAsync([Required] Guid calculationId)
     {
-        var report = await _settlementReportClient.GetSettlementReportAsync(batchId).ConfigureAwait(false);
+        var report = await _settlementReportClient.GetSettlementReportAsync(calculationId).ConfigureAwait(false);
         return Ok(report.Stream);
     }
 

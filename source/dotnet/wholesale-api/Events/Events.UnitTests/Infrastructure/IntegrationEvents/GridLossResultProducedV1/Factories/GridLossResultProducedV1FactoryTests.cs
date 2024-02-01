@@ -29,7 +29,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
 
 public class GridLossResultProducedV1FactoryTests
 {
-    private readonly Guid _batchId = Guid.NewGuid();
+    private readonly Guid _calculationId = Guid.NewGuid();
     private readonly Guid _id = Guid.NewGuid();
     private readonly string _gridArea = "543";
     private readonly Instant _periodStart = SystemClock.Instance.GetCurrentInstant();
@@ -59,7 +59,7 @@ public class GridLossResultProducedV1FactoryTests
         var meteringPointId = timeSeriesType is TimeSeriesType.NegativeGridLoss or TimeSeriesType.PositiveGridLoss ? "123" : null;
         return new EnergyResult(
             _id,
-            _batchId,
+            _calculationId,
             _gridArea,
             timeSeriesType,
             null,
@@ -82,7 +82,7 @@ public class GridLossResultProducedV1FactoryTests
     {
         var gridLossResultProduced = new Contracts.IntegrationEvents.GridLossResultProducedV1
         {
-            CalculationId = energyResult.BatchId.ToString(),
+            CalculationId = energyResult.CalculationId.ToString(),
             Resolution = Contracts.IntegrationEvents.GridLossResultProducedV1.Types.Resolution.Quarter,
             QuantityUnit = Contracts.IntegrationEvents.GridLossResultProducedV1.Types.QuantityUnit.Kwh,
             MeteringPointId = energyResult.MeteringPointId,

@@ -44,10 +44,10 @@ public class CalculationControllerTests : WebApiTestBase
         // Arrange
         var expectedUrl = "/v3/calculations";
         var expectedHttpStatusCode = HttpStatusCode.OK;
-        var batchRequestDto = CreateBatchRequestDto();
+        var calculationRequestDto = CreateCalculationRequestDto();
 
         // Act
-        var actualContent = await Client.PostAsJsonAsync(expectedUrl, batchRequestDto, CancellationToken.None);
+        var actualContent = await Client.PostAsJsonAsync(expectedUrl, calculationRequestDto, CancellationToken.None);
 
         // Assert
         actualContent.StatusCode.Should().Be(expectedHttpStatusCode);
@@ -62,7 +62,7 @@ public class CalculationControllerTests : WebApiTestBase
         // Arrange
         mock.Setup(service => service.GetAsync(calculationDto.CalculationId))
             .ReturnsAsync(calculationDto);
-        Factory.BatchesClientMock = mock;
+        Factory.CalculationsClientMock = mock;
 
         // Act
         var response = await Client.GetAsync($"/v3/calculations/{calculationDto.CalculationId}");
@@ -81,14 +81,14 @@ public class CalculationControllerTests : WebApiTestBase
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    private static CalculationRequestDto CreateBatchRequestDto()
+    private static CalculationRequestDto CreateCalculationRequestDto()
     {
         var period = Periods.January_EuropeCopenhagen;
-        var batchRequest = new CalculationRequestDto(
+        var calculationRequest = new CalculationRequestDto(
             CalculationType.BalanceFixing,
             new List<string> { "805" },
             period.PeriodStart,
             period.PeriodEnd);
-        return batchRequest;
+        return calculationRequest;
     }
 }

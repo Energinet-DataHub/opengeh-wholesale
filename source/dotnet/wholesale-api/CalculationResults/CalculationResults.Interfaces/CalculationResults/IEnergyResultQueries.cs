@@ -21,5 +21,5 @@ public interface IEnergyResultQueries
     /// <summary>
     /// Get all results for a given calculation.
     /// </summary>
-    IAsyncEnumerable<EnergyResult> GetAsync(Guid batchId);
+    IAsyncEnumerable<EnergyResult> GetAsync(Guid calculationId);
 }

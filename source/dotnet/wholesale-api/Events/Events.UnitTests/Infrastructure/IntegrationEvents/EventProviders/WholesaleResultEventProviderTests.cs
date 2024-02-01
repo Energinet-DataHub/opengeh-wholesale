@@ -43,10 +43,10 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
             // Arrange
             var expectedIntegrationEvent = new Contracts.IntegrationEvents.AmountPerChargeResultProducedV1();
             var amountPerChargeResult = new[] { wholesaleResult };
-            var wholesaleFixingBatch = CreateWholesaleFixingBatch();
+            var wholesaleFixingCalculation = CreateWholesaleFixingCalculation();
 
             wholesaleResultQueriesMock
-                .Setup(mock => mock.GetAsync(wholesaleFixingBatch.Id))
+                .Setup(mock => mock.GetAsync(wholesaleFixingCalculation.Id))
                 .Returns(amountPerChargeResult.ToAsyncEnumerable());
 
             amountPerChargeResultProducedV1FactoryMock
@@ -57,7 +57,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
                 .Returns(expectedIntegrationEvent);
 
             // Act
-            var actualIntegrationEvents = await sut.GetAsync(wholesaleFixingBatch).ToListAsync();
+            var actualIntegrationEvents = await sut.GetAsync(wholesaleFixingCalculation).ToListAsync();
 
             // Assert
             actualIntegrationEvents.Single().EventName.Should().Be(((IEventMessage)expectedIntegrationEvent).EventName);
@@ -74,11 +74,11 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
         {
             // Arrange
             var expectedIntegrationEvent = new Contracts.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1();
-            var wholesaleFixingBatch = CreateWholesaleFixingBatch();
+            var wholesaleFixingCalculation = CreateWholesaleFixingCalculation();
             var wholesaleResults = new[] { wholesaleResult };
 
             wholesaleResultQueriesMock
-                .Setup(mock => mock.GetAsync(wholesaleFixingBatch.Id))
+                .Setup(mock => mock.GetAsync(wholesaleFixingCalculation.Id))
                 .Returns(wholesaleResults.ToAsyncEnumerable());
 
             amountPerChargeResultProducedV1FactoryMock
@@ -92,7 +92,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
                 .Returns(expectedIntegrationEvent);
 
             // Act
-            var actualIntegrationEvents = await sut.GetAsync(wholesaleFixingBatch).ToListAsync();
+            var actualIntegrationEvents = await sut.GetAsync(wholesaleFixingCalculation).ToListAsync();
 
             // Assert
             actualIntegrationEvents.Single().EventName.Should().Be(((IEventMessage)expectedIntegrationEvent).EventName);
@@ -108,11 +108,11 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
             WholesaleResultEventProvider sut)
         {
             // Arrange
-            var wholesaleFixingBatch = CreateWholesaleFixingBatch();
+            var wholesaleFixingCalculation = CreateWholesaleFixingCalculation();
             var wholesaleResults = new[] { wholesaleResult };
 
             wholesaleResultQueriesMock
-                .Setup(mock => mock.GetAsync(wholesaleFixingBatch.Id))
+                .Setup(mock => mock.GetAsync(wholesaleFixingCalculation.Id))
                 .Returns(wholesaleResults.ToAsyncEnumerable());
 
             amountPerChargeResultProducedV1FactoryMock
@@ -123,7 +123,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
                 .Returns(false);
 
             // Act
-            var act = async () => await sut.GetAsync(wholesaleFixingBatch).SingleAsync();
+            var act = async () => await sut.GetAsync(wholesaleFixingCalculation).SingleAsync();
 
             // Assert
             await act.Should().ThrowAsync<ArgumentException>();
@@ -140,10 +140,10 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
             // Arrange
             const int expectedEventsPerResult = 1;
             var expectedEventsCount = wholesaleResults.Length * expectedEventsPerResult;
-            var wholesaleFixingBatch = CreateWholesaleFixingBatch();
+            var wholesaleFixingCalculation = CreateWholesaleFixingCalculation();
 
             wholesaleResultQueriesMock
-                .Setup(mock => mock.GetAsync(wholesaleFixingBatch.Id))
+                .Setup(mock => mock.GetAsync(wholesaleFixingCalculation.Id))
                 .Returns(wholesaleResults.ToAsyncEnumerable());
 
             amountPerChargeResultProducedV1FactoryMock
@@ -154,7 +154,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
                 .Returns(new Contracts.IntegrationEvents.AmountPerChargeResultProducedV1());
 
             // Act
-            var actualIntegrationEvents = await sut.GetAsync(wholesaleFixingBatch).ToListAsync();
+            var actualIntegrationEvents = await sut.GetAsync(wholesaleFixingCalculation).ToListAsync();
 
             // Assert
             actualIntegrationEvents.Should().HaveCount(expectedEventsCount);
@@ -173,7 +173,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
         {
             // Arrange
             var fixture = new Fixture();
-            var batch = fixture
+            var calculation = fixture
                 .Build<CompletedCalculation>()
                 .With(p => p.CalculationType, calculationType)
                 .Create();
@@ -186,20 +186,20 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
                 new MonthlyAmountPerChargeResultProducedV1Factory());
 
             // Act
-            var actualResult = sut.CanContainWholesaleResults(batch);
+            var actualResult = sut.CanContainWholesaleResults(calculation);
 
             // Assert
             actualResult.Should().Be(canContainWholesaleResults);
         }
 
-        private static CompletedCalculation CreateWholesaleFixingBatch()
+        private static CompletedCalculation CreateWholesaleFixingCalculation()
         {
             var fixture = new Fixture();
-            var wholesaleFixingBatch = fixture
+            var wholesaleFixingCalculation = fixture
                 .Build<CompletedCalculation>()
                 .With(p => p.CalculationType, CalculationType.WholesaleFixing)
                 .Create();
-            return wholesaleFixingBatch;
+            return wholesaleFixingCalculation;
         }
     }
 }

@@ -40,8 +40,8 @@ public static class CalculationDtoMapperTests
         actual.ExecutionTimeEnd.Should().Be(source.ExecutionTimeEnd);
         actual.GridAreaCodes.Should().Contain(source.GridAreaCodes);
         actual.AreSettlementReportsCreated.Should().Be(source.AreSettlementReportsCreated);
-        actual.BatchId.Should().Be(source.CalculationId);
-        actual.BatchId.Should().Be(source.CalculationId);
+        actual.CalculationId.Should().Be(source.CalculationId);
+        actual.CalculationId.Should().Be(source.CalculationId);
         actual.CreatedByUserId.Should().Be(source.CreatedByUserId);
     }
 }

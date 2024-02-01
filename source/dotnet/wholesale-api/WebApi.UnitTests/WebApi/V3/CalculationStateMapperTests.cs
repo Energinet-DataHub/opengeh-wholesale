@@ -37,14 +37,14 @@ public class CalculationStateMapperTests
     [InlineAutoMoqData(CalculationState.Completed, Calculations.Interfaces.Models.CalculationState.Completed)]
     [InlineAutoMoqData(CalculationState.Executing, Calculations.Interfaces.Models.CalculationState.Executing)]
     [InlineAutoMoqData(CalculationState.Pending, Calculations.Interfaces.Models.CalculationState.Pending)]
-    public void Map_ReturnsExpectedTypeForBatchModule(CalculationState source, Calculations.Interfaces.Models.CalculationState expected)
+    public void Map_ReturnsExpectedTypeForCalculationModule(CalculationState source, Calculations.Interfaces.Models.CalculationState expected)
     {
         var actual = CalculationStateMapper.MapState(source);
         actual.Should().Be(expected);
     }
 
     [Fact]
-    public void MapState_WhenInvalidEnumNumberForBatchState_ThrowsArgumentOutOfRangeException()
+    public void MapState_WhenInvalidEnumNumberForCalculationState_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
         var invalidValue = (Calculations.Interfaces.Models.CalculationState)99;
@@ -58,7 +58,7 @@ public class CalculationStateMapperTests
     }
 
     [Fact]
-    public void MapState_WhenInvalidEnumNumberForV3BatchState_ThrowsArgumentOutOfRangeException()
+    public void MapState_WhenInvalidEnumNumberForV3CalculationState_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
         var invalidValue = (CalculationState)99;

@@ -36,21 +36,21 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
 {
     private readonly TableChunk _tableChunk;
-    private readonly string _row0BatchId;
+    private readonly string _row0CalculationId;
     private readonly string _calculationResultId0;
 
-    private readonly Mock<ICalculationsClient> _batchesClientMock;
+    private readonly Mock<ICalculationsClient> _calculationsClientMock;
     private readonly Mock<DatabricksSqlWarehouseQueryExecutor> _databricksSqlWarehouseQueryExecutorMock;
 
     public EnergyResultQueriesTests()
     {
         // The two rows belongs to different calculation results as they have different calculation result ids
-        _row0BatchId = "b78787d5-b544-44ac-87c2-7720aab86ed1";
+        _row0CalculationId = "b78787d5-b544-44ac-87c2-7720aab86ed1";
         _calculationResultId0 = "9913f3bb-1208-400b-9cbe-50300e386d26";
         const string calculationResultId1 = "8c2bb7c6-d8e5-462c-9bce-8537f93ef8e7";
         var row0 = new[]
         {
-            _row0BatchId, "100", "200", "non_profiled_consumption", string.Empty, string.Empty,
+            _row0CalculationId, "100", "200", "non_profiled_consumption", string.Empty, string.Empty,
             "2022-05-16T22:00:00.000Z", "1.111", "[\"measured\"]", _calculationResultId0,
             DeltaTableCalculationType.Aggregation, null,
         };
@@ -69,9 +69,9 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
         // 1. Because DatabricksSqlWarehouseQueryExecutor doesn't implement an interface and the constructor is protected
         // AutoFixture combined with inline is unable to create an instance of it.
         // 2. The many mock parameters are avoided in tests
-        _batchesClientMock = Fixture.Freeze<Mock<ICalculationsClient>>();
+        _calculationsClientMock = Fixture.Freeze<Mock<ICalculationsClient>>();
         _databricksSqlWarehouseQueryExecutorMock = Fixture.Freeze<Mock<DatabricksSqlWarehouseQueryExecutor>>();
-        Fixture.Inject(_batchesClientMock.Object);
+        Fixture.Inject(_calculationsClientMock.Object);
         Fixture.Inject(_databricksSqlWarehouseQueryExecutorMock.Object);
     }
 
@@ -80,7 +80,7 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
     public async Task GetAsync_WhenNoRows_ReturnsNoResults(CalculationDto calculation)
     {
         // Arrange
-        _batchesClientMock
+        _calculationsClientMock
             .Setup(client => client.GetAsync(calculation.CalculationId))
             .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock.Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
@@ -98,7 +98,7 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
     public async Task GetAsync_WhenOneRow_ReturnsSingleResultWithOneTimeSeriesPoint(CalculationDto calculation)
     {
         // Arrange
-        _batchesClientMock
+        _calculationsClientMock
             .Setup(client => client.GetAsync(calculation.CalculationId))
             .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock
@@ -117,7 +117,7 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
     public async Task GetAsync_ReturnsResultRowWithExpectedValues(CalculationDto calculation)
     {
         // Arrange
-        _batchesClientMock
+        _calculationsClientMock
             .Setup(client => client.GetAsync(calculation.CalculationId))
             .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock
@@ -129,12 +129,12 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
 
         // Assert
         actual.Id.Should().Be(_calculationResultId0);
-        actual.BatchId.Should().Be(Guid.Parse(_row0BatchId));
+        actual.CalculationId.Should().Be(Guid.Parse(_row0CalculationId));
         actual.GridArea.Should().Be(_tableChunk[0, EnergyResultColumnNames.GridArea]);
         actual.TimeSeriesType.Should().Be(TimeSeriesType.NonProfiledConsumption);
         actual.BalanceResponsibleId.Should().Be(_tableChunk[0, EnergyResultColumnNames.BalanceResponsibleId]);
         actual.EnergySupplierId.Should().Be(_tableChunk[0, EnergyResultColumnNames.EnergySupplierId]);
-        actual.BatchId.Should().Be(_tableChunk[0, EnergyResultColumnNames.CalculationId]);
+        actual.CalculationId.Should().Be(_tableChunk[0, EnergyResultColumnNames.CalculationId]);
         actual.CalculationType.Should().Be(calculation.CalculationType);
         actual.PeriodStart.Should().Be(calculation.PeriodStart.ToInstant());
         actual.PeriodEnd.Should().Be(calculation.PeriodEnd.ToInstant());
@@ -149,7 +149,7 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
     public async Task GetAsync_WhenRowsBelongsToDifferentResults_ReturnsMultipleResults(CalculationDto calculation)
     {
         // Arrange
-        _batchesClientMock
+        _calculationsClientMock
             .Setup(client => client.GetAsync(calculation.CalculationId))
             .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock
@@ -174,13 +174,13 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
         // Arrange
         var listA = new DatabricksSqlRow(new Dictionary<string, object?>
         {
-            { EnergyResultColumnNames.CalculationId, "batchId" },
+            { EnergyResultColumnNames.CalculationId, "calculationId" },
             { EnergyResultColumnNames.CalculationResultId, calculationResultIdA },
         });
 
         var listB = new DatabricksSqlRow(new Dictionary<string, object?>
         {
-            { EnergyResultColumnNames.CalculationId, "batchId" },
+            { EnergyResultColumnNames.CalculationId, "calculationId" },
             { EnergyResultColumnNames.CalculationResultId, calculationResultIdB },
         });
 

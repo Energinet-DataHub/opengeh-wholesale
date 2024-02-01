@@ -25,10 +25,10 @@ public class CompletedCalculationFactoryTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public void CreateFromBatch_ReturnsCompletedBatch(CalculationDto calculation, CompletedCalculationFactory sut)
+    public void CreateFromCalculation_ReturnsCompletedCalculation(CalculationDto calculation, CompletedCalculationFactory sut)
     {
         // Arrange
-        var expectedCompletedBatch = new CompletedCalculation(
+        var expectedCompletedCalculation = new CompletedCalculation(
             calculation.CalculationId,
             calculation.GridAreaCodes.ToList(),
             calculation.CalculationType,
@@ -37,9 +37,9 @@ public class CompletedCalculationFactoryTests
             calculation.ExecutionTimeEnd!.Value.ToInstant());
 
         // Act
-        var actual = sut.CreateFromBatch(calculation);
+        var actual = sut.CreateFromCalculation(calculation);
 
         // Assert
-        actual.Should().BeEquivalentTo(expectedCompletedBatch);
+        actual.Should().BeEquivalentTo(expectedCompletedCalculation);
     }
 }
