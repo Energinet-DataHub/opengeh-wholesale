@@ -88,31 +88,10 @@ class TableReader:
         df = self._fix_metering_point_type(df)
         return df
 
-    def read_time_series_points(
-        self, period_start_datetime: datetime, period_end_datetime: datetime
-    ) -> DataFrame:
+    def read_time_series_points(self) -> DataFrame:
         path = f"{self._calculation_input_path}/{self._time_series_points_table_name}"
 
-        df = (
-            self._spark.read.format("delta")
-            .load(path)
-            .where(col(Colname.observation_time) >= period_start_datetime)
-            .where(col(Colname.observation_time) < period_end_datetime)
-        )
-
-        # Remove time series of grid loss metering points
-        grid_loss_metering_points = self.read_grid_loss_metering_points()
-        df = df.join(
-            grid_loss_metering_points,
-            Colname.metering_point_id,
-            "left_anti",
-        )
-
-        if "observation_year" in df.columns:
-            df = df.drop("observation_year")  # Drop year partition column
-
-        if "observation_month" in df.columns:
-            df = df.drop("observation_month")  # Drop month partition column
+        df = self._spark.read.format("delta").load(path)
 
         assert_schema(df.schema, time_series_point_schema)
 

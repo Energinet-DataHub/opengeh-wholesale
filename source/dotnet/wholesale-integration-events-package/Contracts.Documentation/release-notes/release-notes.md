@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 8.0.1
+
+Removed obsolete section from documentation.
+
 ## Version 8.0.0
 
 Removed deprecated `CalculationResultCompleted` event.
