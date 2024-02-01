@@ -44,8 +44,13 @@ def _get_charge_master_data(
     period_start_datetime: datetime,
     period_end_datetime: datetime,
 ) -> DataFrame:
-    charge_master_data_df = table_reader.read_charge_master_data_periods(
-        period_start_datetime, period_end_datetime
+    charge_master_data_df = (
+        table_reader.read_charge_master_data_periods()
+        .where(col(Colname.from_date) < period_end_datetime)
+        .where(
+            col(Colname.to_date).isNull()
+            | (col(Colname.to_date) > period_start_datetime)
+        )
     )
     charge_master_data_df = clamp_period(
         charge_master_data_df,
