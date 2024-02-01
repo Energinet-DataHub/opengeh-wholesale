@@ -75,9 +75,9 @@ public class CalculationBuilder
         return this;
     }
 
-    public CalculationBuilder WithProcessType(CalculationType processType)
+    public CalculationBuilder WithCalculationType(CalculationType calculationType)
     {
-        _calculationType = processType;
+        _calculationType = calculationType;
         return this;
     }
 

@@ -20,7 +20,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Mappers;
 
-public class ProcessTypeMapperTests
+public class CalculationTypeMapperTests
 {
     [Theory]
     [InlineData(RequestedCalculationType.BalanceFixing, CalculationType.BalanceFixing)]
@@ -29,10 +29,10 @@ public class ProcessTypeMapperTests
     [InlineData(RequestedCalculationType.FirstCorrection, CalculationType.FirstCorrectionSettlement)]
     [InlineData(RequestedCalculationType.SecondCorrection, CalculationType.SecondCorrectionSettlement)]
     [InlineData(RequestedCalculationType.ThirdCorrection, CalculationType.ThirdCorrectionSettlement)]
-    public void FromRequestedProcessType_WhenValidRequestedProcessType_ReturnsExpectedProcessType(RequestedCalculationType requestedProcessType, CalculationType expectedResult)
+    public void FromRequestedCalculationType_WhenValidRequestedCalculationType_ReturnsExpectedCalculationType(RequestedCalculationType requestedCalculationType, CalculationType expectedResult)
     {
         // Act
-        var actualProcessType = CalculationTypeMapper.FromRequestedProcessType(requestedProcessType);
+        var actualProcessType = CalculationTypeMapper.FromRequestedCalculationType(requestedCalculationType);
 
         // Assert
         actualProcessType.Should().Be(expectedResult);
@@ -44,7 +44,7 @@ public class ProcessTypeMapperTests
     public void FromRequestedProcessType_WhenInvalidRequestedProcessType_ThrowsArgumentOutOfRangeException(RequestedCalculationType requestedProcessType)
     {
         // Act
-        var act = () => CalculationTypeMapper.FromRequestedProcessType(requestedProcessType);
+        var act = () => CalculationTypeMapper.FromRequestedCalculationType(requestedProcessType);
 
         // Assert
         act.Should().ThrowExactly<ArgumentOutOfRangeException>().And.ActualValue.Should().Be(requestedProcessType);

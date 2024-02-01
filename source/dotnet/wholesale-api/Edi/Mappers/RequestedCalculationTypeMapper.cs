@@ -16,9 +16,9 @@ using Energinet.DataHub.Wholesale.EDI.Models;
 
 namespace Energinet.DataHub.Wholesale.EDI.Mappers;
 
-public static class RequestedProcessTypeMapper
+public static class RequestedCalculationTypeMapper
 {
-    public static RequestedCalculationType ToRequestedProcessType(string businessReason, string? settlementSeriesVersion)
+    public static RequestedCalculationType ToRequestedCalculationType(string businessReason, string? settlementSeriesVersion)
     {
         if (businessReason != BusinessReason.Correction && settlementSeriesVersion != null)
         {

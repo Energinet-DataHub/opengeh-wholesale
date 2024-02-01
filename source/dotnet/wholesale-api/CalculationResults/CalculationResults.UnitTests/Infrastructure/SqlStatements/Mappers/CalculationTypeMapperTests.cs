@@ -21,10 +21,10 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SqlStatements.Mappers;
 
-public class ProcessTypeMapperTests
+public class CalculationTypeMapperTests
 {
     [Fact]
-    public async Task ProcessType_Matches_Contract()
+    public async Task CalculationType_Matches_Contract()
     {
         await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.process-type.json");
         await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<CalculationType>(stream);
@@ -37,14 +37,14 @@ public class ProcessTypeMapperTests
     [InlineData(CalculationType.FirstCorrectionSettlement)]
     [InlineData(CalculationType.SecondCorrectionSettlement)]
     [InlineData(CalculationType.ThirdCorrectionSettlement)]
-    public async Task ToDeltaTableValue_ReturnsValidDeltaValue(CalculationType processType)
+    public async Task ToDeltaTableValue_ReturnsValidDeltaValue(CalculationType calculationType)
     {
         // Arrange
         await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.process-type.json");
         var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
 
         // Act
-        var actual = CalculationTypeMapper.ToDeltaTableValue(processType);
+        var actual = CalculationTypeMapper.ToDeltaTableValue(calculationType);
 
         // Assert
         actual.Should().BeOneOf(validDeltaValues);
@@ -97,7 +97,7 @@ public class ProcessTypeMapperTests
     }
 
     [Fact]
-    public void ToDeltaTableValue_WhenInvalidEnumNumberForProcessType_ThrowsArgumentOutOfRangeException()
+    public void ToDeltaTableValue_WhenInvalidEnumNumberForCalculationType_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
         var invalidValue = (CalculationType)99;

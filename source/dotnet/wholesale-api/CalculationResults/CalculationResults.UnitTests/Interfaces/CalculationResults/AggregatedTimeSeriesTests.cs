@@ -27,7 +27,7 @@ public class AggregatedTimeSeriesTests
     public void Ctor_WhenNoPoints_ThrowsArgumentException(
         string anyGridArea,
         TimeSeriesType anyTimeSeriesType,
-        CalculationType anyProcessType)
+        CalculationType anyCalculationType)
     {
         // Arrange
         var emptyTimeSeriesPoints = Array.Empty<EnergyTimeSeriesPoint>();
@@ -37,7 +37,7 @@ public class AggregatedTimeSeriesTests
             gridArea: anyGridArea,
             timeSeriesType: anyTimeSeriesType,
             timeSeriesPoints: emptyTimeSeriesPoints,
-            calculationType: anyProcessType);
+            calculationType: anyCalculationType);
 
         // Assert
         act.Should().Throw<ArgumentException>().WithMessage("*empty*");

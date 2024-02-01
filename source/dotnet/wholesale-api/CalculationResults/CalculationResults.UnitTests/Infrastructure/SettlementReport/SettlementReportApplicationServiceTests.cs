@@ -117,7 +117,7 @@ public class SettlementReportApplicationServiceTests
 
     [Theory]
     [AutoMoqData]
-    public static async Task CreateCompressedSettlementReportAsync_GivenUnsupportedProcessType_ThrowValidationException(
+    public static async Task CreateCompressedSettlementReportAsync_GivenUnsupportedCalculationType_ThrowValidationException(
         [Frozen] Mock<ICalculationsClient> batchesClientMock,
         [Frozen] Mock<ISettlementReportResultsCsvWriter> settlementReportResultsCsvWriterMock,
         [Frozen] Mock<ISettlementReportRepository> settlementReportRepositoryMock,

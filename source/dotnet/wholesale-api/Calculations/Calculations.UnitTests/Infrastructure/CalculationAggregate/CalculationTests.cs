@@ -65,11 +65,11 @@ public class CalculationTests
     [InlineAutoMoqData(CalculationType.FirstCorrectionSettlement)]
     [InlineAutoMoqData(CalculationType.SecondCorrectionSettlement)]
     [InlineAutoMoqData(CalculationType.ThirdCorrectionSettlement)]
-    public void Ctor_WhenWholesaleAndCorrectionProcessTypesAndPeriodIsMoreThanAMonth_ThrowsBusinessValidationException(CalculationType calculationType)
+    public void Ctor_WhenWholesaleAndCorrectionCalculationTypesAndPeriodIsMoreThanAMonth_ThrowsBusinessValidationException(CalculationType calculationType)
     {
         // Arrange & Act
         var actual = Assert.Throws<BusinessValidationException>(() => new CalculationBuilder()
-            .WithProcessType(calculationType)
+            .WithCalculationType(calculationType)
             .WithPeriodEnd(Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022.AddDays(32)))
             .Build());
 
@@ -92,11 +92,11 @@ public class CalculationTests
     [InlineAutoMoqData(CalculationType.ThirdCorrectionSettlement, 32, false)]
     [InlineAutoMoqData(CalculationType.BalanceFixing, 30, true)]
     [InlineAutoMoqData(CalculationType.Aggregation, 30, true)]
-    public void Ctor_PeriodsCombinedWithProcessTypes_AreValidOrInvalid(CalculationType processType, int days, bool isValid)
+    public void Ctor_PeriodsCombinedWithCalculationTypes_AreValidOrInvalid(CalculationType calculationType, int days, bool isValid)
     {
         // Arrange & Act
         var batchBuilder = new CalculationBuilder()
-            .WithProcessType(processType)
+            .WithCalculationType(calculationType)
             .WithPeriodEnd(Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022.AddDays(days)));
 
         // Act
@@ -165,12 +165,12 @@ public class CalculationTests
     }
 
     [Fact]
-    public void GetResolution_DoesNotThrowExceptionForAllProcessTypes()
+    public void GetResolution_DoesNotThrowExceptionForAllCalculationTypes()
     {
         // Arrange
-        foreach (var processType in Enum.GetValues(typeof(CalculationType)))
+        foreach (var calculationType in Enum.GetValues(typeof(CalculationType)))
         {
-            var sut = new CalculationBuilder().WithProcessType((CalculationType)processType).Build();
+            var sut = new CalculationBuilder().WithCalculationType((CalculationType)calculationType).Build();
 
             // Act & Assert
             sut.GetResolution();
@@ -178,12 +178,12 @@ public class CalculationTests
     }
 
     [Fact]
-    public void GetQuantityUnit_DoesNotThrowExceptionForAllProcessTypes()
+    public void GetQuantityUnit_DoesNotThrowExceptionForAllCalculationTypes()
     {
         // Arrange
-        foreach (var processType in Enum.GetValues(typeof(CalculationType)))
+        foreach (var calculationType in Enum.GetValues(typeof(CalculationType)))
         {
-            var sut = new CalculationBuilder().WithProcessType((CalculationType)processType).Build();
+            var sut = new CalculationBuilder().WithCalculationType((CalculationType)calculationType).Build();
 
             // Act & Assert - Remember to add new [InlineAutoMoqData (...,...)] for new calculation types in other tests
             sut.GetQuantityUnit();
@@ -197,10 +197,10 @@ public class CalculationTests
     [InlineAutoMoqData(CalculationType.FirstCorrectionSettlement, "PT15M")]
     [InlineAutoMoqData(CalculationType.SecondCorrectionSettlement, "PT15M")]
     [InlineAutoMoqData(CalculationType.ThirdCorrectionSettlement, "PT15M")]
-    public void GetResolution_ReturnsExpectedIso8601Duration(CalculationType processType, string expectedIso8601Duration)
+    public void GetResolution_ReturnsExpectedIso8601Duration(CalculationType calculationType, string expectedIso8601Duration)
     {
         // Arrange
-        var sut = new CalculationBuilder().WithProcessType(processType).Build();
+        var sut = new CalculationBuilder().WithCalculationType(calculationType).Build();
 
         // Act
         var actual = sut.GetResolution();
@@ -216,10 +216,10 @@ public class CalculationTests
     [InlineAutoMoqData(CalculationType.FirstCorrectionSettlement, QuantityUnit.Kwh)]
     [InlineAutoMoqData(CalculationType.SecondCorrectionSettlement, QuantityUnit.Kwh)]
     [InlineAutoMoqData(CalculationType.ThirdCorrectionSettlement, QuantityUnit.Kwh)]
-    public void GetQuantityUnit_ReturnsExpectedIso8601Duration(CalculationType processType, QuantityUnit expectedQuantityUnit)
+    public void GetQuantityUnit_ReturnsExpectedIso8601Duration(CalculationType calculationType, QuantityUnit expectedQuantityUnit)
     {
         // Arrange
-        var sut = new CalculationBuilder().WithProcessType(processType).Build();
+        var sut = new CalculationBuilder().WithCalculationType(calculationType).Build();
 
         // Act
         var actual = sut.GetQuantityUnit();

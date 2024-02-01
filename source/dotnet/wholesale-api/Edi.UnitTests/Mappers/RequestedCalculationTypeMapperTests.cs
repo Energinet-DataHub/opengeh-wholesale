@@ -19,7 +19,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Mappers;
 
-public class RequestedProcessTypeMapperTests
+public class RequestedCalculationTypeMapperTests
 {
     [Theory]
     [InlineData(BusinessReason.BalanceFixing, null, RequestedCalculationType.BalanceFixing)]
@@ -32,7 +32,7 @@ public class RequestedProcessTypeMapperTests
     public void ToRequestedProcessType_WhenValidBusinessReasonAndSettlementSeriesVersion_ReturnsExpectedType(string businessReason, string? settlementSeriesVersion, RequestedCalculationType expectedType)
     {
         // Act
-        var actualType = RequestedProcessTypeMapper.ToRequestedProcessType(businessReason, settlementSeriesVersion);
+        var actualType = RequestedCalculationTypeMapper.ToRequestedCalculationType(businessReason, settlementSeriesVersion);
 
         // Assert
         actualType.Should().Be(expectedType);
@@ -50,7 +50,7 @@ public class RequestedProcessTypeMapperTests
     public void ToRequestedProcessType_WhenInvalidBusinessReasonAndSettlementSeriesVersionCombination_ThrowsArgumentOutOfRangeException(string businessReason, string? settlementSeriesVersion)
     {
         // Act
-        var act = () => RequestedProcessTypeMapper.ToRequestedProcessType(businessReason, settlementSeriesVersion);
+        var act = () => RequestedCalculationTypeMapper.ToRequestedCalculationType(businessReason, settlementSeriesVersion);
 
         // Assert
         act.Should().ThrowExactly<ArgumentOutOfRangeException>().And.ActualValue.Should().Be(settlementSeriesVersion);
@@ -62,7 +62,7 @@ public class RequestedProcessTypeMapperTests
     public void ToRequestedProcessType_WhenInvalidBusinessReason_ThrowsArgumentOutOfRangeException(string businessReason, string? settlementSeriesVersion)
     {
         // Act
-        var act = () => RequestedProcessTypeMapper.ToRequestedProcessType(businessReason, settlementSeriesVersion);
+        var act = () => RequestedCalculationTypeMapper.ToRequestedCalculationType(businessReason, settlementSeriesVersion);
 
         // Assert
         act.Should().ThrowExactly<ArgumentOutOfRangeException>().And.ActualValue.Should().Be(businessReason);

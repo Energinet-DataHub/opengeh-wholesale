@@ -182,7 +182,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter,
             balanceResponsibleId: balanceResponsibleIdFilter,
-            processType: CalculationType.BalanceFixing);
+            calculationType: CalculationType.BalanceFixing);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -270,7 +270,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        var processTypeFilter = CalculationType.FirstCorrectionSettlement;
+        var calculationTypeFilter = CalculationType.FirstCorrectionSettlement;
         await AddCreatedRowsInArbitraryOrderAsync(addFirstCorrection: true);
 
         var parameters = CreateQueryParameters(
@@ -278,7 +278,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter,
-            processType: processTypeFilter);
+            calculationType: calculationTypeFilter);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -306,7 +306,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        var processTypeFilter = CalculationType.SecondCorrectionSettlement;
+        var calculationTypeFilter = CalculationType.SecondCorrectionSettlement;
         await AddCreatedRowsInArbitraryOrderAsync(addSecondCorrection: true);
 
         var parameters = CreateQueryParameters(
@@ -314,7 +314,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter,
-            processType: processTypeFilter);
+            calculationType: calculationTypeFilter);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -342,7 +342,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        var processTypeFilter = CalculationType.ThirdCorrectionSettlement;
+        var calculationTypeFilter = CalculationType.ThirdCorrectionSettlement;
         await AddCreatedRowsInArbitraryOrderAsync(addThirdCorrection: true);
 
         var parameters = CreateQueryParameters(
@@ -350,7 +350,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter,
-            processType: processTypeFilter);
+            calculationType: calculationTypeFilter);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -419,7 +419,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter,
-            processType: CalculationType.BalanceFixing);
+            calculationType: CalculationType.BalanceFixing);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -443,7 +443,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             endOfPeriod: endOfPeriodFilter,
             energySupplierId: energySupplierIdFilter,
             balanceResponsibleId: balanceResponsibleIdFilter,
-            processType: CalculationType.BalanceFixing);
+            calculationType: CalculationType.BalanceFixing);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -546,7 +546,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
     }
 
     [Fact]
-    public async Task GetLatestCorrectionAsync_WhenProcessTypeIsDefined_ThrowsException()
+    public async Task GetLatestCorrectionAsync_WhenCalculationTypeIsDefined_ThrowsException()
     {
         // Arrange
         var gridAreaFilter = GridAreaCodeC;
@@ -558,7 +558,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             startOfPeriodFilter,
             endOfPeriodFilter,
             gridAreaFilter,
-            processType: CalculationType.BalanceFixing);
+            calculationType: CalculationType.BalanceFixing);
 
         // Act
         var act = async () => await Sut.GetLatestCorrectionForGridAreaAsync(parameters).ToListAsync();
@@ -597,7 +597,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         string? gridArea = null,
         string? energySupplierId = null,
         string? balanceResponsibleId = null,
-        CalculationType? processType = null)
+        CalculationType? calculationType = null)
     {
         return new AggregatedTimeSeriesQueryParameters(
             TimeSeriesType: timeSeriesType ?? TimeSeriesType.Production,
@@ -606,7 +606,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             GridArea: gridArea,
             EnergySupplierId: energySupplierId,
             BalanceResponsibleId: balanceResponsibleId,
-            CalculationType: processType);
+            CalculationType: calculationType);
     }
 
     private async Task AddCreatedRowsInArbitraryOrderAsync(bool addFirstCorrection = false, bool addSecondCorrection = false, bool addThirdCorrection = false)

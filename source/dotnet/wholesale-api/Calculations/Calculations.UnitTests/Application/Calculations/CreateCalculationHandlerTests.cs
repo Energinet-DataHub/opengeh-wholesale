@@ -95,7 +95,7 @@ public class CreateCalculationHandlerTests
     [InlineData(CalculationType.FirstCorrectionSettlement)]
     [InlineData(CalculationType.SecondCorrectionSettlement)]
     [InlineData(CalculationType.ThirdCorrectionSettlement)]
-    public void Handle_WhenPeriodNotOneMonthForCertainProcessTypes_ThrowBusinessValidationException(CalculationType calculationType)
+    public void Handle_WhenPeriodNotOneMonthForCertainCalculationTypes_ThrowBusinessValidationException(CalculationType calculationType)
     {
         // Arrange
         var periodStart = DateTimeOffset.Parse("2021-12-31T23:00Z");
@@ -156,10 +156,10 @@ public class CreateCalculationHandlerTests
         actual.Should().Throw<BusinessValidationException>();
     }
 
-    private static CreateCalculationCommand CreateCalculationCommand(CalculationType processType, DateTimeOffset periodStart, DateTimeOffset periodEnd, IEnumerable<string> gridAreaCodes)
+    private static CreateCalculationCommand CreateCalculationCommand(CalculationType calculationType, DateTimeOffset periodStart, DateTimeOffset periodEnd, IEnumerable<string> gridAreaCodes)
     {
         return new CreateCalculationCommand(
-            processType,
+            calculationType,
             gridAreaCodes,
             periodStart,
             periodEnd,

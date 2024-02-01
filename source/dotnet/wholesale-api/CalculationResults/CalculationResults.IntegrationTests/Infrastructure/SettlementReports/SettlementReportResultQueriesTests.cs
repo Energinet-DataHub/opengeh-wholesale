@@ -31,7 +31,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infras
 
 public class SettlementReportResultQueriesTests : TestBase<SettlementReportResultQueries>, IClassFixture<DatabricksSqlStatementApiFixture>
 {
-    private const CalculationType DefaultProcessType = CalculationType.BalanceFixing;
+    private const CalculationType DefaultCalculationType = CalculationType.BalanceFixing;
     private const string GridAreaA = "805";
     private const string GridAreaB = "111";
     private readonly string[] _gridAreaCodes = { GridAreaA, GridAreaB };
@@ -54,7 +54,7 @@ public class SettlementReportResultQueriesTests : TestBase<SettlementReportResul
         var expectedSettlementReportRow = await InsertRowsFromMultipleBatches(deltaTableOptions);
 
         // Act
-        var actual = await Sut.GetRowsAsync(_gridAreaCodes, DefaultProcessType, _january1St, _january5Th, null);
+        var actual = await Sut.GetRowsAsync(_gridAreaCodes, DefaultCalculationType, _january1St, _january5Th, null);
 
         // Assert
         actual.Should().BeEquivalentTo(expectedSettlementReportRow);

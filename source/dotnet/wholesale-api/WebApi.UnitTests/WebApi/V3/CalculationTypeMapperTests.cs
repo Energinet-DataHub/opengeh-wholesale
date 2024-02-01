@@ -19,7 +19,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.WebApi.V3;
 
-public class ProcessTypeMapperTests
+public class CalculationTypeMapperTests
 {
     [Theory]
     [InlineAutoMoqData(Energinet.DataHub.Wholesale.Common.Interfaces.Models.CalculationType.BalanceFixing, CalculationType.BalanceFixing)]

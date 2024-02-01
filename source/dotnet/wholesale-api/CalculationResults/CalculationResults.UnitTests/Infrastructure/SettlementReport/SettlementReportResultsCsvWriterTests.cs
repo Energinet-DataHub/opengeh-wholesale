@@ -105,7 +105,7 @@ public class SettlementReportResultsCsvWriterTests
     }
 
     [Fact]
-    public static async Task WriteAsync_GivenValidRow_WritesCorrectlyFormattedProcessType()
+    public static async Task WriteAsync_GivenValidRow_WritesCorrectlyFormattedCalculationType()
     {
         // Arrange
         var memoryStream = new MemoryStream();

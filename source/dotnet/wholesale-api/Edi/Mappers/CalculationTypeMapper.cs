@@ -23,7 +23,7 @@ public static class CalculationTypeMapper
     /// Maps a <see cref="RequestedCalculationType"/> to a <see cref="CalculationType"/>. Cannot map <see cref="RequestedCalculationType.LatestCorrection"/> to a <see cref="CalculationType"/>.
     /// </summary>
     /// <exception cref="ArgumentOutOfRangeException">Throws a ArgumentOutOfRangeException if the request calculation type is unknown or has the value LatestCorrection</exception>
-    public static CalculationType FromRequestedProcessType(RequestedCalculationType requestedProcessType)
+    public static CalculationType FromRequestedCalculationType(RequestedCalculationType requestedProcessType)
     {
         if (requestedProcessType == RequestedCalculationType.LatestCorrection)
         {
