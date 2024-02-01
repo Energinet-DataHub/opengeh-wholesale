@@ -52,18 +52,18 @@ public class SettlementReportClient : ISettlementReportClient
     public async Task CreateCompressedSettlementReportAsync(
         Func<Stream> openDestinationStream,
         string[] gridAreaCodes,
-        ProcessType processType,
+        CalculationType calculationType,
         DateTimeOffset periodStart,
         DateTimeOffset periodEnd,
         string? energySupplier,
         string? csvFormatLocale)
     {
-        if (processType == ProcessType.Aggregation)
-            throw new BusinessValidationException($"{ProcessType.Aggregation} is not a valid process type for settlement reports.");
+        if (calculationType == CalculationType.Aggregation)
+            throw new BusinessValidationException($"{CalculationType.Aggregation} is not a valid calculation type for settlement reports.");
 
         var resultRows = await _settlementReportResultQueries.GetRowsAsync(
                 gridAreaCodes,
-                processType,
+                calculationType,
                 Instant.FromDateTimeOffset(periodStart),
                 Instant.FromDateTimeOffset(periodEnd),
                 energySupplier)

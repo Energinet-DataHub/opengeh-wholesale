@@ -59,7 +59,7 @@ public class SettlementReportApplicationServiceTests
         await sut.CreateCompressedSettlementReportAsync(
             () => memoryStream,
             new[] { "500" },
-            ProcessType.BalanceFixing,
+            CalculationType.BalanceFixing,
             DateTimeOffset.MinValue,
             DateTimeOffset.MaxValue,
             null,
@@ -105,7 +105,7 @@ public class SettlementReportApplicationServiceTests
         await sut.CreateCompressedSettlementReportAsync(
             () => memoryStream,
             new[] { "500" },
-            ProcessType.BalanceFixing,
+            CalculationType.BalanceFixing,
             DateTimeOffset.MinValue,
             DateTimeOffset.MaxValue,
             null,
@@ -134,7 +134,7 @@ public class SettlementReportApplicationServiceTests
         await Assert.ThrowsAsync<BusinessValidationException>(() => sut.CreateCompressedSettlementReportAsync(
             () => Stream.Null,
             new[] { "500" },
-            ProcessType.Aggregation,
+            CalculationType.Aggregation,
             DateTimeOffset.MinValue,
             DateTimeOffset.MaxValue,
             null,

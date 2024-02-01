@@ -49,8 +49,8 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
         _row0CalculationId = "b78787d5-b544-44ac-87c2-7720aab86ed1";
         _calculationResultId0 = "9913f3bb-1208-400b-9cbe-50300e386d26";
         const string calculationResultId1 = "8c2bb7c6-d8e5-462c-9bce-8537f93ef8e7";
-        var row0 = new[] { _row0CalculationId, _calculationResultId0, DeltaTableProcessType.WholesaleFixing, "200", "1234567890000", "amount_per_charge", "consumption", "flex", "tariff", "somChargeCode", "someOwnerId", "PT1H", "true", "kWh", "2022-05-16T22:00:00.000Z", "1.111", "[\"measured\"]", "2.123456", "3.123456", null };
-        var row1 = new[] { "b78787d5-b544-44ac-87c2-7720aab86ed2", calculationResultId1, DeltaTableProcessType.WholesaleFixing, "200", "1234567890000", "amount_per_charge", "consumption", "flex", "tariff", "somChargeCode", "someOwnerId", "PT1H", "true", "kWh", "2022-05-16T22:00:00.000Z", "1.111", "[\"measured\"]", "2.123456", "3.123456", null };
+        var row0 = new[] { _row0CalculationId, _calculationResultId0, DeltaTableCalculationType.WholesaleFixing, "200", "1234567890000", "amount_per_charge", "consumption", "flex", "tariff", "somChargeCode", "someOwnerId", "PT1H", "true", "kWh", "2022-05-16T22:00:00.000Z", "1.111", "[\"measured\"]", "2.123456", "3.123456", null };
+        var row1 = new[] { "b78787d5-b544-44ac-87c2-7720aab86ed2", calculationResultId1, DeltaTableCalculationType.WholesaleFixing, "200", "1234567890000", "amount_per_charge", "consumption", "flex", "tariff", "somChargeCode", "someOwnerId", "PT1H", "true", "kWh", "2022-05-16T22:00:00.000Z", "1.111", "[\"measured\"]", "2.123456", "3.123456", null };
         var rows = new List<string?[]> { row0, row1, };
 
         // Using the columns from the WholesaleResultQueries class to ensure that the test is not broken if the columns are changed
@@ -108,7 +108,7 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
     public async Task GetAsync_WhenCalculationHasOneResult_ReturnsResultRowWithExpectedValues(CalculationDto calculation)
     {
         // Arrange
-        calculation = calculation with { BatchId = Guid.Parse(_row0CalculationId), ProcessType = ProcessType.WholesaleFixing };
+        calculation = calculation with { BatchId = Guid.Parse(_row0CalculationId), CalculationType = CalculationType.WholesaleFixing };
         _batchesClientMock
             .Setup(client => client.GetAsync(calculation.BatchId))
             .ReturnsAsync(calculation);
@@ -126,7 +126,7 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
         actual.Single().GridArea.Should().Be(_tableChunk[0, WholesaleResultColumnNames.GridArea]);
         actual.Single().EnergySupplierId.Should().Be(_tableChunk[0, WholesaleResultColumnNames.EnergySupplierId]);
         actual.Single().CalculationId.Should().Be(_tableChunk[0, WholesaleResultColumnNames.CalculationId]);
-        actual.Single().CalculationType.Should().Be(calculation.ProcessType);
+        actual.Single().CalculationType.Should().Be(calculation.CalculationType);
         actual.Single().PeriodStart.Should().Be(calculation.PeriodStart.ToInstant());
         actual.Single().PeriodEnd.Should().Be(calculation.PeriodEnd.ToInstant());
         var actualPoint = actual.Single().TimeSeriesPoints.Single();

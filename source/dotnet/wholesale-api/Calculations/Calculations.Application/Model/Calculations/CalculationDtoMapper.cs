@@ -32,7 +32,7 @@ public class CalculationDtoMapper : ICalculationDtoMapper
             MapState(calculation.ExecutionState),
             calculation.AreSettlementReportsCreated,
             MapGridAreaCodes(calculation.GridAreaCodes),
-            calculation.ProcessType,
+            calculation.CalculationType,
             calculation.CreatedByUserId,
             calculation.Version);
     }

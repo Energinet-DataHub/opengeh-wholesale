@@ -29,7 +29,7 @@ public class CalculationBuilder
 
     private CalculationExecutionState? _state;
     private List<GridAreaCode> _gridAreaCodes = new() { new("805") };
-    private ProcessType _processType = ProcessType.BalanceFixing;
+    private CalculationType _calculationType = CalculationType.BalanceFixing;
 
     public CalculationBuilder()
     {
@@ -75,9 +75,9 @@ public class CalculationBuilder
         return this;
     }
 
-    public CalculationBuilder WithProcessType(ProcessType processType)
+    public CalculationBuilder WithProcessType(CalculationType processType)
     {
-        _processType = processType;
+        _calculationType = processType;
         return this;
     }
 
@@ -97,7 +97,7 @@ public class CalculationBuilder
     {
         var batch = new Calculation(
             SystemClock.Instance.GetCurrentInstant(),
-            _processType,
+            _calculationType,
             _gridAreaCodes,
             _periodStart,
             _periodEnd,

@@ -70,7 +70,7 @@ public class GridLossResultProducedV1FactoryTests
                 new(new DateTime(2021, 1, 1), 2, quantityQualities),
                 new(new DateTime(2021, 1, 1), 3, quantityQualities),
             },
-            ProcessType.Aggregation,
+            CalculationType.Aggregation,
             _periodStart,
             _periodEnd,
             null,

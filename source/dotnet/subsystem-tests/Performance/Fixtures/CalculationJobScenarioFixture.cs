@@ -58,7 +58,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance.Fixtures
                 .Jobs
                 .RunNow(calculatorJobId, runParameters);
 
-            DiagnosticMessageSink.WriteDiagnosticMessage($"'CalculatorJob' for {calculationJobInput.ProcessType} with id '{runId}' started.");
+            DiagnosticMessageSink.WriteDiagnosticMessage($"'CalculatorJob' for {calculationJobInput.CalculationType} with id '{runId}' started.");
 
             return new CalculationJobId(runId);
         }

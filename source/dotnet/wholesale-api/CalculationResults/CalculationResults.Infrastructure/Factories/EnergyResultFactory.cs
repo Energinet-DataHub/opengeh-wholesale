@@ -30,12 +30,12 @@ public class EnergyResultFactory
         long version)
     {
         var id = databricksSqlRow[EnergyResultColumnNames.CalculationResultId];
-        var batchId = databricksSqlRow[EnergyResultColumnNames.BatchId];
+        var batchId = databricksSqlRow[EnergyResultColumnNames.CalculationId];
         var gridArea = databricksSqlRow[EnergyResultColumnNames.GridArea];
         var timeSeriesType = databricksSqlRow[EnergyResultColumnNames.TimeSeriesType];
         var energySupplierId = databricksSqlRow[EnergyResultColumnNames.EnergySupplierId];
         var balanceResponsibleId = databricksSqlRow[EnergyResultColumnNames.BalanceResponsibleId];
-        var processType = databricksSqlRow[EnergyResultColumnNames.BatchProcessType];
+        var calculationType = databricksSqlRow[EnergyResultColumnNames.CalculationType];
         var fromGridArea = databricksSqlRow[EnergyResultColumnNames.FromGridArea];
         var meteringPointId = databricksSqlRow[EnergyResultColumnNames.MeteringPointId];
 
@@ -47,7 +47,7 @@ public class EnergyResultFactory
             energySupplierId,
             balanceResponsibleId,
             timeSeriesPoints.ToArray(),
-            ProcessTypeMapper.FromDeltaTableValue(processType!),
+            CalculationTypeMapper.FromDeltaTableValue(calculationType!),
             periodStart,
             periodEnd,
             fromGridArea,

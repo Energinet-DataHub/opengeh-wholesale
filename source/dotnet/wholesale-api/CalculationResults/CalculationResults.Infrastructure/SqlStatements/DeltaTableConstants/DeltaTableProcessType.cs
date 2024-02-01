@@ -14,7 +14,7 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 
-public static class DeltaTableProcessType
+public static class DeltaTableCalculationType
 {
     public const string Aggregation = "Aggregation";
     public const string BalanceFixing = "BalanceFixing";

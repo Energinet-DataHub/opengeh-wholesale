@@ -27,56 +27,56 @@ public class ProcessTypeMapperTests
     public async Task ProcessType_Matches_Contract()
     {
         await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.process-type.json");
-        await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<ProcessType>(stream);
+        await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<CalculationType>(stream);
     }
 
     [Theory]
-    [InlineData(ProcessType.Aggregation)]
-    [InlineData(ProcessType.BalanceFixing)]
-    [InlineData(ProcessType.WholesaleFixing)]
-    [InlineData(ProcessType.FirstCorrectionSettlement)]
-    [InlineData(ProcessType.SecondCorrectionSettlement)]
-    [InlineData(ProcessType.ThirdCorrectionSettlement)]
-    public async Task ToDeltaTableValue_ReturnsValidDeltaValue(ProcessType processType)
+    [InlineData(CalculationType.Aggregation)]
+    [InlineData(CalculationType.BalanceFixing)]
+    [InlineData(CalculationType.WholesaleFixing)]
+    [InlineData(CalculationType.FirstCorrectionSettlement)]
+    [InlineData(CalculationType.SecondCorrectionSettlement)]
+    [InlineData(CalculationType.ThirdCorrectionSettlement)]
+    public async Task ToDeltaTableValue_ReturnsValidDeltaValue(CalculationType processType)
     {
         // Arrange
         await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.process-type.json");
         var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
 
         // Act
-        var actual = ProcessTypeMapper.ToDeltaTableValue(processType);
+        var actual = CalculationTypeMapper.ToDeltaTableValue(processType);
 
         // Assert
         actual.Should().BeOneOf(validDeltaValues);
     }
 
     [Theory]
-    [InlineData(ProcessType.Aggregation, DeltaTableProcessType.Aggregation)]
-    [InlineData(ProcessType.BalanceFixing, DeltaTableProcessType.BalanceFixing)]
-    [InlineData(ProcessType.WholesaleFixing, DeltaTableProcessType.WholesaleFixing)]
-    [InlineData(ProcessType.FirstCorrectionSettlement, DeltaTableProcessType.FirstCorrectionSettlement)]
-    [InlineData(ProcessType.SecondCorrectionSettlement, DeltaTableProcessType.SecondCorrectionSettlement)]
-    [InlineData(ProcessType.ThirdCorrectionSettlement, DeltaTableProcessType.ThirdCorrectionSettlement)]
-    public void ToDeltaTableValue_ReturnsExpectedString(ProcessType type, string expected)
+    [InlineData(CalculationType.Aggregation, DeltaTableCalculationType.Aggregation)]
+    [InlineData(CalculationType.BalanceFixing, DeltaTableCalculationType.BalanceFixing)]
+    [InlineData(CalculationType.WholesaleFixing, DeltaTableCalculationType.WholesaleFixing)]
+    [InlineData(CalculationType.FirstCorrectionSettlement, DeltaTableCalculationType.FirstCorrectionSettlement)]
+    [InlineData(CalculationType.SecondCorrectionSettlement, DeltaTableCalculationType.SecondCorrectionSettlement)]
+    [InlineData(CalculationType.ThirdCorrectionSettlement, DeltaTableCalculationType.ThirdCorrectionSettlement)]
+    public void ToDeltaTableValue_ReturnsExpectedString(CalculationType type, string expected)
     {
         // Act
-        var actual = ProcessTypeMapper.ToDeltaTableValue(type);
+        var actual = CalculationTypeMapper.ToDeltaTableValue(type);
 
         // Assert
         actual.Should().Be(expected);
     }
 
     [Theory]
-    [InlineData(DeltaTableProcessType.Aggregation, ProcessType.Aggregation)]
-    [InlineData(DeltaTableProcessType.BalanceFixing, ProcessType.BalanceFixing)]
-    [InlineData(DeltaTableProcessType.WholesaleFixing, ProcessType.WholesaleFixing)]
-    [InlineData(DeltaTableProcessType.FirstCorrectionSettlement, ProcessType.FirstCorrectionSettlement)]
-    [InlineData(DeltaTableProcessType.SecondCorrectionSettlement, ProcessType.SecondCorrectionSettlement)]
-    [InlineData(DeltaTableProcessType.ThirdCorrectionSettlement, ProcessType.ThirdCorrectionSettlement)]
-    public void FromDeltaTableValue_ReturnsExpectedType(string deltaTableValue, ProcessType expected)
+    [InlineData(DeltaTableCalculationType.Aggregation, CalculationType.Aggregation)]
+    [InlineData(DeltaTableCalculationType.BalanceFixing, CalculationType.BalanceFixing)]
+    [InlineData(DeltaTableCalculationType.WholesaleFixing, CalculationType.WholesaleFixing)]
+    [InlineData(DeltaTableCalculationType.FirstCorrectionSettlement, CalculationType.FirstCorrectionSettlement)]
+    [InlineData(DeltaTableCalculationType.SecondCorrectionSettlement, CalculationType.SecondCorrectionSettlement)]
+    [InlineData(DeltaTableCalculationType.ThirdCorrectionSettlement, CalculationType.ThirdCorrectionSettlement)]
+    public void FromDeltaTableValue_ReturnsExpectedType(string deltaTableValue, CalculationType expected)
     {
         // Act
-        var actual = ProcessTypeMapper.FromDeltaTableValue(deltaTableValue);
+        var actual = CalculationTypeMapper.FromDeltaTableValue(deltaTableValue);
 
         // Assert
         actual.Should().Be(expected);
@@ -89,7 +89,7 @@ public class ProcessTypeMapperTests
         var invalidDeltaTableValue = Guid.NewGuid().ToString();
 
         // Act
-        var act = () => ProcessTypeMapper.FromDeltaTableValue(invalidDeltaTableValue);
+        var act = () => CalculationTypeMapper.FromDeltaTableValue(invalidDeltaTableValue);
 
         // Assert
         act.Should().Throw<ArgumentOutOfRangeException>()
@@ -100,10 +100,10 @@ public class ProcessTypeMapperTests
     public void ToDeltaTableValue_WhenInvalidEnumNumberForProcessType_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
-        var invalidValue = (ProcessType)99;
+        var invalidValue = (CalculationType)99;
 
         // Act
-        var act = () => ProcessTypeMapper.ToDeltaTableValue(invalidValue);
+        var act = () => CalculationTypeMapper.ToDeltaTableValue(invalidValue);
 
         // Assert
         act.Should().Throw<ArgumentOutOfRangeException>()

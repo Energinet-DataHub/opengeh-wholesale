@@ -29,5 +29,5 @@ public sealed record BatchDto(
     BatchState ExecutionState,
     bool AreSettlementReportsCreated,
     string[] GridAreaCodes,
-    CalculationType ProcessType,
+    CalculationType CalculationType,
     Guid CreatedByUserId);

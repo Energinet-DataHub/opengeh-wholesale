@@ -85,7 +85,7 @@ public class CalculationControllerTests : WebApiTestBase
     {
         var period = Periods.January_EuropeCopenhagen;
         var batchRequest = new CalculationRequestDto(
-            ProcessType.BalanceFixing,
+            CalculationType.BalanceFixing,
             new List<string> { "805" },
             period.PeriodStart,
             period.PeriodEnd);

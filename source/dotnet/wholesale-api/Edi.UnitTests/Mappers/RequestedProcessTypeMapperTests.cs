@@ -22,14 +22,14 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Mappers;
 public class RequestedProcessTypeMapperTests
 {
     [Theory]
-    [InlineData(BusinessReason.BalanceFixing, null, RequestedProcessType.BalanceFixing)]
-    [InlineData(BusinessReason.PreliminaryAggregation, null, RequestedProcessType.PreliminaryAggregation)]
-    [InlineData(BusinessReason.WholesaleFixing, null, RequestedProcessType.WholesaleFixing)]
-    [InlineData(BusinessReason.Correction, SettlementSeriesVersion.FirstCorrection, RequestedProcessType.FirstCorrection)]
-    [InlineData(BusinessReason.Correction, SettlementSeriesVersion.SecondCorrection, RequestedProcessType.SecondCorrection)]
-    [InlineData(BusinessReason.Correction, SettlementSeriesVersion.ThirdCorrection, RequestedProcessType.ThirdCorrection)]
-    [InlineData(BusinessReason.Correction, null, RequestedProcessType.LatestCorrection)]
-    public void ToRequestedProcessType_WhenValidBusinessReasonAndSettlementSeriesVersion_ReturnsExpectedType(string businessReason, string? settlementSeriesVersion, RequestedProcessType expectedType)
+    [InlineData(BusinessReason.BalanceFixing, null, RequestedCalculationType.BalanceFixing)]
+    [InlineData(BusinessReason.PreliminaryAggregation, null, RequestedCalculationType.PreliminaryAggregation)]
+    [InlineData(BusinessReason.WholesaleFixing, null, RequestedCalculationType.WholesaleFixing)]
+    [InlineData(BusinessReason.Correction, SettlementSeriesVersion.FirstCorrection, RequestedCalculationType.FirstCorrection)]
+    [InlineData(BusinessReason.Correction, SettlementSeriesVersion.SecondCorrection, RequestedCalculationType.SecondCorrection)]
+    [InlineData(BusinessReason.Correction, SettlementSeriesVersion.ThirdCorrection, RequestedCalculationType.ThirdCorrection)]
+    [InlineData(BusinessReason.Correction, null, RequestedCalculationType.LatestCorrection)]
+    public void ToRequestedProcessType_WhenValidBusinessReasonAndSettlementSeriesVersion_ReturnsExpectedType(string businessReason, string? settlementSeriesVersion, RequestedCalculationType expectedType)
     {
         // Act
         var actualType = RequestedProcessTypeMapper.ToRequestedProcessType(businessReason, settlementSeriesVersion);

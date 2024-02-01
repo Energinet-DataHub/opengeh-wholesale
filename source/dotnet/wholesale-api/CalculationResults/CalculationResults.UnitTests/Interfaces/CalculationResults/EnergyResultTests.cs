@@ -31,7 +31,7 @@ public class EnergyResultTests
         string anyGridArea,
         string anyFromGridArea,
         TimeSeriesType anyTimeSeriesType,
-        ProcessType anyProcessType,
+        CalculationType anyProcessType,
         Instant anyPeriodStart,
         Instant anyPeriodEnd,
         string anyMeteringPointId,

@@ -31,7 +31,7 @@ public class CompletedCalculationFactoryTests
         var expectedCompletedBatch = new CompletedCalculation(
             calculation.BatchId,
             calculation.GridAreaCodes.ToList(),
-            calculation.ProcessType,
+            calculation.CalculationType,
             calculation.PeriodStart.ToInstant(),
             calculation.PeriodEnd.ToInstant(),
             calculation.ExecutionTimeEnd!.Value.ToInstant());

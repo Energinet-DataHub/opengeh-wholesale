@@ -29,7 +29,7 @@ public static class BatchDtoMapperTests
         var actual = CalculationDtoMapper.Map(source);
 
         // Assert
-        actual.ProcessType.Should().Be(CalculationTypeMapper.Map(source.ProcessType));
+        actual.CalculationType.Should().Be(CalculationTypeMapper.Map(source.CalculationType));
         actual.ExecutionState.Should().Be(CalculationStateMapper.MapState(source.ExecutionState));
         actual.Resolution.Should().Be(source.Resolution);
         actual.RunId.Should().Be(source.RunId);

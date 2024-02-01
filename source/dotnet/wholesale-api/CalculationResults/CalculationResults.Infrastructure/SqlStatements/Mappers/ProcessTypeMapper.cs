@@ -16,41 +16,41 @@ using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 
-public static class ProcessTypeMapper
+public static class CalculationTypeMapper
 {
-    public static ProcessType FromDeltaTableValue(string processType)
+    public static CalculationType FromDeltaTableValue(string calculationType)
     {
-        return processType switch
+        return calculationType switch
         {
-            DeltaTableConstants.DeltaTableProcessType.BalanceFixing => ProcessType.BalanceFixing,
-            DeltaTableConstants.DeltaTableProcessType.Aggregation => ProcessType.Aggregation,
-            DeltaTableConstants.DeltaTableProcessType.WholesaleFixing => ProcessType.WholesaleFixing,
-            DeltaTableConstants.DeltaTableProcessType.FirstCorrectionSettlement => ProcessType.FirstCorrectionSettlement,
-            DeltaTableConstants.DeltaTableProcessType.SecondCorrectionSettlement => ProcessType.SecondCorrectionSettlement,
-            DeltaTableConstants.DeltaTableProcessType.ThirdCorrectionSettlement => ProcessType.ThirdCorrectionSettlement,
+            DeltaTableConstants.DeltaTableCalculationType.BalanceFixing => CalculationType.BalanceFixing,
+            DeltaTableConstants.DeltaTableCalculationType.Aggregation => CalculationType.Aggregation,
+            DeltaTableConstants.DeltaTableCalculationType.WholesaleFixing => CalculationType.WholesaleFixing,
+            DeltaTableConstants.DeltaTableCalculationType.FirstCorrectionSettlement => CalculationType.FirstCorrectionSettlement,
+            DeltaTableConstants.DeltaTableCalculationType.SecondCorrectionSettlement => CalculationType.SecondCorrectionSettlement,
+            DeltaTableConstants.DeltaTableCalculationType.ThirdCorrectionSettlement => CalculationType.ThirdCorrectionSettlement,
 
             _ => throw new ArgumentOutOfRangeException(
-                nameof(processType),
-                actualValue: processType,
-                "Value does not contain a valid string representation of a process type."),
+                nameof(calculationType),
+                actualValue: calculationType,
+                "Value does not contain a valid string representation of a calculation type."),
         };
     }
 
-    public static string ToDeltaTableValue(ProcessType processType)
+    public static string ToDeltaTableValue(CalculationType calculationType)
     {
-        return processType switch
+        return calculationType switch
         {
-            ProcessType.BalanceFixing => DeltaTableConstants.DeltaTableProcessType.BalanceFixing,
-            ProcessType.Aggregation => DeltaTableConstants.DeltaTableProcessType.Aggregation,
-            ProcessType.WholesaleFixing => DeltaTableConstants.DeltaTableProcessType.WholesaleFixing,
-            ProcessType.FirstCorrectionSettlement => DeltaTableConstants.DeltaTableProcessType.FirstCorrectionSettlement,
-            ProcessType.SecondCorrectionSettlement => DeltaTableConstants.DeltaTableProcessType.SecondCorrectionSettlement,
-            ProcessType.ThirdCorrectionSettlement => DeltaTableConstants.DeltaTableProcessType.ThirdCorrectionSettlement,
+            CalculationType.BalanceFixing => DeltaTableConstants.DeltaTableCalculationType.BalanceFixing,
+            CalculationType.Aggregation => DeltaTableConstants.DeltaTableCalculationType.Aggregation,
+            CalculationType.WholesaleFixing => DeltaTableConstants.DeltaTableCalculationType.WholesaleFixing,
+            CalculationType.FirstCorrectionSettlement => DeltaTableConstants.DeltaTableCalculationType.FirstCorrectionSettlement,
+            CalculationType.SecondCorrectionSettlement => DeltaTableConstants.DeltaTableCalculationType.SecondCorrectionSettlement,
+            CalculationType.ThirdCorrectionSettlement => DeltaTableConstants.DeltaTableCalculationType.ThirdCorrectionSettlement,
 
             _ => throw new ArgumentOutOfRangeException(
-                nameof(processType),
-                actualValue: processType,
-                "Value cannot be mapped to a string representation of a process type."),
+                nameof(calculationType),
+                actualValue: calculationType,
+                "Value cannot be mapped to a string representation of a calculation type."),
         };
     }
 }

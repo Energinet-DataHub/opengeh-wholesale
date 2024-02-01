@@ -25,13 +25,13 @@ public sealed class EnergyResult(
     string? energySupplierId,
     string? balanceResponsibleId,
     EnergyTimeSeriesPoint[] timeSeriesPoints,
-    ProcessType processType,
+    CalculationType calculationType,
     Instant periodStart,
     Instant periodEnd,
     string? fromGridArea,
     string? meteringPointId,
     long version)
-    : AggregatedTimeSeries(gridArea, timeSeriesPoints, timeSeriesType, processType)
+    : AggregatedTimeSeries(gridArea, timeSeriesPoints, timeSeriesType, calculationType)
 {
     public Guid Id { get; } = id;
 

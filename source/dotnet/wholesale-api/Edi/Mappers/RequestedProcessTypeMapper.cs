@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Wholesale.EDI.Mappers;
 
 public static class RequestedProcessTypeMapper
 {
-    public static RequestedProcessType ToRequestedProcessType(string businessReason, string? settlementSeriesVersion)
+    public static RequestedCalculationType ToRequestedProcessType(string businessReason, string? settlementSeriesVersion)
     {
         if (businessReason != BusinessReason.Correction && settlementSeriesVersion != null)
         {
@@ -30,24 +30,24 @@ public static class RequestedProcessTypeMapper
 
         return businessReason switch
         {
-            BusinessReason.BalanceFixing => RequestedProcessType.BalanceFixing,
-            BusinessReason.PreliminaryAggregation => RequestedProcessType.PreliminaryAggregation,
-            BusinessReason.WholesaleFixing => RequestedProcessType.WholesaleFixing,
+            BusinessReason.BalanceFixing => RequestedCalculationType.BalanceFixing,
+            BusinessReason.PreliminaryAggregation => RequestedCalculationType.PreliminaryAggregation,
+            BusinessReason.WholesaleFixing => RequestedCalculationType.WholesaleFixing,
             BusinessReason.Correction => settlementSeriesVersion switch
             {
-                SettlementSeriesVersion.FirstCorrection => RequestedProcessType.FirstCorrection,
-                SettlementSeriesVersion.SecondCorrection => RequestedProcessType.SecondCorrection,
-                SettlementSeriesVersion.ThirdCorrection => RequestedProcessType.ThirdCorrection,
-                null => RequestedProcessType.LatestCorrection,
+                SettlementSeriesVersion.FirstCorrection => RequestedCalculationType.FirstCorrection,
+                SettlementSeriesVersion.SecondCorrection => RequestedCalculationType.SecondCorrection,
+                SettlementSeriesVersion.ThirdCorrection => RequestedCalculationType.ThirdCorrection,
+                null => RequestedCalculationType.LatestCorrection,
                 _ => throw new ArgumentOutOfRangeException(
                     nameof(settlementSeriesVersion),
                     settlementSeriesVersion,
-                    $"Value cannot be mapped to a {nameof(RequestedProcessType)}."),
+                    $"Value cannot be mapped to a {nameof(RequestedCalculationType)}."),
             },
             _ => throw new ArgumentOutOfRangeException(
                 nameof(businessReason),
                 businessReason,
-                $"Value cannot be mapped to a {nameof(RequestedProcessType)}."),
+                $"Value cannot be mapped to a {nameof(RequestedCalculationType)}."),
         };
     }
 }

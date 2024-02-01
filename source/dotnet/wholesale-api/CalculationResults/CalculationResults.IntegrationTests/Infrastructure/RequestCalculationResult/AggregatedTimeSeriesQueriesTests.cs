@@ -182,7 +182,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter,
             balanceResponsibleId: balanceResponsibleIdFilter,
-            processType: ProcessType.BalanceFixing);
+            processType: CalculationType.BalanceFixing);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -270,7 +270,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        var processTypeFilter = ProcessType.FirstCorrectionSettlement;
+        var processTypeFilter = CalculationType.FirstCorrectionSettlement;
         await AddCreatedRowsInArbitraryOrderAsync(addFirstCorrection: true);
 
         var parameters = CreateQueryParameters(
@@ -289,7 +289,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var aggregatedTimeSeries = actual.First();
         aggregatedTimeSeries!.GridArea.Should().Be(gridAreaFilter);
         aggregatedTimeSeries.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
-        aggregatedTimeSeries.ProcessType.Should().Be(ProcessType.FirstCorrectionSettlement);
+        aggregatedTimeSeries.CalculationType.Should().Be(CalculationType.FirstCorrectionSettlement);
         aggregatedTimeSeries.TimeSeriesPoints
             .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
             .ToArray()
@@ -306,7 +306,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        var processTypeFilter = ProcessType.SecondCorrectionSettlement;
+        var processTypeFilter = CalculationType.SecondCorrectionSettlement;
         await AddCreatedRowsInArbitraryOrderAsync(addSecondCorrection: true);
 
         var parameters = CreateQueryParameters(
@@ -324,7 +324,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         actual.Should().HaveCount(1);
         var aggregatedTimeSeries = actual.First();
         aggregatedTimeSeries!.GridArea.Should().Be(gridAreaFilter);
-        aggregatedTimeSeries.ProcessType.Should().Be(ProcessType.SecondCorrectionSettlement);
+        aggregatedTimeSeries.CalculationType.Should().Be(CalculationType.SecondCorrectionSettlement);
         aggregatedTimeSeries.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
         aggregatedTimeSeries.TimeSeriesPoints
             .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
@@ -342,7 +342,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        var processTypeFilter = ProcessType.ThirdCorrectionSettlement;
+        var processTypeFilter = CalculationType.ThirdCorrectionSettlement;
         await AddCreatedRowsInArbitraryOrderAsync(addThirdCorrection: true);
 
         var parameters = CreateQueryParameters(
@@ -360,7 +360,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         actual.Should().HaveCount(1);
         var aggregatedTimeSeries = actual.First();
         aggregatedTimeSeries!.GridArea.Should().Be(gridAreaFilter);
-        aggregatedTimeSeries.ProcessType.Should().Be(ProcessType.ThirdCorrectionSettlement);
+        aggregatedTimeSeries.CalculationType.Should().Be(CalculationType.ThirdCorrectionSettlement);
         aggregatedTimeSeries.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
         aggregatedTimeSeries.TimeSeriesPoints
             .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
@@ -419,7 +419,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter,
-            processType: ProcessType.BalanceFixing);
+            processType: CalculationType.BalanceFixing);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -443,7 +443,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             endOfPeriod: endOfPeriodFilter,
             energySupplierId: energySupplierIdFilter,
             balanceResponsibleId: balanceResponsibleIdFilter,
-            processType: ProcessType.BalanceFixing);
+            processType: CalculationType.BalanceFixing);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -475,7 +475,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         // Assert
         using var assertionScope = new AssertionScope();
         actual.Should().HaveCount(1);
-        actual.First()!.ProcessType.Should().Be(ProcessType.ThirdCorrectionSettlement);
+        actual.First()!.CalculationType.Should().Be(CalculationType.ThirdCorrectionSettlement);
     }
 
     [Fact]
@@ -498,7 +498,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         // Assert
         using var assertionScope = new AssertionScope();
         actual.Should().HaveCount(1);
-        actual.First()!.ProcessType.Should().Be(ProcessType.SecondCorrectionSettlement);
+        actual.First()!.CalculationType.Should().Be(CalculationType.SecondCorrectionSettlement);
     }
 
     [Fact]
@@ -521,7 +521,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         // Assert
         using var assertionScope = new AssertionScope();
         actual.Should().HaveCount(1);
-        actual.First()!.ProcessType.Should().Be(ProcessType.FirstCorrectionSettlement);
+        actual.First()!.CalculationType.Should().Be(CalculationType.FirstCorrectionSettlement);
     }
 
     [Fact]
@@ -558,15 +558,15 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             startOfPeriodFilter,
             endOfPeriodFilter,
             gridAreaFilter,
-            processType: ProcessType.BalanceFixing);
+            processType: CalculationType.BalanceFixing);
 
         // Act
         var act = async () => await Sut.GetLatestCorrectionForGridAreaAsync(parameters).ToListAsync();
 
         // Assert
         await act.Should().ThrowAsync<ArgumentException>(
-            "The process type will be overwritten when fetching the latest correction.",
-            parameters.ProcessType);
+            "The calculation type will be overwritten when fetching the latest correction.",
+            parameters.CalculationType);
     }
 
     [Fact]
@@ -597,7 +597,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         string? gridArea = null,
         string? energySupplierId = null,
         string? balanceResponsibleId = null,
-        ProcessType? processType = null)
+        CalculationType? processType = null)
     {
         return new AggregatedTimeSeriesQueryParameters(
             TimeSeriesType: timeSeriesType ?? TimeSeriesType.Production,
@@ -606,7 +606,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             GridArea: gridArea,
             EnergySupplierId: energySupplierId,
             BalanceResponsibleId: balanceResponsibleId,
-            ProcessType: processType);
+            CalculationType: processType);
     }
 
     private async Task AddCreatedRowsInArbitraryOrderAsync(bool addFirstCorrection = false, bool addSecondCorrection = false, bool addThirdCorrection = false)
@@ -624,36 +624,36 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
 
         const string energySupplier = "4321987654321";
         const string balanceResponsibleId = "1234567891234";
-        var row1 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: firstHour, gridArea: GridAreaCodeC, quantity: FirstQuantity);
-        var row2 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: secondHour, gridArea: GridAreaCodeC, quantity: SecondQuantity);
+        var row1 = EnergyResultDeltaTableHelper.CreateRowValues(calculationId: BatchId, calculationResultId: firstCalculationResultId, time: firstHour, gridArea: GridAreaCodeC, quantity: FirstQuantity);
+        var row2 = EnergyResultDeltaTableHelper.CreateRowValues(calculationId: BatchId, calculationResultId: firstCalculationResultId, time: secondHour, gridArea: GridAreaCodeC, quantity: SecondQuantity);
 
-        var row3 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, time: secondHour, gridArea: GridAreaCodeC, quantity: ThirdQuantity, batchExecutionTimeStart: "2022-03-12T03:00:00.000Z");
-        var row4 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, time: thirdHour, gridArea: GridAreaCodeC, quantity: FourthQuantity, batchExecutionTimeStart: "2022-03-12T03:00:00.000Z");
+        var row3 = EnergyResultDeltaTableHelper.CreateRowValues(calculationId: BatchId, calculationResultId: secondCalculationResultId, time: secondHour, gridArea: GridAreaCodeC, quantity: ThirdQuantity, calculationExecutionTimeStart: "2022-03-12T03:00:00.000Z");
+        var row4 = EnergyResultDeltaTableHelper.CreateRowValues(calculationId: BatchId, calculationResultId: secondCalculationResultId, time: thirdHour, gridArea: GridAreaCodeC, quantity: FourthQuantity, calculationExecutionTimeStart: "2022-03-12T03:00:00.000Z");
 
-        var row5 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: firstHour, gridArea: GridAreaCodeC, quantity: FirstQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndGridArea, energySupplierId: energySupplier);
-        var row6 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, time: secondHour, gridArea: GridAreaCodeC, quantity: SecondQuantity, aggregationLevel: DeltaTableAggregationLevel.BalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId);
+        var row5 = EnergyResultDeltaTableHelper.CreateRowValues(calculationId: BatchId, calculationResultId: firstCalculationResultId, time: firstHour, gridArea: GridAreaCodeC, quantity: FirstQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndGridArea, energySupplierId: energySupplier);
+        var row6 = EnergyResultDeltaTableHelper.CreateRowValues(calculationId: BatchId, calculationResultId: secondCalculationResultId, time: secondHour, gridArea: GridAreaCodeC, quantity: SecondQuantity, aggregationLevel: DeltaTableAggregationLevel.BalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId);
 
-        var row7 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: secondHour, gridArea: GridAreaCodeC, quantity: ThirdQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId, energySupplierId: energySupplier);
-        var row8 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: thirdHour, gridArea: GridAreaCodeB, quantity: FourthQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId, energySupplierId: energySupplier);
+        var row7 = EnergyResultDeltaTableHelper.CreateRowValues(calculationId: BatchId, calculationResultId: firstCalculationResultId, time: secondHour, gridArea: GridAreaCodeC, quantity: ThirdQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId, energySupplierId: energySupplier);
+        var row8 = EnergyResultDeltaTableHelper.CreateRowValues(calculationId: BatchId, calculationResultId: firstCalculationResultId, time: thirdHour, gridArea: GridAreaCodeB, quantity: FourthQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId, energySupplierId: energySupplier);
 
-        var row9 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: firstHour, gridArea: GridAreaCodeA, quantity: FirstQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea);
-        var row10 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: thirdHour, gridArea: GridAreaCodeB, quantity: FourthQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId, energySupplierId: energySupplier);
+        var row9 = EnergyResultDeltaTableHelper.CreateRowValues(calculationId: BatchId, calculationResultId: firstCalculationResultId, time: firstHour, gridArea: GridAreaCodeA, quantity: FirstQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea);
+        var row10 = EnergyResultDeltaTableHelper.CreateRowValues(calculationId: BatchId, calculationResultId: firstCalculationResultId, time: thirdHour, gridArea: GridAreaCodeB, quantity: FourthQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId, energySupplierId: energySupplier);
 
-        var row11 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: firstHour, gridArea: GridAreaCodeB, quantity: FirstQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndGridArea, energySupplierId: energySupplier);
-        var row12 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: secondHour, gridArea: GridAreaCodeB, quantity: FirstQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndGridArea, energySupplierId: energySupplier);
+        var row11 = EnergyResultDeltaTableHelper.CreateRowValues(calculationId: BatchId, calculationResultId: firstCalculationResultId, time: firstHour, gridArea: GridAreaCodeB, quantity: FirstQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndGridArea, energySupplierId: energySupplier);
+        var row12 = EnergyResultDeltaTableHelper.CreateRowValues(calculationId: BatchId, calculationResultId: firstCalculationResultId, time: secondHour, gridArea: GridAreaCodeB, quantity: FirstQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndGridArea, energySupplierId: energySupplier);
 
-        var row1FirstCorrection = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, batchProcessType: DeltaTableProcessType.FirstCorrectionSettlement, time: firstHour, gridArea: GridAreaCodeC, quantity: FirstQuantityFirstCorrection);
-        var row2FirstCorrection = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, batchProcessType: DeltaTableProcessType.FirstCorrectionSettlement, time: secondHour, gridArea: GridAreaCodeC, quantity: SecondQuantityFirstCorrection);
+        var row1FirstCorrection = EnergyResultDeltaTableHelper.CreateRowValues(calculationId: BatchId, calculationResultId: firstCalculationResultId, calculationType: DeltaTableCalculationType.FirstCorrectionSettlement, time: firstHour, gridArea: GridAreaCodeC, quantity: FirstQuantityFirstCorrection);
+        var row2FirstCorrection = EnergyResultDeltaTableHelper.CreateRowValues(calculationId: BatchId, calculationResultId: firstCalculationResultId, calculationType: DeltaTableCalculationType.FirstCorrectionSettlement, time: secondHour, gridArea: GridAreaCodeC, quantity: SecondQuantityFirstCorrection);
 
-        var row1SecondCorrection = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, batchProcessType: DeltaTableProcessType.SecondCorrectionSettlement, time: firstHour, gridArea: GridAreaCodeC, quantity: FirstQuantitySecondCorrection);
-        var row2SecondCorrection = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, batchProcessType: DeltaTableProcessType.SecondCorrectionSettlement, time: secondHour, gridArea: GridAreaCodeC, quantity: SecondQuantitySecondCorrection);
+        var row1SecondCorrection = EnergyResultDeltaTableHelper.CreateRowValues(calculationId: BatchId, calculationResultId: secondCalculationResultId, calculationType: DeltaTableCalculationType.SecondCorrectionSettlement, time: firstHour, gridArea: GridAreaCodeC, quantity: FirstQuantitySecondCorrection);
+        var row2SecondCorrection = EnergyResultDeltaTableHelper.CreateRowValues(calculationId: BatchId, calculationResultId: secondCalculationResultId, calculationType: DeltaTableCalculationType.SecondCorrectionSettlement, time: secondHour, gridArea: GridAreaCodeC, quantity: SecondQuantitySecondCorrection);
 
-        var row1ThirdCorrection = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, batchProcessType: DeltaTableProcessType.ThirdCorrectionSettlement, time: firstHour, gridArea: GridAreaCodeC, quantity: FirstQuantityThirdCorrection);
-        var row2ThirdCorrection = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, batchProcessType: DeltaTableProcessType.ThirdCorrectionSettlement, time: secondHour, gridArea: GridAreaCodeC, quantity: SecondQuantityThirdCorrection);
-        var row4ThirdCorrection = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, batchProcessType: DeltaTableProcessType.ThirdCorrectionSettlement, time: thirdHour, gridArea: GridAreaCodeC, quantity: FourthQuantityThirdCorrection);
+        var row1ThirdCorrection = EnergyResultDeltaTableHelper.CreateRowValues(calculationId: BatchId, calculationResultId: thirdCalculationResultId, calculationType: DeltaTableCalculationType.ThirdCorrectionSettlement, time: firstHour, gridArea: GridAreaCodeC, quantity: FirstQuantityThirdCorrection);
+        var row2ThirdCorrection = EnergyResultDeltaTableHelper.CreateRowValues(calculationId: BatchId, calculationResultId: thirdCalculationResultId, calculationType: DeltaTableCalculationType.ThirdCorrectionSettlement, time: secondHour, gridArea: GridAreaCodeC, quantity: SecondQuantityThirdCorrection);
+        var row4ThirdCorrection = EnergyResultDeltaTableHelper.CreateRowValues(calculationId: BatchId, calculationResultId: thirdCalculationResultId, calculationType: DeltaTableCalculationType.ThirdCorrectionSettlement, time: thirdHour, gridArea: GridAreaCodeC, quantity: FourthQuantityThirdCorrection);
 
-        var row1SecondDay = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: secondDay, gridArea: GridAreaCodeC, quantity: FirstQuantity);
-        var row1ThirdDay = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: thirdDay, gridArea: GridAreaCodeC, quantity: SecondQuantity);
+        var row1SecondDay = EnergyResultDeltaTableHelper.CreateRowValues(calculationId: BatchId, calculationResultId: firstCalculationResultId, time: secondDay, gridArea: GridAreaCodeC, quantity: FirstQuantity);
+        var row1ThirdDay = EnergyResultDeltaTableHelper.CreateRowValues(calculationId: BatchId, calculationResultId: firstCalculationResultId, time: thirdDay, gridArea: GridAreaCodeC, quantity: SecondQuantity);
 
         var rows = new List<IReadOnlyCollection<string>>
         {

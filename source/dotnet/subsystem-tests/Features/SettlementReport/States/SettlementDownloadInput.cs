@@ -20,7 +20,7 @@ public class SettlementDownloadInput
 {
     public IList<string> GridAreaCodes { get; } = new List<string>();
 
-    public ProcessType ProcessType { get; set; }
+    public ProcessType CalculationType { get; set; }
 
     public DateTimeOffset CalculationPeriodStart { get; set; }
 

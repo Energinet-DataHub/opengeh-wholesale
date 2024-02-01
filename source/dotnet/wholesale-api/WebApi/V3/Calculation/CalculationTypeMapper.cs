@@ -16,39 +16,39 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 
 public static class CalculationTypeMapper
 {
-    public static Common.Interfaces.Models.ProcessType Map(CalculationType batchDtoProcessType)
+    public static Common.Interfaces.Models.CalculationType Map(CalculationType batchDtoProcessType)
     {
         return batchDtoProcessType switch
         {
-            CalculationType.Aggregation => Common.Interfaces.Models.ProcessType.Aggregation,
-            CalculationType.BalanceFixing => Common.Interfaces.Models.ProcessType.BalanceFixing,
-            CalculationType.WholesaleFixing => Common.Interfaces.Models.ProcessType.WholesaleFixing,
-            CalculationType.FirstCorrectionSettlement => Common.Interfaces.Models.ProcessType.FirstCorrectionSettlement,
-            CalculationType.SecondCorrectionSettlement => Common.Interfaces.Models.ProcessType.SecondCorrectionSettlement,
-            CalculationType.ThirdCorrectionSettlement => Common.Interfaces.Models.ProcessType.ThirdCorrectionSettlement,
+            CalculationType.Aggregation => Common.Interfaces.Models.CalculationType.Aggregation,
+            CalculationType.BalanceFixing => Common.Interfaces.Models.CalculationType.BalanceFixing,
+            CalculationType.WholesaleFixing => Common.Interfaces.Models.CalculationType.WholesaleFixing,
+            CalculationType.FirstCorrectionSettlement => Common.Interfaces.Models.CalculationType.FirstCorrectionSettlement,
+            CalculationType.SecondCorrectionSettlement => Common.Interfaces.Models.CalculationType.SecondCorrectionSettlement,
+            CalculationType.ThirdCorrectionSettlement => Common.Interfaces.Models.CalculationType.ThirdCorrectionSettlement,
 
             _ => throw new ArgumentOutOfRangeException(
                 nameof(batchDtoProcessType),
                 actualValue: batchDtoProcessType,
-                "Value cannot be mapped to a process type."),
+                "Value cannot be mapped to a calculation type."),
         };
     }
 
-    public static CalculationType Map(Common.Interfaces.Models.ProcessType batchDtoProcessType)
+    public static CalculationType Map(Common.Interfaces.Models.CalculationType batchDtoProcessType)
     {
         return batchDtoProcessType switch
         {
-            Common.Interfaces.Models.ProcessType.Aggregation => CalculationType.Aggregation,
-            Common.Interfaces.Models.ProcessType.BalanceFixing => CalculationType.BalanceFixing,
-            Common.Interfaces.Models.ProcessType.WholesaleFixing => CalculationType.WholesaleFixing,
-            Common.Interfaces.Models.ProcessType.FirstCorrectionSettlement => CalculationType.FirstCorrectionSettlement,
-            Common.Interfaces.Models.ProcessType.SecondCorrectionSettlement => CalculationType.SecondCorrectionSettlement,
-            Common.Interfaces.Models.ProcessType.ThirdCorrectionSettlement => CalculationType.ThirdCorrectionSettlement,
+            Common.Interfaces.Models.CalculationType.Aggregation => CalculationType.Aggregation,
+            Common.Interfaces.Models.CalculationType.BalanceFixing => CalculationType.BalanceFixing,
+            Common.Interfaces.Models.CalculationType.WholesaleFixing => CalculationType.WholesaleFixing,
+            Common.Interfaces.Models.CalculationType.FirstCorrectionSettlement => CalculationType.FirstCorrectionSettlement,
+            Common.Interfaces.Models.CalculationType.SecondCorrectionSettlement => CalculationType.SecondCorrectionSettlement,
+            Common.Interfaces.Models.CalculationType.ThirdCorrectionSettlement => CalculationType.ThirdCorrectionSettlement,
 
             _ => throw new ArgumentOutOfRangeException(
                 nameof(batchDtoProcessType),
                 actualValue: batchDtoProcessType,
-                "Value cannot be mapped to a process type."),
+                "Value cannot be mapped to a calculation type."),
         };
     }
 }

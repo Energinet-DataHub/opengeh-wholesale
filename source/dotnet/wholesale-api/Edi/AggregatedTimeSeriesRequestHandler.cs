@@ -86,7 +86,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     {
         var parameters = CreateAggregatedTimeSeriesQueryParametersWithoutProcessType(request);
 
-        if (request.RequestedProcessType == RequestedProcessType.LatestCorrection)
+        if (request.RequestedProcessType == RequestedCalculationType.LatestCorrection)
         {
             return await _aggregatedTimeSeriesQueries.GetLatestCorrectionForGridAreaAsync(parameters).ToListAsync(cancellationToken).ConfigureAwait(false);
         }
@@ -94,7 +94,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         return await _aggregatedTimeSeriesQueries.GetAsync(
             parameters with
             {
-                ProcessType = ProcessTypeMapper.FromRequestedProcessType(request.RequestedProcessType),
+                CalculationType = CalculationTypeMapper.FromRequestedProcessType(request.RequestedProcessType),
             }).ToListAsync(cancellationToken).ConfigureAwait(false);
     }
 
@@ -113,7 +113,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
             var parameters = CreateAggregatedTimeSeriesQueryParametersWithoutProcessType(newRequest);
 
             var results = _aggregatedTimeSeriesQueries.GetAsync(
-                    parameters with { ProcessType = ProcessTypeMapper.FromRequestedProcessType(newRequest.RequestedProcessType), })
+                    parameters with { CalculationType = CalculationTypeMapper.FromRequestedProcessType(newRequest.RequestedProcessType), })
                 .ConfigureAwait(false);
 
             await foreach (var result in results)

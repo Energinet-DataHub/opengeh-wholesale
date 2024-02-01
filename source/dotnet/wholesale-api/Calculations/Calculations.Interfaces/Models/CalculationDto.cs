@@ -31,6 +31,6 @@ public sealed record CalculationDto(
     CalculationState ExecutionState,
     bool AreSettlementReportsCreated,
     string[] GridAreaCodes,
-    ProcessType ProcessType,
+    CalculationType CalculationType,
     Guid CreatedByUserId,
     long Version);

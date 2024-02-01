@@ -23,28 +23,28 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Mappers;
 public class ProcessTypeMapperTests
 {
     [Theory]
-    [InlineData(RequestedProcessType.BalanceFixing, ProcessType.BalanceFixing)]
-    [InlineData(RequestedProcessType.PreliminaryAggregation, ProcessType.Aggregation)]
-    [InlineData(RequestedProcessType.WholesaleFixing, ProcessType.WholesaleFixing)]
-    [InlineData(RequestedProcessType.FirstCorrection, ProcessType.FirstCorrectionSettlement)]
-    [InlineData(RequestedProcessType.SecondCorrection, ProcessType.SecondCorrectionSettlement)]
-    [InlineData(RequestedProcessType.ThirdCorrection, ProcessType.ThirdCorrectionSettlement)]
-    public void FromRequestedProcessType_WhenValidRequestedProcessType_ReturnsExpectedProcessType(RequestedProcessType requestedProcessType, ProcessType expectedResult)
+    [InlineData(RequestedCalculationType.BalanceFixing, CalculationType.BalanceFixing)]
+    [InlineData(RequestedCalculationType.PreliminaryAggregation, CalculationType.Aggregation)]
+    [InlineData(RequestedCalculationType.WholesaleFixing, CalculationType.WholesaleFixing)]
+    [InlineData(RequestedCalculationType.FirstCorrection, CalculationType.FirstCorrectionSettlement)]
+    [InlineData(RequestedCalculationType.SecondCorrection, CalculationType.SecondCorrectionSettlement)]
+    [InlineData(RequestedCalculationType.ThirdCorrection, CalculationType.ThirdCorrectionSettlement)]
+    public void FromRequestedProcessType_WhenValidRequestedProcessType_ReturnsExpectedProcessType(RequestedCalculationType requestedProcessType, CalculationType expectedResult)
     {
         // Act
-        var actualProcessType = ProcessTypeMapper.FromRequestedProcessType(requestedProcessType);
+        var actualProcessType = CalculationTypeMapper.FromRequestedProcessType(requestedProcessType);
 
         // Assert
         actualProcessType.Should().Be(expectedResult);
     }
 
     [Theory]
-    [InlineData(RequestedProcessType.LatestCorrection)]
-    [InlineData((RequestedProcessType)999999)]
-    public void FromRequestedProcessType_WhenInvalidRequestedProcessType_ThrowsArgumentOutOfRangeException(RequestedProcessType requestedProcessType)
+    [InlineData(RequestedCalculationType.LatestCorrection)]
+    [InlineData((RequestedCalculationType)999999)]
+    public void FromRequestedProcessType_WhenInvalidRequestedProcessType_ThrowsArgumentOutOfRangeException(RequestedCalculationType requestedProcessType)
     {
         // Act
-        var act = () => ProcessTypeMapper.FromRequestedProcessType(requestedProcessType);
+        var act = () => CalculationTypeMapper.FromRequestedProcessType(requestedProcessType);
 
         // Assert
         act.Should().ThrowExactly<ArgumentOutOfRangeException>().And.ActualValue.Should().Be(requestedProcessType);

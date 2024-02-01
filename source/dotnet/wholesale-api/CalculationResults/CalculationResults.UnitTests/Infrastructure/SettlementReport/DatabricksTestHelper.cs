@@ -51,7 +51,7 @@ public static class DatabricksTestHelper
         var newRow = new Dictionary<string, object?>
         {
             { EnergyResultColumnNames.GridArea, gridAre },
-            { EnergyResultColumnNames.BatchProcessType, batchProcessType },
+            { EnergyResultColumnNames.CalculationType, batchProcessType },
             { EnergyResultColumnNames.Time, time },
             { EnergyResultColumnNames.TimeSeriesType, timeSeriesType },
             { EnergyResultColumnNames.Quantity, $@"{quantity}" },

@@ -22,7 +22,7 @@ public sealed class CompletedCalculation
     public CompletedCalculation(
         Guid id,
         List<string> gridAreaCodes,
-        ProcessType processType,
+        CalculationType processType,
         Instant periodStart,
         Instant periodEnd,
         Instant completedTime)
@@ -44,7 +44,7 @@ public sealed class CompletedCalculation
 
     public List<string> GridAreaCodes { get; init; }
 
-    public ProcessType ProcessType { get; init; }
+    public CalculationType ProcessType { get; init; }
 
     public Instant PeriodStart { get; init; }
 

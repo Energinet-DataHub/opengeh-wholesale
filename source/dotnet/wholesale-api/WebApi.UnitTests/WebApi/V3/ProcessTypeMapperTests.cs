@@ -22,18 +22,18 @@ namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.WebApi.V3;
 public class ProcessTypeMapperTests
 {
     [Theory]
-    [InlineAutoMoqData(Energinet.DataHub.Wholesale.Common.Interfaces.Models.ProcessType.BalanceFixing, CalculationType.BalanceFixing)]
-    [InlineAutoMoqData(Energinet.DataHub.Wholesale.Common.Interfaces.Models.ProcessType.Aggregation, CalculationType.Aggregation)]
-    public void Map_ReturnsExpectedType(Energinet.DataHub.Wholesale.Common.Interfaces.Models.ProcessType source, CalculationType expected)
+    [InlineAutoMoqData(Energinet.DataHub.Wholesale.Common.Interfaces.Models.CalculationType.BalanceFixing, CalculationType.BalanceFixing)]
+    [InlineAutoMoqData(Energinet.DataHub.Wholesale.Common.Interfaces.Models.CalculationType.Aggregation, CalculationType.Aggregation)]
+    public void Map_ReturnsExpectedType(Energinet.DataHub.Wholesale.Common.Interfaces.Models.CalculationType source, CalculationType expected)
     {
         var actual = CalculationTypeMapper.Map(source);
         actual.Should().Be(expected);
     }
 
     [Theory]
-    [InlineAutoMoqData(CalculationType.BalanceFixing, Energinet.DataHub.Wholesale.Common.Interfaces.Models.ProcessType.BalanceFixing)]
-    [InlineAutoMoqData(CalculationType.Aggregation, Energinet.DataHub.Wholesale.Common.Interfaces.Models.ProcessType.Aggregation)]
-    public void MapProcessType_ReturnsExpectedType(CalculationType source, Energinet.DataHub.Wholesale.Common.Interfaces.Models.ProcessType expected)
+    [InlineAutoMoqData(CalculationType.BalanceFixing, Energinet.DataHub.Wholesale.Common.Interfaces.Models.CalculationType.BalanceFixing)]
+    [InlineAutoMoqData(CalculationType.Aggregation, Energinet.DataHub.Wholesale.Common.Interfaces.Models.CalculationType.Aggregation)]
+    public void MapProcessType_ReturnsExpectedType(CalculationType source, Energinet.DataHub.Wholesale.Common.Interfaces.Models.CalculationType expected)
     {
         var actual = CalculationTypeMapper.Map(source);
         actual.Should().Be(expected);
@@ -43,7 +43,7 @@ public class ProcessTypeMapperTests
     public void Map_WhenInvalidEnumNumberForProcessType_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
-        var invalidValue = (Energinet.DataHub.Wholesale.Common.Interfaces.Models.ProcessType)99;
+        var invalidValue = (Energinet.DataHub.Wholesale.Common.Interfaces.Models.CalculationType)99;
 
         // Act
         var act = () => CalculationTypeMapper.Map(invalidValue);

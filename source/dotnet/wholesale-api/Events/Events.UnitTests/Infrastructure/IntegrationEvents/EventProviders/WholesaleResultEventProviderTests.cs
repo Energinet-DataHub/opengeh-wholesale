@@ -161,14 +161,14 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
         }
 
         [Theory]
-        [InlineData(ProcessType.Aggregation, false)]
-        [InlineData(ProcessType.BalanceFixing, false)]
-        [InlineData(ProcessType.WholesaleFixing, true)]
-        [InlineData(ProcessType.FirstCorrectionSettlement, true)]
-        [InlineData(ProcessType.SecondCorrectionSettlement, true)]
-        [InlineData(ProcessType.ThirdCorrectionSettlement, true)]
+        [InlineData(CalculationType.Aggregation, false)]
+        [InlineData(CalculationType.BalanceFixing, false)]
+        [InlineData(CalculationType.WholesaleFixing, true)]
+        [InlineData(CalculationType.FirstCorrectionSettlement, true)]
+        [InlineData(CalculationType.SecondCorrectionSettlement, true)]
+        [InlineData(CalculationType.ThirdCorrectionSettlement, true)]
         public void CanContainWholesaleResults_WhenProcessTypeCanContainWholesaleResults_ReturnsTrue(
-            ProcessType processType,
+            CalculationType processType,
             bool canContainWholesaleResults)
         {
             // Arrange
@@ -197,7 +197,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
             var fixture = new Fixture();
             var wholesaleFixingBatch = fixture
                 .Build<CompletedCalculation>()
-                .With(p => p.ProcessType, ProcessType.WholesaleFixing)
+                .With(p => p.ProcessType, CalculationType.WholesaleFixing)
                 .Create();
             return wholesaleFixingBatch;
         }

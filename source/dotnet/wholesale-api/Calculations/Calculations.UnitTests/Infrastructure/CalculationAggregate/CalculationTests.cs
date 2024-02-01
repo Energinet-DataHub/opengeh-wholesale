@@ -49,7 +49,7 @@ public class CalculationTests
         var emptyGridAreaCodes = new List<GridAreaCode>();
         var actual = Assert.Throws<BusinessValidationException>(() => new Calculation(
             SystemClock.Instance.GetCurrentInstant(),
-            ProcessType.BalanceFixing,
+            CalculationType.BalanceFixing,
             emptyGridAreaCodes,
             Instant.FromDateTimeOffset(DateTimeOffset.Now),
             Instant.FromDateTimeOffset(DateTimeOffset.Now),
@@ -61,38 +61,38 @@ public class CalculationTests
     }
 
     [Theory]
-    [InlineAutoMoqData(ProcessType.WholesaleFixing)]
-    [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement)]
-    [InlineAutoMoqData(ProcessType.SecondCorrectionSettlement)]
-    [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement)]
-    public void Ctor_WhenWholesaleAndCorrectionProcessTypesAndPeriodIsMoreThanAMonth_ThrowsBusinessValidationException(ProcessType processType)
+    [InlineAutoMoqData(CalculationType.WholesaleFixing)]
+    [InlineAutoMoqData(CalculationType.FirstCorrectionSettlement)]
+    [InlineAutoMoqData(CalculationType.SecondCorrectionSettlement)]
+    [InlineAutoMoqData(CalculationType.ThirdCorrectionSettlement)]
+    public void Ctor_WhenWholesaleAndCorrectionProcessTypesAndPeriodIsMoreThanAMonth_ThrowsBusinessValidationException(CalculationType calculationType)
     {
         // Arrange & Act
         var actual = Assert.Throws<BusinessValidationException>(() => new CalculationBuilder()
-            .WithProcessType(processType)
+            .WithProcessType(calculationType)
             .WithPeriodEnd(Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022.AddDays(32)))
             .Build());
 
         // Assert
-        actual.Message.Should().Contain($"The period (start: 2021-12-31T23:00:00Z end: 2022-02-01T23:00:00Z) has to be an entire month when using process type {processType}");
+        actual.Message.Should().Contain($"The period (start: 2021-12-31T23:00:00Z end: 2022-02-01T23:00:00Z) has to be an entire month when using calculation type {calculationType}");
     }
 
     [Theory]
-    [InlineAutoMoqData(ProcessType.WholesaleFixing, 30, false)]
-    [InlineAutoMoqData(ProcessType.WholesaleFixing, 31, true)]
-    [InlineAutoMoqData(ProcessType.WholesaleFixing, 32, false)]
-    [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement, 30, false)]
-    [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement, 31, true)]
-    [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement, 32, false)]
-    [InlineAutoMoqData(ProcessType.SecondCorrectionSettlement, 30, false)]
-    [InlineAutoMoqData(ProcessType.SecondCorrectionSettlement, 31, true)]
-    [InlineAutoMoqData(ProcessType.SecondCorrectionSettlement, 32, false)]
-    [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement, 30, false)]
-    [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement, 31, true)]
-    [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement, 32, false)]
-    [InlineAutoMoqData(ProcessType.BalanceFixing, 30, true)]
-    [InlineAutoMoqData(ProcessType.Aggregation, 30, true)]
-    public void Ctor_PeriodsCombinedWithProcessTypes_AreValidOrInvalid(ProcessType processType, int days, bool isValid)
+    [InlineAutoMoqData(CalculationType.WholesaleFixing, 30, false)]
+    [InlineAutoMoqData(CalculationType.WholesaleFixing, 31, true)]
+    [InlineAutoMoqData(CalculationType.WholesaleFixing, 32, false)]
+    [InlineAutoMoqData(CalculationType.FirstCorrectionSettlement, 30, false)]
+    [InlineAutoMoqData(CalculationType.FirstCorrectionSettlement, 31, true)]
+    [InlineAutoMoqData(CalculationType.FirstCorrectionSettlement, 32, false)]
+    [InlineAutoMoqData(CalculationType.SecondCorrectionSettlement, 30, false)]
+    [InlineAutoMoqData(CalculationType.SecondCorrectionSettlement, 31, true)]
+    [InlineAutoMoqData(CalculationType.SecondCorrectionSettlement, 32, false)]
+    [InlineAutoMoqData(CalculationType.ThirdCorrectionSettlement, 30, false)]
+    [InlineAutoMoqData(CalculationType.ThirdCorrectionSettlement, 31, true)]
+    [InlineAutoMoqData(CalculationType.ThirdCorrectionSettlement, 32, false)]
+    [InlineAutoMoqData(CalculationType.BalanceFixing, 30, true)]
+    [InlineAutoMoqData(CalculationType.Aggregation, 30, true)]
+    public void Ctor_PeriodsCombinedWithProcessTypes_AreValidOrInvalid(CalculationType processType, int days, bool isValid)
     {
         // Arrange & Act
         var batchBuilder = new CalculationBuilder()
@@ -130,7 +130,7 @@ public class CalculationTests
         // Act
         Action createBatch = () => new Calculation(
             SystemClock.Instance.GetCurrentInstant(),
-            ProcessType.WholesaleFixing,
+            CalculationType.WholesaleFixing,
             someGridAreas,
             Instant.FromDateTimeOffset(startDate),
             Instant.FromDateTimeOffset(endDate),
@@ -168,9 +168,9 @@ public class CalculationTests
     public void GetResolution_DoesNotThrowExceptionForAllProcessTypes()
     {
         // Arrange
-        foreach (var processType in Enum.GetValues(typeof(ProcessType)))
+        foreach (var processType in Enum.GetValues(typeof(CalculationType)))
         {
-            var sut = new CalculationBuilder().WithProcessType((ProcessType)processType).Build();
+            var sut = new CalculationBuilder().WithProcessType((CalculationType)processType).Build();
 
             // Act & Assert
             sut.GetResolution();
@@ -181,23 +181,23 @@ public class CalculationTests
     public void GetQuantityUnit_DoesNotThrowExceptionForAllProcessTypes()
     {
         // Arrange
-        foreach (var processType in Enum.GetValues(typeof(ProcessType)))
+        foreach (var processType in Enum.GetValues(typeof(CalculationType)))
         {
-            var sut = new CalculationBuilder().WithProcessType((ProcessType)processType).Build();
+            var sut = new CalculationBuilder().WithProcessType((CalculationType)processType).Build();
 
-            // Act & Assert - Remember to add new [InlineAutoMoqData (...,...)] for new process types in other tests
+            // Act & Assert - Remember to add new [InlineAutoMoqData (...,...)] for new calculation types in other tests
             sut.GetQuantityUnit();
         }
     }
 
     [Theory]
-    [InlineAutoMoqData(ProcessType.BalanceFixing, "PT15M")]
-    [InlineAutoMoqData(ProcessType.Aggregation, "PT15M")]
-    [InlineAutoMoqData(ProcessType.WholesaleFixing, "PT15M")]
-    [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement, "PT15M")]
-    [InlineAutoMoqData(ProcessType.SecondCorrectionSettlement, "PT15M")]
-    [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement, "PT15M")]
-    public void GetResolution_ReturnsExpectedIso8601Duration(ProcessType processType, string expectedIso8601Duration)
+    [InlineAutoMoqData(CalculationType.BalanceFixing, "PT15M")]
+    [InlineAutoMoqData(CalculationType.Aggregation, "PT15M")]
+    [InlineAutoMoqData(CalculationType.WholesaleFixing, "PT15M")]
+    [InlineAutoMoqData(CalculationType.FirstCorrectionSettlement, "PT15M")]
+    [InlineAutoMoqData(CalculationType.SecondCorrectionSettlement, "PT15M")]
+    [InlineAutoMoqData(CalculationType.ThirdCorrectionSettlement, "PT15M")]
+    public void GetResolution_ReturnsExpectedIso8601Duration(CalculationType processType, string expectedIso8601Duration)
     {
         // Arrange
         var sut = new CalculationBuilder().WithProcessType(processType).Build();
@@ -210,13 +210,13 @@ public class CalculationTests
     }
 
     [Theory]
-    [InlineAutoMoqData(ProcessType.BalanceFixing, QuantityUnit.Kwh)]
-    [InlineAutoMoqData(ProcessType.Aggregation, QuantityUnit.Kwh)]
-    [InlineAutoMoqData(ProcessType.WholesaleFixing, QuantityUnit.Kwh)]
-    [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement, QuantityUnit.Kwh)]
-    [InlineAutoMoqData(ProcessType.SecondCorrectionSettlement, QuantityUnit.Kwh)]
-    [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement, QuantityUnit.Kwh)]
-    public void GetQuantityUnit_ReturnsExpectedIso8601Duration(ProcessType processType, QuantityUnit expectedQuantityUnit)
+    [InlineAutoMoqData(CalculationType.BalanceFixing, QuantityUnit.Kwh)]
+    [InlineAutoMoqData(CalculationType.Aggregation, QuantityUnit.Kwh)]
+    [InlineAutoMoqData(CalculationType.WholesaleFixing, QuantityUnit.Kwh)]
+    [InlineAutoMoqData(CalculationType.FirstCorrectionSettlement, QuantityUnit.Kwh)]
+    [InlineAutoMoqData(CalculationType.SecondCorrectionSettlement, QuantityUnit.Kwh)]
+    [InlineAutoMoqData(CalculationType.ThirdCorrectionSettlement, QuantityUnit.Kwh)]
+    public void GetQuantityUnit_ReturnsExpectedIso8601Duration(CalculationType processType, QuantityUnit expectedQuantityUnit)
     {
         // Arrange
         var sut = new CalculationBuilder().WithProcessType(processType).Build();
@@ -249,7 +249,7 @@ public class CalculationTests
         // Act
         var actual = Assert.Throws<BusinessValidationException>(() => new Calculation(
             SystemClock.Instance.GetCurrentInstant(),
-            ProcessType.BalanceFixing,
+            CalculationType.BalanceFixing,
             new List<GridAreaCode> { gridAreaCode },
             Instant.MinValue,
             periodEnd,
@@ -275,7 +275,7 @@ public class CalculationTests
         // Act
         var actual = Assert.Throws<BusinessValidationException>(() => new Calculation(
             SystemClock.Instance.GetCurrentInstant(),
-            ProcessType.BalanceFixing,
+            CalculationType.BalanceFixing,
             new List<GridAreaCode> { gridAreaCode },
             startPeriod,
             Instant.FromDateTimeOffset(new DateTimeOffset(2023, 02, 01, 23, 0, 0, new TimeSpan(0))),

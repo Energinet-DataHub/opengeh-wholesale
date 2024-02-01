@@ -37,7 +37,7 @@ public class CalculationFactoryTests
         var sut = new CalculationFactory(SystemClock.Instance, _timeZone);
 
         // Act
-        var batch = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid());
+        var batch = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid());
 
         // Assert
         batch.PeriodStart.Should().Be(Instant.FromDateTimeOffset(_startDate));
@@ -51,7 +51,7 @@ public class CalculationFactoryTests
         var sut = new CalculationFactory(SystemClock.Instance, _timeZone);
 
         // Act
-        var batch = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid());
+        var batch = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid());
 
         // Assert
         batch.GridAreaCodes.Select(x => x.Code).Should().Contain(_someGridAreasIds);
@@ -68,10 +68,10 @@ public class CalculationFactoryTests
         var sut = new CalculationFactory(clockMock.Object, _timeZone);
 
         // Act
-        var batch = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid());
+        var calculation = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid());
 
         // Assert
-        batch.ExecutionTimeStart.Should().Be(expected);
+        calculation.ExecutionTimeStart.Should().Be(expected);
     }
 
     [Theory]
@@ -85,7 +85,7 @@ public class CalculationFactoryTests
         var sut = new CalculationFactory(clockMock.Object, _timeZone);
 
         // Act
-        var actual = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid()).Version;
+        var actual = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid()).Version;
 
         // Assert
         actual.Should().Be(expected);
@@ -96,11 +96,11 @@ public class CalculationFactoryTests
     {
         // Arrange
         var sut = new CalculationFactory(SystemClock.Instance, _timeZone);
-        var earlierCalculation = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid());
+        var earlierCalculation = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid());
         var earlierVersion = earlierCalculation.Version;
 
         // Act
-        var actual = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid()).Version;
+        var actual = sut.Create(CalculationType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid()).Version;
 
         // Assert
         actual.Should().BeGreaterThan(earlierVersion);

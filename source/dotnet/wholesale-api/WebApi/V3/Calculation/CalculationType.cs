@@ -15,7 +15,7 @@
 namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 
 /// <summary>
-/// Defines the wholesale process type
+/// Defines the wholesale calculation type
 /// </summary>
 public enum CalculationType
 {

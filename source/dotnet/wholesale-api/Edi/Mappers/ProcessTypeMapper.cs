@@ -17,34 +17,34 @@ using Energinet.DataHub.Wholesale.EDI.Models;
 
 namespace Energinet.DataHub.Wholesale.EDI.Mappers;
 
-public static class ProcessTypeMapper
+public static class CalculationTypeMapper
 {
     /// <summary>
-    /// Maps a <see cref="RequestedProcessType"/> to a <see cref="ProcessType"/>. Cannot map <see cref="RequestedProcessType.LatestCorrection"/> to a <see cref="ProcessType"/>.
+    /// Maps a <see cref="RequestedCalculationType"/> to a <see cref="CalculationType"/>. Cannot map <see cref="RequestedCalculationType.LatestCorrection"/> to a <see cref="CalculationType"/>.
     /// </summary>
-    /// <exception cref="ArgumentOutOfRangeException">Throws a ArgumentOutOfRangeException if the request process type is unknown or has the value LatestCorrection</exception>
-    public static ProcessType FromRequestedProcessType(RequestedProcessType requestedProcessType)
+    /// <exception cref="ArgumentOutOfRangeException">Throws a ArgumentOutOfRangeException if the request calculation type is unknown or has the value LatestCorrection</exception>
+    public static CalculationType FromRequestedProcessType(RequestedCalculationType requestedProcessType)
     {
-        if (requestedProcessType == RequestedProcessType.LatestCorrection)
+        if (requestedProcessType == RequestedCalculationType.LatestCorrection)
         {
             throw new ArgumentOutOfRangeException(
                 nameof(requestedProcessType),
                 actualValue: requestedProcessType,
-                $"Value of type {nameof(RequestedProcessType.LatestCorrection)} cannot be mapped to {nameof(ProcessType)}.");
+                $"Value of type {nameof(RequestedCalculationType.LatestCorrection)} cannot be mapped to {nameof(CalculationType)}.");
         }
 
         return requestedProcessType switch
         {
-            RequestedProcessType.BalanceFixing => ProcessType.BalanceFixing,
-            RequestedProcessType.PreliminaryAggregation => ProcessType.Aggregation,
-            RequestedProcessType.WholesaleFixing => ProcessType.WholesaleFixing,
-            RequestedProcessType.FirstCorrection => ProcessType.FirstCorrectionSettlement,
-            RequestedProcessType.SecondCorrection => ProcessType.SecondCorrectionSettlement,
-            RequestedProcessType.ThirdCorrection => ProcessType.ThirdCorrectionSettlement,
+            RequestedCalculationType.BalanceFixing => CalculationType.BalanceFixing,
+            RequestedCalculationType.PreliminaryAggregation => CalculationType.Aggregation,
+            RequestedCalculationType.WholesaleFixing => CalculationType.WholesaleFixing,
+            RequestedCalculationType.FirstCorrection => CalculationType.FirstCorrectionSettlement,
+            RequestedCalculationType.SecondCorrection => CalculationType.SecondCorrectionSettlement,
+            RequestedCalculationType.ThirdCorrection => CalculationType.ThirdCorrectionSettlement,
             _ => throw new ArgumentOutOfRangeException(
                 nameof(requestedProcessType),
                 actualValue: requestedProcessType,
-                $"Value cannot be mapped to a {nameof(ProcessType)}."),
+                $"Value cannot be mapped to a {nameof(CalculationType)}."),
         };
     }
 }

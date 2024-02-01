@@ -116,12 +116,12 @@ public sealed class SettlementReportTests : WebApiTestBase
             .Setup(service => service.CreateCompressedSettlementReportAsync(
                 It.IsAny<Func<Stream>>(),
                 new[] { gridAreaCode },
-                ProcessType.BalanceFixing,
+                CalculationType.BalanceFixing,
                 periodStart,
                 periodEnd,
                 null,
                 null))
-            .Returns<Func<Stream>, string[], ProcessType, DateTimeOffset, DateTimeOffset, string?, string?>((openStream, _, _, _, _, _, _) =>
+            .Returns<Func<Stream>, string[], CalculationType, DateTimeOffset, DateTimeOffset, string?, string?>((openStream, _, _, _, _, _, _) =>
             {
                 openStream().Write(Encoding.UTF8.GetBytes(expectedMockedContent));
                 return Task.CompletedTask;
@@ -161,12 +161,12 @@ public sealed class SettlementReportTests : WebApiTestBase
             .Setup(service => service.CreateCompressedSettlementReportAsync(
                 It.IsAny<Func<Stream>>(),
                 new[] { gridAreaCode },
-                ProcessType.BalanceFixing,
+                CalculationType.BalanceFixing,
                 periodStart,
                 periodEnd,
                 null,
                 language))
-            .Returns<Func<Stream>, string[], ProcessType, DateTimeOffset, DateTimeOffset, string?, string?>((openStream, _, _, _, _, _, _) =>
+            .Returns<Func<Stream>, string[], CalculationType, DateTimeOffset, DateTimeOffset, string?, string?>((openStream, _, _, _, _, _, _) =>
             {
                 openStream().Write(Encoding.UTF8.GetBytes(expectedMockedContent));
                 return Task.CompletedTask;
@@ -204,12 +204,12 @@ public sealed class SettlementReportTests : WebApiTestBase
             .Setup(service => service.CreateCompressedSettlementReportAsync(
                 It.IsAny<Func<Stream>>(),
                 new[] { gridAreaCode },
-                ProcessType.BalanceFixing,
+                CalculationType.BalanceFixing,
                 periodStart,
                 periodEnd,
                 null,
                 null))
-            .Returns<Func<Stream>, string[], ProcessType, DateTimeOffset, DateTimeOffset, string?, string?>((openStream, _, _, _, _, _, _) =>
+            .Returns<Func<Stream>, string[], CalculationType, DateTimeOffset, DateTimeOffset, string?, string?>((openStream, _, _, _, _, _, _) =>
             {
                 openStream();
                 return Task.CompletedTask;
@@ -247,12 +247,12 @@ public sealed class SettlementReportTests : WebApiTestBase
             .Setup(service => service.CreateCompressedSettlementReportAsync(
                 It.IsAny<Func<Stream>>(),
                 new[] { gridAreaCode },
-                ProcessType.Aggregation,
+                CalculationType.Aggregation,
                 periodStart,
                 periodEnd,
                 null,
                 null))
-            .Returns<Func<Stream>, string[], ProcessType, DateTimeOffset, DateTimeOffset, string?, string?>((_, _, _, _, _, _, _) =>
+            .Returns<Func<Stream>, string[], CalculationType, DateTimeOffset, DateTimeOffset, string?, string?>((_, _, _, _, _, _, _) =>
                 throw new BusinessValidationException("Tested Validation Exception"));
 
         Factory.SettlementReportApplicationServiceMock = settlementReportApplicationService;

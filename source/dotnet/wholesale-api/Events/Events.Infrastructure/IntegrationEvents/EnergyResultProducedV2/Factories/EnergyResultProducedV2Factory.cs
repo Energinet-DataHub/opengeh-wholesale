@@ -100,7 +100,7 @@ public class EnergyResultProducedV2Factory : IEnergyResultProducedV2Factory
         {
             CalculationId = result.BatchId.ToString(),
             Resolution = Contracts.IntegrationEvents.EnergyResultProducedV2.Types.Resolution.Quarter,
-            CalculationType = CalculationTypeMapper.MapCalculationType(result.ProcessType),
+            CalculationType = CalculationTypeMapper.MapCalculationType(result.CalculationType),
             QuantityUnit = QuantityUnit.Kwh,
             PeriodStartUtc = result.PeriodStart.ToTimestamp(),
             PeriodEndUtc = result.PeriodEnd.ToTimestamp(),

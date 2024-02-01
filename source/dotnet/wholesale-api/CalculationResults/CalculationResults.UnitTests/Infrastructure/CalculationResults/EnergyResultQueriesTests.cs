@@ -52,13 +52,13 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
         {
             _row0BatchId, "100", "200", "non_profiled_consumption", string.Empty, string.Empty,
             "2022-05-16T22:00:00.000Z", "1.111", "[\"measured\"]", _calculationResultId0,
-            DeltaTableProcessType.Aggregation, null,
+            DeltaTableCalculationType.Aggregation, null,
         };
         var row1 = new[]
         {
             "b78787d5-b544-44ac-87c2-7720aab86ed2", "200", "100", "non_profiled_consumption", string.Empty,
             string.Empty, "2022-05-16T22:00:00.000Z", "2.222", "[\"measured\"]", calculationResultId1,
-            DeltaTableProcessType.BalanceFixing, null,
+            DeltaTableCalculationType.BalanceFixing, null,
         };
         var rows = new List<string?[]> { row0, row1, };
 
@@ -134,8 +134,8 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
         actual.TimeSeriesType.Should().Be(TimeSeriesType.NonProfiledConsumption);
         actual.BalanceResponsibleId.Should().Be(_tableChunk[0, EnergyResultColumnNames.BalanceResponsibleId]);
         actual.EnergySupplierId.Should().Be(_tableChunk[0, EnergyResultColumnNames.EnergySupplierId]);
-        actual.BatchId.Should().Be(_tableChunk[0, EnergyResultColumnNames.BatchId]);
-        actual.ProcessType.Should().Be(calculation.ProcessType);
+        actual.BatchId.Should().Be(_tableChunk[0, EnergyResultColumnNames.CalculationId]);
+        actual.CalculationType.Should().Be(calculation.CalculationType);
         actual.PeriodStart.Should().Be(calculation.PeriodStart.ToInstant());
         actual.PeriodEnd.Should().Be(calculation.PeriodEnd.ToInstant());
         var actualPoint = actual.TimeSeriesPoints.Single();
@@ -174,13 +174,13 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
         // Arrange
         var listA = new DatabricksSqlRow(new Dictionary<string, object?>
         {
-            { EnergyResultColumnNames.BatchId, "batchId" },
+            { EnergyResultColumnNames.CalculationId, "batchId" },
             { EnergyResultColumnNames.CalculationResultId, calculationResultIdA },
         });
 
         var listB = new DatabricksSqlRow(new Dictionary<string, object?>
         {
-            { EnergyResultColumnNames.BatchId, "batchId" },
+            { EnergyResultColumnNames.CalculationId, "batchId" },
             { EnergyResultColumnNames.CalculationResultId, calculationResultIdB },
         });
 

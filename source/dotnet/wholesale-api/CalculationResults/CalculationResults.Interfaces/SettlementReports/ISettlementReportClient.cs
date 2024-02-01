@@ -26,7 +26,7 @@ public interface ISettlementReportClient
     Task CreateCompressedSettlementReportAsync(
         Func<Stream> openDestinationStream,
         string[] gridAreaCodes,
-        ProcessType processType,
+        CalculationType calculationType,
         DateTimeOffset periodStart,
         DateTimeOffset periodEnd,
         string? energySupplier,

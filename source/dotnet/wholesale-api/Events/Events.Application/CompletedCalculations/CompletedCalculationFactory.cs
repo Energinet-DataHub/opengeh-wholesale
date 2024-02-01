@@ -32,7 +32,7 @@ public class CompletedCalculationFactory : ICompletedCalculationFactory
         return new CompletedCalculation(
             completedCalculationDto.BatchId,
             completedCalculationDto.GridAreaCodes.ToList(),
-            completedCalculationDto.ProcessType,
+            completedCalculationDto.CalculationType,
             completedCalculationDto.PeriodStart.ToInstant(),
             completedCalculationDto.PeriodEnd.ToInstant(),
             completedTime: completedCalculationDto.ExecutionTimeEnd.Value.ToInstant());
