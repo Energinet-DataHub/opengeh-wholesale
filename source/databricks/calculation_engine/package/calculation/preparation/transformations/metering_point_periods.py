@@ -48,8 +48,6 @@ def get_metering_point_periods_df(
         .where(col(Colname.to_date).isNull() | (col(Colname.to_date) > period_start))
     )
 
-    assert_schema(metering_point_periods_df.schema, metering_point_period_schema)
-
     metering_point_periods_df = _clamp_at_period_boundaries(
         metering_point_periods_df, period_start, period_end
     )

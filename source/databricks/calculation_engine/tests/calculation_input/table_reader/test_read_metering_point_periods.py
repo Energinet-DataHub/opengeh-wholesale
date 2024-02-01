@@ -13,7 +13,10 @@
 # limitations under the License.
 
 import pathlib
-from pyspark.sql import SparkSession, DataFrame
+from unittest import mock
+import pytest
+from pyspark.sql import SparkSession
+import pyspark.sql.functions as f
 
 from package.calculation_input.table_reader import TableReader
 from package.calculation_input.schemas import metering_point_period_schema
@@ -49,3 +52,21 @@ class TestWhenValidInput:
 
         # Assert
         assert_dataframes_equal(actual, df)
+
+
+class TestWhenSchemaMismatch:
+    def test_raises_assertion_error(self, spark: SparkSession) -> None:
+        # Arrange
+        reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
+        row = factory.create_row()
+        df = factory.create(spark, row)
+        df = df.withColumn("test", f.lit("test"))
+
+        # Act & Assert
+        with mock.patch.object(
+            reader._spark.read.format("delta"), "load", return_value=df
+        ):
+            with pytest.raises(AssertionError) as exc_info:
+                reader.read_metering_point_periods()
+
+            assert "Schema mismatch" in str(exc_info.value)

@@ -15,7 +15,7 @@
 from datetime import datetime, timedelta
 
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import lit, when, col
+from pyspark.sql.functions import when, col
 
 import pytest
 from unittest.mock import patch, Mock
@@ -357,30 +357,6 @@ class TestWhenThreeGridAreasExchangingWithEachOther:
         assert actual_rows[2][Colname.grid_area] == "333"
         assert actual_rows[2][Colname.from_grid_area] == "111"
         assert actual_rows[2][Colname.to_grid_area] == "222"
-
-
-class TestWhenSchemaMismatch:
-    @patch.object(calculation_input, TableReader.__name__)
-    def test_raises_assertion_error(
-        self, mock_calculation_input_reader: Mock, spark: SparkSession
-    ) -> None:
-        # Arrange
-        row = factory.create_row()
-        df = factory.create(spark, row)
-        df = df.withColumn("test", lit("test"))
-
-        mock_calculation_input_reader.read_metering_point_periods.return_value = df
-
-        # Act & Assert
-        with pytest.raises(AssertionError) as exc_info:
-            get_metering_point_periods_df(
-                mock_calculation_input_reader,
-                factory.DEFAULT_FROM_DATE,
-                factory.DEFAULT_TO_DATE,
-                [factory.DEFAULT_GRID_AREA],
-            )
-
-        assert "Schema mismatch" in str(exc_info.value)
 
 
 class TestWhenExchangeMeteringPoint:

@@ -24,6 +24,7 @@ from .schemas import (
     charge_link_periods_schema,
     charge_master_data_periods_schema,
     charge_price_points_schema,
+    metering_point_period_schema,
     time_series_point_schema,
     grid_loss_metering_points_schema,
 )
@@ -57,7 +58,11 @@ class TableReader:
         path = (
             f"{self._calculation_input_path}/{self._metering_point_periods_table_name}"
         )
-        return self._spark.read.format("delta").load(path)
+        df = self._spark.read.format("delta").load(path)
+
+        assert_schema(df.schema, metering_point_period_schema)
+
+        return df
 
     def read_time_series_points(self) -> DataFrame:
         path = f"{self._calculation_input_path}/{self._time_series_points_table_name}"
