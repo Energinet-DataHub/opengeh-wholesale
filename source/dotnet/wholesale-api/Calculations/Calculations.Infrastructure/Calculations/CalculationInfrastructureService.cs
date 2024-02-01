@@ -30,15 +30,15 @@ public class CalculationInfrastructureService : ICalculationInfrastructureServic
         _calculationEngineClient = calculationEngineClient;
     }
 
-    public async Task<Application.Model.CalculationState> GetStatusAsync(CalculationId calculationId)
+    public async Task<Application.Model.CalculationState> GetStatusAsync(CalculationJobId calculationJobId)
     {
-        return await _calculationEngineClient.GetStatusAsync(calculationId).ConfigureAwait(false);
+        return await _calculationEngineClient.GetStatusAsync(calculationJobId).ConfigureAwait(false);
     }
 
-    public async Task StartAsync(Guid batchId)
+    public async Task StartAsync(Guid calculationId)
     {
-        var batch = await _calculationRepository.GetAsync(batchId).ConfigureAwait(false);
-        var calculationId = await _calculationEngineClient.StartAsync(batch).ConfigureAwait(false);
-        batch.MarkAsSubmitted(calculationId);
+        var calculation = await _calculationRepository.GetAsync(calculationId).ConfigureAwait(false);
+        var calculationJobId = await _calculationEngineClient.StartAsync(calculation).ConfigureAwait(false);
+        calculation.MarkAsSubmitted(calculationJobId);
     }
 }

@@ -24,7 +24,7 @@ namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local", Justification = "Private setters are needed by EF Core")]
 public class DatabaseContext : DbContext, IDatabaseContext
 {
-    private const string Schema = "batches";
+    private const string Schema = "calculations";
 
     public DatabaseContext(DbContextOptions<DatabaseContext> options)
         : base(options)
@@ -36,7 +36,7 @@ public class DatabaseContext : DbContext, IDatabaseContext
     {
     }
 
-    public virtual DbSet<Calculation> Batches { get; private set; } = null!;
+    public virtual DbSet<Calculation> Calculations { get; private set; } = null!;
 
     public virtual DbSet<Interfaces.GridArea.GridAreaOwner> GridAreaOwners { get; private set; } = null!;
 

@@ -42,7 +42,7 @@ public class CalculationExecutionStateDomainServiceTests
         var pendingBatches = new List<Calculation>() { batch };
         batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<CalculationExecutionState>>()))
             .ReturnsAsync(pendingBatches);
-        calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch.CalculationId!)).ReturnsAsync(CalculationState.Running);
+        calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch.CalculationJobId!)).ReturnsAsync(CalculationState.Running);
 
         // Act
         await sut.UpdateExecutionStateAsync();
@@ -66,7 +66,7 @@ public class CalculationExecutionStateDomainServiceTests
         var executingBatches = new List<Calculation>() { batch };
         batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<CalculationExecutionState>>()))
             .ReturnsAsync(executingBatches);
-        calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch.CalculationId!)).ReturnsAsync(CalculationState.Completed);
+        calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch.CalculationJobId!)).ReturnsAsync(CalculationState.Completed);
 
         // Act
         await sut.UpdateExecutionStateAsync();
@@ -91,7 +91,7 @@ public class CalculationExecutionStateDomainServiceTests
         var executingBatches = new List<Calculation>() { batch };
         batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<CalculationExecutionState>>()))
             .ReturnsAsync(executingBatches);
-        calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch.CalculationId!)).ReturnsAsync(CalculationState.Canceled);
+        calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch.CalculationJobId!)).ReturnsAsync(CalculationState.Canceled);
 
         // Act
         await sut.UpdateExecutionStateAsync();
@@ -117,9 +117,9 @@ public class CalculationExecutionStateDomainServiceTests
 
         batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<CalculationExecutionState>>()))
             .ReturnsAsync(batches);
-        calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch1.CalculationId!))
+        calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch1.CalculationJobId!))
             .ReturnsAsync(CalculationState.Pending); // Unchanged
-        calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch2.CalculationId!))
+        calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch2.CalculationJobId!))
             .ReturnsAsync(CalculationState.Completed);
 
         // Act
@@ -146,7 +146,7 @@ public class CalculationExecutionStateDomainServiceTests
         clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(executionTimeEndGreaterThanStart);
         batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<CalculationExecutionState>>()))
             .ReturnsAsync(batches);
-        calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch2.CalculationId!))
+        calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch2.CalculationJobId!))
             .ReturnsAsync(CalculationState.Completed);
 
         // Act
@@ -174,10 +174,10 @@ public class CalculationExecutionStateDomainServiceTests
         clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(executionTimeEndGreaterThanStart);
         batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<CalculationExecutionState>>()))
             .ReturnsAsync(batches);
-        calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch1.CalculationId!))
+        calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch1.CalculationJobId!))
             .ReturnsAsync(CalculationState.Completed);
-        calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch2.CalculationId!)).ThrowsAsync(default);
-        calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch3.CalculationId!))
+        calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch2.CalculationJobId!)).ThrowsAsync(default);
+        calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch3.CalculationJobId!))
             .ReturnsAsync(CalculationState.Completed);
 
         // Act
@@ -206,7 +206,7 @@ public class CalculationExecutionStateDomainServiceTests
         clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(executionTimeEndGreaterThanStart);
         calculationRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<CalculationExecutionState>>()))
             .ReturnsAsync(batches);
-        calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(It.IsAny<CalculationId>())).ThrowsAsync(default);
+        calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(It.IsAny<CalculationJobId>())).ThrowsAsync(default);
 
         // Act
         await sut.UpdateExecutionStateAsync();

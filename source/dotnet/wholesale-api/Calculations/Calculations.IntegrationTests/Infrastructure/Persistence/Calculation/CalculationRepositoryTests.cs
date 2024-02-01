@@ -36,71 +36,71 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
     }
 
     [Fact]
-    public async Task AddAsync_AddsBatch()
+    public async Task AddAsync_AddsCalculation()
     {
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
-        var expectedBatch = CreateBatch(ProcessType.Aggregation, someGridAreasIds);
+        var expectedCalculation = CreateCalculation(ProcessType.Aggregation, someGridAreasIds);
         var sut = new CalculationRepository(writeContext);
 
         // Act
-        await sut.AddAsync(expectedBatch);
+        await sut.AddAsync(expectedCalculation);
         await writeContext.SaveChangesAsync();
 
         // Assert
         await using var readContext = _databaseManager.CreateDbContext();
-        var actual = await readContext.Batches.SingleAsync(b => b.Id == expectedBatch.Id);
+        var actual = await readContext.Calculations.SingleAsync(b => b.Id == expectedCalculation.Id);
 
-        actual.Should().BeEquivalentTo(expectedBatch);
+        actual.Should().BeEquivalentTo(expectedCalculation);
         actual.GridAreaCodes.Should().BeEquivalentTo(someGridAreasIds);
         actual.ProcessType.Should().Be(ProcessType.Aggregation);
     }
 
     [Fact]
-    public async Task AddAsync_BatchContainsExecutionTime()
+    public async Task AddAsync_CalculationContainsExecutionTime()
     {
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
-        var batch = CreateBatch(someGridAreasIds);
+        var calculation = CreateCalculation(someGridAreasIds);
         var sut = new CalculationRepository(writeContext);
-        batch.MarkAsExecuting(); // This call will ensure ExecutionTimeStart is set
-        batch.MarkAsCompleted(
-            batch.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2))); // This call will ensure ExecutionTimeEnd is set
-        batch.ExecutionTimeEnd.Should().NotBeNull(); // Additional check
-        batch.ExecutionTimeStart.Should().NotBeNull(); // Additional check
+        calculation.MarkAsExecuting(); // This call will ensure ExecutionTimeStart is set
+        calculation.MarkAsCompleted(
+            calculation.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2))); // This call will ensure ExecutionTimeEnd is set
+        calculation.ExecutionTimeEnd.Should().NotBeNull(); // Additional check
+        calculation.ExecutionTimeStart.Should().NotBeNull(); // Additional check
 
         // Act
-        await sut.AddAsync(batch);
+        await sut.AddAsync(calculation);
         await writeContext.SaveChangesAsync();
 
         // Assert
         await using var readContext = _databaseManager.CreateDbContext();
-        var actual = await readContext.Batches.SingleAsync(b => b.Id == batch.Id);
+        var actual = await readContext.Calculations.SingleAsync(b => b.Id == calculation.Id);
 
-        Assert.Equal(actual.ExecutionTimeStart, batch.ExecutionTimeStart);
-        Assert.Equal(actual.ExecutionTimeEnd, batch.ExecutionTimeEnd);
+        Assert.Equal(actual.ExecutionTimeStart, calculation.ExecutionTimeStart);
+        Assert.Equal(actual.ExecutionTimeEnd, calculation.ExecutionTimeEnd);
     }
 
     [Fact]
-    public async Task AddAsync_WhenExecutionTimeEndIsNull_BatchExecutionTimeIsNull()
+    public async Task AddAsync_WhenExecutionTimeEndIsNull_CalculationExecutionTimeIsNull()
     {
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
-        var batch = CreateBatch(someGridAreasIds);
+        var calculation = CreateCalculation(someGridAreasIds);
         var sut = new CalculationRepository(writeContext);
 
         // Act
-        await sut.AddAsync(batch);
+        await sut.AddAsync(calculation);
         await writeContext.SaveChangesAsync();
 
         // Assert
         await using var readContext = _databaseManager.CreateDbContext();
-        var actual = await readContext.Batches.SingleAsync(b => b.Id == batch.Id);
+        var actual = await readContext.Calculations.SingleAsync(b => b.Id == calculation.Id);
 
-        actual.Should().BeEquivalentTo(batch);
+        actual.Should().BeEquivalentTo(calculation);
         actual.GridAreaCodes.Should().BeEquivalentTo(someGridAreasIds);
         actual.ExecutionTimeEnd.Should().BeNull();
         actual.ExecutionTimeStart.Should().NotBeNull();
@@ -112,9 +112,9 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
-        var batch = CreateBatch(someGridAreasIds);
+        var calculation = CreateCalculation(someGridAreasIds);
         var sut = new CalculationRepository(writeContext);
-        await sut.AddAsync(batch);
+        await sut.AddAsync(calculation);
         await writeContext.SaveChangesAsync();
 
         // Act
@@ -127,18 +127,18 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
             null);
 
         // Assert
-        actual.Should().Contain(batch);
+        actual.Should().Contain(calculation);
     }
 
     [Fact]
-    public async Task SearchAsync_HasBatchExecutionStateFilter_FiltersAsExpected()
+    public async Task SearchAsync_HasCalculationExecutionStateFilter_FiltersAsExpected()
     {
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
-        var batch = CreateBatch(someGridAreasIds);
+        var calculation = CreateCalculation(someGridAreasIds);
         var sut = new CalculationRepository(writeContext);
-        await sut.AddAsync(batch);
+        await sut.AddAsync(calculation);
         await writeContext.SaveChangesAsync();
 
         // Act
@@ -151,26 +151,26 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
             null);
 
         // Assert
-        actual.Should().Contain(batch);
+        actual.Should().Contain(calculation);
     }
 
     [Theory]
-    [InlineData("2021-12-31T23:00Z", "2022-01-31T23:00Z", true)] // Period overlaps batch interval
-    [InlineData("2022-01-01T23:00Z", "2022-01-30T23:00Z", true)] // Period inside of batch interval
-    [InlineData("2022-01-30T23:00Z", "2022-02-02T23:00Z", true)] // Period overlaps end of batch interval
-    [InlineData("2021-12-30T23:00Z", "2022-02-01T23:00Z", true)] // Period overlaps entire batch interval
-    [InlineData("2021-12-25T23:00Z", "2022-01-01T23:00Z", true)] // Period overlaps start of batch interval
-    [InlineData("2021-12-25T23:00Z", "2021-12-31T23:00Z", false)] // Period before start of batch interval, complete miss
-    [InlineData("2021-12-21T23:00Z", "2021-12-29T23:00Z", false)] // Period before start of batch interval, complete miss
-    [InlineData("2022-01-31T23:00Z", "2022-02-01T23:00Z", false)] // Period past end of batch interval, complete miss
+    [InlineData("2021-12-31T23:00Z", "2022-01-31T23:00Z", true)] // Period overlaps calculation interval
+    [InlineData("2022-01-01T23:00Z", "2022-01-30T23:00Z", true)] // Period inside of calculation interval
+    [InlineData("2022-01-30T23:00Z", "2022-02-02T23:00Z", true)] // Period overlaps end of calculation interval
+    [InlineData("2021-12-30T23:00Z", "2022-02-01T23:00Z", true)] // Period overlaps entire calculation interval
+    [InlineData("2021-12-25T23:00Z", "2022-01-01T23:00Z", true)] // Period overlaps start of calculation interval
+    [InlineData("2021-12-25T23:00Z", "2021-12-31T23:00Z", false)] // Period before start of calculation interval, complete miss
+    [InlineData("2021-12-21T23:00Z", "2021-12-29T23:00Z", false)] // Period before start of calculation interval, complete miss
+    [InlineData("2022-01-31T23:00Z", "2022-02-01T23:00Z", false)] // Period past end of calculation interval, complete miss
     public async Task SearchAsync_HasPeriodFilter_FiltersAsExpected(DateTimeOffset start, DateTimeOffset end, bool expected)
     {
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
-        var batch = CreateBatch(someGridAreasIds);
+        var calculation = CreateCalculation(someGridAreasIds);
         var sut = new CalculationRepository(writeContext);
-        await sut.AddAsync(batch);
+        await sut.AddAsync(calculation);
         await writeContext.SaveChangesAsync();
 
         // Act
@@ -184,9 +184,9 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
 
         // Assert
         if (expected)
-            actual.Should().Contain(batch);
+            actual.Should().Contain(calculation);
         else
-            actual.Should().NotContain(batch);
+            actual.Should().NotContain(calculation);
     }
 
     [Theory]
@@ -199,7 +199,7 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
         await using var writeContext = _databaseManager.CreateDbContext();
 
         var period = Periods.January_EuropeCopenhagen_Instant;
-        var batch = new Application.Model.Calculations.Calculation(
+        var calculation = new Application.Model.Calculations.Calculation(
             SystemClock.Instance.GetCurrentInstant(),
             ProcessType.BalanceFixing,
             new List<GridAreaCode> { new("004") },
@@ -211,7 +211,7 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
             SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks);
 
         var sut = new CalculationRepository(writeContext);
-        await sut.AddAsync(batch);
+        await sut.AddAsync(calculation);
         await writeContext.SaveChangesAsync();
 
         // Act
@@ -225,17 +225,17 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
 
         // Assert
         if (expected)
-            actual.Should().Contain(batch);
+            actual.Should().Contain(calculation);
         else
-            actual.Should().NotContain(batch);
+            actual.Should().NotContain(calculation);
     }
 
-    private static Application.Model.Calculations.Calculation CreateBatch(List<GridAreaCode> someGridAreasIds)
+    private static Application.Model.Calculations.Calculation CreateCalculation(List<GridAreaCode> someGridAreasIds)
     {
-        return CreateBatch(ProcessType.BalanceFixing, someGridAreasIds);
+        return CreateCalculation(ProcessType.BalanceFixing, someGridAreasIds);
     }
 
-    private static Application.Model.Calculations.Calculation CreateBatch(ProcessType processType, List<GridAreaCode> someGridAreasIds)
+    private static Application.Model.Calculations.Calculation CreateCalculation(ProcessType processType, List<GridAreaCode> someGridAreasIds)
     {
         var period = Periods.January_EuropeCopenhagen_Instant;
         return new Application.Model.Calculations.Calculation(
