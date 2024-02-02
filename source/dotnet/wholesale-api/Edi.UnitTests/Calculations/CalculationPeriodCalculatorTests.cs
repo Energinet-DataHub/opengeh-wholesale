@@ -85,38 +85,6 @@ public class CalculationPeriodCalculatorTests
     }
 
     [Fact]
-    public void FindLatestCalculations_WithMultipleCalculationForWholePeriod_ThrowException()
-    {
-        // Arrange
-        var firstPeriodStart = Instant.FromUtc(2024, 1, 1, 23, 0, 0);
-        var firstPeriodEnd = Instant.FromUtc(2024, 1, 15, 23, 0, 0);
-        var secondPeriodStart = Instant.FromUtc(2024, 1, 16, 23, 0, 0);
-        var secondPeriodEnd = Instant.FromUtc(2024, 1, 31, 23, 0, 0);
-        var firstCalculation = CalculationDtoBuilder.CalculationDto()
-            .WithPeriodStart(firstPeriodStart)
-            .WithPeriodEnd(firstPeriodEnd)
-            .Build();
-        var secondCalculation = CalculationDtoBuilder.CalculationDto()
-            .WithPeriodStart(secondPeriodStart)
-            .WithPeriodEnd(secondPeriodEnd)
-            .Build();
-
-        var sut = new CalculationPeriodCalculator(_dateTimeZone);
-
-        // Act
-        var actual = sut
-            .FindLatestCalculationsForPeriod(
-                firstPeriodStart,
-                secondPeriodEnd,
-                new List<CalculationDto>() { firstCalculation, secondCalculation, });
-
-        // Assert
-        using var assertionScope = new AssertionScope();
-        actual.Count.Should().Be(2);
-        AssertCalculationsCoversWholePeriod(actual, firstPeriodStart, secondPeriodEnd);
-    }
-
-    [Fact]
     public void FindLatestCalculations_WithCalculationsOverlappingInTheEnd_LatestCalculationsForEachDayInPeriod()
     {
         // Arrange
@@ -148,7 +116,11 @@ public class CalculationPeriodCalculatorTests
         using var assertionScope = new AssertionScope();
         actual.Count.Should().Be(2);
         AssertCalculationsCoversWholePeriod(actual, firstPeriodStart, secondPeriodEnd);
-        AssertCalculationsAreLatest(actual, new List<CalculationDto>() { firstCalculation, secondCalculation });
+
+        actual.Should().ContainSingle(c => c.PeriodStart.InUtc().Day == 1 && c.PeriodEnd.InUtc().Day == 9)
+            .Which.BatchId.Should().Be(firstCalculation.BatchId);
+        actual.Single(c => c.PeriodStart.InUtc().Day == 10 && c.PeriodEnd.InUtc().Day == 31)
+            .BatchId.Should().Be(secondCalculation.BatchId);
     }
 
     [Fact]
@@ -183,7 +155,11 @@ public class CalculationPeriodCalculatorTests
         using var assertionScope = new AssertionScope();
         actual.Count.Should().Be(2);
         AssertCalculationsCoversWholePeriod(actual, secondPeriodStart, firstPeriodEnd);
-        AssertCalculationsAreLatest(actual, new List<CalculationDto>() { firstCalculation, secondCalculation });
+
+        actual.Should().ContainSingle(c => c.PeriodStart.InUtc().Day == 10 && c.PeriodEnd.InUtc().Day == 31)
+            .Which.BatchId.Should().Be(firstCalculation.BatchId);
+        actual.Single(c => c.PeriodStart.InUtc().Day == 1 && c.PeriodEnd.InUtc().Day == 9)
+            .BatchId.Should().Be(secondCalculation.BatchId);
     }
 
     [Fact]
@@ -217,9 +193,16 @@ public class CalculationPeriodCalculatorTests
 
         // Assert
         using var assertionScope = new AssertionScope();
+
+        actual.Should().ContainSingle(c => c.PeriodStart.InUtc().Day == 1 && c.PeriodEnd.InUtc().Day == 9)
+            .Which.BatchId.Should().Be(firstCalculation.BatchId);
+        actual.Single(c => c.PeriodStart.InUtc().Day == 10 && c.PeriodEnd.InUtc().Day == 20)
+            .BatchId.Should().Be(secondCalculation.BatchId);
+        actual.Single(c => c.PeriodStart.InUtc().Day == 21 && c.PeriodEnd.InUtc().Day == 31)
+            .BatchId.Should().Be(firstCalculation.BatchId);
+
         actual.Count.Should().Be(3);
         AssertCalculationsCoversWholePeriod(actual, firstPeriodStart, firstPeriodEnd);
-        AssertCalculationsAreLatest(actual, new List<CalculationDto>() { firstCalculation, secondCalculation });
     }
 
     [Fact]
@@ -262,9 +245,17 @@ public class CalculationPeriodCalculatorTests
         using var assertionScope = new AssertionScope();
         actual.Count.Should().Be(5);
         AssertCalculationsCoversWholePeriod(actual, firstPeriodStart, firstPeriodEnd);
-        AssertCalculationsAreLatest(
-            actual,
-            new List<CalculationDto>() { firstCalculation, secondCalculation, thirdCalculation, });
+
+        actual.Should().ContainSingle(c => c.PeriodStart.InUtc().Day == 1 && c.PeriodEnd.InUtc().Day == 4)
+            .Which.BatchId.Should().Be(firstCalculation.BatchId);
+        actual.Single(c => c.PeriodStart.InUtc().Day == 5 && c.PeriodEnd.InUtc().Day == 10)
+            .BatchId.Should().Be(secondCalculation.BatchId);
+        actual.Single(c => c.PeriodStart.InUtc().Day == 11 && c.PeriodEnd.InUtc().Day == 19)
+            .BatchId.Should().Be(firstCalculation.BatchId);
+        actual.Single(c => c.PeriodStart.InUtc().Day == 20 && c.PeriodEnd.InUtc().Day == 25)
+            .BatchId.Should().Be(thirdCalculation.BatchId);
+        actual.Single(c => c.PeriodStart.InUtc().Day == 26 && c.PeriodEnd.InUtc().Day == 31)
+            .BatchId.Should().Be(firstCalculation.BatchId);
     }
 
     [Fact]
@@ -317,17 +308,6 @@ public class CalculationPeriodCalculatorTests
 
         // Assert
         actual.Should().BeEmpty();
-    }
-
-    private void AssertCalculationsAreLatest(IReadOnlyCollection<LatestCalculationForPeriod> actual, IReadOnlyCollection<CalculationDto> calculations)
-    {
-        foreach (var latestCalculation in actual.OrderByDescending(x => x.CalculationVersion))
-        {
-            calculations.Should().ContainSingle(x =>
-                x.Version >= latestCalculation.CalculationVersion
-                && x.PeriodStart.ToInstant() <= latestCalculation.PeriodStart
-                && x.PeriodEnd.ToInstant() >= latestCalculation.PeriodEnd);
-        }
     }
 
     private void AssertCalculationsCoversWholePeriod(IReadOnlyCollection<LatestCalculationForPeriod> actual, Instant periodStart, Instant periodEnd)

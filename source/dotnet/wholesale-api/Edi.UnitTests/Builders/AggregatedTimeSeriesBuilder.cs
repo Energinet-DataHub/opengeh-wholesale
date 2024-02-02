@@ -23,34 +23,70 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 
 public class AggregatedTimeSeriesBuilder
 {
-    private readonly string _gridAreaCode;
     private readonly IList<EnergyTimeSeriesPoint> _timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
-    private readonly Guid _calculationId;
+    private Instant _startDate = Instant.FromUtc(2024, 1, 1, 0, 0);
+    private Instant _endDate = Instant.FromUtc(2024, 1, 31, 0, 0);
+    private string _gridAreaCode = "543";
+    private Guid _calculationId = Guid.NewGuid();
+    private int _quantity = 0;
 
-    private AggregatedTimeSeriesBuilder(CalculationDto calculation)
+    private AggregatedTimeSeriesBuilder()
     {
-        _gridAreaCode = calculation.GridAreaCodes.First();
-        _calculationId = calculation.BatchId;
-        var currentTime = calculation.PeriodStart.ToInstant();
-        while (currentTime < calculation.PeriodEnd.ToInstant())
-        {
-            _timeSeriesPoints.Add(new EnergyTimeSeriesPoint(currentTime.ToDateTimeOffset(), 0, new List<QuantityQuality> { QuantityQuality.Measured }));
-            currentTime = currentTime.Plus(Duration.FromMinutes(15));
-        }
     }
 
     public static AggregatedTimeSeriesBuilder AggregatedTimeSeries(CalculationDto calculation)
     {
-        return new AggregatedTimeSeriesBuilder(calculation);
+        return new AggregatedTimeSeriesBuilder()
+            .WithCalculation(calculation);
+    }
+
+    public static AggregatedTimeSeriesBuilder AggregatedTimeSeries()
+    {
+        return new AggregatedTimeSeriesBuilder();
     }
 
     public AggregatedTimeSeries Build()
     {
+        var currentTime = _startDate;
+        while (currentTime < _endDate)
+        {
+            _timeSeriesPoints.Add(new EnergyTimeSeriesPoint(currentTime.ToDateTimeOffset(), _quantity, new List<QuantityQuality> { QuantityQuality.Measured }));
+            currentTime = currentTime.Plus(Duration.FromMinutes(15));
+        }
+
         return new AggregatedTimeSeries(
             _gridAreaCode,
             _timeSeriesPoints.ToArray(),
             TimeSeriesType.Production,
             ProcessType.Aggregation,
             _calculationId);
+    }
+
+    public AggregatedTimeSeriesBuilder WithTimeSeriePointQuantity(int quantity)
+    {
+        _quantity = quantity;
+        return this;
+    }
+
+    public AggregatedTimeSeriesBuilder ForPeriod(Instant periodStart, Instant periodEnd)
+    {
+        _startDate = periodStart;
+        _endDate = periodEnd;
+        return this;
+    }
+
+    public AggregatedTimeSeriesBuilder WithCalculationId(Guid calculationId)
+    {
+        _calculationId = calculationId;
+        return this;
+    }
+
+    private AggregatedTimeSeriesBuilder WithCalculation(CalculationDto calculation)
+    {
+        _gridAreaCode = calculation.GridAreaCodes.First();
+        _startDate = calculation.PeriodStart.ToInstant();
+        _endDate = calculation.PeriodEnd.ToInstant();
+        _calculationId = calculation.BatchId;
+        return this;
     }
 }

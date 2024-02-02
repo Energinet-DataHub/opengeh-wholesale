@@ -24,7 +24,7 @@ using NodaTime;
 using NodaTime.Extensions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.EDI.UnitTests;
+namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Calculations;
 
 public class CalculationResultPeriodCalculatorTests
 {
@@ -69,47 +69,65 @@ public class CalculationResultPeriodCalculatorTests
         GetLatestCalculationsResultsPerDay_WithCalculationResultsFromTwoCalculation_ReturnLatestCalculationResultsPerDay()
     {
         // Arrange
-        var firstPeriodStart = Instant.FromUtc(2024, 1, 1, 23, 0, 0);
-        var firstPeriodEnd = Instant.FromUtc(2024, 1, 31, 23, 0, 0);
-        var secondPeriodStart = Instant.FromUtc(2024, 1, 10, 23, 0, 0);
-        var secondPeriodEnd = Instant.FromUtc(2024, 1, 20, 23, 0, 0);
-        var firstCalculation = CalculationDtoBuilder.CalculationDto()
-            .WithPeriodStart(firstPeriodStart)
-            .WithPeriodEnd(firstPeriodEnd)
-            .WithVersion(1)
-            .Build();
-        var secondCalculation = CalculationDtoBuilder.CalculationDto()
-            .WithPeriodStart(secondPeriodStart)
-            .WithPeriodEnd(secondPeriodEnd)
-            .WithVersion(2)
+        var expectedQuantityPerTimeSeriePointForFirstCalculation = 2;
+        var expectedQuantityPerTimeSeriePointForSecondCalculation = 5;
+        var day1 = Instant.FromUtc(2024, 1, 1, 23, 0, 0);
+        var day6 = Instant.FromUtc(2024, 1, 6, 23, 0, 0);
+        var day3 = Instant.FromUtc(2024, 1, 3, 23, 0, 0);
+        var day4 = Instant.FromUtc(2024, 1, 4, 23, 0, 0);
+        var firstCalculationId = Guid.NewGuid();
+        var secondCalculationId = Guid.NewGuid();
+
+        var firstLatestCalculation = LatestCalculationForPeriodBuilder
+                .LatestCalculationForPeriod()
+                .ForPeriod(day1, day3.Minus(Duration.FromDays(1)))
+                .WithCalculationId(firstCalculationId)
+                .WithVersion(1)
+                .Build();
+        var secondLatestCalculation = LatestCalculationForPeriodBuilder
+                .LatestCalculationForPeriod()
+                .ForPeriod(day3, day4.Minus(Duration.FromDays(1)))
+                .WithCalculationId(secondCalculationId)
+                .WithVersion(2)
+                .Build();
+        var thirdLatestCalculation = LatestCalculationForPeriodBuilder
+                .LatestCalculationForPeriod()
+                .ForPeriod(day4, day6)
+                .WithCalculationId(firstCalculationId)
+                .WithVersion(1)
+                .Build();
+
+        var calculationResultsForWholePeriodFromFirstCalculation = AggregatedTimeSeriesBuilder
+            .AggregatedTimeSeries()
+            .ForPeriod(day1, day6)
+            .WithCalculationId(firstCalculationId)
+            .WithTimeSeriePointQuantity(expectedQuantityPerTimeSeriePointForFirstCalculation)
             .Build();
 
-        var calculationResultsFromFirstCalculation = AggregatedTimeSeriesBuilder
-            .AggregatedTimeSeries(firstCalculation)
+        var calculationResultsForDay3FromSecondCalculation = AggregatedTimeSeriesBuilder
+            .AggregatedTimeSeries()
+            .ForPeriod(day3, day4)
+            .WithCalculationId(secondCalculationId)
+            .WithTimeSeriePointQuantity(expectedQuantityPerTimeSeriePointForSecondCalculation)
             .Build();
-
-        var calculationResultsFromSecondCalculation = AggregatedTimeSeriesBuilder
-            .AggregatedTimeSeries(secondCalculation)
-            .Build();
-
-        var calculationPeriodCalculator = new CalculationPeriodCalculator(_dateTimeZone);
-        var latestCalculations = calculationPeriodCalculator
-            .FindLatestCalculationsForPeriod(
-                firstPeriodStart,
-                secondPeriodEnd,
-                new List<CalculationDto>() { firstCalculation, secondCalculation });
 
         var sut = new CalculationResultPeriodCalculator();
 
         // Act
         var actual = sut.GetLatestCalculationsResultsPerDay(
-            latestCalculations,
-            new List<AggregatedTimeSeries>() { calculationResultsFromFirstCalculation, calculationResultsFromSecondCalculation, });
+            new List<LatestCalculationForPeriod>() { firstLatestCalculation, secondLatestCalculation, thirdLatestCalculation },
+            new List<AggregatedTimeSeries>() { calculationResultsForWholePeriodFromFirstCalculation, calculationResultsForDay3FromSecondCalculation, });
 
         // Assert
         using var assertionScope = new AssertionScope();
-        AssertCalculationResultsCoversWholePeriod(actual, firstPeriodStart, secondPeriodEnd);
-        AssertCalculationResultsAreLatest(actual, new List<CalculationDto>() { firstCalculation, secondCalculation });
+        AssertCalculationResultsCoversWholePeriod(actual, day1, day6);
+
+        actual.Should().ContainSingle(c => c.PeriodStart.InUtc().Day == 1 && c.PeriodEnd.InUtc().Day == 2)
+            .Which.TimeSeriesPoints.Sum(x => x.Quantity).Should().Be(expectedQuantityPerTimeSeriePointForFirstCalculation * 4 * 24m);
+        actual.Should().ContainSingle(c => c.PeriodStart.InUtc().Day == day3.InUtc().Day && c.PeriodEnd.InUtc().Day == day4.InUtc().Day)
+            .Which.TimeSeriesPoints.Sum(x => x.Quantity).Should().Be(expectedQuantityPerTimeSeriePointForSecondCalculation * 4 * 24m);
+        actual.Should().ContainSingle(c => c.PeriodStart.InUtc().Day == 5 && c.PeriodEnd.InUtc().Day == 6)
+            .Which.TimeSeriesPoints.Sum(x => x.Quantity).Should().Be(expectedQuantityPerTimeSeriePointForFirstCalculation * 4 * 24m);
     }
 
     [Fact]
@@ -234,18 +252,5 @@ public class CalculationResultPeriodCalculatorTests
         }
 
         lastCalculationResult!.PeriodEnd.Should().Be(periodEnd);
-    }
-
-    private void AssertCalculationResultsAreLatest(
-        IReadOnlyCollection<AggregatedTimeSeriesResult> actual,
-        IReadOnlyCollection<CalculationDto> calculations)
-    {
-        foreach (var latestCalculationResult in actual.OrderByDescending(x => x.Version))
-        {
-            calculations.Should().ContainSingle(x =>
-                x.Version >= latestCalculationResult.Version
-                && x.PeriodStart.ToInstant() <= latestCalculationResult.TimeSeriesPoints.Min(x => x.Time.ToInstant())
-                && x.PeriodEnd.ToInstant() >= latestCalculationResult.TimeSeriesPoints.Max(x => x.Time.ToInstant()));
-        }
     }
 }

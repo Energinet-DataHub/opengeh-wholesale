@@ -79,15 +79,6 @@ public class AggregatedTimeSeriesRequestHandlerTests
             .WithPeriodStart(periodStart)
             .WithPeriodEnd(periodEnd)
             .Build();
-        calculationsClient
-            .Setup(client => client.SearchAsync(
-                request.HasGridAreaCode
-                    ? new[] { request.GridAreaCode }
-                    : new string[] { },
-                CalculationState.Completed,
-                periodStart,
-                periodEnd))
-            .ReturnsAsync(() => new List<CalculationDto>() { calculation });
 
         aggregatedTimeSeriesQueries
             .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
@@ -158,15 +149,6 @@ public class AggregatedTimeSeriesRequestHandlerTests
             .WithPeriodStart(periodStart)
             .WithPeriodEnd(periodEnd)
             .Build();
-        calculationsClient
-            .Setup(client => client.SearchAsync(
-                request.HasGridAreaCode
-                    ? new[] { request.GridAreaCode }
-                    : new string[] { },
-                CalculationState.Completed,
-                periodStart,
-                periodEnd))
-            .ReturnsAsync(() => new List<CalculationDto>() { calculation });
 
         aggregatedTimeSeriesQueries
             .Setup(parameters => parameters.GetLatestCorrectionForGridAreaAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
@@ -328,18 +310,6 @@ public class AggregatedTimeSeriesRequestHandlerTests
                 It.IsAny<AggregatedTimeSeriesRequest>()))
             .ReturnsAsync(() => new List<ValidationError>());
 
-        var periodStart = InstantPattern.General.Parse(request.Period.Start).Value;
-        var periodEnd = InstantPattern.General.Parse(request.Period.End).Value;
-        calculationsClient
-            .Setup(client => client.SearchAsync(
-                request.HasGridAreaCode
-                    ? new[] { request.GridAreaCode }
-                    : new string[] { },
-                CalculationState.Completed,
-                periodStart,
-                periodEnd))
-            .ReturnsAsync(() => new List<CalculationDto>());
-
         aggregatedTimeSeriesQueries
             .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
             .Returns(() => new List<AggregatedTimeSeries>().ToAsyncEnumerable());
@@ -404,15 +374,6 @@ public class AggregatedTimeSeriesRequestHandlerTests
             .WithPeriodStart(periodStart)
             .WithPeriodEnd(periodEnd)
             .Build();
-        calculationsClient
-            .Setup(client => client.SearchAsync(
-                request.HasGridAreaCode
-                    ? new[] { request.GridAreaCode }
-                    : new string[] { },
-                CalculationState.Completed,
-                periodStart,
-                periodEnd))
-            .ReturnsAsync(() => new List<CalculationDto>() { calculation });
 
         aggregatedTimeSeriesQueries
             .Setup(parameters =>
@@ -484,18 +445,6 @@ public class AggregatedTimeSeriesRequestHandlerTests
         validator.Setup(vali => vali.ValidateAsync(
                 It.IsAny<AggregatedTimeSeriesRequest>()))
             .ReturnsAsync(() => new List<ValidationError>());
-
-        var periodStart = InstantPattern.General.Parse(request.Period.Start).Value;
-        var periodEnd = InstantPattern.General.Parse(request.Period.End).Value;
-        calculationsClient
-            .Setup(client => client.SearchAsync(
-                request.HasGridAreaCode
-                    ? new[] { request.GridAreaCode }
-                    : new string[] { },
-                CalculationState.Completed,
-                periodStart,
-                periodEnd))
-            .ReturnsAsync(() => new List<CalculationDto>());
 
         aggregatedTimeSeriesQueries
             .Setup(parameters =>
