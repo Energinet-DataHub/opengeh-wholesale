@@ -795,7 +795,9 @@ def test__get_tariff_charges_day4__only_accepts_charges_in_metering_point_period
         ),
     ]
     time_series_rows = [
-        _create_time_series_row(observation_time=date_time_1),
+        _create_time_series_row(
+            observation_time=date_time_1, quality=e.QuantityQuality.MISSING
+        ),
         _create_time_series_row(observation_time=date_time_2),
     ]
     charges_rows = [

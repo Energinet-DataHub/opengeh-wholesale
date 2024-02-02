@@ -213,14 +213,17 @@ def test__missing_point_has_quantity_0_for_hourly_resolution(
 
 
 def test__df_is_not_empty_when_no_time_series_points(
-    raw_time_series_points_factory, metering_point_period_df_factory, timestamp_factory
+    spark,
+    raw_time_series_points_factory,
+    metering_point_period_df_factory,
+    timestamp_factory,
 ):
     # Arrange
     start_time = "2022-06-08T22:00:00.000Z"
     end_time = "2022-06-09T22:00:00.000Z"
 
-    empty_raw_time_series_points = raw_time_series_points_factory().where(
-        col(Colname.metering_point_id) == ""
+    empty_raw_time_series_points = spark.createDataFrame(
+        data=[], schema=time_series_point_schema
     )
     metering_point_period_df = metering_point_period_df_factory(
         resolution=MeteringPointResolution.QUARTER.value,
