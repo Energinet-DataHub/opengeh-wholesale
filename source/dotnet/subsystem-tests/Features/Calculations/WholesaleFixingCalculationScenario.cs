@@ -207,7 +207,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
         [SubsystemFact]
         public void AndThen_ReceivedMonthlyAmountPerChargeResultProducedEventsCountIsEqualToExpected()
         {
-            var expected = 16;
+            var expected = 40; // 16 monthly tariff from hourly + 24 monthly tariff from daily
 
             // Assert
             Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1.Count.Should().Be(expected);

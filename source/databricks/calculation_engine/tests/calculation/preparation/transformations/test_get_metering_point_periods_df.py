@@ -14,7 +14,8 @@
 
 from datetime import datetime, timedelta
 
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql.functions import when, col
 
 import pytest
 from unittest.mock import patch, Mock
@@ -24,10 +25,16 @@ from package.calculation_input.table_reader import TableReader
 from package.calculation.preparation.transformations import (
     get_metering_point_periods_df,
 )
-from package.codelists import MeteringPointType
+from package.codelists import (
+    InputMeteringPointType,
+    InputSettlementMethod,
+    MeteringPointType,
+    SettlementMethod,
+)
 from package.constants import Colname
-import tests.calculation.preparation.transformations.metering_point_periods_factory as factory
 
+import tests.calculation_input.table_reader.input_metering_point_periods_factory as factory
+from tests.helpers.data_frame_utils import assert_dataframes_equal
 
 june_1th = datetime(2022, 5, 31, 22, 0)
 june_2th = june_1th + timedelta(days=1)
@@ -35,14 +42,70 @@ june_3th = june_1th + timedelta(days=2)
 june_4th = june_1th + timedelta(days=3)
 
 
+def _map_metering_point_type_and_settlement_method(df: DataFrame) -> DataFrame:
+    """
+    Maps metering point type and settlement method to the correct values
+    Currently only supports consumption and flex
+    """
+    return df.withColumn(
+        Colname.metering_point_type,
+        when(
+            col(Colname.metering_point_type)
+            == InputMeteringPointType.CONSUMPTION.value,
+            MeteringPointType.CONSUMPTION.value,
+        ).otherwise(col(Colname.metering_point_type)),
+    ).withColumn(
+        Colname.settlement_method,
+        when(
+            col(Colname.settlement_method) == InputSettlementMethod.FLEX.value,
+            SettlementMethod.FLEX.value,
+        ).otherwise(col(Colname.settlement_method)),
+    )
+
+
 class TestWhenValidInput:
-    @pytest.mark.parametrize("metering_point_type", list(MeteringPointType))
+    @pytest.mark.parametrize(
+        "metering_point_type,expected",
+        [
+            [InputMeteringPointType.CONSUMPTION, MeteringPointType.CONSUMPTION],
+            [InputMeteringPointType.PRODUCTION, MeteringPointType.PRODUCTION],
+            [InputMeteringPointType.EXCHANGE, MeteringPointType.EXCHANGE],
+            [InputMeteringPointType.VE_PRODUCTION, MeteringPointType.VE_PRODUCTION],
+            [InputMeteringPointType.NET_PRODUCTION, MeteringPointType.NET_PRODUCTION],
+            [InputMeteringPointType.SUPPLY_TO_GRID, MeteringPointType.SUPPLY_TO_GRID],
+            [
+                InputMeteringPointType.CONSUMPTION_FROM_GRID,
+                MeteringPointType.CONSUMPTION_FROM_GRID,
+            ],
+            [
+                InputMeteringPointType.WHOLESALE_SERVICES_INFORMATION,
+                MeteringPointType.WHOLESALE_SERVICES_INFORMATION,
+            ],
+            [InputMeteringPointType.OWN_PRODUCTION, MeteringPointType.OWN_PRODUCTION],
+            [InputMeteringPointType.NET_FROM_GRID, MeteringPointType.NET_FROM_GRID],
+            [InputMeteringPointType.NET_TO_GRID, MeteringPointType.NET_TO_GRID],
+            [
+                InputMeteringPointType.TOTAL_CONSUMPTION,
+                MeteringPointType.TOTAL_CONSUMPTION,
+            ],
+            [
+                InputMeteringPointType.ELECTRICAL_HEATING,
+                MeteringPointType.ELECTRICAL_HEATING,
+            ],
+            [InputMeteringPointType.NET_CONSUMPTION, MeteringPointType.NET_CONSUMPTION],
+            [
+                InputMeteringPointType.EFFECT_SETTLEMENT,
+                MeteringPointType.EFFECT_SETTLEMENT,
+            ],
+        ],
+    )
     @patch.object(calculation_input, TableReader.__name__)
-    def test_returns_metering_point_period_for_(
+    def test_returns_df_with_correct_metering_point_types(
         self,
         mock_calculation_input_reader: Mock,
         spark: SparkSession,
-        metering_point_type: MeteringPointType,
+        metering_point_type: InputMeteringPointType,
+        expected: MeteringPointType,
     ) -> None:
         # Arrange
         row = factory.create_row(
@@ -61,9 +124,39 @@ class TestWhenValidInput:
         )
 
         # Assert
-        actual_rows = actual.collect()
-        assert len(actual_rows) == 1
-        assert actual_rows[0][Colname.metering_point_type] == metering_point_type.value
+        assert actual.collect()[0][Colname.metering_point_type] == expected.value
+
+    @pytest.mark.parametrize(
+        "settlement_method,expected",
+        [
+            [InputSettlementMethod.FLEX, SettlementMethod.FLEX],
+            [InputSettlementMethod.NON_PROFILED, SettlementMethod.NON_PROFILED],
+        ],
+    )
+    @patch.object(calculation_input, TableReader.__name__)
+    def test_returns_df_with_correct_settlement_methods(
+        self,
+        mock_calculation_input_reader: Mock,
+        spark: SparkSession,
+        settlement_method: InputSettlementMethod,
+        expected: SettlementMethod,
+    ) -> None:
+        # Arrange
+        row = factory.create_row(settlement_method=settlement_method)
+        mock_calculation_input_reader.read_metering_point_periods.return_value = (
+            factory.create(spark, row)
+        )
+
+        # Act
+        actual = get_metering_point_periods_df(
+            mock_calculation_input_reader,
+            factory.DEFAULT_FROM_DATE,
+            factory.DEFAULT_TO_DATE,
+            [factory.DEFAULT_GRID_AREA],
+        )
+
+        # Assert
+        assert actual.collect()[0][Colname.settlement_method] == expected.value
 
     @patch.object(calculation_input, TableReader.__name__)
     def test_returns_dataframe_with_expected_columns(
@@ -72,7 +165,10 @@ class TestWhenValidInput:
         spark: SparkSession,
     ) -> None:
         # Arrange
-        row = factory.create_row()
+        row = factory.create_row(
+            metering_point_type=InputMeteringPointType.CONSUMPTION,
+            settlement_method=InputSettlementMethod.FLEX,
+        )
         mock_calculation_input_reader.read_metering_point_periods.return_value = (
             factory.create(spark, row)
         )
@@ -94,12 +190,9 @@ class TestWhenValidInput:
         )
         assert (
             actual_row[Colname.metering_point_type]
-            == factory.DEFAULT_METERING_POINT_TYPE.value
+            == MeteringPointType.CONSUMPTION.value
         )
-        assert (
-            actual_row[Colname.settlement_method]
-            == factory.DEFAULT_SETTLEMENT_METHOD.value
-        )
+        assert actual_row[Colname.settlement_method] == SettlementMethod.FLEX.value
         assert actual_row[Colname.grid_area] == factory.DEFAULT_GRID_AREA
         assert actual_row[Colname.resolution] == factory.DEFAULT_RESOLUTION.value
         assert actual_row[Colname.from_grid_area] == factory.DEFAULT_FROM_GRID_AREA
@@ -115,6 +208,32 @@ class TestWhenValidInput:
             actual_row[Colname.balance_responsible_id]
             == factory.DEFAULT_BALANCE_RESPONSIBLE_ID
         )
+
+    @patch.object(calculation_input, TableReader.__name__)
+    def test_returns_expected_df(
+        self,
+        mock_calculation_input_reader: Mock,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        row = factory.create_row(
+            metering_point_type=InputMeteringPointType.CONSUMPTION,
+            settlement_method=InputSettlementMethod.FLEX,
+        )
+        df = factory.create(spark, row)
+        mock_calculation_input_reader.read_metering_point_periods.return_value = df
+        expected = _map_metering_point_type_and_settlement_method(df)
+
+        # Act
+        actual = get_metering_point_periods_df(
+            mock_calculation_input_reader,
+            factory.DEFAULT_FROM_DATE,
+            factory.DEFAULT_TO_DATE,
+            [factory.DEFAULT_GRID_AREA],
+        )
+
+        # Assert
+        assert_dataframes_equal(actual, expected)
 
     @pytest.mark.parametrize(
         "from_date, to_date, period_start, period_end, expected_from_date, expected_to_date",
@@ -238,3 +357,49 @@ class TestWhenThreeGridAreasExchangingWithEachOther:
         assert actual_rows[2][Colname.grid_area] == "333"
         assert actual_rows[2][Colname.from_grid_area] == "111"
         assert actual_rows[2][Colname.to_grid_area] == "222"
+
+
+class TestWhenExchangeMeteringPoint:
+    @pytest.mark.parametrize(
+        "grid_area, from_grid_area, to_grid_area, calculation_grid_area, expected",
+        [
+            ("111", "222", "333", "111", 1),
+            ("111", "222", "333", "222", 1),
+            ("111", "222", "333", "333", 1),
+            ("111", "222", "333", "444", 0),
+            ("111", "111", "333", "111", 1),
+            ("111", "222", "111", "111", 1),
+        ],
+    )
+    @patch.object(calculation_input, TableReader.__name__)
+    def test_returns_metering_point_if_it_associates_to_relevant_grid_area(
+        self,
+        mock_calculation_input_reader: Mock,
+        spark: SparkSession,
+        grid_area: str,
+        from_grid_area: str,
+        to_grid_area: str,
+        calculation_grid_area: str,
+        expected: bool,
+    ) -> None:
+        # Arrange
+        row = factory.create_row(
+            metering_point_type=InputMeteringPointType.EXCHANGE,
+            grid_area=grid_area,
+            from_grid_area=from_grid_area,
+            to_grid_area=to_grid_area,
+        )
+        mock_calculation_input_reader.read_metering_point_periods.return_value = (
+            factory.create(spark, row)
+        )
+
+        # Act
+        actual = get_metering_point_periods_df(
+            mock_calculation_input_reader,
+            factory.DEFAULT_FROM_DATE,
+            factory.DEFAULT_TO_DATE,
+            [calculation_grid_area],
+        )
+
+        # Assert
+        assert len(actual.collect()) == expected
