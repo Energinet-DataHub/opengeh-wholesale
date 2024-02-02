@@ -17,28 +17,29 @@ from pyspark.sql import DataFrame
 from package.calculation.energy.energy_results import EnergyResults
 
 
+# TODO BJM: Can we remove the | None from the dataclass fields? (in another PR)
 @dataclass
 class EnergyResultsContainer:
-    exchange_per_neighbour_ga: EnergyResults = None
-    exchange_per_grid_area: EnergyResults = None
-    temporary_production_per_ga: EnergyResults = None
-    temporary_flex_consumption_per_ga: EnergyResults = None
-    grid_loss: EnergyResults = None
-    positive_grid_loss: EnergyResults = None
-    negative_grid_loss: EnergyResults = None
-    consumption_per_ga_and_brp: EnergyResults = None
-    consumption_per_ga_and_brp_and_es: EnergyResults = None
-    consumption_per_ga_and_es: EnergyResults = None
-    consumption_per_ga: EnergyResults = None
-    production_per_ga_and_brp_and_es: EnergyResults = None
-    production_per_ga_and_brp: EnergyResults = None
-    production_per_ga_and_es: EnergyResults = None
-    production_per_ga: EnergyResults = None
-    flex_consumption_per_ga: EnergyResults = None
-    flex_consumption_per_ga_and_es: EnergyResults = None
-    flex_consumption_per_ga_and_brp_and_es: EnergyResults = None
-    flex_consumption_per_ga_and_brp: EnergyResults = None
-    total_consumption: EnergyResults = None
+    exchange_per_neighbour_ga: EnergyResults = EnergyResults | None
+    exchange_per_grid_area: EnergyResults = EnergyResults | None
+    temporary_production_per_ga: EnergyResults = EnergyResults | None
+    temporary_flex_consumption_per_ga: EnergyResults = EnergyResults | None
+    grid_loss: EnergyResults = EnergyResults | None
+    positive_grid_loss: EnergyResults = EnergyResults | None
+    negative_grid_loss: EnergyResults = EnergyResults | None
+    consumption_per_ga_and_brp: EnergyResults = EnergyResults | None
+    consumption_per_ga_and_brp_and_es: EnergyResults = EnergyResults | None
+    consumption_per_ga_and_es: EnergyResults = EnergyResults | None
+    consumption_per_ga: EnergyResults = EnergyResults | None
+    production_per_ga_and_brp_and_es: EnergyResults = EnergyResults | None
+    production_per_ga_and_brp: EnergyResults = EnergyResults | None
+    production_per_ga_and_es: EnergyResults = EnergyResults | None
+    production_per_ga: EnergyResults = EnergyResults | None
+    flex_consumption_per_ga: EnergyResults = EnergyResults | None
+    flex_consumption_per_ga_and_es: EnergyResults = EnergyResults | None
+    flex_consumption_per_ga_and_brp_and_es: EnergyResults = EnergyResults | None
+    flex_consumption_per_ga_and_brp: EnergyResults = EnergyResults | None
+    total_consumption: EnergyResults = EnergyResults | None
 
 
 @dataclass
@@ -48,12 +49,12 @@ class WholesaleResultsContainer:
 
 @dataclass
 class BasisDataContainer:
-    metering_point_periods: DataFrame = None
-    metering_point_time_series: DataFrame = None
+    metering_point_periods: DataFrame = DataFrame | None
+    metering_point_time_series: DataFrame = DataFrame | None
 
 
 @dataclass
 class CalculationResultsContainer:
-    energy_results: EnergyResultsContainer = None
-    wholesale_results: WholesaleResultsContainer = None
+    energy_results: EnergyResultsContainer = EnergyResultsContainer | None
+    wholesale_results: WholesaleResultsContainer = WholesaleResultsContainer | None
     basis_data: BasisDataContainer = BasisDataContainer()
