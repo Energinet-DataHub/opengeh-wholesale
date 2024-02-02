@@ -16,12 +16,12 @@ using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using Energinet.DataHub.MarketParticipant.Infrastructure.Model.Contracts;
-using Energinet.DataHub.Wholesale.Batches.Application.IntegrationEvents;
-using Energinet.DataHub.Wholesale.Batches.Application.IntegrationEvents.Handlers;
-using Energinet.DataHub.Wholesale.Batches.Application.UseCases;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.GridArea;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.ReceivedIntegrationEvent;
-using Energinet.DataHub.Wholesale.Batches.Interfaces.GridArea;
+using Energinet.DataHub.Wholesale.Calculations.Application.IntegrationEvents;
+using Energinet.DataHub.Wholesale.Calculations.Application.IntegrationEvents.Handlers;
+using Energinet.DataHub.Wholesale.Calculations.Application.UseCases;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.GridArea;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.ReceivedIntegrationEvent;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
@@ -29,9 +29,9 @@ using Energinet.DataHub.Wholesale.Events.Application.Triggers;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Energinet.DataHub.Wholesale.Events.Application.Workers;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.AmountPerChargeResultProducedV1.Factories;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.CalculationResultCompleted.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.GridLossResultProducedV1.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedCalculations;
@@ -92,8 +92,8 @@ public static class EventsRegistration
     private static void AddInfrastructure(this IServiceCollection serviceCollection)
     {
         serviceCollection
-            .AddScoped<ICalculationResultCompletedFactory, CalculationResultCompletedFactory>()
             .AddScoped<IEnergyResultProducedV2Factory, EnergyResultProducedV2Factory>()
+            .AddScoped<IGridLossResultProducedV1Factory, GridLossResultProducedV1Factory>()
             .AddScoped<IAmountPerChargeResultProducedV1Factory, AmountPerChargeResultProducedV1Factory>()
             .AddScoped<IMonthlyAmountPerChargeResultProducedV1Factory, MonthlyAmountPerChargeResultProducedV1Factory>()
             .AddScoped<IEventsDatabaseContext, EventsDatabaseContext>();
@@ -106,6 +106,7 @@ public static class EventsRegistration
         {
             options.ServiceBusConnectionString = serviceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING;
             options.TopicName = serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME;
+            options.TransportType = Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpWebSockets;
         });
         serviceCollection.AddPublisher<IntegrationEventProvider>();
 

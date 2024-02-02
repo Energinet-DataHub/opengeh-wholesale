@@ -21,14 +21,33 @@ from package.calculation_output.wholesale_calculation_result_writer import (
 )
 from package.codelists import ChargeResolution, MeteringPointType, ProcessType
 from package.constants import Colname
+from .CalculationResults import CalculationResults
 from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
 from .preparation import PreparedDataReader
 from .wholesale import wholesale_calculation
 
 
-@logging_configuration.use_span("calculation")
 def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> None:
+    results = _execute(args, prepared_data_reader)
+
+    # We write basis data at the end of the calculation to make it easier to analyze performance of the calculation part
+    basis_data_writer = BasisDataWriter(
+        args.wholesale_container_path, args.calculation_id
+    )
+    basis_data_writer.write(
+        results.basis_data.metering_point_periods,
+        results.basis_data.metering_point_time_series,
+        args.time_zone,
+    )
+
+
+@logging_configuration.use_span("calculation")
+def _execute(
+    args: CalculatorArgs, prepared_data_reader: PreparedDataReader
+) -> CalculationResults:
+    results = CalculationResults()
+
     with logging_configuration.start_span("calculation.prepare"):
         # cache of metering_point_time_series had no effect on performance (01-12-2023)
         metering_point_periods_df = prepared_data_reader.get_metering_point_periods_df(
@@ -70,31 +89,36 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
         )
 
         charges_df = prepared_data_reader.get_charges()
-        metering_points_periods_df = _get_production_and_consumption_metering_points(
-            metering_point_periods_df
+        metering_points_periods_for_wholesale_calculation_df = (
+            _get_production_and_consumption_metering_points(metering_point_periods_df)
         )
 
         tariffs_hourly_df = prepared_data_reader.get_tariff_charges(
-            metering_points_periods_df,
+            metering_points_periods_for_wholesale_calculation_df,
             metering_point_time_series,
             charges_df,
             ChargeResolution.HOUR,
         )
 
+        tariffs_daily_df = prepared_data_reader.get_tariff_charges(
+            metering_points_periods_for_wholesale_calculation_df,
+            metering_point_time_series,
+            charges_df,
+            ChargeResolution.DAY,
+        )
+
         wholesale_calculation.execute(
             wholesale_calculation_result_writer,
             tariffs_hourly_df,
+            tariffs_daily_df,
             args.calculation_period_start_datetime,
         )
 
-    basis_data_writer = BasisDataWriter(
-        args.wholesale_container_path, args.calculation_id
-    )
-    basis_data_writer.write(
-        metering_point_periods_df,
-        metering_point_time_series,
-        args.time_zone,
-    )
+    # Add basis data results
+    results.basis_data.metering_point_periods = metering_point_periods_df
+    results.basis_data.metering_point_time_series = metering_point_time_series
+
+    return results
 
 
 def _get_production_and_consumption_metering_points(

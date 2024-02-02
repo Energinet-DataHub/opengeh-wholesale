@@ -16,5 +16,5 @@ namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 
 public class AppInsightOptions
 {
-    public string APPINSIGHTS_INSTRUMENTATIONKEY { get; set; } = string.Empty;
+    public string APPLICATIONINSIGHTS_CONNECTION_STRING { get; set; } = string.Empty;
 }

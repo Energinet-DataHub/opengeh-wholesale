@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Batches.IntegrationTests.Fixture.Database;
+using Energinet.DataHub.Wholesale.Calculations.IntegrationTests.Fixture.Database;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedCalculations;
@@ -46,7 +46,7 @@ public class CompletedCalculationRepositoryTests : IClassFixture<WholesaleDataba
 
         // Assert
         await using var readContext = _databaseManager.CreateDbContext();
-        var actual = await readContext.CompletedBatches.SingleAsync(b => b.Id == expectedCalculation.Id);
+        var actual = await readContext.CompletedCalculations.SingleAsync(b => b.Id == expectedCalculation.Id);
 
         actual.Should().BeEquivalentTo(expectedCalculation);
     }

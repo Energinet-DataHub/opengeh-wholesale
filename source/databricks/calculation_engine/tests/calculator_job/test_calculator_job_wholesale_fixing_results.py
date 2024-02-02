@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame
+from pyspark.sql import DataFrame, SparkSession
 import pyspark.sql.functions as F
 import pytest
 from typing import Any
@@ -24,6 +24,7 @@ from package.codelists import (
     MeteringPointType,
     SettlementMethod,
     TimeSeriesType,
+    WholesaleResultResolution,
 )
 from package.constants import EnergyResultColumnNames, WholesaleResultColumnNames
 
@@ -139,14 +140,47 @@ def test__energy_result__has_expected_number_of_types(
 
 
 WHOLESALE_RESULT_TYPES = [
-    (ChargeType.TARIFF, MeteringPointType.CONSUMPTION, SettlementMethod.FLEX),
-    (ChargeType.TARIFF, MeteringPointType.CONSUMPTION, SettlementMethod.NON_PROFILED),
-    (ChargeType.TARIFF, MeteringPointType.PRODUCTION, None),
+    (
+        ChargeType.TARIFF,
+        MeteringPointType.CONSUMPTION,
+        SettlementMethod.FLEX,
+        WholesaleResultResolution.HOUR,
+    ),
+    (
+        ChargeType.TARIFF,
+        MeteringPointType.CONSUMPTION,
+        SettlementMethod.NON_PROFILED,
+        WholesaleResultResolution.HOUR,
+    ),
+    (
+        ChargeType.TARIFF,
+        MeteringPointType.PRODUCTION,
+        None,
+        WholesaleResultResolution.HOUR,
+    ),
+    (
+        ChargeType.TARIFF,
+        MeteringPointType.CONSUMPTION,
+        SettlementMethod.FLEX,
+        WholesaleResultResolution.DAY,
+    ),
+    (
+        ChargeType.TARIFF,
+        MeteringPointType.CONSUMPTION,
+        SettlementMethod.NON_PROFILED,
+        WholesaleResultResolution.DAY,
+    ),
+    (
+        ChargeType.TARIFF,
+        MeteringPointType.PRODUCTION,
+        None,
+        WholesaleResultResolution.DAY,
+    ),
 ]
 
 
 @pytest.mark.parametrize(
-    "charge_type, metering_point_type, settlement_method",
+    "charge_type, metering_point_type, settlement_method, resolution",
     WHOLESALE_RESULT_TYPES,
 )
 def test__wholesale_result__is_created(
@@ -154,6 +188,7 @@ def test__wholesale_result__is_created(
     charge_type: ChargeType,
     metering_point_type: MeteringPointType,
     settlement_method: SettlementMethod | Any,
+    resolution: WholesaleResultResolution,
 ) -> None:
     # Arrange
     result_df = (
@@ -166,6 +201,7 @@ def test__wholesale_result__is_created(
             F.col(WholesaleResultColumnNames.metering_point_type)
             == metering_point_type.value
         )
+        .where(F.col(WholesaleResultColumnNames.resolution) == resolution.value)
     )
     if settlement_method:
         result_df = result_df.where(
@@ -176,6 +212,38 @@ def test__wholesale_result__is_created(
         result_df = result_df.where(
             F.col(WholesaleResultColumnNames.settlement_method).isNull()
         )
+
+    # Act: Calculator job is executed just once per session.
+    #      See the fixtures `results_df` and `executed_wholesale_fixing`
+
+    # Assert: The result is created if there are rows
+    assert result_df.count() > 0
+
+
+@pytest.mark.parametrize(
+    "charge_code",
+    ["40000", "41000"],
+    # charge_code 40000 is for hourly charge resolution
+    # charge_code 41000 is for daily charge resolution
+    # see "test_files/ChargeMasterDataPeriods.csv"
+)
+def test__monthly_amount_for_both_hourly_and_daily__is_created(
+    spark: SparkSession,
+    wholesale_fixing_wholesale_results_df: DataFrame,
+    charge_code: str,
+) -> None:
+    # Arrange
+
+    result_df = (
+        wholesale_fixing_wholesale_results_df.where(
+            F.col(WholesaleResultColumnNames.charge_type) == ChargeType.TARIFF.value
+        )
+        .where(
+            F.col(WholesaleResultColumnNames.resolution)
+            == WholesaleResultResolution.MONTH.value
+        )
+        .where(F.col(WholesaleResultColumnNames.charge_code) == charge_code)
+    )
 
     # Act: Calculator job is executed just once per session.
     #      See the fixtures `results_df` and `executed_wholesale_fixing`

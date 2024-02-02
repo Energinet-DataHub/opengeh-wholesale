@@ -23,8 +23,7 @@ public class CompletedCalculationEntityConfiguration : IEntityTypeConfiguration<
 {
     public void Configure(EntityTypeBuilder<CompletedCalculation> builder)
     {
-        // TODO: Change to nameof(CompletedCalculation) when updating table name in database
-        builder.ToTable("CompletedBatch");
+        builder.ToTable(nameof(CompletedCalculation));
 
         builder.HasKey(b => b.Id);
         builder
@@ -38,11 +37,9 @@ public class CompletedCalculationEntityConfiguration : IEntityTypeConfiguration<
         builder.Property(b => b.PublishedTime);
 
         // Grid area codes are stored as a JSON array
-        var gridAreaCodes = builder.Metadata
-            .FindNavigation(nameof(CompletedCalculation.GridAreaCodes))!;
-        gridAreaCodes.SetPropertyAccessMode(PropertyAccessMode.Field);
         builder
             .Property(b => b.GridAreaCodes)
+            .UsePropertyAccessMode(PropertyAccessMode.Field)
             .HasConversion(
                 l => JsonSerializer.Serialize(l, (JsonSerializerOptions?)null),
                 s => JsonSerializer.Deserialize<List<string>>(s, (JsonSerializerOptions?)null)!);

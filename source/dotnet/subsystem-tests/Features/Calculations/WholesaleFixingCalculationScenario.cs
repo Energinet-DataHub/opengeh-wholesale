@@ -14,7 +14,6 @@
 
 using System.Globalization;
 using Azure.Monitor.Query;
-using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtures;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
@@ -53,10 +52,10 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
         [SubsystemFact]
         public void AndGiven_SubscribedIntegrationEvents()
         {
-            Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(CalculationResultCompleted.EventName);
             Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(EnergyResultProducedV2.EventName);
             Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(AmountPerChargeResultProducedV1.EventName);
             Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(MonthlyAmountPerChargeResultProducedV1.EventName);
+            Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(GridLossResultProducedV1.EventName);
         }
 
         [ScenarioStep(2)]
@@ -74,16 +73,15 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
         [SubsystemFact]
         public async Task Then_CalculationIsCompletedWithinWaitTime()
         {
-            var actualWaitResult = await Fixture.WaitForCalculationStateAsync(
+            var actualWaitResult = await Fixture.WaitForCalculationCompletedOrFailedAsync(
                 Fixture.ScenarioState.CalculationId,
-                waitForState: Clients.v3.BatchState.Completed,
                 waitTimeLimit: TimeSpan.FromMinutes(33));
 
             Fixture.ScenarioState.Batch = actualWaitResult.Batch;
 
             // Assert
             using var assertionScope = new AssertionScope();
-            actualWaitResult.IsState.Should().BeTrue();
+            actualWaitResult.IsCompletedOrFailed.Should().BeTrue();
             actualWaitResult.Batch.Should().NotBeNull();
 
             actualWaitResult.Batch!.ExecutionState.Should().Be(Clients.v3.BatchState.Completed);
@@ -111,21 +109,21 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
                 Fixture.ScenarioState.SubscribedIntegrationEventNames.AsReadOnly(),
                 waitTimeLimit: TimeSpan.FromMinutes(8));
 
-            Fixture.ScenarioState.ReceivedCalculationResultCompleted =
-                actualReceivedIntegrationEvents.OfType<CalculationResultCompleted>().ToList();
             Fixture.ScenarioState.ReceivedEnergyResultProducedV2 =
                 actualReceivedIntegrationEvents.OfType<EnergyResultProducedV2>().ToList();
             Fixture.ScenarioState.ReceivedAmountPerChargeResultProducedV1 = actualReceivedIntegrationEvents
                 .OfType<AmountPerChargeResultProducedV1>().ToList();
             Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1 = actualReceivedIntegrationEvents
                 .OfType<MonthlyAmountPerChargeResultProducedV1>().ToList();
+            Fixture.ScenarioState.ReceivedGridLossProducedV1 = actualReceivedIntegrationEvents
+                .OfType<GridLossResultProducedV1>().ToList();
 
             // Assert
             using var assertionScope = new AssertionScope();
-            Fixture.ScenarioState.ReceivedCalculationResultCompleted.Should().NotBeEmpty();
             Fixture.ScenarioState.ReceivedEnergyResultProducedV2.Should().NotBeEmpty();
             Fixture.ScenarioState.ReceivedAmountPerChargeResultProducedV1.Should().NotBeEmpty();
             Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1.Should().NotBeEmpty();
+            Fixture.ScenarioState.ReceivedGridLossProducedV1.Should().NotBeEmpty();
         }
 
         [ScenarioStep(6)]
@@ -136,7 +134,6 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
 
             // Assert
             using var assertionScope = new AssertionScope();
-            Fixture.ScenarioState.ReceivedCalculationResultCompleted.Count.Should().Be(expected);
             Fixture.ScenarioState.ReceivedEnergyResultProducedV2.Count.Should().Be(expected);
         }
 
@@ -149,11 +146,6 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
                 .Where(s => s != nameof(TimeSeriesType.NetExchangePerNeighboringGa))
                 .ToList();
 
-            var actualTimeSeriesTypesForCalculationResultCompleted = Fixture.ScenarioState
-                .ReceivedCalculationResultCompleted
-                .Select(x => Enum.GetName(x.TimeSeriesType))
-                .Distinct()
-                .ToList();
             var actualTimeSeriesTypesForEnergyResultProducedV2 = Fixture.ScenarioState.ReceivedEnergyResultProducedV2
                 .Select(x => Enum.GetName(x.TimeSeriesType))
                 .Distinct()
@@ -163,7 +155,6 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
             using var assertionScope = new AssertionScope();
             foreach (var timeSeriesType in expected)
             {
-                actualTimeSeriesTypesForCalculationResultCompleted.Should().Contain(timeSeriesType);
                 actualTimeSeriesTypesForEnergyResultProducedV2.Should().Contain(timeSeriesType);
             }
         }
@@ -194,12 +185,6 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
             using var assertionScope = new AssertionScope();
             foreach (var tuple in expected)
             {
-                Fixture.ScenarioState.ReceivedCalculationResultCompleted
-                    .Should()
-                    .Contain(item =>
-                        Enum.GetName(item.TimeSeriesType) == tuple.TimeSeriesType
-                        && Enum.GetName(item.AggregationLevelCase) == tuple.AggregationLevel);
-
                 Fixture.ScenarioState.ReceivedEnergyResultProducedV2
                     .Should()
                     .Contain(item =>
@@ -212,7 +197,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
         [SubsystemFact]
         public void AndThen_ReceivedAmountPerChargeResultProducedEventsCountIsEqualToExpected()
         {
-            var expected = 28;
+            var expected = 67; // 28 hourly tariff + 39 daily tariff
 
             // Assert
             Fixture.ScenarioState.ReceivedAmountPerChargeResultProducedV1.Count.Should().Be(expected);
@@ -222,7 +207,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
         [SubsystemFact]
         public void AndThen_ReceivedMonthlyAmountPerChargeResultProducedEventsCountIsEqualToExpected()
         {
-            var expected = 16;
+            var expected = 40; // 16 monthly tariff from hourly + 24 monthly tariff from daily
 
             // Assert
             Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1.Count.Should().Be(expected);
@@ -240,7 +225,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
             var expectedChargeType = AmountPerChargeResultProducedV1.Types.ChargeType.Tariff;
             var expectedChargeOwnerId = "5790001330552";
             var expectedSettlementMethod = AmountPerChargeResultProducedV1.Types.SettlementMethod.NonProfiled;
-            var expectedTimeSeriesPoints = await Fixture.ParseTimeSeriesPointsFromCsvAsync("amount_for_es_for_hourly_tarif_40000_for_e17_e02.csv");
+            var expectedTimeSeriesPoints = await Fixture.ParseChargeResultTimeSeriesPointsFromCsvAsync("amount_for_es_for_hourly_tarif_40000_for_e17_e02.csv");
 
             // Assert
             var actualEvents = Fixture.ScenarioState.ReceivedAmountPerChargeResultProducedV1.Where(item =>
@@ -256,7 +241,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
             var actualEvent = actualEvents.First();
             actualEvent.TimeSeriesPoints.Should().HaveCount(expectedTimeSeriesPoints.Count);
 
-            // We clear incomming 'QuantityQualities' before comparing with test data, because we don't have them in our test data file.
+            // We clear incoming 'QuantityQualities' before comparing with test data, because we don't have them in our test data file.
             actualEvent.TimeSeriesPoints
                 .Select(item =>
                 {
@@ -282,7 +267,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
                 && item.ChargeCode == expectedChargeCode
                 && item.ChargeType == expectedChargeType
                 && item.ChargeOwnerId == expectedChargeOwnerId
-                && object.Equals(item.Amount, expectedAmount));
+                && Equals(item.Amount, expectedAmount));
 
             using var assertionScope = new AssertionScope();
             actualEvents.Should().HaveCount(1);
@@ -331,6 +316,42 @@ AppDependencies
 
             using var assertionScope = new AssertionScope();
             actual.Value.Table.Rows[0][0].Should().Be(1); // count == 1
+        }
+
+        [ScenarioStep(15)]
+        [SubsystemFact]
+        public async Task AndThen_ReceivedEnergyResultProducedV2EventContainsExpectedTimeSeriesPoint()
+        {
+            // Arrange
+            var expectedTimeSeriesPoints = await Fixture.ParseEnergyResultTimeSeriesPointsFromCsvAsync("Non_profiled_consumption_GA_804 for 5790001687137.csv");
+
+            var energyResults = Fixture.ScenarioState.ReceivedEnergyResultProducedV2
+                .Where(x => x.TimeSeriesType == EnergyResultProducedV2.Types.TimeSeriesType.NonProfiledConsumption)
+                .Where(x => x.AggregationPerEnergysupplierPerGridarea != null)
+                .Where(x => x.AggregationPerEnergysupplierPerGridarea.EnergySupplierId == "5790001687137")
+                .Where(x => x.AggregationPerEnergysupplierPerGridarea.GridAreaCode == "804")
+                .ToList();
+
+            // Assert
+            Assert.Single(energyResults);
+            energyResults.First().TimeSeriesPoints.Should().BeEquivalentTo(expectedTimeSeriesPoints);
+        }
+
+        [ScenarioStep(16)]
+        [SubsystemFact]
+        public async Task AndThen_ReceivedGridLossResultProducedV1EventContainsExpectedTimeSeriesPoints()
+        {
+            // Arrange
+            var expectedTimeSeriesPoints = await Fixture.ParseGridLossTimeSeriesPointsFromCsvAsync("Positive_gridLoss 804.csv");
+            var energyResults = Fixture.ScenarioState.ReceivedGridLossProducedV1
+                .Where(x => x.MeteringPointType == GridLossResultProducedV1.Types.MeteringPointType.Consumption)
+                .Where(x => x.MeteringPointId == "571313180400100657")
+                .Select(x => x.TimeSeriesPoints)
+                .ToList();
+
+            // Assert
+            Assert.Single(energyResults);
+            energyResults.First().Should().BeEquivalentTo(expectedTimeSeriesPoints);
         }
     }
 }

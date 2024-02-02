@@ -14,8 +14,8 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Batches.Interfaces;
-using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Moq;
@@ -45,7 +45,7 @@ public class RegisterCompletedCalculationsHandlerTests
             .Setup(repository => repository.GetLastCompletedOrNullAsync())
             .ReturnsAsync(lastKnownCompletedCalculation);
         batchesClientMock
-            .Setup(client => client.GetBatchesCompletedAfterAsync(It.IsAny<Instant>()))
+            .Setup(client => client.GetCompletedAfterAsync(It.IsAny<Instant>()))
             .ReturnsAsync(new[] { newBatch1, newBatch2 });
         completedBatchFactoryMock
             .Setup(x => x.CreateFromBatches(It.IsAny<IEnumerable<CalculationDto>>()))

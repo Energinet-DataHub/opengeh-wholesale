@@ -29,6 +29,7 @@ public class AggregatedTimeSeriesFactory
         var timeSeriesType = databricksSqlRow[EnergyResultColumnNames.TimeSeriesType];
         var processType = databricksSqlRow[EnergyResultColumnNames.BatchProcessType];
         var calculationId = Guid.Parse(databricksSqlRow[EnergyResultColumnNames.BatchId]!);
+
         return new AggregatedTimeSeries(
             gridArea: gridArea!,
             timeSeriesPoints: timeSeriesPoints.ToArray()!,

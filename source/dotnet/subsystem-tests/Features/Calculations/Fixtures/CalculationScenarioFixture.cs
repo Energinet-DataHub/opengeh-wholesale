@@ -21,7 +21,6 @@ using Azure.Messaging.ServiceBus.Administration;
 using Azure.Monitor.Query;
 using Azure.Monitor.Query.Models;
 using Energinet.DataHub.Core.TestCommon;
-using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents;
 using Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3;
@@ -78,26 +77,31 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
             return calculationId;
         }
 
-        public async Task<(bool IsState, BatchDto? Batch)> WaitForCalculationStateAsync(
+        /// <summary>
+        /// Wait for the calculation to complete or fail.
+        /// </summary>
+        /// <returns>IsCompletedOrFailed: True if the calculation completed or failed; otherwise false.</returns>
+        public async Task<(bool IsCompletedOrFailed, BatchDto? Batch)> WaitForCalculationCompletedOrFailedAsync(
             Guid calculationId,
-            BatchState waitForState,
             TimeSpan waitTimeLimit)
         {
             var delay = TimeSpan.FromSeconds(30);
 
             BatchDto? batch = null;
-            var isState = await Awaiter.TryWaitUntilConditionAsync(
+            var isCompletedOrFailed = await Awaiter.TryWaitUntilConditionAsync(
                 async () =>
                 {
                     batch = await WholesaleClient.GetBatchAsync(calculationId);
-                    return batch?.ExecutionState == waitForState;
+                    return
+                        batch?.ExecutionState == BatchState.Completed
+                        || batch?.ExecutionState == BatchState.Failed;
                 },
                 waitTimeLimit,
                 delay);
 
-            DiagnosticMessageSink.WriteDiagnosticMessage($"Wait for calculation with id '{calculationId}' completed with '{nameof(isState)}={isState}'.");
+            DiagnosticMessageSink.WriteDiagnosticMessage($"Wait for calculation with id '{calculationId}' completed with '{nameof(batch.ExecutionState)}={batch?.ExecutionState}'.");
 
-            return (isState, batch);
+            return (isCompletedOrFailed, batch);
         }
 
         public async Task<IReadOnlyCollection<IEventMessage>> WaitForIntegrationEventsAsync(
@@ -148,43 +152,35 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
 
         /// <summary>
         /// Load CSV file and parse each data row into <see cref="AmountPerChargeResultProducedV1.Types.TimeSeriesPoint"/>.
-        /// Expects the first row to be a specific header to ensure we read data from the correct columns.
         /// </summary>
-        /// <param name="testFileName">Filename of file located in 'TestData' folder.</param>
-        public async Task<IReadOnlyCollection<AmountPerChargeResultProducedV1.Types.TimeSeriesPoint>> ParseTimeSeriesPointsFromCsvAsync(string testFileName)
+        public async Task<IReadOnlyCollection<AmountPerChargeResultProducedV1.Types.TimeSeriesPoint>> ParseChargeResultTimeSeriesPointsFromCsvAsync(string testFileName)
         {
-            const string ExpectedHeader = "grid_area;energy_supplier_id;quantity;time;price;amount;charge_code;";
+            return await ParseCsvAsync(
+                testFileName,
+                "grid_area;energy_supplier_id;quantity;time;price;amount;charge_code;",
+                ParseAmountPerChargeResultProducedV1TimeSeriesPoint);
+        }
 
-            using var stream = EmbeddedResources.GetStream<Root>("Features.Calculations.TestData.amount_for_es_for_hourly_tarif_40000_for_e17_e02.csv");
-            using var reader = new StreamReader(stream);
+        /// <summary>
+        /// Load CSV file and parse each data row into <see cref="EnergyResultProducedV2.Types.TimeSeriesPoint"/>.
+        /// </summary>
+        public async Task<IReadOnlyCollection<EnergyResultProducedV2.Types.TimeSeriesPoint>> ParseEnergyResultTimeSeriesPointsFromCsvAsync(string testFileName)
+        {
+            return await ParseCsvAsync(
+                testFileName,
+                "grid_area,energy_supplier_id,balance_responsible_id,quantity,quantity_qualities,time,aggregation_level,time_series_type,calculation_id,calculation_type,calculation_execution_time_start,out_grid_area,calculation_result_id",
+                ParseEnergyResultProducedV2TimeSeriesPoint);
+        }
 
-            var hasVerifiedHeader = false;
-            var parsedTimeSeriesPoints = new List<AmountPerChargeResultProducedV1.Types.TimeSeriesPoint>();
-            while (!reader.EndOfStream)
-            {
-                var line = await reader.ReadLineAsync();
-                if (!hasVerifiedHeader)
-                {
-                    if (line != ExpectedHeader)
-                    {
-                        throw new Exception($"Cannot parse CSV file. Header is '{line}', expected '{ExpectedHeader}'.");
-                    }
-
-                    hasVerifiedHeader = true;
-                    continue;
-                }
-
-                var columns = line!.Split(';');
-                parsedTimeSeriesPoints.Add(new()
-                {
-                    Time = ParseTimestamp(columns[3]),
-                    Quantity = ParseDecimalValue(columns[2]),
-                    Price = ParseDecimalValue(columns[4]),
-                    Amount = ParseDecimalValue(columns[5]),
-                });
-            }
-
-            return parsedTimeSeriesPoints;
+        /// <summary>
+        /// Load CSV file and parse each data line into a <see cref="GridLossResultProducedV1.Types.TimeSeriesPoint"/>.
+        /// </summary>
+        public async Task<IReadOnlyCollection<GridLossResultProducedV1.Types.TimeSeriesPoint>> ParseGridLossTimeSeriesPointsFromCsvAsync(string testFileName)
+        {
+            return await ParseCsvAsync(
+                testFileName,
+                "grid_area,energy_supplier_id,balance_responsible_id,quantity,quantity_qualities,time,aggregation_level,time_series_type,calculation_id,calculation_type,calculation_execution_time_start,out_grid_area,calculation_result_id,metering_point_id",
+                ParseGridLossProducedV1TimeSeriesPoint);
         }
 
         protected override async Task OnInitializeAsync()
@@ -199,6 +195,75 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
         {
             await ServiceBusAdministrationClient.DeleteSubscriptionAsync(Configuration.ServiceBus.SubsystemRelayTopicName, _subscriptionName);
             await ServiceBusClient.DisposeAsync();
+        }
+
+        /// <summary>
+        /// Load CSV file and parse each data row into T./>.
+        /// Expects the first row to be a specific header to ensure we read data from the correct columns.
+        /// </summary>
+        /// <param name="testFileName">Filename of file located in 'TestData' folder.</param>
+        /// <param name="expectedHeader">The expected headers in the CVS file.</param>
+        /// <param name="createResult">Delegate function that create an specific result object.</param>
+        private static async Task<IReadOnlyCollection<T>> ParseCsvAsync<T>(string testFileName, string expectedHeader, Func<string[], T> createResult)
+        {
+            var hasVerifiedHeader = false;
+            await using var stream = EmbeddedResources.GetStream<Root>($"Features.Calculations.TestData.{testFileName}");
+            using var reader = new StreamReader(stream);
+
+            var resultList = new List<T>();
+
+            while (!reader.EndOfStream)
+            {
+                var line = await reader.ReadLineAsync();
+                if (!hasVerifiedHeader)
+                {
+                    if (line != expectedHeader)
+                    {
+                        throw new Exception($"Cannot parse CSV file. Header is '{line}', expected '{expectedHeader}'.");
+                    }
+
+                    hasVerifiedHeader = true;
+                    continue;
+                }
+
+                var columns = line!.Split(',', ';');
+                var result = createResult(columns);
+                resultList.Add(result);
+            }
+
+            return resultList;
+        }
+
+        private static AmountPerChargeResultProducedV1.Types.TimeSeriesPoint ParseAmountPerChargeResultProducedV1TimeSeriesPoint(IReadOnlyList<string> columns)
+        {
+            return new AmountPerChargeResultProducedV1.Types.TimeSeriesPoint
+            {
+                Time = ParseTimestamp(columns[3]),
+                Quantity = ParseDecimalValue(columns[2]),
+                Price = ParseDecimalValue(columns[4]),
+                Amount = ParseDecimalValue(columns[5]),
+            };
+        }
+
+        private static GridLossResultProducedV1.Types.TimeSeriesPoint ParseGridLossProducedV1TimeSeriesPoint(string[] columns)
+        {
+            var result = new GridLossResultProducedV1.Types.TimeSeriesPoint
+            {
+                Time = ParseTimestamp(columns[5]),
+                Quantity = ParseDecimalValue(columns[3]),
+            };
+            return result;
+        }
+
+        private static EnergyResultProducedV2.Types.TimeSeriesPoint ParseEnergyResultProducedV2TimeSeriesPoint(string[] columns)
+        {
+            var result = new EnergyResultProducedV2.Types.TimeSeriesPoint
+            {
+                Time = ParseTimestamp(columns[5]),
+                Quantity = ParseDecimalValue(columns[3]),
+            };
+            result.QuantityQualities.AddRange(ParseEnumValueTo(columns[4]));
+            return result;
         }
 
         /// <summary>
@@ -246,20 +311,20 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
 
                 switch (message.Subject)
                 {
-                    case CalculationResultCompleted.EventName:
-                        var calculationResultCompleted = CalculationResultCompleted.Parser.ParseFrom(data);
-                        if (calculationResultCompleted.BatchId == calculationId.ToString())
-                        {
-                            eventMessage = calculationResultCompleted;
-                            shouldCollect = true;
-                        }
-
-                        break;
                     case EnergyResultProducedV2.EventName:
                         var energyResultProduced = EnergyResultProducedV2.Parser.ParseFrom(data);
                         if (energyResultProduced.CalculationId == calculationId.ToString())
                         {
                             eventMessage = energyResultProduced;
+                            shouldCollect = true;
+                        }
+
+                        break;
+                    case GridLossResultProducedV1.EventName:
+                        var gridLossResultProduced = GridLossResultProducedV1.Parser.ParseFrom(data);
+                        if (gridLossResultProduced.CalculationId == calculationId.ToString())
+                        {
+                            eventMessage = gridLossResultProduced;
                             shouldCollect = true;
                         }
 
@@ -316,6 +381,30 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
         private static Contracts.IntegrationEvents.Common.DecimalValue? ParseDecimalValue(string value)
         {
             return string.IsNullOrEmpty(value) ? null : new Contracts.IntegrationEvents.Common.DecimalValue(decimal.Parse(value, CultureInfo.InvariantCulture));
+        }
+
+        private static List<EnergyResultProducedV2.Types.QuantityQuality> ParseEnumValueTo(string value)
+        {
+            value = value.Replace("[", string.Empty).Replace("]", string.Empty).Replace("'", string.Empty);
+            var splits = value.Split(':');
+            var result = new List<EnergyResultProducedV2.Types.QuantityQuality>();
+            foreach (var split in splits)
+            {
+                switch (split)
+                {
+                    case "measured":
+                        result.Add(EnergyResultProducedV2.Types.QuantityQuality.Measured);
+                        break;
+                    case "calculated":
+                        result.Add(EnergyResultProducedV2.Types.QuantityQuality.Calculated);
+                        break;
+                    case "missing":
+                        result.Add(EnergyResultProducedV2.Types.QuantityQuality.Missing);
+                        break;
+                }
+            }
+
+            return result;
         }
     }
 }

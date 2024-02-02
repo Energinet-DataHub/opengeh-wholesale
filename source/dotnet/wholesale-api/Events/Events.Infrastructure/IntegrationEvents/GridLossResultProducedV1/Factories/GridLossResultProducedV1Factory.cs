@@ -22,8 +22,14 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Gr
 
 public class GridLossResultProducedV1Factory : IGridLossResultProducedV1Factory
 {
+    public bool CanCreate(EnergyResult result) =>
+        result.TimeSeriesType is TimeSeriesType.NegativeGridLoss or TimeSeriesType.PositiveGridLoss;
+
     public Contracts.IntegrationEvents.GridLossResultProducedV1 Create(EnergyResult result)
     {
+        if (!CanCreate(result))
+            throw new ArgumentException($"Cannot create '{nameof(GridLossResultProducedV1)}' from energy result.", nameof(result));
+
         var gridLossResultProduced = new Contracts.IntegrationEvents.GridLossResultProducedV1
         {
             CalculationId = result.CalculationId.ToString(),

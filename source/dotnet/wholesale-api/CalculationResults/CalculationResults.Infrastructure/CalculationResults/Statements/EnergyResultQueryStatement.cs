@@ -52,5 +52,6 @@ ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames
         EnergyResultColumnNames.QuantityQualities,
         EnergyResultColumnNames.CalculationResultId,
         EnergyResultColumnNames.BatchProcessType,
+        EnergyResultColumnNames.MeteringPointId,
     };
 }

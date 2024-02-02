@@ -132,6 +132,7 @@ public class EnergyResultProducedV2FactoryTests
             _periodStart,
             _periodEnd,
             _fromGridArea,
+            null,
             _version);
     }
 

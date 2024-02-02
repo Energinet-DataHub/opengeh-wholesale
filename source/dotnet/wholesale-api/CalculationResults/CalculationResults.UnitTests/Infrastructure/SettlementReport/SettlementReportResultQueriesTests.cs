@@ -91,7 +91,7 @@ public class SettlementReportResultQueriesTests
         {
             "123", "BalanceFixing", "2022-05-16T01:00:00.000Z", "non_profiled_consumption", "1.234",
         };
-        var list = new List<string[]> { row };
+        var list = new List<string?[]> { row };
         var columnNames = new[]
         {
             EnergyResultColumnNames.GridArea,

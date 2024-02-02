@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.Edi.Exceptions;
@@ -21,15 +20,12 @@ using Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using NodaTime;
-using NodaTime.Extensions;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Calculations;
 
 public class CalculationResultPeriodCalculatorTests
 {
-    private DateTimeZone _dateTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!;
-
     [Fact]
     public void
         GetLatestCalculationsResultsPerDay_WithCalculationResults_ReturnLatestCalculationResultsPerDayWithVersion()
