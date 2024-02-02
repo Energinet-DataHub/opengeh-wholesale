@@ -539,3 +539,138 @@ def test__get_tariff_charges__returns_df_with_expected_values(
 
     # Assert
     assert actual.collect() == expected_tariff_charges.collect()
+
+
+@pytest.mark.parametrize(
+    "charge_resolution, expected_rows, expected_sum_quantity",
+    [
+        (
+            e.ChargeResolution.HOUR,
+            48,
+            DEFAULT_QUANTITY,
+        ),
+        (
+            e.ChargeResolution.DAY,
+            2,
+            24 * DEFAULT_QUANTITY,
+        ),
+    ],
+)
+def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hour_returns_expected(
+    spark: SparkSession,
+    charge_resolution: e.ChargeResolution,
+    expected_rows: int,
+    expected_sum_quantity: int,
+) -> None:
+    """
+    Only charges where charge time is greater than or equal to the metering point from date and
+    less than the metering point to date are accepted.
+    """
+    # Arrange
+    metering_point_rows = [
+        _create_metering_point_row(
+            from_date=datetime(2020, 1, 1, 0),
+            to_date=datetime(2020, 1, 3, 0),
+            resolution=e.MeteringPointResolution.HOUR,
+        )
+    ]
+    time_series_rows = []
+    charges_rows = []
+    for j in range(1, 4):
+        for i in range(0, 24):
+            time_series_rows.append(
+                _create_time_series_row(observation_time=datetime(2020, 1, j, i))
+            )
+            charges_rows.append(
+                _create_tariff_charges_row(
+                    charge_time=datetime(2020, 1, j, i),
+                    resolution=charge_resolution,
+                )
+            )
+
+    metering_point = spark.createDataFrame(
+        metering_point_rows, metering_point_period_schema
+    )
+    time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
+    charges = spark.createDataFrame(charges_rows, charges_schema)
+
+    # Act
+    actual = get_tariff_charges(
+        metering_point,
+        time_series,
+        charges,
+        charge_resolution,
+    )
+    actual.show()
+    # Assert
+    assert actual.count() == expected_rows
+    assert actual.collect()[0][Colname.sum_quantity] == expected_sum_quantity
+
+
+@pytest.mark.parametrize(
+    "charge_resolution, expected_rows, expected_sum_quantity",
+    [
+        (
+            e.ChargeResolution.HOUR,
+            48,
+            4 * DEFAULT_QUANTITY,
+        ),
+        (
+            e.ChargeResolution.DAY,
+            2,
+            96 * DEFAULT_QUANTITY,
+        ),
+    ],
+)
+def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_quarter_returns_expected(
+    spark: SparkSession,
+    charge_resolution: e.ChargeResolution,
+    expected_rows: int,
+    expected_sum_quantity: int,
+) -> None:
+    """
+    Only charges where charge time is greater than or equal to the metering point from date and
+    less than the metering point to date are accepted.
+    """
+    # Arrange
+    metering_point_rows = [
+        _create_metering_point_row(
+            from_date=datetime(2020, 1, 1, 0),
+            to_date=datetime(2020, 1, 3, 0),
+            resolution=e.MeteringPointResolution.QUARTER,
+        )
+    ]
+    time_series_rows = []
+    charges_rows = []
+    for j in range(1, 4):
+        for i in range(0, 24):
+            for k in range(0, 4):
+                time_series_rows.append(
+                    _create_time_series_row(
+                        observation_time=datetime(2020, 1, j, i, k * 15)
+                    )
+                )
+            charges_rows.append(
+                _create_tariff_charges_row(
+                    charge_time=datetime(2020, 1, j, i),
+                    resolution=charge_resolution,
+                )
+            )
+
+    metering_point = spark.createDataFrame(
+        metering_point_rows, metering_point_period_schema
+    )
+    time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
+    charges = spark.createDataFrame(charges_rows, charges_schema)
+
+    # Act
+    actual = get_tariff_charges(
+        metering_point,
+        time_series,
+        charges,
+        charge_resolution,
+    )
+    actual.show()
+    # Assert
+    assert actual.count() == expected_rows
+    assert actual.collect()[0][Colname.sum_quantity] == expected_sum_quantity
