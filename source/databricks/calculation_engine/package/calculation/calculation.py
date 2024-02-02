@@ -44,12 +44,15 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
         args.calculation_execution_time_start,
     )
 
-    with logging_configuration.start_span("net_exchange_per_neighbour_ga"):
-        energy_result_writer.write(
-            results.energy_results.exchange_per_neighbour_ga,
-            TimeSeriesType.NET_EXCHANGE_PER_NEIGHBORING_GA,
-            AggregationLevel.TOTAL_GA,
-        )
+    # TODO BJM: The following code is a bit repetitive. It could be refactored to a loop or a function in another Pr
+    if results.energy_results.exchange_per_neighbour_ga is not None:
+        # Only calculated for aggregations and balance fixings
+        with logging_configuration.start_span("net_exchange_per_neighbour_ga"):
+            energy_result_writer.write(
+                results.energy_results.exchange_per_neighbour_ga,
+                TimeSeriesType.NET_EXCHANGE_PER_NEIGHBORING_GA,
+                AggregationLevel.TOTAL_GA,
+            )
 
     with logging_configuration.start_span("net_exchange_per_ga"):
         energy_result_writer.write(
@@ -93,19 +96,23 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
             AggregationLevel.TOTAL_GA,
         )
 
-    with logging_configuration.start_span("consumption_per_ga_and_brp"):
-        energy_result_writer.write(
-            results.energy_results.consumption_per_ga_and_brp,
-            TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            AggregationLevel.BRP_PER_GA,
-        )
+    if results.energy_results.consumption_per_ga_and_brp is not None:
+        # Only calculated for aggregations and balance fixings
+        with logging_configuration.start_span("consumption_per_ga_and_brp"):
+            energy_result_writer.write(
+                results.energy_results.consumption_per_ga_and_brp,
+                TimeSeriesType.NON_PROFILED_CONSUMPTION,
+                AggregationLevel.BRP_PER_GA,
+            )
 
-    with logging_configuration.start_span("consumption_per_ga_and_brp_and_es"):
-        energy_result_writer.write(
-            results.energy_results.consumption_per_ga_and_brp_and_es,
-            TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            AggregationLevel.ES_PER_BRP_PER_GA,
-        )
+    if results.energy_results.consumption_per_ga_and_brp_and_es is not None:
+        # Only calculated for aggregations and balance fixings
+        with logging_configuration.start_span("consumption_per_ga_and_brp_and_es"):
+            energy_result_writer.write(
+                results.energy_results.consumption_per_ga_and_brp_and_es,
+                TimeSeriesType.NON_PROFILED_CONSUMPTION,
+                AggregationLevel.ES_PER_BRP_PER_GA,
+            )
 
     with logging_configuration.start_span("consumption_per_ga_and_es"):
         energy_result_writer.write(
@@ -122,6 +129,7 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
         )
 
     if results.energy_results.production_per_ga_and_brp_and_es is not None:
+        # Only calculated for aggregations and balance fixings
         with logging_configuration.start_span("production_per_ga_and_brp_and_es"):
             energy_result_writer.write(
                 results.energy_results.production_per_ga_and_brp_and_es,
@@ -129,12 +137,14 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
                 AggregationLevel.ES_PER_BRP_PER_GA,
             )
 
-    with logging_configuration.start_span("production_per_ga_and_brp"):
-        energy_result_writer.write(
-            results.energy_results.production_per_ga_and_brp,
-            TimeSeriesType.PRODUCTION,
-            AggregationLevel.BRP_PER_GA,
-        )
+    if results.energy_results.production_per_ga_and_brp is not None:
+        # Only calculated for aggregations and balance fixings
+        with logging_configuration.start_span("production_per_ga_and_brp"):
+            energy_result_writer.write(
+                results.energy_results.production_per_ga_and_brp,
+                TimeSeriesType.PRODUCTION,
+                AggregationLevel.BRP_PER_GA,
+            )
 
     with logging_configuration.start_span("production_per_ga_and_es"):
         energy_result_writer.write(
@@ -164,19 +174,23 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
             AggregationLevel.ES_PER_GA,
         )
 
-    with logging_configuration.start_span("flex_consumption_per_ga_and_brp_and_es"):
-        energy_result_writer.write(
-            results.energy_results.flex_consumption_per_ga_and_brp_and_es,
-            TimeSeriesType.FLEX_CONSUMPTION,
-            AggregationLevel.ES_PER_BRP_PER_GA,
-        )
+    if results.energy_results.flex_consumption_per_ga_and_brp_and_es is not None:
+        # Only calculated for aggregations and balance fixings
+        with logging_configuration.start_span("flex_consumption_per_ga_and_brp_and_es"):
+            energy_result_writer.write(
+                results.energy_results.flex_consumption_per_ga_and_brp_and_es,
+                TimeSeriesType.FLEX_CONSUMPTION,
+                AggregationLevel.ES_PER_BRP_PER_GA,
+            )
 
-    with logging_configuration.start_span("flex_consumption_per_ga_and_brp"):
-        energy_result_writer.write(
-            results.energy_results.flex_consumption_per_ga_and_brp,
-            TimeSeriesType.FLEX_CONSUMPTION,
-            AggregationLevel.BRP_PER_GA,
-        )
+    if results.energy_results.flex_consumption_per_ga_and_brp is not None:
+        # Only calculated for aggregations and balance fixings
+        with logging_configuration.start_span("flex_consumption_per_ga_and_brp"):
+            energy_result_writer.write(
+                results.energy_results.flex_consumption_per_ga_and_brp,
+                TimeSeriesType.FLEX_CONSUMPTION,
+                AggregationLevel.BRP_PER_GA,
+            )
 
     with logging_configuration.start_span("total_consumption"):
         energy_result_writer.write(
