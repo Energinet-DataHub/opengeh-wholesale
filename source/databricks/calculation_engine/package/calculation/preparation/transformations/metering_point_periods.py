@@ -18,17 +18,17 @@ from pyspark.sql.functions import (
     when,
     lit,
 )
+
+from package.calculation.preparation.transformations.clamp_period import clamp_period
 from package.constants import Colname
 from datetime import datetime
 from package.calculation_input import TableReader
-from package.calculation_input.schemas import metering_point_period_schema
 from package.codelists import (
     InputMeteringPointType,
     InputSettlementMethod,
     MeteringPointType,
     SettlementMethod,
 )
-from package.common import assert_schema
 
 
 def get_metering_point_periods_df(
@@ -48,8 +48,12 @@ def get_metering_point_periods_df(
         .where(col(Colname.to_date).isNull() | (col(Colname.to_date) > period_start))
     )
 
-    metering_point_periods_df = _clamp_at_period_boundaries(
-        metering_point_periods_df, period_start, period_end
+    metering_point_periods_df = clamp_period(
+        metering_point_periods_df,
+        period_start,
+        period_end,
+        Colname.from_date,
+        Colname.to_date,
     )
     metering_point_periods_df = _fix_settlement_method(metering_point_periods_df)
     metering_point_periods_df = _fix_metering_point_type(metering_point_periods_df)
@@ -71,27 +75,6 @@ def get_metering_point_periods_df(
     )
 
     return metering_point_periods_df
-
-
-def _clamp_at_period_boundaries(
-    df: DataFrame,
-    period_start: datetime,
-    period_end: datetime,
-) -> DataFrame:
-    df = df.withColumn(
-        Colname.from_date,
-        when(col(Colname.from_date) < period_start, period_start).otherwise(
-            col(Colname.from_date)
-        ),
-    ).withColumn(
-        Colname.to_date,
-        when(
-            col(Colname.to_date).isNull() | (col(Colname.to_date) > period_end),
-            period_end,
-        ).otherwise(col(Colname.to_date)),
-    )
-
-    return df
 
 
 def _fix_metering_point_type(df: DataFrame) -> DataFrame:
