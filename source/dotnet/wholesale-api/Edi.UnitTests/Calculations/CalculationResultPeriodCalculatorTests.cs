@@ -142,23 +142,18 @@ public class CalculationResultPeriodCalculatorTests
         // Arrange
         var periodStart = Instant.FromUtc(2024, 1, 1, 23, 0, 0);
         var periodEnd = Instant.FromUtc(2024, 1, 31, 23, 0, 0);
-        var calculation = CalculationDtoBuilder.CalculationDto()
-            .WithPeriodStart(periodStart)
-            .WithPeriodEnd(periodEnd)
-            .Build();
 
-        var calculationPeriodCalculator = new CalculationPeriodCalculator(_dateTimeZone);
-        var latestCalculations = calculationPeriodCalculator
-            .FindLatestCalculationsForPeriod(
-                periodStart,
-                periodEnd,
-                new List<CalculationDto>() { calculation });
+        var calculation = LatestCalculationForPeriodBuilder
+            .LatestCalculationForPeriod()
+            .ForPeriod(periodStart, periodEnd.Minus(Duration.FromDays(1)))
+            .WithVersion(1)
+            .Build();
 
         var sut = new CalculationResultPeriodCalculator();
 
         // Act
         var actual = sut.GetLatestCalculationsResultsPerDay(
-            latestCalculations,
+            new List<LatestCalculationForPeriod>() { calculation },
             new List<AggregatedTimeSeries>() { });
 
         // Assert
@@ -180,18 +175,11 @@ public class CalculationResultPeriodCalculatorTests
             .AggregatedTimeSeries(calculation)
             .Build();
 
-        var calculationPeriodCalculator = new CalculationPeriodCalculator(_dateTimeZone);
-        var latestCalculations = calculationPeriodCalculator
-            .FindLatestCalculationsForPeriod(
-                periodStart,
-                periodEnd,
-                new List<CalculationDto>() { });
-
         var sut = new CalculationResultPeriodCalculator();
 
         // Act
         var actual = sut.GetLatestCalculationsResultsPerDay(
-            latestCalculations,
+            new List<LatestCalculationForPeriod>(),
             new List<AggregatedTimeSeries>() { calculationResults });
 
         // Assert
@@ -205,33 +193,25 @@ public class CalculationResultPeriodCalculatorTests
         // Arrange
         var periodStart = Instant.FromUtc(2024, 1, 1, 23, 0, 0);
         var periodEnd = Instant.FromUtc(2024, 1, 31, 23, 0, 0);
-        var calculationWithMissingCalculationResults = CalculationDtoBuilder.CalculationDto()
-            .WithPeriodStart(periodStart)
-            .WithPeriodEnd(periodEnd)
+
+        var calculation = LatestCalculationForPeriodBuilder
+            .LatestCalculationForPeriod()
+            .ForPeriod(periodStart, periodEnd.Minus(Duration.FromDays(1)))
+            .WithVersion(1)
             .Build();
 
-        var calculationPeriodCalculator = new CalculationPeriodCalculator(_dateTimeZone);
-        var latestCalculations = calculationPeriodCalculator
-            .FindLatestCalculationsForPeriod(
-                periodStart,
-                periodEnd,
-                new List<CalculationDto>() { calculationWithMissingCalculationResults });
-
-        var anotherCalculation = CalculationDtoBuilder.CalculationDto()
-            .WithPeriodStart(periodStart)
-            .WithPeriodEnd(periodEnd)
-            .Build();
-
-        var calculationResultFromAnotherCalculation = AggregatedTimeSeriesBuilder
-            .AggregatedTimeSeries(anotherCalculation)
+        var calculationResultsForAnotherCalculation = AggregatedTimeSeriesBuilder
+            .AggregatedTimeSeries()
+            .ForPeriod(periodStart, periodEnd)
+            .WithCalculationId(Guid.NewGuid())
             .Build();
 
         var sut = new CalculationResultPeriodCalculator();
 
         // Act
         var actual = () => sut.GetLatestCalculationsResultsPerDay(
-            latestCalculations,
-            new List<AggregatedTimeSeries>() { calculationResultFromAnotherCalculation });
+         new List<LatestCalculationForPeriod>() { calculation },
+         new List<AggregatedTimeSeries>() { calculationResultsForAnotherCalculation });
 
         // Assert
         actual.Should().ThrowExactly<MissingCalculationResultException>();

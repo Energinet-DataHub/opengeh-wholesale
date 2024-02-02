@@ -187,7 +187,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task ProcessAsync_WithTotalProductionPerGridAreaRequestForMultipleCalculations_SendsAcceptedEdiMessageWithSeriesPerDay(
+    public async Task ProcessAsync_WithTotalProductionPerGridAreaRequestForMultipleCalculations_SendsAcceptedEdiMessageWithSeriesPerVersion(
         [Frozen] Mock<IAggregatedTimeSeriesQueries> aggregatedTimeSeriesQueries,
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
@@ -198,10 +198,10 @@ public class AggregatedTimeSeriesRequestHandlerTests
     {
         // Arrange
         const string expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestAccepted);
+        var expectedSeriesWithDifferentVersions = 3;
         var periodStart = Instant.FromUtc(2024, 1, 1, 23, 0, 0);
         var periodEnd = periodStart.Plus(Duration.FromDays(10));
 
-        var expectedSeriesExcludingEndDate = Instant.Subtract(periodEnd.Minus(Duration.FromDays(1)), periodStart).Days;
         var expectedReferenceId = Guid.NewGuid().ToString();
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
@@ -279,7 +279,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
                 message.Subject.Equals(expectedAcceptedSubject)
                 && message.ApplicationProperties.ContainsKey("ReferenceId")
                 && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)
-                && AggregatedTimeSeriesRequestAccepted.Parser.ParseFrom(message.Body).Series.Count == expectedSeriesExcludingEndDate),
+                && AggregatedTimeSeriesRequestAccepted.Parser.ParseFrom(message.Body).Series.Count == expectedSeriesWithDifferentVersions),
             It.IsAny<CancellationToken>()),
             Times.Once);
     }

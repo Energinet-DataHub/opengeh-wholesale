@@ -50,6 +50,8 @@ public class CalculationPeriodCalculatorTests
         using var assertionScope = new AssertionScope();
         actual.Count.Should().Be(1);
         AssertCalculationsCoversWholePeriod(actual, periodStart, periodEnd);
+        actual.Should().ContainSingle(c => c.PeriodStart.InUtc().Day == 1 && c.PeriodEnd.InUtc().Day == 15)
+            .Which.BatchId.Should().Be(calculation.BatchId);
     }
 
     [Fact]
@@ -82,6 +84,10 @@ public class CalculationPeriodCalculatorTests
         using var assertionScope = new AssertionScope();
         actual.Count.Should().Be(2);
         AssertCalculationsCoversWholePeriod(actual, firstPeriodStart, secondPeriodEnd);
+        actual.Should().ContainSingle(c => c.PeriodStart.InUtc().Day == 1 && c.PeriodEnd.InUtc().Day == 15)
+            .Which.BatchId.Should().Be(firstCalculation.BatchId);
+        actual.Should().ContainSingle(c => c.PeriodStart.InUtc().Day == 16 && c.PeriodEnd.InUtc().Day == 31)
+            .Which.BatchId.Should().Be(secondCalculation.BatchId);
     }
 
     [Fact]

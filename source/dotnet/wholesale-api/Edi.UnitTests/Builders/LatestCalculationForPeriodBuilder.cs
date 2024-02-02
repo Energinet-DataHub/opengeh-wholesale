@@ -21,7 +21,7 @@ public class LatestCalculationForPeriodBuilder
 {
     private Instant _startDate = Instant.FromUtc(2024, 1, 1, 0, 0);
     private Instant _endDate = Instant.FromUtc(2024, 1, 31, 0, 0);
-    private Guid _calculationId;
+    private Guid _calculationId = Guid.NewGuid();
     private long _version;
 
     private LatestCalculationForPeriodBuilder()
