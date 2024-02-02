@@ -57,6 +57,11 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
 
     public async IAsyncEnumerable<AggregatedTimeSeries> GetAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
+        if (!parameters.CalculationIds.Any())
+        {
+            yield break;
+        }
+
         var sqlStatement = new AggregatedTimeSeriesQueryStatement(parameters, _deltaTableOptions);
         await foreach (var aggregatedTimeSeries in GetInternalAsync(sqlStatement).ConfigureAwait(false))
             yield return aggregatedTimeSeries;
