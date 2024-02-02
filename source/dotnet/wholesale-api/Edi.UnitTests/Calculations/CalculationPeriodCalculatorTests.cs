@@ -116,11 +116,10 @@ public class CalculationPeriodCalculatorTests
         using var assertionScope = new AssertionScope();
         actual.Count.Should().Be(2);
         AssertCalculationsCoversWholePeriod(actual, firstPeriodStart, secondPeriodEnd);
-
         actual.Should().ContainSingle(c => c.PeriodStart.InUtc().Day == 1 && c.PeriodEnd.InUtc().Day == 9)
             .Which.BatchId.Should().Be(firstCalculation.BatchId);
-        actual.Single(c => c.PeriodStart.InUtc().Day == 10 && c.PeriodEnd.InUtc().Day == 31)
-            .BatchId.Should().Be(secondCalculation.BatchId);
+        actual.Should().ContainSingle(c => c.PeriodStart.InUtc().Day == 10 && c.PeriodEnd.InUtc().Day == 31)
+            .Which.BatchId.Should().Be(secondCalculation.BatchId);
     }
 
     [Fact]
@@ -155,11 +154,10 @@ public class CalculationPeriodCalculatorTests
         using var assertionScope = new AssertionScope();
         actual.Count.Should().Be(2);
         AssertCalculationsCoversWholePeriod(actual, secondPeriodStart, firstPeriodEnd);
-
         actual.Should().ContainSingle(c => c.PeriodStart.InUtc().Day == 10 && c.PeriodEnd.InUtc().Day == 31)
             .Which.BatchId.Should().Be(firstCalculation.BatchId);
-        actual.Single(c => c.PeriodStart.InUtc().Day == 1 && c.PeriodEnd.InUtc().Day == 9)
-            .BatchId.Should().Be(secondCalculation.BatchId);
+        actual.Should().ContainSingle(c => c.PeriodStart.InUtc().Day == 1 && c.PeriodEnd.InUtc().Day == 9)
+            .Which.BatchId.Should().Be(secondCalculation.BatchId);
     }
 
     [Fact]
@@ -193,16 +191,14 @@ public class CalculationPeriodCalculatorTests
 
         // Assert
         using var assertionScope = new AssertionScope();
-
-        actual.Should().ContainSingle(c => c.PeriodStart.InUtc().Day == 1 && c.PeriodEnd.InUtc().Day == 9)
-            .Which.BatchId.Should().Be(firstCalculation.BatchId);
-        actual.Single(c => c.PeriodStart.InUtc().Day == 10 && c.PeriodEnd.InUtc().Day == 20)
-            .BatchId.Should().Be(secondCalculation.BatchId);
-        actual.Single(c => c.PeriodStart.InUtc().Day == 21 && c.PeriodEnd.InUtc().Day == 31)
-            .BatchId.Should().Be(firstCalculation.BatchId);
-
         actual.Count.Should().Be(3);
         AssertCalculationsCoversWholePeriod(actual, firstPeriodStart, firstPeriodEnd);
+        actual.Should().ContainSingle(c => c.PeriodStart.InUtc().Day == 1 && c.PeriodEnd.InUtc().Day == 9)
+            .Which.BatchId.Should().Be(firstCalculation.BatchId);
+        actual.Should().ContainSingle(c => c.PeriodStart.InUtc().Day == 10 && c.PeriodEnd.InUtc().Day == 20)
+            .Which.BatchId.Should().Be(secondCalculation.BatchId);
+        actual.Should().ContainSingle(c => c.PeriodStart.InUtc().Day == 21 && c.PeriodEnd.InUtc().Day == 31)
+            .Which.BatchId.Should().Be(firstCalculation.BatchId);
     }
 
     [Fact]
@@ -248,14 +244,14 @@ public class CalculationPeriodCalculatorTests
 
         actual.Should().ContainSingle(c => c.PeriodStart.InUtc().Day == 1 && c.PeriodEnd.InUtc().Day == 4)
             .Which.BatchId.Should().Be(firstCalculation.BatchId);
-        actual.Single(c => c.PeriodStart.InUtc().Day == 5 && c.PeriodEnd.InUtc().Day == 10)
-            .BatchId.Should().Be(secondCalculation.BatchId);
-        actual.Single(c => c.PeriodStart.InUtc().Day == 11 && c.PeriodEnd.InUtc().Day == 19)
-            .BatchId.Should().Be(firstCalculation.BatchId);
-        actual.Single(c => c.PeriodStart.InUtc().Day == 20 && c.PeriodEnd.InUtc().Day == 25)
-            .BatchId.Should().Be(thirdCalculation.BatchId);
-        actual.Single(c => c.PeriodStart.InUtc().Day == 26 && c.PeriodEnd.InUtc().Day == 31)
-            .BatchId.Should().Be(firstCalculation.BatchId);
+        actual.Should().ContainSingle(c => c.PeriodStart.InUtc().Day == 5 && c.PeriodEnd.InUtc().Day == 10)
+            .Which.BatchId.Should().Be(secondCalculation.BatchId);
+        actual.Should().ContainSingle(c => c.PeriodStart.InUtc().Day == 11 && c.PeriodEnd.InUtc().Day == 19)
+            .Which.BatchId.Should().Be(firstCalculation.BatchId);
+        actual.Should().ContainSingle(c => c.PeriodStart.InUtc().Day == 20 && c.PeriodEnd.InUtc().Day == 25)
+            .Which.BatchId.Should().Be(thirdCalculation.BatchId);
+        actual.Should().ContainSingle(c => c.PeriodStart.InUtc().Day == 26 && c.PeriodEnd.InUtc().Day == 31)
+            .Which.BatchId.Should().Be(firstCalculation.BatchId);
     }
 
     [Fact]

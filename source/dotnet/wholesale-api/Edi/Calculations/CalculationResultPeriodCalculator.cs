@@ -36,44 +36,34 @@ public class CalculationResultPeriodCalculator
             if (calculationResult == null)
                 throw new MissingCalculationResultException($"No calculation result found for batch {latestCalculation.BatchId}");
 
-            var timeSeriesPointWithinPeriod = GetTimeSeriesPointWithinPeriodPerDay(
+            // Calculation result is exclusive of the period end, so we add a day to include the results from the last day.
+            var periodEndForCalculationResults = latestCalculation.PeriodEnd.Plus(Duration.FromDays(1));
+            var timeSeriesPointWithinPeriod = GetTimeSeriesPointWithinPeriod(
                 calculationResult.TimeSeriesPoints,
                 latestCalculation.PeriodStart,
-                latestCalculation.PeriodEnd);
+                periodEndForCalculationResults);
 
-            latestCalculationResults.AddRange(timeSeriesPointWithinPeriod.Select(x =>
+            latestCalculationResults.Add(
                 new AggregatedTimeSeriesResult(
                     latestCalculation.CalculationVersion,
-                    x.Min(point => point.Time).ToInstant(),
-                    x.Min(point => point.Time).ToInstant().Plus(Duration.FromDays(1)),
+                    latestCalculation.PeriodStart,
+                    periodEndForCalculationResults,
                     calculationResult.GridArea,
-                    x,
+                    timeSeriesPointWithinPeriod,
                     calculationResult.TimeSeriesType,
-                    calculationResult.ProcessType)));
+                    calculationResult.ProcessType));
         }
 
         return latestCalculationResults;
     }
 
-    private static IReadOnlyCollection<EnergyTimeSeriesPoint[]> GetTimeSeriesPointWithinPeriodPerDay(
+    private static EnergyTimeSeriesPoint[] GetTimeSeriesPointWithinPeriod(
         EnergyTimeSeriesPoint[] timeSeriesPoints,
         Instant periodStart,
         Instant periodEnd)
     {
-        var timeSeriesPointsWithinPeriodPerDay = new List<EnergyTimeSeriesPoint[]>();
-
-        var currentTime = periodStart;
-        while (currentTime <= periodEnd)
-        {
-            currentTime = currentTime.Plus(Duration.FromDays(1));
-            var pointsForTheCurrentDay = timeSeriesPoints
-                .Where(x => x.Time.ToInstant() >= periodStart && x.Time.ToInstant() < currentTime)
-                .ToArray();
-            if (pointsForTheCurrentDay.Any())
-                timeSeriesPointsWithinPeriodPerDay.Add(pointsForTheCurrentDay);
-            periodStart = currentTime;
-        }
-
-        return timeSeriesPointsWithinPeriodPerDay;
+        return timeSeriesPoints
+            .Where(x => x.Time.ToInstant() >= periodStart && x.Time.ToInstant() < periodEnd)
+            .ToArray();
     }
 }
