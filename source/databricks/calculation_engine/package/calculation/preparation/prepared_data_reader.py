@@ -46,8 +46,14 @@ class PreparedDataReader:
             grid_areas, metering_point_periods_df, self._table_reader
         )
 
-    def get_charges(self) -> DataFrame:
-        return T.read_charges(self._table_reader)
+    def get_charges(
+        self,
+        period_start_datetime: datetime,
+        period_end_datetime: datetime,
+    ) -> DataFrame:
+        return T.read_charges(
+            self._table_reader, period_start_datetime, period_end_datetime
+        )
 
     def get_fee_charges(
         self,
@@ -80,10 +86,10 @@ class PreparedDataReader:
         period_end_datetime: datetime,
         metering_point_periods_df: DataFrame,
     ) -> DataFrame:
-        raw_time_series_points_df = self._table_reader.read_time_series_points(
-            period_start_datetime, period_end_datetime
+        time_series_points_df = T.get_time_series_points(
+            self._table_reader, period_start_datetime, period_end_datetime
         )
         return T.get_metering_point_time_series(
-            raw_time_series_points_df,
+            time_series_points_df,
             metering_point_periods_df,
         )
