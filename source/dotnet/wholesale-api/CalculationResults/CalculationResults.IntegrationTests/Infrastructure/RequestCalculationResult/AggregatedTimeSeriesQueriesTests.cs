@@ -24,6 +24,7 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using NodaTime;
 using Xunit;
+using Period = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.Period;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.RequestCalculationResult;
 
@@ -64,7 +65,13 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         await AddCreatedRowsInArbitraryOrderAsync();
         var parameters = CreateQueryParameters(
-            calculationIds: new[] { _firstCalculationId },
+            latestCalculationForPeriods: new[]
+            {
+                new LatestCalculationForPeriod(
+                    new Period(startOfPeriodFilter, endOfPeriodFilter),
+                    _firstCalculationId,
+                    1),
+            },
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
@@ -90,12 +97,20 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
     public async Task GetAsync_WhenRequestFromGridOperatorTotalProductionInWrongPeriod_ReturnsNoResults()
     {
         // Arrange
+        var startOfPeriodFilter = Instant.FromUtc(2020, 1, 1, 1, 1);
+        var endOfPeriodFilter = Instant.FromUtc(2021, 1, 2, 1, 1);
         await AddCreatedRowsInArbitraryOrderAsync();
         var parameters = CreateQueryParameters(
-            calculationIds: new[] { _firstCalculationId },
+            latestCalculationForPeriods: new[]
+            {
+                new LatestCalculationForPeriod(
+                    new Period(startOfPeriodFilter, endOfPeriodFilter),
+                    _firstCalculationId,
+                    1),
+            },
             gridArea: GridAreaCodeA,
-            startOfPeriod: Instant.FromUtc(2020, 1, 1, 1, 1),
-            endOfPeriod: Instant.FromUtc(2021, 1, 2, 1, 1));
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -115,7 +130,13 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         await AddCreatedRowsInArbitraryOrderAsync();
         var parameters = CreateQueryParameters(
-            calculationIds: new[] { _firstCalculationId },
+            latestCalculationForPeriods: new[]
+            {
+                new LatestCalculationForPeriod(
+                    new Period(startOfPeriodFilter, endOfPeriodFilter),
+                    _firstCalculationId,
+                    1),
+            },
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
@@ -157,7 +178,13 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         await AddCreatedRowsInArbitraryOrderAsync();
         var parameters = CreateQueryParameters(
-            calculationIds: new[] { _firstCalculationId },
+            latestCalculationForPeriods: new[]
+            {
+                new LatestCalculationForPeriod(
+                    new Period(startOfPeriodFilter, endOfPeriodFilter),
+                    _firstCalculationId,
+                    1),
+            },
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
@@ -182,7 +209,13 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         await AddCreatedRowsInArbitraryOrderAsync();
         var parameters = CreateQueryParameters(
-            calculationIds: new[] { _firstCalculationId },
+            latestCalculationForPeriods: new[]
+            {
+                new LatestCalculationForPeriod(
+                    new Period(startOfPeriodFilter, endOfPeriodFilter),
+                    _firstCalculationId,
+                    1),
+            },
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
@@ -218,7 +251,13 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         await AddCreatedRowsInArbitraryOrderAsync();
         var parameters = CreateQueryParameters(
-            calculationIds: new[] { _firstCalculationId },
+            latestCalculationForPeriods: new[]
+            {
+                new LatestCalculationForPeriod(
+                    new Period(startOfPeriodFilter, endOfPeriodFilter),
+                    _firstCalculationId,
+                    1),
+            },
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
@@ -252,7 +291,13 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         await AddCreatedRowsInArbitraryOrderAsync();
         var parameters = CreateQueryParameters(
-            calculationIds: new[] { _firstCalculationId },
+            latestCalculationForPeriods: new[]
+            {
+                new LatestCalculationForPeriod(
+                    new Period(startOfPeriodFilter, endOfPeriodFilter),
+                    _firstCalculationId,
+                    1),
+            },
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter,
@@ -282,7 +327,13 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         await AddCreatedRowsInArbitraryOrderAsync(addFirstCorrection: true);
 
         var parameters = CreateQueryParameters(
-            calculationIds: new[] { _firstCalculationId },
+            latestCalculationForPeriods: new[]
+            {
+                new LatestCalculationForPeriod(
+                    new Period(startOfPeriodFilter, endOfPeriodFilter),
+                    _firstCalculationId,
+                    1),
+            },
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
@@ -319,7 +370,13 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         await AddCreatedRowsInArbitraryOrderAsync(addSecondCorrection: true);
 
         var parameters = CreateQueryParameters(
-            calculationIds: new[] { _firstCalculationId },
+            latestCalculationForPeriods: new[]
+            {
+                new LatestCalculationForPeriod(
+                    new Period(startOfPeriodFilter, endOfPeriodFilter),
+                    _firstCalculationId,
+                    1),
+            },
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
@@ -356,7 +413,13 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         await AddCreatedRowsInArbitraryOrderAsync(addThirdCorrection: true);
 
         var parameters = CreateQueryParameters(
-            calculationIds: new[] { _firstCalculationId },
+            latestCalculationForPeriods: new[]
+            {
+                new LatestCalculationForPeriod(
+                    new Period(startOfPeriodFilter, endOfPeriodFilter),
+                    _firstCalculationId,
+                    1),
+            },
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
@@ -392,7 +455,13 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
 
         await AddCreatedRowsInArbitraryOrderAsync();
         var parameters = CreateQueryParameters(
-            calculationIds: new[] { _firstCalculationId },
+            latestCalculationForPeriods: new[]
+            {
+                new LatestCalculationForPeriod(
+                    new Period(startOfPeriodFilter, endOfPeriodFilter),
+                    _firstCalculationId,
+                    1),
+            },
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
@@ -427,7 +496,13 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         await AddCreatedRowsInArbitraryOrderAsync();
 
         var parameters = CreateQueryParameters(
-            calculationIds: new[] { _firstCalculationId },
+            latestCalculationForPeriods: new[]
+            {
+                new LatestCalculationForPeriod(
+                    new Period(startOfPeriodFilter, endOfPeriodFilter),
+                    _firstCalculationId,
+                    1),
+            },
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
@@ -451,7 +526,13 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         var parameters = CreateQueryParameters(
-            calculationIds: new[] { _firstCalculationId },
+            latestCalculationForPeriods: new[]
+            {
+                new LatestCalculationForPeriod(
+                    new Period(startOfPeriodFilter, endOfPeriodFilter),
+                    _firstCalculationId,
+                    1),
+            },
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter,
@@ -478,7 +559,13 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         await AddCreatedRowsInArbitraryOrderAsync(addThirdCorrection: true);
         var parameters = CreateQueryParameters(
-            calculationIds: new[] { _firstCalculationId },
+            latestCalculationForPeriods: new[]
+            {
+                new LatestCalculationForPeriod(
+                    new Period(startOfPeriodFilter, endOfPeriodFilter),
+                    _firstCalculationId,
+                    1),
+            },
             timeSeriesTypeFilter,
             startOfPeriodFilter,
             endOfPeriodFilter,
@@ -502,7 +589,13 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         await AddCreatedRowsInArbitraryOrderAsync(addSecondCorrection: true);
         var parameters = CreateQueryParameters(
-            calculationIds: new[] { _firstCalculationId },
+            latestCalculationForPeriods: new[]
+            {
+                new LatestCalculationForPeriod(
+                    new Period(startOfPeriodFilter, endOfPeriodFilter),
+                    _firstCalculationId,
+                    1),
+            },
             timeSeriesTypeFilter,
             startOfPeriodFilter,
             endOfPeriodFilter,
@@ -526,7 +619,13 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         await AddCreatedRowsInArbitraryOrderAsync(addFirstCorrection: true);
         var parameters = CreateQueryParameters(
-            calculationIds: new[] { _firstCalculationId },
+            latestCalculationForPeriods: new[]
+            {
+                new LatestCalculationForPeriod(
+                    new Period(startOfPeriodFilter, endOfPeriodFilter),
+                    _firstCalculationId,
+                    1),
+            },
             timeSeriesTypeFilter,
             startOfPeriodFilter,
             endOfPeriodFilter,
@@ -550,7 +649,13 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         await AddCreatedRowsInArbitraryOrderAsync(addFirstCorrection: false, addSecondCorrection: false, addThirdCorrection: false);
         var parameters = CreateQueryParameters(
-            calculationIds: new[] { _firstCalculationId },
+            latestCalculationForPeriods: new[]
+            {
+                new LatestCalculationForPeriod(
+                    new Period(startOfPeriodFilter, endOfPeriodFilter),
+                    _firstCalculationId,
+                    1),
+            },
             timeSeriesTypeFilter,
             startOfPeriodFilter,
             endOfPeriodFilter,
@@ -572,7 +677,13 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         var parameters = CreateQueryParameters(
-            calculationIds: new[] { _firstCalculationId },
+            latestCalculationForPeriods: new[]
+            {
+                new LatestCalculationForPeriod(
+                    new Period(startOfPeriodFilter, endOfPeriodFilter),
+                    _firstCalculationId,
+                    1),
+            },
             timeSeriesTypeFilter,
             startOfPeriodFilter,
             endOfPeriodFilter,
@@ -597,7 +708,13 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         await AddCreatedRowsInArbitraryOrderAsync();
         var parameters = CreateQueryParameters(
-            calculationIds: new[] { _firstCalculationId },
+            latestCalculationForPeriods: new[]
+            {
+                new LatestCalculationForPeriod(
+                    new Period(startOfPeriodFilter, endOfPeriodFilter),
+                    _firstCalculationId,
+                    1),
+            },
             gridArea: emptyGridAreaFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
@@ -619,7 +736,13 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         await AddCreatedRowsInArbitraryOrderAsync(addSecondCorrection: true);
         var parameters = CreateQueryParameters(
-            calculationIds: new[] { _secondCalculationId },
+            latestCalculationForPeriods: new[]
+            {
+                new LatestCalculationForPeriod(
+                    new Period(startOfPeriodFilter, endOfPeriodFilter),
+                    _secondCalculationId,
+                    1),
+            },
             gridArea: gridAreaFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
@@ -639,7 +762,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         var parameters = CreateQueryParameters(
-            calculationIds: Array.Empty<Guid>(),
+            latestCalculationForPeriods: Array.Empty<LatestCalculationForPeriod>(),
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
@@ -651,7 +774,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
     }
 
     private AggregatedTimeSeriesQueryParameters CreateQueryParameters(
-        IReadOnlyCollection<Guid> calculationIds,
+        IReadOnlyCollection<LatestCalculationForPeriod> latestCalculationForPeriods,
         TimeSeriesType? timeSeriesType = null,
         Instant? startOfPeriod = null,
         Instant? endOfPeriod = null,
@@ -668,7 +791,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             EnergySupplierId: energySupplierId,
             BalanceResponsibleId: balanceResponsibleId,
             ProcessType: processType,
-            CalculationIds: calculationIds);
+            LatestCalculationForPeriod: latestCalculationForPeriods);
     }
 
     private async Task AddCreatedRowsInArbitraryOrderAsync(bool addFirstCorrection = false, bool addSecondCorrection = false, bool addThirdCorrection = false)

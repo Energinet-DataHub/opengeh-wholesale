@@ -20,6 +20,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.EDI.Client;
 using Energinet.DataHub.Wholesale.EDI.Models;
 using Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
@@ -48,7 +49,8 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
         [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> logger,
-        [Frozen] Mock<ICalculationsClient> calculationsClient)
+        [Frozen] Mock<ICalculationsClient> calculationsClient,
+        [Frozen] Mock<CalculationPeriodCalculator> calculationPeriodCalculator)
     {
         // Arrange
         const string expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestAccepted);
@@ -75,7 +77,8 @@ public class AggregatedTimeSeriesRequestHandlerTests
             validator.Object,
             aggregatedTimeSeriesQueries.Object,
             logger.Object,
-            calculationsClient.Object);
+            calculationsClient.Object,
+            calculationPeriodCalculator.Object);
 
         // Act
         await sut.ProcessAsync(
@@ -101,7 +104,8 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
         [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> logger,
-        [Frozen] Mock<ICalculationsClient> calculationsClient)
+        [Frozen] Mock<ICalculationsClient> calculationsClient,
+        [Frozen] Mock<CalculationPeriodCalculator> calculationPeriodCalculator)
     {
         // Arrange
         const string expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestAccepted);
@@ -129,7 +133,8 @@ public class AggregatedTimeSeriesRequestHandlerTests
             validator.Object,
             aggregatedTimeSeriesQueries.Object,
             logger.Object,
-            calculationsClient.Object);
+            calculationsClient.Object,
+            calculationPeriodCalculator.Object);
 
         // Act
         await sut.ProcessAsync(
@@ -155,7 +160,8 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
         [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> logger,
-        [Frozen] Mock<ICalculationsClient> calculationsClient)
+        [Frozen] Mock<ICalculationsClient> calculationsClient,
+        [Frozen] Mock<CalculationPeriodCalculator> calculationPeriodCalculator)
     {
         // Arrange
         const string expectedRejectedSubject = nameof(AggregatedTimeSeriesRequestRejected);
@@ -181,7 +187,8 @@ public class AggregatedTimeSeriesRequestHandlerTests
             validator.Object,
             aggregatedTimeSeriesQueries.Object,
             logger.Object,
-            calculationsClient.Object);
+            calculationsClient.Object,
+            calculationPeriodCalculator.Object);
 
         // Act
         await sut.ProcessAsync(
@@ -208,7 +215,8 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
         [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> logger,
-        [Frozen] Mock<ICalculationsClient> calculationsClient)
+        [Frozen] Mock<ICalculationsClient> calculationsClient,
+        [Frozen] Mock<CalculationPeriodCalculator> calculationPeriodCalculator)
     {
         // Arrange
         const string expectedRejectedSubject = nameof(AggregatedTimeSeriesRequestRejected);
@@ -244,7 +252,8 @@ public class AggregatedTimeSeriesRequestHandlerTests
             validator.Object,
             aggregatedTimeSeriesQueries.Object,
             logger.Object,
-            calculationsClient.Object);
+            calculationsClient.Object,
+            calculationPeriodCalculator.Object);
 
         // Act
         await sut.ProcessAsync(
@@ -271,7 +280,8 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
         [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> logger,
-        [Frozen] Mock<ICalculationsClient> calculationsClient)
+        [Frozen] Mock<ICalculationsClient> calculationsClient,
+        [Frozen] Mock<CalculationPeriodCalculator> calculationPeriodCalculator)
     {
         // Arrange
         const string expectedRejectedSubject = nameof(AggregatedTimeSeriesRequestRejected);
@@ -306,7 +316,8 @@ public class AggregatedTimeSeriesRequestHandlerTests
             validator.Object,
             aggregatedTimeSeriesQueries.Object,
             logger.Object,
-            calculationsClient.Object);
+            calculationsClient.Object,
+            calculationPeriodCalculator.Object);
 
         // Act
         await sut.ProcessAsync(
@@ -333,7 +344,8 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
         [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> logger,
-        [Frozen] Mock<ICalculationsClient> calculationsClient)
+        [Frozen] Mock<ICalculationsClient> calculationsClient,
+        [Frozen] Mock<CalculationPeriodCalculator> calculationPeriodCalculator)
     {
         // Arrange
         const string expectedRejectedSubject = nameof(AggregatedTimeSeriesRequestRejected);
@@ -356,7 +368,8 @@ public class AggregatedTimeSeriesRequestHandlerTests
             validator.Object,
             aggregatedTimeSeriesQueries.Object,
             logger.Object,
-            calculationsClient.Object);
+            calculationsClient.Object,
+            calculationPeriodCalculator.Object);
 
         // Act
         await sut.ProcessAsync(
@@ -387,7 +400,8 @@ public class AggregatedTimeSeriesRequestHandlerTests
                     new(DateTime.Now, 0, new List<QuantityQuality> { QuantityQuality.Measured }),
                 },
                 timeSeriesType: TimeSeriesType.Production,
-                processType: ProcessType.Aggregation),
+                processType: ProcessType.Aggregation,
+                version: 1),
         };
     }
 }

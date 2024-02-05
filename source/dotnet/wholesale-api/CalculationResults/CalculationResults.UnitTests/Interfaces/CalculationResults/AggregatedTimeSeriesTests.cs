@@ -35,9 +35,10 @@ public class AggregatedTimeSeriesTests
         // Act
         var act = () => new AggregatedTimeSeries(
             gridArea: anyGridArea,
-            timeSeriesType: anyTimeSeriesType,
             timeSeriesPoints: emptyTimeSeriesPoints,
-            processType: anyProcessType);
+            timeSeriesType: anyTimeSeriesType,
+            processType: anyProcessType,
+            version: 1);
 
         // Assert
         act.Should().Throw<ArgumentException>().WithMessage("*empty*");

@@ -23,7 +23,8 @@ public class AggregatedTimeSeriesFactory
 {
     public static AggregatedTimeSeries Create(
         DatabricksSqlRow databricksSqlRow,
-        IReadOnlyCollection<EnergyTimeSeriesPoint> timeSeriesPoints)
+        IReadOnlyCollection<EnergyTimeSeriesPoint> timeSeriesPoints,
+        long version)
     {
         var gridArea = databricksSqlRow[EnergyResultColumnNames.GridArea];
         var timeSeriesType = databricksSqlRow[EnergyResultColumnNames.TimeSeriesType];
@@ -33,6 +34,7 @@ public class AggregatedTimeSeriesFactory
             gridArea: gridArea!,
             timeSeriesPoints: timeSeriesPoints.ToArray()!,
             timeSeriesType: SqlResultValueConverters.ToTimeSeriesType(timeSeriesType!),
-            processType: ProcessTypeMapper.FromDeltaTableValue(processType!));
+            processType: ProcessTypeMapper.FromDeltaTableValue(processType!),
+            version: version);
     }
 }

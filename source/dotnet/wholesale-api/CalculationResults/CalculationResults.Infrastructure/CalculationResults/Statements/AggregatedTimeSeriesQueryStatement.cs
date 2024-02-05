@@ -38,16 +38,7 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
         var sql = $@"
             SELECT {string.Join(", ", SqlColumnNames.Select(columnName => $"t1.{columnName}"))}
             FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} t1
-            LEFT JOIN {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} t2
-                ON t1.{EnergyResultColumnNames.Time} = t2.{EnergyResultColumnNames.Time}
-                    AND t1.{EnergyResultColumnNames.BatchExecutionTimeStart} < t2.{EnergyResultColumnNames.BatchExecutionTimeStart}
-                    AND t1.{EnergyResultColumnNames.GridArea} = t2.{EnergyResultColumnNames.GridArea}
-                    AND COALESCE(t1.{EnergyResultColumnNames.FromGridArea}, 'N/A') = COALESCE(t2.{EnergyResultColumnNames.FromGridArea}, 'N/A')
-                    AND t1.{EnergyResultColumnNames.TimeSeriesType} = t2.{EnergyResultColumnNames.TimeSeriesType}
-                    AND t1.{EnergyResultColumnNames.BatchProcessType} = t2.{EnergyResultColumnNames.BatchProcessType}
-                    AND t1.{EnergyResultColumnNames.AggregationLevel} = t2.{EnergyResultColumnNames.AggregationLevel}
-            WHERE t2.time IS NULL
-                AND {CreateSqlQueryFilters(_parameters)}";
+            WHERE {CreateSqlQueryFilters(_parameters)}";
 
         sql += $@"ORDER BY t1.{EnergyResultColumnNames.GridArea}, t1.{EnergyResultColumnNames.Time}";
         return sql;
@@ -59,9 +50,36 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
                 t1.{EnergyResultColumnNames.TimeSeriesType} IN ('{TimeSeriesTypeMapper.ToDeltaTableValue(parameters.TimeSeriesType)}')
             AND t1.{EnergyResultColumnNames.Time} >= '{parameters.StartOfPeriod.ToString()}'
             AND t1.{EnergyResultColumnNames.Time} < '{parameters.EndOfPeriod.ToString()}'
-            AND t1.{EnergyResultColumnNames.AggregationLevel} = '{AggregationLevelMapper.ToDeltaTableValue(parameters.TimeSeriesType, parameters.EnergySupplierId, parameters.BalanceResponsibleId)}'
-            AND t1.{EnergyResultColumnNames.BatchId} IN ({string.Join(',', parameters.CalculationIds.Select(calculationId => $"'{calculationId}'"))})    
+            AND t1.{EnergyResultColumnNames.AggregationLevel} = '{AggregationLevelMapper.ToDeltaTableValue(parameters.TimeSeriesType, parameters.EnergySupplierId, parameters.BalanceResponsibleId)}')    
         ";
+
+        for (int i = 0; i < parameters.LatestCalculationForPeriod.Count; i++)
+        {
+            if (i == 0)
+                whereClausesSql += " AND (";
+
+            var calculationForPeriod = parameters.LatestCalculationForPeriod.ToList()[i];
+            whereClausesSql += $@"
+                AND (t1.{EnergyResultColumnNames.BatchId} == '{calculationForPeriod.BatchId}'  
+                AND t1.{EnergyResultColumnNames.Time} >= '{calculationForPeriod.Period.Start.ToString()}'
+                AND t1.{EnergyResultColumnNames.Time} <= '{calculationForPeriod.Period.End.ToString()})'
+            ";
+
+            if (i != parameters.LatestCalculationForPeriod.Count - 1)
+                whereClausesSql += " OR";
+            else
+                whereClausesSql += ")";
+        }
+
+        foreach (var calculationForPeriod in parameters.LatestCalculationForPeriod)
+        {
+            whereClausesSql += $@"
+                AND (t1.{EnergyResultColumnNames.BatchId} == '{calculationForPeriod.BatchId}'  
+                AND t1.{EnergyResultColumnNames.Time} >= '{calculationForPeriod.Period.Start.ToString()}'
+                AND t1.{EnergyResultColumnNames.Time} <= '{calculationForPeriod.Period.End.ToString()})'
+            ";
+        }
+
         if (!string.IsNullOrWhiteSpace(parameters.GridArea))
         {
             whereClausesSql += $"AND t1.{EnergyResultColumnNames.GridArea} IN ({parameters.GridArea})";

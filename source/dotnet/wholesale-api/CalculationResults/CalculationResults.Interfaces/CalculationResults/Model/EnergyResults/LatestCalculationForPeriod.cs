@@ -12,17 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
-using NodaTime;
-
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 
-public record AggregatedTimeSeriesQueryParameters(
-    TimeSeriesType TimeSeriesType,
-    Instant StartOfPeriod,
-    Instant EndOfPeriod,
-    string? GridArea,
-    string? EnergySupplierId,
-    string? BalanceResponsibleId,
-    IReadOnlyCollection<LatestCalculationForPeriod> LatestCalculationForPeriod,
-    ProcessType? ProcessType = null);
+public class LatestCalculationForPeriod
+{
+    public LatestCalculationForPeriod(
+        Period period,
+        Guid batchId,
+        long calculationVersion)
+    {
+        Period = period;
+        BatchId = batchId;
+        CalculationVersion = calculationVersion;
+    }
+
+    public Period Period { get; }
+
+    public Guid BatchId { get; }
+
+    public long CalculationVersion { get; }
+}

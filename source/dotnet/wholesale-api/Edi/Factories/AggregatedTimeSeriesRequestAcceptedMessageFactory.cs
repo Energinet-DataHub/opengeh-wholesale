@@ -51,6 +51,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
                 TimeSeriesPoints = { points },
                 TimeSeriesType = CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromCalculationsResult(series.TimeSeriesType),
                 Resolution = Resolution.Pt15M,
+                CalculationResultVersion = series.Version,
             });
         }
 
