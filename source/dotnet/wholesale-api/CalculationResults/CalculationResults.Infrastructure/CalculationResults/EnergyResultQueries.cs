@@ -44,13 +44,13 @@ public class EnergyResultQueries : IEnergyResultQueries
         _logger = logger;
     }
 
-    public async IAsyncEnumerable<EnergyResult> GetAsync(Guid batchId)
+    public async IAsyncEnumerable<EnergyResult> GetAsync(Guid calculationId)
     {
-        var batch = await _calculationsClient.GetAsync(batchId).ConfigureAwait(false);
-        var statement = new EnergyResultQueryStatement(batchId, _deltaTableOptions);
-        await foreach (var calculationResult in GetInternalAsync(statement, batch.PeriodStart.ToInstant(), batch.PeriodEnd.ToInstant(), batch.Version))
+        var calculation = await _calculationsClient.GetAsync(calculationId).ConfigureAwait(false);
+        var statement = new EnergyResultQueryStatement(calculationId, _deltaTableOptions);
+        await foreach (var calculationResult in GetInternalAsync(statement, calculation.PeriodStart.ToInstant(), calculation.PeriodEnd.ToInstant(), calculation.Version))
             yield return calculationResult;
-        _logger.LogDebug("Fetched all energy results for calculation {calculation_id}", batchId);
+        _logger.LogDebug("Fetched all energy results for calculation {calculation_id}", calculationId);
     }
 
     public static bool BelongsToDifferentResults(DatabricksSqlRow row, DatabricksSqlRow otherRow)

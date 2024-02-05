@@ -34,11 +34,11 @@ public sealed class WholesaleResultBuilder
     private IReadOnlyCollection<WholesaleTimeSeriesPoint> _wholesaleTimeSeriesPoint
         = new List<WholesaleTimeSeriesPoint> { new(new DateTime(2021, 1, 1), 1, new[] { QuantityQuality.Measured }, 2, 3) };
 
-    private ProcessType _calculationType = ProcessType.WholesaleFixing;
+    private CalculationType _calculationType = CalculationType.WholesaleFixing;
     private AmountType _amountType = AmountType.AmountPerCharge;
     private Resolution _resolution = Resolution.Hour;
 
-    public WholesaleResultBuilder WithCalculationType(ProcessType calculationType)
+    public WholesaleResultBuilder WithCalculationType(CalculationType calculationType)
     {
         _calculationType = calculationType;
         return this;

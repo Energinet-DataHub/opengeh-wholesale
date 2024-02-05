@@ -38,15 +38,15 @@ public class RegisterCompletedCalculationsHandler : IRegisterCompletedCalculatio
 
     public async Task RegisterCompletedCalculationsAsync()
     {
-        var newCompletedBatches = await GetNewCompletedBatchesAsync().ConfigureAwait(false);
-        await _completedCalculationRepository.AddAsync(newCompletedBatches).ConfigureAwait(false);
+        var newCompletedCalculations = await GetNewCompletedCalculationsAsync().ConfigureAwait(false);
+        await _completedCalculationRepository.AddAsync(newCompletedCalculations).ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
-    private async Task<IEnumerable<CompletedCalculation>> GetNewCompletedBatchesAsync()
+    private async Task<IEnumerable<CompletedCalculation>> GetNewCompletedCalculationsAsync()
     {
-        var lastKnownCompletedBatch = await _completedCalculationRepository.GetLastCompletedOrNullAsync().ConfigureAwait(false);
-        var completedBatchDtos = await _calculationsClient.GetCompletedAfterAsync(lastKnownCompletedBatch?.CompletedTime).ConfigureAwait(false);
-        return _completedCalculationFactory.CreateFromBatches(completedBatchDtos);
+        var lastKnownCompletedCalculation = await _completedCalculationRepository.GetLastCompletedOrNullAsync().ConfigureAwait(false);
+        var completedCalculationDtos = await _calculationsClient.GetCompletedAfterAsync(lastKnownCompletedCalculation?.CompletedTime).ConfigureAwait(false);
+        return _completedCalculationFactory.CreateFromCalculations(completedCalculationDtos);
     }
 }

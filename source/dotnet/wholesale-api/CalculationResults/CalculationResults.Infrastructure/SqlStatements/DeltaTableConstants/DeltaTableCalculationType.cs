@@ -12,12 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 
-public enum BatchState
+public static class DeltaTableCalculationType
 {
-    Pending,
-    Executing,
-    Completed,
-    Failed,
+    public const string Aggregation = "Aggregation";
+    public const string BalanceFixing = "BalanceFixing";
+    public const string WholesaleFixing = "WholesaleFixing";
+    public const string FirstCorrectionSettlement = "FirstCorrectionSettlement";
+    public const string SecondCorrectionSettlement = "SecondCorrectionSettlement";
+    public const string ThirdCorrectionSettlement = "ThirdCorrectionSettlement";
 }

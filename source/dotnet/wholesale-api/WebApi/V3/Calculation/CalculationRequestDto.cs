@@ -15,37 +15,6 @@
 namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 
 /// <summary>
-/// Defines the wholesale process type
+/// An immutable request to create a calculation.
 /// </summary>
-public enum ProcessType
-{
-    /// <summary>
-    /// Balance fixing
-    /// </summary>
-    BalanceFixing = 0,
-
-    /// <summary>
-    /// Aggregation.
-    /// </summary>
-    Aggregation = 1,
-
-    /// <summary>
-    /// WholesaleFixing.
-    /// </summary>
-    WholesaleFixing = 2,
-
-    /// <summary>
-    /// First correction settlement.
-    /// </summary>
-    FirstCorrectionSettlement = 3,
-
-    /// <summary>
-    /// Second correction settlement.
-    /// </summary>
-    SecondCorrectionSettlement = 4,
-
-    /// <summary>
-    /// Third correction settlement.
-    /// </summary>
-    ThirdCorrectionSettlement = 5,
-}
+public sealed record CalculationRequestDto(CalculationType CalculationType, IEnumerable<string> GridAreaCodes, DateTimeOffset StartDate, DateTimeOffset EndDate);

@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States
 {
     public class BackgroundServiceTelemetryScenarioState
     {
-        public BatchRequestDto CalculationInput { get; set; }
+        public CalculationRequestDto CalculationInput { get; set; }
             = new();
 
         public Guid CalculationId { get; set; }
