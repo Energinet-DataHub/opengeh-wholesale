@@ -463,3 +463,95 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_qua
     # Assert
     assert actual.count() == expected_rows
     assert actual.collect()[0][Colname.sum_quantity] == expected_sum_quantity
+
+
+@pytest.mark.parametrize(
+    "date_time_1, date_time_2, expected_rows",
+    [
+        (
+            datetime(2019, 12, 31, 23),
+            datetime(2020, 1, 1, 23),
+            2,
+        ),
+        (
+            datetime(2019, 12, 31, 23),
+            datetime(2020, 1, 2, 23),
+            1,
+        ),
+        (
+            datetime(2020, 1, 1, 23),
+            datetime(2020, 1, 2, 23),
+            1,
+        ),
+        (
+            datetime(2019, 12, 30, 23),
+            datetime(2020, 1, 3, 23),
+            0,
+        ),
+    ],
+)
+def test__get_tariff_charges__per_day_only_accepts_time_series_and_change_times_within_metering_point_period(
+    spark: SparkSession,
+    date_time_1: datetime,
+    date_time_2: datetime,
+    expected_rows: int,
+) -> None:
+    """
+    Only tariff charges where observation/charge time is greater than or equal to the metering point from date
+    and less than the metering point to date are accepted.
+    OC = Observation/Charge time, MMP = Metering Point Period
+
+              31.12       01.01       01.02       01.03      01.04
+    |-----------|-----------|-----------|-----------|----------|
+    MPP                     |----------------------|
+    ES1                     |----------|
+    ES2                                 |----------|
+    Test1                   OC          OC                          Expected: 2
+    Test2                   OC                     OC               Expected: 1
+    Test3                               OC         OC               Expected: 1
+    Test4       OC                      OC                     OC   Expected: 0
+    """
+    # Arrange
+    metering_point_rows = [
+        create_metering_point_row(
+            from_date=datetime(2019, 12, 31, 23), to_date=datetime(2020, 1, 1, 23)
+        ),
+        create_metering_point_row(
+            from_date=datetime(2020, 1, 1, 23),
+            to_date=datetime(2020, 1, 2, 23),
+            energy_supplier_id="123",
+        ),
+    ]
+    time_series_rows = [
+        create_time_series_row(
+            observation_time=date_time_1, quality=e.QuantityQuality.MISSING
+        ),
+        create_time_series_row(observation_time=date_time_2),
+    ]
+    charges_rows = [
+        create_tariff_charges_row(
+            charge_time=date_time_1,
+            resolution=e.ChargeResolution.DAY,
+        ),
+        create_tariff_charges_row(
+            charge_time=date_time_2,
+            resolution=e.ChargeResolution.DAY,
+        ),
+    ]
+
+    metering_point = spark.createDataFrame(
+        metering_point_rows, metering_point_period_schema
+    )
+    time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
+    charges = spark.createDataFrame(charges_rows, charges_schema)
+
+    # Act
+    actual = get_tariff_charges(
+        metering_point,
+        time_series,
+        charges,
+        e.ChargeResolution.DAY,
+    )
+
+    # Assert
+    assert actual.count() == expected_rows
