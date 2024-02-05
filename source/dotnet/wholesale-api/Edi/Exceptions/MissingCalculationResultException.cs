@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.EDI.Models;
+namespace Energinet.DataHub.Wholesale.Edi.Exceptions;
 
-public record AggregatedTimeSeriesRequest(
-    Period PeriodExcludingEndDate,
-    TimeSeriesType TimeSeriesType,
-    AggregationPerRoleAndGridArea AggregationPerRoleAndGridArea,
-    RequestedProcessType RequestedProcessType,
-    IReadOnlyCollection<Guid> CalculationIds);
+public class MissingCalculationResultException : Exception
+{
+    public MissingCalculationResultException(string message)
+        : base(message)
+    {
+    }
+}

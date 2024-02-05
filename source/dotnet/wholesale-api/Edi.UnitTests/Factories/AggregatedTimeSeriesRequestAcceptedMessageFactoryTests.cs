@@ -16,6 +16,7 @@ using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.EDI.Factories;
+using Energinet.DataHub.Wholesale.Edi.Models;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Google.Protobuf.WellKnownTypes;
@@ -50,10 +51,13 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
         // Arrange
         var expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestAccepted);
         var expectedReferenceId = "123456789";
-        var aggregatedTimeSeries = CreateAggregatedTimeSeries();
+        var exceptedVersion = 1880;
+        var aggregatedTimeSeries = CreateAggregatedTimeSeries(exceptedVersion);
 
         // Act
-        var actual = AggregatedTimeSeriesRequestAcceptedMessageFactory.Create(aggregatedTimeSeries, expectedReferenceId);
+        var actual = AggregatedTimeSeriesRequestAcceptedMessageFactory.Create(
+            aggregatedTimeSeries,
+            expectedReferenceId);
 
         // Assert
         using var assertionScope = new AssertionScope();
@@ -67,6 +71,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
         series.Should().NotBeNull();
         series!.GridArea.Should().Be(_gridArea);
         series.TimeSeriesType.Should().Be(Energinet.DataHub.Edi.Responses.TimeSeriesType.Production);
+        series.CalculationResultVersion.Should().Be(exceptedVersion);
 
         var timeSeriesOrdered = series.TimeSeriesPoints.OrderBy(ts => ts.Time).ToList();
         var earliestTimestamp = timeSeriesOrdered.First();
@@ -88,8 +93,11 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
     {
         // Arrange
         const string expectedReferenceId = "123456789";
+        var expectedVersion = 1880;
         var expectedQuantityQualities = quantityQualities.ToList();
-        var aggregatedTimeSeries = CreateAggregatedTimeSeries(expectedQuantityQualities);
+        var aggregatedTimeSeries = CreateAggregatedTimeSeries(
+            expectedVersion,
+            expectedQuantityQualities);
 
         // Act
         var actual = AggregatedTimeSeriesRequestAcceptedMessageFactory.Create(aggregatedTimeSeries, expectedReferenceId);
@@ -98,6 +106,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
         actual.Should().NotBeNull();
         var responseBody = AggregatedTimeSeriesRequestAccepted.Parser.ParseFrom(actual.Body);
         responseBody.Series.Should().ContainSingle();
+        responseBody.Series.Single().CalculationResultVersion.Should().Be(expectedVersion);
         responseBody.Series.Single().TimeSeriesPoints.Should().HaveCount(3);
         responseBody.Series.Single().TimeSeriesPoints.Select(p => p.QuantityQualities).Should().AllSatisfy(
             qqs =>
@@ -109,11 +118,16 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
             });
     }
 
-    private IReadOnlyCollection<AggregatedTimeSeries> CreateAggregatedTimeSeries(IReadOnlyCollection<QuantityQuality>? quantityQualities = null)
+    private IReadOnlyCollection<AggregatedTimeSeriesResult> CreateAggregatedTimeSeries(
+        long version,
+        IReadOnlyCollection<QuantityQuality>? quantityQualities = null)
     {
         quantityQualities ??= new List<QuantityQuality> { QuantityQuality.Estimated };
 
-        var aggregatedTimeSeries = new AggregatedTimeSeries(
+        var aggregatedTimeSeries = new AggregatedTimeSeriesResult(
+            version,
+            _periodStart,
+            _periodEnd,
             _gridArea,
             new EnergyTimeSeriesPoint[]
             {
@@ -124,7 +138,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
             _timeSeriesType,
             ProcessType.Aggregation);
 
-        return new List<AggregatedTimeSeries>()
+        return new List<AggregatedTimeSeriesResult>()
         {
             aggregatedTimeSeries,
         };

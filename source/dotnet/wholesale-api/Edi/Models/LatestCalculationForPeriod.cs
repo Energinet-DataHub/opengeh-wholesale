@@ -12,11 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.EDI.Models;
+using Energinet.DataHub.Wholesale.EDI.Models;
 
-public record AggregatedTimeSeriesRequest(
-    Period PeriodExcludingEndDate,
-    TimeSeriesType TimeSeriesType,
-    AggregationPerRoleAndGridArea AggregationPerRoleAndGridArea,
-    RequestedProcessType RequestedProcessType,
-    IReadOnlyCollection<Guid> CalculationIds);
+namespace Energinet.DataHub.Wholesale.Edi.Models;
+
+public class LatestCalculationForPeriod
+{
+    public LatestCalculationForPeriod(
+        Period period,
+        Guid batchId,
+        long calculationVersion)
+    {
+        Period = period;
+        BatchId = batchId;
+        CalculationVersion = calculationVersion;
+    }
+
+    public Period Period { get; }
+
+    public Guid BatchId { get; }
+
+    public long CalculationVersion { get; }
+}

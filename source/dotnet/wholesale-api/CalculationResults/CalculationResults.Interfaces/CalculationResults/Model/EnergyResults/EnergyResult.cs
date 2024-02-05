@@ -31,11 +31,9 @@ public sealed class EnergyResult(
     string? fromGridArea,
     string? meteringPointId,
     long version)
-    : AggregatedTimeSeries(gridArea, timeSeriesPoints, timeSeriesType, processType)
+    : AggregatedTimeSeries(gridArea, timeSeriesPoints, timeSeriesType, processType, batchId)
 {
     public Guid Id { get; } = id;
-
-    public Guid BatchId { get; } = batchId;
 
     public string? FromGridArea { get; } = fromGridArea;
 
