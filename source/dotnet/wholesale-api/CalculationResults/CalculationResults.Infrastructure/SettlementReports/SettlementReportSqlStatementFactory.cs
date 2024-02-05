@@ -27,7 +27,7 @@ public static class SettlementReportSqlStatementFactory
         string schemaName,
         string tableName,
         string[] gridAreaCodes,
-        ProcessType processType,
+        CalculationType calculationType,
         Instant periodStart,
         Instant periodEnd,
         string? energySupplier)
@@ -37,11 +37,11 @@ public static class SettlementReportSqlStatementFactory
         var selectColumns = string.Join(
             ", ",
             @$"t1.{EnergyResultColumnNames.GridArea}",
-            @$"t1.{EnergyResultColumnNames.BatchProcessType}",
+            @$"t1.{EnergyResultColumnNames.CalculationType}",
             @$"t1.{EnergyResultColumnNames.Time}",
             @$"t1.{EnergyResultColumnNames.TimeSeriesType}",
             @$"t1.{EnergyResultColumnNames.Quantity}");
-        var processTypeString = ProcessTypeMapper.ToDeltaTableValue(processType);
+        var calculationTypeString = CalculationTypeMapper.ToDeltaTableValue(calculationType);
         var gridAreas = string.Join(",", gridAreaCodes);
         var startTimeString = periodStart.ToString();
         var endTimeString = periodEnd.ToString();
@@ -52,16 +52,16 @@ SELECT {selectColumns}
 FROM {schemaName}.{tableName} t1
 LEFT JOIN {schemaName}.{tableName} t2
     ON t1.{EnergyResultColumnNames.Time} = t2.{EnergyResultColumnNames.Time}
-        AND t1.{EnergyResultColumnNames.BatchExecutionTimeStart} < t2.{EnergyResultColumnNames.BatchExecutionTimeStart}
+        AND t1.{EnergyResultColumnNames.CalculationExecutionTimeStart} < t2.{EnergyResultColumnNames.CalculationExecutionTimeStart}
         AND t1.{EnergyResultColumnNames.GridArea} = t2.{EnergyResultColumnNames.GridArea}
         AND COALESCE(t1.{EnergyResultColumnNames.FromGridArea}, 'N/A') = COALESCE(t2.{EnergyResultColumnNames.FromGridArea}, 'N/A')
         AND t1.{EnergyResultColumnNames.TimeSeriesType} = t2.{EnergyResultColumnNames.TimeSeriesType}
-        AND t1.{EnergyResultColumnNames.BatchProcessType} = t2.{EnergyResultColumnNames.BatchProcessType}
+        AND t1.{EnergyResultColumnNames.CalculationType} = t2.{EnergyResultColumnNames.CalculationType}
         AND t1.{EnergyResultColumnNames.AggregationLevel} = t2.{EnergyResultColumnNames.AggregationLevel}
 WHERE t2.time IS NULL
     AND t1.{EnergyResultColumnNames.GridArea} IN ({gridAreas})
     AND t1.{EnergyResultColumnNames.TimeSeriesType} IN ({timeSeriesTypesString})
-    AND t1.{EnergyResultColumnNames.BatchProcessType} = '{processTypeString}'
+    AND t1.{EnergyResultColumnNames.CalculationType} = '{calculationTypeString}'
     AND t1.{EnergyResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}'
     AND t1.{EnergyResultColumnNames.AggregationLevel} = '{aggregationLevel}'";
         if (energySupplier != null)

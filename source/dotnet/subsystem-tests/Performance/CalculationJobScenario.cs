@@ -42,7 +42,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance
             var createdByUserId = Guid.Parse("DED7734B-DD56-43AD-9EE8-0D7EFDA6C783");
             Fixture.ScenarioState.CalculationJobInput = new Calculation(
                 createdTime: createdTime,
-                processType: Common.Interfaces.Models.ProcessType.Aggregation,
+                calculationType: Common.Interfaces.Models.CalculationType.Aggregation,
                 gridAreaCodes: new List<GridAreaCode> { new GridAreaCode("791") },
                 periodStart: Instant.FromDateTimeOffset(new DateTimeOffset(2022, 11, 30, 23, 0, 0, TimeSpan.Zero)),
                 periodEnd: Instant.FromDateTimeOffset(new DateTimeOffset(2022, 12, 11, 23, 0, 0, TimeSpan.Zero)),

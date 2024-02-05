@@ -15,6 +15,37 @@
 namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 
 /// <summary>
-/// An immutable criteria for batch search.
+/// Defines the wholesale calculation type
 /// </summary>
-public sealed record BatchSearchDto(DateTimeOffset MinExecutionTime, DateTimeOffset MaxExecutionTime);
+public enum CalculationType
+{
+    /// <summary>
+    /// Balance fixing
+    /// </summary>
+    BalanceFixing = 0,
+
+    /// <summary>
+    /// Aggregation.
+    /// </summary>
+    Aggregation = 1,
+
+    /// <summary>
+    /// Wholesale fixing.
+    /// </summary>
+    WholesaleFixing = 2,
+
+    /// <summary>
+    /// First correction settlement.
+    /// </summary>
+    FirstCorrectionSettlement = 3,
+
+    /// <summary>
+    /// Second correction settlement.
+    /// </summary>
+    SecondCorrectionSettlement = 4,
+
+    /// <summary>
+    /// Third correction settlement.
+    /// </summary>
+    ThirdCorrectionSettlement = 5,
+}

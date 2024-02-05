@@ -34,14 +34,14 @@ public class EnergyResultQueryStatement : DatabricksStatement
         return $@"
 SELECT {string.Join(", ", SqlColumnNames)}
 FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME}
-WHERE {EnergyResultColumnNames.BatchId} = '{_calculationId}'
+WHERE {EnergyResultColumnNames.CalculationId} = '{_calculationId}'
 ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames.Time}
 ";
     }
 
     public static string[] SqlColumnNames { get; } =
     {
-        EnergyResultColumnNames.BatchId,
+        EnergyResultColumnNames.CalculationId,
         EnergyResultColumnNames.GridArea,
         EnergyResultColumnNames.FromGridArea,
         EnergyResultColumnNames.TimeSeriesType,
@@ -51,7 +51,7 @@ ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames
         EnergyResultColumnNames.Quantity,
         EnergyResultColumnNames.QuantityQualities,
         EnergyResultColumnNames.CalculationResultId,
-        EnergyResultColumnNames.BatchProcessType,
+        EnergyResultColumnNames.CalculationType,
         EnergyResultColumnNames.MeteringPointId,
     };
 }

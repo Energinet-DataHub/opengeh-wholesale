@@ -41,7 +41,7 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
-        var expectedCalculation = CreateCalculation(ProcessType.Aggregation, someGridAreasIds);
+        var expectedCalculation = CreateCalculation(CalculationType.Aggregation, someGridAreasIds);
         var sut = new CalculationRepository(writeContext);
 
         // Act
@@ -54,7 +54,7 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
 
         actual.Should().BeEquivalentTo(expectedCalculation);
         actual.GridAreaCodes.Should().BeEquivalentTo(someGridAreasIds);
-        actual.ProcessType.Should().Be(ProcessType.Aggregation);
+        actual.CalculationType.Should().Be(CalculationType.Aggregation);
     }
 
     [Fact]
@@ -201,7 +201,7 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
         var period = Periods.January_EuropeCopenhagen_Instant;
         var calculation = new Application.Model.Calculations.Calculation(
             SystemClock.Instance.GetCurrentInstant(),
-            ProcessType.BalanceFixing,
+            CalculationType.BalanceFixing,
             new List<GridAreaCode> { new("004") },
             period.PeriodStart,
             period.PeriodEnd,
@@ -232,15 +232,15 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
 
     private static Application.Model.Calculations.Calculation CreateCalculation(List<GridAreaCode> someGridAreasIds)
     {
-        return CreateCalculation(ProcessType.BalanceFixing, someGridAreasIds);
+        return CreateCalculation(CalculationType.BalanceFixing, someGridAreasIds);
     }
 
-    private static Application.Model.Calculations.Calculation CreateCalculation(ProcessType processType, List<GridAreaCode> someGridAreasIds)
+    private static Application.Model.Calculations.Calculation CreateCalculation(CalculationType calculationType, List<GridAreaCode> someGridAreasIds)
     {
         var period = Periods.January_EuropeCopenhagen_Instant;
         return new Application.Model.Calculations.Calculation(
             SystemClock.Instance.GetCurrentInstant(),
-            processType,
+            calculationType,
             someGridAreasIds,
             period.PeriodStart,
             period.PeriodEnd,

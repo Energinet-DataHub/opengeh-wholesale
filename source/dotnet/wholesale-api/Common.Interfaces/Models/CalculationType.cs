@@ -15,9 +15,9 @@
 namespace Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 /// <summary>
-/// Defines the wholesale process type
+/// Defines the wholesale calculation type
 /// </summary>
-public enum ProcessType
+public enum CalculationType
 {
     /// <summary>
     /// Balance fixing

@@ -19,4 +19,4 @@ namespace Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 /// <summary>
 /// An immutable request to create a calculation.
 /// </summary>
-public sealed record CalculationRequestDto(ProcessType ProcessType, IEnumerable<string> GridAreaCodes, DateTimeOffset StartDate, DateTimeOffset EndDate);
+public sealed record CalculationRequestDto(CalculationType CalculationType, IEnumerable<string> GridAreaCodes, DateTimeOffset StartDate, DateTimeOffset EndDate);

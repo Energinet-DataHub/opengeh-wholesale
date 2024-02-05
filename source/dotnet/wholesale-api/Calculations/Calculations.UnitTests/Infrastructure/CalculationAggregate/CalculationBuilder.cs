@@ -29,7 +29,7 @@ public class CalculationBuilder
 
     private CalculationExecutionState? _state;
     private List<GridAreaCode> _gridAreaCodes = new() { new("805") };
-    private ProcessType _processType = ProcessType.BalanceFixing;
+    private CalculationType _calculationType = CalculationType.BalanceFixing;
 
     public CalculationBuilder()
     {
@@ -75,9 +75,9 @@ public class CalculationBuilder
         return this;
     }
 
-    public CalculationBuilder WithProcessType(ProcessType processType)
+    public CalculationBuilder WithCalculationType(CalculationType calculationType)
     {
-        _processType = processType;
+        _calculationType = calculationType;
         return this;
     }
 
@@ -95,9 +95,9 @@ public class CalculationBuilder
 
     public Calculation Build()
     {
-        var batch = new Calculation(
+        var calculation = new Calculation(
             SystemClock.Instance.GetCurrentInstant(),
-            _processType,
+            _calculationType,
             _gridAreaCodes,
             _periodStart,
             _periodEnd,
@@ -109,31 +109,31 @@ public class CalculationBuilder
 
         if (_state == CalculationExecutionState.Submitted)
         {
-            batch.MarkAsSubmitted(jobRunId);
+            calculation.MarkAsSubmitted(jobRunId);
         }
         else if (_state == CalculationExecutionState.Pending)
         {
-            batch.MarkAsSubmitted(jobRunId);
-            batch.MarkAsPending();
+            calculation.MarkAsSubmitted(jobRunId);
+            calculation.MarkAsPending();
         }
         else if (_state == CalculationExecutionState.Executing)
         {
-            batch.MarkAsSubmitted(jobRunId);
-            batch.MarkAsPending();
-            batch.MarkAsExecuting();
+            calculation.MarkAsSubmitted(jobRunId);
+            calculation.MarkAsPending();
+            calculation.MarkAsExecuting();
         }
         else if (_state == CalculationExecutionState.Completed)
         {
-            batch.MarkAsSubmitted(jobRunId);
-            batch.MarkAsPending();
-            batch.MarkAsExecuting();
-            batch.MarkAsCompleted(SystemClock.Instance.GetCurrentInstant());
+            calculation.MarkAsSubmitted(jobRunId);
+            calculation.MarkAsPending();
+            calculation.MarkAsExecuting();
+            calculation.MarkAsCompleted(SystemClock.Instance.GetCurrentInstant());
         }
         else if (_state != null)
         {
             throw new NotImplementedException();
         }
 
-        return batch;
+        return calculation;
     }
 }

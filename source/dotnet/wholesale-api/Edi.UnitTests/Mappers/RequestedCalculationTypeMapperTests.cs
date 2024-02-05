@@ -19,20 +19,20 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Mappers;
 
-public class RequestedProcessTypeMapperTests
+public class RequestedCalculationTypeMapperTests
 {
     [Theory]
-    [InlineData(BusinessReason.BalanceFixing, null, RequestedProcessType.BalanceFixing)]
-    [InlineData(BusinessReason.PreliminaryAggregation, null, RequestedProcessType.PreliminaryAggregation)]
-    [InlineData(BusinessReason.WholesaleFixing, null, RequestedProcessType.WholesaleFixing)]
-    [InlineData(BusinessReason.Correction, SettlementSeriesVersion.FirstCorrection, RequestedProcessType.FirstCorrection)]
-    [InlineData(BusinessReason.Correction, SettlementSeriesVersion.SecondCorrection, RequestedProcessType.SecondCorrection)]
-    [InlineData(BusinessReason.Correction, SettlementSeriesVersion.ThirdCorrection, RequestedProcessType.ThirdCorrection)]
-    [InlineData(BusinessReason.Correction, null, RequestedProcessType.LatestCorrection)]
-    public void ToRequestedProcessType_WhenValidBusinessReasonAndSettlementSeriesVersion_ReturnsExpectedType(string businessReason, string? settlementSeriesVersion, RequestedProcessType expectedType)
+    [InlineData(BusinessReason.BalanceFixing, null, RequestedCalculationType.BalanceFixing)]
+    [InlineData(BusinessReason.PreliminaryAggregation, null, RequestedCalculationType.PreliminaryAggregation)]
+    [InlineData(BusinessReason.WholesaleFixing, null, RequestedCalculationType.WholesaleFixing)]
+    [InlineData(BusinessReason.Correction, SettlementSeriesVersion.FirstCorrection, RequestedCalculationType.FirstCorrection)]
+    [InlineData(BusinessReason.Correction, SettlementSeriesVersion.SecondCorrection, RequestedCalculationType.SecondCorrection)]
+    [InlineData(BusinessReason.Correction, SettlementSeriesVersion.ThirdCorrection, RequestedCalculationType.ThirdCorrection)]
+    [InlineData(BusinessReason.Correction, null, RequestedCalculationType.LatestCorrection)]
+    public void ToRequestedCalculationType_WhenValidBusinessReasonAndSettlementSeriesVersion_ReturnsExpectedType(string businessReason, string? settlementSeriesVersion, RequestedCalculationType expectedType)
     {
         // Act
-        var actualType = RequestedProcessTypeMapper.ToRequestedProcessType(businessReason, settlementSeriesVersion);
+        var actualType = RequestedCalculationTypeMapper.ToRequestedCalculationType(businessReason, settlementSeriesVersion);
 
         // Assert
         actualType.Should().Be(expectedType);
@@ -47,10 +47,10 @@ public class RequestedProcessTypeMapperTests
     [InlineData("", "")]
     [InlineData("random-string", "")]
     [InlineData("random-string", SettlementSeriesVersion.FirstCorrection)]
-    public void ToRequestedProcessType_WhenInvalidBusinessReasonAndSettlementSeriesVersionCombination_ThrowsArgumentOutOfRangeException(string businessReason, string? settlementSeriesVersion)
+    public void ToRequestedCalculationType_WhenInvalidBusinessReasonAndSettlementSeriesVersionCombination_ThrowsArgumentOutOfRangeException(string businessReason, string? settlementSeriesVersion)
     {
         // Act
-        var act = () => RequestedProcessTypeMapper.ToRequestedProcessType(businessReason, settlementSeriesVersion);
+        var act = () => RequestedCalculationTypeMapper.ToRequestedCalculationType(businessReason, settlementSeriesVersion);
 
         // Assert
         act.Should().ThrowExactly<ArgumentOutOfRangeException>().And.ActualValue.Should().Be(settlementSeriesVersion);
@@ -59,10 +59,10 @@ public class RequestedProcessTypeMapperTests
     [Theory]
     [InlineData("", null)]
     [InlineData("random-string", null)]
-    public void ToRequestedProcessType_WhenInvalidBusinessReason_ThrowsArgumentOutOfRangeException(string businessReason, string? settlementSeriesVersion)
+    public void ToRequestedCalculationType_WhenInvalidBusinessReason_ThrowsArgumentOutOfRangeException(string businessReason, string? settlementSeriesVersion)
     {
         // Act
-        var act = () => RequestedProcessTypeMapper.ToRequestedProcessType(businessReason, settlementSeriesVersion);
+        var act = () => RequestedCalculationTypeMapper.ToRequestedCalculationType(businessReason, settlementSeriesVersion);
 
         // Assert
         act.Should().ThrowExactly<ArgumentOutOfRangeException>().And.ActualValue.Should().Be(businessReason);

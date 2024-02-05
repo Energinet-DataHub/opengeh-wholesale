@@ -52,7 +52,7 @@ public class SettlementReportResultQueriesTests
         var sut = new SettlementReportResultQueries(databricksSqlWarehouseQueryExecutorMock.Object, _someDeltaTableOptions);
 
         // Act
-        var actual = await sut.GetRowsAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null);
+        var actual = await sut.GetRowsAsync(_someGridAreas, CalculationType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null);
 
         // Assert
         actual.Count().Should().Be(_rows.Count());
@@ -67,7 +67,7 @@ public class SettlementReportResultQueriesTests
         var row = CreateRow();
         var expected = new SettlementReportResultRow(
             "123",
-            ProcessType.BalanceFixing,
+            CalculationType.BalanceFixing,
             Instant.FromUtc(2022, 5, 16, 1, 0, 0),
             "PT15M",
             MeteringPointType.Consumption,
@@ -79,7 +79,7 @@ public class SettlementReportResultQueriesTests
         var sut = new SettlementReportResultQueries(databricksSqlWarehouseQueryExecutorMock.Object, _someDeltaTableOptions);
 
         // Act
-        var actual = await sut.GetRowsAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null);
+        var actual = await sut.GetRowsAsync(_someGridAreas, CalculationType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null);
 
         // Assert
         actual.First().Should().Be(expected);
@@ -95,7 +95,7 @@ public class SettlementReportResultQueriesTests
         var columnNames = new[]
         {
             EnergyResultColumnNames.GridArea,
-            EnergyResultColumnNames.BatchProcessType,
+            EnergyResultColumnNames.CalculationType,
             EnergyResultColumnNames.Time,
             EnergyResultColumnNames.TimeSeriesType,
             EnergyResultColumnNames.Quantity,

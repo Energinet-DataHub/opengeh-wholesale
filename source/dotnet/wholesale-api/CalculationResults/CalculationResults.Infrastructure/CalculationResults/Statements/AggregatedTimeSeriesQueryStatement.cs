@@ -40,11 +40,11 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
             FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} t1
             LEFT JOIN {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} t2
                 ON t1.{EnergyResultColumnNames.Time} = t2.{EnergyResultColumnNames.Time}
-                    AND t1.{EnergyResultColumnNames.BatchExecutionTimeStart} < t2.{EnergyResultColumnNames.BatchExecutionTimeStart}
+                    AND t1.{EnergyResultColumnNames.CalculationExecutionTimeStart} < t2.{EnergyResultColumnNames.CalculationExecutionTimeStart}
                     AND t1.{EnergyResultColumnNames.GridArea} = t2.{EnergyResultColumnNames.GridArea}
                     AND COALESCE(t1.{EnergyResultColumnNames.FromGridArea}, 'N/A') = COALESCE(t2.{EnergyResultColumnNames.FromGridArea}, 'N/A')
                     AND t1.{EnergyResultColumnNames.TimeSeriesType} = t2.{EnergyResultColumnNames.TimeSeriesType}
-                    AND t1.{EnergyResultColumnNames.BatchProcessType} = t2.{EnergyResultColumnNames.BatchProcessType}
+                    AND t1.{EnergyResultColumnNames.CalculationType} = t2.{EnergyResultColumnNames.CalculationType}
                     AND t1.{EnergyResultColumnNames.AggregationLevel} = t2.{EnergyResultColumnNames.AggregationLevel}
             WHERE t2.time IS NULL
                 AND {CreateSqlQueryFilters(_parameters)}";
@@ -66,10 +66,10 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
             whereClausesSql += $"AND t1.{EnergyResultColumnNames.GridArea} IN ({parameters.GridArea})";
         }
 
-        if (parameters.ProcessType != null)
+        if (parameters.CalculationType != null)
         {
             whereClausesSql +=
-                $"AND t1.{EnergyResultColumnNames.BatchProcessType} = '{ProcessTypeMapper.ToDeltaTableValue((ProcessType)parameters.ProcessType)}'";
+                $"AND t1.{EnergyResultColumnNames.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue((CalculationType)parameters.CalculationType)}'";
         }
 
         if (!string.IsNullOrWhiteSpace(parameters.EnergySupplierId))
@@ -87,7 +87,7 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
 
     private static string[] SqlColumnNames { get; } =
     {
-        EnergyResultColumnNames.BatchId,
+        EnergyResultColumnNames.CalculationId,
         EnergyResultColumnNames.GridArea,
         EnergyResultColumnNames.FromGridArea,
         EnergyResultColumnNames.TimeSeriesType,
@@ -97,6 +97,6 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
         EnergyResultColumnNames.Quantity,
         EnergyResultColumnNames.QuantityQualities,
         EnergyResultColumnNames.CalculationResultId,
-        EnergyResultColumnNames.BatchProcessType,
+        EnergyResultColumnNames.CalculationType,
     };
 }

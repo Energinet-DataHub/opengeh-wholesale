@@ -30,24 +30,24 @@ public class EnergyResultFactory
         long version)
     {
         var id = databricksSqlRow[EnergyResultColumnNames.CalculationResultId];
-        var batchId = databricksSqlRow[EnergyResultColumnNames.BatchId];
+        var calculationId = databricksSqlRow[EnergyResultColumnNames.CalculationId];
         var gridArea = databricksSqlRow[EnergyResultColumnNames.GridArea];
         var timeSeriesType = databricksSqlRow[EnergyResultColumnNames.TimeSeriesType];
         var energySupplierId = databricksSqlRow[EnergyResultColumnNames.EnergySupplierId];
         var balanceResponsibleId = databricksSqlRow[EnergyResultColumnNames.BalanceResponsibleId];
-        var processType = databricksSqlRow[EnergyResultColumnNames.BatchProcessType];
+        var calculationType = databricksSqlRow[EnergyResultColumnNames.CalculationType];
         var fromGridArea = databricksSqlRow[EnergyResultColumnNames.FromGridArea];
         var meteringPointId = databricksSqlRow[EnergyResultColumnNames.MeteringPointId];
 
         return new EnergyResult(
             SqlResultValueConverters.ToGuid(id!),
-            Guid.Parse(batchId!),
+            Guid.Parse(calculationId!),
             gridArea!,
             SqlResultValueConverters.ToTimeSeriesType(timeSeriesType!),
             energySupplierId,
             balanceResponsibleId,
             timeSeriesPoints.ToArray(),
-            ProcessTypeMapper.FromDeltaTableValue(processType!),
+            CalculationTypeMapper.FromDeltaTableValue(calculationType!),
             periodStart,
             periodEnd,
             fromGridArea,

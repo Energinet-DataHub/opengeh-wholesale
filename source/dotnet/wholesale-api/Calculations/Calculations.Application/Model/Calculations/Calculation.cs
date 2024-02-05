@@ -24,7 +24,7 @@ public class Calculation
 
     public Calculation(
         Instant createdTime,
-        ProcessType processType,
+        CalculationType calculationType,
         IEnumerable<GridAreaCode> gridAreaCodes,
         Instant periodStart,
         Instant periodEnd,
@@ -35,11 +35,11 @@ public class Calculation
         : this()
     {
         _gridAreaCodes = gridAreaCodes.ToList();
-        if (!IsValid(_gridAreaCodes, processType, periodStart, periodEnd, dateTimeZone, out var errorMessages))
+        if (!IsValid(_gridAreaCodes, calculationType, periodStart, periodEnd, dateTimeZone, out var errorMessages))
             throw new BusinessValidationException(string.Join(" ", errorMessages));
 
         ExecutionState = CalculationExecutionState.Created;
-        ProcessType = processType;
+        CalculationType = calculationType;
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
         ExecutionTimeStart = executionTimeStart;
@@ -54,7 +54,7 @@ public class Calculation
     /// Validate if parameters are valid for a <see cref="Calculation"/>.
     /// </summary>
     /// <param name="gridAreaCodes"></param>
-    /// <param name="processType"></param>
+    /// <param name="calculationType"></param>
     /// <param name="periodStart"></param>
     /// <param name="periodEnd"></param>
     /// <param name="dateTimeZone"></param>
@@ -62,7 +62,7 @@ public class Calculation
     /// <returns>If the parameters are valid for a <see cref="Calculation"/></returns>
     private static bool IsValid(
         IEnumerable<GridAreaCode> gridAreaCodes,
-        ProcessType processType,
+        CalculationType calculationType,
         Instant periodStart,
         Instant periodEnd,
         DateTimeZone dateTimeZone,
@@ -86,14 +86,14 @@ public class Calculation
         if (periodStartInTimeZone.TimeOfDay != LocalTime.Midnight)
             errors.Add($"The period start '{periodStart.ToString()}' must be midnight.");
 
-        if (processType is ProcessType.WholesaleFixing
-            or ProcessType.FirstCorrectionSettlement
-            or ProcessType.SecondCorrectionSettlement
-            or ProcessType.ThirdCorrectionSettlement)
+        if (calculationType is CalculationType.WholesaleFixing
+            or CalculationType.FirstCorrectionSettlement
+            or CalculationType.SecondCorrectionSettlement
+            or CalculationType.ThirdCorrectionSettlement)
         {
             if (!IsEntireMonth(periodStartInTimeZone, periodEndInTimeZone))
             {
-                errors.Add($"The period (start: {periodStart} end: {periodEnd}) has to be an entire month when using process type {processType}.");
+                errors.Add($"The period (start: {periodStart} end: {periodEnd}) has to be an entire month when using calculation type {calculationType}.");
             }
         }
 
@@ -120,7 +120,7 @@ public class Calculation
     // Private setter is used implicitly by tests
     public Guid Id { get; private set; }
 
-    public ProcessType ProcessType { get; }
+    public CalculationType CalculationType { get; }
 
     public IReadOnlyCollection<GridAreaCode> GridAreaCodes => _gridAreaCodes;
 
@@ -158,18 +158,18 @@ public class Calculation
     public long Version { get; private set; }
 
     /// <summary>
-    /// Get the ISO 8601 duration for the given process type.
+    /// Get the ISO 8601 duration for the given calculation type.
     /// </summary>
     public string GetResolution()
     {
-        switch (ProcessType)
+        switch (CalculationType)
         {
-            case ProcessType.BalanceFixing:
-            case ProcessType.Aggregation:
-            case ProcessType.WholesaleFixing:
-            case ProcessType.FirstCorrectionSettlement:
-            case ProcessType.SecondCorrectionSettlement:
-            case ProcessType.ThirdCorrectionSettlement:
+            case CalculationType.BalanceFixing:
+            case CalculationType.Aggregation:
+            case CalculationType.WholesaleFixing:
+            case CalculationType.FirstCorrectionSettlement:
+            case CalculationType.SecondCorrectionSettlement:
+            case CalculationType.ThirdCorrectionSettlement:
                 return "PT15M";
             default:
                 throw new NotImplementedException();
@@ -181,14 +181,14 @@ public class Calculation
     /// </summary>
     public QuantityUnit GetQuantityUnit()
     {
-        switch (ProcessType)
+        switch (CalculationType)
         {
-            case ProcessType.BalanceFixing:
-            case ProcessType.Aggregation:
-            case ProcessType.WholesaleFixing:
-            case ProcessType.FirstCorrectionSettlement:
-            case ProcessType.SecondCorrectionSettlement:
-            case ProcessType.ThirdCorrectionSettlement:
+            case CalculationType.BalanceFixing:
+            case CalculationType.Aggregation:
+            case CalculationType.WholesaleFixing:
+            case CalculationType.FirstCorrectionSettlement:
+            case CalculationType.SecondCorrectionSettlement:
+            case CalculationType.ThirdCorrectionSettlement:
                 return QuantityUnit.Kwh;
             default:
                 throw new NotImplementedException();

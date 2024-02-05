@@ -34,7 +34,6 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures
         {
             Configuration = new WholesaleSubsystemConfiguration();
             LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
-            ExistingBatchId = Configuration.Root.GetValue<Guid>("EXISTING_BATCH_ID");
 
             ScenarioState = new TState();
         }
@@ -47,16 +46,14 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures
         /// </summary>
         public WholesaleClient_V3 WholesaleClient { get; private set; } = null!;
 
-        public Guid ExistingBatchId { get; }
-
         private WholesaleSubsystemConfiguration Configuration { get; }
 
         private LogsQueryClient LogsQueryClient { get; }
 
-        public async Task<Guid> StartCalculationAsync(BatchRequestDto calculationInput)
+        public async Task<Guid> StartCalculationAsync(CalculationRequestDto calculationInput)
         {
-            var calculationId = await WholesaleClient.CreateBatchAsync(calculationInput);
-            DiagnosticMessageSink.WriteDiagnosticMessage($"Fixture {GetType().Name} - Calculation for {calculationInput.ProcessType} with id '{calculationId}' started.");
+            var calculationId = await WholesaleClient.CreateCalculationAsync(calculationInput);
+            DiagnosticMessageSink.WriteDiagnosticMessage($"Fixture {GetType().Name} - Calculation for {calculationInput.CalculationType} with id '{calculationId}' started.");
 
             return calculationId;
         }

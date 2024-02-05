@@ -30,41 +30,41 @@ public class StartCalculationHandlerTests
     [Theory]
     [InlineAutoMoqData]
     public async Task StartCalculationAsync_ActivatesInfrastructureServiceAndCommits(
-        [Frozen] Mock<ICalculationRepository> batchRepositoryMock,
+        [Frozen] Mock<ICalculationRepository> calculationRepositoryMock,
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         [Frozen] Mock<ICalculationInfrastructureService> calculationInfrastructureServiceMock,
         StartCalculationHandler sut)
     {
         // Arrange
-        var batches = new List<Calculation> { new CalculationBuilder().Build(), new CalculationBuilder().Build() };
-        batchRepositoryMock
+        var calculations = new List<Calculation> { new CalculationBuilder().Build(), new CalculationBuilder().Build() };
+        calculationRepositoryMock
             .Setup(repository => repository.GetCreatedAsync())
-            .ReturnsAsync(batches);
+            .ReturnsAsync(calculations);
 
         // Arrange & Act
         await sut.StartAsync();
 
         // Assert
         unitOfWorkMock.Verify(x => x.CommitAsync());
-        foreach (var batch in batches)
+        foreach (var calculation in calculations)
         {
-            calculationInfrastructureServiceMock.Verify(x => x.StartAsync(batch.Id));
+            calculationInfrastructureServiceMock.Verify(x => x.StartAsync(calculation.Id));
         }
     }
 
     [Theory]
     [InlineAutoMoqData]
     public async Task StartCalculationAsync_LogsExpectedMessage(
-        [Frozen] Mock<ICalculationRepository> batchRepositoryMock,
+        [Frozen] Mock<ICalculationRepository> calculationRepositoryMock,
         [Frozen] Mock<ILogger<StartCalculationHandler>> loggerMock,
         StartCalculationHandler sut)
     {
         // Arrange
         const string expectedLogMessage = $"Calculation with id {LoggingConstants.CalculationId} started.";
-        var batches = new List<Calculation> { new CalculationBuilder().Build(), new CalculationBuilder().Build() };
-        batchRepositoryMock
+        var calculations = new List<Calculation> { new CalculationBuilder().Build(), new CalculationBuilder().Build() };
+        calculationRepositoryMock
             .Setup(repository => repository.GetCreatedAsync())
-            .ReturnsAsync(batches);
+            .ReturnsAsync(calculations);
 
         // Act
         await sut.StartAsync();
