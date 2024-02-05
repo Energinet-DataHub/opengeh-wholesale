@@ -155,6 +155,44 @@ public class BalanceResponsibleValidatorTest
     }
 
     [Fact]
+    public async Task Validate_WhenBusinessReasonIsBalanceFixing_ReturnsNoValidationErrors()
+    {
+        // Arrange
+        var message = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithRequestedByActorId(ValidGlnNumber)
+            .WithRequestedByActorRole(BalanceResponsibleRole)
+            .WithBalanceResponsibleId(ValidGlnNumber)
+            .WithBusinessReason(BusinessReason.BalanceFixing)
+            .Build();
+
+        // Act
+        var errors = await _sut.ValidateAsync(message);
+
+        // Assert
+        errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Validate_WhenBusinessReasonIsPreliminaryAggregation_ReturnsNoValidationErrors()
+    {
+        // Arrange
+        var message = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithRequestedByActorId(ValidGlnNumber)
+            .WithRequestedByActorRole(BalanceResponsibleRole)
+            .WithBalanceResponsibleId(ValidGlnNumber)
+            .WithBusinessReason(BusinessReason.PreliminaryAggregation)
+            .Build();
+
+        // Act
+        var errors = await _sut.ValidateAsync(message);
+
+        // Assert
+        errors.Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task Validate_WhenRequestingInvalidBusinessReason_ReturnsExpectedValidationError()
     {
         // Arrange
