@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Exceptions;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
@@ -27,6 +28,17 @@ public class AggregatedTimeSeries
     {
         if (timeSeriesPoints.Length == 0)
             throw new ArgumentException($"{nameof(timeSeriesPoints)} are empty.");
+
+        var duplicatedTimeSeriesPoints = timeSeriesPoints
+            .GroupBy(x => x.Time)
+            .Where(g => g.Count() > 1)
+            .ToArray();
+        if (duplicatedTimeSeriesPoints.Any())
+        {
+            throw new NotUniqueTimeSeriesPointException(
+                $"Multiple Time series points found for version {version} on {gridArea} at " +
+                $"{string.Join(',', duplicatedTimeSeriesPoints.Select(x => x.Key))}.");
+        }
 
         GridArea = gridArea;
         TimeSeriesPoints = timeSeriesPoints;

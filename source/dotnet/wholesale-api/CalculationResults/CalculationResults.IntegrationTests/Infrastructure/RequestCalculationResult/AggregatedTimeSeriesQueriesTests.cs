@@ -18,6 +18,7 @@ using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Exceptions;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
@@ -801,6 +802,30 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         actual.Should().BeEmpty();
     }
 
+    [Fact]
+    public async Task GetAsync_WhenDuplicatedTimeSeriesPoint_ThrowException()
+    {
+        // Arrange
+        var periodStart = Instant.FromUtc(2022, 1, 1, 00, 0, 0);
+        var periodEnd = Instant.FromUtc(2022, 1, 2, 00, 0, 0);
+        await AddCreatedRowsInArbitraryOrderAsync(addDuplicatedTimeSeriesPoint: true);
+        var parameters = CreateQueryParameters(
+            latestCalculationForPeriods: new[]
+            {
+                new CalculationForPeriod(
+                    new Period(periodStart, periodEnd),
+                    _firstCalculationId,
+                    1),
+            },
+            gridArea: GridAreaCodeC);
+
+        // Act
+        var actual = async () => await Sut.GetAsync(parameters).ToListAsync();
+
+        // Assert
+        await actual.Should().ThrowAsync<NotUniqueTimeSeriesPointException>();
+    }
+
     private AggregatedTimeSeriesQueryParameters CreateQueryParameters(
         IReadOnlyCollection<CalculationForPeriod> latestCalculationForPeriods,
         TimeSeriesType? timeSeriesType = null,
@@ -818,7 +843,11 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             LatestCalculationForPeriod: latestCalculationForPeriods);
     }
 
-    private async Task AddCreatedRowsInArbitraryOrderAsync(bool addFirstCorrection = false, bool addSecondCorrection = false, bool addThirdCorrection = false)
+    private async Task AddCreatedRowsInArbitraryOrderAsync(
+        bool addFirstCorrection = false,
+        bool addSecondCorrection = false,
+        bool addThirdCorrection = false,
+        bool addDuplicatedTimeSeriesPoint = false)
     {
         const string firstCalculationResultId = "aaaaaaaa-386f-49eb-8b56-63fae62e4fc7";
         const string secondCalculationResultId = "bbbbbbbb-b58b-4190-a873-eded0ed50c20";
@@ -834,6 +863,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         const string energySupplier = "4321987654321";
         const string balanceResponsibleId = "1234567891234";
         var row1 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: _firstCalculationId.ToString(), calculationResultId: firstCalculationResultId, time: firstHour, gridArea: GridAreaCodeC, quantity: FirstQuantity);
+        var duplicatedRow1 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: _firstCalculationId.ToString(), calculationResultId: firstCalculationResultId, time: firstHour, gridArea: GridAreaCodeC, quantity: SecondQuantity);
         var row2 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: _secondCalculationId.ToString(), calculationResultId: firstCalculationResultId, time: secondHour, gridArea: GridAreaCodeC, quantity: SecondQuantity);
 
         var row3 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: _firstCalculationId.ToString(), calculationResultId: secondCalculationResultId, time: secondHour, gridArea: GridAreaCodeC, quantity: ThirdQuantity, batchExecutionTimeStart: "2022-03-12T03:00:00.000Z");
@@ -846,7 +876,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var row8 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: _firstCalculationId.ToString(), calculationResultId: firstCalculationResultId, time: thirdHour, gridArea: GridAreaCodeB, quantity: FourthQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId, energySupplierId: energySupplier);
 
         var row9 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: _firstCalculationId.ToString(), calculationResultId: firstCalculationResultId, time: firstHour, gridArea: GridAreaCodeA, quantity: FirstQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea);
-        var row10 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: _firstCalculationId.ToString(), calculationResultId: firstCalculationResultId, time: thirdHour, gridArea: GridAreaCodeB, quantity: FourthQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId, energySupplierId: energySupplier);
+        var row10 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: _secondCalculationId.ToString(), calculationResultId: firstCalculationResultId, time: thirdHour, gridArea: GridAreaCodeB, quantity: FourthQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId, energySupplierId: energySupplier);
 
         var row11 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: _firstCalculationId.ToString(), calculationResultId: firstCalculationResultId, time: firstHour, gridArea: GridAreaCodeB, quantity: FirstQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndGridArea, energySupplierId: energySupplier);
         var row12 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: _firstCalculationId.ToString(), calculationResultId: firstCalculationResultId, time: secondHour, gridArea: GridAreaCodeB, quantity: FirstQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndGridArea, energySupplierId: energySupplier);
@@ -911,6 +941,14 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
                 row1ThirdCorrection,
                 row2ThirdCorrection,
                 row4ThirdCorrection,
+            });
+        }
+
+        if (addDuplicatedTimeSeriesPoint)
+        {
+            rows.AddRange(new[]
+            {
+                duplicatedRow1,
             });
         }
 
