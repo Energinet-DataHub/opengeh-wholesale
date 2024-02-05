@@ -18,12 +18,11 @@ import pytest
 import package.codelists as e
 
 from pyspark.sql import SparkSession
-from calculation.preparation.transformations.charge_types.charge_type_factories import (
-    DefaultTestValues as d,
-    create_metering_point_row,
-    create_time_series_row,
-    create_tariff_charges_row,
+import calculation.preparation.transformations.charge_types.charge_type_factories as factory
+from calculation.preparation.transformations.default_test_values import (
+    DefaultTestValues,
 )
+
 from package.calculation.preparation.transformations import (
     get_tariff_charges,
 )
@@ -38,19 +37,19 @@ from pyspark.sql import Row
 
 
 def _create_expected_tariff_charges_row(
-    charge_key: str = f"{d.DEFAULT_CHARGE_CODE}-{d.DEFAULT_CHARGE_OWNER}-{e.ChargeType.TARIFF.value}",
-    charge_code: str = d.DEFAULT_CHARGE_CODE,
-    charge_owner: str = d.DEFAULT_CHARGE_OWNER,
-    charge_tax: bool = d.DEFAULT_CHARGE_TAX,
+    charge_key: str = f"{DefaultTestValues.DEFAULT_CHARGE_CODE}-{DefaultTestValues.DEFAULT_CHARGE_OWNER}-{e.ChargeType.TARIFF.value}",
+    charge_code: str = DefaultTestValues.DEFAULT_CHARGE_CODE,
+    charge_owner: str = DefaultTestValues.DEFAULT_CHARGE_OWNER,
+    charge_tax: bool = DefaultTestValues.DEFAULT_CHARGE_TAX,
     resolution: e.ChargeResolution = e.ChargeResolution.HOUR,
-    charge_time: datetime = d.DEFAULT_CHARGE_TIME_HOUR_0,
-    charge_price: Decimal = d.DEFAULT_CHARGE_PRICE,
-    metering_point_id: str = d.DEFAULT_METERING_POINT_ID,
-    energy_supplier_id: str = d.DEFAULT_ENERGY_SUPPLIER_ID,
-    metering_point_type: e.MeteringPointType = d.DEFAULT_METERING_POINT_TYPE,
-    settlement_method: e.SettlementMethod = d.DEFAULT_SETTLEMENT_METHOD,
-    grid_area: str = d.DEFAULT_GRID_AREA,
-    quantity: Decimal = d.DEFAULT_QUANTITY,
+    charge_time: datetime = DefaultTestValues.DEFAULT_CHARGE_TIME_HOUR_0,
+    charge_price: Decimal = DefaultTestValues.DEFAULT_CHARGE_PRICE,
+    metering_point_id: str = DefaultTestValues.DEFAULT_METERING_POINT_ID,
+    energy_supplier_id: str = DefaultTestValues.DEFAULT_ENERGY_SUPPLIER_ID,
+    metering_point_type: e.MeteringPointType = DefaultTestValues.DEFAULT_METERING_POINT_TYPE,
+    settlement_method: e.SettlementMethod = DefaultTestValues.DEFAULT_SETTLEMENT_METHOD,
+    grid_area: str = DefaultTestValues.DEFAULT_GRID_AREA,
+    quantity: Decimal = DefaultTestValues.DEFAULT_QUANTITY,
     qualities=None,
 ) -> Row:
     if qualities is None:
@@ -88,13 +87,13 @@ def test__get_tariff_charges__filters_on_resolution(
     Only charges with the given resolution are accepted.
     """
     # Arrange
-    metering_point_rows = [create_metering_point_row()]
-    time_series_rows = [create_time_series_row()]
+    metering_point_rows = [factory.create_metering_point_row()]
+    time_series_rows = [factory.create_time_series_row()]
     charges_rows = [
-        create_tariff_charges_row(
+        factory.create_tariff_charges_row(
             resolution=e.ChargeResolution.HOUR,
         ),
-        create_tariff_charges_row(
+        factory.create_tariff_charges_row(
             resolution=e.ChargeResolution.DAY,
         ),
     ]
@@ -125,10 +124,10 @@ def test__get_tariff_charges__filters_on_tariff_charge_type(
     Only charges with the charge type TARIFF are accepted.
     """
     # Arrange
-    metering_point_rows = [create_metering_point_row()]
-    time_series_rows = [create_time_series_row()]
+    metering_point_rows = [factory.create_metering_point_row()]
+    time_series_rows = [factory.create_time_series_row()]
     charges_rows = [
-        create_tariff_charges_row(),
+        factory.create_tariff_charges_row(),
     ]
 
     metering_point = spark.createDataFrame(
@@ -175,15 +174,15 @@ def test__get_tariff_charges__only_accepts_charges_in_metering_point_period(
     """
     # Arrange
     metering_point_rows = [
-        create_metering_point_row(
+        factory.create_metering_point_row(
             from_date=datetime(2020, 1, 1, 0), to_date=datetime(2020, 1, 1, 2)
         ),
     ]
     time_series_rows = [
-        create_time_series_row(observation_time=from_date),
+        factory.create_time_series_row(observation_time=from_date),
     ]
     charges_rows = [
-        create_tariff_charges_row(
+        factory.create_tariff_charges_row(
             from_date=from_date,
             to_date=to_date,
             charge_time=from_date,
@@ -216,9 +215,12 @@ def test__get_tariff_charges__when_same_metering_point_and_resolution__sums_quan
     with the same observation time, the quantity is summed.
     """
     # Arrange
-    metering_point_rows = [create_metering_point_row()]
-    time_series_rows = [create_time_series_row(), create_time_series_row()]
-    charges_rows = [create_tariff_charges_row()]
+    metering_point_rows = [factory.create_metering_point_row()]
+    time_series_rows = [
+        factory.create_time_series_row(),
+        factory.create_time_series_row(),
+    ]
+    charges_rows = [factory.create_tariff_charges_row()]
 
     metering_point = spark.createDataFrame(
         metering_point_rows, metering_point_period_schema
@@ -235,16 +237,21 @@ def test__get_tariff_charges__when_same_metering_point_and_resolution__sums_quan
     )
 
     # Assert
-    assert actual.collect()[0][Colname.sum_quantity] == 2 * d.DEFAULT_QUANTITY
+    assert (
+        actual.collect()[0][Colname.sum_quantity]
+        == 2 * DefaultTestValues.DEFAULT_QUANTITY
+    )
 
 
 def test__get_tariff_charges__when_no_matching_charge_resolution__returns_empty_tariffs(
     spark: SparkSession,
 ) -> None:
     # Arrange
-    metering_point_rows = [create_metering_point_row()]
-    time_series_rows = [create_time_series_row()]
-    charges_rows = [create_tariff_charges_row(resolution=e.ChargeResolution.DAY)]
+    metering_point_rows = [factory.create_metering_point_row()]
+    time_series_rows = [factory.create_time_series_row()]
+    charges_rows = [
+        factory.create_tariff_charges_row(resolution=e.ChargeResolution.DAY)
+    ]
 
     metering_point = spark.createDataFrame(
         metering_point_rows, metering_point_period_schema
@@ -268,11 +275,11 @@ def test__get_tariff_charges__when_two_tariff_overlap__returns_both_tariffs(
     spark: SparkSession,
 ) -> None:
     # Arrange
-    metering_point_rows = [create_metering_point_row()]
-    time_series_rows = [create_time_series_row()]
+    metering_point_rows = [factory.create_metering_point_row()]
+    time_series_rows = [factory.create_time_series_row()]
     charges_rows = [
-        create_tariff_charges_row(charge_code="4000"),
-        create_tariff_charges_row(charge_code="3000"),
+        factory.create_tariff_charges_row(charge_code="4000"),
+        factory.create_tariff_charges_row(charge_code="3000"),
     ]
 
     metering_point = spark.createDataFrame(
@@ -297,15 +304,17 @@ def test__get_tariff_charges__returns_expected_tariff_values(
     spark: SparkSession,
 ) -> None:
     # Arrange
-    metering_point_rows = [create_metering_point_row()]
+    metering_point_rows = [factory.create_metering_point_row()]
     time_series_rows = [
-        create_time_series_row(quality=e.QuantityQuality.CALCULATED),
-        create_time_series_row(quality=e.QuantityQuality.ESTIMATED),
+        factory.create_time_series_row(quality=e.QuantityQuality.CALCULATED),
+        factory.create_time_series_row(quality=e.QuantityQuality.ESTIMATED),
     ]
-    charges_rows = [create_tariff_charges_row()]
+    charges_rows = [factory.create_tariff_charges_row()]
 
     expected_tariff_charges_row = [
-        _create_expected_tariff_charges_row(quantity=2 * d.DEFAULT_QUANTITY)
+        _create_expected_tariff_charges_row(
+            quantity=2 * DefaultTestValues.DEFAULT_QUANTITY
+        )
     ]
 
     metering_point = spark.createDataFrame(
@@ -336,12 +345,12 @@ def test__get_tariff_charges__returns_expected_tariff_values(
         (
             e.ChargeResolution.HOUR,
             48,
-            d.DEFAULT_QUANTITY,
+            DefaultTestValues.DEFAULT_QUANTITY,
         ),
         (
             e.ChargeResolution.DAY,
             2,
-            24 * d.DEFAULT_QUANTITY,
+            24 * DefaultTestValues.DEFAULT_QUANTITY,
         ),
     ],
 )
@@ -357,7 +366,7 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hou
     """
     # Arrange
     metering_point_rows = [
-        create_metering_point_row(
+        factory.create_metering_point_row(
             from_date=datetime(2020, 1, 1, 0),
             to_date=datetime(2020, 1, 3, 0),
             resolution=e.MeteringPointResolution.HOUR,
@@ -368,10 +377,10 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hou
     for j in range(1, 4):
         for i in range(0, 24):
             time_series_rows.append(
-                create_time_series_row(observation_time=datetime(2020, 1, j, i))
+                factory.create_time_series_row(observation_time=datetime(2020, 1, j, i))
             )
             charges_rows.append(
-                create_tariff_charges_row(
+                factory.create_tariff_charges_row(
                     charge_time=datetime(2020, 1, j, i),
                     resolution=charge_resolution,
                 )
@@ -402,12 +411,12 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hou
         (
             e.ChargeResolution.HOUR,
             48,
-            4 * d.DEFAULT_QUANTITY,
+            4 * DefaultTestValues.DEFAULT_QUANTITY,
         ),
         (
             e.ChargeResolution.DAY,
             2,
-            96 * d.DEFAULT_QUANTITY,
+            96 * DefaultTestValues.DEFAULT_QUANTITY,
         ),
     ],
 )
@@ -423,7 +432,7 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_qua
     """
     # Arrange
     metering_point_rows = [
-        create_metering_point_row(
+        factory.create_metering_point_row(
             from_date=datetime(2020, 1, 1, 0),
             to_date=datetime(2020, 1, 3, 0),
             resolution=e.MeteringPointResolution.QUARTER,
@@ -435,12 +444,12 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_qua
         for i in range(0, 24):
             for k in range(0, 4):
                 time_series_rows.append(
-                    create_time_series_row(
+                    factory.create_time_series_row(
                         observation_time=datetime(2020, 1, j, i, k * 15)
                     )
                 )
             charges_rows.append(
-                create_tariff_charges_row(
+                factory.create_tariff_charges_row(
                     charge_time=datetime(2020, 1, j, i),
                     resolution=charge_resolution,
                 )
@@ -513,27 +522,27 @@ def test__get_tariff_charges__per_day_only_accepts_time_series_and_change_times_
     """
     # Arrange
     metering_point_rows = [
-        create_metering_point_row(
+        factory.create_metering_point_row(
             from_date=datetime(2019, 12, 31, 23), to_date=datetime(2020, 1, 1, 23)
         ),
-        create_metering_point_row(
+        factory.create_metering_point_row(
             from_date=datetime(2020, 1, 1, 23),
             to_date=datetime(2020, 1, 2, 23),
             energy_supplier_id="123",
         ),
     ]
     time_series_rows = [
-        create_time_series_row(
+        factory.create_time_series_row(
             observation_time=date_time_1, quality=e.QuantityQuality.MISSING
         ),
-        create_time_series_row(observation_time=date_time_2),
+        factory.create_time_series_row(observation_time=date_time_2),
     ]
     charges_rows = [
-        create_tariff_charges_row(
+        factory.create_tariff_charges_row(
             charge_time=date_time_1,
             resolution=e.ChargeResolution.DAY,
         ),
-        create_tariff_charges_row(
+        factory.create_tariff_charges_row(
             charge_time=date_time_2,
             resolution=e.ChargeResolution.DAY,
         ),
