@@ -18,8 +18,6 @@ from decimal import Decimal
 from pyspark.sql import SparkSession, Row
 from package.calculation.preparation.transformations import (
     get_tariff_charges,
-    get_fee_charges,
-    get_subscription_charges,
 )
 import package.codelists as e
 from package.calculation.wholesale.schemas.tariffs_schema import tariff_schema
@@ -122,35 +120,6 @@ def _create_tariff_charges_row(
     return Row(**row)
 
 
-def _create_subscription_or_fee_charges_row(
-    charge_type: e.ChargeType,
-    charge_code: str = DEFAULT_CHARGE_CODE,
-    charge_owner: str = DEFAULT_CHARGE_OWNER,
-    charge_tax: bool = DEFAULT_CHARGE_TAX,
-    charge_time: datetime = DEFAULT_CHARGE_TIME_HOUR_0,
-    from_date: datetime = datetime(2019, 12, 31, 23),
-    to_date: datetime = datetime(2020, 1, 1, 0),
-    charge_price: Decimal = DEFAULT_CHARGE_PRICE,
-    metering_point_id: str = DEFAULT_METERING_POINT_ID,
-) -> Row:
-    charge_key: str = f"{charge_code}-{charge_owner}-{charge_type.value}"
-
-    row = {
-        Colname.charge_key: charge_key,
-        Colname.charge_code: charge_code,
-        Colname.charge_type: charge_type.value,
-        Colname.charge_owner: charge_owner,
-        Colname.charge_tax: charge_tax,
-        Colname.resolution: e.ChargeResolution.MONTH.value,
-        Colname.charge_time: charge_time,
-        Colname.from_date: from_date,
-        Colname.to_date: to_date,
-        Colname.charge_price: charge_price,
-        Colname.metering_point_id: metering_point_id,
-    }
-    return Row(**row)
-
-
 def _create_expected_tariff_charges_row(
     charge_key: str = f"{DEFAULT_CHARGE_CODE}-{DEFAULT_CHARGE_OWNER}-{e.ChargeType.TARIFF.value}",
     charge_code: str = DEFAULT_CHARGE_CODE,
@@ -240,12 +209,6 @@ def test__get_tariff_charges__filters_on_tariff_charge_type(
     time_series_rows = [_create_time_series_row()]
     charges_rows = [
         _create_tariff_charges_row(),
-        _create_subscription_or_fee_charges_row(
-            charge_type=e.ChargeType.FEE,
-        ),
-        _create_subscription_or_fee_charges_row(
-            charge_type=e.ChargeType.SUBSCRIPTION,
-        ),
     ]
 
     metering_point = spark.createDataFrame(
@@ -264,104 +227,6 @@ def test__get_tariff_charges__filters_on_tariff_charge_type(
 
     # Assert
     assert actual_tariff.collect()[0][Colname.charge_type] == e.ChargeType.TARIFF.value
-
-
-def test__get_fee_charges__filters_on_fee_charge_type(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    metering_point_rows = [_create_metering_point_row()]
-    charges_rows = [
-        _create_tariff_charges_row(),
-        _create_subscription_or_fee_charges_row(
-            charge_type=e.ChargeType.FEE,
-        ),
-        _create_subscription_or_fee_charges_row(
-            charge_type=e.ChargeType.SUBSCRIPTION,
-        ),
-    ]
-
-    metering_point = spark.createDataFrame(
-        metering_point_rows, metering_point_period_schema
-    )
-    charges = spark.createDataFrame(charges_rows, charges_schema)
-
-    # Act
-    actual_fee = get_fee_charges(charges, metering_point)
-
-    # Assert
-    assert actual_fee.collect()[0][Colname.charge_type] == e.ChargeType.FEE.value
-
-
-def test__get_subscription_charges__filters_on_subscription_charge_type(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    metering_point_rows = [_create_metering_point_row()]
-    charges_rows = [
-        _create_tariff_charges_row(),
-        _create_subscription_or_fee_charges_row(
-            charge_type=e.ChargeType.FEE,
-        ),
-        _create_subscription_or_fee_charges_row(
-            charge_type=e.ChargeType.SUBSCRIPTION,
-        ),
-    ]
-
-    metering_point = spark.createDataFrame(
-        metering_point_rows, metering_point_period_schema
-    )
-    charges = spark.createDataFrame(charges_rows, charges_schema)
-
-    # Act
-    actual_subscription = get_subscription_charges(charges, metering_point)
-
-    # Assert
-    assert (
-        actual_subscription.collect()[0][Colname.charge_type]
-        == e.ChargeType.SUBSCRIPTION.value
-    )
-
-
-@pytest.mark.parametrize(
-    "charge_time, from_date, to_date, expected_day_count",
-    [
-        # leap year
-        (datetime(2020, 2, 1, 0), datetime(2020, 2, 1, 0), datetime(2020, 3, 1, 0), 29),
-        # non-leap year
-        (datetime(2021, 2, 1, 0), datetime(2021, 2, 1, 0), datetime(2021, 3, 1, 0), 28),
-    ],
-)
-def test__get_subscription_charges__split_into_days_between_from_and_to_date(
-    spark: SparkSession,
-    charge_time: datetime,
-    from_date: datetime,
-    to_date: datetime,
-    expected_day_count: int,
-) -> None:
-    # Arrange
-    metering_point_rows = [
-        _create_metering_point_row(from_date=from_date, to_date=to_date)
-    ]
-    charges_rows = [
-        _create_subscription_or_fee_charges_row(
-            charge_time=charge_time,
-            from_date=from_date,
-            to_date=to_date,
-            charge_type=e.ChargeType.SUBSCRIPTION,
-        ),
-    ]
-
-    metering_point = spark.createDataFrame(
-        metering_point_rows, metering_point_period_schema
-    )
-    charges = spark.createDataFrame(charges_rows, charges_schema)
-
-    # Act
-    actual_subscription = get_subscription_charges(charges, metering_point)
-
-    # Assert
-    assert actual_subscription.count() == expected_day_count
 
 
 @pytest.mark.parametrize(
