@@ -728,34 +728,6 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
     }
 
     [Fact]
-    public async Task GetAsync_WhenRequestedPeriodWithMultipleCalculations_ReturnsResult()
-    {
-        // Arrange
-        var gridAreaFilter = GridAreaCodeC;
-        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
-        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        await AddCreatedRowsInArbitraryOrderAsync(addSecondCorrection: true);
-        var parameters = CreateQueryParameters(
-            latestCalculationForPeriods: new[]
-            {
-                new LatestCalculationForPeriod(
-                    new Period(startOfPeriodFilter, endOfPeriodFilter),
-                    _secondCalculationId,
-                    1),
-            },
-            gridArea: gridAreaFilter,
-            startOfPeriod: startOfPeriodFilter,
-            endOfPeriod: endOfPeriodFilter);
-
-        // Act
-        var actual = await Sut.GetAsync(parameters).ToListAsync();
-
-        // Assert
-        using var assertionScope = new AssertionScope();
-        actual.Should().HaveCount(1);
-    }
-
-    [Fact]
     public async Task GetAsync_WithoutCalculations_ReturnsEmptyResult()
     {
         // Arrange
@@ -770,6 +742,76 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var actual = await Sut.GetAsync(parameters).ToListAsync();
 
         // Assert
+        actual.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetAsync_WhenRequestedPeriodWithMultipleCalculations_ReturnsResult()
+    {
+        // Arrange
+        var expectedQuantityPerTimeSeriePointForFirstCalculation = 2;
+        var expectedQuantityPerTimeSeriePointForSecondCalculation = 5;
+        var periodStartForFirstCalculation = Instant.FromUtc(2024, 1, 1, 23, 0, 0);
+        var periodEndForFirstCalculation = Instant.FromUtc(2024, 1, 3, 23, 0, 0);
+        var periodStartForSecondCalculation = Instant.FromUtc(2024, 1, 4, 23, 0, 0);
+        var periodEndForSecondCalculation = Instant.FromUtc(2024, 1, 6, 23, 0, 0);
+        await AddCreatedRowsInArbitraryOrderAsync(addSecondCorrection: true);
+        var parameters = CreateQueryParameters(
+            latestCalculationForPeriods: new[]
+            {
+                new LatestCalculationForPeriod(
+                    new Period(periodStartForFirstCalculation, periodEndForFirstCalculation),
+                    _firstCalculationId,
+                    1),
+                new LatestCalculationForPeriod(
+                    new Period(periodStartForSecondCalculation, periodEndForSecondCalculation),
+                    _secondCalculationId,
+                    2),
+            },
+            gridArea: GridAreaCodeC,
+            startOfPeriod: periodStartForFirstCalculation,
+            // Since calculation results is excluding the end date, we need to add one day to the end date.
+            endOfPeriod: periodEndForSecondCalculation.Plus(Duration.FromDays(1)));
+
+        // Act
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        actual.Should().HaveCount(2);
+
+        actual.Should().ContainSingle(c => c.Version == 1)
+            .Which.TimeSeriesPoints.Sum(x => x.Quantity).Should().Be(expectedQuantityPerTimeSeriePointForFirstCalculation * 4 * 24m * 3);
+        actual.Should().ContainSingle(c => c.Version == 2)
+            .Which.TimeSeriesPoints.Sum(x => x.Quantity).Should().Be(expectedQuantityPerTimeSeriePointForSecondCalculation * 4 * 24m * 3);
+    }
+
+    [Fact]
+    public async Task GetAsync_WhenNoResultForRequestedCalculation_ReturnsEmptyResult()
+    {
+        // Arrange
+        var calculationWithoutAnyResults = Guid.NewGuid();
+        var periodStart = Instant.FromUtc(2024, 1, 1, 23, 0, 0);
+        var periodEnd = Instant.FromUtc(2024, 1, 3, 23, 0, 0);
+        await AddCreatedRowsInArbitraryOrderAsync(addSecondCorrection: true);
+        var parameters = CreateQueryParameters(
+            latestCalculationForPeriods: new[]
+            {
+                new LatestCalculationForPeriod(
+                    new Period(periodStart, periodEnd),
+                    calculationWithoutAnyResults,
+                    1),
+            },
+            gridArea: GridAreaCodeC,
+            startOfPeriod: periodStart,
+            // Since calculation results is excluding the end date, we need to add one day to the end date.
+            endOfPeriod: periodEnd.Plus(Duration.FromDays(1)));
+
+        // Act
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        // Assert
+        actual.Should().BeEmpty();
         actual.Should().BeEmpty();
     }
 
