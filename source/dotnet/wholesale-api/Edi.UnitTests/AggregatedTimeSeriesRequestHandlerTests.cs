@@ -50,7 +50,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
         [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> logger,
         [Frozen] Mock<ICalculationsClient> calculationsClient,
-        [Frozen] Mock<LatestCalculationsPeriod> calculationPeriodCalculator)
+        [Frozen] Mock<LatestCalculationsForPeriod> calculationPeriodCalculator)
     {
         // Arrange
         const string expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestAccepted);
@@ -105,7 +105,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
         [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> logger,
         [Frozen] Mock<ICalculationsClient> calculationsClient,
-        [Frozen] Mock<LatestCalculationsPeriod> calculationPeriodCalculator)
+        [Frozen] Mock<LatestCalculationsForPeriod> calculationPeriodCalculator)
     {
         // Arrange
         const string expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestAccepted);
@@ -161,7 +161,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
         [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> logger,
         [Frozen] Mock<ICalculationsClient> calculationsClient,
-        [Frozen] Mock<LatestCalculationsPeriod> calculationPeriodCalculator)
+        [Frozen] Mock<LatestCalculationsForPeriod> calculationPeriodCalculator)
     {
         // Arrange
         const string expectedRejectedSubject = nameof(AggregatedTimeSeriesRequestRejected);
@@ -216,7 +216,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
         [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> logger,
         [Frozen] Mock<ICalculationsClient> calculationsClient,
-        [Frozen] Mock<LatestCalculationsPeriod> calculationPeriodCalculator)
+        [Frozen] Mock<LatestCalculationsForPeriod> calculationPeriodCalculator)
     {
         // Arrange
         const string expectedRejectedSubject = nameof(AggregatedTimeSeriesRequestRejected);
@@ -281,7 +281,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
         [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> logger,
         [Frozen] Mock<ICalculationsClient> calculationsClient,
-        [Frozen] Mock<LatestCalculationsPeriod> calculationPeriodCalculator)
+        [Frozen] Mock<LatestCalculationsForPeriod> calculationPeriodCalculator)
     {
         // Arrange
         const string expectedRejectedSubject = nameof(AggregatedTimeSeriesRequestRejected);
@@ -345,7 +345,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
         [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> logger,
         [Frozen] Mock<ICalculationsClient> calculationsClient,
-        [Frozen] Mock<LatestCalculationsPeriod> calculationPeriodCalculator)
+        [Frozen] Mock<LatestCalculationsForPeriod> calculationPeriodCalculator)
     {
         // Arrange
         const string expectedRejectedSubject = nameof(AggregatedTimeSeriesRequestRejected);

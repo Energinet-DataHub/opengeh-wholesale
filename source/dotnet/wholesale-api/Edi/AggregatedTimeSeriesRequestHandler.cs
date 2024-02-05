@@ -35,7 +35,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     private readonly IAggregatedTimeSeriesQueries _aggregatedTimeSeriesQueries;
     private readonly ILogger<AggregatedTimeSeriesRequestHandler> _logger;
     private readonly ICalculationsClient _calculationsClient;
-    private readonly LatestCalculationsPeriod _latestCalculationsPeriod;
+    private readonly LatestCalculationsForPeriod _latestCalculationsForPeriod;
     private static readonly ValidationError _noDataAvailable = new("Ingen data tilgængelig / No data available", "E0H");
     private static readonly ValidationError _noDataForRequestedGridArea = new("Forkert netområde / invalid grid area", "D46");
 
@@ -45,14 +45,14 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         IAggregatedTimeSeriesQueries aggregatedTimeSeriesQueries,
         ILogger<AggregatedTimeSeriesRequestHandler> logger,
         ICalculationsClient calculationsClient,
-        LatestCalculationsPeriod latestCalculationsPeriod)
+        LatestCalculationsForPeriod latestCalculationsForPeriod)
     {
         _ediClient = ediClient;
         _validator = validator;
         _aggregatedTimeSeriesQueries = aggregatedTimeSeriesQueries;
         _logger = logger;
         _calculationsClient = calculationsClient;
-        _latestCalculationsPeriod = latestCalculationsPeriod;
+        _latestCalculationsForPeriod = latestCalculationsForPeriod;
     }
 
     public async Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken)
@@ -103,7 +103,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
                 periodEnd: aggregatedTimeSeriesRequest.Period.End)
             .ConfigureAwait(false);
 
-        return _latestCalculationsPeriod.FindLatestCalculationsForPeriod(
+        return _latestCalculationsForPeriod.FindLatestCalculationsForPeriod(
             aggregatedTimeSeriesRequest.Period.Start,
             aggregatedTimeSeriesRequest.Period.End,
             calculations);

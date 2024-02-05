@@ -26,7 +26,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Calculations;
 
-public class LatestCalculationsPeriodTests
+public class LatestCalculationsForPeriodTests
 {
     private DateTimeZone _dateTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!;
 
@@ -41,7 +41,7 @@ public class LatestCalculationsPeriodTests
             .WithPeriodEnd(periodEnd)
             .Build();
 
-        var sut = new LatestCalculationsPeriod(_dateTimeZone);
+        var sut = new LatestCalculationsForPeriod(_dateTimeZone);
 
         // Act
         var actual = sut
@@ -72,7 +72,7 @@ public class LatestCalculationsPeriodTests
             .WithPeriodEnd(secondPeriodEnd)
             .Build();
 
-        var sut = new LatestCalculationsPeriod(_dateTimeZone);
+        var sut = new LatestCalculationsForPeriod(_dateTimeZone);
 
         // Act
         var actual = sut
@@ -110,7 +110,7 @@ public class LatestCalculationsPeriodTests
             .WithVersion(2)
             .Build();
 
-        var sut = new LatestCalculationsPeriod(_dateTimeZone);
+        var sut = new LatestCalculationsForPeriod(_dateTimeZone);
 
         // Act
         var actual = sut
@@ -148,7 +148,7 @@ public class LatestCalculationsPeriodTests
             .WithVersion(1)
             .Build();
 
-        var sut = new LatestCalculationsPeriod(_dateTimeZone);
+        var sut = new LatestCalculationsForPeriod(_dateTimeZone);
 
         // Act
         var actual = sut
@@ -187,7 +187,7 @@ public class LatestCalculationsPeriodTests
             .WithVersion(2)
             .Build();
 
-        var sut = new LatestCalculationsPeriod(_dateTimeZone);
+        var sut = new LatestCalculationsForPeriod(_dateTimeZone);
 
         // Act
         var actual = sut
@@ -235,7 +235,7 @@ public class LatestCalculationsPeriodTests
             .WithVersion(3)
             .Build();
 
-        var sut = new LatestCalculationsPeriod(_dateTimeZone);
+        var sut = new LatestCalculationsForPeriod(_dateTimeZone);
 
         // Act
         var actual = sut
@@ -280,7 +280,7 @@ public class LatestCalculationsPeriodTests
             .WithVersion(2)
             .Build();
 
-        var sut = new LatestCalculationsPeriod(_dateTimeZone);
+        var sut = new LatestCalculationsForPeriod(_dateTimeZone);
 
         // Act
         var actual = () => sut
@@ -300,7 +300,7 @@ public class LatestCalculationsPeriodTests
         var periodStart = Instant.FromUtc(2024, 1, 1, 23, 0, 0);
         var periodEnd = Instant.FromUtc(2024, 1, 14, 23, 0, 0);
 
-        var sut = new LatestCalculationsPeriod(_dateTimeZone);
+        var sut = new LatestCalculationsForPeriod(_dateTimeZone);
 
         // Act
         var actual = sut

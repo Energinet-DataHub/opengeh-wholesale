@@ -117,9 +117,9 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
             _gridArea,
             new EnergyTimeSeriesPoint[]
             {
-                new(new DateTime(2021, 1, 1), 1, quantityQualities),
-                new(new DateTime(2021, 1, 1), 2, quantityQualities),
-                new(new DateTime(2021, 1, 1), 3, quantityQualities),
+                new(new DateTime(2021, 1, 1, 0, 15, 0), 1, quantityQualities),
+                new(new DateTime(2021, 1, 1, 0, 30, 0), 2, quantityQualities),
+                new(new DateTime(2021, 1, 1, 0, 45, 0), 3, quantityQualities),
             },
             _timeSeriesType,
             ProcessType.Aggregation,

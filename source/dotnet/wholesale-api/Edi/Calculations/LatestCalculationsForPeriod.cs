@@ -15,17 +15,16 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Edi.Exceptions;
-using Energinet.DataHub.Wholesale.EDI.Models;
 using NodaTime;
 using Period = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.Period;
 
 namespace Energinet.DataHub.Wholesale.Edi.Calculations;
 
-public class LatestCalculationsPeriod
+public class LatestCalculationsForPeriod
 {
     private readonly DateTimeZone _dateTimeZone;
 
-    public LatestCalculationsPeriod(DateTimeZone dateTimeZone)
+    public LatestCalculationsForPeriod(DateTimeZone dateTimeZone)
     {
         _dateTimeZone = dateTimeZone;
     }
