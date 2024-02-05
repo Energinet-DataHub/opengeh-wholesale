@@ -45,13 +45,13 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReport.F
         {
             using var fileResponse = await WholesaleClient.DownloadAsync(
                 settlementDownloadInput.GridAreaCodes,
-                settlementDownloadInput.ProcessType,
+                settlementDownloadInput.CalculationType,
                 settlementDownloadInput.CalculationPeriodStart,
                 settlementDownloadInput.CalculationPeriodEnd);
             DiagnosticMessageSink.WriteDiagnosticMessage($"""
                 Downloading settlement report for
                 grid area codes {string.Join(", ", settlementDownloadInput.GridAreaCodes.ToArray())} and
-                process type {settlementDownloadInput.ProcessType} started.
+                calculation type {settlementDownloadInput.CalculationType} started.
                 """);
 
             return new ZipArchive(fileResponse.Stream, ZipArchiveMode.Read);

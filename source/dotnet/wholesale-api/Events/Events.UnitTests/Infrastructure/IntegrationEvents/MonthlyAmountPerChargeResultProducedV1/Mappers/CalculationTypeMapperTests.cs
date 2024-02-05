@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Monthl
 using FluentAssertions;
 using Xunit;
 using EventCalculationType = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1.Types.CalculationType;
-using ModelCalculationType = Energinet.DataHub.Wholesale.Common.Interfaces.Models.ProcessType;
+using ModelCalculationType = Energinet.DataHub.Wholesale.Common.Interfaces.Models.CalculationType;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1.MonthlyAmountPerChargeResultProducedV1;
 

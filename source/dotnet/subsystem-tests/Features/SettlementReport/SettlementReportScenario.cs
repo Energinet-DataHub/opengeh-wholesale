@@ -40,7 +40,7 @@ public class SettlementReportScenario : SubsystemTestsBase<SettlementReportScena
         // fixing calculation has been executed. This means that the tests will fail the very first time they are run,
         // when there is no data in the delta table.
         Fixture.ScenarioState.SettlementDownloadInput.GridAreaCodes.Add("543");
-        Fixture.ScenarioState.SettlementDownloadInput.ProcessType = ProcessType.BalanceFixing;
+        Fixture.ScenarioState.SettlementDownloadInput.CalculationType = CalculationType.BalanceFixing;
         Fixture.ScenarioState.SettlementDownloadInput.CalculationPeriodStart = DateTimeOffset.Parse("2022-01-11T23:00:00");
         Fixture.ScenarioState.SettlementDownloadInput.CalculationPeriodEnd = DateTimeOffset.Parse("2022-01-12T23:00:00");
     }

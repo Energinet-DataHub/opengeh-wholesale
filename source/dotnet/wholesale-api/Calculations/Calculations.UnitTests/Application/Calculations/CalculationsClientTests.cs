@@ -28,13 +28,13 @@ public class CalculationsClientTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public async Task SearchAsync_NoMatchingBatches_ReturnsZeroBatches(
-       [Frozen] Mock<ICalculationRepository> batchRepositoryMock,
+    public async Task SearchAsync_NoMatchingCalculations_ReturnsZeroCalculations(
+       [Frozen] Mock<ICalculationRepository> calculationRepositoryMock,
        CalculationsClient sut)
     {
         // Arrange
-        var noBatches = new List<Calculation>();
-        batchRepositoryMock
+        var nocalculations = new List<Calculation>();
+        calculationRepositoryMock
             .Setup(x => x.SearchAsync(
                 Array.Empty<GridAreaCode>(),
                 Array.Empty<CalculationExecutionState>(),
@@ -42,7 +42,7 @@ public class CalculationsClientTests
                 null,
                 null,
                 null))
-            .ReturnsAsync(noBatches);
+            .ReturnsAsync(nocalculations);
 
         // Act
         var searchResult = await sut.SearchAsync(
@@ -59,20 +59,20 @@ public class CalculationsClientTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task SearchAsync_ReturnsCorrectNumberOfBatches(
-        [Frozen] Mock<ICalculationRepository> batchRepositoryMock,
+    public async Task SearchAsync_ReturnsCorrectNumberOfCalculations(
+        [Frozen] Mock<ICalculationRepository> calculationRepositoryMock,
         CalculationsClient sut)
     {
         // Arrange
-        const int numberOfBatches = 3;
-        var batches = new List<Calculation>()
+        const int numberOfCalculations = 3;
+        var calculations = new List<Calculation>()
         {
             new CalculationBuilder().Build(),
             new CalculationBuilder().Build(),
             new CalculationBuilder().Build(),
         };
 
-        batchRepositoryMock
+        calculationRepositoryMock
             .Setup(x => x.SearchAsync(
                 It.IsAny<List<GridAreaCode>>(),
                 Array.Empty<CalculationExecutionState>(),
@@ -80,7 +80,7 @@ public class CalculationsClientTests
                 null,
                 null,
                 null))
-            .ReturnsAsync(batches);
+            .ReturnsAsync(calculations);
 
         // Act
         var searchResult = await sut.SearchAsync(
@@ -92,6 +92,6 @@ public class CalculationsClientTests
             null);
 
         // Assert
-        searchResult.Count().Should().Be(numberOfBatches);
+        searchResult.Count().Should().Be(numberOfCalculations);
     }
 }

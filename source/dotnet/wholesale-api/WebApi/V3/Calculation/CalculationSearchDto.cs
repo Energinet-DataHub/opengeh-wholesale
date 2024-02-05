@@ -15,19 +15,6 @@
 namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 
 /// <summary>
-/// An immutable batch.
+/// An immutable criteria for calculation search.
 /// </summary>
-public sealed record BatchDto(
-    long? RunId,
-    Guid BatchId,
-    DateTimeOffset PeriodStart,
-    DateTimeOffset PeriodEnd,
-    string Resolution,
-    string Unit,
-    DateTimeOffset? ExecutionTimeStart,
-    DateTimeOffset? ExecutionTimeEnd,
-    BatchState ExecutionState,
-    bool AreSettlementReportsCreated,
-    string[] GridAreaCodes,
-    ProcessType ProcessType,
-    Guid CreatedByUserId);
+public sealed record CalculationSearchDto(DateTimeOffset MinExecutionTime, DateTimeOffset MaxExecutionTime);

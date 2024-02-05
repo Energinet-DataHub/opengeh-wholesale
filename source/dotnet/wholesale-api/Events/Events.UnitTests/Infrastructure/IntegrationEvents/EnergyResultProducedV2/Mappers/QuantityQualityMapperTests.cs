@@ -48,7 +48,7 @@ public class QuantityQualityMapperTests
     }
 
     [Fact]
-    public void MapProcessType_WhenInvalidEnumNumberForQuantityQuality_ThrowsArgumentOutOfRangeException()
+    public void MapCalculationType_WhenInvalidEnumNumberForQuantityQuality_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
         var invalidValue = (QuantityQuality)99;

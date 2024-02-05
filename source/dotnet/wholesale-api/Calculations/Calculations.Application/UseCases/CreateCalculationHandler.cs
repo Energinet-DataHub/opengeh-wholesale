@@ -39,7 +39,7 @@ public class CreateCalculationHandler : ICreateCalculationHandler
 
     public async Task<Guid> HandleAsync(CreateCalculationCommand command)
     {
-        var calculation = _calculationFactory.Create(command.ProcessType, command.GridAreaCodes, command.StartDate, command.EndDate, command.CreatedByUserId);
+        var calculation = _calculationFactory.Create(command.CalculationType, command.GridAreaCodes, command.StartDate, command.EndDate, command.CreatedByUserId);
         await _calculationRepository.AddAsync(calculation).ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
 

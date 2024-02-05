@@ -84,9 +84,9 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         AggregatedTimeSeriesRequest request,
         CancellationToken cancellationToken)
     {
-        var parameters = CreateAggregatedTimeSeriesQueryParametersWithoutProcessType(request);
+        var parameters = CreateAggregatedTimeSeriesQueryParametersWithoutCalculationType(request);
 
-        if (request.RequestedProcessType == RequestedProcessType.LatestCorrection)
+        if (request.RequestedCalculationType == RequestedCalculationType.LatestCorrection)
         {
             return await _aggregatedTimeSeriesQueries.GetLatestCorrectionForGridAreaAsync(parameters).ToListAsync(cancellationToken).ConfigureAwait(false);
         }
@@ -94,7 +94,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         return await _aggregatedTimeSeriesQueries.GetAsync(
             parameters with
             {
-                ProcessType = ProcessTypeMapper.FromRequestedProcessType(request.RequestedProcessType),
+                CalculationType = CalculationTypeMapper.FromRequestedCalculationType(request.RequestedCalculationType),
             }).ToListAsync(cancellationToken).ConfigureAwait(false);
     }
 
@@ -110,10 +110,10 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         {
             var newAggregationLevel = aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea with { GridAreaCode = null };
             var newRequest = aggregatedTimeSeriesRequestMessage with { AggregationPerRoleAndGridArea = newAggregationLevel };
-            var parameters = CreateAggregatedTimeSeriesQueryParametersWithoutProcessType(newRequest);
+            var parameters = CreateAggregatedTimeSeriesQueryParametersWithoutCalculationType(newRequest);
 
             var results = _aggregatedTimeSeriesQueries.GetAsync(
-                    parameters with { ProcessType = ProcessTypeMapper.FromRequestedProcessType(newRequest.RequestedProcessType), })
+                    parameters with { CalculationType = CalculationTypeMapper.FromRequestedCalculationType(newRequest.RequestedCalculationType), })
                 .ConfigureAwait(false);
 
             await foreach (var result in results)
@@ -125,7 +125,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         return false;
     }
 
-    private static AggregatedTimeSeriesQueryParameters CreateAggregatedTimeSeriesQueryParametersWithoutProcessType(
+    private static AggregatedTimeSeriesQueryParameters CreateAggregatedTimeSeriesQueryParametersWithoutCalculationType(
         AggregatedTimeSeriesRequest request)
     {
         var parameters = new AggregatedTimeSeriesQueryParameters(
