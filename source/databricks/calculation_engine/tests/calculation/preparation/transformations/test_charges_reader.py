@@ -168,7 +168,7 @@ class TestWhenChargeIsInMasterDataButNotInChargeLinks:
         assert actual_row[Colname.charge_key] == DEFAULT_CHARGE_KEY
 
 
-class TestWhenMultipleChargeKJeys:
+class TestWhenMultipleChargeKeys:
     @pytest.mark.parametrize(
         "from_date, to_date, charge_time, expect_empty",
         [
@@ -269,6 +269,8 @@ class TestWhenMasterDataPeriodExceedsLinksPeriod:
         charge_master_data_to_date,
     ) -> None:
         # Arrange
+        from_date = min(charge_links_from_date, charge_master_data_from_date)
+        to_date = max(charge_links_to_date, charge_master_data_to_date)
         table_reader_mock.read_charge_master_data_periods.return_value = (
             spark.createDataFrame(
                 data=[
@@ -295,7 +297,7 @@ class TestWhenMasterDataPeriodExceedsLinksPeriod:
         )
 
         # Act
-        actual = read_charges(table_reader_mock)
+        actual = read_charges(table_reader_mock, from_date, to_date)
 
         # Assert
         assert actual.count() == 1
