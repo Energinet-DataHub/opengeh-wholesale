@@ -30,15 +30,12 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Authorization.Fixt
             : base(diagnosticMessageSink)
         {
             Configuration = new WholesaleSubsystemConfiguration();
-            ExistingCalculationId = Configuration.Root.GetValue<Guid>("EXISTING_BATCH_ID");
         }
 
         /// <summary>
         /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
         /// </summary>
         public WholesaleClient_V3 WholesaleClient { get; private set; } = null!;
-
-        public Guid ExistingCalculationId { get; }
 
         private WholesaleSubsystemConfiguration Configuration { get; }
 

@@ -34,7 +34,6 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures
         {
             Configuration = new WholesaleSubsystemConfiguration();
             LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
-            ExistingCalculationId = Configuration.Root.GetValue<Guid>("EXISTING_BATCH_ID");
 
             ScenarioState = new TState();
         }
@@ -46,8 +45,6 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures
         /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
         /// </summary>
         public WholesaleClient_V3 WholesaleClient { get; private set; } = null!;
-
-        public Guid ExistingCalculationId { get; }
 
         private WholesaleSubsystemConfiguration Configuration { get; }
 

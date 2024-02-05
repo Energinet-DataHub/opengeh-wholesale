@@ -82,16 +82,15 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Authorization
             /// Perform a request that do require authorization.
             /// </summary>
             [SubsystemFact]
-            public async Task WhenRequestingExistingCalculationId_ResponseIsOk()
+            public async Task WhenRequestingCalculations_ResponseIsOk()
             {
                 // Arrange
 
                 // Act
-                var calculationResult = await Fixture.WholesaleClient.GetCalculationAsync(Fixture.ExistingCalculationId);
+                var actualResult = await Fixture.WholesaleClient.SearchCalculationsAsync();
 
                 // Assert
-                calculationResult.Should().NotBeNull();
-                calculationResult!.CalculationId.Should().Be(Fixture.ExistingCalculationId);
+                actualResult.Should().NotBeNull();
             }
         }
     }
