@@ -19,10 +19,8 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationR
 
 public record AggregatedTimeSeriesQueryParameters(
     TimeSeriesType TimeSeriesType,
-    Instant StartOfPeriod,
-    Instant EndOfPeriod,
     string? GridArea,
     string? EnergySupplierId,
     string? BalanceResponsibleId,
-    IReadOnlyCollection<LatestCalculationForPeriod> LatestCalculationForPeriod,
+    IReadOnlyCollection<CalculationForPeriod> LatestCalculationForPeriod,
     ProcessType? ProcessType = null);

@@ -14,9 +14,9 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 
-public class LatestCalculationForPeriod
+public class CalculationForPeriod
 {
-    public LatestCalculationForPeriod(
+    public CalculationForPeriod(
         Period period,
         Guid batchId,
         long calculationVersion)

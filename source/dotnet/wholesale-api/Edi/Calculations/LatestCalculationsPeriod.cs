@@ -21,22 +21,22 @@ using Period = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Calcula
 
 namespace Energinet.DataHub.Wholesale.Edi.Calculations;
 
-public class CalculationPeriodCalculator
+public class LatestCalculationsPeriod
 {
     private readonly DateTimeZone _dateTimeZone;
 
-    public CalculationPeriodCalculator(DateTimeZone dateTimeZone)
+    public LatestCalculationsPeriod(DateTimeZone dateTimeZone)
     {
         _dateTimeZone = dateTimeZone;
     }
 
-    public IReadOnlyCollection<LatestCalculationForPeriod> FindLatestCalculationsForPeriod(
+    public IReadOnlyCollection<CalculationForPeriod> FindLatestCalculationsForPeriod(
         Instant periodStart,
         Instant periodEnd,
         IReadOnlyCollection<CalculationDto> calculations)
     {
         var remainingDaysInPeriod = GetDaysInPeriod(periodStart, periodEnd);
-        var latestCalculationsForPeriod = new List<LatestCalculationForPeriod>();
+        var latestCalculationsForPeriod = new List<CalculationForPeriod>();
         foreach (var calculation in calculations.OrderByDescending(x => x.Version))
         {
             var periodsWhereCalculationIsLatest =
@@ -65,12 +65,12 @@ public class CalculationPeriodCalculator
         throw new MissingCalculationException($"No calculation found for dates: {string.Join(", ", remainingDaysInPeriod)}");
     }
 
-    private static IReadOnlyCollection<LatestCalculationForPeriod> GetPeriodsWhereCalculationIsLatest(
+    private static IReadOnlyCollection<CalculationForPeriod> GetPeriodsWhereCalculationIsLatest(
         CalculationDto calculation,
-        IReadOnlyCollection<LatestCalculationForPeriod> latestCalculationsForPeriod,
+        IReadOnlyCollection<CalculationForPeriod> latestCalculationsForPeriod,
         IReadOnlyCollection<Instant> remainingDaysInPeriod)
     {
-        var result = new List<LatestCalculationForPeriod>();
+        var result = new List<CalculationForPeriod>();
         var calculationStart = Instant.FromDateTimeOffset(calculation.PeriodStart);
         var calculationEnd = Instant.FromDateTimeOffset(calculation.PeriodEnd);
         Instant? startOfPeriod = null;
@@ -86,7 +86,7 @@ public class CalculationPeriodCalculator
                 && (calculationEnd == remainDay
                     || NextDayInExistingPeriod(remainDay, latestCalculationsForPeriod)))
             {
-                result.Add(new LatestCalculationForPeriod(
+                result.Add(new CalculationForPeriod(
                     new Period(startOfPeriod.Value, remainDay),
                     calculation.BatchId,
                     calculation.Version));
@@ -99,7 +99,7 @@ public class CalculationPeriodCalculator
 
     private static bool NextDayInExistingPeriod(
         Instant remainDay,
-        IReadOnlyCollection<LatestCalculationForPeriod> latestCalculationsForPeriod)
+        IReadOnlyCollection<CalculationForPeriod> latestCalculationsForPeriod)
     {
         return latestCalculationsForPeriod
             .Any(x => x.Period.Start <= remainDay.Plus(Duration.FromDays(1))

@@ -35,7 +35,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     private readonly IAggregatedTimeSeriesQueries _aggregatedTimeSeriesQueries;
     private readonly ILogger<AggregatedTimeSeriesRequestHandler> _logger;
     private readonly ICalculationsClient _calculationsClient;
-    private readonly CalculationPeriodCalculator _calculationPeriodCalculator;
+    private readonly LatestCalculationsPeriod _latestCalculationsPeriod;
     private static readonly ValidationError _noDataAvailable = new("Ingen data tilgængelig / No data available", "E0H");
     private static readonly ValidationError _noDataForRequestedGridArea = new("Forkert netområde / invalid grid area", "D46");
 
@@ -45,14 +45,14 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         IAggregatedTimeSeriesQueries aggregatedTimeSeriesQueries,
         ILogger<AggregatedTimeSeriesRequestHandler> logger,
         ICalculationsClient calculationsClient,
-        CalculationPeriodCalculator calculationPeriodCalculator)
+        LatestCalculationsPeriod latestCalculationsPeriod)
     {
         _ediClient = ediClient;
         _validator = validator;
         _aggregatedTimeSeriesQueries = aggregatedTimeSeriesQueries;
         _logger = logger;
         _calculationsClient = calculationsClient;
-        _calculationPeriodCalculator = calculationPeriodCalculator;
+        _latestCalculationsPeriod = latestCalculationsPeriod;
     }
 
     public async Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken)
@@ -90,7 +90,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         await SendAcceptedMessageAsync(results, referenceId, cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task<IReadOnlyCollection<LatestCalculationForPeriod>> GetLatestCompletedCalculationForRequestAsync(
+    private async Task<IReadOnlyCollection<CalculationForPeriod>> GetLatestCompletedCalculationForRequestAsync(
         AggregatedTimeSeriesRequest aggregatedTimeSeriesRequest)
     {
         var calculations = await _calculationsClient
@@ -103,7 +103,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
                 periodEnd: aggregatedTimeSeriesRequest.Period.End)
             .ConfigureAwait(false);
 
-        return _calculationPeriodCalculator.FindLatestCalculationsForPeriod(
+        return _latestCalculationsPeriod.FindLatestCalculationsForPeriod(
             aggregatedTimeSeriesRequest.Period.Start,
             aggregatedTimeSeriesRequest.Period.End,
             calculations);
@@ -162,8 +162,6 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
 
         var parameters = new AggregatedTimeSeriesQueryParameters(
             CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromEdi(request.TimeSeriesType),
-            request.Period.Start,
-            request.Period.End,
             request.AggregationPerRoleAndGridArea.GridAreaCode,
             request.AggregationPerRoleAndGridArea.EnergySupplierId,
             request.AggregationPerRoleAndGridArea.BalanceResponsibleId,

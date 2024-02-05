@@ -81,7 +81,7 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
 
     private async IAsyncEnumerable<AggregatedTimeSeries> GetInternalAsync(
         AggregatedTimeSeriesQueryStatement sqlStatement,
-        IReadOnlyCollection<LatestCalculationForPeriod> latestCalculationForPeriod)
+        IReadOnlyCollection<CalculationForPeriod> latestCalculationForPeriod)
     {
         var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
         DatabricksSqlRow? previousRow = null;
@@ -109,7 +109,7 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
         }
     }
 
-    private long GetVersion(DatabricksSqlRow row, IReadOnlyCollection<LatestCalculationForPeriod> latestCalculationForPeriod)
+    private long GetVersion(DatabricksSqlRow row, IReadOnlyCollection<CalculationForPeriod> latestCalculationForPeriod)
     {
         return latestCalculationForPeriod
             .First(x => x.BatchId == Guid.Parse(row[EnergyResultColumnNames.BatchId]!))
