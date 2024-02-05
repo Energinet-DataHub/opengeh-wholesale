@@ -140,20 +140,31 @@ def _join_with_metering_points(df: DataFrame, metering_points: DataFrame) -> Dat
 def _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
     metering_point_time_series: DataFrame, charge_resolution: ChargeResolution
 ) -> DataFrame:
-    grouped_time_series = t.aggregate_quantity_and_quality(
-        metering_point_time_series,
-        [
-            Colname.metering_point_id,
-            f.window(
+    timezone = "Europe/Copenhagen"
+    grouped_time_series = (
+        t.aggregate_quantity_and_quality(
+            metering_point_time_series.withColumn(
                 Colname.observation_time,
-                _get_window_duration_string_based_on_resolution(charge_resolution),
+                f.from_utc_timestamp(Colname.observation_time, timezone),
             ),
-        ],
-    ).selectExpr(
-        Colname.sum_quantity,
-        Colname.qualities,
-        Colname.metering_point_id,
-        f"window.{Colname.start} as {Colname.observation_time}",
+            [
+                Colname.metering_point_id,
+                f.window(
+                    Colname.observation_time,
+                    _get_window_duration_string_based_on_resolution(charge_resolution),
+                ),
+            ],
+        )
+        .selectExpr(
+            Colname.sum_quantity,
+            Colname.qualities,
+            Colname.metering_point_id,
+            f"window.{Colname.start} as {Colname.observation_time}",
+        )
+        .withColumn(
+            Colname.observation_time,
+            f.to_utc_timestamp(Colname.observation_time, timezone),
+        )
     )
 
     # The sum operator creates by default a column as a double type (28,6).
