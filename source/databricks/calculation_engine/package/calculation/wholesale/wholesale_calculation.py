@@ -20,7 +20,7 @@ from pyspark.sql import DataFrame
 import package.calculation.wholesale.tariff_calculators as tariffs
 from package.common import assert_schema
 from .schemas.tariffs_schema import tariff_schema
-from ..CalculationResults import WholesaleResults
+from ..CalculationResults import WholesaleResultsContainer
 from ...infrastructure import logging_configuration
 
 
@@ -29,10 +29,10 @@ def execute(
     tariffs_hourly_df: DataFrame,
     tariffs_daily_df: DataFrame,
     period_start_datetime: datetime,
-) -> WholesaleResults:
+) -> WholesaleResultsContainer:
     assert_schema(tariffs_hourly_df.schema, tariff_schema)
 
-    results = WholesaleResults()
+    results = WholesaleResultsContainer()
 
     _calculate_tariff_charges(
         tariffs_hourly_df,
@@ -48,7 +48,7 @@ def _calculate_tariff_charges(
     tariffs_hourly_df: DataFrame,
     tariffs_daily_df: DataFrame,
     period_start_datetime: datetime,
-    results: WholesaleResults,
+    results: WholesaleResultsContainer,
 ) -> None:
     results.hourly_tariff_per_ga_co_es = tariffs.calculate_tariff_price_per_ga_co_es(
         tariffs_hourly_df

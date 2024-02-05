@@ -25,6 +25,7 @@ from package.codelists import (
     ProcessType,
     TimeSeriesType,
     AggregationLevel,
+    AmountType,
 )
 from package.constants import Colname
 from .CalculationResults import CalculationResultsContainer
@@ -284,7 +285,9 @@ def _execute(
         or args.calculation_process_type == ProcessType.SECOND_CORRECTION_SETTLEMENT
         or args.calculation_process_type == ProcessType.THIRD_CORRECTION_SETTLEMENT
     ):
-        charges_df = prepared_data_reader.get_charges()
+        charges_df = prepared_data_reader.get_charges(
+            args.calculation_period_start_datetime, args.calculation_period_end_datetime
+        )
 
         metering_points_periods_for_wholesale_calculation_df = (
             _get_production_and_consumption_metering_points(metering_point_periods_df)
