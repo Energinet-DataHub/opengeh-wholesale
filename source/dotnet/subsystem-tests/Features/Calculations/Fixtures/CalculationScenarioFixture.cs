@@ -69,10 +69,10 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
 
         private LogsQueryClient LogsQueryClient { get; }
 
-        public async Task<Guid> StartCalculationAsync(BatchRequestDto calculationInput)
+        public async Task<Guid> StartCalculationAsync(CalculationRequestDto calculationInput)
         {
-            var calculationId = await WholesaleClient.CreateBatchAsync(calculationInput);
-            DiagnosticMessageSink.WriteDiagnosticMessage($"Calculation for {calculationInput.ProcessType} with id '{calculationId}' started.");
+            var calculationId = await WholesaleClient.CreateCalculationAsync(calculationInput);
+            DiagnosticMessageSink.WriteDiagnosticMessage($"Calculation for {calculationInput.CalculationType} with id '{calculationId}' started.");
 
             return calculationId;
         }
@@ -81,27 +81,27 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
         /// Wait for the calculation to complete or fail.
         /// </summary>
         /// <returns>IsCompletedOrFailed: True if the calculation completed or failed; otherwise false.</returns>
-        public async Task<(bool IsCompletedOrFailed, BatchDto? Batch)> WaitForCalculationCompletedOrFailedAsync(
+        public async Task<(bool IsCompletedOrFailed, CalculationDto? Calculation)> WaitForCalculationCompletedOrFailedAsync(
             Guid calculationId,
             TimeSpan waitTimeLimit)
         {
             var delay = TimeSpan.FromSeconds(30);
 
-            BatchDto? batch = null;
+            CalculationDto? calculation = null;
             var isCompletedOrFailed = await Awaiter.TryWaitUntilConditionAsync(
                 async () =>
                 {
-                    batch = await WholesaleClient.GetBatchAsync(calculationId);
+                    calculation = await WholesaleClient.GetCalculationAsync(calculationId);
                     return
-                        batch?.ExecutionState == BatchState.Completed
-                        || batch?.ExecutionState == BatchState.Failed;
+                        calculation?.ExecutionState == CalculationState.Completed
+                        || calculation?.ExecutionState == CalculationState.Failed;
                 },
                 waitTimeLimit,
                 delay);
 
-            DiagnosticMessageSink.WriteDiagnosticMessage($"Wait for calculation with id '{calculationId}' completed with '{nameof(batch.ExecutionState)}={batch?.ExecutionState}'.");
+            DiagnosticMessageSink.WriteDiagnosticMessage($"Wait for calculation with id '{calculationId}' completed with '{nameof(calculation.ExecutionState)}={calculation?.ExecutionState}'.");
 
-            return (isCompletedOrFailed, batch);
+            return (isCompletedOrFailed, calculation);
         }
 
         public async Task<IReadOnlyCollection<IEventMessage>> WaitForIntegrationEventsAsync(

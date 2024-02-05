@@ -27,11 +27,11 @@ public class EnergyResultTests
     [InlineAutoMoqData]
     public void Ctor_WhenNoPoints_ThrowsArgumentException(
         Guid anyId,
-        Guid anyBatchId,
+        Guid anyCalculationId,
         string anyGridArea,
         string anyFromGridArea,
         TimeSeriesType anyTimeSeriesType,
-        ProcessType anyProcessType,
+        CalculationType anyCalculationType,
         Instant anyPeriodStart,
         Instant anyPeriodEnd,
         string anyMeteringPointId,
@@ -43,13 +43,13 @@ public class EnergyResultTests
         // Act
         var act = () => new EnergyResult(
             anyId,
-            anyBatchId,
+            anyCalculationId,
             anyGridArea,
             anyTimeSeriesType,
             null,
             null,
             emptyTimeSeriesPoints,
-            anyProcessType,
+            anyCalculationType,
             anyPeriodStart,
             anyPeriodEnd,
             anyFromGridArea,

@@ -41,11 +41,11 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ev
 
         public bool CanContainWholesaleResults(CompletedCalculation calculation)
         {
-            return calculation.ProcessType
-                is ProcessType.WholesaleFixing
-                or ProcessType.FirstCorrectionSettlement
-                or ProcessType.SecondCorrectionSettlement
-                or ProcessType.ThirdCorrectionSettlement;
+            return calculation.CalculationType
+                is CalculationType.WholesaleFixing
+                or CalculationType.FirstCorrectionSettlement
+                or CalculationType.SecondCorrectionSettlement
+                or CalculationType.ThirdCorrectionSettlement;
         }
 
         public async IAsyncEnumerable<IntegrationEvent> GetAsync(CompletedCalculation calculation)

@@ -55,10 +55,10 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Authorization
             /// Perform a request that do require authorization.
             /// </summary>
             [SubsystemFact]
-            public async Task WhenRequestBatchId_ResponseIsUnauthorized()
+            public async Task WhenRequestCalculationId_ResponseIsUnauthorized()
             {
                 // Arrange
-                var request = new HttpRequestMessage(HttpMethod.Get, "v3/batches?batchId=1");
+                var request = new HttpRequestMessage(HttpMethod.Get, "v3/calculations?calculationId=1");
 
                 // Act
                 using var actualResponse = await Fixture.UnauthorizedHttpClient.SendAsync(request);
@@ -82,16 +82,15 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Authorization
             /// Perform a request that do require authorization.
             /// </summary>
             [SubsystemFact]
-            public async Task WhenRequestingExistingBatchId_ResponseIsOk()
+            public async Task WhenRequestingCalculations_ResponseIsOk()
             {
                 // Arrange
 
                 // Act
-                var batchResult = await Fixture.WholesaleClient.GetBatchAsync(Fixture.ExistingBatchId);
+                var actualResult = await Fixture.WholesaleClient.SearchCalculationsAsync();
 
                 // Assert
-                batchResult.Should().NotBeNull();
-                batchResult!.BatchId.Should().Be(Fixture.ExistingBatchId);
+                actualResult.Should().NotBeNull();
             }
         }
     }

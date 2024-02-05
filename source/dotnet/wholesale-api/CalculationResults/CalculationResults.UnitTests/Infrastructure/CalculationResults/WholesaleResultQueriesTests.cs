@@ -40,7 +40,7 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
     private readonly string _row0CalculationId;
     private readonly string _calculationResultId0;
 
-    private readonly Mock<ICalculationsClient> _batchesClientMock;
+    private readonly Mock<ICalculationsClient> _calculationsClientMock;
     private readonly Mock<DatabricksSqlWarehouseQueryExecutor> _databricksSqlWarehouseQueryExecutorMock;
 
     public WholesaleResultQueriesTests()
@@ -49,8 +49,8 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
         _row0CalculationId = "b78787d5-b544-44ac-87c2-7720aab86ed1";
         _calculationResultId0 = "9913f3bb-1208-400b-9cbe-50300e386d26";
         const string calculationResultId1 = "8c2bb7c6-d8e5-462c-9bce-8537f93ef8e7";
-        var row0 = new[] { _row0CalculationId, _calculationResultId0, DeltaTableProcessType.WholesaleFixing, "200", "1234567890000", "amount_per_charge", "consumption", "flex", "tariff", "somChargeCode", "someOwnerId", "PT1H", "true", "kWh", "2022-05-16T22:00:00.000Z", "1.111", "[\"measured\"]", "2.123456", "3.123456", null };
-        var row1 = new[] { "b78787d5-b544-44ac-87c2-7720aab86ed2", calculationResultId1, DeltaTableProcessType.WholesaleFixing, "200", "1234567890000", "amount_per_charge", "consumption", "flex", "tariff", "somChargeCode", "someOwnerId", "PT1H", "true", "kWh", "2022-05-16T22:00:00.000Z", "1.111", "[\"measured\"]", "2.123456", "3.123456", null };
+        var row0 = new[] { _row0CalculationId, _calculationResultId0, DeltaTableCalculationType.WholesaleFixing, "200", "1234567890000", "amount_per_charge", "consumption", "flex", "tariff", "somChargeCode", "someOwnerId", "PT1H", "true", "kWh", "2022-05-16T22:00:00.000Z", "1.111", "[\"measured\"]", "2.123456", "3.123456", null };
+        var row1 = new[] { "b78787d5-b544-44ac-87c2-7720aab86ed2", calculationResultId1, DeltaTableCalculationType.WholesaleFixing, "200", "1234567890000", "amount_per_charge", "consumption", "flex", "tariff", "somChargeCode", "someOwnerId", "PT1H", "true", "kWh", "2022-05-16T22:00:00.000Z", "1.111", "[\"measured\"]", "2.123456", "3.123456", null };
         var rows = new List<string?[]> { row0, row1, };
 
         // Using the columns from the WholesaleResultQueries class to ensure that the test is not broken if the columns are changed
@@ -60,9 +60,9 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
         // 1. Because DatabricksSqlWarehouseQueryExecutor doesn't implement an interface and the constructor is protected
         // AutoFixture combined with inline is unable to create an instance of it.
         // 2. The many mock parameters are avoided in tests
-        _batchesClientMock = Fixture.Freeze<Mock<ICalculationsClient>>();
+        _calculationsClientMock = Fixture.Freeze<Mock<ICalculationsClient>>();
         _databricksSqlWarehouseQueryExecutorMock = Fixture.Freeze<Mock<DatabricksSqlWarehouseQueryExecutor>>();
-        Fixture.Inject(_batchesClientMock.Object);
+        Fixture.Inject(_calculationsClientMock.Object);
         Fixture.Inject(_databricksSqlWarehouseQueryExecutorMock.Object);
     }
 
@@ -71,15 +71,15 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
     public async Task GetAsync_WhenNoRows_ReturnsNoResults(CalculationDto calculation)
     {
         // Arrange
-        _batchesClientMock
-            .Setup(client => client.GetAsync(calculation.BatchId))
+        _calculationsClientMock
+            .Setup(client => client.GetAsync(calculation.CalculationId))
             .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock
             .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
             .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 0));
 
         // Act
-        var actual = await Sut.GetAsync(calculation.BatchId).ToListAsync();
+        var actual = await Sut.GetAsync(calculation.CalculationId).ToListAsync();
 
         // Assert
         actual.Should().BeEmpty();
@@ -90,14 +90,14 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
     public async Task GetAsync_WhenOneRow_ReturnsSingleResultWithOneTimeSeriesPoint(CalculationDto calculation)
     {
         // Arrange
-        _batchesClientMock
-            .Setup(client => client.GetAsync(calculation.BatchId))
+        _calculationsClientMock
+            .Setup(client => client.GetAsync(calculation.CalculationId))
             .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock.Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
             .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 1));
 
         // Act
-        var actual = await Sut.GetAsync(calculation.BatchId).ToListAsync();
+        var actual = await Sut.GetAsync(calculation.CalculationId).ToListAsync();
 
         // Assert
         actual.Single().TimeSeriesPoints.Count.Should().Be(1);
@@ -108,16 +108,16 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
     public async Task GetAsync_WhenCalculationHasOneResult_ReturnsResultRowWithExpectedValues(CalculationDto calculation)
     {
         // Arrange
-        calculation = calculation with { BatchId = Guid.Parse(_row0CalculationId), ProcessType = ProcessType.WholesaleFixing };
-        _batchesClientMock
-            .Setup(client => client.GetAsync(calculation.BatchId))
+        calculation = calculation with { CalculationId = Guid.Parse(_row0CalculationId), CalculationType = CalculationType.WholesaleFixing };
+        _calculationsClientMock
+            .Setup(client => client.GetAsync(calculation.CalculationId))
             .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock
             .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
             .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 1));
 
         // Act
-        var actual = await Sut.GetAsync(calculation.BatchId).ToListAsync();
+        var actual = await Sut.GetAsync(calculation.CalculationId).ToListAsync();
 
         // Assert
         using var assertionScope = new AssertionScope();
@@ -126,7 +126,7 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
         actual.Single().GridArea.Should().Be(_tableChunk[0, WholesaleResultColumnNames.GridArea]);
         actual.Single().EnergySupplierId.Should().Be(_tableChunk[0, WholesaleResultColumnNames.EnergySupplierId]);
         actual.Single().CalculationId.Should().Be(_tableChunk[0, WholesaleResultColumnNames.CalculationId]);
-        actual.Single().CalculationType.Should().Be(calculation.ProcessType);
+        actual.Single().CalculationType.Should().Be(calculation.CalculationType);
         actual.Single().PeriodStart.Should().Be(calculation.PeriodStart.ToInstant());
         actual.Single().PeriodEnd.Should().Be(calculation.PeriodEnd.ToInstant());
         var actualPoint = actual.Single().TimeSeriesPoints.Single();
@@ -143,15 +143,15 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
     public async Task GetAsync_WhenRowsBelongsToDifferentResults_ReturnsMultipleResults(CalculationDto calculation)
     {
         // Arrange
-        _batchesClientMock
-            .Setup(client => client.GetAsync(calculation.BatchId))
+        _calculationsClientMock
+            .Setup(client => client.GetAsync(calculation.CalculationId))
             .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock
             .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
             .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 2));
 
         // Act
-        var actual = await Sut.GetAsync(calculation.BatchId).ToListAsync();
+        var actual = await Sut.GetAsync(calculation.CalculationId).ToListAsync();
 
         // Assert
         actual.Count.Should().Be(2);

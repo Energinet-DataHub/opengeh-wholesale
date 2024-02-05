@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 /// </summary>
 public sealed record CalculationDto(
     long? RunId,
-    Guid BatchId,
+    Guid CalculationId,
     DateTimeOffset PeriodStart,
     DateTimeOffset PeriodEnd,
     string Resolution,
@@ -31,6 +31,6 @@ public sealed record CalculationDto(
     CalculationState ExecutionState,
     bool AreSettlementReportsCreated,
     string[] GridAreaCodes,
-    ProcessType ProcessType,
+    CalculationType CalculationType,
     Guid CreatedByUserId,
     long Version);

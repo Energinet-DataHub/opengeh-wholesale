@@ -85,9 +85,9 @@ public class AmountPerChargeResultProducedV1FactoryTests
     }
 
     [Theory]
-    [InlineData(ProcessType.Aggregation)]
-    [InlineData(ProcessType.BalanceFixing)]
-    public void Create_WhenUnexpectedCalculationType_ThrowsException(ProcessType calculationType)
+    [InlineData(CalculationType.Aggregation)]
+    [InlineData(CalculationType.BalanceFixing)]
+    public void Create_WhenUnexpectedCalculationType_ThrowsException(CalculationType calculationType)
     {
         // Arrange
         var sut = new AmountPerChargeResultProducedV1Factory();

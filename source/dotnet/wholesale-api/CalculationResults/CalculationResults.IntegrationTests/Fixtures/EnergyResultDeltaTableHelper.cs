@@ -19,9 +19,9 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtur
 public static class EnergyResultDeltaTableHelper
 {
     public static IReadOnlyCollection<string> CreateRowValues(
-        string batchId = "ed39dbc5-bdc5-41b9-922a-08d3b12d4538",
-        string batchExecutionTimeStart = "2022-03-11T03:00:00.000Z",
-        string batchProcessType = DeltaTableProcessType.BalanceFixing,
+        string calculationId = "ed39dbc5-bdc5-41b9-922a-08d3b12d4538",
+        string calculationExecutionTimeStart = "2022-03-11T03:00:00.000Z",
+        string calculationType = DeltaTableCalculationType.BalanceFixing,
         string calculationResultId = "aaaaaaaa-1111-1111-1c1c-08d3b12d4511",
         string timeSeriesType = DeltaTableTimeSeriesType.Production,
         string gridArea = "805",
@@ -36,9 +36,9 @@ public static class EnergyResultDeltaTableHelper
     {
         return EnergyResultColumnNames.GetAllNames().Select(columnName => columnName switch
         {
-            EnergyResultColumnNames.BatchId => $@"'{batchId}'",
-            EnergyResultColumnNames.BatchExecutionTimeStart => $@"'{batchExecutionTimeStart}'",
-            EnergyResultColumnNames.BatchProcessType =>$@"'{batchProcessType}'",
+            EnergyResultColumnNames.CalculationId => $@"'{calculationId}'",
+            EnergyResultColumnNames.CalculationExecutionTimeStart => $@"'{calculationExecutionTimeStart}'",
+            EnergyResultColumnNames.CalculationType =>$@"'{calculationType}'",
             EnergyResultColumnNames.CalculationResultId => $@"'{calculationResultId}'",
             EnergyResultColumnNames.TimeSeriesType => $@"'{timeSeriesType}'",
             EnergyResultColumnNames.GridArea => $@"'{gridArea}'",

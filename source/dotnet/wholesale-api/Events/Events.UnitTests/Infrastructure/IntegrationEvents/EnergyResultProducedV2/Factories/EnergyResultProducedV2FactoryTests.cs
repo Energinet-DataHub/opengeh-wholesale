@@ -30,7 +30,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
 
 public class EnergyResultProducedV2FactoryTests
 {
-    private readonly Guid _batchId = Guid.NewGuid();
+    private readonly Guid _calculationId = Guid.NewGuid();
     private readonly Guid _id = Guid.NewGuid();
     private readonly string _gridArea = "543";
     private readonly string _energySupplierId = "es_id";
@@ -117,7 +117,7 @@ public class EnergyResultProducedV2FactoryTests
 
         return new EnergyResult(
             _id,
-            _batchId,
+            _calculationId,
             _gridArea,
             TimeSeriesType.FlexConsumption,
             _energySupplierId,
@@ -128,7 +128,7 @@ public class EnergyResultProducedV2FactoryTests
                 new(new DateTime(2021, 1, 1), 2, quantityQualities),
                 new(new DateTime(2021, 1, 1), 3, quantityQualities),
             },
-            ProcessType.Aggregation,
+            CalculationType.Aggregation,
             _periodStart,
             _periodEnd,
             _fromGridArea,
@@ -140,7 +140,7 @@ public class EnergyResultProducedV2FactoryTests
     {
         var energyResultProduced = new EnergyResultProduced
         {
-            CalculationId = energyResult.BatchId.ToString(),
+            CalculationId = energyResult.CalculationId.ToString(),
             Resolution = EnergyResultProduced.Types.Resolution.Quarter,
             CalculationType = EnergyResultProduced.Types.CalculationType.Aggregation,
             QuantityUnit = EnergyResultProduced.Types.QuantityUnit.Kwh,
