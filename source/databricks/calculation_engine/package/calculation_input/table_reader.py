@@ -15,10 +15,8 @@
 from datetime import datetime
 
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import concat_ws, col
 
 from package.common import assert_schema
-from package.constants import Colname
 from package.infrastructure import paths
 from .schemas import (
     charge_link_periods_schema,
@@ -79,7 +77,6 @@ class TableReader:
 
         assert_schema(df.schema, charge_link_periods_schema)
 
-        df = self._add_charge_key_column(df)
         return df
 
     def read_charge_master_data_periods(self) -> DataFrame:
@@ -88,16 +85,16 @@ class TableReader:
 
         assert_schema(df.schema, charge_master_data_periods_schema)
 
-        df = self._add_charge_key_column(df)
         return df
 
-    def read_charge_price_points(self) -> DataFrame:
+    def read_charge_price_points(
+        self,
+    ) -> DataFrame:
         path = f"{self._calculation_input_path}/{paths.CHARGE_PRICE_POINTS_TABLE_NAME}"
         df = self._spark.read.format("delta").load(path)
 
         assert_schema(df.schema, charge_price_points_schema)
 
-        df = self._add_charge_key_column(df)
         return df
 
     def read_grid_loss_metering_points(self) -> DataFrame:
@@ -107,14 +104,3 @@ class TableReader:
         assert_schema(df.schema, grid_loss_metering_points_schema)
 
         return df
-
-    def _add_charge_key_column(self, charge_df: DataFrame) -> DataFrame:
-        return charge_df.withColumn(
-            Colname.charge_key,
-            concat_ws(
-                "-",
-                col(Colname.charge_code),
-                col(Colname.charge_owner),
-                col(Colname.charge_type),
-            ),
-        )
