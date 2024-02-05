@@ -155,11 +155,11 @@ def _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
                 ),
             ],
         )
-        .selectExpr(
+        .select(
             Colname.sum_quantity,
             Colname.qualities,
             Colname.metering_point_id,
-            f"window.{Colname.start} as {Colname.observation_time}",
+            f.col("window.start").alias(Colname.observation_time),
         )
         .withColumn(
             Colname.observation_time,
