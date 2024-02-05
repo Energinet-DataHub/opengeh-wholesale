@@ -38,7 +38,7 @@ public class AggregatedTimeSeriesTests
             timeSeriesType: anyTimeSeriesType,
             timeSeriesPoints: emptyTimeSeriesPoints,
             processType: anyProcessType,
-            calculationId: Guid.NewGuid());
+            batchId: Guid.NewGuid());
 
         // Assert
         act.Should().Throw<ArgumentException>().WithMessage("*empty*");

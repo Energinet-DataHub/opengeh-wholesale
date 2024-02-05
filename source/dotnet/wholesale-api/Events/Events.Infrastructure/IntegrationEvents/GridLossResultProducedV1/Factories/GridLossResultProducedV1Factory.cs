@@ -32,7 +32,7 @@ public class GridLossResultProducedV1Factory : IGridLossResultProducedV1Factory
 
         var gridLossResultProduced = new Contracts.IntegrationEvents.GridLossResultProducedV1
         {
-            CalculationId = result.CalculationId.ToString(),
+            CalculationId = result.BatchId.ToString(),
             MeteringPointId = result.MeteringPointId,
             MeteringPointType = GridLossMeteringPointTypeMapper.MapFromTimeSeriesType(result.TimeSeriesType),
             Resolution = Contracts.IntegrationEvents.GridLossResultProducedV1.Types.Resolution.Quarter,

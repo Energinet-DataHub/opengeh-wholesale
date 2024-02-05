@@ -82,7 +82,7 @@ public class GridLossResultProducedV1FactoryTests
     {
         var gridLossResultProduced = new Contracts.IntegrationEvents.GridLossResultProducedV1
         {
-            CalculationId = energyResult.CalculationId.ToString(),
+            CalculationId = energyResult.BatchId.ToString(),
             Resolution = Contracts.IntegrationEvents.GridLossResultProducedV1.Types.Resolution.Quarter,
             QuantityUnit = Contracts.IntegrationEvents.GridLossResultProducedV1.Types.QuantityUnit.Kwh,
             MeteringPointId = energyResult.MeteringPointId,

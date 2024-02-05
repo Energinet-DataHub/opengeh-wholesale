@@ -32,7 +32,7 @@ public class CalculationResultPeriodCalculator
 
         foreach (var latestCalculation in latestCalculationsForPeriod.OrderBy(x => x.PeriodStart))
         {
-            var calculationResult = calculationResults.FirstOrDefault(x => x.CalculationId == latestCalculation.BatchId);
+            var calculationResult = calculationResults.FirstOrDefault(x => x.BatchId == latestCalculation.BatchId);
             if (calculationResult == null)
                 throw new MissingCalculationResultException($"No calculation result found for batch {latestCalculation.BatchId}");
 

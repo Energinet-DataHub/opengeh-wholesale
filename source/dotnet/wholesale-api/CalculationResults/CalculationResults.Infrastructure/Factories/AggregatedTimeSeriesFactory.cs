@@ -35,6 +35,6 @@ public class AggregatedTimeSeriesFactory
             timeSeriesPoints: timeSeriesPoints.ToArray()!,
             timeSeriesType: SqlResultValueConverters.ToTimeSeriesType(timeSeriesType!),
             processType: ProcessTypeMapper.FromDeltaTableValue(processType!),
-            calculationId: calculationId);
+            batchId: calculationId);
     }
 }
