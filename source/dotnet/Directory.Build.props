@@ -16,7 +16,7 @@
     <!--
     IMPORTANT: Do NOT add NuGet package dependencies in this file, except for "StyleCop.Analyzers".
     -->
-    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.435">
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

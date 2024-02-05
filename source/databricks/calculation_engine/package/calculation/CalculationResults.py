@@ -14,25 +14,49 @@
 from dataclasses import dataclass
 from pyspark.sql import DataFrame
 
-
-@dataclass
-class EnergyResults:
-    pass
+from package.calculation.energy.energy_results import EnergyResults
 
 
 @dataclass
-class WholesaleResults:
-    pass
+class EnergyResultsContainer:
+    exchange_per_neighbour_ga: EnergyResults | None = None
+    exchange_per_grid_area: EnergyResults | None = None
+    temporary_production_per_ga: EnergyResults | None = None
+    temporary_flex_consumption_per_ga: EnergyResults | None = None
+    grid_loss: EnergyResults | None = None
+    positive_grid_loss: EnergyResults | None = None
+    negative_grid_loss: EnergyResults | None = None
+    consumption_per_ga_and_brp: EnergyResults | None = None
+    consumption_per_ga_and_brp_and_es: EnergyResults | None = None
+    consumption_per_ga_and_es: EnergyResults | None = None
+    consumption_per_ga: EnergyResults | None = None
+    production_per_ga_and_brp_and_es: EnergyResults | None = None
+    production_per_ga_and_brp: EnergyResults | None = None
+    production_per_ga_and_es: EnergyResults | None = None
+    production_per_ga: EnergyResults | None = None
+    flex_consumption_per_ga: EnergyResults | None = None
+    flex_consumption_per_ga_and_es: EnergyResults | None = None
+    flex_consumption_per_ga_and_brp_and_es: EnergyResults | None = None
+    flex_consumption_per_ga_and_brp: EnergyResults | None = None
+    total_consumption: EnergyResults | None = None
 
 
 @dataclass
-class BasisData:
-    metering_point_periods: DataFrame = None
-    metering_point_time_series: DataFrame = None
+class WholesaleResultsContainer:
+    hourly_tariff_per_ga_co_es: DataFrame | None = None
+    monthly_tariff_from_hourly_per_ga_co_es: DataFrame | None = None
+    daily_tariff_per_ga_co_es: DataFrame | None = None
+    monthly_tariff_from_daily_per_ga_co_es: DataFrame | None = None
 
 
 @dataclass
-class CalculationResults:
-    energy_results: EnergyResults = EnergyResults()
-    wholesale_results: WholesaleResults = WholesaleResults()
-    basis_data: BasisData = BasisData()
+class BasisDataContainer:
+    metering_point_periods: DataFrame | None = None
+    metering_point_time_series: DataFrame | None = None
+
+
+@dataclass
+class CalculationResultsContainer:
+    energy_results: EnergyResultsContainer | None = None
+    wholesale_results: WholesaleResultsContainer | None = None
+    basis_data: BasisDataContainer = BasisDataContainer()
