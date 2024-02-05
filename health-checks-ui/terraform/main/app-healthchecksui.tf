@@ -34,7 +34,7 @@ locals {
     "HealthChecksUI__HealthChecks__002__Uri"  = "https://app-webapi-markpart-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/ready"
     "HealthChecksUI__HealthChecks__003__Name" = "geh-market-participant:::Function"
     "HealthChecksUI__HealthChecks__003__Uri"  = "https://func-organization-markpart-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
-    "HealthChecksUI__HealthChecks__004__Name" = "opengeh-edi:::Web API"
+    "HealthChecksUI__HealthChecks__004__Name" = "opengeh-edi:::B2B Function App"
     "HealthChecksUI__HealthChecks__004__Uri"  = "https://func-api-edi-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
     "HealthChecksUI__HealthChecks__005__Name" = "opengeh-migrations:::Dropzoneunzipper Function"
     "HealthChecksUI__HealthChecks__005__Uri"  = "https://func-dropzoneunzipper-mig-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
@@ -69,6 +69,8 @@ locals {
     # Note: 025 is taken by Sauron in test_002 and prod_001 overrides
     "HealthChecksUI__HealthChecks__026__Name" = "grid-loss-imbalance-prices:::Web API"
     "HealthChecksUI__HealthChecks__026__Uri"  = "https://app-webapi-gridimbp-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/ready"
+    "HealthChecksUI__HealthChecks__027__Name" = "opengeh-edi:::B2C Web API"
+    "HealthChecksUI__HealthChecks__027__Uri"  = "https://app-b2cwebapi-edi-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/ready"
 
     # Live - prefix with 2xx
     "HealthChecksUI__HealthChecks__200__Name" = "health-checks-ui:::Health Check UI - live"
@@ -79,7 +81,7 @@ locals {
     "HealthChecksUI__HealthChecks__202__Uri"  = "https://app-webapi-markpart-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/live"
     "HealthChecksUI__HealthChecks__203__Name" = "geh-market-participant:::Function - live"
     "HealthChecksUI__HealthChecks__203__Uri"  = "https://func-organization-markpart-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
-    "HealthChecksUI__HealthChecks__204__Name" = "opengeh-edi:::Web API - live"
+    "HealthChecksUI__HealthChecks__204__Name" = "opengeh-edi:::B2B Function App - live"
     "HealthChecksUI__HealthChecks__204__Uri"  = "https://func-api-edi-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
     "HealthChecksUI__HealthChecks__205__Name" = "opengeh-migrations:::Dropzoneunzipper Function - live"
     "HealthChecksUI__HealthChecks__205__Uri"  = "https://func-dropzoneunzipper-mig-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
@@ -114,6 +116,8 @@ locals {
     # Note: 225 is taken by Sauron in test_002 and prod_001 overrides
     "HealthChecksUI__HealthChecks__226__Name" = "grid-loss-imbalance-prices:::Web API - live"
     "HealthChecksUI__HealthChecks__226__Uri"  = "https://app-webapi-gridimbp-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/live"
+    "HealthChecksUI__HealthChecks__227__Name" = "opengeh-edi:::B2C Web API - live"
+    "HealthChecksUI__HealthChecks__227__Uri"  = "https://app-b2cwebapi-edi-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/live"
 
     # Polling Interval
     "HealthChecksUI__EvaluationTimeinSeconds" = 60
