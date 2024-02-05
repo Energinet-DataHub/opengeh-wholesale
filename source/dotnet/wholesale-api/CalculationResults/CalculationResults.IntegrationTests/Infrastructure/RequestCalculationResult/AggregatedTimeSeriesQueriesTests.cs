@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Energinet DataHub A/S
+﻿﻿// Copyright 2020 Energinet DataHub A/S
 //
 // Licensed under the Apache License, Version 2.0 (the "License2");
 // you may not use this file except in compliance with the License.
@@ -619,7 +619,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         await AddCreatedRowsInArbitraryOrderAsync(addSecondCorrection: true);
         var parameters = CreateQueryParameters(
-            calculationIds: new[] { _firstCalculationId },
+            calculationIds: new[] { _secondCalculationId },
             gridArea: gridAreaFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
@@ -630,7 +630,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         // Assert
         using var assertionScope = new AssertionScope();
         actual.Should().HaveCount(1);
-        actual.First()!.CalculationId.Should().Be(_firstCalculationId);
+        actual.First()!.CalculationId.Should().Be(_secondCalculationId);
     }
 
     [Fact]
@@ -743,7 +743,6 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             {
                 row1FirstCorrection,
                 row2FirstCorrection,
-                row2SecondCorrectionSecondBatch,
             });
         }
 
@@ -753,6 +752,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             {
                 row1SecondCorrection,
                 row2SecondCorrection,
+                row2SecondCorrectionSecondBatch,
             });
         }
 
