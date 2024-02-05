@@ -5,7 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.17.1" />
-    <PackageReference Include="CsvHelper" Version="30.0.1" />
+    <PackageReference Include="CsvHelper" Version="30.1.0" />
     <PackageReference Include="Energinet.DataHub.Core.Databricks.SqlStatementExecution" Version="8.2.1" />
     <PackageReference Include="Energinet.DataHub.Core.JsonSerialization" Version="2.2.9" />
     <PackageReference Include="NodaTime" Version="3.1.10" />
@@ -16,7 +16,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Batches\Batches.Interfaces\Batches.Interfaces.csproj" />
+    <ProjectReference Include="..\..\Calculations\Calculations.Interfaces\Calculations.Interfaces.csproj" />
     <ProjectReference Include="..\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
     <ProjectReference Include="..\..\Common.Infrastructure\Common.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Common.Interfaces\Common.Interfaces.csproj" />
