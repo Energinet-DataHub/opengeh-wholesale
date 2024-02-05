@@ -140,7 +140,7 @@ public class EnergyResultProducedV2FactoryTests
     {
         var energyResultProduced = new EnergyResultProduced
         {
-            CalculationId = energyResult.CalculationId.ToString(),
+            CalculationId = energyResult.BatchId.ToString(),
             Resolution = EnergyResultProduced.Types.Resolution.Quarter,
             CalculationType = EnergyResultProduced.Types.CalculationType.Aggregation,
             QuantityUnit = EnergyResultProduced.Types.QuantityUnit.Kwh,
