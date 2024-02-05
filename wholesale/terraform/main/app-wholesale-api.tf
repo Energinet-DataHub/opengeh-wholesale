@@ -53,6 +53,7 @@ module "app_wholesale_api" {
     WorkspaceToken = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-workspace-token)"
     WorkspaceUrl   = "https://${module.dbw.workspace_url}"
     WarehouseId    = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-databricks-sql-endpoint-id)"
+    TimeoutInSeconds = "50" # This corresponds to a total timeout of 500 seconds, because the Databricks module currently is hard coded with 10 retries.
   }
 
   connection_strings = [
