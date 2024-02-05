@@ -152,14 +152,14 @@ def _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
                 f.window(
                     Colname.observation_time,
                     _get_window_duration_string_based_on_resolution(charge_resolution),
-                ),
+                ).alias(Colname.time_window),
             ],
         )
         .select(
             Colname.sum_quantity,
             Colname.qualities,
             Colname.metering_point_id,
-            f.col("window.start").alias(Colname.observation_time),
+            f.col(Colname.time_window_start).alias(Colname.observation_time),
         )
         .withColumn(
             Colname.observation_time,
