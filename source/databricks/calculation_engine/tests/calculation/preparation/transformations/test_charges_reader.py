@@ -141,7 +141,7 @@ class TestWhenValidInput:
 class TestWhenChargeIsInMasterDataButNotInChargeLinks:
     @patch.object(calculation_input, TableReader.__name__)
     def test_returns_dataframe_without_that_charge(
-        table_reader_mock: TableReader, spark: SparkSession
+        self, table_reader_mock: TableReader, spark: SparkSession
     ) -> None:
         # Arrange
         table_reader_mock.read_charge_master_data_periods.return_value = (
