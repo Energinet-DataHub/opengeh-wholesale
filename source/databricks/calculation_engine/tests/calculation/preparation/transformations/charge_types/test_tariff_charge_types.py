@@ -19,7 +19,7 @@ import package.codelists as e
 
 from pyspark.sql import SparkSession
 from calculation.preparation.transformations.charge_types.charge_type_factories import (
-    DefaultChargeValues as d,
+    DefaultTestValues as d,
     create_metering_point_row,
     create_time_series_row,
     create_tariff_charges_row,
