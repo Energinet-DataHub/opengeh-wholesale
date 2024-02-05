@@ -25,6 +25,7 @@ from package.codelists import (
     ProcessType,
     TimeSeriesType,
     AggregationLevel,
+    AmountType,
 )
 from package.constants import Colname
 from .CalculationResults import CalculationResultsContainer
@@ -199,6 +200,42 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
             AggregationLevel.TOTAL_GA,
         )
 
+    wholesale_calculation_result_writer = WholesaleCalculationResultWriter(
+        args.calculation_id,
+        args.calculation_process_type,
+        args.calculation_execution_time_start,
+    )
+
+    if (
+        args.calculation_process_type == ProcessType.WHOLESALE_FIXING
+        or args.calculation_process_type == ProcessType.FIRST_CORRECTION_SETTLEMENT
+        or args.calculation_process_type == ProcessType.SECOND_CORRECTION_SETTLEMENT
+        or args.calculation_process_type == ProcessType.THIRD_CORRECTION_SETTLEMENT
+    ):
+        with logging_configuration.start_span("hourly_tariff_per_ga_co_es"):
+            wholesale_calculation_result_writer.write(
+                results.wholesale_results.hourly_tariff_per_ga_co_es,
+                AmountType.AMOUNT_PER_CHARGE,
+            )
+
+        with logging_configuration.start_span("monthly_tariff_per_ga_co_es"):
+            wholesale_calculation_result_writer.write(
+                results.wholesale_results.monthly_tariff_from_hourly_per_ga_co_es,
+                AmountType.MONTHLY_AMOUNT_PER_CHARGE,
+            )
+
+        with logging_configuration.start_span("daily_tariff_per_ga_co_es"):
+            wholesale_calculation_result_writer.write(
+                results.wholesale_results.daily_tariff_per_ga_co_es,
+                AmountType.AMOUNT_PER_CHARGE,
+            )
+
+        with logging_configuration.start_span("monthly_tariff_per_ga_co_es"):
+            wholesale_calculation_result_writer.write(
+                results.wholesale_results.monthly_tariff_from_daily_per_ga_co_es,
+                AmountType.MONTHLY_AMOUNT_PER_CHARGE,
+            )
+
     # We write basis data at the end of the calculation to make it easier to analyze performance of the calculation part
     basis_data_writer = BasisDataWriter(
         args.wholesale_container_path, args.calculation_id
@@ -248,15 +285,10 @@ def _execute(
         or args.calculation_process_type == ProcessType.SECOND_CORRECTION_SETTLEMENT
         or args.calculation_process_type == ProcessType.THIRD_CORRECTION_SETTLEMENT
     ):
-        wholesale_calculation_result_writer = WholesaleCalculationResultWriter(
-            args.calculation_id,
-            args.calculation_process_type,
-            args.calculation_execution_time_start,
-        )
-
         charges_df = prepared_data_reader.get_charges(
             args.calculation_period_start_datetime, args.calculation_period_end_datetime
         )
+
         metering_points_periods_for_wholesale_calculation_df = (
             _get_production_and_consumption_metering_points(metering_point_periods_df)
         )
@@ -275,8 +307,7 @@ def _execute(
             ChargeResolution.DAY,
         )
 
-        wholesale_calculation.execute(
-            wholesale_calculation_result_writer,
+        results.wholesale_results = wholesale_calculation.execute(
             tariffs_hourly_df,
             tariffs_daily_df,
             args.calculation_period_start_datetime,

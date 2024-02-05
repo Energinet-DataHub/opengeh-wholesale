@@ -17,7 +17,6 @@ from pyspark.sql import DataFrame
 from package.calculation.energy.energy_results import EnergyResults
 
 
-# TODO BJM: Can we remove the from the dataclass fields? (in another PR)
 @dataclass
 class EnergyResultsContainer:
     exchange_per_neighbour_ga: EnergyResults | None = None
@@ -44,7 +43,10 @@ class EnergyResultsContainer:
 
 @dataclass
 class WholesaleResultsContainer:
-    pass
+    hourly_tariff_per_ga_co_es: DataFrame | None = None
+    monthly_tariff_from_hourly_per_ga_co_es: DataFrame | None = None
+    daily_tariff_per_ga_co_es: DataFrame | None = None
+    monthly_tariff_from_daily_per_ga_co_es: DataFrame | None = None
 
 
 @dataclass
