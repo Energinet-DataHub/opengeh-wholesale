@@ -27,7 +27,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Calculations\Calculations.Infrastructure\Calculations.Infrastructure.csproj" />
     <ProjectReference Include="..\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
-    <ProjectReference Include="..\Calculations\Calculations.Interfaces\Calculations.Interfaces.csproj" />
     <ProjectReference Include="..\Edi\Edi.csproj" />
   </ItemGroup>
 </Project>

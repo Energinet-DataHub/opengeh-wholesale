@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Edi.Models;
 using NodaTime;
+using Period = Energinet.DataHub.Wholesale.EDI.Models.Period;
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 
@@ -36,8 +37,7 @@ public class LatestCalculationForPeriodBuilder
     public LatestCalculationForPeriod Build()
     {
         return new LatestCalculationForPeriod(
-            _startDate,
-            _endDate,
+            new Period(_startDate, _endDate),
             _calculationId,
             _version);
     }

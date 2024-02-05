@@ -15,7 +15,7 @@
 namespace Energinet.DataHub.Wholesale.EDI.Models;
 
 public record AggregatedTimeSeriesRequest(
-    Period Period,
+    Period PeriodExcludingEndDate,
     TimeSeriesType TimeSeriesType,
     AggregationPerRoleAndGridArea AggregationPerRoleAndGridArea,
     RequestedProcessType RequestedProcessType,

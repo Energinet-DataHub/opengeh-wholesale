@@ -12,27 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NodaTime;
+using Energinet.DataHub.Wholesale.EDI.Models;
 
 namespace Energinet.DataHub.Wholesale.Edi.Models;
 
 public class LatestCalculationForPeriod
 {
     public LatestCalculationForPeriod(
-        Instant periodStart,
-        Instant periodEnd,
+        Period period,
         Guid batchId,
         long calculationVersion)
     {
-        PeriodStart = periodStart;
-        PeriodEnd = periodEnd;
+        Period = period;
         BatchId = batchId;
         CalculationVersion = calculationVersion;
     }
 
-    public Instant PeriodStart { get; }
-
-    public Instant PeriodEnd { get; }
+    public Period Period { get; }
 
     public Guid BatchId { get; }
 

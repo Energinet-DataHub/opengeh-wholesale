@@ -43,8 +43,8 @@ public class CalculationPeriodCalculator
             foreach (var periodWhereCalculationIsLatest in periodsWhereCalculationIsLatest)
             {
                 var daysInPeriod = GetDaysInPeriod(
-                    periodWhereCalculationIsLatest.PeriodStart,
-                    periodWhereCalculationIsLatest.PeriodEnd);
+                    periodWhereCalculationIsLatest.Period.Start,
+                    periodWhereCalculationIsLatest.Period.End);
                 foreach (var day in daysInPeriod.Where(x => remainingDaysInPeriod.Contains(x)))
                 {
                     remainingDaysInPeriod.Remove(day);
@@ -85,8 +85,7 @@ public class CalculationPeriodCalculator
                     || NextDayInExistingPeriod(remainDay, latestCalculationsForPeriod)))
             {
                 result.Add(new LatestCalculationForPeriod(
-                    startOfPeriod.Value,
-                    remainDay,
+                    new EDI.Models.Period(startOfPeriod.Value, remainDay),
                     calculation.BatchId,
                     calculation.Version));
                 startOfPeriod = null;
@@ -101,8 +100,8 @@ public class CalculationPeriodCalculator
         IReadOnlyCollection<LatestCalculationForPeriod> latestCalculationsForPeriod)
     {
         return latestCalculationsForPeriod
-            .Any(x => x.PeriodStart <= remainDay.Plus(Duration.FromDays(1))
-                      && x.PeriodEnd >= remainDay.Plus(Duration.FromDays(1)));
+            .Any(x => x.Period.Start <= remainDay.Plus(Duration.FromDays(1))
+                      && x.Period.End >= remainDay.Plus(Duration.FromDays(1)));
     }
 
     private List<Instant> GetDaysInPeriod(Instant periodStart, Instant periodEnd)

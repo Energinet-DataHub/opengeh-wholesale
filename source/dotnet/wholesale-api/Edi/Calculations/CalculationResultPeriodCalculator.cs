@@ -30,23 +30,23 @@ public class CalculationResultPeriodCalculator
         if (calculationResults.Count == 0)
             return latestCalculationResults;
 
-        foreach (var latestCalculation in latestCalculationsForPeriod.OrderBy(x => x.PeriodStart))
+        foreach (var latestCalculation in latestCalculationsForPeriod.OrderBy(x => x.Period.Start))
         {
             var calculationResult = calculationResults.FirstOrDefault(x => x.BatchId == latestCalculation.BatchId);
             if (calculationResult == null)
                 throw new MissingCalculationResultException($"No calculation result found for batch {latestCalculation.BatchId}");
 
             // Calculation result is exclusive of the period end, so we add a day to include the results from the last day.
-            var periodEndForCalculationResults = latestCalculation.PeriodEnd.Plus(Duration.FromDays(1));
+            var periodEndForCalculationResults = latestCalculation.Period.End.Plus(Duration.FromDays(1));
             var timeSeriesPointWithinPeriod = GetTimeSeriesPointWithinPeriod(
                 calculationResult.TimeSeriesPoints,
-                latestCalculation.PeriodStart,
+                latestCalculation.Period.Start,
                 periodEndForCalculationResults);
 
             latestCalculationResults.Add(
                 new AggregatedTimeSeriesResult(
                     latestCalculation.CalculationVersion,
-                    latestCalculation.PeriodStart,
+                    latestCalculation.Period.Start,
                     periodEndForCalculationResults,
                     calculationResult.GridArea,
                     timeSeriesPointWithinPeriod,

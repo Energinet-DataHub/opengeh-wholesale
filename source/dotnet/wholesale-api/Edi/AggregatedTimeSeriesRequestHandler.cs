@@ -168,8 +168,8 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     {
         var parameters = new AggregatedTimeSeriesQueryParameters(
             CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromEdi(request.TimeSeriesType),
-            request.Period.Start,
-            request.Period.End,
+            request.PeriodExcludingEndDate.Start,
+            request.PeriodExcludingEndDate.End,
             request.AggregationPerRoleAndGridArea.GridAreaCode,
             request.AggregationPerRoleAndGridArea.EnergySupplierId,
             request.AggregationPerRoleAndGridArea.BalanceResponsibleId,
