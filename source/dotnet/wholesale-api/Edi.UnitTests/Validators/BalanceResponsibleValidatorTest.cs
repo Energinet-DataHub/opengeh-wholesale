@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Diagnostics.CodeAnalysis;
+using Energinet.DataHub.Wholesale.EDI.Models;
 using Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.EDI.Validation;
 using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSeries.Rules;
@@ -29,7 +30,8 @@ public class BalanceResponsibleValidatorTest
     private const string ValidGlnNumber = "qwertyuiopasd"; // Must be 13 characters to be a valid GLN
     private const string ValidEicNumber = "qwertyuiopasdfgh"; // Must be 16 characters to be a valid GLN
     private static readonly ValidationError _invalidBalanceResponsible = new("Feltet BalanceResponsibleParty skal være udfyldt med et valid GLN/EIC når en balanceansvarlig anmoder om data / BalanceResponsibleParty must be submitted with a valid GLN/EIC when a balance responsible requests data", "E18");
-    private static readonly ValidationError _mismatchedBalanceResponsibleInHeaderAndMessage = new("BalanceResponsibleParty i besked stemmer ikke overenes med balanceansvarlig anmoder i header / BalanceResponsibleParty in message does not correspond with balance responsible in header", "E18");
+    private static readonly ValidationError _mismatchedBalanceResponsibleInHeaderAndMessage = new("BalanceResponsibleParty i beskeden stemmer ikke overenes med balanceansvarlig anmoder i header / BalanceResponsibleParty in message does not correspond with balance responsible in header", "E18");
+    private static readonly ValidationError _invalidBusinessReason = new("En BalanceResponsibleParty kan kun benytte forretningsårsag D03 eller D04 i forbindelse med en anmodning / A BalanceResponsibleParty can only use business reason D03 or D04 in connection with a request", "D11");
 
     private readonly BalanceResponsibleValidationRule _sut = new();
 
@@ -150,5 +152,50 @@ public class BalanceResponsibleValidatorTest
 
         // Assert
         errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Validate_WhenRequestingInvalidBusinessReason_ReturnsExpectedValidationError()
+    {
+        // Arrange
+        var message = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithRequestedByActorId(ValidGlnNumber)
+            .WithRequestedByActorRole(BalanceResponsibleRole)
+            .WithBalanceResponsibleId(ValidGlnNumber)
+            .WithBusinessReason(BusinessReason.WholesaleFixing)
+            .Build();
+
+        // Act
+        var errors = await _sut.ValidateAsync(message);
+
+        // Assert
+        errors.Should().ContainSingle();
+
+        using var assertionScope = new AssertionScope();
+        var error = errors.Single();
+        error.Message.Should().Be(_invalidBusinessReason.Message);
+        error.ErrorCode.Should().Be(_invalidBusinessReason.ErrorCode);
+    }
+
+    [Fact]
+    public async Task Validate_WhenRequestingInvalidBusinessReasonWithInvalidId_ReturnsExpectedValidationError()
+    {
+        // Arrange
+        var message = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithRequestedByActorId(ValidGlnNumber)
+            .WithRequestedByActorRole(BalanceResponsibleRole)
+            .WithBalanceResponsibleId("invalid-format")
+            .WithBusinessReason(BusinessReason.WholesaleFixing)
+            .Build();
+
+        // Act
+        var errors = await _sut.ValidateAsync(message);
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        errors.Should().ContainSingle(error => error.ErrorCode == _invalidBalanceResponsible.ErrorCode);
+        errors.Should().ContainSingle(error => error.ErrorCode == _invalidBusinessReason.ErrorCode);
     }
 }
