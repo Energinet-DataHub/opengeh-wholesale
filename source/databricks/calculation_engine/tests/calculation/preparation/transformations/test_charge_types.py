@@ -34,7 +34,7 @@ DEFAULT_GRID_AREA = "543"
 DEFAULT_CHARGE_CODE = "4000"
 DEFAULT_CHARGE_OWNER = "001"
 DEFAULT_CHARGE_TAX = True
-DEFAULT_CHARGE_TIME_HOUR_0 = datetime(2020, 1, 1, 0)
+DEFAULT_CHARGE_TIME_HOUR_0 = datetime(2019, 12, 31, 23)
 DEFAULT_CHARGE_PRICE = Decimal("2.000005")
 DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
 DEFAULT_METERING_POINT_ID = "123456789012345678901234567"
@@ -57,8 +57,8 @@ def _create_metering_point_row(
     parent_metering_point_id: str = "parent_metering_point_id",
     energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
     balance_responsible_id: str = "balance_responsible_id",
-    from_date: datetime = datetime(2020, 1, 1, 0),
-    to_date: datetime = datetime(2020, 2, 1, 0),
+    from_date: datetime = datetime(2019, 12, 31, 23),
+    to_date: datetime = datetime(2020, 1, 31, 23),
 ) -> Row:
     row = {
         Colname.metering_point_id: metering_point_id,
@@ -82,7 +82,7 @@ def _create_time_series_row(
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
     quantity: Decimal = DEFAULT_QUANTITY,
     quality: e.QuantityQuality = e.QuantityQuality.CALCULATED,
-    observation_time: datetime = datetime(2020, 1, 1, 0),
+    observation_time: datetime = datetime(2019, 12, 31, 23),
 ) -> Row:
     row = {
         Colname.metering_point_id: metering_point_id,
@@ -99,8 +99,8 @@ def _create_tariff_charges_row(
     charge_tax: bool = DEFAULT_CHARGE_TAX,
     resolution: e.ChargeResolution = e.ChargeResolution.HOUR,
     charge_time: datetime = DEFAULT_CHARGE_TIME_HOUR_0,
-    from_date: datetime = datetime(2020, 1, 1, 0),
-    to_date: datetime = datetime(2020, 1, 1, 1),
+    from_date: datetime = datetime(2019, 12, 31, 23),
+    to_date: datetime = datetime(2020, 1, 1, 0),
     charge_price: Decimal = DEFAULT_CHARGE_PRICE,
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
 ) -> Row:
@@ -128,8 +128,8 @@ def _create_subscription_or_fee_charges_row(
     charge_owner: str = DEFAULT_CHARGE_OWNER,
     charge_tax: bool = DEFAULT_CHARGE_TAX,
     charge_time: datetime = DEFAULT_CHARGE_TIME_HOUR_0,
-    from_date: datetime = datetime(2020, 1, 1, 0),
-    to_date: datetime = datetime(2020, 1, 1, 1),
+    from_date: datetime = datetime(2019, 12, 31, 23),
+    to_date: datetime = datetime(2020, 1, 1, 0),
     charge_price: Decimal = DEFAULT_CHARGE_PRICE,
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
 ) -> Row:
