@@ -87,7 +87,7 @@ public class SettlementReportScenario : SubsystemTestsBase<SettlementReportScena
 
     [ScenarioStep(5)]
     [SubsystemFact]
-    public void AndThen_SingleEntryShouldContainCorrectGridAreaCodesAndProcessType()
+    public void AndThen_SingleEntryShouldContainCorrectGridAreaCodesAndCalculationType()
     {
         var expected = "543,D04,";
 
