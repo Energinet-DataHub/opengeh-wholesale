@@ -19,7 +19,6 @@ from pyspark.sql import SparkSession, Row
 from package.calculation.preparation.transformations import (
     get_tariff_charges,
     get_fee_charges,
-    get_subscription_charges,
 )
 import package.codelists as e
 from package.calculation.wholesale.schemas.tariffs_schema import tariff_schema
