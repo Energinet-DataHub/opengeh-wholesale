@@ -18,5 +18,5 @@ namespace Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculation
 
 public interface ICalculationFactory
 {
-    Calculation Create(ProcessType processType, IEnumerable<string> gridAreaCodes, DateTimeOffset startDate, DateTimeOffset endDate, Guid createdByUserId);
+    Calculation Create(CalculationType calculationType, IEnumerable<string> gridAreaCodes, DateTimeOffset startDate, DateTimeOffset endDate, Guid createdByUserId);
 }

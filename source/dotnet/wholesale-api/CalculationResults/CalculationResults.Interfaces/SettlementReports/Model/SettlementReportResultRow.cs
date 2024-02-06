@@ -20,7 +20,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementRe
 
 public sealed record SettlementReportResultRow(
     string GridArea,
-    ProcessType ProcessType,
+    CalculationType CalculationType,
     Instant Time,
     string Resolution,
     MeteringPointType? MeteringPointType,

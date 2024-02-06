@@ -62,7 +62,7 @@ public class WholesaleResultFactoryTests
         actual.SettlementMethod.Should().Be(SettlementMethod.Flex);
         actual.PeriodEnd.Should().Be(_defaultPeriodEnd);
         actual.PeriodStart.Should().Be(_defaultPeriodStart);
-        actual.CalculationType.Should().Be(ProcessType.WholesaleFixing);
+        actual.CalculationType.Should().Be(CalculationType.WholesaleFixing);
         actual.QuantityUnit.Should().Be(QuantityUnit.Kwh);
         actual.TimeSeriesPoints.Should().HaveCount(1);
     }

@@ -21,7 +21,7 @@ public static class WholesaleResultDeltaTableHelper
     public static string?[] CreateRowValues(
         string calculationId = "ed39dbc5-bdc5-41b9-922a-08d3b12d4538",
         string calculationExecutionTimeStart = "2022-03-11T03:00:00.000Z",
-        string calculationType = DeltaTableProcessType.WholesaleFixing,
+        string calculationType = DeltaTableCalculationType.WholesaleFixing,
         string calculationResultId = "aaaaaaaa-1111-1111-1c1c-08d3b12d4511",
         string gridArea = "805",
         string energySupplierId = "2236552000028",

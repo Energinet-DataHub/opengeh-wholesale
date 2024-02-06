@@ -15,6 +15,19 @@
 namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 
 /// <summary>
-/// An immutable request to create a batch.
+/// An immutable calculation.
 /// </summary>
-public sealed record BatchRequestDto(ProcessType ProcessType, IEnumerable<string> GridAreaCodes, DateTimeOffset StartDate, DateTimeOffset EndDate);
+public sealed record CalculationDto(
+    long? RunId,
+    Guid CalculationId,
+    DateTimeOffset PeriodStart,
+    DateTimeOffset PeriodEnd,
+    string Resolution,
+    string Unit,
+    DateTimeOffset? ExecutionTimeStart,
+    DateTimeOffset? ExecutionTimeEnd,
+    CalculationState ExecutionState,
+    bool AreSettlementReportsCreated,
+    string[] GridAreaCodes,
+    CalculationType CalculationType,
+    Guid CreatedByUserId);

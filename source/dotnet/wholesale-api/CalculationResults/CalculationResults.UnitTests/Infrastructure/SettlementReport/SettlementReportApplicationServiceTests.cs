@@ -32,7 +32,7 @@ public class SettlementReportApplicationServiceTests
     [Theory]
     [AutoMoqData]
     public static async Task CreateCompressedSettlementReportAsync_GivenRows_CreatesValidZipArchive(
-        [Frozen] Mock<ICalculationsClient> batchesClientMock,
+        [Frozen] Mock<ICalculationsClient> calculationsClientMock,
         [Frozen] Mock<ISettlementReportResultsCsvWriter> settlementReportResultsCsvWriterMock,
         [Frozen] Mock<ISettlementReportRepository> settlementReportRepositoryMock,
         [Frozen] Mock<ISettlementReportResultQueries> settlementReportResultRepositoryMock)
@@ -40,7 +40,7 @@ public class SettlementReportApplicationServiceTests
         // Arrange
         await using var memoryStream = new MemoryStream();
         var sut = new SettlementReportClient(
-            batchesClientMock.Object,
+            calculationsClientMock.Object,
             settlementReportResultsCsvWriterMock.Object,
             settlementReportRepositoryMock.Object,
             settlementReportResultRepositoryMock.Object);
@@ -59,7 +59,7 @@ public class SettlementReportApplicationServiceTests
         await sut.CreateCompressedSettlementReportAsync(
             () => memoryStream,
             new[] { "500" },
-            ProcessType.BalanceFixing,
+            CalculationType.BalanceFixing,
             DateTimeOffset.MinValue,
             DateTimeOffset.MaxValue,
             null,
@@ -78,7 +78,7 @@ public class SettlementReportApplicationServiceTests
     [Theory]
     [AutoMoqData]
     public static async Task CreateCompressedSettlementReportAsync_GivenNoLanguage_DefaultsToEnUs(
-        [Frozen] Mock<ICalculationsClient> batchesClientMock,
+        [Frozen] Mock<ICalculationsClient> calculationsClientMock,
         [Frozen] Mock<ISettlementReportResultsCsvWriter> settlementReportResultsCsvWriterMock,
         [Frozen] Mock<ISettlementReportRepository> settlementReportRepositoryMock,
         [Frozen] Mock<ISettlementReportResultQueries> settlementReportResultRepositoryMock)
@@ -86,7 +86,7 @@ public class SettlementReportApplicationServiceTests
         // Arrange
         await using var memoryStream = new MemoryStream();
         var sut = new SettlementReportClient(
-            batchesClientMock.Object,
+            calculationsClientMock.Object,
             settlementReportResultsCsvWriterMock.Object,
             settlementReportRepositoryMock.Object,
             settlementReportResultRepositoryMock.Object);
@@ -105,7 +105,7 @@ public class SettlementReportApplicationServiceTests
         await sut.CreateCompressedSettlementReportAsync(
             () => memoryStream,
             new[] { "500" },
-            ProcessType.BalanceFixing,
+            CalculationType.BalanceFixing,
             DateTimeOffset.MinValue,
             DateTimeOffset.MaxValue,
             null,
@@ -117,15 +117,15 @@ public class SettlementReportApplicationServiceTests
 
     [Theory]
     [AutoMoqData]
-    public static async Task CreateCompressedSettlementReportAsync_GivenUnsupportedProcessType_ThrowValidationException(
-        [Frozen] Mock<ICalculationsClient> batchesClientMock,
+    public static async Task CreateCompressedSettlementReportAsync_GivenUnsupportedCalculationType_ThrowValidationException(
+        [Frozen] Mock<ICalculationsClient> calculationsClientMock,
         [Frozen] Mock<ISettlementReportResultsCsvWriter> settlementReportResultsCsvWriterMock,
         [Frozen] Mock<ISettlementReportRepository> settlementReportRepositoryMock,
         [Frozen] Mock<ISettlementReportResultQueries> settlementReportResultRepositoryMock)
     {
         // Arrange
         var sut = new SettlementReportClient(
-            batchesClientMock.Object,
+            calculationsClientMock.Object,
             settlementReportResultsCsvWriterMock.Object,
             settlementReportRepositoryMock.Object,
             settlementReportResultRepositoryMock.Object);
@@ -134,7 +134,7 @@ public class SettlementReportApplicationServiceTests
         await Assert.ThrowsAsync<BusinessValidationException>(() => sut.CreateCompressedSettlementReportAsync(
             () => Stream.Null,
             new[] { "500" },
-            ProcessType.Aggregation,
+            CalculationType.Aggregation,
             DateTimeOffset.MinValue,
             DateTimeOffset.MaxValue,
             null,

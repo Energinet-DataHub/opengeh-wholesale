@@ -47,7 +47,7 @@ public class WholesaleResultFactory
         return new WholesaleResult(
             SqlResultValueConverters.ToGuid(id!),
             SqlResultValueConverters.ToGuid(calculationId!),
-            ProcessTypeMapper.FromDeltaTableValue(calculationType!),
+            CalculationTypeMapper.FromDeltaTableValue(calculationType!),
             periodStart,
             periodEnd,
             gridArea!,

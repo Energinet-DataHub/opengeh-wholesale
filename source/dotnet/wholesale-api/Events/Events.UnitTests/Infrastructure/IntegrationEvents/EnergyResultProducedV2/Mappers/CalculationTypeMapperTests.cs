@@ -17,23 +17,23 @@ using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Energy
 using FluentAssertions;
 using Xunit;
 using EnergyResultProduced = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV2;
-using ProcessType = Energinet.DataHub.Wholesale.Common.Interfaces.Models.ProcessType;
+using ModelCalculationType = Energinet.DataHub.Wholesale.Common.Interfaces.Models.CalculationType;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Mappers;
 
 public class CalculationTypeMapperTests
 {
     [Theory]
-    [InlineAutoMoqData(ProcessType.Aggregation, Contracts.IntegrationEvents.EnergyResultProducedV2.Types.CalculationType.Aggregation)]
-    [InlineAutoMoqData(ProcessType.BalanceFixing, EnergyResultProduced.Types.CalculationType.BalanceFixing)]
-    [InlineAutoMoqData(ProcessType.WholesaleFixing, EnergyResultProduced.Types.CalculationType.WholesaleFixing)]
-    [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement, EnergyResultProduced.Types.CalculationType.FirstCorrectionSettlement)]
-    [InlineAutoMoqData(ProcessType.SecondCorrectionSettlement, EnergyResultProduced.Types.CalculationType.SecondCorrectionSettlement)]
-    [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement, EnergyResultProduced.Types.CalculationType.ThirdCorrectionSettlement)]
-    public void MapCalculationType_WhenCalled_MapsCorrectly(ProcessType processType, EnergyResultProduced.Types.CalculationType expected)
+    [InlineAutoMoqData(ModelCalculationType.Aggregation, Contracts.IntegrationEvents.EnergyResultProducedV2.Types.CalculationType.Aggregation)]
+    [InlineAutoMoqData(ModelCalculationType.BalanceFixing, EnergyResultProduced.Types.CalculationType.BalanceFixing)]
+    [InlineAutoMoqData(ModelCalculationType.WholesaleFixing, EnergyResultProduced.Types.CalculationType.WholesaleFixing)]
+    [InlineAutoMoqData(ModelCalculationType.FirstCorrectionSettlement, EnergyResultProduced.Types.CalculationType.FirstCorrectionSettlement)]
+    [InlineAutoMoqData(ModelCalculationType.SecondCorrectionSettlement, EnergyResultProduced.Types.CalculationType.SecondCorrectionSettlement)]
+    [InlineAutoMoqData(ModelCalculationType.ThirdCorrectionSettlement, EnergyResultProduced.Types.CalculationType.ThirdCorrectionSettlement)]
+    public void MapCalculationType_WhenCalled_MapsCorrectly(ModelCalculationType calculationType, EnergyResultProduced.Types.CalculationType expected)
     {
         // Arrange & Act
-        var actual = CalculationTypeMapper.MapCalculationType(processType);
+        var actual = CalculationTypeMapper.MapCalculationType(calculationType);
 
         // Assert
         actual.Should().Be(expected);
@@ -42,10 +42,10 @@ public class CalculationTypeMapperTests
     [Fact]
     public void MapCalculationType_MapsAnyValidValue()
     {
-        foreach (var processType in Enum.GetValues(typeof(ProcessType)).Cast<ProcessType>())
+        foreach (var calculationType in Enum.GetValues(typeof(ModelCalculationType)).Cast<ModelCalculationType>())
         {
             // Act
-            var actual = CalculationTypeMapper.MapCalculationType(processType);
+            var actual = CalculationTypeMapper.MapCalculationType(calculationType);
 
             // Assert: Is defined (and implicitly that it didn't throw exception)
             Enum.IsDefined(typeof(EnergyResultProduced.Types.CalculationType), actual).Should().BeTrue();
@@ -56,7 +56,7 @@ public class CalculationTypeMapperTests
     public void MapCalculationType_WhenInvalidEnumNumberForCalculationType_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
-        var invalidValue = (ProcessType)99;
+        var invalidValue = (ModelCalculationType)99;
 
         // Act
         var act = () => CalculationTypeMapper.MapCalculationType(invalidValue);

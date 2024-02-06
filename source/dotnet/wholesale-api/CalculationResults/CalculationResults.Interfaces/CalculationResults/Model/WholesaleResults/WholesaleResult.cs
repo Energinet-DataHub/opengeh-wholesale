@@ -22,7 +22,7 @@ public sealed class WholesaleResult
     public WholesaleResult(
         Guid id,
         Guid calculationId,
-        ProcessType calculationType,
+        CalculationType calculationType,
         Instant periodStart,
         Instant periodEnd,
         string gridArea,
@@ -65,7 +65,7 @@ public sealed class WholesaleResult
 
     public Guid CalculationId { get; }
 
-    public ProcessType CalculationType { get; }
+    public CalculationType CalculationType { get; }
 
     public string GridArea { get; }
 

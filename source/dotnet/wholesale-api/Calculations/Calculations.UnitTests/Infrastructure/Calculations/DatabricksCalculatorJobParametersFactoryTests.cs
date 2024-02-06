@@ -34,9 +34,9 @@ public class DatabricksCalculatorJobParametersFactoryTests
         DatabricksCalculationParametersFactory sut)
     {
         // Arrange
-        var batch = new Calculation(
+        var calculation = new Calculation(
             SystemClock.Instance.GetCurrentInstant(),
-            ProcessType.BalanceFixing,
+            CalculationType.BalanceFixing,
             new List<GridAreaCode> { new("805"), new("806"), new("033") },
             DateTimeOffset.Parse("2022-05-31T22:00Z").ToInstant(),
             DateTimeOffset.Parse("2022-06-01T22:00Z").ToInstant(),
@@ -50,14 +50,14 @@ public class DatabricksCalculatorJobParametersFactoryTests
 
         var pythonParams = reader
             .ReadToEnd()
-            .Replace("{calculation-id}", batch.Id.ToString())
+            .Replace("{calculation-id}", calculation.Id.ToString())
             .Replace("\r", string.Empty)
             .Split("\n") // Split lines
             .Where(l => !l.StartsWith("#") && l.Length > 0); // Remove empty and comment lines
         var expected = RunParameters.CreatePythonParams(pythonParams);
 
         // Act
-        var actual = sut.CreateParameters(batch);
+        var actual = sut.CreateParameters(calculation);
 
         // Assert
         actual.Should().BeEquivalentTo(expected);

@@ -29,14 +29,14 @@ public static class SettlementReportDataFactory
     private static SettlementReportResultRow Map(DatabricksSqlRow databricksSqlRow)
     {
         var gridArea = databricksSqlRow[EnergyResultColumnNames.GridArea];
-        var processType = databricksSqlRow[EnergyResultColumnNames.BatchProcessType];
+        var calculationType = databricksSqlRow[EnergyResultColumnNames.CalculationType];
         var time = databricksSqlRow[EnergyResultColumnNames.Time];
         var timeSeriesType = databricksSqlRow[EnergyResultColumnNames.TimeSeriesType];
         var quantity = databricksSqlRow[EnergyResultColumnNames.Quantity];
 
         return new SettlementReportResultRow(
             gridArea!,
-            ProcessTypeMapper.FromDeltaTableValue(processType!),
+            CalculationTypeMapper.FromDeltaTableValue(calculationType!),
             SqlResultValueConverters.ToInstant(time)!.Value,
             "PT15M", // TODO (JMG): store resolution in delta table?
             MeteringPointTypeMapper.FromTimeSeriesTypeDeltaTableValue(timeSeriesType!),
