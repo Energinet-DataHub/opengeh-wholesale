@@ -92,6 +92,7 @@ variable "datahub2_ip_whitelist" {
 variable "datahub2_migration_url" {
   type        = string
   description = "URL for DataHub2"
+  default     = ""
 }
 
 variable "developer_object_ids" {
