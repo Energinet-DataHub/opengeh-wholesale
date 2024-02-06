@@ -28,13 +28,13 @@ public class AggregatedTimeSeriesFactory
     {
         var gridArea = databricksSqlRow[EnergyResultColumnNames.GridArea];
         var timeSeriesType = databricksSqlRow[EnergyResultColumnNames.TimeSeriesType];
-        var processType = databricksSqlRow[EnergyResultColumnNames.BatchProcessType];
+        var calculationType = databricksSqlRow[EnergyResultColumnNames.CalculationType];
 
         return new AggregatedTimeSeries(
             gridArea: gridArea!,
             timeSeriesPoints: timeSeriesPoints.ToArray()!,
             timeSeriesType: SqlResultValueConverters.ToTimeSeriesType(timeSeriesType!),
-            processType: ProcessTypeMapper.FromDeltaTableValue(processType!),
+            calculationType: CalculationTypeMapper.FromDeltaTableValue(calculationType!),
             version: version);
     }
 }

@@ -41,9 +41,9 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
 
     public async IAsyncEnumerable<AggregatedTimeSeries> GetLatestCorrectionForGridAreaAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
-        if (parameters.ProcessType != null)
+        if (parameters.CalculationType != null)
         {
-            throw new ArgumentException($"{nameof(parameters.ProcessType)} must be null, it will be overwritten.", nameof(parameters));
+            throw new ArgumentException($"{nameof(parameters.CalculationType)} must be null, it will be overwritten.", nameof(parameters));
         }
 
         if (parameters.GridArea == null)
@@ -69,13 +69,13 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
 
     private async IAsyncEnumerable<AggregatedTimeSeries> GetAggregatedTimeSeriesForLatestCorrectionAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
-        await foreach (var aggregatedTimeSeries in GetAsync(parameters with { ProcessType = ProcessType.ThirdCorrectionSettlement }).ConfigureAwait(false))
+        await foreach (var aggregatedTimeSeries in GetAsync(parameters with { CalculationType = CalculationType.ThirdCorrectionSettlement }).ConfigureAwait(false))
             yield return aggregatedTimeSeries;
 
-        await foreach (var aggregatedTimeSeries in GetAsync(parameters with { ProcessType = ProcessType.SecondCorrectionSettlement }).ConfigureAwait(false))
+        await foreach (var aggregatedTimeSeries in GetAsync(parameters with { CalculationType = CalculationType.SecondCorrectionSettlement }).ConfigureAwait(false))
             yield return aggregatedTimeSeries;
 
-        await foreach (var aggregatedTimeSeries in GetAsync(parameters with { ProcessType = ProcessType.FirstCorrectionSettlement }).ConfigureAwait(false))
+        await foreach (var aggregatedTimeSeries in GetAsync(parameters with { CalculationType = CalculationType.FirstCorrectionSettlement }).ConfigureAwait(false))
             yield return aggregatedTimeSeries;
     }
 
@@ -112,13 +112,13 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
     private long GetVersion(DatabricksSqlRow row, IReadOnlyCollection<CalculationForPeriod> latestCalculationForPeriod)
     {
         return latestCalculationForPeriod
-            .First(x => x.BatchId == Guid.Parse(row[EnergyResultColumnNames.BatchId]!))
+            .First(x => x.CalculationId == Guid.Parse(row[EnergyResultColumnNames.CalculationId]!))
             .CalculationVersion;
     }
 
     private bool DifferentCalculationId(DatabricksSqlRow row, DatabricksSqlRow otherRow)
     {
-        return row[EnergyResultColumnNames.BatchId] != otherRow[EnergyResultColumnNames.BatchId];
+        return row[EnergyResultColumnNames.CalculationId] != otherRow[EnergyResultColumnNames.CalculationId];
     }
 
     private static bool BelongsToDifferentGridArea(DatabricksSqlRow row, DatabricksSqlRow otherRow)

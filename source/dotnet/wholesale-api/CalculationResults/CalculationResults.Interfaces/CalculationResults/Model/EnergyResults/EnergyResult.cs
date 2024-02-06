@@ -19,23 +19,23 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationR
 
 public sealed class EnergyResult(
     Guid id,
-    Guid batchId,
+    Guid calculationId,
     string gridArea,
     TimeSeriesType timeSeriesType,
     string? energySupplierId,
     string? balanceResponsibleId,
     EnergyTimeSeriesPoint[] timeSeriesPoints,
-    ProcessType processType,
+    CalculationType calculationType,
     Instant periodStart,
     Instant periodEnd,
     string? fromGridArea,
     string? meteringPointId,
     long version)
-    : AggregatedTimeSeries(gridArea, timeSeriesPoints, timeSeriesType, processType, version)
+    : AggregatedTimeSeries(gridArea, timeSeriesPoints, timeSeriesType, calculationType, version)
 {
     public Guid Id { get; } = id;
 
-    public Guid BatchId { get; } = batchId;
+    public Guid CalculationId { get; } = calculationId;
 
     public string? FromGridArea { get; } = fromGridArea;
 

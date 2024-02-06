@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Exceptions;
+namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 
-public class NotUniqueTimeSeriesPointException : Exception
+public enum CalculationState
 {
-    public NotUniqueTimeSeriesPointException(string message)
-    : base(message)
-    {
-    }
+    Pending,
+    Executing,
+    Completed,
+    Failed,
 }

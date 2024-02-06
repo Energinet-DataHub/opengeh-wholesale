@@ -32,7 +32,7 @@ public class CompletedCalculationEntityConfiguration : IEntityTypeConfiguration<
 
         builder.Property(b => b.PeriodStart);
         builder.Property(b => b.PeriodEnd);
-        builder.Property(b => b.ProcessType);
+        builder.Property(b => b.CalculationType);
         builder.Property(b => b.CompletedTime);
         builder.Property(b => b.PublishedTime);
 

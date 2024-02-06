@@ -18,17 +18,17 @@ public class CalculationForPeriod
 {
     public CalculationForPeriod(
         Period period,
-        Guid batchId,
+        Guid calculationId,
         long calculationVersion)
     {
         Period = period;
-        BatchId = batchId;
+        CalculationId = calculationId;
         CalculationVersion = calculationVersion;
     }
 
     public Period Period { get; }
 
-    public Guid BatchId { get; }
+    public Guid CalculationId { get; }
 
     public long CalculationVersion { get; }
 }

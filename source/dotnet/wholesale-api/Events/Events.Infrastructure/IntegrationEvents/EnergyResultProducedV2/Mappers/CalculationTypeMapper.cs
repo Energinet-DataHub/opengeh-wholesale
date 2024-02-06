@@ -19,20 +19,20 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.En
 
 public static class CalculationTypeMapper
 {
-    public static CalculationType MapCalculationType(ProcessType processType)
+    public static CalculationType MapCalculationType(Wholesale.Common.Interfaces.Models.CalculationType calculationType)
     {
-        return processType switch
+        return calculationType switch
         {
-            ProcessType.Aggregation => CalculationType.Aggregation,
-            ProcessType.BalanceFixing => CalculationType.BalanceFixing,
-            ProcessType.WholesaleFixing => CalculationType.WholesaleFixing,
-            ProcessType.FirstCorrectionSettlement => CalculationType.FirstCorrectionSettlement,
-            ProcessType.SecondCorrectionSettlement => CalculationType.SecondCorrectionSettlement,
-            ProcessType.ThirdCorrectionSettlement => CalculationType.ThirdCorrectionSettlement,
+            Wholesale.Common.Interfaces.Models.CalculationType.Aggregation => CalculationType.Aggregation,
+            Wholesale.Common.Interfaces.Models.CalculationType.BalanceFixing => CalculationType.BalanceFixing,
+            Wholesale.Common.Interfaces.Models.CalculationType.WholesaleFixing => CalculationType.WholesaleFixing,
+            Wholesale.Common.Interfaces.Models.CalculationType.FirstCorrectionSettlement => CalculationType.FirstCorrectionSettlement,
+            Wholesale.Common.Interfaces.Models.CalculationType.SecondCorrectionSettlement => CalculationType.SecondCorrectionSettlement,
+            Wholesale.Common.Interfaces.Models.CalculationType.ThirdCorrectionSettlement => CalculationType.ThirdCorrectionSettlement,
 
             _ => throw new ArgumentOutOfRangeException(
-                nameof(processType),
-                actualValue: processType,
+                nameof(calculationType),
+                actualValue: calculationType,
                 "Value cannot be mapped to a calculation type."),
         };
     }

@@ -40,7 +40,7 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
             FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} t1
             WHERE {CreateSqlQueryFilters(_parameters)}";
 
-        sql += $@"ORDER BY t1.{EnergyResultColumnNames.GridArea}, t1.{EnergyResultColumnNames.BatchId}, t1.{EnergyResultColumnNames.Time}";
+        sql += $@"ORDER BY t1.{EnergyResultColumnNames.GridArea}, t1.{EnergyResultColumnNames.CalculationId}, t1.{EnergyResultColumnNames.Time}";
         return sql;
     }
 
@@ -58,7 +58,7 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
 
             var calculationForPeriod = parameters.LatestCalculationForPeriod.ToList()[i];
             whereClausesSql += $@"
-                (t1.{EnergyResultColumnNames.BatchId} == '{calculationForPeriod.BatchId}'  
+                (t1.{EnergyResultColumnNames.CalculationId} == '{calculationForPeriod.CalculationId}'  
                 AND t1.{EnergyResultColumnNames.Time} >= '{calculationForPeriod.Period.Start.ToString()}'
                 AND t1.{EnergyResultColumnNames.Time} < '{calculationForPeriod.Period.End.ToString()}')
             ";
@@ -74,10 +74,10 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
             whereClausesSql += $"AND t1.{EnergyResultColumnNames.GridArea} IN ({parameters.GridArea})";
         }
 
-        if (parameters.ProcessType != null)
+        if (parameters.CalculationType != null)
         {
             whereClausesSql +=
-                $"AND t1.{EnergyResultColumnNames.BatchProcessType} = '{ProcessTypeMapper.ToDeltaTableValue((ProcessType)parameters.ProcessType)}'";
+                $"AND t1.{EnergyResultColumnNames.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue((CalculationType)parameters.CalculationType)}'";
         }
 
         if (!string.IsNullOrWhiteSpace(parameters.EnergySupplierId))
@@ -95,7 +95,7 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
 
     private static string[] SqlColumnNames { get; } =
     {
-        EnergyResultColumnNames.BatchId,
+        EnergyResultColumnNames.CalculationId,
         EnergyResultColumnNames.GridArea,
         EnergyResultColumnNames.FromGridArea,
         EnergyResultColumnNames.TimeSeriesType,
@@ -105,6 +105,6 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
         EnergyResultColumnNames.Quantity,
         EnergyResultColumnNames.QuantityQualities,
         EnergyResultColumnNames.CalculationResultId,
-        EnergyResultColumnNames.BatchProcessType,
+        EnergyResultColumnNames.CalculationType,
     };
 }

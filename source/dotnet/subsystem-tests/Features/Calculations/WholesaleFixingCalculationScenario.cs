@@ -39,9 +39,9 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
         [SubsystemFact]
         public void Given_CalculationInput()
         {
-            Fixture.ScenarioState.CalculationInput = new Clients.v3.BatchRequestDto
+            Fixture.ScenarioState.CalculationInput = new Clients.v3.CalculationRequestDto
             {
-                ProcessType = Clients.v3.ProcessType.WholesaleFixing,
+                CalculationType = Clients.v3.CalculationType.WholesaleFixing,
                 GridAreaCodes = new List<string> { "804" },
                 StartDate = new DateTimeOffset(2023, 1, 31, 23, 0, 0, TimeSpan.Zero),
                 EndDate = new DateTimeOffset(2023, 2, 28, 23, 0, 0, TimeSpan.Zero),
@@ -77,14 +77,14 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
                 Fixture.ScenarioState.CalculationId,
                 waitTimeLimit: TimeSpan.FromMinutes(33));
 
-            Fixture.ScenarioState.Batch = actualWaitResult.Batch;
+            Fixture.ScenarioState.Calculation = actualWaitResult.Calculation;
 
             // Assert
             using var assertionScope = new AssertionScope();
             actualWaitResult.IsCompletedOrFailed.Should().BeTrue();
-            actualWaitResult.Batch.Should().NotBeNull();
+            actualWaitResult.Calculation.Should().NotBeNull();
 
-            actualWaitResult.Batch!.ExecutionState.Should().Be(Clients.v3.BatchState.Completed);
+            actualWaitResult.Calculation!.ExecutionState.Should().Be(Clients.v3.CalculationState.Completed);
         }
 
         [ScenarioStep(4)]
@@ -93,7 +93,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
         {
             var calculationTimeLimit = TimeSpan.FromMinutes(30);
             var actualCalculationDuration =
-                Fixture.ScenarioState.Batch!.ExecutionTimeEnd - Fixture.ScenarioState.Batch.ExecutionTimeStart;
+                Fixture.ScenarioState.Calculation!.ExecutionTimeEnd - Fixture.ScenarioState.Calculation.ExecutionTimeStart;
 
             // Assert
             actualCalculationDuration.Should().BeGreaterThan(TimeSpan.Zero);

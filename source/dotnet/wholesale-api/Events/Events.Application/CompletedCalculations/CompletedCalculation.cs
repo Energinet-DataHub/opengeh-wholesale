@@ -22,21 +22,21 @@ public sealed class CompletedCalculation
     public CompletedCalculation(
         Guid id,
         List<string> gridAreaCodes,
-        ProcessType processType,
+        CalculationType calculationType,
         Instant periodStart,
         Instant periodEnd,
         Instant completedTime)
     {
         Id = id;
         GridAreaCodes = gridAreaCodes;
-        ProcessType = processType;
+        CalculationType = calculationType;
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
         CompletedTime = completedTime;
     }
 
     /// <summary>
-    /// The time when integration events for the batch were published.
+    /// The time when integration events for the calculation were published.
     /// </summary>
     public Instant? PublishedTime { get; set; }
 
@@ -44,7 +44,7 @@ public sealed class CompletedCalculation
 
     public List<string> GridAreaCodes { get; init; }
 
-    public ProcessType ProcessType { get; init; }
+    public CalculationType CalculationType { get; init; }
 
     public Instant PeriodStart { get; init; }
 

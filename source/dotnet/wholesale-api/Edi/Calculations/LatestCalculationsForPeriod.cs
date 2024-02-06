@@ -87,7 +87,7 @@ public class LatestCalculationsForPeriod
             {
                 result.Add(new CalculationForPeriod(
                     new Period(startOfPeriod.Value, remainDay),
-                    calculation.BatchId,
+                    calculation.CalculationId,
                     calculation.Version));
                 startOfPeriod = null;
             }

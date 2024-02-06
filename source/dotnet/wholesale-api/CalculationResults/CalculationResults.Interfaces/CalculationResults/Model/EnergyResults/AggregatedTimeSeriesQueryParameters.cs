@@ -23,4 +23,4 @@ public record AggregatedTimeSeriesQueryParameters(
     string? EnergySupplierId,
     string? BalanceResponsibleId,
     IReadOnlyCollection<CalculationForPeriod> LatestCalculationForPeriod,
-    ProcessType? ProcessType = null);
+    CalculationType? CalculationType = null);

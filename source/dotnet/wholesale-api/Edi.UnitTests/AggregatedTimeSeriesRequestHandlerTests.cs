@@ -400,8 +400,8 @@ public class AggregatedTimeSeriesRequestHandlerTests
                     new(DateTime.Now, 0, new List<QuantityQuality> { QuantityQuality.Measured }),
                 },
                 timeSeriesType: TimeSeriesType.Production,
-                processType: ProcessType.Aggregation,
-                version: 1),
+                calculationType: CalculationType.Aggregation,
+                1),
         };
     }
 }

@@ -24,7 +24,6 @@ using Energinet.DataHub.Wholesale.EDI.Mappers;
 using Energinet.DataHub.Wholesale.EDI.Models;
 using Energinet.DataHub.Wholesale.EDI.Validation;
 using Microsoft.Extensions.Logging;
-using NodaTime.Text;
 
 namespace Energinet.DataHub.Wholesale.EDI;
 
@@ -113,9 +112,9 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         AggregatedTimeSeriesRequest request,
         CancellationToken cancellationToken)
     {
-        var parameters = await CreateAggregatedTimeSeriesQueryParametersWithoutProcessTypeAsync(request).ConfigureAwait(false);
+        var parameters = await CreateAggregatedTimeSeriesQueryParametersWithoutCalculationTypeAsync(request).ConfigureAwait(false);
 
-        if (request.RequestedProcessType == RequestedProcessType.LatestCorrection)
+        if (request.RequestedCalculationType == RequestedCalculationType.LatestCorrection)
         {
             return await _aggregatedTimeSeriesQueries.GetLatestCorrectionForGridAreaAsync(parameters).ToListAsync(cancellationToken).ConfigureAwait(false);
         }
@@ -123,7 +122,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         return await _aggregatedTimeSeriesQueries.GetAsync(
             parameters with
             {
-                ProcessType = ProcessTypeMapper.FromRequestedProcessType(request.RequestedProcessType),
+                CalculationType = CalculationTypeMapper.FromRequestedCalculationType(request.RequestedCalculationType),
             }).ToListAsync(cancellationToken).ConfigureAwait(false);
     }
 
@@ -139,10 +138,10 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         {
             var newAggregationLevel = aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea with { GridAreaCode = null };
             var newRequest = aggregatedTimeSeriesRequestMessage with { AggregationPerRoleAndGridArea = newAggregationLevel };
-            var parameters = await CreateAggregatedTimeSeriesQueryParametersWithoutProcessTypeAsync(newRequest).ConfigureAwait(false);
+            var parameters = await CreateAggregatedTimeSeriesQueryParametersWithoutCalculationTypeAsync(newRequest).ConfigureAwait(false);
 
             var results = _aggregatedTimeSeriesQueries.GetAsync(
-                    parameters with { ProcessType = ProcessTypeMapper.FromRequestedProcessType(newRequest.RequestedProcessType), })
+                    parameters with { CalculationType = CalculationTypeMapper.FromRequestedCalculationType(newRequest.RequestedCalculationType), })
                 .ConfigureAwait(false);
 
             await foreach (var result in results)
@@ -154,7 +153,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         return false;
     }
 
-    private async Task<AggregatedTimeSeriesQueryParameters> CreateAggregatedTimeSeriesQueryParametersWithoutProcessTypeAsync(
+    private async Task<AggregatedTimeSeriesQueryParameters> CreateAggregatedTimeSeriesQueryParametersWithoutCalculationTypeAsync(
         AggregatedTimeSeriesRequest request)
     {
         var latestCalculationsForRequest = await GetLatestCompletedCalculationForRequestAsync(request)

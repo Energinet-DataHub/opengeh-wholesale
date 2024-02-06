@@ -14,7 +14,7 @@
 
 namespace Energinet.DataHub.Wholesale.EDI.Models;
 
-public enum RequestedProcessType
+public enum RequestedCalculationType
 {
     BalanceFixing,
     PreliminaryAggregation,

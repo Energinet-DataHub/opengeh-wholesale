@@ -42,28 +42,28 @@ public class SettlementReportClient : ISettlementReportClient
         _settlementReportRepository = settlementReportRepository;
     }
 
-    public async Task<SettlementReportDto> GetSettlementReportAsync(Guid batchId)
+    public async Task<SettlementReportDto> GetSettlementReportAsync(Guid calculationId)
     {
-        var batch = await _calculationsClient.GetAsync(batchId).ConfigureAwait(false);
-        var report = await _settlementReportRepository.GetSettlementReportAsync(Map(batch)).ConfigureAwait(false);
+        var calculation = await _calculationsClient.GetAsync(calculationId).ConfigureAwait(false);
+        var report = await _settlementReportRepository.GetSettlementReportAsync(Map(calculation)).ConfigureAwait(false);
         return new SettlementReportDto(report.Stream);
     }
 
     public async Task CreateCompressedSettlementReportAsync(
         Func<Stream> openDestinationStream,
         string[] gridAreaCodes,
-        ProcessType processType,
+        CalculationType calculationType,
         DateTimeOffset periodStart,
         DateTimeOffset periodEnd,
         string? energySupplier,
         string? csvFormatLocale)
     {
-        if (processType == ProcessType.Aggregation)
-            throw new BusinessValidationException($"{ProcessType.Aggregation} is not a valid process type for settlement reports.");
+        if (calculationType == CalculationType.Aggregation)
+            throw new BusinessValidationException($"{CalculationType.Aggregation} is not a valid calculation type for settlement reports.");
 
         var resultRows = await _settlementReportResultQueries.GetRowsAsync(
                 gridAreaCodes,
-                processType,
+                calculationType,
                 Instant.FromDateTimeOffset(periodStart),
                 Instant.FromDateTimeOffset(periodEnd),
                 energySupplier)
@@ -88,11 +88,11 @@ public class SettlementReportClient : ISettlementReportClient
         }
     }
 
-    public async Task GetSettlementReportAsync(Guid batchId, string gridAreaCode, Stream outputStream)
+    public async Task GetSettlementReportAsync(Guid calculationId, string gridAreaCode, Stream outputStream)
     {
-        var batch = await _calculationsClient.GetAsync(batchId).ConfigureAwait(false);
+        var calculation = await _calculationsClient.GetAsync(calculationId).ConfigureAwait(false);
         await _settlementReportRepository
-            .GetSettlementReportAsync(Map(batch), gridAreaCode, outputStream)
+            .GetSettlementReportAsync(Map(calculation), gridAreaCode, outputStream)
             .ConfigureAwait(false);
     }
 
@@ -100,7 +100,7 @@ public class SettlementReportClient : ISettlementReportClient
     {
         return new CalculationInfo
         {
-            Id = calculation.BatchId,
+            Id = calculation.CalculationId,
             PeriodStart = Instant.FromDateTimeOffset(calculation.PeriodStart),
             PeriodEnd = Instant.FromDateTimeOffset(calculation.PeriodEnd),
             GridAreaCodes = calculation.GridAreaCodes.ToList(),

@@ -16,7 +16,7 @@ namespace Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 
 public interface ICompletedCalculationRepository
 {
-    Task AddAsync(IEnumerable<CompletedCalculation> completedBatches);
+    Task AddAsync(IEnumerable<CompletedCalculation> completedCalculations);
 
     Task<CompletedCalculation?> GetLastCompletedOrNullAsync();
 

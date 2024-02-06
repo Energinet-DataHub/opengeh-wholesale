@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Edi.Requests;
+using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.EDI.Client;
 using Energinet.DataHub.Wholesale.EDI.Factories;
 using Energinet.DataHub.Wholesale.EDI.Validation;
@@ -23,7 +24,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Energinet.DataHub.Wholesale.EDI;
 
 /// <summary>
-/// Registration of services required for the Batches module.
+/// Registration of services required for the Calculations module.
 /// </summary>
 public static class EdiRegistration
 {
@@ -31,6 +32,7 @@ public static class EdiRegistration
     {
         serviceCollection.AddScoped<IAggregatedTimeSeriesRequestHandler, AggregatedTimeSeriesRequestHandler>();
         serviceCollection.AddSingleton<IEdiClient, EdiClient>();
+        serviceCollection.AddSingleton<LatestCalculationsForPeriod>();
         AddAggregatedTimeSeriesRequestValidation(serviceCollection);
     }
 

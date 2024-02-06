@@ -74,9 +74,9 @@ public class ControllerRolesTests
     }
 
     [Theory]
-    [InlineAutoData(typeof(CalculationController), "CreateBatch", Permissions.CalculationsManage)]
-    [InlineAutoData(typeof(CalculationController), "GetBatch", Permissions.CalculationsManage)]
-    [InlineAutoData(typeof(CalculationController), "SearchBatches", Permissions.CalculationsManage)]
+    [InlineAutoData(typeof(CalculationController), "CreateCalculation", Permissions.CalculationsManage)]
+    [InlineAutoData(typeof(CalculationController), "GetCalculation", Permissions.CalculationsManage)]
+    [InlineAutoData(typeof(CalculationController), "SearchCalculations", Permissions.CalculationsManage)]
     [InlineAutoData(typeof(SettlementReportController), "Download", Permissions.SettlementReportsManage)]
     [InlineAutoData(typeof(SettlementReportController), "GetSettlementReportAsStreamAsync", Permissions.SettlementReportsManage)]
     [InlineAutoData(typeof(SettlementReportController), "ZippedBasisDataStream", Permissions.SettlementReportsManage)]

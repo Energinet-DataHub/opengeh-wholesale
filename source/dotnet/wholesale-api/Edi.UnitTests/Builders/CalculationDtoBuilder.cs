@@ -51,7 +51,7 @@ public class CalculationDtoBuilder
             CalculationState.Completed,
             false,
             new[] { "543" },
-            ProcessType.BalanceFixing,
+            CalculationType.BalanceFixing,
             Guid.NewGuid(),
             _version);
     }

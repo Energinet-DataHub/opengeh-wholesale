@@ -12,14 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
+namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 
-public static class DeltaTableProcessType
-{
-    public const string Aggregation = "Aggregation";
-    public const string BalanceFixing = "BalanceFixing";
-    public const string WholesaleFixing = "WholesaleFixing";
-    public const string FirstCorrectionSettlement = "FirstCorrectionSettlement";
-    public const string SecondCorrectionSettlement = "SecondCorrectionSettlement";
-    public const string ThirdCorrectionSettlement = "ThirdCorrectionSettlement";
-}
+/// <summary>
+/// An immutable calculation.
+/// </summary>
+public sealed record CalculationDto(
+    long? RunId,
+    Guid CalculationId,
+    DateTimeOffset PeriodStart,
+    DateTimeOffset PeriodEnd,
+    string Resolution,
+    string Unit,
+    DateTimeOffset? ExecutionTimeStart,
+    DateTimeOffset? ExecutionTimeEnd,
+    CalculationState ExecutionState,
+    bool AreSettlementReportsCreated,
+    string[] GridAreaCodes,
+    CalculationType CalculationType,
+    Guid CreatedByUserId);

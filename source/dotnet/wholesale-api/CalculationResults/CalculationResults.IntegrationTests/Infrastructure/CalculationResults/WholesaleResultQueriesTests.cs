@@ -38,12 +38,12 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>, ICl
     private const string DefaultMonthlyAmount = "1.123456";
 
     private readonly DatabricksSqlStatementApiFixture _fixture;
-    private readonly Mock<ICalculationsClient> _batchesClientMock;
+    private readonly Mock<ICalculationsClient> _calculationsClientMock;
 
     public WholesaleResultQueriesTests(DatabricksSqlStatementApiFixture fixture)
     {
         _fixture = fixture;
-        _batchesClientMock = Fixture.Freeze<Mock<ICalculationsClient>>();
+        _calculationsClientMock = Fixture.Freeze<Mock<ICalculationsClient>>();
         Fixture.Inject(_fixture.DatabricksSchemaManager.DeltaTableOptions);
         Fixture.Inject(_fixture.GetDatabricksExecutor());
     }
@@ -54,13 +54,13 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>, ICl
     {
         // Arrange
         await InsertHourlyTariffAndMonthlyAmountTariffRowsAsync();
-        calculation = calculation with { BatchId = Guid.Parse(CalculationId) };
-        _batchesClientMock
+        calculation = calculation with { CalculationId = Guid.Parse(CalculationId) };
+        _calculationsClientMock
             .Setup(b => b.GetAsync(It.IsAny<Guid>()))
             .ReturnsAsync(calculation);
 
         // Act
-        var actual = await Sut.GetAsync(calculation.BatchId).ToListAsync();
+        var actual = await Sut.GetAsync(calculation.CalculationId).ToListAsync();
 
         // Assert
         using var assertionScope = new AssertionScope();
