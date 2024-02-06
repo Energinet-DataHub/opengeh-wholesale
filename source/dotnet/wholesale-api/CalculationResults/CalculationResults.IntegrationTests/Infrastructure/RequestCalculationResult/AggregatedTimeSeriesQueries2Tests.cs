@@ -81,6 +81,39 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
         Fixture.Inject(_fixture.GetDatabricksExecutor());
     }
 
+    /*
+     Overview of the test data, where
+     - ES1, ES2, ES3 are energy suppliers
+     - BR1, BR2, BR3 are balance responsibles
+     - GA1, GA2, GA3 are grid areas
+     - 1, 2, 3, 4 are metering point ids, directly corresponding to the methods CreateDataOne, CreateDataTwo,
+       CreateDataThree, and CreateDataFour
+
+     +-------------------------------+    +----------------------+
+     |   GA1                         |    |   GA2                |
+     |   +-----------------------+   |    |   +--------------+   |
+     |   |   BR1                 |   |    |   |   BR3        |   |
+     |   |   +-----+   +-----+   |   |    |   |   +------+   |   |
+     |   |   | ES1 |   | ES2 |   |   |    |   |   | ES1  |   |   |
+     |   |   | 1   |   | 1   |   |   |    |   |   | 1  3 |   |   |
+     |   |   | 2   |   | 4   |   |   |    |   |   | 2  4 |   |   |
+     |   |   +-----+   +-----+   |   |    |   |   +------+   |   |
+     |   +-----------------------+   |    |   +--------------+   |
+     |                               |    +----------------------+
+     |                               |
+     |                               |    +---------------------------+
+     |                               |    |   GA3                     |
+     |   +---------------------------+----+-----------------------+   |
+     |   |   BR2                     |    |                       |   |
+     |   |   +-----+   +-----+       |    |   +-----+   +-----+   |   |
+     |   |   | ES1 |   | ES3 |       |    |   | ES2 |   | ES3 |   |   |
+     |   |   | 3   |   | 2   |       |    |   | 2   |   | 1   |   |   |
+     |   |   | 4   |   | 3   |       |    |   | 3   |   | 4   |   |   |
+     |   |   +-----+   +-----+       |    |   +-----+   +-----+   |   |
+     |   +---------------------------+----+-----------------------+   |
+     +-------------------------------+    +---------------------------+
+     */
+
     [Fact]
     public async Task
         GetAsync_EnergySupplierWithSpecificBalanceResponsibleAndGridArea_SecondCorrectionSettlement_Production_OneSeriesWithTwoPoints()
