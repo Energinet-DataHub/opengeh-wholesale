@@ -16,13 +16,13 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 
 public static class CalculationDtoMapper
 {
-    public static BatchDto Map(Calculations.Interfaces.Models.CalculationDto calculationDto)
+    public static CalculationDto Map(Calculations.Interfaces.Models.CalculationDto calculationDto)
     {
         if (calculationDto == null) throw new ArgumentNullException(nameof(calculationDto));
 
-        return new BatchDto(
+        return new CalculationDto(
             calculationDto.RunId,
-            calculationDto.BatchId,
+            calculationDto.CalculationId,
             calculationDto.PeriodStart,
             calculationDto.PeriodEnd,
             calculationDto.Resolution,
@@ -32,7 +32,7 @@ public static class CalculationDtoMapper
             CalculationStateMapper.MapState(calculationDto.ExecutionState),
             calculationDto.AreSettlementReportsCreated,
             calculationDto.GridAreaCodes,
-            ProcessTypeMapper.Map(calculationDto.ProcessType),
+            CalculationTypeMapper.Map(calculationDto.CalculationType),
             calculationDto.CreatedByUserId);
     }
 }

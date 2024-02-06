@@ -44,14 +44,14 @@ public sealed class SettlementReportTests : WebApiTestBase
     {
         // arrange
         const string gridAreaCode = "001";
-        var batchId = Guid.NewGuid();
+        var calculationId = Guid.NewGuid();
 
-        var url = $"/v3/SettlementReport?batchId={batchId}&gridAreaCode={gridAreaCode}";
+        var url = $"/v3/SettlementReport?calculationId={calculationId}&gridAreaCode={gridAreaCode}";
 
         const HttpStatusCode expectedHttpStatusCode = HttpStatusCode.OK;
 
         settlementReportApplicationService
-            .Setup(service => service.GetSettlementReportAsync(batchId, gridAreaCode, Stream.Null));
+            .Setup(service => service.GetSettlementReportAsync(calculationId, gridAreaCode, Stream.Null));
 
         Factory.SettlementReportApplicationServiceMock = settlementReportApplicationService;
 
@@ -69,14 +69,14 @@ public sealed class SettlementReportTests : WebApiTestBase
     {
         // arrange
         const string gridAreaCode = "001";
-        var batchId = Guid.NewGuid();
+        var calculationId = Guid.NewGuid();
 
-        var url = $"/v3/SettlementReport?batchId={batchId}&gridAreaCode={gridAreaCode}";
+        var url = $"/v3/SettlementReport?calculationId={calculationId}&gridAreaCode={gridAreaCode}";
 
         const string expectedContent = "F33B866D-D97A-42B3-9DFF-5BD1EC28885A";
 
         settlementReportApplicationService
-            .Setup(service => service.GetSettlementReportAsync(batchId, gridAreaCode, It.IsAny<Stream>()))
+            .Setup(service => service.GetSettlementReportAsync(calculationId, gridAreaCode, It.IsAny<Stream>()))
             .Callback<Guid, string, Stream>((_, _, outputStream) => outputStream.Write(Encoding.UTF8.GetBytes(expectedContent)));
 
         Factory.SettlementReportApplicationServiceMock = settlementReportApplicationService;
@@ -100,13 +100,13 @@ public sealed class SettlementReportTests : WebApiTestBase
     {
         // Arrange
         const string gridAreaCode = "567";
-        const string processType = "BalanceFixing";
+        const string calculationType = "BalanceFixing";
         var periodStart = DateTime.Parse("2021-01-01T00:00:00Z").ToUniversalTime();
         var periodEnd = DateTime.Parse("2021-06-15T00:00:00Z").ToUniversalTime();
 
         var url = "/v3/SettlementReport/Download"
                   + $"?gridAreaCodes={gridAreaCode}"
-                  + $"&processType={processType}"
+                  + $"&calculationType={calculationType}"
                   + $"&periodStart={periodStart:O}"
                   + $"&periodEnd={periodEnd:O}";
 
@@ -116,12 +116,12 @@ public sealed class SettlementReportTests : WebApiTestBase
             .Setup(service => service.CreateCompressedSettlementReportAsync(
                 It.IsAny<Func<Stream>>(),
                 new[] { gridAreaCode },
-                ProcessType.BalanceFixing,
+                CalculationType.BalanceFixing,
                 periodStart,
                 periodEnd,
                 null,
                 null))
-            .Returns<Func<Stream>, string[], ProcessType, DateTimeOffset, DateTimeOffset, string?, string?>((openStream, _, _, _, _, _, _) =>
+            .Returns<Func<Stream>, string[], CalculationType, DateTimeOffset, DateTimeOffset, string?, string?>((openStream, _, _, _, _, _, _) =>
             {
                 openStream().Write(Encoding.UTF8.GetBytes(expectedMockedContent));
                 return Task.CompletedTask;
@@ -143,14 +143,14 @@ public sealed class SettlementReportTests : WebApiTestBase
     {
         // Arrange
         const string gridAreaCode = "567";
-        const string processType = "BalanceFixing";
+        const string calculationType = "BalanceFixing";
         const string language = "da-DK";
         var periodStart = DateTime.Parse("2021-01-01T00:00:00Z").ToUniversalTime();
         var periodEnd = DateTime.Parse("2021-06-15T00:00:00Z").ToUniversalTime();
 
         var url = "/v3/SettlementReport/Download"
                   + $"?gridAreaCodes={gridAreaCode}"
-                  + $"&processType={processType}"
+                  + $"&calculationType={calculationType}"
                   + $"&periodStart={periodStart:O}"
                   + $"&periodEnd={periodEnd:O}"
                   + $"&csvFormatLocale={language}";
@@ -161,12 +161,12 @@ public sealed class SettlementReportTests : WebApiTestBase
             .Setup(service => service.CreateCompressedSettlementReportAsync(
                 It.IsAny<Func<Stream>>(),
                 new[] { gridAreaCode },
-                ProcessType.BalanceFixing,
+                CalculationType.BalanceFixing,
                 periodStart,
                 periodEnd,
                 null,
                 language))
-            .Returns<Func<Stream>, string[], ProcessType, DateTimeOffset, DateTimeOffset, string?, string?>((openStream, _, _, _, _, _, _) =>
+            .Returns<Func<Stream>, string[], CalculationType, DateTimeOffset, DateTimeOffset, string?, string?>((openStream, _, _, _, _, _, _) =>
             {
                 openStream().Write(Encoding.UTF8.GetBytes(expectedMockedContent));
                 return Task.CompletedTask;
@@ -188,13 +188,13 @@ public sealed class SettlementReportTests : WebApiTestBase
     {
         // Arrange
         const string gridAreaCode = "567";
-        const string processType = "BalanceFixing";
+        const string calculationType = "BalanceFixing";
         var periodStart = DateTime.Parse("2021-01-01T00:00:00Z").ToUniversalTime();
         var periodEnd = DateTime.Parse("2021-06-15T00:00:00Z").ToUniversalTime();
 
         var url = "/v3/SettlementReport/Download"
                   + $"?gridAreaCodes={gridAreaCode}"
-                  + $"&processType={processType}"
+                  + $"&calculationType={calculationType}"
                   + $"&periodStart={periodStart:O}"
                   + $"&periodEnd={periodEnd:O}";
 
@@ -204,12 +204,12 @@ public sealed class SettlementReportTests : WebApiTestBase
             .Setup(service => service.CreateCompressedSettlementReportAsync(
                 It.IsAny<Func<Stream>>(),
                 new[] { gridAreaCode },
-                ProcessType.BalanceFixing,
+                CalculationType.BalanceFixing,
                 periodStart,
                 periodEnd,
                 null,
                 null))
-            .Returns<Func<Stream>, string[], ProcessType, DateTimeOffset, DateTimeOffset, string?, string?>((openStream, _, _, _, _, _, _) =>
+            .Returns<Func<Stream>, string[], CalculationType, DateTimeOffset, DateTimeOffset, string?, string?>((openStream, _, _, _, _, _, _) =>
             {
                 openStream();
                 return Task.CompletedTask;
@@ -228,18 +228,18 @@ public sealed class SettlementReportTests : WebApiTestBase
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task HTTP_GET_V3_Download_WithAggregationProcessType_ReturnsBadRequest(
+    public async Task HTTP_GET_V3_Download_WithAggregationCalculationType_ReturnsBadRequest(
         Mock<ISettlementReportClient> settlementReportApplicationService)
     {
         // Arrange
         const string gridAreaCode = "567";
-        const string processType = "Aggregation";
+        const string calculationType = "Aggregation";
         var periodStart = DateTime.Parse("2021-01-01T00:00:00Z").ToUniversalTime();
         var periodEnd = DateTime.Parse("2021-06-15T00:00:00Z").ToUniversalTime();
 
         var url = "/v3/SettlementReport/Download"
                   + $"?gridAreaCodes={gridAreaCode}"
-                  + $"&processType={processType}"
+                  + $"&calculationType={calculationType}"
                   + $"&periodStart={periodStart:O}"
                   + $"&periodEnd={periodEnd:O}";
 
@@ -247,12 +247,12 @@ public sealed class SettlementReportTests : WebApiTestBase
             .Setup(service => service.CreateCompressedSettlementReportAsync(
                 It.IsAny<Func<Stream>>(),
                 new[] { gridAreaCode },
-                ProcessType.Aggregation,
+                CalculationType.Aggregation,
                 periodStart,
                 periodEnd,
                 null,
                 null))
-            .Returns<Func<Stream>, string[], ProcessType, DateTimeOffset, DateTimeOffset, string?, string?>((_, _, _, _, _, _, _) =>
+            .Returns<Func<Stream>, string[], CalculationType, DateTimeOffset, DateTimeOffset, string?, string?>((_, _, _, _, _, _, _) =>
                 throw new BusinessValidationException("Tested Validation Exception"));
 
         Factory.SettlementReportApplicationServiceMock = settlementReportApplicationService;

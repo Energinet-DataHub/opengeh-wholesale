@@ -40,26 +40,26 @@ public class CreateCalculationHandlerTests
         var periodStart = period.PeriodStart.ToDateTimeOffset();
         var periodEnd = period.PeriodEnd.ToDateTimeOffset();
         var gridAreaCodes = new List<string> { "805" };
-        _defaultCreateCalculationCommand = CreateCalculationCommand(ProcessType.Aggregation, periodStart, periodEnd, gridAreaCodes);
+        _defaultCreateCalculationCommand = CreateCalculationCommand(CalculationType.Aggregation, periodStart, periodEnd, gridAreaCodes);
     }
 
     [Theory]
-    [InlineAutoMoqData(ProcessType.BalanceFixing)]
-    [InlineAutoMoqData(ProcessType.Aggregation)]
-    [InlineAutoMoqData(ProcessType.WholesaleFixing)]
-    [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement)]
-    [InlineAutoMoqData(ProcessType.SecondCorrectionSettlement)]
-    [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement)]
+    [InlineAutoMoqData(CalculationType.BalanceFixing)]
+    [InlineAutoMoqData(CalculationType.Aggregation)]
+    [InlineAutoMoqData(CalculationType.WholesaleFixing)]
+    [InlineAutoMoqData(CalculationType.FirstCorrectionSettlement)]
+    [InlineAutoMoqData(CalculationType.SecondCorrectionSettlement)]
+    [InlineAutoMoqData(CalculationType.ThirdCorrectionSettlement)]
     public async Task Handle_AddsCalculationToRepository(
-        ProcessType processType,
+        CalculationType calculationType,
         [Frozen] Mock<ICalculationFactory> calculationFactoryMock,
         [Frozen] Mock<ICalculationRepository> calculationRepositoryMock,
         CreateCalculationHandler sut)
     {
         // Arrange
-        var calculationCommand = _defaultCreateCalculationCommand with { ProcessType = processType };
+        var calculationCommand = _defaultCreateCalculationCommand with { CalculationType = calculationType };
         var calculation = CreateCalculationFromCommand(calculationCommand);
-        calculationFactoryMock.Setup(x => x.Create(calculation.ProcessType, calculationCommand.GridAreaCodes, calculationCommand.StartDate, calculationCommand.EndDate, calculationCommand.CreatedByUserId))
+        calculationFactoryMock.Setup(x => x.Create(calculation.CalculationType, calculationCommand.GridAreaCodes, calculationCommand.StartDate, calculationCommand.EndDate, calculationCommand.CreatedByUserId))
             .Returns(calculation);
 
         // Act
@@ -80,7 +80,7 @@ public class CreateCalculationHandlerTests
         // Arrange
         const string expectedLogMessage = $"Calculation created with id {LoggingConstants.CalculationId}";
         var calculation = CreateCalculationFromCommand(_defaultCreateCalculationCommand);
-        calculationFactoryMock.Setup(x => x.Create(calculation.ProcessType, _defaultCreateCalculationCommand.GridAreaCodes, _defaultCreateCalculationCommand.StartDate, _defaultCreateCalculationCommand.EndDate, _defaultCreateCalculationCommand.CreatedByUserId))
+        calculationFactoryMock.Setup(x => x.Create(calculation.CalculationType, _defaultCreateCalculationCommand.GridAreaCodes, _defaultCreateCalculationCommand.StartDate, _defaultCreateCalculationCommand.EndDate, _defaultCreateCalculationCommand.CreatedByUserId))
             .Returns(calculation);
 
         // Act
@@ -91,16 +91,16 @@ public class CreateCalculationHandlerTests
     }
 
     [Theory]
-    [InlineData(ProcessType.WholesaleFixing)]
-    [InlineData(ProcessType.FirstCorrectionSettlement)]
-    [InlineData(ProcessType.SecondCorrectionSettlement)]
-    [InlineData(ProcessType.ThirdCorrectionSettlement)]
-    public void Handle_WhenPeriodNotOneMonthForCertainProcessTypes_ThrowBusinessValidationException(ProcessType processType)
+    [InlineData(CalculationType.WholesaleFixing)]
+    [InlineData(CalculationType.FirstCorrectionSettlement)]
+    [InlineData(CalculationType.SecondCorrectionSettlement)]
+    [InlineData(CalculationType.ThirdCorrectionSettlement)]
+    public void Handle_WhenPeriodNotOneMonthForCertainCalculationTypes_ThrowBusinessValidationException(CalculationType calculationType)
     {
         // Arrange
         var periodStart = DateTimeOffset.Parse("2021-12-31T23:00Z");
         var periodEnd = DateTimeOffset.Parse("2022-01-30T23:00Z");
-        var calculationCommand = _defaultCreateCalculationCommand with { StartDate = periodStart, EndDate = periodEnd, ProcessType = processType };
+        var calculationCommand = _defaultCreateCalculationCommand with { StartDate = periodStart, EndDate = periodEnd, CalculationType = calculationType };
 
         // Act
         var actual = () => CreateCalculationFromCommand(calculationCommand);
@@ -156,10 +156,10 @@ public class CreateCalculationHandlerTests
         actual.Should().Throw<BusinessValidationException>();
     }
 
-    private static CreateCalculationCommand CreateCalculationCommand(ProcessType processType, DateTimeOffset periodStart, DateTimeOffset periodEnd, IEnumerable<string> gridAreaCodes)
+    private static CreateCalculationCommand CreateCalculationCommand(CalculationType calculationType, DateTimeOffset periodStart, DateTimeOffset periodEnd, IEnumerable<string> gridAreaCodes)
     {
         return new CreateCalculationCommand(
-            processType,
+            calculationType,
             gridAreaCodes,
             periodStart,
             periodEnd,
@@ -171,7 +171,7 @@ public class CreateCalculationHandlerTests
         var period = Periods.January_EuropeCopenhagen_Instant;
         return new Calculation(
             SystemClock.Instance.GetCurrentInstant(),
-            command.ProcessType,
+            command.CalculationType,
             command.GridAreaCodes.Select(x => new GridAreaCode(x)).ToList(),
             command.StartDate.ToInstant(),
             command.EndDate.ToInstant(),

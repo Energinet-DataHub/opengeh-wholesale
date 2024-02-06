@@ -19,7 +19,7 @@ using Microsoft.Extensions.Logging;
 namespace Energinet.DataHub.Wholesale.Events.Application.Triggers;
 
 /// <summary>
-/// Worker invoking fetching completed batches from the batches module and registering them in the module.
+/// Worker invoking fetching completed calculations from the calculations module and registering them in the module.
 /// </summary>
 public class RegisterCompletedCalculationsTrigger : RepeatingTrigger<IRegisterCompletedCalculationsHandler>
 {

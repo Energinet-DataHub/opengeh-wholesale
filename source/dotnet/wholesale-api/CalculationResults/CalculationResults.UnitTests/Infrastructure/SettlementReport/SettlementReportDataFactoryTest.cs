@@ -41,8 +41,8 @@ public class SettlementReportDataFactoryTests
         _rows.Add(row2);
         _rows.Add(row3);
 
-        _firstRow = new SettlementReportResultRow("123", ProcessType.BalanceFixing, Instant.FromUtc(2022, 5, 16, 1, 0, 0), "PT15M", MeteringPointType.Consumption, SettlementMethod.NonProfiled, new decimal(1.1));
-        _lastRow = new SettlementReportResultRow("234", ProcessType.BalanceFixing, Instant.FromUtc(2022, 5, 16, 1, 30, 0), "PT15M", MeteringPointType.Production, null, new decimal(3.3));
+        _firstRow = new SettlementReportResultRow("123", CalculationType.BalanceFixing, Instant.FromUtc(2022, 5, 16, 1, 0, 0), "PT15M", MeteringPointType.Consumption, SettlementMethod.NonProfiled, new decimal(1.1));
+        _lastRow = new SettlementReportResultRow("234", CalculationType.BalanceFixing, Instant.FromUtc(2022, 5, 16, 1, 30, 0), "PT15M", MeteringPointType.Production, null, new decimal(3.3));
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class SettlementReportDataFactoryTests
         var row = new Dictionary<string, object?>
         {
             { EnergyResultColumnNames.GridArea, gridArea },
-            { EnergyResultColumnNames.BatchProcessType, balanceFixing },
+            { EnergyResultColumnNames.CalculationType, balanceFixing },
             { EnergyResultColumnNames.Time, time },
             { EnergyResultColumnNames.TimeSeriesType, timeSeriesType },
             { EnergyResultColumnNames.Quantity, quantity },

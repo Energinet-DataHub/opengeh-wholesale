@@ -21,7 +21,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Events.IntegrationTests.Infrastructure.Persistence.Batches;
+namespace Energinet.DataHub.Wholesale.Events.IntegrationTests.Infrastructure.Persistence.Calculations;
 
 public class CompletedCalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture<EventsDatabaseContext>>
 {
@@ -34,7 +34,7 @@ public class CompletedCalculationRepositoryTests : IClassFixture<WholesaleDataba
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task AddAsync_AddsCompletedBatchWithExpectedData(CompletedCalculation expectedCalculation)
+    public async Task AddAsync_AddsCompletedCalculationWithExpectedData(CompletedCalculation expectedCalculation)
     {
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();

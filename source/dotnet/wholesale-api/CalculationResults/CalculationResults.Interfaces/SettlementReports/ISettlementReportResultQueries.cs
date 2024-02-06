@@ -22,7 +22,7 @@ public interface ISettlementReportResultQueries
 {
     Task<IEnumerable<SettlementReportResultRow>> GetRowsAsync(
         string[] gridAreaCodes,
-        ProcessType processType,
+        CalculationType calculationType,
         Instant periodStart,
         Instant periodEnd,
         string? energySupplier);

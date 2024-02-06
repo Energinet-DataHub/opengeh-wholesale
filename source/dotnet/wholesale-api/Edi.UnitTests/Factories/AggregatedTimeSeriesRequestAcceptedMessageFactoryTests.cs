@@ -122,7 +122,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
                 new(new DateTime(2021, 1, 1), 3, quantityQualities),
             },
             _timeSeriesType,
-            ProcessType.Aggregation);
+            CalculationType.Aggregation);
 
         return new List<AggregatedTimeSeries>()
         {

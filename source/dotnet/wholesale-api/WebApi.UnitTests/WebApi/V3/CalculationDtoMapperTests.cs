@@ -19,7 +19,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.WebApi.V3;
 
-public static class BatchDtoMapperTests
+public static class CalculationDtoMapperTests
 {
     [Theory]
     [InlineAutoMoqData]
@@ -29,7 +29,7 @@ public static class BatchDtoMapperTests
         var actual = CalculationDtoMapper.Map(source);
 
         // Assert
-        actual.ProcessType.Should().Be(ProcessTypeMapper.Map(source.ProcessType));
+        actual.CalculationType.Should().Be(CalculationTypeMapper.Map(source.CalculationType));
         actual.ExecutionState.Should().Be(CalculationStateMapper.MapState(source.ExecutionState));
         actual.Resolution.Should().Be(source.Resolution);
         actual.RunId.Should().Be(source.RunId);
@@ -40,8 +40,8 @@ public static class BatchDtoMapperTests
         actual.ExecutionTimeEnd.Should().Be(source.ExecutionTimeEnd);
         actual.GridAreaCodes.Should().Contain(source.GridAreaCodes);
         actual.AreSettlementReportsCreated.Should().Be(source.AreSettlementReportsCreated);
-        actual.BatchId.Should().Be(source.BatchId);
-        actual.BatchId.Should().Be(source.BatchId);
+        actual.CalculationId.Should().Be(source.CalculationId);
+        actual.CalculationId.Should().Be(source.CalculationId);
         actual.CreatedByUserId.Should().Be(source.CreatedByUserId);
     }
 }

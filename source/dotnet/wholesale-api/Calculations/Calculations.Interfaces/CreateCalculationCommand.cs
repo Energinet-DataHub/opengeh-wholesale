@@ -20,7 +20,7 @@ namespace Energinet.DataHub.Wholesale.Calculations.Interfaces;
 /// An immutable command to create a calculation.
 /// </summary>
 public sealed record CreateCalculationCommand(
-    ProcessType ProcessType,
+    CalculationType CalculationType,
     IEnumerable<string> GridAreaCodes,
     DateTimeOffset StartDate,
     DateTimeOffset EndDate,

@@ -51,15 +51,15 @@ public class IntegrationEventProvider : IIntegrationEventProvider
         do
         {
             var hasFailed = false;
-            var unpublishedBatch = await _completedCalculationRepository.GetNextUnpublishedOrNullAsync().ConfigureAwait(false);
-            if (unpublishedBatch == null)
+            var unpublishedCalculation = await _completedCalculationRepository.GetNextUnpublishedOrNullAsync().ConfigureAwait(false);
+            if (unpublishedCalculation == null)
             {
                 break;
             }
 
             // Publish integration events for energy results
             var energyResultCount = 0;
-            var energyResultEventProviderEnumerator = _energyResultEventProvider.GetAsync(unpublishedBatch).GetAsyncEnumerator();
+            var energyResultEventProviderEnumerator = _energyResultEventProvider.GetAsync(unpublishedCalculation).GetAsyncEnumerator();
             try
             {
                 var hasResult = true;
@@ -73,7 +73,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
                     {
                         hasResult = false;
                         hasFailed = true;
-                        _logger.LogError(ex, "Failed energy result event publishing for completed calculation {calculation_id}. Handled '{energy_result_count}' energy results before failing.", unpublishedBatch.Id, energyResultCount);
+                        _logger.LogError(ex, "Failed energy result event publishing for completed calculation {calculation_id}. Handled '{energy_result_count}' energy results before failing.", unpublishedCalculation.Id, energyResultCount);
                     }
 
                     if (hasResult)
@@ -93,9 +93,9 @@ public class IntegrationEventProvider : IIntegrationEventProvider
 
             // Publish integration events for wholesale results
             var wholesaleResultCount = 0;
-            if (_wholesaleResultEventProvider.CanContainWholesaleResults(unpublishedBatch))
+            if (_wholesaleResultEventProvider.CanContainWholesaleResults(unpublishedCalculation))
             {
-                var wholesaleResultEventProviderEnumerator = _wholesaleResultEventProvider.GetAsync(unpublishedBatch).GetAsyncEnumerator();
+                var wholesaleResultEventProviderEnumerator = _wholesaleResultEventProvider.GetAsync(unpublishedCalculation).GetAsyncEnumerator();
                 try
                 {
                     var hasResult = true;
@@ -109,7 +109,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
                         {
                             hasResult = false;
                             hasFailed = true;
-                            _logger.LogError(ex, "Failed wholesale result event publishing for completed calculation {calculation_id}. Handled '{wholesale_result_count}' wholesale results before failing.", unpublishedBatch.Id, wholesaleResultCount);
+                            _logger.LogError(ex, "Failed wholesale result event publishing for completed calculation {calculation_id}. Handled '{wholesale_result_count}' wholesale results before failing.", unpublishedCalculation.Id, wholesaleResultCount);
                         }
 
                         if (hasResult)
@@ -131,19 +131,19 @@ public class IntegrationEventProvider : IIntegrationEventProvider
             if (hasFailed)
             {
                 // Quick fix: We currently do not have any status field to mark failures, so instead we set this property to a constant.
-                unpublishedBatch.PublishedTime = NodaConstants.UnixEpoch;
+                unpublishedCalculation.PublishedTime = NodaConstants.UnixEpoch;
             }
             else
             {
-                unpublishedBatch.PublishedTime = _clock.GetCurrentInstant();
+                unpublishedCalculation.PublishedTime = _clock.GetCurrentInstant();
             }
 
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
-            _logger.LogInformation("Published results for succeeded energy calculation {calculation_id} to the service bus ({energy_result_count} integration events).", unpublishedBatch.Id, energyResultCount);
-            if (_wholesaleResultEventProvider.CanContainWholesaleResults(unpublishedBatch))
+            _logger.LogInformation("Published results for succeeded energy calculation {calculation_id} to the service bus ({energy_result_count} integration events).", unpublishedCalculation.Id, energyResultCount);
+            if (_wholesaleResultEventProvider.CanContainWholesaleResults(unpublishedCalculation))
             {
-                _logger.LogInformation("Published results for succeeded wholesale calculation {calculation_id} to the service bus ({wholesale_result_count} integration events).", unpublishedBatch.Id, wholesaleResultCount);
+                _logger.LogInformation("Published results for succeeded wholesale calculation {calculation_id} to the service bus ({wholesale_result_count} integration events).", unpublishedCalculation.Id, wholesaleResultCount);
             }
         }
         while (true);
