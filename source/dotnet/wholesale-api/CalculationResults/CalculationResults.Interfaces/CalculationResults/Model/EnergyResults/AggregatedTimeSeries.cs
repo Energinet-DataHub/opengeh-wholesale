@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 
@@ -23,6 +24,8 @@ public class AggregatedTimeSeries
         EnergyTimeSeriesPoint[] timeSeriesPoints,
         TimeSeriesType timeSeriesType,
         CalculationType calculationType,
+        Instant periodStart,
+        Instant periodEnd,
         long version)
     {
         if (timeSeriesPoints.Length == 0)
@@ -32,6 +35,8 @@ public class AggregatedTimeSeries
         TimeSeriesPoints = timeSeriesPoints;
         TimeSeriesType = timeSeriesType;
         CalculationType = calculationType;
+        PeriodStart = periodStart;
+        PeriodEnd = periodEnd;
         Version = version;
     }
 
@@ -42,6 +47,10 @@ public class AggregatedTimeSeries
     public TimeSeriesType TimeSeriesType { get; init; }
 
     public CalculationType CalculationType { get; init; }
+
+    public Instant PeriodStart { get; init; }
+
+    public Instant PeriodEnd { get; init; }
 
     public long Version { get; init; }
 }

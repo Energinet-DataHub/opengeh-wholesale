@@ -51,23 +51,14 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
             AND t1.{EnergyResultColumnNames.AggregationLevel} = '{AggregationLevelMapper.ToDeltaTableValue(parameters.TimeSeriesType, parameters.EnergySupplierId, parameters.BalanceResponsibleId)}'    
         ";
 
-        for (int i = 0; i < parameters.LatestCalculationForPeriod.Count; i++)
-        {
-            if (i == 0)
-                whereClausesSql += " AND (";
-
-            var calculationForPeriod = parameters.LatestCalculationForPeriod.ToList()[i];
-            whereClausesSql += $@"
+        var calculationPeriodFilter = parameters.LatestCalculationForPeriod
+            .Select(calculationForPeriod => $@"
                 (t1.{EnergyResultColumnNames.CalculationId} == '{calculationForPeriod.CalculationId}'  
                 AND t1.{EnergyResultColumnNames.Time} >= '{calculationForPeriod.Period.Start.ToString()}'
                 AND t1.{EnergyResultColumnNames.Time} < '{calculationForPeriod.Period.End.ToString()}')
-            ";
+            ").ToList();
 
-            if (i != parameters.LatestCalculationForPeriod.Count - 1)
-                whereClausesSql += " OR";
-            else
-                whereClausesSql += ")";
-        }
+        whereClausesSql += " AND (" + string.Join(" OR ", calculationPeriodFilter) + ")";
 
         if (!string.IsNullOrWhiteSpace(parameters.GridArea))
         {

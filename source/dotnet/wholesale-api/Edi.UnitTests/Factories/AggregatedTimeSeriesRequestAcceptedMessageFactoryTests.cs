@@ -20,6 +20,7 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using Google.Protobuf.WellKnownTypes;
 using NodaTime;
+using NodaTime.Extensions;
 using Xunit;
 using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
@@ -123,6 +124,8 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
             },
             _timeSeriesType,
             CalculationType.Aggregation,
+            DateTimeOffset.Parse("2022-01-01T00:00Z").ToInstant(),
+            DateTimeOffset.Parse("2022-01-01T00:45Z").ToInstant(),
             1);
 
         return new List<AggregatedTimeSeries>()

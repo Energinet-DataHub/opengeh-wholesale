@@ -81,7 +81,7 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
 
     private async IAsyncEnumerable<AggregatedTimeSeries> GetInternalAsync(
         AggregatedTimeSeriesQueryStatement sqlStatement,
-        IReadOnlyCollection<CalculationForPeriod> latestCalculationForPeriod)
+        IReadOnlyCollection<CalculationForPeriod> latestCalculationsForPeriod)
     {
         var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
         DatabricksSqlRow? previousRow = null;
@@ -93,8 +93,13 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
             if (previousRow != null && (BelongsToDifferentGridArea(currentRow, previousRow)
                                         || DifferentCalculationId(currentRow, previousRow)))
             {
-                var version = GetVersion(previousRow, latestCalculationForPeriod);
-                yield return AggregatedTimeSeriesFactory.Create(previousRow, timeSeriesPoints, version);
+                var calculationForPeriod = GetCalculationForPeriod(previousRow, latestCalculationsForPeriod);
+                yield return AggregatedTimeSeriesFactory.Create(
+                    previousRow,
+                    calculationForPeriod.Period.Start,
+                    calculationForPeriod.Period.End,
+                    timeSeriesPoints,
+                    calculationForPeriod.CalculationVersion);
                 timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
             }
 
@@ -104,16 +109,20 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
 
         if (previousRow != null)
         {
-            var version = GetVersion(previousRow, latestCalculationForPeriod);
-            yield return AggregatedTimeSeriesFactory.Create(previousRow, timeSeriesPoints, version);
+            var calculationForPeriod = GetCalculationForPeriod(previousRow, latestCalculationsForPeriod);
+            yield return AggregatedTimeSeriesFactory.Create(
+                previousRow,
+                calculationForPeriod.Period.Start,
+                calculationForPeriod.Period.End,
+                timeSeriesPoints,
+                calculationForPeriod.CalculationVersion);
         }
     }
 
-    private long GetVersion(DatabricksSqlRow row, IReadOnlyCollection<CalculationForPeriod> latestCalculationForPeriod)
+    private CalculationForPeriod GetCalculationForPeriod(DatabricksSqlRow row, IReadOnlyCollection<CalculationForPeriod> latestCalculationForPeriod)
     {
         return latestCalculationForPeriod
-            .First(x => x.CalculationId == Guid.Parse(row[EnergyResultColumnNames.CalculationId]!))
-            .CalculationVersion;
+            .First(x => x.CalculationId == Guid.Parse(row[EnergyResultColumnNames.CalculationId]!));
     }
 
     private bool DifferentCalculationId(DatabricksSqlRow row, DatabricksSqlRow otherRow)

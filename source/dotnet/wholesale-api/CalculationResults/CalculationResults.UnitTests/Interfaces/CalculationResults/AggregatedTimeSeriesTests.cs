@@ -16,6 +16,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
+using NodaTime.Extensions;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Interfaces.CalculationResults;
@@ -38,6 +39,9 @@ public class AggregatedTimeSeriesTests
             timeSeriesPoints: emptyTimeSeriesPoints,
             timeSeriesType: anyTimeSeriesType,
             calculationType: anyCalculationType,
+            DateTimeOffset.Parse("2022-01-01T00:00Z").ToInstant(),
+            DateTimeOffset.Parse("2022-01-01T00:45." +
+                                 "Z").ToInstant(),
             1);
 
         // Assert
