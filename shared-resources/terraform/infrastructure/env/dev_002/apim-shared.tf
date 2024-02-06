@@ -1,5 +1,5 @@
 module "apim_shared" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management?ref=13.33.2"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management?ref=13.37.0"
 
   name                 = "shared"
   project_name         = var.domain_name_short
