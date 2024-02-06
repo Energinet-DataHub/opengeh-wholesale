@@ -55,11 +55,11 @@ public class LatestCalculationsForPeriod
             }
 
             if (remainingDaysInPeriod.Count == 0)
-                return latestCalculationsForPeriod;
+                return latestCalculationsForPeriod.OrderBy(x => x.Period.Start).ToList();
         }
 
         if (latestCalculationsForPeriod.Count == 0)
-            return latestCalculationsForPeriod;
+            return latestCalculationsForPeriod.OrderBy(x => x.Period.Start).ToList();
 
         throw new MissingCalculationException($"No calculation found for dates: {string.Join(", ", remainingDaysInPeriod)}");
     }
