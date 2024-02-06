@@ -30,8 +30,8 @@ public class BalanceResponsibleValidatorTest
     private const string ValidGlnNumber = "qwertyuiopasd"; // Must be 13 characters to be a valid GLN
     private const string ValidEicNumber = "qwertyuiopasdfgh"; // Must be 16 characters to be a valid GLN
     private static readonly ValidationError _invalidBalanceResponsible = new("Feltet BalanceResponsibleParty skal være udfyldt med et valid GLN/EIC når en balanceansvarlig anmoder om data / BalanceResponsibleParty must be submitted with a valid GLN/EIC when a balance responsible requests data", "E18");
-    private static readonly ValidationError _mismatchedBalanceResponsibleInHeaderAndMessage = new("BalanceResponsibleParty i beskeden stemmer ikke overenes med balanceansvarlig anmoder i header / BalanceResponsibleParty in message does not correspond with balance responsible in header", "E18");
-    private static readonly ValidationError _invalidBusinessReason = new("En BalanceResponsibleParty kan kun benytte forretningsårsag D03 eller D04 i forbindelse med en anmodning / A BalanceResponsibleParty can only use business reason D03 or D04 in connection with a request", "D11");
+    private static readonly ValidationError _mismatchedBalanceResponsibleInHeaderAndMessage = new("Den balanceansvarlige i beskeden stemmer ikke overenes med den balanceansvarlige i headeren / BalanceResponsibleParty in the message does not correspond with balance responsible in header", "E18");
+    private static readonly ValidationError _invalidBusinessReason = new("En balanceansvarlig kan kun benytte forretningsårsag D03 eller D04 i forbindelse med en anmodning / A BalanceResponsibleParty can only use business reason D03 or D04 in connection with a request", "D11");
 
     private readonly BalanceResponsibleValidationRule _sut = new();
 

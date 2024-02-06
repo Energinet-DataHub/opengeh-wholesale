@@ -19,10 +19,10 @@ namespace Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSeries.Rules;
 
 public class BalanceResponsibleValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
 {
-    private static readonly string _balanceResponsiblePartyName = "BalanceResponsibleParty";
-    private static readonly ValidationError _invalidBalanceResponsible = new($"Feltet {_balanceResponsiblePartyName} skal være udfyldt med et valid GLN/EIC når en balanceansvarlig anmoder om data / {_balanceResponsiblePartyName} must be submitted with a valid GLN/EIC when a balance responsible requests data", "E18");
-    private static readonly ValidationError _notEqualToRequestedBy = new($"{_balanceResponsiblePartyName} i beskeden stemmer ikke overenes med balanceansvarlig anmoder i header / {_balanceResponsiblePartyName} in message does not correspond with balance responsible in header", "E18");
-    private static readonly ValidationError _invalidBusinessReason = new($"En {_balanceResponsiblePartyName} kan kun benytte forretningsårsag D03 eller D04 i forbindelse med en anmodning / A {_balanceResponsiblePartyName} can only use business reason D03 or D04 in connection with a request", "D11");
+    private static readonly string _propertyName = "BalanceResponsibleParty";
+    private static readonly ValidationError _invalidBalanceResponsible = new($"Feltet {_propertyName} skal være udfyldt med et valid GLN/EIC når en balanceansvarlig anmoder om data / {_propertyName} must be submitted with a valid GLN/EIC when a balance responsible requests data", "E18");
+    private static readonly ValidationError _notEqualToRequestedBy = new($"Den balanceansvarlige i beskeden stemmer ikke overenes med den balanceansvarlige i headeren / {_propertyName} in the message does not correspond with balance responsible in header", "E18");
+    private static readonly ValidationError _invalidBusinessReason = new($"En balanceansvarlig kan kun benytte forretningsårsag {BusinessReason.PreliminaryAggregation} eller {BusinessReason.BalanceFixing} i forbindelse med en anmodning / A {_propertyName} can only use business reason {BusinessReason.PreliminaryAggregation} or {BusinessReason.BalanceFixing} in connection with a request", "D11");
 
     public Task<IList<ValidationError>> ValidateAsync(AggregatedTimeSeriesRequest subject)
     {
