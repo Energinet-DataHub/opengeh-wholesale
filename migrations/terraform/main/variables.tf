@@ -92,7 +92,6 @@ variable "datahub2_ip_whitelist" {
 variable "datahub2_migration_url" {
   type        = string
   description = "URL for DataHub2"
-  default     = "https://b2b.te7.datahub.dk/dh3"
 }
 
 variable "developer_object_ids" {
@@ -102,10 +101,10 @@ variable "developer_object_ids" {
 }
 
 variable "ip_restrictions" {
-  type        = list(object({
-    ip_address  = string
-    name        = string
-    priority    = optional(number)
+  type = list(object({
+    ip_address = string
+    name       = string
+    priority   = optional(number)
   }))
   description = "A list of IP restrictions defining allowed access to domain services. Each entry should include an 'ip_address' representing the allowed IP, a 'name' for identification, and an optional 'priority' for rule order. Defaults to `[]`."
   default     = []
