@@ -14,7 +14,7 @@
 
 from pyspark.sql import SparkSession
 
-from calculation.preparation.transformations.charge_types.charge_type_factories import (
+from calculation.preparation.transformations.charge_types.charges_factory import (
     create_metering_point_row,
     create_subscription_or_fee_charges_row,
 )

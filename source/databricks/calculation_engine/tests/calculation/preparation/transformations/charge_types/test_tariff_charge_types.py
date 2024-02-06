@@ -18,10 +18,8 @@ import pytest
 import package.codelists as e
 
 from pyspark.sql import SparkSession
-import calculation.preparation.transformations.charge_types.charge_type_factories as factory
-from calculation.preparation.transformations.default_test_values import (
-    DefaultTestValues,
-)
+import calculation.preparation.transformations.charge_types.charges_factory as factory
+
 
 from package.calculation.preparation.transformations import (
     get_tariff_charges,
@@ -37,19 +35,19 @@ from pyspark.sql import Row
 
 
 def _create_expected_tariff_charges_row(
-    charge_key: str = f"{DefaultTestValues.DEFAULT_CHARGE_CODE}-{DefaultTestValues.DEFAULT_CHARGE_OWNER}-{e.ChargeType.TARIFF.value}",
-    charge_code: str = DefaultTestValues.DEFAULT_CHARGE_CODE,
-    charge_owner: str = DefaultTestValues.DEFAULT_CHARGE_OWNER,
-    charge_tax: bool = DefaultTestValues.DEFAULT_CHARGE_TAX,
+    charge_key: str = f"{factory.DefaultValues.DEFAULT_CHARGE_CODE}-{factory.DefaultValues.DEFAULT_CHARGE_OWNER}-{e.ChargeType.TARIFF.value}",
+    charge_code: str = factory.DefaultValues.DEFAULT_CHARGE_CODE,
+    charge_owner: str = factory.DefaultValues.DEFAULT_CHARGE_OWNER,
+    charge_tax: bool = factory.DefaultValues.DEFAULT_CHARGE_TAX,
     resolution: e.ChargeResolution = e.ChargeResolution.HOUR,
-    charge_time: datetime = DefaultTestValues.DEFAULT_CHARGE_TIME_HOUR_0,
-    charge_price: Decimal = DefaultTestValues.DEFAULT_CHARGE_PRICE,
-    metering_point_id: str = DefaultTestValues.DEFAULT_METERING_POINT_ID,
-    energy_supplier_id: str = DefaultTestValues.DEFAULT_ENERGY_SUPPLIER_ID,
-    metering_point_type: e.MeteringPointType = DefaultTestValues.DEFAULT_METERING_POINT_TYPE,
-    settlement_method: e.SettlementMethod = DefaultTestValues.DEFAULT_SETTLEMENT_METHOD,
-    grid_area: str = DefaultTestValues.DEFAULT_GRID_AREA,
-    quantity: Decimal = DefaultTestValues.DEFAULT_QUANTITY,
+    charge_time: datetime = factory.DefaultValues.DEFAULT_CHARGE_TIME_HOUR_0,
+    charge_price: Decimal = factory.DefaultValues.DEFAULT_CHARGE_PRICE,
+    metering_point_id: str = factory.DefaultValues.DEFAULT_METERING_POINT_ID,
+    energy_supplier_id: str = factory.DefaultValues.DEFAULT_ENERGY_SUPPLIER_ID,
+    metering_point_type: e.MeteringPointType = factory.DefaultValues.DEFAULT_METERING_POINT_TYPE,
+    settlement_method: e.SettlementMethod = factory.DefaultValues.DEFAULT_SETTLEMENT_METHOD,
+    grid_area: str = factory.DefaultValues.DEFAULT_GRID_AREA,
+    quantity: Decimal = factory.DefaultValues.DEFAULT_QUANTITY,
     qualities=None,
 ) -> Row:
     if qualities is None:
@@ -239,7 +237,7 @@ def test__get_tariff_charges__when_same_metering_point_and_resolution__sums_quan
     # Assert
     assert (
         actual.collect()[0][Colname.sum_quantity]
-        == 2 * DefaultTestValues.DEFAULT_QUANTITY
+        == 2 * factory.DefaultValues.DEFAULT_QUANTITY
     )
 
 
@@ -313,7 +311,7 @@ def test__get_tariff_charges__returns_expected_tariff_values(
 
     expected_tariff_charges_row = [
         _create_expected_tariff_charges_row(
-            quantity=2 * DefaultTestValues.DEFAULT_QUANTITY
+            quantity=2 * factory.DefaultValues.DEFAULT_QUANTITY
         )
     ]
 
@@ -345,12 +343,12 @@ def test__get_tariff_charges__returns_expected_tariff_values(
         (
             e.ChargeResolution.HOUR,
             48,
-            DefaultTestValues.DEFAULT_QUANTITY,
+            factory.DefaultValues.DEFAULT_QUANTITY,
         ),
         (
             e.ChargeResolution.DAY,
             2,
-            24 * DefaultTestValues.DEFAULT_QUANTITY,
+            24 * factory.DefaultValues.DEFAULT_QUANTITY,
         ),
     ],
 )
@@ -411,12 +409,12 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hou
         (
             e.ChargeResolution.HOUR,
             48,
-            4 * DefaultTestValues.DEFAULT_QUANTITY,
+            4 * factory.DefaultValues.DEFAULT_QUANTITY,
         ),
         (
             e.ChargeResolution.DAY,
             2,
-            96 * DefaultTestValues.DEFAULT_QUANTITY,
+            96 * factory.DefaultValues.DEFAULT_QUANTITY,
         ),
     ],
 )
