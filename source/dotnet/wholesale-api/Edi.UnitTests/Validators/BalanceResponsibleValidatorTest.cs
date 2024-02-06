@@ -225,7 +225,7 @@ public class BalanceResponsibleValidatorTest
             .WithRequestedByActorId(ValidGlnNumber)
             .WithRequestedByActorRole(BalanceResponsibleRole)
             .WithBalanceResponsibleId("invalid-format")
-            .WithBusinessReason(BusinessReason.WholesaleFixing)
+            .WithBusinessReason(BusinessReason.Correction)
             .Build();
 
         // Act
