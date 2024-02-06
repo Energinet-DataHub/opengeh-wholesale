@@ -854,6 +854,130 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             });
     }
 
+    [Fact]
+    public async Task GetLatestCorrectionForGridAreaAsync_EnergySupplierWithSpecificBalanceResponsibleAndGridArea_EquivalentToGetAsyncForAllSettlementTypes()
+    {
+        var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
+        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
+
+        await AddDataAsync();
+
+        var parameters = CreateQueryParameters(
+            timeSeriesType: new[] { TimeSeriesType.Production, TimeSeriesType.FlexConsumption },
+            gridArea: GridAreaCodeB,
+            energySupplierId: EnergySupplierB,
+            balanceResponsibleId: BalanceResponsibleB,
+            processType: ProcessType.FirstCorrectionSettlement,
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter);
+
+        // Act
+        var getAsyncResult = await Sut.GetAsync(parameters).ToListAsync();
+        getAsyncResult.AddRange(await Sut
+            .GetAsync(parameters with { ProcessType = ProcessType.SecondCorrectionSettlement }).ToListAsync());
+        getAsyncResult.AddRange(await Sut
+            .GetAsync(parameters with { ProcessType = ProcessType.ThirdCorrectionSettlement }).ToListAsync());
+
+        var latestCorrectionForGridAreaAsyncResult =
+            await Sut.GetLatestCorrectionForGridAreaAsync(parameters with { ProcessType = null }).ToListAsync();
+
+        using var assertionScope = new AssertionScope();
+        getAsyncResult.Should().BeEquivalentTo(latestCorrectionForGridAreaAsyncResult);
+    }
+
+    [Fact]
+    public async Task GetLatestCorrectionForGridAreaAsync_EnergySupplierWithGridArea_EquivalentToGetAsyncForAllSettlementTypes()
+    {
+        var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
+        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
+
+        await AddDataAsync();
+
+        var parameters = CreateQueryParameters(
+            timeSeriesType: new[] { TimeSeriesType.Production, TimeSeriesType.FlexConsumption },
+            gridArea: GridAreaCodeB,
+            energySupplierId: EnergySupplierB,
+            balanceResponsibleId: null,
+            processType: ProcessType.FirstCorrectionSettlement,
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter);
+
+        // Act
+        var getAsyncResult = await Sut.GetAsync(parameters).ToListAsync();
+        getAsyncResult.AddRange(await Sut
+            .GetAsync(parameters with { ProcessType = ProcessType.SecondCorrectionSettlement }).ToListAsync());
+        getAsyncResult.AddRange(await Sut
+            .GetAsync(parameters with { ProcessType = ProcessType.ThirdCorrectionSettlement }).ToListAsync());
+
+        var latestCorrectionForGridAreaAsyncResult =
+            await Sut.GetLatestCorrectionForGridAreaAsync(parameters with { ProcessType = null }).ToListAsync();
+
+        using var assertionScope = new AssertionScope();
+        getAsyncResult.Should().BeEquivalentTo(latestCorrectionForGridAreaAsyncResult);
+    }
+
+    [Fact]
+    public async Task GetLatestCorrectionForGridAreaAsync_BalanceResponsibleWithGridArea_EquivalentToGetAsyncForAllSettlementTypes()
+    {
+        var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
+        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
+
+        await AddDataAsync();
+
+        var parameters = CreateQueryParameters(
+            timeSeriesType: new[] { TimeSeriesType.Production, TimeSeriesType.FlexConsumption },
+            gridArea: GridAreaCodeB,
+            energySupplierId: null,
+            balanceResponsibleId: BalanceResponsibleB,
+            processType: ProcessType.FirstCorrectionSettlement,
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter);
+
+        // Act
+        var getAsyncResult = await Sut.GetAsync(parameters).ToListAsync();
+        getAsyncResult.AddRange(await Sut
+            .GetAsync(parameters with { ProcessType = ProcessType.SecondCorrectionSettlement }).ToListAsync());
+        getAsyncResult.AddRange(await Sut
+            .GetAsync(parameters with { ProcessType = ProcessType.ThirdCorrectionSettlement }).ToListAsync());
+
+        var latestCorrectionForGridAreaAsyncResult =
+            await Sut.GetLatestCorrectionForGridAreaAsync(parameters with { ProcessType = null }).ToListAsync();
+
+        using var assertionScope = new AssertionScope();
+        getAsyncResult.Should().BeEquivalentTo(latestCorrectionForGridAreaAsyncResult);
+    }
+
+    [Fact]
+    public async Task GetLatestCorrectionForGridAreaAsync_GridArea_EquivalentToGetAsyncForAllSettlementTypes()
+    {
+        var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
+        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
+
+        await AddDataAsync();
+
+        var parameters = CreateQueryParameters(
+            timeSeriesType: new[] { TimeSeriesType.Production, TimeSeriesType.FlexConsumption },
+            gridArea: GridAreaCodeB,
+            energySupplierId: null,
+            balanceResponsibleId: null,
+            processType: ProcessType.FirstCorrectionSettlement,
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter);
+
+        // Act
+        var getAsyncResult = await Sut.GetAsync(parameters).ToListAsync();
+        getAsyncResult.AddRange(await Sut
+            .GetAsync(parameters with { ProcessType = ProcessType.SecondCorrectionSettlement }).ToListAsync());
+        getAsyncResult.AddRange(await Sut
+            .GetAsync(parameters with { ProcessType = ProcessType.ThirdCorrectionSettlement }).ToListAsync());
+
+        var latestCorrectionForGridAreaAsyncResult =
+            await Sut.GetLatestCorrectionForGridAreaAsync(parameters with { ProcessType = null }).ToListAsync();
+
+        using var assertionScope = new AssertionScope();
+        getAsyncResult.Should().BeEquivalentTo(latestCorrectionForGridAreaAsyncResult);
+    }
+
     private static AggregatedTimeSeriesQueryParameters CreateQueryParameters(
         IReadOnlyCollection<TimeSeriesType>? timeSeriesType = null,
         Instant? startOfPeriod = null,
