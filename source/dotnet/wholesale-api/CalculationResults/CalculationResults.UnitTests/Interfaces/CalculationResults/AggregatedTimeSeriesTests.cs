@@ -40,8 +40,7 @@ public class AggregatedTimeSeriesTests
             timeSeriesType: anyTimeSeriesType,
             calculationType: anyCalculationType,
             DateTimeOffset.Parse("2022-01-01T00:00Z").ToInstant(),
-            DateTimeOffset.Parse("2022-01-01T00:45." +
-                                 "Z").ToInstant(),
+            DateTimeOffset.Parse("2022-01-01T00:45Z").ToInstant(),
             1);
 
         // Assert
