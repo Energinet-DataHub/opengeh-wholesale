@@ -128,7 +128,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             gridArea: GridAreaCodeB,
             energySupplierId: EnergySupplierB,
             balanceResponsibleId: BalanceResponsibleB,
-            processType: ProcessType.SecondCorrectionSettlement,
+            calculationType: CalculationType.SecondCorrectionSettlement,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
@@ -139,7 +139,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
         actual.Should().HaveCount(1);
         var aggregatedTimeSeries = actual.Single();
         aggregatedTimeSeries.GridArea.Should().Be(GridAreaCodeB);
-        aggregatedTimeSeries.ProcessType.Should().Be(ProcessType.SecondCorrectionSettlement);
+        aggregatedTimeSeries.CalculationType.Should().Be(CalculationType.SecondCorrectionSettlement);
         aggregatedTimeSeries.TimeSeriesType.Should().Be(TimeSeriesType.Production);
         aggregatedTimeSeries.TimeSeriesPoints.Should().HaveCount(2);
         aggregatedTimeSeries.TimeSeriesPoints.Should().SatisfyRespectively(
@@ -169,7 +169,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             gridArea: GridAreaCodeA,
             energySupplierId: EnergySupplierC,
             balanceResponsibleId: BalanceResponsibleB,
-            processType: ProcessType.BalanceFixing,
+            calculationType: CalculationType.BalanceFixing,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
@@ -182,7 +182,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             first =>
             {
                 first.GridArea.Should().Be(GridAreaCodeA);
-                first.ProcessType.Should().Be(ProcessType.BalanceFixing);
+                first.CalculationType.Should().Be(CalculationType.BalanceFixing);
                 first.TimeSeriesType.Should().Be(TimeSeriesType.FlexConsumption);
                 first.TimeSeriesPoints.Should().HaveCount(2);
                 first.TimeSeriesPoints.OrderBy(p => p.Time).Should().SatisfyRespectively(
@@ -200,7 +200,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             second =>
             {
                 second.GridArea.Should().Be(GridAreaCodeA);
-                second.ProcessType.Should().Be(ProcessType.BalanceFixing);
+                second.CalculationType.Should().Be(CalculationType.BalanceFixing);
                 second.TimeSeriesType.Should().Be(TimeSeriesType.Production);
                 second.TimeSeriesPoints.Should().HaveCount(2);
                 second.TimeSeriesPoints.OrderBy(p => p.Time).Should().SatisfyRespectively(
@@ -231,7 +231,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             gridArea: GridAreaCodeB,
             energySupplierId: EnergySupplierC,
             balanceResponsibleId: null,
-            processType: ProcessType.FirstCorrectionSettlement,
+            calculationType: CalculationType.FirstCorrectionSettlement,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
@@ -242,7 +242,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
         actual.Should().HaveCount(1);
         var aggregatedTimeSeries = actual.Single();
         aggregatedTimeSeries.GridArea.Should().Be(GridAreaCodeB);
-        aggregatedTimeSeries.ProcessType.Should().Be(ProcessType.FirstCorrectionSettlement);
+        aggregatedTimeSeries.CalculationType.Should().Be(CalculationType.FirstCorrectionSettlement);
         aggregatedTimeSeries.TimeSeriesType.Should().Be(TimeSeriesType.FlexConsumption);
         aggregatedTimeSeries.TimeSeriesPoints.Should().HaveCount(1);
         var energyTimeSeriesPoint = aggregatedTimeSeries.TimeSeriesPoints.Single();
@@ -264,7 +264,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             gridArea: GridAreaCodeC,
             energySupplierId: EnergySupplierA,
             balanceResponsibleId: null,
-            processType: ProcessType.SecondCorrectionSettlement,
+            calculationType: CalculationType.SecondCorrectionSettlement,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
@@ -277,7 +277,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             first =>
             {
                 first.GridArea.Should().Be(GridAreaCodeC);
-                first.ProcessType.Should().Be(ProcessType.SecondCorrectionSettlement);
+                first.CalculationType.Should().Be(CalculationType.SecondCorrectionSettlement);
                 first.TimeSeriesType.Should().Be(TimeSeriesType.FlexConsumption);
                 first.TimeSeriesPoints.Should().HaveCount(3);
                 first.TimeSeriesPoints.OrderBy(p => p.Time).Should().SatisfyRespectively(
@@ -300,7 +300,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             second =>
             {
                 second.GridArea.Should().Be(GridAreaCodeC);
-                second.ProcessType.Should().Be(ProcessType.SecondCorrectionSettlement);
+                second.CalculationType.Should().Be(CalculationType.SecondCorrectionSettlement);
                 second.TimeSeriesType.Should().Be(TimeSeriesType.Production);
                 second.TimeSeriesPoints.Should().HaveCount(3);
                 second.TimeSeriesPoints.OrderBy(p => p.Time).Should().SatisfyRespectively(
@@ -336,7 +336,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             gridArea: null,
             energySupplierId: EnergySupplierA,
             balanceResponsibleId: BalanceResponsibleB,
-            processType: ProcessType.ThirdCorrectionSettlement,
+            calculationType: CalculationType.ThirdCorrectionSettlement,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
@@ -347,7 +347,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
         actual.Should().HaveCount(1);
         var aggregatedTimeSeries = actual.Single();
         aggregatedTimeSeries.GridArea.Should().Be(GridAreaCodeA);
-        aggregatedTimeSeries.ProcessType.Should().Be(ProcessType.ThirdCorrectionSettlement);
+        aggregatedTimeSeries.CalculationType.Should().Be(CalculationType.ThirdCorrectionSettlement);
         aggregatedTimeSeries.TimeSeriesType.Should().Be(TimeSeriesType.FlexConsumption);
         aggregatedTimeSeries.TimeSeriesPoints.Should().HaveCount(2);
         aggregatedTimeSeries.TimeSeriesPoints.OrderBy(p => p.Time).Should().SatisfyRespectively(
@@ -377,7 +377,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             gridArea: null,
             energySupplierId: EnergySupplierB,
             balanceResponsibleId: BalanceResponsibleB,
-            processType: ProcessType.FirstCorrectionSettlement,
+            calculationType: CalculationType.FirstCorrectionSettlement,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
@@ -390,7 +390,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             first =>
             {
                 first.GridArea.Should().Be(GridAreaCodeB);
-                first.ProcessType.Should().Be(ProcessType.FirstCorrectionSettlement);
+                first.CalculationType.Should().Be(CalculationType.FirstCorrectionSettlement);
                 first.TimeSeriesType.Should().Be(TimeSeriesType.FlexConsumption);
                 first.TimeSeriesPoints.Should().HaveCount(1);
                 var energyTimeSeriesPoint = first.TimeSeriesPoints.Single();
@@ -401,7 +401,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             second =>
             {
                 second.GridArea.Should().Be(GridAreaCodeB);
-                second.ProcessType.Should().Be(ProcessType.FirstCorrectionSettlement);
+                second.CalculationType.Should().Be(CalculationType.FirstCorrectionSettlement);
                 second.TimeSeriesType.Should().Be(TimeSeriesType.Production);
                 second.TimeSeriesPoints.Should().HaveCount(1);
                 var energyTimeSeriesPoint = second.TimeSeriesPoints.Single();
@@ -425,7 +425,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             gridArea: GridAreaCodeA,
             energySupplierId: null,
             balanceResponsibleId: BalanceResponsibleA,
-            processType: ProcessType.ThirdCorrectionSettlement,
+            calculationType: CalculationType.ThirdCorrectionSettlement,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
@@ -438,7 +438,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             first =>
             {
                 first.GridArea.Should().Be(GridAreaCodeA);
-                first.ProcessType.Should().Be(ProcessType.ThirdCorrectionSettlement);
+                first.CalculationType.Should().Be(CalculationType.ThirdCorrectionSettlement);
                 first.TimeSeriesType.Should().Be(TimeSeriesType.FlexConsumption);
                 first.TimeSeriesPoints.Should().HaveCount(2);
                 first.TimeSeriesPoints.OrderBy(p => p.Time).Should().SatisfyRespectively(
@@ -460,7 +460,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             second =>
             {
                 second.GridArea.Should().Be(GridAreaCodeA);
-                second.ProcessType.Should().Be(ProcessType.ThirdCorrectionSettlement);
+                second.CalculationType.Should().Be(CalculationType.ThirdCorrectionSettlement);
                 second.TimeSeriesType.Should().Be(TimeSeriesType.Production);
                 second.TimeSeriesPoints.Should().HaveCount(2);
                 second.TimeSeriesPoints.OrderBy(p => p.Time).Should().SatisfyRespectively(
@@ -495,7 +495,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             gridArea: GridAreaCodeC,
             energySupplierId: null,
             balanceResponsibleId: BalanceResponsibleC,
-            processType: ProcessType.SecondCorrectionSettlement,
+            calculationType: CalculationType.SecondCorrectionSettlement,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
@@ -506,7 +506,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
         actual.Should().HaveCount(1);
         var aggregatedTimeSeries = actual.Single();
         aggregatedTimeSeries.GridArea.Should().Be(GridAreaCodeC);
-        aggregatedTimeSeries.ProcessType.Should().Be(ProcessType.SecondCorrectionSettlement);
+        aggregatedTimeSeries.CalculationType.Should().Be(CalculationType.SecondCorrectionSettlement);
         aggregatedTimeSeries.TimeSeriesType.Should().Be(TimeSeriesType.FlexConsumption);
         aggregatedTimeSeries.TimeSeriesPoints.Should().HaveCount(3);
         aggregatedTimeSeries.TimeSeriesPoints.OrderBy(p => p.Time).Should().SatisfyRespectively(
@@ -544,7 +544,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             gridArea: GridAreaCodeA,
             energySupplierId: null,
             balanceResponsibleId: null,
-            processType: ProcessType.ThirdCorrectionSettlement,
+            calculationType: CalculationType.ThirdCorrectionSettlement,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
@@ -557,7 +557,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             first =>
             {
                 first.GridArea.Should().Be(GridAreaCodeA);
-                first.ProcessType.Should().Be(ProcessType.ThirdCorrectionSettlement);
+                first.CalculationType.Should().Be(CalculationType.ThirdCorrectionSettlement);
                 first.TimeSeriesType.Should().Be(TimeSeriesType.FlexConsumption);
                 first.TimeSeriesPoints.Should().HaveCount(3);
                 first.TimeSeriesPoints.OrderBy(p => p.Time).Should().SatisfyRespectively(
@@ -592,7 +592,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             second =>
             {
                 second.GridArea.Should().Be(GridAreaCodeA);
-                second.ProcessType.Should().Be(ProcessType.ThirdCorrectionSettlement);
+                second.CalculationType.Should().Be(CalculationType.ThirdCorrectionSettlement);
                 second.TimeSeriesType.Should().Be(TimeSeriesType.Production);
                 second.TimeSeriesPoints.Should().HaveCount(3);
                 second.TimeSeriesPoints.OrderBy(p => p.Time).Should().SatisfyRespectively(
@@ -627,7 +627,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             third =>
             {
                 third.GridArea.Should().Be(GridAreaCodeA);
-                third.ProcessType.Should().Be(ProcessType.ThirdCorrectionSettlement);
+                third.CalculationType.Should().Be(CalculationType.ThirdCorrectionSettlement);
                 third.TimeSeriesType.Should().Be(TimeSeriesType.NetExchangePerGa);
                 third.TimeSeriesPoints.Should().HaveCount(3);
                 third.TimeSeriesPoints.OrderBy(p => p.Time).Should().SatisfyRespectively(
@@ -675,7 +675,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             gridArea: null,
             energySupplierId: null,
             balanceResponsibleId: null,
-            processType: ProcessType.BalanceFixing,
+            calculationType: CalculationType.BalanceFixing,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
@@ -688,7 +688,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             first =>
             {
                 first.GridArea.Should().Be(GridAreaCodeA);
-                first.ProcessType.Should().Be(ProcessType.BalanceFixing);
+                first.CalculationType.Should().Be(CalculationType.BalanceFixing);
                 first.TimeSeriesType.Should().Be(TimeSeriesType.Production);
                 first.TimeSeriesPoints.Should().HaveCount(4);
                 first.TimeSeriesPoints.OrderBy(p => p.Time).Should().SatisfyRespectively(
@@ -732,7 +732,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             second =>
             {
                 second.GridArea.Should().Be(GridAreaCodeA);
-                second.ProcessType.Should().Be(ProcessType.BalanceFixing);
+                second.CalculationType.Should().Be(CalculationType.BalanceFixing);
                 second.TimeSeriesType.Should().Be(TimeSeriesType.NetExchangePerGa);
                 second.TimeSeriesPoints.Should().HaveCount(4);
                 second.TimeSeriesPoints.OrderBy(p => p.Time).Should().SatisfyRespectively(
@@ -776,7 +776,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             third =>
             {
                 third.GridArea.Should().Be(GridAreaCodeB);
-                third.ProcessType.Should().Be(ProcessType.BalanceFixing);
+                third.CalculationType.Should().Be(CalculationType.BalanceFixing);
                 third.TimeSeriesType.Should().Be(TimeSeriesType.Production);
                 third.TimeSeriesPoints.Should().HaveCount(4);
                 third.TimeSeriesPoints.OrderBy(p => p.Time).Should().SatisfyRespectively(
@@ -804,7 +804,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             fourth =>
             {
                 fourth.GridArea.Should().Be(GridAreaCodeB);
-                fourth.ProcessType.Should().Be(ProcessType.BalanceFixing);
+                fourth.CalculationType.Should().Be(CalculationType.BalanceFixing);
                 fourth.TimeSeriesType.Should().Be(TimeSeriesType.NetExchangePerGa);
                 fourth.TimeSeriesPoints.Should().HaveCount(4);
                 fourth.TimeSeriesPoints.OrderBy(p => p.Time).Should().SatisfyRespectively(
@@ -832,7 +832,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             fifth =>
             {
                 fifth.GridArea.Should().Be(GridAreaCodeC);
-                fifth.ProcessType.Should().Be(ProcessType.BalanceFixing);
+                fifth.CalculationType.Should().Be(CalculationType.BalanceFixing);
                 fifth.TimeSeriesType.Should().Be(TimeSeriesType.Production);
                 fifth.TimeSeriesPoints.Should().HaveCount(4);
                 fifth.TimeSeriesPoints.OrderBy(p => p.Time).Should().SatisfyRespectively(
@@ -860,7 +860,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             sixth =>
             {
                 sixth.GridArea.Should().Be(GridAreaCodeC);
-                sixth.ProcessType.Should().Be(ProcessType.BalanceFixing);
+                sixth.CalculationType.Should().Be(CalculationType.BalanceFixing);
                 sixth.TimeSeriesType.Should().Be(TimeSeriesType.NetExchangePerGa);
                 sixth.TimeSeriesPoints.Should().HaveCount(4);
                 sixth.TimeSeriesPoints.OrderBy(p => p.Time).Should().SatisfyRespectively(
@@ -900,19 +900,19 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             gridArea: GridAreaCodeB,
             energySupplierId: EnergySupplierB,
             balanceResponsibleId: BalanceResponsibleB,
-            processType: ProcessType.FirstCorrectionSettlement,
+            calculationType: CalculationType.FirstCorrectionSettlement,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
         // Act
         var getAsyncResult = await Sut.GetAsync(parameters).ToListAsync();
         getAsyncResult.AddRange(await Sut
-            .GetAsync(parameters with { ProcessType = ProcessType.SecondCorrectionSettlement }).ToListAsync());
+            .GetAsync(parameters with { CalculationType = CalculationType.SecondCorrectionSettlement }).ToListAsync());
         getAsyncResult.AddRange(await Sut
-            .GetAsync(parameters with { ProcessType = ProcessType.ThirdCorrectionSettlement }).ToListAsync());
+            .GetAsync(parameters with { CalculationType = CalculationType.ThirdCorrectionSettlement }).ToListAsync());
 
         var latestCorrectionForGridAreaAsyncResult =
-            await Sut.GetLatestCorrectionForGridAreaAsync(parameters with { ProcessType = null }).ToListAsync();
+            await Sut.GetLatestCorrectionForGridAreaAsync(parameters with { CalculationType = null }).ToListAsync();
 
         using var assertionScope = new AssertionScope();
         getAsyncResult.Should().BeEquivalentTo(latestCorrectionForGridAreaAsyncResult);
@@ -931,19 +931,19 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             gridArea: GridAreaCodeB,
             energySupplierId: EnergySupplierB,
             balanceResponsibleId: null,
-            processType: ProcessType.FirstCorrectionSettlement,
+            calculationType: CalculationType.FirstCorrectionSettlement,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
         // Act
         var getAsyncResult = await Sut.GetAsync(parameters).ToListAsync();
         getAsyncResult.AddRange(await Sut
-            .GetAsync(parameters with { ProcessType = ProcessType.SecondCorrectionSettlement }).ToListAsync());
+            .GetAsync(parameters with { CalculationType = CalculationType.SecondCorrectionSettlement }).ToListAsync());
         getAsyncResult.AddRange(await Sut
-            .GetAsync(parameters with { ProcessType = ProcessType.ThirdCorrectionSettlement }).ToListAsync());
+            .GetAsync(parameters with { CalculationType = CalculationType.ThirdCorrectionSettlement }).ToListAsync());
 
         var latestCorrectionForGridAreaAsyncResult =
-            await Sut.GetLatestCorrectionForGridAreaAsync(parameters with { ProcessType = null }).ToListAsync();
+            await Sut.GetLatestCorrectionForGridAreaAsync(parameters with { CalculationType = null }).ToListAsync();
 
         using var assertionScope = new AssertionScope();
         getAsyncResult.Should().BeEquivalentTo(latestCorrectionForGridAreaAsyncResult);
@@ -962,19 +962,19 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             gridArea: GridAreaCodeB,
             energySupplierId: null,
             balanceResponsibleId: BalanceResponsibleB,
-            processType: ProcessType.FirstCorrectionSettlement,
+            calculationType: CalculationType.FirstCorrectionSettlement,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
         // Act
         var getAsyncResult = await Sut.GetAsync(parameters).ToListAsync();
         getAsyncResult.AddRange(await Sut
-            .GetAsync(parameters with { ProcessType = ProcessType.SecondCorrectionSettlement }).ToListAsync());
+            .GetAsync(parameters with { CalculationType = CalculationType.SecondCorrectionSettlement }).ToListAsync());
         getAsyncResult.AddRange(await Sut
-            .GetAsync(parameters with { ProcessType = ProcessType.ThirdCorrectionSettlement }).ToListAsync());
+            .GetAsync(parameters with { CalculationType = CalculationType.ThirdCorrectionSettlement }).ToListAsync());
 
         var latestCorrectionForGridAreaAsyncResult =
-            await Sut.GetLatestCorrectionForGridAreaAsync(parameters with { ProcessType = null }).ToListAsync();
+            await Sut.GetLatestCorrectionForGridAreaAsync(parameters with { CalculationType = null }).ToListAsync();
 
         using var assertionScope = new AssertionScope();
         getAsyncResult.Should().BeEquivalentTo(latestCorrectionForGridAreaAsyncResult);
@@ -993,19 +993,19 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             gridArea: GridAreaCodeB,
             energySupplierId: null,
             balanceResponsibleId: null,
-            processType: ProcessType.FirstCorrectionSettlement,
+            calculationType: CalculationType.FirstCorrectionSettlement,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
         // Act
         var getAsyncResult = await Sut.GetAsync(parameters).ToListAsync();
         getAsyncResult.AddRange(await Sut
-            .GetAsync(parameters with { ProcessType = ProcessType.SecondCorrectionSettlement }).ToListAsync());
+            .GetAsync(parameters with { CalculationType = CalculationType.SecondCorrectionSettlement }).ToListAsync());
         getAsyncResult.AddRange(await Sut
-            .GetAsync(parameters with { ProcessType = ProcessType.ThirdCorrectionSettlement }).ToListAsync());
+            .GetAsync(parameters with { CalculationType = CalculationType.ThirdCorrectionSettlement }).ToListAsync());
 
         var latestCorrectionForGridAreaAsyncResult =
-            await Sut.GetLatestCorrectionForGridAreaAsync(parameters with { ProcessType = null }).ToListAsync();
+            await Sut.GetLatestCorrectionForGridAreaAsync(parameters with { CalculationType = null }).ToListAsync();
 
         using var assertionScope = new AssertionScope();
         getAsyncResult.Should().BeEquivalentTo(latestCorrectionForGridAreaAsyncResult);
@@ -1018,7 +1018,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
         string? gridArea = null,
         string? energySupplierId = null,
         string? balanceResponsibleId = null,
-        ProcessType? processType = null)
+        CalculationType? calculationType = null)
     {
         return new AggregatedTimeSeriesQueryParameters(
             TimeSeriesTypes: timeSeriesType ?? new[] { TimeSeriesType.Production },
@@ -1027,7 +1027,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             GridArea: gridArea,
             EnergySupplierId: energySupplierId,
             BalanceResponsibleId: balanceResponsibleId,
-            ProcessType: processType);
+            CalculationType: calculationType);
     }
 
     private IReadOnlyCollection<IReadOnlyCollection<string>> CreateDataOne(
@@ -1037,7 +1037,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
         string timeSeriesType)
     {
         var o = EnergyResultDeltaTableHelper.CreateRowValues(
-            batchId: BatchId,
+            calculationId: BatchId,
             calculationResultId: FirstCalculationResultId,
             time: FirstHour,
             gridArea: gridAreaCode,
@@ -1046,10 +1046,10 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             balanceResponsibleId: balanceResponsibleId,
             energySupplierId: energySupplierId,
             timeSeriesType: timeSeriesType,
-            batchProcessType: DeltaTableProcessType.BalanceFixing);
+            calculationType: DeltaTableCalculationType.BalanceFixing);
 
         var f = EnergyResultDeltaTableHelper.CreateRowValues(
-            batchId: BatchId,
+            calculationId: BatchId,
             calculationResultId: SecondCalculationResultId,
             time: FirstHour,
             gridArea: gridAreaCode,
@@ -1058,10 +1058,10 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             balanceResponsibleId: balanceResponsibleId,
             energySupplierId: energySupplierId,
             timeSeriesType: timeSeriesType,
-            batchProcessType: DeltaTableProcessType.FirstCorrectionSettlement);
+            calculationType: DeltaTableCalculationType.FirstCorrectionSettlement);
 
         var s = EnergyResultDeltaTableHelper.CreateRowValues(
-            batchId: BatchId,
+            calculationId: BatchId,
             calculationResultId: ThirdCalculationResultId,
             time: FirstHour,
             gridArea: gridAreaCode,
@@ -1070,10 +1070,10 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             balanceResponsibleId: balanceResponsibleId,
             energySupplierId: energySupplierId,
             timeSeriesType: timeSeriesType,
-            batchProcessType: DeltaTableProcessType.SecondCorrectionSettlement);
+            calculationType: DeltaTableCalculationType.SecondCorrectionSettlement);
 
         var t = EnergyResultDeltaTableHelper.CreateRowValues(
-            batchId: BatchId,
+            calculationId: BatchId,
             calculationResultId: ThirdCalculationResultId,
             time: FirstHour,
             gridArea: gridAreaCode,
@@ -1082,7 +1082,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             balanceResponsibleId: balanceResponsibleId,
             energySupplierId: energySupplierId,
             timeSeriesType: timeSeriesType,
-            batchProcessType: DeltaTableProcessType.ThirdCorrectionSettlement);
+            calculationType: DeltaTableCalculationType.ThirdCorrectionSettlement);
 
         return
             [o, f, s, t];
@@ -1095,7 +1095,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
         string timeSeriesType)
     {
         var o = EnergyResultDeltaTableHelper.CreateRowValues(
-            batchId: BatchId,
+            calculationId: BatchId,
             calculationResultId: FirstCalculationResultId,
             time: SecondHour,
             gridArea: gridAreaCode,
@@ -1104,10 +1104,10 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             balanceResponsibleId: balanceResponsibleId,
             energySupplierId: energySupplierId,
             timeSeriesType: timeSeriesType,
-            batchProcessType: DeltaTableProcessType.BalanceFixing);
+            calculationType: DeltaTableCalculationType.BalanceFixing);
 
         var f = EnergyResultDeltaTableHelper.CreateRowValues(
-            batchId: BatchId,
+            calculationId: BatchId,
             calculationResultId: SecondCalculationResultId,
             time: SecondHour,
             gridArea: gridAreaCode,
@@ -1116,10 +1116,10 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             balanceResponsibleId: balanceResponsibleId,
             energySupplierId: energySupplierId,
             timeSeriesType: timeSeriesType,
-            batchProcessType: DeltaTableProcessType.FirstCorrectionSettlement);
+            calculationType: DeltaTableCalculationType.FirstCorrectionSettlement);
 
         var s = EnergyResultDeltaTableHelper.CreateRowValues(
-            batchId: BatchId,
+            calculationId: BatchId,
             calculationResultId: ThirdCalculationResultId,
             time: SecondHour,
             gridArea: gridAreaCode,
@@ -1128,7 +1128,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             balanceResponsibleId: balanceResponsibleId,
             energySupplierId: energySupplierId,
             timeSeriesType: timeSeriesType,
-            batchProcessType: DeltaTableProcessType.SecondCorrectionSettlement);
+            calculationType: DeltaTableCalculationType.SecondCorrectionSettlement);
 
         return
             [o, f, s];
@@ -1141,7 +1141,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
         string timeSeriesType)
     {
         var o = EnergyResultDeltaTableHelper.CreateRowValues(
-            batchId: BatchId,
+            calculationId: BatchId,
             calculationResultId: FirstCalculationResultId,
             time: ThirdHour,
             gridArea: gridAreaCode,
@@ -1150,10 +1150,10 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             balanceResponsibleId: balanceResponsibleId,
             energySupplierId: energySupplierId,
             timeSeriesType: timeSeriesType,
-            batchProcessType: DeltaTableProcessType.BalanceFixing);
+            calculationType: DeltaTableCalculationType.BalanceFixing);
 
         var s = EnergyResultDeltaTableHelper.CreateRowValues(
-            batchId: BatchId,
+            calculationId: BatchId,
             calculationResultId: SecondCalculationResultId,
             time: ThirdHour,
             gridArea: gridAreaCode,
@@ -1162,10 +1162,10 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             balanceResponsibleId: balanceResponsibleId,
             energySupplierId: energySupplierId,
             timeSeriesType: timeSeriesType,
-            batchProcessType: DeltaTableProcessType.SecondCorrectionSettlement);
+            calculationType: DeltaTableCalculationType.SecondCorrectionSettlement);
 
         var t = EnergyResultDeltaTableHelper.CreateRowValues(
-            batchId: BatchId,
+            calculationId: BatchId,
             calculationResultId: ThirdCalculationResultId,
             time: ThirdHour,
             gridArea: gridAreaCode,
@@ -1174,7 +1174,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             balanceResponsibleId: balanceResponsibleId,
             energySupplierId: energySupplierId,
             timeSeriesType: timeSeriesType,
-            batchProcessType: DeltaTableProcessType.ThirdCorrectionSettlement);
+            calculationType: DeltaTableCalculationType.ThirdCorrectionSettlement);
 
         return
             [o, s, t];
@@ -1187,7 +1187,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
         string timeSeriesType)
     {
         var o = EnergyResultDeltaTableHelper.CreateRowValues(
-            batchId: BatchId,
+            calculationId: BatchId,
             calculationResultId: FirstCalculationResultId,
             time: SecondDay,
             gridArea: gridAreaCode,
@@ -1196,10 +1196,10 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             balanceResponsibleId: balanceResponsibleId,
             energySupplierId: energySupplierId,
             timeSeriesType: timeSeriesType,
-            batchProcessType: DeltaTableProcessType.BalanceFixing);
+            calculationType: DeltaTableCalculationType.BalanceFixing);
 
         var t = EnergyResultDeltaTableHelper.CreateRowValues(
-            batchId: BatchId,
+            calculationId: BatchId,
             calculationResultId: SecondCalculationResultId,
             time: SecondDay,
             gridArea: gridAreaCode,
@@ -1208,7 +1208,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             balanceResponsibleId: balanceResponsibleId,
             energySupplierId: energySupplierId,
             timeSeriesType: timeSeriesType,
-            batchProcessType: DeltaTableProcessType.ThirdCorrectionSettlement);
+            calculationType: DeltaTableCalculationType.ThirdCorrectionSettlement);
 
         return
             [o, t];
@@ -1327,11 +1327,11 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
                     TimeSeriesType = row.ElementAt(11),
                     BalanceResponsibleId = row.ElementAt(8),
                     CalculationId = row.ElementAt(3),
-                    ProcessType = row.ElementAt(2),
+                    CalculationType = row.ElementAt(2),
                 })
                 .Select(grouping =>
                     EnergyResultDeltaTableHelper.CreateRowValues(
-                        batchId: BatchId,
+                        calculationId: BatchId,
                         calculationResultId: ThirdCalculationResultId,
                         time: grouping.Key.Time.Replace("'", string.Empty),
                         gridArea: grouping.Key.GridArea.Replace("'", string.Empty),
@@ -1341,7 +1341,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
                         balanceResponsibleId: grouping.Key.BalanceResponsibleId.Replace("'", string.Empty),
                         // energySupplierId: "NULL",
                         timeSeriesType: grouping.Key.TimeSeriesType.Replace("'", string.Empty),
-                        batchProcessType: grouping.Key.ProcessType.Replace("'", string.Empty)))
+                        calculationType: grouping.Key.CalculationType.Replace("'", string.Empty)))
                 .ToList();
 
             var aggregatedByEnergyAndGrid = allThemRows.GroupBy(row => new
@@ -1352,11 +1352,11 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
                     // BalanceResponsibleId = row.ElementAt(8),
                     EnergySupplierId = row.ElementAt(5),
                     CalculationId = row.ElementAt(3),
-                    ProcessType = row.ElementAt(2),
+                    CalculationType = row.ElementAt(2),
                 })
                 .Select(grouping =>
                     EnergyResultDeltaTableHelper.CreateRowValues(
-                        batchId: BatchId,
+                        calculationId: BatchId,
                         calculationResultId: ThirdCalculationResultId,
                         time: grouping.Key.Time.Replace("'", string.Empty),
                         gridArea: grouping.Key.GridArea.Replace("'", string.Empty),
@@ -1366,7 +1366,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
                         // balanceResponsibleId: grouping.Key.BalanceResponsibleId.Replace("'", string.Empty),
                         energySupplierId: grouping.Key.EnergySupplierId.Replace("'", string.Empty),
                         timeSeriesType: grouping.Key.TimeSeriesType.Replace("'", string.Empty),
-                        batchProcessType: grouping.Key.ProcessType.Replace("'", string.Empty)))
+                        calculationType: grouping.Key.CalculationType.Replace("'", string.Empty)))
                 .ToList();
 
             var aggregatedByGrid = allThemRows.GroupBy(row => new
@@ -1377,11 +1377,11 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
                     // BalanceResponsibleId = row.ElementAt(8),
                     // EnergySupplierId = row.ElementAt(5),
                     CalculationId = row.ElementAt(3),
-                    ProcessType = row.ElementAt(2),
+                    CalculationType = row.ElementAt(2),
                 })
                 .Select(grouping =>
                     EnergyResultDeltaTableHelper.CreateRowValues(
-                        batchId: BatchId,
+                        calculationId: BatchId,
                         calculationResultId: ThirdCalculationResultId,
                         time: grouping.Key.Time.Replace("'", string.Empty),
                         gridArea: grouping.Key.GridArea.Replace("'", string.Empty),
@@ -1391,7 +1391,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
                         // balanceResponsibleId: grouping.Key.BalanceResponsibleId.Replace("'", string.Empty),
                         // energySupplierId: grouping.Key.EnergySupplierId.Replace("'", string.Empty),
                         timeSeriesType: grouping.Key.TimeSeriesType.Replace("'", string.Empty),
-                        batchProcessType: grouping.Key.ProcessType.Replace("'", string.Empty)))
+                        calculationType: grouping.Key.CalculationType.Replace("'", string.Empty)))
                 .ToList();
 
             allThemRows.AddRange(aggregatedByBalanceAndGrid);
