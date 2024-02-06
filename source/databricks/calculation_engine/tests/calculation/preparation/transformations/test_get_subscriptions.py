@@ -293,7 +293,7 @@ class TestWhenChargeTimeDiffersFromMeteringPointPeriod:
                 charge_type=e.ChargeType.SUBSCRIPTION,
                 from_date=charge_from_date,
                 to_date=charge_to_date,
-                charge_time=charge_to_date,
+                charge_time=charge_from_date,
             )
         ]
 
