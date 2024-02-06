@@ -81,52 +81,9 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
         Fixture.Inject(_fixture.GetDatabricksExecutor());
     }
 
-    /*
-                time grid energy balance process
-1               prod    2      2       2  second
-2                con    2      3     n/a   first
-3               prod    1      1       1   first
-4           prod+con    2    n/a       1   third
-5           prod+con    1      3       2     fix
-6               prod    3      3       3   third
-7  prod+con+exchange    1      2     n/a   third
-8                con  n/a      1       2   third
-9                con    1    n/a       3  second
-10              prod  n/a    n/a     n/a     fix
-11 prod+con+exchange    2      1       3     fix
-12 prod+con+exchange  n/a      3       1  second
-13          prod+con    3      1     n/a  second
-14 prod+con+exchange    3    n/a       2   first
-15          prod+con  n/a      2       3   first
-16               con    3      2       1     fix
-     */
-
-    // [Fact]
-    // public async Task Three_GetAsync_FirstCorrectionSettlement_Production_EnergySupplierWithSpecificBalanceResponsibleAndGridArea_OneSeriesWithTwoPoints()
-    // {
-    //     var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
-    //     var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
-    //
-    //     await AddDataAsync();
-    //
-    //     var parameters = CreateQueryParameters(
-    //         timeSeriesType: new[] { TimeSeriesType.Production },
-    //         gridArea: GridAreaCodeA,
-    //         energySupplierId: EnergySupplierA,
-    //         balanceResponsibleId: BalanceResponsibleA,
-    //         processType: ProcessType.FirstCorrectionSettlement,
-    //         startOfPeriod: startOfPeriodFilter,
-    //         endOfPeriod: endOfPeriodFilter);
-    //
-    //     // Act
-    //     var actual = await Sut.GetAsync(parameters).ToListAsync();
-    //
-    //     using var assertionScope = new AssertionScope();
-    //     actual.Should().HaveCount(0);
-    // }
     [Fact]
     public async Task
-        One_GetAsync_SecondCorrectionSettlement_Production_EnergySupplierWithSpecificBalanceResponsibleAndGridArea_OneSeriesWithTwoPoints()
+        GetAsync_EnergySupplierWithSpecificBalanceResponsibleAndGridArea_SecondCorrectionSettlement_Production_OneSeriesWithTwoPoints()
     {
         var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
@@ -167,7 +124,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
 
     [Fact]
     public async Task
-        Five_GetAsync_BalanceFixing_ProductionConsumption_EnergySupplierWithSpecificBalanceResponsibleAndGridArea_TwoSeriesWithTwoPoints()
+        GetAsync_EnergySupplierWithSpecificBalanceResponsibleAndGridArea_BalanceFixing_ProductionConsumption_TwoSeriesWithTwoPoints()
     {
         var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
@@ -229,7 +186,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
 
     [Fact]
     public async Task
-        Two_GetAsync_FirstCorrectionSettlement_Consumption_EnergySupplierWithGridArea_OneSeriesWithOnePoint()
+        GetAsync_EnergySupplierWithGridArea_FirstCorrectionSettlement_Consumption_OneSeriesWithOnePoint()
     {
         var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
@@ -262,7 +219,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
 
     [Fact]
     public async Task
-        Thirteen_GetAsync_SecondCorrectionSettlement_ProductionConsumption_EnergySupplierWithGridArea_TwoSeriesWithThreePoints()
+        GetAsync_EnergySupplierWithGridArea_SecondCorrectionSettlement_ProductionConsumption_TwoSeriesWithThreePoints()
     {
         var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
@@ -334,7 +291,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
 
     [Fact]
     public async Task
-        Eight_GetAsync_ThirdCorrectionSettlement_Consumption_EnergySupplierWithSpecificBalanceResponsible_OneSeriesWithTwoPoints()
+        GetAsync_EnergySupplierWithSpecificBalanceResponsible_ThirdCorrectionSettlement_Consumption_OneSeriesWithTwoPoints()
     {
         var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
@@ -375,7 +332,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
 
     [Fact]
     public async Task
-        Fifteen_GetAsync_FirstCorrectionSettlement_ProductionConsumption_EnergySupplierWithSpecificBalanceResponsible_TwoSeriesWithOnePoint()
+        GetAsync_EnergySupplierWithSpecificBalanceResponsible_FirstCorrectionSettlement_ProductionConsumption_TwoSeriesWithOnePoint()
     {
         var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
@@ -423,7 +380,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
 
     [Fact]
     public async Task
-        Four_GetAsync_ThirdCorrectionSettlement_ProductionConsumption_BalanceResponsibleWithGridArea_TwoSeriesWithTwoPoints()
+        GetAsync_BalanceResponsibleWithGridArea_ThirdCorrectionSettlement_ProductionConsumption_TwoSeriesWithTwoPoints()
     {
         var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
@@ -493,7 +450,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
 
     [Fact]
     public async Task
-        Nine_GetAsync_SecondCorrectionSettlement_Consumption_BalanceResponsibleWithGridArea_OneSeriesWithThreePoints()
+        GetAsync_BalanceResponsibleWithGridArea_SecondCorrectionSettlement_Consumption_OneSeriesWithThreePoints()
     {
         var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
@@ -539,7 +496,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
 
     [Fact]
     public async Task
-        Seven_Fixed_GetAsync_ThirdCorrectionSettlement_ProductionConsumptionExchange_ForGridArea_ThreeSeriesWithThreePoints()
+        GetAsync_GridArea_ThirdCorrectionSettlement_ProductionConsumptionExchange_ThreeSeriesWithThreePoints()
     {
         var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
@@ -673,7 +630,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
 
     [Fact]
     public async Task
-        Ten_GetAsync_BalanceFixing_Production_NoEnergySupplierBalanceResponsibleOrGridArea_ThreeSeriesWithFourPoints()
+        GetAsync_NoEnergySupplierBalanceResponsibleOrGridArea_BalanceFixing_Production_ThreeSeriesWithFourPoints()
     {
         var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
