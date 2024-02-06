@@ -38,6 +38,11 @@ DEFAULT_METERING_POINT_ID = "123456789012345678901234567"
 DEFAULT_METERING_POINT_TYPE = e.MeteringPointType.CONSUMPTION
 DEFAULT_SETTLEMENT_METHOD = e.SettlementMethod.FLEX
 
+JAN_1ST = datetime(2020, 1, 1, 0)
+JAN_2ND = datetime(2020, 1, 2, 0)
+JAN_3RD = datetime(2020, 1, 3, 0)
+JAN_4TH = datetime(2020, 1, 4, 0)
+
 
 def _create_metering_point_row(
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
@@ -250,25 +255,27 @@ class TestWhenValidInput:
         assert actual.collect() == expected_subscription.collect()
 
 
-class TestWhenChargeTimeOutsideMeteringPointPeriod:
+class TestWhenChargeTimeDiffersFromMeteringPointPeriod:
     @pytest.mark.parametrize(
-        "from_date, to_date, expected_rows",
+        "charge_from_date, charge_to_date, metering_point_from_date, metering_point_to_date, expected_rows",
         [
-            # charge time before metering point from date - not accepted
-            (datetime(2019, 12, 31, 23), datetime(2020, 1, 1, 0), 0),
-            # charge time equal to metering point from date - accepted
-            (datetime(2020, 1, 1, 0), datetime(2020, 1, 1, 1), 1),
-            # charge time between metering point from and to date - accepted
-            (datetime(2020, 1, 1, 1), datetime(2020, 1, 1, 2), 1),
-            # charge time equal to metering point to date - not accepted
-            (datetime(2020, 1, 1, 2), datetime(2020, 1, 1, 3), 0),
+            # charge period is within metering point period
+            (JAN_2ND, JAN_3RD, JAN_1ST, JAN_4TH, 1),
+            # charge period ends before metering point period
+            (JAN_1ST, JAN_3RD, JAN_1ST, JAN_4TH, 2),
+            # charge period starts after metering point period
+            (JAN_2ND, JAN_4TH, JAN_1ST, JAN_4TH, 2),
+            # charge period ends before start of metering point period
+            (JAN_1ST, JAN_2ND, JAN_3RD, JAN_4TH, 0),
         ],
     )
-    def test_only_accepts_charges_in_metering_point_period(
+    def test_only_include_charges_in_metering_point_period(
         self,
         spark: SparkSession,
-        from_date: datetime,
-        to_date: datetime,
+        charge_from_date: datetime,
+        charge_to_date: datetime,
+        metering_point_from_date: datetime,
+        metering_point_to_date: datetime,
         expected_rows: int,
     ) -> None:
         """
@@ -278,15 +285,15 @@ class TestWhenChargeTimeOutsideMeteringPointPeriod:
         # Arrange
         metering_point_rows = [
             _create_metering_point_row(
-                from_date=datetime(2020, 1, 1, 0), to_date=datetime(2020, 1, 1, 2)
+                from_date=metering_point_from_date, to_date=metering_point_to_date
             ),
         ]
         charges_rows = [
             _create_subscription_or_fee_charges_row(
                 charge_type=e.ChargeType.SUBSCRIPTION,
-                from_date=from_date,
-                to_date=to_date,
-                charge_time=from_date,
+                from_date=charge_from_date,
+                to_date=charge_to_date,
+                charge_time=charge_to_date,
             )
         ]
 
@@ -300,6 +307,7 @@ class TestWhenChargeTimeOutsideMeteringPointPeriod:
             charges,
             metering_point,
         )
+        actual.show()
 
         # Assert
         assert actual.count() == expected_rows
