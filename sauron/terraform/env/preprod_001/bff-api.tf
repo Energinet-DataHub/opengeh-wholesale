@@ -1,7 +1,7 @@
 module "apima_bff_api" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=v13"
 
-  count                      = 1
+  count = 0
 
   name                       = "sauron-bff"
   project_name               = var.domain_name_short
@@ -19,7 +19,7 @@ module "apima_bff_api" {
 module "apimao_get_deployments" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=v13"
 
-  count                   = 1
+  count                   = 0
   operation_id            = "get-deployments"
   api_management_api_name = module.apima_bff_api[0].name
   resource_group_name     = data.azurerm_key_vault_secret.apim_instance_resource_group_name.value
