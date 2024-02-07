@@ -23,11 +23,11 @@
   </Target>
 
   <ItemGroup>
-    <EmbeddedResource Include="Features\Calculations\TestData\amount_for_es_for_hourly_tarif_40000_for_e17_e02.csv" />
     <EmbeddedResource Include="Features\Calculations\TestData\Non_profiled_consumption_es_brp_ga_GA_543 for 5790001102357.csv" />
     <EmbeddedResource Include="Features\Calculations\TestData\Non_profiled_consumption_GA_804 for 5790001687137.csv" />
     <EmbeddedResource Include="Features\Calculations\TestData\Positive_gridLoss 543.csv" />
     <EmbeddedResource Include="Features\Calculations\TestData\Positive_gridLoss 804.csv" />
+    <EmbeddedResource Include="Features\Calculations\TestData\amount_for_es_for_hourly_tarif_40000_for_e17_e02.csv" />
   </ItemGroup>
 
   <ItemGroup>
