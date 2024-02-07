@@ -157,7 +157,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
         {
             return await ParseCsvAsync(
                 testFileName,
-                "grid_area;energy_supplier_id;quantity;time;price;amount;charge_code;",
+                "grid_area,energy_supplier_id,quantity,time,price,amount,charge_code,",
                 ParseAmountPerChargeResultProducedV1TimeSeriesPoint);
         }
 
