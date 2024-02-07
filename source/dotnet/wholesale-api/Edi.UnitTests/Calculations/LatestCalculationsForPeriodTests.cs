@@ -75,7 +75,7 @@ public class LatestCalculationsForPeriodTests
             .FindLatestCalculationsForPeriod(periodStart, periodEnd, new List<CalculationDto>() { calculation });
 
         // Assert
-        //using var assertionScope = new AssertionScope();
+        using var assertionScope = new AssertionScope();
         actual.Count.Should().Be(1);
         AssertCalculationsCoversWholePeriod(actual, periodStart, periodEnd);
         actual.Should().ContainSingle(c => c.Period.Start == periodStart && c.Period.End == periodEnd)
