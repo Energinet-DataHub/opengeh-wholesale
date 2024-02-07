@@ -34,15 +34,15 @@ from tests.contract_utils import (
     get_column_names_from_contract,
 )
 
-# The batch id is used in parameterized test executed using xdist, which does not allow parameters to change
-DEFAULT_BATCH_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
+# The calculation id is used in parameterized test executed using xdist, which does not allow parameters to change
+DEFAULT_CALCULATION_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
 DEFAULT_GRID_AREA = "105"
 DEFAULT_FROM_GRID_AREA = "106"
 DEFAULT_TO_GRID_AREA = "107"
 DEFAULT_ENERGY_SUPPLIER_ID = "9876543210123"
 DEFAULT_BALANCE_RESPONSIBLE_ID = "1234567890123"
 DEFAULT_PROCESS_TYPE = e.ProcessType.BALANCE_FIXING
-DEFAULT_BATCH_EXECUTION_START = datetime(2022, 6, 10, 13, 15)
+DEFAULT_CALCULATION_EXECUTION_START = datetime(2022, 6, 10, 13, 15)
 DEFAULT_QUANTITY = "1.1"
 DEFAULT_QUALITY = e.QuantityQuality.MEASURED
 DEFAULT_TIME_SERIES_TYPE = e.TimeSeriesType.PRODUCTION
@@ -52,14 +52,14 @@ DEFAULT_TIME_WINDOW_END = datetime(2020, 1, 1, 1, 0)
 DEFAULT_METERING_POINT_TYPE = e.MeteringPointType.PRODUCTION
 DEFAULT_SETTLEMENT_METHOD = e.SettlementMethod.FLEX
 
-OTHER_BATCH_ID = "0b15a420-9fc8-409a-a169-fbd49479d719"
+OTHER_CALCULATION_ID = "0b15a420-9fc8-409a-a169-fbd49479d719"
 OTHER_GRID_AREA = "205"
 OTHER_FROM_GRID_AREA = "206"
 OTHER_TO_GRID_AREA = "207"
 OTHER_ENERGY_SUPPLIER_ID = "9876543210124"
 OTHER_BALANCE_RESPONSIBLE_ID = "1234567890124"
 OTHER_PROCESS_TYPE = e.ProcessType.AGGREGATION
-OTHER_BATCH_EXECUTION_START = datetime(2023, 6, 10, 13, 15)
+OTHER_CALCULATION_EXECUTION_START = datetime(2023, 6, 10, 13, 15)
 OTHER_QUANTITY = "1.2"
 OTHER_QUALITY = e.QuantityQuality.CALCULATED
 OTHER_TIME_SERIES_TYPE = e.TimeSeriesType.NON_PROFILED_CONSUMPTION
@@ -158,11 +158,11 @@ def test__write__writes_aggregation_level(
     # Arrange
     row = [_create_result_row()]
     result_df = _create_result_df(spark, row)
-    batch_id = str(uuid.uuid4())
+    calculation_id = str(uuid.uuid4())
     sut = EnergyCalculationResultWriter(
-        batch_id,
+        calculation_id,
         DEFAULT_PROCESS_TYPE,
-        DEFAULT_BATCH_EXECUTION_START,
+        DEFAULT_CALCULATION_EXECUTION_START,
     )
 
     # Act
@@ -174,7 +174,7 @@ def test__write__writes_aggregation_level(
 
     # Assert
     actual_df = spark.read.table(TABLE_NAME).where(
-        col(EnergyResultColumnNames.calculation_id) == batch_id
+        col(EnergyResultColumnNames.calculation_id) == calculation_id
     )
     assert actual_df.collect()[0][Colname.aggregation_level] == aggregation_level.value
 
@@ -182,10 +182,10 @@ def test__write__writes_aggregation_level(
 @pytest.mark.parametrize(
     "column_name, column_value",
     [
-        (EnergyResultColumnNames.calculation_id, DEFAULT_BATCH_ID),
+        (EnergyResultColumnNames.calculation_id, DEFAULT_CALCULATION_ID),
         (
             EnergyResultColumnNames.calculation_execution_time_start,
-            DEFAULT_BATCH_EXECUTION_START,
+            DEFAULT_CALCULATION_EXECUTION_START,
         ),
         (EnergyResultColumnNames.calculation_type, DEFAULT_PROCESS_TYPE.value),
         (EnergyResultColumnNames.time_series_type, DEFAULT_TIME_SERIES_TYPE.value),
@@ -211,9 +211,9 @@ def test__write__writes_column(
     row = [_create_result_row()]
     result_df = _create_result_df(spark, row)
     sut = EnergyCalculationResultWriter(
-        DEFAULT_BATCH_ID,
+        DEFAULT_CALCULATION_ID,
         DEFAULT_PROCESS_TYPE,
-        DEFAULT_BATCH_EXECUTION_START,
+        DEFAULT_CALCULATION_EXECUTION_START,
     )
 
     # Act
@@ -225,7 +225,7 @@ def test__write__writes_column(
 
     # Assert
     actual_df = spark.read.table(TABLE_NAME).where(
-        col(EnergyResultColumnNames.calculation_id) == DEFAULT_BATCH_ID
+        col(EnergyResultColumnNames.calculation_id) == DEFAULT_CALCULATION_ID
     )
     assert actual_df.collect()[0][column_name] == column_value
 
@@ -240,9 +240,9 @@ def test__write__writes_columns_matching_contract(
     row = [_create_result_row()]
     result_df = _create_result_df(spark, row)
     sut = EnergyCalculationResultWriter(
-        DEFAULT_BATCH_ID,
+        DEFAULT_CALCULATION_ID,
         DEFAULT_PROCESS_TYPE,
-        DEFAULT_BATCH_EXECUTION_START,
+        DEFAULT_CALCULATION_EXECUTION_START,
     )
 
     # Act
@@ -254,7 +254,7 @@ def test__write__writes_columns_matching_contract(
 
     # Assert
     actual_df = spark.read.table(TABLE_NAME).where(
-        col(EnergyResultColumnNames.calculation_id) == DEFAULT_BATCH_ID
+        col(EnergyResultColumnNames.calculation_id) == DEFAULT_CALCULATION_ID
     )
 
     assert_contract_matches_schema(contract_path, actual_df.schema)
@@ -270,7 +270,7 @@ def test__write__writes_calculation_result_id(
     sut = EnergyCalculationResultWriter(
         calculation_id,
         DEFAULT_PROCESS_TYPE,
-        DEFAULT_BATCH_EXECUTION_START,
+        DEFAULT_CALCULATION_EXECUTION_START,
     )
 
     # Act
@@ -325,7 +325,7 @@ def test__write__when_rows_belong_to_different_results__adds_different_calculati
     sut = EnergyCalculationResultWriter(
         calculation_id,
         DEFAULT_PROCESS_TYPE,
-        DEFAULT_BATCH_EXECUTION_START,
+        DEFAULT_CALCULATION_EXECUTION_START,
     )
 
     # Act
@@ -389,7 +389,7 @@ def test__write__when_rows_belong_to_same_result__adds_same_calculation_result_i
     sut = EnergyCalculationResultWriter(
         calculation_id,
         DEFAULT_PROCESS_TYPE,
-        DEFAULT_BATCH_EXECUTION_START,
+        DEFAULT_CALCULATION_EXECUTION_START,
     )
 
     # Act
