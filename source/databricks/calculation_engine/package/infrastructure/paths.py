@@ -54,26 +54,26 @@ def get_calculation_input_path(
     return f"{get_container_root_path(storage_account_name)}{input_folder}/"
 
 
-def get_basis_data_root_path(basis_data_type: BasisDataType, batch_id: str) -> str:
-    batch_path = get_batch_relative_path(batch_id)
-    return f"{batch_path}/{BASIS_DATA_FOLDER}/{_get_basis_data_folder_name(basis_data_type)}"
+def get_basis_data_root_path(basis_data_type: BasisDataType, calculation_id: str) -> str:
+    calculation_path = get_calculation_relative_path(calculation_id)
+    return f"{calculation_path}/{BASIS_DATA_FOLDER}/{_get_basis_data_folder_name(basis_data_type)}"
 
 
 def get_basis_data_path(
     basis_data_type: BasisDataType,
-    batch_id: str,
+    calculation_id: str,
     grid_area: str,
     energy_supplier_id: str | None = None,
 ) -> str:
-    basis_data_root_path = get_basis_data_root_path(basis_data_type, batch_id)
+    basis_data_root_path = get_basis_data_root_path(basis_data_type, calculation_id)
     if energy_supplier_id is None:
         return f"{basis_data_root_path}/grouping=total_ga/grid_area={grid_area}"
     else:
         return f"{basis_data_root_path}/grouping=es_ga/grid_area={grid_area}/energy_supplier_gln={energy_supplier_id}"
 
 
-def get_batch_relative_path(batch_id: str) -> str:
-    return f"{OUTPUT_FOLDER}/batch_id={batch_id}"
+def get_calculation_relative_path(calculation_id: str) -> str:
+    return f"{OUTPUT_FOLDER}/batch_id={calculation_id}"
 
 
 def _get_basis_data_folder_name(basis_data_type: BasisDataType) -> str:

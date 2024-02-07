@@ -42,7 +42,7 @@ def calculator_args_balance_fixing(
         time_series_points_table_name=None,
         metering_point_periods_table_name=None,
         grid_loss_metering_points_table_name=None,
-        calculation_id=C.executed_balance_fixing_batch_id,
+        calculation_id=C.executed_balance_fixing_calculation_id,
         calculation_process_type=ProcessType.BALANCE_FIXING,
         calculation_grid_areas=["805", "806"],
         calculation_period_start_datetime=datetime(2018, 1, 1, 23, 0, 0),
@@ -57,7 +57,7 @@ def calculator_args_wholesale_fixing(
     calculator_args_balance_fixing: CalculatorArgs,
 ) -> CalculatorArgs:
     args = calculator_args_balance_fixing
-    args.calculation_id = C.executed_wholesale_batch_id
+    args.calculation_id = C.executed_wholesale_calculation_id
     args.calculation_process_type = ProcessType.WHOLESALE_FIXING
     return args
 
@@ -121,7 +121,7 @@ def balance_fixing_results_df(
     )
     return results_df.where(
         F.col(EnergyResultColumnNames.calculation_id)
-        == C.executed_balance_fixing_batch_id
+        == C.executed_balance_fixing_calculation_id
     )
 
 
@@ -134,7 +134,7 @@ def wholesale_fixing_energy_results_df(
         f"{paths.OUTPUT_DATABASE_NAME}.{paths.ENERGY_RESULT_TABLE_NAME}"
     )
     return results_df.where(
-        F.col(EnergyResultColumnNames.calculation_id) == C.executed_wholesale_batch_id
+        F.col(EnergyResultColumnNames.calculation_id) == C.executed_wholesale_calculation_id
     )
 
 
@@ -148,5 +148,5 @@ def wholesale_fixing_wholesale_results_df(
     )
     return results_df.where(
         F.col(WholesaleResultColumnNames.calculation_id)
-        == C.executed_wholesale_batch_id
+        == C.executed_wholesale_calculation_id
     )
