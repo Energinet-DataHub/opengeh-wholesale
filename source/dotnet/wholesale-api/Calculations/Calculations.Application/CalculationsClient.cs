@@ -71,9 +71,9 @@ public class CalculationsClient : ICalculationsClient
     public async Task<IReadOnlyCollection<CalculationDto>> SearchAsync(
         IEnumerable<string> filterByGridAreaCodes,
         CalculationState filterByExecutionState,
-        CalculationType calculationType,
         Instant periodStart,
-        Instant periodEnd)
+        Instant periodEnd,
+        CalculationType calculationType)
     {
         return await SearchAsync(
             filterByGridAreaCodes,
