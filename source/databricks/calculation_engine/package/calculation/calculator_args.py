@@ -15,7 +15,7 @@
 from azure.identity import ClientSecretCredential
 from dataclasses import dataclass, field
 from datetime import datetime
-from package.codelists.process_type import ProcessType
+from package.codelists.process_type import CalculationType
 
 
 @dataclass
@@ -32,6 +32,6 @@ class CalculatorArgs:
     calculation_grid_areas: list[str]
     calculation_period_start_datetime: datetime
     calculation_period_end_datetime: datetime
-    calculation_process_type: ProcessType
+    calculation_process_type: CalculationType
     calculation_execution_time_start: datetime
     time_zone: str

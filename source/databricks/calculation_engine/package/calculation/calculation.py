@@ -22,7 +22,7 @@ from package.calculation_output.wholesale_calculation_result_writer import (
 from package.codelists import (
     ChargeResolution,
     MeteringPointType,
-    ProcessType,
+    CalculationType,
     TimeSeriesType,
     AggregationLevel,
     AmountType,
@@ -207,10 +207,10 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
     )
 
     if (
-        args.calculation_process_type == ProcessType.WHOLESALE_FIXING
-        or args.calculation_process_type == ProcessType.FIRST_CORRECTION_SETTLEMENT
-        or args.calculation_process_type == ProcessType.SECOND_CORRECTION_SETTLEMENT
-        or args.calculation_process_type == ProcessType.THIRD_CORRECTION_SETTLEMENT
+        args.calculation_process_type == CalculationType.WHOLESALE_FIXING
+        or args.calculation_process_type == CalculationType.FIRST_CORRECTION_SETTLEMENT
+        or args.calculation_process_type == CalculationType.SECOND_CORRECTION_SETTLEMENT
+        or args.calculation_process_type == CalculationType.THIRD_CORRECTION_SETTLEMENT
     ):
         with logging_configuration.start_span("hourly_tariff_per_ga_co_es"):
             wholesale_calculation_result_writer.write(
@@ -280,10 +280,10 @@ def _execute(
     )
 
     if (
-        args.calculation_process_type == ProcessType.WHOLESALE_FIXING
-        or args.calculation_process_type == ProcessType.FIRST_CORRECTION_SETTLEMENT
-        or args.calculation_process_type == ProcessType.SECOND_CORRECTION_SETTLEMENT
-        or args.calculation_process_type == ProcessType.THIRD_CORRECTION_SETTLEMENT
+        args.calculation_process_type == CalculationType.WHOLESALE_FIXING
+        or args.calculation_process_type == CalculationType.FIRST_CORRECTION_SETTLEMENT
+        or args.calculation_process_type == CalculationType.SECOND_CORRECTION_SETTLEMENT
+        or args.calculation_process_type == CalculationType.THIRD_CORRECTION_SETTLEMENT
     ):
         charges_df = prepared_data_reader.get_charges(
             args.calculation_period_start_datetime, args.calculation_period_end_datetime

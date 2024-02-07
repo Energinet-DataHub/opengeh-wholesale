@@ -19,7 +19,7 @@ import pyspark.sql.functions as f
 from pyspark.sql.window import Window
 
 from package.codelists import (
-    ProcessType,
+    CalculationType,
     AmountType,
 )
 from package.constants import Colname, WholesaleResultColumnNames
@@ -33,7 +33,7 @@ class WholesaleCalculationResultWriter:
     def __init__(
         self,
         batch_id: str,
-        process_type: ProcessType,
+        process_type: CalculationType,
         execution_time_start: datetime,
     ):
         self.__batch_id = batch_id

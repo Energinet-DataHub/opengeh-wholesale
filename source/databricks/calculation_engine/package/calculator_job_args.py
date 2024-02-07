@@ -20,7 +20,7 @@ from configargparse import argparse
 
 import package.infrastructure.environment_variables as env_vars
 from package.calculation.calculator_args import CalculatorArgs
-from package.codelists.process_type import ProcessType
+from package.codelists.process_type import CalculationType
 from package.common.logger import Logger
 from package.infrastructure import valid_date, valid_list, paths, logging_configuration
 
@@ -71,7 +71,7 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p.add("--grid-areas", type=valid_list, required=True)
     p.add("--period-start-datetime", type=valid_date, required=True)
     p.add("--period-end-datetime", type=valid_date, required=True)
-    p.add("--process-type", type=ProcessType, required=True)
+    p.add("--process-type", type=CalculationType, required=True)
     p.add("--execution-time-start", type=valid_date, required=True)
     p.add("--calculation_input_folder_name", type=str, required=False)
     p.add("--time_series_points_table_name", type=str, required=False)

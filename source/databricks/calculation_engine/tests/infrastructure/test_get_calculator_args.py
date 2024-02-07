@@ -20,7 +20,7 @@ from package.calculator_job_args import (
     create_calculation_arguments,
     parse_command_line_arguments,
 )
-from package.codelists import ProcessType
+from package.codelists import CalculationType
 from package.infrastructure.environment_variables import EnvironmentVariable
 
 DEFAULT_CALCULATION_ID = "the-calculation-id"
@@ -107,7 +107,7 @@ class TestWhenInvokedWithValidParameters:
         assert actual.calculation_period_end_datetime == datetime.datetime(
             2022, 6, 1, 22
         )
-        assert actual.calculation_process_type == ProcessType.BALANCE_FIXING
+        assert actual.calculation_process_type == CalculationType.BALANCE_FIXING
         assert actual.calculation_execution_time_start == datetime.datetime(
             2022, 6, 4, 22
         )

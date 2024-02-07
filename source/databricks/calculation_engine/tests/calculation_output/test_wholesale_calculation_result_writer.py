@@ -26,7 +26,7 @@ from package.codelists import (
     ChargeType,
     ChargeUnit,
     MeteringPointType,
-    ProcessType,
+    CalculationType,
     SettlementMethod,
     AmountType,
 )
@@ -43,7 +43,7 @@ TABLE_NAME = f"{OUTPUT_DATABASE_NAME}.{WHOLESALE_RESULT_TABLE_NAME}"
 
 # Writer constructor parameters
 DEFAULT_BATCH_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
-DEFAULT_PROCESS_TYPE = ProcessType.FIRST_CORRECTION_SETTLEMENT
+DEFAULT_PROCESS_TYPE = CalculationType.FIRST_CORRECTION_SETTLEMENT
 DEFAULT_BATCH_EXECUTION_START = datetime(2022, 6, 10, 13, 15)
 
 # Input dataframe parameters
