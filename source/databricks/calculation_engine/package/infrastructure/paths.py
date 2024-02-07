@@ -54,7 +54,9 @@ def get_calculation_input_path(
     return f"{get_container_root_path(storage_account_name)}{input_folder}/"
 
 
-def get_basis_data_root_path(basis_data_type: BasisDataType, calculation_id: str) -> str:
+def get_basis_data_root_path(
+    basis_data_type: BasisDataType, calculation_id: str
+) -> str:
     calculation_path = get_calculation_relative_path(calculation_id)
     return f"{calculation_path}/{BASIS_DATA_FOLDER}/{_get_basis_data_folder_name(basis_data_type)}"
 

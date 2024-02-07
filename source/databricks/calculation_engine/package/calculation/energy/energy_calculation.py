@@ -39,7 +39,6 @@ def execute(
     metering_point_time_series: DataFrame,
     grid_loss_responsible_df: GridLossResponsible,
 ) -> EnergyResultsContainer:
-
     with logging_configuration.start_span("quarterly_metering_point_time_series"):
         quarterly_metering_point_time_series = transform_hour_to_quarter(
             metering_point_time_series

@@ -79,7 +79,9 @@ def test__creates_quarter_for_total_ga__with_expected_columns_names(
 ) -> None:
     # Arrange
     relative_path = paths.get_basis_data_path(
-        BasisDataType.TIME_SERIES_QUARTER, C.executed_balance_fixing_calculation_id, "805"
+        BasisDataType.TIME_SERIES_QUARTER,
+        C.executed_balance_fixing_calculation_id,
+        "805",
     )
 
     # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
@@ -132,10 +134,14 @@ def test__creates_quarter_for_total_ga__per_grid_area(
 ) -> None:
     # Arrange
     basis_data_relative_path_805 = paths.get_basis_data_path(
-        BasisDataType.TIME_SERIES_QUARTER, C.executed_balance_fixing_calculation_id, "805"
+        BasisDataType.TIME_SERIES_QUARTER,
+        C.executed_balance_fixing_calculation_id,
+        "805",
     )
     basis_data_relative_path_806 = paths.get_basis_data_path(
-        BasisDataType.TIME_SERIES_QUARTER, C.executed_balance_fixing_calculation_id, "806"
+        BasisDataType.TIME_SERIES_QUARTER,
+        C.executed_balance_fixing_calculation_id,
+        "806",
     )
 
     # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`

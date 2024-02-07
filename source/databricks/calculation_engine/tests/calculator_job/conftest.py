@@ -134,7 +134,8 @@ def wholesale_fixing_energy_results_df(
         f"{paths.OUTPUT_DATABASE_NAME}.{paths.ENERGY_RESULT_TABLE_NAME}"
     )
     return results_df.where(
-        F.col(EnergyResultColumnNames.calculation_id) == C.executed_wholesale_calculation_id
+        F.col(EnergyResultColumnNames.calculation_id)
+        == C.executed_wholesale_calculation_id
     )
 
 

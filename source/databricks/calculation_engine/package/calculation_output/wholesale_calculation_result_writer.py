@@ -81,7 +81,9 @@ class WholesaleCalculationResultWriter:
         # Map column names to the Delta table field names
         # Note: The order of the columns must match the order of the columns in the Delta table
         return df.select(
-            col(Colname.calculation_id).alias(WholesaleResultColumnNames.calculation_id),
+            col(Colname.calculation_id).alias(
+                WholesaleResultColumnNames.calculation_id
+            ),
             col(Colname.calculation_type).alias(
                 WholesaleResultColumnNames.calculation_type
             ),
