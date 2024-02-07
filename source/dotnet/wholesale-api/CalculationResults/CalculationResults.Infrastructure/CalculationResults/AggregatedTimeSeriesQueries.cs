@@ -57,8 +57,13 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
 
     public async IAsyncEnumerable<AggregatedTimeSeries> GetAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
+        if (!parameters.LatestCalculationForPeriod.Any())
+        {
+            yield break;
+        }
+
         var sqlStatement = new AggregatedTimeSeriesQueryStatement(parameters, _deltaTableOptions);
-        await foreach (var aggregatedTimeSeries in GetInternalAsync(sqlStatement).ConfigureAwait(false))
+        await foreach (var aggregatedTimeSeries in GetInternalAsync(sqlStatement, parameters.LatestCalculationForPeriod).ConfigureAwait(false))
             yield return aggregatedTimeSeries;
     }
 
@@ -74,7 +79,9 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
             yield return aggregatedTimeSeries;
     }
 
-    private async IAsyncEnumerable<AggregatedTimeSeries> GetInternalAsync(AggregatedTimeSeriesQueryStatement sqlStatement)
+    private async IAsyncEnumerable<AggregatedTimeSeries> GetInternalAsync(
+        AggregatedTimeSeriesQueryStatement sqlStatement,
+        IReadOnlyCollection<CalculationForPeriod> latestCalculationsForPeriod)
     {
         var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
         DatabricksSqlRow? previousRow = null;
@@ -83,9 +90,16 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
             var currentRow = new DatabricksSqlRow(databricksCurrentRow);
             var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(currentRow);
 
-            if (previousRow != null && BelongsToDifferentGridArea(currentRow, previousRow))
+            if (previousRow != null && (BelongsToDifferentGridArea(currentRow, previousRow)
+                                        || DifferentCalculationId(currentRow, previousRow)))
             {
-                yield return AggregatedTimeSeriesFactory.Create(previousRow, timeSeriesPoints);
+                var calculationForPeriod = GetCalculationForPeriod(previousRow, latestCalculationsForPeriod);
+                yield return AggregatedTimeSeriesFactory.Create(
+                    previousRow,
+                    calculationForPeriod.Period.Start,
+                    calculationForPeriod.Period.End,
+                    timeSeriesPoints,
+                    calculationForPeriod.CalculationVersion);
                 timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
             }
 
@@ -94,7 +108,26 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
         }
 
         if (previousRow != null)
-            yield return AggregatedTimeSeriesFactory.Create(previousRow, timeSeriesPoints);
+        {
+            var calculationForPeriod = GetCalculationForPeriod(previousRow, latestCalculationsForPeriod);
+            yield return AggregatedTimeSeriesFactory.Create(
+                previousRow,
+                calculationForPeriod.Period.Start,
+                calculationForPeriod.Period.End,
+                timeSeriesPoints,
+                calculationForPeriod.CalculationVersion);
+        }
+    }
+
+    private CalculationForPeriod GetCalculationForPeriod(DatabricksSqlRow row, IReadOnlyCollection<CalculationForPeriod> latestCalculationForPeriod)
+    {
+        return latestCalculationForPeriod
+            .First(x => x.CalculationId == Guid.Parse(row[EnergyResultColumnNames.CalculationId]!));
+    }
+
+    private bool DifferentCalculationId(DatabricksSqlRow row, DatabricksSqlRow otherRow)
+    {
+        return row[EnergyResultColumnNames.CalculationId] != otherRow[EnergyResultColumnNames.CalculationId];
     }
 
     private static bool BelongsToDifferentGridArea(DatabricksSqlRow row, DatabricksSqlRow otherRow)

@@ -14,10 +14,7 @@
 
 from pyspark.sql import SparkSession
 
-from calculation.preparation.transformations.charge_types.charges_factory import (
-    create_metering_point_row,
-    create_subscription_or_fee_charges_row,
-)
+import calculation.preparation.transformations.charge_types.charges_factory as factory
 from package.calculation.preparation.transformations import (
     get_fee_charges,
 )
@@ -33,14 +30,15 @@ def test__get_fee_charges__filters_on_fee_charge_type(
     spark: SparkSession,
 ) -> None:
     # Arrange
-    metering_point_rows = [create_metering_point_row()]
+    metering_point_rows = [factory.create_metering_point_row()]
     charges_rows = [
-        create_subscription_or_fee_charges_row(
+        factory.create_subscription_or_fee_charges_row(
             charge_type=e.ChargeType.FEE,
         ),
-        create_subscription_or_fee_charges_row(
+        factory.create_subscription_or_fee_charges_row(
             charge_type=e.ChargeType.SUBSCRIPTION,
         ),
+        factory.create_tariff_charges_row(),
     ]
 
     metering_point = spark.createDataFrame(

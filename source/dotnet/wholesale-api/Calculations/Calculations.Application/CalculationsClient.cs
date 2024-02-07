@@ -52,24 +52,48 @@ public class CalculationsClient : ICalculationsClient
         DateTimeOffset? periodStart,
         DateTimeOffset? periodEnd)
     {
-        var executionStateFilter = filterByExecutionState switch
-        {
-            null => Array.Empty<CalculationExecutionState>(),
-            CalculationState.Pending => new[] { CalculationExecutionState.Created, CalculationExecutionState.Submitted, CalculationExecutionState.Pending },
-            CalculationState.Executing => new[] { CalculationExecutionState.Executing },
-            CalculationState.Completed => new[] { CalculationExecutionState.Completed },
-            CalculationState.Failed => new[] { CalculationExecutionState.Failed },
-            _ => throw new ArgumentOutOfRangeException(nameof(filterByExecutionState)),
-        };
-
-        var gridAreaFilter = filterByGridAreaCodes
-            .Select(g => new GridAreaCode(g))
-            .ToList();
-
         var minExecutionTimeStart = ConvertToInstant(minExecutionTime);
         var maxExecutionTimeStart = ConvertToInstant(maxExecutionTime);
         var periodStartInstant = ConvertToInstant(periodStart);
         var periodEndInstant = ConvertToInstant(periodEnd);
+
+        return await SearchAsync(
+            filterByGridAreaCodes,
+            filterByExecutionState,
+            minExecutionTimeStart,
+            maxExecutionTimeStart,
+            periodStartInstant,
+            periodEndInstant).ConfigureAwait(false);
+    }
+
+    public async Task<IReadOnlyCollection<CalculationDto>> SearchAsync(
+        IEnumerable<string> filterByGridAreaCodes,
+        CalculationState filterByExecutionState,
+        Instant periodStart,
+        Instant periodEnd)
+    {
+        return await SearchAsync(
+            filterByGridAreaCodes,
+            filterByExecutionState,
+            null,
+            null,
+            periodStart,
+            periodEnd).ConfigureAwait(false);
+    }
+
+    private async Task<IReadOnlyCollection<CalculationDto>> SearchAsync(
+        IEnumerable<string> filterByGridAreaCodes,
+        CalculationState? filterByExecutionState,
+        Instant? minExecutionTimeStart,
+        Instant? maxExecutionTimeStart,
+        Instant? periodStartInstant,
+        Instant? periodEndInstant)
+    {
+        var executionStateFilter = GetCalculationExecutionStates(filterByExecutionState);
+
+        var gridAreaFilter = filterByGridAreaCodes
+            .Select(g => new GridAreaCode(g))
+            .ToList();
 
         var calculations = await _calculationRepository
             .SearchAsync(
@@ -81,7 +105,24 @@ public class CalculationsClient : ICalculationsClient
                 periodEndInstant)
             .ConfigureAwait(false);
 
-        return calculations.Select(_calculationDtoMapper.Map);
+        return calculations.Select(_calculationDtoMapper.Map).ToList();
+    }
+
+    private static CalculationExecutionState[] GetCalculationExecutionStates(CalculationState? filterByExecutionState)
+    {
+        var executionStateFilter = filterByExecutionState switch
+        {
+            null => Array.Empty<CalculationExecutionState>(),
+            CalculationState.Pending => new[]
+            {
+                CalculationExecutionState.Created, CalculationExecutionState.Submitted, CalculationExecutionState.Pending,
+            },
+            CalculationState.Executing => new[] { CalculationExecutionState.Executing },
+            CalculationState.Completed => new[] { CalculationExecutionState.Completed },
+            CalculationState.Failed => new[] { CalculationExecutionState.Failed },
+            _ => throw new ArgumentOutOfRangeException(nameof(filterByExecutionState)),
+        };
+        return executionStateFilter;
     }
 
     private static Instant? ConvertToInstant(DateTimeOffset? dateTimeOffset)
