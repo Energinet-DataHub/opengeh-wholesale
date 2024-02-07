@@ -18,10 +18,9 @@ import pytest
 import package.codelists as e
 
 from pyspark.sql import SparkSession
-import calculation.preparation.transformations.charge_types.charge_type_factories as factory
-from calculation.preparation.transformations.charge_types.charge_type_factories import (
-    DefaultChargeValues as d,
-)
+import calculation.preparation.transformations.charge_types.charges_factory as factory
+
+
 from package.calculation.preparation.transformations import (
     get_tariff_charges,
 )
@@ -36,19 +35,19 @@ from pyspark.sql import Row
 
 
 def _create_expected_tariff_charges_row(
-    charge_key: str = f"{d.DEFAULT_CHARGE_CODE}-{d.DEFAULT_CHARGE_OWNER}-{e.ChargeType.TARIFF.value}",
-    charge_code: str = d.DEFAULT_CHARGE_CODE,
-    charge_owner: str = d.DEFAULT_CHARGE_OWNER,
-    charge_tax: bool = d.DEFAULT_CHARGE_TAX,
+    charge_key: str = f"{factory.DefaultValues.DEFAULT_CHARGE_CODE}-{factory.DefaultValues.DEFAULT_CHARGE_OWNER}-{e.ChargeType.TARIFF.value}",
+    charge_code: str = factory.DefaultValues.DEFAULT_CHARGE_CODE,
+    charge_owner: str = factory.DefaultValues.DEFAULT_CHARGE_OWNER,
+    charge_tax: bool = factory.DefaultValues.DEFAULT_CHARGE_TAX,
     resolution: e.ChargeResolution = e.ChargeResolution.HOUR,
-    charge_time: datetime = d.DEFAULT_CHARGE_TIME_HOUR_0,
-    charge_price: Decimal = d.DEFAULT_CHARGE_PRICE,
-    metering_point_id: str = d.DEFAULT_METERING_POINT_ID,
-    energy_supplier_id: str = d.DEFAULT_ENERGY_SUPPLIER_ID,
-    metering_point_type: e.MeteringPointType = d.DEFAULT_METERING_POINT_TYPE,
-    settlement_method: e.SettlementMethod = d.DEFAULT_SETTLEMENT_METHOD,
-    grid_area: str = d.DEFAULT_GRID_AREA,
-    quantity: Decimal = d.DEFAULT_QUANTITY,
+    charge_time: datetime = factory.DefaultValues.DEFAULT_CHARGE_TIME_HOUR_0,
+    charge_price: Decimal = factory.DefaultValues.DEFAULT_CHARGE_PRICE,
+    metering_point_id: str = factory.DefaultValues.DEFAULT_METERING_POINT_ID,
+    energy_supplier_id: str = factory.DefaultValues.DEFAULT_ENERGY_SUPPLIER_ID,
+    metering_point_type: e.MeteringPointType = factory.DefaultValues.DEFAULT_METERING_POINT_TYPE,
+    settlement_method: e.SettlementMethod = factory.DefaultValues.DEFAULT_SETTLEMENT_METHOD,
+    grid_area: str = factory.DefaultValues.DEFAULT_GRID_AREA,
+    quantity: Decimal = factory.DefaultValues.DEFAULT_QUANTITY,
     qualities=None,
 ) -> Row:
     if qualities is None:
@@ -127,6 +126,10 @@ def test__get_tariff_charges__filters_on_tariff_charge_type(
     time_series_rows = [factory.create_time_series_row()]
     charges_rows = [
         factory.create_tariff_charges_row(),
+        factory.create_subscription_or_fee_charges_row(charge_type=e.ChargeType.FEE),
+        factory.create_subscription_or_fee_charges_row(
+            charge_type=e.ChargeType.SUBSCRIPTION
+        ),
     ]
 
     metering_point = spark.createDataFrame(
@@ -164,8 +167,8 @@ def test__get_tariff_charges__only_accepts_charges_in_metering_point_period(
     spark: SparkSession, from_date: datetime, to_date: datetime, expected_rows: int
 ) -> None:
     """
-    Only charges where charge time is greater than or equal to the metering point from date and
-    less than the metering point to date are accepted.
+    Only charges where charge time is greater than or equal to the metering point from
+    date and less than the metering point to date are accepted.
 
                 from_date                to_date
         |-----------|-----------|-----------|----------|
@@ -236,7 +239,10 @@ def test__get_tariff_charges__when_same_metering_point_and_resolution__sums_quan
     )
 
     # Assert
-    assert actual.collect()[0][Colname.sum_quantity] == 2 * d.DEFAULT_QUANTITY
+    assert (
+        actual.collect()[0][Colname.sum_quantity]
+        == 2 * factory.DefaultValues.DEFAULT_QUANTITY
+    )
 
 
 def test__get_tariff_charges__when_no_matching_charge_resolution__returns_empty_tariffs(
@@ -308,7 +314,9 @@ def test__get_tariff_charges__returns_expected_tariff_values(
     charges_rows = [factory.create_tariff_charges_row()]
 
     expected_tariff_charges_row = [
-        _create_expected_tariff_charges_row(quantity=2 * d.DEFAULT_QUANTITY)
+        _create_expected_tariff_charges_row(
+            quantity=2 * factory.DefaultValues.DEFAULT_QUANTITY
+        )
     ]
 
     metering_point = spark.createDataFrame(
@@ -339,12 +347,12 @@ def test__get_tariff_charges__returns_expected_tariff_values(
         (
             e.ChargeResolution.HOUR,
             48,
-            d.DEFAULT_QUANTITY,
+            factory.DefaultValues.DEFAULT_QUANTITY,
         ),
         (
             e.ChargeResolution.DAY,
             2,
-            24 * d.DEFAULT_QUANTITY,
+            24 * factory.DefaultValues.DEFAULT_QUANTITY,
         ),
     ],
 )
@@ -355,8 +363,8 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hou
     expected_sum_quantity: int,
 ) -> None:
     """
-    Only charges where charge time is greater than or equal to the metering point from date and
-    less than the metering point to date are accepted.
+    Only charges where charge time is greater than or equal to the metering point from
+    date and less than the metering point to date are accepted.
     """
     # Arrange
     metering_point_rows = [
@@ -405,12 +413,12 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hou
         (
             e.ChargeResolution.HOUR,
             48,
-            4 * d.DEFAULT_QUANTITY,
+            4 * factory.DefaultValues.DEFAULT_QUANTITY,
         ),
         (
             e.ChargeResolution.DAY,
             2,
-            96 * d.DEFAULT_QUANTITY,
+            96 * factory.DefaultValues.DEFAULT_QUANTITY,
         ),
     ],
 )
@@ -421,8 +429,8 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_qua
     expected_sum_quantity: int,
 ) -> None:
     """
-    Only charges where charge time is greater than or equal to the metering point from date and
-    less than the metering point to date are accepted.
+    Only charges where charge time is greater than or equal to the metering point from
+    date and less than the metering point to date are accepted.
     """
     # Arrange
     metering_point_rows = [
@@ -500,8 +508,8 @@ def test__get_tariff_charges__per_day_only_accepts_time_series_and_change_times_
     expected_rows: int,
 ) -> None:
     """
-    Only tariff charges where observation/charge time is greater than or equal to the metering point from date
-    and less than the metering point to date are accepted.
+    Only tariff charges where observation/charge time is greater than or equal to the
+    metering point from date and less than the metering point to date are accepted.
     OC = Observation/Charge time, MMP = Metering Point Period
 
               31.12       01.01       01.02       01.03      01.04
