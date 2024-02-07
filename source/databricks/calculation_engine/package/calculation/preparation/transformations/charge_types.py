@@ -87,12 +87,10 @@ def _explode_subscription(charges_df: DataFrame) -> DataFrame:
             Colname.date,
             f.explode(
                 f.expr(
-                    f"sequence({Colname.from_date}, {Colname.to_date}, interval 1 day)"
+                    f"sequence({Colname.from_date}, date_sub({Colname.to_date}, 1), interval 1 day)"
                 )
             ),
         )
-        .filter((f.year(Colname.date) == f.year(Colname.charge_time)))
-        .filter((f.month(Colname.date) == f.month(Colname.charge_time)))
         .drop(Colname.charge_time)
         .withColumnRenamed(Colname.date, Colname.charge_time)
         .select(
