@@ -168,4 +168,23 @@ public class AggregatedTimeSeriesRequestValidatorTests
         validationErrors.Should().ContainSingle()
             .Which.ErrorCode.Should().Be("D11");
     }
+
+    [Fact]
+    public async Task Validate_WhenWholesaleFixingForBalanceResponsible_ReturnsUnsuccessfulValidation()
+    {
+        // Arrange
+        var request = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithRequestedByActorRole(ActorRoleCode.BalanceResponsibleParty)
+            .WithBusinessReason("D05")
+            .WithBalanceResponsibleId(BalanceResponsibleValidatorTest.ValidGlnNumber)
+            .Build();
+
+        // Act
+        var validationErrors = await _sut.ValidateAsync(request);
+
+        // Assert
+        validationErrors.Should().ContainSingle()
+            .Which.ErrorCode.Should().Be("D11");
+    }
 }
