@@ -18,11 +18,9 @@ import pytest
 import package.codelists as e
 
 from pyspark.sql import SparkSession
+import calculation.preparation.transformations.charge_types.charge_type_factories as factory
 from calculation.preparation.transformations.charge_types.charge_type_factories import (
     DefaultChargeValues as d,
-    create_metering_point_row,
-    create_time_series_row,
-    create_tariff_charges_row,
 )
 from package.calculation.preparation.transformations import (
     get_tariff_charges,
@@ -88,13 +86,13 @@ def test__get_tariff_charges__filters_on_resolution(
     Only charges with the given resolution are accepted.
     """
     # Arrange
-    metering_point_rows = [create_metering_point_row()]
-    time_series_rows = [create_time_series_row()]
+    metering_point_rows = [factory.create_metering_point_row()]
+    time_series_rows = [factory.create_time_series_row()]
     charges_rows = [
-        create_tariff_charges_row(
+        factory.create_tariff_charges_row(
             resolution=e.ChargeResolution.HOUR,
         ),
-        create_tariff_charges_row(
+        factory.create_tariff_charges_row(
             resolution=e.ChargeResolution.DAY,
         ),
     ]
@@ -125,10 +123,10 @@ def test__get_tariff_charges__filters_on_tariff_charge_type(
     Only charges with the charge type TARIFF are accepted.
     """
     # Arrange
-    metering_point_rows = [create_metering_point_row()]
-    time_series_rows = [create_time_series_row()]
+    metering_point_rows = [factory.create_metering_point_row()]
+    time_series_rows = [factory.create_time_series_row()]
     charges_rows = [
-        create_tariff_charges_row(),
+        factory.create_tariff_charges_row(),
     ]
 
     metering_point = spark.createDataFrame(
@@ -175,15 +173,15 @@ def test__get_tariff_charges__only_accepts_charges_in_metering_point_period(
     """
     # Arrange
     metering_point_rows = [
-        create_metering_point_row(
+        factory.create_metering_point_row(
             from_date=datetime(2020, 1, 1, 0), to_date=datetime(2020, 1, 1, 2)
         ),
     ]
     time_series_rows = [
-        create_time_series_row(observation_time=from_date),
+        factory.create_time_series_row(observation_time=from_date),
     ]
     charges_rows = [
-        create_tariff_charges_row(
+        factory.create_tariff_charges_row(
             from_date=from_date,
             to_date=to_date,
             charge_time=from_date,
@@ -216,9 +214,9 @@ def test__get_tariff_charges__when_same_metering_point_and_resolution__sums_quan
     with the same observation time, the quantity is summed.
     """
     # Arrange
-    metering_point_rows = [create_metering_point_row()]
-    time_series_rows = [create_time_series_row(), create_time_series_row()]
-    charges_rows = [create_tariff_charges_row()]
+    metering_point_rows = [factory.create_metering_point_row()]
+    time_series_rows = [factory.create_time_series_row(), create_time_series_row()]
+    charges_rows = [factory.create_tariff_charges_row()]
 
     metering_point = spark.createDataFrame(
         metering_point_rows, metering_point_period_schema
@@ -242,9 +240,11 @@ def test__get_tariff_charges__when_no_matching_charge_resolution__returns_empty_
     spark: SparkSession,
 ) -> None:
     # Arrange
-    metering_point_rows = [create_metering_point_row()]
-    time_series_rows = [create_time_series_row()]
-    charges_rows = [create_tariff_charges_row(resolution=e.ChargeResolution.DAY)]
+    metering_point_rows = [factory.create_metering_point_row()]
+    time_series_rows = [factory.create_time_series_row()]
+    charges_rows = [
+        factory.create_tariff_charges_row(resolution=e.ChargeResolution.DAY)
+    ]
 
     metering_point = spark.createDataFrame(
         metering_point_rows, metering_point_period_schema
@@ -268,11 +268,11 @@ def test__get_tariff_charges__when_two_tariff_overlap__returns_both_tariffs(
     spark: SparkSession,
 ) -> None:
     # Arrange
-    metering_point_rows = [create_metering_point_row()]
-    time_series_rows = [create_time_series_row()]
+    metering_point_rows = [factory.create_metering_point_row()]
+    time_series_rows = [factory.create_time_series_row()]
     charges_rows = [
-        create_tariff_charges_row(charge_code="4000"),
-        create_tariff_charges_row(charge_code="3000"),
+        factory.create_tariff_charges_row(charge_code="4000"),
+        factory.create_tariff_charges_row(charge_code="3000"),
     ]
 
     metering_point = spark.createDataFrame(
@@ -297,12 +297,12 @@ def test__get_tariff_charges__returns_expected_tariff_values(
     spark: SparkSession,
 ) -> None:
     # Arrange
-    metering_point_rows = [create_metering_point_row()]
+    metering_point_rows = [factory.create_metering_point_row()]
     time_series_rows = [
-        create_time_series_row(quality=e.QuantityQuality.CALCULATED),
-        create_time_series_row(quality=e.QuantityQuality.ESTIMATED),
+        factory.create_time_series_row(quality=e.QuantityQuality.CALCULATED),
+        factory.create_time_series_row(quality=e.QuantityQuality.ESTIMATED),
     ]
-    charges_rows = [create_tariff_charges_row()]
+    charges_rows = [factory.create_tariff_charges_row()]
 
     expected_tariff_charges_row = [
         _create_expected_tariff_charges_row(quantity=2 * d.DEFAULT_QUANTITY)
@@ -357,7 +357,7 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hou
     """
     # Arrange
     metering_point_rows = [
-        create_metering_point_row(
+        factory.create_metering_point_row(
             from_date=datetime(2020, 1, 1, 0),
             to_date=datetime(2020, 1, 3, 0),
             resolution=e.MeteringPointResolution.HOUR,
@@ -368,10 +368,10 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hou
     for j in range(1, 4):
         for i in range(0, 24):
             time_series_rows.append(
-                create_time_series_row(observation_time=datetime(2020, 1, j, i))
+                factory.create_time_series_row(observation_time=datetime(2020, 1, j, i))
             )
             charges_rows.append(
-                create_tariff_charges_row(
+                factory.create_tariff_charges_row(
                     charge_time=datetime(2020, 1, j, i),
                     resolution=charge_resolution,
                 )
@@ -423,7 +423,7 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_qua
     """
     # Arrange
     metering_point_rows = [
-        create_metering_point_row(
+        factory.create_metering_point_row(
             from_date=datetime(2020, 1, 1, 0),
             to_date=datetime(2020, 1, 3, 0),
             resolution=e.MeteringPointResolution.QUARTER,
@@ -435,12 +435,12 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_qua
         for i in range(0, 24):
             for k in range(0, 4):
                 time_series_rows.append(
-                    create_time_series_row(
+                    factory.create_time_series_row(
                         observation_time=datetime(2020, 1, j, i, k * 15)
                     )
                 )
             charges_rows.append(
-                create_tariff_charges_row(
+                factory.create_tariff_charges_row(
                     charge_time=datetime(2020, 1, j, i),
                     resolution=charge_resolution,
                 )
@@ -513,27 +513,27 @@ def test__get_tariff_charges__per_day_only_accepts_time_series_and_change_times_
     """
     # Arrange
     metering_point_rows = [
-        create_metering_point_row(
+        factory.create_metering_point_row(
             from_date=datetime(2019, 12, 31, 23), to_date=datetime(2020, 1, 1, 23)
         ),
-        create_metering_point_row(
+        factory.create_metering_point_row(
             from_date=datetime(2020, 1, 1, 23),
             to_date=datetime(2020, 1, 2, 23),
             energy_supplier_id="123",
         ),
     ]
     time_series_rows = [
-        create_time_series_row(
+        factory.create_time_series_row(
             observation_time=date_time_1, quality=e.QuantityQuality.MISSING
         ),
-        create_time_series_row(observation_time=date_time_2),
+        factory.create_time_series_row(observation_time=date_time_2),
     ]
     charges_rows = [
-        create_tariff_charges_row(
+        factory.create_tariff_charges_row(
             charge_time=date_time_1,
             resolution=e.ChargeResolution.DAY,
         ),
-        create_tariff_charges_row(
+        factory.create_tariff_charges_row(
             charge_time=date_time_2,
             resolution=e.ChargeResolution.DAY,
         ),
