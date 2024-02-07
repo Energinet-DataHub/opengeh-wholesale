@@ -15,7 +15,9 @@
 from azure.identity import ClientSecretCredential
 from dataclasses import dataclass, field
 from datetime import datetime
-from source.databricks.calculation_engine.package.codelists.calculation_type import CalculationType
+from source.databricks.calculation_engine.package.codelists.calculation_type import (
+    CalculationType,
+)
 
 
 @dataclass

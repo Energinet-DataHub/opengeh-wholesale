@@ -24,7 +24,9 @@ from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.preparation import PreparedDataReader
 
 from package.calculation_input import TableReader
-from source.databricks.calculation_engine.package.codelists.calculation_type import CalculationType
+from source.databricks.calculation_engine.package.codelists.calculation_type import (
+    CalculationType,
+)
 from package.constants import EnergyResultColumnNames, WholesaleResultColumnNames
 from package.infrastructure import paths
 from . import configuration as C
