@@ -22,7 +22,7 @@ from .input_metering_point_type import InputMeteringPointType
 from .input_settlement_method import InputSettlementMethod
 from .metering_point_resolution import MeteringPointResolution
 from .metering_point_type import MeteringPointType
-from .process_type import CalculationType
+from .calculation_type import CalculationType
 from .settlement_method import SettlementMethod
 from .quantity_quality import QuantityQuality
 from .time_series_type import TimeSeriesType

@@ -20,7 +20,7 @@ from configargparse import argparse
 
 import package.infrastructure.environment_variables as env_vars
 from package.calculation.calculator_args import CalculatorArgs
-from package.codelists.process_type import CalculationType
+from source.databricks.calculation_engine.package.codelists.calculation_type import CalculationType
 from package.common.logger import Logger
 from package.infrastructure import valid_date, valid_list, paths, logging_configuration
 
@@ -53,7 +53,7 @@ def create_calculation_arguments(job_args: Namespace) -> CalculatorArgs:
         calculation_period_start_datetime=job_args.period_start_datetime,
         calculation_period_end_datetime=job_args.period_end_datetime,
         calculation_execution_time_start=job_args.execution_time_start,
-        calculation_process_type=job_args.process_type,
+        calculation_process_type=job_args.calculation_type,
         time_zone=time_zone,
     )
 
