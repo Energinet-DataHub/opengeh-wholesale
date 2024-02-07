@@ -70,6 +70,10 @@ module "func_dropzoneunzipper" {
     {
       resource_id          = azurerm_eventhub_namespace.eventhub_namespace_dropzone.id
       role_definition_name = "Azure Event Hubs Data Receiver"
+    },
+    {
+      resource_id          = azurerm_eventhub_namespace.eventhub_namespace_dropzone.id
+      role_definition_name = "Azure Event Hubs Data Sender"
     }
   ]
 }
