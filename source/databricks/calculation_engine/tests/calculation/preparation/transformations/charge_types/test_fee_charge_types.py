@@ -17,9 +17,7 @@ from decimal import Decimal
 from pyspark.sql import SparkSession, Row
 
 from package.calculation.preparation.transformations import get_fee_charges
-from package.calculation_input.schemas import (
-    metering_point_period_schema,
-)
+from package.calculation_input.schemas import metering_point_period_schema
 from package.calculation.wholesale.schemas.charges_schema import charges_schema
 import package.codelists as e
 from package.constants import Colname
@@ -34,9 +32,6 @@ DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
 DEFAULT_METERING_POINT_ID = "123456789012345678901234567"
 DEFAULT_METERING_POINT_TYPE = e.MeteringPointType.CONSUMPTION
 DEFAULT_SETTLEMENT_METHOD = e.SettlementMethod.FLEX
-DEFAULT_QUANTITY = Decimal("1.005")
-DEFAULT_QUALITY = e.ChargeQuality.CALCULATED
-DEFAULT_PERIOD_START_DATETIME = datetime(2019, 12, 31, 23)
 
 
 def _create_metering_point_row(
