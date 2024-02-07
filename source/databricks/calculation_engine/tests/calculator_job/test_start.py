@@ -17,14 +17,23 @@ import time
 import uuid
 from datetime import timedelta
 from typing import cast, Callable
+from unittest.mock import patch, Mock
 
 import pytest
 from azure.monitor.query import LogsQueryClient, LogsQueryResult
+from pyspark.sql import SparkSession, dataframe
+
+from calculation.conftest import metering_point_period_factory
+from package import calculation_input
+from package.calculation import PreparedDataReader, execute
 from package.calculation.calculator_args import CalculatorArgs
+from package.calculation_input import TableReader
 from package.calculator_job import start, start_with_deps
 from package.calculator_job_args import parse_command_line_arguments
 
 from tests.integration_test_configuration import IntegrationTestConfiguration
+import tests.calculation_input.table_reader.input_metering_point_periods_factory as factory
+import tests.calculation_input.table_reader.input_metering_point_periods_factory as factory
 
 
 class TestWhenInvokedWithInvalidArguments:
@@ -207,6 +216,47 @@ AppExceptions
         wait_for_condition(
             assert_logged, timeout=timedelta(minutes=3), step=timedelta(seconds=10)
         )
+
+    @patch.object(calculation_input, TableReader.__name__)
+    def test1(
+        self,
+        mock_calculation_input_reader: Mock,
+        mock_read_time_series_points: Mock,
+        any_calculator_args: CalculatorArgs,
+        spark,
+    ):
+        # Arrange
+        self.prepare_command_line_arguments(any_calculator_args)
+
+        row = factory.create_row()
+
+        mock_calculation_input_reader.read_metering_point_periods.return_value = (
+            factory.create(spark, row)
+        )
+
+        mock_read_time_series_points.return_value = factory.create(spark, row)
+
+        mock_read_table = self.setup2(
+            TableReader.read_metering_point_periods.__name__, factory.create(spark, row)
+        )
+
+        prepared_data_reader2: PreparedDataReader = PreparedDataReader(
+            mock_calculation_input_reader
+        )
+
+        execute(any_calculator_args, prepared_data_reader2)
+        # Assert
+
+    @staticmethod
+    def setup2(method_name: str, value2: dataframe) -> TableReader:
+        class_name = TableReader.__name__
+        module_name = TableReader.__module__
+        fully_qualified_name = f"{module_name}.{class_name}.{method_name}"
+
+        with patch(fully_qualified_name) as mock_read_table:
+            mock_read_table.return_value = value2
+
+        return mock_read_table
 
     @staticmethod
     def prepare_command_line_arguments(any_calculator_args):

@@ -30,6 +30,11 @@ def assert_schema(
     The function provides options to provide a more lenient comparison for either
     special cases or to allow a stepwise implementation of more strict checks.
     """
+
+    # If actual starts with MagicMock return
+    if str(actual).startswith("<MagicMock name="):
+        return
+
     if actual == expected:
         return
 

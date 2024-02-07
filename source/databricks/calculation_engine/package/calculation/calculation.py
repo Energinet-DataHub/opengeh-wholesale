@@ -37,6 +37,12 @@ from ..calculation_output import EnergyCalculationResultWriter
 
 
 def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> None:
+    ff = prepared_data_reader.get_metering_point_periods_df(
+        args.calculation_period_start_datetime,
+        args.calculation_period_end_datetime,
+        args.calculation_grid_areas,
+    )
+
     results = _execute(args, prepared_data_reader)
 
     energy_result_writer = EnergyCalculationResultWriter(
