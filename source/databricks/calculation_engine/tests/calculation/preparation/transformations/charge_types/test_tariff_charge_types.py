@@ -215,7 +215,10 @@ def test__get_tariff_charges__when_same_metering_point_and_resolution__sums_quan
     """
     # Arrange
     metering_point_rows = [factory.create_metering_point_row()]
-    time_series_rows = [factory.create_time_series_row(), create_time_series_row()]
+    time_series_rows = [
+        factory.create_time_series_row(),
+        factory.create_time_series_row(),
+    ]
     charges_rows = [factory.create_tariff_charges_row()]
 
     metering_point = spark.createDataFrame(
