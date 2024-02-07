@@ -43,7 +43,7 @@ TABLE_NAME = f"{OUTPUT_DATABASE_NAME}.{WHOLESALE_RESULT_TABLE_NAME}"
 
 # Writer constructor parameters
 DEFAULT_CALCULATION_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
-DEFAULT_PROCESS_TYPE = CalculationType.FIRST_CORRECTION_SETTLEMENT
+DEFAULT_CALCULATION_TYPE = CalculationType.FIRST_CORRECTION_SETTLEMENT
 DEFAULT_CALCULATION_EXECUTION_START = datetime(2022, 6, 10, 13, 15)
 
 # Input dataframe parameters
@@ -133,7 +133,7 @@ def _create_result_df_corresponding_to_multiple_calculation_results(
 def sut() -> WholesaleCalculationResultWriter:
     return WholesaleCalculationResultWriter(
         DEFAULT_CALCULATION_ID,
-        DEFAULT_PROCESS_TYPE,
+        DEFAULT_CALCULATION_TYPE,
         DEFAULT_CALCULATION_EXECUTION_START,
     )
 
@@ -142,7 +142,7 @@ def sut() -> WholesaleCalculationResultWriter:
     "column_name, column_value",
     [
         (WholesaleResultColumnNames.calculation_id, DEFAULT_CALCULATION_ID),
-        (WholesaleResultColumnNames.calculation_type, DEFAULT_PROCESS_TYPE.value),
+        (WholesaleResultColumnNames.calculation_type, DEFAULT_CALCULATION_TYPE.value),
         (
             WholesaleResultColumnNames.calculation_execution_time_start,
             DEFAULT_CALCULATION_EXECUTION_START,
@@ -202,7 +202,7 @@ def test__write__writes_calculation_result_id(
     calculation_id = str(uuid.uuid4())
     sut = WholesaleCalculationResultWriter(
         calculation_id,
-        DEFAULT_PROCESS_TYPE,
+        DEFAULT_CALCULATION_TYPE,
         DEFAULT_CALCULATION_EXECUTION_START,
     )
 

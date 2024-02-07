@@ -107,7 +107,7 @@ class TestWhenInvokedWithValidParameters:
         assert actual.calculation_period_end_datetime == datetime.datetime(
             2022, 6, 1, 22
         )
-        assert actual.calculation_process_type == CalculationType.BALANCE_FIXING
+        assert actual.calculation_type == CalculationType.BALANCE_FIXING
         assert actual.calculation_execution_time_start == datetime.datetime(
             2022, 6, 4, 22
         )

@@ -41,7 +41,7 @@ DEFAULT_FROM_GRID_AREA = "106"
 DEFAULT_TO_GRID_AREA = "107"
 DEFAULT_ENERGY_SUPPLIER_ID = "9876543210123"
 DEFAULT_BALANCE_RESPONSIBLE_ID = "1234567890123"
-DEFAULT_PROCESS_TYPE = e.CalculationType.BALANCE_FIXING
+DEFAULT_CALCULATION_TYPE = e.CalculationType.BALANCE_FIXING
 DEFAULT_CALCULATION_EXECUTION_START = datetime(2022, 6, 10, 13, 15)
 DEFAULT_QUANTITY = "1.1"
 DEFAULT_QUALITY = e.QuantityQuality.MEASURED
@@ -58,7 +58,7 @@ OTHER_FROM_GRID_AREA = "206"
 OTHER_TO_GRID_AREA = "207"
 OTHER_ENERGY_SUPPLIER_ID = "9876543210124"
 OTHER_BALANCE_RESPONSIBLE_ID = "1234567890124"
-OTHER_PROCESS_TYPE = e.CalculationType.AGGREGATION
+OTHER_CALCULATION_TYPE = e.CalculationType.AGGREGATION
 OTHER_CALCULATION_EXECUTION_START = datetime(2023, 6, 10, 13, 15)
 OTHER_QUANTITY = "1.2"
 OTHER_QUALITY = e.QuantityQuality.CALCULATED
@@ -161,7 +161,7 @@ def test__write__writes_aggregation_level(
     calculation_id = str(uuid.uuid4())
     sut = EnergyCalculationResultWriter(
         calculation_id,
-        DEFAULT_PROCESS_TYPE,
+        DEFAULT_CALCULATION_TYPE,
         DEFAULT_CALCULATION_EXECUTION_START,
     )
 
@@ -187,7 +187,7 @@ def test__write__writes_aggregation_level(
             EnergyResultColumnNames.calculation_execution_time_start,
             DEFAULT_CALCULATION_EXECUTION_START,
         ),
-        (EnergyResultColumnNames.calculation_type, DEFAULT_PROCESS_TYPE.value),
+        (EnergyResultColumnNames.calculation_type, DEFAULT_CALCULATION_TYPE.value),
         (EnergyResultColumnNames.time_series_type, DEFAULT_TIME_SERIES_TYPE.value),
         (EnergyResultColumnNames.grid_area, DEFAULT_GRID_AREA),
         (EnergyResultColumnNames.from_grid_area, DEFAULT_FROM_GRID_AREA),
@@ -212,7 +212,7 @@ def test__write__writes_column(
     result_df = _create_result_df(spark, row)
     sut = EnergyCalculationResultWriter(
         DEFAULT_CALCULATION_ID,
-        DEFAULT_PROCESS_TYPE,
+        DEFAULT_CALCULATION_TYPE,
         DEFAULT_CALCULATION_EXECUTION_START,
     )
 
@@ -241,7 +241,7 @@ def test__write__writes_columns_matching_contract(
     result_df = _create_result_df(spark, row)
     sut = EnergyCalculationResultWriter(
         DEFAULT_CALCULATION_ID,
-        DEFAULT_PROCESS_TYPE,
+        DEFAULT_CALCULATION_TYPE,
         DEFAULT_CALCULATION_EXECUTION_START,
     )
 
@@ -269,7 +269,7 @@ def test__write__writes_calculation_result_id(
     calculation_id = str(uuid.uuid4())
     sut = EnergyCalculationResultWriter(
         calculation_id,
-        DEFAULT_PROCESS_TYPE,
+        DEFAULT_CALCULATION_TYPE,
         DEFAULT_CALCULATION_EXECUTION_START,
     )
 
@@ -324,7 +324,7 @@ def test__write__when_rows_belong_to_different_results__adds_different_calculati
     calculation_id = str(uuid.uuid4())
     sut = EnergyCalculationResultWriter(
         calculation_id,
-        DEFAULT_PROCESS_TYPE,
+        DEFAULT_CALCULATION_TYPE,
         DEFAULT_CALCULATION_EXECUTION_START,
     )
 
@@ -388,7 +388,7 @@ def test__write__when_rows_belong_to_same_result__adds_same_calculation_result_i
     calculation_id = str(uuid.uuid4())
     sut = EnergyCalculationResultWriter(
         calculation_id,
-        DEFAULT_PROCESS_TYPE,
+        DEFAULT_CALCULATION_TYPE,
         DEFAULT_CALCULATION_EXECUTION_START,
     )
 

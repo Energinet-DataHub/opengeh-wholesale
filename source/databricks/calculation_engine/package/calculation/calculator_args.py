@@ -34,6 +34,6 @@ class CalculatorArgs:
     calculation_grid_areas: list[str]
     calculation_period_start_datetime: datetime
     calculation_period_end_datetime: datetime
-    calculation_process_type: CalculationType
+    calculation_type: CalculationType
     calculation_execution_time_start: datetime
     time_zone: str

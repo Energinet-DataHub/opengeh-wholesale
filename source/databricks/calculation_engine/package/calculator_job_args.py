@@ -55,7 +55,7 @@ def create_calculation_arguments(job_args: Namespace) -> CalculatorArgs:
         calculation_period_start_datetime=job_args.period_start_datetime,
         calculation_period_end_datetime=job_args.period_end_datetime,
         calculation_execution_time_start=job_args.execution_time_start,
-        calculation_process_type=job_args.calculation_type,
+        calculation_type=job_args.calculation_type,
         time_zone=time_zone,
     )
 

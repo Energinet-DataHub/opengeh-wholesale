@@ -273,11 +273,11 @@ def _calculate_adjust_flex_consumption_per_ga_and_brp_and_es(
 
 
 def _calculate_production(
-    process_type: CalculationType,
+    calculation_type: CalculationType,
     production_per_ga_and_brp_and_es: EnergyResults,
     results: EnergyResultsContainer,
 ) -> EnergyResults:
-    if _is_aggregation_or_balance_fixing(process_type):
+    if _is_aggregation_or_balance_fixing(calculation_type):
         # production per balance responsible
         results.production_per_ga_and_brp_and_es = production_per_ga_and_brp_and_es
 
@@ -299,7 +299,7 @@ def _calculate_production(
 
 
 def _calculate_flex_consumption(
-    process_type: CalculationType,
+    calculation_type: CalculationType,
     flex_consumption_per_ga_and_brp_and_es: EnergyResults,
     results: EnergyResultsContainer,
 ) -> None:
@@ -314,7 +314,7 @@ def _calculate_flex_consumption(
     )
 
     # flex consumption per balance responsible
-    if _is_aggregation_or_balance_fixing(process_type):
+    if _is_aggregation_or_balance_fixing(calculation_type):
         results.flex_consumption_per_ga_and_brp_and_es = (
             flex_consumption_per_ga_and_brp_and_es
         )
@@ -327,12 +327,12 @@ def _calculate_flex_consumption(
 
 
 def _calculate_non_profiled_consumption(
-    process_type: CalculationType,
+    calculation_type: CalculationType,
     consumption_per_ga_and_brp_and_es: EnergyResults,
     results: EnergyResultsContainer,
 ) -> None:
     # Non-profiled consumption per balance responsible
-    if _is_aggregation_or_balance_fixing(process_type):
+    if _is_aggregation_or_balance_fixing(calculation_type):
         consumption_per_ga_and_brp = grouping_aggr.aggregate_per_ga_and_brp(
             consumption_per_ga_and_brp_and_es
         )
@@ -361,8 +361,8 @@ def _calculate_total_consumption(
     )
 
 
-def _is_aggregation_or_balance_fixing(process_type: CalculationType) -> bool:
+def _is_aggregation_or_balance_fixing(calculation_type: CalculationType) -> bool:
     return (
-        process_type == CalculationType.AGGREGATION
-        or process_type == CalculationType.BALANCE_FIXING
+        calculation_type == CalculationType.AGGREGATION
+        or calculation_type == CalculationType.BALANCE_FIXING
     )
