@@ -34,8 +34,8 @@ from package.infrastructure import logging_configuration
 
 @logging_configuration.use_span("calculation.energy")
 def execute(
-    batch_process_type: CalculationType,
-    batch_grid_areas: list[str],
+    calculation_type: CalculationType,
+    grid_areas: list[str],
     metering_point_time_series: DataFrame,
     grid_loss_responsible_df: GridLossResponsible,
 ) -> EnergyResultsContainer:
@@ -46,16 +46,16 @@ def execute(
         quarterly_metering_point_time_series.cache_internal()
 
     return _calculate(
-        batch_process_type,
-        batch_grid_areas,
+        calculation_type,
+        grid_areas,
         quarterly_metering_point_time_series,
         grid_loss_responsible_df,
     )
 
 
 def _calculate(
-    process_type: CalculationType,
-    batch_grid_areas: list[str],
+    calculation_type: CalculationType,
+    grid_areas: list[str],
     quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
     grid_loss_responsible_df: GridLossResponsible,
 ) -> EnergyResultsContainer:
@@ -63,8 +63,8 @@ def _calculate(
 
     # cache of net exchange per grid area did not improve performance (01/12/2023)
     net_exchange_per_ga = _calculate_net_exchange(
-        process_type,
-        batch_grid_areas,
+        calculation_type,
+        grid_areas,
         quarterly_metering_point_time_series,
         results,
     )
@@ -112,17 +112,17 @@ def _calculate(
     )
 
     _calculate_non_profiled_consumption(
-        process_type,
+        calculation_type,
         consumption_per_ga_and_brp_and_es,
         results,
     )
     production_per_ga = _calculate_production(
-        process_type,
+        calculation_type,
         production_per_ga_and_brp_and_es,
         results,
     )
     _calculate_flex_consumption(
-        process_type,
+        calculation_type,
         flex_consumption_per_ga_and_brp_and_es,
         results,
     )
@@ -133,18 +133,18 @@ def _calculate(
 
 
 def _calculate_net_exchange(
-    process_type: CalculationType,
-    batch_grid_areas: list[str],
+    calculation_type: CalculationType,
+    grid_areas: list[str],
     quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
     results: EnergyResultsContainer,
 ) -> EnergyResults:
     exchange_per_neighbour_ga = exchange_aggr.aggregate_net_exchange_per_neighbour_ga(
-        quarterly_metering_point_time_series, batch_grid_areas
+        quarterly_metering_point_time_series, grid_areas
     )
-    if _is_aggregation_or_balance_fixing(process_type):
+    if _is_aggregation_or_balance_fixing(calculation_type):
         exchange_per_neighbour_ga = (
             exchange_aggr.aggregate_net_exchange_per_neighbour_ga(
-                quarterly_metering_point_time_series, batch_grid_areas
+                quarterly_metering_point_time_series, grid_areas
             )
         )
 

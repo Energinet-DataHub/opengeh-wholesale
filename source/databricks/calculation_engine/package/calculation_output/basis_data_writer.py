@@ -22,11 +22,11 @@ from package.infrastructure import paths, logging_configuration
 
 
 class BasisDataWriter:
-    def __init__(self, container_path: str, batch_id: str):
-        self.__master_basis_data_path = f"{container_path}/{paths.get_basis_data_root_path(BasisDataType.MASTER_BASIS_DATA, batch_id)}"
-        self.__time_series_quarter_path = f"{container_path}/{paths.get_basis_data_root_path(BasisDataType.TIME_SERIES_QUARTER, batch_id)}"
-        self.__time_series_hour_path = f"{container_path}/{paths.get_basis_data_root_path(BasisDataType.TIME_SERIES_HOUR, batch_id)}"
-        self.calculation_id = batch_id
+    def __init__(self, container_path: str, calculation_id: str):
+        self.__master_basis_data_path = f"{container_path}/{paths.get_basis_data_root_path(BasisDataType.MASTER_BASIS_DATA, calculation_id)}"
+        self.__time_series_quarter_path = f"{container_path}/{paths.get_basis_data_root_path(BasisDataType.TIME_SERIES_QUARTER, calculation_id)}"
+        self.__time_series_hour_path = f"{container_path}/{paths.get_basis_data_root_path(BasisDataType.TIME_SERIES_HOUR, calculation_id)}"
+        self.calculation_id = calculation_id
 
     @logging_configuration.use_span("calculation.basis_data")
     def write(

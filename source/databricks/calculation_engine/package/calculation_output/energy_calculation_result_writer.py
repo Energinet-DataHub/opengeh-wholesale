@@ -27,13 +27,13 @@ from package.infrastructure.paths import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TAB
 class EnergyCalculationResultWriter:
     def __init__(
         self,
-        batch_id: str,
-        batch_process_type: CalculationType,
-        batch_execution_time_start: datetime,
+        calculation_id: str,
+        calculation_type: CalculationType,
+        calculation_execution_time_start: datetime,
     ):
-        self.__batch_id = batch_id
-        self.__batch_process_type = batch_process_type.value
-        self.__batch_execution_time_start = batch_execution_time_start
+        self.__calculation_id = calculation_id
+        self.__calculation_type = calculation_type.value
+        self.__calculation_execution_time_start = calculation_execution_time_start
 
     def write(
         self,
@@ -50,7 +50,7 @@ class EnergyCalculationResultWriter:
         results_df = self._add_aggregation_level_and_time_series_type(
             results_df, aggregation_level, time_series_type
         )
-        results_df = self._add_batch_columns(results_df)
+        results_df = self._add_calculation_columns(results_df)
         results_df = self._add_calculation_result_id(results_df)
         results_df = self._map_to_storage_dataframe(results_df)
 
@@ -69,19 +69,19 @@ class EnergyCalculationResultWriter:
             EnergyResultColumnNames.time_series_type, f.lit(time_series_type.value)
         )
 
-    def _add_batch_columns(self, results: DataFrame) -> DataFrame:
-        """Add columns that are the same for all calculation results in batch."""
+    def _add_calculation_columns(self, results: DataFrame) -> DataFrame:
+        """Add columns that are the same for all calculation results in calculation."""
         return (
             results.withColumn(
-                EnergyResultColumnNames.calculation_id, f.lit(self.__batch_id)
+                EnergyResultColumnNames.calculation_id, f.lit(self.__calculation_id)
             )
             .withColumn(
                 EnergyResultColumnNames.calculation_type,
-                f.lit(self.__batch_process_type),
+                f.lit(self.__calculation_type),
             )
             .withColumn(
                 EnergyResultColumnNames.calculation_execution_time_start,
-                f.lit(self.__batch_execution_time_start),
+                f.lit(self.__calculation_execution_time_start),
             )
         )
 

@@ -98,7 +98,7 @@ def test__energy_result__is_created(
     result_df = (
         wholesale_fixing_energy_results_df.where(
             F.col(EnergyResultColumnNames.calculation_id)
-            == C.executed_wholesale_batch_id
+            == C.executed_wholesale_calculation_id
         )
         .where(F.col(EnergyResultColumnNames.time_series_type) == time_series_type)
         .where(F.col(EnergyResultColumnNames.aggregation_level) == aggregation_level)
@@ -118,11 +118,11 @@ def test__energy_result__has_expected_number_of_types(
     actual_result_type_count = (
         wholesale_fixing_energy_results_df.where(
             F.col(EnergyResultColumnNames.calculation_id)
-            == C.executed_wholesale_batch_id
+            == C.executed_wholesale_calculation_id
         )
         .where(
             F.col(EnergyResultColumnNames.calculation_id)
-            == C.executed_wholesale_batch_id
+            == C.executed_wholesale_calculation_id
         )
         .select(
             EnergyResultColumnNames.time_series_type,
@@ -194,7 +194,7 @@ def test__wholesale_result__is_created(
     result_df = (
         wholesale_fixing_wholesale_results_df.where(
             F.col(WholesaleResultColumnNames.calculation_id)
-            == C.executed_wholesale_batch_id
+            == C.executed_wholesale_calculation_id
         )
         .where(F.col(WholesaleResultColumnNames.charge_type) == charge_type.value)
         .where(

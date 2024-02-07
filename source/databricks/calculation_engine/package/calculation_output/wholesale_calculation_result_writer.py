@@ -32,12 +32,12 @@ from package.infrastructure.paths import (
 class WholesaleCalculationResultWriter:
     def __init__(
         self,
-        batch_id: str,
-        process_type: CalculationType,
+        calculation_id: str,
+        calculation_type: CalculationType,
         execution_time_start: datetime,
     ):
-        self.__batch_id = batch_id
-        self.__process_type = process_type.value
+        self.__calculation_id = calculation_id
+        self.__calculation_type = calculation_type.value
         self.__execution_time_start = execution_time_start
 
     def write(self, df: DataFrame, amount_type: AmountType) -> None:
@@ -52,10 +52,10 @@ class WholesaleCalculationResultWriter:
 
     def _add_metadata(self, df: DataFrame) -> DataFrame:
         return (
-            df.withColumn(Colname.batch_id, lit(self.__batch_id))
-            .withColumn(Colname.batch_process_type, lit(self.__process_type))
+            df.withColumn(Colname.calculation_id, lit(self.__calculation_id))
+            .withColumn(Colname.calculation_type, lit(self.__calculation_type))
             .withColumn(
-                Colname.batch_execution_time_start,
+                Colname.calculation_execution_time_start,
                 lit(self.__execution_time_start),
             )
         )
@@ -81,11 +81,13 @@ class WholesaleCalculationResultWriter:
         # Map column names to the Delta table field names
         # Note: The order of the columns must match the order of the columns in the Delta table
         return df.select(
-            col(Colname.batch_id).alias(WholesaleResultColumnNames.calculation_id),
-            col(Colname.batch_process_type).alias(
+            col(Colname.calculation_id).alias(
+                WholesaleResultColumnNames.calculation_id
+            ),
+            col(Colname.calculation_type).alias(
                 WholesaleResultColumnNames.calculation_type
             ),
-            col(Colname.batch_execution_time_start).alias(
+            col(Colname.calculation_execution_time_start).alias(
                 WholesaleResultColumnNames.calculation_execution_time_start
             ),
             col(WholesaleResultColumnNames.calculation_result_id),
@@ -116,7 +118,7 @@ class WholesaleCalculationResultWriter:
     @staticmethod
     def _get_column_group_for_calculation_result_id() -> list[str]:
         return [
-            Colname.batch_id,
+            Colname.calculation_id,
             Colname.resolution,
             Colname.charge_type,
             Colname.charge_owner,
