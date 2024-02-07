@@ -149,9 +149,9 @@ def _join_with_charge_links(df: DataFrame, charge_links: DataFrame) -> DataFrame
         df[Colname.charge_tax],
         df[Colname.resolution],
         df[Colname.charge_time],
-        df[Colname.from_date],
-        df[Colname.to_date],
         df[Colname.charge_price],
+        charge_links[Colname.from_date],
+        charge_links[Colname.to_date],
         charge_links[Colname.metering_point_id],
     )
     return df
