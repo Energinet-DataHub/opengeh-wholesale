@@ -55,7 +55,6 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
     private const string EnergySupplierA = "4321987654321";
     private const string EnergySupplierB = "7654321987654";
     private const string EnergySupplierC = "1987654321987";
-    private const string EnergySupplierD = "3219876543219";
 
     private const string BalanceResponsibleA = "2345678912345";
     private const string BalanceResponsibleB = "5678912345678";
@@ -70,7 +69,6 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
     private const string ThirdHour = "2022-01-01T03:00:00.000Z";
 
     private const string SecondDay = "2022-01-02T00:00:00.000Z";
-    private const string ThirdDay = "2022-01-03T00:00:00.000Z";
 
     private readonly DatabricksSqlStatementApiFixture _fixture;
 
@@ -86,11 +84,15 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
      - ES1, ES2, ES3 are energy suppliers
      - BR1, BR2, BR3 are balance responsibles
      - GA1, GA2, GA3 are grid areas
-     - 1, 2, 3, 4 are metering point ids, directly corresponding to the methods CreateDataOne, CreateDataTwo,
+     - 1, 2, 3, 4 are metering data point ids, directly corresponding to the methods CreateDataOne, CreateDataTwo,
        CreateDataThree, and CreateDataFour
+       - 1: This metering data point has data for balance fixing, first, second, and third correction. The data point is defined for FirstHour.
+       - 2: This metering data point has data for balance fixing, first, and second correction. The data point is defined for SecondHour.
+       - 3: This metering data point has data for balance fixing, second, and third correction. The data point is defined for ThirdHour.
+       - 4: This metering data point has data for balance fixing and third correction. The data point is defined for SecondDay.
 
      +-------------------------------+    +----------------------+
-     |   GA1                         |    |   GA2                |
+     |   GA1                         |    |   GA3                |
      |   +-----------------------+   |    |   +--------------+   |
      |   |   BR1                 |   |    |   |   BR3        |   |
      |   |   +-----+   +-----+   |   |    |   |   +------+   |   |
@@ -102,7 +104,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
      |                               |    +----------------------+
      |                               |
      |                               |    +---------------------------+
-     |                               |    |   GA3                     |
+     |                               |    |   GA2                     |
      |   +---------------------------+----+-----------------------+   |
      |   |   BR2                     |    |                       |   |
      |   |   +-----+   +-----+       |    |   +-----+   +-----+   |   |
@@ -1009,6 +1011,153 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
 
         using var assertionScope = new AssertionScope();
         getAsyncResult.Should().BeEquivalentTo(latestCorrectionForGridAreaAsyncResult);
+    }
+
+    [Fact]
+    public async Task GetAsync_WhenRequestFromGridOperatorTotalProductionInWrongPeriod_ReturnsNoResults()
+    {
+        // Arrange
+        await AddDataAsync();
+        var parameters = CreateQueryParameters(
+            gridArea: GridAreaCodeA,
+            startOfPeriod: Instant.FromUtc(2020, 1, 1, 1, 1),
+            endOfPeriod: Instant.FromUtc(2021, 1, 2, 1, 1));
+
+        // Act
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        // Assert
+        actual.Should().HaveCount(0);
+    }
+
+    [Fact]
+    public async Task GetAsync_WhenRequestFromEnergySupplierTotalProductionBadId_ReturnsNoResults()
+    {
+        // Arrange
+        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
+        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+
+        await AddDataAsync();
+
+        var parameters = CreateQueryParameters(
+            gridArea: GridAreaCodeC,
+            timeSeriesType: [TimeSeriesType.Production],
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter,
+            energySupplierId: "badId");
+
+        // Act
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        // Assert
+        actual.Should().HaveCount(0);
+    }
+
+    [Fact]
+    public async Task
+        GetAsync_WhenRequestFromEnergySupplierTotalProductionWithoutGridAreaFilter_ReturnsOneResultPerGridArea()
+    {
+        // Arrange
+        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
+        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+
+        await AddDataAsync();
+
+        var parameters = CreateQueryParameters(
+            timeSeriesType: [TimeSeriesType.Production],
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter,
+            energySupplierId: EnergySupplierA);
+
+        // Act
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        // Assert
+        var resultsPerGridArea = actual.GroupBy(x => x.GridArea);
+        using var assertionScope = new AssertionScope();
+        foreach (var resultsInGridArea in resultsPerGridArea)
+        {
+            resultsInGridArea.Should()
+                .ContainSingle($"There should be only one result for grid area: {resultsInGridArea.Key}.");
+        }
+    }
+
+    [Fact]
+    public async Task GetAsync_WhenRequestFromGridOperatorForOneDay_ReturnsResult()
+    {
+        // Arrange
+        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 3, 0, 0);
+
+        await AddDataAsync();
+
+        var parameters = CreateQueryParameters(
+            gridArea: GridAreaCodeC,
+            timeSeriesType: [TimeSeriesType.Production],
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter);
+
+        // Act
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        actual.Should().HaveCount(1);
+        var aggregatedTimeSeries = actual.First();
+        aggregatedTimeSeries.GridArea.Should().Be(GridAreaCodeC);
+        aggregatedTimeSeries.TimeSeriesType.Should().Be(TimeSeriesType.Production);
+        aggregatedTimeSeries.TimeSeriesPoints
+            .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
+            .Should()
+            .BeEquivalentTo(FourthQuantity, FourthQuantityThirdCorrection);
+    }
+
+    [Fact]
+    public async Task GetAsync_WhenRequestFromGridOperatorStartAndEndDataAreEqual_ReturnsNoResult()
+    {
+        // Arrange
+        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
+        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
+
+        await AddDataAsync();
+
+        var parameters = CreateQueryParameters(
+            gridArea: GridAreaCodeC,
+            timeSeriesType: [TimeSeriesType.Production],
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter,
+            calculationType: CalculationType.BalanceFixing);
+
+        // Act
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        // Assert
+        actual.Should().HaveCount(0);
+    }
+
+    [Fact]
+    public async Task GetLatestCorrectionAsync_WhenCalculationTypeIsDefined_ThrowsException()
+    {
+        // Arrange
+        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
+        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+
+        await AddDataAsync();
+
+        var parameters = CreateQueryParameters(
+            [TimeSeriesType.Production],
+            startOfPeriodFilter,
+            endOfPeriodFilter,
+            GridAreaCodeC,
+            calculationType: CalculationType.BalanceFixing);
+
+        // Act
+        var act = async () => await Sut.GetLatestCorrectionForGridAreaAsync(parameters).ToListAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<ArgumentException>(
+            "The calculation type will be overwritten when fetching the latest correction.",
+            parameters.CalculationType);
     }
 
     private static AggregatedTimeSeriesQueryParameters CreateQueryParameters(
