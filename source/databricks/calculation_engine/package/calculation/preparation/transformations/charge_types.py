@@ -39,7 +39,7 @@ def get_tariff_charges(
     # group by time series on metering point id and resolution and sum quantity
     grouped_time_series = (
         _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
-            metering_point_time_series
+            metering_point_time_series, resolution
         )
     )
 
@@ -136,19 +136,33 @@ def _join_with_metering_points(df: DataFrame, metering_points: DataFrame) -> Dat
 
 
 def _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
-    metering_point_time_series: DataFrame,
+    metering_point_time_series: DataFrame, charge_resolution: ChargeResolution
 ) -> DataFrame:
-    grouped_time_series = t.aggregate_quantity_and_quality(
-        metering_point_time_series,
-        [
+    timezone = "Europe/Copenhagen"
+    grouped_time_series = (
+        t.aggregate_quantity_and_quality(
+            metering_point_time_series.withColumn(
+                Colname.observation_time,
+                f.from_utc_timestamp(Colname.observation_time, timezone),
+            ),
+            [
+                Colname.metering_point_id,
+                f.window(
+                    Colname.observation_time,
+                    _get_window_duration_string_based_on_resolution(charge_resolution),
+                ).alias(Colname.time_window),
+            ],
+        )
+        .select(
+            Colname.sum_quantity,
+            Colname.qualities,
             Colname.metering_point_id,
+            f.col(Colname.time_window_start).alias(Colname.observation_time),
+        )
+        .withColumn(
             Colname.observation_time,
-        ],
-    ).select(
-        Colname.sum_quantity,
-        Colname.qualities,
-        Colname.metering_point_id,
-        Colname.observation_time,
+            f.to_utc_timestamp(Colname.observation_time, timezone),
+        )
     )
 
     # The sum operator creates by default a column as a double type (28,6).
@@ -162,6 +176,17 @@ def _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
     )
 
     return grouped_time_series
+
+
+def _get_window_duration_string_based_on_resolution(
+    resolution_duration: ChargeResolution,
+) -> str:
+    window_duration_string = "1 hour"
+
+    if resolution_duration == ChargeResolution.DAY:
+        window_duration_string = "1 day"
+
+    return window_duration_string
 
 
 def _join_with_grouped_time_series(

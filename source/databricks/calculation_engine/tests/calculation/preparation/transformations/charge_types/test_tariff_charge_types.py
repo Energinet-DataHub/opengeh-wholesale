@@ -18,7 +18,6 @@ from decimal import Decimal
 from pyspark.sql import SparkSession, Row
 from package.calculation.preparation.transformations import (
     get_tariff_charges,
-    get_fee_charges,
 )
 import package.codelists as e
 from package.calculation.wholesale.schemas.tariffs_schema import tariff_schema
@@ -33,7 +32,7 @@ DEFAULT_GRID_AREA = "543"
 DEFAULT_CHARGE_CODE = "4000"
 DEFAULT_CHARGE_OWNER = "001"
 DEFAULT_CHARGE_TAX = True
-DEFAULT_CHARGE_TIME_HOUR_0 = datetime(2020, 1, 1, 0)
+DEFAULT_CHARGE_TIME_HOUR_0 = datetime(2019, 12, 31, 23)
 DEFAULT_CHARGE_PRICE = Decimal("2.000005")
 DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
 DEFAULT_METERING_POINT_ID = "123456789012345678901234567"
@@ -56,8 +55,8 @@ def _create_metering_point_row(
     parent_metering_point_id: str = "parent_metering_point_id",
     energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
     balance_responsible_id: str = "balance_responsible_id",
-    from_date: datetime = datetime(2020, 1, 1, 0),
-    to_date: datetime = datetime(2020, 2, 1, 0),
+    from_date: datetime = datetime(2019, 12, 31, 23),
+    to_date: datetime = datetime(2020, 1, 31, 23),
 ) -> Row:
     row = {
         Colname.metering_point_id: metering_point_id,
@@ -81,7 +80,7 @@ def _create_time_series_row(
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
     quantity: Decimal = DEFAULT_QUANTITY,
     quality: e.QuantityQuality = e.QuantityQuality.CALCULATED,
-    observation_time: datetime = datetime(2020, 1, 1, 0),
+    observation_time: datetime = datetime(2019, 12, 31, 23),
 ) -> Row:
     row = {
         Colname.metering_point_id: metering_point_id,
@@ -98,8 +97,8 @@ def _create_tariff_charges_row(
     charge_tax: bool = DEFAULT_CHARGE_TAX,
     resolution: e.ChargeResolution = e.ChargeResolution.HOUR,
     charge_time: datetime = DEFAULT_CHARGE_TIME_HOUR_0,
-    from_date: datetime = datetime(2020, 1, 1, 0),
-    to_date: datetime = datetime(2020, 1, 1, 1),
+    from_date: datetime = datetime(2019, 12, 31, 23),
+    to_date: datetime = datetime(2020, 1, 1, 0),
     charge_price: Decimal = DEFAULT_CHARGE_PRICE,
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
 ) -> Row:
@@ -112,35 +111,6 @@ def _create_tariff_charges_row(
         Colname.charge_owner: charge_owner,
         Colname.charge_tax: charge_tax,
         Colname.resolution: resolution.value,
-        Colname.charge_time: charge_time,
-        Colname.from_date: from_date,
-        Colname.to_date: to_date,
-        Colname.charge_price: charge_price,
-        Colname.metering_point_id: metering_point_id,
-    }
-    return Row(**row)
-
-
-def _create_subscription_or_fee_charges_row(
-    charge_type: e.ChargeType,
-    charge_code: str = DEFAULT_CHARGE_CODE,
-    charge_owner: str = DEFAULT_CHARGE_OWNER,
-    charge_tax: bool = DEFAULT_CHARGE_TAX,
-    charge_time: datetime = DEFAULT_CHARGE_TIME_HOUR_0,
-    from_date: datetime = datetime(2020, 1, 1, 0),
-    to_date: datetime = datetime(2020, 1, 1, 1),
-    charge_price: Decimal = DEFAULT_CHARGE_PRICE,
-    metering_point_id: str = DEFAULT_METERING_POINT_ID,
-) -> Row:
-    charge_key: str = f"{charge_code}-{charge_owner}-{charge_type.value}"
-
-    row = {
-        Colname.charge_key: charge_key,
-        Colname.charge_code: charge_code,
-        Colname.charge_type: charge_type.value,
-        Colname.charge_owner: charge_owner,
-        Colname.charge_tax: charge_tax,
-        Colname.resolution: e.ChargeResolution.MONTH.value,
         Colname.charge_time: charge_time,
         Colname.from_date: from_date,
         Colname.to_date: to_date,
@@ -239,12 +209,6 @@ def test__get_tariff_charges__filters_on_tariff_charge_type(
     time_series_rows = [_create_time_series_row()]
     charges_rows = [
         _create_tariff_charges_row(),
-        _create_subscription_or_fee_charges_row(
-            charge_type=e.ChargeType.FEE,
-        ),
-        _create_subscription_or_fee_charges_row(
-            charge_type=e.ChargeType.SUBSCRIPTION,
-        ),
     ]
 
     metering_point = spark.createDataFrame(
@@ -263,33 +227,6 @@ def test__get_tariff_charges__filters_on_tariff_charge_type(
 
     # Assert
     assert actual_tariff.collect()[0][Colname.charge_type] == e.ChargeType.TARIFF.value
-
-
-def test__get_fee_charges__filters_on_fee_charge_type(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    metering_point_rows = [_create_metering_point_row()]
-    charges_rows = [
-        _create_tariff_charges_row(),
-        _create_subscription_or_fee_charges_row(
-            charge_type=e.ChargeType.FEE,
-        ),
-        _create_subscription_or_fee_charges_row(
-            charge_type=e.ChargeType.SUBSCRIPTION,
-        ),
-    ]
-
-    metering_point = spark.createDataFrame(
-        metering_point_rows, metering_point_period_schema
-    )
-    charges = spark.createDataFrame(charges_rows, charges_schema)
-
-    # Act
-    actual_fee = get_fee_charges(charges, metering_point)
-
-    # Assert
-    assert actual_fee.collect()[0][Colname.charge_type] == e.ChargeType.FEE.value
 
 
 @pytest.mark.parametrize(
@@ -467,3 +404,138 @@ def test__get_tariff_charges__returns_df_with_expected_values(
 
     # Assert
     assert actual.collect() == expected_tariff_charges.collect()
+
+
+@pytest.mark.parametrize(
+    "charge_resolution, expected_rows, expected_sum_quantity",
+    [
+        (
+            e.ChargeResolution.HOUR,
+            48,
+            DEFAULT_QUANTITY,
+        ),
+        (
+            e.ChargeResolution.DAY,
+            2,
+            24 * DEFAULT_QUANTITY,
+        ),
+    ],
+)
+def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hour_returns_expected(
+    spark: SparkSession,
+    charge_resolution: e.ChargeResolution,
+    expected_rows: int,
+    expected_sum_quantity: int,
+) -> None:
+    """
+    Only charges where charge time is greater than or equal to the metering point from date and
+    less than the metering point to date are accepted.
+    """
+    # Arrange
+    metering_point_rows = [
+        _create_metering_point_row(
+            from_date=datetime(2020, 1, 1, 0),
+            to_date=datetime(2020, 1, 3, 0),
+            resolution=e.MeteringPointResolution.HOUR,
+        )
+    ]
+    time_series_rows = []
+    charges_rows = []
+    for j in range(1, 4):
+        for i in range(0, 24):
+            time_series_rows.append(
+                _create_time_series_row(observation_time=datetime(2020, 1, j, i))
+            )
+            charges_rows.append(
+                _create_tariff_charges_row(
+                    charge_time=datetime(2020, 1, j, i),
+                    resolution=charge_resolution,
+                )
+            )
+
+    metering_point = spark.createDataFrame(
+        metering_point_rows, metering_point_period_schema
+    )
+    time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
+    charges = spark.createDataFrame(charges_rows, charges_schema)
+
+    # Act
+    actual = get_tariff_charges(
+        metering_point,
+        time_series,
+        charges,
+        charge_resolution,
+    )
+    actual.show()
+    # Assert
+    assert actual.count() == expected_rows
+    assert actual.collect()[0][Colname.sum_quantity] == expected_sum_quantity
+
+
+@pytest.mark.parametrize(
+    "charge_resolution, expected_rows, expected_sum_quantity",
+    [
+        (
+            e.ChargeResolution.HOUR,
+            48,
+            4 * DEFAULT_QUANTITY,
+        ),
+        (
+            e.ChargeResolution.DAY,
+            2,
+            96 * DEFAULT_QUANTITY,
+        ),
+    ],
+)
+def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_quarter_returns_expected(
+    spark: SparkSession,
+    charge_resolution: e.ChargeResolution,
+    expected_rows: int,
+    expected_sum_quantity: int,
+) -> None:
+    """
+    Only charges where charge time is greater than or equal to the metering point from date and
+    less than the metering point to date are accepted.
+    """
+    # Arrange
+    metering_point_rows = [
+        _create_metering_point_row(
+            from_date=datetime(2020, 1, 1, 0),
+            to_date=datetime(2020, 1, 3, 0),
+            resolution=e.MeteringPointResolution.QUARTER,
+        )
+    ]
+    time_series_rows = []
+    charges_rows = []
+    for j in range(1, 4):
+        for i in range(0, 24):
+            for k in range(0, 4):
+                time_series_rows.append(
+                    _create_time_series_row(
+                        observation_time=datetime(2020, 1, j, i, k * 15)
+                    )
+                )
+            charges_rows.append(
+                _create_tariff_charges_row(
+                    charge_time=datetime(2020, 1, j, i),
+                    resolution=charge_resolution,
+                )
+            )
+
+    metering_point = spark.createDataFrame(
+        metering_point_rows, metering_point_period_schema
+    )
+    time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
+    charges = spark.createDataFrame(charges_rows, charges_schema)
+
+    # Act
+    actual = get_tariff_charges(
+        metering_point,
+        time_series,
+        charges,
+        charge_resolution,
+    )
+    actual.show()
+    # Assert
+    assert actual.count() == expected_rows
+    assert actual.collect()[0][Colname.sum_quantity] == expected_sum_quantity
