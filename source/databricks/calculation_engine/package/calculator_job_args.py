@@ -71,7 +71,7 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p.add("--grid-areas", type=valid_list, required=True)
     p.add("--period-start-datetime", type=valid_date, required=True)
     p.add("--period-end-datetime", type=valid_date, required=True)
-    p.add("--process-type", type=CalculationType, required=True)
+    p.add("--calculation-type", type=CalculationType, required=True)
     p.add("--execution-time-start", type=valid_date, required=True)
     p.add("--calculation_input_folder_name", type=str, required=False)
     p.add("--time_series_points_table_name", type=str, required=False)

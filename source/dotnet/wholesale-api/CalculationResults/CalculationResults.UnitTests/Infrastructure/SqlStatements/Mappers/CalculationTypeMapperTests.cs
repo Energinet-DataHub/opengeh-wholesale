@@ -26,7 +26,7 @@ public class CalculationTypeMapperTests
     [Fact]
     public async Task CalculationType_Matches_Contract()
     {
-        await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.process-type.json");
+        await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.calculation-type.json");
         await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<CalculationType>(stream);
     }
 
@@ -40,7 +40,7 @@ public class CalculationTypeMapperTests
     public async Task ToDeltaTableValue_ReturnsValidDeltaValue(CalculationType calculationType)
     {
         // Arrange
-        await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.process-type.json");
+        await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.calculation-type.json");
         var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
 
         // Act

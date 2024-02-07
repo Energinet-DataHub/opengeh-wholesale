@@ -162,18 +162,18 @@ class TestWhenInvokedWithValidParameters:
         assert actual.time_series_points_table_name is None
 
 
-class TestWhenUnknownProcessType:
+class TestWhenUnknownCalculationType:
     def test_raise_system_exit_with_non_zero_code(
         self, job_environment_variables: dict, sys_argv_from_contract
     ) -> None:
         # Arrange
-        unknown_process_type = "unknown_process_type"
-        pattern = r"--process-type=(\w+)"
+        unknown_calculation_type = "unknown_calculation_type"
+        pattern = r"--calculation-type=(\w+)"
 
         for i, item in enumerate(sys_argv_from_contract):
             if re.search(pattern, item):
                 sys_argv_from_contract[i] = re.sub(
-                    pattern, f"--process-type={unknown_process_type}", item
+                    pattern, f"--calculation-type={unknown_calculation_type}", item
                 )
                 break
 
