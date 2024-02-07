@@ -98,6 +98,8 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
                     ? new[] { aggregatedTimeSeriesRequest.AggregationPerRoleAndGridArea.GridAreaCode }
                     : new string[] { },
                 filterByExecutionState: CalculationState.Completed,
+                calculationType: CalculationTypeMapper.FromRequestedCalculationType(
+                    aggregatedTimeSeriesRequest.RequestedCalculationType),
                 periodStart: aggregatedTimeSeriesRequest.Period.Start,
                 periodEnd: aggregatedTimeSeriesRequest.Period.End)
             .ConfigureAwait(false);

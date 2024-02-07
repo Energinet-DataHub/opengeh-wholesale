@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Calculations.Interfaces;
@@ -34,6 +35,7 @@ public interface ICalculationsClient
     Task<IReadOnlyCollection<CalculationDto>> SearchAsync(
         IEnumerable<string> filterByGridAreaCodes,
         CalculationState filterByExecutionState,
+        CalculationType calculationType,
         Instant periodStart,
         Instant periodEnd);
 }
