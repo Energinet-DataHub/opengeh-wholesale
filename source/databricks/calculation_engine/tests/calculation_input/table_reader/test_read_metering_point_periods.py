@@ -20,7 +20,7 @@ import pyspark.sql.functions as f
 
 from package.calculation_input.table_reader import TableReader
 from package.calculation_input.schemas import metering_point_period_schema
-import tests.calculation_input.table_reader.input_metering_point_periods_factory as factory
+import calculation_input.factories.input_metering_point_periods_factory as factory
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 
@@ -36,7 +36,7 @@ class TestWhenValidInput:
         calculation_input_path = f"{str(tmp_path)}/{calculation_input_folder}"
         table_location = f"{calculation_input_path}/metering_point_periods"
         row = factory.create_row()
-        df = factory.create(spark, row)
+        df = factory.create_dataframe(spark, row)
         write_dataframe_to_table(
             spark,
             df,
@@ -59,7 +59,7 @@ class TestWhenSchemaMismatch:
         # Arrange
         reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
         row = factory.create_row()
-        df = factory.create(spark, row)
+        df = factory.create_dataframe(spark, row)
         df = df.withColumn("test", f.lit("test"))
 
         # Act & Assert

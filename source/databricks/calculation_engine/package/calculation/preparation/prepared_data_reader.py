@@ -19,7 +19,7 @@ from package.calculation_input import TableReader
 from package.codelists import ChargeResolution
 from package.calculation.preparation.grid_loss_responsible import GridLossResponsible
 
-from . import transformations as T
+from . import transformations as t
 
 
 class PreparedDataReader:
@@ -32,7 +32,7 @@ class PreparedDataReader:
         period_end_datetime: datetime,
         grid_areas: list[str],
     ) -> DataFrame:
-        return T.get_metering_point_periods_df(
+        return t.get_metering_point_periods_df(
             self._table_reader,
             period_start_datetime,
             period_end_datetime,
@@ -42,7 +42,7 @@ class PreparedDataReader:
     def get_grid_loss_responsible(
         self, grid_areas: list[str], metering_point_periods_df: DataFrame
     ) -> GridLossResponsible:
-        return T.get_grid_loss_responsible(
+        return t.get_grid_loss_responsible(
             grid_areas, metering_point_periods_df, self._table_reader
         )
 
@@ -51,7 +51,7 @@ class PreparedDataReader:
         period_start_datetime: datetime,
         period_end_datetime: datetime,
     ) -> DataFrame:
-        return T.read_charges(
+        return t.read_charges(
             self._table_reader, period_start_datetime, period_end_datetime
         )
 
@@ -60,14 +60,14 @@ class PreparedDataReader:
         charges_df: DataFrame,
         metering_points: DataFrame,
     ) -> DataFrame:
-        return T.get_fee_charges(charges_df, metering_points)
+        return t.get_fee_charges(charges_df, metering_points)
 
     def get_subscription_charges(
         self,
         charges_df: DataFrame,
         metering_points: DataFrame,
     ) -> DataFrame:
-        return T.get_subscription_charges(charges_df, metering_points)
+        return t.get_subscription_charges(charges_df, metering_points)
 
     def get_tariff_charges(
         self,
@@ -76,7 +76,7 @@ class PreparedDataReader:
         charges_df: DataFrame,
         resolution: ChargeResolution,
     ) -> DataFrame:
-        return T.get_tariff_charges(
+        return t.get_tariff_charges(
             metering_points, time_series, charges_df, resolution
         )
 
@@ -86,10 +86,10 @@ class PreparedDataReader:
         period_end_datetime: datetime,
         metering_point_periods_df: DataFrame,
     ) -> DataFrame:
-        time_series_points_df = T.get_time_series_points(
+        time_series_points_df = t.get_time_series_points(
             self._table_reader, period_start_datetime, period_end_datetime
         )
-        return T.get_metering_point_time_series(
+        return t.get_metering_point_time_series(
             time_series_points_df,
             metering_point_periods_df,
         )

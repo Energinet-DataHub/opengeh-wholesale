@@ -33,7 +33,7 @@ from package.codelists import (
 )
 from package.constants import Colname
 
-import tests.calculation_input.table_reader.input_metering_point_periods_factory as factory
+import calculation_input.factories.input_metering_point_periods_factory as factory
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 
 june_1th = datetime(2022, 5, 31, 22, 0)
@@ -112,7 +112,7 @@ class TestWhenValidInput:
             metering_point_type=metering_point_type,
         )
         mock_calculation_input_reader.read_metering_point_periods.return_value = (
-            factory.create(spark, row)
+            factory.create_dataframe(spark, row)
         )
 
         # Act
@@ -144,7 +144,7 @@ class TestWhenValidInput:
         # Arrange
         row = factory.create_row(settlement_method=settlement_method)
         mock_calculation_input_reader.read_metering_point_periods.return_value = (
-            factory.create(spark, row)
+            factory.create_dataframe(spark, row)
         )
 
         # Act
@@ -170,7 +170,7 @@ class TestWhenValidInput:
             settlement_method=InputSettlementMethod.FLEX,
         )
         mock_calculation_input_reader.read_metering_point_periods.return_value = (
-            factory.create(spark, row)
+            factory.create_dataframe(spark, row)
         )
 
         # Act
@@ -220,7 +220,7 @@ class TestWhenValidInput:
             metering_point_type=InputMeteringPointType.CONSUMPTION,
             settlement_method=InputSettlementMethod.FLEX,
         )
-        df = factory.create(spark, row)
+        df = factory.create_dataframe(spark, row)
         mock_calculation_input_reader.read_metering_point_periods.return_value = df
         expected = _map_metering_point_type_and_settlement_method(df)
 
@@ -295,7 +295,7 @@ class TestWhenValidInput:
         # Arrange
         row = factory.create_row(from_date=from_date, to_date=to_date)
         mock_calculation_input_reader.read_metering_point_periods.return_value = (
-            factory.create(spark, row)
+            factory.create_dataframe(spark, row)
         )
 
         # Act
@@ -334,7 +334,7 @@ class TestWhenThreeGridAreasExchangingWithEachOther:
         ]
 
         mock_calculation_input_reader.read_metering_point_periods.return_value = (
-            factory.create(spark, rows)
+            factory.create_dataframe(spark, rows)
         )
 
         # Act
@@ -390,7 +390,7 @@ class TestWhenExchangeMeteringPoint:
             to_grid_area=to_grid_area,
         )
         mock_calculation_input_reader.read_metering_point_periods.return_value = (
-            factory.create(spark, row)
+            factory.create_dataframe(spark, row)
         )
 
         # Act
