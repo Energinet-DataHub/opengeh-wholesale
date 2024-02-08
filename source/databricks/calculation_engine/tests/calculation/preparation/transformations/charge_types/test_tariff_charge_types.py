@@ -13,8 +13,10 @@
 # limitations under the License.
 
 import pytest
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
+
+import pytz
 from pyspark.sql import SparkSession, Row
 from pyspark.sql.types import TimestampType
 from pyspark.sql.window import Window
@@ -208,10 +210,23 @@ def test__temp(
     spark: SparkSession,
 ) -> None:
     # Define the data for the DataFrame
+    period_start = datetime(2020, 2, 29, 23, 0)
+    period_end = datetime(2020, 3, 31, 22, 0)
+
+    time_zone = "Europe/Copenhagen"
+    period_start_local_time = f.from_utc_timestamp(
+        f.to_timestamp("{period_start}"), time_zone
+    ).cast("date")
+    period_end_local_time = f.from_utc_timestamp(
+        f.to_timestamp("{period_end}"), time_zone
+    ).cast("date")
+
+    print(period_start_local_time)
+
     data = [
-        ("key1", "2022-01-01", 100),
-        ("key1", "2022-01-10", 200),
-        ("key2", "2022-01-01", 300),
+        ("key1", period_start, 100),
+        ("key1", period_start + timedelta(days=10), 200),
+        ("key2", period_start, 300),
     ]
 
     # Define the schema for the DataFrame
@@ -221,35 +236,46 @@ def test__temp(
     df = spark.createDataFrame(data, schema)
 
     all_dates_df = (
-        df.groupBy("charge_key")
+        df.select(Colname.charge_key)
+        .dropDuplicates()
+        .withColumn(
+            "date",
+            f.expr(
+                f"sequence(to_timestamp('{period_start}'), to_timestamp('{period_end}'), interval 1 day)"
+            ),
+        )
+        .withColumn(Colname.charge_time, f.explode("date"))
+        .drop("date")
+    )
+
+    all_dates_df2 = (
+        df.groupBy(Colname.charge_key)
         .agg(
-            f.lit("2022-01-01")
-            .cast(TimestampType())
-            .alias("min_date"),  # set min_date as 2022-01-01 directly
-            f.lit("2022-01-31")
-            .cast(TimestampType())
-            .alias("max_date"),  # set min_date as 2022-01-01 directly
+            f.lit(period_start).alias("min_date"),
+            f.lit(period_end).alias("max_date"),
         )
         .select(
-            "charge_key",
+            Colname.charge_key,
             f.expr("sequence(min_date, max_date, interval 1 day)").alias("date"),
         )
-        .withColumn("charge_time", f.explode("date"))
-        .withColumn("charge_time", f.date_format("charge_time", "yyyy-MM-dd"))
+        .withColumn(Colname.charge_time, f.explode("date"))
         .drop("date")
     )
 
     all_dates_df.show(100)
+    all_dates_df2.show(100)
 
-    w = Window.partitionBy("charge_key").orderBy("charge_time")
+    w = Window.partitionBy(Colname.charge_key).orderBy(Colname.charge_time)
 
-    result = all_dates_df.join(df, ["charge_key", "charge_time"], "left").select(
-        "charge_key",
-        "charge_time",
+    result = all_dates_df.join(
+        df, [Colname.charge_key, Colname.charge_time], "left"
+    ).select(
+        Colname.charge_key,
+        Colname.charge_time,
         *[
             f.last(f.col(c), ignorenulls=True).over(w).alias(c)
             for c in df.columns
-            if c not in ("charge_key", "charge_time")
+            if c not in (Colname.charge_key, Colname.charge_time)
         ],
     )
 
