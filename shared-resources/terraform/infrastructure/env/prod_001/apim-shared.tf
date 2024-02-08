@@ -9,7 +9,7 @@ module "apim_shared" {
   location             = azurerm_resource_group.this.location
   publisher_name       = var.project_name
   publisher_email      = var.apim_publisher_email
-  sku_name             = "Developer_1"
+  sku_name             = "Premium_1"
   virtual_network_type = "External"
   subnet_id            = data.azurerm_subnet.snet_apim.id
 
