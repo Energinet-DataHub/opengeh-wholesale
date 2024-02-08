@@ -219,13 +219,11 @@ def test__temp(
     all_dates_df = (
         df.groupBy("charge_key")
         .agg(
-            f.date_trunc("dd", f.max(f.to_date("charge_time", "yyyy-MM-dd"))).alias(
-                "max_date"
-            ),
             f.date_trunc("dd", f.min(f.to_date("charge_time", "yyyy-MM-dd"))).alias(
                 "min_date"
             ),
         )
+        .withColumn("max_date", f.last_day("min_date"))
         .select(
             "charge_key",
             f.expr("sequence(min_date, max_date, interval 1 day)").alias("date"),
