@@ -36,6 +36,9 @@ def read_charges(
     charge_links_df = _get_charge_links(
         table_reader, period_start_datetime, period_end_datetime
     )
+    charge_prices_df.show()
+    charge_master_data_df.show()
+    charge_links_df.show()
     return _create_charges_df(charge_master_data_df, charge_links_df, charge_prices_df)
 
 

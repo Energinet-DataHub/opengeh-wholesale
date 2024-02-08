@@ -16,6 +16,9 @@ import pytest
 from datetime import datetime
 from decimal import Decimal
 from pyspark.sql import SparkSession, Row
+from pyspark.sql.types import TimestampType
+from pyspark.sql.window import Window
+import pyspark.sql.functions as f
 from package.calculation.preparation.transformations import (
     get_tariff_charges,
 )
@@ -199,6 +202,54 @@ def test__get_tariff_charges__filters_on_resolution(
     # Assert
     assert actual.count() == 1
     assert actual.collect()[0][Colname.resolution] == charge_resolution.value
+
+
+def test__temp(
+    spark: SparkSession,
+) -> None:
+    # Define the data for the DataFrame
+    data = [("key1", "2022-01-01", 100), ("key1", "2022-01-10", 200)]
+
+    # Define the schema for the DataFrame
+    schema = ["charge_key", "charge_time", "charge_price"]
+
+    # Create the DataFrame
+    df = spark.createDataFrame(data, schema)
+
+    all_dates_df = (
+        df.groupBy("charge_key")
+        .agg(
+            f.date_trunc("dd", f.max(f.to_date("charge_time", "yyyy-MM-dd"))).alias(
+                "max_date"
+            ),
+            f.date_trunc("dd", f.min(f.to_date("charge_time", "yyyy-MM-dd"))).alias(
+                "min_date"
+            ),
+        )
+        .select(
+            "charge_key",
+            f.expr("sequence(min_date, max_date, interval 1 day)").alias("date"),
+        )
+        .withColumn("charge_time", f.explode("date"))
+        .withColumn("charge_time", f.date_format("charge_time", "yyyy-MM-dd"))
+        .drop("date")
+    )
+
+    all_dates_df.show(100)
+
+    w = Window.partitionBy("charge_key").orderBy("charge_time")
+
+    result = all_dates_df.join(df, ["charge_key", "charge_time"], "left").select(
+        "charge_key",
+        "charge_time",
+        *[
+            f.last(f.col(c), ignorenulls=True).over(w).alias(c)
+            for c in df.columns
+            if c not in ("charge_key", "charge_time")
+        ],
+    )
+
+    result.show(100)
 
 
 def test__get_tariff_charges__filters_on_tariff_charge_type(

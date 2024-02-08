@@ -110,6 +110,43 @@ def _explode_subscription(charges_df: DataFrame) -> DataFrame:
     return charges_df
 
 
+def _explode_subscription2(
+    charge_prices: DataFrame, charge_links: DataFrame
+) -> DataFrame:
+    charges_df = (
+        charges_df.withColumn(
+            Colname.date,
+            f.explode(
+                f.expr(
+                    f"sequence({Colname.from_date}, {Colname.to_date}, interval 1 day)"
+                )
+            ),
+        )
+        .withColumn(
+            "charge_time2",
+            f.expr(
+                "explode(sequence(date_trunc('MM', charge_time), date_add(date_trunc('MM', date_add(charge_time, 1)), -1), interval 1 day))"
+            ),
+        )
+        .filter((f.year(Colname.date) == f.year(Colname.charge_time)))
+        .filter((f.month(Colname.date) == f.month(Colname.charge_time)))
+        .drop(Colname.charge_time)
+        .withColumnRenamed(Colname.date, Colname.charge_time)
+        .select(
+            Colname.charge_key,
+            Colname.charge_code,
+            Colname.charge_type,
+            Colname.charge_owner,
+            Colname.charge_tax,
+            Colname.resolution,
+            Colname.charge_time,
+            Colname.charge_price,
+            Colname.metering_point_id,
+        )
+    )
+    return charges_df
+
+
 def _join_with_metering_points(df: DataFrame, metering_points: DataFrame) -> DataFrame:
     df = df.join(
         metering_points,
