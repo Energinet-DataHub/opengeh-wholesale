@@ -306,74 +306,41 @@ def test__temp1(
 def test__temp(
     spark: SparkSession,
 ) -> None:
-    # Define the data for the DataFrame
+    # Prepare the data
     period_start_utc = datetime(2020, 2, 29, 23, 0)
     period_end_utc = datetime(2020, 3, 31, 22, 0)
-
-    # time_zone = "Europe/Copenhagen"
-    # period_start_local_time = f.from_utc_timestamp(
-    #     f.to_timestamp(f"{period_start}"), time_zone
-    # ).cast("date")
-    # period_end_local_time = f.from_utc_timestamp(
-    #     f.to_timestamp("{period_end}"), time_zone
-    # ).cast("date")
-
-    # print(period_start_local_time)
-
     time_zone = "Europe/Copenhagen"
-    local_tz = pytz.timezone(time_zone)
-    period_start_local_time = period_start_utc.astimezone(local_tz)
-    period_end_local_time = period_start_utc.astimezone(local_tz)
-    print(period_start_local_time)
 
     data = [
         ("key1", period_start_utc, 100),
         ("key1", period_start_utc + timedelta(days=10), 200),
         ("key2", period_start_utc, 300),
     ]
-
-    # Define the schema for the DataFrame
     schema = ["charge_key", "charge_time", "charge_price"]
-
-    # Create the DataFrame
     df = spark.createDataFrame(data, schema)
+
+    # Start the transformation
+
+    local_tz = pytz.timezone(time_zone)
+    period_start_local_time_str = period_start_utc.astimezone(local_tz).strftime(
+        "%Y-%m-%d %H:%M:%S"
+    )
+    period_end_local_time_str = period_end_utc.astimezone(local_tz).strftime(
+        "%Y-%m-%d %H:%M:%S"
+    )
 
     all_dates_df = (
         df.select(Colname.charge_key)
         .dropDuplicates()
-        .withColumn(
-            "date",
-            f.expr(
-                f"sequence(to_timestamp('{period_start_utc}'), to_timestamp('{period_end_utc}'), interval 1 day)"
-            ),
-        )
-        .withColumn(Colname.charge_time, f.explode("date"))
-        .drop("date")
-    )
-
-    all_dates_df3 = (
-        df.select(Colname.charge_key)
-        .dropDuplicates()
         .select(
+            Colname.charge_key,
             f.explode(
                 f.sequence(
-                    f.to_timestamp(
-                        f.lit(
-                            period_start_utc.astimezone(local_tz).strftime(
-                                "%Y-%m-%d %H:%M:%S"
-                            )
-                        )
-                    ),
-                    f.to_timestamp(
-                        f.lit(
-                            period_end_utc.astimezone(local_tz).strftime(
-                                "%Y-%m-%d %H:%M:%S"
-                            )
-                        )
-                    ),
+                    f.to_timestamp(f.lit(period_start_local_time_str)),
+                    f.to_timestamp(f.lit(period_end_local_time_str)),
                     f.expr("INTERVAL 1 DAY"),
                 )
-            ).alias("charge_time_local")
+            ).alias("charge_time_local"),
         )
         .withColumn(
             "charge_time", f.to_utc_timestamp(f.col("charge_time_local"), time_zone)
@@ -382,7 +349,6 @@ def test__temp(
     )
 
     all_dates_df.show(100)
-    all_dates_df3.show(100)
 
     w = Window.partitionBy(Colname.charge_key).orderBy(Colname.charge_time)
 
