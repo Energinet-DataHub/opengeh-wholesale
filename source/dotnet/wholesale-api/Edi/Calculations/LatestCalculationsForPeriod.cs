@@ -83,6 +83,7 @@ public class LatestCalculationsForPeriod
 
             if (startOfPeriod != null
                 && (calculationEnd == remainDay
+                    || remainingDaysInPeriod.Last() == remainDay
                     || NextDayInExistingPeriod(remainDay, latestCalculationsForPeriod)))
             {
                 result.Add(new CalculationForPeriod(
