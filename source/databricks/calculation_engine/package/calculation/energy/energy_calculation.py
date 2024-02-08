@@ -26,7 +26,7 @@ from package.calculation.preparation.quarterly_metering_point_time_series import
     QuarterlyMeteringPointTimeSeries,
 )
 from package.codelists import (
-    ProcessType,
+    CalculationType,
     MeteringPointType,
 )
 from package.infrastructure import logging_configuration
@@ -34,7 +34,7 @@ from package.infrastructure import logging_configuration
 
 @logging_configuration.use_span("calculation.energy")
 def execute(
-    calculation_type: ProcessType,
+    calculation_type: CalculationType,
     grid_areas: list[str],
     metering_point_time_series: DataFrame,
     grid_loss_responsible_df: GridLossResponsible,
@@ -54,7 +54,7 @@ def execute(
 
 
 def _calculate(
-    calculation_type: ProcessType,
+    calculation_type: CalculationType,
     grid_areas: list[str],
     quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
     grid_loss_responsible_df: GridLossResponsible,
@@ -133,7 +133,7 @@ def _calculate(
 
 
 def _calculate_net_exchange(
-    calculation_type: ProcessType,
+    calculation_type: CalculationType,
     grid_areas: list[str],
     quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
     results: EnergyResultsContainer,
@@ -273,11 +273,11 @@ def _calculate_adjust_flex_consumption_per_ga_and_brp_and_es(
 
 
 def _calculate_production(
-    process_type: ProcessType,
+    calculation_type: CalculationType,
     production_per_ga_and_brp_and_es: EnergyResults,
     results: EnergyResultsContainer,
 ) -> EnergyResults:
-    if _is_aggregation_or_balance_fixing(process_type):
+    if _is_aggregation_or_balance_fixing(calculation_type):
         # production per balance responsible
         results.production_per_ga_and_brp_and_es = production_per_ga_and_brp_and_es
 
@@ -299,7 +299,7 @@ def _calculate_production(
 
 
 def _calculate_flex_consumption(
-    process_type: ProcessType,
+    calculation_type: CalculationType,
     flex_consumption_per_ga_and_brp_and_es: EnergyResults,
     results: EnergyResultsContainer,
 ) -> None:
@@ -314,7 +314,7 @@ def _calculate_flex_consumption(
     )
 
     # flex consumption per balance responsible
-    if _is_aggregation_or_balance_fixing(process_type):
+    if _is_aggregation_or_balance_fixing(calculation_type):
         results.flex_consumption_per_ga_and_brp_and_es = (
             flex_consumption_per_ga_and_brp_and_es
         )
@@ -327,12 +327,12 @@ def _calculate_flex_consumption(
 
 
 def _calculate_non_profiled_consumption(
-    process_type: ProcessType,
+    calculation_type: CalculationType,
     consumption_per_ga_and_brp_and_es: EnergyResults,
     results: EnergyResultsContainer,
 ) -> None:
     # Non-profiled consumption per balance responsible
-    if _is_aggregation_or_balance_fixing(process_type):
+    if _is_aggregation_or_balance_fixing(calculation_type):
         consumption_per_ga_and_brp = grouping_aggr.aggregate_per_ga_and_brp(
             consumption_per_ga_and_brp_and_es
         )
@@ -361,8 +361,8 @@ def _calculate_total_consumption(
     )
 
 
-def _is_aggregation_or_balance_fixing(process_type: ProcessType) -> bool:
+def _is_aggregation_or_balance_fixing(calculation_type: CalculationType) -> bool:
     return (
-        process_type == ProcessType.AGGREGATION
-        or process_type == ProcessType.BALANCE_FIXING
+        calculation_type == CalculationType.AGGREGATION
+        or calculation_type == CalculationType.BALANCE_FIXING
     )

@@ -22,7 +22,7 @@ import uuid
 from helpers.data_frame_utils import set_column
 from package.codelists import (
     AggregationLevel,
-    ProcessType,
+    CalculationType,
     TimeSeriesType,
     QuantityQuality,
 )
@@ -149,7 +149,7 @@ def test__migrated_table_accepts_valid_data(
 @pytest.mark.parametrize(
     "column_name,column_value",
     [
-        *[(EnergyResultColumnNames.calculation_type, x.value) for x in ProcessType],
+        *[(EnergyResultColumnNames.calculation_type, x.value) for x in CalculationType],
         *[(EnergyResultColumnNames.time_series_type, x.value) for x in TimeSeriesType],
         *[
             (EnergyResultColumnNames.quantity_qualities, [x.value])

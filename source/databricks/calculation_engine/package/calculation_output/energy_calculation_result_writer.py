@@ -19,7 +19,7 @@ from pyspark.sql import DataFrame
 from pyspark.sql.window import Window
 
 from package.calculation.energy.energy_results import EnergyResults
-from package.codelists import TimeSeriesType, AggregationLevel, ProcessType
+from package.codelists import TimeSeriesType, AggregationLevel, CalculationType
 from package.constants import Colname, EnergyResultColumnNames
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
 
@@ -28,7 +28,7 @@ class EnergyCalculationResultWriter:
     def __init__(
         self,
         calculation_id: str,
-        calculation_type: ProcessType,
+        calculation_type: CalculationType,
         calculation_execution_time_start: datetime,
     ):
         self.__calculation_id = calculation_id
