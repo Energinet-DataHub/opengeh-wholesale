@@ -210,8 +210,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             },
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
-            balanceResponsibleId: balanceResponsibleIdFilter,
-            calculationType: CalculationType.BalanceFixing);
+            balanceResponsibleId: balanceResponsibleIdFilter);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -309,7 +308,6 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        var calculationTypeFilter = CalculationType.FirstCorrectionSettlement;
         await AddCreatedRowsInArbitraryOrderAsync(addFirstCorrection: true);
 
         var parameters = CreateQueryParameters(
@@ -321,8 +319,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
                     1),
             },
             gridArea: gridAreaFilter,
-            timeSeriesType: timeSeriesTypeFilter,
-            calculationType: calculationTypeFilter);
+            timeSeriesType: timeSeriesTypeFilter);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -349,7 +346,6 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        var calculationTypeFilter = CalculationType.SecondCorrectionSettlement;
         await AddCreatedRowsInArbitraryOrderAsync(addSecondCorrection: true);
 
         var parameters = CreateQueryParameters(
@@ -361,8 +357,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
                     1),
             },
             gridArea: gridAreaFilter,
-            timeSeriesType: timeSeriesTypeFilter,
-            calculationType: calculationTypeFilter);
+            timeSeriesType: timeSeriesTypeFilter);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -390,7 +385,6 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        var calculationTypeFilter = CalculationType.ThirdCorrectionSettlement;
         await AddCreatedRowsInArbitraryOrderAsync(addThirdCorrection: true);
 
         var parameters = CreateQueryParameters(
@@ -402,8 +396,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
                     1),
             },
             gridArea: gridAreaFilter,
-            timeSeriesType: timeSeriesTypeFilter,
-            calculationType: calculationTypeFilter);
+            timeSeriesType: timeSeriesTypeFilter);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -479,8 +472,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
                     1),
             },
             gridArea: gridAreaFilter,
-            timeSeriesType: timeSeriesTypeFilter,
-            calculationType: CalculationType.BalanceFixing);
+            timeSeriesType: timeSeriesTypeFilter);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -508,8 +500,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             },
             timeSeriesType: timeSeriesTypeFilter,
             energySupplierId: energySupplierIdFilter,
-            balanceResponsibleId: balanceResponsibleIdFilter,
-            calculationType: CalculationType.BalanceFixing);
+            balanceResponsibleId: balanceResponsibleIdFilter);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -667,15 +658,13 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         TimeSeriesType? timeSeriesType = null,
         string? gridArea = null,
         string? energySupplierId = null,
-        string? balanceResponsibleId = null,
-        CalculationType? calculationType = null)
+        string? balanceResponsibleId = null)
     {
         return new AggregatedTimeSeriesQueryParameters(
             TimeSeriesType: timeSeriesType ?? TimeSeriesType.Production,
             GridArea: gridArea,
             EnergySupplierId: energySupplierId,
             BalanceResponsibleId: balanceResponsibleId,
-            CalculationType: calculationType,
             LatestCalculationForPeriod: latestCalculationForPeriods);
     }
 

@@ -93,10 +93,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         var parameters = await CreateAggregatedTimeSeriesQueryParametersWithoutCalculationTypeAsync(request).ConfigureAwait(false);
 
         return await _aggregatedTimeSeriesQueries.GetAsync(
-            parameters with
-            {
-                CalculationType = CalculationTypeMapper.FromRequestedCalculationType(request.RequestedCalculationType),
-            }).ToListAsync(cancellationToken).ConfigureAwait(false);
+            parameters).ToListAsync(cancellationToken).ConfigureAwait(false);
     }
 
     private async Task<bool> EnergySupplierOrBalanceResponsibleHaveAggregatedTimeSeriesForAnotherGridAreasAsync(
@@ -114,7 +111,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
             var parameters = await CreateAggregatedTimeSeriesQueryParametersWithoutCalculationTypeAsync(newRequest).ConfigureAwait(false);
 
             var results = _aggregatedTimeSeriesQueries.GetAsync(
-                    parameters with { CalculationType = CalculationTypeMapper.FromRequestedCalculationType(newRequest.RequestedCalculationType), })
+                    parameters)
                 .ConfigureAwait(false);
 
             await foreach (var result in results)
