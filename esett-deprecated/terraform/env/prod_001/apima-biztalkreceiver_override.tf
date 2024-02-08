@@ -1,5 +1,4 @@
 module "apim_biztalkreceiver" {
-  count = 0
   policies = [
     {
       xml_content = <<XML
@@ -24,12 +23,4 @@ module "apim_biztalkreceiver" {
     XML
     }
   ]
-}
-
-resource "azurerm_api_management_backend" "biztalkreceiver" {
-  count = 0
-}
-
-module "apimao_receiverfunction" {
-  count = 0
 }
