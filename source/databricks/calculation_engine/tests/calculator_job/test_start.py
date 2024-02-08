@@ -15,11 +15,10 @@ import argparse
 import sys
 import time
 import uuid
+import pytest
 from datetime import timedelta
 from typing import cast, Callable
 from unittest.mock import patch, Mock
-
-import pytest
 from azure.monitor.query import LogsQueryClient, LogsQueryResult
 from calculation_input.factories import raw_grid_loss_metering_points_factory
 from package import calculation_input

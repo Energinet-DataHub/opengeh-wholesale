@@ -21,7 +21,8 @@ from package.constants import Colname
 from package.infrastructure import logging_configuration
 from package.codelists import (
     ChargeResolution,
-    ProcessType, MeteringPointType,
+    CalculationType,
+    MeteringPointType,
 )
 from pyspark.pandas import DataFrame
 
@@ -51,17 +52,17 @@ def calculation_execute(
         )
 
     results.energy_results = energy_calculation.execute(
-        args.calculation_process_type,
+        args.calculation_type,
         args.calculation_grid_areas,
         metering_point_time_series,
         grid_loss_responsible_df,
     )
 
     if (
-        args.calculation_process_type == ProcessType.WHOLESALE_FIXING
-        or args.calculation_process_type == ProcessType.FIRST_CORRECTION_SETTLEMENT
-        or args.calculation_process_type == ProcessType.SECOND_CORRECTION_SETTLEMENT
-        or args.calculation_process_type == ProcessType.THIRD_CORRECTION_SETTLEMENT
+        args.calculation_type == CalculationType.WHOLESALE_FIXING
+        or args.calculation_type == CalculationType.FIRST_CORRECTION_SETTLEMENT
+        or args.calculation_type == CalculationType.SECOND_CORRECTION_SETTLEMENT
+        or args.calculation_type == CalculationType.THIRD_CORRECTION_SETTLEMENT
     ):
         charges_df = prepared_data_reader.get_charges(
             args.calculation_period_start_datetime, args.calculation_period_end_datetime
