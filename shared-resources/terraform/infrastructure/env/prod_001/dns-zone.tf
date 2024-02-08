@@ -3,6 +3,10 @@
 resource "azurerm_dns_zone" "this" {
   name                = "datahub3.dk"
   resource_group_name = azurerm_resource_group.this.name
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 # Verification code to verify ownership of the domain

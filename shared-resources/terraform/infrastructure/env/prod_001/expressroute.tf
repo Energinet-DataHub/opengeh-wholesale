@@ -10,6 +10,10 @@ resource "azurerm_express_route_circuit" "dh2_express_route" {
     tier   = "Standard"
     family = "MeteredData"
   }
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "azurerm_route_filter" "this" {
@@ -22,6 +26,10 @@ resource "azurerm_route_filter" "this" {
     access      = "Allow"
     rule_type   = "Community"
     communities = ["12076:52002"]
+  }
+
+  lifecycle {
+    prevent_destroy = true
   }
 }
 
@@ -38,6 +46,11 @@ resource "azurerm_express_route_circuit_peering" "this" {
   route_filter_id               = azurerm_route_filter.this.id
 
   microsoft_peering_config {
-    advertised_public_prefixes = ["86.106.96.1/32,86.106.96.2/32"]
+    advertised_public_prefixes = ["86.106.96.1/32","86.106.96.2/32"]
+    advertised_communities     = ["12076:52002"]
+  }
+
+  lifecycle {
+    prevent_destroy = true
   }
 }
