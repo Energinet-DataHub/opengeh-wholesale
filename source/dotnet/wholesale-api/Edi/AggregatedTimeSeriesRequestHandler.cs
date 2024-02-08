@@ -92,7 +92,39 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     private async Task<IReadOnlyCollection<CalculationForPeriod>> GetLatestCompletedCalculationForRequestAsync(
         AggregatedTimeSeriesRequest aggregatedTimeSeriesRequest)
     {
-        var calculations = await _calculationsClient
+        if (aggregatedTimeSeriesRequest.RequestedCalculationType == RequestedCalculationType.LatestCorrection)
+        {
+            aggregatedTimeSeriesRequest.RequestedCalculationType = RequestedCalculationType.ThirdCorrection;
+            var calculationForLatestCorrection = await GetCompletedCalculationAsync(aggregatedTimeSeriesRequest).ConfigureAwait(true);
+            if (!calculationForLatestCorrection.Any())
+            {
+                aggregatedTimeSeriesRequest.RequestedCalculationType = RequestedCalculationType.SecondCorrection;
+                calculationForLatestCorrection = await GetCompletedCalculationAsync(aggregatedTimeSeriesRequest).ConfigureAwait(true);
+            }
+
+            if (!calculationForLatestCorrection.Any())
+            {
+                aggregatedTimeSeriesRequest.RequestedCalculationType = RequestedCalculationType.FirstCorrection;
+                calculationForLatestCorrection = await GetCompletedCalculationAsync(aggregatedTimeSeriesRequest).ConfigureAwait(true);
+            }
+
+            return _latestCalculationsForPeriod.FindLatestCalculationsForPeriod(
+                aggregatedTimeSeriesRequest.Period.Start,
+                aggregatedTimeSeriesRequest.Period.End,
+                calculationForLatestCorrection);
+        }
+
+        var calculations = await GetCompletedCalculationAsync(aggregatedTimeSeriesRequest).ConfigureAwait(true);
+
+        return _latestCalculationsForPeriod.FindLatestCalculationsForPeriod(
+            aggregatedTimeSeriesRequest.Period.Start,
+            aggregatedTimeSeriesRequest.Period.End,
+            calculations);
+    }
+
+    private async Task<IReadOnlyCollection<CalculationDto>> GetCompletedCalculationAsync(AggregatedTimeSeriesRequest aggregatedTimeSeriesRequest)
+    {
+        return await _calculationsClient
             .SearchAsync(
                 filterByGridAreaCodes: aggregatedTimeSeriesRequest.AggregationPerRoleAndGridArea.GridAreaCode != null
                     ? new[] { aggregatedTimeSeriesRequest.AggregationPerRoleAndGridArea.GridAreaCode }
@@ -103,11 +135,6 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
                 calculationType: CalculationTypeMapper.FromRequestedCalculationType(
                     aggregatedTimeSeriesRequest.RequestedCalculationType))
             .ConfigureAwait(false);
-
-        return _latestCalculationsForPeriod.FindLatestCalculationsForPeriod(
-            aggregatedTimeSeriesRequest.Period.Start,
-            aggregatedTimeSeriesRequest.Period.End,
-            calculations);
     }
 
     private async Task<IReadOnlyCollection<AggregatedTimeSeries>> GetAggregatedTimeSeriesAsync(
@@ -115,11 +142,6 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         CancellationToken cancellationToken)
     {
         var parameters = await CreateAggregatedTimeSeriesQueryParametersWithoutCalculationTypeAsync(request).ConfigureAwait(false);
-
-        if (request.RequestedCalculationType == RequestedCalculationType.LatestCorrection)
-        {
-            return await _aggregatedTimeSeriesQueries.GetLatestCorrectionForGridAreaAsync(parameters).ToListAsync(cancellationToken).ConfigureAwait(false);
-        }
 
         return await _aggregatedTimeSeriesQueries.GetAsync(
             parameters with

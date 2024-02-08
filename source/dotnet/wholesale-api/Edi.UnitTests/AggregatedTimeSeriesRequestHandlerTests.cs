@@ -122,7 +122,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
 
         var aggregatedTimeSeries = CreateAggregatedTimeSeries();
         aggregatedTimeSeriesQueries
-            .Setup(parameters => parameters.GetLatestCorrectionForGridAreaAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
+            .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
             .Returns(() => aggregatedTimeSeries.ToAsyncEnumerable());
 
         validator.Setup(vali => vali.ValidateAsync(
