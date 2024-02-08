@@ -213,14 +213,20 @@ def test__temp(
     period_start = datetime(2020, 2, 29, 23, 0)
     period_end = datetime(2020, 3, 31, 22, 0)
 
-    time_zone = "Europe/Copenhagen"
-    period_start_local_time = f.from_utc_timestamp(
-        f.to_timestamp("{period_start}"), time_zone
-    ).cast("date")
-    period_end_local_time = f.from_utc_timestamp(
-        f.to_timestamp("{period_end}"), time_zone
-    ).cast("date")
+    # time_zone = "Europe/Copenhagen"
+    # period_start_local_time = f.from_utc_timestamp(
+    #     f.to_timestamp(f"{period_start}"), time_zone
+    # ).cast("date")
+    # period_end_local_time = f.from_utc_timestamp(
+    #     f.to_timestamp("{period_end}"), time_zone
+    # ).cast("date")
 
+    # print(period_start_local_time)
+
+    time_zone = "Europe/Copenhagen"
+    local_tz = pytz.timezone(time_zone)
+    period_start_local_time = period_start.astimezone(local_tz)
+    period_end_local_time = period_end.astimezone(local_tz)
     print(period_start_local_time)
 
     data = [
@@ -258,12 +264,31 @@ def test__temp(
             Colname.charge_key,
             f.expr("sequence(min_date, max_date, interval 1 day)").alias("date"),
         )
-        .withColumn(Colname.charge_time, f.explode("date"))
-        .drop("date")
+        # .withColumn(Colname.charge_time, f.explode("date"))
+        # .drop("date")
+    )
+
+    all_dates_df3 = (
+        df.select(Colname.charge_key)
+        .dropDuplicates()
+        .select(
+            f.explode(
+                f.sequence(
+                    f.to_timestamp(f.lit(datetime(2020, 3, 1, 0, 0))),
+                    f.to_timestamp(f.lit(datetime(2020, 3, 31, 0, 0))),
+                    f.expr("INTERVAL 1 DAY"),
+                )
+            ).alias("charge_time_local")
+        )
+        .withColumn(
+            "charge_time", f.to_utc_timestamp(f.col("charge_time_local"), time_zone)
+        )
+        .drop("charge_time_local")
     )
 
     all_dates_df.show(100)
     all_dates_df2.show(100)
+    all_dates_df3.show(100)
 
     w = Window.partitionBy(Colname.charge_key).orderBy(Colname.charge_time)
 
