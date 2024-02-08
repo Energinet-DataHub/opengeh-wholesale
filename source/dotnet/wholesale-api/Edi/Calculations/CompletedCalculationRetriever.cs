@@ -38,17 +38,26 @@ public class CompletedCalculationRetriever
     {
         if (aggregatedTimeSeriesRequest.RequestedCalculationType == RequestedCalculationType.LatestCorrection)
         {
-            aggregatedTimeSeriesRequest.RequestedCalculationType = RequestedCalculationType.ThirdCorrection;
+            aggregatedTimeSeriesRequest = aggregatedTimeSeriesRequest with
+            {
+                RequestedCalculationType = RequestedCalculationType.ThirdCorrection,
+            };
             var calculationForLatestCorrection = await GetCompletedCalculationAsync(aggregatedTimeSeriesRequest).ConfigureAwait(true);
             if (!calculationForLatestCorrection.Any())
             {
-                aggregatedTimeSeriesRequest.RequestedCalculationType = RequestedCalculationType.SecondCorrection;
+                aggregatedTimeSeriesRequest = aggregatedTimeSeriesRequest with
+                {
+                    RequestedCalculationType = RequestedCalculationType.SecondCorrection,
+                };
                 calculationForLatestCorrection = await GetCompletedCalculationAsync(aggregatedTimeSeriesRequest).ConfigureAwait(true);
             }
 
             if (!calculationForLatestCorrection.Any())
             {
-                aggregatedTimeSeriesRequest.RequestedCalculationType = RequestedCalculationType.FirstCorrection;
+                aggregatedTimeSeriesRequest = aggregatedTimeSeriesRequest with
+                {
+                    RequestedCalculationType = RequestedCalculationType.FirstCorrection,
+                };
                 calculationForLatestCorrection = await GetCompletedCalculationAsync(aggregatedTimeSeriesRequest).ConfigureAwait(true);
             }
 

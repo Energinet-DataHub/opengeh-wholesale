@@ -18,7 +18,4 @@ public record AggregatedTimeSeriesRequest(
     Period Period,
     TimeSeriesType TimeSeriesType,
     AggregationPerRoleAndGridArea AggregationPerRoleAndGridArea,
-    RequestedCalculationType RequestedCalculationType)
-{
-    public RequestedCalculationType RequestedCalculationType { get; set; } = RequestedCalculationType;
-}
+    RequestedCalculationType RequestedCalculationType);

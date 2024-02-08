@@ -225,7 +225,7 @@ public class CompletedCalculationRetrieverTest
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
 
         var calculationWithSecondCorrection = CalculationDtoBuilder.CalculationDto()
-            .WithCalculationType(CalculationType.FirstCorrectionSettlement)
+            .WithCalculationType(CalculationType.SecondCorrectionSettlement)
             .WithPeriodStart(startOfPeriodFilter)
             .WithPeriodEnd(endOfPeriodFilter)
             .Build();
