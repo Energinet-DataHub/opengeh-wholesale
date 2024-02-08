@@ -1,4 +1,5 @@
 module "apim_biztalkreceiver" {
+  count = 0
   policies = [
     {
       xml_content = <<XML
