@@ -206,12 +206,12 @@ def test__get_tariff_charges__filters_on_resolution(
     assert actual.collect()[0][Colname.resolution] == charge_resolution.value
 
 
-def test__temp(
+def test__temp0(
     spark: SparkSession,
 ) -> None:
     # Define the data for the DataFrame
-    period_start = datetime(2020, 2, 29, 23, 0)
-    period_end = datetime(2020, 3, 31, 22, 0)
+    period_start_utc = datetime(2020, 2, 29, 23, 0)
+    period_end_utc = datetime(2020, 3, 31, 22, 0)
 
     # time_zone = "Europe/Copenhagen"
     # period_start_local_time = f.from_utc_timestamp(
@@ -225,14 +225,111 @@ def test__temp(
 
     time_zone = "Europe/Copenhagen"
     local_tz = pytz.timezone(time_zone)
-    period_start_local_time = period_start.astimezone(local_tz)
-    period_end_local_time = period_end.astimezone(local_tz)
+
+    data = [
+        ("key1", period_start_utc, 100),
+    ]
+
+    # Define the schema for the DataFrame
+    schema = ["charge_key", "charge_time", "charge_price"]
+
+    # Create the DataFrame
+    df = spark.createDataFrame(data, schema)
+
+    df = df.withColumn(
+        "local_time",
+        f.explode(
+            f.sequence(
+                f.to_timestamp(
+                    f.lit(
+                        period_start_utc.astimezone(local_tz).strftime(
+                            "%Y-%m-%d %H:%M:%S"
+                        )
+                    )
+                ),
+                f.to_timestamp(
+                    f.lit(
+                        period_end_utc.astimezone(local_tz).strftime(
+                            "%Y-%m-%d %H:%M:%S"
+                        )
+                    )
+                ),
+                f.expr("INTERVAL 1 DAY"),
+            )
+        ),
+    )
+
+    df.show()
+
+
+def test__temp1(
+    spark: SparkSession,
+) -> None:
+    # Define the data for the DataFrame
+    period_start_utc = datetime(2020, 2, 29, 23, 0)
+    period_end_utc = datetime(2020, 3, 31, 22, 0)
+
+    # time_zone = "Europe/Copenhagen"
+    # period_start_local_time = f.from_utc_timestamp(
+    #     f.to_timestamp(f"{period_start}"), time_zone
+    # ).cast("date")
+    # period_end_local_time = f.from_utc_timestamp(
+    #     f.to_timestamp("{period_end}"), time_zone
+    # ).cast("date")
+
+    # print(period_start_local_time)
+
+    time_zone = "Europe/Copenhagen"
+    local_tz = pytz.timezone(time_zone)
+
+    data = [
+        ("key1", period_start_utc, 100),
+    ]
+
+    # Define the schema for the DataFrame
+    schema = ["charge_key", "charge_time", "charge_price"]
+
+    # Create the DataFrame
+    df = spark.createDataFrame(data, schema)
+
+    df = df.withColumn(
+        "period_start_local",
+        f.lit(period_start_utc.astimezone(local_tz)).cast(TimestampType()),
+    ).withColumn(
+        "period_start_end",
+        f.lit(period_end_utc.astimezone(local_tz)).cast(TimestampType()),
+    )
+
+    df.show()
+
+
+def test__temp(
+    spark: SparkSession,
+) -> None:
+    # Define the data for the DataFrame
+    period_start_utc = datetime(2020, 2, 29, 23, 0)
+    period_end_utc = datetime(2020, 3, 31, 22, 0)
+
+    # time_zone = "Europe/Copenhagen"
+    # period_start_local_time = f.from_utc_timestamp(
+    #     f.to_timestamp(f"{period_start}"), time_zone
+    # ).cast("date")
+    # period_end_local_time = f.from_utc_timestamp(
+    #     f.to_timestamp("{period_end}"), time_zone
+    # ).cast("date")
+
+    # print(period_start_local_time)
+
+    time_zone = "Europe/Copenhagen"
+    local_tz = pytz.timezone(time_zone)
+    period_start_local_time = period_start_utc.astimezone(local_tz)
+    period_end_local_time = period_start_utc.astimezone(local_tz)
     print(period_start_local_time)
 
     data = [
-        ("key1", period_start, 100),
-        ("key1", period_start + timedelta(days=10), 200),
-        ("key2", period_start, 300),
+        ("key1", period_start_utc, 100),
+        ("key1", period_start_utc + timedelta(days=10), 200),
+        ("key2", period_start_utc, 300),
     ]
 
     # Define the schema for the DataFrame
@@ -247,25 +344,11 @@ def test__temp(
         .withColumn(
             "date",
             f.expr(
-                f"sequence(to_timestamp('{period_start}'), to_timestamp('{period_end}'), interval 1 day)"
+                f"sequence(to_timestamp('{period_start_utc}'), to_timestamp('{period_end_utc}'), interval 1 day)"
             ),
         )
         .withColumn(Colname.charge_time, f.explode("date"))
         .drop("date")
-    )
-
-    all_dates_df2 = (
-        df.groupBy(Colname.charge_key)
-        .agg(
-            f.lit(period_start).alias("min_date"),
-            f.lit(period_end).alias("max_date"),
-        )
-        .select(
-            Colname.charge_key,
-            f.expr("sequence(min_date, max_date, interval 1 day)").alias("date"),
-        )
-        # .withColumn(Colname.charge_time, f.explode("date"))
-        # .drop("date")
     )
 
     all_dates_df3 = (
@@ -274,8 +357,20 @@ def test__temp(
         .select(
             f.explode(
                 f.sequence(
-                    f.to_timestamp(f.lit(datetime(2020, 3, 1, 0, 0))),
-                    f.to_timestamp(f.lit(datetime(2020, 3, 31, 0, 0))),
+                    f.to_timestamp(
+                        f.lit(
+                            period_start_utc.astimezone(local_tz).strftime(
+                                "%Y-%m-%d %H:%M:%S"
+                            )
+                        )
+                    ),
+                    f.to_timestamp(
+                        f.lit(
+                            period_end_utc.astimezone(local_tz).strftime(
+                                "%Y-%m-%d %H:%M:%S"
+                            )
+                        )
+                    ),
                     f.expr("INTERVAL 1 DAY"),
                 )
             ).alias("charge_time_local")
@@ -287,7 +382,6 @@ def test__temp(
     )
 
     all_dates_df.show(100)
-    all_dates_df2.show(100)
     all_dates_df3.show(100)
 
     w = Window.partitionBy(Colname.charge_key).orderBy(Colname.charge_time)
