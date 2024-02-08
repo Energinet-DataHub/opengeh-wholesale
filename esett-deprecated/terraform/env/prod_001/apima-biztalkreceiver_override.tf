@@ -25,3 +25,11 @@ module "apim_biztalkreceiver" {
     }
   ]
 }
+
+resource "azurerm_api_management_backend" "biztalkreceiver" {
+  count = 0
+}
+
+module "apimao_receiverfunction" {
+  count = 0
+}
