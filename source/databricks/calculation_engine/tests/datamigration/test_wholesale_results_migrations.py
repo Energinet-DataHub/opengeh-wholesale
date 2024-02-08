@@ -26,7 +26,7 @@ from package.codelists import (
     ChargeType,
     ChargeUnit,
     MeteringPointType,
-    ProcessType,
+    CalculationType,
     SettlementMethod,
     WholesaleResultResolution,
 )
@@ -197,10 +197,10 @@ def test__migrated_table_accepts_valid_data(
         *[
             (WholesaleResultColumnNames.calculation_type, x)
             for x in [
-                ProcessType.WHOLESALE_FIXING.value,
-                ProcessType.FIRST_CORRECTION_SETTLEMENT.value,
-                ProcessType.SECOND_CORRECTION_SETTLEMENT.value,
-                ProcessType.THIRD_CORRECTION_SETTLEMENT.value,
+                CalculationType.WHOLESALE_FIXING.value,
+                CalculationType.FIRST_CORRECTION_SETTLEMENT.value,
+                CalculationType.SECOND_CORRECTION_SETTLEMENT.value,
+                CalculationType.THIRD_CORRECTION_SETTLEMENT.value,
             ]
         ],
         *[(WholesaleResultColumnNames.quantity_unit, x.value) for x in ChargeUnit],

@@ -18,7 +18,9 @@ from package.calculation_output.wholesale_calculation_result_writer import (
     WholesaleCalculationResultWriter,
 )
 from package.codelists import (
-    ProcessType,
+    ChargeResolution,
+    MeteringPointType,
+    CalculationType,
     TimeSeriesType,
     AggregationLevel,
     AmountType,
@@ -35,7 +37,7 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
 
     energy_result_writer = EnergyCalculationResultWriter(
         args.calculation_id,
-        args.calculation_process_type,
+        args.calculation_type,
         args.calculation_execution_time_start,
     )
 
@@ -197,15 +199,15 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
 
     wholesale_calculation_result_writer = WholesaleCalculationResultWriter(
         args.calculation_id,
-        args.calculation_process_type,
+        args.calculation_type,
         args.calculation_execution_time_start,
     )
 
     if (
-        args.calculation_process_type == ProcessType.WHOLESALE_FIXING
-        or args.calculation_process_type == ProcessType.FIRST_CORRECTION_SETTLEMENT
-        or args.calculation_process_type == ProcessType.SECOND_CORRECTION_SETTLEMENT
-        or args.calculation_process_type == ProcessType.THIRD_CORRECTION_SETTLEMENT
+        args.calculation_type == CalculationType.WHOLESALE_FIXING
+        or args.calculation_type == CalculationType.FIRST_CORRECTION_SETTLEMENT
+        or args.calculation_type == CalculationType.SECOND_CORRECTION_SETTLEMENT
+        or args.calculation_type == CalculationType.THIRD_CORRECTION_SETTLEMENT
     ):
         with logging_configuration.start_span("hourly_tariff_per_ga_co_es"):
             wholesale_calculation_result_writer.write(

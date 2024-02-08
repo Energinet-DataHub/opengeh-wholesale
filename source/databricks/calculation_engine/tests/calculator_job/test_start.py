@@ -261,7 +261,7 @@ AppExceptions
         sys.argv.append("--grid-areas=[123]")
         sys.argv.append("--period-start-datetime=2023-01-31T23:00:00Z")
         sys.argv.append("--period-end-datetime=2023-01-31T23:00:00Z")
-        sys.argv.append("--process-type=BalanceFixing")
+        sys.argv.append("--calculation-type=BalanceFixing")
         sys.argv.append("--execution-time-start=2023-01-31T23:00:00Z")
 
 
