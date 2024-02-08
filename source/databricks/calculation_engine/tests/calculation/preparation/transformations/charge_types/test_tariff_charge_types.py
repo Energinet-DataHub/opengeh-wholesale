@@ -208,7 +208,11 @@ def test__temp(
     spark: SparkSession,
 ) -> None:
     # Define the data for the DataFrame
-    data = [("key1", "2022-01-01", 100), ("key1", "2022-01-10", 200)]
+    data = [
+        ("key1", "2022-01-01", 100),
+        ("key1", "2022-01-10", 200),
+        ("key2", "2022-01-01", 300),
+    ]
 
     # Define the schema for the DataFrame
     schema = ["charge_key", "charge_time", "charge_price"]
@@ -219,11 +223,13 @@ def test__temp(
     all_dates_df = (
         df.groupBy("charge_key")
         .agg(
-            f.date_trunc("dd", f.min(f.to_date("charge_time", "yyyy-MM-dd"))).alias(
-                "min_date"
-            ),
+            f.lit("2022-01-01")
+            .cast(TimestampType())
+            .alias("min_date"),  # set min_date as 2022-01-01 directly
+            f.lit("2022-01-31")
+            .cast(TimestampType())
+            .alias("max_date"),  # set min_date as 2022-01-01 directly
         )
-        .withColumn("max_date", f.last_day("min_date"))
         .select(
             "charge_key",
             f.expr("sequence(min_date, max_date, interval 1 day)").alias("date"),
