@@ -93,10 +93,10 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
                 .CreateAsync();
 
             Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING), ServiceBusResourceProvider.ConnectionString);
-            Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING), ServiceBusResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING), ServiceBusResourceProvider.ConnectionString);
 
             // Add events configuration variables
-            Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING), ServiceBusResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING), ServiceBusResourceProvider.ConnectionString);
             await ServiceBusResourceProvider
                 .BuildQueue("sbq-wholesale-inbox")
                 .SetEnvironmentVariableToQueueName(nameof(ServiceBusOptions.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME))
