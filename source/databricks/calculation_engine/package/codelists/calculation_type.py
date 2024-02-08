@@ -15,7 +15,7 @@
 from enum import Enum
 
 
-class ProcessType(Enum):
+class CalculationType(Enum):
     BALANCE_FIXING = "BalanceFixing"
     AGGREGATION = "Aggregation"
     WHOLESALE_FIXING = "WholesaleFixing"
