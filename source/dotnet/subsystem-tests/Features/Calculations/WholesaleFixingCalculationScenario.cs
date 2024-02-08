@@ -251,9 +251,6 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
                 .Should().BeEquivalentTo(expectedTimeSeriesPoints);
         }
 
-        /// <summary>
-        /// Note: The total expected amount is NOT correct! PO will investigate the issue.
-        /// </summary>
         [ScenarioStep(12)]
         [SubsystemFact]
         public void AndThen_OneSpecificMonthlyAmountPerChargeResultProducedEventContainsExpectedMonthlyAmount()
