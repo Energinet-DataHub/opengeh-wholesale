@@ -33,8 +33,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     private readonly IValidator<Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest> _validator;
     private readonly IAggregatedTimeSeriesQueries _aggregatedTimeSeriesQueries;
     private readonly ILogger<AggregatedTimeSeriesRequestHandler> _logger;
-    private readonly ICalculationsClient _calculationsClient;
-    private readonly LatestCalculationsForPeriod _latestCalculationsForPeriod;
+    private readonly CompletedCalculationRetriever _completedCalculationRetriever;
     private static readonly ValidationError _noDataAvailable = new("Ingen data tilgængelig / No data available", "E0H");
     private static readonly ValidationError _noDataForRequestedGridArea = new("Forkert netområde / invalid grid area", "D46");
 
@@ -43,15 +42,13 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         IValidator<Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest> validator,
         IAggregatedTimeSeriesQueries aggregatedTimeSeriesQueries,
         ILogger<AggregatedTimeSeriesRequestHandler> logger,
-        ICalculationsClient calculationsClient,
-        LatestCalculationsForPeriod latestCalculationsForPeriod)
+        CompletedCalculationRetriever completedCalculationRetriever)
     {
         _ediClient = ediClient;
         _validator = validator;
         _aggregatedTimeSeriesQueries = aggregatedTimeSeriesQueries;
         _logger = logger;
-        _calculationsClient = calculationsClient;
-        _latestCalculationsForPeriod = latestCalculationsForPeriod;
+        _completedCalculationRetriever = completedCalculationRetriever;
     }
 
     public async Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken)
@@ -87,54 +84,6 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
 
         _logger.LogInformation("Sending message with reference id {reference_id}", referenceId);
         await SendAcceptedMessageAsync(results, referenceId, cancellationToken).ConfigureAwait(false);
-    }
-
-    private async Task<IReadOnlyCollection<CalculationForPeriod>> GetLatestCompletedCalculationForRequestAsync(
-        AggregatedTimeSeriesRequest aggregatedTimeSeriesRequest)
-    {
-        if (aggregatedTimeSeriesRequest.RequestedCalculationType == RequestedCalculationType.LatestCorrection)
-        {
-            aggregatedTimeSeriesRequest.RequestedCalculationType = RequestedCalculationType.ThirdCorrection;
-            var calculationForLatestCorrection = await GetCompletedCalculationAsync(aggregatedTimeSeriesRequest).ConfigureAwait(true);
-            if (!calculationForLatestCorrection.Any())
-            {
-                aggregatedTimeSeriesRequest.RequestedCalculationType = RequestedCalculationType.SecondCorrection;
-                calculationForLatestCorrection = await GetCompletedCalculationAsync(aggregatedTimeSeriesRequest).ConfigureAwait(true);
-            }
-
-            if (!calculationForLatestCorrection.Any())
-            {
-                aggregatedTimeSeriesRequest.RequestedCalculationType = RequestedCalculationType.FirstCorrection;
-                calculationForLatestCorrection = await GetCompletedCalculationAsync(aggregatedTimeSeriesRequest).ConfigureAwait(true);
-            }
-
-            return _latestCalculationsForPeriod.FindLatestCalculationsForPeriod(
-                aggregatedTimeSeriesRequest.Period.Start,
-                aggregatedTimeSeriesRequest.Period.End,
-                calculationForLatestCorrection);
-        }
-
-        var calculations = await GetCompletedCalculationAsync(aggregatedTimeSeriesRequest).ConfigureAwait(true);
-
-        return _latestCalculationsForPeriod.FindLatestCalculationsForPeriod(
-            aggregatedTimeSeriesRequest.Period.Start,
-            aggregatedTimeSeriesRequest.Period.End,
-            calculations);
-    }
-
-    private async Task<IReadOnlyCollection<CalculationDto>> GetCompletedCalculationAsync(AggregatedTimeSeriesRequest aggregatedTimeSeriesRequest)
-    {
-        return await _calculationsClient
-            .SearchAsync(
-                filterByGridAreaCodes: aggregatedTimeSeriesRequest.AggregationPerRoleAndGridArea.GridAreaCode != null
-                    ? new[] { aggregatedTimeSeriesRequest.AggregationPerRoleAndGridArea.GridAreaCode }
-                    : new string[] { },
-                filterByExecutionState: CalculationState.Completed,
-                periodStart: aggregatedTimeSeriesRequest.Period.Start,
-                periodEnd: aggregatedTimeSeriesRequest.Period.End,
-                calculationType: CalculationTypeMapper.FromRequestedCalculationType(
-                    aggregatedTimeSeriesRequest.RequestedCalculationType))
-            .ConfigureAwait(false);
     }
 
     private async Task<IReadOnlyCollection<AggregatedTimeSeries>> GetAggregatedTimeSeriesAsync(
@@ -180,7 +129,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     private async Task<AggregatedTimeSeriesQueryParameters> CreateAggregatedTimeSeriesQueryParametersWithoutCalculationTypeAsync(
         AggregatedTimeSeriesRequest request)
     {
-        var latestCalculationsForRequest = await GetLatestCompletedCalculationForRequestAsync(request)
+        var latestCalculationsForRequest = await _completedCalculationRetriever.GetLatestCompletedCalculationForRequestAsync(request)
             .ConfigureAwait(true);
 
         var parameters = new AggregatedTimeSeriesQueryParameters(
