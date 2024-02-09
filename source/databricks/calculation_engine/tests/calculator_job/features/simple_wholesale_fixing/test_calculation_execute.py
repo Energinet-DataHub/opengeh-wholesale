@@ -1,0 +1,45 @@
+# Copyright 2020 Energinet DataHub A/S
+#
+# Licensed under the Apache License, Version 2.0 (the "License2");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+from datetime import datetime
+from unittest.mock import patch
+from calculator_job.test_data_builder import TableReaderMockBuilder
+from package import calculation_input
+from package.calculation.calculation_execute import calculation_execute
+from package.calculation.calculator_args import CalculatorArgs
+from package.calculation_input import TableReader
+
+
+class TestBusinessLogic:
+    @patch.object(calculation_input, TableReader.__name__)
+    def test_demo(
+            self,
+            args: CalculatorArgs,
+            spark,
+    ):
+        # Arrange
+        args.calculation_grid_areas = ["805"]
+        args.calculation_period_start_datetime = datetime(2019, 12, 30, 23, 0, 0)
+        args.calculation_period_end_datetime = datetime(2020, 1, 1, 23, 0, 0)
+
+        builder = TableReaderMockBuilder(spark, "features/simple_wholesale_fixing/test_data/")
+        builder.populate_metering_point_periods("metering_point_periods.csv")
+        builder.populate_time_series_points("time_series_points.csv")
+        builder.populate_grid_loss_metering_points("grid_loss_metering_points.csv")
+        prepared_data_reader = builder.get_prepared_date_reader()
+
+        # Act
+        actual = calculation_execute(args, prepared_data_reader)
+
+        # Assert
+        actual.basis_data.metering_point_time_series.count = 2
