@@ -20,13 +20,16 @@ from datetime import timedelta
 from typing import cast, Callable
 from unittest.mock import patch, Mock
 from azure.monitor.query import LogsQueryClient, LogsQueryResult
+
 from calculation_input.factories import raw_grid_loss_metering_points_factory
 from package import calculation_input
 from package.calculation import PreparedDataReader
 from package.calculation.calculation_execute import calculation_execute
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation_input import TableReader
+from package.calculation_input.schemas import metering_point_period_schema
 from package.calculator_job import start, start_with_deps
+from package.codelists import InputMeteringPointType
 
 from tests.integration_test_configuration import IntegrationTestConfiguration
 import calculation_input.factories.raw_time_series_point_factory \
@@ -225,18 +228,31 @@ AppExceptions
         spark,
     ):
         # Arrange
-        self.prepare_command_line_arguments(any_calculator_args)
+        any_calculator_args.calculation_grid_areas= ["805"]
+        self.prepare_command_line_arguments2(any_calculator_args)
+        any_calculator_args.calculation_period_start_datetime = "2019-12-30T23:00:00Z"
+        any_calculator_args.calculation_period_end_datetime = "2020-01-01T23:00:00Z"
+        row1 = raw_metering_point_periods_factory.create_row()
+        row2 = raw_metering_point_periods_factory.create_row(
+            metering_point_id="123456789012345678901234568",
+            grid_area="805",
+            metering_point_type=InputMeteringPointType.CONSUMPTION
+        )
 
-        mock_table_reader.read_time_series_points.return_value = (
-            raw_metering_point_periods_factory.create_dataframe(spark)
+        mock_table_reader.read_metering_point_periods.return_value = (
+            raw_metering_point_periods_factory.create_dataframe(spark, [row1, row2])
         )
 
         mock_table_reader.read_time_series_points.return_value = (
             raw_time_series_point_factory.create_dataframe(spark)
         )
 
-        mock_table_reader.read_time_series_points.return_value = (
-            raw_grid_loss_metering_points_factory.create_dataframe(spark)
+        row3 = raw_grid_loss_metering_points_factory.create_row()
+        row4 = raw_grid_loss_metering_points_factory.create_row(
+            metering_point_id="123456789012345678901234568"
+        )
+        mock_table_reader.read_grid_loss_metering_points.return_value = (
+            raw_grid_loss_metering_points_factory.create_dataframe(spark, [row3, row4])
         )
 
         prepared_data_reader: PreparedDataReader = PreparedDataReader(
@@ -248,6 +264,19 @@ AppExceptions
 
         # Assert
 
+    @staticmethod
+    def prepare_command_line_arguments2(any_calculator_args):
+        any_calculator_args.calculation_id = str(
+            uuid.uuid4()
+        )  # Ensure unique calculation id
+        sys.argv = []
+        sys.argv.append("--dummy=")
+        sys.argv.append(f"--calculation-id={str(any_calculator_args.calculation_id)}")
+        sys.argv.append("--grid-areas=[805]")
+        sys.argv.append("--period-start-datetime=2019-12-30T23:00:00Z")
+        sys.argv.append("--period-end-datetime=2020-01-1T23:00:00Z")
+        sys.argv.append("--calculation-type=WholesaleFixing")
+        sys.argv.append("--execution-time-start=2020-01-05T23:00:00Z")
 
     @staticmethod
     def prepare_command_line_arguments(any_calculator_args):

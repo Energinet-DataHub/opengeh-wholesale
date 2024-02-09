@@ -16,6 +16,8 @@
 from datetime import datetime
 
 from pyspark.sql import DataFrame, Row, SparkSession
+from pyspark.sql.functions import to_timestamp
+from pyspark.sql.types import TimestampType
 
 from package.calculation_input.schemas import (
     metering_point_period_schema,
@@ -23,48 +25,54 @@ from package.calculation_input.schemas import (
 from package.codelists import (
     InputMeteringPointType,
     InputSettlementMethod,
-    MeteringPointResolution,
+    MeteringPointResolution, CalculationType,
 )
 from package.constants import Colname
 
-DEFAULT_FROM_DATE = datetime(2022, 6, 8, 22, 0, 0)
-DEFAULT_TO_DATE = datetime(2022, 6, 9, 22, 0, 0)
-DEFAULT_GRID_AREA = "805"
-DEFAULT_METERING_POINT_ID = "123456789012345678901234567"
-DEFAULT_METERING_POINT_TYPE = InputMeteringPointType.CONSUMPTION
-DEFAULT_SETTLEMENT_METHOD = InputSettlementMethod.FLEX
-DEFAULT_RESOLUTION = MeteringPointResolution.HOUR
-DEFAULT_FROM_GRID_AREA = None
-DEFAULT_TO_GRID_AREA = None
-DEFAULT_PARENT_METERING_POINT_ID = None
-DEFAULT_ENERGY_SUPPLIER_ID = "9999999999999"
-DEFAULT_BALANCE_RESPONSIBLE_ID = "1234567890123"
+
+class DefaultValues:
+    METERING_POINT_ID = "123456789012345678901234567"
+    METERING_POINT_TYPE = InputMeteringPointType.PRODUCTION
+    CALCULATION_TYPE = CalculationType.WHOLESALE_FIXING
+    FROM_DATE = datetime(2019, 12, 31, 23, 0, 0)
+    TO_DATE = datetime(2020, 1, 2, 23, 0, 0)
+    GRID_AREA = "805"
+    SETTLEMENT_METHOD = InputSettlementMethod.FLEX
+    RESOLUTION = MeteringPointResolution.HOUR
+    FROM_GRID_AREA = "805"
+    TO_GRID_AREA = "805"
+    PARENT_METERING_POINT_ID = None
+    ENERGY_SUPPLIER_ID = "9999999999999"
+    BALANCE_RESPONSIBLE_ID = "1234567890123"
 
 
 def create_row(
-    metering_point_type: InputMeteringPointType = DEFAULT_METERING_POINT_TYPE,
-    settlement_method: InputSettlementMethod = DEFAULT_SETTLEMENT_METHOD,
-    from_date: datetime = DEFAULT_FROM_DATE,
-    to_date: datetime = DEFAULT_TO_DATE,
-    grid_area: str = DEFAULT_GRID_AREA,
-    from_grid_area: str = DEFAULT_FROM_GRID_AREA,
-    to_grid_area: str = DEFAULT_TO_GRID_AREA,
+    metering_point_id: str = DefaultValues.METERING_POINT_ID,
+    metering_point_type: InputMeteringPointType = DefaultValues.METERING_POINT_TYPE,
+    calculation_type: CalculationType | None = DefaultValues.CALCULATION_TYPE,
+    settlement_method: InputSettlementMethod = DefaultValues.SETTLEMENT_METHOD,
+    from_date: TimestampType = DefaultValues.FROM_DATE,
+    to_date: TimestampType = DefaultValues.TO_DATE,
+    grid_area: str = DefaultValues.GRID_AREA,
+    from_grid_area: str = DefaultValues.FROM_GRID_AREA,
+    to_grid_area: str = DefaultValues.TO_GRID_AREA,
 ) -> Row:
     row = {
-        Colname.metering_point_id: DEFAULT_METERING_POINT_ID,
+        Colname.metering_point_id: metering_point_id,
         Colname.metering_point_type: metering_point_type.value,
-        Colname.calculation_type: "foo",
+        Colname.calculation_type: calculation_type.value,
         Colname.settlement_method: settlement_method.value,
         Colname.grid_area: grid_area,
-        Colname.resolution: DEFAULT_RESOLUTION.value,
+        Colname.resolution: DefaultValues.RESOLUTION.value,
         Colname.from_grid_area: from_grid_area,
         Colname.to_grid_area: to_grid_area,
-        Colname.parent_metering_point_id: DEFAULT_PARENT_METERING_POINT_ID,
-        Colname.energy_supplier_id: DEFAULT_ENERGY_SUPPLIER_ID,
-        Colname.balance_responsible_id: DEFAULT_BALANCE_RESPONSIBLE_ID,
+        Colname.parent_metering_point_id: DefaultValues.PARENT_METERING_POINT_ID,
+        Colname.energy_supplier_id: DefaultValues.ENERGY_SUPPLIER_ID,
+        Colname.balance_responsible_id: DefaultValues.BALANCE_RESPONSIBLE_ID,
         Colname.from_date: from_date,
         Colname.to_date: to_date,
     }
+
     return Row(**row)
 
 

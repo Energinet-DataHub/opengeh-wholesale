@@ -17,6 +17,7 @@ from datetime import datetime
 from decimal import Decimal
 
 from pyspark.sql import DataFrame, Row, SparkSession
+from pyspark.sql.types import TimestampType
 
 from package.calculation_input.schemas import (
     time_series_point_schema
@@ -35,7 +36,7 @@ def create_row(
     metering_point_id: str = DefaultValues.METERING_POINT_ID,
     quantity: Decimal = DefaultValues.QUANTITY,
     quality: str = DefaultValues.QUALITY,
-    observation_time: datetime = DefaultValues.OBSERVATION_TIME,
+    observation_time: TimestampType = DefaultValues.OBSERVATION_TIME,
 ) -> Row:
     row = {
         Colname.metering_point_id: metering_point_id,

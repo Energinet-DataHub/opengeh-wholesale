@@ -196,17 +196,17 @@ class TestWhenValidInput:
         assert actual_row[Colname.grid_area] == factory.DEFAULT_GRID_AREA
         assert actual_row[Colname.resolution] == factory.DEFAULT_RESOLUTION.value
         assert actual_row[Colname.from_grid_area] == factory.DEFAULT_FROM_GRID_AREA
-        assert actual_row[Colname.to_grid_area] == factory.DEFAULT_TO_GRID_AREA
+        assert actual_row[Colname.to_grid_area] == factory.DefaultValues.TO_GRID_AREA
         assert (
             actual_row[Colname.parent_metering_point_id]
-            == factory.DEFAULT_PARENT_METERING_POINT_ID
+            == factory.DefaultValues.PARENT_METERING_POINT_ID
         )
         assert (
-            actual_row[Colname.energy_supplier_id] == factory.DEFAULT_ENERGY_SUPPLIER_ID
+            actual_row[Colname.energy_supplier_id] == factory.DefaultValues.ENERGY_SUPPLIER_ID
         )
         assert (
             actual_row[Colname.balance_responsible_id]
-            == factory.DEFAULT_BALANCE_RESPONSIBLE_ID
+            == factory.DefaultValues.BALANCE_RESPONSIBLE_ID
         )
 
     @patch.object(calculation_input, TableReader.__name__)
