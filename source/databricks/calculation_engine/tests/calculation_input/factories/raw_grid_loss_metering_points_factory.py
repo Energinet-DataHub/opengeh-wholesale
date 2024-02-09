@@ -23,6 +23,7 @@ from package.constants import Colname
 class DefaultValues:
     METERING_POINT_ID = "123456789012345678901234567"
 
+
 def create_row(
     metering_point_id: str = DefaultValues.METERING_POINT_ID,
 ) -> Row:

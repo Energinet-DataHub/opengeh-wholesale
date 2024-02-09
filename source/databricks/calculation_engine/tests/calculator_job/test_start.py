@@ -25,6 +25,7 @@ from package.calculator_job import start, start_with_deps
 
 from tests.integration_test_configuration import IntegrationTestConfiguration
 
+
 class TestWhenInvokedWithInvalidArguments:
     def test_exits_with_code_2(self):
         """The exit code 2 originates from the argparse library."""
@@ -48,7 +49,7 @@ class TestWhenInvokedWithValidArguments:
 
     def test_add_info_log_record_to_azure_monitor_with_expected_settings(
         self,
-            calculator_args: CalculatorArgs,
+        calculator_args: CalculatorArgs,
         integration_test_configuration: IntegrationTestConfiguration,
     ):
         """
@@ -105,7 +106,7 @@ AppTraces
 
     def test_add_trace_log_record_to_azure_monitor_with_expected_settings(
         self,
-            calculator_args: CalculatorArgs,
+        calculator_args: CalculatorArgs,
         integration_test_configuration: IntegrationTestConfiguration,
     ):
         """
@@ -155,7 +156,7 @@ AppDependencies
 
     def test_adds_exception_log_record_to_azure_monitor_with_expected_settings(
         self,
-            calculator_args: CalculatorArgs,
+        calculator_args: CalculatorArgs,
         integration_test_configuration: IntegrationTestConfiguration,
     ):
         """

@@ -49,7 +49,6 @@ def get_metering_point_periods_df(
         .where(col(Colname.to_date).isNull() | (col(Colname.to_date) > period_start))
     )
 
-
     metering_point_periods_df = clamp_period(
         metering_point_periods_df,
         period_start,

@@ -25,6 +25,7 @@ import calculation_input.factories.raw_time_series_point_factory \
 import calculation_input.factories.input_metering_point_periods_factory \
     as raw_metering_point_periods_factory
 
+
 class TestBusinessLogic:
     @patch.object(calculation_input, TableReader.__name__)
     def test1(
