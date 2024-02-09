@@ -59,8 +59,6 @@ def get_metering_point_periods_df(
         Colname.to_date,
     )
 
-    metering_point_periods_df.printSchema()
-
     metering_point_periods_df = _fix_settlement_method(metering_point_periods_df)
     metering_point_periods_df = _fix_metering_point_type(metering_point_periods_df)
 

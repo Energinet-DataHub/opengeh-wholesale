@@ -32,11 +32,6 @@ def clamp_period(
 
     If the end date is null or if it is later than ´clamp_end_datetime´: set end date equal to ´clamp_end_datetime´.
     """
-    print(period_start_column_name)
-
-    print("here1")
-    df.printSchema()
-
     df = df.withColumn(
         period_start_column_name,
         f.when(
@@ -50,8 +45,5 @@ def clamp_period(
             clamp_end_datetime,
         ).otherwise(f.col(period_end_column_name)),
     )
-
-    print("here2")
-    df.printSchema()
 
     return df

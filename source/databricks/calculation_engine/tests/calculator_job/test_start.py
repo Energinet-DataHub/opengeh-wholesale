@@ -16,7 +16,7 @@ import sys
 import time
 import uuid
 import pytest
-from datetime import timedelta
+from datetime import timedelta, datetime
 from typing import cast, Callable
 from unittest.mock import patch, Mock
 from azure.monitor.query import LogsQueryClient, LogsQueryResult
@@ -230,8 +230,8 @@ AppExceptions
         # Arrange
         any_calculator_args.calculation_grid_areas= ["805"]
         self.prepare_command_line_arguments2(any_calculator_args)
-        any_calculator_args.calculation_period_start_datetime = "2019-12-30T23:00:00Z"
-        any_calculator_args.calculation_period_end_datetime = "2020-01-01T23:00:00Z"
+        any_calculator_args.calculation_period_start_datetime = datetime(2019, 12, 30, 23, 0, 0)
+        any_calculator_args.calculation_period_end_datetime = datetime(2020, 1, 1, 23, 0, 0)
         row1 = raw_metering_point_periods_factory.create_row()
         row2 = raw_metering_point_periods_factory.create_row(
             metering_point_id="123456789012345678901234568",
