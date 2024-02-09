@@ -22,5 +22,4 @@ public record AggregatedTimeSeriesQueryParameters(
     string? GridArea,
     string? EnergySupplierId,
     string? BalanceResponsibleId,
-    IReadOnlyCollection<CalculationForPeriod> LatestCalculationForPeriod,
-    CalculationType? CalculationType = null);
+    IReadOnlyCollection<CalculationForPeriod> LatestCalculationForPeriod);

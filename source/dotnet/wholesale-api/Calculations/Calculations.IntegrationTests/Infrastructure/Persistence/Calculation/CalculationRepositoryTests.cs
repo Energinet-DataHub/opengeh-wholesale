@@ -124,6 +124,7 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
             null,
             null,
             null,
+            null,
             null);
 
         // Assert
@@ -145,6 +146,7 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
         var actual = await sut.SearchAsync(
             Array.Empty<GridAreaCode>(),
             new[] { CalculationExecutionState.Created },
+            null,
             null,
             null,
             null,
@@ -180,7 +182,8 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
             null,
             null,
             Instant.FromDateTimeOffset(start),
-            Instant.FromDateTimeOffset(end));
+            Instant.FromDateTimeOffset(end),
+            null);
 
         // Assert
         if (expected)
@@ -221,6 +224,7 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
             Instant.FromDateTimeOffset(start),
             Instant.FromDateTimeOffset(end),
             null,
+            null,
             null);
 
         // Assert
@@ -228,6 +232,31 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
             actual.Should().Contain(calculation);
         else
             actual.Should().NotContain(calculation);
+    }
+
+    [Fact]
+    public async Task SearchAsync_HasCalculationTypeFilter_FiltersAsExpected()
+    {
+        // Arrange
+        await using var writeContext = _databaseManager.CreateDbContext();
+        var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
+        var calculation = CreateCalculation(someGridAreasIds);
+        var sut = new CalculationRepository(writeContext);
+        await sut.AddAsync(calculation);
+        await writeContext.SaveChangesAsync();
+
+        // Act
+        var actual = await sut.SearchAsync(
+            Array.Empty<GridAreaCode>(),
+            Array.Empty<CalculationExecutionState>(),
+            null,
+            null,
+            null,
+            null,
+            CalculationType.BalanceFixing);
+
+        // Assert
+        actual.Should().Contain(calculation);
     }
 
     private static Application.Model.Calculations.Calculation CreateCalculation(List<GridAreaCode> someGridAreasIds)

@@ -39,22 +39,6 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
         _deltaTableOptions = deltaTableOptions.Value;
     }
 
-    public async IAsyncEnumerable<AggregatedTimeSeries> GetLatestCorrectionForGridAreaAsync(AggregatedTimeSeriesQueryParameters parameters)
-    {
-        if (parameters.CalculationType != null)
-        {
-            throw new ArgumentException($"{nameof(parameters.CalculationType)} must be null, it will be overwritten.", nameof(parameters));
-        }
-
-        if (parameters.GridArea == null)
-        {
-            throw new ArgumentNullException(nameof(parameters), $"{nameof(parameters.GridArea)} may not be null.");
-        }
-
-        await foreach (var aggregatedTimeSeries in GetAggregatedTimeSeriesForLatestCorrectionAsync(parameters).ConfigureAwait(false))
-            yield return aggregatedTimeSeries;
-    }
-
     public async IAsyncEnumerable<AggregatedTimeSeries> GetAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
         if (!parameters.LatestCalculationForPeriod.Any())
@@ -64,18 +48,6 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
 
         var sqlStatement = new AggregatedTimeSeriesQueryStatement(parameters, _deltaTableOptions);
         await foreach (var aggregatedTimeSeries in GetInternalAsync(sqlStatement, parameters.LatestCalculationForPeriod).ConfigureAwait(false))
-            yield return aggregatedTimeSeries;
-    }
-
-    private async IAsyncEnumerable<AggregatedTimeSeries> GetAggregatedTimeSeriesForLatestCorrectionAsync(AggregatedTimeSeriesQueryParameters parameters)
-    {
-        await foreach (var aggregatedTimeSeries in GetAsync(parameters with { CalculationType = CalculationType.ThirdCorrectionSettlement }).ConfigureAwait(false))
-            yield return aggregatedTimeSeries;
-
-        await foreach (var aggregatedTimeSeries in GetAsync(parameters with { CalculationType = CalculationType.SecondCorrectionSettlement }).ConfigureAwait(false))
-            yield return aggregatedTimeSeries;
-
-        await foreach (var aggregatedTimeSeries in GetAsync(parameters with { CalculationType = CalculationType.FirstCorrectionSettlement }).ConfigureAwait(false))
             yield return aggregatedTimeSeries;
     }
 

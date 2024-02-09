@@ -32,6 +32,7 @@ public static class EdiRegistration
     {
         serviceCollection.AddScoped<IAggregatedTimeSeriesRequestHandler, AggregatedTimeSeriesRequestHandler>();
         serviceCollection.AddScoped<LatestCalculationsForPeriod>();
+        serviceCollection.AddScoped<CompletedCalculationRetriever>();
         serviceCollection.AddSingleton<IEdiClient, EdiClient>();
         AddAggregatedTimeSeriesRequestValidation(serviceCollection);
     }
