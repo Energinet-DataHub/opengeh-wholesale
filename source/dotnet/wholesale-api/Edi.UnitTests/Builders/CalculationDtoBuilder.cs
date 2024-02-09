@@ -25,6 +25,7 @@ public class CalculationDtoBuilder
     private DateTimeOffset _executionStart;
     private DateTimeOffset __executionEnd;
     private Guid _calculationId;
+    private CalculationType _calculationType;
     private long _version;
 
     private CalculationDtoBuilder()
@@ -34,6 +35,7 @@ public class CalculationDtoBuilder
         _executionStart = DateTimeOffset.Parse("2022-06-01T22:00Z");
         __executionEnd = DateTimeOffset.Parse("2022-06-01T22:00Z");
         _calculationId = Guid.NewGuid();
+        _calculationType = CalculationType.BalanceFixing;
         _version = 1;
     }
 
@@ -51,7 +53,7 @@ public class CalculationDtoBuilder
             CalculationState.Completed,
             false,
             new[] { "543" },
-            CalculationType.BalanceFixing,
+            _calculationType,
             Guid.NewGuid(),
             _version);
     }
@@ -76,6 +78,12 @@ public class CalculationDtoBuilder
     public CalculationDtoBuilder WithVersion(long version)
     {
         _version = version;
+        return this;
+    }
+
+    public CalculationDtoBuilder WithCalculationType(CalculationType calculationType)
+    {
+        _calculationType = calculationType;
         return this;
     }
 }

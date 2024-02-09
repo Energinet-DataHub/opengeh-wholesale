@@ -15,6 +15,7 @@
 using Energinet.DataHub.Wholesale.Calculations.Application;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 
@@ -66,7 +67,8 @@ public class CalculationRepository : ICalculationRepository
         Instant? minExecutionTimeStart,
         Instant? maxExecutionTimeStart,
         Instant? periodStart,
-        Instant? periodEnd)
+        Instant? periodEnd,
+        CalculationType? calculationType)
     {
         var query = _context
             .Calculations
@@ -74,7 +76,8 @@ public class CalculationRepository : ICalculationRepository
             .Where(b => maxExecutionTimeStart == null || b.ExecutionTimeStart <= maxExecutionTimeStart)
             .Where(b => periodEnd == null || b.PeriodStart < periodEnd)
             .Where(b => periodStart == null || b.PeriodEnd > periodStart)
-            .Where(b => filterByExecutionState.Count == 0 || filterByExecutionState.Contains(b.ExecutionState));
+            .Where(b => filterByExecutionState.Count == 0 || filterByExecutionState.Contains(b.ExecutionState))
+            .Where(b => calculationType == null || b.CalculationType == calculationType);
 
         var foundCalculations = await query.ToListAsync().ConfigureAwait(false);
 
