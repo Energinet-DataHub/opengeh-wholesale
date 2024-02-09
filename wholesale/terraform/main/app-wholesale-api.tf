@@ -38,21 +38,21 @@ module "app_wholesale_api" {
     STORAGE_ACCOUNT_URI    = local.STORAGE_ACCOUNT_URI
 
     # Service Bus
-    SERVICE_BUS_SEND_CONNECTION_STRING   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-send-connection-string)"
-    SERVICE_BUS_MANAGE_CONNECTION_STRING = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-manage-connection-string)"
-    INTEGRATIONEVENTS_TOPIC_NAME         = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-shres-integrationevent-received-name)"
-    INTEGRATIONEVENTS_SUBSCRIPTION_NAME  = module.sbtsub_wholesale_integration_event_listener.name
-    EDI_INBOX_MESSAGE_QUEUE_NAME         = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbq-edi-inbox-messagequeue-name)"
-    WHOLESALE_INBOX_MESSAGE_QUEUE_NAME   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbq-wholesale-inbox-messagequeue-name)"
+    SERVICE_BUS_SEND_CONNECTION_STRING       = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-send-connection-string)"
+    SERVICE_BUS_TRANCEIVER_CONNECTION_STRING = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-transceiver-connection-string)"
+    INTEGRATIONEVENTS_TOPIC_NAME             = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-shres-integrationevent-received-name)"
+    INTEGRATIONEVENTS_SUBSCRIPTION_NAME      = module.sbtsub_wholesale_integration_event_listener.name
+    EDI_INBOX_MESSAGE_QUEUE_NAME             = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbq-edi-inbox-messagequeue-name)"
+    WHOLESALE_INBOX_MESSAGE_QUEUE_NAME       = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbq-wholesale-inbox-messagequeue-name)"
 
     # Logging
     "Logging__ApplicationInsights__LogLevel__Default"                     = local.LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT
     "Logging__ApplicationInsights__LogLevel__Energinet.Datahub.Wholesale" = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_WHOLESALE
     "Logging__ApplicationInsights__LogLevel__Energinet.Datahub.Core"      = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE
     # Databricks
-    WorkspaceToken = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-workspace-token)"
-    WorkspaceUrl   = "https://${module.dbw.workspace_url}"
-    WarehouseId    = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-databricks-sql-endpoint-id)"
+    WorkspaceToken   = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-workspace-token)"
+    WorkspaceUrl     = "https://${module.dbw.workspace_url}"
+    WarehouseId      = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-databricks-sql-endpoint-id)"
     TimeoutInSeconds = "50" # This corresponds to a total timeout of 500 seconds, because the Databricks module currently is hard coded with 10 retries.
   }
 
