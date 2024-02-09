@@ -37,7 +37,6 @@ def get_metering_point_periods_df(
     period_end: datetime,
     calculation_grid_areas: list[str],
 ) -> DataFrame:
-
     metering_point_periods_df = (
         calculation_input_reader.read_metering_point_periods()
         .where(
@@ -56,7 +55,6 @@ def get_metering_point_periods_df(
         Colname.from_date,
         Colname.to_date,
     )
-
     metering_point_periods_df = _fix_settlement_method(metering_point_periods_df)
     metering_point_periods_df = _fix_metering_point_type(metering_point_periods_df)
 

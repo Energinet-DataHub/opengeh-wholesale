@@ -12,13 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 from datetime import datetime
-
 from pyspark.sql import DataFrame, Row, SparkSession
-from pyspark.sql.functions import to_timestamp
 from pyspark.sql.types import TimestampType
-
 from package.calculation_input.schemas import (
     metering_point_period_schema,
 )

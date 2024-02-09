@@ -36,20 +36,20 @@ class TestWhenInvokedWithInvalidArguments:
 
 
 class TestWhenInvokedWithValidArguments:
-    def test_does_not_raise(self, calculator_args):
+    def test_does_not_raise(self, args):
         command_line_args = argparse.Namespace()
-        command_line_args.calculation_id = calculator_args.calculation_id
+        command_line_args.calculation_id = args.calculation_id
 
         start_with_deps(
             parse_command_line_args=lambda: command_line_args,
-            create_calculation_args=lambda args: calculator_args,
+            create_calculation_args=lambda args: args,
             calculation_executor=lambda args, reader: None,
             is_storage_locked_checker=lambda name, cred: False,
         )
 
     def test_add_info_log_record_to_azure_monitor_with_expected_settings(
         self,
-        calculator_args: CalculatorArgs,
+            args: CalculatorArgs,
         integration_test_configuration: IntegrationTestConfiguration,
     ):
         """
@@ -66,7 +66,7 @@ class TestWhenInvokedWithValidArguments:
         """
 
         # Arrange
-        self.prepare_command_line_arguments(calculator_args)
+        self.prepare_command_line_arguments(args)
 
         # Act
         with pytest.raises(SystemExit):
@@ -86,7 +86,7 @@ AppTraces
 | where Message startswith_cs "Command line arguments"
 | where OperationId != "00000000000000000000000000000000"
 | where Properties.Subsystem == "wholesale"
-| where Properties.calculation_id == "{calculator_args.calculation_id}"
+| where Properties.calculation_id == "{args.calculation_id}"
 | where Properties.CategoryName == "Energinet.DataHub.package.calculator_job_args"
 | count
         """
@@ -106,7 +106,7 @@ AppTraces
 
     def test_add_trace_log_record_to_azure_monitor_with_expected_settings(
         self,
-        calculator_args: CalculatorArgs,
+            args: CalculatorArgs,
         integration_test_configuration: IntegrationTestConfiguration,
     ):
         """
@@ -119,7 +119,7 @@ AppTraces
         """
 
         # Arrange
-        self.prepare_command_line_arguments(calculator_args)
+        self.prepare_command_line_arguments(args)
 
         # Act
         with pytest.raises(SystemExit):
@@ -137,7 +137,7 @@ AppDependencies
 | where Name == "calculation.create_calculation_arguments"
 | where OperationId != "00000000000000000000000000000000"
 | where Properties.Subsystem == "wholesale"
-| where Properties.calculation_id == "{calculator_args.calculation_id}"
+| where Properties.calculation_id == "{args.calculation_id}"
 | count
         """
 
@@ -156,7 +156,7 @@ AppDependencies
 
     def test_adds_exception_log_record_to_azure_monitor_with_expected_settings(
         self,
-        calculator_args: CalculatorArgs,
+            args: CalculatorArgs,
         integration_test_configuration: IntegrationTestConfiguration,
     ):
         """
@@ -171,7 +171,7 @@ AppDependencies
         """
 
         # Arrange
-        self.prepare_command_line_arguments(calculator_args)
+        self.prepare_command_line_arguments(args)
 
         with pytest.raises(SystemExit):
             # Act
@@ -190,7 +190,7 @@ AppExceptions
 | where OuterMessage == "Environment variable not found: TIME_ZONE"
 | where OperationId != "00000000000000000000000000000000"
 | where Properties.Subsystem == "wholesale"
-| where Properties.calculation_id == "{calculator_args.calculation_id}"
+| where Properties.calculation_id == "{args.calculation_id}"
 | where Properties.CategoryName == "Energinet.DataHub.package.calculator_job"
 | count
         """

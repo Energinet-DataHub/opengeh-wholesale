@@ -1,0 +1,3 @@
+metering_point_id,type,calculation_type,settlement_method,grid_area_code,resolution,from_grid_area_code,to_grid_area_code,parent_metering_point_id,energy_supplier_id,balance_responsible_id,from_date,to_date
+123456789012345678901234567,E18,WholesaleFixing,D01,805,PT1H,NULL,NULL,NULL,8100000000108,1234567890123,2019-12-31 23:00:00,2020-01-02 23:00:00
+123456789012345678901234568,E17,WholesaleFixing,D01,805,PT1H,NULL,NULL,NULL,8100000000108,1234567890123,2019-12-31 23:00:00,2020-01-02 23:00:00

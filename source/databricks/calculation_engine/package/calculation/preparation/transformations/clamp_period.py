@@ -32,6 +32,7 @@ def clamp_period(
 
     If the end date is null or if it is later than ´clamp_end_datetime´: set end date equal to ´clamp_end_datetime´.
     """
+
     df = df.withColumn(
         period_start_column_name,
         f.when(
