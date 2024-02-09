@@ -65,7 +65,7 @@ def calculator_args_wholesale_fixing(
 
 
 @pytest.fixture(scope="session")
-def args(
+def any_calculator_args(
     calculator_args_balance_fixing: CalculatorArgs,
 ) -> CalculatorArgs:
     return calculator_args_balance_fixing
