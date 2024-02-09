@@ -120,7 +120,7 @@ public class Startup
         serviceCollection.AddAzureClients(builder =>
         {
             builder
-                .AddServiceBusClient(Configuration.Get<ServiceBusOptions>()!.SERVICE_BUS_MANAGE_CONNECTION_STRING)
+                .AddServiceBusClient(Configuration.Get<ServiceBusOptions>()!.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING)
                 .ConfigureOptions(options =>
                 {
                     options.TransportType = ServiceBusTransportType.AmqpWebSockets;
@@ -204,10 +204,11 @@ public class Startup
             .AddLiveCheck()
             .AddDbContextCheck<EventsDatabaseContext>(
                 name: HealthCheckNames.SqlDatabaseContext)
-            .AddAzureServiceBusTopicUsingWebSockets(
-                serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
+            .AddAzureServiceBusSubscriptionUsingWebSockets(
+                serviceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING,
                 serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
-                name: HealthCheckNames.IntegrationEventsTopic)
+                serviceBusOptions.INTEGRATIONEVENTS_SUBSCRIPTION_NAME,
+                name: HealthCheckNames.IntegrationEventsTopicSubscription)
             .AddDataLakeHealthCheck(
                 _ => Configuration.Get<DataLakeOptions>()!,
                 name: HealthCheckNames.DataLake)
@@ -216,11 +217,11 @@ public class Startup
             .AddDatabricksSqlStatementApiHealthCheck(
                 name: HealthCheckNames.DatabricksSqlStatementsApi)
             .AddAzureServiceBusQueueUsingWebSockets(
-                serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
+                serviceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING,
                 serviceBusOptions.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME,
                 name: HealthCheckNames.WholesaleInboxEventsQueue)
             .AddAzureServiceBusQueueUsingWebSockets(
-                serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
+                serviceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING,
                 serviceBusOptions.EDI_INBOX_MESSAGE_QUEUE_NAME,
                 name: HealthCheckNames.EdiInboxEventsQueue);
     }

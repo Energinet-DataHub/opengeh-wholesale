@@ -29,7 +29,7 @@ public class DatabricksCalculationParametersFactory : ICalculationParametersFact
             $"--grid-areas=[{gridAreas}]",
             $"--period-start-datetime={calculation.PeriodStart}",
             $"--period-end-datetime={calculation.PeriodEnd}",
-            $"--process-type={calculation.CalculationType}",
+            $"--calculation-type={calculation.CalculationType}",
             $"--execution-time-start={calculation.ExecutionTimeStart}",
         };
 

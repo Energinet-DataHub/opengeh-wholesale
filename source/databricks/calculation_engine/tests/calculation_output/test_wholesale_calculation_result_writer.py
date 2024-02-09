@@ -26,7 +26,7 @@ from package.codelists import (
     ChargeType,
     ChargeUnit,
     MeteringPointType,
-    ProcessType,
+    CalculationType,
     SettlementMethod,
     AmountType,
 )
@@ -42,9 +42,9 @@ from typing import Any
 TABLE_NAME = f"{OUTPUT_DATABASE_NAME}.{WHOLESALE_RESULT_TABLE_NAME}"
 
 # Writer constructor parameters
-DEFAULT_BATCH_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
-DEFAULT_PROCESS_TYPE = ProcessType.FIRST_CORRECTION_SETTLEMENT
-DEFAULT_BATCH_EXECUTION_START = datetime(2022, 6, 10, 13, 15)
+DEFAULT_CALCULATION_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
+DEFAULT_CALCULATION_TYPE = CalculationType.FIRST_CORRECTION_SETTLEMENT
+DEFAULT_CALCULATION_EXECUTION_START = datetime(2022, 6, 10, 13, 15)
 
 # Input dataframe parameters
 DEFAULT_AMOUNT_TYPE = AmountType.AMOUNT_PER_CHARGE
@@ -132,20 +132,20 @@ def _create_result_df_corresponding_to_multiple_calculation_results(
 @pytest.fixture(scope="session")
 def sut() -> WholesaleCalculationResultWriter:
     return WholesaleCalculationResultWriter(
-        DEFAULT_BATCH_ID,
-        DEFAULT_PROCESS_TYPE,
-        DEFAULT_BATCH_EXECUTION_START,
+        DEFAULT_CALCULATION_ID,
+        DEFAULT_CALCULATION_TYPE,
+        DEFAULT_CALCULATION_EXECUTION_START,
     )
 
 
 @pytest.mark.parametrize(
     "column_name, column_value",
     [
-        (WholesaleResultColumnNames.calculation_id, DEFAULT_BATCH_ID),
-        (WholesaleResultColumnNames.calculation_type, DEFAULT_PROCESS_TYPE.value),
+        (WholesaleResultColumnNames.calculation_id, DEFAULT_CALCULATION_ID),
+        (WholesaleResultColumnNames.calculation_type, DEFAULT_CALCULATION_TYPE.value),
         (
             WholesaleResultColumnNames.calculation_execution_time_start,
-            DEFAULT_BATCH_EXECUTION_START,
+            DEFAULT_CALCULATION_EXECUTION_START,
         ),
         (WholesaleResultColumnNames.grid_area, DEFAULT_GRID_AREA),
         (WholesaleResultColumnNames.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
@@ -185,7 +185,7 @@ def test__write__writes_column(
 
     # Assert
     actual_df = spark.read.table(TABLE_NAME).where(
-        col(WholesaleResultColumnNames.calculation_id) == DEFAULT_BATCH_ID
+        col(WholesaleResultColumnNames.calculation_id) == DEFAULT_CALCULATION_ID
     )
     actual_row = actual_df.collect()[0]
 
@@ -202,8 +202,8 @@ def test__write__writes_calculation_result_id(
     calculation_id = str(uuid.uuid4())
     sut = WholesaleCalculationResultWriter(
         calculation_id,
-        DEFAULT_PROCESS_TYPE,
-        DEFAULT_BATCH_EXECUTION_START,
+        DEFAULT_CALCULATION_TYPE,
+        DEFAULT_CALCULATION_EXECUTION_START,
     )
 
     # Act
@@ -233,7 +233,7 @@ def test__write__writes_amount_type(
 
     # Assert
     actual_df = spark.read.table(TABLE_NAME).where(
-        col(WholesaleResultColumnNames.calculation_id) == DEFAULT_BATCH_ID
+        col(WholesaleResultColumnNames.calculation_id) == DEFAULT_CALCULATION_ID
     )
     actual_row = actual_df.collect()[0]
 
@@ -247,7 +247,7 @@ def test__get_column_group_for_calculation_result_id__returns_expected_column_na
 ) -> None:
     # Arrange
     expected_column_names = [
-        Colname.batch_id,
+        Colname.calculation_id,
         Colname.resolution,
         Colname.charge_type,
         Colname.charge_owner,

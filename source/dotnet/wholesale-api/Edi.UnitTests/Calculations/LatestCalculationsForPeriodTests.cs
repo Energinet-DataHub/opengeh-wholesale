@@ -56,6 +56,68 @@ public class LatestCalculationsForPeriodTests
     }
 
     [Fact]
+    public void FindLatestCalculations_WithACalculationLargerThenRequestedPeriod_LatestCalculationsForPeriod()
+    {
+        // Arrange
+        var calculationPeriodStart = Instant.FromUtc(2024, 1, 1, 23, 0, 0);
+        var calculationPeriodEnd = Instant.FromUtc(2024, 1, 15, 23, 0, 0);
+        var periodStart = Instant.FromUtc(2024, 1, 5, 23, 0, 0);
+        var periodEnd = Instant.FromUtc(2024, 1, 10, 23, 0, 0);
+        var calculation = CalculationDtoBuilder.CalculationDto()
+            .WithPeriodStart(calculationPeriodStart)
+            .WithPeriodEnd(calculationPeriodEnd)
+            .Build();
+
+        var sut = new LatestCalculationsForPeriod(_dateTimeZone);
+
+        // Act
+        var actual = sut
+            .FindLatestCalculationsForPeriod(periodStart, periodEnd, new List<CalculationDto>() { calculation });
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        actual.Count.Should().Be(1);
+        AssertCalculationsCoversWholePeriod(actual, periodStart, periodEnd);
+        actual.Should().ContainSingle(c => c.Period.Start == periodStart && c.Period.End == periodEnd)
+            .Which.CalculationId.Should().Be(calculation.CalculationId);
+    }
+
+    [Fact]
+    public void FindLatestCalculations_WithACalculationLargerThenRequestedPeriod_LatestCalculationsForPeriod2()
+    {
+        // Arrange
+        var calculationPeriodStart = Instant.FromUtc(2024, 1, 15, 23, 0, 0);
+        var calculationPeriodEnd = Instant.FromUtc(2024, 1, 31, 23, 0, 0);
+        var periodStart = Instant.FromUtc(2024, 1, 20, 23, 0, 0);
+        var periodEnd = Instant.FromUtc(2024, 1, 25, 23, 0, 0);
+        var calculation = CalculationDtoBuilder.CalculationDto()
+            .WithPeriodStart(calculationPeriodStart)
+            .WithPeriodEnd(calculationPeriodEnd)
+            .Build();
+
+        var calculationPeriodStart2 = Instant.FromUtc(2024, 1, 1, 23, 0, 0);
+        var calculationPeriodEnd2 = Instant.FromUtc(2024, 1, 10, 23, 0, 0);
+        var calculation2 = CalculationDtoBuilder.CalculationDto()
+            .WithPeriodStart(calculationPeriodStart2)
+            .WithPeriodEnd(calculationPeriodEnd2)
+            .WithVersion(2)
+            .Build();
+
+        var sut = new LatestCalculationsForPeriod(_dateTimeZone);
+
+        // Act
+        var actual = sut
+            .FindLatestCalculationsForPeriod(periodStart, periodEnd, new List<CalculationDto>() { calculation, calculation2 });
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        actual.Count.Should().Be(1);
+        AssertCalculationsCoversWholePeriod(actual, periodStart, periodEnd);
+        actual.Should().ContainSingle(c => c.Period.Start == periodStart && c.Period.End == periodEnd)
+            .Which.CalculationId.Should().Be(calculation.CalculationId);
+    }
+
+    [Fact]
     public void FindLatestCalculations_WithMultipleCalculationForWholePeriod_LatestCalculationsForPeriod()
     {
         // Arrange

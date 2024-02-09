@@ -18,7 +18,7 @@ public static class HealthCheckNames
 {
     public const string WholesaleInboxEventsQueue = "WholesaleInboxHealthCheck";
     public const string EdiInboxEventsQueue = "EdiInboxEventsQueueHealthCheck";
-    public const string IntegrationEventsTopic = "IntegrationEventsTopicHealthCheck";
+    public const string IntegrationEventsTopicSubscription = "IntegrationEventsTopicSubscriptionHealthCheck";
     public const string DatabricksSqlStatementsApi = "DatabricksSqlStatementsApiHealthCheck";
     public const string DatabricksJobsApi = "DatabricksJobsApiHealthCheck";
     public const string SqlDatabaseContext = "SqlDatabaseContextHealthCheck";

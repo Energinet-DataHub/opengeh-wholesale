@@ -22,7 +22,7 @@ import uuid
 from helpers.data_frame_utils import set_column
 from package.codelists import (
     AggregationLevel,
-    ProcessType,
+    CalculationType,
     TimeSeriesType,
     QuantityQuality,
 )
@@ -149,7 +149,7 @@ def test__migrated_table_accepts_valid_data(
 @pytest.mark.parametrize(
     "column_name,column_value",
     [
-        *[(EnergyResultColumnNames.calculation_type, x.value) for x in ProcessType],
+        *[(EnergyResultColumnNames.calculation_type, x.value) for x in CalculationType],
         *[(EnergyResultColumnNames.time_series_type, x.value) for x in TimeSeriesType],
         *[
             (EnergyResultColumnNames.quantity_qualities, [x.value])
@@ -204,9 +204,9 @@ def test__migrated_table_does_not_round_valid_decimal(
     # Arrange
     result_df = _create_df(spark)
     result_df = result_df.withColumn("quantity", lit(quantity))
-    batch_id = str(uuid.uuid4())
+    calculation_id = str(uuid.uuid4())
     result_df = result_df.withColumn(
-        EnergyResultColumnNames.calculation_id, lit(batch_id)
+        EnergyResultColumnNames.calculation_id, lit(calculation_id)
     )
 
     # Act
@@ -217,7 +217,7 @@ def test__migrated_table_does_not_round_valid_decimal(
     # Assert
     actual_df = spark.read.table(
         f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}"
-    ).where(col(EnergyResultColumnNames.calculation_id) == batch_id)
+    ).where(col(EnergyResultColumnNames.calculation_id) == calculation_id)
     assert actual_df.collect()[0].quantity == quantity
 
 

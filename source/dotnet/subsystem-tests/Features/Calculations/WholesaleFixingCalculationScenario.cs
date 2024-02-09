@@ -259,7 +259,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
             var expectedChargeCode = "40000";
             var expectedChargeType = MonthlyAmountPerChargeResultProducedV1.Types.ChargeType.Tariff;
             var expectedChargeOwnerId = "5790001330552";
-            var expectedAmount = new Contracts.IntegrationEvents.Common.DecimalValue(decimal.Parse("95738.23956", CultureInfo.InvariantCulture));
+            var expectedAmount = new Contracts.IntegrationEvents.Common.DecimalValue(decimal.Parse("156031.5498", CultureInfo.InvariantCulture));
 
             // Assert
             var actualEvents = Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1.Where(item =>
