@@ -11,18 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from datetime import datetime
 
-import pytest
 from datetime import datetime, timedelta
 from decimal import Decimal
 
 import pytest
 import package.codelists as e
-
-from pyspark.sql import SparkSession
-import calculation.preparation.transformations.charge_types.charges_factory as factory
-
 
 
 import pytz
@@ -40,7 +34,7 @@ from package.calculation_input.schemas import (
 )
 from package.calculation.wholesale.schemas.charges_schema import charges_schema
 from package.constants import Colname
-from pyspark.sql import Row
+import tests.calculation.preparation.transformations.charge_types.charges_factory as factory
 
 
 def _create_expected_tariff_charges_row(
