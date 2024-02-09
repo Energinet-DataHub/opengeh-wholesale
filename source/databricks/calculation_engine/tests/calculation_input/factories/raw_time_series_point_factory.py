@@ -31,6 +31,7 @@ class DefaultValues:
     QUALITY: str = "missing"
     OBSERVATION_TIME = datetime(2019, 12, 31, 23)
 
+
 def create_row(
     metering_point_id: str = DefaultValues.METERING_POINT_ID,
     quantity: Decimal = DefaultValues.QUANTITY,

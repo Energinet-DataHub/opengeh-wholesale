@@ -34,6 +34,7 @@ class TestBusinessLogic:
         calculator_args: CalculatorArgs,
         spark,
     ):
+        
         # Arrange
         calculator_args.calculation_grid_areas= ["805"]
         calculator_args.calculation_period_start_datetime = datetime(2019, 12, 30, 23, 0, 0)
