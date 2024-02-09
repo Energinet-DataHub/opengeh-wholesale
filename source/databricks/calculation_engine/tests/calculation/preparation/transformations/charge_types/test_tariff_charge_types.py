@@ -442,17 +442,17 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_qua
     ]
     time_series_rows = []
     charges_rows = []
-    for j in range(1, 4):
-        for i in range(0, 24):
-            for k in range(0, 4):
+    for day in range(1, 4):
+        for hour in range(0, 24):
+            for minute in range(0, 4):
                 time_series_rows.append(
                     factory.create_time_series_row(
-                        observation_time=datetime(2020, 1, j, i, k * 15)
+                        observation_time=datetime(2020, 1, day, hour, minute * 15)
                     )
                 )
             charges_rows.append(
                 factory.create_tariff_charges_row(
-                    charge_time=datetime(2020, 1, j, i),
+                    charge_time=datetime(2020, 1, day, hour),
                     resolution=charge_resolution,
                 )
             )
@@ -472,6 +472,7 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_qua
     )
 
     # Assert
+    actual.show(1000, False)
     assert actual.count() == expected_rows
     assert actual.collect()[0][Colname.sum_quantity] == expected_sum_quantity
 

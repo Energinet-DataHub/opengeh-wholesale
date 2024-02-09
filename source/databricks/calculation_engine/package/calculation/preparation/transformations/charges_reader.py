@@ -16,8 +16,9 @@ from datetime import datetime
 from pyspark.sql import DataFrame
 
 from package.calculation.preparation.transformations.clamp_period import clamp_period
-from pyspark.sql.functions import col, concat_ws
+import pyspark.sql.functions as f
 
+from package.codelists import ChargeResolution
 from package.constants import Colname
 from package.calculation_input import TableReader
 
@@ -36,7 +37,112 @@ def read_charges(
     charge_links_df = _get_charge_links(
         table_reader, period_start_datetime, period_end_datetime
     )
-    return _create_charges_df(charge_master_data_df, charge_links_df, charge_prices_df)
+
+    charges_with_prices = _join_with_charge_prices(
+        charge_master_data_df, charge_prices_df
+    )
+    charges_with_prices.show()
+    charges_with_prices_and_missing_prices = _add_missing_prices(
+        charges_with_prices, period_start_datetime, period_end_datetime
+    )
+    return _join_with_charge_links(
+        charges_with_prices_and_missing_prices, charge_links_df
+    )
+
+
+def _add_missing_prices(
+    charges_with_prices: DataFrame,
+    period_start_datetime: datetime,
+    period_end_datetime: datetime,
+) -> DataFrame:
+    charges_with_prices_hour = charges_with_prices.where(
+        f.col(Colname.resolution) == ChargeResolution.HOUR.value
+    )
+
+    charges_with_prices_hour = (
+        charges_with_prices_hour.select(
+            Colname.charge_key,
+            Colname.charge_code,
+            Colname.charge_type,
+            Colname.charge_owner,
+            Colname.charge_tax,
+            Colname.resolution,
+            Colname.from_date,
+            Colname.to_date,
+            Colname.charge_time,
+            Colname.charge_price,
+        )
+        .withColumn(
+            "temp_time",
+            f.expr(
+                f"sequence(to_timestamp('{period_start_datetime}'), to_timestamp('{period_end_datetime}'), interval 1 hour)"
+            ),
+        )
+        .select(
+            Colname.charge_key,
+            Colname.charge_code,
+            Colname.charge_type,
+            Colname.charge_owner,
+            Colname.charge_tax,
+            Colname.resolution,
+            Colname.from_date,
+            Colname.to_date,
+            f.explode("temp_time").alias(Colname.charge_time),
+        )
+    )
+
+    charges_with_prices_day = charges_with_prices.where(
+        f.col(Colname.resolution) == ChargeResolution.DAY.value
+    )
+
+    charges_with_prices_day = (
+        charges_with_prices_day.select(
+            Colname.charge_key,
+            Colname.charge_code,
+            Colname.charge_type,
+            Colname.charge_owner,
+            Colname.charge_tax,
+            Colname.resolution,
+            Colname.from_date,
+            Colname.to_date,
+            Colname.charge_time,
+            Colname.charge_price,
+        )
+        .withColumn(
+            "temp_time",
+            f.expr(
+                f"sequence(to_timestamp('{period_start_datetime}'), to_timestamp('{period_end_datetime}'), interval 1 day)"
+            ),
+        )
+        .select(
+            Colname.charge_key,
+            Colname.charge_code,
+            Colname.charge_type,
+            Colname.charge_owner,
+            Colname.charge_tax,
+            Colname.resolution,
+            Colname.from_date,
+            Colname.to_date,
+            f.explode("temp_time").alias(Colname.charge_time),
+        )
+    )
+    no_prices = charges_with_prices_hour.union(charges_with_prices_day)
+    charges_with_prices_and_missing_prices = no_prices.join(
+        charges_with_prices, [Colname.charge_key, Colname.charge_time], "left"
+    ).select(
+        no_prices[Colname.charge_key],
+        no_prices[Colname.charge_code],
+        no_prices[Colname.charge_type],
+        no_prices[Colname.charge_owner],
+        no_prices[Colname.charge_tax],
+        no_prices[Colname.resolution],
+        no_prices[Colname.charge_time],
+        no_prices[Colname.from_date],
+        no_prices[Colname.to_date],
+        Colname.charge_price,
+    )
+
+    return charges_with_prices_and_missing_prices
 
 
 def _get_charge_master_data(
@@ -46,10 +152,10 @@ def _get_charge_master_data(
 ) -> DataFrame:
     charge_master_data_df = (
         table_reader.read_charge_master_data_periods()
-        .where(col(Colname.from_date) < period_end_datetime)
+        .where(f.col(Colname.from_date) < period_end_datetime)
         .where(
-            col(Colname.to_date).isNull()
-            | (col(Colname.to_date) > period_start_datetime)
+            f.col(Colname.to_date).isNull()
+            | (f.col(Colname.to_date) > period_start_datetime)
         )
     )
     charge_master_data_df = clamp_period(
@@ -70,10 +176,10 @@ def _get_charge_links(
 ) -> DataFrame:
     charge_links_df = (
         table_reader.read_charge_links_periods()
-        .where(col(Colname.from_date) < period_end_datetime)
+        .where(f.col(Colname.from_date) < period_end_datetime)
         .where(
-            col(Colname.to_date).isNull()
-            | (col(Colname.to_date) > period_start_datetime)
+            f.col(Colname.to_date).isNull()
+            | (f.col(Colname.to_date) > period_start_datetime)
         )
     )
 
@@ -96,24 +202,12 @@ def _get_charge_price_points(
 ) -> DataFrame:
     charge_price_points_df = (
         table_reader.read_charge_price_points()
-        .where(col(Colname.charge_time) >= period_start_datetime)
-        .where(col(Colname.charge_time) < period_end_datetime)
+        .where(f.col(Colname.charge_time) >= period_start_datetime)
+        .where(f.col(Colname.charge_time) < period_end_datetime)
     )
 
     charge_price_points_df = _add_charge_key_column(charge_price_points_df)
     return charge_price_points_df
-
-
-def _create_charges_df(
-    charge_master_data: DataFrame,
-    charge_links: DataFrame,
-    charge_prices: DataFrame,
-) -> DataFrame:
-    charges_with_prices = _join_with_charge_prices(charge_master_data, charge_prices)
-    charges_with_price_and_links = _join_with_charge_links(
-        charges_with_prices, charge_links
-    )
-    return charges_with_price_and_links
 
 
 def _join_with_charge_prices(df: DataFrame, charge_prices: DataFrame) -> DataFrame:
@@ -160,10 +254,10 @@ def _join_with_charge_links(df: DataFrame, charge_links: DataFrame) -> DataFrame
 def _add_charge_key_column(charge_df: DataFrame) -> DataFrame:
     return charge_df.withColumn(
         Colname.charge_key,
-        concat_ws(
+        f.concat_ws(
             "-",
-            col(Colname.charge_code),
-            col(Colname.charge_owner),
-            col(Colname.charge_type),
+            f.col(Colname.charge_code),
+            f.col(Colname.charge_owner),
+            f.col(Colname.charge_type),
         ),
     )

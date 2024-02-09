@@ -24,7 +24,7 @@ import package.codelists as e
 
 class DefaultValues:
     DEFAULT_GRID_AREA = "543"
-    DEFAULT_CHARGE_CODE = "4000"
+    DEFAULT_CHARGE_CODE = "40000"
     DEFAULT_CHARGE_OWNER = "001"
     DEFAULT_CHARGE_TAX = True
     DEFAULT_CHARGE_TIME_HOUR_0 = datetime(2019, 12, 31, 23)
