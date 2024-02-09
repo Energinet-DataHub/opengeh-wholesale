@@ -16,28 +16,14 @@ import sys
 import time
 import uuid
 import pytest
-from datetime import timedelta, datetime
+from datetime import timedelta
 from typing import cast, Callable
-from unittest.mock import patch, Mock
 from azure.monitor.query import LogsQueryClient, LogsQueryResult
 
-from calculation_input.factories import raw_grid_loss_metering_points_factory
-from package import calculation_input
-from package.calculation import PreparedDataReader
-from package.calculation.calculation_execute import calculation_execute
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation_input import TableReader
-from package.calculation_input.schemas import metering_point_period_schema
 from package.calculator_job import start, start_with_deps
-from package.codelists import InputMeteringPointType
 
 from tests.integration_test_configuration import IntegrationTestConfiguration
-import calculation_input.factories.raw_time_series_point_factory \
-    as raw_time_series_point_factory
-
-import calculation_input.factories.input_metering_point_periods_factory \
-    as raw_metering_point_periods_factory
-
 
 class TestWhenInvokedWithInvalidArguments:
     def test_exits_with_code_2(self):
@@ -49,20 +35,20 @@ class TestWhenInvokedWithInvalidArguments:
 
 
 class TestWhenInvokedWithValidArguments:
-    def test_does_not_raise(self, any_calculator_args):
+    def test_does_not_raise(self, calculator_args):
         command_line_args = argparse.Namespace()
-        command_line_args.calculation_id = any_calculator_args.calculation_id
+        command_line_args.calculation_id = calculator_args.calculation_id
 
         start_with_deps(
             parse_command_line_args=lambda: command_line_args,
-            create_calculation_args=lambda args: any_calculator_args,
+            create_calculation_args=lambda args: calculator_args,
             calculation_executor=lambda args, reader: None,
             is_storage_locked_checker=lambda name, cred: False,
         )
 
     def test_add_info_log_record_to_azure_monitor_with_expected_settings(
         self,
-        any_calculator_args: CalculatorArgs,
+            calculator_args: CalculatorArgs,
         integration_test_configuration: IntegrationTestConfiguration,
     ):
         """
@@ -79,12 +65,13 @@ class TestWhenInvokedWithValidArguments:
         """
 
         # Arrange
-        self.prepare_command_line_arguments(any_calculator_args)
+        self.prepare_command_line_arguments(calculator_args)
 
         # Act
         with pytest.raises(SystemExit):
             start_with_deps(
-                applicationinsights_connection_string=integration_test_configuration.get_applicationinsights_connection_string(),
+                applicationinsights_connection_string=integration_test_configuration
+                .get_applicationinsights_connection_string(),
             )
 
         # Assert
@@ -98,7 +85,7 @@ AppTraces
 | where Message startswith_cs "Command line arguments"
 | where OperationId != "00000000000000000000000000000000"
 | where Properties.Subsystem == "wholesale"
-| where Properties.calculation_id == "{any_calculator_args.calculation_id}"
+| where Properties.calculation_id == "{calculator_args.calculation_id}"
 | where Properties.CategoryName == "Energinet.DataHub.package.calculator_job_args"
 | count
         """
@@ -118,7 +105,7 @@ AppTraces
 
     def test_add_trace_log_record_to_azure_monitor_with_expected_settings(
         self,
-        any_calculator_args: CalculatorArgs,
+            calculator_args: CalculatorArgs,
         integration_test_configuration: IntegrationTestConfiguration,
     ):
         """
@@ -131,7 +118,7 @@ AppTraces
         """
 
         # Arrange
-        self.prepare_command_line_arguments(any_calculator_args)
+        self.prepare_command_line_arguments(calculator_args)
 
         # Act
         with pytest.raises(SystemExit):
@@ -149,7 +136,7 @@ AppDependencies
 | where Name == "calculation.create_calculation_arguments"
 | where OperationId != "00000000000000000000000000000000"
 | where Properties.Subsystem == "wholesale"
-| where Properties.calculation_id == "{any_calculator_args.calculation_id}"
+| where Properties.calculation_id == "{calculator_args.calculation_id}"
 | count
         """
 
@@ -168,7 +155,7 @@ AppDependencies
 
     def test_adds_exception_log_record_to_azure_monitor_with_expected_settings(
         self,
-        any_calculator_args: CalculatorArgs,
+            calculator_args: CalculatorArgs,
         integration_test_configuration: IntegrationTestConfiguration,
     ):
         """
@@ -183,7 +170,7 @@ AppDependencies
         """
 
         # Arrange
-        self.prepare_command_line_arguments(any_calculator_args)
+        self.prepare_command_line_arguments(calculator_args)
 
         with pytest.raises(SystemExit):
             # Act
@@ -202,7 +189,7 @@ AppExceptions
 | where OuterMessage == "Environment variable not found: TIME_ZONE"
 | where OperationId != "00000000000000000000000000000000"
 | where Properties.Subsystem == "wholesale"
-| where Properties.calculation_id == "{any_calculator_args.calculation_id}"
+| where Properties.calculation_id == "{calculator_args.calculation_id}"
 | where Properties.CategoryName == "Energinet.DataHub.package.calculator_job"
 | count
         """
@@ -219,64 +206,6 @@ AppExceptions
         wait_for_condition(
             assert_logged, timeout=timedelta(minutes=3), step=timedelta(seconds=10)
         )
-
-    @patch.object(calculation_input, TableReader.__name__)
-    def test1(
-        self,
-        mock_table_reader: Mock,
-        any_calculator_args: CalculatorArgs,
-        spark,
-    ):
-        # Arrange
-        any_calculator_args.calculation_grid_areas= ["805"]
-        self.prepare_command_line_arguments2(any_calculator_args)
-        any_calculator_args.calculation_period_start_datetime = datetime(2019, 12, 30, 23, 0, 0)
-        any_calculator_args.calculation_period_end_datetime = datetime(2020, 1, 1, 23, 0, 0)
-        row1 = raw_metering_point_periods_factory.create_row()
-        row2 = raw_metering_point_periods_factory.create_row(
-            metering_point_id="123456789012345678901234568",
-            grid_area="805",
-            metering_point_type=InputMeteringPointType.CONSUMPTION
-        )
-
-        mock_table_reader.read_metering_point_periods.return_value = (
-            raw_metering_point_periods_factory.create_dataframe(spark, [row1, row2])
-        )
-
-        mock_table_reader.read_time_series_points.return_value = (
-            raw_time_series_point_factory.create_dataframe(spark)
-        )
-
-        row3 = raw_grid_loss_metering_points_factory.create_row()
-        row4 = raw_grid_loss_metering_points_factory.create_row(
-            metering_point_id="123456789012345678901234568"
-        )
-        mock_table_reader.read_grid_loss_metering_points.return_value = (
-            raw_grid_loss_metering_points_factory.create_dataframe(spark, [row3, row4])
-        )
-
-        prepared_data_reader: PreparedDataReader = PreparedDataReader(
-            mock_table_reader
-        )
-
-        # Act
-        actual = calculation_execute(any_calculator_args, prepared_data_reader)
-
-        # Assert
-
-    @staticmethod
-    def prepare_command_line_arguments2(any_calculator_args):
-        any_calculator_args.calculation_id = str(
-            uuid.uuid4()
-        )  # Ensure unique calculation id
-        sys.argv = []
-        sys.argv.append("--dummy=")
-        sys.argv.append(f"--calculation-id={str(any_calculator_args.calculation_id)}")
-        sys.argv.append("--grid-areas=[805]")
-        sys.argv.append("--period-start-datetime=2019-12-30T23:00:00Z")
-        sys.argv.append("--period-end-datetime=2020-01-1T23:00:00Z")
-        sys.argv.append("--calculation-type=WholesaleFixing")
-        sys.argv.append("--execution-time-start=2020-01-05T23:00:00Z")
 
     @staticmethod
     def prepare_command_line_arguments(any_calculator_args):

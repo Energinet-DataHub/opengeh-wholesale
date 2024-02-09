@@ -26,6 +26,7 @@ from package.codelists import (
 )
 from pyspark.pandas import DataFrame
 
+
 @logging_configuration.use_span("calculation")
 def calculation_execute(
     args: CalculatorArgs, prepared_data_reader: PreparedDataReader

@@ -50,7 +50,6 @@ def get_metering_point_periods_df(
     )
 
 
-
     metering_point_periods_df = clamp_period(
         metering_point_periods_df,
         period_start,

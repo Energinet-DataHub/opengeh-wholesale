@@ -19,6 +19,7 @@ from package.calculation_input.schemas import (
 )
 from package.constants import Colname
 
+
 class DefaultValues:
     METERING_POINT_ID = "123456789012345678901234567"
 

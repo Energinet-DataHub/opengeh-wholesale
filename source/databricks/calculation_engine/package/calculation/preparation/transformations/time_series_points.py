@@ -13,12 +13,11 @@
 # limitations under the License.
 
 from datetime import datetime
-
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
-
 from package.calculation_input import TableReader
 from package.constants import Colname
+
 
 def get_time_series_points(
     calculation_input_reader: TableReader,
