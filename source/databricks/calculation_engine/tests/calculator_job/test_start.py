@@ -49,7 +49,7 @@ class TestWhenInvokedWithValidArguments:
 
     def test_add_info_log_record_to_azure_monitor_with_expected_settings(
         self,
-            args: CalculatorArgs,
+        args: CalculatorArgs,
         integration_test_configuration: IntegrationTestConfiguration,
     ):
         """
@@ -106,7 +106,7 @@ AppTraces
 
     def test_add_trace_log_record_to_azure_monitor_with_expected_settings(
         self,
-            args: CalculatorArgs,
+        args: CalculatorArgs,
         integration_test_configuration: IntegrationTestConfiguration,
     ):
         """
@@ -156,7 +156,7 @@ AppDependencies
 
     def test_adds_exception_log_record_to_azure_monitor_with_expected_settings(
         self,
-            args: CalculatorArgs,
+        args: CalculatorArgs,
         integration_test_configuration: IntegrationTestConfiguration,
     ):
         """

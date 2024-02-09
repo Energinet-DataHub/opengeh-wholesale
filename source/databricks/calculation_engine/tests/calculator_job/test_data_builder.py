@@ -29,7 +29,6 @@ class TableReaderMockBuilder:
         test_dir = os.path.dirname(os.path.abspath(__file__))
         self.test_path = os.path.join(test_dir, test_path)
 
-
     def populate_metering_point_periods(self, file_path: str) -> None:
         df = self._parse_csv_to_dataframe(file_path, metering_point_period_schema)
         self.table_reader.read_metering_point_periods.return_value = df
@@ -48,5 +47,3 @@ class TableReaderMockBuilder:
 
     def get_prepared_date_reader(self) -> PreparedDataReader:
         return PreparedDataReader(self.table_reader)
-
-
