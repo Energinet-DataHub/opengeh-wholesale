@@ -30,7 +30,8 @@ public class AggregatedTimeSeriesRequestFactory
             RequestedCalculationTypeMapper.ToRequestedCalculationType(request.BusinessReason, request.HasSettlementSeriesVersion ? request.SettlementSeriesVersion : null));
     }
 
-    private static TimeSeriesType[] GetTimeSeriesTypes(Edi.Requests.AggregatedTimeSeriesRequest request)
+    private static TimeSeriesType[] GetTimeSeriesTypes(
+        Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request)
     {
         return request.MeteringPointType != string.Empty
             ? new[] { TimeSeriesTypeMapper.MapTimeSeriesType(request.MeteringPointType, request.SettlementMethod) }
