@@ -16,6 +16,7 @@ using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using NodaTime;
 using CalculationState = Energinet.DataHub.Wholesale.Calculations.Interfaces.Models.CalculationState;
 
@@ -63,14 +64,16 @@ public class CalculationsClient : ICalculationsClient
             minExecutionTimeStart,
             maxExecutionTimeStart,
             periodStartInstant,
-            periodEndInstant).ConfigureAwait(false);
+            periodEndInstant,
+            null).ConfigureAwait(false);
     }
 
     public async Task<IReadOnlyCollection<CalculationDto>> SearchAsync(
         IEnumerable<string> filterByGridAreaCodes,
         CalculationState filterByExecutionState,
         Instant periodStart,
-        Instant periodEnd)
+        Instant periodEnd,
+        CalculationType calculationType)
     {
         return await SearchAsync(
             filterByGridAreaCodes,
@@ -78,7 +81,8 @@ public class CalculationsClient : ICalculationsClient
             null,
             null,
             periodStart,
-            periodEnd).ConfigureAwait(false);
+            periodEnd,
+            calculationType).ConfigureAwait(false);
     }
 
     private async Task<IReadOnlyCollection<CalculationDto>> SearchAsync(
@@ -87,7 +91,8 @@ public class CalculationsClient : ICalculationsClient
         Instant? minExecutionTimeStart,
         Instant? maxExecutionTimeStart,
         Instant? periodStartInstant,
-        Instant? periodEndInstant)
+        Instant? periodEndInstant,
+        CalculationType? calculationType)
     {
         var executionStateFilter = GetCalculationExecutionStates(filterByExecutionState);
 
@@ -102,7 +107,8 @@ public class CalculationsClient : ICalculationsClient
                 minExecutionTimeStart,
                 maxExecutionTimeStart,
                 periodStartInstant,
-                periodEndInstant)
+                periodEndInstant,
+                calculationType)
             .ConfigureAwait(false);
 
         return calculations.Select(_calculationDtoMapper.Map).ToList();

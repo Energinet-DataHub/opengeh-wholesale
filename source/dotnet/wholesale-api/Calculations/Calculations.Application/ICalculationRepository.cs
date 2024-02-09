@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Calculations.Application;
@@ -36,5 +37,6 @@ public interface ICalculationRepository
         Instant? minExecutionTimeStart,
         Instant? maxExecutionTimeStart,
         Instant? periodStart,
-        Instant? periodEnd);
+        Instant? periodEnd,
+        CalculationType? calculationType);
 }

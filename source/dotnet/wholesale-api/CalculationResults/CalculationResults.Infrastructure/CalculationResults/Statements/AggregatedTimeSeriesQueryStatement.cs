@@ -65,12 +65,6 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
             whereClausesSql += $"AND t1.{EnergyResultColumnNames.GridArea} IN ({parameters.GridArea})";
         }
 
-        if (parameters.CalculationType != null)
-        {
-            whereClausesSql +=
-                $"AND t1.{EnergyResultColumnNames.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue((CalculationType)parameters.CalculationType)}'";
-        }
-
         if (!string.IsNullOrWhiteSpace(parameters.EnergySupplierId))
         {
             whereClausesSql += $"AND t1.{EnergyResultColumnNames.EnergySupplierId} = '{parameters.EnergySupplierId}'";
