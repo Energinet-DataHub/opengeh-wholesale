@@ -21,3 +21,9 @@ resource "azurerm_role_assignment" "ra_dh2data_adf_contributor" {
   role_definition_name = "Storage Blob Data Contributor"
   principal_id         = azurerm_data_factory.this.identity[0].principal_id
 }
+
+resource "azurerm_role_assignment" "ra_dh2dropzone_adf_contributor" {
+  scope                = module.st_dh2dropzone.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = azurerm_data_factory.this.identity[0].principal_id
+}
