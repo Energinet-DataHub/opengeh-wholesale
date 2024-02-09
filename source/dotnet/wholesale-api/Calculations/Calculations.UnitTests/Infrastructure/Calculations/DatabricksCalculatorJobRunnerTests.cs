@@ -15,7 +15,6 @@
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.Databricks.Jobs.Abstractions;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
 using Microsoft.Azure.Databricks.Client.Models;
@@ -29,22 +28,22 @@ public class DatabricksCalculatorJobRunnerTests
     [Theory]
 
     // When LifeCycleState is not Terminated, LifeCycleState will determine JobState
-    [InlineAutoMoqData(CalculationState.Pending, RunLifeCycleState.PENDING)]
-    [InlineAutoMoqData(CalculationState.Running, RunLifeCycleState.RUNNING)]
-    [InlineAutoMoqData(CalculationState.Running, RunLifeCycleState.TERMINATING)]
-    [InlineAutoMoqData(CalculationState.Canceled, RunLifeCycleState.SKIPPED)]
-    [InlineAutoMoqData(CalculationState.Failed, RunLifeCycleState.INTERNAL_ERROR)]
+    [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Pending, RunLifeCycleState.PENDING)]
+    [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Running, RunLifeCycleState.RUNNING)]
+    [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Running, RunLifeCycleState.TERMINATING)]
+    [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Canceled, RunLifeCycleState.SKIPPED)]
+    [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Failed, RunLifeCycleState.INTERNAL_ERROR)]
 
     // When LifCycleState is Terminated, ResultState will determine JobState
-    [InlineAutoMoqData(CalculationState.Completed, RunLifeCycleState.TERMINATED, RunResultState.SUCCESS)]
-    [InlineAutoMoqData(CalculationState.Failed, RunLifeCycleState.TERMINATED, RunResultState.FAILED)]
-    [InlineAutoMoqData(CalculationState.Canceled, RunLifeCycleState.TERMINATED, RunResultState.CANCELED)]
-    [InlineAutoMoqData(CalculationState.Canceled, RunLifeCycleState.TERMINATED, RunResultState.TIMEDOUT)]
+    [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Completed, RunLifeCycleState.TERMINATED, RunResultState.SUCCESS)]
+    [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Failed, RunLifeCycleState.TERMINATED, RunResultState.FAILED)]
+    [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Canceled, RunLifeCycleState.TERMINATED, RunResultState.CANCELED)]
+    [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Canceled, RunLifeCycleState.TERMINATED, RunResultState.TIMEDOUT)]
 
     // LifeCycleState determine JobState since LifeCycleState is not Terminated
-    [InlineAutoMoqData(CalculationState.Running, RunLifeCycleState.TERMINATING, RunResultState.SUCCESS)]
+    [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Running, RunLifeCycleState.TERMINATING, RunResultState.SUCCESS)]
     public async Task GivenRunState_WhenGetJobStateAsyncIsCalled_ThenReturnCorrectJobState(
-        CalculationState expectedCalculationState,
+        Wholesale.Calculations.Application.Model.CalculationState expectedCalculationState,
         RunLifeCycleState runLifeCycleState,
         RunResultState runResultState,
         [Frozen] Mock<IJobsApiClient> jobsApiMock,
