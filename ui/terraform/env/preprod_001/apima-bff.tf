@@ -1,22 +1,27 @@
-module "apima_b2c" {
+module "apima_bff" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=v13"
 
-  name                       = "b2c"
+  name                       = "bff"
   project_name               = var.domain_name_short
   api_management_name        = data.azurerm_key_vault_secret.apim_instance_name.value
   resource_group_name        = data.azurerm_key_vault_secret.apim_instance_resource_group_name.value
-  display_name               = "B2C Api"
-  authorization_server_name  = data.azurerm_key_vault_secret.apim_oauth_server_name.value
+  display_name               = "BFF Api"
+  authorization_server_name  = azurerm_api_management_authorization_server.oauth_server_bff.name
   apim_logger_id             = data.azurerm_key_vault_secret.apim_logger_id.value
   logger_sampling_percentage = 100.0
   logger_verbosity           = "verbose"
-  path                       = "b2c"
+  path                       = "bff"
+  backend_service_url        = "https://${module.bff.default_hostname}"
+  import = {
+    content_format = "openapi+json"
+    content_value  = data.local_file.swagger_file.content
+  }
   policies = [
     {
       xml_content = <<XML
         <policies>
           <inbound>
-            <trace source="B2C API" severity="verbose">
+            <trace source="BFF API" severity="verbose">
                 <message>@{
                     string authHeader = context.Request.Headers.GetValueOrDefault("Authorization", "");
                     string callerId = "(empty)";
@@ -28,15 +33,16 @@ module "apima_b2c" {
                             Jwt jwt;
                             if (authHeaderParts[1].TryParseJwt(out jwt))
                             {
-                                callerId = (jwt.Claims.GetValueOrDefault("azp", "(empty)"));
+                                callerId = (jwt.Claims.GetValueOrDefault("sub", "(empty)"));
                             }
                         }
                     }
-                    return $"Caller ID (claims.azp): {callerId}";
+                    return $"Caller ID (claims.sub): {callerId}";
                 }</message>
                 <metadata name="CorrelationId" value="@($"{context.RequestId}")" />
             </trace>
             <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Failed policy requirements, or token is invalid or missing.">
+                <openid-config url="${data.azurerm_key_vault_secret.frontend_open_id_url.value}" />
                 <openid-config url="${data.azurerm_key_vault_secret.backend_open_id_url.value}" />
                 <required-claims>
                     <claim name="aud" match="any">
@@ -51,6 +57,20 @@ module "apima_b2c" {
             <set-header name="RequestTime" exists-action="override">
                 <value>@(DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"))</value>
             </set-header>
+            <cors allow-credentials="true">
+                <allowed-origins>
+                    <origin>https://${local.frontend_url}</origin>
+                </allowed-origins>
+                <allowed-methods preflight-result-max-age="300">
+                    <method>*</method>
+                </allowed-methods>
+                <allowed-headers>
+                    <header>*</header>
+                </allowed-headers>
+                <expose-headers>
+                    <header>*</header>
+                </expose-headers>
+            </cors>
           </inbound>
           <backend>
               <base />
@@ -73,10 +93,37 @@ module "apima_b2c" {
   ]
 }
 
-resource "azurerm_api_management_backend" "edi-b2c" {
-  name                = "edi-b2c"
-  resource_group_name = data.azurerm_key_vault_secret.apim_instance_resource_group_name.value
-  api_management_name = data.azurerm_key_vault_secret.apim_instance_name.value
-  protocol            = "http"
-  url                 = "https://${module.b2c_web_api.default_hostname}"
+data "local_file" "swagger_file" {
+  filename = "${path.module}/../../swagger.json"
+}
+
+resource "azurerm_api_management_authorization_server" "oauth_server_bff" {
+  name                         = "bffoauthserver"
+  api_management_name          = data.azurerm_key_vault_secret.apim_instance_name.value
+  resource_group_name          = data.azurerm_key_vault_secret.apim_instance_resource_group_name.value
+  display_name                 = "BFF: OAuth client credentials server"
+  client_registration_endpoint = "http://localhost/"
+  grant_types = [
+    "implicit",
+  ]
+  authorization_endpoint = local.b2c_authorization_sign_in_endpoint
+  authorization_methods = [
+    "GET",
+  ]
+  token_endpoint = local.b2c_authorization_token_endpoint
+  client_authentication_method = [
+    "Body",
+  ]
+  bearer_token_sending_methods = [
+    "authorizationHeader",
+  ]
+  client_id = data.azurerm_key_vault_secret.backend_bff_app_id.value
+}
+
+module "kvs_app_bff_base_url" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
+
+  name         = "app-bff-base-url"
+  value        = "${data.azurerm_key_vault_secret.apim_gateway_url.value}/${module.apima_bff.path}"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
