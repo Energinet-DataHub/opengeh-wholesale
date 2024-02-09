@@ -15,7 +15,6 @@
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Calculations.Application;
-using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.CalculationState;
 using Energinet.DataHub.Wholesale.Calculations.UnitTests.Infrastructure.CalculationAggregate;
@@ -26,9 +25,9 @@ using NodaTime;
 using Test.Core;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Calculations.UnitTests.Infrastructure.CalculationExecutionStateDomainService;
+namespace Energinet.DataHub.Wholesale.Calculations.UnitTests.Infrastructure.CalculationState;
 
-public class CalculationExecutionStateDomainServiceTests
+public class CalculationExecutionStateInfrastructureServiceTests
 {
     [Theory]
     [InlineAutoMoqData]
@@ -42,7 +41,7 @@ public class CalculationExecutionStateDomainServiceTests
         var pendingCalculations = new List<Calculation>() { calculation };
         calculationRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<CalculationExecutionState>>()))
             .ReturnsAsync(pendingCalculations);
-        calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(calculation.CalculationJobId!)).ReturnsAsync(CalculationState.Running);
+        calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(calculation.CalculationJobId!)).ReturnsAsync(Wholesale.Calculations.Application.Model.CalculationState.Running);
 
         // Act
         await sut.UpdateExecutionStateAsync();
@@ -66,7 +65,7 @@ public class CalculationExecutionStateDomainServiceTests
         var executingCalculations = new List<Calculation>() { calculation };
         calculationRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<CalculationExecutionState>>()))
             .ReturnsAsync(executingCalculations);
-        calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(calculation.CalculationJobId!)).ReturnsAsync(CalculationState.Completed);
+        calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(calculation.CalculationJobId!)).ReturnsAsync(Wholesale.Calculations.Application.Model.CalculationState.Completed);
 
         // Act
         await sut.UpdateExecutionStateAsync();
@@ -91,7 +90,7 @@ public class CalculationExecutionStateDomainServiceTests
         var executingCalculations = new List<Calculation>() { calculation };
         calculationRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<CalculationExecutionState>>()))
             .ReturnsAsync(executingCalculations);
-        calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(calculation.CalculationJobId!)).ReturnsAsync(CalculationState.Canceled);
+        calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(calculation.CalculationJobId!)).ReturnsAsync(Wholesale.Calculations.Application.Model.CalculationState.Canceled);
 
         // Act
         await sut.UpdateExecutionStateAsync();
@@ -118,9 +117,9 @@ public class CalculationExecutionStateDomainServiceTests
         calculationRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<CalculationExecutionState>>()))
             .ReturnsAsync(calculations);
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(calculation1.CalculationJobId!))
-            .ReturnsAsync(CalculationState.Pending); // Unchanged
+            .ReturnsAsync(Wholesale.Calculations.Application.Model.CalculationState.Pending); // Unchanged
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(calculation2.CalculationJobId!))
-            .ReturnsAsync(CalculationState.Completed);
+            .ReturnsAsync(Wholesale.Calculations.Application.Model.CalculationState.Completed);
 
         // Act
         await sut.UpdateExecutionStateAsync();
@@ -147,7 +146,7 @@ public class CalculationExecutionStateDomainServiceTests
         calculationRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<CalculationExecutionState>>()))
             .ReturnsAsync(calculations);
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(calculation2.CalculationJobId!))
-            .ReturnsAsync(CalculationState.Completed);
+            .ReturnsAsync(Wholesale.Calculations.Application.Model.CalculationState.Completed);
 
         // Act
         await sut.UpdateExecutionStateAsync();
@@ -175,10 +174,10 @@ public class CalculationExecutionStateDomainServiceTests
         calculationRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<CalculationExecutionState>>()))
             .ReturnsAsync(calculations);
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(calculation1.CalculationJobId!))
-            .ReturnsAsync(CalculationState.Completed);
+            .ReturnsAsync(Wholesale.Calculations.Application.Model.CalculationState.Completed);
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(calculation2.CalculationJobId!)).ThrowsAsync(default!);
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(calculation3.CalculationJobId!))
-            .ReturnsAsync(CalculationState.Completed);
+            .ReturnsAsync(Wholesale.Calculations.Application.Model.CalculationState.Completed);
 
         // Act
         await sut.UpdateExecutionStateAsync();
