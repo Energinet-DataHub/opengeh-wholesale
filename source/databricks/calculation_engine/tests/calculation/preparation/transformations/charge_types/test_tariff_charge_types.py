@@ -118,6 +118,26 @@ def test__get_tariff_charges__filters_on_resolution(
     assert actual.collect()[0][Colname.resolution] == charge_resolution.value
 
 
+def test__t(
+    spark: SparkSession,
+) -> None:
+    start_datetime = datetime(2022, 1, 1, 0, 0, 0)
+    end_datetime = datetime(2022, 1, 3, 0, 0, 0)
+
+    # Specify the target time zone (replace 'UTC' with your desired time zone)
+    target_timezone = "America/New_York"
+
+    # Create a DataFrame with a single column containing the sequence of timestamps in the specified time zone
+    df = spark.range(1).select(
+        f.expr(
+            f"sequence(from_utc_timestamp('{start_datetime}', '{target_timezone}'), from_utc_timestamp('{end_datetime}', '{target_timezone}'), interval 1 hour)"
+        ).alias("timestamps")
+    )
+
+    # Show the resulting DataFrame
+    df.show(truncate=False)
+
+
 def test__temp0(
     spark: SparkSession,
 ) -> None:
@@ -125,18 +145,7 @@ def test__temp0(
     period_start_utc = datetime(2020, 2, 29, 23, 0)
     period_end_utc = datetime(2020, 3, 31, 22, 0)
 
-    # time_zone = "Europe/Copenhagen"
-    # period_start_local_time = f.from_utc_timestamp(
-    #     f.to_timestamp(f"{period_start}"), time_zone
-    # ).cast("date")
-    # period_end_local_time = f.from_utc_timestamp(
-    #     f.to_timestamp("{period_end}"), time_zone
-    # ).cast("date")
-
-    # print(period_start_local_time)
-
     time_zone = "Europe/Copenhagen"
-    local_tz = pytz.timezone(time_zone)
 
     data = [
         ("key1", period_start_utc, 100),
@@ -151,22 +160,8 @@ def test__temp0(
     df = df.withColumn(
         "local_time",
         f.explode(
-            f.sequence(
-                f.to_timestamp(
-                    f.lit(
-                        period_start_utc.astimezone(local_tz).strftime(
-                            "%Y-%m-%d %H:%M:%S"
-                        )
-                    )
-                ),
-                f.to_timestamp(
-                    f.lit(
-                        period_end_utc.astimezone(local_tz).strftime(
-                            "%Y-%m-%d %H:%M:%S"
-                        )
-                    )
-                ),
-                f.expr("INTERVAL 1 DAY"),
+            f.expr(
+                f"sequence(from_utc_timestamp('{period_start_utc}', '{time_zone}'), from_utc_timestamp('{period_end_utc}', '{time_zone}'), interval 1 hour)"
             )
         ),
     )
@@ -180,16 +175,6 @@ def test__temp1(
     # Define the data for the DataFrame
     period_start_utc = datetime(2020, 2, 29, 23, 0)
     period_end_utc = datetime(2020, 3, 31, 22, 0)
-
-    # time_zone = "Europe/Copenhagen"
-    # period_start_local_time = f.from_utc_timestamp(
-    #     f.to_timestamp(f"{period_start}"), time_zone
-    # ).cast("date")
-    # period_end_local_time = f.from_utc_timestamp(
-    #     f.to_timestamp("{period_end}"), time_zone
-    # ).cast("date")
-
-    # print(period_start_local_time)
 
     time_zone = "Europe/Copenhagen"
     local_tz = pytz.timezone(time_zone)
@@ -231,26 +216,14 @@ def test__temp(
     schema = ["charge_key", "charge_time", "charge_price"]
     df = spark.createDataFrame(data, schema)
 
-    # Start the transformation
-
-    local_tz = pytz.timezone(time_zone)
-    period_start_local_time_str = period_start_utc.astimezone(local_tz).strftime(
-        "%Y-%m-%d %H:%M:%S"
-    )
-    period_end_local_time_str = period_end_utc.astimezone(local_tz).strftime(
-        "%Y-%m-%d %H:%M:%S"
-    )
-
     all_dates_df = (
         df.select(Colname.charge_key)
         .dropDuplicates()
         .select(
             Colname.charge_key,
             f.explode(
-                f.sequence(
-                    f.to_timestamp(f.lit(period_start_local_time_str)),
-                    f.to_timestamp(f.lit(period_end_local_time_str)),
-                    f.expr("INTERVAL 1 DAY"),
+                f.expr(
+                    f"sequence(from_utc_timestamp('{period_start_utc}', '{time_zone}'), from_utc_timestamp('{period_end_utc}', '{time_zone}'), interval 1 day)"
                 )
             ).alias("charge_time_local"),
         )
