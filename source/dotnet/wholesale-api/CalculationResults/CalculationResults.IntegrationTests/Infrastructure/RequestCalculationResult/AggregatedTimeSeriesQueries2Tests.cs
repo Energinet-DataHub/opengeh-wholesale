@@ -79,76 +79,138 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
     }
 
     /*
-The following illustration shows how the different grid areas, balance responsibles, energy suppliers, and data points
-are related for this particular test.
-+-------------------------------+    +----------------------+
-|   GA1                         |    |   GA3                |
-|   +-----------------------+   |    |   +--------------+   |
-|   |   BR1                 |   |    |   |   BR3        |   |
-|   |   +-----+   +-----+   |   |    |   |   +------+   |   |
-|   |   | ES1 |   | ES2 |   |   |    |   |   | ES1  |   |   |
-|   |   | 1   |   | 1   |   |   |    |   |   | 1  3 |   |   |
-|   |   | 2   |   | 4   |   |   |    |   |   | 2  4 |   |   |
-|   |   +-----+   +-----+   |   |    |   |   +------+   |   |
-|   +-----------------------+   |    |   +--------------+   |
-|                               |    +----------------------+
-|                               |
-|                               |    +---------------------------+
-|                               |    |   GA2                     |
-|   +---------------------------+----+-----------------------+   |
-|   |   BR2                     |    |                       |   |
-|   |   +-----+   +-----+       |    |   +-----+   +-----+   |   |
-|   |   | ES1 |   | ES3 |       |    |   | ES2 |   | ES3 |   |   |
-|   |   | 3   |   | 2   |       |    |   | 2   |   | 1   |   |   |
-|   |   | 4   |   | 3   |       |    |   | 3   |   | 4   |   |   |
-|   |   +-----+   +-----+       |    |   +-----+   +-----+   |   |
-|   +---------------------------+----+-----------------------+   |
-+-------------------------------+    +---------------------------+
+1 Test data
+═══════════
 
-The following table works as a kind of legend to the diagram above:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- Id   Name
-────────────────────────────
- GAX  Grid area X
- BRX  Balance responsible X
- ESX  Energy supplier X
- X    Metering data point X
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  The following illustration shows how the different grid areas, balance responsibles, energy suppliers, and data points
+  are related for this particular test.
+  ┌────
+  │ +-------------------------------+    +----------------------+
+  │ |   GA1                         |    |   GA3                |
+  │ |   +-----------------------+   |    |   +--------------+   |
+  │ |   |   BR1                 |   |    |   |   BR3        |   |
+  │ |   |   +-----+   +-----+   |   |    |   |   +------+   |   |
+  │ |   |   | ES1 |   | ES2 |   |   |    |   |   | ES1  |   |   |
+  │ |   |   | 1   |   | 1   |   |   |    |   |   | 1  3 |   |   |
+  │ |   |   | 2   |   | 4   |   |   |    |   |   | 2  4 |   |   |
+  │ |   |   +-----+   +-----+   |   |    |   |   +------+   |   |
+  │ |   +-----------------------+   |    |   +--------------+   |
+  │ |                               |    +----------------------+
+  │ |                               |
+  │ |                               |    +---------------------------+
+  │ |                               |    |   GA2                     |
+  │ |   +---------------------------+----+-----------------------+   |
+  │ |   |   BR2                     |    |                       |   |
+  │ |   |   +-----+   +-----+       |    |   +-----+   +-----+   |   |
+  │ |   |   | ES1 |   | ES3 |       |    |   | ES2 |   | ES3 |   |   |
+  │ |   |   | 3   |   | 2   |       |    |   | 2   |   | 1   |   |   |
+  │ |   |   | 4   |   | 3   |       |    |   | 3   |   | 4   |   |   |
+  │ |   |   +-----+   +-----+       |    |   +-----+   +-----+   |   |
+  │ |   +---------------------------+----+-----------------------+   |
+  │ +-------------------------------+    +---------------------------+
+  └────
 
-In addition to these elements, each metering data point contains additional information
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- Id  Quantity        Time        Balance fixing            First correction           Second correction          Third correction
-───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-  1  FirstQuantity   FirstHour   FirstCalculationResultId  SecondCalculationResultId  ThirdCalculationResultId   ThirdCalculationResultId
-  2  SecondQuantity  SecondHour  FirstCalculationResultId  SecondCalculationResultId  ThirdCalculationResultId
-  3  ThirdQuantity   ThirdHour   FirstCalculationResultId                             SecondCalculationResultId  ThirdCalculationResultId
-  4  FourthQuantity  SecondDay   FirstCalculationResultId                                                        SecondCalculationResultId
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  The following table works as a kind of legend to the diagram above:
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Id   Name
+  ────────────────────────────
+   GAX  Grid area X
+   BRX  Balance responsible X
+   ESX  Energy supplier X
+   X    Metering data point X
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-The test data also contains aggregation data for `BalanceResponsibleAndGridArea', `EnergySupplierAndGridArea', and
-`GridArea'. This data is derived directly from the points above, distributed as illustrated in the diagram with the
-aggregation level `EnergySupplierAndBalanceResponsibleAndGridArea' as each data point — as seen — is bound to a grid
-area, balance responsible, and energy supplier. The generated aggregated data is derived using the calculated ids as
-follow
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- Aggregation level              Derivation                          Calculation id
-─────────────────────────────────────────────────────────────────────────────────────────────
- BalanceResponsibleAndGridArea  Sum of all points within BR in GA   ThirdCalculationResultId
- EnergySupplierAndGridArea      Sum of all points for ES within GA  ThirdCalculationResultId
- GridArea                       Sum of all points within GA         ThirdCalculationResultId
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-It is worth noticing that each generated aggregation is done for each calculation level too, i.e. balance fixing, first
-correction, second correction, and third correction.
+  In addition to these elements, each metering data point contains additional information
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Id  Quantity        Time        Balance fixing            First correction           Second correction          Third correction
+  ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    1  FirstQuantity   FirstHour   FirstCalculationResultId  SecondCalculationResultId  ThirdCalculationResultId   ThirdCalculationResultId
+    2  SecondQuantity  SecondHour  FirstCalculationResultId  SecondCalculationResultId  ThirdCalculationResultId
+    3  ThirdQuantity   ThirdHour   FirstCalculationResultId                             SecondCalculationResultId  ThirdCalculationResultId
+    4  FourthQuantity  SecondDay   FirstCalculationResultId                                                        SecondCalculationResultId
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-The utilised `CalculationForPeriod' as part of the query parameters are generated as follows
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- Calculation id             Calculation version
-────────────────────────────────────────────────
- FirstCalculationResultId                  1024
- SecondCalculationResultId                  512
- ThirdCalculationResultId                    42
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-with the period start and end being the same for all `CalculationForPeriod'.
+  The test data also contains aggregation data for `BalanceResponsibleAndGridArea', `EnergySupplierAndGridArea', and
+  `GridArea'. This data is derived directly from the points above, distributed as illustrated in the diagram with the
+  aggregation level `EnergySupplierAndBalanceResponsibleAndGridArea' as each data point — as seen — is bound to a grid
+  area, balance responsible, and energy supplier. The generated aggregated data is derived using the calculated ids as
+  follow
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Aggregation level              Derivation                          Calculation id
+  ─────────────────────────────────────────────────────────────────────────────────────────────
+   BalanceResponsibleAndGridArea  Sum of all points within BR in GA   ThirdCalculationResultId
+   EnergySupplierAndGridArea      Sum of all points for ES within GA  ThirdCalculationResultId
+   GridArea                       Sum of all points within GA         ThirdCalculationResultId
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  It is worth noticing that each generated aggregation is done for each calculation level too, i.e. balance fixing,
+  first correction, second correction, and third correction.
+
+  The utilised `CalculationForPeriod' as part of the query parameters are generated as follows
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Calculation id             Calculation version
+  ────────────────────────────────────────────────
+   FirstCalculationResultId                  1024
+   SecondCalculationResultId                  512
+   ThirdCalculationResultId                    42
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  with the period start and end being the same for all `CalculationForPeriod'.
+
+
+2 Test purpose
+══════════════
+
+  The purpose of the tests in this class is to ensure that the SQL queries made by `AggregatedTimeSeriesQueryStatement'
+  using `AggregatedTimeSeriesQueryParameters' are resulting in the expected and correct data. The structure of the
+  queries is not considered, neither is performance. The tests focus solely on whether the returned data correlates
+  with our expectations for a particular query parameter.
+
+
+2.1 Test structure
+──────────────────
+
+  The tests in this file all follow the same pattern:
+  1. We generate a specific query parameter
+  2. We execute the generate query using the sut
+  3. We validate that the expected data is returned
+
+
+  In particular we change the query parameter fields listed below
+  ━━━━━━━━━━━━━━━━━━━━━━━━
+   Query parameter field
+  ────────────────────────
+   Time series type
+   Grid area
+   Energy supplier id
+   Balance responsible id
+   Calculation type
+   Start of period
+   End of period
+  ━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+2.2 Result validation
+─────────────────────
+
+  We usually validate the following for time series
+  ━━━━━━━━━━━━━━━━━━
+   Time series
+  ──────────────────
+   Grid area
+   Calculation type
+   Time series type
+   Version
+   Number of points
+  ━━━━━━━━━━━━━━━━━━
+
+  and for the points we limit ourselves to
+  ━━━━━━━━━━━━━━━━━━━
+   Time series point
+  ───────────────────
+   Quantity
+   Time
+  ━━━━━━━━━━━━━━━━━━━
+  as these are sufficient to distinguish the individual data points in conjunction with the time series validation, and
+  thus ensure the correct subset of the data is returned.
      */
 
     [Fact]
