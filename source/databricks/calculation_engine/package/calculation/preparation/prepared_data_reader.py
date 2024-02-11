@@ -93,4 +93,3 @@ class PreparedDataReader:
             time_series_points_df,
             metering_point_periods_df,
         )
-    
