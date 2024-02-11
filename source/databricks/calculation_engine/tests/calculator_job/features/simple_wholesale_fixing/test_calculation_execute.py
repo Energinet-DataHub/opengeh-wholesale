@@ -36,7 +36,7 @@ class TestBusinessLogic:
         builder.populate_metering_point_periods("metering_point_periods.csv")
         builder.populate_time_series_points("time_series_points.csv")
         builder.populate_grid_loss_metering_points("grid_loss_metering_points.csv")
-        prepared_data_reader = builder.get_prepared_date_reader()
+        prepared_data_reader = builder.create_prepared_data_reader()
 
         # Act
         actual = calculation_execute(args, prepared_data_reader)

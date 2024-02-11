@@ -45,5 +45,5 @@ class TableReaderMockBuilder:
         df = self.spark.read.csv(self.test_path + file_path, header=True, schema=schema)
         return self.spark.createDataFrame(df.rdd, schema)
 
-    def get_prepared_date_reader(self) -> PreparedDataReader:
+    def create_prepared_data_reader(self) -> PreparedDataReader:
         return PreparedDataReader(self.table_reader)
