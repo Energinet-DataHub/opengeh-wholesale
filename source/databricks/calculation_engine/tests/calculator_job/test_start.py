@@ -36,13 +36,13 @@ class TestWhenInvokedWithInvalidArguments:
 
 
 class TestWhenInvokedWithValidArguments:
-    def test_does_not_raise(self, args):
+    def test_does_not_raise(self, any_calculator_args):
         command_line_args = argparse.Namespace()
-        command_line_args.calculation_id = args.calculation_id
+        command_line_args.calculation_id = any_calculator_args.calculation_id
 
         start_with_deps(
             parse_command_line_args=lambda: command_line_args,
-            create_calculation_args=lambda args: args,
+            create_calculation_args=lambda args: any_calculator_args,
             calculation_executor=lambda args, reader: None,
             is_storage_locked_checker=lambda name, cred: False,
         )
