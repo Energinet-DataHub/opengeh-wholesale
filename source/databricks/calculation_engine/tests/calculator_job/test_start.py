@@ -106,7 +106,7 @@ AppTraces
 
     def test_add_trace_log_record_to_azure_monitor_with_expected_settings(
         self,
-        any_calculator_argsargs: CalculatorArgs,
+        any_calculator_args: CalculatorArgs,
         integration_test_configuration: IntegrationTestConfiguration,
     ):
         """
@@ -119,7 +119,7 @@ AppTraces
         """
 
         # Arrange
-        self.prepare_command_line_arguments(any_calculator_argsargs)
+        self.prepare_command_line_arguments(any_calculator_args)
 
         # Act
         with pytest.raises(SystemExit):
@@ -137,7 +137,7 @@ AppDependencies
 | where Name == "calculation.create_calculation_arguments"
 | where OperationId != "00000000000000000000000000000000"
 | where Properties.Subsystem == "wholesale"
-| where Properties.calculation_id == "{any_calculator_argsargs.calculation_id}"
+| where Properties.calculation_id == "{any_calculator_args.calculation_id}"
 | count
         """
 
