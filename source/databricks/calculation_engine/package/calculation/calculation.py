@@ -76,10 +76,7 @@ def _execute(
         or args.calculation_type == CalculationType.SECOND_CORRECTION_SETTLEMENT
         or args.calculation_type == CalculationType.THIRD_CORRECTION_SETTLEMENT
     ):
-        charges_df = prepared_data_reader.get_charges(
-            args.calculation_period_start_datetime, args.calculation_period_end_datetime
-        )
-        charge_links_df = prepared_data_reader.get_charge_links(
+        charges = prepared_data_reader.get_charges(
             args.calculation_period_start_datetime, args.calculation_period_end_datetime
         )
 
@@ -87,11 +84,18 @@ def _execute(
             _get_production_and_consumption_metering_points(metering_point_periods_df)
         )
 
+        metering_point_charges_links = (
+            prepared_data_reader.get_metering_point_charge_links(
+                args.calculation_period_start_datetime,
+                args.calculation_period_end_datetime,
+                metering_points_periods_for_wholesale_calculation_df,
+            )
+        )
+
         tariffs_hourly_df = prepared_data_reader.get_tariff_charges(
-            metering_points_periods_for_wholesale_calculation_df,
             metering_point_time_series,
-            charges_df,
-            charge_links_df,
+            charges,
+            metering_point_charges_links,
             ChargeResolution.HOUR,
         )
 
