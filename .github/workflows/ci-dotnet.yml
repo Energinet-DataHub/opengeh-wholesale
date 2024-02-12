@@ -25,6 +25,21 @@ jobs:
       dotnet_version: 8.0.101
       solution_file_path: source/dotnet/Wholesale.sln
 
+  dotnet_ci_test_integrationtests_functionapp:
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v12
+    with:
+      dotnet_version: 8.0.101
+      tests_dll_file_path: \source\dotnet\wholesale-api\FunctionApp.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.FunctionApp.IntegrationTests.dll
+      download_attempt_limit: 20
+      use_azure_functions_tools: true
+      environment: AzureAuth
+      run_integration_tests: true
+      azure_integrationtest_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
+      azure_integrationtest_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
+      azure_integrationtest_spn_id: ${{ vars.integration_test_azure_spn_id_oidc }}
+      azure_keyvault_url: ${{ vars.integration_test_azure_keyvault_url }}
+      azure_b2csecrets_keyvault_url: ${{ vars.integration_test_azure_b2csecrets_keyvault_url }}
+
   dotnet_ci_test_integrationtests_webapi:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v12
     with:
@@ -33,7 +48,6 @@ jobs:
       aspnetcore_test_contentroot_variable_name: ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI
       aspnetcore_test_contentroot_variable_value: \source\dotnet\wholesale-api\WebApi
       download_attempt_limit: 20
-      use_azure_functions_tools: true
       environment: AzureAuth
       run_integration_tests: true
       azure_integrationtest_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
@@ -55,7 +69,6 @@ jobs:
       dotnet_version: 8.0.101
       tests_dll_file_path: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
       download_attempt_limit: 20
-      use_azure_functions_tools: true
       environment: AzureAuth
       run_integration_tests: true
       azure_integrationtest_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
@@ -77,7 +90,6 @@ jobs:
       dotnet_version: 8.0.101
       tests_dll_file_path: \source\dotnet\wholesale-api\Calculations\Calculations.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Calculations.IntegrationTests.dll
       download_attempt_limit: 20
-      use_azure_functions_tools: true
 
   dotnet_ci_test_calculation_calculations:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v12
@@ -92,7 +104,6 @@ jobs:
       dotnet_version: 8.0.101
       tests_dll_file_path: \source\dotnet\wholesale-api\Events\Events.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Events.IntegrationTests.dll
       download_attempt_limit: 20
-      use_azure_functions_tools: true
       environment: AzureAuth
       run_integration_tests: true
       azure_integrationtest_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
