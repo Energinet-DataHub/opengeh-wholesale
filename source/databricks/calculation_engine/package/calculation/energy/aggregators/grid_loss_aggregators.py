@@ -111,8 +111,10 @@ def calculate_negative_grid_loss(
         grid_loss_responsible, MeteringPointType.PRODUCTION
     )
 
-    only_grid_area_and_metering_point_id = only_grid_area_and_metering_point_id.withColumnRenamed(
-        Colname.metering_point_id, "grid_loss_metering_point_id"
+    only_grid_area_and_metering_point_id = (
+        only_grid_area_and_metering_point_id.withColumnRenamed(
+            Colname.metering_point_id, "grid_loss_metering_point_id"
+        )
     )
 
     result = grid_loss.df.join(
@@ -128,7 +130,9 @@ def calculate_negative_grid_loss(
         only_grid_area_and_metering_point_id["grid_loss_metering_point_id"],
     )
 
-    result = result.withColumnRenamed("grid_loss_metering_point_id", Colname.metering_point_id)
+    result = result.withColumnRenamed(
+        "grid_loss_metering_point_id", Colname.metering_point_id
+    )
 
     return EnergyResults(result)
 
@@ -140,8 +144,10 @@ def calculate_positive_grid_loss(
         grid_loss_responsible, MeteringPointType.CONSUMPTION
     )
 
-    only_grid_area_and_metering_point_id = only_grid_area_and_metering_point_id.withColumnRenamed(
-        Colname.metering_point_id, "grid_loss_metering_point_id"
+    only_grid_area_and_metering_point_id = (
+        only_grid_area_and_metering_point_id.withColumnRenamed(
+            Colname.metering_point_id, "grid_loss_metering_point_id"
+        )
     )
 
     result = grid_loss.df.join(
@@ -157,7 +163,9 @@ def calculate_positive_grid_loss(
         only_grid_area_and_metering_point_id["grid_loss_metering_point_id"],
     )
 
-    result = result.withColumnRenamed("grid_loss_metering_point_id", Colname.metering_point_id)
+    result = result.withColumnRenamed(
+        "grid_loss_metering_point_id", Colname.metering_point_id
+    )
 
     return EnergyResults(result)
 
