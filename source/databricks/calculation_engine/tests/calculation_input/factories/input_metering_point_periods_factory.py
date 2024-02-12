@@ -21,7 +21,8 @@ from package.calculation_input.schemas import (
 from package.codelists import (
     InputMeteringPointType,
     InputSettlementMethod,
-    MeteringPointResolution, CalculationType,
+    MeteringPointResolution,
+    CalculationType,
 )
 from package.constants import Colname
 
@@ -72,7 +73,9 @@ def create_row(
     return Row(**row)
 
 
-def create_dataframe(spark: SparkSession, data: None | Row | list[Row] = None) -> DataFrame:
+def create_dataframe(
+        spark: SparkSession, data: None | Row | list[Row] = None
+) -> DataFrame:
     if data is None:
         data = [create_row()]
     elif isinstance(data, Row):

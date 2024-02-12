@@ -13,10 +13,7 @@
 # limitations under the License.
 
 from pyspark.sql import DataFrame, Row, SparkSession
-
-from package.calculation_input.schemas import (
-    grid_loss_metering_points_schema
-)
+from package.calculation_input.schemas import grid_loss_metering_points_schema
 from package.constants import Colname
 
 

@@ -186,23 +186,31 @@ class TestWhenValidInput:
         assert len(actual_rows) == 1
         actual_row = actual_rows[0]
         assert (
-            actual_row[Colname.metering_point_id] == factory.DefaultValues.METERING_POINT_ID
+            actual_row[Colname.metering_point_id]
+            == factory.DefaultValues.METERING_POINT_ID
         )
         assert (
             actual_row[Colname.metering_point_type]
             == MeteringPointType.CONSUMPTION.value
         )
         assert actual_row[Colname.settlement_method] == SettlementMethod.FLEX.value
-        assert actual_row[Colname.grid_area] == factory.DefaultValues.GRID_AREA
+        assert (
+                actual_row[Colname.grid_area]
+                == factory.DefaultValues.GRID_AREA
+        )
         assert actual_row[Colname.resolution] == factory.DefaultValues.RESOLUTION.value
-        assert actual_row[Colname.from_grid_area] == factory.DefaultValues.FROM_GRID_AREA
+        assert (
+                actual_row[Colname.from_grid_area] ==
+                factory.DefaultValues.FROM_GRID_AREA
+        )
         assert actual_row[Colname.to_grid_area] == factory.DefaultValues.TO_GRID_AREA
         assert (
             actual_row[Colname.parent_metering_point_id]
             == factory.DefaultValues.PARENT_METERING_POINT_ID
         )
         assert (
-            actual_row[Colname.energy_supplier_id] == factory.DefaultValues.ENERGY_SUPPLIER_ID
+            actual_row[Colname.energy_supplier_id]
+            == factory.DefaultValues.ENERGY_SUPPLIER_ID
         )
         assert (
             actual_row[Colname.balance_responsible_id]

@@ -12,16 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 from datetime import datetime
 from decimal import Decimal
 
 from pyspark.sql import DataFrame, Row, SparkSession
 from pyspark.sql.types import TimestampType
 
-from package.calculation_input.schemas import (
-    time_series_point_schema
-)
+from package.calculation_input.schemas import time_series_point_schema
 from package.constants import Colname
 
 
@@ -48,7 +45,9 @@ def create_row(
     return Row(**row)
 
 
-def create_dataframe(spark: SparkSession, data: None | Row | list[Row] = None) -> DataFrame:
+def create_dataframe(
+        spark: SparkSession, data: None | Row | list[Row] = None
+) -> DataFrame:
     if data is None:
         data = [create_row()]
     elif isinstance(data, Row):
