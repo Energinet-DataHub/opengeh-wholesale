@@ -13,18 +13,18 @@
 # limitations under the License.
 
 from datetime import datetime, timedelta
+from unittest.mock import patch, Mock
 
+import pytest
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import when, col
 
-import pytest
-from unittest.mock import patch, Mock
-
+import calculation_input.factories.input_metering_point_periods_factory as factory
 from package import calculation_input
-from package.calculation_input.table_reader import TableReader
 from package.calculation.preparation.transformations import (
     get_metering_point_periods_df,
 )
+from package.calculation_input.table_reader import TableReader
 from package.codelists import (
     InputMeteringPointType,
     InputSettlementMethod,
@@ -32,8 +32,6 @@ from package.codelists import (
     SettlementMethod,
 )
 from package.constants import Colname
-
-import calculation_input.factories.input_metering_point_periods_factory as factory
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 
 june_1th = datetime(2022, 5, 31, 22, 0)
@@ -194,7 +192,7 @@ class TestWhenValidInput:
             == MeteringPointType.CONSUMPTION.value
         )
         assert actual_row[Colname.settlement_method] == SettlementMethod.FLEX.value
-        assert (actual_row[Colname.grid_area] == factory.DefaultValues.GRID_AREA)
+        assert actual_row[Colname.grid_area] == factory.DefaultValues.GRID_AREA
         assert actual_row[Colname.resolution] == factory.DefaultValues.RESOLUTION.value
         assert (
             actual_row[Colname.from_grid_area] == factory.DefaultValues.FROM_GRID_AREA
