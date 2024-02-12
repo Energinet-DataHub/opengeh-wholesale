@@ -35,14 +35,7 @@ from .wholesale import wholesale_calculation
 
 def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> None:
     results = _execute(args, prepared_data_reader)
-
-    write_energy_results(args, results.energy_results)
-
-    if results.wholesale_results is not None:
-        write_wholesale_results(args, results.wholesale_results)
-
-    # We write basis data at the end of the calculation to make it easier to analyze performance of the calculation part
-    write_basis_data(args, results.basis_data)
+    _write_results(args, results)
 
 
 @logging_configuration.use_span("calculation")
@@ -125,3 +118,11 @@ def _get_production_and_consumption_metering_points(
         (f.col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
         | (f.col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
     )
+
+
+def _write_results(args, results):
+    write_energy_results(args, results.energy_results)
+    if results.wholesale_results is not None:
+        write_wholesale_results(args, results.wholesale_results)
+    # We write basis data at the end of the calculation to make it easier to analyze performance of the calculation part
+    write_basis_data(args, results.basis_data)
