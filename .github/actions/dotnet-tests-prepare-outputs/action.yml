@@ -41,6 +41,18 @@ runs:
 
     # To ensure code coverage tooling is available in bin folder, we use publish on test assemblies
     # See https://github.com/coverlet-coverage/coverlet/issues/521#issuecomment-522429394
+    - name: Publish FunctionApp IntegrationTests
+      shell: bash
+      run: |
+        dotnet publish \
+          '.\source\dotnet\wholesale-api\FunctionApp.IntegrationTests\FunctionApp.IntegrationTests.csproj' \
+          --no-build \
+          --no-restore \
+          --configuration Release \
+          --output '.\source\dotnet\wholesale-api\FunctionApp.IntegrationTests\bin\Release\net8.0'
+
+    # To ensure code coverage tooling is available in bin folder, we use publish on test assemblies
+    # See https://github.com/coverlet-coverage/coverlet/issues/521#issuecomment-522429394
     - name: Publish UnitTests
       shell: bash
       run: |
