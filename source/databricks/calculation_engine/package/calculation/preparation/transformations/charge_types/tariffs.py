@@ -25,7 +25,7 @@ def get_tariff_charges(
     metering_points: DataFrame,
     metering_point_time_series: DataFrame,
     charges: DataFrame,
-    charge_links: DataFrame,
+    metering_point_charges_links: DataFrame,
     resolution: ChargeResolution,
 ) -> DataFrame:
     tariffs = charges.filter(
