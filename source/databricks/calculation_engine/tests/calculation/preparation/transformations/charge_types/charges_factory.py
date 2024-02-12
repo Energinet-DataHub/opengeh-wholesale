@@ -126,6 +126,27 @@ def create_tariff_charges_row(
     return Row(**row)
 
 
+def create_tariff_charge_link_row(
+    charge_code: str = DefaultValues.DEFAULT_CHARGE_CODE,
+    charge_owner: str = DefaultValues.DEFAULT_CHARGE_OWNER,
+    from_date: datetime = datetime(2019, 12, 31, 23),
+    to_date: datetime = datetime(2020, 1, 1, 0),
+    metering_point_id: str = DefaultValues.DEFAULT_METERING_POINT_ID,
+) -> Row:
+    charge_key: str = f"{charge_code}-{charge_owner}-{e.ChargeType.TARIFF.value}"
+
+    row = {
+        Colname.charge_key: charge_key,
+        Colname.charge_code: charge_code,
+        Colname.charge_type: e.ChargeType.TARIFF.value,
+        Colname.charge_owner: charge_owner,
+        Colname.from_date: from_date,
+        Colname.to_date: to_date,
+        Colname.metering_point_id: metering_point_id,
+    }
+    return Row(**row)
+
+
 def create_subscription_or_fee_charges_row(
     charge_type: e.ChargeType,
     charge_code: str = DefaultValues.DEFAULT_CHARGE_CODE,

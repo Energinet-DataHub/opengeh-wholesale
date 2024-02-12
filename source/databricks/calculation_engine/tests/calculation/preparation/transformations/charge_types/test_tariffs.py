@@ -254,18 +254,21 @@ def test__get_tariff_charges__when_no_matching_charge_resolution__returns_empty_
     charges_rows = [
         factory.create_tariff_charges_row(resolution=e.ChargeResolution.DAY)
     ]
+    charge_link_row = factory.create_tariff_charge_link_row()
 
     metering_point = spark.createDataFrame(
         metering_point_rows, metering_point_period_schema
     )
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
     charges = spark.createDataFrame(charges_rows, charges_schema)
+    charge_links = spark.createDataFrame(charge_link_row, charges_schema)
 
     # Act
     actual = get_tariff_charges(
         metering_point,
         time_series,
         charges,
+        charge_links,
         e.ChargeResolution.HOUR,
     )
 

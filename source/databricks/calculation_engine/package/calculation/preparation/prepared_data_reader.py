@@ -90,6 +90,15 @@ class PreparedDataReader:
             metering_points, time_series, charges_df, resolution
         )
 
+    def get_metering_point_charge_links(
+        self,
+        period_start_datetime: datetime,
+        period_end_datetime: datetime,
+        metering_point_periods_df: DataFrame,
+    ) -> DataFrame:
+        charge_links = T.read_charge_links(self._table_reader, period_start_datetime, period_end_datetime)
+        return T.get_metering_point_charge_links(self._table_reader)
+
     def get_metering_point_time_series(
         self,
         period_start_datetime: datetime,
