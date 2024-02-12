@@ -34,7 +34,6 @@ charges_schema = StructType(
         StructField(Colname.from_date, TimestampType(), False),
         StructField(Colname.to_date, TimestampType(), False),
         StructField(Colname.charge_price, DecimalType(18, 6), False),
-        StructField(Colname.metering_point_id, StringType(), False),
     ]
 )
 
