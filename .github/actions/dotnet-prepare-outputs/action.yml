@@ -50,7 +50,7 @@ runs:
           --no-build \
           --no-restore \
           --configuration Release \
-          --output '${{ inputs.output_path }}\functions\functionapp'
+          --output '${{ inputs.output_path }}\functions\orchestration'
 
     - name: Publish Database Migration
       shell: bash
