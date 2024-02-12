@@ -54,8 +54,6 @@ namespace Energinet.DataHub.Wholesale.FunctionApp.IntegrationTests.Fixtures
             AzuriteManager.StartAzurite();
 
             // => Prepare host settings
-            var localSettingsSnapshot = HostConfigurationBuilder.BuildLocalSettingsConfiguration();
-
             var port = 8000;
             var appHostSettings = CreateAppHostSettings("FunctionApp", ref port);
 
