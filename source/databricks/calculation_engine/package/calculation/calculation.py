@@ -120,7 +120,7 @@ def _get_production_and_consumption_metering_points(
     )
 
 
-def _write_results(args, results):
+def _write_results(args: CalculatorArgs, results: CalculationResultsContainer) -> None:
     write_energy_results(args, results.energy_results)
     if results.wholesale_results is not None:
         write_wholesale_results(args, results.wholesale_results)

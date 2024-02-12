@@ -19,26 +19,28 @@ from package.calculation.energy.energy_results import EnergyResults
 
 @dataclass
 class EnergyResultsContainer:
+    """The usage of `EnergyResults.empty()` is a workaround to prevent the type checker from complaining."""
+
     exchange_per_neighbour_ga: EnergyResults | None = None
     exchange_per_grid_area: EnergyResults | None = None
-    temporary_production_per_ga: EnergyResults | None = None
-    temporary_flex_consumption_per_ga: EnergyResults | None = None
-    grid_loss: EnergyResults | None = None
-    positive_grid_loss: EnergyResults | None = None
-    negative_grid_loss: EnergyResults | None = None
+    temporary_production_per_ga: EnergyResults = EnergyResults.empty()
+    temporary_flex_consumption_per_ga: EnergyResults = EnergyResults.empty()
+    grid_loss: EnergyResults = EnergyResults.empty()
+    positive_grid_loss: EnergyResults = EnergyResults.empty()
+    negative_grid_loss: EnergyResults = EnergyResults.empty()
     consumption_per_ga_and_brp: EnergyResults | None = None
     consumption_per_ga_and_brp_and_es: EnergyResults | None = None
-    consumption_per_ga_and_es: EnergyResults | None = None
-    consumption_per_ga: EnergyResults | None = None
+    consumption_per_ga_and_es: EnergyResults = EnergyResults.empty()
+    consumption_per_ga: EnergyResults = EnergyResults.empty()
     production_per_ga_and_brp_and_es: EnergyResults | None = None
     production_per_ga_and_brp: EnergyResults | None = None
-    production_per_ga_and_es: EnergyResults | None = None
-    production_per_ga: EnergyResults | None = None
-    flex_consumption_per_ga: EnergyResults | None = None
-    flex_consumption_per_ga_and_es: EnergyResults | None = None
+    production_per_ga_and_es: EnergyResults = EnergyResults.empty()
+    production_per_ga: EnergyResults = EnergyResults.empty()
+    flex_consumption_per_ga: EnergyResults = EnergyResults.empty()
+    flex_consumption_per_ga_and_es: EnergyResults = EnergyResults.empty()
     flex_consumption_per_ga_and_brp_and_es: EnergyResults | None = None
     flex_consumption_per_ga_and_brp: EnergyResults | None = None
-    total_consumption: EnergyResults | None = None
+    total_consumption: EnergyResults = EnergyResults.empty()
 
 
 @dataclass

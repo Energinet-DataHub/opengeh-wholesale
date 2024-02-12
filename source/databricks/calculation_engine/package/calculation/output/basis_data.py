@@ -16,7 +16,7 @@ from package.calculation.calculator_args import CalculatorArgs
 from package.calculation_output.basis_data_writer import BasisDataWriter
 
 
-def write_basis_data(args: CalculatorArgs, basis_data: BasisDataContainer):
+def write_basis_data(args: CalculatorArgs, basis_data: BasisDataContainer) -> None:
     basis_data_writer = BasisDataWriter(
         args.wholesale_container_path, args.calculation_id
     )

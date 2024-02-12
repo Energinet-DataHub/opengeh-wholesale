@@ -20,7 +20,7 @@ from package.infrastructure import logging_configuration
 
 def write_wholesale_results(
     args: CalculatorArgs, wholesale_results: WholesaleResultsContainer
-):
+) -> None:
     wholesale_calculation_result_writer = WholesaleCalculationResultWriter(
         args.calculation_id,
         args.calculation_type,
