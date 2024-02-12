@@ -24,13 +24,15 @@ from package.constants import Colname
 def get_tariff_charges(
     metering_points: DataFrame,
     metering_point_time_series: DataFrame,
-    charges_df: DataFrame,
+    charges: DataFrame,
+    charge_links: DataFrame,
     resolution: ChargeResolution,
 ) -> DataFrame:
-    tariffs = charges_df.filter(
+    tariffs = charges.filter(
         f.col(Colname.charge_type) == ChargeType.TARIFF.value
     ).filter(f.col(Colname.resolution) == resolution.value)
 
+    tariffs = _join_with_charge_links(tariffs, charge_links)
     tariffs = _join_with_metering_points(tariffs, metering_points)
 
     # group by time series on metering point id and resolution and sum quantity
@@ -48,6 +50,29 @@ def get_tariff_charges(
     tariffs.schema[Colname.energy_supplier_id].nullable = False
 
     return tariffs
+
+
+def _join_with_charge_links(df: DataFrame, charge_links: DataFrame) -> DataFrame:
+    df = df.join(
+        charge_links,
+        [
+            df[Colname.charge_key] == charge_links[Colname.charge_key],
+            df[Colname.charge_time] >= charge_links[Colname.from_date],
+            df[Colname.charge_time] < charge_links[Colname.to_date],
+        ],
+        "inner",
+    ).select(
+        df[Colname.charge_key],
+        df[Colname.charge_code],
+        df[Colname.charge_type],
+        df[Colname.charge_owner],
+        df[Colname.charge_tax],
+        df[Colname.resolution],
+        df[Colname.charge_time],
+        df[Colname.charge_price],
+        charge_links[Colname.metering_point_id],
+    )
+    return df
 
 
 def _join_with_metering_points(df: DataFrame, metering_points: DataFrame) -> DataFrame:

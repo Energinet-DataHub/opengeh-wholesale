@@ -33,10 +33,21 @@ def read_charges(
     charge_master_data_df = _get_charge_master_data(
         table_reader, period_start_datetime, period_end_datetime
     )
-    charge_links_df = _get_charge_links(
+    charges = _join_with_charge_prices(charge_master_data_df, charge_prices_df)
+
+    return charges
+
+
+def read_charge_links(
+    table_reader: TableReader,
+    period_start_datetime: datetime,
+    period_end_datetime: datetime,
+) -> DataFrame:
+    charge_links = _get_charge_links(
         table_reader, period_start_datetime, period_end_datetime
     )
-    return _create_charges_df(charge_master_data_df, charge_links_df, charge_prices_df)
+
+    return charge_links
 
 
 def _get_charge_master_data(
@@ -104,18 +115,6 @@ def _get_charge_price_points(
     return charge_price_points_df
 
 
-def _create_charges_df(
-    charge_master_data: DataFrame,
-    charge_links: DataFrame,
-    charge_prices: DataFrame,
-) -> DataFrame:
-    charges_with_prices = _join_with_charge_prices(charge_master_data, charge_prices)
-    charges_with_price_and_links = _join_with_charge_links(
-        charges_with_prices, charge_links
-    )
-    return charges_with_price_and_links
-
-
 def _join_with_charge_prices(df: DataFrame, charge_prices: DataFrame) -> DataFrame:
     df = df.join(charge_prices, [Colname.charge_key], "inner").select(
         df[Colname.charge_key],
@@ -128,31 +127,6 @@ def _join_with_charge_prices(df: DataFrame, charge_prices: DataFrame) -> DataFra
         df[Colname.to_date],
         charge_prices[Colname.charge_time],
         charge_prices[Colname.charge_price],
-    )
-    return df
-
-
-def _join_with_charge_links(df: DataFrame, charge_links: DataFrame) -> DataFrame:
-    df = df.join(
-        charge_links,
-        [
-            df[Colname.charge_key] == charge_links[Colname.charge_key],
-            df[Colname.charge_time] >= charge_links[Colname.from_date],
-            df[Colname.charge_time] < charge_links[Colname.to_date],
-        ],
-        "inner",
-    ).select(
-        df[Colname.charge_key],
-        df[Colname.charge_code],
-        df[Colname.charge_type],
-        df[Colname.charge_owner],
-        df[Colname.charge_tax],
-        df[Colname.resolution],
-        df[Colname.charge_time],
-        df[Colname.charge_price],
-        charge_links[Colname.from_date],
-        charge_links[Colname.to_date],
-        charge_links[Colname.metering_point_id],
     )
     return df
 

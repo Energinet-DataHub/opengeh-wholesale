@@ -79,6 +79,9 @@ def _execute(
         charges_df = prepared_data_reader.get_charges(
             args.calculation_period_start_datetime, args.calculation_period_end_datetime
         )
+        get_charge_links_df = prepared_data_reader.get_charge_links(
+            args.calculation_period_start_datetime, args.calculation_period_end_datetime
+        )
 
         metering_points_periods_for_wholesale_calculation_df = (
             _get_production_and_consumption_metering_points(metering_point_periods_df)
@@ -88,6 +91,7 @@ def _execute(
             metering_points_periods_for_wholesale_calculation_df,
             metering_point_time_series,
             charges_df,
+            charge_links_df,
             ChargeResolution.HOUR,
         )
 
