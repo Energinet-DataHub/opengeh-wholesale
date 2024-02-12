@@ -298,6 +298,7 @@ def _execute(
             metering_point_time_series,
             charges_df,
             ChargeResolution.HOUR,
+            args.time_zone,
         )
 
         tariffs_daily_df = prepared_data_reader.get_tariff_charges(
