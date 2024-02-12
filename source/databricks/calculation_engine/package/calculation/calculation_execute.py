@@ -41,7 +41,6 @@ def calculation_execute(
             args.calculation_period_end_datetime,
             args.calculation_grid_areas,
         )
-
         grid_loss_responsible_df = prepared_data_reader.get_grid_loss_responsible(
             args.calculation_grid_areas, metering_point_periods_df
         )
