@@ -118,9 +118,9 @@ class TestWhenValidInput:
         # Act
         actual = get_metering_point_periods_df(
             mock_calculation_input_reader,
-            factory.DEFAULT_FROM_DATE,
-            factory.DEFAULT_TO_DATE,
-            [factory.DEFAULT_GRID_AREA],
+            factory.DefaultValues.FROM_DATE,
+            factory.DefaultValues.TO_DATE,
+            [factory.DefaultValues.GRID_AREA],
         )
 
         # Assert
@@ -176,9 +176,9 @@ class TestWhenValidInput:
         # Act
         actual = get_metering_point_periods_df(
             mock_calculation_input_reader,
-            factory.DEFAULT_FROM_DATE,
-            factory.DEFAULT_TO_DATE,
-            [factory.DEFAULT_GRID_AREA],
+            factory.DefaultValues.FROM_DATE,
+            factory.DefaultValues.TO_DATE,
+            [factory.DefaultValues.GRID_AREA],
         )
 
         # Assert
@@ -186,16 +186,16 @@ class TestWhenValidInput:
         assert len(actual_rows) == 1
         actual_row = actual_rows[0]
         assert (
-            actual_row[Colname.metering_point_id] == factory.DEFAULT_METERING_POINT_ID
+            actual_row[Colname.metering_point_id] == factory.DefaultValues.METERING_POINT_ID
         )
         assert (
             actual_row[Colname.metering_point_type]
             == MeteringPointType.CONSUMPTION.value
         )
         assert actual_row[Colname.settlement_method] == SettlementMethod.FLEX.value
-        assert actual_row[Colname.grid_area] == factory.DEFAULT_GRID_AREA
-        assert actual_row[Colname.resolution] == factory.DEFAULT_RESOLUTION.value
-        assert actual_row[Colname.from_grid_area] == factory.DEFAULT_FROM_GRID_AREA
+        assert actual_row[Colname.grid_area] == factory.DefaultValues.GRID_AREA
+        assert actual_row[Colname.resolution] == factory.DefaultValues.RESOLUTION.value
+        assert actual_row[Colname.from_grid_area] == factory.DefaultValues.FROM_GRID_AREA
         assert actual_row[Colname.to_grid_area] == factory.DefaultValues.TO_GRID_AREA
         assert (
             actual_row[Colname.parent_metering_point_id]
@@ -227,9 +227,9 @@ class TestWhenValidInput:
         # Act
         actual = get_metering_point_periods_df(
             mock_calculation_input_reader,
-            factory.DEFAULT_FROM_DATE,
-            factory.DEFAULT_TO_DATE,
-            [factory.DEFAULT_GRID_AREA],
+            factory.DefaultValues.FROM_DATE,
+            factory.DefaultValues.TO_DATE,
+            [factory.DefaultValues.GRID_AREA],
         )
 
         # Assert
@@ -303,7 +303,7 @@ class TestWhenValidInput:
             mock_calculation_input_reader,
             period_start,
             period_end,
-            [factory.DEFAULT_GRID_AREA],
+            [factory.DefaultValues.GRID_AREA],
         )
 
         # Assert
@@ -340,8 +340,8 @@ class TestWhenThreeGridAreasExchangingWithEachOther:
         # Act
         actual = get_metering_point_periods_df(
             mock_calculation_input_reader,
-            factory.DEFAULT_FROM_DATE,
-            factory.DEFAULT_TO_DATE,
+            factory.DefaultValues.FROM_DATE,
+            factory.DefaultValues.TO_DATE,
             ["111", "222"],
         )
 
@@ -396,8 +396,8 @@ class TestWhenExchangeMeteringPoint:
         # Act
         actual = get_metering_point_periods_df(
             mock_calculation_input_reader,
-            factory.DEFAULT_FROM_DATE,
-            factory.DEFAULT_TO_DATE,
+            factory.DefaultValues.FROM_DATE,
+            factory.DefaultValues.TO_DATE,
             [calculation_grid_area],
         )
 
