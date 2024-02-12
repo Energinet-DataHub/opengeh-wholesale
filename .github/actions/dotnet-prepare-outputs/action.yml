@@ -42,6 +42,16 @@ runs:
           --configuration Release \
           --output '${{ inputs.output_path }}\functions\webapi'
 
+    - name: Publish Function App
+      shell: bash
+      run: |
+        dotnet publish \
+          '.\source\dotnet\wholesale-api\FunctionApp\FunctionApp.csproj' \
+          --no-build \
+          --no-restore \
+          --configuration Release \
+          --output '${{ inputs.output_path }}\functions\functionapp'
+
     - name: Publish Database Migration
       shell: bash
       run: |
