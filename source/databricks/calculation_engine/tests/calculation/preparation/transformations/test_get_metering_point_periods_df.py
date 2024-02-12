@@ -150,9 +150,9 @@ class TestWhenValidInput:
         # Act
         actual = get_metering_point_periods_df(
             mock_calculation_input_reader,
-            factory.DEFAULT_FROM_DATE,
-            factory.DEFAULT_TO_DATE,
-            [factory.DEFAULT_GRID_AREA],
+            factory.DefaultValues.FROM_DATE,
+            factory.DefaultValues.TO_DATE,
+            [factory.DefaultValues.GRID_AREA],
         )
 
         # Assert
