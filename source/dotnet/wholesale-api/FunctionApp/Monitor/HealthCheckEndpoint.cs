@@ -12,24 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Azure.Functions.Worker.Http;
 
-var host = new HostBuilder()
-    .ConfigureFunctionsWorkerDefaults()
-    .ConfigureServices(services =>
+namespace FunctionApp.Monitor
+{
+    public class HealthCheckEndpoint
     {
-        services.AddApplicationInsightsTelemetryWorkerService();
-        services.ConfigureFunctionsApplicationInsights();
+        public HealthCheckEndpoint(IHealthCheckEndpointHandler healthCheckEndpointHandler)
+        {
+            EndpointHandler = healthCheckEndpointHandler;
+        }
 
-        // Health check
-        services.AddScoped<IHealthCheckEndpointHandler, HealthCheckEndpointHandler>();
-        services.AddHealthChecks()
-            .AddLiveCheck();
-    })
-    .Build();
+        private IHealthCheckEndpointHandler EndpointHandler { get; }
 
-host.Run();
+        [Function("HealthCheck")]
+        public Task<HttpResponseData> RunAsync(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "monitor/{endpoint}")]
+            HttpRequestData httpRequest,
+            string endpoint)
+        {
+            return EndpointHandler.HandleAsync(httpRequest, endpoint);
+        }
+    }
+}
