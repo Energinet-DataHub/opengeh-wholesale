@@ -16,7 +16,11 @@ from unittest.mock import Mock
 from pyspark.sql import SparkSession, dataframe
 
 from package.calculation import PreparedDataReader
-from package.calculation_input.schemas import metering_point_period_schema, time_series_point_schema, grid_loss_metering_points_schema
+from package.calculation_input.schemas import (
+    metering_point_period_schema,
+    time_series_point_schema,
+    grid_loss_metering_points_schema
+)
 
 
 class TableReaderMockBuilder:

@@ -71,8 +71,7 @@ class TestWhenInvokedWithValidArguments:
         # Act
         with pytest.raises(SystemExit):
             start_with_deps(
-                applicationinsights_connection_string=integration_test_configuration
-                .get_applicationinsights_connection_string(),
+                applicationinsights_connection_string=integration_test_configuration.get_applicationinsights_connection_string(),
             )
 
         # Assert
