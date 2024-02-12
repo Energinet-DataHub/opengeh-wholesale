@@ -48,6 +48,7 @@ jobs:
       aspnetcore_test_contentroot_variable_name: ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI
       aspnetcore_test_contentroot_variable_value: \source\dotnet\wholesale-api\WebApi
       download_attempt_limit: 20
+      use_azure_functions_tools: true
       environment: AzureAuth
       run_integration_tests: true
       azure_integrationtest_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
