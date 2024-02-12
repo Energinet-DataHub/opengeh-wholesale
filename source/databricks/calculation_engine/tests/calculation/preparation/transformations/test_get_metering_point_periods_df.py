@@ -195,13 +195,11 @@ class TestWhenValidInput:
         )
         assert actual_row[Colname.settlement_method] == SettlementMethod.FLEX.value
         assert (
-                actual_row[Colname.grid_area]
-                == factory.DefaultValues.GRID_AREA
+            actual_row[Colname.grid_area] == factory.DefaultValues.GRID_AREA
         )
         assert actual_row[Colname.resolution] == factory.DefaultValues.RESOLUTION.value
         assert (
-                actual_row[Colname.from_grid_area] ==
-                factory.DefaultValues.FROM_GRID_AREA
+            actual_row[Colname.from_grid_area] == factory.DefaultValues.FROM_GRID_AREA
         )
         assert actual_row[Colname.to_grid_area] == factory.DefaultValues.TO_GRID_AREA
         assert (

@@ -46,7 +46,7 @@ def create_row(
 
 
 def create_dataframe(
-        spark: SparkSession, data: None | Row | list[Row] = None
+    spark: SparkSession, data: None | Row | list[Row] = None
 ) -> DataFrame:
     if data is None:
         data = [create_row()]
