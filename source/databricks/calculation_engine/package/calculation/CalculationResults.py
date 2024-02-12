@@ -13,34 +13,38 @@
 # limitations under the License.
 from dataclasses import dataclass
 from pyspark.sql import DataFrame
+from typing import cast
 
 from package.calculation.energy.energy_results import EnergyResults
 
 
 @dataclass
 class EnergyResultsContainer:
-    """The usage of `EnergyResults.empty()` is a workaround to prevent the type checker from complaining."""
+    """
+    The usage of `cast(EnergyResults, None)` is a workaround to prevent the type checker from complaining.
+    It's a consequence of the current code design where props are set after creation of the container.
+    """
 
     exchange_per_neighbour_ga: EnergyResults | None = None
-    exchange_per_grid_area: EnergyResults | None = None
-    temporary_production_per_ga: EnergyResults = EnergyResults.empty()
-    temporary_flex_consumption_per_ga: EnergyResults = EnergyResults.empty()
-    grid_loss: EnergyResults = EnergyResults.empty()
-    positive_grid_loss: EnergyResults = EnergyResults.empty()
-    negative_grid_loss: EnergyResults = EnergyResults.empty()
+    exchange_per_grid_area: EnergyResults = cast(EnergyResults, None)
+    temporary_production_per_ga: EnergyResults = cast(EnergyResults, None)
+    temporary_flex_consumption_per_ga: EnergyResults = cast(EnergyResults, None)
+    grid_loss: EnergyResults = cast(EnergyResults, None)
+    positive_grid_loss: EnergyResults = cast(EnergyResults, None)
+    negative_grid_loss: EnergyResults = cast(EnergyResults, None)
     consumption_per_ga_and_brp: EnergyResults | None = None
     consumption_per_ga_and_brp_and_es: EnergyResults | None = None
-    consumption_per_ga_and_es: EnergyResults = EnergyResults.empty()
-    consumption_per_ga: EnergyResults = EnergyResults.empty()
+    consumption_per_ga_and_es: EnergyResults = cast(EnergyResults, None)
+    consumption_per_ga: EnergyResults = cast(EnergyResults, None)
     production_per_ga_and_brp_and_es: EnergyResults | None = None
     production_per_ga_and_brp: EnergyResults | None = None
-    production_per_ga_and_es: EnergyResults = EnergyResults.empty()
-    production_per_ga: EnergyResults = EnergyResults.empty()
-    flex_consumption_per_ga: EnergyResults = EnergyResults.empty()
-    flex_consumption_per_ga_and_es: EnergyResults = EnergyResults.empty()
+    production_per_ga_and_es: EnergyResults = cast(EnergyResults, None)
+    production_per_ga: EnergyResults = cast(EnergyResults, None)
+    flex_consumption_per_ga: EnergyResults = cast(EnergyResults, None)
+    flex_consumption_per_ga_and_es: EnergyResults = cast(EnergyResults, None)
     flex_consumption_per_ga_and_brp_and_es: EnergyResults | None = None
     flex_consumption_per_ga_and_brp: EnergyResults | None = None
-    total_consumption: EnergyResults = EnergyResults.empty()
+    total_consumption: EnergyResults = cast(EnergyResults, None)
 
 
 @dataclass

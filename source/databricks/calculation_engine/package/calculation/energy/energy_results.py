@@ -14,7 +14,6 @@
 
 import pyspark.sql.types as t
 from pyspark.sql import DataFrame
-from typing import cast
 
 from package.common import DataFrameWrapper
 from package.constants import Colname
@@ -42,14 +41,6 @@ class EnergyResults(DataFrameWrapper):
             ignore_decimal_scale=True,
             ignore_decimal_precision=True,
         )
-
-    @staticmethod
-    def empty() -> "EnergyResults":
-        """
-        Provide an "empty" instance of the class. This is useful for avoiding `Foo | None` type annotations for
-        types that should not be expected to be `None`.
-        """
-        return cast("EnergyResults", None)
 
 
 # The nullability and decimal types are not precisely representative of the actual data frame schema at runtime,
