@@ -13,6 +13,7 @@
 # limitations under the License.
 from datetime import datetime
 from unittest.mock import patch
+
 from calculator_job.test_data_builder import TableReaderMockBuilder
 from package import calculation_input
 from package.calculation.calculation_execute import calculation_execute
@@ -27,6 +28,11 @@ class TestBusinessLogic:
         args: CalculatorArgs,
         spark,
     ):
+        """
+        Period_Start                               Period_Start
+         2019-12-31                                 2020-01-02
+             |---------------------|---------------------|
+        """
         # Arrange
         args.calculation_grid_areas = ["805"]
         args.calculation_period_start_datetime = datetime(2019, 12, 30, 23, 0, 0)
