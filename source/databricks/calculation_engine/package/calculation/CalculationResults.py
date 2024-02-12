@@ -63,6 +63,6 @@ class BasisDataContainer:
 
 @dataclass
 class CalculationResultsContainer:
-    energy_results: EnergyResultsContainer | None = None
+    energy_results: EnergyResultsContainer = cast(EnergyResultsContainer, None)
     wholesale_results: WholesaleResultsContainer | None = None
     basis_data: BasisDataContainer = BasisDataContainer()
