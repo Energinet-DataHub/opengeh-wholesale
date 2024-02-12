@@ -96,7 +96,6 @@ def _get_grid_loss_metering_point_ids_for_grid_areas_with_specific_metering_poin
 ) -> DataFrame:
     return (
         grid_loss_responsible.df.select(Colname.grid_area, Colname.metering_point_id)
-        .withColumnRenamed(Colname.metering_point_id, "grid_loss_metering_point_id")
         .distinct()
         .where(
             grid_loss_responsible.df[Colname.metering_point_type]
@@ -122,7 +121,7 @@ def calculate_negative_grid_loss(
         .alias(Colname.sum_quantity),
         f.lit(MeteringPointType.PRODUCTION.value).alias(Colname.metering_point_type),
         Colname.qualities,
-        only_grid_area_and_metering_point_id["grid_loss_metering_point_id"],
+        only_grid_area_and_metering_point_id[Colname.metering_point_id],
     )
 
     return EnergyResults(result)
@@ -145,7 +144,7 @@ def calculate_positive_grid_loss(
         .alias(Colname.sum_quantity),
         f.lit(MeteringPointType.CONSUMPTION.value).alias(Colname.metering_point_type),
         Colname.qualities,
-        only_grid_area_and_metering_point_id["grid_loss_metering_point_id"],
+        only_grid_area_and_metering_point_id[Colname.metering_point_id],
     )
     return EnergyResults(result)
 
