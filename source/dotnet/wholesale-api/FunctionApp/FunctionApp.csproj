@@ -2,11 +2,8 @@
   <PropertyGroup>
     <AssemblyName>Energinet.DataHub.Wholesale.FunctionApp</AssemblyName>
     <RootNamespace>Energinet.DataHub.Wholesale.FunctionApp</RootNamespace>
-    <TargetFramework>net8.0</TargetFramework>
     <AzureFunctionsVersion>v4</AzureFunctionsVersion>
     <OutputType>Exe</OutputType>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />

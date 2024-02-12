@@ -80,7 +80,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Calculations.IntegrationTes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{1563FA3D-F631-463A-B09D-81177B8FA237}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionApp", "wholesale-api\FunctionApp\FunctionApp.csproj", "{AB55272B-6C9E-486F-B2AA-FEFA42D432D3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FunctionApp", "wholesale-api\FunctionApp\FunctionApp.csproj", "{AB55272B-6C9E-486F-B2AA-FEFA42D432D3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionApp.IntegrationTests", "wholesale-api\FunctionApp.IntegrationTests\FunctionApp.IntegrationTests.csproj", "{80A26138-FF9A-4045-ABE4-AF6A1FA7F22E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -188,6 +190,10 @@ Global
 		{AB55272B-6C9E-486F-B2AA-FEFA42D432D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB55272B-6C9E-486F-B2AA-FEFA42D432D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB55272B-6C9E-486F-B2AA-FEFA42D432D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80A26138-FF9A-4045-ABE4-AF6A1FA7F22E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80A26138-FF9A-4045-ABE4-AF6A1FA7F22E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80A26138-FF9A-4045-ABE4-AF6A1FA7F22E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80A26138-FF9A-4045-ABE4-AF6A1FA7F22E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -221,6 +227,7 @@ Global
 		{5332D816-02C6-4461-8D99-DFBBEB880BD2} = {A43C95A7-82B5-4A0B-8842-CF3DCB3D9950}
 		{675F2728-8F3C-4367-B8E0-8677FEC76B40} = {A43C95A7-82B5-4A0B-8842-CF3DCB3D9950}
 		{AB55272B-6C9E-486F-B2AA-FEFA42D432D3} = {1563FA3D-F631-463A-B09D-81177B8FA237}
+		{80A26138-FF9A-4045-ABE4-AF6A1FA7F22E} = {A65AE4F0-E4A5-4F6C-AB74-F8A278C31AD9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D2B1040C-316B-406A-B2AB-671DB0449FAB}
