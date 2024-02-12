@@ -12,19 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pyspark.sql.functions as f
+from pyspark.pandas import DataFrame
+
 from package.calculation import PreparedDataReader
 from package.calculation.CalculationResults import CalculationResultsContainer
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.energy import energy_calculation
 from package.calculation.wholesale import wholesale_calculation
-from package.constants import Colname
-from package.infrastructure import logging_configuration
 from package.codelists import (
     ChargeResolution,
     CalculationType,
     MeteringPointType,
 )
-from pyspark.pandas import DataFrame
+from package.constants import Colname
+from package.infrastructure import logging_configuration
 
 
 @logging_configuration.use_span("calculation")

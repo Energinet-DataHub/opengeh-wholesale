@@ -13,7 +13,8 @@
 # limitations under the License.
 import os
 from unittest.mock import Mock
-from pyspark.sql import SparkSession, dataframe
+
+from pyspark.sql import SparkSession, DataFrame
 
 from package.calculation import PreparedDataReader
 from package.calculation_input.schemas import (
@@ -45,7 +46,7 @@ class TableReaderMockBuilder:
         df = self._parse_csv_to_dataframe(file_path, grid_loss_metering_points_schema)
         self.table_reader.read_grid_loss_metering_points.return_value = df
 
-    def _parse_csv_to_dataframe(self, file_path: str, schema: str) -> dataframe:
+    def _parse_csv_to_dataframe(self, file_path: str, schema: str) -> DataFrame:
         df = self.spark.read.csv(self.test_path + file_path, header=True, schema=schema)
         return self.spark.createDataFrame(df.rdd, schema)
 
