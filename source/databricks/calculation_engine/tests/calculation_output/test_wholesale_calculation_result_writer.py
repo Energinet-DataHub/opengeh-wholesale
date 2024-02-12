@@ -273,7 +273,6 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
 
     # Arrange
     expected_excluded_columns = [
-        WholesaleResultColumnNames.calculation_id,
         WholesaleResultColumnNames.calculation_type,
         WholesaleResultColumnNames.calculation_execution_time_start,
         WholesaleResultColumnNames.calculation_result_id,
