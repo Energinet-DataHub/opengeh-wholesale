@@ -228,7 +228,8 @@ def test__temp(
             ).alias("charge_time_local"),
         )
         .withColumn(
-            "charge_time", f.to_utc_timestamp(f.col("charge_time_local"), time_zone)
+            Colname.charge_time,
+            f.to_utc_timestamp(f.col("charge_time_local"), time_zone),
         )
         .drop("charge_time_local")
     )
