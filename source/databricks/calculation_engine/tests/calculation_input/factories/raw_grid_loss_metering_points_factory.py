@@ -31,7 +31,9 @@ def create_row(
     return Row(**row)
 
 
-def create_dataframe(spark: SparkSession, data: None | Row | list[Row] = None) -> DataFrame:
+def create_dataframe(
+    spark: SparkSession, data: None | Row | list[Row] = None
+) -> DataFrame:
     if data is None:
         data = [create_row()]
     elif isinstance(data, Row):
