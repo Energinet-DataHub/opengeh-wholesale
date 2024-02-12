@@ -1,5 +1,6 @@
 module "apima_bff_api" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=v13"
+  count  = 1
 
   name                       = "sauron-bff"
   project_name               = var.domain_name_short
