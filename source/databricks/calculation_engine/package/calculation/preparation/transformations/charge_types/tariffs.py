@@ -27,14 +27,11 @@ def get_tariff_charges(
     charges_df: DataFrame,
     resolution: ChargeResolution,
 ) -> DataFrame:
-    # filter on resolution
-    charges_df = charges_df.filter(f.col(Colname.resolution) == resolution.value)
+    tariffs = charges_df.filter(
+        f.col(Colname.charge_type) == ChargeType.TARIFF.value
+    ).filter(f.col(Colname.resolution) == resolution.value)
 
-    df = _join_properties_on_charges_with_given_charge_type(
-        charges_df,
-        metering_points,
-        ChargeType.TARIFF,
-    )
+    tariffs = _join_with_metering_points(tariffs, metering_points)
 
     # group by time series on metering point id and resolution and sum quantity
     grouped_time_series = (
@@ -44,70 +41,13 @@ def get_tariff_charges(
     )
 
     # join with grouped time series
-    df = _join_with_grouped_time_series(df, grouped_time_series)
+    tariffs = _join_with_grouped_time_series(tariffs, grouped_time_series)
 
     # energy_supplier_id is nullable when metering point is a child metering point
     # TODO JVM - find a solution to this
-    df.schema[Colname.energy_supplier_id].nullable = False
+    tariffs.schema[Colname.energy_supplier_id].nullable = False
 
-    return df
-
-
-def get_fee_charges(
-    charges_df: DataFrame,
-    metering_points: DataFrame,
-) -> DataFrame:
-    return _join_properties_on_charges_with_given_charge_type(
-        charges_df,
-        metering_points,
-        ChargeType.FEE,
-    )
-
-
-def get_subscription_charges(
-    charges_df: DataFrame,
-    metering_points: DataFrame,
-) -> DataFrame:
-    return _join_properties_on_charges_with_given_charge_type(
-        charges_df,
-        metering_points,
-        ChargeType.SUBSCRIPTION,
-    )
-
-
-def _get_charges_based_on_charge_type(
-    charges_df: DataFrame, charge_type: ChargeType
-) -> DataFrame:
-    return charges_df.filter(f.col(Colname.charge_type) == charge_type.value)
-
-
-def _explode_subscription(charges_df: DataFrame) -> DataFrame:
-    charges_df = (
-        charges_df.withColumn(
-            Colname.date,
-            f.explode(
-                f.expr(
-                    f"sequence({Colname.from_date}, {Colname.to_date}, interval 1 day)"
-                )
-            ),
-        )
-        .filter((f.year(Colname.date) == f.year(Colname.charge_time)))
-        .filter((f.month(Colname.date) == f.month(Colname.charge_time)))
-        .drop(Colname.charge_time)
-        .withColumnRenamed(Colname.date, Colname.charge_time)
-        .select(
-            Colname.charge_key,
-            Colname.charge_code,
-            Colname.charge_type,
-            Colname.charge_owner,
-            Colname.charge_tax,
-            Colname.resolution,
-            Colname.charge_time,
-            Colname.charge_price,
-            Colname.metering_point_id,
-        )
-    )
-    return charges_df
+    return tariffs
 
 
 def _join_with_metering_points(df: DataFrame, metering_points: DataFrame) -> DataFrame:
@@ -138,14 +78,15 @@ def _join_with_metering_points(df: DataFrame, metering_points: DataFrame) -> Dat
 
 
 def _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
-    metering_point_time_series: DataFrame, charge_resolution: ChargeResolution
+    metering_point_time_series: DataFrame,
+    charge_resolution: ChargeResolution,
 ) -> DataFrame:
-    timezone = "Europe/Copenhagen"
+    time_zone = "Europe/Copenhagen"
     grouped_time_series = (
         t.aggregate_quantity_and_quality(
             metering_point_time_series.withColumn(
                 Colname.observation_time,
-                f.from_utc_timestamp(Colname.observation_time, timezone),
+                f.from_utc_timestamp(Colname.observation_time, time_zone),
             ),
             [
                 Colname.metering_point_id,
@@ -163,7 +104,7 @@ def _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
         )
         .withColumn(
             Colname.observation_time,
-            f.to_utc_timestamp(Colname.observation_time, timezone),
+            f.to_utc_timestamp(Colname.observation_time, time_zone),
         )
     )
 
@@ -219,37 +160,4 @@ def _join_with_grouped_time_series(
         grouped_time_series[Colname.sum_quantity],
         grouped_time_series[Colname.qualities],
     )
-    return df
-
-
-# Join charge_master_data, charge prices, charge links, and metering points together.
-# On given charge type.
-def _join_properties_on_charges_with_given_charge_type(
-    charges_df: DataFrame,
-    metering_points: DataFrame,
-    charge_type: ChargeType,
-) -> DataFrame:
-    # filter on charge_type
-    charges_df = _get_charges_based_on_charge_type(charges_df, charge_type)
-
-    if charge_type == ChargeType.SUBSCRIPTION:
-        # Explode dataframe: create row for each day the time period from and to date
-        charges_df = _explode_subscription(charges_df)
-
-    df = _join_with_metering_points(charges_df, metering_points)
-
-    if charge_type != ChargeType.TARIFF:
-        df = df.select(
-            Colname.charge_key,
-            Colname.charge_code,
-            Colname.charge_type,
-            Colname.charge_owner,
-            Colname.charge_time,
-            Colname.charge_price,
-            Colname.metering_point_type,
-            Colname.settlement_method,
-            Colname.grid_area,
-            Colname.energy_supplier_id,
-        )
-
     return df
