@@ -227,7 +227,6 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             gridArea: GridAreaCodeB,
             energySupplierId: EnergySupplierB,
             balanceResponsibleId: BalanceResponsibleB,
-            calculationType: CalculationType.SecondCorrectionSettlement,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
@@ -275,7 +274,6 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             gridArea: GridAreaCodeA,
             energySupplierId: EnergySupplierC,
             balanceResponsibleId: BalanceResponsibleB,
-            calculationType: CalculationType.BalanceFixing,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
@@ -337,7 +335,6 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             gridArea: GridAreaCodeB,
             energySupplierId: EnergySupplierC,
             balanceResponsibleId: null,
-            calculationType: CalculationType.FirstCorrectionSettlement,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
@@ -370,7 +367,6 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             gridArea: GridAreaCodeC,
             energySupplierId: EnergySupplierA,
             balanceResponsibleId: null,
-            calculationType: CalculationType.SecondCorrectionSettlement,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
@@ -442,7 +438,6 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             gridArea: null,
             energySupplierId: EnergySupplierA,
             balanceResponsibleId: BalanceResponsibleB,
-            calculationType: CalculationType.ThirdCorrectionSettlement,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
@@ -503,7 +498,6 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             gridArea: null,
             energySupplierId: EnergySupplierB,
             balanceResponsibleId: BalanceResponsibleB,
-            calculationType: CalculationType.FirstCorrectionSettlement,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
@@ -551,7 +545,6 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             gridArea: GridAreaCodeA,
             energySupplierId: null,
             balanceResponsibleId: BalanceResponsibleA,
-            calculationType: CalculationType.ThirdCorrectionSettlement,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
@@ -621,7 +614,6 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             gridArea: GridAreaCodeC,
             energySupplierId: null,
             balanceResponsibleId: BalanceResponsibleC,
-            calculationType: CalculationType.SecondCorrectionSettlement,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
@@ -629,7 +621,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
         var actual = await Sut.GetAsync(parameters).ToListAsync();
 
         using var assertionScope = new AssertionScope();
-        actual.Should().HaveCount(1);
+        actual.Should().HaveCount(2);
         var aggregatedTimeSeries = actual.Single();
         aggregatedTimeSeries.GridArea.Should().Be(GridAreaCodeC);
         aggregatedTimeSeries.CalculationType.Should().Be(CalculationType.SecondCorrectionSettlement);
@@ -670,7 +662,6 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             gridArea: GridAreaCodeA,
             energySupplierId: null,
             balanceResponsibleId: null,
-            calculationType: CalculationType.ThirdCorrectionSettlement,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
@@ -801,7 +792,6 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             gridArea: null,
             energySupplierId: null,
             balanceResponsibleId: null,
-            calculationType: CalculationType.BalanceFixing,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
@@ -1014,130 +1004,6 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
     }
 
     [Fact]
-    public async Task GetLatestCorrectionForGridAreaAsync_EnergySupplierWithSpecificBalanceResponsibleAndGridArea_EquivalentToGetAsyncForAllSettlementTypes()
-    {
-        var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
-        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
-
-        await AddDataAsync();
-
-        var parameters = CreateQueryParameters(
-            timeSeriesType: new[] { TimeSeriesType.Production, TimeSeriesType.FlexConsumption },
-            gridArea: GridAreaCodeB,
-            energySupplierId: EnergySupplierB,
-            balanceResponsibleId: BalanceResponsibleB,
-            calculationType: CalculationType.FirstCorrectionSettlement,
-            startOfPeriod: startOfPeriodFilter,
-            endOfPeriod: endOfPeriodFilter);
-
-        // Act
-        var getAsyncResult = await Sut.GetAsync(parameters).ToListAsync();
-        getAsyncResult.AddRange(await Sut
-            .GetAsync(parameters with { CalculationType = CalculationType.SecondCorrectionSettlement }).ToListAsync());
-        getAsyncResult.AddRange(await Sut
-            .GetAsync(parameters with { CalculationType = CalculationType.ThirdCorrectionSettlement }).ToListAsync());
-
-        var latestCorrectionForGridAreaAsyncResult =
-            await Sut.GetLatestCorrectionForGridAreaAsync(parameters with { CalculationType = null }).ToListAsync();
-
-        using var assertionScope = new AssertionScope();
-        getAsyncResult.Should().BeEquivalentTo(latestCorrectionForGridAreaAsyncResult);
-    }
-
-    [Fact]
-    public async Task GetLatestCorrectionForGridAreaAsync_EnergySupplierWithGridArea_EquivalentToGetAsyncForAllSettlementTypes()
-    {
-        var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
-        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
-
-        await AddDataAsync();
-
-        var parameters = CreateQueryParameters(
-            timeSeriesType: new[] { TimeSeriesType.Production, TimeSeriesType.FlexConsumption },
-            gridArea: GridAreaCodeB,
-            energySupplierId: EnergySupplierB,
-            balanceResponsibleId: null,
-            calculationType: CalculationType.FirstCorrectionSettlement,
-            startOfPeriod: startOfPeriodFilter,
-            endOfPeriod: endOfPeriodFilter);
-
-        // Act
-        var getAsyncResult = await Sut.GetAsync(parameters).ToListAsync();
-        getAsyncResult.AddRange(await Sut
-            .GetAsync(parameters with { CalculationType = CalculationType.SecondCorrectionSettlement }).ToListAsync());
-        getAsyncResult.AddRange(await Sut
-            .GetAsync(parameters with { CalculationType = CalculationType.ThirdCorrectionSettlement }).ToListAsync());
-
-        var latestCorrectionForGridAreaAsyncResult =
-            await Sut.GetLatestCorrectionForGridAreaAsync(parameters with { CalculationType = null }).ToListAsync();
-
-        using var assertionScope = new AssertionScope();
-        getAsyncResult.Should().BeEquivalentTo(latestCorrectionForGridAreaAsyncResult);
-    }
-
-    [Fact]
-    public async Task GetLatestCorrectionForGridAreaAsync_BalanceResponsibleWithGridArea_EquivalentToGetAsyncForAllSettlementTypes()
-    {
-        var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
-        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
-
-        await AddDataAsync();
-
-        var parameters = CreateQueryParameters(
-            timeSeriesType: new[] { TimeSeriesType.Production, TimeSeriesType.FlexConsumption },
-            gridArea: GridAreaCodeB,
-            energySupplierId: null,
-            balanceResponsibleId: BalanceResponsibleB,
-            calculationType: CalculationType.FirstCorrectionSettlement,
-            startOfPeriod: startOfPeriodFilter,
-            endOfPeriod: endOfPeriodFilter);
-
-        // Act
-        var getAsyncResult = await Sut.GetAsync(parameters).ToListAsync();
-        getAsyncResult.AddRange(await Sut
-            .GetAsync(parameters with { CalculationType = CalculationType.SecondCorrectionSettlement }).ToListAsync());
-        getAsyncResult.AddRange(await Sut
-            .GetAsync(parameters with { CalculationType = CalculationType.ThirdCorrectionSettlement }).ToListAsync());
-
-        var latestCorrectionForGridAreaAsyncResult =
-            await Sut.GetLatestCorrectionForGridAreaAsync(parameters with { CalculationType = null }).ToListAsync();
-
-        using var assertionScope = new AssertionScope();
-        getAsyncResult.Should().BeEquivalentTo(latestCorrectionForGridAreaAsyncResult);
-    }
-
-    [Fact]
-    public async Task GetLatestCorrectionForGridAreaAsync_GridArea_EquivalentToGetAsyncForAllSettlementTypes()
-    {
-        var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
-        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
-
-        await AddDataAsync();
-
-        var parameters = CreateQueryParameters(
-            timeSeriesType: new[] { TimeSeriesType.Production, TimeSeriesType.FlexConsumption },
-            gridArea: GridAreaCodeB,
-            energySupplierId: null,
-            balanceResponsibleId: null,
-            calculationType: CalculationType.FirstCorrectionSettlement,
-            startOfPeriod: startOfPeriodFilter,
-            endOfPeriod: endOfPeriodFilter);
-
-        // Act
-        var getAsyncResult = await Sut.GetAsync(parameters).ToListAsync();
-        getAsyncResult.AddRange(await Sut
-            .GetAsync(parameters with { CalculationType = CalculationType.SecondCorrectionSettlement }).ToListAsync());
-        getAsyncResult.AddRange(await Sut
-            .GetAsync(parameters with { CalculationType = CalculationType.ThirdCorrectionSettlement }).ToListAsync());
-
-        var latestCorrectionForGridAreaAsyncResult =
-            await Sut.GetLatestCorrectionForGridAreaAsync(parameters with { CalculationType = null }).ToListAsync();
-
-        using var assertionScope = new AssertionScope();
-        getAsyncResult.Should().BeEquivalentTo(latestCorrectionForGridAreaAsyncResult);
-    }
-
-    [Fact]
     public async Task GetAsync_WhenRequestFromGridOperatorTotalProductionInWrongPeriod_ReturnsNoResults()
     {
         // Arrange
@@ -1249,8 +1115,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             gridArea: GridAreaCodeC,
             timeSeriesType: [TimeSeriesType.Production],
             startOfPeriod: startOfPeriodFilter,
-            endOfPeriod: endOfPeriodFilter,
-            calculationType: CalculationType.BalanceFixing);
+            endOfPeriod: endOfPeriodFilter);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -1259,39 +1124,13 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
         actual.Should().HaveCount(0);
     }
 
-    [Fact]
-    public async Task GetLatestCorrectionAsync_WhenCalculationTypeIsDefined_ThrowsException()
-    {
-        // Arrange
-        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
-        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-
-        await AddDataAsync();
-
-        var parameters = CreateQueryParameters(
-            [TimeSeriesType.Production],
-            startOfPeriodFilter,
-            endOfPeriodFilter,
-            GridAreaCodeC,
-            calculationType: CalculationType.BalanceFixing);
-
-        // Act
-        var act = async () => await Sut.GetLatestCorrectionForGridAreaAsync(parameters).ToListAsync();
-
-        // Assert
-        await act.Should().ThrowAsync<ArgumentException>(
-            "The calculation type will be overwritten when fetching the latest correction.",
-            parameters.CalculationType);
-    }
-
     private static AggregatedTimeSeriesQueryParameters CreateQueryParameters(
         IReadOnlyCollection<TimeSeriesType>? timeSeriesType = null,
         Instant? startOfPeriod = null,
         Instant? endOfPeriod = null,
         string? gridArea = null,
         string? energySupplierId = null,
-        string? balanceResponsibleId = null,
-        CalculationType? calculationType = null)
+        string? balanceResponsibleId = null)
     {
         IReadOnlyCollection<CalculationForPeriod> calculationForPeriods =
         [
@@ -1320,8 +1159,7 @@ public class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeSeriesQu
             LatestCalculationForPeriod: calculationForPeriods,
             GridArea: gridArea,
             EnergySupplierId: energySupplierId,
-            BalanceResponsibleId: balanceResponsibleId,
-            CalculationType: calculationType);
+            BalanceResponsibleId: balanceResponsibleId);
     }
 
     private IReadOnlyCollection<IReadOnlyCollection<string>> CreateDataOne(
