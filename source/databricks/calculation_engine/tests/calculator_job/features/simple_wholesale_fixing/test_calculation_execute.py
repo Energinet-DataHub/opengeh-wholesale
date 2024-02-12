@@ -23,16 +23,18 @@ from package.calculation_input import TableReader
 class TestBusinessLogic:
     @patch.object(calculation_input, TableReader.__name__)
     def test_demo(
-            self,
-            args: CalculatorArgs,
-            spark,
+        self,
+        args: CalculatorArgs,
+        spark,
     ):
         # Arrange
         args.calculation_grid_areas = ["805"]
         args.calculation_period_start_datetime = datetime(2019, 12, 30, 23, 0, 0)
         args.calculation_period_end_datetime = datetime(2020, 1, 1, 23, 0, 0)
 
-        builder = TableReaderMockBuilder(spark, "features/simple_wholesale_fixing/test_data/")
+        builder = TableReaderMockBuilder(
+            spark, "features/simple_wholesale_fixing/test_data/"
+        )
         builder.populate_metering_point_periods("metering_point_periods.csv")
         builder.populate_time_series_points("time_series_points.csv")
         builder.populate_grid_loss_metering_points("grid_loss_metering_points.csv")
