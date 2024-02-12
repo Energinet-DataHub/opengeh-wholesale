@@ -11,10 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from datetime import datetime
 
 from pyspark.sql.dataframe import DataFrame
 import pyspark.sql.functions as f
 from pyspark.sql.types import DecimalType, StringType, ArrayType
+from pyspark.sql.window import Window
 
 import package.calculation.energy.aggregators.transformations as t
 from package.codelists import ChargeType, ChargeResolution
@@ -111,40 +113,54 @@ def _explode_subscription(charges_df: DataFrame) -> DataFrame:
 
 
 def _explode_subscription2(
-    charge_prices: DataFrame, charge_links: DataFrame
+    charge_prices: DataFrame,
+    period_start_utc: datetime,
+    period_end_utc: datetime,
+    time_zone: str,
 ) -> DataFrame:
-    charges_df = (
-        charges_df.withColumn(
-            Colname.date,
-            f.explode(
-                f.expr(
-                    f"sequence({Colname.from_date}, {Colname.to_date}, interval 1 day)"
-                )
-            ),
-        )
-        .withColumn(
-            "charge_time2",
-            f.expr(
-                "explode(sequence(date_trunc('MM', charge_time), date_add(date_trunc('MM', date_add(charge_time, 1)), -1), interval 1 day))"
-            ),
-        )
-        .filter((f.year(Colname.date) == f.year(Colname.charge_time)))
-        .filter((f.month(Colname.date) == f.month(Colname.charge_time)))
-        .drop(Colname.charge_time)
-        .withColumnRenamed(Colname.date, Colname.charge_time)
+    charge_time_local = "charge_time_local"
+    all_dates_df = (
+        charge_prices.select(Colname.charge_key)
+        .dropDuplicates()
         .select(
             Colname.charge_key,
-            Colname.charge_code,
-            Colname.charge_type,
-            Colname.charge_owner,
-            Colname.charge_tax,
-            Colname.resolution,
-            Colname.charge_time,
-            Colname.charge_price,
-            Colname.metering_point_id,
+            f.explode(
+                f.expr(
+                    f"sequence(from_utc_timestamp('{period_start_utc}', '{time_zone}'), from_utc_timestamp('{period_end_utc}', '{time_zone}'), interval 1 day)"
+                )
+            ).alias(charge_time_local),
         )
+        .withColumn(
+            Colname.charge_time,
+            f.to_utc_timestamp(f.col(charge_time_local), time_zone),
+        )
+        .drop(charge_time_local)
     )
-    return charges_df
+
+    w = Window.partitionBy(Colname.charge_key).orderBy(Colname.charge_time)
+
+    charges_for_all_days = all_dates_df.join(
+        charge_prices, [Colname.charge_key, Colname.charge_time], "left"
+    ).select(
+        Colname.charge_key,
+        Colname.charge_time,
+        *[
+            f.last(f.col(c), ignorenulls=True).over(w).alias(c)
+            for c in charge_prices.columns
+            if c not in (Colname.charge_key, Colname.charge_time)
+        ],
+        Colname.charge_key,
+        Colname.charge_code,
+        Colname.charge_type,
+        Colname.charge_owner,
+        Colname.charge_tax,
+        f.col(Colname.resolution).lit(ChargeResolution.DAY.value),
+        Colname.charge_time,
+        Colname.charge_price,
+        Colname.metering_point_id,
+    )
+
+    return charges_for_all_days
 
 
 def _join_with_metering_points(df: DataFrame, metering_points: DataFrame) -> DataFrame:

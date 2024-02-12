@@ -253,6 +253,53 @@ def test__temp(
     result.show(100)
 
 
+def test__temp_utc(
+    spark: SparkSession,
+) -> None:
+    # Prepare the data
+    period_start_utc = datetime(2020, 2, 29, 23, 0)
+    period_end_utc = datetime(2020, 3, 31, 22, 0)
+
+    data = [
+        ("key1", period_start_utc, 100),
+        ("key1", period_start_utc + timedelta(days=10), 200),
+        ("key2", period_start_utc, 300),
+    ]
+    schema = ["charge_key", "charge_time", "charge_price"]
+    df = spark.createDataFrame(data, schema)
+
+    all_dates_df = (
+        df.select(Colname.charge_key)
+        .dropDuplicates()
+        .select(
+            Colname.charge_key,
+            f.explode(
+                f.expr(
+                    f"sequence(to_timestamp('{period_start_utc}'), to_timestamp('{period_end_utc}'), interval 1 day)"
+                )
+            ).alias("charge_time"),<F
+        )
+    )
+
+    all_dates_df.show(100)
+
+    w = Window.partitionBy(Colname.charge_key).orderBy(Colname.charge_time)
+
+    result = all_dates_df.join(
+        df, [Colname.charge_key, Colname.charge_time], "left"
+    ).select(
+        Colname.charge_key,
+        Colname.charge_time,
+        *[
+            f.last(f.col(c), ignorenulls=True).over(w).alias(c)
+            for c in df.columns
+            if c not in (Colname.charge_key, Colname.charge_time)
+        ],
+    )
+
+    result.show(100)
+
+
 def test__get_tariff_charges__filters_on_tariff_charge_type(
     spark: SparkSession,
 ) -> None:
