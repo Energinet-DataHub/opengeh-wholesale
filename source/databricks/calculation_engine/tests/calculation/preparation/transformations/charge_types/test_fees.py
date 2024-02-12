@@ -14,8 +14,8 @@
 
 from pyspark.sql import SparkSession
 
-import calculation.preparation.transformations.charge_types.charges_factory as factory
-from package.calculation.preparation.transformations import (
+import tests.calculation.preparation.transformations.charge_types.charges_factory as factory
+from package.calculation.preparation.transformations.charge_types import (
     get_fee_charges,
 )
 import package.codelists as e

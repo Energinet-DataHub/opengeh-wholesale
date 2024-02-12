@@ -16,7 +16,6 @@ import pytest
 from datetime import datetime
 from pyspark.sql import SparkSession
 
-import calculation.preparation.transformations.charge_types.charges_factory as factory
 from package.calculation.preparation.transformations import (
     get_subscription_charges,
 )
@@ -26,6 +25,8 @@ from package.calculation_input.schemas import (
 )
 from package.calculation.wholesale.schemas.charges_schema import charges_schema
 from package.constants import Colname
+
+import tests.calculation.preparation.transformations.charge_types.charges_factory as factory
 
 
 def test__get_subscription_charges__filters_on_subscription_charge_type(

@@ -18,8 +18,6 @@ import pytest
 import package.codelists as e
 
 from pyspark.sql import SparkSession
-import calculation.preparation.transformations.charge_types.charges_factory as factory
-
 
 from package.calculation.preparation.transformations import (
     get_tariff_charges,
@@ -32,6 +30,8 @@ from package.calculation_input.schemas import (
 from package.calculation.wholesale.schemas.charges_schema import charges_schema
 from package.constants import Colname
 from pyspark.sql import Row
+
+import tests.calculation.preparation.transformations.charge_types.charges_factory as factory
 
 
 def _create_expected_tariff_charges_row(
