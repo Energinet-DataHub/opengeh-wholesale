@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 8.0.2
+
+Renamed use of word "domain" to "subsystem.
+
 ## Version 8.0.1
 
 Removed obsolete section from documentation.

@@ -41,6 +41,7 @@ public class CalculationsClientTests
                 null,
                 null,
                 null,
+                null,
                 null))
             .ReturnsAsync(nocalculations);
 
@@ -76,6 +77,7 @@ public class CalculationsClientTests
             .Setup(x => x.SearchAsync(
                 It.IsAny<List<GridAreaCode>>(),
                 Array.Empty<CalculationExecutionState>(),
+                null,
                 null,
                 null,
                 null,

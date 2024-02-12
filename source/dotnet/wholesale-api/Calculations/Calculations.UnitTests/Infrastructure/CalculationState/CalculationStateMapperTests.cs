@@ -13,23 +13,22 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.CalculationState;
 using FluentAssertions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Calculations.UnitTests.Infrastructure.CalculationExecutionStateDomainService;
+namespace Energinet.DataHub.Wholesale.Calculations.UnitTests.Infrastructure.CalculationState;
 
 public class CalculationStateMapperTests
 {
     [Theory]
-    [InlineAutoMoqData(CalculationState.Pending, CalculationExecutionState.Pending)]
-    [InlineAutoMoqData(CalculationState.Running, CalculationExecutionState.Executing)]
-    [InlineAutoMoqData(CalculationState.Completed, CalculationExecutionState.Completed)]
-    [InlineAutoMoqData(CalculationState.Canceled, CalculationExecutionState.Canceled)]
-    [InlineAutoMoqData(CalculationState.Failed, CalculationExecutionState.Failed)]
-    public void MapState_CalledWithACalculationStateItCanMap_ExpectedCalculationExecutionState(CalculationState calculationState, CalculationExecutionState expectedCalculationExecutionState)
+    [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Pending, CalculationExecutionState.Pending)]
+    [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Running, CalculationExecutionState.Executing)]
+    [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Completed, CalculationExecutionState.Completed)]
+    [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Canceled, CalculationExecutionState.Canceled)]
+    [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Failed, CalculationExecutionState.Failed)]
+    public void MapState_CalledWithACalculationStateItCanMap_ExpectedCalculationExecutionState(Wholesale.Calculations.Application.Model.CalculationState calculationState, CalculationExecutionState expectedCalculationExecutionState)
     {
         // Act
         var actualCalculationExecutionState = CalculationStateMapper.MapState(calculationState);
@@ -42,7 +41,7 @@ public class CalculationStateMapperTests
     public void MapState_CalledWithAUnexpectedCalculationStateItCanNotMap_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
-        const CalculationState unexpectedCalculationState = (CalculationState)99;
+        const Wholesale.Calculations.Application.Model.CalculationState unexpectedCalculationState = (Wholesale.Calculations.Application.Model.CalculationState)99;
 
         // Act
         var act = () => CalculationStateMapper.MapState(unexpectedCalculationState);

@@ -208,7 +208,7 @@ public class Startup
                 serviceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING,
                 serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
                 serviceBusOptions.INTEGRATIONEVENTS_SUBSCRIPTION_NAME,
-                name: HealthCheckNames.IntegrationEventsTopic)
+                name: HealthCheckNames.IntegrationEventsTopicSubscription)
             .AddDataLakeHealthCheck(
                 _ => Configuration.Get<DataLakeOptions>()!,
                 name: HealthCheckNames.DataLake)

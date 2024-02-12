@@ -1,3 +1,3 @@
 # Wholesale Contracts Documentation
 
-A package containing contracts for the wholesale domain.
+A package containing contracts for the wholesale subsystem.
