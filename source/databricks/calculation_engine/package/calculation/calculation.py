@@ -79,7 +79,7 @@ def _execute(
         charges_df = prepared_data_reader.get_charges(
             args.calculation_period_start_datetime, args.calculation_period_end_datetime
         )
-        get_charge_links_df = prepared_data_reader.get_charge_links(
+        charge_links_df = prepared_data_reader.get_charge_links(
             args.calculation_period_start_datetime, args.calculation_period_end_datetime
         )
 
