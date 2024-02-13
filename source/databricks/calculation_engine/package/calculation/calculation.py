@@ -100,7 +100,6 @@ def _execute(
         )
 
         tariffs_daily_df = prepared_data_reader.get_tariff_charges(
-            metering_points_periods_for_wholesale_calculation_df,
             metering_point_time_series,
             charges,
             metering_point_charges_links,
