@@ -17,13 +17,16 @@ using System.Reflection;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.Common.Reflection;
 using Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.Databricks.Jobs.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Calculations.Application;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Application.UseCases;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -53,7 +56,11 @@ var host = new HostBuilder()
         // Health check
         services.AddScoped<IHealthCheckEndpointHandler, HealthCheckEndpointHandler>();
         services.AddHealthChecks()
-            .AddLiveCheck();
+            .AddLiveCheck()
+            .AddDbContextCheck<DatabaseContext>(
+                name: HealthCheckNames.CalculationDatabaseContext)
+            .AddDatabricksJobsApiHealthCheck(
+                name: HealthCheckNames.DatabricksJobsApi);
 
         // Calculation
         // => Database
