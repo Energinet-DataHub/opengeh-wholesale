@@ -26,7 +26,7 @@ from package.calculation.wholesale.schemas.charges_schema import (
 from package.constants import Colname
 import package.codelists as e
 
-import tests.calculation.preparation.transformations.charge_types.charges_factory as factory
+import tests.calculation.charges_factory as factory
 
 
 def test__get_subscription_charges__filters_on_subscription_charge_type(

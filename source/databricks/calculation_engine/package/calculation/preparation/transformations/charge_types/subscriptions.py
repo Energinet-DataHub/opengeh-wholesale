@@ -20,19 +20,32 @@ from package.constants import Colname
 
 
 def get_subscription_charges(
-    charges_df: DataFrame,
+    charges: DataFrame,
     charge_link_metering_points: DataFrame,
 ) -> DataFrame:
-    subscription_charges = charges_df.filter(
+    subscription_charges = charges.filter(
         f.col(Colname.charge_type) == ChargeType.SUBSCRIPTION.value
     )
 
     subscription_charges = _explode_subscription(subscription_charges)
 
     subscriptions = subscription_charges.join(
-        charge_link_metering_points, on=Colname.charge_key, how="inner"
+        charge_link_metering_points,
+        (
+            subscription_charges[Colname.charge_key]
+            == charge_link_metering_points[Colname.charge_key]
+        )
+        & (
+            subscription_charges[Colname.charge_time]
+            >= charge_link_metering_points[Colname.from_date]
+        )
+        & (
+            subscription_charges[Colname.charge_time]
+            < charge_link_metering_points[Colname.to_date]
+        ),
+        how="inner",
     ).select(
-        Colname.charge_key,
+        subscription_charges[Colname.charge_key],
         Colname.charge_code,
         Colname.charge_type,
         Colname.charge_owner,

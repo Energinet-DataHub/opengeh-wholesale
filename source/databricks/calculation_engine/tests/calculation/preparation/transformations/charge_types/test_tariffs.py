@@ -33,7 +33,7 @@ from package.calculation.wholesale.schemas.charges_schema import (
 from package.constants import Colname
 from pyspark.sql import Row
 
-import tests.calculation.preparation.transformations.charge_types.charges_factory as factory
+import tests.calculation.charges_factory as factory
 
 
 def _create_expected_tariff_charges_row(

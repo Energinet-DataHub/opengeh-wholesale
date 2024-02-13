@@ -13,12 +13,17 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime
+
+from package.calculation.wholesale.schemas.charges_schema import (
+    charge_link_metering_points_schema,
+    charges_schema,
+)
 from tests.helpers.test_schemas import (
     charges_flex_consumption_schema,
     charges_per_day_schema,
 )
 
-from package.codelists import MeteringPointType, SettlementMethod
+from package.codelists import MeteringPointType, SettlementMethod, ChargeType
 from package.calculation.wholesale.subscription_calculators import (
     calculate_daily_subscription_price,
     calculate_price_per_day,
@@ -30,30 +35,32 @@ from calendar import monthrange
 import pytest
 from package.constants import Colname
 
+import tests.calculation.charges_factory as factory
+
 
 def test__calculate_daily_subscription_price__simple(
     spark,
-    charge_master_data_factory,
-    charge_links_factory,
-    charge_prices_factory,
-    metering_point_period_factory,
     calculate_daily_subscription_price_factory,
+    charges_factory,
+    charge_link_metering_points_factory,
 ):
     # Test that calculate_daily_subscription_price does as expected in with the most simple dataset
     # Arrange
     from_date = datetime(2020, 1, 1, 0, 0)
     to_date = datetime(2020, 1, 2, 0, 0)
     time = datetime(2020, 1, 1, 0, 0)
-    charges_master_data_df = charge_master_data_factory(from_date, to_date)
-    charge_links_df = charge_links_factory(from_date, to_date)
-    charge_prices_df = charge_prices_factory(time)
-    charges_df = _create_charges_df(
-        charges_master_data_df, charge_links_df, charge_prices_df
+    charge_link_metering_points = charge_link_metering_points_factory(
+        charge_type=ChargeType.SUBSCRIPTION.value, from_date=from_date, to_date=to_date
     )
-    metering_point_df = metering_point_period_factory(from_date, to_date)
+    charges = charges_factory(
+        charge_type=ChargeType.SUBSCRIPTION.value,
+        charge_time=time,
+        to_date=to_date,
+        from_date=from_date,
+    )
 
     expected_date = datetime(2020, 1, 1, 0, 0)
-    expected_charge_price = charge_prices_df.collect()[0][Colname.charge_price]
+    expected_charge_price = charges.collect()[0][Colname.charge_price]
     expected_price_per_day = Decimal(
         expected_charge_price / monthrange(expected_date.year, expected_date.month)[1]
     )
@@ -61,8 +68,8 @@ def test__calculate_daily_subscription_price__simple(
 
     # Act
     subscription_charges = get_subscription_charges(
-        charges_df,
-        metering_point_df,
+        charges,
+        charge_link_metering_points,
     )
     result = calculate_daily_subscription_price(spark, subscription_charges)
     expected = calculate_daily_subscription_price_factory(
@@ -72,6 +79,9 @@ def test__calculate_daily_subscription_price__simple(
         expected_price_per_day,
         charge_price=expected_charge_price,
     )
+
+    expected.show()
+    result.show()
 
     # Assert
     assert result.collect() == expected.collect()
