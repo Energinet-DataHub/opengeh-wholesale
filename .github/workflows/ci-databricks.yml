@@ -23,7 +23,7 @@ on:
 
 jobs:
   databricks_ci_build:
-    uses: Energinet-DataHub/.github/.github/workflows/databricks-build-prerelease.yml@v12
+    uses: Energinet-DataHub/.github/.github/workflows/databricks-build-prerelease.yml@kerbou/1911-remove-node16-deprecation-warnings
     with:
       python_version: 3.11.7
       architecture: x64
@@ -110,7 +110,7 @@ jobs:
           done
 
   python_tests_calculationjob:
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v12
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@kerbou/1911-remove-node16-deprecation-warnings
     with:
       operating_system: dh3-ubuntu-20.04-4core
       path_static_checks: ./source/databricks/calculation_engine
@@ -126,7 +126,7 @@ jobs:
       image_tag: ${{ inputs.image_tag }}
 
   python_tests_other:
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v12
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@kerbou/1911-remove-node16-deprecation-warnings
     with:
       operating_system: dh3-ubuntu-20.04-4core
       path_static_checks: ./source/databricks/calculation_engine

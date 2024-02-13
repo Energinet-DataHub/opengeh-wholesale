@@ -34,7 +34,7 @@ jobs:
   cd_docker:
     needs: changes
     if: ${{ needs.changes.outputs.docker == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/python-build-and-push-docker-image.yml@v12
+    uses: Energinet-DataHub/.github/.github/workflows/python-build-and-push-docker-image.yml@kerbou/1911-remove-node16-deprecation-warnings
     with:
       docker_changed: ${{ needs.changes.outputs.docker == 'true' }}
       # 'docker_changed_in_commit' value is same as 'docker_changed' because we want to build and push docker image when docker changed
@@ -47,7 +47,7 @@ jobs:
   databricks_promote_prerelease:
     needs: changes
     if: ${{ needs.changes.outputs.databricks == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/promote-prerelease.yml@v12
+    uses: Energinet-DataHub/.github/.github/workflows/promote-prerelease.yml@kerbou/1911-remove-node16-deprecation-warnings
     with:
       release_name_prefix: databricks
 
@@ -58,7 +58,7 @@ jobs:
   dotnet_promote_prerelease:
     needs: changes
     if: ${{ needs.changes.outputs.dotnet == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/promote-prerelease.yml@v12
+    uses: Energinet-DataHub/.github/.github/workflows/promote-prerelease.yml@kerbou/1911-remove-node16-deprecation-warnings
     with:
       release_name_prefix: dotnet
 
@@ -81,7 +81,7 @@ jobs:
       - run: echo "${{ toJSON(needs) }}"
 
       - name: Find associated pull request
-        uses: Energinet-DataHub/.github/.github/actions/find-related-pr-number@v12
+        uses: Energinet-DataHub/.github/.github/actions/find-related-pr-number@kerbou/1911-remove-node16-deprecation-warnings
         id: find_pull_request
 
       - name: Repository Dispatch
