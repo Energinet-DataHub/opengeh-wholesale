@@ -37,8 +37,14 @@ resource "azurerm_role_assignment" "ra_ehdropzone_sender" {
 
 #---- Containers
 
-resource "azurerm_storage_container" "dh2_dropzone_zipped" {
-  name                  = "dh2-dropzone-zipped"
+# resource "azurerm_storage_container" "dh2_dropzone_zipped" {
+#   name                  = "dh2-dropzone-zipped"
+#   storage_account_name  = module.st_dh2dropzone.name
+#   container_access_type = "private"
+# }
+
+resource "azurerm_storage_container" "dh2_dropzone_temp_zipped" {
+  name                  = "dh2-temp-zipped"
   storage_account_name  = module.st_dh2dropzone.name
   container_access_type = "private"
 }
@@ -57,16 +63,16 @@ resource "azurerm_eventgrid_system_topic" "system_topic_dropzone_zipped" {
 }
 
 #---- System topic event subscription for blob created events
-resource "azurerm_eventgrid_system_topic_event_subscription" "eventgrid_dropzone_zipped" {
-  name                 = "ests-dropzonezipped-${local.resources_suffix}"
-  system_topic         = azurerm_eventgrid_system_topic.system_topic_dropzone_zipped.name
-  resource_group_name  = azurerm_resource_group.this.name
-  included_event_types = ["Microsoft.Storage.BlobCreated"]
-  eventhub_endpoint_id = azurerm_eventhub.eventhub_dropzone_zipped.id
-  subject_filter {
-    subject_begins_with = "/blobServices/default/containers/dh2-dropzone-zipped"
-  }
-  delivery_identity {
-    type = "SystemAssigned"
-  }
-}
+# resource "azurerm_eventgrid_system_topic_event_subscription" "eventgrid_dropzone_zipped" {
+#   name                 = "ests-dropzonezipped-${local.resources_suffix}"
+#   system_topic         = azurerm_eventgrid_system_topic.system_topic_dropzone_zipped.name
+#   resource_group_name  = azurerm_resource_group.this.name
+#   included_event_types = ["Microsoft.Storage.BlobCreated"]
+#   eventhub_endpoint_id = azurerm_eventhub.eventhub_dropzone_zipped.id
+#   subject_filter {
+#     subject_begins_with = "/blobServices/default/containers/dh2-dropzone-zipped"
+#   }
+#   delivery_identity {
+#     type = "SystemAssigned"
+#   }
+# }

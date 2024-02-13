@@ -32,7 +32,7 @@ module "func_dropzoneunzipper" {
     ARCHIVE_DROPZONE_URI                    = "https://${module.st_dh2dropzone_archive.name}.blob.core.windows.net"
     ARCHIVE_CONTAINER_NAME                  = azurerm_storage_container.dropzonearchive.name
     ZIPPED_DROPZONE_URI                     = "https://${module.st_dh2dropzone.name}.blob.core.windows.net"
-    ZIPPED_CONTAINER_NAME                   = azurerm_storage_container.dh2_dropzone_zipped.name
+    ZIPPED_CONTAINER_NAME                   = azurerm_storage_container.dh2_dropzone_temp_zipped.name # Use a temporary pointer to the container
     UNZIPPED_DROPZONE_URI                   = "https://${module.st_dh2data.name}.blob.core.windows.net"
     UNZIPPED_METERING_POINTS_CONTAINER_NAME = azurerm_storage_container.dh2_metering_point_history.name
     UNZIPPED_TIME_SERIES_CONTAINER_NAME     = azurerm_storage_container.dh2_timeseries.name
