@@ -70,7 +70,6 @@ def _explode_subscription(charges_df: DataFrame) -> DataFrame:
             Colname.resolution,
             Colname.charge_time,
             Colname.charge_price,
-            Colname.metering_point_id,
         )
     )
     return charges_df
