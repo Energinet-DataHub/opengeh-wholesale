@@ -17,8 +17,12 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Any, Callable
 
-from package.infrastructure import paths
 import pytest
+from pyspark.sql import DataFrame, SparkSession
+
+from package.calculation.CalculationResults import BasisDataContainer
+from package.calculation.preparation.transformations import basis_data
+from package.calculation_output.basis_data_writer import BasisDataWriter
 from package.codelists import (
     BasisDataType,
     MeteringPointResolution,
@@ -27,8 +31,7 @@ from package.codelists import (
     QuantityQuality,
 )
 from package.constants import Colname
-from package.calculation_output.basis_data_writer import BasisDataWriter
-from pyspark.sql import DataFrame, SparkSession
+from package.infrastructure import paths
 from tests.helpers.assert_calculation_file_path import (
     CalculationFileType,
     assert_file_path_match_contract,
@@ -176,10 +179,26 @@ def test__write__writes_to_paths_that_match_contract(
     # Arrange
     metering_point_period_df = metering_point_period_df_factory()
     metering_point_time_series = metering_point_time_series_factory()
+    (
+        timeseries_quarter_df,
+        timeseries_hour_df,
+    ) = basis_data.get_metering_point_time_series_basis_data_dfs(
+        metering_point_time_series,
+        TIME_ZONE,
+    )
+
+    master_basis_data_df = basis_data.get_master_basis_data_df(metering_point_period_df)
+
+    basis_data_container: BasisDataContainer = BasisDataContainer()
+    basis_data_container.timeseries_quarter_df = timeseries_quarter_df
+    basis_data_container.timeseries_hour_df = timeseries_hour_df
+    basis_data_container.master_basis_data_df = master_basis_data_df
+    basis_data_container.metering_point_periods = metering_point_period_df
+    basis_data_container.metering_point_time_series = metering_point_time_series
     sut = BasisDataWriter(str(tmpdir), DEFAULT_CALCULATION_ID)
 
     # Act
-    sut.write(metering_point_period_df, metering_point_time_series, TIME_ZONE)
+    sut.write(basis_data_container)
 
     # Assert
     for file_type in _get_all_basis_data_file_types():
