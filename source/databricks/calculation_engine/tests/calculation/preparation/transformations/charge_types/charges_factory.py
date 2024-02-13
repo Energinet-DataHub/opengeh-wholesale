@@ -108,7 +108,6 @@ def create_tariff_charges_row(
     from_date: datetime = datetime(2019, 12, 31, 23),
     to_date: datetime = datetime(2020, 1, 1, 0),
     charge_price: Decimal = DefaultValues.DEFAULT_CHARGE_PRICE,
-    metering_point_id: str = DefaultValues.DEFAULT_METERING_POINT_ID,
 ) -> Row:
     charge_key: str = f"{charge_code}-{charge_owner}-{e.ChargeType.TARIFF.value}"
 
@@ -123,8 +122,8 @@ def create_tariff_charges_row(
         Colname.from_date: from_date,
         Colname.to_date: to_date,
         Colname.charge_price: charge_price,
-        Colname.metering_point_id: metering_point_id,
     }
+
     return Row(**row)
 
 
@@ -132,18 +131,29 @@ def create_metering_point_charge_link_row(
     charge_type: e.ChargeType = DefaultValues.DEFAULT_CHARGE_TYPE,
     charge_code: str = DefaultValues.DEFAULT_CHARGE_CODE,
     charge_owner: str = DefaultValues.DEFAULT_CHARGE_OWNER,
-    from_date: datetime = datetime(2019, 12, 31, 23),
-    to_date: datetime = datetime(2020, 1, 1, 0),
     metering_point_id: str = DefaultValues.DEFAULT_METERING_POINT_ID,
+    metering_point_type: (
+        e.MeteringPointType
+    ) = DefaultValues.DEFAULT_METERING_POINT_TYPE,
+    settlement_method: e.SettlementMethod = DefaultValues.DEFAULT_SETTLEMENT_METHOD,
+    grid_area: str = DefaultValues.DEFAULT_GRID_AREA,
+    energy_supplier_id: str | None = DefaultValues.DEFAULT_ENERGY_SUPPLIER_ID,
+    from_date: datetime = DefaultValues.DEFAULT_FROM_DATE,
+    to_date: datetime | None = DefaultValues.DEFAULT_TO_DATE,
 ) -> Row:
-    charge_key: str = f"{charge_code}-{charge_owner}-{charge_type}"
+    charge_key: str = f"{charge_code}-{charge_owner}-{charge_type.value}"
 
     row = {
         Colname.charge_key: charge_key,
+        Colname.metering_point_id: metering_point_id,
+        Colname.metering_point_type: metering_point_type.value,
+        Colname.settlement_method: settlement_method.value,
+        Colname.grid_area: grid_area,
+        Colname.energy_supplier_id: energy_supplier_id,
         Colname.from_date: from_date,
         Colname.to_date: to_date,
-        Colname.metering_point_id: metering_point_id,
     }
+
     return Row(**row)
 
 

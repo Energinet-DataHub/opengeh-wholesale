@@ -256,15 +256,12 @@ def test__get_tariff_charges__when_no_matching_charge_resolution__returns_empty_
     charges_rows = [
         factory.create_tariff_charges_row(resolution=e.ChargeResolution.DAY)
     ]
-
-    metering_point_charge_link_row = factory.create_metering_point_charge_link_row(
-        charge_type=e.ChargeType.TARIFF
-    )
+    metering_point_charge_link_rows = [factory.create_metering_point_charge_link_row()]
 
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
     charges = spark.createDataFrame(charges_rows, charges_schema)
     metering_point_charge_links = spark.createDataFrame(
-        metering_point_charge_link_row, metering_point_charge_links_schema
+        metering_point_charge_link_rows, metering_point_charge_links_schema
     )
 
     # Act

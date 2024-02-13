@@ -56,7 +56,8 @@ def _join_with_metering_point_charge_links(
     tariffs: DataFrame, metering_point_charge_links: DataFrame
 ) -> DataFrame:
     df = tariffs.join(
-        metering_point_charge_links[
+        metering_point_charge_links,
+        [
             tariffs[Colname.charge_key]
             == metering_point_charge_links[Colname.charge_key],
             tariffs[Colname.charge_time]
