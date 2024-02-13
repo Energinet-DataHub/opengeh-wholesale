@@ -23,6 +23,165 @@ using Period = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Calcula
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.RequestCalculationResult;
 
+/*
+1 Test data
+═══════════
+
+1.1 Overall structure
+─────────────────────
+
+  The following illustration shows how the different grid areas, balance responsibles, energy suppliers, and data points
+  are related for this particular test.
+  ┌────
+  │ +-------------------------------+    +----------------------+
+  │ |   GA1                         |    |   GA3                |
+  │ |   +-----------------------+   |    |   +--------------+   |
+  │ |   |   BR1                 |   |    |   |   BR3        |   |
+  │ |   |   +-----+   +-----+   |   |    |   |   +------+   |   |
+  │ |   |   | ES1 |   | ES2 |   |   |    |   |   | ES1  |   |   |
+  │ |   |   | 1   |   | 1   |   |   |    |   |   | 1  3 |   |   |
+  │ |   |   | 2   |   | 4   |   |   |    |   |   | 2  4 |   |   |
+  │ |   |   +-----+   +-----+   |   |    |   |   +------+   |   |
+  │ |   +-----------------------+   |    |   +--------------+   |
+  │ |                               |    +----------------------+
+  │ |                               |
+  │ |                               |    +---------------------------+
+  │ |                               |    |   GA2                     |
+  │ |   +---------------------------+----+-----------------------+   |
+  │ |   |   BR2                     |    |                       |   |
+  │ |   |   +-----+   +-----+       |    |   +-----+   +-----+   |   |
+  │ |   |   | ES1 |   | ES3 |       |    |   | ES2 |   | ES3 |   |   |
+  │ |   |   | 3   |   | 2   |       |    |   | 2   |   | 1   |   |   |
+  │ |   |   | 4   |   | 3   |       |    |   | 3   |   | 4   |   |   |
+  │ |   |   +-----+   +-----+       |    |   +-----+   +-----+   |   |
+  │ |   +---------------------------+----+-----------------------+   |
+  │ +-------------------------------+    +---------------------------+
+  └────
+
+  The following table works as a kind of legend to the diagram above:
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Id   Name
+  ────────────────────────────
+   GAX  Grid area X
+   BRX  Balance responsible X
+   ESX  Energy supplier X
+   X    Metering data point X
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+1.2 Data points
+───────────────
+
+  In addition to these elements, each metering data point contains additional information
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Id  Quantity        Time        Balance fixing  First correction  Second correction  Third correction
+  ───────────────────────────────────────────────────────────────────────────────────────────────────────
+    1  FirstQuantity   FirstHour   X               X                 X                  X
+    2  SecondQuantity  SecondHour  X               X                 X
+    3  ThirdQuantity   ThirdHour   X                                 X                  X
+    4  FourthQuantity  SecondDay   X                                                    X
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  The test data also contains aggregation data for `BalanceResponsibleAndGridArea', `EnergySupplierAndGridArea', and
+  `GridArea'. This data is derived directly from the points above, distributed as illustrated in the diagram with the
+  aggregation level `EnergySupplierAndBalanceResponsibleAndGridArea', as each data point—as seen—is bound to a grid
+  area, balance responsible, and energy supplier. The generation of aggregated data is generated as summarised below.
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Aggregation level              Derivation
+  ───────────────────────────────────────────────────────────────────
+   BalanceResponsibleAndGridArea  Sum of all points within BR in GA
+   EnergySupplierAndGridArea      Sum of all points for ES within GA
+   GridArea                       Sum of all points within GA
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  It is worth noticing that each generated aggregation is done for each calculation level too, i.e. balance fixing,
+  first correction, second correction, and third correction.
+
+
+1.3 Calculations
+────────────────
+
+  Each data point is equipped with a calculation id. There are quite a few of these, as they—the calculation ids that
+  is—must adhere to a few rules:
+  1. All ids must be unique
+  2. Each id can only be used for a specific calculation type, e.g. balance fixing or second correction.
+
+
+  We additionally adhere to the following too:
+  1. Each id can only be used for a specific aggregation level, e.g. we cannot reuse the same id for first corrections
+     for grid areas and energy supplier per grid area
+  2. Each id can only appear in one specific version; if we want different versions we need different calculation ids
+
+
+  The following table details the calculation ids and which data points they encompass
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Calculation id                                 Description
+  ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+   BalanceFixingCalculationResultId               Used for energy supplier, balance responsible, and grid area aggregation of balance fixing measurements, i.e. the initial balance fixing data points
+   FirstCorrectionSettlementCalculationResultId   Used for energy supplier, balance responsible, and grid area aggregation of first corrections, i.e. the initial first correction data points
+   SecondCorrectionSettlementCalculationResultId  Used for energy supplier, balance responsible, and grid area aggregation of second corrections, i.e. the initial second correction data points
+   ThirdCorrectionSettlementCalculationResultId   Used for energy supplier, balance responsible, and grid area aggregation of third corrections, i.e. the initial third correction data points
+   BrGaAgBf1CalculationResultId                   Used for balance responsible and grid area aggregation of balance fixing measurements before SecondDay
+   BrGaAgBf2CalculationResultId                   Used for balance responsible and grid area aggregation of balance fixing measurements at or after SecondDay
+   BrGaAgFc1CalculationResultId                   Used for balance responsible and grid area aggregation of first corrections before SecondDay
+   BrGaAgFc2CalculationResultId                   Used for balance responsible and grid area aggregation of first corrections at or after SecondDay
+   BrGaAgSc1CalculationResultId                   Used for balance responsible and grid area aggregation of second corrections before SecondDay
+   BrGaAgSc2CalculationResultId                   Used for balance responsible and grid area aggregation of second corrections at or after SecondDay
+   BrGaAgTc1CalculationResultId                   Used for balance responsible and grid area aggregation of third corrections before SecondDay
+   BrGaAgTc2CalculationResultId                   Used for balance responsible and grid area aggregation of third corrections at or after SecondDay
+   EsGaAgBf1CalculationResultId                   Used for energy supplier and grid area aggregation of balance fixing measurements before SecondDay
+   EsGaAgBf2CalculationResultId                   Used for energy supplier and grid area aggregation of balance fixing measurements at or after SecondDay
+   EsGaAgFc1CalculationResultId                   Used for energy supplier and grid area aggregation of first corrections before SecondDay
+   EsGaAgFc2CalculationResultId                   Used for energy supplier and grid area aggregation of first corrections at or after SecondDay
+   EsGaAgSc1CalculationResultId                   Used for energy supplier and grid area aggregation of second corrections before SecondDay
+   EsGaAgSc2CalculationResultId                   Used for energy supplier and grid area aggregation of second corrections at or after SecondDay
+   EsGaAgTc1CalculationResultId                   Used for energy supplier and grid area aggregation of third corrections before SecondDay
+   EsGaAgTc2CalculationResultId                   Used for energy supplier and grid area aggregation of third corrections at or after SecondDay
+   GaAgBf1CalculationResultId                     Used for grid area aggregation of balance fixing measurements before SecondDay
+   GaAgBf2CalculationResultId                     Used for grid area aggregation of balance fixing measurements at or after SecondDay
+   GaAgFc1CalculationResultId                     Used for grid area aggregation of first corrections before SecondDay
+   GaAgFc2CalculationResultId                     Used for grid area aggregation of first corrections at or after SecondDay
+   GaAgSc1CalculationResultId                     Used for grid area aggregation of second corrections before SecondDay
+   GaAgSc2CalculationResultId                     Used for grid area aggregation of second corrections at or after SecondDay
+   GaAgTc1CalculationResultId                     Used for grid area aggregation of third corrections before SecondDay
+   GaAgTc2CalculationResultId                     Used for grid area aggregation of third corrections at or after SecondDay
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  The utilised `CalculationForPeriod' as part of the query parameters are generated with calculation id and version as
+  follows
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Calculation id                                 Version
+  ────────────────────────────────────────────────────────
+   BalanceFixingCalculationResultId                   256
+   FirstCorrectionSettlementCalculationResultId       512
+   SecondCorrectionSettlementCalculationResultId     1024
+   ThirdCorrectionSettlementCalculationResultId      2048
+   BrGaAgBf1CalculationResultId                         1
+   BrGaAgBf2CalculationResultId                         2
+   BrGaAgFc1CalculationResultId                         3
+   BrGaAgFc2CalculationResultId                         4
+   BrGaAgSc1CalculationResultId                         5
+   BrGaAgSc2CalculationResultId                         6
+   BrGaAgTc1CalculationResultId                         7
+   BrGaAgTc2CalculationResultId                         8
+   EsGaAgBf1CalculationResultId                        11
+   EsGaAgBf2CalculationResultId                        22
+   EsGaAgFc1CalculationResultId                        33
+   EsGaAgFc2CalculationResultId                        44
+   EsGaAgSc1CalculationResultId                        55
+   EsGaAgSc2CalculationResultId                        66
+   EsGaAgTc1CalculationResultId                        77
+   EsGaAgTc2CalculationResultId                        88
+   GaAgBf1CalculationResultId                         111
+   GaAgBf2CalculationResultId                         222
+   GaAgFc1CalculationResultId                         333
+   GaAgFc2CalculationResultId                         444
+   GaAgSc1CalculationResultId                         555
+   GaAgSc2CalculationResultId                         666
+   GaAgTc1CalculationResultId                         777
+   GaAgTc2CalculationResultId                         888
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  with the period start and end being the same for all `CalculationForPeriod'.
+ */
 public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFixture sqlStatementApiFixture)
 {
     public static AggregatedTimeSeriesQueryParameters CreateQueryParameters(
