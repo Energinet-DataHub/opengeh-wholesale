@@ -58,8 +58,6 @@ class WholesaleResultsContainer:
 
 @dataclass
 class BasisDataContainer:
-    metering_point_periods: DataFrame | None = None
-    metering_point_time_series: DataFrame | None = None
     master_basis_data_df: DataFrame | None = None
     timeseries_quarter_df: DataFrame | None = None
     timeseries_hour_df: DataFrame | None = None

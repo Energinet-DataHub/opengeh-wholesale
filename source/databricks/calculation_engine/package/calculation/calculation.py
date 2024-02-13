@@ -106,10 +106,25 @@ def _execute(
         )
 
     # Add basis data results
-    results.basis_data.metering_point_periods = metering_point_periods_df
-    results.basis_data.metering_point_time_series = metering_point_time_series
+    master_basis_data_df, timeseries_hour_df, timeseries_quarter_df = get_basis_data(args, metering_point_periods_df, metering_point_time_series)
+    results.basis_data.timeseries_quarter_df = timeseries_quarter_df
+    results.basis_data.timeseries_hour_df = timeseries_hour_df
+    results.basis_data.master_basis_data_df = master_basis_data_df
 
     return results
+
+
+def get_basis_data(args, metering_point_periods_df, metering_point_time_series):
+    (
+        timeseries_quarter_df,
+        timeseries_hour_df,
+    ) = basis_data.get_metering_point_time_series_basis_data_dfs(
+        metering_point_time_series, args.time_zone
+    )
+    master_basis_data_df = basis_data.get_master_basis_data_df(
+        metering_point_periods_df
+    )
+    return master_basis_data_df, timeseries_hour_df, timeseries_quarter_df
 
 
 def _get_production_and_consumption_metering_points(
@@ -125,22 +140,6 @@ def _write_results(args: CalculatorArgs, results: CalculationResultsContainer) -
     write_energy_results(args, results.energy_results)
     if results.wholesale_results is not None:
         write_wholesale_results(args, results.wholesale_results)
-
-    with logging_configuration.start_span("basis_data.prepare"):
-        (
-            timeseries_quarter_df,
-            timeseries_hour_df,
-        ) = basis_data.get_metering_point_time_series_basis_data_dfs(
-            results.basis_data.metering_point_time_series, args.time_zone
-        )
-
-        master_basis_data_df = basis_data.get_master_basis_data_df(
-            results.basis_data.metering_point_periods
-        )
-
-    results.basis_data.timeseries_quarter_df = timeseries_quarter_df
-    results.basis_data.timeseries_hour_df = timeseries_hour_df
-    results.basis_data.master_basis_data_df = master_basis_data_df
 
     # We write basis data at the end of the calculation to make it easier to analyze performance of the calculation part
     write_basis_data(args, results.basis_data)
