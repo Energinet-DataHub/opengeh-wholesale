@@ -93,6 +93,11 @@ variable "ip_restrictions" {
   default     = []
 }
 
+variable "cvr_base_address" {
+  type        = string
+  description = "Base address for CVR register"
+}
+
 variable "cvr_username" {
   type        = string
   description = "Username for CVR register"
