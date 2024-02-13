@@ -52,7 +52,7 @@ charges_master_data_schema = StructType(
 )
 
 
-charge_links_schema = StructType(
+metering_point_charge_links_schema = StructType(
     [
         StructField(Colname.charge_key, StringType(), False),
         StructField(Colname.metering_point_id, StringType(), False),

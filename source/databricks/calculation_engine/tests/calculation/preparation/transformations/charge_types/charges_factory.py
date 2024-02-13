@@ -17,6 +17,7 @@ from decimal import Decimal
 from pyspark.sql import Row, DataFrame, SparkSession
 
 from package.calculation_input.schemas import metering_point_period_schema
+from package.codelists import ChargeType
 from package.constants import Colname
 
 import package.codelists as e
@@ -24,6 +25,7 @@ import package.codelists as e
 
 class DefaultValues:
     DEFAULT_GRID_AREA = "543"
+    DEFAULT_CHARGE_TYPE = ChargeType.TARIFF
     DEFAULT_CHARGE_CODE = "4000"
     DEFAULT_CHARGE_OWNER = "001"
     DEFAULT_CHARGE_TAX = True
@@ -126,20 +128,18 @@ def create_tariff_charges_row(
     return Row(**row)
 
 
-def create_tariff_charge_link_row(
+def create_metering_point_charge_link_row(
+    charge_type: e.ChargeType = DefaultValues.DEFAULT_CHARGE_TYPE,
     charge_code: str = DefaultValues.DEFAULT_CHARGE_CODE,
     charge_owner: str = DefaultValues.DEFAULT_CHARGE_OWNER,
     from_date: datetime = datetime(2019, 12, 31, 23),
     to_date: datetime = datetime(2020, 1, 1, 0),
     metering_point_id: str = DefaultValues.DEFAULT_METERING_POINT_ID,
 ) -> Row:
-    charge_key: str = f"{charge_code}-{charge_owner}-{e.ChargeType.TARIFF.value}"
+    charge_key: str = f"{charge_code}-{charge_owner}-{charge_type}"
 
     row = {
         Colname.charge_key: charge_key,
-        Colname.charge_code: charge_code,
-        Colname.charge_type: e.ChargeType.TARIFF.value,
-        Colname.charge_owner: charge_owner,
         Colname.from_date: from_date,
         Colname.to_date: to_date,
         Colname.metering_point_id: metering_point_id,
