@@ -15,7 +15,7 @@
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
 
-import package.calculation.preparation.transformations.basis_data as basis_data
+from package.calculation.CalculationResults import BasisDataContainer
 from package.codelists import AggregationLevel, BasisDataType
 from package.constants import PartitionKeyName, BasisDataColname
 from package.infrastructure import paths, logging_configuration
@@ -31,40 +31,18 @@ class BasisDataWriter:
     @logging_configuration.use_span("calculation.basis_data")
     def write(
         self,
-        metering_points_periods_df: DataFrame,
-        metering_point_time_series: DataFrame,
-        time_zone: str,
-    ) -> None:
-        with logging_configuration.start_span("prepare"):
-            (
-                timeseries_quarter_df,
-                timeseries_hour_df,
-            ) = basis_data.get_metering_point_time_series_basis_data_dfs(
-                metering_point_time_series, time_zone
-            )
-
-        master_basis_data_df = basis_data.get_master_basis_data_df(
-            metering_points_periods_df
-        )
-
-        self._write(master_basis_data_df, timeseries_quarter_df, timeseries_hour_df)
-
-    def _write(
-        self,
-        master_basis_data_df: DataFrame,
-        timeseries_quarter_df: DataFrame,
-        timeseries_hour_df: DataFrame,
+        basis_data: BasisDataContainer,
     ) -> None:
         self._write_ga_basis_data(
-            master_basis_data_df,
-            timeseries_quarter_df,
-            timeseries_hour_df,
+            basis_data.master_basis_data_df,
+            basis_data.timeseries_quarter_df,
+            basis_data.timeseries_hour_df,
         )
 
         self._write_es_basis_data(
-            master_basis_data_df,
-            timeseries_quarter_df,
-            timeseries_hour_df,
+            basis_data.master_basis_data_df,
+            basis_data.timeseries_quarter_df,
+            basis_data.timeseries_hour_df,
         )
 
     @logging_configuration.use_span("per_grid_area")
