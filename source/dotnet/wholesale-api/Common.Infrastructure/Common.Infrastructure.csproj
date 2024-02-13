@@ -20,6 +20,7 @@ limitations under the License.
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Energinet.DataHub.Core.App.Common.Abstractions" Version="8.3.1" />
+    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.22.0" />
     <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.8.14">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

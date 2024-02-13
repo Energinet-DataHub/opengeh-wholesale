@@ -12,8 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Reflection;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.App.Common.Reflection;
 using Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -22,7 +26,17 @@ var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
     .ConfigureServices(services =>
     {
-        services.AddApplicationInsightsTelemetryWorkerService();
+        // Application Insights (Telemetry)
+        //  - Telemetry initializers only add information to logs emitted by the isolated worker; not the function host.
+        services.AddSingleton<ITelemetryInitializer>(new SubsystemInitializer(TelemetryConstants.SubsystemName));
+        services.AddApplicationInsightsTelemetryWorkerService(options =>
+        {
+            options.ApplicationVersion = Assembly
+                .GetEntryAssembly()!
+                .GetAssemblyInformationalVersionAttribute()!
+                .GetSourceVersionInformation()
+                .ToString();
+        });
         services.ConfigureFunctionsApplicationInsights();
 
         // Health check
