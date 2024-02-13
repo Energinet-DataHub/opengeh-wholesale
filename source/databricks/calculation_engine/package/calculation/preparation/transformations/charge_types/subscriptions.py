@@ -21,43 +21,30 @@ from package.constants import Colname
 
 def get_subscription_charges(
     charges_df: DataFrame,
-    metering_points: DataFrame,
+    charge_link_metering_points: DataFrame,
 ) -> DataFrame:
-    subscriptions = charges_df.filter(
+    subscription_charges = charges_df.filter(
         f.col(Colname.charge_type) == ChargeType.SUBSCRIPTION.value
     )
 
-    subscriptions = _explode_subscription(subscriptions)
+    subscription_charges = _explode_subscription(subscription_charges)
 
-    subscriptions = _join_with_metering_points(subscriptions, metering_points)
+    subscriptions = subscription_charges.join(
+        charge_link_metering_points, on=Colname.charge_key, how="inner"
+    ).select(
+        Colname.charge_key,
+        Colname.charge_code,
+        Colname.charge_type,
+        Colname.charge_owner,
+        Colname.charge_time,
+        Colname.charge_price,
+        charge_link_metering_points[Colname.metering_point_type],
+        charge_link_metering_points[Colname.settlement_method],
+        charge_link_metering_points[Colname.grid_area],
+        charge_link_metering_points[Colname.energy_supplier_id],
+    )
 
     return subscriptions
-
-
-def _join_with_metering_points(df: DataFrame, metering_points: DataFrame) -> DataFrame:
-    df = df.join(
-        metering_points,
-        [
-            df[Colname.metering_point_id] == metering_points[Colname.metering_point_id],
-            df[Colname.charge_time] >= metering_points[Colname.from_date],
-            df[Colname.charge_time] < metering_points[Colname.to_date],
-        ],
-        "inner",
-    ).select(
-        df[Colname.charge_key],
-        df[Colname.charge_code],
-        df[Colname.charge_type],
-        df[Colname.charge_owner],
-        df[Colname.charge_tax],
-        df[Colname.resolution],
-        df[Colname.charge_time],
-        df[Colname.charge_price],
-        metering_points[Colname.metering_point_type],
-        metering_points[Colname.settlement_method],
-        metering_points[Colname.grid_area],
-        metering_points[Colname.energy_supplier_id],
-    )
-    return df
 
 
 def _explode_subscription(charges_df: DataFrame) -> DataFrame:

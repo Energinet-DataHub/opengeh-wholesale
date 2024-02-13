@@ -25,7 +25,7 @@ from package.calculation.wholesale.fee_calculators import (
 )
 from package.calculation.preparation.transformations import get_fee_charges
 from package.calculation.preparation.transformations.charges_reader import (
-    _create_charges_df,
+    _join_with_charge_prices,
 )
 import pytest
 
@@ -46,11 +46,8 @@ def test__calculate_fee_charge_price__simple(
     charges_master_data_df = charge_master_data_factory(
         from_date, to_date, charge_type=ChargeType.FEE.value
     )
-    charge_links_df = charge_links_factory(from_date, to_date)
     charge_prices_df = charge_prices_factory(time)
-    charges_df = _create_charges_df(
-        charges_master_data_df, charge_links_df, charge_prices_df
-    )
+    charges_df = _join_with_charge_prices(charges_master_data_df, charge_prices_df)
     metering_point_df = metering_point_period_factory(from_date, to_date)
 
     expected_time = datetime(2020, 1, 1, 0, 0)

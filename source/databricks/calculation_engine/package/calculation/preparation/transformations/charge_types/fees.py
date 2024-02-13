@@ -20,50 +20,26 @@ from package.constants import Colname
 
 def get_fee_charges(
     charges_df: DataFrame,
-    metering_points: DataFrame,
+    charge_link_metering_points: DataFrame,
 ) -> DataFrame:
-    charges_df = charges_df.filter(f.col(Colname.charge_type) == ChargeType.FEE.value)
+    fee_charges = charges_df.filter(f.col(Colname.charge_type) == ChargeType.FEE.value)
 
-    df = _join_with_metering_points(charges_df, metering_points)
+    fee_charges.show()
+    charge_link_metering_points.show()
 
-    df = df.select(
+    fees = fee_charges.join(
+        charge_link_metering_points, on=Colname.charge_key, how="inner"
+    ).select(
         Colname.charge_key,
         Colname.charge_code,
         Colname.charge_type,
         Colname.charge_owner,
         Colname.charge_time,
         Colname.charge_price,
-        Colname.metering_point_type,
-        Colname.settlement_method,
-        Colname.grid_area,
-        Colname.energy_supplier_id,
+        charge_link_metering_points[Colname.metering_point_type],
+        charge_link_metering_points[Colname.settlement_method],
+        charge_link_metering_points[Colname.grid_area],
+        charge_link_metering_points[Colname.energy_supplier_id],
     )
 
-    return df
-
-
-def _join_with_metering_points(df: DataFrame, metering_points: DataFrame) -> DataFrame:
-    df = df.join(
-        metering_points,
-        [
-            df[Colname.metering_point_id] == metering_points[Colname.metering_point_id],
-            df[Colname.charge_time] >= metering_points[Colname.from_date],
-            df[Colname.charge_time] < metering_points[Colname.to_date],
-        ],
-        "inner",
-    ).select(
-        df[Colname.charge_key],
-        df[Colname.charge_code],
-        df[Colname.charge_type],
-        df[Colname.charge_owner],
-        df[Colname.charge_tax],
-        df[Colname.resolution],
-        df[Colname.charge_time],
-        df[Colname.charge_price],
-        metering_points[Colname.metering_point_type],
-        metering_points[Colname.settlement_method],
-        metering_points[Colname.grid_area],
-        metering_points[Colname.energy_supplier_id],
-    )
-
-    return df
+    return fees
