@@ -20,7 +20,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.FunctionApp.IntegrationTests.Fixtures
+namespace Energinet.DataHub.Wholesale.Orchestration.IntegrationTests.Fixtures
 {
     /// <summary>
     /// Support testing Function App hosts.

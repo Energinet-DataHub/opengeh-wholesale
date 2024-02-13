@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <AssemblyName>Energinet.DataHub.Wholesale.FunctionApp</AssemblyName>
-    <RootNamespace>Energinet.DataHub.Wholesale.FunctionApp</RootNamespace>
+    <AssemblyName>Energinet.DataHub.Wholesale.Orchestration</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Wholesale.Orchestration</RootNamespace>
     <AzureFunctionsVersion>v4</AzureFunctionsVersion>
     <OutputType>Exe</OutputType>
   </PropertyGroup>

@@ -80,9 +80,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Calculations.IntegrationTes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{1563FA3D-F631-463A-B09D-81177B8FA237}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FunctionApp", "wholesale-api\FunctionApp\FunctionApp.csproj", "{AB55272B-6C9E-486F-B2AA-FEFA42D432D3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchestration", "wholesale-api\FunctionApp\Orchestration.csproj", "{AB55272B-6C9E-486F-B2AA-FEFA42D432D3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionApp.IntegrationTests", "wholesale-api\FunctionApp.IntegrationTests\FunctionApp.IntegrationTests.csproj", "{80A26138-FF9A-4045-ABE4-AF6A1FA7F22E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchestration.IntegrationTests", "wholesale-api\FunctionApp.IntegrationTests\Orchestration.IntegrationTests.csproj", "{80A26138-FF9A-4045-ABE4-AF6A1FA7F22E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
