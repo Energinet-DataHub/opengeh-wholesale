@@ -1,0 +1,113 @@
+/* Copyright 2020 Energinet DataHub A/S
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License2");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+import "Common/Protos/decimal_value.proto";
+
+option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts.IntegrationEvents";
+
+
+/*
+ * A calculation will result in one or more wholesale results. Each result is
+ * published as an instance of this type.
+ */
+message MonthlyAmountPerChargeResultProducedV2 {
+  /*
+   * The ID of the calculation creating the result.
+   * The ID is a UUID consisting of hexadecimal digits in the form XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX.
+   * Example: 65801e3c-5131-426e-b1bb-7b186349c996
+   */
+  string calculation_id = 1;
+
+  CalculationType calculation_type = 2;
+
+  /*
+   * The beginning of the calculation period.
+   * The time is included in the period and is identical to the time of the first time series point
+   * in the process time series type results.
+   */
+  google.protobuf.Timestamp period_start_utc = 3;
+
+  /*
+   * The end of the calculation period.
+   * The time is excluded from the period.
+   */
+  google.protobuf.Timestamp period_end_utc = 4;
+
+  string grid_area_code = 5;
+
+  string energy_supplier_id = 6;
+
+  string charge_code = 7;
+
+  ChargeType charge_type = 8;
+
+  string charge_owner_id = 9;
+
+  QuantityUnit quantity_unit = 10;
+
+  bool is_tax = 11;
+
+  Currency currency = 12;
+
+  /*
+   * 6 digit scale decimal value of the amount.
+   */
+  optional DecimalValue amount = 13;
+
+  /*
+ * The version of the calculation result. It is a positive integer (int64).
+ */
+  int64 calculation_result_version = 14;
+
+  // ---------------------------- NESTED TYPES BELOW ----------------------------------------
+
+  enum CalculationType {
+    /*
+     * Unspecified is unused but according to best practice.
+     * Read more at https://protobuf.dev/programming-guides/style/#enums.
+     */
+    CALCULATION_TYPE_UNSPECIFIED = 0;
+    CALCULATION_TYPE_WHOLESALE_FIXING = 1;
+    CALCULATION_TYPE_FIRST_CORRECTION_SETTLEMENT = 2;
+    CALCULATION_TYPE_SECOND_CORRECTION_SETTLEMENT = 3;
+    CALCULATION_TYPE_THIRD_CORRECTION_SETTLEMENT = 4;
+  }
+
+  enum ChargeType {
+    CHARGE_TYPE_UNSPECIFIED = 0;
+    CHARGE_TYPE_FEE = 1;
+    CHARGE_TYPE_TARIFF = 2;
+    CHARGE_TYPE_SUBSCRIPTION = 3;
+  }
+
+  enum Currency {
+    CURRENCY_UNSPECIFIED = 0;
+    CURRENCY_DKK = 1;
+  }
+
+  enum QuantityUnit {
+    /*
+     * Unspecified is unused but according to best practice.
+     * Read more at https://protobuf.dev/programming-guides/style/#enums.
+     */
+    QUANTITY_UNIT_UNSPECIFIED = 0;
+
+    // States that the energy quantity is measured in kWh (kilo Watt hours).
+    QUANTITY_UNIT_KWH = 1;
+    QUANTITY_UNIT_PIECES = 2;
+  }
+}
