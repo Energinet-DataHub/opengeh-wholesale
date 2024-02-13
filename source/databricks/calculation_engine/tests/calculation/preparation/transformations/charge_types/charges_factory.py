@@ -166,7 +166,6 @@ def create_subscription_or_fee_charges_row(
     from_date: datetime = datetime(2019, 12, 31, 23),
     to_date: datetime = datetime(2020, 1, 1, 0),
     charge_price: Decimal = DefaultValues.DEFAULT_CHARGE_PRICE,
-    metering_point_id: str = DefaultValues.DEFAULT_METERING_POINT_ID,
 ) -> Row:
     charge_key: str = f"{charge_code}-{charge_owner}-{charge_type.value}"
 
@@ -181,7 +180,6 @@ def create_subscription_or_fee_charges_row(
         Colname.from_date: from_date,
         Colname.to_date: to_date,
         Colname.charge_price: charge_price,
-        Colname.metering_point_id: metering_point_id,
     }
     return Row(**row)
 

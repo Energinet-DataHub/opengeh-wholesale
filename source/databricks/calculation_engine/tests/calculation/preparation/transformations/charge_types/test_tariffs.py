@@ -305,14 +305,24 @@ def test__get_tariff_charges__when_two_tariff_overlap__returns_both_tariffs(
         factory.create_tariff_charges_row(charge_code="4000"),
         factory.create_tariff_charges_row(charge_code="3000"),
     ]
+    metering_point_charge_link_rows = [
+        factory.create_metering_point_charge_links_row(
+            charge_type=e.ChargeType.TARIFF, charge_code="4000"
+        ),
+        factory.create_metering_point_charge_links_row(
+            charge_type=e.ChargeType.TARIFF, charge_code="3000"
+        ),
+    ]
 
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
     charges = spark.createDataFrame(charges_rows, charges_schema)
+    metering_point_charge_link = spark.createDataFrame(metering_point_charge_link_rows)
 
     # Act
     actual = get_tariff_charges(
         time_series,
         charges,
+        metering_point_charge_link,
         e.ChargeResolution.HOUR,
     )
 
@@ -339,7 +349,7 @@ def test__get_tariff_charges__returns_expected_tariff_values(
         )
     ]
 
-    metering_point = spark.createDataFrame(
+    metering_point_charge_links = spark.createDataFrame(
         metering_point_charge_links_rows, metering_point_charge_links_schema
     )
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
@@ -351,9 +361,9 @@ def test__get_tariff_charges__returns_expected_tariff_values(
 
     # Act
     actual = get_tariff_charges(
-        metering_point,
         time_series,
         charges,
+        metering_point_charge_links,
         e.ChargeResolution.HOUR,
     )
 
