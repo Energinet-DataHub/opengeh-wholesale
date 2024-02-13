@@ -23,10 +23,10 @@ namespace Energinet.DataHub.Wholesale.Orchestration.IntegrationTests.Monitor
     /// <summary>
     /// Tests verifying the configuration and behaviour of Health Checks.
     /// </summary>
-    [Collection(nameof(FunctionAppCollectionFixture))]
+    [Collection(nameof(OrchestrationAppCollectionFixture))]
     public class HealthCheckEndpointTests : IAsyncLifetime
     {
-        public HealthCheckEndpointTests(FunctionAppFixture fixture, ITestOutputHelper testOutputHelper)
+        public HealthCheckEndpointTests(OrchestrationAppFixture fixture, ITestOutputHelper testOutputHelper)
         {
             Fixture = fixture;
             Fixture.SetTestOutputHelper(testOutputHelper);
@@ -34,7 +34,7 @@ namespace Energinet.DataHub.Wholesale.Orchestration.IntegrationTests.Monitor
             Fixture.AppHostManager.ClearHostLog();
         }
 
-        private FunctionAppFixture Fixture { get; }
+        private OrchestrationAppFixture Fixture { get; }
 
         public Task InitializeAsync()
         {

@@ -23,11 +23,11 @@ using Xunit.Abstractions;
 namespace Energinet.DataHub.Wholesale.Orchestration.IntegrationTests.Fixtures
 {
     /// <summary>
-    /// Support testing Function App hosts.
+    /// Support testing Orchestration app.
     /// </summary>
-    public class FunctionAppFixture : IAsyncLifetime
+    public class OrchestrationAppFixture : IAsyncLifetime
     {
-        public FunctionAppFixture()
+        public OrchestrationAppFixture()
         {
             TestLogger = new TestDiagnosticsLogger();
 
@@ -55,7 +55,7 @@ namespace Energinet.DataHub.Wholesale.Orchestration.IntegrationTests.Fixtures
 
             // => Prepare host settings
             var port = 8000;
-            var appHostSettings = CreateAppHostSettings("FunctionApp", ref port);
+            var appHostSettings = CreateAppHostSettings("Orchestration", ref port);
 
             // => Create and start host's
             AppHostManager = new FunctionAppHostManager(appHostSettings, TestLogger);

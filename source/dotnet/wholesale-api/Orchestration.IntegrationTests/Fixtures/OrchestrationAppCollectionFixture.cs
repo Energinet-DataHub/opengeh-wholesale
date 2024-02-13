@@ -20,8 +20,8 @@ namespace Energinet.DataHub.Wholesale.Orchestration.IntegrationTests.Fixtures
     /// xUnit documentation of collection fixtures:
     ///  * https://xunit.net/docs/shared-context#collection-fixture
     /// </summary>
-    [CollectionDefinition(nameof(FunctionAppCollectionFixture))]
-    public class FunctionAppCollectionFixture : ICollectionFixture<FunctionAppFixture>
+    [CollectionDefinition(nameof(OrchestrationAppCollectionFixture))]
+    public class OrchestrationAppCollectionFixture : ICollectionFixture<OrchestrationAppFixture>
     {
     }
 }
