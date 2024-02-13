@@ -324,7 +324,9 @@ def test__get_tariff_charges__returns_expected_tariff_values(
     spark: SparkSession,
 ) -> None:
     # Arrange
-    metering_point_rows = [factory.create_metering_point_row()]
+    metering_point_charge_links_rows = [
+        factory.create_metering_point_charge_links_row()
+    ]
     time_series_rows = [
         factory.create_time_series_row(quality=e.QuantityQuality.CALCULATED),
         factory.create_time_series_row(quality=e.QuantityQuality.ESTIMATED),
@@ -338,7 +340,7 @@ def test__get_tariff_charges__returns_expected_tariff_values(
     ]
 
     metering_point = spark.createDataFrame(
-        metering_point_rows, metering_point_period_schema
+        metering_point_charge_links_rows, metering_point_charge_links_schema
     )
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
     charges = spark.createDataFrame(charges_rows, charges_schema)
@@ -385,11 +387,10 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hou
     date and less than the metering point to date are accepted.
     """
     # Arrange
-    metering_point_rows = [
-        factory.create_metering_point_row(
+    metering_point_charge_links_rows = [
+        factory.create_metering_point_charge_links_row(
             from_date=datetime(2020, 1, 1, 0),
             to_date=datetime(2020, 1, 3, 0),
-            resolution=e.MeteringPointResolution.HOUR,
         )
     ]
     time_series_rows = []
@@ -406,17 +407,17 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hou
                 )
             )
 
-    metering_point = spark.createDataFrame(
-        metering_point_rows, metering_point_period_schema
+    metering_point_charge_links = spark.createDataFrame(
+        metering_point_charge_links_rows, metering_point_charge_links_schema
     )
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
     charges = spark.createDataFrame(charges_rows, charges_schema)
 
     # Act
     actual = get_tariff_charges(
-        metering_point,
         time_series,
         charges,
+        metering_point_charge_links,
         charge_resolution,
     )
 
@@ -451,11 +452,10 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_qua
     date and less than the metering point to date are accepted.
     """
     # Arrange
-    metering_point_rows = [
-        factory.create_metering_point_row(
+    metering_point_charge_links_rows = [
+        factory.create_metering_point_charge_links_row(
             from_date=datetime(2020, 1, 1, 0),
             to_date=datetime(2020, 1, 3, 0),
-            resolution=e.MeteringPointResolution.QUARTER,
         )
     ]
     time_series_rows = []
@@ -475,17 +475,17 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_qua
                 )
             )
 
-    metering_point = spark.createDataFrame(
-        metering_point_rows, metering_point_period_schema
+    metering_point_charge_links = spark.createDataFrame(
+        metering_point_charge_links_rows, metering_point_charge_links_schema
     )
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
     charges = spark.createDataFrame(charges_rows, charges_schema)
 
     # Act
     actual = get_tariff_charges(
-        metering_point,
         time_series,
         charges,
+        metering_point_charge_links,
         charge_resolution,
     )
 
@@ -541,11 +541,11 @@ def test__get_tariff_charges__per_day_only_accepts_time_series_and_change_times_
     Test4       OC                      OC                     OC   Expected: 0
     """
     # Arrange
-    metering_point_rows = [
-        factory.create_metering_point_row(
+    metering_point_charge_links_rows = [
+        factory.create_metering_point_charge_links_row(
             from_date=datetime(2019, 12, 31, 23), to_date=datetime(2020, 1, 1, 23)
         ),
-        factory.create_metering_point_row(
+        factory.create_metering_point_charge_links_row(
             from_date=datetime(2020, 1, 1, 23),
             to_date=datetime(2020, 1, 2, 23),
             energy_supplier_id="123",
@@ -568,8 +568,8 @@ def test__get_tariff_charges__per_day_only_accepts_time_series_and_change_times_
         ),
     ]
 
-    metering_point = spark.createDataFrame(
-        metering_point_rows, metering_point_period_schema
+    metering_point_charge_links = spark.createDataFrame(
+        metering_point_charge_links_rows, metering_point_charge_links_schema
     )
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
     charges = spark.createDataFrame(charges_rows, charges_schema)
@@ -578,6 +578,7 @@ def test__get_tariff_charges__per_day_only_accepts_time_series_and_change_times_
     actual = get_tariff_charges(
         time_series,
         charges,
+        metering_point_charge_links,
         e.ChargeResolution.DAY,
     )
 
