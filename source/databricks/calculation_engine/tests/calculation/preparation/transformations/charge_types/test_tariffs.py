@@ -25,7 +25,6 @@ from package.calculation.preparation.transformations import (
 from package.calculation.wholesale.schemas.tariffs_schema import tariff_schema
 from package.calculation_input.schemas import (
     time_series_point_schema,
-    metering_point_period_schema,
 )
 from package.calculation.wholesale.schemas.charges_schema import (
     charges_schema,
@@ -88,28 +87,33 @@ def test__get_tariff_charges__filters_on_resolution(
     Only charges with the given resolution are accepted.
     """
     # Arrange
-    metering_point_rows = [factory.create_metering_point_row()]
     time_series_rows = [factory.create_time_series_row()]
     charges_rows = [
         factory.create_tariff_charges_row(
+            charge_code="code_hour",
             resolution=e.ChargeResolution.HOUR,
         ),
         factory.create_tariff_charges_row(
+            charge_code="code_day",
             resolution=e.ChargeResolution.DAY,
         ),
     ]
+    metering_point_charge_links_rows = [
+        factory.create_metering_point_charge_links_row(charge_code="code_hour"),
+        factory.create_metering_point_charge_links_row(charge_code="code_day"),
+    ]
 
-    metering_point = spark.createDataFrame(
-        metering_point_rows, metering_point_period_schema
+    metering_point_charge_links = spark.createDataFrame(
+        metering_point_charge_links_rows, metering_point_charge_links_schema
     )
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
     charges = spark.createDataFrame(charges_rows, charges_schema)
 
     # Act
     actual = get_tariff_charges(
-        metering_point,
         time_series,
         charges,
+        metering_point_charge_links,
         charge_resolution,
     )
 
@@ -125,7 +129,17 @@ def test__get_tariff_charges__filters_on_tariff_charge_type(
     Only charges with the charge type TARIFF are accepted.
     """
     # Arrange
-    metering_point_rows = [factory.create_metering_point_row()]
+    metering_point_charge_links_rows = [
+        factory.create_metering_point_charge_links_row(
+            charge_type=e.ChargeType.TARIFF,
+        ),
+        factory.create_metering_point_charge_links_row(
+            charge_type=e.ChargeType.FEE,
+        ),
+        factory.create_metering_point_charge_links_row(
+            charge_type=e.ChargeType.SUBSCRIPTION,
+        ),
+    ]
     time_series_rows = [factory.create_time_series_row()]
     charges_rows = [
         factory.create_tariff_charges_row(),
@@ -135,17 +149,17 @@ def test__get_tariff_charges__filters_on_tariff_charge_type(
         ),
     ]
 
-    metering_point = spark.createDataFrame(
-        metering_point_rows, metering_point_period_schema
+    metering_point_charge_links = spark.createDataFrame(
+        metering_point_charge_links_rows, metering_point_charge_links_schema
     )
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
     charges = spark.createDataFrame(charges_rows, charges_schema)
 
     # Act
     actual_tariff = get_tariff_charges(
-        metering_point,
         time_series,
         charges,
+        metering_point_charge_links,
         e.ChargeResolution.HOUR,
     )
 
@@ -178,10 +192,12 @@ def test__get_tariff_charges__only_accepts_charges_in_metering_point_period(
                     |------ _charge_time --|
     """
     # Arrange
-    metering_point_rows = [
-        factory.create_metering_point_row(
-            from_date=datetime(2020, 1, 1, 0), to_date=datetime(2020, 1, 1, 2)
-        ),
+    metering_point_charge_links_rows = [
+        factory.create_metering_point_charge_links_row(
+            charge_type=e.ChargeType.TARIFF,
+            from_date=datetime(2020, 1, 1, 0),
+            to_date=datetime(2020, 1, 1, 2),
+        )
     ]
     time_series_rows = [
         factory.create_time_series_row(observation_time=from_date),
@@ -194,17 +210,17 @@ def test__get_tariff_charges__only_accepts_charges_in_metering_point_period(
         )
     ]
 
-    metering_point = spark.createDataFrame(
-        metering_point_rows, metering_point_period_schema
+    metering_point_charge_links = spark.createDataFrame(
+        metering_point_charge_links_rows, metering_point_charge_links_schema
     )
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
     charges = spark.createDataFrame(charges_rows, charges_schema)
 
     # Act
     actual = get_tariff_charges(
-        metering_point,
         time_series,
         charges,
+        metering_point_charge_links,
         e.ChargeResolution.HOUR,
     )
 
@@ -220,24 +236,26 @@ def test__get_tariff_charges__when_same_metering_point_and_resolution__sums_quan
     with the same observation time, the quantity is summed.
     """
     # Arrange
-    metering_point_rows = [factory.create_metering_point_row()]
+    metering_point_charge_links_rows = [
+        factory.create_metering_point_charge_links_row(charge_type=e.ChargeType.TARIFF)
+    ]
     time_series_rows = [
         factory.create_time_series_row(),
         factory.create_time_series_row(),
     ]
     charges_rows = [factory.create_tariff_charges_row()]
 
-    metering_point = spark.createDataFrame(
-        metering_point_rows, metering_point_period_schema
+    metering_point_charge_links = spark.createDataFrame(
+        metering_point_charge_links_rows, metering_point_charge_links_schema
     )
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
     charges = spark.createDataFrame(charges_rows, charges_schema)
 
     # Act
     actual = get_tariff_charges(
-        metering_point,
         time_series,
         charges,
+        metering_point_charge_links,
         e.ChargeResolution.HOUR,
     )
 
@@ -256,7 +274,9 @@ def test__get_tariff_charges__when_no_matching_charge_resolution__returns_empty_
     charges_rows = [
         factory.create_tariff_charges_row(resolution=e.ChargeResolution.DAY)
     ]
-    metering_point_charge_link_rows = [factory.create_metering_point_charge_link_row()]
+    metering_point_charge_link_rows = [
+        factory.create_metering_point_charge_links_row(charge_type=e.ChargeType.TARIFF)
+    ]
 
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
     charges = spark.createDataFrame(charges_rows, charges_schema)
