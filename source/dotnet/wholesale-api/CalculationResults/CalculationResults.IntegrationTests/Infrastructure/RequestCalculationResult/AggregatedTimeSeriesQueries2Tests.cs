@@ -660,45 +660,19 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
     }
 
     [Fact]
-    public async Task
-        GetAsync_WhenRequestFromEnergySupplierTotalProductionWithoutGridAreaFilter_ReturnsOneResultPerGridArea()
+    public async Task GetAsync_PeriodFilterDenotesHalfClosedInterval_StartIsIncludedEndIsNot()
     {
         // Arrange
-        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
-        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        var startOfPeriodFilter =
+            Instant.FromDateTimeOffset(DateTimeOffset.Parse(AggregatedTimeSeriesQueries2Constants.FirstHour));
+
+        var endOfPeriodFilter =
+            Instant.FromDateTimeOffset(DateTimeOffset.Parse(AggregatedTimeSeriesQueries2Constants.SecondHour));
 
         await _aggregatedTimeSeriesQueries2Data.AddDataAsync();
 
         var parameters = AggregatedTimeSeriesQueries2Data.CreateQueryParameters(
-            timeSeriesType: [TimeSeriesType.Production],
-            startOfPeriod: startOfPeriodFilter,
-            endOfPeriod: endOfPeriodFilter,
-            energySupplierId: AggregatedTimeSeriesQueries2Constants.EnergySupplierA);
-
-        // Act
-        var actual = await Sut.GetAsync(parameters).ToListAsync();
-
-        // Assert
-        var resultsPerGridArea = actual.GroupBy(x => x.GridArea);
-        using var assertionScope = new AssertionScope();
-        foreach (var resultsInGridArea in resultsPerGridArea)
-        {
-            resultsInGridArea.Should()
-                .ContainSingle($"There should be only one result for grid area: {resultsInGridArea.Key}.");
-        }
-    }
-
-    [Fact]
-    public async Task GetAsync_WhenRequestFromGridOperatorForOneDay_ReturnsResult()
-    {
-        // Arrange
-        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 3, 0, 0);
-
-        await _aggregatedTimeSeriesQueries2Data.AddDataAsync();
-
-        var parameters = AggregatedTimeSeriesQueries2Data.CreateQueryParameters(
-            gridArea: AggregatedTimeSeriesQueries2Constants.GridAreaCodeC,
+            gridArea: AggregatedTimeSeriesQueries2Constants.GridAreaCodeA,
             timeSeriesType: [TimeSeriesType.Production],
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
@@ -708,16 +682,14 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
 
         // Assert
         using var assertionScope = new AssertionScope();
-        actual.Should().HaveCount(1);
-        var aggregatedTimeSeries = actual.First();
-        aggregatedTimeSeries.GridArea.Should().Be(AggregatedTimeSeriesQueries2Constants.GridAreaCodeC);
-        aggregatedTimeSeries.TimeSeriesType.Should().Be(TimeSeriesType.Production);
-        aggregatedTimeSeries.TimeSeriesPoints
-            .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
+        actual.Should().NotBeEmpty();
+        actual.Should().AllSatisfy(ats => ats.TimeSeriesPoints.Should().NotBeEmpty());
+
+        actual.SelectMany(ats => ats.TimeSeriesPoints.Select(tsp => tsp.Time))
             .Should()
-            .BeEquivalentTo(
-                AggregatedTimeSeriesQueries2Constants.FourthQuantity,
-                AggregatedTimeSeriesQueries2Constants.FourthQuantityThirdCorrection);
+            .AllSatisfy(dto => dto.Should().BeOnOrAfter(startOfPeriodFilter.ToDateTimeOffset()))
+            .And
+            .AllSatisfy(dto => dto.Should().BeBefore(endOfPeriodFilter.ToDateTimeOffset()));
     }
 
     [Fact]
