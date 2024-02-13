@@ -20,5 +20,5 @@ public interface IMonthlyAmountPerChargeResultProducedV2Factory
 {
     bool CanCreate(WholesaleResult result);
 
-    Contracts.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1 Create(WholesaleResult result);
+    Contracts.IntegrationEvents.MonthlyAmountPerChargeResultProducedV2 Create(WholesaleResult result);
 }

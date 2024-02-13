@@ -14,24 +14,23 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Common;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.MonthlyAmountPerChargeResultProducedV2.Mappers;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.MonthlyAmountPerChargeResultProducedV2.Factories;
 
-public class MonthlyAmountPerChargeResultProducedV2Factory : IMonthlyAmountPerChargeResultProducedV1Factory
+public class MonthlyAmountPerChargeResultProducedV2Factory : IMonthlyAmountPerChargeResultProducedV2Factory
 {
     public bool CanCreate(WholesaleResult result) =>
         result.AmountType == AmountType.MonthlyAmountPerCharge
         && result.Resolution is Resolution.Month
         && result.TimeSeriesPoints.Count == 1;
 
-    public Contracts.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1 Create(WholesaleResult result)
+    public Contracts.IntegrationEvents.MonthlyAmountPerChargeResultProducedV2 Create(WholesaleResult result)
     {
         if (!CanCreate(result))
-            throw new ArgumentException($"Cannot create '{nameof(MonthlyAmountPerChargeResultProducedV1)}' from wholesale result.", nameof(result));
+            throw new ArgumentException($"Cannot create '{nameof(MonthlyAmountPerChargeResultProducedV2)}' from wholesale result.", nameof(result));
 
-        var amountPerChargeResultProducedV1 = new Contracts.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1
+        var amountPerChargeResultProducedV2 = new Contracts.IntegrationEvents.MonthlyAmountPerChargeResultProducedV2
         {
             CalculationId = result.CalculationId.ToString(),
             CalculationType = CalculationTypeMapper.MapCalculationType(result.CalculationType),
@@ -44,10 +43,10 @@ public class MonthlyAmountPerChargeResultProducedV2Factory : IMonthlyAmountPerCh
             ChargeOwnerId = result.ChargeOwnerId,
             QuantityUnit = QuantityUnitMapper.MapQuantityUnit(result.QuantityUnit),
             IsTax = result.IsTax,
-            Currency = Contracts.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1.Types.Currency.Dkk,
+            Currency = Contracts.IntegrationEvents.MonthlyAmountPerChargeResultProducedV2.Types.Currency.Dkk,
             Amount = result.TimeSeriesPoints.Single().Amount,
         };
 
-        return amountPerChargeResultProducedV1;
+        return amountPerChargeResultProducedV2;
     }
 }
