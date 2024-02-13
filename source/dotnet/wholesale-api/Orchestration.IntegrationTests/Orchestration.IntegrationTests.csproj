@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FunctionApp\Orchestration.csproj" />
+    <ProjectReference Include="..\Orchestration\Orchestration.csproj" />
   </ItemGroup>
 
   <ItemGroup>
