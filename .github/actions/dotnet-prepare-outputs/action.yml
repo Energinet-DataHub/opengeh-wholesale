@@ -42,11 +42,11 @@ runs:
           --configuration Release \
           --output '${{ inputs.output_path }}\functions\webapi'
 
-    - name: Publish Function App
+    - name: Publish Orchestration
       shell: bash
       run: |
         dotnet publish \
-          '.\source\dotnet\wholesale-api\FunctionApp\FunctionApp.csproj' \
+          '.\source\dotnet\wholesale-api\Orchestration\Orchestration.csproj' \
           --no-build \
           --no-restore \
           --configuration Release \

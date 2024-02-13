@@ -25,11 +25,11 @@ jobs:
       dotnet_version: 8.0.101
       solution_file_path: source/dotnet/Wholesale.sln
 
-  dotnet_ci_test_integrationtests_functionapp:
+  dotnet_ci_test_integrationtests_orchestration:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v12
     with:
       dotnet_version: 8.0.101
-      tests_dll_file_path: \source\dotnet\wholesale-api\FunctionApp.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.FunctionApp.IntegrationTests.dll
+      tests_dll_file_path: \source\dotnet\wholesale-api\Orchestration.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Orchestration.IntegrationTests.dll
       download_attempt_limit: 20
       use_azure_functions_tools: true
       environment: AzureAuth
