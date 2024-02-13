@@ -92,3 +92,14 @@ variable "ip_restrictions" {
   description = "A list of IP restrictions defining allowed access to domain services. Each entry should include an 'ip_address' representing the allowed IP, a 'name' for identification, and an optional 'priority' for rule order. Defaults to `[]`."
   default     = []
 }
+
+variable "cvr_username" {
+  type        = string
+  description = "Username for CVR register"
+}
+
+variable "cvr_password" {
+  type        = string
+  description = "Password for CVR register"
+}
+

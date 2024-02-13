@@ -35,3 +35,11 @@ module "kvs_sendgrid_bcc_email" {
   value        = var.sendgrid_bcc_email
   key_vault_id = module.kv_internal.id
 }
+
+module "kvs_cvr_password" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
+
+  name         = "cvr-password"
+  value        = var.cvr_password
+  key_vault_id = module.kv_internal.id
+}

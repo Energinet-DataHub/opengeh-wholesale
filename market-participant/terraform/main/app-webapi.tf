@@ -34,6 +34,8 @@ module "app_webapi" {
     TOKEN_KEY_VAULT                            = module.kv_internal.vault_uri
     TOKEN_KEY_NAME                             = azurerm_key_vault_key.token_sign.name
     CERTIFICATES_KEY_VAULT                     = module.kv_dh2_certificates.vault_uri
+    CVR_USERNAME                               = var.cvr_username
+    CVR_PASSWORD                               = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_cvr_password.name})"
   }
 }
 

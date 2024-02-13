@@ -10,3 +10,4 @@ ip_restrictions=[{
 developer_ad_group_name="SEC-A-GreenForce-DevelopmentTeamAzure"
 sendgrid_from_email="no-reply@datahub.dk"
 sendgrid_bcc_email="webformlog@energinet.dk"
+cvr_username="energinet.dk_CVR_I_SKYEN"
