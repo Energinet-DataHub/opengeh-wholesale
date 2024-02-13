@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Orchestration\Orchestration.csproj" />
+    <ProjectReference Include="..\Test.Core\Test.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

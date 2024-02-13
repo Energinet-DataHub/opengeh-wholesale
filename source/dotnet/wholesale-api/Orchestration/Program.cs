@@ -33,6 +33,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NodaTime;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
@@ -59,6 +60,10 @@ var host = new HostBuilder()
                 name: HealthCheckNames.CalculationDatabaseContext)
             .AddDatabricksJobsApiHealthCheck(
                 name: HealthCheckNames.DatabricksJobsApi);
+
+        // Common
+        // => NodaTime
+        services.AddSingleton<IClock>(_ => SystemClock.Instance);
 
         // Calculation
         // => Database
