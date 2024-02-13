@@ -28,7 +28,7 @@ from tests.calculation.dataframe_defaults import DataframeDefaults
 from package.calculation.wholesale.schemas.charges_schema import (
     charges_schema,
     charges_master_data_schema,
-    metering_point_charge_links_schema,
+    charge_link_metering_points_schema,
     charge_prices_schema,
 )
 from package.calculation_input.schemas import (
@@ -169,7 +169,7 @@ def charge_links_factory(spark: SparkSession) -> Callable[..., DataFrame]:
             }
         ]
 
-        return spark.createDataFrame(data, schema=metering_point_charge_links_schema)
+        return spark.createDataFrame(data, schema=charge_link_metering_points_schema)
 
     return factory
 

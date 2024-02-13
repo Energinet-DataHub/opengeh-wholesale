@@ -85,7 +85,7 @@ def _execute(
         )
 
         metering_point_charges_links = (
-            prepared_data_reader.get_metering_point_charge_links(
+            prepared_data_reader.get_charge_link_metering_points(
                 args.calculation_period_start_datetime,
                 args.calculation_period_end_datetime,
                 metering_points_periods_for_wholesale_calculation_df,

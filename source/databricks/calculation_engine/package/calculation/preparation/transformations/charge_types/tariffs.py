@@ -24,15 +24,15 @@ from package.constants import Colname
 def get_tariff_charges(
     metering_point_time_series: DataFrame,
     charges: DataFrame,
-    metering_point_charge_links: DataFrame,
+    charge_link_metering_points: DataFrame,
     resolution: ChargeResolution,
 ) -> DataFrame:
     tariffs = charges.filter(
         f.col(Colname.charge_type) == ChargeType.TARIFF.value
     ).filter(f.col(Colname.resolution) == resolution.value)
 
-    tariffs = _join_with_metering_point_charge_links(
-        tariffs, metering_point_charge_links
+    tariffs = _join_with_charge_link_metering_points(
+        tariffs, charge_link_metering_points
     )
 
     # group by time series on metering point id and resolution and sum quantity
@@ -52,17 +52,17 @@ def get_tariff_charges(
     return tariffs
 
 
-def _join_with_metering_point_charge_links(
-    tariffs: DataFrame, metering_point_charge_links: DataFrame
+def _join_with_charge_link_metering_points(
+    tariffs: DataFrame, charge_link_metering_points: DataFrame
 ) -> DataFrame:
     df = tariffs.join(
-        metering_point_charge_links,
+        charge_link_metering_points,
         [
             tariffs[Colname.charge_key]
-            == metering_point_charge_links[Colname.charge_key],
+            == charge_link_metering_points[Colname.charge_key],
             tariffs[Colname.charge_time]
-            >= metering_point_charge_links[Colname.from_date],
-            tariffs[Colname.charge_time] < metering_point_charge_links[Colname.to_date],
+            >= charge_link_metering_points[Colname.from_date],
+            tariffs[Colname.charge_time] < charge_link_metering_points[Colname.to_date],
         ],
         "inner",
     ).select(
@@ -74,11 +74,11 @@ def _join_with_metering_point_charge_links(
         tariffs[Colname.resolution],
         tariffs[Colname.charge_time],
         tariffs[Colname.charge_price],
-        metering_point_charge_links[Colname.metering_point_id],
-        metering_point_charge_links[Colname.metering_point_type],
-        metering_point_charge_links[Colname.settlement_method],
-        metering_point_charge_links[Colname.grid_area],
-        metering_point_charge_links[Colname.energy_supplier_id],
+        charge_link_metering_points[Colname.metering_point_id],
+        charge_link_metering_points[Colname.metering_point_type],
+        charge_link_metering_points[Colname.settlement_method],
+        charge_link_metering_points[Colname.grid_area],
+        charge_link_metering_points[Colname.energy_supplier_id],
     )
     return df
 

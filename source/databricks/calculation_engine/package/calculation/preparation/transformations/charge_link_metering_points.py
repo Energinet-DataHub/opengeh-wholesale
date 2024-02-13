@@ -17,7 +17,7 @@ from pyspark.sql import DataFrame
 from package.constants import Colname
 
 
-def get_metering_point_charge_links(
+def get_charge_link_metering_points(
     charge_links: DataFrame,
     metering_points: DataFrame,
 ) -> DataFrame:

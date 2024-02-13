@@ -55,7 +55,7 @@ class PreparedDataReader:
             self._table_reader, period_start_datetime, period_end_datetime
         )
 
-    def get_metering_point_charge_links(
+    def get_charge_link_metering_points(
         self,
         period_start_datetime: datetime,
         period_end_datetime: datetime,
@@ -64,7 +64,7 @@ class PreparedDataReader:
         charge_links = T.read_charge_links(
             self._table_reader, period_start_datetime, period_end_datetime
         )
-        return T.get_metering_point_charge_links(
+        return T.get_charge_link_metering_points(
             charge_links, metering_point_periods_df
         )
 

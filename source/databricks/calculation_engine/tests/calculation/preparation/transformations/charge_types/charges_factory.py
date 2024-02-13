@@ -127,7 +127,7 @@ def create_tariff_charges_row(
     return Row(**row)
 
 
-def create_metering_point_charge_links_row(
+def create_charge_link_metering_points_row(
     charge_type: e.ChargeType = DefaultValues.DEFAULT_CHARGE_TYPE,
     charge_code: str = DefaultValues.DEFAULT_CHARGE_CODE,
     charge_owner: str = DefaultValues.DEFAULT_CHARGE_OWNER,
