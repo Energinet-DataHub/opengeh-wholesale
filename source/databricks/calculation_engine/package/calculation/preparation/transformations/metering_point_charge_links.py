@@ -21,7 +21,7 @@ def get_metering_point_charge_links(
     charge_links: DataFrame,
     metering_points: DataFrame,
 ) -> DataFrame:
-    df = charge_links.join(
+    charge_link_metering_points = charge_links.join(
         metering_points,
         [
             charge_links[Colname.metering_point_id]
@@ -31,9 +31,11 @@ def get_metering_point_charge_links(
     ).select(
         charge_links[Colname.charge_key],
         charge_links[Colname.metering_point_id],
+        charge_links[Colname.from_date],
+        charge_links[Colname.to_date],
         metering_points[Colname.metering_point_type],
         metering_points[Colname.settlement_method],
         metering_points[Colname.grid_area],
         metering_points[Colname.energy_supplier_id],
     )
-    return df
+    return charge_link_metering_points

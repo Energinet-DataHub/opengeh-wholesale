@@ -43,11 +43,25 @@ def read_charge_links(
     period_start_datetime: datetime,
     period_end_datetime: datetime,
 ) -> DataFrame:
-    charge_links = _get_charge_links(
-        table_reader, period_start_datetime, period_end_datetime
+    charge_links_df = (
+        table_reader.read_charge_links_periods()
+        .where(col(Colname.from_date) < period_end_datetime)
+        .where(
+            col(Colname.to_date).isNull()
+            | (col(Colname.to_date) > period_start_datetime)
+        )
     )
 
-    return charge_links
+    charge_links_df = clamp_period(
+        charge_links_df,
+        period_start_datetime,
+        period_end_datetime,
+        Colname.from_date,
+        Colname.to_date,
+    )
+    charge_links_df = _add_charge_key_column(charge_links_df)
+
+    return charge_links_df
 
 
 def _get_charge_master_data(
@@ -72,32 +86,6 @@ def _get_charge_master_data(
     )
     charge_master_data_df = _add_charge_key_column(charge_master_data_df)
     return charge_master_data_df
-
-
-def _get_charge_links(
-    table_reader: TableReader,
-    period_start_datetime: datetime,
-    period_end_datetime: datetime,
-) -> DataFrame:
-    charge_links_df = (
-        table_reader.read_charge_links_periods()
-        .where(col(Colname.from_date) < period_end_datetime)
-        .where(
-            col(Colname.to_date).isNull()
-            | (col(Colname.to_date) > period_start_datetime)
-        )
-    )
-
-    charge_links_df = clamp_period(
-        charge_links_df,
-        period_start_datetime,
-        period_end_datetime,
-        Colname.from_date,
-        Colname.to_date,
-    )
-    charge_links_df = _add_charge_key_column(charge_links_df)
-
-    return charge_links_df
 
 
 def _get_charge_price_points(
