@@ -98,7 +98,7 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
             .First(x => x.CalculationId == Guid.Parse(row[EnergyResultColumnNames.CalculationId]!));
     }
 
-    private bool DifferentCalculationId(DatabricksSqlRow row, DatabricksSqlRow otherRow)
+    private static bool DifferentCalculationId(DatabricksSqlRow row, DatabricksSqlRow otherRow)
     {
         return row[EnergyResultColumnNames.CalculationId] != otherRow[EnergyResultColumnNames.CalculationId];
     }
