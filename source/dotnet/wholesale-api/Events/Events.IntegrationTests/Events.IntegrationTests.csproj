@@ -4,8 +4,6 @@
     <RootNamespace>Energinet.DataHub.Wholesale.Events.IntegrationTests</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Energinet.DataHub.Core.FunctionApp.TestCommon" Version="4.5.0" />
-    <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="4.5.0" />
     <PackageReference Include="FluentAssertions" Version="6.12.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Version="8.0.0" />
