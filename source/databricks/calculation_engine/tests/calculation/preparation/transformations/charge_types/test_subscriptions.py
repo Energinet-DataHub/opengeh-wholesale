@@ -19,15 +19,12 @@ from pyspark.sql import SparkSession
 from package.calculation.preparation.transformations import (
     get_subscription_charges,
 )
-import package.codelists as e
-from package.calculation_input.schemas import (
-    metering_point_period_schema,
-)
 from package.calculation.wholesale.schemas.charges_schema import (
     charges_schema,
     charge_link_metering_points_schema,
 )
 from package.constants import Colname
+import package.codelists as e
 
 import tests.calculation.preparation.transformations.charge_types.charges_factory as factory
 
@@ -85,8 +82,10 @@ def test__get_subscription_charges__split_into_days_between_from_and_to_date(
     expected_day_count: int,
 ) -> None:
     # Arrange
-    metering_point_rows = [
-        factory.create_metering_point_row(from_date=from_date, to_date=to_date)
+    charge_link_metering_points_rows = [
+        factory.create_charge_link_metering_points_row(
+            charge_type=e.ChargeType.SUBSCRIPTION, from_date=from_date, to_date=to_date
+        ),
     ]
     charges_rows = [
         factory.create_subscription_or_fee_charges_row(
@@ -97,13 +96,13 @@ def test__get_subscription_charges__split_into_days_between_from_and_to_date(
         ),
     ]
 
-    metering_point = spark.createDataFrame(
-        metering_point_rows, metering_point_period_schema
+    charge_link_metering_points = spark.createDataFrame(
+        charge_link_metering_points_rows, charge_link_metering_points_schema
     )
     charges = spark.createDataFrame(charges_rows, charges_schema)
 
     # Act
-    actual_subscription = get_subscription_charges(charges, metering_point)
+    actual_subscription = get_subscription_charges(charges, charge_link_metering_points)
 
     # Assert
     assert actual_subscription.count() == expected_day_count
