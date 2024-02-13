@@ -24,6 +24,5 @@ public static class HealthCheckNames
     public const string CalculationDatabaseContext = "CalculationDatabaseContextHealthCheck";
     public const string RegisterCompletedCalculationsTrigger = nameof(RegisterCompletedCalculationsTrigger);
     public const string UpdateCalculationExecutionStateTrigger = nameof(UpdateCalculationExecutionStateTrigger);
-    public const string StartCalculationTrigger = nameof(StartCalculationTrigger);
     public const string DataLake = "DataLakeHealthCheck";
 }
