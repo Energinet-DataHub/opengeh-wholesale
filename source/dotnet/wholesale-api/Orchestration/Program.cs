@@ -12,22 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Configuration;
 using System.Reflection;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.Common.Reflection;
 using Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection;
+using Energinet.DataHub.Wholesale.Calculations.Application;
+using Energinet.DataHub.Wholesale.Calculations.Application.UseCases;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Calculations;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
-    .ConfigureServices(services =>
+    .ConfigureServices((context, services) =>
     {
         // Application Insights (Telemetry)
-        //  - Telemetry initializers only add information to logs emitted by the isolated worker; not the function host.
+        // => Telemetry initializers only adds information to logs emitted by the isolated worker; not the function host.
         services.AddSingleton<ITelemetryInitializer>(new SubsystemInitializer(TelemetryConstants.SubsystemName));
         services.AddApplicationInsightsTelemetryWorkerService(options =>
         {
@@ -43,6 +54,36 @@ var host = new HostBuilder()
         services.AddScoped<IHealthCheckEndpointHandler, HealthCheckEndpointHandler>();
         services.AddHealthChecks()
             .AddLiveCheck();
+
+        // Calculation
+        // => Database
+        var connectionStringOptions = context.Configuration
+            .GetSection(ConnectionStringsOptions.ConnectionStrings)
+            .Get<ConnectionStringsOptions>();
+        services.AddScoped<IDatabaseContext, DatabaseContext>();
+        services.AddDbContext<DatabaseContext>(
+            options => options.UseSqlServer(
+                connectionStringOptions!.DB_CONNECTION_STRING,
+                o =>
+                {
+                    o.UseNodaTime();
+                    o.EnableRetryOnFailure();
+                }));
+
+        services.AddScoped<ICalculationRepository, CalculationRepository>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        // => Databricks
+        services.AddDatabricksJobs(context.Configuration);
+        services.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
+        services.AddScoped<ICalculationParametersFactory, DatabricksCalculationParametersFactory>();
+        services.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
+
+        // => Clients
+        services.AddScoped<ICalculationInfrastructureService, CalculationInfrastructureService>();
+
+        // => Handlers
+        services.AddScoped<IStartCalculationHandler, StartCalculationHandler>();
     })
     .Build();
 

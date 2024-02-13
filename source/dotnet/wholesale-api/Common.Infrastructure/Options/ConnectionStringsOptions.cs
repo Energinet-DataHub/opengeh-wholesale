@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
+namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 
 public class ConnectionStringsOptions
 {
