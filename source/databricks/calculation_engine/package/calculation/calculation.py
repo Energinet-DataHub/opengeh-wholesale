@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import Tuple
+
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 
@@ -106,7 +108,7 @@ def _execute(
         )
 
     # Add basis data results
-    master_basis_data_df, timeseries_hour_df, timeseries_quarter_df = get_basis_data(
+    master_basis_data_df, timeseries_hour_df, timeseries_quarter_df = _get_basis_data(
         args, metering_point_periods_df, metering_point_time_series
     )
     results.basis_data.timeseries_quarter_df = timeseries_quarter_df
@@ -116,11 +118,11 @@ def _execute(
     return results
 
 
-def get_basis_data(
+def _get_basis_data(
     args: CalculatorArgs,
     metering_point_periods_df: DataFrame,
     metering_point_time_series_df: DataFrame,
-) -> (DataFrame, DataFrame, DataFrame):
+) -> Tuple[DataFrame, DataFrame, DataFrame]:
     (
         timeseries_quarter_df,
         timeseries_hour_df,
