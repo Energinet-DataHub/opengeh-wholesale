@@ -62,7 +62,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
         [SubsystemFact]
         public void When_ExpectedTelemetryEvents()
         {
-            // From 'StartCalculationHandler' (handled in default http request pipeline)
+            // From 'StartCalculationHandler' (handled in Timer Trigger request pipeline within Orchestration host)
             Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new AppTraceMatch
             {
                 AppVersionContains = "PR:",
@@ -84,7 +84,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
         {
             var query = $@"
                 AppTraces
-                | where AppRoleName contains ""app-webapi-wholsal-""
+                | where AppRoleName contains ""-wholsal-""
                 | where Message contains ""{Fixture.ScenarioState.CalculationId}""
                 | extend parsedProp = parse_json(Properties)
                 | project TimeGenerated, OperationId, ParentId, Type, AppVersion, Subsystem=parsedProp.Subsystem, EventName=parsedProp.EventName, Message

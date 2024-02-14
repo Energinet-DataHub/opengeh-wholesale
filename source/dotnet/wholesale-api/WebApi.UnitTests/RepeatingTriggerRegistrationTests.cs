@@ -26,7 +26,6 @@ public class RepeatingTriggerRegistrationTests
 {
     [Theory]
     [InlineAutoData(typeof(RegisterCompletedCalculationsTrigger))]
-    [InlineAutoData(typeof(StartCalculationTrigger))]
     [InlineAutoData(typeof(UpdateCalculationExecutionStateTrigger))]
     public void Repeating_Trigger_Is_Registered_In_Ioc(Type type, ServiceBusOptions options, ServiceCollection serviceCollection)
     {
