@@ -62,7 +62,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
         [SubsystemFact]
         public void When_ExpectedTelemetryEvents()
         {
-            // From 'StartCalculationHandler' (handled in default http request pipeline)
+            // From 'StartCalculationHandler' (handled in Timer Trigger request pipeline within Orchestration host)
             Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new AppTraceMatch
             {
                 AppVersionContains = "PR:",
