@@ -37,6 +37,7 @@ public sealed class WholesaleResultBuilder
     private CalculationType _calculationType = CalculationType.WholesaleFixing;
     private AmountType _amountType = AmountType.AmountPerCharge;
     private Resolution _resolution = Resolution.Hour;
+    private long _version = 1;
 
     public WholesaleResultBuilder WithCalculationType(CalculationType calculationType)
     {
@@ -81,6 +82,7 @@ public sealed class WholesaleResultBuilder
             _resolution,
             MeteringPointType.Production,
             null,
-            _wholesaleTimeSeriesPoint);
+            _wholesaleTimeSeriesPoint,
+            _version);
     }
 }
