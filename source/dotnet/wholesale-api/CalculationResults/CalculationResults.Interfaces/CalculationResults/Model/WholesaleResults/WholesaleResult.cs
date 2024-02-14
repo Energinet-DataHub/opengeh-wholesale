@@ -96,5 +96,5 @@ public sealed class WholesaleResult
 
     public IReadOnlyCollection<WholesaleTimeSeriesPoint> TimeSeriesPoints { get; }
 
-    public long Version { get; set; }
+    public long Version { get; }
 }
