@@ -120,7 +120,7 @@ def get_basis_data(
     args: CalculatorArgs,
     metering_point_periods_df: DataFrame,
     metering_point_time_series_df: DataFrame,
-):
+) -> (DataFrame, DataFrame, DataFrame):
     (
         timeseries_quarter_df,
         timeseries_hour_df,
