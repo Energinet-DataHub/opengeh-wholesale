@@ -30,6 +30,7 @@ from .output.basis_data import write_basis_data
 from .output.energy_results import write_energy_results
 from .output.wholesale_results import write_wholesale_results
 from .preparation import PreparedDataReader
+from .preparation.transformations.basis_data_transformator import BasisDataTransformator
 from .wholesale import wholesale_calculation
 
 
@@ -104,9 +105,11 @@ def _execute(
             args.calculation_period_start_datetime,
         )
 
-    # Add basis data results
-    results.basis_data.metering_point_periods = metering_point_periods_df
-    results.basis_data.metering_point_time_series = metering_point_time_series
+    # Add basis data to results
+    basis_data_transformator = BasisDataTransformator()
+    results.basis_data = basis_data_transformator.transform(
+        metering_point_periods_df, metering_point_time_series, args.time_zone
+    )
 
     return results
 

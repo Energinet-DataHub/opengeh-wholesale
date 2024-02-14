@@ -13,11 +13,9 @@
 # limitations under the License.
 
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col
 
-import package.calculation.preparation.transformations.basis_data as basis_data
-from package.codelists import AggregationLevel, BasisDataType
-from package.constants import PartitionKeyName, BasisDataColname
+from package.codelists import BasisDataType
+from package.constants import PartitionKeyName
 from package.infrastructure import paths, logging_configuration
 
 
@@ -28,106 +26,7 @@ class BasisDataWriter:
         self.__time_series_hour_path = f"{container_path}/{paths.get_basis_data_root_path(BasisDataType.TIME_SERIES_HOUR, calculation_id)}"
         self.calculation_id = calculation_id
 
-    @logging_configuration.use_span("calculation.basis_data")
-    def write(
-        self,
-        metering_points_periods_df: DataFrame,
-        metering_point_time_series: DataFrame,
-        time_zone: str,
-    ) -> None:
-        with logging_configuration.start_span("prepare"):
-            (
-                timeseries_quarter_df,
-                timeseries_hour_df,
-            ) = basis_data.get_metering_point_time_series_basis_data_dfs(
-                metering_point_time_series, time_zone
-            )
-
-        master_basis_data_df = basis_data.get_master_basis_data_df(
-            metering_points_periods_df
-        )
-
-        self._write(master_basis_data_df, timeseries_quarter_df, timeseries_hour_df)
-
-    def _write(
-        self,
-        master_basis_data_df: DataFrame,
-        timeseries_quarter_df: DataFrame,
-        timeseries_hour_df: DataFrame,
-    ) -> None:
-        self._write_ga_basis_data(
-            master_basis_data_df,
-            timeseries_quarter_df,
-            timeseries_hour_df,
-        )
-
-        self._write_es_basis_data(
-            master_basis_data_df,
-            timeseries_quarter_df,
-            timeseries_hour_df,
-        )
-
-    @logging_configuration.use_span("per_grid_area")
-    def _write_ga_basis_data(
-        self,
-        master_basis_data_df: DataFrame,
-        timeseries_quarter_df: DataFrame,
-        timeseries_hour_df: DataFrame,
-    ) -> None:
-        grouping_folder_name = f"grouping={AggregationLevel.TOTAL_GA.value}"
-
-        partition_keys = [PartitionKeyName.GRID_AREA]
-        timeseries_quarter_df = timeseries_quarter_df.drop(
-            BasisDataColname.energy_supplier_id
-        ).withColumnRenamed(BasisDataColname.grid_area, PartitionKeyName.GRID_AREA)
-        timeseries_hour_df = timeseries_hour_df.drop(
-            BasisDataColname.energy_supplier_id
-        ).withColumnRenamed(BasisDataColname.grid_area, PartitionKeyName.GRID_AREA)
-        master_basis_data_df = master_basis_data_df.withColumn(
-            PartitionKeyName.GRID_AREA, col(BasisDataColname.grid_area)
-        )
-
-        self._write_basis_data_to_csv(
-            master_basis_data_df,
-            timeseries_quarter_df,
-            timeseries_hour_df,
-            grouping_folder_name,
-            partition_keys,
-        )
-
-    @logging_configuration.use_span("per_energy_supplier")
-    def _write_es_basis_data(
-        self,
-        master_basis_data_df: DataFrame,
-        timeseries_quarter_df: DataFrame,
-        timeseries_hour_df: DataFrame,
-    ) -> None:
-        grouping_folder_name = f"grouping={AggregationLevel.ES_PER_GA.value}"
-
-        partition_keys = [
-            PartitionKeyName.GRID_AREA,
-            PartitionKeyName.ENERGY_SUPPLIER_GLN,
-        ]
-
-        timeseries_quarter_df = timeseries_quarter_df.withColumnRenamed(
-            BasisDataColname.energy_supplier_id, PartitionKeyName.ENERGY_SUPPLIER_GLN
-        ).withColumnRenamed(BasisDataColname.grid_area, PartitionKeyName.GRID_AREA)
-        timeseries_hour_df = timeseries_hour_df.withColumnRenamed(
-            BasisDataColname.energy_supplier_id, PartitionKeyName.ENERGY_SUPPLIER_GLN
-        ).withColumnRenamed(BasisDataColname.grid_area, PartitionKeyName.GRID_AREA)
-        master_basis_data_df = master_basis_data_df.withColumnRenamed(
-            BasisDataColname.energy_supplier_id, PartitionKeyName.ENERGY_SUPPLIER_GLN
-        ).withColumn(PartitionKeyName.GRID_AREA, col(BasisDataColname.grid_area))
-
-        self._write_basis_data_to_csv(
-            master_basis_data_df,
-            timeseries_quarter_df,
-            timeseries_hour_df,
-            grouping_folder_name,
-            partition_keys,
-        )
-
-    def _write_basis_data_to_csv(
+    def write_basis_data_to_csv(
         self,
         master_basis_data_df: DataFrame,
         timeseries_quarter_df: DataFrame,

@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from dataclasses import dataclass
-from pyspark.sql import DataFrame
 from typing import cast
+
+from pyspark.sql import DataFrame
 
 from package.calculation.energy.energy_results import EnergyResults
 
@@ -57,8 +58,12 @@ class WholesaleResultsContainer:
 
 @dataclass
 class BasisDataContainer:
-    metering_point_periods: DataFrame | None = None
-    metering_point_time_series: DataFrame | None = None
+    master_basis_data_for_es_per_ga: DataFrame | None = None
+    master_basis_data_for_total_ga: DataFrame | None = None
+    time_series_quarter_basis_data_for_total_ga: DataFrame | None = None
+    time_series_quarter_basis_data_for_es_per_ga: DataFrame | None = None
+    time_series_hour_basis_data: DataFrame | None = None
+    time_series_hour_basis_data_for_es_per_ga: DataFrame | None = None
 
 
 @dataclass

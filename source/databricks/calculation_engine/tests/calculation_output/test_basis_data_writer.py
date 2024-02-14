@@ -17,8 +17,10 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Any, Callable
 
-from package.infrastructure import paths
 import pytest
+from pyspark.sql import DataFrame, SparkSession
+
+from package.calculation_output.basis_data_writer import BasisDataWriter
 from package.codelists import (
     BasisDataType,
     MeteringPointResolution,
@@ -27,8 +29,7 @@ from package.codelists import (
     QuantityQuality,
 )
 from package.constants import Colname
-from package.calculation_output.basis_data_writer import BasisDataWriter
-from pyspark.sql import DataFrame, SparkSession
+from package.infrastructure import paths
 from tests.helpers.assert_calculation_file_path import (
     CalculationFileType,
     assert_file_path_match_contract,
@@ -179,7 +180,7 @@ def test__write__writes_to_paths_that_match_contract(
     sut = BasisDataWriter(str(tmpdir), DEFAULT_CALCULATION_ID)
 
     # Act
-    sut.write(metering_point_period_df, metering_point_time_series, TIME_ZONE)
+    sut.write_basis_data_to_csv(metering_point_period_df, metering_point_time_series, TIME_ZONE)
 
     # Assert
     for file_type in _get_all_basis_data_file_types():

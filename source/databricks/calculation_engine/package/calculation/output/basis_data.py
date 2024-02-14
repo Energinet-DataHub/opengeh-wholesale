@@ -14,14 +14,47 @@
 from package.calculation.CalculationResults import BasisDataContainer
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation_output.basis_data_writer import BasisDataWriter
+from package.codelists import AggregationLevel
+from package.constants import PartitionKeyName
+from package.infrastructure import logging_configuration
 
 
+@logging_configuration.use_span("calculation.basis_data")
 def write_basis_data(args: CalculatorArgs, basis_data: BasisDataContainer) -> None:
     basis_data_writer = BasisDataWriter(
         args.wholesale_container_path, args.calculation_id
     )
-    basis_data_writer.write(
-        basis_data.metering_point_periods,
-        basis_data.metering_point_time_series,
-        args.time_zone,
-    )
+
+    write_ga_basis_data_to_csv(basis_data, basis_data_writer)
+    write_es_basis_data_to_csv(basis_data, basis_data_writer)
+
+
+def write_ga_basis_data_to_csv(basis_data, basis_data_writer):
+    grouping_folder_name = f"grouping={AggregationLevel.TOTAL_GA.value}"
+    partition_keys = [PartitionKeyName.GRID_AREA]
+
+    with logging_configuration.use_span("per_grid_area"):
+        basis_data_writer.write_basis_data_to_csv(
+            basis_data.master_basis_data_for_total_ga,
+            basis_data.time_series_quarter_basis_data_for_total_ga,
+            basis_data.time_series_hour_basis_data,
+            grouping_folder_name,
+            partition_keys,
+        )
+
+
+def write_es_basis_data_to_csv(basis_data, basis_data_writer):
+    grouping_folder_name = f"grouping={AggregationLevel.ES_PER_GA.value}"
+    partition_keys = [
+        PartitionKeyName.GRID_AREA,
+        PartitionKeyName.ENERGY_SUPPLIER_GLN,
+    ]
+
+    with logging_configuration.use_span("per_energy_supplier"):
+        basis_data_writer.write_basis_data_to_csv(
+            basis_data.master_basis_data_for_es_per_ga,
+            basis_data.time_series_quarter_basis_data_for_es_per_ga,
+            basis_data.time_series_hour_basis_data_for_es_per_ga,
+            grouping_folder_name,
+            partition_keys,
+        )
