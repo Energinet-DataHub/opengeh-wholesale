@@ -4,6 +4,6 @@ databricks_vnet_address_space                      = "10.142.100.0/22"
 databricks_private_subnet_address_prefix           = "10.142.100.0/24"
 databricks_public_subnet_address_prefix            = "10.142.101.0/24"
 databricks_private_endpoints_subnet_address_prefix = "10.142.102.0/24"
-datahub2_ip_whitelist                              = "86.106.96.1,81.7.132.35"
+datahub2_ip_whitelist                              = "86.106.96.1,81.7.132.35,81.7.165.14"
 datahub2_migration_url                             = "https://b2b.te7.datahub.dk/dh3"
 feature_flag_datahub2_healthcheck                  = true
