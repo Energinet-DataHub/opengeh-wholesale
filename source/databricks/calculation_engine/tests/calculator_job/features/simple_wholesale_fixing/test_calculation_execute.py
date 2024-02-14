@@ -30,8 +30,11 @@ class TestBusinessLogic:
     ):
         """
         Period_Start                               Period_Start
-         2019-12-31                                 2020-01-02
+         2019-12-31            2020-01-01           2020-01-02
              |---------------------|---------------------|
+        MPP1 (E18)                 |---------------------|
+        MPP2 (E17)                 |---------------------|
+        TSP                        x
         """
         # Arrange
         args.calculation_grid_areas = ["805"]
@@ -50,4 +53,5 @@ class TestBusinessLogic:
         actual = calculation_execute(args, prepared_data_reader)
 
         # Assert
-        actual.basis_data.metering_point_time_series.count = 2
+        assert actual.basis_data.metering_point_time_series.count() == 48
+        assert actual.basis_data.metering_point_periods.count() == 2

@@ -19,7 +19,7 @@ import pytest
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import when, col
 
-import calculation_input.factories.input_metering_point_periods_factory as factory
+import calculation_input.factories.raw_metering_point_periods_factory as factory
 from package import calculation_input
 from package.calculation.preparation.transformations import (
     get_metering_point_periods_df,

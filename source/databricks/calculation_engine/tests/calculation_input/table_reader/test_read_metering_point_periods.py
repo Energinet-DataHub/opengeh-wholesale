@@ -14,15 +14,16 @@
 
 import pathlib
 from unittest import mock
+
+import pyspark.sql.functions as f
 import pytest
 from pyspark.sql import SparkSession
-import pyspark.sql.functions as f
 
-from package.calculation_input.table_reader import TableReader
+import calculation_input.factories.raw_metering_point_periods_factory as factory
 from package.calculation_input.schemas import metering_point_period_schema
-import calculation_input.factories.input_metering_point_periods_factory as factory
-from tests.helpers.delta_table_utils import write_dataframe_to_table
+from package.calculation_input.table_reader import TableReader
 from tests.helpers.data_frame_utils import assert_dataframes_equal
+from tests.helpers.delta_table_utils import write_dataframe_to_table
 
 
 class TestWhenValidInput:
