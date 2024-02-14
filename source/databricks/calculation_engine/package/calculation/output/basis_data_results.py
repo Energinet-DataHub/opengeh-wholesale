@@ -30,7 +30,7 @@ def write_basis_data(args: CalculatorArgs, basis_data: BasisDataContainer) -> No
 
 
 @logging_configuration.use_span("per_grid_area")
-def write_ga_basis_data_to_csv(basis_data, basis_data_writer):
+def write_ga_basis_data_to_csv(basis_data, basis_data_writer) -> None:
     grouping_folder_name = f"grouping={AggregationLevel.TOTAL_GA.value}"
     partition_keys = [PartitionKeyName.GRID_AREA]
 
@@ -44,7 +44,7 @@ def write_ga_basis_data_to_csv(basis_data, basis_data_writer):
 
 
 @logging_configuration.use_span("per_energy_supplier")
-def write_es_basis_data_to_csv(basis_data, basis_data_writer):
+def write_es_basis_data_to_csv(basis_data, basis_data_writer) -> None:
     grouping_folder_name = f"grouping={AggregationLevel.ES_PER_GA.value}"
     partition_keys = [
         PartitionKeyName.GRID_AREA,
