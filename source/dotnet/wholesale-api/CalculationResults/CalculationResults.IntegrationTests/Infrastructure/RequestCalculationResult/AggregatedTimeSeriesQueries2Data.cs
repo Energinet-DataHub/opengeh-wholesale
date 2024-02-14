@@ -72,7 +72,9 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infras
 1.2 Data points
 ───────────────
 
-  In addition to these elements, each metering data point contains additional information
+  The data points consists primarily of a quantity and time (for the purpose of this data set, aspects like quality is
+  ignored). In addition to these base elements—or base points—each metering data point is "corrected" a fixed number of
+  times
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    Id  Quantity        Time        Balance fixing  First correction  Second correction  Third correction
   ───────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -81,11 +83,13 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infras
     3  ThirdQuantity   ThirdHour   X                                 X                  X
     4  FourthQuantity  SecondDay   X                                                    X
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  which in the end results in generating up to four distinct data points for each data point in the diagram; e.g. for
+  `1' we have a balance fixing, first correction, second correction, and third correction point/element/row.
 
   The test data also contains aggregation data for `BalanceResponsibleAndGridArea', `EnergySupplierAndGridArea', and
-  `GridArea'. This data is derived directly from the points above, distributed as illustrated in the diagram with the
-  aggregation level `EnergySupplierAndBalanceResponsibleAndGridArea', as each data point—as seen—is bound to a grid
-  area, balance responsible, and energy supplier. The generation of aggregated data is generated as summarised below.
+  `GridArea'. This data is derived directly from the points above, which are all of the aggregation level
+  `EnergySupplierAndBalanceResponsibleAndGridArea', as each data point—as seen in the diagram—is bound to a grid area,
+  balance responsible, and energy supplier. The generation of aggregated data is generated as summarised below.
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    Aggregation level              Derivation
   ───────────────────────────────────────────────────────────────────
@@ -96,6 +100,17 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infras
   It is worth noticing that each generated aggregation is done for each calculation level too, i.e. balance fixing,
   first correction, second correction, and third correction.
 
+  ┌────
+  │ Consider the case of ~BalanceResponsibleAndGridArea~ for BR2 and GA1. For balance fixing aggregation, we have one
+  │ point at time ~SecondHour~ (from ES3), two for ~ThirdHour~ (one from ES2 and one from ES3), and one for ~SecondDay~
+  │ (from ES2). The aggregated points will thus be the points
+  │
+  │ { (SecondHour, SecondQuantity), (ThirdHour, ThirdQuantity x 2), (SecondDay, FourthQuantity) }
+  │
+  │ We repeat the process for the other calculation types and for instance for first correction we have
+  │
+  │ { (SecondQuantity, SecondQuantity) }
+  └────
 
 1.3 Calculations
 ────────────────
