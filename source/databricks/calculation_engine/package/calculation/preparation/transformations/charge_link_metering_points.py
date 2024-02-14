@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from pyspark.sql import DataFrame
+from pyspark.sql.functions import when
 
 from package.constants import Colname
 
@@ -31,7 +32,16 @@ def get_charge_link_metering_points(
     ).select(
         charge_links[Colname.charge_key],
         charge_links[Colname.metering_point_id],
-        charge_links[Colname.from_date],
+        when(
+            charge_links[Colname.from_date] > metering_points[Colname.from_date],
+            charge_links[Colname.from_date],
+        ).otherwise(metering_points[Colname.from_date]),
+        when(
+            charge_links[Colname.to_date] < metering_points[Colname.to_date],
+            charge_links[Colname.to_date],
+        )
+        .otherwise(metering_points[Colname.to_date])
+        .alias(Colname.from_date),
         charge_links[Colname.to_date],
         metering_points[Colname.metering_point_type],
         metering_points[Colname.settlement_method],
