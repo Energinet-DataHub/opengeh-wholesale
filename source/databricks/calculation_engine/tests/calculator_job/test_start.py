@@ -15,14 +15,13 @@ import argparse
 import sys
 import time
 import uuid
+import pytest
 from datetime import timedelta
 from typing import cast, Callable
-
-import pytest
 from azure.monitor.query import LogsQueryClient, LogsQueryResult
+
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculator_job import start, start_with_deps
-from package.calculator_job_args import parse_command_line_arguments
 
 from tests.integration_test_configuration import IntegrationTestConfiguration
 

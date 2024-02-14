@@ -11,17 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 
+import package.calculation.energy.aggregators.transformations as t
+from package.calculation.energy.energy_results import EnergyResults
+from package.calculation.preparation.grid_loss_responsible import GridLossResponsible
 from package.codelists import (
     MeteringPointType,
     QuantityQuality,
 )
-import pyspark.sql.functions as f
-import package.calculation.energy.aggregators.transformations as t
 from package.constants import Colname
-from package.calculation.energy.energy_results import EnergyResults
-from package.calculation.preparation.grid_loss_responsible import GridLossResponsible
 
 production_sum_quantity = "production_sum_quantity"
 exchange_sum_quantity = "exchange_sum_quantity"
@@ -111,6 +111,12 @@ def calculate_negative_grid_loss(
         grid_loss_responsible, MeteringPointType.PRODUCTION
     )
 
+    only_grid_area_and_metering_point_id = (
+        only_grid_area_and_metering_point_id.withColumnRenamed(
+            Colname.metering_point_id, "grid_loss_metering_point_id"
+        )
+    )
+
     result = grid_loss.df.join(
         only_grid_area_and_metering_point_id, Colname.grid_area, "left"
     ).select(
@@ -121,7 +127,11 @@ def calculate_negative_grid_loss(
         .alias(Colname.sum_quantity),
         f.lit(MeteringPointType.PRODUCTION.value).alias(Colname.metering_point_type),
         Colname.qualities,
-        only_grid_area_and_metering_point_id[Colname.metering_point_id],
+        only_grid_area_and_metering_point_id["grid_loss_metering_point_id"],
+    )
+
+    result = result.withColumnRenamed(
+        "grid_loss_metering_point_id", Colname.metering_point_id
     )
 
     return EnergyResults(result)
@@ -134,6 +144,12 @@ def calculate_positive_grid_loss(
         grid_loss_responsible, MeteringPointType.CONSUMPTION
     )
 
+    only_grid_area_and_metering_point_id = (
+        only_grid_area_and_metering_point_id.withColumnRenamed(
+            Colname.metering_point_id, "grid_loss_metering_point_id"
+        )
+    )
+
     result = grid_loss.df.join(
         only_grid_area_and_metering_point_id, Colname.grid_area, "left"
     ).select(
@@ -144,8 +160,13 @@ def calculate_positive_grid_loss(
         .alias(Colname.sum_quantity),
         f.lit(MeteringPointType.CONSUMPTION.value).alias(Colname.metering_point_type),
         Colname.qualities,
-        only_grid_area_and_metering_point_id[Colname.metering_point_id],
+        only_grid_area_and_metering_point_id["grid_loss_metering_point_id"],
     )
+
+    result = result.withColumnRenamed(
+        "grid_loss_metering_point_id", Colname.metering_point_id
+    )
+
     return EnergyResults(result)
 
 
