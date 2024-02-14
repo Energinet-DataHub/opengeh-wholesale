@@ -12,6 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .basis_data import write_basis_data
+from .basis_data_results import write_basis_data
 from .energy_results import write_energy_results
 from .wholesale_results import write_wholesale_results

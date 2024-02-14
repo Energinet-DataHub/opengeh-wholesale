@@ -29,20 +29,21 @@ def write_basis_data(args: CalculatorArgs, basis_data: BasisDataContainer) -> No
     write_es_basis_data_to_csv(basis_data, basis_data_writer)
 
 
+@logging_configuration.use_span("per_grid_area")
 def write_ga_basis_data_to_csv(basis_data, basis_data_writer):
     grouping_folder_name = f"grouping={AggregationLevel.TOTAL_GA.value}"
     partition_keys = [PartitionKeyName.GRID_AREA]
 
-    with logging_configuration.use_span("per_grid_area"):
-        basis_data_writer.write_basis_data_to_csv(
-            basis_data.master_basis_data_for_total_ga,
-            basis_data.time_series_quarter_basis_data_for_total_ga,
-            basis_data.time_series_hour_basis_data,
-            grouping_folder_name,
-            partition_keys,
-        )
+    basis_data_writer.write_basis_data_to_csv(
+        basis_data.master_basis_data_for_total_ga,
+        basis_data.time_series_quarter_basis_data_for_total_ga,
+        basis_data.time_series_hour_basis_data,
+        grouping_folder_name,
+        partition_keys,
+    )
 
 
+@logging_configuration.use_span("per_energy_supplier")
 def write_es_basis_data_to_csv(basis_data, basis_data_writer):
     grouping_folder_name = f"grouping={AggregationLevel.ES_PER_GA.value}"
     partition_keys = [
@@ -50,11 +51,10 @@ def write_es_basis_data_to_csv(basis_data, basis_data_writer):
         PartitionKeyName.ENERGY_SUPPLIER_GLN,
     ]
 
-    with logging_configuration.use_span("per_energy_supplier"):
-        basis_data_writer.write_basis_data_to_csv(
-            basis_data.master_basis_data_for_es_per_ga,
-            basis_data.time_series_quarter_basis_data_for_es_per_ga,
-            basis_data.time_series_hour_basis_data_for_es_per_ga,
-            grouping_folder_name,
-            partition_keys,
-        )
+    basis_data_writer.write_basis_data_to_csv(
+        basis_data.master_basis_data_for_es_per_ga,
+        basis_data.time_series_quarter_basis_data_for_es_per_ga,
+        basis_data.time_series_hour_basis_data_for_es_per_ga,
+        grouping_folder_name,
+        partition_keys,
+    )

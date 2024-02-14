@@ -42,58 +42,28 @@ class BasisDataTransformator:
                 metering_point_periods_df
             )
 
-            (master_basis_data_df, timeseries_quarter_df, timeseries_hour_df) = (
-                self._get_ga_basis_data(
-                    master_basis_data_df, timeseries_quarter_df, timeseries_hour_df
-                )
+            # Get basis data for energy suppliers
+            (mbd_df, tsq_df, tsh_df) = self._get_es_basis_data(
+                master_basis_data_df, timeseries_quarter_df, timeseries_hour_df
             )
 
-            basis_data_container.time_series_hour_basis_data_for_es_per_ga = (
-                timeseries_hour_df
-            )
-            basis_data_container.time_series_quarter_basis_data_for_es_per_ga = (
-                timeseries_quarter_df
-            )
-            basis_data_container.master_basis_data_for_es_per_ga = master_basis_data_df
+            basis_data_container.time_series_hour_basis_data_for_es_per_ga = tsh_df
+            basis_data_container.time_series_quarter_basis_data_for_es_per_ga = tsq_df
+            basis_data_container.master_basis_data_for_es_per_ga = mbd_df
 
-            (master_basis_data_df, timeseries_quarter_df, timeseries_hour_df) = (
-                self._get_es_basis_data(
-                    master_basis_data_df, timeseries_quarter_df, timeseries_hour_df
-                )
+            # Add basis data for total grid area
+            (mbd_df, tsq_df, tsh_df) = self._get_ga_basis_data(
+                master_basis_data_df, timeseries_quarter_df, timeseries_hour_df
             )
 
-            basis_data_container.time_series_hour_basis_data = timeseries_hour_df
-            basis_data_container.time_series_quarter_basis_data = timeseries_quarter_df
-            basis_data_container.master_basis_data = master_basis_data_df
+            basis_data_container.time_series_hour_basis_data = tsh_df
+            basis_data_container.time_series_quarter_basis_data_for_total_ga = tsq_df
+            basis_data_container.master_basis_data_for_total_ga = mbd_df
 
         return basis_data_container
 
-    def _get_ga_basis_data(
-        self,
-        master_basis_data_df: DataFrame,
-        timeseries_quarter_df: DataFrame,
-        timeseries_hour_df: DataFrame,
-    ) -> tuple[DataFrame, DataFrame, DataFrame]:
-        return self._get_ga_basis_data2(
-            master_basis_data_df,
-            timeseries_quarter_df,
-            timeseries_hour_df,
-        )
-
-    def _get_es_basis_data(
-        self,
-        master_basis_data_df: DataFrame,
-        timeseries_quarter_df: DataFrame,
-        timeseries_hour_df: DataFrame,
-    ) -> tuple[DataFrame, DataFrame, DataFrame]:
-        return self._get_es_basis_data2(
-            master_basis_data_df,
-            timeseries_quarter_df,
-            timeseries_hour_df,
-        )
-
     @logging_configuration.use_span("per_grid_area")
-    def _get_ga_basis_data2(
+    def _get_ga_basis_data(
         self,
         master_basis_data_df: DataFrame,
         timeseries_quarter_df: DataFrame,
@@ -116,7 +86,7 @@ class BasisDataTransformator:
         )
 
     @logging_configuration.use_span("per_energy_supplier")
-    def _get_es_basis_data2(
+    def _get_es_basis_data(
         self,
         master_basis_data_df: DataFrame,
         timeseries_quarter_df: DataFrame,
