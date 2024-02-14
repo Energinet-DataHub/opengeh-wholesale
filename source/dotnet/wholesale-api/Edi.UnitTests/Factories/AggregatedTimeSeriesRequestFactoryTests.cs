@@ -108,14 +108,17 @@ public class AggregatedTimeSeriesRequestFactoryTests
             gridAreaCode: gridAreaCode,
             energySupplier: energySupplier,
             balanceResponsible: balanceResponsibleId,
-            meteringPointType: string.Empty);
+            meteringPointType: string.Empty,
+            settlementMethod: string.Empty);
 
         // Act
         var actual = AggregatedTimeSeriesRequestFactory.Parse(request);
 
         // Assert
         using var assertionScope = new AssertionScope();
-        actual.TimeSeriesTypes.Should().BeEquivalentTo([TimeSeriesType.Production, TimeSeriesType.FlexConsumption]);
+        actual.TimeSeriesTypes.Should().BeEquivalentTo([
+            TimeSeriesType.Production, TimeSeriesType.FlexConsumption, TimeSeriesType.NonProfiledConsumption
+        ]);
 
         var aggregationLevel = actual.AggregationPerRoleAndGridArea;
         aggregationLevel.BalanceResponsibleId.Should().Be(balanceResponsibleId);
@@ -124,7 +127,8 @@ public class AggregatedTimeSeriesRequestFactoryTests
     }
 
     [Fact]
-    public void Parse_WhenMeteringPointTypeIsEmptyForEnergySupplierWithNonProfiledSettlementMethod_ExpectedParsing()
+    public void
+        Parse_WhenMeteringPointTypeIsEmptyForEnergySupplierWithNonProfiledSettlementMethod_IgnoreSettlementMethod()
     {
         // Arrange
         var balanceResponsibleId = "1234567891234";
@@ -142,7 +146,9 @@ public class AggregatedTimeSeriesRequestFactoryTests
 
         // Assert
         using var assertionScope = new AssertionScope();
-        actual.TimeSeriesTypes.Should().BeEquivalentTo([TimeSeriesType.Production, TimeSeriesType.NonProfiledConsumption]);
+        actual.TimeSeriesTypes.Should().BeEquivalentTo([
+            TimeSeriesType.Production, TimeSeriesType.NonProfiledConsumption, TimeSeriesType.FlexConsumption
+        ]);
 
         var aggregationLevel = actual.AggregationPerRoleAndGridArea;
         aggregationLevel.BalanceResponsibleId.Should().Be(balanceResponsibleId);
@@ -161,7 +167,8 @@ public class AggregatedTimeSeriesRequestFactoryTests
             gridAreaCode: gridAreaCode,
             energySupplier: energySupplier,
             balanceResponsible: balanceResponsibleId,
-            meteringPointType: string.Empty);
+            meteringPointType: string.Empty,
+            settlementMethod: string.Empty);
 
         request.RequestedByActorRole = ActorRoleCode.BalanceResponsibleParty;
 
@@ -170,7 +177,9 @@ public class AggregatedTimeSeriesRequestFactoryTests
 
         // Assert
         using var assertionScope = new AssertionScope();
-        actual.TimeSeriesTypes.Should().BeEquivalentTo([TimeSeriesType.Production, TimeSeriesType.FlexConsumption]);
+        actual.TimeSeriesTypes.Should().BeEquivalentTo([
+            TimeSeriesType.Production, TimeSeriesType.FlexConsumption, TimeSeriesType.NonProfiledConsumption
+        ]);
 
         var aggregationLevel = actual.AggregationPerRoleAndGridArea;
         aggregationLevel.BalanceResponsibleId.Should().Be(balanceResponsibleId);
@@ -189,7 +198,8 @@ public class AggregatedTimeSeriesRequestFactoryTests
             gridAreaCode: gridAreaCode,
             energySupplier: energySupplier,
             balanceResponsible: balanceResponsibleId,
-            meteringPointType: string.Empty);
+            meteringPointType: string.Empty,
+            settlementMethod: string.Empty);
 
         request.RequestedByActorRole = ActorRoleCode.MeteredDataResponsible;
 
@@ -203,6 +213,8 @@ public class AggregatedTimeSeriesRequestFactoryTests
             .BeEquivalentTo([
                 TimeSeriesType.Production,
                 TimeSeriesType.FlexConsumption,
+                TimeSeriesType.NonProfiledConsumption,
+                TimeSeriesType.TotalConsumption,
                 TimeSeriesType.NetExchangePerGa
             ]);
 

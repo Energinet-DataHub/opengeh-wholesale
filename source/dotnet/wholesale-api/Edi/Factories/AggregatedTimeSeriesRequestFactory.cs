@@ -19,7 +19,7 @@ using Period = Energinet.DataHub.Wholesale.EDI.Models.Period;
 
 namespace Energinet.DataHub.Wholesale.EDI.Factories;
 
-public class AggregatedTimeSeriesRequestFactory
+public static class AggregatedTimeSeriesRequestFactory
 {
     public static AggregatedTimeSeriesRequest Parse(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request)
     {
@@ -33,28 +33,41 @@ public class AggregatedTimeSeriesRequestFactory
     private static TimeSeriesType[] GetTimeSeriesTypes(
         Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request)
     {
-        return request.MeteringPointType != string.Empty
-            ? new[] { TimeSeriesTypeMapper.MapTimeSeriesType(request.MeteringPointType, request.SettlementMethod) }
-            : request.RequestedByActorRole switch
+        if (request.MeteringPointType == string.Empty)
+        {
+            return request.RequestedByActorRole switch
             {
                 ActorRoleCode.EnergySupplier =>
                 [
-                    TimeSeriesTypeMapper.MapTimeSeriesType(MeteringPointType.Production, request.SettlementMethod),
-                    TimeSeriesTypeMapper.MapTimeSeriesType(MeteringPointType.Consumption, request.SettlementMethod)
+                    TimeSeriesType.Production,
+                    TimeSeriesType.FlexConsumption,
+                    TimeSeriesType.NonProfiledConsumption,
                 ],
                 ActorRoleCode.BalanceResponsibleParty =>
                 [
-                    TimeSeriesTypeMapper.MapTimeSeriesType(MeteringPointType.Production, request.SettlementMethod),
-                    TimeSeriesTypeMapper.MapTimeSeriesType(MeteringPointType.Consumption, request.SettlementMethod)
+                    TimeSeriesType.Production,
+                    TimeSeriesType.FlexConsumption,
+                    TimeSeriesType.NonProfiledConsumption,
                 ],
                 ActorRoleCode.MeteredDataResponsible =>
                 [
-                    TimeSeriesTypeMapper.MapTimeSeriesType(MeteringPointType.Production, request.SettlementMethod),
-                    TimeSeriesTypeMapper.MapTimeSeriesType(MeteringPointType.Consumption, request.SettlementMethod),
-                    TimeSeriesTypeMapper.MapTimeSeriesType(MeteringPointType.Exchange, request.SettlementMethod)
+                    TimeSeriesType.Production,
+                    TimeSeriesType.FlexConsumption,
+                    TimeSeriesType.NonProfiledConsumption,
+                    TimeSeriesType.TotalConsumption,
+                    TimeSeriesType.NetExchangePerGa,
                 ],
-                _ => throw new ArgumentOutOfRangeException(nameof(request.RequestedByActorRole), request.RequestedByActorRole, "Value does not contain a valid string representation of a requested by actor role."),
+                _ => throw new ArgumentOutOfRangeException(
+                    nameof(request.RequestedByActorRole),
+                    request.RequestedByActorRole,
+                    "Value does not contain a valid string representation of a requested by actor role."),
             };
+        }
+
+        return
+        [
+            TimeSeriesTypeMapper.MapTimeSeriesType(request.MeteringPointType, request.SettlementMethod)
+        ];
     }
 
     private static AggregationPerRoleAndGridArea MapAggregationPerRoleAndGridArea(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request)
