@@ -24,18 +24,14 @@ from package.calculation.wholesale.fee_calculators import (
     get_count_of_charges_and_total_daily_charge_price,
 )
 from package.calculation.preparation.transformations import get_fee_charges
-from package.calculation.preparation.transformations.charges_reader import (
-    _join_with_charge_prices,
-)
+
 import pytest
 
 
 def test__calculate_fee_charge_price__simple(
     spark,
-    charge_master_data_factory,
-    charge_links_factory,
-    charge_prices_factory,
-    metering_point_period_factory,
+    charge_link_metering_points_factory,
+    charges_factory,
     calculate_fee_charge_price_factory,
 ):
     # Test that calculate_fee_charge_price does as expected in with the most simple dataset
@@ -43,22 +39,27 @@ def test__calculate_fee_charge_price__simple(
     from_date = datetime(2020, 1, 1, 0, 0)
     to_date = datetime(2020, 1, 2, 0, 0)
     time = datetime(2020, 1, 1, 0, 0)
-    charges_master_data_df = charge_master_data_factory(
-        from_date, to_date, charge_type=ChargeType.FEE.value
+    charges = charges_factory(
+        charge_time=time,
+        from_date=from_date,
+        to_date=to_date,
+        charge_type=ChargeType.FEE.value,
     )
-    charge_prices_df = charge_prices_factory(time)
-    charges_df = _join_with_charge_prices(charges_master_data_df, charge_prices_df)
-    metering_point_df = metering_point_period_factory(from_date, to_date)
+    charge_link_metering_points = charge_link_metering_points_factory(
+        from_date=from_date,
+        to_date=to_date,
+        charge_type=ChargeType.FEE.value,
+    )
 
     expected_time = datetime(2020, 1, 1, 0, 0)
-    expected_charge_price = charge_prices_df.collect()[0][Colname.charge_price]
+    expected_charge_price = charges.collect()[0][Colname.charge_price]
     expected_total_daily_charge_price = expected_charge_price
     expected_charge_count = 1
 
     # Act
     fee_charges = get_fee_charges(
-        charges_df,
-        metering_point_df,
+        charges,
+        charge_link_metering_points,
     )
     result = calculate_fee_charge_price(spark, fee_charges)
     expected = calculate_fee_charge_price_factory(

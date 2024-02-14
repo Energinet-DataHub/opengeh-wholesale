@@ -14,10 +14,6 @@
 from decimal import Decimal
 from datetime import datetime
 
-from package.calculation.wholesale.schemas.charges_schema import (
-    charge_link_metering_points_schema,
-    charges_schema,
-)
 from tests.helpers.test_schemas import (
     charges_flex_consumption_schema,
     charges_per_day_schema,

@@ -89,7 +89,6 @@ def calculate_fee_charge_price_factory(spark: SparkSession) -> Callable[..., Dat
         time: datetime,
         charge_count: int,
         total_daily_charge_price: Decimal,
-        charge_key: str = DataframeDefaults.default_charge_key,
         charge_code: str = DataframeDefaults.default_charge_code,
         charge_type: str = ChargeType.FEE.value,
         charge_owner: str = DataframeDefaults.default_charge_owner,
@@ -99,6 +98,8 @@ def calculate_fee_charge_price_factory(spark: SparkSession) -> Callable[..., Dat
         grid_area: str = DataframeDefaults.default_grid_area,
         energy_supplier_id: str = DataframeDefaults.default_energy_supplier_id,
     ) -> DataFrame:
+        charge_key: str = f"{charge_code}-{charge_owner}-{charge_type}"
+
         data = [
             {
                 Colname.charge_key: charge_key,

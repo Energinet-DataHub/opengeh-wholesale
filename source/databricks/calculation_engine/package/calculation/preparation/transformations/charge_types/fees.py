@@ -24,13 +24,23 @@ def get_fee_charges(
 ) -> DataFrame:
     fee_charges = charges_df.filter(f.col(Colname.charge_type) == ChargeType.FEE.value)
 
-    fee_charges.show()
-    charge_link_metering_points.show()
-
     fees = fee_charges.join(
-        charge_link_metering_points, on=Colname.charge_key, how="inner"
+        charge_link_metering_points,
+        (
+            fee_charges[Colname.charge_key]
+            == charge_link_metering_points[Colname.charge_key]
+        )
+        & (
+            fee_charges[Colname.charge_time]
+            >= charge_link_metering_points[Colname.from_date]
+        )
+        & (
+            fee_charges[Colname.charge_time]
+            < charge_link_metering_points[Colname.to_date]
+        ),
+        how="inner",
     ).select(
-        Colname.charge_key,
+        fee_charges[Colname.charge_key],
         Colname.charge_code,
         Colname.charge_type,
         Colname.charge_owner,
