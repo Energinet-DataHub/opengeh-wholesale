@@ -33,6 +33,7 @@ public class WholesaleResultFactoryTests
     private static readonly Instant _defaultTime = Instant.FromUtc(2022, 5, 1, 1, 0);
     private readonly Instant _defaultPeriodEnd = Instant.FromUtc(2022, 5, 2, 0, 0);
     private readonly Instant _defaultPeriodStart = Instant.FromUtc(2022, 5, 1, 0, 0);
+    private readonly long _version = DateTime.Now.Ticks;
     private readonly List<WholesaleTimeSeriesPoint> _defaultWholesaleTimeSeriesPoints = new()
     {
         new WholesaleTimeSeriesPoint(_defaultTime.ToDateTimeOffset(), 1.0m, new List<QuantityQuality> { QuantityQuality.Measured, QuantityQuality.Missing, }, DefaultPrice, DefaultAmount),
@@ -45,7 +46,7 @@ public class WholesaleResultFactoryTests
         var row = CreateSqlResultRow();
 
         // Act
-        var actual = WholesaleResultFactory.CreateWholesaleResult(row, _defaultWholesaleTimeSeriesPoints, _defaultPeriodStart, _defaultPeriodEnd);
+        var actual = WholesaleResultFactory.CreateWholesaleResult(row, _defaultWholesaleTimeSeriesPoints, _defaultPeriodStart, _defaultPeriodEnd, _version);
 
         // Assert
         using var assertionScope = new AssertionScope();
