@@ -33,9 +33,9 @@ public static class AggregatedTimeSeriesRequestFactory
     private static TimeSeriesType[] GetTimeSeriesTypes(
         Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request)
     {
-        if (request.MeteringPointType == string.Empty)
-        {
-            return request.RequestedByActorRole switch
+        return request.MeteringPointType != string.Empty
+            ? [TimeSeriesTypeMapper.MapTimeSeriesType(request.MeteringPointType, request.SettlementMethod)]
+            : request.RequestedByActorRole switch
             {
                 ActorRoleCode.EnergySupplier =>
                 [
@@ -62,12 +62,6 @@ public static class AggregatedTimeSeriesRequestFactory
                     request.RequestedByActorRole,
                     "Value does not contain a valid string representation of a requested by actor role."),
             };
-        }
-
-        return
-        [
-            TimeSeriesTypeMapper.MapTimeSeriesType(request.MeteringPointType, request.SettlementMethod)
-        ];
     }
 
     private static AggregationPerRoleAndGridArea MapAggregationPerRoleAndGridArea(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request)
