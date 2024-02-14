@@ -11,42 +11,25 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from dataclasses import asdict
+from pyspark.sql import DataFrame
+
 from package.calculation.CalculationResults import WholesaleResultsContainer
-from package.calculation.calculator_args import CalculatorArgs
-from package.calculation_output import WholesaleCalculationResultWriter
-from package.codelists import AmountType
 from package.infrastructure import logging_configuration
+from package.infrastructure.paths import (
+    OUTPUT_DATABASE_NAME,
+    WHOLESALE_RESULT_TABLE_NAME,
+)
 
 
-def write_wholesale_results(
-    args: CalculatorArgs, wholesale_results: WholesaleResultsContainer
-) -> None:
-    wholesale_calculation_result_writer = WholesaleCalculationResultWriter(
-        args.calculation_id,
-        args.calculation_type,
-        args.calculation_execution_time_start,
-    )
+def write(wholesale_results: WholesaleResultsContainer) -> None:
+    """Write each wholesale result to the output table."""
+    for name, df in asdict(wholesale_results).items():
+        _write(name, df)
 
-    with logging_configuration.start_span("hourly_tariff_per_ga_co_es"):
-        wholesale_calculation_result_writer.write(
-            wholesale_results.hourly_tariff_per_ga_co_es,
-            AmountType.AMOUNT_PER_CHARGE,
-        )
 
-    with logging_configuration.start_span("monthly_tariff_per_ga_co_es"):
-        wholesale_calculation_result_writer.write(
-            wholesale_results.monthly_tariff_from_hourly_per_ga_co_es,
-            AmountType.MONTHLY_AMOUNT_PER_CHARGE,
-        )
-
-    with logging_configuration.start_span("daily_tariff_per_ga_co_es"):
-        wholesale_calculation_result_writer.write(
-            wholesale_results.daily_tariff_per_ga_co_es,
-            AmountType.AMOUNT_PER_CHARGE,
-        )
-
-    with logging_configuration.start_span("monthly_tariff_per_ga_co_es"):
-        wholesale_calculation_result_writer.write(
-            wholesale_results.monthly_tariff_from_daily_per_ga_co_es,
-            AmountType.MONTHLY_AMOUNT_PER_CHARGE,
-        )
+def _write(name: str, df: DataFrame) -> None:
+    with logging_configuration.start_span(name):
+        df.write.format("delta").mode("append").option(
+            "mergeSchema", "false"
+        ).insertInto(f"{OUTPUT_DATABASE_NAME}.{WHOLESALE_RESULT_TABLE_NAME}")

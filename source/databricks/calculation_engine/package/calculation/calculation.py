@@ -28,7 +28,7 @@ from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
 from .output.basis_data import write_basis_data
 from .output.energy_results import write_energy_results
-from .output.wholesale_results import write_wholesale_results
+from .output.wholesale_results import write as write_wholesale_results
 from .preparation import PreparedDataReader
 from .wholesale import wholesale_calculation
 
@@ -99,9 +99,9 @@ def _execute(
         )
 
         results.wholesale_results = wholesale_calculation.execute(
+            args,
             tariffs_hourly_df,
             tariffs_daily_df,
-            args.calculation_period_start_datetime,
         )
 
     # Add basis data results
@@ -123,6 +123,6 @@ def _get_production_and_consumption_metering_points(
 def _write_results(args: CalculatorArgs, results: CalculationResultsContainer) -> None:
     write_energy_results(args, results.energy_results)
     if results.wholesale_results is not None:
-        write_wholesale_results(args, results.wholesale_results)
+        write_wholesale_results(results.wholesale_results)
     # We write basis data at the end of the calculation to make it easier to analyze performance of the calculation part
     write_basis_data(args, results.basis_data)
