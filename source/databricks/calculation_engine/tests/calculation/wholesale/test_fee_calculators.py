@@ -75,10 +75,8 @@ def test__calculate_fee_charge_price__simple(
 
 def test__calculate_fee_charge_price__two_fees(
     spark,
-    charge_master_data_factory,
-    charge_links_factory,
-    charge_prices_factory,
-    metering_point_period_factory,
+    charge_link_metering_points_factory,
+    charges_factory,
     calculate_fee_charge_price_factory,
 ):
     # Test that calculate_fee_charge_price does as expected with two fees on the same day
@@ -86,21 +84,30 @@ def test__calculate_fee_charge_price__two_fees(
     from_date = datetime(2020, 1, 1, 0, 0)
     to_date = datetime(2020, 1, 2, 0, 0)
     time = datetime(2020, 1, 1, 0, 0)
-    charges_master_data_df = charge_master_data_factory(
-        from_date, to_date, charge_type=ChargeType.FEE.value
+    charges = charges_factory(
+        charge_time=time,
+        from_date=from_date,
+        to_date=to_date,
+        charge_type=ChargeType.FEE.value,
     )
-    charge_links_df = charge_links_factory(from_date, to_date)
-    metering_point_df = metering_point_period_factory(from_date, to_date)
+    charge_link_metering_points = charge_link_metering_points_factory(
+        from_date=from_date,
+        to_date=to_date,
+        charge_type=ChargeType.FEE.value,
+    )
 
     fee_1_charge_prices_charge_price = Decimal("3.124544")
-    fee_1_charge_prices_df = charge_prices_factory(
-        time, charge_price=fee_1_charge_prices_charge_price
+    fee_1_charge_prices_df = charges_factory(
+        charge_type=ChargeType.FEE.value,
+        charge_time=time,
+        charge_price=fee_1_charge_prices_charge_price,
+        from_date=from_date,
+        to_date=to_date,
     )
-    fee_2_charge_prices_df = charge_prices_factory(time)
+    fee_2_charge_prices_df = charges_factory(
+        charge_type=ChargeType.FEE.value, charge_time=time
+    )
     charge_prices_df = fee_1_charge_prices_df.union(fee_2_charge_prices_df)
-    charges_df = _create_charges_df(
-        charges_master_data_df, charge_links_df, charge_prices_df
-    )
 
     expected_time = datetime(2020, 1, 1, 0, 0)
     expected_charge_price_fee_1 = charge_prices_df.collect()[0][Colname.charge_price]
@@ -110,10 +117,12 @@ def test__calculate_fee_charge_price__two_fees(
     )
     expected_charge_count = 2
 
+    charge_prices_df.show()
+    charge_link_metering_points.show()
     # Act
     fee_charges = get_fee_charges(
-        charges_df,
-        metering_point_df,
+        charge_prices_df,
+        charge_link_metering_points,
     )
     result = calculate_fee_charge_price(spark, fee_charges).orderBy(
         Colname.charge_price
