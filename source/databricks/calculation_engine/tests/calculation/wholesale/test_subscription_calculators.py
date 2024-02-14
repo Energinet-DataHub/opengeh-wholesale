@@ -74,9 +74,6 @@ def test__calculate_daily_subscription_price__simple(
         charge_price=expected_charge_price,
     )
 
-    expected.show()
-    result.show()
-
     # Assert
     assert result.collect() == expected.collect()
 
@@ -204,7 +201,6 @@ def test__calculate_daily_subscription_price__charge_price_change_with_two_diffe
             subscription_2_charge_prices_df_with_charge_key_1
         )
     )
-    charge_prices_df_with_charge_key_1.show()
 
     subscription_1_charge_prices_df_with_charge_key_2 = charges_factory(
         charge_time=subcription_1_charge_prices_time,
@@ -234,7 +230,6 @@ def test__calculate_daily_subscription_price__charge_price_change_with_two_diffe
         charge_prices_df,
         charge_links_df,
     )
-    subscription_charges.show()
     result = calculate_daily_subscription_price(spark, subscription_charges).orderBy(
         Colname.charge_time, Colname.charge_key
     )

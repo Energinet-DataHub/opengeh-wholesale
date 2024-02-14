@@ -84,12 +84,6 @@ def test__calculate_fee_charge_price__two_fees(
     from_date = datetime(2020, 1, 1, 0, 0)
     to_date = datetime(2020, 1, 2, 0, 0)
     time = datetime(2020, 1, 1, 0, 0)
-    charges = charges_factory(
-        charge_time=time,
-        from_date=from_date,
-        to_date=to_date,
-        charge_type=ChargeType.FEE.value,
-    )
     charge_link_metering_points = charge_link_metering_points_factory(
         from_date=from_date,
         to_date=to_date,
@@ -117,8 +111,6 @@ def test__calculate_fee_charge_price__two_fees(
     )
     expected_charge_count = 2
 
-    charge_prices_df.show()
-    charge_link_metering_points.show()
     # Act
     fee_charges = get_fee_charges(
         charge_prices_df,
