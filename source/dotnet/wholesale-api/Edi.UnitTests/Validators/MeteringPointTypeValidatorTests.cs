@@ -31,6 +31,7 @@ public class MeteringPointTypeValidatorTests
     [InlineData(MeteringPointType.Consumption)]
     [InlineData(MeteringPointType.Production)]
     [InlineData(MeteringPointType.Exchange)]
+    [InlineData("")]
     public async Task Validate_WhenMeteringPointIsValid_ReturnsExpectedNoValidationErrors(string meteringPointType)
     {
         // Arrange
