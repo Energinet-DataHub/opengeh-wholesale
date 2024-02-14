@@ -63,7 +63,7 @@ public class MonthlyAmountPerChargeResultProducedV1Tests
         Assert.Equal(LastKnownContentOfContract, actualContent, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
     }
 
-    private const int LastKnownMinorEventVersion = 2;
+    private const int LastKnownMinorEventVersion = 3;
     private const string LastKnownContentOfContract = @"/* Copyright 2020 Energinet DataHub A/S
  *
  * Licensed under the Apache License, Version 2.0 (the ""License2"");
@@ -133,6 +133,11 @@ message MonthlyAmountPerChargeResultProducedV1 {
    * 6 digit scale decimal value of the amount.
    */
   optional DecimalValue amount = 13;
+
+  /*
+   * The version of the calculation result. It is a positive integer (int64).
+  */
+  int64 calculation_result_version = 14;
 
   // ---------------------------- NESTED TYPES BELOW ----------------------------------------
 
