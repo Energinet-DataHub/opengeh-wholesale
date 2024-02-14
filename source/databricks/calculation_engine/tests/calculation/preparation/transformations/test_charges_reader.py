@@ -262,7 +262,7 @@ class TestWhenChargePeriodExceedsCalculationPeriod:
         ],
     )
     @patch.object(calculation_input, TableReader.__name__)
-    def test__returns_empty_result(
+    def test__returns_expected_to_and_from_date(
         self,
         table_reader_mock: TableReader,
         spark: SparkSession,
