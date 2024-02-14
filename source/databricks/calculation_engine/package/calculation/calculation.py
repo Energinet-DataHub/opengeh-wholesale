@@ -106,7 +106,9 @@ def _execute(
         )
 
     # Add basis data results
-    master_basis_data_df, timeseries_hour_df, timeseries_quarter_df = get_basis_data(args, metering_point_periods_df, metering_point_time_series)
+    master_basis_data_df, timeseries_hour_df, timeseries_quarter_df = get_basis_data(
+        args, metering_point_periods_df, metering_point_time_series
+    )
     results.basis_data.timeseries_quarter_df = timeseries_quarter_df
     results.basis_data.timeseries_hour_df = timeseries_hour_df
     results.basis_data.master_basis_data_df = master_basis_data_df
@@ -114,12 +116,16 @@ def _execute(
     return results
 
 
-def get_basis_data(args, metering_point_periods_df, metering_point_time_series):
+def get_basis_data(
+    args: CalculatorArgs,
+    metering_point_periods_df: DataFrame,
+    metering_point_time_series_df: DataFrame,
+):
     (
         timeseries_quarter_df,
         timeseries_hour_df,
     ) = basis_data.get_metering_point_time_series_basis_data_dfs(
-        metering_point_time_series, args.time_zone
+        metering_point_time_series_df, args.time_zone
     )
     master_basis_data_df = basis_data.get_master_basis_data_df(
         metering_point_periods_df
