@@ -36,7 +36,8 @@ public sealed class WholesaleResult
         Resolution resolution,
         MeteringPointType? meteringPointType,
         SettlementMethod? settlementMethod,
-        IReadOnlyCollection<WholesaleTimeSeriesPoint> timeSeriesPoints)
+        IReadOnlyCollection<WholesaleTimeSeriesPoint> timeSeriesPoints,
+        long version)
     {
         if (timeSeriesPoints.Count == 0)
             throw new ArgumentException("Time series points empty");
@@ -57,8 +58,8 @@ public sealed class WholesaleResult
         Resolution = resolution;
         MeteringPointType = meteringPointType;
         SettlementMethod = settlementMethod;
-
         TimeSeriesPoints = timeSeriesPoints;
+        Version = version;
     }
 
     public Guid Id { get; }
@@ -94,4 +95,6 @@ public sealed class WholesaleResult
     public SettlementMethod? SettlementMethod { get; }
 
     public IReadOnlyCollection<WholesaleTimeSeriesPoint> TimeSeriesPoints { get; }
+
+    public long Version { get; set; }
 }
