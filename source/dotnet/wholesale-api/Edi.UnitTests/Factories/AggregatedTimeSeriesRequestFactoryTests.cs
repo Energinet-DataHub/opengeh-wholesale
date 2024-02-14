@@ -34,7 +34,8 @@ public class AggregatedTimeSeriesRequestFactoryTests
         var request = CreateRequest(
             gridAreaCode: gridAreaCode,
             energySupplier: energySupplier,
-            balanceResponsible: balanceResponsibleId);
+            balanceResponsible: balanceResponsibleId,
+            meteringPointType: MeteringPointType.Production);
 
         // Act
         var actual = AggregatedTimeSeriesRequestFactory.Parse(request);
@@ -123,6 +124,33 @@ public class AggregatedTimeSeriesRequestFactoryTests
     }
 
     [Fact]
+    public void Parse_WhenMeteringPointTypeIsEmptyForEnergySupplierWithNonProfiledSettlementMethod_ExpectedParsing()
+    {
+        // Arrange
+        var balanceResponsibleId = "1234567891234";
+        var energySupplier = "1234567891234";
+        var gridAreaCode = "303";
+        var request = CreateRequest(
+            gridAreaCode: gridAreaCode,
+            energySupplier: energySupplier,
+            balanceResponsible: balanceResponsibleId,
+            meteringPointType: string.Empty,
+            settlementMethod: SettlementMethod.NonProfiled);
+
+        // Act
+        var actual = AggregatedTimeSeriesRequestFactory.Parse(request);
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        actual.TimeSeriesTypes.Should().BeEquivalentTo([TimeSeriesType.Production, TimeSeriesType.NonProfiledConsumption]);
+
+        var aggregationLevel = actual.AggregationPerRoleAndGridArea;
+        aggregationLevel.BalanceResponsibleId.Should().Be(balanceResponsibleId);
+        aggregationLevel.EnergySupplierId.Should().Be(energySupplier);
+        aggregationLevel.GridAreaCode.Should().Be(gridAreaCode);
+    }
+
+    [Fact]
     public void Parse_WhenMeteringPointTypeIsEmptyForBalanceResponsibleParty_ExpectedParsing()
     {
         // Arrange
@@ -188,7 +216,8 @@ public class AggregatedTimeSeriesRequestFactoryTests
         string? gridAreaCode = null,
         string? energySupplier = null,
         string? balanceResponsible = null,
-        string meteringPointType = MeteringPointType.Production)
+        string meteringPointType = MeteringPointType.Production,
+        string settlementMethod = SettlementMethod.Flex)
     {
         var request = new AggregatedTimeSeriesRequest()
         {
@@ -204,7 +233,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
             BusinessReason = BusinessReason.BalanceFixing,
 
             // Optional
-            SettlementMethod = SettlementMethod.Flex,
+            SettlementMethod = settlementMethod,
         };
 
         if (gridAreaCode is not null)

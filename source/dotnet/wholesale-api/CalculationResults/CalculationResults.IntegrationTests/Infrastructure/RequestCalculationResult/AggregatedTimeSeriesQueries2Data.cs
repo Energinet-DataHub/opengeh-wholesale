@@ -486,6 +486,7 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
                     GridArea = row.ElementAt(4),
                     TimeSeriesType = row.ElementAt(11),
                     BalanceResponsibleId = row.ElementAt(8),
+                    // EnergySupplierId = row.ElementAt(5),
                     CalculationId = row.ElementAt(3),
                     CalculationType = row.ElementAt(2),
                 })
@@ -762,9 +763,7 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
 
     private static string GetCalculationIdForBrGaAggregation(string time, string calculationType)
     {
-        var isTimeBeforeCut = Instant.FromDateTimeOffset(DateTimeOffset.Parse(time)) <
-                              Instant.FromDateTimeOffset(
-                                  DateTimeOffset.Parse(AggregatedTimeSeriesQueries2Constants.SecondDay));
+        var isTimeBeforeCut = IsTimeBeforeCut(time);
         var tryParse = Enum.TryParse<CalculationType>(calculationType, out var calculationTypeAsEnum);
 
         tryParse.Should().BeTrue("Must be able to parse calculation type in order to determine calculation id");
@@ -796,9 +795,7 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
 
     private static string GetCalculationIdForEsGaAggregation(string time, string calculationType)
     {
-        var isTimeBeforeCut = Instant.FromDateTimeOffset(DateTimeOffset.Parse(time)) <
-                              Instant.FromDateTimeOffset(
-                                  DateTimeOffset.Parse(AggregatedTimeSeriesQueries2Constants.SecondDay));
+        var isTimeBeforeCut = IsTimeBeforeCut(time);
         var tryParse = Enum.TryParse<CalculationType>(calculationType, out var calculationTypeAsEnum);
 
         tryParse.Should().BeTrue("Must be able to parse calculation type in order to determine calculation id");
@@ -830,9 +827,7 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
 
     private static string GetCalculationIdForGaAggregation(string time, string calculationType)
     {
-        var isTimeBeforeCut = Instant.FromDateTimeOffset(DateTimeOffset.Parse(time)) <
-                              Instant.FromDateTimeOffset(
-                                  DateTimeOffset.Parse(AggregatedTimeSeriesQueries2Constants.SecondDay));
+        var isTimeBeforeCut = IsTimeBeforeCut(time);
         var tryParse = Enum.TryParse<CalculationType>(calculationType, out var calculationTypeAsEnum);
 
         tryParse.Should().BeTrue("Must be able to parse calculation type in order to determine calculation id");
@@ -860,5 +855,11 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
                 .GaAgTc2CalculationResultId,
             _ => throw new ArgumentOutOfRangeException(),
         };
+    }
+
+    private static bool IsTimeBeforeCut(string time)
+    {
+        return Instant.FromDateTimeOffset(DateTimeOffset.Parse(time))
+               < Instant.FromDateTimeOffset(DateTimeOffset.Parse(AggregatedTimeSeriesQueries2Constants.SecondDay));
     }
 }
