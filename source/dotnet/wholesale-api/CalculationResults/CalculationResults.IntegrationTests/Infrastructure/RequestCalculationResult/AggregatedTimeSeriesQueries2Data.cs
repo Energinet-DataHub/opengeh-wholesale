@@ -401,48 +401,48 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
                      DeltaTableTimeSeriesType.NetExchangePerGridArea,
                  })
         {
-            var allThemRows = new List<IReadOnlyCollection<string>>();
+            var allDataRowsToAddToDatabricks = new List<IReadOnlyCollection<string>>();
 
             // GridAreaCodeA
             // BalanceResponsibleA
-            allThemRows.AddRange(CreateDataOne(
+            allDataRowsToAddToDatabricks.AddRange(CreateDataOne(
                 AggregatedTimeSeriesQueries2Constants.GridAreaCodeA,
                 AggregatedTimeSeriesQueries2Constants.BalanceResponsibleA,
                 AggregatedTimeSeriesQueries2Constants.EnergySupplierA,
                 timeSeriesType));
-            allThemRows.AddRange(CreateDataTwo(
+            allDataRowsToAddToDatabricks.AddRange(CreateDataTwo(
                 AggregatedTimeSeriesQueries2Constants.GridAreaCodeA,
                 AggregatedTimeSeriesQueries2Constants.BalanceResponsibleA,
                 AggregatedTimeSeriesQueries2Constants.EnergySupplierA,
                 timeSeriesType));
-            allThemRows.AddRange(CreateDataOne(
+            allDataRowsToAddToDatabricks.AddRange(CreateDataOne(
                 AggregatedTimeSeriesQueries2Constants.GridAreaCodeA,
                 AggregatedTimeSeriesQueries2Constants.BalanceResponsibleA,
                 AggregatedTimeSeriesQueries2Constants.EnergySupplierB,
                 timeSeriesType));
-            allThemRows.AddRange(CreateDataFour(
+            allDataRowsToAddToDatabricks.AddRange(CreateDataFour(
                 AggregatedTimeSeriesQueries2Constants.GridAreaCodeA,
                 AggregatedTimeSeriesQueries2Constants.BalanceResponsibleA,
                 AggregatedTimeSeriesQueries2Constants.EnergySupplierB,
                 timeSeriesType));
 
             // BalanceResponsibleB
-            allThemRows.AddRange(CreateDataThree(
+            allDataRowsToAddToDatabricks.AddRange(CreateDataThree(
                 AggregatedTimeSeriesQueries2Constants.GridAreaCodeA,
                 AggregatedTimeSeriesQueries2Constants.BalanceResponsibleB,
                 AggregatedTimeSeriesQueries2Constants.EnergySupplierA,
                 timeSeriesType));
-            allThemRows.AddRange(CreateDataFour(
+            allDataRowsToAddToDatabricks.AddRange(CreateDataFour(
                 AggregatedTimeSeriesQueries2Constants.GridAreaCodeA,
                 AggregatedTimeSeriesQueries2Constants.BalanceResponsibleB,
                 AggregatedTimeSeriesQueries2Constants.EnergySupplierA,
                 timeSeriesType));
-            allThemRows.AddRange(CreateDataTwo(
+            allDataRowsToAddToDatabricks.AddRange(CreateDataTwo(
                 AggregatedTimeSeriesQueries2Constants.GridAreaCodeA,
                 AggregatedTimeSeriesQueries2Constants.BalanceResponsibleB,
                 AggregatedTimeSeriesQueries2Constants.EnergySupplierC,
                 timeSeriesType));
-            allThemRows.AddRange(CreateDataThree(
+            allDataRowsToAddToDatabricks.AddRange(CreateDataThree(
                 AggregatedTimeSeriesQueries2Constants.GridAreaCodeA,
                 AggregatedTimeSeriesQueries2Constants.BalanceResponsibleB,
                 AggregatedTimeSeriesQueries2Constants.EnergySupplierC,
@@ -450,22 +450,22 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
 
             // GridAreaCodeB
             // BalanceResponsibleB
-            allThemRows.AddRange(CreateDataTwo(
+            allDataRowsToAddToDatabricks.AddRange(CreateDataTwo(
                 AggregatedTimeSeriesQueries2Constants.GridAreaCodeB,
                 AggregatedTimeSeriesQueries2Constants.BalanceResponsibleB,
                 AggregatedTimeSeriesQueries2Constants.EnergySupplierB,
                 timeSeriesType));
-            allThemRows.AddRange(CreateDataThree(
+            allDataRowsToAddToDatabricks.AddRange(CreateDataThree(
                 AggregatedTimeSeriesQueries2Constants.GridAreaCodeB,
                 AggregatedTimeSeriesQueries2Constants.BalanceResponsibleB,
                 AggregatedTimeSeriesQueries2Constants.EnergySupplierB,
                 timeSeriesType));
-            allThemRows.AddRange(CreateDataOne(
+            allDataRowsToAddToDatabricks.AddRange(CreateDataOne(
                 AggregatedTimeSeriesQueries2Constants.GridAreaCodeB,
                 AggregatedTimeSeriesQueries2Constants.BalanceResponsibleB,
                 AggregatedTimeSeriesQueries2Constants.EnergySupplierC,
                 timeSeriesType));
-            allThemRows.AddRange(CreateDataFour(
+            allDataRowsToAddToDatabricks.AddRange(CreateDataFour(
                 AggregatedTimeSeriesQueries2Constants.GridAreaCodeB,
                 AggregatedTimeSeriesQueries2Constants.BalanceResponsibleB,
                 AggregatedTimeSeriesQueries2Constants.EnergySupplierC,
@@ -473,29 +473,29 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
 
             // GridAreaCodeC
             // BalanceResponsibleC
-            allThemRows.AddRange(CreateDataOne(
+            allDataRowsToAddToDatabricks.AddRange(CreateDataOne(
                 AggregatedTimeSeriesQueries2Constants.GridAreaCodeC,
                 AggregatedTimeSeriesQueries2Constants.BalanceResponsibleC,
                 AggregatedTimeSeriesQueries2Constants.EnergySupplierA,
                 timeSeriesType));
-            allThemRows.AddRange(CreateDataTwo(
+            allDataRowsToAddToDatabricks.AddRange(CreateDataTwo(
                 AggregatedTimeSeriesQueries2Constants.GridAreaCodeC,
                 AggregatedTimeSeriesQueries2Constants.BalanceResponsibleC,
                 AggregatedTimeSeriesQueries2Constants.EnergySupplierA,
                 timeSeriesType));
-            allThemRows.AddRange(CreateDataThree(
+            allDataRowsToAddToDatabricks.AddRange(CreateDataThree(
                 AggregatedTimeSeriesQueries2Constants.GridAreaCodeC,
                 AggregatedTimeSeriesQueries2Constants.BalanceResponsibleC,
                 AggregatedTimeSeriesQueries2Constants.EnergySupplierA,
                 timeSeriesType));
-            allThemRows.AddRange(CreateDataFour(
+            allDataRowsToAddToDatabricks.AddRange(CreateDataFour(
                 AggregatedTimeSeriesQueries2Constants.GridAreaCodeC,
                 AggregatedTimeSeriesQueries2Constants.BalanceResponsibleC,
                 AggregatedTimeSeriesQueries2Constants.EnergySupplierA,
                 timeSeriesType));
 
             // Do the aggregations
-            var aggregatedByBalanceAndGrid = allThemRows.GroupBy(row => new
+            var aggregatedByBalanceAndGrid = allDataRowsToAddToDatabricks.GroupBy(row => new
                 {
                     Time = row.ElementAt(6),
                     GridArea = row.ElementAt(4),
@@ -524,7 +524,7 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
                         calculationType: grouping.Key.CalculationType.Replace("'", string.Empty)))
                 .ToList();
 
-            var aggregatedByEnergyAndGrid = allThemRows.GroupBy(row => new
+            var aggregatedByEnergyAndGrid = allDataRowsToAddToDatabricks.GroupBy(row => new
                 {
                     Time = row.ElementAt(6),
                     GridArea = row.ElementAt(4),
@@ -553,7 +553,7 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
                         calculationType: grouping.Key.CalculationType.Replace("'", string.Empty)))
                 .ToList();
 
-            var aggregatedByGrid = allThemRows.GroupBy(row => new
+            var aggregatedByGrid = allDataRowsToAddToDatabricks.GroupBy(row => new
                 {
                     Time = row.ElementAt(6),
                     GridArea = row.ElementAt(4),
@@ -582,13 +582,13 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
                         calculationType: grouping.Key.CalculationType.Replace("'", string.Empty)))
                 .ToList();
 
-            allThemRows.AddRange(aggregatedByBalanceAndGrid);
-            allThemRows.AddRange(aggregatedByEnergyAndGrid);
-            allThemRows.AddRange(aggregatedByGrid);
+            allDataRowsToAddToDatabricks.AddRange(aggregatedByBalanceAndGrid);
+            allDataRowsToAddToDatabricks.AddRange(aggregatedByEnergyAndGrid);
+            allDataRowsToAddToDatabricks.AddRange(aggregatedByGrid);
 
-            allThemRows = allThemRows.OrderBy(_ => Random.Shared.NextInt64()).ToList();
+            allDataRowsToAddToDatabricks = allDataRowsToAddToDatabricks.OrderBy(_ => Random.Shared.NextInt64()).ToList();
 
-            await sqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(sqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME, allThemRows);
+            await sqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(sqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME, allDataRowsToAddToDatabricks);
         }
     }
 
