@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout current branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Get files from PR branch
         id: get_script_files_in_pr
@@ -44,7 +44,7 @@ jobs:
           echo "::set-output name=script_files_in_pr::$SCRIPT_FILES_IN_PR"
 
       - name: Checkout main branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: main
 
@@ -140,8 +140,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Static type checker
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: 3.x
       - name: Run pip intall and mypy check of files in package
@@ -155,7 +155,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Code style check
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: psf/black@stable
         with:
           options: --check --diff
