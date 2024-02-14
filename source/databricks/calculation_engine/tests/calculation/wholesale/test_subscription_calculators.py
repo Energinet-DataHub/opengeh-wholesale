@@ -35,8 +35,6 @@ from calendar import monthrange
 import pytest
 from package.constants import Colname
 
-import tests.calculation.charges_factory as factory
-
 
 def test__calculate_daily_subscription_price__simple(
     spark,
@@ -89,35 +87,34 @@ def test__calculate_daily_subscription_price__simple(
 
 def test__calculate_daily_subscription_price__charge_price_change(
     spark,
-    charge_master_data_factory,
-    charge_links_factory,
-    charge_prices_factory,
-    metering_point_period_factory,
     calculate_daily_subscription_price_factory,
+    charges_factory,
+    charge_link_metering_points_factory,
 ):
     # Test that calculate_daily_subscription_price act as expected when charge price changes in a given period
     # Arrange
     from_date = datetime(2020, 1, 31, 0, 0)
     to_date = datetime(2020, 2, 2, 0, 0)
-    charges_master_data_df = charge_master_data_factory(from_date, to_date)
-    charge_links_df = charge_links_factory(from_date, to_date)
-    metering_point_df = metering_point_period_factory(from_date, to_date)
 
+    charge_link_metering_points = charge_link_metering_points_factory(
+        charge_type=ChargeType.SUBSCRIPTION.value, from_date=from_date, to_date=to_date
+    )
     subscription_1_charge_prices_charge_price = Decimal("3.124544")
     subcription_1_charge_prices_time = from_date
-    subscription_1_charge_prices_df = charge_prices_factory(
-        subcription_1_charge_prices_time,
+    subscription_1_charge_prices_df = charges_factory(
+        charge_time=subcription_1_charge_prices_time,
         charge_price=subscription_1_charge_prices_charge_price,
+        from_date=from_date,
+        to_date=to_date,
     )
     subcription_2_charge_prices_time = datetime(2020, 2, 1, 0, 0)
-    subscription_2_charge_prices_df = charge_prices_factory(
-        subcription_2_charge_prices_time
+    subscription_2_charge_prices_df = charges_factory(
+        charge_time=subcription_2_charge_prices_time,
+        from_date=from_date,
+        to_date=to_date,
     )
     charge_prices_df = subscription_1_charge_prices_df.union(
         subscription_2_charge_prices_df
-    )
-    charges_df = _create_charges_df(
-        charges_master_data_df, charge_links_df, charge_prices_df
     )
 
     expected_charge_price_subscription_1 = charge_prices_df.collect()[0][
@@ -144,8 +141,8 @@ def test__calculate_daily_subscription_price__charge_price_change(
 
     # Act
     subscription_charges = get_subscription_charges(
-        charges_df,
-        metering_point_df,
+        charge_prices_df,
+        charge_link_metering_points,
     )
     result = calculate_daily_subscription_price(spark, subscription_charges).orderBy(
         Colname.charge_time
