@@ -62,10 +62,10 @@ jobs:
     steps:
       - name: Checkout repository
         if: ${{ github.event_name != 'pull_request' }}
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Detect file changes
-        uses: dorny/paths-filter@v2
+        uses: dorny/paths-filter@v3
         id: filter
         with:
           filters: |

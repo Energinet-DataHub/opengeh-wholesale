@@ -30,7 +30,7 @@ jobs:
       folders: ${{ steps.find_folder_names.outputs.folders }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # bash tree is used to make it easier to finder the subfolders.
       # https://linuxhint.com/bash-tree-command/
@@ -60,7 +60,7 @@ jobs:
     runs-on: ${{ inputs.operating_system }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Copy infrastructure files
         shell: bash
@@ -84,7 +84,7 @@ jobs:
         environment_folder_name: ${{ fromJSON(needs.find_environment_names.outputs.folders) }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Copy infrastructure files
         shell: bash
