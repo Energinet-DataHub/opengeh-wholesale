@@ -33,6 +33,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 
 var host = new HostBuilder()
@@ -40,8 +41,10 @@ var host = new HostBuilder()
     .ConfigureServices((context, services) =>
     {
         // Application Insights (Telemetry)
-        // => Telemetry initializers only adds information to logs emitted by the isolated worker; not the function host.
+        // => Telemetry initializers only adds information to logs emitted by the isolated worker; not logs emitted by the function host.
         services.AddSingleton<ITelemetryInitializer>(new SubsystemInitializer(TelemetryConstants.SubsystemName));
+        // => Configure isolated worker to emit logs directly to Application Insights.
+        // See https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide?tabs=windows#application-insights
         services.AddApplicationInsightsTelemetryWorkerService(options =>
         {
             options.ApplicationVersion = Assembly
@@ -94,6 +97,12 @@ var host = new HostBuilder()
 
         // => Handlers
         services.AddScoped<IStartCalculationHandler, StartCalculationHandler>();
+    })
+    .ConfigureLogging((hostingContext, logging) =>
+    {
+        // Make sure the logging configuration is picked up from settings.
+        // Found inspiration in https://github.com/Azure/azure-functions-dotnet-worker/issues/1447
+        logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
     })
     .Build();
 
