@@ -170,7 +170,7 @@ def test__write__writes_to_paths_that_match_contract(
     contracts_path: str,
     tmpdir: Path,
     metering_point_period_df_factory: Callable[..., DataFrame],
-    metering_point_time_series_factory
+    metering_point_time_series_factory,
 ) -> None:
     """
     This test calls 'write' once and then asserts on all file contracts.
@@ -188,7 +188,6 @@ def test__write__writes_to_paths_that_match_contract(
     )
 
     master_basis_data_df = basis_data.get_master_basis_data_df(metering_point_period_df)
-    
     basis_data_container: BasisDataContainer = BasisDataContainer()
     basis_data_container.timeseries_quarter_df = timeseries_quarter_df
     basis_data_container.timeseries_hour_df = timeseries_hour_df
