@@ -77,6 +77,7 @@ def _get_charge_master_data(
             | (col(Colname.to_date) > period_start_datetime)
         )
     )
+
     charge_master_data_df = clamp_period(
         charge_master_data_df,
         period_start_datetime,
@@ -84,6 +85,7 @@ def _get_charge_master_data(
         Colname.from_date,
         Colname.to_date,
     )
+
     charge_master_data_df = _add_charge_key_column(charge_master_data_df)
     return charge_master_data_df
 
@@ -107,7 +109,13 @@ def _join_with_charge_prices(
     charge_master_data: DataFrame, charge_prices: DataFrame
 ) -> DataFrame:
     charge_master_data = charge_master_data.join(
-        charge_prices, [Colname.charge_key], "inner"
+        charge_prices,
+        [
+            charge_prices[Colname.charge_key] == charge_master_data[Colname.charge_key],
+            charge_prices[Colname.charge_time] >= charge_master_data[Colname.from_date],
+            charge_prices[Colname.charge_time] < charge_master_data[Colname.to_date],
+        ],
+        "inner",
     ).select(
         charge_master_data[Colname.charge_key],
         charge_master_data[Colname.charge_code],
