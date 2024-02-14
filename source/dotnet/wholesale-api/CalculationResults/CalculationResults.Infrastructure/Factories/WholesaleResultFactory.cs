@@ -27,7 +27,8 @@ public class WholesaleResultFactory
         DatabricksSqlRow databricksSqlRow,
         IReadOnlyCollection<WholesaleTimeSeriesPoint> wholesaleTimeSeriesPoints,
         Instant periodStart,
-        Instant periodEnd)
+        Instant periodEnd,
+        long version)
     {
         var id = databricksSqlRow[WholesaleResultColumnNames.CalculationResultId];
         var calculationId = databricksSqlRow[WholesaleResultColumnNames.CalculationId];
@@ -61,6 +62,7 @@ public class WholesaleResultFactory
             ResolutionMapper.FromDeltaTableValue(resolution!),
             MeteringPointTypeMapper.FromDeltaTableValue(meteringPointType),
             SettlementMethodMapper.FromDeltaTableValue(settlementMethod),
-            wholesaleTimeSeriesPoints);
+            wholesaleTimeSeriesPoints,
+            version);
     }
 }
