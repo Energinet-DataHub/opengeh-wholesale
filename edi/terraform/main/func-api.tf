@@ -19,7 +19,27 @@ module "func_receiver" {
   scm_ip_restrictions                      = var.ip_restrictions
   client_certificate_mode                  = "Optional"
 
-  app_settings = {
+  app_settings = local.default_func_api_app_settings
+
+  # Role assigments is needed to connect to the storage account (st_documents) using URI
+  role_assignments = [
+    {
+      resource_id          = module.st_documents.id
+      role_definition_name = "Storage Blob Data Contributor"
+    }
+  ]
+}
+
+module "kvs_edi_api_base_url" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
+
+  name         = "func-edi-api-base-url"
+  value        = "https://${module.func_receiver.default_hostname}"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+locals {
+  default_func_api_app_settings = {
     # Shared resources logging
     REQUEST_RESPONSE_LOGGING_CONNECTION_STRING = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=st-marketoplogs-primary-connection-string)",
     REQUEST_RESPONSE_LOGGING_CONTAINER_NAME    = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=st-marketoplogs-container-name)",
@@ -38,20 +58,4 @@ module "func_receiver" {
     INTEGRATION_EVENTS_TOPIC_NAME                           = local.INTEGRATION_EVENTS_TOPIC_NAME
     INTEGRATION_EVENTS_SUBSCRIPTION_NAME                    = module.sbtsub_edi_integration_event_listener.name
   }
-
-  # Role assigments is needed to connect to the storage account (st_documents) using URI
-  role_assignments = [
-    {
-      resource_id          = module.st_documents.id
-      role_definition_name = "Storage Blob Data Contributor"
-    }
-  ]
-}
-
-module "kvs_edi_api_base_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
-
-  name         = "func-edi-api-base-url"
-  value        = "https://${module.func_receiver.default_hostname}"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
