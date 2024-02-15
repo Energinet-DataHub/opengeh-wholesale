@@ -17,7 +17,7 @@ from decimal import Decimal
 from pyspark.sql import SparkSession, DataFrame
 import pytest
 from typing import Callable
-from package.codelists import ChargeType
+from package.codelists import ChargeType, MeteringPointType, SettlementMethod
 from package.calculation.wholesale.schemas.calculate_daily_subscription_price_schema import (
     calculate_daily_subscription_price_schema,
 )
@@ -28,7 +28,7 @@ from tests.calculation.dataframe_defaults import DataframeDefaults
 from package.calculation.wholesale.schemas.charges_schema import (
     charges_schema,
     charges_master_data_schema,
-    charge_links_schema,
+    charge_link_metering_points_schema,
     charge_prices_schema,
 )
 from package.calculation_input.schemas import (
@@ -47,7 +47,6 @@ def calculate_daily_subscription_price_factory(
         price_per_day: Decimal,
         charge_count: int,
         total_daily_charge_price: Decimal = DataframeDefaults.default_charge_price,
-        charge_key: str = DataframeDefaults.default_charge_key,
         charge_code: str = DataframeDefaults.default_charge_code,
         charge_type: str = DataframeDefaults.default_charge_type,
         charge_owner: str = DataframeDefaults.default_charge_owner,
@@ -57,6 +56,8 @@ def calculate_daily_subscription_price_factory(
         grid_area: str = DataframeDefaults.default_grid_area,
         energy_supplier_id: str = DataframeDefaults.default_energy_supplier_id,
     ) -> DataFrame:
+        charge_key: str = f"{charge_code}-{charge_owner}-{charge_type}"
+
         data = [
             {
                 Colname.charge_key: charge_key,
@@ -88,7 +89,6 @@ def calculate_fee_charge_price_factory(spark: SparkSession) -> Callable[..., Dat
         time: datetime,
         charge_count: int,
         total_daily_charge_price: Decimal,
-        charge_key: str = DataframeDefaults.default_charge_key,
         charge_code: str = DataframeDefaults.default_charge_code,
         charge_type: str = ChargeType.FEE.value,
         charge_owner: str = DataframeDefaults.default_charge_owner,
@@ -98,6 +98,8 @@ def calculate_fee_charge_price_factory(spark: SparkSession) -> Callable[..., Dat
         grid_area: str = DataframeDefaults.default_grid_area,
         energy_supplier_id: str = DataframeDefaults.default_energy_supplier_id,
     ) -> DataFrame:
+        charge_key: str = f"{charge_code}-{charge_owner}-{charge_type}"
+
         data = [
             {
                 Colname.charge_key: charge_key,
@@ -121,80 +123,6 @@ def calculate_fee_charge_price_factory(spark: SparkSession) -> Callable[..., Dat
 
 
 @pytest.fixture(scope="session")
-def charge_master_data_factory(spark: SparkSession) -> Callable[..., DataFrame]:
-    def factory(
-        from_date: datetime,
-        to_date: datetime,
-        charge_key: str = DataframeDefaults.default_charge_key,
-        charge_code: str = DataframeDefaults.default_charge_code,
-        charge_type: str = DataframeDefaults.default_charge_type,
-        charge_owner: str = DataframeDefaults.default_charge_owner,
-        resolution: str = DataframeDefaults.default_charge_resolution,
-        charge_tax: str = DataframeDefaults.default_charge_tax,
-        currency: str = DataframeDefaults.default_currency,
-    ) -> DataFrame:
-        data = [
-            {
-                Colname.charge_key: charge_key,
-                Colname.charge_code: charge_code,
-                Colname.charge_type: charge_type,
-                Colname.charge_owner: charge_owner,
-                Colname.resolution: resolution,
-                Colname.charge_tax: charge_tax,
-                Colname.currency: currency,
-                Colname.from_date: from_date,
-                Colname.to_date: to_date,
-            }
-        ]
-
-        return spark.createDataFrame(data, schema=charges_master_data_schema)
-
-    return factory
-
-
-@pytest.fixture(scope="session")
-def charge_links_factory(spark: SparkSession) -> Callable[..., DataFrame]:
-    def factory(
-        from_date: datetime,
-        to_date: datetime,
-        charge_key: str = DataframeDefaults.default_charge_key,
-        metering_point_id: str = DataframeDefaults.default_metering_point_id,
-    ) -> DataFrame:
-        data = [
-            {
-                Colname.charge_key: charge_key,
-                Colname.metering_point_id: metering_point_id,
-                Colname.from_date: from_date,
-                Colname.to_date: to_date,
-            }
-        ]
-
-        return spark.createDataFrame(data, schema=charge_links_schema)
-
-    return factory
-
-
-@pytest.fixture(scope="session")
-def charge_prices_factory(spark: SparkSession) -> Callable[..., DataFrame]:
-    def factory(
-        time: datetime,
-        charge_key: str = DataframeDefaults.default_charge_key,
-        charge_price: Decimal = DataframeDefaults.default_charge_price,
-    ) -> DataFrame:
-        data = [
-            {
-                Colname.charge_key: charge_key,
-                Colname.charge_price: charge_price,
-                Colname.charge_time: time,
-            }
-        ]
-
-        return spark.createDataFrame(data, schema=charge_prices_schema)
-
-    return factory
-
-
-@pytest.fixture(scope="session")
 def charges_factory(spark: SparkSession) -> Callable[..., DataFrame]:
     def factory(
         charge_code: str = DataframeDefaults.default_charge_code,
@@ -202,26 +130,65 @@ def charges_factory(spark: SparkSession) -> Callable[..., DataFrame]:
         charge_owner: str = DataframeDefaults.default_charge_owner,
         charge_resolution: str = DataframeDefaults.default_charge_resolution,
         charge_tax: str = DataframeDefaults.default_charge_tax,
-        time: datetime = DataframeDefaults.default_charge_time,
+        charge_time: datetime = DataframeDefaults.default_charge_time,
         charge_price: Decimal = DataframeDefaults.default_charge_price,
+        from_date: datetime = DataframeDefaults.default_from_date,
+        to_date: datetime = DataframeDefaults.default_to_date,
     ) -> DataFrame:
+        charge_key: str = f"{charge_code}-{charge_owner}-{charge_type}"
+
         data = [
             {
-                Colname.charge_key: DataframeDefaults.default_charge_key,
+                Colname.charge_key: charge_key,
                 Colname.charge_code: charge_code,
                 Colname.charge_type: charge_type,
                 Colname.charge_owner: charge_owner,
                 Colname.charge_tax: charge_tax,
                 Colname.resolution: charge_resolution,
-                Colname.charge_time: time,
-                Colname.from_date: DataframeDefaults.default_from_date,
-                Colname.to_date: DataframeDefaults.default_to_date,
+                Colname.charge_time: charge_time,
+                Colname.from_date: from_date,
+                Colname.to_date: to_date,
                 Colname.charge_price: charge_price,
-                Colname.metering_point_id: DataframeDefaults.default_metering_point_id,
             }
         ]
 
         return spark.createDataFrame(data, schema=charges_schema)
+
+    return factory
+
+
+@pytest.fixture(scope="session")
+def charge_link_metering_points_factory(
+    spark: SparkSession,
+) -> Callable[..., DataFrame]:
+    def factory(
+        charge_type: str = DataframeDefaults.default_charge_type,
+        charge_code: str = DataframeDefaults.default_charge_code,
+        charge_owner: str = DataframeDefaults.default_charge_owner,
+        metering_point_id: str = DataframeDefaults.default_metering_point_id,
+        metering_point_type: str = DataframeDefaults.default_metering_point_type,
+        settlement_method: str = DataframeDefaults.default_settlement_method,
+        grid_area: str = DataframeDefaults.default_grid_area,
+        energy_supplier_id: str | None = DataframeDefaults.default_energy_supplier_id,
+        from_date: datetime = DataframeDefaults.default_from_date,
+        to_date: datetime | None = DataframeDefaults.default_to_date,
+    ) -> DataFrame:
+        charge_key: str = f"{charge_code}-{charge_owner}-{charge_type}"
+
+        data = [
+            {
+                Colname.charge_key: charge_key,
+                Colname.metering_point_id: metering_point_id,
+                Colname.metering_point_type: metering_point_type,
+                Colname.settlement_method: settlement_method,
+                Colname.grid_area: grid_area,
+                Colname.energy_supplier_id: energy_supplier_id,
+                Colname.from_date: from_date,
+                Colname.to_date: to_date,
+            }
+        ]
+
+        return spark.createDataFrame(data, schema=charge_link_metering_points_schema)
 
     return factory
 
