@@ -42,7 +42,7 @@ def create(
 
         # Get basis data for energy suppliers
         (
-            master_basis_data_df,
+            master_basis_data,
             time_series_quarter_basis_data_df,
             time_series_hour_basis_data_df,
         ) = _get_es_basis_data(
