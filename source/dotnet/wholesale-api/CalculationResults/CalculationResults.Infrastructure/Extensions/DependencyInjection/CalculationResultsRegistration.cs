@@ -23,7 +23,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DependencyInjection;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.DependencyInjection;
 
 /// <summary>
 /// Registration of services required for the CalculationResults module.

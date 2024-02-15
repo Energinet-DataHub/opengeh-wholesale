@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Core.Databricks.Jobs.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection;
-using Energinet.DataHub.Wholesale.Calculations.Infrastructure.DependencyInjection;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
 using Energinet.DataHub.Wholesale.Orchestration.Extensions.DependencyInjection;

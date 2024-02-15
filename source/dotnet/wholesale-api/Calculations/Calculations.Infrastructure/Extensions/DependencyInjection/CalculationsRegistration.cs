@@ -27,7 +27,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.DependencyInjection;
+namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
 
 /// <summary>
 /// Registration of services required for the Calculations module.
