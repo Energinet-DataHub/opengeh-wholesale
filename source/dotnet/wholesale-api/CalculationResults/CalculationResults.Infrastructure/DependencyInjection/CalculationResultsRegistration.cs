@@ -20,6 +20,8 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineS
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
 
@@ -28,25 +30,27 @@ namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
 /// </summary>
 public static class CalculationResultsRegistration
 {
-    public static void AddCalculationResultsModule(
-        this IServiceCollection serviceCollection,
+    public static IServiceCollection AddCalculationResultsModule(
+        this IServiceCollection services,
         IConfiguration configuration)
     {
-        serviceCollection.AddScoped<ISettlementReportClient, SettlementReportClient>();
+        services.AddScoped<ISettlementReportClient, SettlementReportClient>();
 
-        serviceCollection.AddDatabricksSqlStatementExecution(configuration);
+        services.AddDatabricksSqlStatementExecution(configuration);
 
-        serviceCollection.AddScoped<ISettlementReportResultsCsvWriter, SettlementReportResultsCsvWriter>();
-        serviceCollection.AddScoped<IDataLakeClient, DataLakeClient>();
-        serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
-        serviceCollection.AddScoped<IEnergyResultQueries, EnergyResultQueries>();
-        serviceCollection.AddScoped<IWholesaleResultQueries, WholesaleResultQueries>();
-        serviceCollection.AddScoped<IAggregatedTimeSeriesQueries, AggregatedTimeSeriesQueries>();
-        serviceCollection.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
-        serviceCollection.AddScoped<ISettlementReportRepository>(
+        services.AddScoped<ISettlementReportResultsCsvWriter, SettlementReportResultsCsvWriter>();
+        services.AddScoped<IDataLakeClient, DataLakeClient>();
+        services.AddScoped<IStreamZipper, StreamZipper>();
+        services.AddScoped<IEnergyResultQueries, EnergyResultQueries>();
+        services.AddScoped<IWholesaleResultQueries, WholesaleResultQueries>();
+        services.AddScoped<IAggregatedTimeSeriesQueries, AggregatedTimeSeriesQueries>();
+        services.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
+        services.AddScoped<ISettlementReportRepository>(
             provider => new SettlementReportRepository(
                 provider.GetRequiredService<IDataLakeClient>(),
                 provider.GetRequiredService<IStreamZipper>()));
-        serviceCollection.AddScoped<ISettlementReportResultQueries, SettlementReportResultQueries>();
+        services.AddScoped<ISettlementReportResultQueries, SettlementReportResultQueries>();
+
+        return services;
     }
 }
