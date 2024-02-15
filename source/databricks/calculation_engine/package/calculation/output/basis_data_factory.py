@@ -44,18 +44,14 @@ def create(
             master_basis_data_per_es,
             time_series_quarter_basis_data_per_es,
             time_series_hour_basis_data_per_es,
-        ) = _get_es_basis_data(
-            master_basis_data, timeseries_quarter, timeseries_hour
-        )
+        ) = _get_es_basis_data(master_basis_data, timeseries_quarter, timeseries_hour)
 
         # Add basis data for total grid area
         (
             master_basis_data,
             time_series_quarter_basis_data_df,
             time_series_hour_basis_data_df,
-        ) = _get_ga_basis_data(
-            master_basis_data, timeseries_quarter, timeseries_hour
-        )
+        ) = _get_ga_basis_data(master_basis_data, timeseries_quarter, timeseries_hour)
 
         basis_data_container = BasisDataContainer(
             time_series_hour_basis_data_per_es_per_ga=time_series_hour_basis_data_df,
