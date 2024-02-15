@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql.dataframe import DataFrame
 import pyspark.sql.functions as f
+from pyspark.sql.dataframe import DataFrame
+
 from package.codelists import ChargeType
 from package.constants import Colname
 
@@ -24,23 +25,14 @@ def get_fee_charges(
 ) -> DataFrame:
     fees = charges_df.filter(f.col(Colname.charge_type) == ChargeType.FEE.value)
 
-    fees = fee_charges.join(
+    fees = fees.join(
         charge_link_metering_points,
-        (
-            fee_charges[Colname.charge_key]
-            == charge_link_metering_points[Colname.charge_key]
-        )
-        & (
-            fee_charges[Colname.charge_time]
-            >= charge_link_metering_points[Colname.from_date]
-        )
-        & (
-            fee_charges[Colname.charge_time]
-            < charge_link_metering_points[Colname.to_date]
-        ),
+        (fees[Colname.charge_key] == charge_link_metering_points[Colname.charge_key])
+        & (fees[Colname.charge_time] >= charge_link_metering_points[Colname.from_date])
+        & (fees[Colname.charge_time] < charge_link_metering_points[Colname.to_date]),
         how="inner",
     ).select(
-        fee_charges[Colname.charge_key],
+        fees[Colname.charge_key],
         Colname.charge_code,
         Colname.charge_type,
         Colname.charge_owner,

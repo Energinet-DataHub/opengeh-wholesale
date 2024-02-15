@@ -14,12 +14,11 @@
 from datetime import datetime
 
 from pyspark.sql import DataFrame
-
-from package.calculation.preparation.transformations.clamp_period import clamp_period
 from pyspark.sql.functions import col, concat_ws
 
-from package.constants import Colname
+from package.calculation.preparation.transformations.clamp_period import clamp_period
 from package.calculation_input import TableReader
+from package.constants import Colname
 
 
 def read_charges(
@@ -30,7 +29,7 @@ def read_charges(
     charge_prices_df = _get_charge_price_points(
         table_reader, period_start_datetime, period_end_datetime
     )
-    charge_master_data_df = _get_charge_master_data(
+    charge_master_data_df = _get_charge_master_data_periods(
         table_reader, period_start_datetime, period_end_datetime
     )
     charges = _join_with_charge_prices(charge_master_data_df, charge_prices_df)
@@ -79,7 +78,7 @@ def _get_charge_master_data_periods(
     )
 
     charge_master_data_df = clamp_period(
-        charge_master_data_df,
+        charge_master_data_periods,
         period_start_datetime,
         period_end_datetime,
         Colname.from_date,
