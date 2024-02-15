@@ -19,24 +19,26 @@ from package.constants import PartitionKeyName
 from package.infrastructure import logging_configuration
 
 
-@logging_configuration.use_span("calculation.basis_data")
-def write_basis_data(args: CalculatorArgs, basis_data: BasisDataContainer) -> None:
-    basis_data_writer = BasisDataWriter(
-        args.wholesale_container_path, args.calculation_id
-    )
+logging_configuration.use_span("calculation.basis_data")
 
-    _write_ga_basis_data_to_csv(basis_data, basis_data_writer)
-    _write_es_basis_data_to_csv(basis_data, basis_data_writer)
+
+def write_basis_data(args: CalculatorArgs, basis_data: BasisDataContainer) -> None:
+    basis_data_writer = BasisDataWriter(args.wholesale_container_path)
+    _write_ga_basis_data_to_csv(args.calculation_id, basis_data, basis_data_writer)
+    _write_es_basis_data_to_csv(args.calculation_id, basis_data, basis_data_writer)
 
 
 @logging_configuration.use_span("per_grid_area")
 def _write_ga_basis_data_to_csv(
-    basis_data: BasisDataContainer, basis_data_writer: BasisDataWriter
+    calculation_id: str,
+    basis_data: BasisDataContainer,
+    basis_data_writer: BasisDataWriter,
 ) -> None:
     grouping_folder_name = f"grouping={AggregationLevel.TOTAL_GA.value}"
     partition_keys = [PartitionKeyName.GRID_AREA]
 
     basis_data_writer.write_basis_data_to_csv(
+        calculation_id,
         basis_data.master_basis_data_for_total_ga,
         basis_data.time_series_quarter_basis_data_for_total_ga,
         basis_data.time_series_hour_basis_data,
@@ -47,7 +49,9 @@ def _write_ga_basis_data_to_csv(
 
 @logging_configuration.use_span("per_energy_supplier")
 def _write_es_basis_data_to_csv(
-    basis_data: BasisDataContainer, basis_data_writer: BasisDataWriter
+    calculation_id: str,
+    basis_data: BasisDataContainer,
+    basis_data_writer: BasisDataWriter,
 ) -> None:
     grouping_folder_name = f"grouping={AggregationLevel.ES_PER_GA.value}"
     partition_keys = [
@@ -56,6 +60,7 @@ def _write_es_basis_data_to_csv(
     ]
 
     basis_data_writer.write_basis_data_to_csv(
+        calculation_id,
         basis_data.master_basis_data_for_es_per_ga,
         basis_data.time_series_quarter_basis_data_for_es_per_ga,
         basis_data.time_series_hour_basis_data_for_es_per_ga,

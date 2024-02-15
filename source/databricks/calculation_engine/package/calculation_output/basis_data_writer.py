@@ -20,37 +20,40 @@ from package.infrastructure import paths, logging_configuration
 
 
 class BasisDataWriter:
-    def __init__(self, container_path: str, calculation_id: str):
-        self.__master_basis_data_path = f"{container_path}/{paths.get_basis_data_root_path(BasisDataType.MASTER_BASIS_DATA, calculation_id)}"
-        self.__time_series_quarter_path = f"{container_path}/{paths.get_basis_data_root_path(BasisDataType.TIME_SERIES_QUARTER, calculation_id)}"
-        self.__time_series_hour_path = f"{container_path}/{paths.get_basis_data_root_path(BasisDataType.TIME_SERIES_HOUR, calculation_id)}"
-        self.calculation_id = calculation_id
+    def __init__(self, container_path: str):
+        self.__container_path = container_path
 
     def write_basis_data_to_csv(
         self,
+        calculation_id: str,
         master_basis_data_df: DataFrame,
         timeseries_quarter_df: DataFrame,
         timeseries_hour_df: DataFrame,
         grouping_folder_name: str,
         partition_keys: list[str],
     ) -> None:
+
+        master_basis_data_path = f"{self.__container_path}/{paths.get_basis_data_root_path(BasisDataType.MASTER_BASIS_DATA, calculation_id)}"
+        time_series_quarter_path = f"{self.__container_path}/{paths.get_basis_data_root_path(BasisDataType.TIME_SERIES_QUARTER, calculation_id)}"
+        time_series_hour_path = f"{self.__container_path}/{paths.get_basis_data_root_path(BasisDataType.TIME_SERIES_HOUR, calculation_id)}"
+
         with logging_configuration.start_span("timeseries_quarter_to_csv"):
             _write_df_to_csv(
-                f"{self.__time_series_quarter_path}/{grouping_folder_name}",
+                f"{time_series_quarter_path}/{grouping_folder_name}",
                 timeseries_quarter_df,
                 partition_keys,
             )
 
         with logging_configuration.start_span("timeseries_hour_to_csv"):
             _write_df_to_csv(
-                f"{self.__time_series_hour_path}/{grouping_folder_name}",
+                f"{time_series_hour_path}/{grouping_folder_name}",
                 timeseries_hour_df,
                 partition_keys,
             )
 
         with logging_configuration.start_span("metering_point_to_csv"):
             _write_df_to_csv(
-                f"{self.__master_basis_data_path}/{grouping_folder_name}",
+                f"{master_basis_data_path}/{grouping_folder_name}",
                 master_basis_data_df,
                 partition_keys,
             )
