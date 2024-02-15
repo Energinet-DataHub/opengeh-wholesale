@@ -26,13 +26,13 @@ public class MeteringPointTypeValidationRule : IValidationRule<AggregatedTimeSer
         MeteringPointType.Exchange,
     };
 
-    private static readonly ValidationError _invalidMeteringPointType = new("Metering point type skal være en af følgende: {PropertyName} / Metering point type has to be one of the following: {PropertyName}", "D18");
+    private static readonly ValidationError _invalidMeteringPointType =
+        new(
+            "Metering point type skal være tom eller en af følgende: {PropertyName} / Metering point type has to be empty or one of the following: {PropertyName}",
+            "D18");
 
     public Task<IList<ValidationError>> ValidateAsync(AggregatedTimeSeriesRequest subject)
     {
-        if (subject.MeteringPointType == string.Empty)
-            return Task.FromResult(NoError);
-
         if (IsValidMeteringPointType(subject.MeteringPointType))
             return Task.FromResult(NoError);
 
@@ -41,7 +41,8 @@ public class MeteringPointTypeValidationRule : IValidationRule<AggregatedTimeSer
 
     private static bool IsValidMeteringPointType(string meteringPointType)
     {
-        return _validMeteringPointTypes.Contains(meteringPointType, StringComparer.OrdinalIgnoreCase);
+        return meteringPointType == string.Empty
+               || _validMeteringPointTypes.Contains(meteringPointType, StringComparer.OrdinalIgnoreCase);
     }
 
     private static IList<ValidationError> NoError => new List<ValidationError>();

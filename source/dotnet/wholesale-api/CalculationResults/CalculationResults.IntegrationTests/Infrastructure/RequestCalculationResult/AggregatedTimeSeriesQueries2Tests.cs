@@ -607,12 +607,11 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
 
         var eachGridAreaIndividually = new List<AggregatedTimeSeries>();
         foreach (var parametersForGridArea in new[]
-                     {
-                         AggregatedTimeSeriesQueries2Constants.GridAreaCodeA,
-                         AggregatedTimeSeriesQueries2Constants.GridAreaCodeB,
-                         AggregatedTimeSeriesQueries2Constants.GridAreaCodeC,
-                     }
-                     .Select(gridArea => parameters with { GridArea = gridArea }))
+                 {
+                     AggregatedTimeSeriesQueries2Constants.GridAreaCodeA,
+                     AggregatedTimeSeriesQueries2Constants.GridAreaCodeB,
+                     AggregatedTimeSeriesQueries2Constants.GridAreaCodeC,
+                 }.Select(gridArea => parameters with { GridArea = gridArea }))
         {
             eachGridAreaIndividually.AddRange(await Sut.GetAsync(parametersForGridArea).ToListAsync());
         }
