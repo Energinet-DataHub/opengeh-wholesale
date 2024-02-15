@@ -12,9 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
+namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 
-public class AppInsightOptions
+public class ConnectionStringsOptions
 {
-    public string APPLICATIONINSIGHTS_CONNECTION_STRING { get; set; } = string.Empty;
+    // This is the section name. It must match the section name in setting storage.
+    public const string ConnectionStrings = "CONNECTIONSTRINGS";
+
+    public string DB_CONNECTION_STRING { get; set; } = string.Empty;
 }
