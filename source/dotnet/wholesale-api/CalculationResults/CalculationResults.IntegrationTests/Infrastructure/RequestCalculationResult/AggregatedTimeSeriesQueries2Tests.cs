@@ -52,7 +52,7 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
 
   The tests in this file all follow the same pattern:
   1. We generate a specific query parameter
-  2. We execute the generate query using the sut
+  2. We execute the generated query using the sut
   3. We validate that the expected data is returned
 
 
@@ -69,9 +69,9 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
    End of period
   ━━━━━━━━━━━━━━━━━━━━━━━━
 
-  The tests are for the most part group in two
-  1. We consider only one time series type and here validate
-  2. We consider multiple time series types and here validate
+  The tests are for the most part grouped in two
+  1. We consider only one time series type
+  2. We consider multiple time series types
 
 
 2.2 Result validation
