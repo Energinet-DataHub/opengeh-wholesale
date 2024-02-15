@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks;
+namespace Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
 
 public static class HealthCheckNames
 {
@@ -21,9 +21,8 @@ public static class HealthCheckNames
     public const string IntegrationEventsTopicSubscription = "IntegrationEventsTopicSubscriptionHealthCheck";
     public const string DatabricksSqlStatementsApi = "DatabricksSqlStatementsApiHealthCheck";
     public const string DatabricksJobsApi = "DatabricksJobsApiHealthCheck";
-    public const string SqlDatabaseContext = "SqlDatabaseContextHealthCheck";
+    public const string CalculationDatabaseContext = "CalculationDatabaseContextHealthCheck";
     public const string RegisterCompletedCalculationsTrigger = nameof(RegisterCompletedCalculationsTrigger);
     public const string UpdateCalculationExecutionStateTrigger = nameof(UpdateCalculationExecutionStateTrigger);
-    public const string StartCalculationTrigger = nameof(StartCalculationTrigger);
     public const string DataLake = "DataLakeHealthCheck";
 }
