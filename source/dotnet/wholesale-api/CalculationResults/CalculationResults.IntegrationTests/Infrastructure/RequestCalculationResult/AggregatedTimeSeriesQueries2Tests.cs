@@ -96,7 +96,8 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
      */
 
     [Fact]
-    public async Task GetAsync_EnergySupplierWithSpecificBalanceResponsibleAndGridArea_Production()
+    public async Task
+        GetAsync_WhenRequestFromEnergySupplierWithSpecificBalanceResponsibleAndGridArea_CorrectTimeSeriesPoints()
     {
         var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
@@ -143,7 +144,8 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
     }
 
     [Fact]
-    public async Task GetAsync_EnergySupplierWithSpecificBalanceResponsibleAndGridArea_ProductionConsumption()
+    public async Task
+        GetAsync_WhenRequestFromEnergySupplierWithSpecificBalanceResponsibleAndGridArea_CorrectTimeSeriesSplit()
     {
         var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
@@ -174,7 +176,7 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
     }
 
     [Fact]
-    public async Task GetAsync_EnergySupplierWithGridArea_Consumption()
+    public async Task GetAsync_WhenRequestFromEnergySupplierWithGridArea_CorrectTimeSeriesPoints()
     {
         var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
@@ -233,7 +235,7 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
     }
 
     [Fact]
-    public async Task GetAsync_EnergySupplierWithGridArea_ProductionConsumption()
+    public async Task GetAsync_WhenRequestFromEnergySupplierWithGridArea_CorrectTimeSeriesSplit()
     {
         var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
@@ -266,7 +268,7 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
     }
 
     [Fact]
-    public async Task GetAsync_EnergySupplierWithSpecificBalanceResponsible_Consumption()
+    public async Task GetAsync_WhenRequestFromEnergySupplierWithSpecificBalanceResponsible_CorrectTimeSeriesPoints()
     {
         var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
@@ -352,7 +354,7 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
     }
 
     [Fact]
-    public async Task GetAsync_EnergySupplierWithSpecificBalanceResponsible_ProductionConsumption()
+    public async Task GetAsync_WhenRequestFromEnergySupplierWithSpecificBalanceResponsible_CorrectTimeSeriesSplit()
     {
         var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
@@ -395,7 +397,7 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
     }
 
     [Fact]
-    public async Task GetAsync_BalanceResponsibleWithGridArea_ProductionConsumption()
+    public async Task GetAsync_WhenRequestFromBalanceResponsibleWithGridArea_CorrectTimeSeriesPoints()
     {
         var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
@@ -428,7 +430,7 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
     }
 
     [Fact]
-    public async Task GetAsync_BalanceResponsibleWithGridArea_Consumption()
+    public async Task GetAsync_WhenRequestFromBalanceResponsibleWithGridArea_CorrectTimeSeriesSplit()
     {
         var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
@@ -487,7 +489,7 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
     }
 
     [Fact]
-    public async Task GetAsync_GridArea_Production()
+    public async Task GetAsync_WhenRequestForGridArea_CorrectTimeSeriesPoints()
     {
         var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
@@ -546,7 +548,7 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
     }
 
     [Fact]
-    public async Task GetAsync_GridArea_ProductionConsumptionExchange()
+    public async Task GetAsync_WhenRequestForGridArea_CorrectTimeSeriesSplit()
     {
         var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
@@ -585,7 +587,7 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
     }
 
     [Fact]
-    public async Task GetAsync_NoEnergySupplierBalanceResponsibleOrGridArea_IsEquivalentToAskingForEachGridArea()
+    public async Task GetAsync_WhenRequestForNoEnergySupplierBalanceResponsibleOrGridArea_CorrectTimeSeriesPoints()
     {
         var startOfPeriodFilter = Instant.FromUtc(2021, 12, 31, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 4, 0, 0);
@@ -660,7 +662,7 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
     }
 
     [Fact]
-    public async Task GetAsync_PeriodFilterDenotesHalfClosedInterval_StartIsIncludedEndIsNot()
+    public async Task GetAsync_WhenRequestReceived_PeriodFilterDenotesHalfClosedIntervalWhereStarIsIncludedAndEndIsNot()
     {
         // Arrange
         var startOfPeriodFilter =
