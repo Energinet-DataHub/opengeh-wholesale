@@ -45,6 +45,7 @@ public class MonthlyAmountPerChargeResultProducedV1Factory : IMonthlyAmountPerCh
             IsTax = result.IsTax,
             Currency = Contracts.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1.Types.Currency.Dkk,
             Amount = result.TimeSeriesPoints.Single().Amount,
+            CalculationResultVersion = result.Version,
         };
 
         return amountPerChargeResultProducedV1;
