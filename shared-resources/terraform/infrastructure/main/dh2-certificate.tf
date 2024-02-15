@@ -23,7 +23,7 @@ resource "azurerm_app_service_certificate" "esett_dh2_certificate_app" {
 }
 
 module "esett_dh2_certificate_thumbprint" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.33.2"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.37.2"
 
   name         = "cert-esett-dh2-thumbprint"
   value        = azurerm_key_vault_certificate.esett_dh2_certificate.thumbprint

@@ -4,7 +4,7 @@ resource "azurerm_servicebus_queue" "wholesale_inbox_messagequeue" {
 }
 
 module "kvs_sbq_wholesale_inbox_messagequeue_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.33.2"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.37.2"
 
   name         = "sbq-wholesale-inbox-messagequeue-name"
   value        = azurerm_servicebus_queue.wholesale_inbox_messagequeue.name
@@ -18,7 +18,7 @@ resource "azurerm_servicebus_queue" "edi_inbox_messagequeue" {
 }
 
 module "kvs_sbq_edi_inbox_messagequeue" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.33.2"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.37.2"
 
   name         = "sbq-edi-inbox-messagequeue-name"
   value        = azurerm_servicebus_queue.edi_inbox_messagequeue.name

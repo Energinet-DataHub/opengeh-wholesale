@@ -4,7 +4,7 @@ resource "azurerm_servicebus_topic" "domainrelay_integrationevent_received" {
 }
 
 module "kvs_sbt_domainrelay_integrationevent_received_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.33.2"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.37.2"
 
   name         = "sbt-shres-integrationevent-received-id"
   value        = azurerm_servicebus_topic.domainrelay_integrationevent_received.id
@@ -12,7 +12,7 @@ module "kvs_sbt_domainrelay_integrationevent_received_id" {
 }
 
 module "kvs_sbt_domainrelay_integrationevent_received_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.33.2"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.37.2"
 
   name         = "sbt-shres-integrationevent-received-name"
   value        = azurerm_servicebus_topic.domainrelay_integrationevent_received.name
