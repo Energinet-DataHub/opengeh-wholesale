@@ -1,6 +1,4 @@
 module "app_webapi" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=v13"
-
   app_settings = {
     EXTERNAL_OPEN_ID_URL                       = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=frontend-open-id-url)"
     INTERNAL_OPEN_ID_URL                       = "https://app-webapi-${var.domain_name_short}-${var.environment_short}-we-${var.environment_instance}.azurewebsites.net/.well-known/openid-configuration"
@@ -19,5 +17,8 @@ module "app_webapi" {
     TOKEN_KEY_NAME                             = azurerm_key_vault_key.token_sign.name
     CERTIFICATES_KEY_VAULT                     = module.kv_dh2_certificates.vault_uri
     ENFORCE_2FA                                = "false"
+    CVR_BASE_ADDRESS                           = var.cvr_base_address
+    CVR_USERNAME                               = var.cvr_username
+    CVR_PASSWORD                               = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_cvr_password.name})"
   }
 }

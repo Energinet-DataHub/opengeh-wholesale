@@ -33,4 +33,9 @@ resource "azurerm_key_vault_access_policy" "kv_internal_access_policy_app_webapi
     "Get",
     "Sign"
   ]
+
+  secret_permissions = [
+    "List",
+    "Get"
+  ]
 }
