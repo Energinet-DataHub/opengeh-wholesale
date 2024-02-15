@@ -39,7 +39,7 @@ class DataframeDefaults:
     default_calculation_type: Optional[str] = None
     default_charge_code: str = const_charge_code
     default_charge_key: str = (
-        f"{const_charge_code}-{const_charge_type}-{const_charge_owner}"
+        f"{const_charge_code}-{const_charge_type.value}-{const_charge_owner}"
     )
     default_charge_owner: str = const_charge_owner
     default_charge_price: Decimal = Decimal("1.123456")

@@ -17,6 +17,7 @@ from decimal import Decimal
 from pyspark.sql import Row, DataFrame, SparkSession
 
 from package.calculation_input.schemas import metering_point_period_schema
+from package.codelists import ChargeType
 from package.constants import Colname
 
 import package.codelists as e
@@ -24,6 +25,7 @@ import package.codelists as e
 
 class DefaultValues:
     DEFAULT_GRID_AREA = "543"
+    DEFAULT_CHARGE_TYPE = ChargeType.TARIFF
     DEFAULT_CHARGE_CODE = "4000"
     DEFAULT_CHARGE_OWNER = "001"
     DEFAULT_CHARGE_TAX = True
@@ -106,7 +108,6 @@ def create_tariff_charges_row(
     from_date: datetime = datetime(2019, 12, 31, 23),
     to_date: datetime = datetime(2020, 1, 1, 0),
     charge_price: Decimal = DefaultValues.DEFAULT_CHARGE_PRICE,
-    metering_point_id: str = DefaultValues.DEFAULT_METERING_POINT_ID,
 ) -> Row:
     charge_key: str = f"{charge_code}-{charge_owner}-{e.ChargeType.TARIFF.value}"
 
@@ -121,8 +122,38 @@ def create_tariff_charges_row(
         Colname.from_date: from_date,
         Colname.to_date: to_date,
         Colname.charge_price: charge_price,
-        Colname.metering_point_id: metering_point_id,
     }
+
+    return Row(**row)
+
+
+def create_charge_link_metering_points_row(
+    charge_type: e.ChargeType = DefaultValues.DEFAULT_CHARGE_TYPE,
+    charge_code: str = DefaultValues.DEFAULT_CHARGE_CODE,
+    charge_owner: str = DefaultValues.DEFAULT_CHARGE_OWNER,
+    metering_point_id: str = DefaultValues.DEFAULT_METERING_POINT_ID,
+    metering_point_type: (
+        e.MeteringPointType
+    ) = DefaultValues.DEFAULT_METERING_POINT_TYPE,
+    settlement_method: e.SettlementMethod = DefaultValues.DEFAULT_SETTLEMENT_METHOD,
+    grid_area: str = DefaultValues.DEFAULT_GRID_AREA,
+    energy_supplier_id: str | None = DefaultValues.DEFAULT_ENERGY_SUPPLIER_ID,
+    from_date: datetime = DefaultValues.DEFAULT_FROM_DATE,
+    to_date: datetime | None = DefaultValues.DEFAULT_TO_DATE,
+) -> Row:
+    charge_key: str = f"{charge_code}-{charge_owner}-{charge_type.value}"
+
+    row = {
+        Colname.charge_key: charge_key,
+        Colname.metering_point_id: metering_point_id,
+        Colname.metering_point_type: metering_point_type.value,
+        Colname.settlement_method: settlement_method.value,
+        Colname.grid_area: grid_area,
+        Colname.energy_supplier_id: energy_supplier_id,
+        Colname.from_date: from_date,
+        Colname.to_date: to_date,
+    }
+
     return Row(**row)
 
 
@@ -135,7 +166,6 @@ def create_subscription_or_fee_charges_row(
     from_date: datetime = datetime(2019, 12, 31, 23),
     to_date: datetime = datetime(2020, 1, 1, 0),
     charge_price: Decimal = DefaultValues.DEFAULT_CHARGE_PRICE,
-    metering_point_id: str = DefaultValues.DEFAULT_METERING_POINT_ID,
 ) -> Row:
     charge_key: str = f"{charge_code}-{charge_owner}-{charge_type.value}"
 
@@ -150,7 +180,6 @@ def create_subscription_or_fee_charges_row(
         Colname.from_date: from_date,
         Colname.to_date: to_date,
         Colname.charge_price: charge_price,
-        Colname.metering_point_id: metering_point_id,
     }
     return Row(**row)
 
