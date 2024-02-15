@@ -49,13 +49,13 @@ def create(
             master_basis_data_df, timeseries_quarter_df, timeseries_hour_df
         )
 
-        basis_data_container.time_series_hour_basis_data_for_es_per_ga = (
+        basis_data_container.time_series_hour_basis_data_per_es_per_ga = (
             time_series_hour_basis_data_df
         )
-        basis_data_container.time_series_quarter_basis_data_for_es_per_ga = (
+        basis_data_container.time_series_quarter_basis_data_per_es_per_ga = (
             time_series_quarter_basis_data_df
         )
-        basis_data_container.master_basis_data_for_es_per_ga = master_basis_data_df
+        basis_data_container.master_basis_data_per_es_per_ga = master_basis_data_df
 
         # Add basis data for total grid area
         (
@@ -69,10 +69,10 @@ def create(
         basis_data_container.time_series_hour_basis_data = (
             time_series_hour_basis_data_df
         )
-        basis_data_container.time_series_quarter_basis_data_for_total_ga = (
+        basis_data_container.time_series_quarter_basis_data_per_total_ga = (
             time_series_quarter_basis_data_df
         )
-        basis_data_container.master_basis_data_for_total_ga = master_basis_data_df
+        basis_data_container.master_basis_data_per_total_ga = master_basis_data_df
 
     return basis_data_container
 

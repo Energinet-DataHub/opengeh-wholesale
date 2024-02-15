@@ -39,8 +39,8 @@ def _write_ga_basis_data_to_csv(
 
     basis_data_writer.write_basis_data_to_csv(
         calculation_id,
-        basis_data.master_basis_data_for_total_ga,
-        basis_data.time_series_quarter_basis_data_for_total_ga,
+        basis_data.master_basis_data_per_total_ga,
+        basis_data.time_series_quarter_basis_data_per_total_ga,
         basis_data.time_series_hour_basis_data,
         grouping_folder_name,
         partition_keys,
@@ -61,9 +61,9 @@ def _write_es_basis_data_to_csv(
 
     basis_data_writer.write_basis_data_to_csv(
         calculation_id,
-        basis_data.master_basis_data_for_es_per_ga,
-        basis_data.time_series_quarter_basis_data_for_es_per_ga,
-        basis_data.time_series_hour_basis_data_for_es_per_ga,
+        basis_data.master_basis_data_per_es_per_ga,
+        basis_data.time_series_quarter_basis_data_per_es_per_ga,
+        basis_data.time_series_hour_basis_data_per_es_per_ga,
         grouping_folder_name,
         partition_keys,
     )
