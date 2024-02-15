@@ -445,7 +445,8 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
                 timeSeriesType));
 
             // Do the aggregations
-            var aggregatedByBalanceAndGrid = dataRowsToAddToDatabricks.GroupBy(row => new
+            var aggregatedByBalanceAndGrid = dataRowsToAddToDatabricks
+                .GroupBy(row => new
                 {
                     Time = row.ElementAt(6),
                     GridArea = row.ElementAt(4),
@@ -474,7 +475,8 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
                         calculationType: grouping.Key.CalculationType.Replace("'", string.Empty)))
                 .ToList();
 
-            var aggregatedByEnergyAndGrid = dataRowsToAddToDatabricks.GroupBy(row => new
+            var aggregatedByEnergyAndGrid = dataRowsToAddToDatabricks
+                .GroupBy(row => new
                 {
                     Time = row.ElementAt(6),
                     GridArea = row.ElementAt(4),
@@ -503,7 +505,8 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
                         calculationType: grouping.Key.CalculationType.Replace("'", string.Empty)))
                 .ToList();
 
-            var aggregatedByGrid = dataRowsToAddToDatabricks.GroupBy(row => new
+            var aggregatedByGrid = dataRowsToAddToDatabricks
+                .GroupBy(row => new
                 {
                     Time = row.ElementAt(6),
                     GridArea = row.ElementAt(4),
@@ -538,7 +541,9 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
 
             dataRowsToAddToDatabricks = dataRowsToAddToDatabricks.OrderBy(_ => Random.Shared.NextInt64()).ToList();
 
-            await sqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(sqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME, dataRowsToAddToDatabricks);
+            await sqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(
+                sqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME,
+                dataRowsToAddToDatabricks);
         }
     }
 
