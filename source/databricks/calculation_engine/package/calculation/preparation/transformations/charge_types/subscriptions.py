@@ -27,7 +27,7 @@ def get_subscription_charges(
         f.col(Colname.charge_type) == ChargeType.SUBSCRIPTION.value
     )
 
-    subscription_charges = _explode_subscription(subscription_charges)
+    subscriptions = _explode_subscription(subscription_charges)
 
     subscriptions = subscription_charges.join(
         charge_link_metering_points,
