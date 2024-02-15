@@ -20,6 +20,7 @@ using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Orchestration.Extensions.DependencyInjection;
@@ -27,7 +28,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using NodaTime;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
@@ -39,7 +39,7 @@ var host = new HostBuilder()
         // => Health checks
         services.AddHealthChecksForIsolatedWorker();
         // => NodaTime
-        services.AddSingleton<IClock>(_ => SystemClock.Instance);
+        services.AddNodaTimeForApplication(context.Configuration);
 
         // Calculation
         // => Database

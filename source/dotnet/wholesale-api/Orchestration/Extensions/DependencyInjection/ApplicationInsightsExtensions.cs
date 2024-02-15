@@ -23,7 +23,7 @@ namespace Energinet.DataHub.Wholesale.Orchestration.Extensions.DependencyInjecti
 {
     /// <summary>
     /// Extension methods for <see cref="IServiceCollection"/>
-    /// that allow adding Application Insights services to Function App's.
+    /// that allow adding Application Insights services to a Function App.
     /// </summary>
     public static class ApplicationInsightsExtensions
     {

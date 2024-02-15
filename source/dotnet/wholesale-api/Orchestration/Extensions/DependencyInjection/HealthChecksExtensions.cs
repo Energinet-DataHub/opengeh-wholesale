@@ -14,14 +14,13 @@
 
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks;
-using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Wholesale.Orchestration.Extensions.DependencyInjection
 {
     /// <summary>
     /// Extension methods for <see cref="IServiceCollection"/>
-    /// that allow adding Health Checks services to Function App's.
+    /// that allow adding HealthChecks services to a Function App.
     /// </summary>
     public static class HealthChecksExtensions
     {
