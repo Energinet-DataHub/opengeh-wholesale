@@ -69,7 +69,7 @@ def _get_charge_master_data_periods(
     period_start_datetime: datetime,
     period_end_datetime: datetime,
 ) -> DataFrame:
-    charge_master_data_df = (
+    charge_master_data_periods = (
         table_reader.read_charge_master_data_periods()
         .where(col(Colname.from_date) < period_end_datetime)
         .where(
