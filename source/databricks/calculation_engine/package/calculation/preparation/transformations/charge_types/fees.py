@@ -22,7 +22,7 @@ def get_fee_charges(
     charges_df: DataFrame,
     charge_link_metering_points: DataFrame,
 ) -> DataFrame:
-    fee_charges = charges_df.filter(f.col(Colname.charge_type) == ChargeType.FEE.value)
+    fees = charges_df.filter(f.col(Colname.charge_type) == ChargeType.FEE.value)
 
     fees = fee_charges.join(
         charge_link_metering_points,
