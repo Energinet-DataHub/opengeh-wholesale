@@ -152,7 +152,7 @@ class TestWhenChargeTimeIsOutsideCalculationPeriod:
                 datetime(2020, 1, 4, 0, 0),
                 datetime(2020, 1, 5, 0, 0),
             ),
-            (  # Dataset: charge time equals after to_date
+            (  # Dataset: charge time equals to_date
                 datetime(2020, 1, 2, 0, 0),
                 datetime(2020, 1, 4, 0, 0),
                 datetime(2020, 1, 4, 0, 0),
