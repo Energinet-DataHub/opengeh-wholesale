@@ -64,7 +64,7 @@ def read_charge_links(
     return charge_links_df
 
 
-def _get_charge_master_data(
+def _get_charge_master_data_periods(
     table_reader: TableReader,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
