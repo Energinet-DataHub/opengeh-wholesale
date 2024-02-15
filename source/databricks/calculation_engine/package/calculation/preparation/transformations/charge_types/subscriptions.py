@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql.dataframe import DataFrame
 import pyspark.sql.functions as f
+from pyspark.sql.dataframe import DataFrame
 
 from package.codelists import ChargeType
 from package.constants import Colname
@@ -27,7 +27,7 @@ def get_subscription_charges(
         f.col(Colname.charge_type) == ChargeType.SUBSCRIPTION.value
     )
 
-    subscriptions = _explode_subscription(subscription_charges)
+    subscription_charges = _explode_subscription(subscription_charges)
 
     subscriptions = subscription_charges.join(
         charge_link_metering_points,
