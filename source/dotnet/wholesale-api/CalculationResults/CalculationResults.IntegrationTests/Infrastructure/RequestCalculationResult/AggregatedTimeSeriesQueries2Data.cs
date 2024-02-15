@@ -209,6 +209,7 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
     {
         IReadOnlyCollection<CalculationForPeriod> calculationForPeriods =
         [
+            // Energy supplier, balance responsible, and grid area aggregation data
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.BalanceFixingCalculationResultId),
@@ -226,6 +227,7 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.ThirdCorrectionSettlementCalculationResultId),
                 2048),
 
+            // Balance responsible and grid area aggregation data
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.BrGaAgBf1CalculationResultId),
@@ -259,6 +261,7 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.BrGaAgTc2CalculationResultId),
                 8),
 
+            // Energy supplier and grid area aggregation data
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.EsGaAgBf1CalculationResultId),
@@ -292,6 +295,7 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.EsGaAgTc2CalculationResultId),
                 88),
 
+            // Grid area aggregation data
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.GaAgBf1CalculationResultId),
@@ -336,12 +340,14 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
 
     public async Task AddDataAsync()
     {
-        await sqlStatementApiFixture.DatabricksSchemaManager.EmptyAsync(sqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value
-            .ENERGY_RESULTS_TABLE_NAME);
+        await sqlStatementApiFixture.DatabricksSchemaManager
+            .EmptyAsync(
+                sqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME);
 
         foreach (var timeSeriesType in new[]
                  {
-                     DeltaTableTimeSeriesType.Production, DeltaTableTimeSeriesType.FlexConsumption,
+                     DeltaTableTimeSeriesType.Production,
+                     DeltaTableTimeSeriesType.FlexConsumption,
                      DeltaTableTimeSeriesType.NetExchangePerGridArea,
                  })
         {
