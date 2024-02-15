@@ -16,14 +16,14 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonSerialization;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DependencyInjection;
 
 /// <summary>
 /// Registration of services required for the CalculationResults module.
