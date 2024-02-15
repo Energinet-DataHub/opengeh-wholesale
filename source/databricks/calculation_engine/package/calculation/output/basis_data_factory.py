@@ -29,41 +29,41 @@ def create(
 
     with logging_configuration.start_span("basis_data_prepare"):
         (
-            timeseries_quarter_df,
-            timeseries_hour_df,
+            timeseries_quarter,
+            timeseries_hour,
         ) = basis_data.get_metering_point_time_series_basis_data_dfs(
             metering_point_time_series_df, time_zone
         )
 
-        master_basis_data_df = basis_data.get_master_basis_data_df(
+        master_basis_data = basis_data.get_master_basis_data_df(
             metering_point_periods_df
         )
 
         # Get basis data for energy suppliers
         (
-            master_basis_data,
-            time_series_quarter_basis_data_df,
-            time_series_hour_basis_data_df,
+            master_basis_data_per_es,
+            time_series_quarter_basis_data_per_es,
+            time_series_hour_basis_data_per_es,
         ) = _get_es_basis_data(
-            master_basis_data_df, timeseries_quarter_df, timeseries_hour_df
+            master_basis_data, timeseries_quarter, timeseries_hour
         )
 
         # Add basis data for total grid area
         (
-            master_basis_data_df,
+            master_basis_data,
             time_series_quarter_basis_data_df,
             time_series_hour_basis_data_df,
         ) = _get_ga_basis_data(
-            master_basis_data_df, timeseries_quarter_df, timeseries_hour_df
+            master_basis_data, timeseries_quarter, timeseries_hour
         )
 
         basis_data_container = BasisDataContainer(
             time_series_hour_basis_data_per_es_per_ga=time_series_hour_basis_data_df,
             time_series_quarter_basis_data_per_es_per_ga=time_series_quarter_basis_data_df,
-            master_basis_data_per_es_per_ga=master_basis_data_df,
-            time_series_hour_basis_data=time_series_hour_basis_data_df,
-            time_series_quarter_basis_data_per_total_ga=time_series_quarter_basis_data_df,
-            master_basis_data_per_total_ga=master_basis_data_df,
+            master_basis_data_per_es_per_ga=master_basis_data,
+            time_series_hour_basis_data=time_series_hour_basis_data_per_es,
+            time_series_quarter_basis_data_per_total_ga=time_series_quarter_basis_data_per_es,
+            master_basis_data_per_total_ga=master_basis_data_per_es,
         )
 
     return basis_data_container
