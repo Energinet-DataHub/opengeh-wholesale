@@ -26,7 +26,8 @@ from .CalculationResults import (
 )
 from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
-from .output.basis_data import write_basis_data
+from .output import basis_data_factory
+from .output.basis_data_results import write_basis_data
 from .output.energy_results import write_energy_results
 from .output.wholesale_results import write_wholesale_results
 from .preparation import PreparedDataReader
@@ -104,9 +105,10 @@ def _execute(
             args.calculation_period_start_datetime,
         )
 
-    # Add basis data results
-    results.basis_data.metering_point_periods = metering_point_periods_df
-    results.basis_data.metering_point_time_series = metering_point_time_series
+    # Add basis data to results
+    results.basis_data = basis_data_factory.create(
+        metering_point_periods_df, metering_point_time_series, args.time_zone
+    )
 
     return results
 
