@@ -26,11 +26,11 @@ from .CalculationResults import (
 )
 from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
+from .output import basis_data_factory
 from .output.basis_data_results import write_basis_data
 from .output.energy_results import write_energy_results
 from .output.wholesale_results import write_wholesale_results
 from .preparation import PreparedDataReader
-from .preparation.transformations import basis_data_factory
 from .wholesale import wholesale_calculation
 
 

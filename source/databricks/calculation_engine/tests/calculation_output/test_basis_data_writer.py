@@ -21,8 +21,7 @@ import pytest
 from pyspark.sql import DataFrame, SparkSession
 
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.output import basis_data_results
-from package.calculation.preparation.transformations import basis_data_factory
+from package.calculation.output import basis_data_results, basis_data_factory
 from package.codelists import (
     BasisDataType,
     MeteringPointResolution,

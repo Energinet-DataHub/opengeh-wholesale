@@ -26,7 +26,6 @@ def create(
     metering_point_time_series_df: DataFrame,
     time_zone: str,
 ) -> BasisDataContainer:
-    basis_data_container = BasisDataContainer()
 
     with logging_configuration.start_span("basis_data_prepare"):
         (
@@ -49,14 +48,6 @@ def create(
             master_basis_data_df, timeseries_quarter_df, timeseries_hour_df
         )
 
-        basis_data_container.time_series_hour_basis_data_per_es_per_ga = (
-            time_series_hour_basis_data_df
-        )
-        basis_data_container.time_series_quarter_basis_data_per_es_per_ga = (
-            time_series_quarter_basis_data_df
-        )
-        basis_data_container.master_basis_data_per_es_per_ga = master_basis_data_df
-
         # Add basis data for total grid area
         (
             master_basis_data_df,
@@ -66,13 +57,14 @@ def create(
             master_basis_data_df, timeseries_quarter_df, timeseries_hour_df
         )
 
-        basis_data_container.time_series_hour_basis_data = (
-            time_series_hour_basis_data_df
+        basis_data_container = BasisDataContainer(
+            time_series_hour_basis_data_per_es_per_ga=time_series_hour_basis_data_df,
+            time_series_quarter_basis_data_per_es_per_ga=time_series_quarter_basis_data_df,
+            master_basis_data_per_es_per_ga=master_basis_data_df,
+            time_series_hour_basis_data=time_series_hour_basis_data_df,
+            time_series_quarter_basis_data_per_total_ga=time_series_quarter_basis_data_df,
+            master_basis_data_per_total_ga=master_basis_data_df,
         )
-        basis_data_container.time_series_quarter_basis_data_per_total_ga = (
-            time_series_quarter_basis_data_df
-        )
-        basis_data_container.master_basis_data_per_total_ga = master_basis_data_df
 
     return basis_data_container
 

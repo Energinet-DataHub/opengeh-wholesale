@@ -58,16 +58,16 @@ class WholesaleResultsContainer:
 
 @dataclass
 class BasisDataContainer:
-    master_basis_data_per_es_per_ga: DataFrame | None = None
-    master_basis_data_per_total_ga: DataFrame | None = None
-    time_series_quarter_basis_data_per_total_ga: DataFrame | None = None
-    time_series_quarter_basis_data_per_es_per_ga: DataFrame | None = None
-    time_series_hour_basis_data: DataFrame | None = None
-    time_series_hour_basis_data_per_es_per_ga: DataFrame | None = None
+    master_basis_data_per_es_per_ga: DataFrame
+    master_basis_data_per_total_ga: DataFrame
+    time_series_quarter_basis_data_per_total_ga: DataFrame
+    time_series_quarter_basis_data_per_es_per_ga: DataFrame
+    time_series_hour_basis_data: DataFrame
+    time_series_hour_basis_data_per_es_per_ga: DataFrame
 
 
 @dataclass
 class CalculationResultsContainer:
     energy_results: EnergyResultsContainer = cast(EnergyResultsContainer, None)
     wholesale_results: WholesaleResultsContainer | None = None
-    basis_data: BasisDataContainer = BasisDataContainer()
+    basis_data: BasisDataContainer = cast(BasisDataContainer, None)
