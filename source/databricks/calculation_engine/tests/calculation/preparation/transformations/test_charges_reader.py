@@ -22,6 +22,7 @@ from pyspark.sql import SparkSession
 
 from package import calculation_input
 from package.calculation.preparation.transformations import read_charges
+from package.calculation_input.schemas import charge_master_data_periods_schema
 
 from package.calculation_input.table_reader import TableReader
 from package.codelists import ChargeType
@@ -53,10 +54,10 @@ def _create_charge_master_data_row(
 ) -> Row:
     row = {
         Colname.charge_code: charge_code,
-        Colname.charge_owner: charge_owner,
         Colname.charge_type: charge_type,
-        Colname.charge_tax: charge_tax,
+        Colname.charge_owner: charge_owner,
         Colname.resolution: resolution,
+        Colname.charge_tax: charge_tax,
         Colname.from_date: from_date,
         Colname.to_date: to_date,
     }
@@ -135,37 +136,172 @@ class TestWhenValidInput:
         assert actual_row[Colname.from_date] == DEFAULT_FROM_DATE
         assert actual_row[Colname.to_date] == DEFAULT_TO_DATE
         assert actual_row[Colname.charge_time] == DEFAULT_CHARGE_TIME
-        assert actual_row[Colname.metering_point_id] == DEFAULT_METERING_POINT_ID
 
 
-class TestWhenChargeIsInMasterDataButNotInChargeLinks:
+class TestWhenChargeTimeIsOutsideCalculationPeriod:
+    @pytest.mark.parametrize(
+        "from_date, to_date, charge_time",
+        [
+            (  # Dataset: charge time is before from_date
+                datetime(2020, 1, 2, 0, 0),
+                datetime(2020, 1, 4, 0, 0),
+                datetime(2020, 1, 1, 0, 0),
+            ),
+            (  # Dataset: charge time is after to_date
+                datetime(2020, 1, 2, 0, 0),
+                datetime(2020, 1, 4, 0, 0),
+                datetime(2020, 1, 5, 0, 0),
+            ),
+            (  # Dataset: charge time equals to_date
+                datetime(2020, 1, 2, 0, 0),
+                datetime(2020, 1, 4, 0, 0),
+                datetime(2020, 1, 4, 0, 0),
+            ),
+        ],
+    )
     @patch.object(calculation_input, TableReader.__name__)
-    def test_returns_dataframe_without_that_charge(
-        self, table_reader_mock: TableReader, spark: SparkSession
+    def test__returns_empty_result(
+        self,
+        table_reader_mock: TableReader,
+        spark: SparkSession,
+        from_date,
+        to_date,
+        charge_time,
     ) -> None:
         # Arrange
         table_reader_mock.read_charge_master_data_periods.return_value = (
             spark.createDataFrame(
                 data=[
-                    _create_charge_master_data_row(),
-                    _create_charge_master_data_row(charge_code="not-in-charge-links"),
+                    _create_charge_master_data_row(
+                        from_date=from_date,
+                        to_date=from_date,
+                    )
                 ]
             )
         )
-        table_reader_mock.read_charge_links_periods.return_value = (
-            spark.createDataFrame(data=[_create_charge_link_periods_row()])
-        )
+
         table_reader_mock.read_charge_price_points.return_value = spark.createDataFrame(
-            data=[_create_charges_price_points_row()]
+            data=[_create_charges_price_points_row(charge_time=charge_time)]
         )
 
         # Act
-        actual = read_charges(table_reader_mock, DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
+        actual = read_charges(table_reader_mock, from_date, to_date)
+
+        # Assert
+        assert actual.isEmpty()
+
+
+class TestWhenChargeTimeIsInsideCalculationPeriod:
+    @pytest.mark.parametrize(
+        "from_date, to_date, charge_time",
+        [
+            (
+                datetime(2020, 1, 2, 0, 0),
+                datetime(2020, 1, 4, 0, 0),
+                datetime(2020, 1, 3, 0, 0),
+            ),
+            (
+                datetime(2020, 1, 2, 0, 0),
+                datetime(2020, 1, 4, 0, 0),
+                datetime(2020, 1, 2, 0, 0),
+            ),
+        ],
+    )
+    @patch.object(calculation_input, TableReader.__name__)
+    def test__returns_charge(
+        self,
+        table_reader_mock: TableReader,
+        spark: SparkSession,
+        from_date,
+        to_date,
+        charge_time,
+    ) -> None:
+        # Arrange
+        table_reader_mock.read_charge_master_data_periods.return_value = (
+            spark.createDataFrame(
+                data=[
+                    _create_charge_master_data_row(
+                        from_date=from_date,
+                        to_date=to_date,
+                    )
+                ]
+            )
+        )
+
+        table_reader_mock.read_charge_price_points.return_value = spark.createDataFrame(
+            data=[_create_charges_price_points_row(charge_time=charge_time)]
+        )
+
+        # Act
+        actual = read_charges(table_reader_mock, from_date, to_date)
 
         # Assert
         assert actual.count() == 1
+
+
+class TestWhenChargePeriodExceedsCalculationPeriod:
+    @pytest.mark.parametrize(
+        "charge_from_date, charge_to_date, calculation_from_date, calculation_to_date, expected_from_date, expected_to_date",
+        [
+            (
+                datetime(2020, 1, 1, 0, 0),
+                datetime(2020, 1, 5, 0, 0),
+                datetime(2020, 1, 2, 0, 0),
+                datetime(2020, 1, 3, 0, 0),
+                datetime(2020, 1, 2, 0, 0),
+                datetime(2020, 1, 3, 0, 0),
+            ),
+            (
+                datetime(2020, 1, 1, 0, 0),
+                None,
+                datetime(2020, 1, 2, 0, 0),
+                datetime(2020, 1, 3, 0, 0),
+                datetime(2020, 1, 2, 0, 0),
+                datetime(2020, 1, 3, 0, 0),
+            ),
+        ],
+    )
+    @patch.object(calculation_input, TableReader.__name__)
+    def test__returns_expected_to_and_from_date(
+        self,
+        table_reader_mock: TableReader,
+        spark: SparkSession,
+        charge_from_date: datetime,
+        charge_to_date: datetime,
+        calculation_from_date: datetime,
+        calculation_to_date: datetime,
+        expected_from_date: datetime,
+        expected_to_date: datetime,
+    ) -> None:
+        # Arrange
+        table_reader_mock.read_charge_master_data_periods.return_value = (
+            spark.createDataFrame(
+                data=[
+                    _create_charge_master_data_row(
+                        from_date=charge_from_date,
+                        to_date=charge_to_date,
+                    )
+                ],
+                schema=charge_master_data_periods_schema,
+            )
+        )
+
+        charge_time = max(
+            charge_from_date, calculation_from_date
+        )  # ensure time is included in period
+        table_reader_mock.read_charge_price_points.return_value = spark.createDataFrame(
+            data=[_create_charges_price_points_row(charge_time=charge_time)]
+        )
+
+        # Act
+        actual = read_charges(
+            table_reader_mock, calculation_from_date, calculation_to_date
+        )
+
+        # Assert
         actual_row = actual.collect()[0]
-        assert actual_row[Colname.charge_key] == DEFAULT_CHARGE_KEY
+        assert actual_row[Colname.from_date] == expected_from_date
+        assert actual_row[Colname.to_date] == expected_to_date
 
 
 class TestWhenMultipleChargeKeys:
@@ -214,12 +350,10 @@ class TestWhenMultipleChargeKeys:
         )  # ensure all times are within period
         period_to_date = max(to_date, charge_time)  # ensure all times are within period
         table_reader_mock.read_charge_master_data_periods.return_value = (
-            spark.createDataFrame(data=[_create_charge_master_data_row()])
-        )
-
-        table_reader_mock.read_charge_links_periods.return_value = (
             spark.createDataFrame(
-                [_create_charge_link_periods_row(from_date=from_date, to_date=to_date)]
+                data=[
+                    _create_charge_master_data_row(from_date=from_date, to_date=to_date)
+                ]
             )
         )
 
@@ -232,75 +366,3 @@ class TestWhenMultipleChargeKeys:
 
         # Assert
         assert actual.isEmpty() == expect_empty
-
-
-class TestWhenMasterDataPeriodExceedsLinksPeriod:
-    @pytest.mark.parametrize(
-        "charge_links_from_date, charge_links_to_date, charge_master_data_from_date, charge_master_data_to_date",
-        [
-            (  # Dataset: link ends before master data
-                datetime(2020, 1, 1, 0, 0),
-                datetime(2020, 1, 4, 0, 0),
-                datetime(2020, 1, 1, 0, 0),
-                datetime(2020, 1, 5, 0, 0),
-            ),
-            (  # Dataset: link starts after master data
-                datetime(2020, 1, 2, 0, 0),
-                datetime(2020, 1, 4, 0, 0),
-                datetime(2020, 1, 1, 0, 0),
-                datetime(2020, 1, 4, 0, 0),
-            ),
-            (  # Dataset: link starts after end ends before master data
-                datetime(2020, 1, 2, 0, 0),
-                datetime(2020, 1, 3, 0, 0),
-                datetime(2020, 1, 1, 0, 0),
-                datetime(2020, 1, 4, 0, 0),
-            ),
-        ],
-    )
-    @patch.object(calculation_input, TableReader.__name__)
-    def test__returns_link_period(
-        self,
-        table_reader_mock: TableReader,
-        spark: SparkSession,
-        charge_links_from_date,
-        charge_links_to_date,
-        charge_master_data_from_date,
-        charge_master_data_to_date,
-    ) -> None:
-        # Arrange
-        from_date = min(charge_links_from_date, charge_master_data_from_date)
-        to_date = max(charge_links_to_date, charge_master_data_to_date)
-        table_reader_mock.read_charge_master_data_periods.return_value = (
-            spark.createDataFrame(
-                data=[
-                    _create_charge_master_data_row(
-                        from_date=charge_master_data_from_date,
-                        to_date=charge_master_data_to_date,
-                    )
-                ]
-            )
-        )
-        table_reader_mock.read_charge_links_periods.return_value = (
-            spark.createDataFrame(
-                data=[
-                    _create_charge_link_periods_row(
-                        from_date=charge_links_from_date, to_date=charge_links_to_date
-                    )
-                ]
-            )
-        )
-        table_reader_mock.read_charge_price_points.return_value = spark.createDataFrame(
-            data=[
-                _create_charges_price_points_row(charge_time=datetime(2020, 1, 2, 0, 0))
-            ]
-        )
-
-        # Act
-        actual = read_charges(table_reader_mock, from_date, to_date)
-
-        # Assert
-        assert actual.count() == 1
-        actual_row = actual.collect()[0]
-        assert actual_row[Colname.from_date] == charge_links_from_date
-        assert actual_row[Colname.to_date] == charge_links_to_date
