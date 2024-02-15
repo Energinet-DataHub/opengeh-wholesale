@@ -14,7 +14,7 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.RequestCalculationResult;
 
-public static class AggregatedTimeSeriesQueries2Constants
+public static class AggregatedTimeSeriesQueriesConstants
 {
     public const string FirstQuantity = "1.111";
     public const string FirstQuantityFirstCorrection = "1.222";

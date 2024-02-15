@@ -197,7 +197,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infras
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   with the period start and end being the same for all `CalculationForPeriod'.
  */
-public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFixture sqlStatementApiFixture)
+public sealed class AggregatedTimeSeriesQueriesData(DatabricksSqlStatementApiFixture sqlStatementApiFixture)
 {
     public static AggregatedTimeSeriesQueryParameters CreateQueryParameters(
         Instant startOfPeriod,
@@ -212,121 +212,121 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
             // Energy supplier, balance responsible, and grid area aggregation data
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
-                Guid.Parse(AggregatedTimeSeriesQueries2Constants.BalanceFixingCalculationResultId),
+                Guid.Parse(AggregatedTimeSeriesQueriesConstants.BalanceFixingCalculationResultId),
                 256),
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
-                Guid.Parse(AggregatedTimeSeriesQueries2Constants.FirstCorrectionSettlementCalculationResultId),
+                Guid.Parse(AggregatedTimeSeriesQueriesConstants.FirstCorrectionSettlementCalculationResultId),
                 512),
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
-                Guid.Parse(AggregatedTimeSeriesQueries2Constants.SecondCorrectionSettlementCalculationResultId),
+                Guid.Parse(AggregatedTimeSeriesQueriesConstants.SecondCorrectionSettlementCalculationResultId),
                 1024),
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
-                Guid.Parse(AggregatedTimeSeriesQueries2Constants.ThirdCorrectionSettlementCalculationResultId),
+                Guid.Parse(AggregatedTimeSeriesQueriesConstants.ThirdCorrectionSettlementCalculationResultId),
                 2048),
 
             // Balance responsible and grid area aggregation data
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
-                Guid.Parse(AggregatedTimeSeriesQueries2Constants.BrGaAgBf1CalculationResultId),
+                Guid.Parse(AggregatedTimeSeriesQueriesConstants.BrGaAgBf1CalculationResultId),
                 1),
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
-                Guid.Parse(AggregatedTimeSeriesQueries2Constants.BrGaAgBf2CalculationResultId),
+                Guid.Parse(AggregatedTimeSeriesQueriesConstants.BrGaAgBf2CalculationResultId),
                 2),
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
-                Guid.Parse(AggregatedTimeSeriesQueries2Constants.BrGaAgFc1CalculationResultId),
+                Guid.Parse(AggregatedTimeSeriesQueriesConstants.BrGaAgFc1CalculationResultId),
                 3),
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
-                Guid.Parse(AggregatedTimeSeriesQueries2Constants.BrGaAgFc2CalculationResultId),
+                Guid.Parse(AggregatedTimeSeriesQueriesConstants.BrGaAgFc2CalculationResultId),
                 4),
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
-                Guid.Parse(AggregatedTimeSeriesQueries2Constants.BrGaAgSc1CalculationResultId),
+                Guid.Parse(AggregatedTimeSeriesQueriesConstants.BrGaAgSc1CalculationResultId),
                 5),
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
-                Guid.Parse(AggregatedTimeSeriesQueries2Constants.BrGaAgSc2CalculationResultId),
+                Guid.Parse(AggregatedTimeSeriesQueriesConstants.BrGaAgSc2CalculationResultId),
                 6),
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
-                Guid.Parse(AggregatedTimeSeriesQueries2Constants.BrGaAgTc1CalculationResultId),
+                Guid.Parse(AggregatedTimeSeriesQueriesConstants.BrGaAgTc1CalculationResultId),
                 7),
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
-                Guid.Parse(AggregatedTimeSeriesQueries2Constants.BrGaAgTc2CalculationResultId),
+                Guid.Parse(AggregatedTimeSeriesQueriesConstants.BrGaAgTc2CalculationResultId),
                 8),
 
             // Energy supplier and grid area aggregation data
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
-                Guid.Parse(AggregatedTimeSeriesQueries2Constants.EsGaAgBf1CalculationResultId),
+                Guid.Parse(AggregatedTimeSeriesQueriesConstants.EsGaAgBf1CalculationResultId),
                 11),
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
-                Guid.Parse(AggregatedTimeSeriesQueries2Constants.EsGaAgBf2CalculationResultId),
+                Guid.Parse(AggregatedTimeSeriesQueriesConstants.EsGaAgBf2CalculationResultId),
                 22),
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
-                Guid.Parse(AggregatedTimeSeriesQueries2Constants.EsGaAgFc1CalculationResultId),
+                Guid.Parse(AggregatedTimeSeriesQueriesConstants.EsGaAgFc1CalculationResultId),
                 33),
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
-                Guid.Parse(AggregatedTimeSeriesQueries2Constants.EsGaAgFc2CalculationResultId),
+                Guid.Parse(AggregatedTimeSeriesQueriesConstants.EsGaAgFc2CalculationResultId),
                 44),
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
-                Guid.Parse(AggregatedTimeSeriesQueries2Constants.EsGaAgSc1CalculationResultId),
+                Guid.Parse(AggregatedTimeSeriesQueriesConstants.EsGaAgSc1CalculationResultId),
                 55),
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
-                Guid.Parse(AggregatedTimeSeriesQueries2Constants.EsGaAgSc2CalculationResultId),
+                Guid.Parse(AggregatedTimeSeriesQueriesConstants.EsGaAgSc2CalculationResultId),
                 66),
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
-                Guid.Parse(AggregatedTimeSeriesQueries2Constants.EsGaAgTc1CalculationResultId),
+                Guid.Parse(AggregatedTimeSeriesQueriesConstants.EsGaAgTc1CalculationResultId),
                 77),
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
-                Guid.Parse(AggregatedTimeSeriesQueries2Constants.EsGaAgTc2CalculationResultId),
+                Guid.Parse(AggregatedTimeSeriesQueriesConstants.EsGaAgTc2CalculationResultId),
                 88),
 
             // Grid area aggregation data
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
-                Guid.Parse(AggregatedTimeSeriesQueries2Constants.GaAgBf1CalculationResultId),
+                Guid.Parse(AggregatedTimeSeriesQueriesConstants.GaAgBf1CalculationResultId),
                 111),
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
-                Guid.Parse(AggregatedTimeSeriesQueries2Constants.GaAgBf2CalculationResultId),
+                Guid.Parse(AggregatedTimeSeriesQueriesConstants.GaAgBf2CalculationResultId),
                 222),
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
-                Guid.Parse(AggregatedTimeSeriesQueries2Constants.GaAgFc1CalculationResultId),
+                Guid.Parse(AggregatedTimeSeriesQueriesConstants.GaAgFc1CalculationResultId),
                 333),
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
-                Guid.Parse(AggregatedTimeSeriesQueries2Constants.GaAgFc2CalculationResultId),
+                Guid.Parse(AggregatedTimeSeriesQueriesConstants.GaAgFc2CalculationResultId),
                 444),
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
-                Guid.Parse(AggregatedTimeSeriesQueries2Constants.GaAgSc1CalculationResultId),
+                Guid.Parse(AggregatedTimeSeriesQueriesConstants.GaAgSc1CalculationResultId),
                 555),
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
-                Guid.Parse(AggregatedTimeSeriesQueries2Constants.GaAgSc2CalculationResultId),
+                Guid.Parse(AggregatedTimeSeriesQueriesConstants.GaAgSc2CalculationResultId),
                 666),
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
-                Guid.Parse(AggregatedTimeSeriesQueries2Constants.GaAgTc1CalculationResultId),
+                Guid.Parse(AggregatedTimeSeriesQueriesConstants.GaAgTc1CalculationResultId),
                 777),
             new CalculationForPeriod(
                 new Period(startOfPeriod, endOfPeriod),
-                Guid.Parse(AggregatedTimeSeriesQueries2Constants.GaAgTc2CalculationResultId),
+                Guid.Parse(AggregatedTimeSeriesQueriesConstants.GaAgTc2CalculationResultId),
                 888)
         ];
 
@@ -356,92 +356,92 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
             // GridAreaCodeA
             // BalanceResponsibleA
             dataRowsToAddToDatabricks.AddRange(CreateDataOne(
-                AggregatedTimeSeriesQueries2Constants.GridAreaCodeA,
-                AggregatedTimeSeriesQueries2Constants.BalanceResponsibleA,
-                AggregatedTimeSeriesQueries2Constants.EnergySupplierA,
+                AggregatedTimeSeriesQueriesConstants.GridAreaCodeA,
+                AggregatedTimeSeriesQueriesConstants.BalanceResponsibleA,
+                AggregatedTimeSeriesQueriesConstants.EnergySupplierA,
                 timeSeriesType));
             dataRowsToAddToDatabricks.AddRange(CreateDataTwo(
-                AggregatedTimeSeriesQueries2Constants.GridAreaCodeA,
-                AggregatedTimeSeriesQueries2Constants.BalanceResponsibleA,
-                AggregatedTimeSeriesQueries2Constants.EnergySupplierA,
+                AggregatedTimeSeriesQueriesConstants.GridAreaCodeA,
+                AggregatedTimeSeriesQueriesConstants.BalanceResponsibleA,
+                AggregatedTimeSeriesQueriesConstants.EnergySupplierA,
                 timeSeriesType));
             dataRowsToAddToDatabricks.AddRange(CreateDataOne(
-                AggregatedTimeSeriesQueries2Constants.GridAreaCodeA,
-                AggregatedTimeSeriesQueries2Constants.BalanceResponsibleA,
-                AggregatedTimeSeriesQueries2Constants.EnergySupplierB,
+                AggregatedTimeSeriesQueriesConstants.GridAreaCodeA,
+                AggregatedTimeSeriesQueriesConstants.BalanceResponsibleA,
+                AggregatedTimeSeriesQueriesConstants.EnergySupplierB,
                 timeSeriesType));
             dataRowsToAddToDatabricks.AddRange(CreateDataFour(
-                AggregatedTimeSeriesQueries2Constants.GridAreaCodeA,
-                AggregatedTimeSeriesQueries2Constants.BalanceResponsibleA,
-                AggregatedTimeSeriesQueries2Constants.EnergySupplierB,
+                AggregatedTimeSeriesQueriesConstants.GridAreaCodeA,
+                AggregatedTimeSeriesQueriesConstants.BalanceResponsibleA,
+                AggregatedTimeSeriesQueriesConstants.EnergySupplierB,
                 timeSeriesType));
 
             // BalanceResponsibleB
             dataRowsToAddToDatabricks.AddRange(CreateDataThree(
-                AggregatedTimeSeriesQueries2Constants.GridAreaCodeA,
-                AggregatedTimeSeriesQueries2Constants.BalanceResponsibleB,
-                AggregatedTimeSeriesQueries2Constants.EnergySupplierA,
+                AggregatedTimeSeriesQueriesConstants.GridAreaCodeA,
+                AggregatedTimeSeriesQueriesConstants.BalanceResponsibleB,
+                AggregatedTimeSeriesQueriesConstants.EnergySupplierA,
                 timeSeriesType));
             dataRowsToAddToDatabricks.AddRange(CreateDataFour(
-                AggregatedTimeSeriesQueries2Constants.GridAreaCodeA,
-                AggregatedTimeSeriesQueries2Constants.BalanceResponsibleB,
-                AggregatedTimeSeriesQueries2Constants.EnergySupplierA,
+                AggregatedTimeSeriesQueriesConstants.GridAreaCodeA,
+                AggregatedTimeSeriesQueriesConstants.BalanceResponsibleB,
+                AggregatedTimeSeriesQueriesConstants.EnergySupplierA,
                 timeSeriesType));
             dataRowsToAddToDatabricks.AddRange(CreateDataTwo(
-                AggregatedTimeSeriesQueries2Constants.GridAreaCodeA,
-                AggregatedTimeSeriesQueries2Constants.BalanceResponsibleB,
-                AggregatedTimeSeriesQueries2Constants.EnergySupplierC,
+                AggregatedTimeSeriesQueriesConstants.GridAreaCodeA,
+                AggregatedTimeSeriesQueriesConstants.BalanceResponsibleB,
+                AggregatedTimeSeriesQueriesConstants.EnergySupplierC,
                 timeSeriesType));
             dataRowsToAddToDatabricks.AddRange(CreateDataThree(
-                AggregatedTimeSeriesQueries2Constants.GridAreaCodeA,
-                AggregatedTimeSeriesQueries2Constants.BalanceResponsibleB,
-                AggregatedTimeSeriesQueries2Constants.EnergySupplierC,
+                AggregatedTimeSeriesQueriesConstants.GridAreaCodeA,
+                AggregatedTimeSeriesQueriesConstants.BalanceResponsibleB,
+                AggregatedTimeSeriesQueriesConstants.EnergySupplierC,
                 timeSeriesType));
 
             // GridAreaCodeB
             // BalanceResponsibleB
             dataRowsToAddToDatabricks.AddRange(CreateDataTwo(
-                AggregatedTimeSeriesQueries2Constants.GridAreaCodeB,
-                AggregatedTimeSeriesQueries2Constants.BalanceResponsibleB,
-                AggregatedTimeSeriesQueries2Constants.EnergySupplierB,
+                AggregatedTimeSeriesQueriesConstants.GridAreaCodeB,
+                AggregatedTimeSeriesQueriesConstants.BalanceResponsibleB,
+                AggregatedTimeSeriesQueriesConstants.EnergySupplierB,
                 timeSeriesType));
             dataRowsToAddToDatabricks.AddRange(CreateDataThree(
-                AggregatedTimeSeriesQueries2Constants.GridAreaCodeB,
-                AggregatedTimeSeriesQueries2Constants.BalanceResponsibleB,
-                AggregatedTimeSeriesQueries2Constants.EnergySupplierB,
+                AggregatedTimeSeriesQueriesConstants.GridAreaCodeB,
+                AggregatedTimeSeriesQueriesConstants.BalanceResponsibleB,
+                AggregatedTimeSeriesQueriesConstants.EnergySupplierB,
                 timeSeriesType));
             dataRowsToAddToDatabricks.AddRange(CreateDataOne(
-                AggregatedTimeSeriesQueries2Constants.GridAreaCodeB,
-                AggregatedTimeSeriesQueries2Constants.BalanceResponsibleB,
-                AggregatedTimeSeriesQueries2Constants.EnergySupplierC,
+                AggregatedTimeSeriesQueriesConstants.GridAreaCodeB,
+                AggregatedTimeSeriesQueriesConstants.BalanceResponsibleB,
+                AggregatedTimeSeriesQueriesConstants.EnergySupplierC,
                 timeSeriesType));
             dataRowsToAddToDatabricks.AddRange(CreateDataFour(
-                AggregatedTimeSeriesQueries2Constants.GridAreaCodeB,
-                AggregatedTimeSeriesQueries2Constants.BalanceResponsibleB,
-                AggregatedTimeSeriesQueries2Constants.EnergySupplierC,
+                AggregatedTimeSeriesQueriesConstants.GridAreaCodeB,
+                AggregatedTimeSeriesQueriesConstants.BalanceResponsibleB,
+                AggregatedTimeSeriesQueriesConstants.EnergySupplierC,
                 timeSeriesType));
 
             // GridAreaCodeC
             // BalanceResponsibleC
             dataRowsToAddToDatabricks.AddRange(CreateDataOne(
-                AggregatedTimeSeriesQueries2Constants.GridAreaCodeC,
-                AggregatedTimeSeriesQueries2Constants.BalanceResponsibleC,
-                AggregatedTimeSeriesQueries2Constants.EnergySupplierA,
+                AggregatedTimeSeriesQueriesConstants.GridAreaCodeC,
+                AggregatedTimeSeriesQueriesConstants.BalanceResponsibleC,
+                AggregatedTimeSeriesQueriesConstants.EnergySupplierA,
                 timeSeriesType));
             dataRowsToAddToDatabricks.AddRange(CreateDataTwo(
-                AggregatedTimeSeriesQueries2Constants.GridAreaCodeC,
-                AggregatedTimeSeriesQueries2Constants.BalanceResponsibleC,
-                AggregatedTimeSeriesQueries2Constants.EnergySupplierA,
+                AggregatedTimeSeriesQueriesConstants.GridAreaCodeC,
+                AggregatedTimeSeriesQueriesConstants.BalanceResponsibleC,
+                AggregatedTimeSeriesQueriesConstants.EnergySupplierA,
                 timeSeriesType));
             dataRowsToAddToDatabricks.AddRange(CreateDataThree(
-                AggregatedTimeSeriesQueries2Constants.GridAreaCodeC,
-                AggregatedTimeSeriesQueries2Constants.BalanceResponsibleC,
-                AggregatedTimeSeriesQueries2Constants.EnergySupplierA,
+                AggregatedTimeSeriesQueriesConstants.GridAreaCodeC,
+                AggregatedTimeSeriesQueriesConstants.BalanceResponsibleC,
+                AggregatedTimeSeriesQueriesConstants.EnergySupplierA,
                 timeSeriesType));
             dataRowsToAddToDatabricks.AddRange(CreateDataFour(
-                AggregatedTimeSeriesQueries2Constants.GridAreaCodeC,
-                AggregatedTimeSeriesQueries2Constants.BalanceResponsibleC,
-                AggregatedTimeSeriesQueries2Constants.EnergySupplierA,
+                AggregatedTimeSeriesQueriesConstants.GridAreaCodeC,
+                AggregatedTimeSeriesQueriesConstants.BalanceResponsibleC,
+                AggregatedTimeSeriesQueriesConstants.EnergySupplierA,
                 timeSeriesType));
 
             // Do the aggregations
@@ -554,11 +554,11 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
         string timeSeriesType)
     {
         var o = EnergyResultDeltaTableHelper.CreateRowValues(
-            calculationId: AggregatedTimeSeriesQueries2Constants.BalanceFixingCalculationResultId,
-            calculationResultId: AggregatedTimeSeriesQueries2Constants.BalanceFixingCalculationResultId,
-            time: AggregatedTimeSeriesQueries2Constants.FirstHour,
+            calculationId: AggregatedTimeSeriesQueriesConstants.BalanceFixingCalculationResultId,
+            calculationResultId: AggregatedTimeSeriesQueriesConstants.BalanceFixingCalculationResultId,
+            time: AggregatedTimeSeriesQueriesConstants.FirstHour,
             gridArea: gridAreaCode,
-            quantity: AggregatedTimeSeriesQueries2Constants.FirstQuantity,
+            quantity: AggregatedTimeSeriesQueriesConstants.FirstQuantity,
             aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea,
             balanceResponsibleId: balanceResponsibleId,
             energySupplierId: energySupplierId,
@@ -566,11 +566,11 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
             calculationType: DeltaTableCalculationType.BalanceFixing);
 
         var f = EnergyResultDeltaTableHelper.CreateRowValues(
-            calculationId: AggregatedTimeSeriesQueries2Constants.FirstCorrectionSettlementCalculationResultId,
-            calculationResultId: AggregatedTimeSeriesQueries2Constants.FirstCorrectionSettlementCalculationResultId,
-            time: AggregatedTimeSeriesQueries2Constants.FirstHour,
+            calculationId: AggregatedTimeSeriesQueriesConstants.FirstCorrectionSettlementCalculationResultId,
+            calculationResultId: AggregatedTimeSeriesQueriesConstants.FirstCorrectionSettlementCalculationResultId,
+            time: AggregatedTimeSeriesQueriesConstants.FirstHour,
             gridArea: gridAreaCode,
-            quantity: AggregatedTimeSeriesQueries2Constants.FirstQuantityFirstCorrection,
+            quantity: AggregatedTimeSeriesQueriesConstants.FirstQuantityFirstCorrection,
             aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea,
             balanceResponsibleId: balanceResponsibleId,
             energySupplierId: energySupplierId,
@@ -578,11 +578,11 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
             calculationType: DeltaTableCalculationType.FirstCorrectionSettlement);
 
         var s = EnergyResultDeltaTableHelper.CreateRowValues(
-            calculationId: AggregatedTimeSeriesQueries2Constants.SecondCorrectionSettlementCalculationResultId,
-            calculationResultId: AggregatedTimeSeriesQueries2Constants.SecondCorrectionSettlementCalculationResultId,
-            time: AggregatedTimeSeriesQueries2Constants.FirstHour,
+            calculationId: AggregatedTimeSeriesQueriesConstants.SecondCorrectionSettlementCalculationResultId,
+            calculationResultId: AggregatedTimeSeriesQueriesConstants.SecondCorrectionSettlementCalculationResultId,
+            time: AggregatedTimeSeriesQueriesConstants.FirstHour,
             gridArea: gridAreaCode,
-            quantity: AggregatedTimeSeriesQueries2Constants.FirstQuantitySecondCorrection,
+            quantity: AggregatedTimeSeriesQueriesConstants.FirstQuantitySecondCorrection,
             aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea,
             balanceResponsibleId: balanceResponsibleId,
             energySupplierId: energySupplierId,
@@ -590,11 +590,11 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
             calculationType: DeltaTableCalculationType.SecondCorrectionSettlement);
 
         var t = EnergyResultDeltaTableHelper.CreateRowValues(
-            calculationId: AggregatedTimeSeriesQueries2Constants.ThirdCorrectionSettlementCalculationResultId,
-            calculationResultId: AggregatedTimeSeriesQueries2Constants.ThirdCorrectionSettlementCalculationResultId,
-            time: AggregatedTimeSeriesQueries2Constants.FirstHour,
+            calculationId: AggregatedTimeSeriesQueriesConstants.ThirdCorrectionSettlementCalculationResultId,
+            calculationResultId: AggregatedTimeSeriesQueriesConstants.ThirdCorrectionSettlementCalculationResultId,
+            time: AggregatedTimeSeriesQueriesConstants.FirstHour,
             gridArea: gridAreaCode,
-            quantity: AggregatedTimeSeriesQueries2Constants.FirstQuantityThirdCorrection,
+            quantity: AggregatedTimeSeriesQueriesConstants.FirstQuantityThirdCorrection,
             aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea,
             balanceResponsibleId: balanceResponsibleId,
             energySupplierId: energySupplierId,
@@ -612,11 +612,11 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
         string timeSeriesType)
     {
         var o = EnergyResultDeltaTableHelper.CreateRowValues(
-            calculationId: AggregatedTimeSeriesQueries2Constants.BalanceFixingCalculationResultId,
-            calculationResultId: AggregatedTimeSeriesQueries2Constants.BalanceFixingCalculationResultId,
-            time: AggregatedTimeSeriesQueries2Constants.SecondHour,
+            calculationId: AggregatedTimeSeriesQueriesConstants.BalanceFixingCalculationResultId,
+            calculationResultId: AggregatedTimeSeriesQueriesConstants.BalanceFixingCalculationResultId,
+            time: AggregatedTimeSeriesQueriesConstants.SecondHour,
             gridArea: gridAreaCode,
-            quantity: AggregatedTimeSeriesQueries2Constants.SecondQuantity,
+            quantity: AggregatedTimeSeriesQueriesConstants.SecondQuantity,
             aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea,
             balanceResponsibleId: balanceResponsibleId,
             energySupplierId: energySupplierId,
@@ -624,11 +624,11 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
             calculationType: DeltaTableCalculationType.BalanceFixing);
 
         var f = EnergyResultDeltaTableHelper.CreateRowValues(
-            calculationId: AggregatedTimeSeriesQueries2Constants.FirstCorrectionSettlementCalculationResultId,
-            calculationResultId: AggregatedTimeSeriesQueries2Constants.FirstCorrectionSettlementCalculationResultId,
-            time: AggregatedTimeSeriesQueries2Constants.SecondHour,
+            calculationId: AggregatedTimeSeriesQueriesConstants.FirstCorrectionSettlementCalculationResultId,
+            calculationResultId: AggregatedTimeSeriesQueriesConstants.FirstCorrectionSettlementCalculationResultId,
+            time: AggregatedTimeSeriesQueriesConstants.SecondHour,
             gridArea: gridAreaCode,
-            quantity: AggregatedTimeSeriesQueries2Constants.SecondQuantityFirstCorrection,
+            quantity: AggregatedTimeSeriesQueriesConstants.SecondQuantityFirstCorrection,
             aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea,
             balanceResponsibleId: balanceResponsibleId,
             energySupplierId: energySupplierId,
@@ -636,11 +636,11 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
             calculationType: DeltaTableCalculationType.FirstCorrectionSettlement);
 
         var s = EnergyResultDeltaTableHelper.CreateRowValues(
-            calculationId: AggregatedTimeSeriesQueries2Constants.SecondCorrectionSettlementCalculationResultId,
-            calculationResultId: AggregatedTimeSeriesQueries2Constants.SecondCorrectionSettlementCalculationResultId,
-            time: AggregatedTimeSeriesQueries2Constants.SecondHour,
+            calculationId: AggregatedTimeSeriesQueriesConstants.SecondCorrectionSettlementCalculationResultId,
+            calculationResultId: AggregatedTimeSeriesQueriesConstants.SecondCorrectionSettlementCalculationResultId,
+            time: AggregatedTimeSeriesQueriesConstants.SecondHour,
             gridArea: gridAreaCode,
-            quantity: AggregatedTimeSeriesQueries2Constants.SecondQuantitySecondCorrection,
+            quantity: AggregatedTimeSeriesQueriesConstants.SecondQuantitySecondCorrection,
             aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea,
             balanceResponsibleId: balanceResponsibleId,
             energySupplierId: energySupplierId,
@@ -658,11 +658,11 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
         string timeSeriesType)
     {
         var o = EnergyResultDeltaTableHelper.CreateRowValues(
-            calculationId: AggregatedTimeSeriesQueries2Constants.BalanceFixingCalculationResultId,
-            calculationResultId: AggregatedTimeSeriesQueries2Constants.BalanceFixingCalculationResultId,
-            time: AggregatedTimeSeriesQueries2Constants.ThirdHour,
+            calculationId: AggregatedTimeSeriesQueriesConstants.BalanceFixingCalculationResultId,
+            calculationResultId: AggregatedTimeSeriesQueriesConstants.BalanceFixingCalculationResultId,
+            time: AggregatedTimeSeriesQueriesConstants.ThirdHour,
             gridArea: gridAreaCode,
-            quantity: AggregatedTimeSeriesQueries2Constants.ThirdQuantity,
+            quantity: AggregatedTimeSeriesQueriesConstants.ThirdQuantity,
             aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea,
             balanceResponsibleId: balanceResponsibleId,
             energySupplierId: energySupplierId,
@@ -670,11 +670,11 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
             calculationType: DeltaTableCalculationType.BalanceFixing);
 
         var s = EnergyResultDeltaTableHelper.CreateRowValues(
-            calculationId: AggregatedTimeSeriesQueries2Constants.SecondCorrectionSettlementCalculationResultId,
-            calculationResultId: AggregatedTimeSeriesQueries2Constants.SecondCorrectionSettlementCalculationResultId,
-            time: AggregatedTimeSeriesQueries2Constants.ThirdHour,
+            calculationId: AggregatedTimeSeriesQueriesConstants.SecondCorrectionSettlementCalculationResultId,
+            calculationResultId: AggregatedTimeSeriesQueriesConstants.SecondCorrectionSettlementCalculationResultId,
+            time: AggregatedTimeSeriesQueriesConstants.ThirdHour,
             gridArea: gridAreaCode,
-            quantity: AggregatedTimeSeriesQueries2Constants.ThirdQuantitySecondCorrection,
+            quantity: AggregatedTimeSeriesQueriesConstants.ThirdQuantitySecondCorrection,
             aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea,
             balanceResponsibleId: balanceResponsibleId,
             energySupplierId: energySupplierId,
@@ -682,11 +682,11 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
             calculationType: DeltaTableCalculationType.SecondCorrectionSettlement);
 
         var t = EnergyResultDeltaTableHelper.CreateRowValues(
-            calculationId: AggregatedTimeSeriesQueries2Constants.ThirdCorrectionSettlementCalculationResultId,
-            calculationResultId: AggregatedTimeSeriesQueries2Constants.ThirdCorrectionSettlementCalculationResultId,
-            time: AggregatedTimeSeriesQueries2Constants.ThirdHour,
+            calculationId: AggregatedTimeSeriesQueriesConstants.ThirdCorrectionSettlementCalculationResultId,
+            calculationResultId: AggregatedTimeSeriesQueriesConstants.ThirdCorrectionSettlementCalculationResultId,
+            time: AggregatedTimeSeriesQueriesConstants.ThirdHour,
             gridArea: gridAreaCode,
-            quantity: AggregatedTimeSeriesQueries2Constants.ThirdQuantityThirdCorrection,
+            quantity: AggregatedTimeSeriesQueriesConstants.ThirdQuantityThirdCorrection,
             aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea,
             balanceResponsibleId: balanceResponsibleId,
             energySupplierId: energySupplierId,
@@ -704,11 +704,11 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
         string timeSeriesType)
     {
         var o = EnergyResultDeltaTableHelper.CreateRowValues(
-            calculationId: AggregatedTimeSeriesQueries2Constants.BalanceFixingCalculationResultId,
-            calculationResultId: AggregatedTimeSeriesQueries2Constants.BalanceFixingCalculationResultId,
-            time: AggregatedTimeSeriesQueries2Constants.SecondDay,
+            calculationId: AggregatedTimeSeriesQueriesConstants.BalanceFixingCalculationResultId,
+            calculationResultId: AggregatedTimeSeriesQueriesConstants.BalanceFixingCalculationResultId,
+            time: AggregatedTimeSeriesQueriesConstants.SecondDay,
             gridArea: gridAreaCode,
-            quantity: AggregatedTimeSeriesQueries2Constants.FourthQuantity,
+            quantity: AggregatedTimeSeriesQueriesConstants.FourthQuantity,
             aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea,
             balanceResponsibleId: balanceResponsibleId,
             energySupplierId: energySupplierId,
@@ -716,11 +716,11 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
             calculationType: DeltaTableCalculationType.BalanceFixing);
 
         var t = EnergyResultDeltaTableHelper.CreateRowValues(
-            calculationId: AggregatedTimeSeriesQueries2Constants.ThirdCorrectionSettlementCalculationResultId,
-            calculationResultId: AggregatedTimeSeriesQueries2Constants.ThirdCorrectionSettlementCalculationResultId,
-            time: AggregatedTimeSeriesQueries2Constants.SecondDay,
+            calculationId: AggregatedTimeSeriesQueriesConstants.ThirdCorrectionSettlementCalculationResultId,
+            calculationResultId: AggregatedTimeSeriesQueriesConstants.ThirdCorrectionSettlementCalculationResultId,
+            time: AggregatedTimeSeriesQueriesConstants.SecondDay,
             gridArea: gridAreaCode,
-            quantity: AggregatedTimeSeriesQueries2Constants.FourthQuantityThirdCorrection,
+            quantity: AggregatedTimeSeriesQueriesConstants.FourthQuantityThirdCorrection,
             aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea,
             balanceResponsibleId: balanceResponsibleId,
             energySupplierId: energySupplierId,
@@ -740,24 +740,24 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
 
         return calculationTypeAsEnum switch
         {
-            CalculationType.BalanceFixing when isTimeBeforeCut => AggregatedTimeSeriesQueries2Constants
+            CalculationType.BalanceFixing when isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
                 .BrGaAgBf1CalculationResultId,
-            CalculationType.BalanceFixing when !isTimeBeforeCut => AggregatedTimeSeriesQueries2Constants
+            CalculationType.BalanceFixing when !isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
                 .BrGaAgBf2CalculationResultId,
 
-            CalculationType.FirstCorrectionSettlement when isTimeBeforeCut => AggregatedTimeSeriesQueries2Constants
+            CalculationType.FirstCorrectionSettlement when isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
                 .BrGaAgFc1CalculationResultId,
-            CalculationType.FirstCorrectionSettlement when !isTimeBeforeCut => AggregatedTimeSeriesQueries2Constants
+            CalculationType.FirstCorrectionSettlement when !isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
                 .BrGaAgFc2CalculationResultId,
 
-            CalculationType.SecondCorrectionSettlement when isTimeBeforeCut => AggregatedTimeSeriesQueries2Constants
+            CalculationType.SecondCorrectionSettlement when isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
                 .BrGaAgSc1CalculationResultId,
-            CalculationType.SecondCorrectionSettlement when !isTimeBeforeCut => AggregatedTimeSeriesQueries2Constants
+            CalculationType.SecondCorrectionSettlement when !isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
                 .BrGaAgSc2CalculationResultId,
 
-            CalculationType.ThirdCorrectionSettlement when isTimeBeforeCut => AggregatedTimeSeriesQueries2Constants
+            CalculationType.ThirdCorrectionSettlement when isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
                 .BrGaAgTc1CalculationResultId,
-            CalculationType.ThirdCorrectionSettlement when !isTimeBeforeCut => AggregatedTimeSeriesQueries2Constants
+            CalculationType.ThirdCorrectionSettlement when !isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
                 .BrGaAgTc2CalculationResultId,
             _ => throw new ArgumentOutOfRangeException(),
         };
@@ -772,24 +772,24 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
 
         return calculationTypeAsEnum switch
         {
-            CalculationType.BalanceFixing when isTimeBeforeCut => AggregatedTimeSeriesQueries2Constants
+            CalculationType.BalanceFixing when isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
                 .EsGaAgBf1CalculationResultId,
-            CalculationType.BalanceFixing when !isTimeBeforeCut => AggregatedTimeSeriesQueries2Constants
+            CalculationType.BalanceFixing when !isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
                 .EsGaAgBf2CalculationResultId,
 
-            CalculationType.FirstCorrectionSettlement when isTimeBeforeCut => AggregatedTimeSeriesQueries2Constants
+            CalculationType.FirstCorrectionSettlement when isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
                 .EsGaAgFc1CalculationResultId,
-            CalculationType.FirstCorrectionSettlement when !isTimeBeforeCut => AggregatedTimeSeriesQueries2Constants
+            CalculationType.FirstCorrectionSettlement when !isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
                 .EsGaAgFc2CalculationResultId,
 
-            CalculationType.SecondCorrectionSettlement when isTimeBeforeCut => AggregatedTimeSeriesQueries2Constants
+            CalculationType.SecondCorrectionSettlement when isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
                 .EsGaAgSc1CalculationResultId,
-            CalculationType.SecondCorrectionSettlement when !isTimeBeforeCut => AggregatedTimeSeriesQueries2Constants
+            CalculationType.SecondCorrectionSettlement when !isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
                 .EsGaAgSc2CalculationResultId,
 
-            CalculationType.ThirdCorrectionSettlement when isTimeBeforeCut => AggregatedTimeSeriesQueries2Constants
+            CalculationType.ThirdCorrectionSettlement when isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
                 .EsGaAgTc1CalculationResultId,
-            CalculationType.ThirdCorrectionSettlement when !isTimeBeforeCut => AggregatedTimeSeriesQueries2Constants
+            CalculationType.ThirdCorrectionSettlement when !isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
                 .EsGaAgTc2CalculationResultId,
             _ => throw new ArgumentOutOfRangeException(),
         };
@@ -804,24 +804,24 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
 
         return calculationTypeAsEnum switch
         {
-            CalculationType.BalanceFixing when isTimeBeforeCut => AggregatedTimeSeriesQueries2Constants
+            CalculationType.BalanceFixing when isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
                 .GaAgBf1CalculationResultId,
-            CalculationType.BalanceFixing when !isTimeBeforeCut => AggregatedTimeSeriesQueries2Constants
+            CalculationType.BalanceFixing when !isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
                 .GaAgBf2CalculationResultId,
 
-            CalculationType.FirstCorrectionSettlement when isTimeBeforeCut => AggregatedTimeSeriesQueries2Constants
+            CalculationType.FirstCorrectionSettlement when isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
                 .GaAgFc1CalculationResultId,
-            CalculationType.FirstCorrectionSettlement when !isTimeBeforeCut => AggregatedTimeSeriesQueries2Constants
+            CalculationType.FirstCorrectionSettlement when !isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
                 .GaAgFc2CalculationResultId,
 
-            CalculationType.SecondCorrectionSettlement when isTimeBeforeCut => AggregatedTimeSeriesQueries2Constants
+            CalculationType.SecondCorrectionSettlement when isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
                 .GaAgSc1CalculationResultId,
-            CalculationType.SecondCorrectionSettlement when !isTimeBeforeCut => AggregatedTimeSeriesQueries2Constants
+            CalculationType.SecondCorrectionSettlement when !isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
                 .GaAgSc2CalculationResultId,
 
-            CalculationType.ThirdCorrectionSettlement when isTimeBeforeCut => AggregatedTimeSeriesQueries2Constants
+            CalculationType.ThirdCorrectionSettlement when isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
                 .GaAgTc1CalculationResultId,
-            CalculationType.ThirdCorrectionSettlement when !isTimeBeforeCut => AggregatedTimeSeriesQueries2Constants
+            CalculationType.ThirdCorrectionSettlement when !isTimeBeforeCut => AggregatedTimeSeriesQueriesConstants
                 .GaAgTc2CalculationResultId,
             _ => throw new ArgumentOutOfRangeException(),
         };
@@ -830,6 +830,6 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
     private static bool IsTimeBeforeCut(string time)
     {
         return Instant.FromDateTimeOffset(DateTimeOffset.Parse(time))
-               < Instant.FromDateTimeOffset(DateTimeOffset.Parse(AggregatedTimeSeriesQueries2Constants.SecondDay));
+               < Instant.FromDateTimeOffset(DateTimeOffset.Parse(AggregatedTimeSeriesQueriesConstants.SecondDay));
     }
 }
