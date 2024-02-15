@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Databricks.Jobs.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Calculations.Application;
@@ -38,10 +36,8 @@ var host = new HostBuilder()
         // Common
         // => Application Insights (telemetry)
         services.AddApplicationInsightsForIsolatedWorker();
-        // => Health check
-        services.AddScoped<IHealthCheckEndpointHandler, HealthCheckEndpointHandler>();
-        services.AddHealthChecks()
-            .AddLiveCheck();
+        // => Health checks
+        services.AddHealthChecksForIsolatedWorker();
         // => NodaTime
         services.AddSingleton<IClock>(_ => SystemClock.Instance);
 
