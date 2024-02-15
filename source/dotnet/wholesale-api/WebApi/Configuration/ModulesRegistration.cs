@@ -16,6 +16,7 @@ using Azure.Identity;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DependencyInjection;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Configuration.Options;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
@@ -31,14 +32,9 @@ internal static class ServiceCollectionExtensions
     public static void AddModules(this IServiceCollection services, IConfiguration configuration)
     {
         // Add modules
-        var connectionStringOptions = configuration
-            .GetSection(ConnectionStringsOptions.ConnectionStrings)
-            .Get<ConnectionStringsOptions>();
-        services.AddCalculationsModule(() => connectionStringOptions!.DB_CONNECTION_STRING);
-
+        services.AddCalculationsModule(configuration);
         services.AddCalculationResultsModule(configuration);
-
-        services.AddEventsModule(configuration.Get<ServiceBusOptions>()!);
+        services.AddEventsModule(configuration);
         services.AddEdiModule();
 
         // Add registration that are used by more than one module

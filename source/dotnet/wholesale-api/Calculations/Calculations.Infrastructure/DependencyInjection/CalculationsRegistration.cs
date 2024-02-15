@@ -19,10 +19,12 @@ using Energinet.DataHub.Wholesale.Calculations.Application.UseCases;
 using Energinet.DataHub.Wholesale.Calculations.Application.Workers;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.CalculationState;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Configuration.Options;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.DependencyInjection;
@@ -32,9 +34,7 @@ namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.DependencyInje
 /// </summary>
 public static class CalculationsRegistration
 {
-    public static IServiceCollection AddCalculationsModule(
-        this IServiceCollection services,
-        Func<string> databaseConnectionStringProvider)
+    public static IServiceCollection AddCalculationsModule(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<ICalculationsClient, CalculationsClient>();
         services.AddScoped<ICalculationExecutionStateInfrastructureService, CalculationExecutionStateInfrastructureService>();
@@ -49,9 +49,13 @@ public static class CalculationsRegistration
         services.AddScoped<ICalculationParametersFactory, DatabricksCalculationParametersFactory>();
 
         services.AddScoped<IDatabaseContext, DatabaseContext>();
+
+        var connectionStringOptions = configuration
+            .GetSection(ConnectionStringsOptions.ConnectionStrings)
+            .Get<ConnectionStringsOptions>();
         services.AddDbContext<DatabaseContext>(
             options => options.UseSqlServer(
-                databaseConnectionStringProvider(),
+                connectionStringOptions!.DB_CONNECTION_STRING,
                 o =>
                 {
                     o.UseNodaTime();

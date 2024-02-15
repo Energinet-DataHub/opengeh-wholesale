@@ -19,6 +19,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Configuration.Options;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Calculations.IntegrationTests.Fixture.Database;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;

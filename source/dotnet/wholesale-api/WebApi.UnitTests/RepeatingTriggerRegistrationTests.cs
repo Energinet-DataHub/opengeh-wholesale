@@ -15,9 +15,9 @@
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Wholesale.Calculations.Application.Workers;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.DependencyInjection;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Events.Application.Triggers;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -28,14 +28,21 @@ public class RepeatingTriggerRegistrationTests
     [Theory]
     [InlineAutoData(typeof(RegisterCompletedCalculationsTrigger))]
     [InlineAutoData(typeof(UpdateCalculationExecutionStateTrigger))]
-    public void Repeating_Trigger_Is_Registered_In_Ioc(Type type, ServiceBusOptions options, ServiceCollection serviceCollection)
+    public void Repeating_Trigger_Is_Registered_In_Ioc(Type type, ServiceCollection services)
     {
         // Arrange
-        serviceCollection.AddEventsModule(options);
-        serviceCollection.AddCalculationsModule(() => string.Empty);
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["CONNECTIONSTRINGS__DB_CONNECTION_STRING"] = string.Empty,
+            })
+            .Build();
+
+        services.AddEventsModule(configuration);
+        services.AddCalculationsModule(configuration);
 
         // Act
-        var actual = serviceCollection.Count(x => x.ImplementationType == type);
+        var actual = services.Count(x => x.ImplementationType == type);
 
         // Assert
         Assert.Equal(1, actual);
