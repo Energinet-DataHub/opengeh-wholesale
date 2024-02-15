@@ -70,7 +70,11 @@ public static class CalculationsRegistration
         services.AddScoped<IUpdateCalculationExecutionStateHandler, UpdateCalculationExecutionStateHandler>();
 
         services.AddHostedService<UpdateCalculationExecutionStateTrigger>();
+
+        // Health checks
         services.AddHealthChecks()
+            .AddDbContextCheck<DatabaseContext>(
+                name: $"{nameof(DatabaseContext)}HealthCheck")
             .AddRepeatingTriggerHealthCheck<UpdateCalculationExecutionStateTrigger>(TimeSpan.FromMinutes(1));
 
         return services;

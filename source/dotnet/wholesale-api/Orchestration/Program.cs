@@ -14,18 +14,10 @@
 
 using Energinet.DataHub.Core.Databricks.Jobs.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection;
-using Energinet.DataHub.Wholesale.Calculations.Application;
-using Energinet.DataHub.Wholesale.Calculations.Application.UseCases;
-using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
-using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Configuration.Options;
-using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Calculations;
-using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
 using Energinet.DataHub.Wholesale.Orchestration.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -42,40 +34,12 @@ var host = new HostBuilder()
         services.AddNodaTimeForApplication(context.Configuration);
 
         // Calculation
-        // => Database
-        services.AddHealthChecks()
-            .AddDbContextCheck<DatabaseContext>(
-                name: HealthCheckNames.CalculationDatabaseContext);
-        services.AddScoped<IDatabaseContext, DatabaseContext>();
-        var connectionStringOptions = context.Configuration
-            .GetSection(ConnectionStringsOptions.ConnectionStrings)
-            .Get<ConnectionStringsOptions>();
-        services.AddDbContext<DatabaseContext>(
-            options => options.UseSqlServer(
-                connectionStringOptions!.DB_CONNECTION_STRING,
-                o =>
-                {
-                    o.UseNodaTime();
-                    o.EnableRetryOnFailure();
-                }));
-
-        services.AddScoped<ICalculationRepository, CalculationRepository>();
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+        services.AddCalculationsModule(context.Configuration);
         // => Databricks
         services.AddHealthChecks()
             .AddDatabricksJobsApiHealthCheck(
                 name: HealthCheckNames.DatabricksJobsApi);
         services.AddDatabricksJobs(context.Configuration);
-        services.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
-        services.AddScoped<ICalculationParametersFactory, DatabricksCalculationParametersFactory>();
-        services.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
-
-        // => Clients
-        services.AddScoped<ICalculationInfrastructureService, CalculationInfrastructureService>();
-
-        // => Handlers
-        services.AddScoped<IStartCalculationHandler, StartCalculationHandler>();
     })
     .ConfigureLogging((hostingContext, logging) =>
     {

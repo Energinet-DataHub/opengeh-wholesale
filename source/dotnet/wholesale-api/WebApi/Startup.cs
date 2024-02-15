@@ -193,8 +193,6 @@ public class Startup
         var serviceBusOptions = Configuration.Get<ServiceBusOptions>()!;
         serviceCollection.AddHealthChecks()
             .AddLiveCheck()
-            .AddDbContextCheck<Calculations.Infrastructure.Persistence.DatabaseContext>(
-                name: HealthCheckNames.CalculationDatabaseContext)
             .AddAzureServiceBusSubscriptionUsingWebSockets(
                 serviceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING,
                 serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
