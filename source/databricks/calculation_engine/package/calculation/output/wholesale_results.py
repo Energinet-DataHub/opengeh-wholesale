@@ -11,7 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from dataclasses import asdict
+from dataclasses import fields
+
 from pyspark.sql import DataFrame
 
 from package.calculation.CalculationResults import WholesaleResultsContainer
@@ -24,8 +25,8 @@ from package.infrastructure.paths import (
 
 def write(wholesale_results: WholesaleResultsContainer) -> None:
     """Write each wholesale result to the output table."""
-    for name, df in asdict(wholesale_results).items():
-        _write(name, df)
+    for field in fields(wholesale_results):
+        _write(field.name, getattr(wholesale_results, field.name))
 
 
 def _write(name: str, df: DataFrame) -> None:
