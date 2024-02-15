@@ -29,6 +29,7 @@ from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType
 
+from package.calculation.calculator_args import CalculatorArgs
 from package.calculation_input.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
@@ -37,6 +38,7 @@ from package.calculation_input.schemas import (
     charge_price_points_schema,
     charge_link_periods_schema,
 )
+from package.codelists import CalculationType
 from package.datamigration.migration import _apply_migration
 from package.datamigration.migration_script_args import MigrationScriptArgs
 from package.datamigration.uncommitted_migrations import _get_all_migrations
@@ -305,6 +307,26 @@ def integration_test_configuration(tests_path: str) -> IntegrationTestConfigurat
     )
     raise Exception(
         "Failed to load integration test settings. Ensure that the Azure Key Vault URL is provided in the settings file or as an environment variable."
+    )
+
+
+@pytest.fixture(scope="session")
+def any_calculator_args() -> CalculatorArgs:
+    return CalculatorArgs(
+        data_storage_account_name="foo",
+        data_storage_account_credentials=ClientSecretCredential("foo", "foo", "foo"),
+        wholesale_container_path="foo",
+        calculation_input_path="foo",
+        time_series_points_table_name=None,
+        metering_point_periods_table_name=None,
+        grid_loss_metering_points_table_name=None,
+        calculation_id="foo",
+        calculation_type=CalculationType.AGGREGATION,
+        calculation_grid_areas=["805", "806"],
+        calculation_period_start_datetime=datetime(2018, 1, 1, 23, 0, 0),
+        calculation_period_end_datetime=datetime(2018, 1, 3, 23, 0, 0),
+        calculation_execution_time_start=datetime(2018, 1, 5, 23, 0, 0),
+        time_zone="Europe/Copenhagen",
     )
 
 
