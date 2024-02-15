@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Wholesale.Orchestration.Extensions.DependencyInjection
@@ -29,11 +30,19 @@ namespace Energinet.DataHub.Wholesale.Orchestration.Extensions.DependencyInjecti
         /// </summary>
         public static IServiceCollection AddHealthChecksForIsolatedWorker(this IServiceCollection services)
         {
-            services.AddScoped<IHealthCheckEndpointHandler, HealthCheckEndpointHandler>();
-            services.AddHealthChecks()
-                .AddLiveCheck();
+            if (!IsHealthChecksAdded(services))
+            {
+                services.AddScoped<IHealthCheckEndpointHandler, HealthCheckEndpointHandler>();
+                services.AddHealthChecks()
+                    .AddLiveCheck();
+            }
 
             return services;
+        }
+
+        private static bool IsHealthChecksAdded(IServiceCollection services)
+        {
+            return services.Any((ServiceDescriptor service) => service.ServiceType == typeof(HealthCheckEndpointHandler));
         }
     }
 }
