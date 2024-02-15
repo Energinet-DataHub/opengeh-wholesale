@@ -46,20 +46,15 @@ var host = new HostBuilder()
         // => NodaTime
         services.AddSingleton<IClock>(_ => SystemClock.Instance);
 
-        var connectionStringOptions = context.Configuration
-            .GetSection(ConnectionStringsOptions.ConnectionStrings)
-            .Get<ConnectionStringsOptions>();
-
-        services.AddHealthChecks()
-            .AddDatabricksJobsApiHealthCheck(
-                name: HealthCheckNames.DatabricksJobsApi);
-
         // Calculation
         // => Database
         services.AddHealthChecks()
             .AddDbContextCheck<DatabaseContext>(
                 name: HealthCheckNames.CalculationDatabaseContext);
         services.AddScoped<IDatabaseContext, DatabaseContext>();
+        var connectionStringOptions = context.Configuration
+            .GetSection(ConnectionStringsOptions.ConnectionStrings)
+            .Get<ConnectionStringsOptions>();
         services.AddDbContext<DatabaseContext>(
             options => options.UseSqlServer(
                 connectionStringOptions!.DB_CONNECTION_STRING,
