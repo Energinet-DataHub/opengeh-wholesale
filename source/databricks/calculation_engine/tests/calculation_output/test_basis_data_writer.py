@@ -17,8 +17,11 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Any, Callable
 
-from package.infrastructure import paths
 import pytest
+from pyspark.sql import DataFrame, SparkSession
+
+from package.calculation.calculator_args import CalculatorArgs
+from package.calculation.output import basis_data_results, basis_data_factory
 from package.codelists import (
     BasisDataType,
     MeteringPointResolution,
@@ -27,8 +30,7 @@ from package.codelists import (
     QuantityQuality,
 )
 from package.constants import Colname
-from package.calculation_output.basis_data_writer import BasisDataWriter
-from pyspark.sql import DataFrame, SparkSession
+from package.infrastructure import paths
 from tests.helpers.assert_calculation_file_path import (
     CalculationFileType,
     assert_file_path_match_contract,
@@ -167,19 +169,27 @@ def test__write__writes_to_paths_that_match_contract(
     contracts_path: str,
     tmpdir: Path,
     metering_point_period_df_factory: Callable[..., DataFrame],
-    metering_point_time_series_factory,
+    metering_point_time_series_factory: Callable,
+    any_calculator_args: CalculatorArgs,
 ) -> None:
     """
     This test calls 'write' once and then asserts on all file contracts.
     This is done to avoid multiple write operations, and thereby reduce execution time
     """
     # Arrange
+    any_calculator_args.wholesale_container_path = str(tmpdir)
+    any_calculator_args.calculation_id = DEFAULT_CALCULATION_ID
     metering_point_period_df = metering_point_period_df_factory()
     metering_point_time_series = metering_point_time_series_factory()
-    sut = BasisDataWriter(str(tmpdir), DEFAULT_CALCULATION_ID)
+
+    basis_data_container = basis_data_factory.create(
+        metering_point_period_df,
+        metering_point_time_series,
+        any_calculator_args.time_zone,
+    )
 
     # Act
-    sut.write(metering_point_period_df, metering_point_time_series, TIME_ZONE)
+    basis_data_results.write_basis_data(any_calculator_args, basis_data_container)
 
     # Assert
     for file_type in _get_all_basis_data_file_types():
