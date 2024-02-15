@@ -25,12 +25,12 @@ def write_basis_data(args: CalculatorArgs, basis_data: BasisDataContainer) -> No
         args.wholesale_container_path, args.calculation_id
     )
 
-    write_ga_basis_data_to_csv(basis_data, basis_data_writer)
-    write_es_basis_data_to_csv(basis_data, basis_data_writer)
+    _write_ga_basis_data_to_csv(basis_data, basis_data_writer)
+    _write_es_basis_data_to_csv(basis_data, basis_data_writer)
 
 
 @logging_configuration.use_span("per_grid_area")
-def write_ga_basis_data_to_csv(
+def _write_ga_basis_data_to_csv(
     basis_data: BasisDataContainer, basis_data_writer: BasisDataWriter
 ) -> None:
     grouping_folder_name = f"grouping={AggregationLevel.TOTAL_GA.value}"
@@ -46,7 +46,7 @@ def write_ga_basis_data_to_csv(
 
 
 @logging_configuration.use_span("per_energy_supplier")
-def write_es_basis_data_to_csv(
+def _write_es_basis_data_to_csv(
     basis_data: BasisDataContainer, basis_data_writer: BasisDataWriter
 ) -> None:
     grouping_folder_name = f"grouping={AggregationLevel.ES_PER_GA.value}"

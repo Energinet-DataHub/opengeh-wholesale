@@ -22,9 +22,7 @@ from pyspark.sql import DataFrame, SparkSession
 
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.output import basis_data_results
-from package.calculation.preparation.transformations.basis_data_transformator import (
-    BasisDataTransformator,
-)
+from package.calculation.preparation.transformations import basis_data_factory
 from package.codelists import (
     BasisDataType,
     MeteringPointResolution,
@@ -172,7 +170,7 @@ def test__write__writes_to_paths_that_match_contract(
     contracts_path: str,
     tmpdir: Path,
     metering_point_period_df_factory: Callable[..., DataFrame],
-    metering_point_time_series_factory,
+    metering_point_time_series_factory: Callable,
     any_calculator_args: CalculatorArgs,
 ) -> None:
     """
@@ -185,8 +183,7 @@ def test__write__writes_to_paths_that_match_contract(
     metering_point_period_df = metering_point_period_df_factory()
     metering_point_time_series = metering_point_time_series_factory()
 
-    basis_data_transformator = BasisDataTransformator()
-    basis_data_container = basis_data_transformator.transform(
+    basis_data_container = basis_data_factory.create(
         metering_point_period_df,
         metering_point_time_series,
         any_calculator_args.time_zone,

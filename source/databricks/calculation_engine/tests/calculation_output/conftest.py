@@ -24,14 +24,12 @@ from package.codelists.calculation_type import (
 
 
 @pytest.fixture(scope="session")
-def calculator_args_balance_fixing(
-    data_lake_path: str, calculation_input_path: str
-) -> CalculatorArgs:
+def any_calculator_args() -> CalculatorArgs:
     return CalculatorArgs(
         data_storage_account_name="foo",
         data_storage_account_credentials=ClientSecretCredential("foo", "foo", "foo"),
-        wholesale_container_path=data_lake_path,
-        calculation_input_path=calculation_input_path,
+        wholesale_container_path="foo",
+        calculation_input_path="foo",
         time_series_points_table_name=None,
         metering_point_periods_table_name=None,
         grid_loss_metering_points_table_name=None,
@@ -43,10 +41,3 @@ def calculator_args_balance_fixing(
         calculation_execution_time_start=datetime(2018, 1, 5, 23, 0, 0),
         time_zone="Europe/Copenhagen",
     )
-
-
-@pytest.fixture(scope="session")
-def any_calculator_args(
-    calculator_args_balance_fixing: CalculatorArgs,
-) -> CalculatorArgs:
-    return calculator_args_balance_fixing
