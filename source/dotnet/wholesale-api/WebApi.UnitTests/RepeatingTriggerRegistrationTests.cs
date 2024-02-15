@@ -14,6 +14,7 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Wholesale.Calculations.Application.Workers;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Events.Application.Triggers;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;

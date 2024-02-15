@@ -23,32 +23,33 @@ using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
+namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.DependencyInjection;
 
 /// <summary>
 /// Registration of services required for the Calculations module.
 /// </summary>
 public static class CalculationsRegistration
 {
-    public static void AddCalculationsModule(
-        this IServiceCollection serviceCollection,
+    public static IServiceCollection AddCalculationsModule(
+        this IServiceCollection services,
         Func<string> databaseConnectionStringProvider)
     {
-        serviceCollection.AddScoped<ICalculationsClient, CalculationsClient>();
-        serviceCollection.AddScoped<ICalculationExecutionStateInfrastructureService, CalculationExecutionStateInfrastructureService>();
-        serviceCollection.AddScoped<ICalculationInfrastructureService, CalculationInfrastructureService>();
-        serviceCollection.AddScoped<ICalculationFactory, CalculationFactory>();
-        serviceCollection.AddScoped<ICalculationRepository, CalculationRepository>();
-        serviceCollection.AddSingleton(new CalculationStateMapper());
+        services.AddScoped<ICalculationsClient, CalculationsClient>();
+        services.AddScoped<ICalculationExecutionStateInfrastructureService, CalculationExecutionStateInfrastructureService>();
+        services.AddScoped<ICalculationInfrastructureService, CalculationInfrastructureService>();
+        services.AddScoped<ICalculationFactory, CalculationFactory>();
+        services.AddScoped<ICalculationRepository, CalculationRepository>();
+        services.AddSingleton(new CalculationStateMapper());
 
-        serviceCollection.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
+        services.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
 
-        serviceCollection.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
-        serviceCollection.AddScoped<ICalculationParametersFactory, DatabricksCalculationParametersFactory>();
+        services.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
+        services.AddScoped<ICalculationParametersFactory, DatabricksCalculationParametersFactory>();
 
-        serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
-        serviceCollection.AddDbContext<DatabaseContext>(
+        services.AddScoped<IDatabaseContext, DatabaseContext>();
+        services.AddDbContext<DatabaseContext>(
             options => options.UseSqlServer(
                 databaseConnectionStringProvider(),
                 o =>
@@ -57,22 +58,17 @@ public static class CalculationsRegistration
                     o.EnableRetryOnFailure();
                 }));
 
-        serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
-        serviceCollection.AddScoped<ICalculationDtoMapper, CalculationDtoMapper>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<ICalculationDtoMapper, CalculationDtoMapper>();
 
-        serviceCollection.AddScoped<ICreateCalculationHandler, CreateCalculationHandler>();
-        serviceCollection.AddScoped<IStartCalculationHandler, StartCalculationHandler>();
-        serviceCollection.AddScoped<IUpdateCalculationExecutionStateHandler, UpdateCalculationExecutionStateHandler>();
+        services.AddScoped<ICreateCalculationHandler, CreateCalculationHandler>();
+        services.AddScoped<IStartCalculationHandler, StartCalculationHandler>();
+        services.AddScoped<IUpdateCalculationExecutionStateHandler, UpdateCalculationExecutionStateHandler>();
 
-        RegisterHostedServices(serviceCollection);
-    }
-
-    private static void RegisterHostedServices(IServiceCollection serviceCollection)
-    {
-        serviceCollection.AddHostedService<UpdateCalculationExecutionStateTrigger>();
-
-        serviceCollection
-            .AddHealthChecks()
+        services.AddHostedService<UpdateCalculationExecutionStateTrigger>();
+        services.AddHealthChecks()
             .AddRepeatingTriggerHealthCheck<UpdateCalculationExecutionStateTrigger>(TimeSpan.FromMinutes(1));
+
+        return services;
     }
 }
