@@ -9,6 +9,14 @@ resource "azurerm_dns_zone" "this" {
   }
 }
 
+# If deleted the new DNS zone URLs will have to be changed with IT operations!
+resource "azurerm_management_lock" "dns-zone-lock" {
+  name       = "dns-zone-lock"
+  scope      = azurerm_dns_zone.this.id
+  lock_level = "CanNotDelete"
+  notes      = "Locked as the DNS zones must be static"
+}
+
 # Verification code to verify ownership of the domain
 resource "azurerm_dns_txt_record" "this" {
   name                = "@"

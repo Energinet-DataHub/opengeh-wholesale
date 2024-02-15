@@ -46,11 +46,19 @@ resource "azurerm_express_route_circuit_peering" "this" {
   route_filter_id               = azurerm_route_filter.this.id
 
   microsoft_peering_config {
-    advertised_public_prefixes = ["86.106.96.1/32","86.106.96.2/32"]
+    advertised_public_prefixes = ["86.106.96.1/32", "86.106.96.2/32"]
     advertised_communities     = ["12076:52002"]
   }
 
   lifecycle {
     prevent_destroy = true
   }
+}
+
+# ReadOnly means authorized users can only read from a resource, but they can't modify or delete it.
+resource "azurerm_management_lock" "erc-lock" {
+  name       = "erc-lock"
+  scope      = azurerm_express_route_circuit.dh2_express_route.id
+  lock_level = "ReadOnly"
+  notes      = "Locked as the Express Route is needed for CGI"
 }
