@@ -7,7 +7,7 @@
 
 data "azurerm_resource_group" "rg_tfstate" {
   count = 1
-  name = "rg-tfs-${var.environment_short}-${var.region_short}-${var.environment_instance}"
+  name  = "rg-tfs-${var.environment_short}-${var.region_short}-${var.environment_instance}"
 }
 
 resource "azurerm_role_assignment" "developers_subscription_reader" {
@@ -38,7 +38,7 @@ resource "azurerm_role_assignment" "deny_developer_dataplane_access_to_tfs_rg" {
 
 // Allow platform team read access to shared keyvault on all environments
 resource "azurerm_key_vault_access_policy" "platformteam_shared_keyvault_read_access" {
-  count = 1
+  count        = 1
   key_vault_id = module.kv_shared.id
   tenant_id    = data.azurerm_client_config.current.tenant_id
   object_id    = var.platform_team_security_group_object_id
@@ -63,15 +63,15 @@ resource "azurerm_key_vault_access_policy" "platformteam_shared_keyvault_read_ac
 // There is no built-in role for reading appsettings :o/
 // Reference: https://github.com/MicrosoftDocs/azure-docs/issues/59847#issuecomment-871298764
 resource "azurerm_role_definition" "app_config_settings_read_access" {
-count         = 1
+  count       = 1
   name        = "datahub-app-config-settings-read-access-${var.environment_short}-${var.region_short}-${var.environment_instance}"
   scope       = data.azurerm_subscription.this.id
   description = "Allow reading config settings in Function apps and App Services"
 
   permissions {
     actions = [
-        "Microsoft.Web/sites/config/list/Action",
-        "Microsoft.Web/sites/config/Read"
+      "Microsoft.Web/sites/config/list/Action",
+      "Microsoft.Web/sites/config/Read"
     ]
   }
 }
@@ -93,7 +93,14 @@ resource "azurerm_role_definition" "apim_groups_contributor_access" {
 
   permissions {
     actions = [
-        "Microsoft.ApiManagement/service/groups/*"
+      "Microsoft.ApiManagement/service/groups/*"
     ]
   }
+}
+
+# Allow platform team to create and manage support tickets to Azure
+resource "azurerm_role_assignment" "platform_support_contributor_access" {
+  scope                = data.azurerm_subscription.this.id
+  role_definition_name = "Support Request Contributor"
+  principal_id         = var.platform_team_security_group_object_id
 }
