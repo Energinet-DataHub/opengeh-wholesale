@@ -200,9 +200,9 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infras
 public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFixture sqlStatementApiFixture)
 {
     public static AggregatedTimeSeriesQueryParameters CreateQueryParameters(
+        Instant startOfPeriod,
+        Instant endOfPeriod,
         IReadOnlyCollection<TimeSeriesType>? timeSeriesType = null,
-        Instant? startOfPeriod = null,
-        Instant? endOfPeriod = null,
         string? gridArea = null,
         string? energySupplierId = null,
         string? balanceResponsibleId = null)
@@ -211,173 +211,173 @@ public sealed class AggregatedTimeSeriesQueries2Data(DatabricksSqlStatementApiFi
         [
             new CalculationForPeriod(
                 new Period(
-                    startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
-                    endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0)),
+                    startOfPeriod,
+                    endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.BalanceFixingCalculationResultId),
                 256),
             new CalculationForPeriod(
                 new Period(
-                    startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
-                    endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0)),
+                    startOfPeriod,
+                    endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.FirstCorrectionSettlementCalculationResultId),
                 512),
             new CalculationForPeriod(
                 new Period(
-                    startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
-                    endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0)),
+                    startOfPeriod,
+                    endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.SecondCorrectionSettlementCalculationResultId),
                 1024),
             new CalculationForPeriod(
                 new Period(
-                    startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
-                    endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0)),
+                    startOfPeriod,
+                    endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.ThirdCorrectionSettlementCalculationResultId),
                 2048),
 
             new CalculationForPeriod(
                 new Period(
-                    startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
-                    endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0)),
+                    startOfPeriod,
+                    endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.BrGaAgBf1CalculationResultId),
                 1),
             new CalculationForPeriod(
                 new Period(
-                    startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
-                    endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0)),
+                    startOfPeriod,
+                    endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.BrGaAgBf2CalculationResultId),
                 2),
             new CalculationForPeriod(
                 new Period(
-                    startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
-                    endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0)),
+                    startOfPeriod,
+                    endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.BrGaAgFc1CalculationResultId),
                 3),
             new CalculationForPeriod(
                 new Period(
-                    startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
-                    endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0)),
+                    startOfPeriod,
+                    endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.BrGaAgFc2CalculationResultId),
                 4),
             new CalculationForPeriod(
                 new Period(
-                    startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
-                    endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0)),
+                    startOfPeriod,
+                    endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.BrGaAgSc1CalculationResultId),
                 5),
             new CalculationForPeriod(
                 new Period(
-                    startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
-                    endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0)),
+                    startOfPeriod,
+                    endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.BrGaAgSc2CalculationResultId),
                 6),
             new CalculationForPeriod(
                 new Period(
-                    startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
-                    endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0)),
+                    startOfPeriod,
+                    endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.BrGaAgTc1CalculationResultId),
                 7),
             new CalculationForPeriod(
                 new Period(
-                    startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
-                    endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0)),
+                    startOfPeriod,
+                    endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.BrGaAgTc2CalculationResultId),
                 8),
 
             new CalculationForPeriod(
                 new Period(
-                    startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
-                    endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0)),
+                    startOfPeriod,
+                    endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.EsGaAgBf1CalculationResultId),
                 11),
             new CalculationForPeriod(
                 new Period(
-                    startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
-                    endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0)),
+                    startOfPeriod,
+                    endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.EsGaAgBf2CalculationResultId),
                 22),
             new CalculationForPeriod(
                 new Period(
-                    startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
-                    endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0)),
+                    startOfPeriod,
+                    endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.EsGaAgFc1CalculationResultId),
                 33),
             new CalculationForPeriod(
                 new Period(
-                    startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
-                    endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0)),
+                    startOfPeriod,
+                    endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.EsGaAgFc2CalculationResultId),
                 44),
             new CalculationForPeriod(
                 new Period(
-                    startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
-                    endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0)),
+                    startOfPeriod,
+                    endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.EsGaAgSc1CalculationResultId),
                 55),
             new CalculationForPeriod(
                 new Period(
-                    startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
-                    endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0)),
+                    startOfPeriod,
+                    endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.EsGaAgSc2CalculationResultId),
                 66),
             new CalculationForPeriod(
                 new Period(
-                    startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
-                    endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0)),
+                    startOfPeriod,
+                    endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.EsGaAgTc1CalculationResultId),
                 77),
             new CalculationForPeriod(
                 new Period(
-                    startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
-                    endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0)),
+                    startOfPeriod,
+                    endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.EsGaAgTc2CalculationResultId),
                 88),
 
             new CalculationForPeriod(
                 new Period(
-                    startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
-                    endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0)),
+                    startOfPeriod,
+                    endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.GaAgBf1CalculationResultId),
                 111),
             new CalculationForPeriod(
                 new Period(
-                    startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
-                    endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0)),
+                    startOfPeriod,
+                    endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.GaAgBf2CalculationResultId),
                 222),
             new CalculationForPeriod(
                 new Period(
-                    startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
-                    endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0)),
+                    startOfPeriod,
+                    endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.GaAgFc1CalculationResultId),
                 333),
             new CalculationForPeriod(
                 new Period(
-                    startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
-                    endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0)),
+                    startOfPeriod,
+                    endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.GaAgFc2CalculationResultId),
                 444),
             new CalculationForPeriod(
                 new Period(
-                    startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
-                    endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0)),
+                    startOfPeriod,
+                    endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.GaAgSc1CalculationResultId),
                 555),
             new CalculationForPeriod(
                 new Period(
-                    startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
-                    endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0)),
+                    startOfPeriod,
+                    endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.GaAgSc2CalculationResultId),
                 666),
             new CalculationForPeriod(
                 new Period(
-                    startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
-                    endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0)),
+                    startOfPeriod,
+                    endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.GaAgTc1CalculationResultId),
                 777),
             new CalculationForPeriod(
                 new Period(
-                    startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
-                    endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0)),
+                    startOfPeriod,
+                    endOfPeriod),
                 Guid.Parse(AggregatedTimeSeriesQueries2Constants.GaAgTc2CalculationResultId),
                 888)
         ];

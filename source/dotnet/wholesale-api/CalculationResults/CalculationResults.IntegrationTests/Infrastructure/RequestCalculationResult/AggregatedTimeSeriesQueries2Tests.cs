@@ -105,12 +105,12 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
         await _aggregatedTimeSeriesQueries2Data.AddDataAsync();
 
         var parameters = AggregatedTimeSeriesQueries2Data.CreateQueryParameters(
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter,
             timeSeriesType: new[] { TimeSeriesType.Production },
             gridArea: AggregatedTimeSeriesQueries2Constants.GridAreaCodeB,
             energySupplierId: AggregatedTimeSeriesQueries2Constants.EnergySupplierB,
-            balanceResponsibleId: AggregatedTimeSeriesQueries2Constants.BalanceResponsibleB,
-            startOfPeriod: startOfPeriodFilter,
-            endOfPeriod: endOfPeriodFilter);
+            balanceResponsibleId: AggregatedTimeSeriesQueries2Constants.BalanceResponsibleB);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -153,12 +153,12 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
         await _aggregatedTimeSeriesQueries2Data.AddDataAsync();
 
         var parameters = AggregatedTimeSeriesQueries2Data.CreateQueryParameters(
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter,
             timeSeriesType: new[] { TimeSeriesType.Production, TimeSeriesType.FlexConsumption },
             gridArea: AggregatedTimeSeriesQueries2Constants.GridAreaCodeA,
             energySupplierId: AggregatedTimeSeriesQueries2Constants.EnergySupplierC,
-            balanceResponsibleId: AggregatedTimeSeriesQueries2Constants.BalanceResponsibleB,
-            startOfPeriod: startOfPeriodFilter,
-            endOfPeriod: endOfPeriodFilter);
+            balanceResponsibleId: AggregatedTimeSeriesQueries2Constants.BalanceResponsibleB);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -184,12 +184,12 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
         await _aggregatedTimeSeriesQueries2Data.AddDataAsync();
 
         var parameters = AggregatedTimeSeriesQueries2Data.CreateQueryParameters(
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter,
             timeSeriesType: new[] { TimeSeriesType.FlexConsumption },
             gridArea: AggregatedTimeSeriesQueries2Constants.GridAreaCodeB,
             energySupplierId: AggregatedTimeSeriesQueries2Constants.EnergySupplierC,
-            balanceResponsibleId: null,
-            startOfPeriod: startOfPeriodFilter,
-            endOfPeriod: endOfPeriodFilter);
+            balanceResponsibleId: null);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -243,12 +243,12 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
         await _aggregatedTimeSeriesQueries2Data.AddDataAsync();
 
         var parameters = AggregatedTimeSeriesQueries2Data.CreateQueryParameters(
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter,
             timeSeriesType: new[] { TimeSeriesType.Production, TimeSeriesType.FlexConsumption },
             gridArea: AggregatedTimeSeriesQueries2Constants.GridAreaCodeC,
             energySupplierId: AggregatedTimeSeriesQueries2Constants.EnergySupplierA,
-            balanceResponsibleId: null,
-            startOfPeriod: startOfPeriodFilter,
-            endOfPeriod: endOfPeriodFilter);
+            balanceResponsibleId: null);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -276,12 +276,12 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
         await _aggregatedTimeSeriesQueries2Data.AddDataAsync();
 
         var parameters = AggregatedTimeSeriesQueries2Data.CreateQueryParameters(
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter,
             timeSeriesType: new[] { TimeSeriesType.FlexConsumption },
             gridArea: null,
             energySupplierId: AggregatedTimeSeriesQueries2Constants.EnergySupplierC,
-            balanceResponsibleId: AggregatedTimeSeriesQueries2Constants.BalanceResponsibleB,
-            startOfPeriod: startOfPeriodFilter,
-            endOfPeriod: endOfPeriodFilter);
+            balanceResponsibleId: AggregatedTimeSeriesQueries2Constants.BalanceResponsibleB);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -362,12 +362,12 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
         await _aggregatedTimeSeriesQueries2Data.AddDataAsync();
 
         var parameters = AggregatedTimeSeriesQueries2Data.CreateQueryParameters(
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter,
             timeSeriesType: new[] { TimeSeriesType.Production, TimeSeriesType.FlexConsumption },
             gridArea: null,
             energySupplierId: AggregatedTimeSeriesQueries2Constants.EnergySupplierC,
-            balanceResponsibleId: AggregatedTimeSeriesQueries2Constants.BalanceResponsibleB,
-            startOfPeriod: startOfPeriodFilter,
-            endOfPeriod: endOfPeriodFilter);
+            balanceResponsibleId: AggregatedTimeSeriesQueries2Constants.BalanceResponsibleB);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -405,12 +405,12 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
         await _aggregatedTimeSeriesQueries2Data.AddDataAsync();
 
         var parameters = AggregatedTimeSeriesQueries2Data.CreateQueryParameters(
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter,
             timeSeriesType: new[] { TimeSeriesType.Production, TimeSeriesType.FlexConsumption },
             gridArea: AggregatedTimeSeriesQueries2Constants.GridAreaCodeA,
             energySupplierId: null,
-            balanceResponsibleId: AggregatedTimeSeriesQueries2Constants.BalanceResponsibleA,
-            startOfPeriod: startOfPeriodFilter,
-            endOfPeriod: endOfPeriodFilter);
+            balanceResponsibleId: AggregatedTimeSeriesQueries2Constants.BalanceResponsibleA);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -438,12 +438,12 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
         await _aggregatedTimeSeriesQueries2Data.AddDataAsync();
 
         var parameters = AggregatedTimeSeriesQueries2Data.CreateQueryParameters(
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter,
             timeSeriesType: new[] { TimeSeriesType.FlexConsumption },
             gridArea: AggregatedTimeSeriesQueries2Constants.GridAreaCodeA,
             energySupplierId: null,
-            balanceResponsibleId: AggregatedTimeSeriesQueries2Constants.BalanceResponsibleB,
-            startOfPeriod: startOfPeriodFilter,
-            endOfPeriod: endOfPeriodFilter);
+            balanceResponsibleId: AggregatedTimeSeriesQueries2Constants.BalanceResponsibleB);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -497,12 +497,12 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
         await _aggregatedTimeSeriesQueries2Data.AddDataAsync();
 
         var parameters = AggregatedTimeSeriesQueries2Data.CreateQueryParameters(
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter,
             timeSeriesType: new[] { TimeSeriesType.Production },
             gridArea: AggregatedTimeSeriesQueries2Constants.GridAreaCodeA,
             energySupplierId: null,
-            balanceResponsibleId: null,
-            startOfPeriod: startOfPeriodFilter,
-            endOfPeriod: endOfPeriodFilter);
+            balanceResponsibleId: null);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -556,15 +556,15 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
         await _aggregatedTimeSeriesQueries2Data.AddDataAsync();
 
         var parameters = AggregatedTimeSeriesQueries2Data.CreateQueryParameters(
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter,
             timeSeriesType: new[]
             {
                 TimeSeriesType.Production, TimeSeriesType.FlexConsumption, TimeSeriesType.NetExchangePerGa,
             },
             gridArea: AggregatedTimeSeriesQueries2Constants.GridAreaCodeA,
             energySupplierId: null,
-            balanceResponsibleId: null,
-            startOfPeriod: startOfPeriodFilter,
-            endOfPeriod: endOfPeriodFilter);
+            balanceResponsibleId: null);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -595,12 +595,12 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
         await _aggregatedTimeSeriesQueries2Data.AddDataAsync();
 
         var parameters = AggregatedTimeSeriesQueries2Data.CreateQueryParameters(
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter,
             timeSeriesType: new[] { TimeSeriesType.Production },
             gridArea: null,
             energySupplierId: null,
-            balanceResponsibleId: null,
-            startOfPeriod: startOfPeriodFilter,
-            endOfPeriod: endOfPeriodFilter);
+            balanceResponsibleId: null);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -627,9 +627,9 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
         // Arrange
         await _aggregatedTimeSeriesQueries2Data.AddDataAsync();
         var parameters = AggregatedTimeSeriesQueries2Data.CreateQueryParameters(
-            gridArea: AggregatedTimeSeriesQueries2Constants.GridAreaCodeA,
             startOfPeriod: Instant.FromUtc(2020, 1, 1, 1, 1),
-            endOfPeriod: Instant.FromUtc(2021, 1, 2, 1, 1));
+            endOfPeriod: Instant.FromUtc(2021, 1, 2, 1, 1),
+            gridArea: AggregatedTimeSeriesQueries2Constants.GridAreaCodeA);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -648,10 +648,10 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
         await _aggregatedTimeSeriesQueries2Data.AddDataAsync();
 
         var parameters = AggregatedTimeSeriesQueries2Data.CreateQueryParameters(
-            gridArea: AggregatedTimeSeriesQueries2Constants.GridAreaCodeC,
-            timeSeriesType: [TimeSeriesType.Production],
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter,
+            timeSeriesType: [TimeSeriesType.Production],
+            gridArea: AggregatedTimeSeriesQueries2Constants.GridAreaCodeC,
             energySupplierId: "badId");
 
         // Act
@@ -674,10 +674,10 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
         await _aggregatedTimeSeriesQueries2Data.AddDataAsync();
 
         var parameters = AggregatedTimeSeriesQueries2Data.CreateQueryParameters(
-            gridArea: AggregatedTimeSeriesQueries2Constants.GridAreaCodeA,
-            timeSeriesType: [TimeSeriesType.Production],
             startOfPeriod: startOfPeriodFilter,
-            endOfPeriod: endOfPeriodFilter);
+            endOfPeriod: endOfPeriodFilter,
+            timeSeriesType: [TimeSeriesType.Production],
+            gridArea: AggregatedTimeSeriesQueries2Constants.GridAreaCodeA);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
@@ -704,10 +704,10 @@ public sealed class AggregatedTimeSeriesQueries2Tests : TestBase<AggregatedTimeS
         await _aggregatedTimeSeriesQueries2Data.AddDataAsync();
 
         var parameters = AggregatedTimeSeriesQueries2Data.CreateQueryParameters(
-            gridArea: AggregatedTimeSeriesQueries2Constants.GridAreaCodeC,
-            timeSeriesType: [TimeSeriesType.Production],
             startOfPeriod: startOfPeriodFilter,
-            endOfPeriod: endOfPeriodFilter);
+            endOfPeriod: endOfPeriodFilter,
+            timeSeriesType: [TimeSeriesType.Production],
+            gridArea: AggregatedTimeSeriesQueries2Constants.GridAreaCodeC);
 
         // Act
         var actual = await Sut.GetAsync(parameters).ToListAsync();
