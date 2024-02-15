@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Configuration;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Databricks.Jobs.Diagnostics.HealthChecks;
@@ -35,26 +36,29 @@ var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
     .ConfigureServices((context, services) =>
     {
+        // Common
+        // => Application Insights (telemetry)
         services.AddApplicationInsightsForIsolatedWorker();
-
-        // Health check
+        // => Health check
         services.AddScoped<IHealthCheckEndpointHandler, HealthCheckEndpointHandler>();
         services.AddHealthChecks()
-            .AddLiveCheck()
-            .AddDbContextCheck<DatabaseContext>(
-                name: HealthCheckNames.CalculationDatabaseContext)
-            .AddDatabricksJobsApiHealthCheck(
-                name: HealthCheckNames.DatabricksJobsApi);
-
-        // Common
+            .AddLiveCheck();
         // => NodaTime
         services.AddSingleton<IClock>(_ => SystemClock.Instance);
 
-        // Calculation
-        // => Database
         var connectionStringOptions = context.Configuration
             .GetSection(ConnectionStringsOptions.ConnectionStrings)
             .Get<ConnectionStringsOptions>();
+
+        services.AddHealthChecks()
+            .AddDatabricksJobsApiHealthCheck(
+                name: HealthCheckNames.DatabricksJobsApi);
+
+        // Calculation
+        // => Database
+        services.AddHealthChecks()
+            .AddDbContextCheck<DatabaseContext>(
+                name: HealthCheckNames.CalculationDatabaseContext);
         services.AddScoped<IDatabaseContext, DatabaseContext>();
         services.AddDbContext<DatabaseContext>(
             options => options.UseSqlServer(
@@ -69,6 +73,9 @@ var host = new HostBuilder()
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         // => Databricks
+        services.AddHealthChecks()
+            .AddDatabricksJobsApiHealthCheck(
+                name: HealthCheckNames.DatabricksJobsApi);
         services.AddDatabricksJobs(context.Configuration);
         services.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
         services.AddScoped<ICalculationParametersFactory, DatabricksCalculationParametersFactory>();
