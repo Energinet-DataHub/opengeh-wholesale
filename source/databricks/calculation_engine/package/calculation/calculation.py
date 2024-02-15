@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import Tuple
+
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 
@@ -30,6 +32,7 @@ from .output.basis_data import write_basis_data
 from .output.energy_results import write_energy_results
 from .output.wholesale_results import write_wholesale_results
 from .preparation import PreparedDataReader
+from .preparation.transformations import basis_data
 from .wholesale import wholesale_calculation
 
 
@@ -105,10 +108,31 @@ def _execute(
         )
 
     # Add basis data results
-    results.basis_data.metering_point_periods = metering_point_periods_df
-    results.basis_data.metering_point_time_series = metering_point_time_series
+    master_basis_data_df, timeseries_hour_df, timeseries_quarter_df = _get_basis_data(
+        args, metering_point_periods_df, metering_point_time_series
+    )
+    results.basis_data.timeseries_quarter_df = timeseries_quarter_df
+    results.basis_data.timeseries_hour_df = timeseries_hour_df
+    results.basis_data.master_basis_data_df = master_basis_data_df
 
     return results
+
+
+def _get_basis_data(
+    args: CalculatorArgs,
+    metering_point_periods_df: DataFrame,
+    metering_point_time_series_df: DataFrame,
+) -> Tuple[DataFrame, DataFrame, DataFrame]:
+    (
+        timeseries_quarter_df,
+        timeseries_hour_df,
+    ) = basis_data.get_metering_point_time_series_basis_data_dfs(
+        metering_point_time_series_df, args.time_zone
+    )
+    master_basis_data_df = basis_data.get_master_basis_data_df(
+        metering_point_periods_df
+    )
+    return master_basis_data_df, timeseries_hour_df, timeseries_quarter_df
 
 
 def _get_production_and_consumption_metering_points(
@@ -124,5 +148,6 @@ def _write_results(args: CalculatorArgs, results: CalculationResultsContainer) -
     write_energy_results(args, results.energy_results)
     if results.wholesale_results is not None:
         write_wholesale_results(args, results.wholesale_results)
+
     # We write basis data at the end of the calculation to make it easier to analyze performance of the calculation part
     write_basis_data(args, results.basis_data)

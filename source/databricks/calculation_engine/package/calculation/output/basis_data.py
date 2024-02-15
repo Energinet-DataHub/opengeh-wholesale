@@ -20,8 +20,4 @@ def write_basis_data(args: CalculatorArgs, basis_data: BasisDataContainer) -> No
     basis_data_writer = BasisDataWriter(
         args.wholesale_container_path, args.calculation_id
     )
-    basis_data_writer.write(
-        basis_data.metering_point_periods,
-        basis_data.metering_point_time_series,
-        args.time_zone,
-    )
+    basis_data_writer.write(basis_data)
