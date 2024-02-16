@@ -27,6 +27,7 @@ from package.calculator_job_args import (
     create_calculation_arguments,
     parse_command_line_arguments,
 )
+from package.container import create_and_configure_container
 from package.infrastructure import initialize_spark
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.storage_account_access import islocked
@@ -79,6 +80,7 @@ def start_with_deps(
 
             args = create_calculation_args(command_line_args)
             infrastructure_settings = create_infrastructure_settings(command_line_args)
+            create_and_configure_container(infrastructure_settings)
 
             raise_if_storage_is_locked(
                 is_storage_locked_checker, infrastructure_settings
