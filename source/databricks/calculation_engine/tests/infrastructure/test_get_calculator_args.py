@@ -17,7 +17,7 @@ import re
 import pytest
 from unittest.mock import patch
 from package.calculator_job_args import (
-    create_calculation_arguments,
+    parse_job_arguments,
     parse_command_line_arguments,
 )
 from package.codelists import CalculationType
@@ -94,7 +94,7 @@ class TestWhenInvokedWithValidParameters:
             with patch.dict("os.environ", job_environment_variables):
                 command_line_args = parse_command_line_arguments()
                 # Act
-                actual = create_calculation_arguments(command_line_args)
+                actual = parse_job_arguments(command_line_args)
 
         # Assert
 
@@ -141,7 +141,7 @@ class TestWhenInvokedWithValidParameters:
             with patch.dict("os.environ", job_environment_variables):
                 command_line_args = parse_command_line_arguments()
                 # Act
-                actual = create_calculation_arguments(command_line_args)
+                actual = parse_job_arguments(command_line_args)
 
         # Assert
         assert actual.time_series_points_table_name == expected
@@ -156,7 +156,7 @@ class TestWhenInvokedWithValidParameters:
             with patch.dict("os.environ", job_environment_variables):
                 command_line_args = parse_command_line_arguments()
                 # Act
-                actual = create_calculation_arguments(command_line_args)
+                actual = parse_job_arguments(command_line_args)
 
         # Assert
         assert actual.time_series_points_table_name is None
@@ -182,7 +182,7 @@ class TestWhenUnknownCalculationType:
                 with pytest.raises(SystemExit) as error:
                     command_line_args = parse_command_line_arguments()
                     # Act
-                    create_calculation_arguments(command_line_args)
+                    parse_job_arguments(command_line_args)
 
         # Assert
         assert error.value.code != 0
@@ -205,7 +205,7 @@ class TestWhenMissingEnvVariables:
                     with pytest.raises(SystemExit) as error:
                         command_line_args = parse_command_line_arguments()
                         # Act
-                        create_calculation_arguments(command_line_args)
+                        parse_job_arguments(command_line_args)
 
         # Assert
         assert error.value.code != 0

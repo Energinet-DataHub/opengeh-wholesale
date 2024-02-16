@@ -25,17 +25,20 @@ from package.codelists.calculation_type import (
 )
 from package.common.logger import Logger
 from package.infrastructure import valid_date, valid_list, logging_configuration
+from package.infrastructure.infrastructure_settings import InfrastructureSettings
 
 
 def parse_command_line_arguments() -> Namespace:
     return _parse_args_or_throw(sys.argv[1:])
 
 
-def create_calculation_arguments(job_args: Namespace) -> CalculatorArgs:
+def parse_job_arguments(
+    job_args: Namespace,
+) -> (CalculatorArgs, InfrastructureSettings):
     logger = Logger(__name__)
     logger.info(f"Command line arguments: {repr(job_args)}")
 
-    with logging_configuration.start_span("calculation.create_calculation_arguments"):
+    with logging_configuration.start_span("calculation.parse_job_arguments"):
         time_zone = env_vars.get_time_zone()
 
         calculator_args = CalculatorArgs(
@@ -48,7 +51,17 @@ def create_calculation_arguments(job_args: Namespace) -> CalculatorArgs:
             time_zone=time_zone,
         )
 
-        return calculator_args
+        infrastructure_settings = InfrastructureSettings(
+            data_storage_account_name=job_args.data_storage_account_name,
+            data_storage_account_credentials=job_args.data_storage_account_credentials,
+            wholesale_container_path=job_args.wholesale_container_path,
+            calculation_input_path=job_args.calculation_input_path,
+            time_series_points_table_name=job_args.time_series_points_table_name,
+            metering_point_periods_table_name=job_args.metering_point_periods_table_name,
+            grid_loss_metering_points_table_name=job_args.grid_loss_metering_points_table_name,
+        )
+
+        return calculator_args, infrastructure_settings
 
 
 def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:

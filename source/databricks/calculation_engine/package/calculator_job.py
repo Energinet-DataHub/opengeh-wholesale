@@ -15,7 +15,7 @@
 import os
 import sys
 from argparse import Namespace
-from typing import Callable
+from typing import Callable, Tuple
 
 from opentelemetry.trace import SpanKind, Status, StatusCode, Span
 
@@ -24,7 +24,7 @@ from package import calculation
 from package import calculation_input
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculator_job_args import (
-    create_calculation_arguments,
+    parse_job_arguments,
     parse_command_line_arguments,
 )
 from package.container import create_and_configure_container
@@ -51,9 +51,9 @@ def start_with_deps(
     cloud_role_name: str = "dbr-calculation-engine",
     applicationinsights_connection_string: str | None = None,
     parse_command_line_args: Callable[..., Namespace] = parse_command_line_arguments,
-    create_calculation_args: Callable[
-        ..., CalculatorArgs
-    ] = create_calculation_arguments,
+    parse_job_args: Callable[
+        ..., Tuple[CalculatorArgs, InfrastructureSettings]
+    ] = parse_job_arguments,
     calculation_executor: Callable[..., None] = calculation.execute,
     is_storage_locked_checker: Callable[..., bool] = islocked,
 ) -> None:
@@ -78,8 +78,7 @@ def start_with_deps(
             config.add_extras({"calculation_id": command_line_args.calculation_id})
             span.set_attributes(config.get_extras())
 
-            args = create_calculation_args(command_line_args)
-            infrastructure_settings = create_infrastructure_settings(command_line_args)
+            args, infrastructure_settings = parse_job_args(command_line_args)
             create_and_configure_container(infrastructure_settings)
 
             raise_if_storage_is_locked(
@@ -98,20 +97,6 @@ def start_with_deps(
         except Exception as e:
             record_exception(e, span)
             sys.exit(4)
-
-
-def create_infrastructure_settings(
-    command_line_args: Namespace,
-) -> InfrastructureSettings:
-    return InfrastructureSettings(
-        data_storage_account_name=command_line_args.data_storage_account_name,
-        data_storage_account_credentials=command_line_args.data_storage_account_credentials,
-        wholesale_container_path=command_line_args.wholesale_container_path,
-        calculation_input_path=command_line_args.calculation_input_path,
-        time_series_points_table_name=command_line_args.time_series_points_table_name,
-        metering_point_periods_table_name=command_line_args.metering_point_periods_table_name,
-        grid_loss_metering_points_table_name=command_line_args.grid_loss_metering_points_table_name,
-    )
 
 
 def record_exception(exception: SystemExit | Exception, span: Span) -> None:
