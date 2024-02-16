@@ -326,12 +326,14 @@ def any_calculator_args() -> CalculatorArgs:
 
 
 @pytest.fixture(scope="session")
-def any_infrastructure_settings() -> InfrastructureSettings:
+def infrastructure_settings(
+    data_lake_path: str, calculation_input_path: str
+) -> InfrastructureSettings:
     return InfrastructureSettings(
         data_storage_account_name="foo",
         data_storage_account_credentials=ClientSecretCredential("foo", "foo", "foo"),
-        wholesale_container_path="foo",
-        calculation_input_path="foo",
+        wholesale_container_path=data_lake_path,
+        calculation_input_path=calculation_input_path,
         time_series_points_table_name=None,
         metering_point_periods_table_name=None,
         grid_loss_metering_points_table_name=None,
@@ -340,13 +342,13 @@ def any_infrastructure_settings() -> InfrastructureSettings:
 
 @pytest.fixture(scope="session", autouse=True)
 def dependency_injection_container(
-    any_infrastructure_settings: InfrastructureSettings,
+    infrastructure_settings: InfrastructureSettings,
 ) -> Container:
     """
     This enables the use of dependency injection in all tests.
     The container is created once for the entire test suite.
     """
-    return create_and_configure_container(any_infrastructure_settings)
+    return create_and_configure_container(infrastructure_settings)
 
 
 @pytest.fixture(scope="session")

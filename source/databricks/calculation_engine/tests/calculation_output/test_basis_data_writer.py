@@ -172,14 +172,14 @@ def test__write__writes_to_paths_that_match_contract(
     metering_point_period_df_factory: Callable[..., DataFrame],
     metering_point_time_series_factory: Callable,
     any_calculator_args: CalculatorArgs,
-    any_infrastructure_settings: InfrastructureSettings,
+    infrastructure_settings: InfrastructureSettings,
 ) -> None:
     """
     This test calls 'write' once and then asserts on all file contracts.
     This is done to avoid multiple write operations, and thereby reduce execution time
     """
     # Arrange
-    infrastructure_settings = copy.copy(any_infrastructure_settings)
+    infrastructure_settings = copy.copy(infrastructure_settings)
     infrastructure_settings.wholesale_container_path = str(tmpdir)
 
     any_calculator_args.calculation_id = DEFAULT_CALCULATION_ID
