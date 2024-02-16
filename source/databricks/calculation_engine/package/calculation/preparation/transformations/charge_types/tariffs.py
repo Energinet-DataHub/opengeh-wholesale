@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql.dataframe import DataFrame
 import pyspark.sql.functions as f
+from pyspark.sql.dataframe import DataFrame
 from pyspark.sql.types import DecimalType, StringType, ArrayType
 
 import package.calculation.energy.aggregators.transformations as t
@@ -48,6 +48,8 @@ def get_tariff_charges(
     # energy_supplier_id is nullable when metering point is a child metering point
     # TODO JVM - find a solution to this
     tariffs.schema[Colname.energy_supplier_id].nullable = False
+
+    tariffs.show()
 
     return tariffs
 
