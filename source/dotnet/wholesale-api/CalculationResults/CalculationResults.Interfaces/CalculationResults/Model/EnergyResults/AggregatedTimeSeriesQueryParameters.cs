@@ -18,7 +18,7 @@ using NodaTime;
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 
 public record AggregatedTimeSeriesQueryParameters(
-    TimeSeriesType TimeSeriesType,
+    IReadOnlyCollection<TimeSeriesType> TimeSeriesTypes,
     string? GridArea,
     string? EnergySupplierId,
     string? BalanceResponsibleId,
