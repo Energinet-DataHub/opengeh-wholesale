@@ -18,6 +18,7 @@ module "mssqldb_market_participant" {
   monitor_alerts_resource_group_name = azurerm_resource_group.this.name
   pim_reader_ad_group_name           = var.pim_sql_reader_ad_group_name
   pim_writer_ad_group_name           = var.pim_sql_writer_ad_group_name
+  prevent_deletion                   = true
 }
 
 module "kvs_sql_ms_market_participant_database_name" {
