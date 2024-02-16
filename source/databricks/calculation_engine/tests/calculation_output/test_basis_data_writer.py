@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import copy
 from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
@@ -31,6 +31,7 @@ from package.codelists import (
 )
 from package.constants import Colname
 from package.infrastructure import paths
+from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from tests.helpers.assert_calculation_file_path import (
     CalculationFileType,
     assert_file_path_match_contract,
@@ -171,14 +172,18 @@ def test__write__writes_to_paths_that_match_contract(
     metering_point_period_df_factory: Callable[..., DataFrame],
     metering_point_time_series_factory: Callable,
     any_calculator_args: CalculatorArgs,
+    any_infrastructure_settings: InfrastructureSettings,
 ) -> None:
     """
     This test calls 'write' once and then asserts on all file contracts.
     This is done to avoid multiple write operations, and thereby reduce execution time
     """
     # Arrange
-    any_calculator_args.wholesale_container_path = str(tmpdir)
+    infrastructure_settings = copy.copy(any_infrastructure_settings)
+    infrastructure_settings.wholesale_container_path = str(tmpdir)
+
     any_calculator_args.calculation_id = DEFAULT_CALCULATION_ID
+
     metering_point_period_df = metering_point_period_df_factory()
     metering_point_time_series = metering_point_time_series_factory()
 
@@ -189,7 +194,11 @@ def test__write__writes_to_paths_that_match_contract(
     )
 
     # Act
-    basis_data_results.write_basis_data(any_calculator_args, basis_data_container)
+    basis_data_results._write_basis_data(
+        any_calculator_args,
+        basis_data_container,
+        infrastructure_settings,
+    )
 
     # Assert
     for file_type in _get_all_basis_data_file_types():

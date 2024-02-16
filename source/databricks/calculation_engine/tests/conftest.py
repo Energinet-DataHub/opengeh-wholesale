@@ -43,6 +43,7 @@ from package.datamigration.migration import _apply_migration
 from package.datamigration.migration_script_args import MigrationScriptArgs
 from package.datamigration.uncommitted_migrations import _get_all_migrations
 from package.infrastructure import paths
+from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
     OUTPUT_DATABASE_NAME,
     OUTPUT_FOLDER,
@@ -320,6 +321,19 @@ def any_calculator_args() -> CalculatorArgs:
         calculation_period_end_datetime=datetime(2018, 1, 3, 23, 0, 0),
         calculation_execution_time_start=datetime(2018, 1, 5, 23, 0, 0),
         time_zone="Europe/Copenhagen",
+    )
+
+
+@pytest.fixture(scope="session")
+def any_infrastructure_settings() -> InfrastructureSettings:
+    return InfrastructureSettings(
+        data_storage_account_name="foo",
+        data_storage_account_credentials=ClientSecretCredential("foo", "foo", "foo"),
+        wholesale_container_path="foo",
+        calculation_input_path="foo",
+        time_series_points_table_name=None,
+        metering_point_periods_table_name=None,
+        grid_loss_metering_points_table_name=None,
     )
 
 
