@@ -23,9 +23,11 @@ class Container(containers.DeclarativeContainer):
 
 def create_and_configure_container(
     infrastructure_settings: InfrastructureSettings,
-) -> None:
+) -> Container:
     container = Container()
 
     container.infrastructure_settings.from_value(infrastructure_settings)
 
     container.wire(packages=[package])
+
+    return container

@@ -39,6 +39,7 @@ from package.calculation_input.schemas import (
     charge_link_periods_schema,
 )
 from package.codelists import CalculationType
+from package.container import create_and_configure_container, Container
 from package.datamigration.migration import _apply_migration
 from package.datamigration.migration_script_args import MigrationScriptArgs
 from package.datamigration.uncommitted_migrations import _get_all_migrations
@@ -335,6 +336,17 @@ def any_infrastructure_settings() -> InfrastructureSettings:
         metering_point_periods_table_name=None,
         grid_loss_metering_points_table_name=None,
     )
+
+
+@pytest.fixture(scope="session", autouse=True)
+def dependency_injection_container(
+    any_infrastructure_settings: InfrastructureSettings,
+) -> Container:
+    """
+    This enables the use of dependency injection in all tests.
+    The container is created once for the entire test suite.
+    """
+    return create_and_configure_container(any_infrastructure_settings)
 
 
 @pytest.fixture(scope="session")
