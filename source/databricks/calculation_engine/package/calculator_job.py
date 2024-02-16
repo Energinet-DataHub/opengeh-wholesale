@@ -28,6 +28,7 @@ from package.calculator_job_args import (
     parse_command_line_arguments,
 )
 from package.infrastructure import initialize_spark
+from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.storage_account_access import islocked
 
 
@@ -77,10 +78,13 @@ def start_with_deps(
             span.set_attributes(config.get_extras())
 
             args = create_calculation_args(command_line_args)
+            infrastructure_settings = create_infrastructure_settings(command_line_args)
 
-            raise_if_storage_is_locked(is_storage_locked_checker, args)
+            raise_if_storage_is_locked(
+                is_storage_locked_checker, infrastructure_settings
+            )
 
-            prepared_data_reader = create_prepared_data_reader(args)
+            prepared_data_reader = create_prepared_data_reader(infrastructure_settings)
             calculation_executor(args, prepared_data_reader)
 
         # Added as ConfigArgParse uses sys.exit() rather than raising exceptions
@@ -94,6 +98,20 @@ def start_with_deps(
             sys.exit(4)
 
 
+def create_infrastructure_settings(
+    command_line_args: Namespace,
+) -> InfrastructureSettings:
+    return InfrastructureSettings(
+        data_storage_account_name=command_line_args.data_storage_account_name,
+        data_storage_account_credentials=command_line_args.data_storage_account_credentials,
+        wholesale_container_path=command_line_args.wholesale_container_path,
+        calculation_input_path=command_line_args.calculation_input_path,
+        time_series_points_table_name=command_line_args.time_series_points_table_name,
+        metering_point_periods_table_name=command_line_args.metering_point_periods_table_name,
+        grid_loss_metering_points_table_name=command_line_args.grid_loss_metering_points_table_name,
+    )
+
+
 def record_exception(exception: SystemExit | Exception, span: Span) -> None:
     span.set_status(Status(StatusCode.ERROR))
     span.record_exception(
@@ -103,25 +121,27 @@ def record_exception(exception: SystemExit | Exception, span: Span) -> None:
     )
 
 
-def create_prepared_data_reader(args: CalculatorArgs) -> calculation.PreparedDataReader:
+def create_prepared_data_reader(
+    settings: InfrastructureSettings,
+) -> calculation.PreparedDataReader:
     """Create calculation execution dependencies."""
     spark = initialize_spark()
     delta_table_reader = calculation_input.TableReader(
         spark,
-        args.calculation_input_path,
-        args.time_series_points_table_name,
-        args.metering_point_periods_table_name,
-        args.grid_loss_metering_points_table_name,
+        settings.calculation_input_path,
+        settings.time_series_points_table_name,
+        settings.metering_point_periods_table_name,
+        settings.grid_loss_metering_points_table_name,
     )
     prepared_data_reader = calculation.PreparedDataReader(delta_table_reader)
     return prepared_data_reader
 
 
 def raise_if_storage_is_locked(
-    is_storage_locked_checker: Callable[..., bool], args: CalculatorArgs
+    is_storage_locked_checker: Callable[..., bool], settings: InfrastructureSettings
 ) -> None:
     if is_storage_locked_checker(
-        args.data_storage_account_name, args.data_storage_account_credentials
+        settings.data_storage_account_name, settings.data_storage_account_credentials
     ):
         raise Exception(
             "Exiting because storage is locked due to data migrations running."
