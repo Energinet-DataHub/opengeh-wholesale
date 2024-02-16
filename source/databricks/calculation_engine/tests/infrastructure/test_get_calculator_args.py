@@ -94,36 +94,36 @@ class TestWhenInvokedWithValidParameters:
             with patch.dict("os.environ", job_environment_variables):
                 command_line_args = parse_command_line_arguments()
                 # Act
-                actual = parse_job_arguments(command_line_args)
+                actual_args, actual_settings = parse_job_arguments(command_line_args)
 
         # Assert
 
-        # From the contract
-        assert actual.calculation_id == DEFAULT_CALCULATION_ID
-        assert actual.calculation_grid_areas == ["805", "806", "033"]
-        assert actual.calculation_period_start_datetime == datetime.datetime(
+        # Assert - Calculation arguments
+        assert actual_args.calculation_id == DEFAULT_CALCULATION_ID
+        assert actual_args.calculation_grid_areas == ["805", "806", "033"]
+        assert actual_args.calculation_period_start_datetime == datetime.datetime(
             2022, 5, 31, 22
         )
-        assert actual.calculation_period_end_datetime == datetime.datetime(
+        assert actual_args.calculation_period_end_datetime == datetime.datetime(
             2022, 6, 1, 22
         )
-        assert actual.calculation_type == CalculationType.BALANCE_FIXING
-        assert actual.calculation_execution_time_start == datetime.datetime(
+        assert actual_args.calculation_type == CalculationType.BALANCE_FIXING
+        assert actual_args.calculation_execution_time_start == datetime.datetime(
             2022, 6, 4, 22
         )
+        assert actual_args.time_zone == "Europe/Copenhagen"
 
-        # From infrastructure
+        # Assert - Infrastructure settings
         assert (
-            actual.calculation_input_path
+            actual_settings.calculation_input_path
             == "abfss://wholesale@some_storage_account_name.dfs.core.windows.net/calculation_input/"
         )
         assert (
-            actual.wholesale_container_path
+            actual_settings.wholesale_container_path
             == "abfss://wholesale@some_storage_account_name.dfs.core.windows.net/"
         )
-        assert actual.time_zone == "Europe/Copenhagen"
         assert (
-            actual.calculation_input_path
+            actual_settings.calculation_input_path
             == "abfss://wholesale@some_storage_account_name.dfs.core.windows.net/calculation_input/"
         )
 
@@ -141,10 +141,10 @@ class TestWhenInvokedWithValidParameters:
             with patch.dict("os.environ", job_environment_variables):
                 command_line_args = parse_command_line_arguments()
                 # Act
-                actual = parse_job_arguments(command_line_args)
+                _, actual_settings = parse_job_arguments(command_line_args)
 
         # Assert
-        assert actual.time_series_points_table_name == expected
+        assert actual_settings.time_series_points_table_name == expected
 
     def test_returns_none_when_time_series_points_table_name_absent(
         self,
@@ -156,7 +156,7 @@ class TestWhenInvokedWithValidParameters:
             with patch.dict("os.environ", job_environment_variables):
                 command_line_args = parse_command_line_arguments()
                 # Act
-                actual = parse_job_arguments(command_line_args)
+                _, actual = parse_job_arguments(command_line_args)
 
         # Assert
         assert actual.time_series_points_table_name is None

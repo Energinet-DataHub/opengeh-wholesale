@@ -25,7 +25,7 @@ from package.codelists.calculation_type import (
     CalculationType,
 )
 from package.common.logger import Logger
-from package.infrastructure import valid_date, valid_list, logging_configuration
+from package.infrastructure import valid_date, valid_list, logging_configuration, paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 
 
@@ -41,7 +41,6 @@ def parse_job_arguments(
 
     with logging_configuration.start_span("calculation.parse_job_arguments"):
         time_zone = env_vars.get_time_zone()
-
         calculator_args = CalculatorArgs(
             calculation_id=job_args.calculation_id,
             calculation_grid_areas=job_args.grid_areas,
@@ -52,11 +51,17 @@ def parse_job_arguments(
             time_zone=time_zone,
         )
 
+        storage_account_name = env_vars.get_storage_account_name()
+        credential = env_vars.get_storage_account_credential()
         infrastructure_settings = InfrastructureSettings(
-            data_storage_account_name=job_args.data_storage_account_name,
-            data_storage_account_credentials=job_args.data_storage_account_credentials,
-            wholesale_container_path=job_args.wholesale_container_path,
-            calculation_input_path=job_args.calculation_input_path,
+            data_storage_account_name=storage_account_name,
+            data_storage_account_credentials=credential,
+            wholesale_container_path=paths.get_container_root_path(
+                storage_account_name
+            ),
+            calculation_input_path=paths.get_calculation_input_path(
+                storage_account_name, job_args.calculation_input_folder_name
+            ),
             time_series_points_table_name=job_args.time_series_points_table_name,
             metering_point_periods_table_name=job_args.metering_point_periods_table_name,
             grid_loss_metering_points_table_name=job_args.grid_loss_metering_points_table_name,
