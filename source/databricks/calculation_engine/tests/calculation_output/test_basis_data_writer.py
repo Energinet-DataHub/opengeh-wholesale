@@ -194,7 +194,7 @@ def test__write__writes_to_paths_that_match_contract(
         dependency_injection_container.infrastructure_settings(),
         "wholesale_container_path",
         new=str(tmpdir),
-    ) as mock_infrastructure_settings:
+    ):
         basis_data_results.write_basis_data(
             any_calculator_args,
             basis_data_container,

@@ -14,6 +14,7 @@
 
 import sys
 from argparse import Namespace
+from typing import Tuple
 
 import configargparse
 from configargparse import argparse
@@ -34,7 +35,7 @@ def parse_command_line_arguments() -> Namespace:
 
 def parse_job_arguments(
     job_args: Namespace,
-) -> (CalculatorArgs, InfrastructureSettings):
+) -> Tuple[CalculatorArgs, InfrastructureSettings]:
     logger = Logger(__name__)
     logger.info(f"Command line arguments: {repr(job_args)}")
 
