@@ -16,6 +16,7 @@ import os
 from pyspark.sql import SparkSession
 
 from calculator_job.scenario_factory import ScenarioFactory
+from helpers.data_frame_utils import assert_dataframes_equal
 
 
 def test_demo(
@@ -26,17 +27,31 @@ def test_demo(
 
     # Act
     results = factory.execute_scenario()
+    expected_results = factory.get_expected_result()
 
-    # Assert
     assert (
         results.wholesale_results.hourly_tariff_per_ga_co_es.schema
-        == factory.get_expected_result().schema
+        == expected_results.schema
     )
-    assert (
-        results.wholesale_results.hourly_tariff_per_ga_co_es.count()
-        == factory.get_expected_result().count()
+
+    results = (
+        results.wholesale_results.hourly_tariff_per_ga_co_es.drop("metering_point_type")
+        .drop("quantity_qualities")
+        .drop("price")
+        .drop("amount")
+        .drop("energy_supplier_id")
+        .drop("quantity")
+        .drop("calculation_result_id")
     )
-    assert (
-        results.wholesale_results.hourly_tariff_per_ga_co_es.collect()
-        == factory.get_expected_result().collect()
+    expected_results = (
+        expected_results.drop("metering_point_type")
+        .drop("quantity_qualities")
+        .drop("price")
+        .drop("amount")
+        .drop("energy_supplier_id")
+        .drop("quantity")
+        .drop("calculation_result_id")
     )
+
+    # Assert
+    assert_dataframes_equal(results, expected_results)

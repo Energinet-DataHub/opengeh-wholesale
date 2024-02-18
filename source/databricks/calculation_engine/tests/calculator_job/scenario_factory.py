@@ -174,10 +174,12 @@ class ScenarioFactory:
         df = df.withColumn("amount", col("amount").cast(DecimalType(38, 6)))
         df = df.withColumn("time", col("time").cast(TimestampType()))
         df = df.withColumn("is_tax", col("is_tax").cast(BooleanType()))
+        df = df.withColumn("settlement_method", lit("flex"))  # TODO AJW
         df = df.withColumn(
             "quantity_qualities",
             f.split(f.col("quantity_qualities"), ",").cast(ArrayType(StringType())),
         )
+
         return self.spark.createDataFrame(df.rdd, schema)
 
 

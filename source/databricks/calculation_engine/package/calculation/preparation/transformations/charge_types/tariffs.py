@@ -49,8 +49,6 @@ def get_tariff_charges(
     # TODO JVM - find a solution to this
     tariffs.schema[Colname.energy_supplier_id].nullable = False
 
-    tariffs.show()
-
     return tariffs
 
 
