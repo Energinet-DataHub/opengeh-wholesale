@@ -15,7 +15,6 @@
 using Energinet.DataHub.Edi.Requests;
 using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.EDI.Client;
-using Energinet.DataHub.Wholesale.EDI.Factories;
 using Energinet.DataHub.Wholesale.EDI.Validation;
 using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSeries;
 using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSeries.Rules;
