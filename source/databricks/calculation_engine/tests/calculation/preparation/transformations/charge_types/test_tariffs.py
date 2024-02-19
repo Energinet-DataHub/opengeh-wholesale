@@ -114,7 +114,7 @@ def test__get_tariff_charges__filters_on_resolution(
     actual = get_tariff_charges(
         time_series,
         charges,
-        charge_link_metering_points,
+        charge_link_metering_point_periods,
         charge_resolution,
     )
 
@@ -162,7 +162,7 @@ def test__get_tariff_charges__filters_on_tariff_charge_type(
     actual_tariff = get_tariff_charges(
         time_series,
         charges,
-        charge_link_metering_points,
+        charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
     )
 
@@ -225,7 +225,7 @@ def test__get_tariff_charges__only_accepts_charges_in_metering_point_period(
     actual = get_tariff_charges(
         time_series,
         charges,
-        charge_link_metering_points,
+        charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
     )
 
@@ -262,7 +262,7 @@ def test__get_tariff_charges__when_same_metering_point_and_resolution__sums_quan
     actual = get_tariff_charges(
         time_series,
         charges,
-        charge_link_metering_points,
+        charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
     )
 
@@ -297,7 +297,7 @@ def test__get_tariff_charges__when_no_matching_charge_resolution__returns_empty_
     actual = get_tariff_charges(
         time_series,
         charges,
-        charge_link_metering_points,
+        charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
     )
 
@@ -335,7 +335,7 @@ def test__get_tariff_charges__when_two_tariff_overlap__returns_both_tariffs(
     actual = get_tariff_charges(
         time_series,
         charges,
-        charge_link_metering_points,
+        charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
     )
 
@@ -378,7 +378,7 @@ def test__get_tariff_charges__returns_expected_tariff_values(
     actual = get_tariff_charges(
         time_series,
         charges,
-        charge_link_metering_points,
+        charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
     )
 
@@ -444,7 +444,7 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hou
     actual = get_tariff_charges(
         time_series,
         charges,
-        charge_link_metering_points,
+        charge_link_metering_point_periods,
         charge_resolution,
     )
 
@@ -514,7 +514,7 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_qua
     actual = get_tariff_charges(
         time_series,
         charges,
-        charge_link_metering_points,
+        charge_link_metering_point_periods,
         charge_resolution,
     )
 
@@ -609,7 +609,7 @@ def test__get_tariff_charges__per_day_only_accepts_time_series_and_change_times_
     actual = get_tariff_charges(
         time_series,
         charges,
-        charge_link_metering_points,
+        charge_link_metering_point_periods,
         e.ChargeResolution.DAY,
     )
 
