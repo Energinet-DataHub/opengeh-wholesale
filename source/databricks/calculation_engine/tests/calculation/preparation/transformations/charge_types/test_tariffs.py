@@ -87,8 +87,8 @@ def test__get_tariff_charges__filters_on_resolution(
     Only charges with the given resolution are accepted.
     """
     # Arrange
-    from_date = datetime(2019, 12, 31, 23)
-    to_date = datetime(2020, 1, 1, 0)
+    period_start = datetime(2019, 12, 31, 23)
+    period_end = datetime(2020, 1, 1, 0)
 
     time_series_rows = [factory.create_time_series_row()]
     charges_rows = [
@@ -118,8 +118,8 @@ def test__get_tariff_charges__filters_on_resolution(
         charges,
         charge_link_metering_points,
         charge_resolution,
-        from_date,
-        to_date,
+        period_start,
+        period_end,
     )
 
     # Assert
@@ -134,8 +134,8 @@ def test__get_tariff_charges__filters_on_tariff_charge_type(
     Only charges with the charge type TARIFF are accepted.
     """
     # Arrange
-    from_date = datetime(2019, 12, 31, 23)
-    to_date = datetime(2020, 1, 1, 0)
+    period_start = datetime(2019, 12, 31, 23)
+    period_end = datetime(2020, 1, 1, 0)
 
     charge_link_metering_points_rows = [
         factory.create_charge_link_metering_points_row(
@@ -169,8 +169,8 @@ def test__get_tariff_charges__filters_on_tariff_charge_type(
         charges,
         charge_link_metering_points,
         e.ChargeResolution.HOUR,
-        from_date,
-        to_date,
+        period_start,
+        period_end,
     )
 
     # Assert
@@ -202,8 +202,8 @@ def test__get_tariff_charges__only_accepts_charges_in_metering_point_period(
                     |------ _charge_time --|
     """
     # Arrange
-    from_date = datetime(2019, 12, 31, 23)
-    to_date = datetime(2020, 1, 1, 2)
+    period_start = datetime(2019, 12, 31, 23)
+    period_end = datetime(2020, 1, 2, 0)
 
     charge_link_metering_points_rows = [
         factory.create_charge_link_metering_points_row(
@@ -235,8 +235,8 @@ def test__get_tariff_charges__only_accepts_charges_in_metering_point_period(
         charges,
         charge_link_metering_points,
         e.ChargeResolution.HOUR,
-        from_date,
-        to_date,
+        period_start,
+        period_end,
     )
     actual.show()
 
@@ -252,6 +252,9 @@ def test__get_tariff_charges__when_same_metering_point_and_resolution__sums_quan
     with the same observation time, the quantity is summed.
     """
     # Arrange
+    period_start = datetime(2019, 12, 31, 23)
+    period_end = datetime(2020, 1, 1, 0)
+
     charge_link_metering_points_rows = [
         factory.create_charge_link_metering_points_row(charge_type=e.ChargeType.TARIFF)
     ]
@@ -273,6 +276,8 @@ def test__get_tariff_charges__when_same_metering_point_and_resolution__sums_quan
         charges,
         charge_link_metering_points,
         e.ChargeResolution.HOUR,
+        period_start,
+        period_end,
     )
 
     # Assert
@@ -286,6 +291,9 @@ def test__get_tariff_charges__when_no_matching_charge_resolution__returns_empty_
     spark: SparkSession,
 ) -> None:
     # Arrange
+    period_start = datetime(2019, 12, 31, 23)
+    period_end = datetime(2020, 1, 1, 0)
+
     time_series_rows = [factory.create_time_series_row()]
     charges_rows = [
         factory.create_tariff_charges_row(resolution=e.ChargeResolution.DAY)
@@ -306,6 +314,8 @@ def test__get_tariff_charges__when_no_matching_charge_resolution__returns_empty_
         charges,
         charge_link_metering_points,
         e.ChargeResolution.HOUR,
+        period_start,
+        period_end,
     )
 
     # Assert
@@ -316,6 +326,9 @@ def test__get_tariff_charges__when_two_tariff_overlap__returns_both_tariffs(
     spark: SparkSession,
 ) -> None:
     # Arrange
+    period_start = datetime(2019, 12, 31, 23)
+    period_end = datetime(2020, 1, 1, 0)
+
     time_series_rows = [factory.create_time_series_row()]
     charges_rows = [
         factory.create_tariff_charges_row(charge_code="4000"),
@@ -340,6 +353,8 @@ def test__get_tariff_charges__when_two_tariff_overlap__returns_both_tariffs(
         charges,
         metering_point_charge_link,
         e.ChargeResolution.HOUR,
+        period_start,
+        period_end,
     )
 
     # Assert
@@ -350,6 +365,9 @@ def test__get_tariff_charges__returns_expected_tariff_values(
     spark: SparkSession,
 ) -> None:
     # Arrange
+    period_start = datetime(2019, 12, 31, 23)
+    period_end = datetime(2020, 1, 1, 0)
+
     charge_link_metering_points_rows = [
         factory.create_charge_link_metering_points_row()
     ]
@@ -381,6 +399,8 @@ def test__get_tariff_charges__returns_expected_tariff_values(
         charges,
         charge_link_metering_points,
         e.ChargeResolution.HOUR,
+        period_start,
+        period_end,
     )
 
     # Assert
@@ -413,6 +433,9 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hou
     date and less than the metering point to date are accepted.
     """
     # Arrange
+    period_start = datetime(2019, 12, 31, 23)
+    period_end = datetime(2020, 1, 3, 0)
+
     charge_link_metering_points_rows = [
         factory.create_charge_link_metering_points_row(
             from_date=datetime(2020, 1, 1, 0),
@@ -445,6 +468,8 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hou
         charges,
         charge_link_metering_points,
         charge_resolution,
+        period_start,
+        period_end,
     )
 
     # Assert
@@ -478,6 +503,9 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_qua
     date and less than the metering point to date are accepted.
     """
     # Arrange
+    period_start = datetime(2019, 12, 31, 23)
+    period_end = datetime(2020, 1, 3, 0)
+
     charge_link_metering_points_rows = [
         factory.create_charge_link_metering_points_row(
             from_date=datetime(2020, 1, 1, 0),
@@ -513,6 +541,8 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_qua
         charges,
         charge_link_metering_points,
         charge_resolution,
+        period_start,
+        period_end,
     )
 
     # Assert
@@ -567,6 +597,9 @@ def test__get_tariff_charges__per_day_only_accepts_time_series_and_change_times_
     Test4       OC                      OC                     OC   Expected: 0
     """
     # Arrange
+    period_start = datetime(2019, 12, 31, 23)
+    period_end = datetime(2020, 1, 3, 0)
+
     charge_link_metering_points_rows = [
         factory.create_charge_link_metering_points_row(
             from_date=datetime(2019, 12, 31, 23), to_date=datetime(2020, 1, 1, 23)
@@ -606,7 +639,10 @@ def test__get_tariff_charges__per_day_only_accepts_time_series_and_change_times_
         charges,
         charge_link_metering_points,
         e.ChargeResolution.DAY,
+        period_start,
+        period_end,
     )
+    actual.show()
 
     # Assert
     assert actual.count() == expected_rows

@@ -33,9 +33,13 @@ def get_tariff_charges(
     tariffs = charges.filter(
         f.col(Colname.charge_type) == ChargeType.TARIFF.value
     ).filter(f.col(Colname.resolution) == resolution.value)
+    print("tariffs")
+    tariffs.show()
 
-    # tariffs = _add_missing_prices(tariffs, period_start, period_end, resolution)
-    # tariffs.show()
+    tariffs = _add_missing_prices(tariffs, period_start, period_end, resolution)
+    print("tariffs2")
+    tariffs.show()
+
     tariffs = _join_with_charge_link_metering_points(
         tariffs, charge_link_metering_points
     )
@@ -94,7 +98,10 @@ def _add_missing_prices(
             Colname.to_date,
             f.explode("temp_time").alias(Colname.charge_time),
         )
+        .distinct()
     )
+    print("charges_with_no_prices")
+    charges_with_no_prices.show()
 
     charges_with_prices_and_missing_prices = charges_with_no_prices.join(
         charges_with_prices, [Colname.charge_key, Colname.charge_time], "left"
