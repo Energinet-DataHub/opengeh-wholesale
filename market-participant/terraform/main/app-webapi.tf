@@ -38,6 +38,21 @@ module "app_webapi" {
     CVR_USERNAME                               = var.cvr_username
     CVR_PASSWORD                               = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_cvr_password.name})"
   }
+
+  role_assignments = [
+    {
+      resource_id          = module.kv_internal.id
+      role_definition_name = "Key Vault Secrets User"
+    },
+    {
+      resource_id          = module.kv_internal.id
+      role_definition_name = "Key Vault Crypto User"
+    },
+    {
+      resource_id          = module.kv_dh2_certificates.id
+      role_definition_name = "Key Vault Secrets Officer"
+    }
+  ]
 }
 
 module "kvs_app_markpart_webapi_base_url" {

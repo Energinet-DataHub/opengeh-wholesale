@@ -39,4 +39,11 @@ module "func_entrypoint_marketparticipant" {
     AZURE_B2C_BACKEND_ID                       = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-b2b-app-id)"
     ENVIRONMENT_DESC                           = local.ENV_DESC
   }
+
+  role_assignments = [
+    {
+      resource_id          = module.kv_internal.id
+      role_definition_name = "Key Vault Secrets User"
+    }
+  ]
 }

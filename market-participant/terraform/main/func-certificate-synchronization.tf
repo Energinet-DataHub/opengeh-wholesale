@@ -30,4 +30,15 @@ module "func_entrypoint_certificate_synchronization" {
     APIM_SP_CLIENT_ID     = azuread_application.app_market_participant.application_id
     APIM_SP_CLIENT_SECRET = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_app_market_participant_password.name})"
   }
+
+  role_assignments = [
+    {
+      resource_id          = module.kv_internal.id
+      role_definition_name = "Key Vault Secrets User"
+    },
+    {
+      resource_id          = module.kv_dh2_certificates.id
+      role_definition_name = "Key Vault Secrets Officer"
+    }
+  ]
 }
