@@ -278,7 +278,7 @@ public class CompletedCalculationRetrieverTest
     {
         return new AggregatedTimeSeriesRequest(
             new EDI.Models.Period(startOfPeriodFilter, endOfPeriodFilter),
-            TimeSeriesType.Production,
+            [TimeSeriesType.Production],
             new AggregationPerRoleAndGridArea("543"),
             requestedCalculationType ?? RequestedCalculationType.LatestCorrection);
     }

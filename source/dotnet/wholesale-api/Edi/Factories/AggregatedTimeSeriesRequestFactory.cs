@@ -19,15 +19,49 @@ using Period = Energinet.DataHub.Wholesale.EDI.Models.Period;
 
 namespace Energinet.DataHub.Wholesale.EDI.Factories;
 
-public class AggregatedTimeSeriesRequestFactory
+public static class AggregatedTimeSeriesRequestFactory
 {
     public static AggregatedTimeSeriesRequest Parse(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request)
     {
         return new AggregatedTimeSeriesRequest(
             MapPeriod(request.Period),
-            TimeSeriesTypeMapper.MapTimeSeriesType(request.MeteringPointType, request.SettlementMethod),
+            GetTimeSeriesTypes(request),
             MapAggregationPerRoleAndGridArea(request),
             RequestedCalculationTypeMapper.ToRequestedCalculationType(request.BusinessReason, request.HasSettlementSeriesVersion ? request.SettlementSeriesVersion : null));
+    }
+
+    private static TimeSeriesType[] GetTimeSeriesTypes(
+        Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request)
+    {
+        return request.MeteringPointType != string.Empty
+            ? [TimeSeriesTypeMapper.MapTimeSeriesType(request.MeteringPointType, request.SettlementMethod)]
+            : request.RequestedByActorRole switch
+            {
+                ActorRoleCode.EnergySupplier =>
+                [
+                    TimeSeriesType.Production,
+                    TimeSeriesType.FlexConsumption,
+                    TimeSeriesType.NonProfiledConsumption,
+                ],
+                ActorRoleCode.BalanceResponsibleParty =>
+                [
+                    TimeSeriesType.Production,
+                    TimeSeriesType.FlexConsumption,
+                    TimeSeriesType.NonProfiledConsumption,
+                ],
+                ActorRoleCode.MeteredDataResponsible =>
+                [
+                    TimeSeriesType.Production,
+                    TimeSeriesType.FlexConsumption,
+                    TimeSeriesType.NonProfiledConsumption,
+                    TimeSeriesType.TotalConsumption,
+                    TimeSeriesType.NetExchangePerGa,
+                ],
+                _ => throw new ArgumentOutOfRangeException(
+                    nameof(request.RequestedByActorRole),
+                    request.RequestedByActorRole,
+                    "Value does not contain a valid string representation of a requested by actor role."),
+            };
     }
 
     private static AggregationPerRoleAndGridArea MapAggregationPerRoleAndGridArea(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request)
