@@ -15,14 +15,19 @@
 import pyspark.sql.functions as f
 from pyspark.sql.dataframe import DataFrame
 
+from package.calculation.preparation.charge_link_metering_point_periods import (
+    ChargeLinkMeteringPointPeriods,
+)
 from package.codelists import ChargeType
 from package.constants import Colname
 
 
 def get_subscription_charges(
     charges: DataFrame,
-    charge_link_metering_points: DataFrame,
+    charge_link_metering_points: ChargeLinkMeteringPointPeriods,
 ) -> DataFrame:
+    charge_link_metering_points_df = charge_link_metering_points.df
+
     subscription_charges = charges.filter(
         f.col(Colname.charge_type) == ChargeType.SUBSCRIPTION.value
     )
@@ -33,15 +38,15 @@ def get_subscription_charges(
         charge_link_metering_points,
         (
             subscription_charges[Colname.charge_key]
-            == charge_link_metering_points[Colname.charge_key]
+            == charge_link_metering_points_df[Colname.charge_key]
         )
         & (
             subscription_charges[Colname.charge_time]
-            >= charge_link_metering_points[Colname.from_date]
+            >= charge_link_metering_points_df[Colname.from_date]
         )
         & (
             subscription_charges[Colname.charge_time]
-            < charge_link_metering_points[Colname.to_date]
+            < charge_link_metering_points_df[Colname.to_date]
         ),
         how="inner",
     ).select(
@@ -51,10 +56,10 @@ def get_subscription_charges(
         Colname.charge_owner,
         Colname.charge_time,
         Colname.charge_price,
-        charge_link_metering_points[Colname.metering_point_type],
-        charge_link_metering_points[Colname.settlement_method],
-        charge_link_metering_points[Colname.grid_area],
-        charge_link_metering_points[Colname.energy_supplier_id],
+        charge_link_metering_points_df[Colname.metering_point_type],
+        charge_link_metering_points_df[Colname.settlement_method],
+        charge_link_metering_points_df[Colname.grid_area],
+        charge_link_metering_points_df[Colname.energy_supplier_id],
     )
 
     return subscriptions

@@ -48,13 +48,15 @@ def test__get_fee_charges__filters_on_fee_charge_type(
         factory.create_tariff_charges_row(),
     ]
 
-    charge_link_metering_points = spark.createDataFrame(
-        charge_link_metering_points_rows, charge_link_metering_points_schema
+    charge_link_metering_point_periods = (
+        factory.create_charge_link_metering_point_periods(
+            spark, charge_link_metering_points_rows
+        )
     )
     charges = spark.createDataFrame(charges_rows, charges_schema)
 
     # Act
-    actual_fee = get_fee_charges(charges, charge_link_metering_points)
+    actual_fee = get_fee_charges(charges, charge_link_metering_point_periods)
 
     # Assert
     assert actual_fee.collect()[0][Colname.charge_type] == e.ChargeType.FEE.value

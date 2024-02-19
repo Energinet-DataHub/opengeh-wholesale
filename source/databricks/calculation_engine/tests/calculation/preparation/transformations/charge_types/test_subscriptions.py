@@ -50,13 +50,17 @@ def test__get_subscription_charges__filters_on_subscription_charge_type(
         factory.create_tariff_charges_row(),
     ]
 
-    charge_link_metering_points = spark.createDataFrame(
-        charge_link_metering_points_rows, charge_link_metering_points_schema
+    charge_link_metering_point_periods = (
+        factory.create_charge_link_metering_point_periods(
+            spark, charge_link_metering_points_rows
+        )
     )
     charges = spark.createDataFrame(charges_rows, charges_schema)
 
     # Act
-    actual_subscription = get_subscription_charges(charges, charge_link_metering_points)
+    actual_subscription = get_subscription_charges(
+        charges, charge_link_metering_point_periods
+    )
 
     # Assert
     assert (
@@ -96,13 +100,17 @@ def test__get_subscription_charges__split_into_days_between_from_and_to_date(
         ),
     ]
 
-    charge_link_metering_points = spark.createDataFrame(
-        charge_link_metering_points_rows, charge_link_metering_points_schema
+    charge_link_metering_point_periods = (
+        factory.create_charge_link_metering_point_periods(
+            spark, charge_link_metering_points_rows
+        )
     )
     charges = spark.createDataFrame(charges_rows, charges_schema)
 
     # Act
-    actual_subscription = get_subscription_charges(charges, charge_link_metering_points)
+    actual_subscription = get_subscription_charges(
+        charges, charge_link_metering_point_periods
+    )
 
     # Assert
     assert actual_subscription.count() == expected_day_count

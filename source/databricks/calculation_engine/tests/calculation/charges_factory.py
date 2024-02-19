@@ -16,7 +16,10 @@ from datetime import datetime
 from decimal import Decimal
 from pyspark.sql import Row, DataFrame, SparkSession
 
-from package.calculation_input.schemas import metering_point_period_schema
+from package.calculation.preparation.charge_link_metering_point_periods import (
+    ChargeLinkMeteringPointPeriods,
+    charge_link_metering_point_periods_schema,
+)
 from package.codelists import ChargeType
 from package.constants import Colname
 
@@ -45,43 +48,6 @@ class DefaultValues:
     DEFAULT_TO_DATE: datetime = datetime(2020, 1, 31, 23)
     DEFAULT_PARENT_METERING_POINT_ID = None
     DEFAULT_CALCULATION_TYPE = None
-
-
-def create_metering_point_row(
-    metering_point_id: str = DefaultValues.DEFAULT_METERING_POINT_ID,
-    metering_point_type: (
-        e.MeteringPointType
-    ) = DefaultValues.DEFAULT_METERING_POINT_TYPE,
-    calculation_type: str | None = DefaultValues.DEFAULT_CALCULATION_TYPE,
-    settlement_method: e.SettlementMethod = DefaultValues.DEFAULT_SETTLEMENT_METHOD,
-    grid_area: str = DefaultValues.DEFAULT_GRID_AREA,
-    resolution: e.MeteringPointResolution = e.MeteringPointResolution.HOUR,
-    from_grid_area: str | None = DefaultValues.DEFAULT_TO_GRID_AREA,
-    to_grid_area: str | None = DefaultValues.DEFAULT_TO_GRID_AREA,
-    parent_metering_point_id: (
-        str | None
-    ) = DefaultValues.DEFAULT_PARENT_METERING_POINT_ID,
-    energy_supplier_id: str | None = DefaultValues.DEFAULT_ENERGY_SUPPLIER_ID,
-    balance_responsible_id: str | None = DefaultValues.DEFAULT_BALANCE_RESPONSIBLE_ID,
-    from_date: datetime = DefaultValues.DEFAULT_FROM_DATE,
-    to_date: datetime | None = DefaultValues.DEFAULT_TO_DATE,
-) -> Row:
-    row = {
-        Colname.metering_point_id: metering_point_id,
-        Colname.metering_point_type: metering_point_type.value,
-        Colname.calculation_type: calculation_type,
-        Colname.settlement_method: settlement_method.value,
-        Colname.grid_area: grid_area,
-        Colname.resolution: resolution.value,
-        Colname.from_grid_area: from_grid_area,
-        Colname.to_grid_area: to_grid_area,
-        Colname.parent_metering_point_id: parent_metering_point_id,
-        Colname.energy_supplier_id: energy_supplier_id,
-        Colname.balance_responsible_id: balance_responsible_id,
-        Colname.from_date: from_date,
-        Colname.to_date: to_date,
-    }
-    return Row(**row)
 
 
 def create_time_series_row(
@@ -184,9 +150,12 @@ def create_subscription_or_fee_charges_row(
     return Row(**row)
 
 
-def create(spark: SparkSession, data: None | Row | list[Row] = None) -> DataFrame:
+def create_charge_link_metering_point_periods(
+    spark: SparkSession, data: None | Row | list[Row] = None
+) -> ChargeLinkMeteringPointPeriods:
     if data is None:
-        data = [create_metering_point_row()]
+        data = [create_charge_link_metering_points_row()]
     elif isinstance(data, Row):
         data = [data]
-    return spark.createDataFrame(data, schema=metering_point_period_schema)
+    df = spark.createDataFrame(data, schema=charge_link_metering_point_periods_schema)
+    return ChargeLinkMeteringPointPeriods(df)
