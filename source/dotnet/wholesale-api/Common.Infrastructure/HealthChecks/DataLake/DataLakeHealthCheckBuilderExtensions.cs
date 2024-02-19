@@ -14,10 +14,11 @@
 
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks.DataLake;
+namespace Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks.DataLake;
 
 public static class DataLakeHealthCheckBuilderExtensions
 {

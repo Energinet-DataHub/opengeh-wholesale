@@ -12,13 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.Jobs.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
 using Energinet.DataHub.Wholesale.Orchestration.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var host = new HostBuilder()
@@ -26,20 +22,15 @@ var host = new HostBuilder()
     .ConfigureServices((context, services) =>
     {
         // Common
-        // => Application Insights (telemetry)
         services.AddApplicationInsightsForIsolatedWorker();
-        // => Health checks
         services.AddHealthChecksForIsolatedWorker();
-        // => NodaTime
-        services.AddNodaTimeForApplication(context.Configuration);
 
-        // Calculation
+        // Shared by modules
+        services.AddNodaTimeForApplication(context.Configuration);
+        services.AddDatabricksJobsForApplication(context.Configuration);
+
+        // Modules
         services.AddCalculationsModule(context.Configuration);
-        // => Databricks
-        services.AddHealthChecks()
-            .AddDatabricksJobsApiHealthCheck(
-                name: HealthCheckNames.DatabricksJobsApi);
-        services.AddDatabricksJobs(context.Configuration);
     })
     .ConfigureLogging((hostingContext, logging) =>
     {

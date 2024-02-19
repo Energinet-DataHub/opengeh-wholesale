@@ -12,14 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Identity;
-using Azure.Storage.Files.DataLake;
-using Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Configuration.Options;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.EDI;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
@@ -55,19 +51,6 @@ internal static class ServiceCollectionExtensions
                 }));
 
         services.AddNodaTimeForApplication(configuration);
-
-        services.AddDatabricksJobs(configuration);
-        services.AddDataLakeFileSystemClient(configuration);
-    }
-
-    private static void AddDataLakeFileSystemClient(this IServiceCollection services, IConfiguration configuration)
-    {
-        var options = configuration.Get<DataLakeOptions>()!;
-        services.AddSingleton<DataLakeFileSystemClient>(_ =>
-        {
-            var dataLakeServiceClient =
-                new DataLakeServiceClient(new Uri(options.STORAGE_ACCOUNT_URI), new DefaultAzureCredential());
-            return dataLakeServiceClient.GetFileSystemClient(options.STORAGE_CONTAINER_NAME);
-        });
+        services.AddDatabricksJobsForApplication(configuration);
     }
 }

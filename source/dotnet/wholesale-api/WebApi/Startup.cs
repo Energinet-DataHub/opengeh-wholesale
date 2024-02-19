@@ -22,15 +22,12 @@ using Energinet.DataHub.Core.App.Common.Reflection;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.Databricks.Jobs.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Diagnostics.HealthChecks;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
-using Energinet.DataHub.Wholesale.WebApi.HealthChecks.DataLake;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks.ServiceBus;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Azure;
@@ -198,13 +195,6 @@ public class Startup
                 serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
                 serviceBusOptions.INTEGRATIONEVENTS_SUBSCRIPTION_NAME,
                 name: HealthCheckNames.IntegrationEventsTopicSubscription)
-            .AddDataLakeHealthCheck(
-                _ => Configuration.Get<DataLakeOptions>()!,
-                name: HealthCheckNames.DataLake)
-            .AddDatabricksJobsApiHealthCheck(
-                name: HealthCheckNames.DatabricksJobsApi)
-            .AddDatabricksSqlStatementApiHealthCheck(
-                name: HealthCheckNames.DatabricksSqlStatementsApi)
             .AddAzureServiceBusQueueUsingWebSockets(
                 serviceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING,
                 serviceBusOptions.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME,
