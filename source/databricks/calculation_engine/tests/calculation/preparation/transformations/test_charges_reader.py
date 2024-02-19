@@ -241,21 +241,29 @@ class TestWhenChargeTimeIsInsideCalculationPeriod:
 
 class TestWhenChargePeriodExceedsCalculationPeriod:
     @pytest.mark.parametrize(
-        "charge_from_date, charge_to_date, calculation_from_date, calculation_to_date, expected_from_date, expected_to_date",
+        "charge_from_date, charge_to_date, expected_from_date, expected_to_date",
         [
-            (
+            (  # Dataset: charge period starts before calculation period
                 datetime(2020, 1, 1, 0, 0),
-                datetime(2020, 1, 5, 0, 0),
-                datetime(2020, 1, 2, 0, 0),
                 datetime(2020, 1, 3, 0, 0),
                 datetime(2020, 1, 2, 0, 0),
                 datetime(2020, 1, 3, 0, 0),
             ),
-            (
-                datetime(2020, 1, 1, 0, 0),
-                None,
+            (  # Dataset: charge period ends after calculation period
+                datetime(2020, 1, 2, 0, 0),
+                datetime(2020, 1, 5, 0, 0),
                 datetime(2020, 1, 2, 0, 0),
                 datetime(2020, 1, 3, 0, 0),
+            ),
+            (  # Dataset: charge period exceeds calculation period at both ends
+                datetime(2020, 1, 1, 0, 0),
+                datetime(2020, 1, 5, 0, 0),
+                datetime(2020, 1, 2, 0, 0),
+                datetime(2020, 1, 3, 0, 0),
+            ),
+            (  # Dataset: charge period never stops (None)
+                datetime(2020, 1, 1, 0, 0),
+                None,
                 datetime(2020, 1, 2, 0, 0),
                 datetime(2020, 1, 3, 0, 0),
             ),
@@ -268,12 +276,12 @@ class TestWhenChargePeriodExceedsCalculationPeriod:
         spark: SparkSession,
         charge_from_date: datetime,
         charge_to_date: datetime,
-        calculation_from_date: datetime,
-        calculation_to_date: datetime,
         expected_from_date: datetime,
         expected_to_date: datetime,
     ) -> None:
         # Arrange
+        calculation_from_date = datetime(2020, 1, 2, 0, 0)
+        calculation_to_date = datetime(2020, 1, 3, 0, 0)
         table_reader_mock.read_charge_master_data_periods.return_value = (
             spark.createDataFrame(
                 data=[
