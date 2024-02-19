@@ -15,11 +15,11 @@ import os
 
 from pyspark.sql import SparkSession
 
-from calculator_job.scenario_factory import ScenarioFactory
+from business_logic_tests.scenario_factory import ScenarioFactory
 from helpers.data_frame_utils import assert_dataframes_equal
 
 
-def test_demo(
+def test_scenario__returns_expected_hourly_tariff_per_ga_co_es(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -28,6 +28,8 @@ def test_demo(
     # Act
     results = factory.execute_scenario()
     expected_results = factory.get_expected_result()
+    results.wholesale_results.hourly_tariff_per_ga_co_es.show(truncate=False)
+    expected_results.show(truncate=False)
 
     assert (
         results.wholesale_results.hourly_tariff_per_ga_co_es.schema

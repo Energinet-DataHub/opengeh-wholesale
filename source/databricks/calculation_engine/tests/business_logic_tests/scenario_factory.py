@@ -32,6 +32,7 @@ from pyspark.sql.types import (
     ArrayType,
 )
 
+from business_logic_tests.features.csv_file_loader import read_files_in_parallel
 from package.calculation import PreparedDataReader
 from package.calculation.CalculationResults import CalculationResultsContainer
 from package.calculation.calculation import execute_calculation
@@ -58,7 +59,18 @@ class ScenarioFactory:
         self.spark = spark
         self.table_reader = Mock()
         self.test_path = os.path.dirname(file_path) + "/test_data/"
-        self._load_test_data()
+
+        file_paths = [
+            "os.path.dirname(file_path) + " / test_data / " + charge_link_periods.csv",
+            "charge_price_points.csv",
+        ]
+        frames = read_files_in_parallel(self.spark, file_paths)
+
+        # Show the dataframes
+        for frame in frames:
+            frame.show()
+
+        # self._load_test_data()
 
     def _load_test_data(self) -> None:
         self.calculation_args = self._load_calculation_args()
