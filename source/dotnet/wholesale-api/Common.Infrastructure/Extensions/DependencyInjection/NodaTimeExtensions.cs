@@ -16,6 +16,7 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection
@@ -33,11 +34,11 @@ namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Dependenc
         {
             services.TryAddSingleton<IClock>(_ => SystemClock.Instance);
 
-            var options = configuration.Get<DateTimeOptions>()!;
-            services.TryAddSingleton<DateTimeZone>(_ =>
+            services.AddOptions<DateTimeOptions>().Bind(configuration);
+            services.TryAddSingleton<DateTimeZone>(services =>
             {
-                var dateTimeZoneId = options.TIME_ZONE;
-                return DateTimeZoneProviders.Tzdb.GetZoneOrNull(dateTimeZoneId)!;
+                var options = services.GetRequiredService<IOptions<DateTimeOptions>>().Value;
+                return DateTimeZoneProviders.Tzdb.GetZoneOrNull(options.TIME_ZONE)!;
             });
 
             return services;
