@@ -11,21 +11,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from dependency_injector import containers, providers
 
-from dataclasses import dataclass
-from datetime import datetime
-
-from package.codelists.calculation_type import (
-    CalculationType,
-)
+import package
+from package.infrastructure.infrastructure_settings import InfrastructureSettings
 
 
-@dataclass
-class CalculatorArgs:
-    calculation_id: str
-    calculation_grid_areas: list[str]
-    calculation_period_start_datetime: datetime
-    calculation_period_end_datetime: datetime
-    calculation_type: CalculationType
-    calculation_execution_time_start: datetime
-    time_zone: str
+class Container(containers.DeclarativeContainer):
+    infrastructure_settings = providers.Configuration()
+
+
+def create_and_configure_container(
+    infrastructure_settings: InfrastructureSettings,
+) -> Container:
+    container = Container()
+
+    container.infrastructure_settings.from_value(infrastructure_settings)
+
+    container.wire(packages=[package])
+
+    return container
