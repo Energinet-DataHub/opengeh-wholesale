@@ -15,13 +15,16 @@
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import when
 
+from package.calculation.preparation.charge_link_metering_point_periods import (
+    ChargeLinkMeteringPointPeriods,
+)
 from package.constants import Colname
 
 
 def get_charge_link_metering_points(
     charge_links: DataFrame,
     metering_points: DataFrame,
-) -> DataFrame:
+) -> ChargeLinkMeteringPointPeriods:
     charge_link_metering_points = charge_links.join(
         metering_points,
         [
@@ -49,4 +52,4 @@ def get_charge_link_metering_points(
         metering_points[Colname.grid_area],
         metering_points[Colname.energy_supplier_id],
     )
-    return charge_link_metering_points
+    return ChargeLinkMeteringPointPeriods(charge_link_metering_points)
