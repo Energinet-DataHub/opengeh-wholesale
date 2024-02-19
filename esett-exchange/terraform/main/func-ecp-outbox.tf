@@ -41,6 +41,7 @@ module "func_entrypoint_ecp_outbox" {
     "EcpSettings:BusinessTypeConsumption"              = local.BIZ_TALK_BUSINESS_TYPE_CONSUMPTION
     "EcpSettings:BusinessTypeProduction"               = local.BIZ_TALK_BUSINESS_TYPE_PRODUCTION
     "EcpSettings:BusinessTypeExchange"                 = local.BIZ_TALK_BUSINESS_TYPE_EXCHANGE
+    "EcpSettings:DisableBizTalkBackOff"                = var.disable_biztalk_backoff
 
     "FeatureManagement__DisableBizTalkConnectionCheck" = var.disable_biztalk_connection_check
   }

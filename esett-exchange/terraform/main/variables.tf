@@ -62,3 +62,9 @@ variable "disable_biztalk_connection_check" {
   description = "Disable BizTalk connection health check."
   default     = false
 }
+
+variable "disable_biztalk_backoff" {
+  type        = bool
+  description = "Disable BizTalk Back Off."
+  default     = false
+}
