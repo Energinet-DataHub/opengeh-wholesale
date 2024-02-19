@@ -40,7 +40,6 @@ DEFAULT_RESOLUTION = "P1D"
 DEFAULT_FROM_DATE = datetime(2020, 1, 1, 0, 0)
 DEFAULT_TO_DATE = datetime(2020, 2, 1, 0, 0)
 DEFAULT_CHARGE_TIME = datetime(2020, 1, 1, 0, 0)
-DEFAULT_METERING_POINT_ID = "123456789012345678901234567"
 
 
 def _create_charge_master_data_row(
@@ -60,27 +59,6 @@ def _create_charge_master_data_row(
         Colname.charge_tax: charge_tax,
         Colname.from_date: from_date,
         Colname.to_date: to_date,
-    }
-    return Row(**row)
-
-
-def _create_charge_link_periods_row(
-    charge_key: str = DEFAULT_CHARGE_KEY,
-    charge_code: str = DEFAULT_CHARGE_CODE,
-    charge_owner: str = DEFAULT_CHARGE_OWNER,
-    charge_type: str = DEFAULT_CHARGE_TYPE,
-    from_date: datetime = DEFAULT_FROM_DATE,
-    to_date: datetime = DEFAULT_TO_DATE,
-    metering_point_id: str = DEFAULT_METERING_POINT_ID,
-) -> Row:
-    row = {
-        Colname.charge_key: charge_key,
-        Colname.charge_code: charge_code,
-        Colname.charge_owner: charge_owner,
-        Colname.charge_type: charge_type,
-        Colname.from_date: from_date,
-        Colname.to_date: to_date,
-        Colname.metering_point_id: metering_point_id,
     }
     return Row(**row)
 
@@ -112,9 +90,6 @@ class TestWhenValidInput:
         # Arrange
         table_reader_mock.read_charge_master_data_periods.return_value = (
             spark.createDataFrame(data=[_create_charge_master_data_row()])
-        )
-        table_reader_mock.read_charge_links_periods.return_value = (
-            spark.createDataFrame(data=[_create_charge_link_periods_row()])
         )
         table_reader_mock.read_charge_price_points.return_value = spark.createDataFrame(
             data=[_create_charges_price_points_row()]
