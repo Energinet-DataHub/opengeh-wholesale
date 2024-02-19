@@ -14,6 +14,9 @@
 from decimal import Decimal
 from datetime import datetime
 
+from package.calculation.preparation.charge_link_metering_point_periods import (
+    ChargeLinkMeteringPointPeriods,
+)
 from tests.helpers.test_schemas import (
     charges_flex_consumption_schema,
     charges_per_day_schema,
@@ -43,8 +46,11 @@ def test__calculate_daily_subscription_price__simple(
     from_date = datetime(2020, 1, 1, 0, 0)
     to_date = datetime(2020, 1, 2, 0, 0)
     time = datetime(2020, 1, 1, 0, 0)
-    charge_link_metering_points = charge_link_metering_points_factory(
+    charge_link_metering_points_df = charge_link_metering_points_factory(
         charge_type=ChargeType.SUBSCRIPTION.value, from_date=from_date, to_date=to_date
+    )
+    charge_link_metering_points = ChargeLinkMeteringPointPeriods(
+        charge_link_metering_points_df
     )
     charges = charges_factory(
         charge_type=ChargeType.SUBSCRIPTION.value,
@@ -89,8 +95,11 @@ def test__calculate_daily_subscription_price__charge_price_change(
     from_date = datetime(2020, 1, 31, 0, 0)
     to_date = datetime(2020, 2, 2, 0, 0)
 
-    charge_link_metering_points = charge_link_metering_points_factory(
+    charge_link_metering_points_df = charge_link_metering_points_factory(
         charge_type=ChargeType.SUBSCRIPTION.value, from_date=from_date, to_date=to_date
+    )
+    charge_link_metering_points = ChargeLinkMeteringPointPeriods(
+        charge_link_metering_points_df
     )
     subscription_1_charge_prices_charge_price = Decimal("3.124544")
     subcription_1_charge_prices_time = from_date
@@ -172,13 +181,18 @@ def test__calculate_daily_subscription_price__charge_price_change_with_two_diffe
     from_date = datetime(2020, 1, 31, 0, 0)
     to_date = datetime(2020, 2, 2, 0, 0)
     charge_code = "charge_code_b"
-    charge_links_df = charge_link_metering_points_factory(
+    charge_links_metering_point_periods_df = charge_link_metering_points_factory(
         from_date=from_date, to_date=to_date
     )
-    charge_links_df = charge_links_df.union(
-        charge_link_metering_points_factory(
-            from_date=from_date, to_date=to_date, charge_code=charge_code
+    charge_links_metering_point_periods_df = (
+        charge_links_metering_point_periods_df.union(
+            charge_link_metering_points_factory(
+                from_date=from_date, to_date=to_date, charge_code=charge_code
+            )
         )
+    )
+    charge_links_metering_point_periods = ChargeLinkMeteringPointPeriods(
+        charge_links_metering_point_periods_df
     )
 
     subscription_1_charge_prices_charge_price = Decimal("3.124544")
@@ -228,7 +242,7 @@ def test__calculate_daily_subscription_price__charge_price_change_with_two_diffe
     # Act
     subscription_charges = get_subscription_charges(
         charge_prices_df,
-        charge_links_df,
+        charge_links_metering_point_periods,
     )
     result = calculate_daily_subscription_price(spark, subscription_charges).orderBy(
         Colname.charge_time, Colname.charge_key
