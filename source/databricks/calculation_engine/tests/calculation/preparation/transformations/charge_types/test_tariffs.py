@@ -87,6 +87,9 @@ def test__get_tariff_charges__filters_on_resolution(
     Only charges with the given resolution are accepted.
     """
     # Arrange
+    from_date = datetime(2019, 12, 31, 23)
+    to_date = datetime(2020, 1, 1, 0)
+
     time_series_rows = [factory.create_time_series_row()]
     charges_rows = [
         factory.create_tariff_charges_row(
@@ -115,6 +118,8 @@ def test__get_tariff_charges__filters_on_resolution(
         charges,
         charge_link_metering_points,
         charge_resolution,
+        from_date,
+        to_date,
     )
 
     # Assert
@@ -129,6 +134,9 @@ def test__get_tariff_charges__filters_on_tariff_charge_type(
     Only charges with the charge type TARIFF are accepted.
     """
     # Arrange
+    from_date = datetime(2019, 12, 31, 23)
+    to_date = datetime(2020, 1, 1, 0)
+
     charge_link_metering_points_rows = [
         factory.create_charge_link_metering_points_row(
             charge_type=e.ChargeType.TARIFF,
@@ -161,6 +169,8 @@ def test__get_tariff_charges__filters_on_tariff_charge_type(
         charges,
         charge_link_metering_points,
         e.ChargeResolution.HOUR,
+        from_date,
+        to_date,
     )
 
     # Assert
@@ -192,6 +202,9 @@ def test__get_tariff_charges__only_accepts_charges_in_metering_point_period(
                     |------ _charge_time --|
     """
     # Arrange
+    from_date = datetime(2019, 12, 31, 23)
+    to_date = datetime(2020, 1, 1, 2)
+
     charge_link_metering_points_rows = [
         factory.create_charge_link_metering_points_row(
             charge_type=e.ChargeType.TARIFF,
@@ -222,7 +235,10 @@ def test__get_tariff_charges__only_accepts_charges_in_metering_point_period(
         charges,
         charge_link_metering_points,
         e.ChargeResolution.HOUR,
+        from_date,
+        to_date,
     )
+    actual.show()
 
     # Assert
     assert actual.count() == expected_rows

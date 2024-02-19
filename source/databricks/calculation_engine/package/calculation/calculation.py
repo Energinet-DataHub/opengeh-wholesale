@@ -98,6 +98,8 @@ def _execute(
             charges,
             metering_point_charges_links,
             ChargeResolution.HOUR,
+            args.calculation_period_start_datetime,
+            args.calculation_period_end_datetime,
         )
 
         tariffs_daily_df = prepared_data_reader.get_tariff_charges(
@@ -105,6 +107,8 @@ def _execute(
             charges,
             metering_point_charges_links,
             ChargeResolution.DAY,
+            args.calculation_period_start_datetime,
+            args.calculation_period_end_datetime,
         )
 
         results.wholesale_results = wholesale_calculation.execute(

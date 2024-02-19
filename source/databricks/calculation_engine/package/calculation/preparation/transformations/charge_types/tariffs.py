@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from datetime import datetime
 
 from pyspark.sql.dataframe import DataFrame
 import pyspark.sql.functions as f
@@ -26,14 +27,19 @@ def get_tariff_charges(
     charges: DataFrame,
     charge_link_metering_points: DataFrame,
     resolution: ChargeResolution,
+    period_start: datetime,
+    period_end: datetime,
 ) -> DataFrame:
     tariffs = charges.filter(
         f.col(Colname.charge_type) == ChargeType.TARIFF.value
     ).filter(f.col(Colname.resolution) == resolution.value)
 
+    # tariffs = _add_missing_prices(tariffs, period_start, period_end, resolution)
+    # tariffs.show()
     tariffs = _join_with_charge_link_metering_points(
         tariffs, charge_link_metering_points
     )
+    tariffs.show()
 
     # group by time series on metering point id and resolution and sum quantity
     grouped_time_series = (
@@ -50,6 +56,62 @@ def get_tariff_charges(
     tariffs.schema[Colname.energy_supplier_id].nullable = False
 
     return tariffs
+
+
+def _add_missing_prices(
+    charges_with_prices: DataFrame,
+    period_start_datetime: datetime,
+    period_end_datetime: datetime,
+    resolution: ChargeResolution,
+) -> DataFrame:
+    charges_with_no_prices = (
+        charges_with_prices.select(
+            Colname.charge_key,
+            Colname.charge_code,
+            Colname.charge_type,
+            Colname.charge_owner,
+            Colname.charge_tax,
+            Colname.resolution,
+            Colname.from_date,
+            Colname.to_date,
+            Colname.charge_time,
+            Colname.charge_price,
+        )
+        .withColumn(
+            "temp_time",
+            f.expr(
+                f"sequence(to_timestamp('{period_start_datetime}'), to_timestamp('{period_end_datetime}'), interval {_get_window_duration_string_based_on_resolution(resolution)})"
+            ),
+        )
+        .select(
+            Colname.charge_key,
+            Colname.charge_code,
+            Colname.charge_type,
+            Colname.charge_owner,
+            Colname.charge_tax,
+            Colname.resolution,
+            Colname.from_date,
+            Colname.to_date,
+            f.explode("temp_time").alias(Colname.charge_time),
+        )
+    )
+
+    charges_with_prices_and_missing_prices = charges_with_no_prices.join(
+        charges_with_prices, [Colname.charge_key, Colname.charge_time], "left"
+    ).select(
+        charges_with_no_prices[Colname.charge_key],
+        charges_with_no_prices[Colname.charge_code],
+        charges_with_no_prices[Colname.charge_type],
+        charges_with_no_prices[Colname.charge_owner],
+        charges_with_no_prices[Colname.charge_tax],
+        charges_with_no_prices[Colname.resolution],
+        charges_with_no_prices[Colname.charge_time],
+        charges_with_no_prices[Colname.from_date],
+        charges_with_no_prices[Colname.to_date],
+        Colname.charge_price,
+    )
+
+    return charges_with_prices_and_missing_prices
 
 
 def _join_with_charge_link_metering_points(

@@ -88,9 +88,16 @@ class PreparedDataReader:
         charges_df: DataFrame,
         metering_point_charges_links: DataFrame,
         resolution: ChargeResolution,
+        period_start: datetime,
+        period_end: datetime,
     ) -> DataFrame:
         return T.get_tariff_charges(
-            time_series, charges_df, metering_point_charges_links, resolution
+            time_series,
+            charges_df,
+            metering_point_charges_links,
+            resolution,
+            period_start,
+            period_end,
         )
 
     def get_metering_point_time_series(
