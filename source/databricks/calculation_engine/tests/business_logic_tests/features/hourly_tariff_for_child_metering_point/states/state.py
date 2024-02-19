@@ -68,10 +68,21 @@ def get_expected_result(
     df = df.withColumn("time", col("time").cast(TimestampType()))
     df = df.withColumn("is_tax", col("is_tax").cast(BooleanType()))
     df = df.withColumn("settlement_method", lit("flex"))  # TODO AJW
+
     df = df.withColumn(
         "quantity_qualities",
-        f.split(f.col("quantity_qualities"), ",").cast(ArrayType(StringType())),
+        f.split(
+            f.regexp_replace(
+                f.regexp_replace(f.col("quantity_qualities"), r"[\[\]']", ""), " ", ""
+            ),
+            ",",
+        ).cast(ArrayType(StringType())),
     )
+
+    # df = df.withColumn(
+    #     "quantity_qualities",
+    #     f.split(f.col("quantity_qualities"), ",").cast(ArrayType(StringType())),
+    # )
 
     return spark.createDataFrame(
         df.rdd, wholesale_hourly_tariff_per_ga_co_es_results_schema
