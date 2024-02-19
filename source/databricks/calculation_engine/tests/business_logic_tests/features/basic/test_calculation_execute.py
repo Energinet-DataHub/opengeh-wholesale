@@ -26,20 +26,7 @@ def test_execute__returns_expected(
     results = scenario_fixture.execute()
 
     # Assert
-    results = results.energy_results.consumption_per_ga.df
-    expected_results = (
-        scenario_fixture.expected_results.energy_results.flex_consumption_per_ga.df.drop(
-            "metering_point_type"
-        )
-        .drop("quantity_qualities")
-        .drop("price")
-        .drop("amount")
-        .drop("energy_supplier_id")
-        .drop("quantity")
-        .drop("calculation_result_id")
+    assert_dataframes_equal(
+        results.energy_results.consumption_per_ga.df,
+        scenario_fixture.expected_results.energy_results.flex_consumption_per_ga.df,
     )
-
-    results.show()
-    expected_results.show()
-
-    assert_dataframes_equal(results, expected_results)
