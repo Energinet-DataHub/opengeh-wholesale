@@ -69,7 +69,7 @@ def test__calculate_daily_subscription_price__simple(
     # Act
     subscription_charges = get_subscription_charges(
         charges,
-        charge_link_metering_points,
+        charge_link_metering_point_periods,
     )
     result = calculate_daily_subscription_price(spark, subscription_charges)
     expected = calculate_daily_subscription_price_factory(
@@ -144,7 +144,7 @@ def test__calculate_daily_subscription_price__charge_price_change(
     # Act
     subscription_charges = get_subscription_charges(
         charge_prices_df,
-        charge_link_metering_points,
+        charge_link_metering_point_periods,
     )
     result = calculate_daily_subscription_price(spark, subscription_charges).orderBy(
         Colname.charge_time
