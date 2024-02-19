@@ -11,29 +11,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
-
-from pyspark.sql import SparkSession
-
-from business_logic_tests.scenario_factory import ScenarioFactory
+from business_logic_tests.scenario_factory import ScenarioFixture
 from helpers.data_frame_utils import assert_dataframes_equal
 
 
 def test_execute_scenario__returns_expected_wholesale_results_hourly_tariff_per_ga_co_es(
-    spark: SparkSession,
+    scenario_fixture: ScenarioFixture,
 ) -> None:
     # Arrange
-    factory = ScenarioFactory(spark, os.path.abspath(__file__))
+    scenario_fixture.setup(file_path=__file__)
 
     # Act
-    results = factory.execute_scenario()
+    results = scenario_fixture.execute()
 
     # Assert
-    expected_results = factory.get_expected_result()
-
-    assert (
-        results.wholesale_results.hourly_tariff_per_ga_co_es.schema
-        == expected_results.schema
+    expected_results = (
+        scenario_fixture.expected_results.wholesale_results.hourly_tariff_per_ga_co_es
     )
 
     results = (

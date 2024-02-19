@@ -21,12 +21,15 @@ import pandas as pd
 import yaml
 from pyspark.sql import SparkSession, DataFrame
 
-from business_logic_tests.features.fixtures.scenario_fixture import (
+from business_logic_tests.features.hourly_tariff_for_child_metering_point.state import (
     wholesale_hourly_tariff_per_ga_co_es_results_schema,
     create_expected_result,
 )
 from package.calculation import PreparedDataReader
-from package.calculation.CalculationResults import CalculationResultsContainer
+from package.calculation.CalculationResults import (
+    CalculationResultsContainer,
+    WholesaleResultsContainer,
+)
 from package.calculation.calculation import _execute_calculation
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation_input.schemas import (
@@ -41,16 +44,21 @@ from package.codelists import CalculationType
 from package.constants import Colname
 
 
-class ScenarioFactory:
+class ScenarioFixture:
 
     table_reader: Mock
     calculation_args: CalculatorArgs
     test_path: str
     results: DataFrame
+    expected_results: CalculationResultsContainer
 
-    def __init__(self, spark: SparkSession, file_path: Path):
+    def __init__(self, spark: SparkSession):
         self.spark = spark
         self.table_reader = Mock()
+        self.expected_results = CalculationResultsContainer()
+        self.expected_results.wholesale_results = WholesaleResultsContainer()
+
+    def setup(self, file_path: Path) -> None:
         self.test_path = os.path.dirname(file_path) + "/test_data/"
 
         file_schema_dict = {
@@ -74,11 +82,11 @@ class ScenarioFactory:
         self.table_reader.read_charge_master_data_periods.return_value = frames[3]
         self.table_reader.read_charge_links_periods.return_value = frames[4]
         self.table_reader.read_charge_price_points.return_value = frames[5]
-        self.results = create_expected_result(
-            self.spark, self.calculation_args, frames[6]
+        self.expected_results.wholesale_results.hourly_tariff_per_ga_co_es = (
+            create_expected_result(self.spark, self.calculation_args, frames[6])
         )
 
-    def execute_scenario(self) -> CalculationResultsContainer:
+    def execute(self) -> CalculationResultsContainer:
         return _execute_calculation(
             self.calculation_args, PreparedDataReader(self.table_reader)
         )
