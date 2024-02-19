@@ -70,7 +70,7 @@ class ScenarioFixture:
             "charge_master_data_periods.csv": charge_master_data_periods_schema,
             "charge_link_periods.csv": charge_link_periods_schema,
             "charge_price_points.csv": charge_price_points_schema,
-            "wholesale_hourly_tariff_per_ga_co_es_results.csv": wholesale_hourly_tariff_per_ga_co_es_results_schema,
+            "results.csv": wholesale_hourly_tariff_per_ga_co_es_results_schema,
         }
 
         self.calculation_args = self._load_calculation_args()
@@ -99,7 +99,7 @@ class ScenarioFixture:
         if not os.path.exists(self.test_path + file_path):
             return spark_session.createDataFrame([], schema)
 
-        if file_path.__contains__("_results.csv"):
+        if file_path.__contains__("results.csv"):
             return spark_session.read.csv(
                 self.test_path + file_path, header=True, sep=";"
             )
