@@ -14,7 +14,7 @@
 
 using System.Text.Json;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonSerialization;
 
 public class JsonNewlineSerializer : IJsonNewlineSerializer
 {
