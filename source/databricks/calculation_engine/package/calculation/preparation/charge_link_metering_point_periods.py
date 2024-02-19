@@ -21,16 +21,10 @@ from package.constants import Colname
 
 class ChargeLinkMeteringPointPeriods(DataFrameWrapper):
     """
-    Time series of energy results.
-
-    Only exchange energy results have to- and from- grid area values.
+    Link between charge (key) and metering points periods
     """
 
     def __init__(self, df: DataFrame):
-        """
-        Fit data frame in a general DataFrame. This is used for all results and missing columns will be null.
-        """
-
         super().__init__(
             df,
             charge_link_metering_point_periods_schema,

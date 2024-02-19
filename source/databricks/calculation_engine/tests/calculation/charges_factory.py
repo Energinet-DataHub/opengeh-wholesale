@@ -14,11 +14,10 @@
 
 from datetime import datetime
 from decimal import Decimal
-from pyspark.sql import Row, DataFrame, SparkSession
+from pyspark.sql import Row, SparkSession
 
 from package.calculation.preparation.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
-    charge_link_metering_point_periods_schema,
 )
 from package.codelists import ChargeType
 from package.constants import Colname
@@ -157,5 +156,5 @@ def create_charge_link_metering_point_periods(
         data = [create_charge_link_metering_points_row()]
     elif isinstance(data, Row):
         data = [data]
-    df = spark.createDataFrame(data, schema=charge_link_metering_point_periods_schema)
+    df = spark.createDataFrame(data)
     return ChargeLinkMeteringPointPeriods(df)
