@@ -23,10 +23,14 @@ from pyspark.sql.types import (
     StructField,
 )
 
+from package.calculation.CalculationResults import (
+    WholesaleResultsContainer,
+    CalculationResultsContainer,
+)
 from package.calculation.calculator_args import CalculatorArgs
 from package.constants import Colname
 
-wholesale_hourly_tariff_per_ga_co_es_results_schema = StructType(
+schema = StructType(
     [
         StructField(Colname.calculation_id, StringType(), False),
         StructField(Colname.calculation_type, StringType(), False),
@@ -52,9 +56,9 @@ wholesale_hourly_tariff_per_ga_co_es_results_schema = StructType(
 )
 
 
-def get_expected_result(
+def get_result(
     spark: SparkSession, calculation_args: CalculatorArgs, df: DataFrame
-) -> DataFrame:
+) -> CalculationResultsContainer:
     df = df.withColumn("calculation_id", lit(calculation_args.calculation_id))
     df = df.withColumn(
         Colname.calculation_execution_time_start,
@@ -79,11 +83,8 @@ def get_expected_result(
         ).cast(ArrayType(StringType())),
     )
 
-    # df = df.withColumn(
-    #     "quantity_qualities",
-    #     f.split(f.col("quantity_qualities"), ",").cast(ArrayType(StringType())),
-    # )
-
-    return spark.createDataFrame(
-        df.rdd, wholesale_hourly_tariff_per_ga_co_es_results_schema
+    results = CalculationResultsContainer()
+    results.wholesale_results = WholesaleResultsContainer(
+        hourly_tariff_per_ga_co_es=spark.createDataFrame(df.rdd, schema)
     )
+    return results

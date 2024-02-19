@@ -15,21 +15,16 @@ import concurrent.futures
 import os
 import uuid
 from pathlib import Path
+from typing import Callable
 from unittest.mock import Mock
 
 import pandas as pd
 import yaml
 from pyspark.sql import SparkSession, DataFrame
 
-from business_logic_tests.features.hourly_tariff_for_child_metering_point.states.state import (
-    wholesale_hourly_tariff_per_ga_co_es_results_schema,
-    get_expected_result,
-)
 from package.calculation import PreparedDataReader
 from package.calculation.CalculationResults import (
     CalculationResultsContainer,
-    WholesaleResultsContainer,
-    EnergyResultsContainer,
 )
 from package.calculation.calculation import _execute
 from package.calculation.calculator_args import CalculatorArgs
@@ -56,11 +51,10 @@ class ScenarioFixture:
     def __init__(self, spark: SparkSession):
         self.spark = spark
         self.table_reader = Mock()
-        self.expected_results = CalculationResultsContainer()
-        self.expected_results.wholesale_results = WholesaleResultsContainer()
-        self.expected_results.energy_results = EnergyResultsContainer()
 
-    def setup(self, file_path: Path) -> None:
+    def setup(
+        self, file_path: Path, get_result: Callable[..., CalculationResultsContainer]
+    ) -> None:
         self.test_path = os.path.dirname(file_path) + "/test_data/"
 
         file_schema_dict = {
@@ -70,7 +64,7 @@ class ScenarioFixture:
             "charge_master_data_periods.csv": charge_master_data_periods_schema,
             "charge_link_periods.csv": charge_link_periods_schema,
             "charge_price_points.csv": charge_price_points_schema,
-            "results.csv": wholesale_hourly_tariff_per_ga_co_es_results_schema,
+            "results.csv": None,
         }
 
         self.calculation_args = self._load_calculation_args()
@@ -84,8 +78,9 @@ class ScenarioFixture:
         self.table_reader.read_charge_master_data_periods.return_value = frames[3]
         self.table_reader.read_charge_links_periods.return_value = frames[4]
         self.table_reader.read_charge_price_points.return_value = frames[5]
-        self.expected_results.wholesale_results.hourly_tariff_per_ga_co_es = (
-            get_expected_result(self.spark, self.calculation_args, frames[6])
+
+        self.expected_results = get_result(
+            self.spark, self.calculation_args, df=frames[6]
         )
 
     def execute(self) -> CalculationResultsContainer:

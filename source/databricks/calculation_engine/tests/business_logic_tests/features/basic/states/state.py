@@ -12,21 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from pyspark.sql import functions as f, DataFrame, SparkSession
-from pyspark.sql.functions import lit, col
+from pyspark.sql.functions import col
 from pyspark.sql.types import (
     StringType,
     TimestampType,
-    BooleanType,
     DecimalType,
     ArrayType,
     StructType,
     StructField,
 )
 
-from package.calculation.calculator_args import CalculatorArgs
+from package.calculation.CalculationResults import (
+    EnergyResultsContainer,
+    CalculationResultsContainer,
+)
+from package.calculation.energy.energy_results import (
+    EnergyResults,
+    energy_results_schema,
+)
 from package.constants import Colname
 
-wholesale_hourly_tariff_per_ga_co_es_results_schema = StructType(
+schema = StructType(
     [
         StructField(Colname.calculation_id, StringType(), False),
         StructField(Colname.calculation_type, StringType(), False),
@@ -41,9 +47,6 @@ wholesale_hourly_tariff_per_ga_co_es_results_schema = StructType(
         StructField(Colname.resolution, StringType(), False),
         StructField("metering_point_type", StringType(), False),
         StructField(Colname.settlement_method, StringType(), True),
-        StructField("price", DecimalType(18, 6), False),
-        StructField("amount", DecimalType(38, 6), True),
-        StructField("is_tax", BooleanType(), False),
         StructField(Colname.charge_code, StringType(), False),
         StructField(Colname.charge_type, StringType(), False),
         StructField(Colname.charge_owner, StringType(), False),
@@ -52,27 +55,26 @@ wholesale_hourly_tariff_per_ga_co_es_results_schema = StructType(
 )
 
 
-def get_expected_result(
-    spark: SparkSession, calculation_args: CalculatorArgs, df: DataFrame
-) -> DataFrame:
-    df = df.withColumn("calculation_id", lit(calculation_args.calculation_id))
+def get_result(spark: SparkSession, df: DataFrame) -> CalculationResultsContainer:
     df = df.withColumn(
-        Colname.calculation_execution_time_start,
-        lit(calculation_args.calculation_execution_time_start).cast(TimestampType()),
+        Colname.time_window, col(Colname.time_window).cast(TimestampType())
     )
-    df = df.withColumn("calculation_result_id", lit(""))
-    df = df.withColumn("quantity_unit", lit("kWh"))  # TODO AJW
-    df = df.withColumn("quantity", col("quantity").cast(DecimalType(28, 3)))
-    df = df.withColumn("price", col("price").cast(DecimalType(28, 3)))
-    df = df.withColumn("amount", col("amount").cast(DecimalType(38, 6)))
-    df = df.withColumn("time", col("time").cast(TimestampType()))
-    df = df.withColumn("is_tax", col("is_tax").cast(BooleanType()))
-    df = df.withColumn("settlement_method", lit("flex"))  # TODO AJW
+    df = df.withColumn(
+        Colname.sum_quantity, col(Colname.sum_quantity).cast(DecimalType(28, 3))
+    )
     df = df.withColumn(
         "quantity_qualities",
-        f.split(f.col("quantity_qualities"), ",").cast(ArrayType(StringType())),
+        f.split(
+            f.regexp_replace(
+                f.regexp_replace(f.col("quantity_qualities"), r"[\[\]']", ""), " ", ""
+            ),
+            ",",
+        ).cast(ArrayType(StringType())),
     )
 
-    return spark.createDataFrame(
-        df.rdd, wholesale_hourly_tariff_per_ga_co_es_results_schema
+    results = CalculationResultsContainer()
+    results.energy_results = EnergyResultsContainer()
+    results.energy_results.flex_consumption_per_ga_and_es = EnergyResults(
+        spark.createDataFrame(df.rdd, energy_results_schema),
     )
+    return results
