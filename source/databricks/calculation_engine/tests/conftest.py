@@ -39,10 +39,12 @@ from package.calculation_input.schemas import (
     charge_link_periods_schema,
 )
 from package.codelists import CalculationType
+from package.container import create_and_configure_container, Container
 from package.datamigration.migration import _apply_migration
 from package.datamigration.migration_script_args import MigrationScriptArgs
 from package.datamigration.uncommitted_migrations import _get_all_migrations
 from package.infrastructure import paths
+from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
     OUTPUT_DATABASE_NAME,
     OUTPUT_FOLDER,
@@ -313,13 +315,6 @@ def integration_test_configuration(tests_path: str) -> IntegrationTestConfigurat
 @pytest.fixture(scope="session")
 def any_calculator_args() -> CalculatorArgs:
     return CalculatorArgs(
-        data_storage_account_name="foo",
-        data_storage_account_credentials=ClientSecretCredential("foo", "foo", "foo"),
-        wholesale_container_path="foo",
-        calculation_input_path="foo",
-        time_series_points_table_name=None,
-        metering_point_periods_table_name=None,
-        grid_loss_metering_points_table_name=None,
         calculation_id="foo",
         calculation_type=CalculationType.AGGREGATION,
         calculation_grid_areas=["805", "806"],
@@ -328,6 +323,32 @@ def any_calculator_args() -> CalculatorArgs:
         calculation_execution_time_start=datetime(2018, 1, 5, 23, 0, 0),
         time_zone="Europe/Copenhagen",
     )
+
+
+@pytest.fixture(scope="session")
+def infrastructure_settings(
+    data_lake_path: str, calculation_input_path: str
+) -> InfrastructureSettings:
+    return InfrastructureSettings(
+        data_storage_account_name="foo",
+        data_storage_account_credentials=ClientSecretCredential("foo", "foo", "foo"),
+        wholesale_container_path=data_lake_path,
+        calculation_input_path=calculation_input_path,
+        time_series_points_table_name=None,
+        metering_point_periods_table_name=None,
+        grid_loss_metering_points_table_name=None,
+    )
+
+
+@pytest.fixture(scope="session", autouse=True)
+def dependency_injection_container(
+    infrastructure_settings: InfrastructureSettings,
+) -> Container:
+    """
+    This enables the use of dependency injection in all tests.
+    The container is created once for the entire test suite.
+    """
+    return create_and_configure_container(infrastructure_settings)
 
 
 @pytest.fixture(scope="session")

@@ -11,11 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
 from typing import Any, Callable
+from unittest.mock import patch
 
 import pytest
 from pyspark.sql import DataFrame, SparkSession
@@ -30,6 +30,7 @@ from package.codelists import (
     QuantityQuality,
 )
 from package.constants import Colname
+from package.container import Container
 from package.infrastructure import paths
 from tests.helpers.assert_calculation_file_path import (
     CalculationFileType,
@@ -171,13 +172,13 @@ def test__write__writes_to_paths_that_match_contract(
     metering_point_period_df_factory: Callable[..., DataFrame],
     metering_point_time_series_factory: Callable,
     any_calculator_args: CalculatorArgs,
+    dependency_injection_container: Container,
 ) -> None:
     """
     This test calls 'write' once and then asserts on all file contracts.
     This is done to avoid multiple write operations, and thereby reduce execution time
     """
     # Arrange
-    any_calculator_args.wholesale_container_path = str(tmpdir)
     any_calculator_args.calculation_id = DEFAULT_CALCULATION_ID
     metering_point_period_df = metering_point_period_df_factory()
     metering_point_time_series = metering_point_time_series_factory()
@@ -189,7 +190,15 @@ def test__write__writes_to_paths_that_match_contract(
     )
 
     # Act
-    basis_data_results.write_basis_data(any_calculator_args, basis_data_container)
+    with patch.object(
+        dependency_injection_container.infrastructure_settings(),
+        "wholesale_container_path",
+        new=str(tmpdir),
+    ):
+        basis_data_results.write_basis_data(
+            any_calculator_args,
+            basis_data_container,
+        )
 
     # Assert
     for file_type in _get_all_basis_data_file_types():
