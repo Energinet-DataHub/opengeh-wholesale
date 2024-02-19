@@ -29,6 +29,8 @@ from package.calculation import PreparedDataReader
 from package.calculation.CalculationResults import (
     CalculationResultsContainer,
     WholesaleResultsContainer,
+    EnergyResultsContainer,
+    BasisDataContainer,
 )
 from package.calculation.calculation import _execute_calculation
 from package.calculation.calculator_args import CalculatorArgs
@@ -57,6 +59,8 @@ class ScenarioFixture:
         self.table_reader = Mock()
         self.expected_results = CalculationResultsContainer()
         self.expected_results.wholesale_results = WholesaleResultsContainer()
+        self.expected_results.energy_results = EnergyResultsContainer()
+        self.expected_results.basis_data = BasisDataContainer()
 
     def setup(self, file_path: Path) -> None:
         self.test_path = os.path.dirname(file_path) + "/test_data/"
@@ -90,9 +94,6 @@ class ScenarioFixture:
         return _execute_calculation(
             self.calculation_args, PreparedDataReader(self.table_reader)
         )
-
-    def get_expected_result(self) -> DataFrame:
-        return self.results
 
     def _read_file(
         self, spark_session: SparkSession, file_path: str, schema: str
