@@ -30,7 +30,6 @@ from package.calculation.CalculationResults import (
     CalculationResultsContainer,
     WholesaleResultsContainer,
     EnergyResultsContainer,
-    BasisDataContainer,
 )
 from package.calculation.calculation import _execute_calculation
 from package.calculation.calculator_args import CalculatorArgs
@@ -60,7 +59,6 @@ class ScenarioFixture:
         self.expected_results = CalculationResultsContainer()
         self.expected_results.wholesale_results = WholesaleResultsContainer()
         self.expected_results.energy_results = EnergyResultsContainer()
-        self.expected_results.basis_data = BasisDataContainer()
 
     def setup(self, file_path: Path) -> None:
         self.test_path = os.path.dirname(file_path) + "/test_data/"
