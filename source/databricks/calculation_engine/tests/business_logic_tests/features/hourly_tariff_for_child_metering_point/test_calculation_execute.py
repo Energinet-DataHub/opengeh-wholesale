@@ -19,7 +19,7 @@ from business_logic_tests.scenario_factory import ScenarioFactory
 from helpers.data_frame_utils import assert_dataframes_equal
 
 
-def test_scenario__returns_expected_hourly_tariff_per_ga_co_es(
+def test_execute_scenario__returns_expected_wholesale_results_hourly_tariff_per_ga_co_es(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -27,9 +27,9 @@ def test_scenario__returns_expected_hourly_tariff_per_ga_co_es(
 
     # Act
     results = factory.execute_scenario()
+
+    # Assert
     expected_results = factory.get_expected_result()
-    results.wholesale_results.hourly_tariff_per_ga_co_es.show(truncate=False)
-    expected_results.show(truncate=False)
 
     assert (
         results.wholesale_results.hourly_tariff_per_ga_co_es.schema
@@ -55,5 +55,4 @@ def test_scenario__returns_expected_hourly_tariff_per_ga_co_es(
         .drop("calculation_result_id")
     )
 
-    # Assert
     assert_dataframes_equal(results, expected_results)
