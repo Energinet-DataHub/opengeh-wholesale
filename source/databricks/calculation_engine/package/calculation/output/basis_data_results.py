@@ -11,19 +11,35 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from dependency_injector.wiring import Provide, inject
+
 from package.calculation.CalculationResults import BasisDataContainer
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation_output.basis_data_writer import BasisDataWriter
 from package.codelists import AggregationLevel
 from package.constants import PartitionKeyName
+from package.container import Container
 from package.infrastructure import logging_configuration
-
+from package.infrastructure.infrastructure_settings import InfrastructureSettings
 
 logging_configuration.use_span("calculation.basis_data")
 
 
 def write_basis_data(args: CalculatorArgs, basis_data: BasisDataContainer) -> None:
-    basis_data_writer = BasisDataWriter(args.wholesale_container_path)
+    _write_basis_data(args, basis_data)
+
+
+@inject
+def _write_basis_data(
+    args: CalculatorArgs,
+    basis_data: BasisDataContainer,
+    infrastructure_settings: InfrastructureSettings = Provide[
+        Container.infrastructure_settings
+    ],
+) -> None:
+    basis_data_writer = BasisDataWriter(
+        infrastructure_settings.wholesale_container_path
+    )
     _write_ga_basis_data_to_csv(args.calculation_id, basis_data, basis_data_writer)
     _write_es_basis_data_to_csv(args.calculation_id, basis_data, basis_data_writer)
 
