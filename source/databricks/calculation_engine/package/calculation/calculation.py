@@ -85,8 +85,8 @@ def _execute(
             _get_production_and_consumption_metering_points(metering_point_periods_df)
         )
 
-        metering_point_charges_links = (
-            prepared_data_reader.get_charge_link_metering_points(
+        charges_link_metering_point_periods = (
+            prepared_data_reader.get_charge_link_metering_point_periods(
                 args.calculation_period_start_datetime,
                 args.calculation_period_end_datetime,
                 metering_points_periods_for_wholesale_calculation_df,
@@ -96,14 +96,14 @@ def _execute(
         tariffs_hourly_df = prepared_data_reader.get_tariff_charges(
             metering_point_time_series,
             charges,
-            metering_point_charges_links,
+            charges_link_metering_point_periods,
             ChargeResolution.HOUR,
         )
 
         tariffs_daily_df = prepared_data_reader.get_tariff_charges(
             metering_point_time_series,
             charges,
-            metering_point_charges_links,
+            charges_link_metering_point_periods,
             ChargeResolution.DAY,
         )
 

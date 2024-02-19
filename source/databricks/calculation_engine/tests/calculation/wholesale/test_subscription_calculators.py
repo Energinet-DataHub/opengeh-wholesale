@@ -49,7 +49,7 @@ def test__calculate_daily_subscription_price__simple(
     charge_link_metering_points_df = charge_link_metering_points_factory(
         charge_type=ChargeType.SUBSCRIPTION.value, from_date=from_date, to_date=to_date
     )
-    charge_link_metering_points = ChargeLinkMeteringPointPeriods(
+    charge_link_metering_point_periods = ChargeLinkMeteringPointPeriods(
         charge_link_metering_points_df
     )
     charges = charges_factory(
@@ -98,7 +98,7 @@ def test__calculate_daily_subscription_price__charge_price_change(
     charge_link_metering_points_df = charge_link_metering_points_factory(
         charge_type=ChargeType.SUBSCRIPTION.value, from_date=from_date, to_date=to_date
     )
-    charge_link_metering_points = ChargeLinkMeteringPointPeriods(
+    charge_link_metering_point_periods = ChargeLinkMeteringPointPeriods(
         charge_link_metering_points_df
     )
     subscription_1_charge_prices_charge_price = Decimal("3.124544")

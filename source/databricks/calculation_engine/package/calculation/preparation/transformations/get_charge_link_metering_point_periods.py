@@ -21,11 +21,11 @@ from package.calculation.preparation.charge_link_metering_point_periods import (
 from package.constants import Colname
 
 
-def get_charge_link_metering_points(
+def get_charge_link_metering_point_periods(
     charge_links: DataFrame,
     metering_points: DataFrame,
 ) -> ChargeLinkMeteringPointPeriods:
-    charge_link_metering_points = charge_links.join(
+    charge_link_metering_point_periods = charge_links.join(
         metering_points,
         [
             charge_links[Colname.metering_point_id]
@@ -52,4 +52,4 @@ def get_charge_link_metering_points(
         metering_points[Colname.grid_area],
         metering_points[Colname.energy_supplier_id],
     )
-    return ChargeLinkMeteringPointPeriods(charge_link_metering_points)
+    return ChargeLinkMeteringPointPeriods(charge_link_metering_point_periods)
