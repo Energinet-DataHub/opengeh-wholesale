@@ -12,9 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonSerialization;
 
-public class DateTimeOptions
+public interface IJsonNewlineSerializer
 {
-    public string TIME_ZONE { get; set; } = string.Empty;
+    /// <summary>
+    /// Returns  a <see cref="List{T}"/> of object type <typeparamref name="T"/>
+    /// </summary>
+    /// <param name="resultStream"></param>
+    Task<List<T>> DeserializeAsync<T>(Stream resultStream);
 }

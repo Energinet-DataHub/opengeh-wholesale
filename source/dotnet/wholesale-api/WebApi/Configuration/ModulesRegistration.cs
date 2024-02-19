@@ -12,40 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Identity;
-using Azure.Storage.Files.DataLake;
-using Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.DependencyInjection;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Configuration.Options;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.EDI;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
-using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Microsoft.EntityFrameworkCore;
-using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 
 internal static class ServiceCollectionExtensions
 {
-    public static void AddModules(this IServiceCollection serviceCollection, IConfiguration configuration)
+    public static void AddModules(this IServiceCollection services, IConfiguration configuration)
     {
         // Add modules
-        var connectionStringOptions = configuration.GetSection(ConnectionStringsOptions.ConnectionStrings)
-            .Get<ConnectionStringsOptions>();
-        serviceCollection.AddCalculationsModule(() => connectionStringOptions!.DB_CONNECTION_STRING);
-
-        serviceCollection.AddCalculationResultsModule(configuration);
-
-        serviceCollection.AddEventsModule(configuration.Get<ServiceBusOptions>()!);
-        serviceCollection.AddEdiModule();
+        services.AddCalculationsModule(configuration);
+        services.AddCalculationResultsModule(configuration);
+        services.AddEventsModule(configuration);
+        services.AddEdiModule();
 
         // Add registration that are used by more than one module
-        serviceCollection.AddShared(configuration);
+        services.AddShared(configuration);
     }
 
-    private static void AddShared(this IServiceCollection serviceCollection, IConfiguration configuration)
+    private static void AddShared(this IServiceCollection services, IConfiguration configuration)
     {
-        serviceCollection.AddDbContext<EventsDatabaseContext>(
+        services.AddDbContext<EventsDatabaseContext>(
             options => options.UseSqlServer(
                 configuration
                     .GetSection(ConnectionStringsOptions.ConnectionStrings)
@@ -56,36 +50,7 @@ internal static class ServiceCollectionExtensions
                     o.EnableRetryOnFailure();
                 }));
 
-        serviceCollection.AddScoped<IClock>(_ => SystemClock.Instance);
-
-        serviceCollection.AddDatabricksJobs(configuration);
-
-        serviceCollection.AddDateTimeConfiguration(configuration);
-        serviceCollection.AddDataLakeFileSystemClient(configuration);
-    }
-
-    private static void AddDataLakeFileSystemClient(
-        this IServiceCollection serviceCollection,
-        IConfiguration configuration)
-    {
-        var options = configuration.Get<DataLakeOptions>()!;
-        serviceCollection.AddSingleton<DataLakeFileSystemClient>(_ =>
-        {
-            var dataLakeServiceClient =
-                new DataLakeServiceClient(new Uri(options.STORAGE_ACCOUNT_URI), new DefaultAzureCredential());
-            return dataLakeServiceClient.GetFileSystemClient(options.STORAGE_CONTAINER_NAME);
-        });
-    }
-
-    private static void AddDateTimeConfiguration(
-        this IServiceCollection serviceCollection,
-        IConfiguration configuration)
-    {
-        var options = configuration.Get<DateTimeOptions>()!;
-        serviceCollection.AddSingleton<DateTimeZone>(_ =>
-        {
-            var dateTimeZoneId = options.TIME_ZONE;
-            return DateTimeZoneProviders.Tzdb.GetZoneOrNull(dateTimeZoneId)!;
-        });
+        services.AddNodaTimeForApplication(configuration);
+        services.AddDatabricksJobsForApplication(configuration);
     }
 }

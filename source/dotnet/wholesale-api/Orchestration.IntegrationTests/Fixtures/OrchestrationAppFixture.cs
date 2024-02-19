@@ -19,6 +19,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Configuration.Options;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Calculations.IntegrationTests.Fixture.Database;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
@@ -102,6 +103,9 @@ namespace Energinet.DataHub.Wholesale.Orchestration.IntegrationTests.Fixtures
             appHostSettings.ProcessEnvironmentVariables.Add("FUNCTIONS_WORKER_RUNTIME", "dotnet-isolated");
             appHostSettings.ProcessEnvironmentVariables.Add("AzureWebJobsStorage", "UseDevelopmentStorage=true");
             appHostSettings.ProcessEnvironmentVariables.Add("APPLICATIONINSIGHTS_CONNECTION_STRING", IntegrationTestConfiguration.ApplicationInsightsConnectionString);
+
+            // Time zone
+            appHostSettings.ProcessEnvironmentVariables.Add(nameof(DateTimeOptions.TIME_ZONE), "Europe/Copenhagen");
 
             // Database
             appHostSettings.ProcessEnvironmentVariables.Add(
