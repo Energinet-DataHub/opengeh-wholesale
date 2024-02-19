@@ -642,7 +642,49 @@ def test__get_tariff_charges__per_day_only_accepts_time_series_and_change_times_
         period_start,
         period_end,
     )
-    actual.show()
 
     # Assert
     assert actual.count() == expected_rows
+
+
+def test__get_tariff_charges__can_handle_missing_charges(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    period_start = datetime(2019, 12, 31, 23)
+    period_end = datetime(2020, 1, 1, 0)
+
+    time_series_rows = [
+        factory.create_time_series_row(observation_time=datetime(2019, 12, 31, 23)),
+        factory.create_time_series_row(observation_time=datetime(2020, 1, 1, 0)),
+    ]
+    charges_rows = [
+        factory.create_tariff_charges_row(),
+    ]
+    metering_point_charge_link_rows = [
+        factory.create_charge_link_metering_points_row(
+            charge_type=e.ChargeType.TARIFF,
+        ),
+    ]
+
+    time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
+    charges = spark.createDataFrame(charges_rows, charges_schema)
+    metering_point_charge_link = spark.createDataFrame(metering_point_charge_link_rows)
+
+    # Act
+    actual = get_tariff_charges(
+        time_series,
+        charges,
+        metering_point_charge_link,
+        e.ChargeResolution.HOUR,
+        period_start,
+        period_end,
+    )
+
+    # Assert
+    assert actual.count() == 2
+    assert (
+        actual.collect()[0][Colname.charge_price]
+        == factory.DefaultValues.DEFAULT_CHARGE_PRICE
+    )
+    assert actual.collect()[1][Colname.charge_price] is None

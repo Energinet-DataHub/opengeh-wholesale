@@ -43,6 +43,7 @@ def get_tariff_charges(
     tariffs = _join_with_charge_link_metering_points(
         tariffs, charge_link_metering_points
     )
+    print("tariffs3")
     tariffs.show()
 
     # group by time series on metering point id and resolution and sum quantity
