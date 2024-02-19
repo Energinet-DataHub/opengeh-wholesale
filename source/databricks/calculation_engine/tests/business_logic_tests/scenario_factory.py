@@ -95,6 +95,10 @@ class ScenarioFixture:
         self, spark_session: SparkSession, file_path: str, schema: str
     ) -> DataFrame:
 
+        # if file doesn't exist, return empty dataframe
+        if not os.path.exists(self.test_path + file_path):
+            return spark_session.createDataFrame([], schema)
+
         if file_path.__contains__("_results.csv"):
             return spark_session.read.csv(
                 self.test_path + file_path, header=True, sep=";"
