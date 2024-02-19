@@ -117,17 +117,17 @@ class TestWhenChargeTimeIsOutsideCalculationPeriod:
     @pytest.mark.parametrize(
         "from_date, to_date, charge_time",
         [
-            (  # Dataset: charge time is before from_date
+            (  # charge_time < from_data
                 datetime(2020, 1, 2, 0, 0),
                 datetime(2020, 1, 4, 0, 0),
                 datetime(2020, 1, 1, 0, 0),
             ),
-            (  # Dataset: charge time is after to_date
+            (  # charge_time > to_data
                 datetime(2020, 1, 2, 0, 0),
                 datetime(2020, 1, 4, 0, 0),
                 datetime(2020, 1, 5, 0, 0),
             ),
-            (  # Dataset: charge time equals to_date
+            (  # charge_time = to_data
                 datetime(2020, 1, 2, 0, 0),
                 datetime(2020, 1, 4, 0, 0),
                 datetime(2020, 1, 4, 0, 0),
@@ -170,12 +170,12 @@ class TestWhenChargeTimeIsInsideCalculationPeriod:
     @pytest.mark.parametrize(
         "from_date, to_date, charge_time",
         [
-            (
+            (  # from_data < charge_time < to_date
                 datetime(2020, 1, 2, 0, 0),
                 datetime(2020, 1, 4, 0, 0),
                 datetime(2020, 1, 3, 0, 0),
             ),
-            (
+            (  # charge_time = from_data
                 datetime(2020, 1, 2, 0, 0),
                 datetime(2020, 1, 4, 0, 0),
                 datetime(2020, 1, 2, 0, 0),
