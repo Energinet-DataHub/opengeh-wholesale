@@ -15,7 +15,7 @@ from business_logic_tests.scenario_factory import ScenarioFixture
 from helpers.data_frame_utils import assert_dataframes_equal
 
 
-def test_execute_scenario__returns_expected_wholesale_results_hourly_tariff_per_ga_co_es(
+def test_execute__returns_expected_wholesale_results_hourly_tariff_per_ga_co_es(
     scenario_fixture: ScenarioFixture,
 ) -> None:
     # Arrange
@@ -25,10 +25,6 @@ def test_execute_scenario__returns_expected_wholesale_results_hourly_tariff_per_
     results = scenario_fixture.execute()
 
     # Assert
-    expected_results = (
-        scenario_fixture.expected_results.wholesale_results.hourly_tariff_per_ga_co_es
-    )
-
     results = (
         results.wholesale_results.hourly_tariff_per_ga_co_es.drop("metering_point_type")
         .drop("quantity_qualities")
@@ -39,7 +35,9 @@ def test_execute_scenario__returns_expected_wholesale_results_hourly_tariff_per_
         .drop("calculation_result_id")
     )
     expected_results = (
-        expected_results.drop("metering_point_type")
+        scenario_fixture.expected_results.wholesale_results.hourly_tariff_per_ga_co_es.drop(
+            "metering_point_type"
+        )
         .drop("quantity_qualities")
         .drop("price")
         .drop("amount")

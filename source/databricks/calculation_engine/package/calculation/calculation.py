@@ -35,12 +35,12 @@ from .wholesale import wholesale_calculation
 
 
 def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> None:
-    results = _execute_calculation(args, prepared_data_reader)
+    results = _execute(args, prepared_data_reader)
     _write_results(args, results)
 
 
 @logging_configuration.use_span("calculation")
-def _execute_calculation(
+def _execute(
     args: CalculatorArgs, prepared_data_reader: PreparedDataReader
 ) -> CalculationResultsContainer:
     results = CalculationResultsContainer()

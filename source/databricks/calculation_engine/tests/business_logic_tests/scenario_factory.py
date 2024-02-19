@@ -21,9 +21,9 @@ import pandas as pd
 import yaml
 from pyspark.sql import SparkSession, DataFrame
 
-from business_logic_tests.features.hourly_tariff_for_child_metering_point.state import (
+from business_logic_tests.features.hourly_tariff_for_child_metering_point.states.state import (
     wholesale_hourly_tariff_per_ga_co_es_results_schema,
-    create_expected_result,
+    get_expected_result,
 )
 from package.calculation import PreparedDataReader
 from package.calculation.CalculationResults import (
@@ -31,7 +31,7 @@ from package.calculation.CalculationResults import (
     WholesaleResultsContainer,
     EnergyResultsContainer,
 )
-from package.calculation.calculation import _execute_calculation
+from package.calculation.calculation import _execute
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation_input.schemas import (
     metering_point_period_schema,
@@ -85,13 +85,11 @@ class ScenarioFixture:
         self.table_reader.read_charge_links_periods.return_value = frames[4]
         self.table_reader.read_charge_price_points.return_value = frames[5]
         self.expected_results.wholesale_results.hourly_tariff_per_ga_co_es = (
-            create_expected_result(self.spark, self.calculation_args, frames[6])
+            get_expected_result(self.spark, self.calculation_args, frames[6])
         )
 
     def execute(self) -> CalculationResultsContainer:
-        return _execute_calculation(
-            self.calculation_args, PreparedDataReader(self.table_reader)
-        )
+        return _execute(self.calculation_args, PreparedDataReader(self.table_reader))
 
     def _read_file(
         self, spark_session: SparkSession, file_path: str, schema: str

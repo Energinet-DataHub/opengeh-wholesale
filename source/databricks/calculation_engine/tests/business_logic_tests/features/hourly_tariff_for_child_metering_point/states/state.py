@@ -28,31 +28,31 @@ from package.constants import Colname
 
 wholesale_hourly_tariff_per_ga_co_es_results_schema = StructType(
     [
-        StructField("calculation_id", StringType(), False),
-        StructField("calculation_type", StringType(), False),
-        StructField("calculation_execution_time_start", TimestampType(), False),
+        StructField(Colname.calculation_id, StringType(), False),
+        StructField(Colname.calculation_type, StringType(), False),
+        StructField(Colname.calculation_execution_time_start, TimestampType(), False),
         StructField("calculation_result_id", StringType(), True),
         StructField("grid_area", StringType(), False),
-        StructField("energy_supplier_id", StringType(), True),
-        StructField("quantity", DecimalType(28, 3), True),
+        StructField(Colname.energy_supplier_id, StringType(), True),
+        StructField(Colname.quantity, DecimalType(28, 3), True),
         StructField("quantity_unit", StringType(), False),
         StructField("quantity_qualities", ArrayType(StringType()), False),
         StructField("time", TimestampType(), False),
-        StructField("resolution", StringType(), False),
+        StructField(Colname.resolution, StringType(), False),
         StructField("metering_point_type", StringType(), False),
-        StructField("settlement_method", StringType(), True),
+        StructField(Colname.settlement_method, StringType(), True),
         StructField("price", DecimalType(18, 6), False),
         StructField("amount", DecimalType(38, 6), True),
         StructField("is_tax", BooleanType(), False),
-        StructField("charge_code", StringType(), False),
-        StructField("charge_type", StringType(), False),
-        StructField("charge_owner_id", StringType(), False),
+        StructField(Colname.charge_code, StringType(), False),
+        StructField(Colname.charge_type, StringType(), False),
+        StructField(Colname.charge_owner, StringType(), False),
         StructField("amount_type", StringType(), False),
     ]
 )
 
 
-def create_expected_result(
+def get_expected_result(
     spark: SparkSession, calculation_args: CalculatorArgs, df: DataFrame
 ) -> DataFrame:
     df = df.withColumn("calculation_id", lit(calculation_args.calculation_id))
