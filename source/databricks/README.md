@@ -118,7 +118,7 @@ We are using standard [Black code style](https://github.com/psf/black/blob/main/
 
 In the CI pipeline, the tests are executed towards a Docker image, which is described in the a [Dockerfile](../../.docker/Dockerfile).
 
-A new Docker image is build and published using the [Docker CD-pipeline](../../.github/workflows/cd-docker-test-image.yml), meaning that a new Docker image is only published, when changes are made to the files described in the `paths`-sections of the workflow.
+A new Docker image is build and published using the [python-build-and-push-docker-image-pipeline](https://github.com/Energinet-DataHub/.github/blob/main/.github/workflows/python-build-and-push-docker-image.yml), meaning that a new Docker image is only published, when changes are made to the files described in the `paths`-sections of the workflow.
 
 If a pull request triggers a new Docker image to be published, a new version of the Docker image is published on each commit. The Docker images published when a pull request is open, are considered `pre-releases`. A `pre-release`-image is assigned a tag with the following format: `pre-release-pr<PR-number>`, e.g. `pre-release-pr311`. When the pull request has been merged, the `Docker CD-pipeline` is run again, and a new `latest` version is published.
 
