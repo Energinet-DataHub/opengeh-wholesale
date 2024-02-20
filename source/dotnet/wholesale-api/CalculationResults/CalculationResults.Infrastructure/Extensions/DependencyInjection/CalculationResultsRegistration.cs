@@ -35,9 +35,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensio
 /// </summary>
 public static class CalculationResultsRegistration
 {
-    public static IServiceCollection AddCalculationResultsModule(
-        this IServiceCollection services,
-        IConfiguration configuration)
+    public static IServiceCollection AddCalculationResultsModule(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<ISettlementReportClient, SettlementReportClient>();
 
