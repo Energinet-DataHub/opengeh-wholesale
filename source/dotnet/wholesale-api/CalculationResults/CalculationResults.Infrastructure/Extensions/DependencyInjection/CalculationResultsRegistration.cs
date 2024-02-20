@@ -64,7 +64,7 @@ public static class CalculationResultsRegistration
         return services;
     }
 
-    private static void AddDataLakeFileSystemClient(this IServiceCollection services, IConfiguration configuration)
+    private static IServiceCollection AddDataLakeFileSystemClient(this IServiceCollection services, IConfiguration configuration)
     {
         var options = configuration.Get<DataLakeOptions>()!;
         services.AddSingleton<DataLakeFileSystemClient>(_ =>
@@ -72,5 +72,7 @@ public static class CalculationResultsRegistration
             var dataLakeServiceClient = new DataLakeServiceClient(new Uri(options.STORAGE_ACCOUNT_URI), new DefaultAzureCredential());
             return dataLakeServiceClient.GetFileSystemClient(options.STORAGE_CONTAINER_NAME);
         });
+
+        return services;
     }
 }
