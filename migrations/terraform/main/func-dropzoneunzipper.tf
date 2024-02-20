@@ -29,15 +29,16 @@ module "func_dropzoneunzipper" {
     FUNCTIONS_WORKER_RUNTIME            = "dotnet-isolated"
 
     # Storage Account and container settings
-    ARCHIVE_DROPZONE_URI                    = "https://${module.st_dh2dropzone_archive.name}.blob.core.windows.net"
-    ARCHIVE_CONTAINER_NAME                  = azurerm_storage_container.dropzonearchive.name
-    ZIPPED_DROPZONE_URI                     = "https://${module.st_dh2dropzone.name}.blob.core.windows.net"
-    ZIPPED_CONTAINER_NAME                   = azurerm_storage_container.dh2_dropzone_zipped.name
-    UNZIPPED_DROPZONE_URI                   = "https://${module.st_dh2data.name}.blob.core.windows.net"
-    UNZIPPED_METERING_POINTS_CONTAINER_NAME = azurerm_storage_container.dh2_metering_point_history.name
-    UNZIPPED_TIME_SERIES_CONTAINER_NAME     = azurerm_storage_container.dh2_timeseries.name
-    UNZIPPED_CHARGES_CONTAINER_NAME         = azurerm_storage_container.dh2_charges.name
-    UNZIPPED_CHARGE_LINKS_CONTAINER_NAME    = azurerm_storage_container.dh2_charge_links.name
+    ARCHIVE_DROPZONE_URI                           = "https://${module.st_dh2dropzone_archive.name}.blob.core.windows.net"
+    ARCHIVE_CONTAINER_NAME                         = azurerm_storage_container.dropzonearchive.name
+    ZIPPED_DROPZONE_URI                            = "https://${module.st_dh2dropzone.name}.blob.core.windows.net"
+    ZIPPED_CONTAINER_NAME                          = azurerm_storage_container.dh2_dropzone_zipped.name
+    UNZIPPED_DROPZONE_URI                          = "https://${module.st_dh2data.name}.blob.core.windows.net"
+    UNZIPPED_METERING_POINTS_CONTAINER_NAME        = azurerm_storage_container.dh2_metering_point_history.name
+    UNZIPPED_TIME_SERIES_CONTAINER_NAME            = azurerm_storage_container.dh2_timeseries.name
+    UNZIPPED_CHARGES_CONTAINER_NAME                = azurerm_storage_container.dh2_charges.name
+    UNZIPPED_CHARGE_LINKS_CONTAINER_NAME           = azurerm_storage_container.dh2_charge_links.name
+    UNZIPPED_CONSUMPTION_STATEMENTS_CONTAINER_NAME = azurerm_storage_container.dh2_consumption_statements.name
 
     # Event Hub settings
     INGRESS_EVENT_HUB_CONNECTION_STRING = azurerm_eventhub_namespace.eventhub_namespace_dropzone.default_primary_connection_string

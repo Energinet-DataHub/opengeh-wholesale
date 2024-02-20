@@ -97,6 +97,12 @@ resource "azurerm_storage_container" "dh2_charge_links" {
   container_access_type = "private"
 }
 
+resource "azurerm_storage_container" "dh2_consumption_statements" {
+  name                  = "dh2-consumption-statements"
+  storage_account_name  = module.st_dh2data.name
+  container_access_type = "private"
+}
+
 #---- Queues
 
 resource "azurerm_storage_queue" "charges" {
@@ -106,6 +112,11 @@ resource "azurerm_storage_queue" "charges" {
 
 resource "azurerm_storage_queue" "charge_links" {
   name                 = azurerm_storage_container.dh2_charge_links.name
+  storage_account_name = module.st_dh2data.name
+}
+
+resource "azurerm_storage_queue" "consumption_statements" {
+  name                 = azurerm_storage_container.dh2_consumption_statements.name
   storage_account_name = module.st_dh2data.name
 }
 
@@ -163,6 +174,27 @@ resource "azurerm_eventgrid_system_topic_event_subscription" "dh2data_charge_lin
     type = "SystemAssigned"
   }
 }
+
+
+resource "azurerm_eventgrid_system_topic_event_subscription" "dh2data_consumption_statements" {
+  name                 = "egsts-${azurerm_storage_queue.consumption_statements.name}-${local.resources_suffix}"
+  system_topic         = azurerm_eventgrid_system_topic.st_dh2data.name
+  resource_group_name  = azurerm_resource_group.this.name
+  included_event_types = ["Microsoft.Storage.BlobCreated"]
+
+  subject_filter {
+    subject_begins_with = "/blobServices/default/containers/${azurerm_storage_container.dh2_consumption_statements.name}/"
+  }
+
+  storage_queue_endpoint {
+    storage_account_id = module.st_dh2data.id
+    queue_name         = azurerm_storage_queue.consumption_statements.name
+  }
+  delivery_identity {
+    type = "SystemAssigned"
+  }
+}
+
 
 resource "azurerm_eventgrid_system_topic_event_subscription" "dh2_metering_point_history" {
   name                 = "egsts-${azurerm_storage_queue.metering_point_history.name}-${local.resources_suffix}"
