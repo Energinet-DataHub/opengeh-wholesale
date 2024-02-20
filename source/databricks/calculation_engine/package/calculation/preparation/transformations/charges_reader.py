@@ -33,9 +33,11 @@ def read_charge_period_prices(
     charge_master_data_periods = _get_charge_master_data_periods(
         table_reader, period_start_datetime, period_end_datetime
     )
-    charges = _join_with_charge_prices(charge_master_data_periods, charge_prices_df)
+    charge_period_prices = _join_with_charge_prices(
+        charge_master_data_periods, charge_prices_df
+    )
 
-    return ChargePeriodPrices(charges)
+    return ChargePeriodPrices(charge_period_prices)
 
 
 def read_charge_links(

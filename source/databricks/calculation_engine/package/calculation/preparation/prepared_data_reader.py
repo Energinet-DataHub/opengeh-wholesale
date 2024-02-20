@@ -79,10 +79,12 @@ class PreparedDataReader:
 
     def get_subscription_charges(
         self,
-        charges_df: ChargePeriodPrices,
+        charge_period_prices: ChargePeriodPrices,
         charge_link_metering_points: ChargeLinkMeteringPointPeriods,
     ) -> DataFrame:
-        return T.get_subscription_charges(charges_df, charge_link_metering_points)
+        return T.get_subscription_charges(
+            charge_period_prices, charge_link_metering_points
+        )
 
     def get_tariff_charges(
         self,
