@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Orchestration.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -31,6 +32,13 @@ var host = new HostBuilder()
 
         // Modules
         services.AddCalculationsModule(context.Configuration);
+        // => Sub-modules of Events
+        services.AddEventsDatabase(context.Configuration);
+        services.AddIntegrationEventPublishing(context.Configuration);
+
+        // TODO: Still need the following and their dependencies
+        // IEnergyResultQueries
+        // IWholesaleResultQueries
     })
     .ConfigureLogging((hostingContext, logging) =>
     {

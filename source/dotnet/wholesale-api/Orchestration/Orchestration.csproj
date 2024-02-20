@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Calculations\Calculations.Infrastructure\Calculations.Infrastructure.csproj" />
     <ProjectReference Include="..\Common.Infrastructure\Common.Infrastructure.csproj" />
+    <ProjectReference Include="..\Events\Events.Infrastructure\Events.Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">
