@@ -22,7 +22,6 @@ import package.codelists as e
 
 from package.calculation.wholesale.schemas.charges_schema import (
     charges_schema,
-    charge_link_metering_points_schema,
 )
 from package.constants import Colname
 

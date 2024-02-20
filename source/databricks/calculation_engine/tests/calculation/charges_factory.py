@@ -18,6 +18,7 @@ from pyspark.sql import Row, SparkSession
 
 from package.calculation.preparation.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
+    charge_link_metering_point_periods_schema,
 )
 from package.codelists import ChargeType
 from package.constants import Colname
@@ -33,6 +34,7 @@ class DefaultValues:
     DEFAULT_CHARGE_TAX = True
     DEFAULT_CHARGE_TIME_HOUR_0 = datetime(2019, 12, 31, 23)
     DEFAULT_CHARGE_PRICE = Decimal("2.000005")
+    DEFAULT_CHARGE_QUANTITY = 1
     DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
     DEFAULT_METERING_POINT_ID = "123456789012345678901234567"
     DEFAULT_METERING_POINT_TYPE = e.MeteringPointType.CONSUMPTION
@@ -97,6 +99,7 @@ def create_charge_link_metering_points_row(
     charge_code: str = DefaultValues.DEFAULT_CHARGE_CODE,
     charge_owner: str = DefaultValues.DEFAULT_CHARGE_OWNER,
     metering_point_id: str = DefaultValues.DEFAULT_METERING_POINT_ID,
+    charge_quantity: int = DefaultValues.DEFAULT_CHARGE_QUANTITY,
     metering_point_type: (
         e.MeteringPointType
     ) = DefaultValues.DEFAULT_METERING_POINT_TYPE,
@@ -111,12 +114,13 @@ def create_charge_link_metering_points_row(
     row = {
         Colname.charge_key: charge_key,
         Colname.metering_point_id: metering_point_id,
+        Colname.charge_quantity: charge_quantity,
+        Colname.from_date: from_date,
+        Colname.to_date: to_date,
         Colname.metering_point_type: metering_point_type.value,
         Colname.settlement_method: settlement_method.value,
         Colname.grid_area: grid_area,
         Colname.energy_supplier_id: energy_supplier_id,
-        Colname.from_date: from_date,
-        Colname.to_date: to_date,
     }
 
     return Row(**row)
@@ -156,5 +160,5 @@ def create_charge_link_metering_point_periods(
         data = [create_charge_link_metering_points_row()]
     elif isinstance(data, Row):
         data = [data]
-    df = spark.createDataFrame(data)
+    df = spark.createDataFrame(data, charge_link_metering_point_periods_schema)
     return ChargeLinkMeteringPointPeriods(df)
