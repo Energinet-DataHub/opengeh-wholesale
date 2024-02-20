@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from datetime import datetime
 
 from pyspark.sql.dataframe import DataFrame
 import pyspark.sql.functions as f
@@ -44,6 +43,7 @@ def get_tariff_charges(
             metering_point_time_series, resolution
         )
     )
+    grouped_time_series.show()
 
     # join with grouped time series
     tariffs = _join_with_grouped_time_series(tariffs, grouped_time_series)
@@ -59,6 +59,7 @@ def _add_missing_prices(
     charges_with_prices: DataFrame,
     resolution: ChargeResolution,
 ) -> DataFrame:
+    time_zone = "Europe/Copenhagen"
     charges_with_no_prices = (
         charges_with_prices.select(
             Colname.charge_key,
@@ -67,14 +68,14 @@ def _add_missing_prices(
             Colname.charge_owner,
             Colname.charge_tax,
             Colname.resolution,
-            Colname.from_date,
-            Colname.to_date,
+            f.from_utc_timestamp(Colname.from_date, time_zone).alias(Colname.from_date),
+            f.from_utc_timestamp(Colname.to_date, time_zone).alias(Colname.to_date),
         )
         .distinct()
         .withColumn(
             "temp_time",
             f.expr(
-                f"sequence(to_timestamp({Colname.from_date}), to_timestamp({Colname.to_date}), interval {_get_window_duration_string_based_on_resolution(resolution)})"
+                f"sequence({Colname.from_date}, {Colname.to_date}, interval {_get_window_duration_string_based_on_resolution(resolution)})"
             ),
         )
         .select(
@@ -87,6 +88,10 @@ def _add_missing_prices(
             Colname.from_date,
             Colname.to_date,
             f.explode("temp_time").alias(Colname.charge_time),
+        )
+        .withColumn(
+            Colname.charge_time,
+            f.to_utc_timestamp(Colname.charge_time, time_zone),
         )
     )
 

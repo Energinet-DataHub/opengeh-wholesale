@@ -637,3 +637,63 @@ def test__get_tariff_charges__can_handle_missing_charges(
         == factory.DefaultValues.DEFAULT_CHARGE_PRICE
     )
     assert actual.collect()[1][Colname.charge_price] is None
+
+
+@pytest.mark.parametrize(
+    "date_time_1, date_time_2",
+    [
+        (
+            datetime(2020, 3, 28, 23),
+            datetime(2020, 3, 29, 22),
+        ),
+        (
+            datetime(2020, 10, 24, 22),
+            datetime(2020, 10, 25, 23),
+        ),
+    ],
+)
+def test__get_tariff_charges__can_handle_daylight_saving_time(
+    date_time_1: datetime,
+    date_time_2: datetime,
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    time_series_rows = [
+        factory.create_time_series_row(observation_time=date_time_1),
+        factory.create_time_series_row(observation_time=date_time_2),
+    ]
+    charges_rows = [
+        factory.create_tariff_charges_row(
+            charge_time=date_time_1,
+            from_date=date_time_1,
+            to_date=date_time_2,
+            resolution=e.ChargeResolution.DAY,
+        ),
+        factory.create_tariff_charges_row(
+            charge_time=date_time_2,
+            from_date=date_time_1,
+            to_date=date_time_2,
+            resolution=e.ChargeResolution.DAY,
+        ),
+    ]
+    metering_point_charge_link_rows = [
+        factory.create_charge_link_metering_points_row(
+            charge_type=e.ChargeType.TARIFF,
+            to_date=datetime(2020, 12, 31, 23),
+        ),
+    ]
+
+    time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
+    charges = spark.createDataFrame(charges_rows, charges_schema)
+    metering_point_charge_link = spark.createDataFrame(metering_point_charge_link_rows)
+
+    # Act
+    actual = get_tariff_charges(
+        time_series,
+        charges,
+        metering_point_charge_link,
+        e.ChargeResolution.DAY,
+    )
+
+    # Assert
+    assert actual.count() == 2
