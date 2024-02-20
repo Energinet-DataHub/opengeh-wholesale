@@ -50,12 +50,11 @@ public static class CalculationsRegistration
 
         services.AddScoped<IDatabaseContext, DatabaseContext>();
 
-        var connectionStringOptions = configuration
-            .GetSection(ConnectionStringsOptions.ConnectionStrings)
-            .Get<ConnectionStringsOptions>();
         services.AddDbContext<DatabaseContext>(
             options => options.UseSqlServer(
-                connectionStringOptions!.DB_CONNECTION_STRING,
+                configuration
+                    .GetSection(ConnectionStringsOptions.ConnectionStrings)
+                    .Get<ConnectionStringsOptions>()!.DB_CONNECTION_STRING,
                 o =>
                 {
                     o.UseNodaTime();
