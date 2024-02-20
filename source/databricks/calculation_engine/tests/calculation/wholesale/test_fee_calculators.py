@@ -13,7 +13,6 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime
-
 from tests.helpers.test_schemas import (
     charges_flex_consumption_schema,
 )
