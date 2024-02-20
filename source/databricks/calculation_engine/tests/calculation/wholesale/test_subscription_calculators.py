@@ -38,7 +38,7 @@ from package.constants import Colname
 def test__calculate_daily_subscription_price__simple(
     spark,
     calculate_daily_subscription_price_factory,
-    charges_factory,
+    charge_period_prices_factory,
     charge_link_metering_points_factory,
 ):
     # Test that calculate_daily_subscription_price does as expected in with the most simple dataset
@@ -49,7 +49,7 @@ def test__calculate_daily_subscription_price__simple(
     charge_link_metering_point_periods = charge_link_metering_points_factory(
         charge_type=ChargeType.SUBSCRIPTION.value, from_date=from_date, to_date=to_date
     )
-    charges = charges_factory(
+    charge_period_prices = charge_period_prices_factory(
         charge_type=ChargeType.SUBSCRIPTION.value,
         charge_time=time,
         to_date=to_date,
@@ -57,7 +57,7 @@ def test__calculate_daily_subscription_price__simple(
     )
 
     expected_date = datetime(2020, 1, 1, 0, 0)
-    expected_charge_price = charges.collect()[0][Colname.charge_price]
+    expected_charge_price = charge_period_prices.collect()[0][Colname.charge_price]
     expected_price_per_day = Decimal(
         expected_charge_price / monthrange(expected_date.year, expected_date.month)[1]
     )
@@ -65,7 +65,7 @@ def test__calculate_daily_subscription_price__simple(
 
     # Act
     subscription_charges = get_subscription_charges(
-        charges,
+        charge_period_prices,
         charge_link_metering_point_periods,
     )
     result = calculate_daily_subscription_price(spark, subscription_charges)
@@ -84,7 +84,7 @@ def test__calculate_daily_subscription_price__simple(
 def test__calculate_daily_subscription_price__charge_price_change(
     spark,
     calculate_daily_subscription_price_factory,
-    charges_factory,
+    charge_period_prices_factory,
     charge_link_metering_points_factory,
 ):
     # Test that calculate_daily_subscription_price act as expected when charge price changes in a given period
@@ -98,14 +98,14 @@ def test__calculate_daily_subscription_price__charge_price_change(
 
     subscription_1_charge_prices_charge_price = Decimal("3.124544")
     subcription_1_charge_prices_time = from_date
-    subscription_1_charge_prices_df = charges_factory(
+    subscription_1_charge_prices_df = charge_period_prices_factory(
         charge_time=subcription_1_charge_prices_time,
         charge_price=subscription_1_charge_prices_charge_price,
         from_date=from_date,
         to_date=to_date,
     )
     subcription_2_charge_prices_time = datetime(2020, 2, 1, 0, 0)
-    subscription_2_charge_prices_df = charges_factory(
+    subscription_2_charge_prices_df = charge_period_prices_factory(
         charge_time=subcription_2_charge_prices_time,
         from_date=from_date,
         to_date=to_date,
@@ -167,7 +167,7 @@ def test__calculate_daily_subscription_price__charge_price_change(
 
 def test__calculate_daily_subscription_price__charge_price_change_with_two_different_charge_key(
     spark,
-    charges_factory,
+    charge_period_prices_factory,
     charge_link_metering_points_factory,
     calculate_daily_subscription_price_factory,
 ):
@@ -194,13 +194,13 @@ def test__calculate_daily_subscription_price__charge_price_change_with_two_diffe
     subcription_2_charge_prices_time = datetime(2020, 2, 1, 0, 0)
     subcription_1_charge_prices_time = from_date
 
-    subscription_1_charge_prices_df_with_charge_key_1 = charges_factory(
+    subscription_1_charge_prices_df_with_charge_key_1 = charge_period_prices_factory(
         charge_time=subcription_1_charge_prices_time,
         charge_price=subscription_1_charge_prices_charge_price,
         from_date=from_date,
         to_date=to_date,
     )
-    subscription_2_charge_prices_df_with_charge_key_1 = charges_factory(
+    subscription_2_charge_prices_df_with_charge_key_1 = charge_period_prices_factory(
         charge_time=subcription_2_charge_prices_time,
         from_date=from_date,
         to_date=to_date,
@@ -211,14 +211,14 @@ def test__calculate_daily_subscription_price__charge_price_change_with_two_diffe
         )
     )
 
-    subscription_1_charge_prices_df_with_charge_key_2 = charges_factory(
+    subscription_1_charge_prices_df_with_charge_key_2 = charge_period_prices_factory(
         charge_time=subcription_1_charge_prices_time,
         charge_price=subscription_1_charge_prices_charge_price,
         charge_code=charge_code,
         from_date=from_date,
         to_date=to_date,
     )
-    subscription_2_charge_prices_df_with_charge_key_2 = charges_factory(
+    subscription_2_charge_prices_df_with_charge_key_2 = charge_period_prices_factory(
         charge_time=subcription_2_charge_prices_time,
         charge_code=charge_code,
         from_date=from_date,

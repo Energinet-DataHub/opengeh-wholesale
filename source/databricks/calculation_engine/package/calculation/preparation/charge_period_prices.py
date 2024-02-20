@@ -20,7 +20,10 @@ from package.constants import Colname
 
 
 class ChargePeriodPrices(DataFrameWrapper):
-    """ """
+    """
+    Represents the charge prices enriched with information from the charge master basis data periods.
+    All periods are clamped to least common period of the metering point and the charge master data period.
+    """
 
     def __init__(self, df: DataFrame):
         super().__init__(

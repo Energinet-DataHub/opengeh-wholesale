@@ -89,10 +89,10 @@ def create_tariff_charge_period_prices_row(
         Colname.charge_owner: charge_owner,
         Colname.charge_tax: charge_tax,
         Colname.resolution: resolution.value,
-        Colname.charge_time: charge_time,
         Colname.from_date: from_date,
         Colname.to_date: to_date,
         Colname.charge_price: charge_price,
+        Colname.charge_time: charge_time,
     }
 
     return Row(**row)
@@ -149,10 +149,10 @@ def create_subscription_or_fee_charge_period_prices_row(
         Colname.charge_owner: charge_owner,
         Colname.charge_tax: charge_tax,
         Colname.resolution: e.ChargeResolution.MONTH.value,
-        Colname.charge_time: charge_time,
         Colname.from_date: from_date,
         Colname.to_date: to_date,
         Colname.charge_price: charge_price,
+        Colname.charge_time: charge_time,
     }
     return Row(**row)
 
