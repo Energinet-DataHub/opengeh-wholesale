@@ -130,7 +130,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
                 credential: new DefaultAzureCredential());
 
             var fileSystemClient = dataLakeServiceClient.GetFileSystemClient(
-                Environment.GetEnvironmentVariable("STORAGE_CONTAINER_NAME"));
+                Environment.GetEnvironmentVariable(nameof(DataLakeOptions.STORAGE_CONTAINER_NAME)));
 
             await fileSystemClient.CreateIfNotExistsAsync();
         }

@@ -14,6 +14,8 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using Azure.Identity;
+using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
@@ -35,7 +37,7 @@ namespace Energinet.DataHub.Wholesale.Orchestration.IntegrationTests.Fixtures
         {
             TestLogger = new TestDiagnosticsLogger();
 
-            AzuriteManager = new AzuriteManager();
+            AzuriteManager = new AzuriteManager(useOAuth: true);
             DatabaseManager = new WholesaleDatabaseManager<DatabaseContext>();
             IntegrationTestConfiguration = new IntegrationTestConfiguration();
 
@@ -66,6 +68,8 @@ namespace Energinet.DataHub.Wholesale.Orchestration.IntegrationTests.Fixtures
             // Prepare host settings
             var port = 8000;
             var appHostSettings = CreateAppHostSettings("Orchestration", ref port);
+
+            await EnsureCalculationStorageContainerExistsAsync();
 
             // Create and start host
             AppHostManager = new FunctionAppHostManager(appHostSettings, TestLogger);
@@ -100,7 +104,7 @@ namespace Energinet.DataHub.Wholesale.Orchestration.IntegrationTests.Fixtures
             appHostSettings.Port = ++port;
 
             appHostSettings.ProcessEnvironmentVariables.Add("FUNCTIONS_WORKER_RUNTIME", "dotnet-isolated");
-            appHostSettings.ProcessEnvironmentVariables.Add("AzureWebJobsStorage", "UseDevelopmentStorage=true");
+            appHostSettings.ProcessEnvironmentVariables.Add("AzureWebJobsStorage", AzuriteManager.FullConnectionString);
             appHostSettings.ProcessEnvironmentVariables.Add("APPLICATIONINSIGHTS_CONNECTION_STRING", IntegrationTestConfiguration.ApplicationInsightsConnectionString);
 
             // Time zone
@@ -122,7 +126,29 @@ namespace Energinet.DataHub.Wholesale.Orchestration.IntegrationTests.Fixtures
                 nameof(DatabricksJobsOptions.WarehouseId),
                 IntegrationTestConfiguration.DatabricksSettings.WarehouseId);
 
+            // DataLake
+            appHostSettings.ProcessEnvironmentVariables.Add(
+                nameof(DataLakeOptions.STORAGE_ACCOUNT_URI),
+                AzuriteManager.BlobStorageServiceUri.ToString());
+            appHostSettings.ProcessEnvironmentVariables.Add(
+                nameof(DataLakeOptions.STORAGE_CONTAINER_NAME),
+                "wholesale");
+
             return appHostSettings;
+        }
+
+        /// <summary>
+        /// Create storage container. Note: Azurite is based on the Blob Storage API, but sinceData Lake Storage Gen2 is built on top of it, we can still create the container like this
+        /// </summary>
+        private async Task EnsureCalculationStorageContainerExistsAsync()
+        {
+            var dataLakeServiceClient = new DataLakeServiceClient(
+                serviceUri: AzuriteManager.BlobStorageServiceUri,
+                credential: new DefaultAzureCredential());
+
+            var fileSystemClient = dataLakeServiceClient.GetFileSystemClient("wholesale");
+
+            await fileSystemClient.CreateIfNotExistsAsync();
         }
 
         private static void StartHost(FunctionAppHostManager hostManager)
