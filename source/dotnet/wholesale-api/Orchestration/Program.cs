@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Extensions.DependencyInjection;
@@ -32,13 +33,10 @@ var host = new HostBuilder()
 
         // Modules
         services.AddCalculationsModule(context.Configuration);
+        services.AddCalculationResultsModule(context.Configuration);
         // => Sub-modules of Events
         services.AddEventsDatabase(context.Configuration);
         services.AddIntegrationEventPublishing(context.Configuration);
-
-        // TODO: Still need the following and their dependencies
-        // IEnergyResultQueries
-        // IWholesaleResultQueries
     })
     .ConfigureLogging((hostingContext, logging) =>
     {

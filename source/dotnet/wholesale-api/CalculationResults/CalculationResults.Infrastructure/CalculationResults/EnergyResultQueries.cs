@@ -36,7 +36,11 @@ public class EnergyResultQueries : IEnergyResultQueries
     private readonly DeltaTableOptions _deltaTableOptions;
     private readonly ILogger<EnergyResultQueries> _logger;
 
-    public EnergyResultQueries(DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor, ICalculationsClient calculationsClient, IOptions<DeltaTableOptions> deltaTableOptions, ILogger<EnergyResultQueries> logger)
+    public EnergyResultQueries(
+        DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor,
+        ICalculationsClient calculationsClient,
+        IOptions<DeltaTableOptions> deltaTableOptions,
+        ILogger<EnergyResultQueries> logger)
     {
         _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
         _calculationsClient = calculationsClient;

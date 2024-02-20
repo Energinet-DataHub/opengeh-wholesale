@@ -36,7 +36,11 @@ public class WholesaleResultQueries : IWholesaleResultQueries
     private readonly DeltaTableOptions _deltaTableOptions;
     private readonly ILogger<WholesaleResultQueries> _logger;
 
-    public WholesaleResultQueries(DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor, ICalculationsClient calculationsClient, IOptions<DeltaTableOptions> deltaTableOptions, ILogger<WholesaleResultQueries> logger)
+    public WholesaleResultQueries(
+        DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor,
+        ICalculationsClient calculationsClient,
+        IOptions<DeltaTableOptions> deltaTableOptions,
+        ILogger<WholesaleResultQueries> logger)
     {
         _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
         _calculationsClient = calculationsClient;
