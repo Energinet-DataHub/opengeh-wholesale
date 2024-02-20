@@ -11,8 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pyspark.sql import functions as f, DataFrame, SparkSession
-from pyspark.sql.functions import col
+from ast import literal_eval
+from datetime import datetime
+
+from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql.functions import col, udf
 from pyspark.sql.types import (
     StringType,
     TimestampType,
@@ -26,6 +29,7 @@ from package.calculation.CalculationResults import (
     EnergyResultsContainer,
     CalculationResultsContainer,
 )
+from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.energy.energy_results import (
     EnergyResults,
     energy_results_schema,
@@ -55,26 +59,50 @@ schema = StructType(
 )
 
 
-def get_result(spark: SparkSession, df: DataFrame) -> CalculationResultsContainer:
-    df = df.withColumn(
-        Colname.time_window, col(Colname.time_window).cast(TimestampType())
+time_window_schema = StructType(
+    [
+        StructField("start", TimestampType()),
+        StructField("end", TimestampType()),
+    ]
+)
+
+
+def parse_time_window(time_window_str):
+    time_window_str = time_window_str.replace("{", "").replace("}", "")
+    start_str, end_str = time_window_str.split(",")
+    start = datetime.strptime(start_str, "%Y-%m-%d %H:%M:%S")
+    end = datetime.strptime(end_str, "%Y-%m-%d %H:%M:%S")
+    return start, end
+
+
+def parse_qualities_string(qualities_str):
+    return literal_eval(qualities_str)
+
+
+def get_result(
+    spark: SparkSession, calculation_args: CalculatorArgs, df: DataFrame
+) -> CalculationResultsContainer:
+
+    parse_time_window_udf = udf(
+        parse_time_window,
+        StructType(
+            [StructField("start", TimestampType()), StructField("end", TimestampType())]
+        ),
     )
+
+    df = df.withColumn("time_window", parse_time_window_udf(df["time_window"]))
     df = df.withColumn(
-        Colname.sum_quantity, col(Colname.sum_quantity).cast(DecimalType(28, 3))
+        Colname.sum_quantity, col(Colname.sum_quantity).cast(DecimalType(18, 6))
     )
-    df = df.withColumn(
-        "quantity_qualities",
-        f.split(
-            f.regexp_replace(
-                f.regexp_replace(f.col("quantity_qualities"), r"[\[\]']", ""), " ", ""
-            ),
-            ",",
-        ).cast(ArrayType(StringType())),
-    )
+
+    parse_qualities_string_udf = udf(parse_qualities_string, ArrayType(StringType()))
+    df = df.withColumn("quantity", parse_qualities_string_udf(df["quantity"]))
+    df = df.withColumnRenamed("quantity", "qualities")
 
     results = CalculationResultsContainer()
     results.energy_results = EnergyResultsContainer()
     results.energy_results.flex_consumption_per_ga_and_es = EnergyResults(
         spark.createDataFrame(df.rdd, energy_results_schema),
     )
+
     return results

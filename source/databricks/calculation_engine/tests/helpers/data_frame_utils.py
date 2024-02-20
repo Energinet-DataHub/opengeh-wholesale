@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
+from pyspark.sql import DataFrame
 
 
 def set_column(
@@ -31,3 +31,12 @@ def assert_dataframes_equal(actual: DataFrame, expected: DataFrame) -> None:
     assert actual.subtract(expected).count() == 0
     assert expected.subtract(actual).count() == 0
     assert actual.subtract(expected).count() == 0
+
+
+def assert_schema(actual_schema, expected_schema):
+    assert actual_schema == expected_schema
+
+
+def assert_schema_and_dataframes_equal(actual: DataFrame, expected: DataFrame) -> None:
+    assert_schema(actual.schema, expected.schema)
+    assert_dataframes_equal(actual, expected)
