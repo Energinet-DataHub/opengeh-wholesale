@@ -37,6 +37,6 @@ def assert_schema(actual_schema, expected_schema):
     assert actual_schema == expected_schema
 
 
-def assert_schema_and_dataframes_equal(actual: DataFrame, expected: DataFrame) -> None:
+def assert_dataframes(actual: DataFrame, expected: DataFrame) -> None:
     assert_schema(actual.schema, expected.schema)
     assert_dataframes_equal(actual, expected)

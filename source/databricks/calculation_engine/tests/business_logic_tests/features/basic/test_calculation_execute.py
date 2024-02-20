@@ -14,7 +14,7 @@
 from business_logic_tests.features.basic.states.state import get_result
 from business_logic_tests.scenario_factory import ScenarioFixture
 from helpers.data_frame_utils import (
-    assert_schema_and_dataframes_equal,
+    assert_dataframes,
 )
 
 
@@ -27,11 +27,8 @@ def test_execute__returns_expected(
     # Act
     results = scenario_fixture.execute()
 
-    results.energy_results.consumption_per_ga_and_es.df.show()
-    scenario_fixture.expected_results.energy_results.flex_consumption_per_ga_and_es.df.show()
-
     # Assert
-    assert_schema_and_dataframes_equal(
+    assert_dataframes(
         results.energy_results.consumption_per_ga_and_es.df,
         scenario_fixture.expected_results.energy_results.flex_consumption_per_ga_and_es.df,
     )

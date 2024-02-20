@@ -36,29 +36,6 @@ from package.calculation.energy.energy_results import (
 )
 from package.constants import Colname
 
-schema = StructType(
-    [
-        StructField(Colname.calculation_id, StringType(), False),
-        StructField(Colname.calculation_type, StringType(), False),
-        StructField(Colname.calculation_execution_time_start, TimestampType(), False),
-        StructField("calculation_result_id", StringType(), True),
-        StructField("grid_area", StringType(), False),
-        StructField(Colname.energy_supplier_id, StringType(), True),
-        StructField(Colname.quantity, DecimalType(28, 3), True),
-        StructField("quantity_unit", StringType(), False),
-        StructField("quantity_qualities", ArrayType(StringType()), False),
-        StructField("time", TimestampType(), False),
-        StructField(Colname.resolution, StringType(), False),
-        StructField("metering_point_type", StringType(), False),
-        StructField(Colname.settlement_method, StringType(), True),
-        StructField(Colname.charge_code, StringType(), False),
-        StructField(Colname.charge_type, StringType(), False),
-        StructField(Colname.charge_owner, StringType(), False),
-        StructField("amount_type", StringType(), False),
-    ]
-)
-
-
 time_window_schema = StructType(
     [
         StructField("start", TimestampType()),
@@ -67,7 +44,7 @@ time_window_schema = StructType(
 )
 
 
-def parse_time_window(time_window_str):
+def parse_time_window(time_window_str: str):
     time_window_str = time_window_str.replace("{", "").replace("}", "")
     start_str, end_str = time_window_str.split(",")
     start = datetime.strptime(start_str, "%Y-%m-%d %H:%M:%S")
@@ -75,7 +52,7 @@ def parse_time_window(time_window_str):
     return start, end
 
 
-def parse_qualities_string(qualities_str):
+def parse_qualities_string(qualities_str: str):
     return literal_eval(qualities_str)
 
 
