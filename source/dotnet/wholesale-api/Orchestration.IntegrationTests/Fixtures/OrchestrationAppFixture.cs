@@ -20,6 +20,7 @@ using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Calculations.IntegrationTests.Fixture.Database;
@@ -36,10 +37,14 @@ namespace Energinet.DataHub.Wholesale.Orchestration.IntegrationTests.Fixtures
         public OrchestrationAppFixture()
         {
             TestLogger = new TestDiagnosticsLogger();
+            IntegrationTestConfiguration = new IntegrationTestConfiguration();
 
             AzuriteManager = new AzuriteManager(useOAuth: true);
             DatabaseManager = new WholesaleDatabaseManager<DatabaseContext>();
-            IntegrationTestConfiguration = new IntegrationTestConfiguration();
+
+            ServiceBusResourceProvider = new ServiceBusResourceProvider(
+                IntegrationTestConfiguration.ServiceBusConnectionString,
+                TestLogger);
 
             HostConfigurationBuilder = new FunctionAppHostConfigurationBuilder();
         }
@@ -49,11 +54,13 @@ namespace Energinet.DataHub.Wholesale.Orchestration.IntegrationTests.Fixtures
         [NotNull]
         public FunctionAppHostManager? AppHostManager { get; private set; }
 
+        private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
+
         private AzuriteManager AzuriteManager { get; }
 
         private WholesaleDatabaseManager<DatabaseContext> DatabaseManager { get; }
 
-        private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
+        private ServiceBusResourceProvider ServiceBusResourceProvider { get; }
 
         private FunctionAppHostConfigurationBuilder HostConfigurationBuilder { get; }
 
@@ -69,6 +76,17 @@ namespace Energinet.DataHub.Wholesale.Orchestration.IntegrationTests.Fixtures
             var port = 8000;
             var appHostSettings = CreateAppHostSettings("Orchestration", ref port);
 
+            // ServiceBus entities
+            await ServiceBusResourceProvider
+                .BuildTopic("integration-events")
+                    .Do(topic => appHostSettings.ProcessEnvironmentVariables
+                        .Add(nameof(ServiceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME), topic.Name))
+                .AddSubscription("subscription")
+                    .Do(subscription => appHostSettings.ProcessEnvironmentVariables
+                        .Add(nameof(ServiceBusOptions.INTEGRATIONEVENTS_SUBSCRIPTION_NAME), subscription.SubscriptionName))
+                .CreateAsync();
+
+            // DataLake
             await EnsureCalculationStorageContainerExistsAsync();
 
             // Create and start host
@@ -133,6 +151,14 @@ namespace Energinet.DataHub.Wholesale.Orchestration.IntegrationTests.Fixtures
             appHostSettings.ProcessEnvironmentVariables.Add(
                 nameof(DataLakeOptions.STORAGE_CONTAINER_NAME),
                 "wholesale");
+
+            // ServiceBus connection strings
+            appHostSettings.ProcessEnvironmentVariables.Add(
+                nameof(ServiceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING),
+                ServiceBusResourceProvider.ConnectionString);
+            appHostSettings.ProcessEnvironmentVariables.Add(
+                nameof(ServiceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING),
+                ServiceBusResourceProvider.ConnectionString);
 
             return appHostSettings;
         }
