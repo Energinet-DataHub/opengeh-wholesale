@@ -14,9 +14,6 @@
 from decimal import Decimal
 from datetime import datetime
 
-from package.calculation.preparation.charge_link_metering_point_periods import (
-    ChargeLinkMeteringPointPeriods,
-)
 from tests.helpers.test_schemas import (
     charges_flex_consumption_schema,
 )
@@ -49,14 +46,12 @@ def test__calculate_fee_charge_price__simple(
         to_date=to_date,
         charge_type=ChargeType.FEE.value,
     )
-    charge_link_metering_point_periods_df = charge_link_metering_points_factory(
+    charge_link_metering_point_periods = charge_link_metering_points_factory(
         from_date=from_date,
         to_date=to_date,
         charge_type=ChargeType.FEE.value,
     )
-    charge_link_metering_point_periods = ChargeLinkMeteringPointPeriods(
-        charge_link_metering_point_periods_df
-    )
+
     expected_time = datetime(2020, 1, 1, 0, 0)
     expected_charge_price = charges.collect()[0][Colname.charge_price]
     expected_total_daily_charge_price = expected_charge_price
@@ -90,13 +85,10 @@ def test__calculate_fee_charge_price__two_fees(
     from_date = datetime(2020, 1, 1, 0, 0)
     to_date = datetime(2020, 1, 2, 0, 0)
     time = datetime(2020, 1, 1, 0, 0)
-    charge_link_metering_point_periods_df = charge_link_metering_points_factory(
+    charge_link_metering_point_periods = charge_link_metering_points_factory(
         from_date=from_date,
         to_date=to_date,
         charge_type=ChargeType.FEE.value,
-    )
-    charge_link_metering_point_periods = ChargeLinkMeteringPointPeriods(
-        charge_link_metering_point_periods_df
     )
 
     fee_1_charge_prices_charge_price = Decimal("3.124544")
