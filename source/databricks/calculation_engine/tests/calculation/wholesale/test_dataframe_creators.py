@@ -59,8 +59,8 @@ def test_calculate_daily_subscription_price(calculate_daily_subscription_price_f
     )
 
 
-def test_charges(charges_factory):
-    df = charges_factory()
+def test_charges(charge_period_prices_factory):
+    df = charge_period_prices_factory().df
     result = df.collect()[0]
     assert len(df.columns) == len(charges_schema.fields)
     assert (

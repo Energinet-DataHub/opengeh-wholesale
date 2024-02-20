@@ -18,16 +18,19 @@ from pyspark.sql.dataframe import DataFrame
 from package.calculation.preparation.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
 )
+from package.calculation.preparation.charge_period_prices import ChargePeriodPrices
 from package.codelists import ChargeType
 from package.constants import Colname
 
 
 def get_fee_charges(
-    charges_df: DataFrame,
-    charge_link_metering_points: ChargeLinkMeteringPointPeriods,
+    charge_period_prices: ChargePeriodPrices,
+    charge_link_metering_point_periods: ChargeLinkMeteringPointPeriods,
 ) -> DataFrame:
-    fees = charges_df.filter(f.col(Colname.charge_type) == ChargeType.FEE.value)
-    charge_link_metering_point_periods_df = charge_link_metering_points.df
+    charge_link_metering_point_periods_df = charge_link_metering_point_periods.df
+    fees = charge_period_prices.df.filter(
+        f.col(Colname.charge_type) == ChargeType.FEE.value
+    )
 
     fees = fees.join(
         charge_link_metering_point_periods_df,
