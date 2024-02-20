@@ -24,9 +24,9 @@ from package.constants import Colname
 
 def get_subscription_charges(
     charges: DataFrame,
-    charge_link_metering_points: ChargeLinkMeteringPointPeriods,
+    charge_link_metering_point_periods: ChargeLinkMeteringPointPeriods,
 ) -> DataFrame:
-    charge_link_metering_points_df = charge_link_metering_points.df
+    charge_link_metering_points_df = charge_link_metering_point_periods.df
 
     subscription_charges = charges.filter(
         f.col(Colname.charge_type) == ChargeType.SUBSCRIPTION.value
@@ -35,7 +35,7 @@ def get_subscription_charges(
     subscription_charges = _explode_subscription(subscription_charges)
 
     subscriptions = subscription_charges.join(
-        charge_link_metering_points,
+        charge_link_metering_points_df,
         (
             subscription_charges[Colname.charge_key]
             == charge_link_metering_points_df[Colname.charge_key]

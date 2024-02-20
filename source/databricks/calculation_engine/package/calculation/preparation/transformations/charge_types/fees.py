@@ -27,16 +27,22 @@ def get_fee_charges(
     charge_link_metering_points: ChargeLinkMeteringPointPeriods,
 ) -> DataFrame:
     fees = charges_df.filter(f.col(Colname.charge_type) == ChargeType.FEE.value)
-    charge_link_metering_points_df = charge_link_metering_points.df
+    charge_link_metering_point_periods_df = charge_link_metering_points.df
 
     fees = fees.join(
-        charge_link_metering_points_df,
-        (fees[Colname.charge_key] == charge_link_metering_points_df[Colname.charge_key])
+        charge_link_metering_point_periods_df,
+        (
+            fees[Colname.charge_key]
+            == charge_link_metering_point_periods_df[Colname.charge_key]
+        )
         & (
             fees[Colname.charge_time]
-            >= charge_link_metering_points_df[Colname.from_date]
+            >= charge_link_metering_point_periods_df[Colname.from_date]
         )
-        & (fees[Colname.charge_time] < charge_link_metering_points_df[Colname.to_date]),
+        & (
+            fees[Colname.charge_time]
+            < charge_link_metering_point_periods_df[Colname.to_date]
+        ),
         how="inner",
     ).select(
         fees[Colname.charge_key],
@@ -45,10 +51,10 @@ def get_fee_charges(
         Colname.charge_owner,
         Colname.charge_time,
         Colname.charge_price,
-        charge_link_metering_points_df[Colname.metering_point_type],
-        charge_link_metering_points_df[Colname.settlement_method],
-        charge_link_metering_points_df[Colname.grid_area],
-        charge_link_metering_points_df[Colname.energy_supplier_id],
+        charge_link_metering_point_periods_df[Colname.metering_point_type],
+        charge_link_metering_point_periods_df[Colname.settlement_method],
+        charge_link_metering_point_periods_df[Colname.grid_area],
+        charge_link_metering_point_periods_df[Colname.energy_supplier_id],
     )
 
     return fees
