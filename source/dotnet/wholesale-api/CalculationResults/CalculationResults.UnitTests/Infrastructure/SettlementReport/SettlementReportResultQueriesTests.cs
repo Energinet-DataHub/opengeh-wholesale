@@ -47,7 +47,7 @@ public class SettlementReportResultQueriesTests
     {
         // Arrange
         databricksSqlWarehouseQueryExecutorMock
-            .Setup(s => s.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
+            .Setup(s => s.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>(), CancellationToken.None))
             .Returns(_rows.ToAsyncEnumerable);
         var sut = new SettlementReportResultQueries(databricksSqlWarehouseQueryExecutorMock.Object, _someDeltaTableOptions);
 
@@ -74,7 +74,7 @@ public class SettlementReportResultQueriesTests
             SettlementMethod.NonProfiled,
             1.234m);
         databricksSqlWarehouseQueryExecutorMock
-            .Setup(s => s.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
+            .Setup(s => s.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>(), CancellationToken.None))
             .Returns(row);
         var sut = new SettlementReportResultQueries(databricksSqlWarehouseQueryExecutorMock.Object, _someDeltaTableOptions);
 
