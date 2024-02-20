@@ -14,7 +14,6 @@
 
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Messaging.Communication;
-using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using Energinet.DataHub.MarketParticipant.Infrastructure.Model.Contracts;
 using Energinet.DataHub.Wholesale.Calculations.Application.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Calculations.Application.IntegrationEvents.Handlers;
@@ -22,7 +21,6 @@ using Energinet.DataHub.Wholesale.Calculations.Application.UseCases;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.GridArea;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.ReceivedIntegrationEvent;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Application.Triggers;
@@ -48,27 +46,24 @@ public static class EventsRegistration
     {
         services.AddApplication();
         services.AddInfrastructure();
-
-        services.AddIntegrationEventPublisher(configuration);
-
-        RegisterIntegrationEvents(services);
-
-        RegisterHostedServices(services);
+        services.AddIntegrationEventSubscriptions();
+        services.AddHostedServices();
     }
 
-    private static void RegisterIntegrationEvents(IServiceCollection services)
+    private static IServiceCollection AddIntegrationEventSubscriptions(this IServiceCollection services)
     {
+        services.AddScoped<IIntegrationEventHandler, GridAreaOwnershipAssignedEventHandler>();
         var integrationEventDescriptors = new List<MessageDescriptor>
         {
             GridAreaOwnershipAssigned.Descriptor,
         };
         services.AddSubscriber<ReceivedIntegrationEventHandler>(integrationEventDescriptors);
-        services.AddScoped<IIntegrationEventHandler, GridAreaOwnershipAssignedEventHandler>();
-
         services.AddScoped<IntegrationEventHandlerFactory>();
+
+        return services;
     }
 
-    private static void AddApplication(this IServiceCollection services)
+    private static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services
             .AddScoped<IUnitOfWork, UnitOfWork>();
@@ -85,9 +80,11 @@ public static class EventsRegistration
         services
             .AddScoped<IGridAreaOwnerRepository, GridAreaOwnerRepository>()
             .AddScoped<IReceivedIntegrationEventRepository, ReceivedIntegrationEventRepository>();
+
+        return services;
     }
 
-    private static void AddInfrastructure(this IServiceCollection services)
+    private static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
         services
             .AddScoped<IEnergyResultProducedV2Factory, EnergyResultProducedV2Factory>()
@@ -95,27 +92,11 @@ public static class EventsRegistration
             .AddScoped<IAmountPerChargeResultProducedV1Factory, AmountPerChargeResultProducedV1Factory>()
             .AddScoped<IMonthlyAmountPerChargeResultProducedV1Factory, MonthlyAmountPerChargeResultProducedV1Factory>()
             .AddScoped<IEventsDatabaseContext, EventsDatabaseContext>();
+
+        return services;
     }
 
-    private static void AddIntegrationEventPublisher(this IServiceCollection services, IConfiguration configuration)
-    {
-        var serviceBusOptions = configuration.Get<ServiceBusOptions>()!;
-
-        // Register integration event publisher
-        services.Configure<PublisherOptions>(options =>
-        {
-            options.ServiceBusConnectionString = serviceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING;
-            options.TopicName = serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME;
-            options.TransportType = Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpWebSockets;
-        });
-        services.AddPublisher<IntegrationEventProvider>();
-
-        // Register hosted service for publishing integration events
-        services.Configure<PublisherWorkerOptions>(options => options.HostedServiceExecutionDelayMs = 10000);
-        services.AddPublisherWorker();
-    }
-
-    private static void RegisterHostedServices(IServiceCollection services)
+    private static IServiceCollection AddHostedServices(this IServiceCollection services)
     {
         services
             .AddHostedService<AggregatedTimeSeriesServiceBusWorker>()
@@ -125,5 +106,7 @@ public static class EventsRegistration
         services
             .AddHealthChecks()
             .AddRepeatingTriggerHealthCheck<RegisterCompletedCalculationsTrigger>(TimeSpan.FromMinutes(1));
+
+        return services;
     }
 }
