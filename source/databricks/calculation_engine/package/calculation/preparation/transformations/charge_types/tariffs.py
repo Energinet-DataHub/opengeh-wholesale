@@ -79,9 +79,8 @@ def _add_missing_prices(
             Colname.resolution,
             Colname.from_date,
             Colname.to_date,
-            Colname.charge_time,
-            Colname.charge_price,
         )
+        .distinct()
         .withColumn(
             "temp_time",
             f.expr(
@@ -99,7 +98,6 @@ def _add_missing_prices(
             Colname.to_date,
             f.explode("temp_time").alias(Colname.charge_time),
         )
-        .distinct()
     )
     print("charges_with_no_prices")
     charges_with_no_prices.show()
