@@ -87,7 +87,7 @@ def test__get_tariff_charges__filters_on_resolution(
     """
     # Arrange
     time_series_rows = [factory.create_time_series_row()]
-    charges_rows = [
+    charge_period_prices_df = [
         factory.create_tariff_charge_period_prices_row(
             charge_code="code_hour",
             resolution=e.ChargeResolution.HOUR,
@@ -108,12 +108,14 @@ def test__get_tariff_charges__filters_on_resolution(
         )
     )
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
-    charges = spark.createDataFrame(charges_rows, charges_schema)
+    charge_period_prices = factory.create_charge_period_prices(
+        spark, charge_period_prices_df
+    )
 
     # Act
     actual = get_tariff_charges(
         time_series,
-        charges,
+        charge_period_prices,
         charge_link_metering_point_periods,
         charge_resolution,
     )
