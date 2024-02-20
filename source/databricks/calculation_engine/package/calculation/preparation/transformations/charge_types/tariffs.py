@@ -27,14 +27,12 @@ def get_tariff_charges(
     charges: DataFrame,
     charge_link_metering_points: DataFrame,
     resolution: ChargeResolution,
-    period_start: datetime,
-    period_end: datetime,
 ) -> DataFrame:
     tariffs = charges.filter(
         f.col(Colname.charge_type) == ChargeType.TARIFF.value
     ).filter(f.col(Colname.resolution) == resolution.value)
 
-    tariffs = _add_missing_prices(tariffs, period_start, period_end, resolution)
+    tariffs = _add_missing_prices(tariffs, resolution)
 
     tariffs = _join_with_charge_link_metering_points(
         tariffs, charge_link_metering_points
@@ -59,8 +57,6 @@ def get_tariff_charges(
 
 def _add_missing_prices(
     charges_with_prices: DataFrame,
-    period_start_datetime: datetime,
-    period_end_datetime: datetime,
     resolution: ChargeResolution,
 ) -> DataFrame:
     charges_with_no_prices = (
@@ -78,7 +74,7 @@ def _add_missing_prices(
         .withColumn(
             "temp_time",
             f.expr(
-                f"sequence(to_timestamp('{period_start_datetime}'), to_timestamp('{period_end_datetime}'), interval {_get_window_duration_string_based_on_resolution(resolution)})"
+                f"sequence(to_timestamp({Colname.from_date}), to_timestamp({Colname.to_date}), interval {_get_window_duration_string_based_on_resolution(resolution)})"
             ),
         )
         .select(
