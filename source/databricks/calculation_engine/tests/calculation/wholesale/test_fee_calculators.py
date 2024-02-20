@@ -13,6 +13,7 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime
+
 from tests.helpers.test_schemas import (
     charges_flex_consumption_schema,
 )
@@ -45,7 +46,7 @@ def test__calculate_fee_charge_price__simple(
         to_date=to_date,
         charge_type=ChargeType.FEE.value,
     )
-    charge_link_metering_points = charge_link_metering_points_factory(
+    charge_link_metering_point_periods = charge_link_metering_points_factory(
         from_date=from_date,
         to_date=to_date,
         charge_type=ChargeType.FEE.value,
@@ -59,7 +60,7 @@ def test__calculate_fee_charge_price__simple(
     # Act
     fee_charges = get_fee_charges(
         charges,
-        charge_link_metering_points,
+        charge_link_metering_point_periods,
     )
     result = calculate_fee_charge_price(spark, fee_charges)
     expected = calculate_fee_charge_price_factory(
@@ -84,7 +85,7 @@ def test__calculate_fee_charge_price__two_fees(
     from_date = datetime(2020, 1, 1, 0, 0)
     to_date = datetime(2020, 1, 2, 0, 0)
     time = datetime(2020, 1, 1, 0, 0)
-    charge_link_metering_points = charge_link_metering_points_factory(
+    charge_link_metering_point_periods = charge_link_metering_points_factory(
         from_date=from_date,
         to_date=to_date,
         charge_type=ChargeType.FEE.value,
@@ -114,7 +115,7 @@ def test__calculate_fee_charge_price__two_fees(
     # Act
     fee_charges = get_fee_charges(
         charge_prices_df,
-        charge_link_metering_points,
+        charge_link_metering_point_periods,
     )
     result = calculate_fee_charge_price(spark, fee_charges).orderBy(
         Colname.charge_price
