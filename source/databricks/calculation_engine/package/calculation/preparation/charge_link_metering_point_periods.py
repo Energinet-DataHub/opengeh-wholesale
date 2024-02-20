@@ -21,7 +21,10 @@ from package.constants import Colname
 
 class ChargeLinkMeteringPointPeriods(DataFrameWrapper):
     """
-    Link between charge (key) and metering points periods
+    Represents the metering point period enriched with information on the relation to a charge.
+    The relation is represented by the charge key and the charge quantity.
+    All periods are clamped to least common period of the metering point and the charge link.
+    Metering points that have no charge links in the calculation period are not included.
     """
 
     def __init__(self, df: DataFrame):
