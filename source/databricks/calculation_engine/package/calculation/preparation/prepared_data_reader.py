@@ -20,6 +20,7 @@ from package.codelists import ChargeResolution
 from package.calculation.preparation.grid_loss_responsible import GridLossResponsible
 
 from . import transformations as T
+from .charge_link_metering_point_periods import ChargeLinkMeteringPointPeriods
 
 
 class PreparedDataReader:
@@ -55,16 +56,16 @@ class PreparedDataReader:
             self._table_reader, period_start_datetime, period_end_datetime
         )
 
-    def get_charge_link_metering_points(
+    def get_charge_link_metering_point_periods(
         self,
         period_start_datetime: datetime,
         period_end_datetime: datetime,
         metering_point_periods_df: DataFrame,
-    ) -> DataFrame:
+    ) -> ChargeLinkMeteringPointPeriods:
         charge_links = T.read_charge_links(
             self._table_reader, period_start_datetime, period_end_datetime
         )
-        return T.get_charge_link_metering_points(
+        return T.get_charge_link_metering_point_periods(
             charge_links, metering_point_periods_df
         )
 
@@ -86,14 +87,11 @@ class PreparedDataReader:
         self,
         time_series: DataFrame,
         charges_df: DataFrame,
-        metering_point_charges_links: DataFrame,
+        charges_link_metering_point_periods: ChargeLinkMeteringPointPeriods,
         resolution: ChargeResolution,
     ) -> DataFrame:
         return T.get_tariff_charges(
-            time_series,
-            charges_df,
-            metering_point_charges_links,
-            resolution,
+            time_series, charges_df, charges_link_metering_point_periods, resolution
         )
 
     def get_metering_point_time_series(
