@@ -27,11 +27,15 @@ def test__get_fee_charges__filters_on_fee_charge_type(
 ) -> None:
     # Arrange
     charge_link_metering_points_rows = [
-        factory.create_charge_link_metering_points_row(charge_type=e.ChargeType.FEE),
-        factory.create_charge_link_metering_points_row(
+        factory.create_charge_link_metering_point_periods_row(
+            charge_type=e.ChargeType.FEE
+        ),
+        factory.create_charge_link_metering_point_periods_row(
             charge_type=e.ChargeType.SUBSCRIPTION
         ),
-        factory.create_charge_link_metering_points_row(charge_type=e.ChargeType.TARIFF),
+        factory.create_charge_link_metering_point_periods_row(
+            charge_type=e.ChargeType.TARIFF
+        ),
     ]
     charge_period_prices_rows = [
         factory.create_subscription_or_fee_charge_period_prices_row(

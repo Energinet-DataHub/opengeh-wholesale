@@ -98,7 +98,7 @@ def create_tariff_charge_period_prices_row(
     return Row(**row)
 
 
-def create_charge_link_metering_points_row(
+def create_charge_link_metering_point_periods_row(
     charge_type: e.ChargeType = DefaultValues.DEFAULT_CHARGE_TYPE,
     charge_code: str = DefaultValues.DEFAULT_CHARGE_CODE,
     charge_owner: str = DefaultValues.DEFAULT_CHARGE_OWNER,
@@ -161,7 +161,7 @@ def create_charge_period_prices(
     spark: SparkSession, data: None | Row | list[Row] = None
 ) -> ChargePeriodPrices:
     if data is None:
-        data = [create_charge_link_metering_points_row()]
+        data = [create_charge_link_metering_point_periods_row()]
     elif isinstance(data, Row):
         data = [data]
     df = spark.createDataFrame(data, charge_period_prices_schema)
@@ -172,7 +172,7 @@ def create_charge_link_metering_point_periods(
     spark: SparkSession, data: None | Row | list[Row] = None
 ) -> ChargeLinkMeteringPointPeriods:
     if data is None:
-        data = [create_charge_link_metering_points_row()]
+        data = [create_charge_link_metering_point_periods_row()]
     elif isinstance(data, Row):
         data = [data]
     df = spark.createDataFrame(data, charge_link_metering_point_periods_schema)
