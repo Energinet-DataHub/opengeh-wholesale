@@ -18,6 +18,7 @@ module "mssqldb_esett_exchange" {
   monitor_alerts_resource_group_name = azurerm_resource_group.this.name
   pim_reader_ad_group_name           = var.pim_sql_reader_ad_group_name
   pim_writer_ad_group_name           = var.pim_sql_writer_ad_group_name
+  max_size_gb                        = 5
 }
 
 module "kvs_sql_ms_esett_exchange_database_name" {
