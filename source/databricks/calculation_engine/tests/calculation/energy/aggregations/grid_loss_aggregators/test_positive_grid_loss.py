@@ -95,7 +95,7 @@ def agg_result_factory(spark: SparkSession) -> Callable[[], EnergyResults]:
                                 datetime(2020, 1, 1, 1, 0)
                             ).tz_localize(None),
                         },
-                        Colname.sum_quantity: Decimal(-12.567),
+                        Colname.sum_quantity: Decimal(34.32),
                         Colname.qualities: [QuantityQuality.ESTIMATED.value],
                     }
                 )
@@ -116,7 +116,7 @@ def agg_result_factory(spark: SparkSession) -> Callable[[], EnergyResults]:
                                 datetime(2020, 1, 1, 1, 0)
                             ).tz_localize(None),
                         },
-                        Colname.sum_quantity: Decimal(-12.567),
+                        Colname.sum_quantity: Decimal(0.0),
                         Colname.qualities: [QuantityQuality.ESTIMATED.value],
                     }
                 )
