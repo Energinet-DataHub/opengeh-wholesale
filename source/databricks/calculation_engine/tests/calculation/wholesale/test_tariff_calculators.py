@@ -61,7 +61,7 @@ def _create_tariff_row(
     charge_owner: str = DEFAULT_CHARGE_OWNER,
     resolution: ChargeResolution = ChargeResolution.HOUR,
     charge_time: datetime = DEFAULT_CHARGE_TIME_HOUR_0,
-    charge_price: Decimal = DEFAULT_CHARGE_PRICE,
+    charge_price: Decimal | None = DEFAULT_CHARGE_PRICE,
     energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
     metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE,
@@ -495,4 +495,51 @@ def test__sum_within_month__sums_charge_price_per_month(
 
     # Assert
     assert actual.collect()[0][Colname.charge_price] == Decimal("2.222222")
+    assert actual.count() == 1
+
+
+def test__calculate_tariff_price_per_ga_co_es__when_charge_price_is_null__returns_total_amount_as_none(
+    spark: SparkSession,
+) -> None:
+    """
+    This is a test for a case where the charge price is none.
+    When charge_price is null, the total_amount should also be none.
+    """
+
+    # Arrange
+    rows = [
+        _create_tariff_row(charge_price=None, quantity=Decimal("2.000000")),
+        _create_tariff_row(
+            charge_price=Decimal("1.000000"), quantity=Decimal("2.000000")
+        ),
+    ]
+    tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
+
+    # Act
+    actual = calculate_tariff_price_per_ga_co_es(tariffs)
+
+    # Assert
+    assert actual.collect()[0][Colname.total_amount] is None
+    assert actual.collect()[1][Colname.total_amount] == Decimal("2.000000")
+
+
+def test__sum_within_month__when_all_charge_prices_are_none__sums_charge_price_and_total_amount_per_month_to_none(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    rows = [
+        _create_tariff_row(charge_price=None),
+        _create_tariff_row(charge_price=None),
+    ]
+    tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
+
+    # Act
+    actual = sum_within_month(
+        calculate_tariff_price_per_ga_co_es(tariffs),
+        DEFAULT_PERIOD_START_DATETIME,
+    )
+
+    # Assert
+    assert actual.collect()[0][Colname.total_amount] is None
+    assert actual.collect()[0][Colname.charge_price] is None
     assert actual.count() == 1
