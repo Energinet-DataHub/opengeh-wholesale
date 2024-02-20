@@ -19,7 +19,7 @@
 echo "Filter (keyword expression): $1"
 
 # Configure Azure CLI to use token cache which must be mapped as volume from host machine
-export AZURE_CONFIG_DIR=/home/jovyan/.azure
+export AZURE_CONFIG_DIR=/root/.azure
 
 # There env vars are important to ensure that the driver and worker nodes in spark are alligned
 export PYSPARK_PYTHON=/opt/conda/bin/python

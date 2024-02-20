@@ -13,12 +13,13 @@
 # limitations under the License.
 
 # The spark version should follow the spark version in databricks.
-# The databricks version of spark is controlled from dh3-infrastructure and uses latest LTS (ATTOW - Spark v3.3.0)
+# The databricks version of spark is controlled from dh3-infrastructure and uses latest LTS (ATTOW - Spark v3.5.0)
 FROM quay.io/jupyter/pyspark-notebook:spark-3.5.0
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 USER root
+ENV HOME /root/
 # This replaces the default spark configuration in the docker image with the ones defined in the sibling file
 COPY spark-defaults.conf $SPARK_HOME/conf/spark-defaults.conf
 
