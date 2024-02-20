@@ -19,7 +19,6 @@ FROM quay.io/jupyter/pyspark-notebook:spark-3.5.0
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 USER root
-ENV HOME /root/
 # This replaces the default spark configuration in the docker image with the ones defined in the sibling file
 COPY spark-defaults.conf $SPARK_HOME/conf/spark-defaults.conf
 
