@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyName>Energinet.DataHub.Wholesale.CalculationResults.Infrastructure</AssemblyName>
     <RootNamespace>Energinet.DataHub.Wholesale.CalculationResults.Infrastructure</RootNamespace>
@@ -16,9 +16,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Calculations\Calculations.Interfaces\Calculations.Interfaces.csproj" />
-    <ProjectReference Include="..\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
+    <ProjectReference Include="..\CalculationResults.Application\CalculationResults.Application.csproj" />
     <ProjectReference Include="..\..\Common.Infrastructure\Common.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\Common.Interfaces\Common.Interfaces.csproj" />
   </ItemGroup>
 </Project>

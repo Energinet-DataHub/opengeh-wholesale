@@ -22,5 +22,7 @@ from .charge_types import (
     get_tariff_charges,
 )
 from .metering_point_time_series import get_metering_point_time_series
-from .charge_link_metering_points import get_charge_link_metering_points
+from .get_charge_link_metering_point_periods import (
+    get_charge_link_metering_point_periods,
+)
 from .time_series_points import get_time_series_points

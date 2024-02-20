@@ -29,10 +29,10 @@ def read_charges(
     charge_prices_df = _get_charge_price_points(
         table_reader, period_start_datetime, period_end_datetime
     )
-    charge_master_data_df = _get_charge_master_data_periods(
+    charge_master_data_periods = _get_charge_master_data_periods(
         table_reader, period_start_datetime, period_end_datetime
     )
-    charges = _join_with_charge_prices(charge_master_data_df, charge_prices_df)
+    charges = _join_with_charge_prices(charge_master_data_periods, charge_prices_df)
 
     return charges
 
@@ -77,7 +77,7 @@ def _get_charge_master_data_periods(
         )
     )
 
-    charge_master_data_df = clamp_period(
+    charge_master_data_periods = clamp_period(
         charge_master_data_periods,
         period_start_datetime,
         period_end_datetime,
@@ -85,8 +85,8 @@ def _get_charge_master_data_periods(
         Colname.to_date,
     )
 
-    charge_master_data_df = _add_charge_key_column(charge_master_data_df)
-    return charge_master_data_df
+    charge_master_data_periods = _add_charge_key_column(charge_master_data_periods)
+    return charge_master_data_periods
 
 
 def _get_charge_price_points(
