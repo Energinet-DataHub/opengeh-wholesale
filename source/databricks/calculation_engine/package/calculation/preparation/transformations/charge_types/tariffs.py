@@ -17,6 +17,9 @@ import pyspark.sql.functions as f
 from pyspark.sql.types import DecimalType, StringType, ArrayType
 
 import package.calculation.energy.aggregators.transformations as t
+from package.calculation.preparation.charge_link_metering_point_periods import (
+    ChargeLinkMeteringPointPeriods,
+)
 from package.codelists import ChargeType, ChargeResolution
 from package.constants import Colname
 
@@ -24,7 +27,7 @@ from package.constants import Colname
 def get_tariff_charges(
     metering_point_time_series: DataFrame,
     charges: DataFrame,
-    charge_link_metering_points: DataFrame,
+    charge_link_metering_points: ChargeLinkMeteringPointPeriods,
     resolution: ChargeResolution,
 ) -> DataFrame:
     tariffs = charges.filter(
@@ -53,16 +56,19 @@ def get_tariff_charges(
 
 
 def _join_with_charge_link_metering_points(
-    tariffs: DataFrame, charge_link_metering_points: DataFrame
+    tariffs: DataFrame, charge_link_metering_points: ChargeLinkMeteringPointPeriods
 ) -> DataFrame:
+    charge_link_metering_point_periods_df = charge_link_metering_points.df
+
     df = tariffs.join(
-        charge_link_metering_points,
+        charge_link_metering_point_periods_df,
         [
             tariffs[Colname.charge_key]
-            == charge_link_metering_points[Colname.charge_key],
+            == charge_link_metering_point_periods_df[Colname.charge_key],
             tariffs[Colname.charge_time]
-            >= charge_link_metering_points[Colname.from_date],
-            tariffs[Colname.charge_time] < charge_link_metering_points[Colname.to_date],
+            >= charge_link_metering_point_periods_df[Colname.from_date],
+            tariffs[Colname.charge_time]
+            < charge_link_metering_point_periods_df[Colname.to_date],
         ],
         "inner",
     ).select(
@@ -74,11 +80,11 @@ def _join_with_charge_link_metering_points(
         tariffs[Colname.resolution],
         tariffs[Colname.charge_time],
         tariffs[Colname.charge_price],
-        charge_link_metering_points[Colname.metering_point_id],
-        charge_link_metering_points[Colname.metering_point_type],
-        charge_link_metering_points[Colname.settlement_method],
-        charge_link_metering_points[Colname.grid_area],
-        charge_link_metering_points[Colname.energy_supplier_id],
+        charge_link_metering_point_periods_df[Colname.metering_point_id],
+        charge_link_metering_point_periods_df[Colname.metering_point_type],
+        charge_link_metering_point_periods_df[Colname.settlement_method],
+        charge_link_metering_point_periods_df[Colname.grid_area],
+        charge_link_metering_point_periods_df[Colname.energy_supplier_id],
     )
     return df
 
