@@ -39,14 +39,14 @@ def test__get_subscription_charges__filters_on_subscription_charge_type(
         ),
         factory.create_charge_link_metering_points_row(charge_type=e.ChargeType.FEE),
     ]
-    charges_rows = [
-        factory.create_subscription_or_fee_charges_row(
+    charge_period_prices_rows = [
+        factory.create_subscription_or_fee_charge_period_prices_row(
             charge_type=e.ChargeType.FEE,
         ),
-        factory.create_subscription_or_fee_charges_row(
+        factory.create_subscription_or_fee_charge_period_prices_row(
             charge_type=e.ChargeType.SUBSCRIPTION,
         ),
-        factory.create_tariff_charges_row(),
+        factory.create_tariff_charge_period_prices_row(),
     ]
 
     charge_link_metering_point_periods = (
@@ -54,7 +54,9 @@ def test__get_subscription_charges__filters_on_subscription_charge_type(
             spark, charge_link_metering_points_rows
         )
     )
-    charges = spark.createDataFrame(charges_rows, charges_schema)
+    charge_period_prices = factory.create_charge_period_prices(
+        spark, charge_period_prices_rows
+    )
 
     # Act
     actual_subscription = get_subscription_charges(
@@ -90,8 +92,8 @@ def test__get_subscription_charges__split_into_days_between_from_and_to_date(
             charge_type=e.ChargeType.SUBSCRIPTION, from_date=from_date, to_date=to_date
         ),
     ]
-    charges_rows = [
-        factory.create_subscription_or_fee_charges_row(
+    charge_period_prices_rows = [
+        factory.create_subscription_or_fee_charge_period_prices_row(
             charge_time=charge_time,
             from_date=from_date,
             to_date=to_date,
@@ -104,11 +106,13 @@ def test__get_subscription_charges__split_into_days_between_from_and_to_date(
             spark, charge_link_metering_points_rows
         )
     )
-    charges = spark.createDataFrame(charges_rows, charges_schema)
+    charge_period_prices = factory.create_charge_period_prices(
+        spark, charge_period_prices_rows
+    )
 
     # Act
     actual_subscription = get_subscription_charges(
-        charges, charge_link_metering_point_periods
+        charge_period_prices, charge_link_metering_point_periods
     )
 
     # Assert
