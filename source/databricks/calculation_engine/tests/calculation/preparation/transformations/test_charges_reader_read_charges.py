@@ -40,7 +40,6 @@ DEFAULT_RESOLUTION = "P1D"
 DEFAULT_FROM_DATE = datetime(2020, 1, 1, 0, 0)
 DEFAULT_TO_DATE = datetime(2020, 2, 1, 0, 0)
 DEFAULT_CHARGE_TIME = datetime(2020, 1, 1, 0, 0)
-DEFAULT_METERING_POINT_ID = "123456789012345678901234567"
 
 
 def _create_charge_master_data_row(
@@ -60,27 +59,6 @@ def _create_charge_master_data_row(
         Colname.charge_tax: charge_tax,
         Colname.from_date: from_date,
         Colname.to_date: to_date,
-    }
-    return Row(**row)
-
-
-def _create_charge_link_periods_row(
-    charge_key: str = DEFAULT_CHARGE_KEY,
-    charge_code: str = DEFAULT_CHARGE_CODE,
-    charge_owner: str = DEFAULT_CHARGE_OWNER,
-    charge_type: str = DEFAULT_CHARGE_TYPE,
-    from_date: datetime = DEFAULT_FROM_DATE,
-    to_date: datetime = DEFAULT_TO_DATE,
-    metering_point_id: str = DEFAULT_METERING_POINT_ID,
-) -> Row:
-    row = {
-        Colname.charge_key: charge_key,
-        Colname.charge_code: charge_code,
-        Colname.charge_owner: charge_owner,
-        Colname.charge_type: charge_type,
-        Colname.from_date: from_date,
-        Colname.to_date: to_date,
-        Colname.metering_point_id: metering_point_id,
     }
     return Row(**row)
 
@@ -113,9 +91,6 @@ class TestWhenValidInput:
         table_reader_mock.read_charge_master_data_periods.return_value = (
             spark.createDataFrame(data=[_create_charge_master_data_row()])
         )
-        table_reader_mock.read_charge_links_periods.return_value = (
-            spark.createDataFrame(data=[_create_charge_link_periods_row()])
-        )
         table_reader_mock.read_charge_price_points.return_value = spark.createDataFrame(
             data=[_create_charges_price_points_row()]
         )
@@ -142,17 +117,17 @@ class TestWhenChargeTimeIsOutsideCalculationPeriod:
     @pytest.mark.parametrize(
         "from_date, to_date, charge_time",
         [
-            (  # Dataset: charge time is before from_date
+            (  # charge_time < from_data
                 datetime(2020, 1, 2, 0, 0),
                 datetime(2020, 1, 4, 0, 0),
                 datetime(2020, 1, 1, 0, 0),
             ),
-            (  # Dataset: charge time is after to_date
+            (  # charge_time > to_data
                 datetime(2020, 1, 2, 0, 0),
                 datetime(2020, 1, 4, 0, 0),
                 datetime(2020, 1, 5, 0, 0),
             ),
-            (  # Dataset: charge time equals to_date
+            (  # charge_time = to_data
                 datetime(2020, 1, 2, 0, 0),
                 datetime(2020, 1, 4, 0, 0),
                 datetime(2020, 1, 4, 0, 0),
@@ -195,12 +170,12 @@ class TestWhenChargeTimeIsInsideCalculationPeriod:
     @pytest.mark.parametrize(
         "from_date, to_date, charge_time",
         [
-            (
+            (  # from_data < charge_time < to_date
                 datetime(2020, 1, 2, 0, 0),
                 datetime(2020, 1, 4, 0, 0),
                 datetime(2020, 1, 3, 0, 0),
             ),
-            (
+            (  # charge_time = from_data
                 datetime(2020, 1, 2, 0, 0),
                 datetime(2020, 1, 4, 0, 0),
                 datetime(2020, 1, 2, 0, 0),
@@ -241,21 +216,29 @@ class TestWhenChargeTimeIsInsideCalculationPeriod:
 
 class TestWhenChargePeriodExceedsCalculationPeriod:
     @pytest.mark.parametrize(
-        "charge_from_date, charge_to_date, calculation_from_date, calculation_to_date, expected_from_date, expected_to_date",
+        "charge_from_date, charge_to_date, expected_from_date, expected_to_date",
         [
-            (
+            (  # Dataset: charge period starts before calculation period
                 datetime(2020, 1, 1, 0, 0),
-                datetime(2020, 1, 5, 0, 0),
-                datetime(2020, 1, 2, 0, 0),
                 datetime(2020, 1, 3, 0, 0),
                 datetime(2020, 1, 2, 0, 0),
                 datetime(2020, 1, 3, 0, 0),
             ),
-            (
-                datetime(2020, 1, 1, 0, 0),
-                None,
+            (  # Dataset: charge period ends after calculation period
+                datetime(2020, 1, 2, 0, 0),
+                datetime(2020, 1, 5, 0, 0),
                 datetime(2020, 1, 2, 0, 0),
                 datetime(2020, 1, 3, 0, 0),
+            ),
+            (  # Dataset: charge period exceeds calculation period at both ends
+                datetime(2020, 1, 1, 0, 0),
+                datetime(2020, 1, 5, 0, 0),
+                datetime(2020, 1, 2, 0, 0),
+                datetime(2020, 1, 3, 0, 0),
+            ),
+            (  # Dataset: charge period never stops (None)
+                datetime(2020, 1, 1, 0, 0),
+                None,
                 datetime(2020, 1, 2, 0, 0),
                 datetime(2020, 1, 3, 0, 0),
             ),
@@ -268,12 +251,12 @@ class TestWhenChargePeriodExceedsCalculationPeriod:
         spark: SparkSession,
         charge_from_date: datetime,
         charge_to_date: datetime,
-        calculation_from_date: datetime,
-        calculation_to_date: datetime,
         expected_from_date: datetime,
         expected_to_date: datetime,
     ) -> None:
         # Arrange
+        calculation_from_date = datetime(2020, 1, 2, 0, 0)
+        calculation_to_date = datetime(2020, 1, 3, 0, 0)
         table_reader_mock.read_charge_master_data_periods.return_value = (
             spark.createDataFrame(
                 data=[
