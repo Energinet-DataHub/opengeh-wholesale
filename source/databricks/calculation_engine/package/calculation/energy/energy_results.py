@@ -65,7 +65,7 @@ energy_results_schema = t.StructType(
             False,
         ),
         t.StructField(
-            Colname.sum_quantity, t.DecimalType(38, 8), True
+            Colname.sum_quantity, t.DecimalType(38, 6), True
         ),  # TODO AJW (18, 6), False
         t.StructField(Colname.qualities, t.ArrayType(t.StringType(), False), False),
         t.StructField(Colname.metering_point_id, t.StringType(), True),

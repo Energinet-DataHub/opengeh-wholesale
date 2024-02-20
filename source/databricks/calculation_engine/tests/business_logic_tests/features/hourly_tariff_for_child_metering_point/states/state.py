@@ -23,10 +23,6 @@ from pyspark.sql.types import (
     StructField,
 )
 
-from package.calculation.CalculationResults import (
-    WholesaleResultsContainer,
-    CalculationResultsContainer,
-)
 from package.calculation.calculator_args import CalculatorArgs
 from package.constants import Colname
 
@@ -58,7 +54,7 @@ schema = StructType(
 
 def get_result(
     spark: SparkSession, calculation_args: CalculatorArgs, df: DataFrame
-) -> CalculationResultsContainer:
+) -> DataFrame:
     df = df.withColumn("calculation_id", lit(calculation_args.calculation_id))
     df = df.withColumn(
         Colname.calculation_execution_time_start,
@@ -83,8 +79,4 @@ def get_result(
         ).cast(ArrayType(StringType())),
     )
 
-    results = CalculationResultsContainer()
-    results.wholesale_results = WholesaleResultsContainer(
-        hourly_tariff_per_ga_co_es=spark.createDataFrame(df.rdd, schema)
-    )
-    return results
+    return spark.createDataFrame(df.rdd, schema)

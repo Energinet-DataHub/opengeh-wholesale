@@ -16,6 +16,7 @@ from business_logic_tests.features.hourly_tariff_for_child_metering_point.states
 )
 from business_logic_tests.scenario_factory import ScenarioFixture
 from helpers.data_frame_utils import assert_dataframes_equal
+from package.common import assert_schema
 
 
 def test_execute__returns_expected(
@@ -26,10 +27,12 @@ def test_execute__returns_expected(
 
     # Act
     results = scenario_fixture.execute()
-    results.energy_results.flex_consumption_per_ga.df.show()
 
     # Assert
+    actual = results.wholesale_results.hourly_tariff_per_ga_co_es
+    expected = scenario_fixture.expected
 
+    assert_schema(actual.schema, expected.schema, ignore_nullability=True)
     assert_dataframes_equal(
         results.wholesale_results.hourly_tariff_per_ga_co_es.drop("metering_point_type")
         .drop("quantity_qualities")
@@ -38,9 +41,7 @@ def test_execute__returns_expected(
         .drop("energy_supplier_id")
         .drop("quantity")
         .drop("calculation_result_id"),
-        scenario_fixture.expected_results.wholesale_results.hourly_tariff_per_ga_co_es.drop(
-            "metering_point_type"
-        )
+        scenario_fixture.expected.drop("metering_point_type")
         .drop("quantity_qualities")
         .drop("price")
         .drop("amount")
