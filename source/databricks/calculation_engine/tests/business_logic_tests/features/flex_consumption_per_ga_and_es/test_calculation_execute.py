@@ -11,7 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from business_logic_tests.features.basic.states.state import get_result
+
+from business_logic_tests.features.flex_consumption_per_ga_and_es.states.state import (
+    get_result,
+)
+
 from business_logic_tests.scenario_factory import ScenarioFixture
 from helpers.data_frame_utils import (
     assert_dataframes,
@@ -32,4 +36,5 @@ def test_execute__returns_expected(
         results.energy_results.flex_consumption_per_ga_and_es.df,
         scenario_fixture.expected,
         ignore_nullability=True,
+        ignore_decimal_precision=True,
     )

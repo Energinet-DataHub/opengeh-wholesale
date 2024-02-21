@@ -31,32 +31,13 @@ from package.calculation.energy.energy_results import (
 )
 from package.constants import Colname
 
-time_window_schema = StructType(
-    [
-        StructField("start", TimestampType()),
-        StructField("end", TimestampType()),
-    ]
-)
-
-
-def parse_time_window(time_window_str: str) -> tuple[datetime, datetime]:
-    time_window_str = time_window_str.replace("{", "").replace("}", "")
-    start_str, end_str = time_window_str.split(",")
-    start = datetime.strptime(start_str, "%Y-%m-%d %H:%M:%S")
-    end = datetime.strptime(end_str, "%Y-%m-%d %H:%M:%S")
-    return start, end
-
-
-def parse_qualities_string(qualities_str: str) -> list[str]:
-    return literal_eval(qualities_str)
-
 
 def get_result(
     spark: SparkSession, calculation_args: CalculatorArgs, df: DataFrame
 ) -> DataFrame:
 
     parse_time_window_udf = udf(
-        parse_time_window,
+        _parse_time_window,
         StructType(
             [StructField("start", TimestampType()), StructField("end", TimestampType())]
         ),
@@ -66,13 +47,33 @@ def get_result(
         Colname.time_window, parse_time_window_udf(df[Colname.time_window])
     )
     df = df.withColumn(
-        Colname.sum_quantity, col(Colname.sum_quantity).cast(DecimalType(18, 6))
+        Colname.sum_quantity, col(Colname.sum_quantity).cast(DecimalType(38, 6))
     )
 
-    parse_qualities_string_udf = udf(parse_qualities_string, ArrayType(StringType()))
+    parse_qualities_string_udf = udf(_parse_qualities_string, ArrayType(StringType()))
     df = df.withColumn(
         Colname.quantity, parse_qualities_string_udf(df[Colname.quantity])
     )
     df = df.withColumnRenamed("quantity", "qualities")
 
     return spark.createDataFrame(df.rdd, energy_results_schema)
+
+
+time_window_schema = StructType(
+    [
+        StructField("start", TimestampType()),
+        StructField("end", TimestampType()),
+    ]
+)
+
+
+def _parse_time_window(time_window_str: str) -> tuple[datetime, datetime]:
+    time_window_str = time_window_str.replace("{", "").replace("}", "")
+    start_str, end_str = time_window_str.split(",")
+    start = datetime.strptime(start_str, "%Y-%m-%d %H:%M:%S")
+    end = datetime.strptime(end_str, "%Y-%m-%d %H:%M:%S")
+    return start, end
+
+
+def _parse_qualities_string(qualities_str: str) -> list[str]:
+    return literal_eval(qualities_str)
