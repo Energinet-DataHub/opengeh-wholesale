@@ -25,7 +25,7 @@ def test_execute__returns_expected(
     scenario_fixture: ScenarioFixture,
 ) -> None:
     # Arrange
-    scenario_fixture.setup(file_path=__file__, get_result=get_result)
+    scenario_fixture.setup(get_result)
 
     # Act
     results = scenario_fixture.execute()

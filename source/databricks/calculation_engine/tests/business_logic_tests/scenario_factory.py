@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import concurrent.futures
+import inspect
 import os
-from pathlib import Path
 from typing import Callable
 from unittest.mock import Mock
 
@@ -48,8 +48,10 @@ class ScenarioFixture:
         self.spark = spark
         self.table_reader = Mock()
 
-    def setup(self, file_path: Path, get_result: Callable[..., DataFrame]) -> None:
-        self.test_path = os.path.dirname(file_path) + "/test_data/"
+    def setup(self, get_result: Callable[..., DataFrame]) -> None:
+        file_path = inspect.getfile(get_result)
+        parent_dir = os.path.dirname(os.path.dirname(file_path))
+        self.test_path = parent_dir + "/test_data/"
 
         file_schema_dict = {
             "metering_point_periods.csv": metering_point_period_schema,
