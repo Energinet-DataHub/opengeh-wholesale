@@ -19,10 +19,6 @@ from package.calculation.preparation.transformations.charge_types import (
     get_fee_charges,
 )
 import package.codelists as e
-
-from package.calculation.wholesale.schemas.charges_schema import (
-    charges_schema,
-)
 from package.constants import Colname
 
 
@@ -31,20 +27,24 @@ def test__get_fee_charges__filters_on_fee_charge_type(
 ) -> None:
     # Arrange
     charge_link_metering_points_rows = [
-        factory.create_charge_link_metering_points_row(charge_type=e.ChargeType.FEE),
-        factory.create_charge_link_metering_points_row(
+        factory.create_charge_link_metering_point_periods_row(
+            charge_type=e.ChargeType.FEE
+        ),
+        factory.create_charge_link_metering_point_periods_row(
             charge_type=e.ChargeType.SUBSCRIPTION
         ),
-        factory.create_charge_link_metering_points_row(charge_type=e.ChargeType.TARIFF),
+        factory.create_charge_link_metering_point_periods_row(
+            charge_type=e.ChargeType.TARIFF
+        ),
     ]
-    charges_rows = [
-        factory.create_subscription_or_fee_charges_row(
+    charge_period_prices_rows = [
+        factory.create_subscription_or_fee_charge_period_prices_row(
             charge_type=e.ChargeType.FEE,
         ),
-        factory.create_subscription_or_fee_charges_row(
+        factory.create_subscription_or_fee_charge_period_prices_row(
             charge_type=e.ChargeType.SUBSCRIPTION,
         ),
-        factory.create_tariff_charges_row(),
+        factory.create_tariff_charge_period_prices_row(),
     ]
 
     charge_link_metering_point_periods = (
@@ -52,10 +52,14 @@ def test__get_fee_charges__filters_on_fee_charge_type(
             spark, charge_link_metering_points_rows
         )
     )
-    charges = spark.createDataFrame(charges_rows, charges_schema)
+    charge_period_prices = factory.create_charge_period_prices(
+        spark, charge_period_prices_rows
+    )
 
     # Act
-    actual_fee = get_fee_charges(charges, charge_link_metering_point_periods)
+    actual_fee = get_fee_charges(
+        charge_period_prices, charge_link_metering_point_periods
+    )
 
     # Assert
     assert actual_fee.collect()[0][Colname.charge_type] == e.ChargeType.FEE.value

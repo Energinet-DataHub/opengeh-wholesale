@@ -20,17 +20,18 @@ import package.calculation.energy.aggregators.transformations as t
 from package.calculation.preparation.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
 )
+from package.calculation.preparation.charge_period_prices import ChargePeriodPrices
 from package.codelists import ChargeType, ChargeResolution
 from package.constants import Colname
 
 
 def get_tariff_charges(
     metering_point_time_series: DataFrame,
-    charges: DataFrame,
+    charge_period_prices: ChargePeriodPrices,
     charge_link_metering_points: ChargeLinkMeteringPointPeriods,
     resolution: ChargeResolution,
 ) -> DataFrame:
-    tariffs = charges.filter(
+    tariffs = charge_period_prices.df.filter(
         f.col(Colname.charge_type) == ChargeType.TARIFF.value
     ).filter(f.col(Colname.resolution) == resolution.value)
 
