@@ -44,54 +44,52 @@ namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
 /// </summary>
 public static class EventsRegistration
 {
-    public static void AddEventsModule(
-        this IServiceCollection serviceCollection,
-        ServiceBusOptions serviceBusOptions)
+    public static void AddEventsModule(this IServiceCollection services, IConfiguration configuration)
     {
-        serviceCollection.AddApplication();
-        serviceCollection.AddInfrastructure();
+        services.AddApplication();
+        services.AddInfrastructure();
 
-        serviceCollection.AddIntegrationEventPublisher(serviceBusOptions);
+        services.AddIntegrationEventPublisher(configuration);
 
-        RegisterIntegrationEvents(serviceCollection);
+        RegisterIntegrationEvents(services);
 
-        RegisterHostedServices(serviceCollection);
+        RegisterHostedServices(services);
     }
 
-    private static void RegisterIntegrationEvents(IServiceCollection serviceCollection)
+    private static void RegisterIntegrationEvents(IServiceCollection services)
     {
         var integrationEventDescriptors = new List<MessageDescriptor>
         {
             GridAreaOwnershipAssigned.Descriptor,
         };
-        serviceCollection.AddSubscriber<ReceivedIntegrationEventHandler>(integrationEventDescriptors);
-        serviceCollection.AddScoped<IIntegrationEventHandler, GridAreaOwnershipAssignedEventHandler>();
+        services.AddSubscriber<ReceivedIntegrationEventHandler>(integrationEventDescriptors);
+        services.AddScoped<IIntegrationEventHandler, GridAreaOwnershipAssignedEventHandler>();
 
-        serviceCollection.AddScoped<IntegrationEventHandlerFactory>();
+        services.AddScoped<IntegrationEventHandlerFactory>();
     }
 
-    private static void AddApplication(this IServiceCollection serviceCollection)
+    private static void AddApplication(this IServiceCollection services)
     {
-        serviceCollection
+        services
             .AddScoped<IUnitOfWork, UnitOfWork>();
 
-        serviceCollection
+        services
             .AddScoped<ICompletedCalculationRepository, CompletedCalculationRepository>()
             .AddScoped<ICompletedCalculationFactory, CompletedCalculationFactory>()
             .AddScoped<IRegisterCompletedCalculationsHandler, RegisterCompletedCalculationsHandler>();
 
-        serviceCollection
+        services
             .AddScoped<IEnergyResultEventProvider, EnergyResultEventProvider>()
             .AddScoped<IWholesaleResultEventProvider, WholesaleResultEventProvider>();
 
-        serviceCollection
+        services
             .AddScoped<IGridAreaOwnerRepository, GridAreaOwnerRepository>()
             .AddScoped<IReceivedIntegrationEventRepository, ReceivedIntegrationEventRepository>();
     }
 
-    private static void AddInfrastructure(this IServiceCollection serviceCollection)
+    private static void AddInfrastructure(this IServiceCollection services)
     {
-        serviceCollection
+        services
             .AddScoped<IEnergyResultProducedV2Factory, EnergyResultProducedV2Factory>()
             .AddScoped<IGridLossResultProducedV1Factory, GridLossResultProducedV1Factory>()
             .AddScoped<IAmountPerChargeResultProducedV1Factory, AmountPerChargeResultProducedV1Factory>()
@@ -99,30 +97,32 @@ public static class EventsRegistration
             .AddScoped<IEventsDatabaseContext, EventsDatabaseContext>();
     }
 
-    private static void AddIntegrationEventPublisher(this IServiceCollection serviceCollection, ServiceBusOptions serviceBusOptions)
+    private static void AddIntegrationEventPublisher(this IServiceCollection services, IConfiguration configuration)
     {
+        var serviceBusOptions = configuration.Get<ServiceBusOptions>()!;
+
         // Register integration event publisher
-        serviceCollection.Configure<PublisherOptions>(options =>
+        services.Configure<PublisherOptions>(options =>
         {
             options.ServiceBusConnectionString = serviceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING;
             options.TopicName = serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME;
             options.TransportType = Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpWebSockets;
         });
-        serviceCollection.AddPublisher<IntegrationEventProvider>();
+        services.AddPublisher<IntegrationEventProvider>();
 
         // Register hosted service for publishing integration events
-        serviceCollection.Configure<PublisherWorkerOptions>(options => options.HostedServiceExecutionDelayMs = 10000);
-        serviceCollection.AddPublisherWorker();
+        services.Configure<PublisherWorkerOptions>(options => options.HostedServiceExecutionDelayMs = 10000);
+        services.AddPublisherWorker();
     }
 
-    private static void RegisterHostedServices(IServiceCollection serviceCollection)
+    private static void RegisterHostedServices(IServiceCollection services)
     {
-        serviceCollection
+        services
             .AddHostedService<AggregatedTimeSeriesServiceBusWorker>()
             .AddHostedService<RegisterCompletedCalculationsTrigger>()
             .AddHostedService<ReceiveIntegrationEventServiceBusWorker>();
 
-        serviceCollection
+        services
             .AddHealthChecks()
             .AddRepeatingTriggerHealthCheck<RegisterCompletedCalculationsTrigger>(TimeSpan.FromMinutes(1));
     }

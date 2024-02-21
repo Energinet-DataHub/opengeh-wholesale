@@ -14,9 +14,16 @@
 
 from datetime import datetime
 from decimal import Decimal
-from pyspark.sql import Row, DataFrame, SparkSession
+from pyspark.sql import Row, SparkSession
 
-from package.calculation_input.schemas import metering_point_period_schema
+from package.calculation.preparation.charge_link_metering_point_periods import (
+    ChargeLinkMeteringPointPeriods,
+    charge_link_metering_point_periods_schema,
+)
+from package.calculation.preparation.charge_period_prices import (
+    charge_period_prices_schema,
+    ChargePeriodPrices,
+)
 from package.codelists import ChargeType
 from package.constants import Colname
 
@@ -31,6 +38,7 @@ class DefaultValues:
     DEFAULT_CHARGE_TAX = True
     DEFAULT_CHARGE_TIME_HOUR_0 = datetime(2019, 12, 31, 23)
     DEFAULT_CHARGE_PRICE = Decimal("2.000005")
+    DEFAULT_CHARGE_QUANTITY = 1
     DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
     DEFAULT_METERING_POINT_ID = "123456789012345678901234567"
     DEFAULT_METERING_POINT_TYPE = e.MeteringPointType.CONSUMPTION
@@ -45,43 +53,6 @@ class DefaultValues:
     DEFAULT_TO_DATE: datetime = datetime(2020, 1, 31, 23)
     DEFAULT_PARENT_METERING_POINT_ID = None
     DEFAULT_CALCULATION_TYPE = None
-
-
-def create_metering_point_row(
-    metering_point_id: str = DefaultValues.DEFAULT_METERING_POINT_ID,
-    metering_point_type: (
-        e.MeteringPointType
-    ) = DefaultValues.DEFAULT_METERING_POINT_TYPE,
-    calculation_type: str | None = DefaultValues.DEFAULT_CALCULATION_TYPE,
-    settlement_method: e.SettlementMethod = DefaultValues.DEFAULT_SETTLEMENT_METHOD,
-    grid_area: str = DefaultValues.DEFAULT_GRID_AREA,
-    resolution: e.MeteringPointResolution = e.MeteringPointResolution.HOUR,
-    from_grid_area: str | None = DefaultValues.DEFAULT_TO_GRID_AREA,
-    to_grid_area: str | None = DefaultValues.DEFAULT_TO_GRID_AREA,
-    parent_metering_point_id: (
-        str | None
-    ) = DefaultValues.DEFAULT_PARENT_METERING_POINT_ID,
-    energy_supplier_id: str | None = DefaultValues.DEFAULT_ENERGY_SUPPLIER_ID,
-    balance_responsible_id: str | None = DefaultValues.DEFAULT_BALANCE_RESPONSIBLE_ID,
-    from_date: datetime = DefaultValues.DEFAULT_FROM_DATE,
-    to_date: datetime | None = DefaultValues.DEFAULT_TO_DATE,
-) -> Row:
-    row = {
-        Colname.metering_point_id: metering_point_id,
-        Colname.metering_point_type: metering_point_type.value,
-        Colname.calculation_type: calculation_type,
-        Colname.settlement_method: settlement_method.value,
-        Colname.grid_area: grid_area,
-        Colname.resolution: resolution.value,
-        Colname.from_grid_area: from_grid_area,
-        Colname.to_grid_area: to_grid_area,
-        Colname.parent_metering_point_id: parent_metering_point_id,
-        Colname.energy_supplier_id: energy_supplier_id,
-        Colname.balance_responsible_id: balance_responsible_id,
-        Colname.from_date: from_date,
-        Colname.to_date: to_date,
-    }
-    return Row(**row)
 
 
 def create_time_series_row(
@@ -99,7 +70,7 @@ def create_time_series_row(
     return Row(**row)
 
 
-def create_tariff_charges_row(
+def create_tariff_charge_period_prices_row(
     charge_code: str = DefaultValues.DEFAULT_CHARGE_CODE,
     charge_owner: str = DefaultValues.DEFAULT_CHARGE_OWNER,
     charge_tax: bool = DefaultValues.DEFAULT_CHARGE_TAX,
@@ -118,20 +89,21 @@ def create_tariff_charges_row(
         Colname.charge_owner: charge_owner,
         Colname.charge_tax: charge_tax,
         Colname.resolution: resolution.value,
-        Colname.charge_time: charge_time,
         Colname.from_date: from_date,
         Colname.to_date: to_date,
         Colname.charge_price: charge_price,
+        Colname.charge_time: charge_time,
     }
 
     return Row(**row)
 
 
-def create_charge_link_metering_points_row(
+def create_charge_link_metering_point_periods_row(
     charge_type: e.ChargeType = DefaultValues.DEFAULT_CHARGE_TYPE,
     charge_code: str = DefaultValues.DEFAULT_CHARGE_CODE,
     charge_owner: str = DefaultValues.DEFAULT_CHARGE_OWNER,
     metering_point_id: str = DefaultValues.DEFAULT_METERING_POINT_ID,
+    charge_quantity: int = DefaultValues.DEFAULT_CHARGE_QUANTITY,
     metering_point_type: (
         e.MeteringPointType
     ) = DefaultValues.DEFAULT_METERING_POINT_TYPE,
@@ -146,18 +118,19 @@ def create_charge_link_metering_points_row(
     row = {
         Colname.charge_key: charge_key,
         Colname.metering_point_id: metering_point_id,
+        Colname.charge_quantity: charge_quantity,
+        Colname.from_date: from_date,
+        Colname.to_date: to_date,
         Colname.metering_point_type: metering_point_type.value,
         Colname.settlement_method: settlement_method.value,
         Colname.grid_area: grid_area,
         Colname.energy_supplier_id: energy_supplier_id,
-        Colname.from_date: from_date,
-        Colname.to_date: to_date,
     }
 
     return Row(**row)
 
 
-def create_subscription_or_fee_charges_row(
+def create_subscription_or_fee_charge_period_prices_row(
     charge_type: e.ChargeType,
     charge_code: str = DefaultValues.DEFAULT_CHARGE_CODE,
     charge_owner: str = DefaultValues.DEFAULT_CHARGE_OWNER,
@@ -176,17 +149,31 @@ def create_subscription_or_fee_charges_row(
         Colname.charge_owner: charge_owner,
         Colname.charge_tax: charge_tax,
         Colname.resolution: e.ChargeResolution.MONTH.value,
-        Colname.charge_time: charge_time,
         Colname.from_date: from_date,
         Colname.to_date: to_date,
         Colname.charge_price: charge_price,
+        Colname.charge_time: charge_time,
     }
     return Row(**row)
 
 
-def create(spark: SparkSession, data: None | Row | list[Row] = None) -> DataFrame:
+def create_charge_period_prices(
+    spark: SparkSession, data: None | Row | list[Row] = None
+) -> ChargePeriodPrices:
     if data is None:
-        data = [create_metering_point_row()]
+        data = [create_charge_link_metering_point_periods_row()]
     elif isinstance(data, Row):
         data = [data]
-    return spark.createDataFrame(data, schema=metering_point_period_schema)
+    df = spark.createDataFrame(data, charge_period_prices_schema)
+    return ChargePeriodPrices(df)
+
+
+def create_charge_link_metering_point_periods(
+    spark: SparkSession, data: None | Row | list[Row] = None
+) -> ChargeLinkMeteringPointPeriods:
+    if data is None:
+        data = [create_charge_link_metering_point_periods_row()]
+    elif isinstance(data, Row):
+        data = [data]
+    df = spark.createDataFrame(data, charge_link_metering_point_periods_schema)
+    return ChargeLinkMeteringPointPeriods(df)

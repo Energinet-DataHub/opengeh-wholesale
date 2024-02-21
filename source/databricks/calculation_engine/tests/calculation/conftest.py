@@ -17,7 +17,16 @@ from decimal import Decimal
 from pyspark.sql import SparkSession, DataFrame
 import pytest
 from typing import Callable
-from package.codelists import ChargeType, MeteringPointType, SettlementMethod
+
+from package.calculation.preparation.charge_link_metering_point_periods import (
+    ChargeLinkMeteringPointPeriods,
+    charge_link_metering_point_periods_schema,
+)
+from package.calculation.preparation.charge_period_prices import (
+    charge_period_prices_schema,
+    ChargePeriodPrices,
+)
+from package.codelists import ChargeType
 from package.calculation.wholesale.schemas.calculate_daily_subscription_price_schema import (
     calculate_daily_subscription_price_schema,
 )
@@ -27,9 +36,6 @@ from package.calculation.wholesale.schemas.calculate_fee_charge_price_schema imp
 from tests.calculation.dataframe_defaults import DataframeDefaults
 from package.calculation.wholesale.schemas.charges_schema import (
     charges_schema,
-    charges_master_data_schema,
-    charge_link_metering_points_schema,
-    charge_prices_schema,
 )
 from package.calculation_input.schemas import (
     time_series_point_schema,
@@ -123,7 +129,9 @@ def calculate_fee_charge_price_factory(spark: SparkSession) -> Callable[..., Dat
 
 
 @pytest.fixture(scope="session")
-def charges_factory(spark: SparkSession) -> Callable[..., DataFrame]:
+def charge_period_prices_factory(
+    spark: SparkSession,
+) -> Callable[..., ChargePeriodPrices]:
     def factory(
         charge_code: str = DataframeDefaults.default_charge_code,
         charge_type: str = DataframeDefaults.default_charge_type,
@@ -134,7 +142,7 @@ def charges_factory(spark: SparkSession) -> Callable[..., DataFrame]:
         charge_price: Decimal = DataframeDefaults.default_charge_price,
         from_date: datetime = DataframeDefaults.default_from_date,
         to_date: datetime = DataframeDefaults.default_to_date,
-    ) -> DataFrame:
+    ) -> ChargePeriodPrices:
         charge_key: str = f"{charge_code}-{charge_owner}-{charge_type}"
 
         data = [
@@ -151,8 +159,9 @@ def charges_factory(spark: SparkSession) -> Callable[..., DataFrame]:
                 Colname.charge_price: charge_price,
             }
         ]
-
-        return spark.createDataFrame(data, schema=charges_schema)
+        return ChargePeriodPrices(
+            spark.createDataFrame(data, schema=charge_period_prices_schema)
+        )
 
     return factory
 
@@ -160,25 +169,27 @@ def charges_factory(spark: SparkSession) -> Callable[..., DataFrame]:
 @pytest.fixture(scope="session")
 def charge_link_metering_points_factory(
     spark: SparkSession,
-) -> Callable[..., DataFrame]:
+) -> Callable[..., ChargeLinkMeteringPointPeriods]:
     def factory(
         charge_type: str = DataframeDefaults.default_charge_type,
         charge_code: str = DataframeDefaults.default_charge_code,
         charge_owner: str = DataframeDefaults.default_charge_owner,
         metering_point_id: str = DataframeDefaults.default_metering_point_id,
+        charge_quantity: int = DataframeDefaults.default_charge_quantity,
         metering_point_type: str = DataframeDefaults.default_metering_point_type,
         settlement_method: str = DataframeDefaults.default_settlement_method,
         grid_area: str = DataframeDefaults.default_grid_area,
         energy_supplier_id: str | None = DataframeDefaults.default_energy_supplier_id,
         from_date: datetime = DataframeDefaults.default_from_date,
         to_date: datetime | None = DataframeDefaults.default_to_date,
-    ) -> DataFrame:
+    ) -> ChargeLinkMeteringPointPeriods:
         charge_key: str = f"{charge_code}-{charge_owner}-{charge_type}"
 
         data = [
             {
                 Colname.charge_key: charge_key,
                 Colname.metering_point_id: metering_point_id,
+                Colname.charge_quantity: charge_quantity,
                 Colname.metering_point_type: metering_point_type,
                 Colname.settlement_method: settlement_method,
                 Colname.grid_area: grid_area,
@@ -188,7 +199,11 @@ def charge_link_metering_points_factory(
             }
         ]
 
-        return spark.createDataFrame(data, schema=charge_link_metering_points_schema)
+        return ChargeLinkMeteringPointPeriods(
+            spark.createDataFrame(
+                data, schema=charge_link_metering_point_periods_schema
+            )
+        )
 
     return factory
 

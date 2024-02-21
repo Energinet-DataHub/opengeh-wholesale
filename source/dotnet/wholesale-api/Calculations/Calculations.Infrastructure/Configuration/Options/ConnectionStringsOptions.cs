@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
+namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Configuration.Options;
 
-public interface IJsonNewlineSerializer
+public class ConnectionStringsOptions
 {
-    /// <summary>
-    /// Returns  a <see cref="List{T}"/> of object type <typeparamref name="T"/>
-    /// </summary>
-    /// <param name="resultStream"></param>
-    Task<List<T>> DeserializeAsync<T>(Stream resultStream);
+    // This is the section name. It must match the section name in setting storage.
+    public const string ConnectionStrings = "CONNECTIONSTRINGS";
+
+    public string DB_CONNECTION_STRING { get; set; } = string.Empty;
 }
