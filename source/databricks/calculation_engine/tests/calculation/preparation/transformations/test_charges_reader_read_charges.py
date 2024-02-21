@@ -21,7 +21,7 @@ from pyspark import Row
 from pyspark.sql import SparkSession
 
 from package import calculation_input
-from package.calculation.preparation.transformations import read_charges
+from package.calculation.preparation.transformations import read_charge_period_prices
 from package.calculation_input.schemas import charge_master_data_periods_schema
 
 from package.calculation_input.table_reader import TableReader
@@ -96,11 +96,13 @@ class TestWhenValidInput:
         )
 
         # Act
-        actual = read_charges(table_reader_mock, DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
+        actual = read_charge_period_prices(
+            table_reader_mock, DEFAULT_FROM_DATE, DEFAULT_TO_DATE
+        )
 
         # Assert
-        assert actual.count() == 1
-        actual_row = actual.collect()[0]
+        assert actual.df.count() == 1
+        actual_row = actual.df.collect()[0]
         assert actual_row[Colname.charge_key] == DEFAULT_CHARGE_KEY
         assert actual_row[Colname.charge_code] == DEFAULT_CHARGE_CODE
         assert actual_row[Colname.charge_type] == DEFAULT_CHARGE_TYPE
@@ -160,10 +162,10 @@ class TestWhenChargeTimeIsOutsideCalculationPeriod:
         )
 
         # Act
-        actual = read_charges(table_reader_mock, from_date, to_date)
+        actual = read_charge_period_prices(table_reader_mock, from_date, to_date)
 
         # Assert
-        assert actual.isEmpty()
+        assert actual.df.isEmpty()
 
 
 class TestWhenChargeTimeIsInsideCalculationPeriod:
@@ -208,10 +210,10 @@ class TestWhenChargeTimeIsInsideCalculationPeriod:
         )
 
         # Act
-        actual = read_charges(table_reader_mock, from_date, to_date)
+        actual = read_charge_period_prices(table_reader_mock, from_date, to_date)
 
         # Assert
-        assert actual.count() == 1
+        assert actual.df.count() == 1
 
 
 class TestWhenChargePeriodExceedsCalculationPeriod:
@@ -277,12 +279,12 @@ class TestWhenChargePeriodExceedsCalculationPeriod:
         )
 
         # Act
-        actual = read_charges(
+        actual = read_charge_period_prices(
             table_reader_mock, calculation_from_date, calculation_to_date
         )
 
         # Assert
-        actual_row = actual.collect()[0]
+        actual_row = actual.df.collect()[0]
         assert actual_row[Colname.from_date] == expected_from_date
         assert actual_row[Colname.to_date] == expected_to_date
 
@@ -345,7 +347,9 @@ class TestWhenMultipleChargeKeys:
         )
 
         # Act
-        actual = read_charges(table_reader_mock, period_from_date, period_to_date)
+        actual = read_charge_period_prices(
+            table_reader_mock, period_from_date, period_to_date
+        )
 
         # Assert
-        assert actual.isEmpty() == expect_empty
+        assert actual.df.isEmpty() == expect_empty
