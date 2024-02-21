@@ -18,7 +18,8 @@ from decimal import Decimal
 import pytest
 import package.codelists as e
 
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession, Window
+import pyspark.sql.functions as f
 
 from package.calculation.preparation.transformations import (
     get_tariff_charges,
@@ -28,7 +29,7 @@ from package.calculation_input.schemas import (
     time_series_point_schema,
 )
 from package.constants import Colname
-import tests.calculation.preparation.transformations.charge_types.charges_factory as factory
+from pyspark.sql import Row
 
 import tests.calculation.charges_factory as factory
 
@@ -72,6 +73,59 @@ def _create_expected_tariff_charges_row(
         Colname.qualities: qualities,
     }
     return Row(**row)
+
+
+def test__temp(
+    spark: SparkSession,
+) -> None:
+    # Prepare the data
+    period_start_utc = datetime(2020, 2, 29, 23, 0)
+    period_end_utc = datetime(2020, 3, 31, 22, 0)
+    time_zone = "Europe/Copenhagen"
+
+    data = [
+        ("key1", period_start_utc, 100),
+        ("key1", period_start_utc + timedelta(days=10), 200),
+        ("key2", period_start_utc, 300),
+    ]
+    schema = ["charge_key", "charge_time", "charge_price"]
+    df = spark.createDataFrame(data, schema)
+
+    all_dates_df = (
+        df.select(Colname.charge_key)
+        .dropDuplicates()
+        .select(
+            Colname.charge_key,
+            f.explode(
+                f.expr(
+                    f"sequence(from_utc_timestamp('{period_start_utc}', '{time_zone}'), from_utc_timestamp('{period_end_utc}', '{time_zone}'), interval 1 day)"
+                )
+            ).alias("charge_time_local"),
+        )
+        .withColumn(
+            Colname.charge_time,
+            f.to_utc_timestamp(f.col("charge_time_local"), time_zone),
+        )
+        .drop("charge_time_local")
+    )
+
+    all_dates_df.show(100)
+
+    w = Window.partitionBy(Colname.charge_key).orderBy(Colname.charge_time)
+
+    result = all_dates_df.join(
+        df, [Colname.charge_key, Colname.charge_time], "left"
+    ).select(
+        Colname.charge_key,
+        Colname.charge_time,
+        *[
+            f.last(f.col(c), ignorenulls=True).over(w).alias(c)
+            for c in df.columns
+            if c not in (Colname.charge_key, Colname.charge_time)
+        ],
+    )
+
+    result.show(100)
 
 
 @pytest.mark.parametrize(
@@ -282,7 +336,7 @@ def test__temp_utc(
                 f.expr(
                     f"sequence(to_timestamp('{period_start_utc}'), to_timestamp('{period_end_utc}'), interval 1 day)"
                 )
-            ).alias("charge_time"),<F
+            ).alias("charge_time"),
         )
     )
 

@@ -64,6 +64,7 @@ def get_subscription_charges(
         charge_link_metering_points_df[Colname.grid_area],
         charge_link_metering_points_df[Colname.energy_supplier_id],
     )
+    subscriptions.show()
 
     return subscriptions
 
@@ -72,37 +73,26 @@ def _explode_subscription(
     charge_prices: DataFrame,
     time_zone: str,
 ) -> DataFrame:
-    charge_time_local = "charge_time_local"
     all_dates_df = (
-        charge_prices.select(
+        charge_prices.select(Colname.charge_key, Colname.from_date, Colname.to_date)
+        .dropDuplicates()
+        .select(
             Colname.charge_key,
-            # Colname.charge_code,
-            Colname.charge_type,
-            Colname.charge_owner,
-            Colname.resolution,
-            Colname.charge_tax,
-            Colname.from_date,
-            Colname.to_date,
-        )
-        .distinct()
-        .withColumn(
-            charge_time_local,
             f.explode(
                 f.expr(
-                    f"sequence(from_utc_timestamp('{Colname.from_date}', '{time_zone}'), from_utc_timestamp('{Colname.to_date}', '{time_zone}'), interval 1 day)"
+                    f"sequence(from_utc_timestamp({Colname.from_date}, '{time_zone}'), from_utc_timestamp({Colname.to_date}, '{time_zone}'), interval 1 day)"
                 )
-            ),
+            ).alias("charge_time_local"),
         )
         .withColumn(
             Colname.charge_time,
-            f.to_utc_timestamp(f.col(charge_time_local), time_zone),
+            f.to_utc_timestamp(f.col("charge_time_local"), time_zone),
         )
-        .drop(charge_time_local)
+        .drop("charge_time_local")
     )
-
     w = Window.partitionBy(Colname.charge_key).orderBy(Colname.charge_time)
 
-    charges_for_all_days = all_dates_df.join(
+    result = all_dates_df.join(
         charge_prices, [Colname.charge_key, Colname.charge_time], "left"
     ).select(
         Colname.charge_key,
@@ -112,15 +102,6 @@ def _explode_subscription(
             for c in charge_prices.columns
             if c not in (Colname.charge_key, Colname.charge_time)
         ],
-        # all_dates_df[Colname.charge_key],
-        # all_dates_df[Colname.charge_code],
-        # all_dates_df[Colname.charge_type],
-        # all_dates_df[Colname.charge_owner],
-        # Colname.charge_tax,
-        # # f.col(Colname.resolution).lit(ChargeResolution.DAY.value),
-        # Colname.charge_time,
-        # Colname.charge_price,
-        # Colname.metering_point_id,
     )
 
-    return charges_for_all_days
+    return result
