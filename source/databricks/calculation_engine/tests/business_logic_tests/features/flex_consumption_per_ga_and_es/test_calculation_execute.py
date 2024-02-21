@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from business_logic_tests.features.flex_consumption_per_ga_and_es.states.state import (
+from business_logic_tests.features.flex_consumption_per_ga_and_es.states.scenario_state import (
     get_result,
 )
 from business_logic_tests.scenario_factory import ScenarioFixture

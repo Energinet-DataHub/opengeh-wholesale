@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from business_logic_tests.features.hourly_tariff_for_child_metering_point.states.state import (
+from business_logic_tests.features.hourly_tariff_for_child_metering_point.states.scenario_state import (
     get_result,
 )
 from business_logic_tests.scenario_factory import ScenarioFixture
