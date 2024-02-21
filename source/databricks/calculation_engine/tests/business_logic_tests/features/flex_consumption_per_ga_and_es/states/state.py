@@ -32,7 +32,7 @@ from package.calculation.energy.energy_results import (
 from package.constants import Colname
 
 
-def get_result_flex_consumption_per_ga_and_es(
+def get_result(
     spark: SparkSession, calculation_args: CalculatorArgs, df: DataFrame
 ) -> DataFrame:
 
