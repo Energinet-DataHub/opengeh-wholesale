@@ -24,6 +24,8 @@ import package.codelists as e
 
 import tests.calculation.charges_factory as factory
 
+DEFAULT_TIME_ZONE = "Europe/Copenhagen"
+
 
 class TestWhenInputContainsOtherChargeTypes:
     def test__returns_only_subscription_charge_type(
@@ -64,7 +66,7 @@ class TestWhenInputContainsOtherChargeTypes:
         actual_subscription = get_subscription_charges(
             charge_period_prices,
             charge_link_metering_point_periods,
-            time_zone="Europe/Copenhagen",
+            time_zone=DEFAULT_TIME_ZONE,
         )
 
         # Assert
@@ -130,7 +132,7 @@ class TestWhenChargeMasterPeriodStopsAndStartsAgain:
         actual_subscription = get_subscription_charges(
             charge_period_prices,
             charge_link_metering_point_periods,
-            time_zone="Europe/Copenhagen",
+            time_zone=DEFAULT_TIME_ZONE,
         )
 
         # Assert
@@ -194,7 +196,7 @@ class TestWhenChargeLinkPeriodStopsAndStartsAgain:
         actual_subscription = get_subscription_charges(
             charge_period_prices,
             charge_link_metering_point_periods,
-            time_zone="Europe/Copenhagen",
+            time_zone=DEFAULT_TIME_ZONE,
         )
 
         # Assert
@@ -206,50 +208,65 @@ class TestWhenChargeLinkPeriodStopsAndStartsAgain:
         assert actual_charge_times == expected_charge_times_set
 
 
-@pytest.mark.parametrize(
-    "charge_time, from_date, to_date, expected_day_count",
-    [
-        # leap year
-        (datetime(2020, 2, 1, 0), datetime(2020, 2, 1, 0), datetime(2020, 3, 1, 0), 29),
-        # non-leap year
-        (datetime(2021, 2, 1, 0), datetime(2021, 2, 1, 0), datetime(2021, 3, 1, 0), 28),
-    ],
-)
-def test__get_subscription_charges__split_into_days_between_from_and_to_date(
-    spark: SparkSession,
-    charge_time: datetime,
-    from_date: datetime,
-    to_date: datetime,
-    expected_day_count: int,
-) -> None:
-    # Arrange
-    charge_link_metering_points_rows = [
-        factory.create_charge_link_metering_point_periods_row(
-            charge_type=e.ChargeType.SUBSCRIPTION, from_date=from_date, to_date=to_date
-        ),
-    ]
-    charge_period_prices_rows = [
-        factory.create_subscription_or_fee_charge_period_prices_row(
-            charge_time=charge_time,
-            from_date=from_date,
-            to_date=to_date,
-            charge_type=e.ChargeType.SUBSCRIPTION,
-        ),
-    ]
-
-    charge_link_metering_point_periods = (
-        factory.create_charge_link_metering_point_periods(
-            spark, charge_link_metering_points_rows
+class TestWhenValidInput:
+    @pytest.mark.parametrize(
+        "charge_time, from_date, to_date, expected_day_count",
+        [
+            # leap year
+            (
+                datetime(2020, 2, 1, 0),
+                datetime(2020, 2, 1, 0),
+                datetime(2020, 3, 1, 0),
+                29,
+            ),
+            # non-leap year
+            (
+                datetime(2021, 2, 1, 0),
+                datetime(2021, 2, 1, 0),
+                datetime(2021, 3, 1, 0),
+                28,
+            ),
+        ],
+    )
+    def test__returns_row_for_each_day_in_link_period(
+        self,
+        spark: SparkSession,
+        charge_time: datetime,
+        from_date: datetime,
+        to_date: datetime,
+        expected_day_count: int,
+    ) -> None:
+        # Arrange
+        charge_link_metering_point_periods = (
+            factory.create_charge_link_metering_point_periods(
+                spark,
+                [
+                    factory.create_charge_link_metering_point_periods_row(
+                        charge_type=e.ChargeType.SUBSCRIPTION,
+                        from_date=from_date,
+                        to_date=to_date,
+                    ),
+                ],
+            )
         )
-    )
-    charge_period_prices = factory.create_charge_period_prices(
-        spark, charge_period_prices_rows
-    )
+        charge_period_prices = factory.create_charge_period_prices(
+            spark,
+            [
+                factory.create_subscription_or_fee_charge_period_prices_row(
+                    charge_time=charge_time,
+                    from_date=from_date,
+                    to_date=to_date,
+                    charge_type=e.ChargeType.SUBSCRIPTION,
+                ),
+            ],
+        )
 
-    # Act
-    actual_subscription = get_subscription_charges(
-        charge_period_prices, charge_link_metering_point_periods
-    )
+        # Act
+        actual_subscription = get_subscription_charges(
+            charge_period_prices,
+            charge_link_metering_point_periods,
+            time_zone=DEFAULT_TIME_ZONE,
+        )
 
-    # Assert
-    assert actual_subscription.count() == expected_day_count
+        # Assert
+        assert actual_subscription.count() == expected_day_count
