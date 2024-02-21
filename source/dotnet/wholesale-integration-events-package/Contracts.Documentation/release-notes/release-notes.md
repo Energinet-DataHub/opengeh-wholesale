@@ -4,7 +4,6 @@
 
 Added `CalculationResultVersion` property to `AmountPerChargeResultProducedV1`
 
-
 ## Version 8.1.0
 
 Added `CalculationResultVersion` property to `MonthlyAmountPerChargeResultProducedV1`
