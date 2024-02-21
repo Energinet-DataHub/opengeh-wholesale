@@ -19,12 +19,12 @@ pytest-xdist
 #
 databricks-cli==0.17.6
 dataclasses-json
-delta-spark==2.2.0
+delta-spark==3.1.0
 dependency_injector==4.41.0
 azure-eventhub
 azure-identity==1.12.0
 azure-keyvault-secrets==4.7.0
-azure-monitor-opentelemetry==1.0.0
+azure-monitor-opentelemetry==1.2.0
 azure-monitor-query==1.2.0
 azure-servicebus
 azure-storage-file-datalake==12.11.0
