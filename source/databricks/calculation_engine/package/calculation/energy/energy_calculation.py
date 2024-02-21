@@ -314,6 +314,8 @@ def _calculate_flex_consumption(
         flex_consumption_per_ga_and_brp_and_es
     )
 
+    flex_consumption_per_ga_and_brp_and_es.df.show(1000, truncate=False)
+
     # flex consumption per balance responsible
     if _is_aggregation_or_balance_fixing(calculation_type):
         results.flex_consumption_per_ga_and_brp_and_es = (

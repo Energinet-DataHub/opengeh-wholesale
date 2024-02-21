@@ -32,5 +32,8 @@ def test_execute__returns_expected(
     actual = results.energy_results.flex_consumption_per_ga_and_es.df
     expected = scenario_fixture.expected
 
+    actual.show(1000, truncate=False)
+    expected.show(1000, truncate=False)
+
     assert_schema(actual.schema, expected.schema, ignore_nullability=True)
     assert_dataframes_equal(actual, expected)
