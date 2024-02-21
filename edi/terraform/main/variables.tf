@@ -51,3 +51,15 @@ variable "ip_restrictions" {
   description = "A list of IP restrictions defining allowed access to domain services. Each entry should include an 'ip_address' representing the allowed IP, a 'name' for identification, and an optional 'priority' for rule order. Defaults to `[]`."
   default     = []
 }
+
+variable "feature_management_use_monthly_amount_per_charge_result_produced" {
+  type        = bool
+  description = "Should use monthly amount per charge result produced."
+  default     = false
+}
+
+variable "feature_management_use_amount_per_charge_result_produced" {
+  type        = bool
+  description = "Should use amount per charge result produced."
+  default     = false
+}
