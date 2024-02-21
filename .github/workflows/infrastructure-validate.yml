@@ -67,10 +67,17 @@ jobs:
         run: |
           cp -fR ${{ inputs.infrastructure_path }}/main ${{ env.TERRAFORM_RELEASE_FOLDER_PATH }} 2>/dev/null || :
 
+      - uses: Energinet-DataHub/.github/.github/actions/github-create-token@v13
+        name: Generate Github token
+        id: generate_token
+        with:
+          app_id: ${{ vars.dh3serviceaccount_appid }}
+          private_key: ${{ secrets.dh3serviceaccount_privatekey }}
+
       - name: Terraform validate
         uses: ./.github/actions/terraform-validate
         with:
-          pat_token: ${{ secrets.internal_github_pat }}
+          pat_token: ${{ steps.generate_token.outputs.token }}
           working_directory: ${{ env.TERRAFORM_RELEASE_FOLDER_PATH }}
 
   # If environments exists, we validate the environments
@@ -92,8 +99,15 @@ jobs:
           cp -fR ${{ inputs.infrastructure_path }}/main ${{ env.TERRAFORM_RELEASE_FOLDER_PATH }} 2>/dev/null || :
           cp -fR ${{ inputs.infrastructure_path }}/env/${{ matrix.environment_folder_name }}/* ${{ env.TERRAFORM_RELEASE_FOLDER_PATH }} 2>/dev/null || :
 
+      - uses: Energinet-DataHub/.github/.github/actions/github-create-token@v13
+        name: Generate Github token
+        id: generate_token
+        with:
+          app_id: ${{ vars.dh3serviceaccount_appid }}
+          private_key: ${{ secrets.dh3serviceaccount_privatekey }}
+
       - name: Terraform validate
         uses: ./.github/actions/terraform-validate
         with:
-          pat_token: ${{ secrets.internal_github_pat }}
+          pat_token: ${{ steps.generate_token.outputs.token }}
           working_directory: ${{ env.TERRAFORM_RELEASE_FOLDER_PATH }}
