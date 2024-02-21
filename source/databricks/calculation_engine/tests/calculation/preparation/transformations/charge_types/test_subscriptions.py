@@ -131,17 +131,12 @@ class TestWhenChargePeriodStopsAndStartsAgain:
         )
 
         # Assert
-        actual_charge_times = (
-            (actual_subscription.select(Colname.charge_time).distinct()).orderBy(
-                Colname.charge_time
-            )
-        ).collect()
-        assert len(actual_charge_times) == len(expected_charge_times)
-        for charge_time_col in range(len(expected_charge_times)):
-            assert (
-                actual_charge_times[charge_time_col][0]
-                == expected_charge_times[charge_time_col]
-            )
+        actual_charge_times = set(
+            row[0] for row in actual_subscription.select(Colname.charge_time).collect()
+        )
+        expected_charge_times_set = set(expected_charge_times)
+
+        assert actual_charge_times == expected_charge_times_set
 
 
 @pytest.mark.parametrize(
