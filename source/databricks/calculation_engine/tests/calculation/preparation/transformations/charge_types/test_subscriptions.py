@@ -25,50 +25,53 @@ import package.codelists as e
 import tests.calculation.charges_factory as factory
 
 
-def test__get_subscription_charges__filters_on_subscription_charge_type(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    charge_link_metering_points_rows = [
-        factory.create_charge_link_metering_point_periods_row(
-            charge_type=e.ChargeType.FEE
-        ),
-        factory.create_charge_link_metering_point_periods_row(
-            charge_type=e.ChargeType.SUBSCRIPTION
-        ),
-        factory.create_charge_link_metering_point_periods_row(
-            charge_type=e.ChargeType.FEE
-        ),
-    ]
-    charge_period_prices_rows = [
-        factory.create_subscription_or_fee_charge_period_prices_row(
-            charge_type=e.ChargeType.FEE,
-        ),
-        factory.create_subscription_or_fee_charge_period_prices_row(
-            charge_type=e.ChargeType.SUBSCRIPTION,
-        ),
-        factory.create_tariff_charge_period_prices_row(),
-    ]
-
-    charge_link_metering_point_periods = (
-        factory.create_charge_link_metering_point_periods(
-            spark, charge_link_metering_points_rows
+class TestWhenInputContainsOtherChargeTypes:
+    def test__returns_only_subscription_charge_type(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        charge_link_metering_point_periods = (
+            factory.create_charge_link_metering_point_periods(
+                spark,
+                [
+                    factory.create_charge_link_metering_point_periods_row(
+                        charge_type=e.ChargeType.FEE
+                    ),
+                    factory.create_charge_link_metering_point_periods_row(
+                        charge_type=e.ChargeType.SUBSCRIPTION
+                    ),
+                    factory.create_charge_link_metering_point_periods_row(
+                        charge_type=e.ChargeType.TARIFF
+                    ),
+                ],
+            )
         )
-    )
-    charge_period_prices = factory.create_charge_period_prices(
-        spark, charge_period_prices_rows
-    )
+        charge_period_prices = factory.create_charge_period_prices(
+            spark,
+            [
+                factory.create_subscription_or_fee_charge_period_prices_row(
+                    charge_type=e.ChargeType.FEE
+                ),
+                factory.create_subscription_or_fee_charge_period_prices_row(
+                    charge_type=e.ChargeType.SUBSCRIPTION
+                ),
+                factory.create_tariff_charge_period_prices_row(),
+            ],
+        )
 
-    # Act
-    actual_subscription = get_subscription_charges(
-        charge_period_prices, charge_link_metering_point_periods
-    )
+        # Act
+        actual_subscription = get_subscription_charges(
+            charge_period_prices,
+            charge_link_metering_point_periods,
+            time_zone="Europe/Copenhagen",
+        )
 
-    # Assert
-    assert (
-        actual_subscription.collect()[0][Colname.charge_type]
-        == e.ChargeType.SUBSCRIPTION.value
-    )
+        # Assert
+        assert (
+            actual_subscription.collect()[0][Colname.charge_type]
+            == e.ChargeType.SUBSCRIPTION.value
+        )
 
 
 class TestWhenChargeMasterPeriodStopsAndStartsAgain:
