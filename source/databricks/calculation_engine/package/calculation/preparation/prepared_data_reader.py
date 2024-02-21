@@ -81,18 +81,22 @@ class PreparedDataReader:
 
     def get_fee_charges(
         self,
-        charge_period_prices: ChargePeriodPrices,
+        charge_master_data: DataFrame,
+        charge_prices: DataFrame,
         charge_link_metering_points: ChargeLinkMeteringPointPeriods,
     ) -> DataFrame:
-        return T.get_fee_charges(charge_period_prices, charge_link_metering_points)
+        return T.get_fee_charges(
+            charge_master_data, charge_prices, charge_link_metering_points
+        )
 
     def get_subscription_charges(
         self,
-        charge_period_prices: ChargePeriodPrices,
+        charge_master_data: DataFrame,
+        charge_prices: DataFrame,
         charge_link_metering_points: ChargeLinkMeteringPointPeriods,
     ) -> DataFrame:
         return T.get_subscription_charges(
-            charge_period_prices, charge_link_metering_points
+            charge_master_data, charge_prices, charge_link_metering_points
         )
 
     def get_tariff_charges(

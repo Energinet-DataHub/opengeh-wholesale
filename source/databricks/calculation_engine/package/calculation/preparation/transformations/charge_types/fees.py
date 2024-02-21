@@ -19,14 +19,21 @@ from package.calculation.preparation.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
 )
 from package.calculation.preparation.charge_period_prices import ChargePeriodPrices
+from package.calculation.preparation.transformations.charge_types.helper import (
+    join_charge_master_data_and_charge_price,
+)
 from package.codelists import ChargeType
 from package.constants import Colname
 
 
 def get_fee_charges(
-    charge_period_prices: ChargePeriodPrices,
+    charge_master_data: DataFrame,
+    charge_prices: DataFrame,
     charge_link_metering_point_periods: ChargeLinkMeteringPointPeriods,
 ) -> DataFrame:
+    charge_period_prices = join_charge_master_data_and_charge_price(
+        charge_master_data, charge_prices
+    )
     charge_link_metering_point_periods_df = charge_link_metering_point_periods.df
     fees = charge_period_prices.df.filter(
         f.col(Colname.charge_type) == ChargeType.FEE.value

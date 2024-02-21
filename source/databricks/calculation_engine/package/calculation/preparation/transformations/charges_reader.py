@@ -108,32 +108,6 @@ def _get_charge_price_points(
     return charge_price_points_df
 
 
-def _join_with_charge_prices(
-    charge_master_data: DataFrame, charge_prices: DataFrame
-) -> DataFrame:
-    charge_master_data = charge_master_data.join(
-        charge_prices,
-        [
-            charge_prices[Colname.charge_key] == charge_master_data[Colname.charge_key],
-            charge_prices[Colname.charge_time] >= charge_master_data[Colname.from_date],
-            charge_prices[Colname.charge_time] < charge_master_data[Colname.to_date],
-        ],
-        "inner",
-    ).select(
-        charge_master_data[Colname.charge_key],
-        charge_master_data[Colname.charge_code],
-        charge_master_data[Colname.charge_type],
-        charge_master_data[Colname.charge_owner],
-        charge_master_data[Colname.charge_tax],
-        charge_master_data[Colname.resolution],
-        charge_master_data[Colname.from_date],
-        charge_master_data[Colname.to_date],
-        charge_prices[Colname.charge_time],
-        charge_prices[Colname.charge_price],
-    )
-    return charge_master_data
-
-
 def _add_charge_key_column(charge_df: DataFrame) -> DataFrame:
     return charge_df.withColumn(
         Colname.charge_key,
