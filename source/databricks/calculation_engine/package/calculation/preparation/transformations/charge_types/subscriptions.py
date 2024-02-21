@@ -93,14 +93,9 @@ def _explode_subscription(
 
     result = all_dates_df.join(
         charge_prices, [Colname.charge_key, Colname.charge_time], "left"
-    ).select(
-        Colname.charge_key,
-        Colname.charge_time,
-        *[
-            f.last(f.col(c), ignorenulls=True).over(w).alias(c)
-            for c in charge_prices.columns
-            if c not in (Colname.charge_key, Colname.charge_time)
-        ],
+    ).withColumn(
+        Colname.charge_price,
+        f.last(Colname.charge_price, ignorenulls=True).over(w),
     )
 
     return result
