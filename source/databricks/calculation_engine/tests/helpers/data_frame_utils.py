@@ -15,6 +15,8 @@
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 
+from package.common import assert_schema
+
 
 def set_column(
     df: DataFrame,
@@ -31,3 +33,43 @@ def assert_dataframes_equal(actual: DataFrame, expected: DataFrame) -> None:
     assert actual.subtract(expected).count() == 0
     assert expected.subtract(actual).count() == 0
     assert actual.subtract(expected).count() == 0
+
+
+def assert_dataframes(
+    actual: DataFrame,
+    expected: DataFrame,
+    ignore_nullability: bool = False,
+    ignore_column_order: bool = False,
+    ignore_decimal_scale: bool = False,
+    ignore_decimal_precision: bool = False,
+    print_schema: bool = False,
+    show_dataframe: bool = False,
+    save_expected_to_csv: bool = False,
+    save_actual_to_csv: bool = False,
+) -> None:
+
+    if print_schema:
+        print(actual.schema)
+        print(expected.schema)
+
+    if show_dataframe:
+        actual.show(1000, truncate=False)
+        expected.show(1000, truncate=False)
+
+    if save_actual_to_csv:
+        df = actual.select([f.col(c).cast("string") for c in actual.columns])
+        df.coalesce(1).write.csv("actual.csv", header=True, mode="overwrite", sep=";")
+
+    if save_expected_to_csv:
+        df = expected.select([f.col(c).cast("string") for c in expected.columns])
+        df.coalesce(1).write.csv("expected.csv", header=True, mode="overwrite", sep=";")
+
+    assert_schema(
+        actual.schema,
+        expected.schema,
+        ignore_nullability,
+        ignore_column_order,
+        ignore_decimal_scale,
+        ignore_decimal_precision,
+    )
+    assert_dataframes_equal(actual, expected)

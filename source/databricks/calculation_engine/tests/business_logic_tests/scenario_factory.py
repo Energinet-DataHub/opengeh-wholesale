@@ -13,15 +13,13 @@
 # limitations under the License.
 import concurrent.futures
 import os
-import uuid
 from pathlib import Path
 from typing import Callable
 from unittest.mock import Mock
 
-import pandas as pd
-import yaml
 from pyspark.sql import SparkSession, DataFrame
 
+from business_logic_tests.load_calculation_args import load_calculation_args
 from package.calculation import PreparedDataReader
 from package.calculation.CalculationResults import (
     CalculationResultsContainer,
@@ -36,8 +34,6 @@ from package.calculation_input.schemas import (
     charge_master_data_periods_schema,
     charge_price_points_schema,
 )
-from package.codelists import CalculationType
-from package.constants import Colname
 
 
 class ScenarioFixture:
@@ -65,7 +61,8 @@ class ScenarioFixture:
             "results.csv": None,
         }
 
-        self.calculation_args = self._load_calculation_args()
+        self.calculation_args = load_calculation_args(self.test_path)
+
         frames = self._read_files_in_parallel(
             list(file_schema_dict.keys()), list(file_schema_dict.values())
         )
@@ -86,18 +83,21 @@ class ScenarioFixture:
         self, spark_session: SparkSession, file_path: str, schema: str
     ) -> DataFrame:
 
-        # if file doesn't exist, return empty dataframe
-        if not os.path.exists(self.test_path + file_path):
+        path = self.test_path + file_path
+
+        # if the file doesn't exist, return empty dataframe
+        if not os.path.exists(path):
             return spark_session.createDataFrame([], schema)
 
+        # If the file is the results file, we need to read it differently
+        # because fx. time_window struct type isn't support by the csv reader.
         if file_path.__contains__("results.csv"):
-            return spark_session.read.csv(
-                self.test_path + file_path, header=True, sep=";"
-            )
-        df = spark_session.read.csv(
-            self.test_path + file_path, header=True, schema=schema, sep=";"
-        )
-        # We need to create the dataframe again, because (nullability) is not being applied when reading the csv
+            return spark_session.read.csv(path, header=True, sep=";")
+
+        df = spark_session.read.csv(path, header=True, schema=schema, sep=";")
+
+        # We need to create the dataframe again, because nullability is
+        # not being applied when reading the csv file.
         return spark_session.createDataFrame(df.rdd, schema)
 
     def _read_files_in_parallel(
@@ -110,28 +110,3 @@ class ScenarioFixture:
                 )
             )
         return dataframes
-
-    def _load_calculation_args(self) -> CalculatorArgs:
-        with open(self.test_path + "calculation_arguments.yml", "r") as file:
-            calculation_args = yaml.safe_load(file)
-
-        date_format = "%Y-%m-%d %H:%M:%S"
-
-        return CalculatorArgs(
-            calculation_id=str(uuid.uuid4()),
-            calculation_grid_areas=calculation_args[0]["grid_areas"],  # TODO const?
-            calculation_period_start_datetime=pd.to_datetime(
-                calculation_args[0]["period_start"], format=date_format
-            ),
-            calculation_period_end_datetime=pd.to_datetime(
-                calculation_args[0]["period_end"], format=date_format
-            ),
-            calculation_type=CalculationType(
-                calculation_args[0][Colname.calculation_type]
-            ),
-            calculation_execution_time_start=pd.to_datetime(
-                calculation_args[0][Colname.calculation_execution_time_start],
-                format=date_format,
-            ),
-            time_zone="Europe/Copenhagen",
-        )
