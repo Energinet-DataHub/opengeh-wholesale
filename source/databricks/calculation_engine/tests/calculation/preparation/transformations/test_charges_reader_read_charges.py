@@ -344,19 +344,11 @@ class TestWhenMultipleChargeKeys:
 
         table_reader_mock.read_charge_price_points.return_value = spark.createDataFrame(
             [_create_charges_price_points_row(charge_time=charge_time)]
-            data=[
-                _create_charges_price_points_row(
-                    charge_time=calculation_period_from_date
-                )
-            ]
         )
 
         # Act
         actual = read_charge_period_prices(
             table_reader_mock, period_from_date, period_to_date
-        )
-        actual = read_charges(
-            table_reader_mock, calculation_period_from_date, calculation_period_to_date
         )
 
         # Assert

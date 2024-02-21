@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import pyspark.sql.functions as f
+from pyspark.sql import Window
 from pyspark.sql.dataframe import DataFrame
 
 from package.calculation.preparation.charge_link_metering_point_periods import (
@@ -26,6 +27,7 @@ from package.constants import Colname
 def get_subscription_charges(
     charge_period_prices: ChargePeriodPrices,
     charge_link_metering_point_periods: ChargeLinkMeteringPointPeriods,
+    time_zone: str,
 ) -> DataFrame:
     charge_link_metering_points_df = charge_link_metering_point_periods.df
 
@@ -33,7 +35,7 @@ def get_subscription_charges(
         f.col(Colname.charge_type) == ChargeType.SUBSCRIPTION.value
     )
 
-    subscription_charges = _explode_subscription(subscription_charges)
+    subscription_charges = _explode_subscription(subscription_charges, time_zone)
 
     subscriptions = subscription_charges.join(
         charge_link_metering_points_df,
@@ -66,29 +68,59 @@ def get_subscription_charges(
     return subscriptions
 
 
-def _explode_subscription(charges_df: DataFrame) -> DataFrame:
-    charges_df = (
-        charges_df.withColumn(
-            Colname.date,
+def _explode_subscription(
+    charge_prices: DataFrame,
+    time_zone: str,
+) -> DataFrame:
+    charge_time_local = "charge_time_local"
+    all_dates_df = (
+        charge_prices.select(
+            Colname.charge_key,
+            # Colname.charge_code,
+            Colname.charge_type,
+            Colname.charge_owner,
+            Colname.resolution,
+            Colname.charge_tax,
+            Colname.from_date,
+            Colname.to_date,
+        )
+        .distinct()
+        .withColumn(
+            charge_time_local,
             f.explode(
                 f.expr(
-                    f"sequence({Colname.from_date}, {Colname.to_date}, interval 1 day)"
+                    f"sequence(from_utc_timestamp('{Colname.from_date}', '{time_zone}'), from_utc_timestamp('{Colname.to_date}', '{time_zone}'), interval 1 day)"
                 )
             ),
         )
-        .filter((f.year(Colname.date) == f.year(Colname.charge_time)))
-        .filter((f.month(Colname.date) == f.month(Colname.charge_time)))
-        .drop(Colname.charge_time)
-        .withColumnRenamed(Colname.date, Colname.charge_time)
-        .select(
-            Colname.charge_key,
-            Colname.charge_code,
-            Colname.charge_type,
-            Colname.charge_owner,
-            Colname.charge_tax,
-            Colname.resolution,
+        .withColumn(
             Colname.charge_time,
-            Colname.charge_price,
+            f.to_utc_timestamp(f.col(charge_time_local), time_zone),
         )
+        .drop(charge_time_local)
     )
-    return charges_df
+
+    w = Window.partitionBy(Colname.charge_key).orderBy(Colname.charge_time)
+
+    charges_for_all_days = all_dates_df.join(
+        charge_prices, [Colname.charge_key, Colname.charge_time], "left"
+    ).select(
+        Colname.charge_key,
+        Colname.charge_time,
+        *[
+            f.last(f.col(c), ignorenulls=True).over(w).alias(c)
+            for c in charge_prices.columns
+            if c not in (Colname.charge_key, Colname.charge_time)
+        ],
+        # all_dates_df[Colname.charge_key],
+        # all_dates_df[Colname.charge_code],
+        # all_dates_df[Colname.charge_type],
+        # all_dates_df[Colname.charge_owner],
+        # Colname.charge_tax,
+        # # f.col(Colname.resolution).lit(ChargeResolution.DAY.value),
+        # Colname.charge_time,
+        # Colname.charge_price,
+        # Colname.metering_point_id,
+    )
+
+    return charges_for_all_days

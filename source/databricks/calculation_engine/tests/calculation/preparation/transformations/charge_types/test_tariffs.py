@@ -27,9 +27,6 @@ from package.calculation.wholesale.schemas.tariffs_schema import tariff_schema
 from package.calculation_input.schemas import (
     time_series_point_schema,
 )
-from package.calculation.wholesale.schemas.charges_schema import (
-    charges_schema,
-)
 from package.constants import Colname
 import tests.calculation.preparation.transformations.charge_types.charges_factory as factory
 
