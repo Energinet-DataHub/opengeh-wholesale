@@ -25,10 +25,10 @@ from package.calculation.preparation.transformations import (
 from package.calculation.wholesale.schemas.tariffs_schema import tariff_schema
 from package.calculation_input.schemas import (
     time_series_point_schema,
+    charge_master_data_periods_schema,
+    charge_price_points_schema,
 )
-from package.calculation.wholesale.schemas.charges_schema import (
-    charges_schema,
-)
+
 from package.constants import Colname
 from pyspark.sql import Row
 
@@ -87,14 +87,22 @@ def test__get_tariff_charges__filters_on_resolution(
     """
     # Arrange
     time_series_rows = [factory.create_time_series_row()]
-    charge_period_prices_df = [
-        factory.create_tariff_charge_period_prices_row(
+    charge_master_data_row = [
+        factory.create_tariff_charge_master_data_row(
             charge_code="code_hour",
             resolution=e.ChargeResolution.HOUR,
         ),
-        factory.create_tariff_charge_period_prices_row(
+        factory.create_tariff_charge_master_data_row(
             charge_code="code_day",
             resolution=e.ChargeResolution.DAY,
+        ),
+    ]
+    charge_prices_row = [
+        factory.create_tariff_charge_prices_row(
+            charge_code="code_hour",
+        ),
+        factory.create_tariff_charge_prices_row(
+            charge_code="code_day",
         ),
     ]
     charge_link_metering_points_rows = [
@@ -108,14 +116,14 @@ def test__get_tariff_charges__filters_on_resolution(
         )
     )
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
-    charge_period_prices = factory.create_charge_period_prices(
-        spark, charge_period_prices_df
-    )
+    charge_master_data = spark.createDataFrame(charge_master_data_row)
+    charge_prices = spark.createDataFrame(charge_prices_row)
 
     # Act
     actual = get_tariff_charges(
         time_series,
-        charge_period_prices,
+        charge_master_data,
+        charge_prices,
         charge_link_metering_point_periods,
         charge_resolution,
     )
