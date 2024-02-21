@@ -17,6 +17,13 @@ module "func_wholesale_orchestration" {
   health_check_path                      = "/api/monitor/ready"
   ip_restrictions                        = var.ip_restrictions
   scm_ip_restrictions                    = var.ip_restrictions
+  role_assignments = [
+    {
+      // DataLake
+      resource_id          = data.azurerm_key_vault_secret.st_shared_data_lake_id.value
+      role_definition_name = "Storage Blob Data Contributor"
+    }
+  ]
 
   app_settings = {
     # Logging
@@ -28,12 +35,27 @@ module "func_wholesale_orchestration" {
     "Logging__ApplicationInsights__LogLevel__Energinet.Datahub.Wholesale" = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_WHOLESALE
     "Logging__ApplicationInsights__LogLevel__Energinet.Datahub.Core"      = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE
 
-    # Database
-    "CONNECTIONSTRINGS__DB_CONNECTION_STRING" = local.DB_CONNECTION_STRING
+    # Time zone
+    TIME_ZONE = local.TIME_ZONE
+
+    # Storage (DataLake)
+    STORAGE_CONTAINER_NAME = local.STORAGE_CONTAINER_NAME
+    STORAGE_ACCOUNT_URI    = local.STORAGE_ACCOUNT_URI
+
+    # Service Bus
+    SERVICE_BUS_SEND_CONNECTION_STRING       = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-send-connection-string)"
+    SERVICE_BUS_TRANCEIVER_CONNECTION_STRING = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-transceiver-connection-string)"
+    INTEGRATIONEVENTS_TOPIC_NAME             = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-shres-integrationevent-received-name)"
+    INTEGRATIONEVENTS_SUBSCRIPTION_NAME      = module.sbtsub_wholesale_integration_event_listener.name
+    EDI_INBOX_MESSAGE_QUEUE_NAME             = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbq-edi-inbox-messagequeue-name)"
+    WHOLESALE_INBOX_MESSAGE_QUEUE_NAME       = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbq-wholesale-inbox-messagequeue-name)"
 
     # Databricks
     WorkspaceToken = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-workspace-token)"
     WorkspaceUrl   = "https://${module.dbw.workspace_url}"
     WarehouseId    = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-databricks-sql-endpoint-id)"
+
+    # Database
+    "CONNECTIONSTRINGS__DB_CONNECTION_STRING" = local.DB_CONNECTION_STRING
   }
 }

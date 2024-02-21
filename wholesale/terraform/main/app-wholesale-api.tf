@@ -19,6 +19,7 @@ module "app_wholesale_api" {
   scm_ip_restrictions                    = var.ip_restrictions
   role_assignments = [
     {
+      // DataLake
       resource_id          = data.azurerm_key_vault_secret.st_shared_data_lake_id.value
       role_definition_name = "Storage Blob Data Contributor"
     }
@@ -28,12 +29,20 @@ module "app_wholesale_api" {
   always_on = true
 
   app_settings = {
-    TIME_ZONE            = local.TIME_ZONE
+    # Authentication/authorization
     EXTERNAL_OPEN_ID_URL = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=frontend-open-id-url)"
     INTERNAL_OPEN_ID_URL = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-open-id-url)"
     BACKEND_BFF_APP_ID   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-bff-app-id)"
 
-    # Storage
+    # Logging
+    "Logging__ApplicationInsights__LogLevel__Default"                     = local.LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT
+    "Logging__ApplicationInsights__LogLevel__Energinet.Datahub.Wholesale" = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_WHOLESALE
+    "Logging__ApplicationInsights__LogLevel__Energinet.Datahub.Core"      = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE
+
+    # Time zone
+    TIME_ZONE = local.TIME_ZONE
+
+    # Storage (DataLake)
     STORAGE_CONTAINER_NAME = local.STORAGE_CONTAINER_NAME
     STORAGE_ACCOUNT_URI    = local.STORAGE_ACCOUNT_URI
 
@@ -45,10 +54,6 @@ module "app_wholesale_api" {
     EDI_INBOX_MESSAGE_QUEUE_NAME             = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbq-edi-inbox-messagequeue-name)"
     WHOLESALE_INBOX_MESSAGE_QUEUE_NAME       = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbq-wholesale-inbox-messagequeue-name)"
 
-    # Logging
-    "Logging__ApplicationInsights__LogLevel__Default"                     = local.LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT
-    "Logging__ApplicationInsights__LogLevel__Energinet.Datahub.Wholesale" = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_WHOLESALE
-    "Logging__ApplicationInsights__LogLevel__Energinet.Datahub.Core"      = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE
     # Databricks
     WorkspaceToken   = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-workspace-token)"
     WorkspaceUrl     = "https://${module.dbw.workspace_url}"
