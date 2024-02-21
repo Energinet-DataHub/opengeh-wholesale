@@ -152,69 +152,7 @@ class TestWhenChargeMasterPeriodStopsAndStartsAgain:
 
 
 class TestWhenChargeLinkPeriodStopsAndStartsAgain:
-    def test__returns_expected_charge_times(
-        self,
-        spark: SparkSession,
-    ) -> None:
-        # Arrange
-        first_link_from_date = datetime(2022, 1, 1, 23)
-        first_link_to_date = datetime(2022, 1, 3, 23)
-        second_link_from_date = datetime(2022, 1, 4, 23)
-        second_link_to_date = datetime(2022, 1, 6, 23)
-        master_period_from_date = first_link_from_date
-        master_period_to_date = second_link_to_date
-        expected_charge_times = [
-            datetime(2022, 1, 1, 23),
-            datetime(2022, 1, 2, 23),
-            datetime(2022, 1, 4, 23),
-            datetime(2022, 1, 5, 23),
-        ]
-
-        charge_link_metering_point_periods = (
-            factory.create_charge_link_metering_point_periods(
-                spark,
-                [
-                    factory.create_charge_link_metering_point_periods_row(
-                        charge_type=e.ChargeType.SUBSCRIPTION,
-                        from_date=first_link_from_date,
-                        to_date=first_link_to_date,
-                    ),
-                    factory.create_charge_link_metering_point_periods_row(
-                        charge_type=e.ChargeType.SUBSCRIPTION,
-                        from_date=second_link_from_date,
-                        to_date=second_link_to_date,
-                    ),
-                ],
-            )
-        )
-        charge_period_prices = factory.create_charge_period_prices(
-            spark,
-            [
-                factory.create_subscription_or_fee_charge_period_prices_row(
-                    charge_time=master_period_from_date,
-                    from_date=master_period_from_date,
-                    to_date=master_period_to_date,
-                    charge_type=e.ChargeType.SUBSCRIPTION,
-                ),
-            ],
-        )
-
-        # Act
-        actual_subscription = get_subscription_charges(
-            charge_period_prices,
-            charge_link_metering_point_periods,
-            time_zone=DEFAULT_TIME_ZONE,
-        )
-
-        # Assert
-        actual_charge_times = set(
-            row[0] for row in actual_subscription.select(Colname.charge_time).collect()
-        )
-        expected_charge_times_set = set(expected_charge_times)
-
-        assert actual_charge_times == expected_charge_times_set
-
-    def test__returns_expected_charge_prices(
+    def test__returns_expected_charge_time_and_price(
         self,
         spark: SparkSession,
     ) -> None:
@@ -224,14 +162,14 @@ class TestWhenChargeLinkPeriodStopsAndStartsAgain:
         second_link_from_date = JAN_4TH
         second_link_to_date = JAN_6TH
         input_charge_time_and_price = {
-            JAN_1ST: Decimal("1"),
-            JAN_3RD: Decimal("2"),
+            JAN_1ST: Decimal("1.000000"),
+            JAN_3RD: Decimal("2.000000"),
         }
         expected_charge_time_and_price = {
-            JAN_1ST: Decimal("1"),
-            JAN_2ND: Decimal("1"),
-            JAN_4TH: Decimal("2"),
-            JAN_5TH: Decimal("2"),
+            JAN_1ST: Decimal("1.000000"),
+            JAN_2ND: Decimal("1.000000"),
+            JAN_4TH: Decimal("2.000000"),
+            JAN_5TH: Decimal("2.000000"),
         }
 
         charge_link_metering_point_periods = (
@@ -273,10 +211,11 @@ class TestWhenChargeLinkPeriodStopsAndStartsAgain:
         )
 
         # Assert
-        actual_charge_times = [
-            row[0] for row in actual_subscription.select(Colname.charge_time).collect()
-        ]
-        assert set(actual_charge_times) == set(expected_charge_time_and_price.keys())
+        actual_charge_times_and_price = {
+            row[Colname.charge_time]: row[Colname.charge_price]
+            for row in actual_subscription.orderBy(Colname.charge_time).collect()
+        }
+        assert actual_charge_times_and_price == expected_charge_time_and_price
 
 
 class TestWhenValidInput:

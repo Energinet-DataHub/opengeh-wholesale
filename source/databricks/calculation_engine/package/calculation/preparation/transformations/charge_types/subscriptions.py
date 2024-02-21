@@ -64,7 +64,6 @@ def get_subscription_charges(
         charge_link_metering_points_df[Colname.grid_area],
         charge_link_metering_points_df[Colname.energy_supplier_id],
     )
-    subscriptions.show()
 
     return subscriptions
 
