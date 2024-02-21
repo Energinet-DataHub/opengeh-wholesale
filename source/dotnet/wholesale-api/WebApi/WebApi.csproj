@@ -27,7 +27,6 @@ limitations under the License.
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0" />
     <PackageReference Include="Asp.Versioning.Mvc" Version="8.0.0" />
     <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.0.0" />
-    <PackageReference Include="AspNetCore.HealthChecks.AzureServiceBus" Version="8.0.0" />
     <PackageReference Include="Energinet.DataHub.Core.App.Common.Security" Version="8.3.1" />
     <PackageReference Include="Energinet.DataHub.Core.App.WebApp" Version="8.3.1" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
