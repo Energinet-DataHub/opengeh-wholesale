@@ -18,10 +18,12 @@ using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Configuration.Options;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Calculations.IntegrationTests.Fixture.Database;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.Components;
-using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.Database;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 using Microsoft.Extensions.Configuration;
 
@@ -32,7 +34,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
         public WholesaleWebApiFixture()
         {
             AzuriteManager = new AzuriteManager(useOAuth: true);
-            DatabaseManager = new WholesaleDatabaseManager();
+            DatabaseManager = new WholesaleDatabaseManager<DatabaseContext>();
             DatabricksTestManager = new DatabricksTestManager();
             IntegrationTestConfiguration = new IntegrationTestConfiguration();
 
@@ -44,7 +46,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
                 TestLogger);
         }
 
-        public WholesaleDatabaseManager DatabaseManager { get; }
+        public WholesaleDatabaseManager<DatabaseContext> DatabaseManager { get; }
 
         public DatabricksTestManager DatabricksTestManager { get; }
 

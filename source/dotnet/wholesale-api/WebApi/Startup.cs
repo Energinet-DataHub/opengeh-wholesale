@@ -14,7 +14,6 @@
 
 using System.Reflection;
 using System.Text.Json.Serialization;
-using System.Threading;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using Azure.Messaging.ServiceBus;
@@ -23,32 +22,21 @@ using Energinet.DataHub.Core.App.Common.Reflection;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.Databricks.Jobs.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.Logging.LoggingMiddleware;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
-using Energinet.DataHub.Wholesale.WebApi.HealthChecks;
-using Energinet.DataHub.Wholesale.WebApi.HealthChecks.DataLake;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks.ServiceBus;
-using Energinet.DataHub.Wholesale.WebApi.Telemetry;
-using HealthChecks.AzureServiceBus;
-using HealthChecks.AzureServiceBus.Configuration;
 using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.Azure.Databricks.Client.Models;
 using Microsoft.Extensions.Azure;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
 
 namespace Energinet.DataHub.Wholesale.WebApi;
 
 public class Startup
 {
-    private const string SubsystemName = "wholesale";
-
     public Startup(IConfiguration configuration, IWebHostEnvironment environment)
     {
         Configuration = configuration;
@@ -130,7 +118,7 @@ public class Startup
         AddJwtTokenSecurity(serviceCollection);
         AddHealthCheck(serviceCollection);
 
-        serviceCollection.AddSingleton<ITelemetryInitializer>(new SubsystemInitializer(SubsystemName));
+        serviceCollection.AddSingleton<ITelemetryInitializer>(new SubsystemInitializer(TelemetryConstants.SubsystemName));
         serviceCollection.AddApplicationInsightsTelemetry(options =>
         {
             options.EnableAdaptiveSampling = false;
@@ -202,20 +190,11 @@ public class Startup
         var serviceBusOptions = Configuration.Get<ServiceBusOptions>()!;
         serviceCollection.AddHealthChecks()
             .AddLiveCheck()
-            .AddDbContextCheck<EventsDatabaseContext>(
-                name: HealthCheckNames.SqlDatabaseContext)
             .AddAzureServiceBusSubscriptionUsingWebSockets(
                 serviceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING,
                 serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
                 serviceBusOptions.INTEGRATIONEVENTS_SUBSCRIPTION_NAME,
                 name: HealthCheckNames.IntegrationEventsTopicSubscription)
-            .AddDataLakeHealthCheck(
-                _ => Configuration.Get<DataLakeOptions>()!,
-                name: HealthCheckNames.DataLake)
-            .AddDatabricksJobsApiHealthCheck(
-                name: HealthCheckNames.DatabricksJobsApi)
-            .AddDatabricksSqlStatementApiHealthCheck(
-                name: HealthCheckNames.DatabricksSqlStatementsApi)
             .AddAzureServiceBusQueueUsingWebSockets(
                 serviceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING,
                 serviceBusOptions.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME,

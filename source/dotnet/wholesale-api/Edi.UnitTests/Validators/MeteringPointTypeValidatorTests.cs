@@ -23,7 +23,10 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 
 public class MeteringPointTypeValidatorTests
 {
-    private static readonly ValidationError _invalidMeteringPointType = new("Metering point type skal være en af følgende: {PropertyName} / Metering point type has to be one of the following: {PropertyName}", "D18");
+    private static readonly ValidationError _invalidMeteringPointType =
+        new(
+            "Metering point type skal være tom eller en af følgende: {PropertyName} / Metering point type has to be empty or one of the following: {PropertyName}",
+            "D18");
 
     private readonly MeteringPointTypeValidationRule _sut = new();
 
@@ -31,6 +34,7 @@ public class MeteringPointTypeValidatorTests
     [InlineData(MeteringPointType.Consumption)]
     [InlineData(MeteringPointType.Production)]
     [InlineData(MeteringPointType.Exchange)]
+    [InlineData("")]
     public async Task Validate_WhenMeteringPointIsValid_ReturnsExpectedNoValidationErrors(string meteringPointType)
     {
         // Arrange

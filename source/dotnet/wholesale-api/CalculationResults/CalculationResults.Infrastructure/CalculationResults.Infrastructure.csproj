@@ -1,24 +1,22 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyName>Energinet.DataHub.Wholesale.CalculationResults.Infrastructure</AssemblyName>
     <RootNamespace>Energinet.DataHub.Wholesale.CalculationResults.Infrastructure</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.17.1" />
-    <PackageReference Include="CsvHelper" Version="30.1.0" />
+    <PackageReference Include="CsvHelper" Version="31.0.0" />
     <PackageReference Include="Energinet.DataHub.Core.Databricks.SqlStatementExecution" Version="8.2.1" />
     <PackageReference Include="Energinet.DataHub.Core.JsonSerialization" Version="2.2.9" />
-    <PackageReference Include="NodaTime" Version="3.1.10" />
+    <PackageReference Include="NodaTime" Version="3.1.11" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
-    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.8.14">
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.9.28">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Calculations\Calculations.Interfaces\Calculations.Interfaces.csproj" />
-    <ProjectReference Include="..\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
+    <ProjectReference Include="..\CalculationResults.Application\CalculationResults.Application.csproj" />
     <ProjectReference Include="..\..\Common.Infrastructure\Common.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\Common.Interfaces\Common.Interfaces.csproj" />
   </ItemGroup>
 </Project>

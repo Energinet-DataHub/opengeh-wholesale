@@ -37,13 +37,6 @@ def calculator_args_balance_fixing(
     data_lake_path: str, calculation_input_path: str
 ) -> CalculatorArgs:
     return CalculatorArgs(
-        data_storage_account_name="foo",
-        data_storage_account_credentials=ClientSecretCredential("foo", "foo", "foo"),
-        wholesale_container_path=data_lake_path,
-        calculation_input_path=calculation_input_path,
-        time_series_points_table_name=None,
-        metering_point_periods_table_name=None,
-        grid_loss_metering_points_table_name=None,
         calculation_id=C.executed_balance_fixing_calculation_id,
         calculation_type=CalculationType.BALANCE_FIXING,
         calculation_grid_areas=["805", "806"],
@@ -62,13 +55,6 @@ def calculator_args_wholesale_fixing(
     args.calculation_id = C.executed_wholesale_calculation_id
     args.calculation_type = CalculationType.WHOLESALE_FIXING
     return args
-
-
-@pytest.fixture(scope="session")
-def any_calculator_args(
-    calculator_args_balance_fixing: CalculatorArgs,
-) -> CalculatorArgs:
-    return calculator_args_balance_fixing
 
 
 @pytest.fixture(scope="session")

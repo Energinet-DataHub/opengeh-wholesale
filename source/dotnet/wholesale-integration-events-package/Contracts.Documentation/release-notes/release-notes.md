@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 8.1.0
+
+Added `CalculationResultVersion` property to `MonthlyAmountPerChargeResultProducedV1`
+
 ## Version 8.0.2
 
 Renamed use of word "domain" to "subsystem.
