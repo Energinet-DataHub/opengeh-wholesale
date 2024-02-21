@@ -52,7 +52,7 @@ schema = StructType(
 )
 
 
-def get_result(
+def get_result_hourly_tariff_per_ga_co_es(
     spark: SparkSession, calculation_args: CalculatorArgs, df: DataFrame
 ) -> DataFrame:
     df = df.withColumn("calculation_id", lit(calculation_args.calculation_id))
