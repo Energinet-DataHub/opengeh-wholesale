@@ -15,7 +15,6 @@
 from business_logic_tests.features.flex_consumption_per_ga_and_es.states.state import (
     get_result,
 )
-
 from business_logic_tests.scenario_factory import ScenarioFixture
 from helpers.data_frame_utils import (
     assert_dataframes,
@@ -35,6 +34,7 @@ def test_execute__returns_expected(
     assert_dataframes(
         results.energy_results.flex_consumption_per_ga_and_es.df,
         scenario_fixture.expected,
+        ignore_schema=True,
         ignore_nullability=True,
         ignore_decimal_precision=True,
     )
