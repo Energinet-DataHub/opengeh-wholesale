@@ -20,7 +20,7 @@ on:
 
 jobs:
   #
-  # License and Markdown Check
+  # License and Markdown Check.
   #
   ci_base:
     uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@v13
