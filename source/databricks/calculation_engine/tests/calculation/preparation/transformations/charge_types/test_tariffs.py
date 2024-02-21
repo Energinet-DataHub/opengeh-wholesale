@@ -633,7 +633,7 @@ def test__get_tariff_charges__can_handle_missing_charges(
     charges_rows = [
         factory.create_tariff_charges_row(),
     ]
-    metering_point_charge_link_rows = [
+    charge_link_metering_points_rows = [
         factory.create_charge_link_metering_points_row(
             charge_type=e.ChargeType.TARIFF,
         ),
@@ -641,13 +641,17 @@ def test__get_tariff_charges__can_handle_missing_charges(
 
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
     charges = spark.createDataFrame(charges_rows, charges_schema)
-    metering_point_charge_link = spark.createDataFrame(metering_point_charge_link_rows)
+    charge_link_metering_point_periods = (
+        factory.create_charge_link_metering_point_periods(
+            spark, charge_link_metering_points_rows
+        )
+    )
 
     # Act
     actual = get_tariff_charges(
         time_series,
         charges,
-        metering_point_charge_link,
+        charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
     )
 
@@ -697,7 +701,7 @@ def test__get_tariff_charges__can_handle_daylight_saving_time(
             resolution=e.ChargeResolution.DAY,
         ),
     ]
-    metering_point_charge_link_rows = [
+    charge_link_metering_points_rows = [
         factory.create_charge_link_metering_points_row(
             charge_type=e.ChargeType.TARIFF,
             to_date=datetime(2020, 12, 31, 23),
@@ -706,13 +710,17 @@ def test__get_tariff_charges__can_handle_daylight_saving_time(
 
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
     charges = spark.createDataFrame(charges_rows, charges_schema)
-    metering_point_charge_link = spark.createDataFrame(metering_point_charge_link_rows)
+    charge_link_metering_point_periods = (
+        factory.create_charge_link_metering_point_periods(
+            spark, charge_link_metering_points_rows
+        )
+    )
 
     # Act
     actual = get_tariff_charges(
         time_series,
         charges,
-        metering_point_charge_link,
+        charge_link_metering_point_periods,
         e.ChargeResolution.DAY,
     )
 
