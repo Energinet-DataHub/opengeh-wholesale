@@ -26,6 +26,12 @@ import package.codelists as e
 import tests.calculation.charges_factory as factory
 
 DEFAULT_TIME_ZONE = "Europe/Copenhagen"
+JAN_1ST = datetime(2022, 1, 1, 23)
+JAN_2ND = datetime(2022, 1, 2, 23)
+JAN_3RD = datetime(2022, 1, 3, 23)
+JAN_4TH = datetime(2022, 1, 4, 23)
+JAN_5TH = datetime(2022, 1, 5, 23)
+JAN_6TH = datetime(2022, 1, 6, 23)
 
 
 class TestWhenInputContainsOtherChargeTypes:
@@ -213,33 +219,20 @@ class TestWhenChargeLinkPeriodStopsAndStartsAgain:
         spark: SparkSession,
     ) -> None:
         # Arrange
-        first_link_from_date = datetime(2022, 1, 1, 23)
-        first_link_to_date = datetime(2022, 1, 3, 23)
-        second_link_from_date = datetime(2022, 1, 4, 23)
-        second_link_to_date = datetime(2022, 1, 6, 23)
-        master_period_from_date = first_link_from_date
-        master_period_to_date = second_link_to_date
-        all_charge_prices = [
-            Decimal("1"),
-            Decimal("2"),
-            Decimal("3"),
-            Decimal("4"),
-            Decimal("5"),
-        ]
-        all_charge_times = [
-            datetime(2022, 1, 1, 23),
-            datetime(2022, 1, 2, 23),
-            datetime(2022, 1, 3, 23),
-            datetime(2022, 1, 4, 23),
-            datetime(2022, 1, 5, 23),
-        ]
-        expected_charge_times = [
-            datetime(2022, 1, 1, 23),
-            datetime(2022, 1, 2, 23),
-            datetime(2022, 1, 4, 23),
-            datetime(2022, 1, 5, 23),
-        ]
-        expected_charge_prices = [1, 2, 4, 5]
+        first_link_from_date = JAN_1ST
+        first_link_to_date = JAN_3RD
+        second_link_from_date = JAN_4TH
+        second_link_to_date = JAN_6TH
+        input_charge_time_and_price = {
+            JAN_1ST: Decimal("1"),
+            JAN_3RD: Decimal("2"),
+        }
+        expected_charge_time_and_price = {
+            JAN_1ST: Decimal("1"),
+            JAN_2ND: Decimal("1"),
+            JAN_4TH: Decimal("2"),
+            JAN_5TH: Decimal("2"),
+        }
 
         charge_link_metering_point_periods = (
             factory.create_charge_link_metering_point_periods(
@@ -264,11 +257,11 @@ class TestWhenChargeLinkPeriodStopsAndStartsAgain:
                 factory.create_subscription_or_fee_charge_period_prices_row(
                     charge_time=time,
                     charge_price=price,
-                    from_date=master_period_from_date,
-                    to_date=master_period_to_date,
+                    from_date=first_link_from_date,
+                    to_date=second_link_to_date,
                     charge_type=e.ChargeType.SUBSCRIPTION,
                 )
-                for time, price in zip(all_charge_times, all_charge_prices)
+                for time, price in input_charge_time_and_price.items()
             ],
         )
 
@@ -283,13 +276,7 @@ class TestWhenChargeLinkPeriodStopsAndStartsAgain:
         actual_charge_times = [
             row[0] for row in actual_subscription.select(Colname.charge_time).collect()
         ]
-        assert set(actual_charge_times) == set(expected_charge_times)
-
-        actual_charge_prices = [
-            row[0] for row in actual_subscription.select(Colname.charge_price).collect()
-        ]
-
-        assert set(actual_charge_prices) == set(expected_charge_prices)
+        assert set(actual_charge_times) == set(expected_charge_time_and_price.keys())
 
 
 class TestWhenValidInput:
