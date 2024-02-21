@@ -48,12 +48,21 @@ class PreparedDataReader:
             grid_areas, metering_point_periods_df, self._table_reader
         )
 
-    def get_charge_period_prices(
+    def get_charge_master_data(
         self,
         period_start_datetime: datetime,
         period_end_datetime: datetime,
-    ) -> ChargePeriodPrices:
-        return T.read_charge_period_prices(
+    ) -> DataFrame:
+        return T.read_charge_master_data(
+            self._table_reader, period_start_datetime, period_end_datetime
+        )
+
+    def get_charge_prices(
+        self,
+        period_start_datetime: datetime,
+        period_end_datetime: datetime,
+    ) -> DataFrame:
+        return T.read_charge_prices(
             self._table_reader, period_start_datetime, period_end_datetime
         )
 
@@ -89,13 +98,15 @@ class PreparedDataReader:
     def get_tariff_charges(
         self,
         time_series: DataFrame,
-        charge_period_prices: ChargePeriodPrices,
+        charge_master_data: DataFrame,
+        charge_prices: DataFrame,
         charges_link_metering_point_periods: ChargeLinkMeteringPointPeriods,
         resolution: ChargeResolution,
     ) -> DataFrame:
         return T.get_tariff_charges(
             time_series,
-            charge_period_prices,
+            charge_master_data,
+            charge_prices,
             charges_link_metering_point_periods,
             resolution,
         )

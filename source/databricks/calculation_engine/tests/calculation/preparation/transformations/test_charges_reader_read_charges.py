@@ -21,7 +21,7 @@ from pyspark import Row
 from pyspark.sql import SparkSession
 
 from package import calculation_input
-from package.calculation.preparation.transformations import read_charge_period_prices
+from package.calculation.preparation.transformations import read_charge_master_data
 from package.calculation_input.schemas import charge_master_data_periods_schema
 
 from package.calculation_input.table_reader import TableReader

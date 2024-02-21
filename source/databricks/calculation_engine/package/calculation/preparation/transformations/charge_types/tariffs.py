@@ -20,17 +20,18 @@ import package.calculation.energy.aggregators.transformations as t
 from package.calculation.preparation.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
 )
-from package.calculation.preparation.charge_period_prices import ChargePeriodPrices
 from package.codelists import ChargeType, ChargeResolution
 from package.constants import Colname
 
 
 def get_tariff_charges(
     metering_point_time_series: DataFrame,
-    charge_period_prices: ChargePeriodPrices,
+    charge_master_data: DataFrame,
+    charge_prices: DataFrame,
     charge_link_metering_points: ChargeLinkMeteringPointPeriods,
     resolution: ChargeResolution,
 ) -> DataFrame:
+    charge_period_prices = _join_with_charge_prices(charge_master_data, charge_prices)
     tariffs = charge_period_prices.df.filter(
         f.col(Colname.charge_type) == ChargeType.TARIFF.value
     ).filter(f.col(Colname.resolution) == resolution.value)
@@ -54,6 +55,32 @@ def get_tariff_charges(
     tariffs.schema[Colname.energy_supplier_id].nullable = False
 
     return tariffs
+
+
+def _join_with_charge_prices(
+    charge_master_data: DataFrame, charge_prices: DataFrame
+) -> DataFrame:
+    charge_master_data = charge_master_data.join(
+        charge_prices,
+        [
+            charge_prices[Colname.charge_key] == charge_master_data[Colname.charge_key],
+            charge_prices[Colname.charge_time] >= charge_master_data[Colname.from_date],
+            charge_prices[Colname.charge_time] < charge_master_data[Colname.to_date],
+        ],
+        "inner",
+    ).select(
+        charge_master_data[Colname.charge_key],
+        charge_master_data[Colname.charge_code],
+        charge_master_data[Colname.charge_type],
+        charge_master_data[Colname.charge_owner],
+        charge_master_data[Colname.charge_tax],
+        charge_master_data[Colname.resolution],
+        charge_master_data[Colname.from_date],
+        charge_master_data[Colname.to_date],
+        charge_prices[Colname.charge_time],
+        charge_prices[Colname.charge_price],
+    )
+    return charge_master_data
 
 
 def _join_with_charge_link_metering_points(
