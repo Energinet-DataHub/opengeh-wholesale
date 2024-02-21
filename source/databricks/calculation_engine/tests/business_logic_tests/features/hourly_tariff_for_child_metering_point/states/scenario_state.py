@@ -52,10 +52,10 @@ schema = StructType(
 )
 
 
-def get_result(
+def get_expected_result(
     spark: SparkSession, calculation_args: CalculatorArgs, df: DataFrame
 ) -> DataFrame:
-    df = df.withColumn("calculation_id", lit(calculation_args.calculation_id))
+    df = df.withColumn(Colname.calculation_id, lit(calculation_args.calculation_id))
     df = df.withColumn(
         Colname.calculation_execution_time_start,
         lit(calculation_args.calculation_execution_time_start).cast(TimestampType()),
@@ -67,7 +67,7 @@ def get_result(
     df = df.withColumn("amount", col("amount").cast(DecimalType(38, 6)))
     df = df.withColumn("time", col("time").cast(TimestampType()))
     df = df.withColumn("is_tax", col("is_tax").cast(BooleanType()))
-    df = df.withColumn("settlement_method", lit("flex"))  # TODO AJW
+    df = df.withColumn(Colname.settlement_method, lit("flex"))  # TODO AJW
 
     df = df.withColumn(
         "quantity_qualities",

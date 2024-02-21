@@ -32,14 +32,17 @@ from package.calculation.energy.energy_results import (
 from package.constants import Colname
 
 
-def get_result(
+def get_expected_results(
     spark: SparkSession, calculation_args: CalculatorArgs, df: DataFrame
 ) -> DataFrame:
 
     parse_time_window_udf = udf(
         _parse_time_window,
         StructType(
-            [StructField("start", TimestampType()), StructField("end", TimestampType())]
+            [
+                StructField(Colname.start, TimestampType()),
+                StructField(Colname.end, TimestampType()),
+            ]
         ),
     )
 
@@ -54,17 +57,9 @@ def get_result(
     df = df.withColumn(
         Colname.quantity, parse_qualities_string_udf(df[Colname.quantity])
     )
-    df = df.withColumnRenamed("quantity", "qualities")
+    df = df.withColumnRenamed(Colname.quantity, Colname.qualities)
 
     return spark.createDataFrame(df.rdd, energy_results_schema)
-
-
-time_window_schema = StructType(
-    [
-        StructField("start", TimestampType()),
-        StructField("end", TimestampType()),
-    ]
-)
 
 
 def _parse_time_window(time_window_str: str) -> tuple[datetime, datetime]:
