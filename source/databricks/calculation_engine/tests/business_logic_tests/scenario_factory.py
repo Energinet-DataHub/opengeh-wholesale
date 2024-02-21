@@ -58,7 +58,7 @@ class ScenarioFixture:
             "charge_master_data_periods.csv": charge_master_data_periods_schema,
             "charge_link_periods.csv": charge_link_periods_schema,
             "charge_price_points.csv": charge_price_points_schema,
-            "results.csv": None,
+            "expected_results.csv": None,
         }
 
         self.calculation_args = load_calculation_args(self.test_path)
@@ -91,7 +91,7 @@ class ScenarioFixture:
 
         # If the file is the results file, we need to read it differently
         # because fx. time_window struct type isn't support by the csv reader.
-        if file_path.__contains__("results.csv"):
+        if file_path.__contains__("expected_results.csv"):
             return spark_session.read.csv(path, header=True, sep=";")
 
         df = spark_session.read.csv(path, header=True, schema=schema, sep=";")
