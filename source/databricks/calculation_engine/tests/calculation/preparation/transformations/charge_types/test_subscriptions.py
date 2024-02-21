@@ -83,6 +83,67 @@ class TestWhenInputContainsOtherChargeTypes:
         )
 
 
+class TestWhenChargePriceChangesDuringPeriod:
+    def test__returns_expected_charge_time_and_price(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        from_date = JAN_1ST
+        to_date = JAN_6TH
+        input_charge_time_and_price = {
+            JAN_1ST: Decimal("1.000000"),
+            JAN_3RD: Decimal("2.000000"),
+        }
+        expected_charge_time_and_price = {
+            JAN_1ST: Decimal("1.000000"),
+            JAN_2ND: Decimal("1.000000"),
+            JAN_3RD: Decimal("2.000000"),
+            JAN_4TH: Decimal("2.000000"),
+            JAN_5TH: Decimal("2.000000"),
+        }
+
+        charge_link_metering_point_periods = (
+            factory.create_charge_link_metering_point_periods(
+                spark,
+                [
+                    factory.create_charge_link_metering_point_periods_row(
+                        charge_type=e.ChargeType.SUBSCRIPTION,
+                        from_date=from_date,
+                        to_date=to_date,
+                    ),
+                ],
+            )
+        )
+        charge_period_prices = factory.create_charge_period_prices(
+            spark,
+            [
+                factory.create_subscription_or_fee_charge_period_prices_row(
+                    charge_time=time,
+                    charge_price=price,
+                    from_date=from_date,
+                    to_date=to_date,
+                    charge_type=e.ChargeType.SUBSCRIPTION,
+                )
+                for time, price in input_charge_time_and_price.items()
+            ],
+        )
+
+        # Act
+        actual_subscription = get_subscription_charges(
+            charge_period_prices,
+            charge_link_metering_point_periods,
+            time_zone=DEFAULT_TIME_ZONE,
+        )
+
+        # Assert
+        actual_charge_times_and_price = {
+            row[Colname.charge_time]: row[Colname.charge_price]
+            for row in actual_subscription.orderBy(Colname.charge_time).collect()
+        }
+        assert actual_charge_times_and_price == expected_charge_time_and_price
+
+
 class TestWhenChargeMasterPeriodStopsAndStartsAgain:
     def test__returns_expected_charge_times(
         self,
