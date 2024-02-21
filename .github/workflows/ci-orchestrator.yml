@@ -23,7 +23,7 @@ jobs:
   # License and Markdown Check
   #
   ci_base:
-    uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@v12
+    uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@v13
     secrets:
       pat_token: ${{ secrets.internal_github_pat }}
 
@@ -35,7 +35,7 @@ jobs:
 
   ci_docker:
     needs: changes
-    uses: Energinet-DataHub/.github/.github/workflows/python-build-and-push-docker-image.yml@v12
+    uses: Energinet-DataHub/.github/.github/workflows/python-build-and-push-docker-image.yml@v13
     with:
       docker_changed: ${{ needs.changes.outputs.docker == 'true' }}
       docker_changed_in_commit: ${{ needs.changes.outputs.docker_in_commit == 'true' }}
@@ -60,7 +60,7 @@ jobs:
   render_c4model_views:
     needs: changes
     if: ${{ needs.changes.outputs.render_c4model_views == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/structurizr-render-diagrams.yml@v12
+    uses: Energinet-DataHub/.github/.github/workflows/structurizr-render-diagrams.yml@v13
     with:
       structurizr_workspace_filename: views
       included_model_filename: model
