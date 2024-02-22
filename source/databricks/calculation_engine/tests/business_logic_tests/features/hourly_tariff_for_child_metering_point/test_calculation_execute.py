@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from business_logic_tests.features.hourly_tariff_for_child_metering_point.states.scenario_state import (
-    get_expected_result,
+    get_expected_results,
 )
 from business_logic_tests.scenario_factory import ScenarioFixture
 from helpers.data_frame_utils import assert_dataframes
@@ -22,7 +22,7 @@ def test_execute__returns_expected(
     scenario_fixture: ScenarioFixture,
 ) -> None:
     # Arrange
-    scenario_fixture.setup(get_expected_result)
+    scenario_fixture.setup(get_expected_results)
 
     # Act
     results = scenario_fixture.execute()

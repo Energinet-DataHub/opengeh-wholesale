@@ -36,6 +36,8 @@ def get_expected_results(
     spark: SparkSession, calculation_args: CalculatorArgs, df: DataFrame
 ) -> DataFrame:
 
+    f = calculation_args
+
     parse_time_window_udf = udf(
         _parse_time_window,
         StructType(

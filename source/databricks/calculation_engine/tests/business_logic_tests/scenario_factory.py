@@ -76,7 +76,7 @@ class ScenarioFixture:
         self.table_reader.read_charge_links_periods.return_value = frames[4]
         self.table_reader.read_charge_price_points.return_value = frames[5]
 
-        self.expected = get_result(self.spark, self.calculation_args, df=frames[6])
+        self.expected = get_result(self.spark, self.calculation_args, frames[6])
 
     def execute(self) -> CalculationResultsContainer:
         return _execute(self.calculation_args, PreparedDataReader(self.table_reader))

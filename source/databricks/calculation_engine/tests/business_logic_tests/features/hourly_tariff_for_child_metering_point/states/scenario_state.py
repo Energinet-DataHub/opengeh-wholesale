@@ -52,7 +52,7 @@ schema = StructType(
 )
 
 
-def get_expected_result(
+def get_expected_results(
     spark: SparkSession, calculation_args: CalculatorArgs, df: DataFrame
 ) -> DataFrame:
 
