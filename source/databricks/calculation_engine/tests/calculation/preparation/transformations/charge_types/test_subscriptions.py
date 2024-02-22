@@ -40,14 +40,23 @@ def test__get_subscription_charges__filters_on_subscription_charge_type(
             charge_type=e.ChargeType.FEE
         ),
     ]
-    charge_period_prices_rows = [
-        factory.create_subscription_or_fee_charge_period_prices_row(
+    charge_master_data_rows = [
+        factory.create_charge_master_data_row(
+            charge_type=e.ChargeType.FEE, resolution=e.ChargeResolution.MONTH
+        ),
+        factory.create_charge_master_data_row(
+            charge_type=e.ChargeType.SUBSCRIPTION, resolution=e.ChargeResolution.MONTH
+        ),
+        factory.create_charge_master_data_row(),
+    ]
+    charge_prices_rows = [
+        factory.create_charge_prices_row(
             charge_type=e.ChargeType.FEE,
         ),
-        factory.create_subscription_or_fee_charge_period_prices_row(
+        factory.create_charge_prices_row(
             charge_type=e.ChargeType.SUBSCRIPTION,
         ),
-        factory.create_tariff_charge_period_prices_row(),
+        factory.create_charge_prices_row(),
     ]
 
     charge_link_metering_point_periods = (
@@ -55,13 +64,12 @@ def test__get_subscription_charges__filters_on_subscription_charge_type(
             spark, charge_link_metering_points_rows
         )
     )
-    charge_period_prices = factory.create_charge_period_prices(
-        spark, charge_period_prices_rows
-    )
+    charge_master_data = spark.createDataFrame(charge_master_data_rows)
+    charge_prices = spark.createDataFrame(charge_prices_rows)
 
     # Act
     actual_subscription = get_subscription_charges(
-        charge_period_prices, charge_link_metering_point_periods
+        charge_master_data, charge_prices, charge_link_metering_point_periods
     )
 
     # Assert
@@ -93,12 +101,18 @@ def test__get_subscription_charges__split_into_days_between_from_and_to_date(
             charge_type=e.ChargeType.SUBSCRIPTION, from_date=from_date, to_date=to_date
         ),
     ]
-    charge_period_prices_rows = [
-        factory.create_subscription_or_fee_charge_period_prices_row(
-            charge_time=charge_time,
+    charge_master_data_rows = [
+        factory.create_charge_master_data_row(
             from_date=from_date,
             to_date=to_date,
             charge_type=e.ChargeType.SUBSCRIPTION,
+            resolution=e.ChargeResolution.MONTH,
+        ),
+    ]
+    charge_prices_rows = [
+        factory.create_charge_prices_row(
+            charge_type=e.ChargeType.SUBSCRIPTION,
+            charge_time=charge_time,
         ),
     ]
 
@@ -107,13 +121,12 @@ def test__get_subscription_charges__split_into_days_between_from_and_to_date(
             spark, charge_link_metering_points_rows
         )
     )
-    charge_period_prices = factory.create_charge_period_prices(
-        spark, charge_period_prices_rows
-    )
+    charge_master_data = spark.createDataFrame(charge_master_data_rows)
+    charge_prices = spark.createDataFrame(charge_prices_rows)
 
     # Act
     actual_subscription = get_subscription_charges(
-        charge_period_prices, charge_link_metering_point_periods
+        charge_master_data, charge_prices, charge_link_metering_point_periods
     )
 
     # Assert
