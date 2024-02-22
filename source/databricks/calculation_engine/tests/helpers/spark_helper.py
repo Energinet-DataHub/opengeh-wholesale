@@ -12,8 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-COMMITTED_MIGRATIONS_FILE_NAME = "migration_state.csv"
-WHEEL_NAME = "package"
-MIGRATION_SCRIPTS_FOLDER_PATH = "package.datamigration.migration_scripts"
-CURRENT_STATE_SCHEMAS_FOLDER_PATH = "package.datamigration.current_state_scripts.schemas"
-CURRENT_STATE_TABLES_FOLDER_PATH = "package.datamigration.current_state_scripts.tables"
+from pyspark.sql import SparkSession
+
+
+def reset_spark_catalog(spark: SparkSession) -> None:
+    schemas = spark.catalog.listDatabases()
+    for schema in schemas:
+        if schema.name != "default":
+            spark.sql(f"DROP DATABASE IF EXISTS {schema.name} CASCADE")

@@ -12,8 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-COMMITTED_MIGRATIONS_FILE_NAME = "migration_state.csv"
-WHEEL_NAME = "package"
-MIGRATION_SCRIPTS_FOLDER_PATH = "package.datamigration.migration_scripts"
-CURRENT_STATE_SCHEMAS_FOLDER_PATH = "package.datamigration.current_state_scripts.schemas"
-CURRENT_STATE_TABLES_FOLDER_PATH = "package.datamigration.current_state_scripts.tables"
+# File required in order for importlib.resources.contents to see the resources in the package

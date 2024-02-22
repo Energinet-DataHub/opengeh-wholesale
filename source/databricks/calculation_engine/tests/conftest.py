@@ -40,13 +40,9 @@ from package.calculation_input.schemas import (
 )
 from package.codelists import CalculationType
 from package.container import create_and_configure_container, Container
-from package.datamigration.migration import _apply_migration
-from package.datamigration.migration_script_args import MigrationScriptArgs
-from package.datamigration.uncommitted_migrations import _get_all_migrations
 from package.infrastructure import paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
-    OUTPUT_DATABASE_NAME,
     OUTPUT_FOLDER,
     INPUT_DATABASE_NAME,
 )
@@ -61,7 +57,7 @@ def test_files_folder_path(tests_path: str) -> str:
 
 @pytest.fixture(scope="session")
 def spark() -> SparkSession:
-    return configure_spark_with_delta_pip(  # see https://docs.delta.io/latest/quick-start.html#python
+    session = (
         SparkSession.builder.config("spark.sql.streaming.schemaInference", True)
         .config("spark.ui.showConsoleProgress", "false")
         .config("spark.ui.enabled", "false")
@@ -83,6 +79,9 @@ def spark() -> SparkSession:
             "org.apache.spark.sql.delta.catalog.DeltaCatalog",
         )
     ).getOrCreate()
+
+    yield session
+    session.stop()
 
 
 @pytest.fixture(scope="session")
@@ -186,35 +185,6 @@ def calculation_input_path(data_lake_path: str, calculation_input_folder: str) -
 @pytest.fixture(scope="session")
 def calculation_output_path(data_lake_path: str) -> str:
     return f"{data_lake_path}/{OUTPUT_FOLDER}"
-
-
-@pytest.fixture(scope="session")
-def migrations_executed(
-    spark: SparkSession,
-    data_lake_path: str,
-    calculation_input_folder: str,
-    calculation_output_path: str,
-    energy_input_data_written_to_delta: None,
-) -> None:
-    # Clean up to prevent problems from previous test runs
-    shutil.rmtree(calculation_output_path, ignore_errors=True)
-    spark.sql(f"DROP DATABASE IF EXISTS {OUTPUT_DATABASE_NAME} CASCADE")
-
-    migration_args = MigrationScriptArgs(
-        data_storage_account_url="foo",
-        data_storage_account_name="foo",
-        data_storage_container_name="foo",
-        data_storage_credential=ClientSecretCredential("foo", "foo", "foo"),
-        calculation_input_folder=calculation_input_folder,
-        spark=spark,
-    )
-    # Overwrite in test
-    migration_args.storage_container_path = data_lake_path
-
-    # Execute all migrations
-    migrations = _get_all_migrations()
-    for name in migrations:
-        _apply_migration(name, migration_args)
 
 
 @pytest.fixture(scope="session")

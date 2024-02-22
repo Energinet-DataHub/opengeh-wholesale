@@ -12,111 +12,59 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import importlib
-from azure.identity import ClientSecretCredential
-
 from package.infrastructure import paths, initialize_spark
 import package.infrastructure.environment_variables as env_vars
-from .committed_migrations import upload_committed_migration
 from package.infrastructure.paths import (
     WHOLESALE_CONTAINER_NAME,
-    OUTPUT_FOLDER,
-    INPUT_DATABASE_NAME,
-)
-from package.infrastructure.storage_account_access.data_lake_file_manager import (
-    DataLakeFileManager,
 )
 from .migration_script_args import MigrationScriptArgs
-from .uncommitted_migrations import get_uncommitted_migrations
-from package.infrastructure.paths import OUTPUT_DATABASE_NAME, TEST
 import package.datamigration.constants as c
 
-
-def split_string_by_go(string: str) -> list[str]:
-    """
-    Databricks doesn't support multi-statement queries.
-    So this emulates the "GO" used with SQL Server T-SQL.
-    """
-    lines = string.replace("\r\n", "\n").split("\n")
-    sections = []
-    current_section: list[str] = []
-
-    for line in lines:
-        if "go" in line.lower():
-            if current_section:
-                sections.append("\n".join(current_section))
-                current_section = []
-        else:
-            current_section.append(line)
-
-    if current_section:
-        sections.append("\n".join(current_section))
-
-    return [s for s in sections if s and not s.isspace()]
-
-
-def _substitute_placeholders(
-    statement: str, migration_args: MigrationScriptArgs
-) -> str:
-    return (
-        statement.replace(
-            "{CONTAINER_PATH}", migration_args.storage_container_path
-        )  # abfss://...
-        .replace("{OUTPUT_DATABASE_NAME}", OUTPUT_DATABASE_NAME)  # "wholesale_output"
-        .replace("{INPUT_DATABASE_NAME}", INPUT_DATABASE_NAME)  # "wholesale"
-        .replace("{OUTPUT_FOLDER}", OUTPUT_FOLDER)  # "calculation-output"
-        .replace(
-            "{INPUT_FOLDER}", migration_args.calculation_input_folder
-        )  # Usually "calculation_input"
-        .replace("{TEST}", TEST)
-    )
-
-
-def _apply_migration(migration_name: str, migration_args: MigrationScriptArgs) -> None:
-    sql_content = importlib.resources.read_text(
-        f"{c.WHEEL_NAME}.{c.MIGRATION_SCRIPTS_FOLDER_PATH}", f"{migration_name}.sql"
-    )
-
-    for statement_template in split_string_by_go(sql_content):
-        statement = _substitute_placeholders(statement_template, migration_args)
-        migration_args.spark.sql(statement)
-
-
-def _migrate_data_lake(
-    storage_account_name: str,
-    storage_account_credential: ClientSecretCredential,
-    calculation_input_folder: str,
-) -> None:
-    file_manager = DataLakeFileManager(
-        storage_account_name, storage_account_credential, WHOLESALE_CONTAINER_NAME
-    )
-
-    spark = initialize_spark()
-
-    uncommitted_migrations = get_uncommitted_migrations(file_manager)
-    uncommitted_migrations.sort()
-
-    storage_account_url = paths.get_storage_account_url(
-        storage_account_name,
-    )
-
-    migration_args = MigrationScriptArgs(
-        data_storage_account_url=storage_account_url,
-        data_storage_account_name=storage_account_name,
-        data_storage_container_name=WHOLESALE_CONTAINER_NAME,
-        data_storage_credential=storage_account_credential,
-        spark=spark,
-        calculation_input_folder=calculation_input_folder,
-    )
-
-    for name in uncommitted_migrations:
-        _apply_migration(name, migration_args)
-        upload_committed_migration(file_manager, name)
+from spark_sql_migrations import (
+    create_and_configure_container,
+    schema_migration_pipeline,
+    SparkSqlMigrationsConfiguration,
+)
+from .substitutions import substitutions
+from .schema_config import schema_config
 
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
 def migrate_data_lake() -> None:
     storage_account_name = env_vars.get_storage_account_name()
-    credential = env_vars.get_storage_account_credential()
     calculation_input_folder = env_vars.get_calculation_input_folder_name()
-    _migrate_data_lake(storage_account_name, credential, calculation_input_folder)
+
+    spark = initialize_spark()
+
+    storage_account_url = paths.get_storage_account_url(
+        storage_account_name,
+    )
+
+    container_url = paths.get_container_url(
+        storage_account_name,
+        WHOLESALE_CONTAINER_NAME
+    )
+
+    migration_args = MigrationScriptArgs(
+        data_storage_account_url=storage_account_url,
+        data_storage_account_name=storage_account_name,
+        storage_container_path=container_url,
+        spark=spark,
+        calculation_input_folder=calculation_input_folder,
+    )
+
+    spark_config = SparkSqlMigrationsConfiguration(
+        migration_schema_name="schema_migration",
+        migration_schema_location=migration_args.storage_container_path,
+        migration_table_name="executed_migrations",
+        migration_table_location=migration_args.storage_container_path,
+        migration_scripts_folder_path=c.MIGRATION_SCRIPTS_FOLDER_PATH,
+        current_state_schemas_folder_path=c.CURRENT_STATE_SCHEMAS_FOLDER_PATH,
+        current_state_tables_folder_path=c.CURRENT_STATE_TABLES_FOLDER_PATH,
+        schema_config=schema_config,
+        substitution_variables=substitutions(migration_args),
+    )
+
+    create_and_configure_container(spark_config)
+    schema_migration_pipeline.migrate()
+

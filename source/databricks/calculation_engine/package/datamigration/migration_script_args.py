@@ -28,14 +28,12 @@ class MigrationScriptArgs:
         self,
         data_storage_account_url: str,
         data_storage_account_name: str,
-        data_storage_container_name: str,
-        data_storage_credential: ClientSecretCredential,
+        storage_container_path: str,
         spark: SparkSession,
         calculation_input_folder: str,
     ) -> None:
         self.storage_account_url = data_storage_account_url
         self.storage_account_name = data_storage_account_name
-        self.storage_container_path = f"abfss://{data_storage_container_name}@{self.storage_account_name}.dfs.core.windows.net"
-        self.storage_credential = data_storage_credential
+        self.storage_container_path = storage_container_path
         self.spark = spark
         self.calculation_input_folder = calculation_input_folder

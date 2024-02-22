@@ -12,6 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-class MigrationError(Exception):
-    pass
+# File required in order for importlib.resources.contents to see the resources in the package

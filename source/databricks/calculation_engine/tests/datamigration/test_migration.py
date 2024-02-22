@@ -12,61 +12,109 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from unittest.mock import ANY, patch, call, Mock
-import pytest
-
-from package.datamigration import migration
-from package.datamigration.migration import (
-    _migrate_data_lake,
-    DataLakeFileManager,
-    initialize_spark,
-    get_uncommitted_migrations,
-    upload_committed_migration,
-    _apply_migration,
-)
-from package.datamigration.uncommitted_migrations import _get_all_migrations
+from pyspark.sql import SparkSession
+from unittest.mock import Mock
+import tests.helpers.spark_helper as spark_helper
+import package.datamigration.schema_config as schema_config
+import package.datamigration.migration as sut
+import tests.helpers.mock_helper as mock_helper
 
 
-@patch.object(migration, initialize_spark.__name__)
-@patch.object(migration, get_uncommitted_migrations.__name__)
-@patch.object(migration, upload_committed_migration.__name__)
-def test__migrate_datalake__when_script_not_found__raise_exception(
-    mock_upload_committed_migration,
-    mock_uncommitted_migrations,
-    mock_spark,
-):
-    # Arrange
-    mock_uncommitted_migrations.return_value = ["not_a_module"]
-    mock_credential = Mock()
-
-    # Act and Assert
-    with pytest.raises(Exception):
-        _migrate_data_lake("dummy_storage_name", mock_credential, "some_folder")
+def _diff(schema1, schema2):
+    return {
+        'fields_in_1_not_2': set(schema1) - set(schema2),
+        'fields_in_2_not_1': set(schema2) - set(schema1)
+    }
 
 
-@patch.object(migration, initialize_spark.__name__)
-@patch.object(migration, DataLakeFileManager.__name__)
-@patch.object(migration, get_uncommitted_migrations.__name__)
-@patch.object(migration, upload_committed_migration.__name__)
-@patch.object(migration, _apply_migration.__name__)
-def test__migrate_datalake__upload_called_with_correct_name(
-    mock_apply_migration: Mock,
-    mock_upload_committed_migration: Mock,
-    mock_uncommitted_migrations: Mock,
-    mock_file_manager: Mock,
-    mock_spark: Mock,
+def test_migrate_with_schema_migration_scripts_compare_schemas(
+    mocker: Mock, spark: SparkSession
 ) -> None:
     # Arrange
-    mock_credential = Mock()
-    all_migrations = _get_all_migrations()
-    mock_uncommitted_migrations.return_value = all_migrations
+    mocker.patch.object(
+        sut.paths,
+        sut.paths.get_storage_account_url.__name__,
+        side_effect=mock_helper.base_path_helper,
+    )
 
-    calls = []
-    for name in all_migrations:
-        calls.append(call(ANY, name))
+    mocker.patch.object(
+        sut.env_vars,
+        sut.env_vars.get_storage_account_name.__name__,
+        return_value="storage_account",
+    )
+
+    mocker.patch.object(
+        sut.env_vars,
+        sut.env_vars.get_calculation_input_folder_name.__name__,
+        return_value="storage_account_2",
+    )
+
+    mocker.patch.object(
+        sut.paths,
+        sut.paths.get_container_url.__name__,
+        return_value="storage_account",
+    )
+
+    spark_helper.reset_spark_catalog(spark)
 
     # Act
-    _migrate_data_lake("dummy_storage_name", mock_credential, "some_folder")
+    sut.migrate_data_lake()
 
     # Assert
-    mock_upload_committed_migration.assert_has_calls(calls)
+    for schema in schema_config.schema_config:
+        for table in schema.tables:
+            actual_table = spark.table(f"{schema.name}.{table.name}")
+            diff = _diff(actual_table.schema, table.schema)
+            assert actual_table.schema == table.schema
+
+
+def test_migrate_with_schema_migration_scripts_compare_result_with_schema_config(
+    mocker: Mock, spark: SparkSession
+) -> None:
+    """If this test fails, it indicates that a SQL script is creating something that the Schema Config does not know
+    about"""
+    # Arrange
+    mocker.patch.object(
+        sut.paths,
+        sut.paths.get_storage_account_url.__name__,
+        side_effect=mock_helper.base_path_helper,
+    )
+
+    mocker.patch.object(
+        sut.env_vars,
+        sut.env_vars.get_storage_account_name.__name__,
+        return_value="storage_account",
+    )
+
+    mocker.patch.object(
+        sut.env_vars,
+        sut.env_vars.get_calculation_input_folder_name.__name__,
+        return_value="storage_account",
+    )
+
+    mocker.patch.object(
+        sut.paths,
+        sut.paths.get_container_url.__name__,
+        return_value="storage_account",
+    )
+
+    spark_helper.reset_spark_catalog(spark)
+
+    # Act
+    sut.migrate_data_lake()
+
+    # Assert
+    schemas = schema_config.schema_config
+    actual_schemas = spark.catalog.listDatabases()
+    for db in actual_schemas:
+        if db.name == "default" or db.name == "schema_migration":
+            continue
+
+        schema = next((x for x in schemas if x.name == db.name), None)
+        assert schema is not None, f"Schema {db.name} is not in the schema config"
+        tables = spark.catalog.listTables(db.name)
+        for table in tables:
+            table_config = next((x for x in schema.tables if x.name == table.name), None)
+            assert table_config is not None, f"Table {table.name} is not in the schema config"
+            actual_table = spark.table(f"{db.name}.{table.name}")
+            assert actual_table.schema == table_config.schema

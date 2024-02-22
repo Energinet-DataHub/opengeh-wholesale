@@ -43,6 +43,10 @@ def get_storage_account_url(storage_account_name: str) -> str:
     return f"https://{storage_account_name}.dfs.core.windows.net"
 
 
+def get_container_url(storage_account_name: str, container: str) -> str:
+    return f"abfss://{container}@{storage_account_name}.dfs.core.windows.net"
+
+
 def get_container_root_path(storage_account_name: str) -> str:
     return f"abfss://{WHOLESALE_CONTAINER_NAME}@{storage_account_name}.dfs.core.windows.net/"
 
