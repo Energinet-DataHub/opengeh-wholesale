@@ -48,15 +48,15 @@ class ScenarioFixture:
 
         correlations = get_correlations(self.table_reader)
         self.calculation_args = create_calculation_args(self.test_path)
-        frames = self._read_files_in_parallel(correlations)
+        dataframes = self._read_files_in_parallel(correlations)
 
         for i, (_, reader) in enumerate(correlations.values()):
             if reader is not None:
-                reader.return_value = frames[i]
+                reader.return_value = dataframes[i]
 
         self.expected = get_expected_result(
             self.spark,
-            frames[-1],
+            dataframes[-1],
             self.calculation_args,
         )
 

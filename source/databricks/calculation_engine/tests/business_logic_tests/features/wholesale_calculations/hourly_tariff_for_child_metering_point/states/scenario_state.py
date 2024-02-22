@@ -51,7 +51,7 @@ schema = StructType(
 )
 
 
-def get_expected_results(*args) -> DataFrame:
+def get_expected_hourly_tariff_per_ga_co_es(*args) -> DataFrame:
     spark: SparkSession = args[0]
     df: DataFrame = args[1]
     calculation_args = args[2]

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from business_logic_tests.features.energy_calculations.flex_consumption_per_ga_and_es.states.scenario_state import (
-    get_expected_results,
+    get_expected_flex_consumption_per_ga_and_es,
 )
 from business_logic_tests.scenario_factory import ScenarioFixture
 from helpers.data_frame_utils import (
@@ -24,7 +24,7 @@ def test_execute__returns_expected(
     scenario_fixture: ScenarioFixture,
 ) -> None:
     # Arrange
-    scenario_fixture.setup(get_expected_results)
+    scenario_fixture.setup(get_expected_flex_consumption_per_ga_and_es)
 
     # Act
     results = scenario_fixture.execute()

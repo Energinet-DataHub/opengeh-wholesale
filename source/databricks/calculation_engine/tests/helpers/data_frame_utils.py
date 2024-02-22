@@ -43,6 +43,23 @@ def assert_dataframes(
     ignore_decimal_scale: bool = False,
     ignore_decimal_precision: bool = False,
     ignore_schema: bool = False,
+) -> None:
+
+    if ignore_schema:
+        assert_schema(
+            actual.schema,
+            expected.schema,
+            ignore_nullability,
+            ignore_column_order,
+            ignore_decimal_scale,
+            ignore_decimal_precision,
+        )
+    assert_dataframes_equal(actual, expected)
+
+
+def dataframes_show(
+    actual: DataFrame,
+    expected: DataFrame,
     print_schema: bool = False,
     show_dataframe: bool = False,
     save_expected_to_csv: bool = False,
@@ -64,14 +81,3 @@ def assert_dataframes(
     if save_expected_to_csv:
         df = expected.select([f.col(c).cast("string") for c in expected.columns])
         df.coalesce(1).write.csv("expected.csv", header=True, mode="overwrite", sep=";")
-
-    if ignore_schema:
-        assert_schema(
-            actual.schema,
-            expected.schema,
-            ignore_nullability,
-            ignore_column_order,
-            ignore_decimal_scale,
-            ignore_decimal_precision,
-        )
-    assert_dataframes_equal(actual, expected)
