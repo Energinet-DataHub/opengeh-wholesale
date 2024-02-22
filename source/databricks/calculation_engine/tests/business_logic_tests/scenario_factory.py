@@ -20,7 +20,7 @@ from unittest.mock import Mock
 from pyspark.sql import SparkSession, DataFrame
 
 from business_logic_tests.correlations import get_correlations
-from business_logic_tests.load_calculation_args import create_calculation_args
+from business_logic_tests.create_calculation_args import create_calculation_args
 from package.calculation import PreparedDataReader
 from package.calculation.CalculationResults import (
     CalculationResultsContainer,
