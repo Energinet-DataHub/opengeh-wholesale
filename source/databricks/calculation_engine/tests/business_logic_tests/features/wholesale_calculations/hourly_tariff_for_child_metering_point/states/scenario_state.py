@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pyspark.sql import functions as f, DataFrame, SparkSession
+from pyspark.sql import functions as f, DataFrame
 from pyspark.sql.functions import lit, col
 from pyspark.sql.types import (
     StringType,
@@ -23,7 +23,6 @@ from pyspark.sql.types import (
     StructField,
 )
 
-from package.calculation.calculator_args import CalculatorArgs
 from package.constants import Colname
 
 schema = StructType(
@@ -52,11 +51,11 @@ schema = StructType(
 )
 
 
-def get_expected_results(
-    spark: SparkSession,
-    df: DataFrame,
-    calculation_args: CalculatorArgs,
-) -> DataFrame:
+def get_expected_results(*args) -> DataFrame:
+    spark = args[0]
+    df = args[1]
+    calculation_args = args[2]
+
     df = df.withColumn(Colname.calculation_id, lit(calculation_args.calculation_id))
     df = df.withColumn(
         Colname.calculation_execution_time_start,

@@ -14,7 +14,7 @@
 from ast import literal_eval
 from datetime import datetime
 
-from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, udf
 from pyspark.sql.types import (
     StringType,
@@ -25,20 +25,15 @@ from pyspark.sql.types import (
     StructField,
 )
 
-import package.calculation.calculator_args as calculator_args
 from package.calculation.energy.energy_results import (
     energy_results_schema,
 )
 from package.constants import Colname
 
 
-def get_expected_results(
-    spark: SparkSession,
-    df: DataFrame,
-    calculation_args: calculator_args.CalculatorArgs,
-) -> DataFrame:
-
-    print(calculation_args)
+def get_expected_results(*args) -> DataFrame:
+    spark = args[0]
+    df = args[1]
 
     parse_time_window_udf = udf(
         _parse_time_window,
