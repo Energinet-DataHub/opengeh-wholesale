@@ -1,7 +1,7 @@
 locals {
   # Databricks runtime version for migration and calculation jobs
-  # Python version for "13.3.x-scala2.12" is 3.10.12
-  spark_version = "13.3.x-scala2.12"
+  # Python version for "14.3.x-scala2.12" is 3.11.7
+  spark_version = "14.3.x-scala2.12"
 
   # Storage
   STORAGE_CONTAINER_NAME = "wholesale"
