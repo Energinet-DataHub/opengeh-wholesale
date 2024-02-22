@@ -55,6 +55,20 @@ module "apimao_ebix_dequeuemessage" {
                   </soap-env:Envelope>
                 </set-body>
               </when>
+              <when condition="@(context.Response.StatusCode == 404)">
+                  <set-status code="200" />
+                  <set-body template="liquid">
+                  <soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/">
+                    <soap-env:Body>
+                      <soap-env:Fault>
+                        <faultcode>soap-env:Client</faultcode>
+                        <faultstring>B2B-900:{{context.Variables.RequestId}}</faultstring>
+                        <faultactor />
+                      </soap-env:Fault>
+                    </soap-env:Body>
+                  </soap-env:Envelope>
+                </set-body>
+              </when>
             </choose>
           </outbound>
           <on-error>
