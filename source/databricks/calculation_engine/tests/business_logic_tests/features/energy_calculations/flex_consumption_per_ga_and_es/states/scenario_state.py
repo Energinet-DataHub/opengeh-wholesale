@@ -25,13 +25,13 @@ from pyspark.sql.types import (
     StructField,
 )
 
-import package.constants as c
 from package.calculation.energy.energy_results import (
     energy_results_schema,
 )
+from package.constants import Colname
 
 
-def get_expected_flex_consumption_per_ga_and_es(*args) -> DataFrame:
+def get_expected_flex_consumption_per_ga_and_es(*args: any) -> DataFrame:
     spark: SparkSession = args[0]
     df: DataFrame = args[1]
 
@@ -39,24 +39,24 @@ def get_expected_flex_consumption_per_ga_and_es(*args) -> DataFrame:
         _parse_time_window,
         StructType(
             [
-                StructField(c.Colname.start, TimestampType()),
-                StructField(c.Colname.end, TimestampType()),
+                StructField(Colname.start, TimestampType()),
+                StructField(Colname.end, TimestampType()),
             ]
         ),
     )
 
     df = df.withColumn(
-        c.Colname.time_window, parse_time_window_udf(df[c.Colname.time_window])
+        Colname.time_window, parse_time_window_udf(df[Colname.time_window])
     )
     df = df.withColumn(
-        c.Colname.sum_quantity, col(c.Colname.sum_quantity).cast(DecimalType(38, 6))
+        Colname.sum_quantity, col(Colname.sum_quantity).cast(DecimalType(38, 6))
     )
 
     parse_qualities_string_udf = udf(_parse_qualities_string, ArrayType(StringType()))
     df = df.withColumn(
-        c.Colname.quantity, parse_qualities_string_udf(df[c.Colname.quantity])
+        Colname.quantity, parse_qualities_string_udf(df[Colname.quantity])
     )
-    df = df.withColumnRenamed(c.Colname.quantity, c.Colname.qualities)
+    df = df.withColumnRenamed(Colname.quantity, Colname.qualities)
 
     return spark.createDataFrame(df.rdd, energy_results_schema)
 
