@@ -16,6 +16,7 @@ pytest-xdist
 
 #
 # CODE DEPENDENCIES
+#  - Make sure any packages specified in setup.py are pinned to the same version here
 #
 databricks-cli==0.18
 dataclasses-json
