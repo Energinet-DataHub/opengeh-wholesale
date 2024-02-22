@@ -48,8 +48,8 @@ class ScenarioFixture:
         self.spark = spark
         self.table_reader = Mock()
 
-    def setup(self, get_result: Callable[..., DataFrame]) -> None:
-        file_path = inspect.getfile(get_result)
+    def setup(self, get_expected_result: Callable[..., DataFrame]) -> None:
+        file_path = inspect.getfile(get_expected_result)
         parent_dir = os.path.dirname(os.path.dirname(file_path))
         self.test_path = parent_dir + "/test_data/"
 
@@ -76,7 +76,7 @@ class ScenarioFixture:
         self.table_reader.read_charge_links_periods.return_value = frames[4]
         self.table_reader.read_charge_price_points.return_value = frames[5]
 
-        self.expected = get_result(self.spark, self.calculation_args, frames[6])
+        self.expected = get_expected_result(self.spark, self.calculation_args, frames[6])
 
     def execute(self) -> CalculationResultsContainer:
         return _execute(self.calculation_args, PreparedDataReader(self.table_reader))
