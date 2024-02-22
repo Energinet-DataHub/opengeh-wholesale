@@ -1,8 +1,8 @@
 # Wholesale Contracts Release notes
 
-## Version 8.1.1
+## Version 8.2.0
 
-No changes.
+Added `CalculationResultVersion` property to `AmountPerChargeResultProducedV1`
 
 ## Version 8.1.0
 

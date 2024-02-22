@@ -1,14 +1,14 @@
 version: "3.9"
 services:
   python-unit-test:
-    image: ghcr.io/energinet-datahub/opengeh-wholesale/databricks-unit-test:${IMAGE_TAG:-latest}
+    image: ghcr.io/energinet-datahub/opengeh-wholesale/python-unit-test:${IMAGE_TAG:-latest}
     volumes:
       # Forwards the local Docker socket to the container.
       - /var/run/docker.sock:/var/run/docker-host.sock
       # Update this to wherever you want VS Code to mount the folder of your project
       - ..:/workspaces/opengeh-wholesale:cached
       # Map to Azure CLI token cache location (on Linux)
-      - "${HOME}/.azure:/root/.azure"
+      - "${HOME}/.azure:/home/joyvan/.azure"
     environment:
       # Pass the environment variables from your shell straight through to your containers.
       # No warning is issued if the variable in the shell environment is not set.
