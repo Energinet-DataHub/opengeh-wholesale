@@ -34,6 +34,4 @@ def test_execute__returns_expected(
     assert_dataframes(
         results.energy_results.flex_consumption_per_ga_and_es.df,
         scenario_fixture.expected,
-        ignore_nullability=True,
-        ignore_decimal_precision=True,
     )

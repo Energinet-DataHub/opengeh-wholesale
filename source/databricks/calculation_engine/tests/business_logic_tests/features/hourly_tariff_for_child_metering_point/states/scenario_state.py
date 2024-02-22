@@ -55,6 +55,9 @@ schema = StructType(
 def get_expected_result(
     spark: SparkSession, calculation_args: CalculatorArgs, df: DataFrame
 ) -> DataFrame:
+
+    print(df.schema)
+
     df = df.withColumn(Colname.calculation_id, lit(calculation_args.calculation_id))
     df = df.withColumn(
         Colname.calculation_execution_time_start,

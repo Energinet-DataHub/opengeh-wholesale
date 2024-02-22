@@ -91,15 +91,16 @@ class ScenarioFixture:
         if not os.path.exists(path):
             return spark_session.createDataFrame([], schema)
 
-        # If the file is the results file, we need to read it differently
-        # because fx. time_window struct type isn't support by the csv reader.
+        df = spark_session.read.csv(path, header=True, sep=";", schema=schema)
+
+        # All the types in the expected dataframe (build from the expected results file) are
+        # string types. These need to be convert first to the correct types before applying
+        # the schema.
         if file_path.__contains__("expected_results.csv"):
-            return spark_session.read.csv(path, header=True, sep=";")
+            return df
 
-        df = spark_session.read.csv(path, header=True, schema=schema, sep=";")
-
-        # We need to create the dataframe again, because nullability is
-        # not being applied when reading the csv file.
+        # We need to create the dataframe again because nullability and precision
+        # are not applied when reading the csv file.
         return spark_session.createDataFrame(df.rdd, schema)
 
     def _read_files_in_parallel(
