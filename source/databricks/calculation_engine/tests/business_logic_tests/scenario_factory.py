@@ -19,21 +19,14 @@ from unittest.mock import Mock
 
 from pyspark.sql import SparkSession, DataFrame
 
-from business_logic_tests.load_calculation_args import load_calculation_args
+from business_logic_tests.correlations import get_correlations
+from business_logic_tests.load_calculation_args import create_calculation_args
 from package.calculation import PreparedDataReader
 from package.calculation.CalculationResults import (
     CalculationResultsContainer,
 )
 from package.calculation.calculation import _execute
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation_input.schemas import (
-    metering_point_period_schema,
-    time_series_point_schema,
-    grid_loss_metering_points_schema,
-    charge_link_periods_schema,
-    charge_master_data_periods_schema,
-    charge_price_points_schema,
-)
 
 
 class ScenarioFixture:
@@ -53,32 +46,17 @@ class ScenarioFixture:
         parent_dir = os.path.dirname(os.path.dirname(file_path))
         self.test_path = parent_dir + "/test_data/"
 
-        file_schema_dict = {
-            "metering_point_periods.csv": metering_point_period_schema,
-            "time_series_points.csv": time_series_point_schema,
-            "grid_loss_metering_points.csv": grid_loss_metering_points_schema,
-            "charge_master_data_periods.csv": charge_master_data_periods_schema,
-            "charge_link_periods.csv": charge_link_periods_schema,
-            "charge_price_points.csv": charge_price_points_schema,
-            "expected_results.csv": None,
-        }
+        correlations = get_correlations(self.table_reader)
+        self.calculation_args = create_calculation_args(self.test_path)
+        frames = self._read_files_in_parallel(correlations)
 
-        self.calculation_args = load_calculation_args(self.test_path)
-
-        frames = self._read_files_in_parallel(
-            list(file_schema_dict.keys()), list(file_schema_dict.values())
-        )
-
-        self.table_reader.read_metering_point_periods.return_value = frames[0]
-        self.table_reader.read_time_series_points.return_value = frames[1]
-        self.table_reader.read_grid_loss_metering_points.return_value = frames[2]
-        self.table_reader.read_charge_master_data_periods.return_value = frames[3]
-        self.table_reader.read_charge_links_periods.return_value = frames[4]
-        self.table_reader.read_charge_price_points.return_value = frames[5]
+        for i, (_, reader) in enumerate(correlations.values()):
+            if reader is not None:
+                reader.return_value = frames[i]
 
         self.expected = get_expected_result(
             self.spark,
-            frames[6],
+            frames[-1],
             self.calculation_args,
         )
 
@@ -108,12 +86,16 @@ class ScenarioFixture:
         return spark_session.createDataFrame(df.rdd, schema)
 
     def _read_files_in_parallel(
-        self, file_names: list, schemas: list
+        self, correlations: dict[str, tuple]
     ) -> list[DataFrame]:
+        schemas = [t[0] for t in correlations.values()]
         with concurrent.futures.ThreadPoolExecutor() as executor:
             dataframes = list(
                 executor.map(
-                    self._read_file, [self.spark] * len(file_names), file_names, schemas
+                    self._read_file,
+                    [self.spark] * len(correlations.keys()),
+                    correlations.keys(),
+                    schemas,
                 )
             )
         return dataframes

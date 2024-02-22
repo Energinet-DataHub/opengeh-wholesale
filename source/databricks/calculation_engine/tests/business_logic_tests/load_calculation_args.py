@@ -21,7 +21,7 @@ from package.codelists import CalculationType
 from package.constants import Colname
 
 
-def load_calculation_args(test_path: str) -> CalculatorArgs:
+def create_calculation_args(test_path: str) -> CalculatorArgs:
     with open(test_path + "calculation_arguments.yml", "r") as file:
         calculation_args = yaml.safe_load(file)
 
@@ -29,7 +29,7 @@ def load_calculation_args(test_path: str) -> CalculatorArgs:
 
     return CalculatorArgs(
         calculation_id=str(uuid.uuid4()),
-        calculation_grid_areas=calculation_args[0]["grid_areas"],  # TODO const?
+        calculation_grid_areas=calculation_args[0]["grid_areas"],
         calculation_period_start_datetime=pd.to_datetime(
             calculation_args[0]["period_start"], format=date_format
         ),
