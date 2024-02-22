@@ -40,8 +40,8 @@ wholesale_results_schema = StructType(
         StructField(WholesaleResultColumnNames.grid_area, StringType(), False),
         # Wholesale results are per energy supplier therefore energy_supplier_id cannot be null.
         StructField(WholesaleResultColumnNames.energy_supplier_id, StringType(), False),
-        StructField(WholesaleResultColumnNames.quantity, DecimalType(18, 3), True),
-        StructField(WholesaleResultColumnNames.quantity_unit, StringType(), True),
+        StructField(WholesaleResultColumnNames.quantity, DecimalType(18, 3), False),
+        StructField(WholesaleResultColumnNames.quantity_unit, StringType(), False),
         StructField(
             WholesaleResultColumnNames.quantity_qualities,
             ArrayType(StringType()),
@@ -51,12 +51,12 @@ wholesale_results_schema = StructType(
         StructField(WholesaleResultColumnNames.resolution, StringType(), False),
         StructField(WholesaleResultColumnNames.metering_point_type, StringType(), True),
         StructField(WholesaleResultColumnNames.settlement_method, StringType(), True),
-        StructField(WholesaleResultColumnNames.price, DecimalType(18, 6), False),
+        StructField(WholesaleResultColumnNames.price, DecimalType(18, 6), True),
         StructField(WholesaleResultColumnNames.amount, DecimalType(18, 6), False),
-        StructField(WholesaleResultColumnNames.is_tax, BooleanType(), False),
-        StructField(WholesaleResultColumnNames.charge_code, StringType(), False),
-        StructField(WholesaleResultColumnNames.charge_type, StringType(), False),
-        StructField(WholesaleResultColumnNames.charge_owner_id, StringType(), False),
+        StructField(WholesaleResultColumnNames.is_tax, BooleanType(), True),
+        StructField(WholesaleResultColumnNames.charge_code, StringType(), True),
+        StructField(WholesaleResultColumnNames.charge_type, StringType(), True),
+        StructField(WholesaleResultColumnNames.charge_owner_id, StringType(), True),
         StructField(WholesaleResultColumnNames.amount_type, StringType(), False),
     ]
 )
