@@ -15,7 +15,8 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.energy_results
     calculation_type STRING NOT NULL,
     calculation_execution_time_start TIMESTAMP NOT NULL,
     out_grid_area STRING,
-    calculation_result_id STRING NOT NULL
+    calculation_result_id STRING NOT NULL,
+    metering_point_id STRING
 )
 USING DELTA
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
