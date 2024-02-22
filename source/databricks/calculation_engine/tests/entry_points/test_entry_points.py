@@ -61,7 +61,7 @@ def test__entry_point__list_migrations_in_package__prints_some(
 
     # Assert: This test will fail if the selected migration is being deleted
     migrations = output.replace("\r\n", "\n").split("\n")
-    assert any("202311151300_Create_database" in m for m in migrations)
+    assert any("202402221000_Create_database" in m for m in migrations)
 
 
 def test__entry_point__list_migrations_in_package__can_load_entry_point(
