@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using AutoFixture.Xunit2;
-using Energinet.DataHub.Wholesale.Calculations.Application.Workers;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Events.Application.Triggers;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
@@ -27,7 +26,6 @@ public class RepeatingTriggerRegistrationTests
 {
     [Theory]
     [InlineAutoData(typeof(RegisterCompletedCalculationsTrigger))]
-    [InlineAutoData(typeof(UpdateCalculationExecutionStateTrigger))]
     public void Repeating_Trigger_Is_Registered_In_Ioc(Type type, ServiceCollection services)
     {
         // Arrange
