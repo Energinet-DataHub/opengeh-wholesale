@@ -14,6 +14,7 @@
 from business_logic_tests.features.wholesale_calculations.hourly_tariff_for_child_metering_point.states.scenario_state import (
     get_expected_results,
 )
+
 from business_logic_tests.scenario_factory import ScenarioFixture
 from helpers.data_frame_utils import assert_dataframes
 
