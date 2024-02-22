@@ -25,7 +25,7 @@ from pyspark.sql.types import (
     StructField,
 )
 
-from package.calculation.calculator_args import CalculatorArgs
+import package.calculation.calculator_args as calculator_args
 from package.calculation.energy.energy_results import (
     energy_results_schema,
 )
@@ -35,7 +35,7 @@ from package.constants import Colname
 def get_expected_results(
     spark: SparkSession,
     df: DataFrame,
-    calculation_args: CalculatorArgs,
+    calculation_args: calculator_args.CalculatorArgs,
 ) -> DataFrame:
 
     print(calculation_args)
