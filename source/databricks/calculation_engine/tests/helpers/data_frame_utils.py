@@ -45,7 +45,7 @@ def assert_dataframes(
     ignore_schema: bool = False,
 ) -> None:
 
-    if ignore_schema:
+    if not ignore_schema:
         assert_schema(
             actual.schema,
             expected.schema,
