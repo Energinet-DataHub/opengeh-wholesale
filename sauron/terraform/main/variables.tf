@@ -28,10 +28,14 @@ variable "shared_resources_resource_group_name" {
   description = "Name of the Resource Group, that contains the shared resources."
 }
 
-variable "hosted_deployagent_public_ip_range" {
-  type        = string
-  description = "(Optional) Comma-delimited string with IPs / CIDR block with deployagent's public IPs, so it can access network-protected resources (Keyvaults, Function apps etc)"
-  default     = null
+variable "ip_restrictions" {
+  type        = list(object({
+    ip_address  = string
+    name        = string
+    priority    = optional(number)
+  }))
+  description = "A list of IP restrictions defining allowed access to domain services. Each entry should include an 'ip_address' representing the allowed IP, a 'name' for identification, and an optional 'priority' for rule order. Defaults to `[]`."
+  default     = []
 }
 
 variable "pim_sql_reader_ad_group_name" {
