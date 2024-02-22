@@ -10,7 +10,7 @@ module "func_entrypoint_ecp_inbox" {
   vnet_integration_subnet_id               = data.azurerm_key_vault_secret.snet_vnet_integration_id.value
   private_endpoint_subnet_id               = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   app_service_plan_id                      = data.azurerm_key_vault_secret.plan_shared_id.value
-  application_insights_instrumentation_key = data.azurerm_key_vault_secret.appi_shared_instrumentation_key.value
+  application_insights_connection_string = data.azurerm_key_vault_secret.appi_shared_connection_string.value
   ip_restrictions                          = var.ip_restrictions
   scm_ip_restrictions                      = var.ip_restrictions
   always_on                                = true

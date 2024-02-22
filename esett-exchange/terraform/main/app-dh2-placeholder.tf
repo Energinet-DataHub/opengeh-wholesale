@@ -10,7 +10,7 @@ module "app_dh2_placeholder" {
   vnet_integration_subnet_id               = data.azurerm_key_vault_secret.snet_vnet_integration_id.value
   private_endpoint_subnet_id               = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   app_service_plan_id                      = data.azurerm_key_vault_secret.plan_shared_id.value
-  application_insights_instrumentation_key = data.azurerm_key_vault_secret.appi_shared_instrumentation_key.value
+  application_insights_connection_string = data.azurerm_key_vault_secret.appi_shared_connection_string.value
   health_check_path                        = "/monitor/ready"
   health_check_alert_action_group_id       = data.azurerm_key_vault_secret.primary_action_group_id.value
   health_check_alert_enabled               = var.enable_health_check_alerts
