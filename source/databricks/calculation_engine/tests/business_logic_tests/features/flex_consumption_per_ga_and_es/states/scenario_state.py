@@ -33,10 +33,12 @@ from package.constants import Colname
 
 
 def get_expected_results(
-    spark: SparkSession, calculation_args: CalculatorArgs, df: DataFrame
+    spark: SparkSession,
+    df: DataFrame,
+    calculation_args: CalculatorArgs,
 ) -> DataFrame:
 
-    f = calculation_args
+    print(calculation_args)
 
     parse_time_window_udf = udf(
         _parse_time_window,
