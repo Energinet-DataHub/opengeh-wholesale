@@ -20,24 +20,31 @@ from package.constants import Colname
 def join_charge_master_data_and_charge_price(
     charge_master_data: DataFrame, charge_prices: DataFrame
 ) -> ChargePeriodPrices:
-    charge_master_data = charge_master_data.join(
-        charge_prices,
-        [
-            charge_prices[Colname.charge_key] == charge_master_data[Colname.charge_key],
-            charge_prices[Colname.charge_time] >= charge_master_data[Colname.from_date],
-            charge_prices[Colname.charge_time] < charge_master_data[Colname.to_date],
-        ],
-        "inner",
-    ).select(
-        charge_master_data[Colname.charge_key],
-        charge_master_data[Colname.charge_code],
-        charge_master_data[Colname.charge_type],
-        charge_master_data[Colname.charge_owner],
-        charge_master_data[Colname.charge_tax],
-        charge_master_data[Colname.resolution],
-        charge_master_data[Colname.from_date],
-        charge_master_data[Colname.to_date],
-        charge_prices[Colname.charge_time],
-        charge_prices[Colname.charge_price],
+    charge_master_data = (
+        charge_master_data.join(
+            charge_prices,
+            [
+                charge_prices[Colname.charge_key]
+                == charge_master_data[Colname.charge_key],
+                charge_prices[Colname.charge_time]
+                >= charge_master_data[Colname.from_date],
+                charge_prices[Colname.charge_time]
+                < charge_master_data[Colname.to_date],
+            ],
+            "inner",
+        )
+        .distinct()
+        .select(
+            charge_master_data[Colname.charge_key],
+            charge_master_data[Colname.charge_code],
+            charge_master_data[Colname.charge_type],
+            charge_master_data[Colname.charge_owner],
+            charge_master_data[Colname.charge_tax],
+            charge_master_data[Colname.resolution],
+            charge_master_data[Colname.from_date],
+            charge_master_data[Colname.to_date],
+            charge_prices[Colname.charge_time],
+            charge_prices[Colname.charge_price],
+        )
     )
     return ChargePeriodPrices(charge_master_data)

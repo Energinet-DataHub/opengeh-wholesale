@@ -476,6 +476,8 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hou
             charge_master_data_rows.append(
                 factory.create_charge_master_data_row(
                     resolution=charge_resolution,
+                    from_date=datetime(2020, 1, 1, 0),
+                    to_date=datetime(2020, 1, 3, 0),
                 )
             )
             charge_prices_rows.append(
@@ -553,9 +555,11 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_qua
             charge_master_data_rows.append(
                 factory.create_charge_master_data_row(
                     resolution=charge_resolution,
+                    from_date=datetime(2020, 1, 1, 0),
+                    to_date=datetime(2020, 1, 3, 0),
                 )
             )
-            charge_master_data_rows.append(
+            charge_prices_rows.append(
                 factory.create_charge_prices_row(
                     charge_time=datetime(2020, 1, day, hour),
                 )
@@ -650,9 +654,13 @@ def test__get_tariff_charges__per_day_only_accepts_time_series_and_change_times_
     charge_master_data_rows = [
         factory.create_charge_master_data_row(
             resolution=e.ChargeResolution.DAY,
+            from_date=datetime(2019, 12, 31, 23),
+            to_date=datetime(2020, 1, 5, 23),
         ),
         factory.create_charge_master_data_row(
             resolution=e.ChargeResolution.DAY,
+            from_date=datetime(2019, 12, 31, 23),
+            to_date=datetime(2020, 1, 5, 23),
         ),
     ]
     charge_prices_rows = [

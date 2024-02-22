@@ -34,12 +34,10 @@ def get_tariff_charges(
     charge_link_metering_points: ChargeLinkMeteringPointPeriods,
     resolution: ChargeResolution,
 ) -> DataFrame:
-    charge_master_data.show()
-    charge_prices.show()
     charge_period_prices = join_charge_master_data_and_charge_price(
         charge_master_data, charge_prices
     )
-    charge_period_prices.df.show()
+
     tariffs = charge_period_prices.df.filter(
         f.col(Colname.charge_type) == ChargeType.TARIFF.value
     ).filter(f.col(Colname.resolution) == resolution.value)
@@ -47,7 +45,6 @@ def get_tariff_charges(
     tariffs = _join_with_charge_link_metering_points(
         tariffs, charge_link_metering_points
     )
-    tariffs.show()
 
     # group by time series on metering point id and resolution and sum quantity
     grouped_time_series = (
@@ -58,7 +55,6 @@ def get_tariff_charges(
 
     # join with grouped time series
     tariffs = _join_with_grouped_time_series(tariffs, grouped_time_series)
-    tariffs.show()
 
     # energy_supplier_id is nullable when metering point is a child metering point
     # TODO JVM - find a solution to this
