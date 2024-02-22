@@ -16,7 +16,7 @@ using Azure.Core;
 using Azure.Messaging.ServiceBus;
 using HealthChecks.AzureServiceBus;
 
-namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks.ServiceBus
+namespace Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks.ServiceBus
 {
     /// <summary>
     /// Allow us to use the transport type AWMP over WebSocket when communicating with ServiceBus.

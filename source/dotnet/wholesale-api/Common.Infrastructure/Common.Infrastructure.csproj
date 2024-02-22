@@ -19,6 +19,7 @@ limitations under the License.
     <RootNamespace>Energinet.DataHub.Wholesale.Common.Infrastructure</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.AzureServiceBus" Version="8.0.0" />
     <PackageReference Include="Azure.Identity" Version="1.10.4" />
     <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.17.1" />
     <PackageReference Include="Energinet.DataHub.Core.Databricks.Jobs" Version="8.2.1" />

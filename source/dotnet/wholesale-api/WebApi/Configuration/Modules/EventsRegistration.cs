@@ -14,7 +14,6 @@
 
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Messaging.Communication;
-using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using Energinet.DataHub.MarketParticipant.Infrastructure.Model.Contracts;
 using Energinet.DataHub.Wholesale.Calculations.Application.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Calculations.Application.IntegrationEvents.Handlers;
@@ -22,108 +21,75 @@ using Energinet.DataHub.Wholesale.Calculations.Application.UseCases;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.GridArea;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.ReceivedIntegrationEvent;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
-using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Application.Triggers;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Energinet.DataHub.Wholesale.Events.Application.Workers;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.AmountPerChargeResultProducedV1.Factories;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Factories;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.GridLossResultProducedV1.Factories;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1.Factories;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedCalculations;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.Extensions.DependencyInjection;
 using Google.Protobuf.Reflection;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
 
 /// <summary>
-/// Registration of services required for the Calculations module.
+/// Registration of services required for the Events module.
 /// </summary>
 public static class EventsRegistration
 {
-    public static void AddEventsModule(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddEventsModule(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddApplication();
-        services.AddInfrastructure();
+        services.AddEventsDatabase(configuration);
+        services.AddIntegrationEventsSubscription();
+        services.AddInboxHandling();
+        services.AddCompletedCalculationsHandling();
 
-        services.AddIntegrationEventPublisher(configuration);
-
-        RegisterIntegrationEvents(services);
-
-        RegisterHostedServices(services);
+        return services;
     }
 
-    private static void RegisterIntegrationEvents(IServiceCollection services)
+    private static IServiceCollection AddIntegrationEventsSubscription(this IServiceCollection services)
     {
-        var integrationEventDescriptors = new List<MessageDescriptor>
-        {
-            GridAreaOwnershipAssigned.Descriptor,
-        };
-        services.AddSubscriber<ReceivedIntegrationEventHandler>(integrationEventDescriptors);
-        services.AddScoped<IIntegrationEventHandler, GridAreaOwnershipAssignedEventHandler>();
-
-        services.AddScoped<IntegrationEventHandlerFactory>();
-    }
-
-    private static void AddApplication(this IServiceCollection services)
-    {
-        services
-            .AddScoped<IUnitOfWork, UnitOfWork>();
-
-        services
-            .AddScoped<ICompletedCalculationRepository, CompletedCalculationRepository>()
-            .AddScoped<ICompletedCalculationFactory, CompletedCalculationFactory>()
-            .AddScoped<IRegisterCompletedCalculationsHandler, RegisterCompletedCalculationsHandler>();
-
-        services
-            .AddScoped<IEnergyResultEventProvider, EnergyResultEventProvider>()
-            .AddScoped<IWholesaleResultEventProvider, WholesaleResultEventProvider>();
-
+        // These are located within Calculations sub-area
         services
             .AddScoped<IGridAreaOwnerRepository, GridAreaOwnerRepository>()
-            .AddScoped<IReceivedIntegrationEventRepository, ReceivedIntegrationEventRepository>();
-    }
+            .AddScoped<IIntegrationEventHandler, GridAreaOwnershipAssignedEventHandler>();
 
-    private static void AddInfrastructure(this IServiceCollection services)
-    {
+        // These are located within Calculations sub-area
         services
-            .AddScoped<IEnergyResultProducedV2Factory, EnergyResultProducedV2Factory>()
-            .AddScoped<IGridLossResultProducedV1Factory, GridLossResultProducedV1Factory>()
-            .AddScoped<IAmountPerChargeResultProducedV1Factory, AmountPerChargeResultProducedV1Factory>()
-            .AddScoped<IMonthlyAmountPerChargeResultProducedV1Factory, MonthlyAmountPerChargeResultProducedV1Factory>()
-            .AddScoped<IEventsDatabaseContext, EventsDatabaseContext>();
-    }
+            .AddScoped<IReceivedIntegrationEventRepository, ReceivedIntegrationEventRepository>()
+            .AddScoped<IntegrationEventHandlerFactory>();
 
-    private static void AddIntegrationEventPublisher(this IServiceCollection services, IConfiguration configuration)
-    {
-        var serviceBusOptions = configuration.Get<ServiceBusOptions>()!;
-
-        // Register integration event publisher
-        services.Configure<PublisherOptions>(options =>
-        {
-            options.ServiceBusConnectionString = serviceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING;
-            options.TopicName = serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME;
-            options.TransportType = Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpWebSockets;
-        });
-        services.AddPublisher<IntegrationEventProvider>();
-
-        // Register hosted service for publishing integration events
-        services.Configure<PublisherWorkerOptions>(options => options.HostedServiceExecutionDelayMs = 10000);
-        services.AddPublisherWorker();
-    }
-
-    private static void RegisterHostedServices(IServiceCollection services)
-    {
+        // These are located within Calculations sub-area
         services
-            .AddHostedService<AggregatedTimeSeriesServiceBusWorker>()
-            .AddHostedService<RegisterCompletedCalculationsTrigger>()
+            .AddSubscriber<ReceivedIntegrationEventHandler>(
+            new List<MessageDescriptor>
+            {
+                GridAreaOwnershipAssigned.Descriptor,
+            });
+
+        services
             .AddHostedService<ReceiveIntegrationEventServiceBusWorker>();
 
+        return services;
+    }
+
+    private static IServiceCollection AddInboxHandling(this IServiceCollection services)
+    {
         services
+            .AddHostedService<AggregatedTimeSeriesServiceBusWorker>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddCompletedCalculationsHandling(this IServiceCollection services)
+    {
+        services
+            .AddScoped<ICompletedCalculationFactory, CompletedCalculationFactory>()
+            .AddScoped<IRegisterCompletedCalculationsHandler, RegisterCompletedCalculationsHandler>(); // This depends on services within Calculations sub-area
+
+        services
+            .AddHostedService<RegisterCompletedCalculationsTrigger>()
             .AddHealthChecks()
-            .AddRepeatingTriggerHealthCheck<RegisterCompletedCalculationsTrigger>(TimeSpan.FromMinutes(1));
+                .AddRepeatingTriggerHealthCheck<RegisterCompletedCalculationsTrigger>(TimeSpan.FromMinutes(1));
+
+        return services;
     }
 }
