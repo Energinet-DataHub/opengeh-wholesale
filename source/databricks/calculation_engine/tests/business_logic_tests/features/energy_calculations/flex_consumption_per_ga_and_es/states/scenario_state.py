@@ -14,7 +14,7 @@
 from ast import literal_eval
 from datetime import datetime
 
-from pyspark.sql import DataFrame
+from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col, udf
 from pyspark.sql.types import (
     StringType,
@@ -32,8 +32,8 @@ from package.constants import Colname
 
 
 def get_expected_results(*args) -> DataFrame:
-    spark = args[0]
-    df = args[1]
+    spark: SparkSession = args[0]
+    df: DataFrame = args[1]
 
     parse_time_window_udf = udf(
         _parse_time_window,

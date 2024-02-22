@@ -11,8 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-from business_logic_tests.features.energy_calculations import (
+from business_logic_tests.features.energy_calculations.flex_consumption_per_ga_and_es.states.scenario_state import (
     get_expected_results,
 )
 from business_logic_tests.scenario_factory import ScenarioFixture
