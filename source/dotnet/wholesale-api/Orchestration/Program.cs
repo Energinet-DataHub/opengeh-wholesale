@@ -39,7 +39,7 @@ var host = new HostBuilder()
         // Modules
         services.AddCalculationsModule(context.Configuration);
         services.AddCalculationResultsModule(context.Configuration);
-        // => Sub-modules of Events.
+        // => Sub-modules of Events
         services.AddEventsDatabase(context.Configuration);
         services.AddIntegrationEventPublishing(context.Configuration);
 
