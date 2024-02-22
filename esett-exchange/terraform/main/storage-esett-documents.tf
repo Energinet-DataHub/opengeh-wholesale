@@ -16,5 +16,8 @@ module "storage_esett_documents" {
     {
       name = local.ESETT_DOCUMENT_STORAGE_CONTAINER_NAME
     },
+    {
+      name = local.ESETT_ERROR_DOCUMENT_STORAGE_CONTAINER_NAME
+    },
   ]
 }
