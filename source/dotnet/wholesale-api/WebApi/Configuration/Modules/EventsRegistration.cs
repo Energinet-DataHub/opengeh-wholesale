@@ -21,7 +21,6 @@ using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.GridAr
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.ReceivedIntegrationEvent;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
 using Energinet.DataHub.Wholesale.Events.Application.Workers;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.Extensions.DependencyInjection;
 using Google.Protobuf.Reflection;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
