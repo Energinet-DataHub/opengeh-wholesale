@@ -118,15 +118,15 @@ We are using standard [Black code style](https://github.com/psf/black/blob/main/
 
 In the CI pipeline, the tests are executed towards a Docker image, which is described in the a [Dockerfile](../../.docker/Dockerfile).
 
-A new Docker image is build and published using the [Docker CD-pipeline](../../.github/workflows/cd-docker-test-image.yml), meaning that a new Docker image is only published, when changes are made to the files described in the `paths`-sections of the workflow.
+A new Docker image is build and published using the [python-build-and-push-docker-image-pipeline](https://github.com/Energinet-DataHub/.github/blob/main/.github/workflows/python-build-and-push-docker-image.yml), meaning that a new Docker image is only published, when changes are made to the files described in the `paths`-sections of the workflow.
 
 If a pull request triggers a new Docker image to be published, a new version of the Docker image is published on each commit. The Docker images published when a pull request is open, are considered `pre-releases`. A `pre-release`-image is assigned a tag with the following format: `pre-release-pr<PR-number>`, e.g. `pre-release-pr311`. When the pull request has been merged, the `Docker CD-pipeline` is run again, and a new `latest` version is published.
 
 ### Running the tests using a published Docker image
 
-The default Docker image used for testing is the newest version of the "latest"-tagged [databricks-unit-test](https://github.com/orgs/Energinet-DataHub/packages?repo_name=opengeh-wholesale)-image stored in [GitHub packages](https://docs.github.com/en/packages/learn-github-packages/introduction-to-github-packages), which is a container registry.
+The default Docker image used for testing is the newest version of the "latest"-tagged [python-unit-test](https://github.com/orgs/Energinet-DataHub/packages?repo_name=opengeh-wholesale)-image stored in [GitHub packages](https://docs.github.com/en/packages/learn-github-packages/introduction-to-github-packages), which is a container registry.
 
-In a pull request, it is possible to change the version of the Docker image used for running the tests. For example, if a pull request changes the Dockerfile, it might be relevant to run the test base towards the new Docker image. To change the version of the Docker image used, change the `image`-reference in the [docker-compose.yml](../../.devcontainer/docker-compose.yml)-file to e.g. `ghcr.io/energinet-datahub/opengeh-wholesale/databricks-unit-test:pre-release-pr311`.
+In a pull request, it is possible to change the version of the Docker image used for running the tests. For example, if a pull request changes the Dockerfile, it might be relevant to run the test base towards the new Docker image. To change the version of the Docker image used, change the `image`-reference in the [docker-compose.yml](../../.devcontainer/docker-compose.yml)-file to e.g. `ghcr.io/energinet-datahub/opengeh-wholesale/python-unit-test:pre-release-pr311`.
 
 ### Static type checking with `mypy`
 

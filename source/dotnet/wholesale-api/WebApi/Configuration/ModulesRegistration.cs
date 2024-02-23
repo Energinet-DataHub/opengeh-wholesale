@@ -13,13 +13,10 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.DependencyInjection;
-using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Configuration.Options;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.EDI;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
-using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 
@@ -27,30 +24,14 @@ internal static class ServiceCollectionExtensions
 {
     public static void AddModules(this IServiceCollection services, IConfiguration configuration)
     {
-        // Add modules
+        // Shared by modules
+        services.AddNodaTimeForApplication(configuration);
+        services.AddDatabricksJobsForApplication(configuration);
+
+        // Modules
         services.AddCalculationsModule(configuration);
         services.AddCalculationResultsModule(configuration);
         services.AddEventsModule(configuration);
         services.AddEdiModule();
-
-        // Add registration that are used by more than one module
-        services.AddShared(configuration);
-    }
-
-    private static void AddShared(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.AddDbContext<EventsDatabaseContext>(
-            options => options.UseSqlServer(
-                configuration
-                    .GetSection(ConnectionStringsOptions.ConnectionStrings)
-                    .Get<ConnectionStringsOptions>()!.DB_CONNECTION_STRING,
-                o =>
-                {
-                    o.UseNodaTime();
-                    o.EnableRetryOnFailure();
-                }));
-
-        services.AddNodaTimeForApplication(configuration);
-        services.AddDatabricksJobsForApplication(configuration);
     }
 }

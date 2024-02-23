@@ -70,27 +70,45 @@ def create_time_series_row(
     return Row(**row)
 
 
-def create_tariff_charge_period_prices_row(
+def create_charge_master_data_row(
     charge_code: str = DefaultValues.DEFAULT_CHARGE_CODE,
+    charge_type: ChargeType = DefaultValues.DEFAULT_CHARGE_TYPE,
     charge_owner: str = DefaultValues.DEFAULT_CHARGE_OWNER,
     charge_tax: bool = DefaultValues.DEFAULT_CHARGE_TAX,
     resolution: e.ChargeResolution = e.ChargeResolution.HOUR,
-    charge_time: datetime = DefaultValues.DEFAULT_CHARGE_TIME_HOUR_0,
     from_date: datetime = datetime(2019, 12, 31, 23),
     to_date: datetime = datetime(2020, 1, 1, 0),
-    charge_price: Decimal = DefaultValues.DEFAULT_CHARGE_PRICE,
 ) -> Row:
-    charge_key: str = f"{charge_code}-{charge_owner}-{e.ChargeType.TARIFF.value}"
+    charge_key: str = f"{charge_code}-{charge_owner}-{charge_type.value}"
 
     row = {
         Colname.charge_key: charge_key,
         Colname.charge_code: charge_code,
-        Colname.charge_type: e.ChargeType.TARIFF.value,
+        Colname.charge_type: charge_type.value,
         Colname.charge_owner: charge_owner,
         Colname.charge_tax: charge_tax,
         Colname.resolution: resolution.value,
         Colname.from_date: from_date,
         Colname.to_date: to_date,
+    }
+
+    return Row(**row)
+
+
+def create_charge_prices_row(
+    charge_code: str = DefaultValues.DEFAULT_CHARGE_CODE,
+    charge_type: ChargeType = DefaultValues.DEFAULT_CHARGE_TYPE,
+    charge_owner: str = DefaultValues.DEFAULT_CHARGE_OWNER,
+    charge_time: datetime = DefaultValues.DEFAULT_CHARGE_TIME_HOUR_0,
+    charge_price: Decimal = DefaultValues.DEFAULT_CHARGE_PRICE,
+) -> Row:
+    charge_key: str = f"{charge_code}-{charge_owner}-{charge_type.value}"
+
+    row = {
+        Colname.charge_key: charge_key,
+        Colname.charge_code: charge_code,
+        Colname.charge_type: charge_type.value,
+        Colname.charge_owner: charge_owner,
         Colname.charge_price: charge_price,
         Colname.charge_time: charge_time,
     }
@@ -127,33 +145,6 @@ def create_charge_link_metering_point_periods_row(
         Colname.energy_supplier_id: energy_supplier_id,
     }
 
-    return Row(**row)
-
-
-def create_subscription_or_fee_charge_period_prices_row(
-    charge_type: e.ChargeType,
-    charge_code: str = DefaultValues.DEFAULT_CHARGE_CODE,
-    charge_owner: str = DefaultValues.DEFAULT_CHARGE_OWNER,
-    charge_tax: bool = DefaultValues.DEFAULT_CHARGE_TAX,
-    charge_time: datetime = DefaultValues.DEFAULT_CHARGE_TIME_HOUR_0,
-    from_date: datetime = datetime(2019, 12, 31, 23),
-    to_date: datetime = datetime(2020, 1, 1, 0),
-    charge_price: Decimal = DefaultValues.DEFAULT_CHARGE_PRICE,
-) -> Row:
-    charge_key: str = f"{charge_code}-{charge_owner}-{charge_type.value}"
-
-    row = {
-        Colname.charge_key: charge_key,
-        Colname.charge_code: charge_code,
-        Colname.charge_type: charge_type.value,
-        Colname.charge_owner: charge_owner,
-        Colname.charge_tax: charge_tax,
-        Colname.resolution: e.ChargeResolution.MONTH.value,
-        Colname.from_date: from_date,
-        Colname.to_date: to_date,
-        Colname.charge_price: charge_price,
-        Colname.charge_time: charge_time,
-    }
     return Row(**row)
 
 

@@ -17,9 +17,10 @@ using System.Runtime.CompilerServices;
 using Azure.Core;
 using HealthChecks.AzureServiceBus;
 using HealthChecks.AzureServiceBus.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks.ServiceBus
+namespace Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks.ServiceBus
 {
     /// <summary>
     /// Extension method to configure ServiceBus health checks using transport type AMQP over WebSocket.
@@ -60,8 +61,9 @@ namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks.ServiceBus
             string? name = default,
             HealthStatus? failureStatus = default,
             IEnumerable<string>? tags = default,
-            TimeSpan? timeout = default) =>
-            builder.AddAzureServiceBusQueueUsingWebSockets(
+            TimeSpan? timeout = default)
+        {
+            return builder.AddAzureServiceBusQueueUsingWebSockets(
                 _ => connectionString,
                 _ => queueName,
                 configure,
@@ -69,6 +71,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks.ServiceBus
                 failureStatus,
                 tags,
                 timeout);
+        }
 
         /// <summary>
         /// Add a health check for specified Azure Service Bus Queue where the ServiceBus transport is set to AmqpOverWebSocket.
@@ -140,8 +143,9 @@ namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks.ServiceBus
             string? name = default,
             HealthStatus? failureStatus = default,
             IEnumerable<string>? tags = default,
-            TimeSpan? timeout = default) =>
-            builder.AddAzureServiceBusQueueUsingWebSockets(
+            TimeSpan? timeout = default)
+        {
+            return builder.AddAzureServiceBusQueueUsingWebSockets(
                 _ => fullyQualifiedNamespace,
                 _ => queueName,
                 _ => tokenCredential,
@@ -150,6 +154,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks.ServiceBus
                 failureStatus,
                 tags,
                 timeout);
+        }
 
         /// <summary>
         /// Add a health check for specified Azure Service Bus Queue where the ServiceBus transport is set to AmqpOverWebSocket.
@@ -390,8 +395,9 @@ namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks.ServiceBus
             string? name = default,
             HealthStatus? failureStatus = default,
             IEnumerable<string>? tags = default,
-            TimeSpan? timeout = default) =>
-            builder.AddAzureServiceBusSubscriptionUsingWebSockets(
+            TimeSpan? timeout = default)
+        {
+            return builder.AddAzureServiceBusSubscriptionUsingWebSockets(
                 _ => connectionString,
                 _ => topicName,
                 _ => subscriptionName,
@@ -400,6 +406,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks.ServiceBus
                 failureStatus,
                 tags,
                 timeout);
+        }
 
         /// <summary>
         /// Add a health check for Azure Service Bus Subscription where the ServiceBus transport is set to AmqpOverWebSocket.
@@ -476,8 +483,9 @@ namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks.ServiceBus
             string? name = default,
             HealthStatus? failureStatus = default,
             IEnumerable<string>? tags = default,
-            TimeSpan? timeout = default) =>
-            builder.AddAzureServiceBusSubscriptionUsingWebSockets(
+            TimeSpan? timeout = default)
+        {
+            return builder.AddAzureServiceBusSubscriptionUsingWebSockets(
                 _ => fullyQualifiedNamespace,
                 _ => topicName,
                 _ => subscriptionName,
@@ -487,6 +495,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks.ServiceBus
                 failureStatus,
                 tags,
                 timeout);
+        }
 
         /// <summary>
         /// Add a health check for Azure Service Bus Subscription where the ServiceBus transport is set to AmqpOverWebSocket.
