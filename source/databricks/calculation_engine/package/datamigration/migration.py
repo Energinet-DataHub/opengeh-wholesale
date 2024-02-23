@@ -41,8 +41,7 @@ def migrate_data_lake() -> None:
     )
 
     container_url = paths.get_container_url(
-        storage_account_name,
-        WHOLESALE_CONTAINER_NAME
+        storage_account_name, WHOLESALE_CONTAINER_NAME
     )
 
     migration_args = MigrationScriptArgs(
@@ -67,4 +66,3 @@ def migrate_data_lake() -> None:
 
     create_and_configure_container(spark_config)
     schema_migration_pipeline.migrate()
-

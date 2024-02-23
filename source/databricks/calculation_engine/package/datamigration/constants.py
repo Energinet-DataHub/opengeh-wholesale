@@ -15,5 +15,7 @@
 COMMITTED_MIGRATIONS_FILE_NAME = "migration_state.csv"
 WHEEL_NAME = "package"
 MIGRATION_SCRIPTS_FOLDER_PATH = "package.datamigration.migration_scripts"
-CURRENT_STATE_SCHEMAS_FOLDER_PATH = "package.datamigration.current_state_scripts.schemas"
+CURRENT_STATE_SCHEMAS_FOLDER_PATH = (
+    "package.datamigration.current_state_scripts.schemas"
+)
 CURRENT_STATE_TABLES_FOLDER_PATH = "package.datamigration.current_state_scripts.tables"

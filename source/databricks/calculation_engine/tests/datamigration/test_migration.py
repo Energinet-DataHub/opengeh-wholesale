@@ -22,8 +22,8 @@ import tests.helpers.mock_helper as mock_helper
 
 def _diff(schema1, schema2):
     return {
-        'fields_in_1_not_2': set(schema1) - set(schema2),
-        'fields_in_2_not_1': set(schema2) - set(schema1)
+        "fields_in_1_not_2": set(schema1) - set(schema2),
+        "fields_in_2_not_1": set(schema2) - set(schema1),
     }
 
 
@@ -64,7 +64,7 @@ def test_migrate_with_schema_migration_scripts_compare_schemas(
     for schema in schema_config.schema_config:
         for table in schema.tables:
             actual_table = spark.table(f"{schema.name}.{table.name}")
-            diff = _diff(actual_table.schema, table.schema)
+            _diff(actual_table.schema, table.schema)
             assert actual_table.schema == table.schema
 
 
@@ -114,7 +114,11 @@ def test_migrate_with_schema_migration_scripts_compare_result_with_schema_config
         assert schema is not None, f"Schema {db.name} is not in the schema config"
         tables = spark.catalog.listTables(db.name)
         for table in tables:
-            table_config = next((x for x in schema.tables if x.name == table.name), None)
-            assert table_config is not None, f"Table {table.name} is not in the schema config"
+            table_config = next(
+                (x for x in schema.tables if x.name == table.name), None
+            )
+            assert (
+                table_config is not None
+            ), f"Table {table.name} is not in the schema config"
             actual_table = spark.table(f"{db.name}.{table.name}")
             assert actual_table.schema == table_config.schema
