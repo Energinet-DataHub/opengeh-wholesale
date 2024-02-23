@@ -19,10 +19,10 @@ using Energinet.DataHub.Wholesale.Calculations.Application.UseCases;
 using Energinet.DataHub.Wholesale.Calculations.Application.Workers;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.CalculationState;
-using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Configuration.Options;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -49,13 +49,11 @@ public static class CalculationsRegistration
         services.AddScoped<ICalculationParametersFactory, DatabricksCalculationParametersFactory>();
 
         services.AddScoped<IDatabaseContext, DatabaseContext>();
-
-        var connectionStringOptions = configuration
-            .GetSection(ConnectionStringsOptions.ConnectionStrings)
-            .Get<ConnectionStringsOptions>();
         services.AddDbContext<DatabaseContext>(
             options => options.UseSqlServer(
-                connectionStringOptions!.DB_CONNECTION_STRING,
+                configuration
+                    .GetSection(ConnectionStringsOptions.ConnectionStrings)
+                    .Get<ConnectionStringsOptions>()!.DB_CONNECTION_STRING,
                 o =>
                 {
                     o.UseNodaTime();
