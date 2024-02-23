@@ -105,7 +105,10 @@ class TestWhenValidInput:
 
         # Act
         actual_subscription = get_subscription_charges(
-            charge_master_data, charge_prices, charge_link_metering_point_periods, DEFAULT_TIME_ZONE
+            charge_master_data,
+            charge_prices,
+            charge_link_metering_point_periods,
+            DEFAULT_TIME_ZONE,
         )
 
         # Assert
@@ -317,6 +320,7 @@ class TestWhenChargeMasterPeriodStopsAndStartsAgain:
 
         # Act
         actual_subscription = get_subscription_charges(
+            charge_master_data,
             charge_period_prices,
             charge_link_metering_point_periods,
             time_zone=DEFAULT_TIME_ZONE,
