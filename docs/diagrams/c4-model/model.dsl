@@ -1,8 +1,8 @@
 # Read description in the 'views.dsl' file.
 
 wholesaleDomain = group "Wholesale" {
-    wholesaleDataLake = container "Data Lake (Wholesale)" {
-        description "Stores calculation results"
+    wholesaleDataLake = container "Wholesale DataLake" {
+        description "Contains calculation inputs and results"
         technology "Azure Data Lake Gen 2"
         tags "Data Storage" "Microsoft Azure - Data Lake Store Gen1" "Mandalorian"
     }
@@ -11,11 +11,11 @@ wholesaleDomain = group "Wholesale" {
         technology "Azure Databricks"
         tags "Microsoft Azure - Azure Databricks" "Mandalorian"
 
-        # Domain relationships
-        this -> wholesaleDataLake "Read / write"
+        # Subsystem relationships
+        this -> wholesaleDataLake "Read inputs / write results"
     }
     wholesaleDb = container "Wholesale Database" {
-        description "Stores calculations and operations data"
+        description "Stores calculations and orchestration data"
         technology "SQL Database Schema"
         tags "Data Storage" "Microsoft Azure - SQL Database" "Mandalorian"
     }
@@ -27,12 +27,12 @@ wholesaleDomain = group "Wholesale" {
         # Base model relationships
         this -> dh3.sharedServiceBus "Sends calculations" "integration event/amqp"
 
-        # Domain relationships
+        # Subsystem relationships
         this -> wholesaleDb "Uses" "EF Core"
         this -> wholesaleCalculator "Sends requests to"
         this -> wholesaleDataLake "Retrieves results from"
 
-        # Domain-to-domain relationships
+        # Subsystem-to-Subsystem relationships
         this -> edi "Sends calculations" "integration event/amqp" {
             tags "Simple View"
         }
