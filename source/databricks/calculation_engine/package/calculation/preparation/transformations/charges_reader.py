@@ -16,28 +16,29 @@ from datetime import datetime
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, concat_ws
 
-from package.calculation.preparation.charge_period_prices import ChargePeriodPrices
 from package.calculation.preparation.transformations.clamp_period import clamp_period
 from package.calculation_input import TableReader
 from package.constants import Colname
 
 
-def read_charge_period_prices(
+def read_charge_master_data(
     table_reader: TableReader,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
-) -> ChargePeriodPrices:
-    charge_prices_df = _get_charge_price_points(
+) -> DataFrame:
+    return _get_charge_master_data_periods(
         table_reader, period_start_datetime, period_end_datetime
-    )
-    charge_master_data_periods = _get_charge_master_data_periods(
-        table_reader, period_start_datetime, period_end_datetime
-    )
-    charge_period_prices = _join_with_charge_prices(
-        charge_master_data_periods, charge_prices_df
     )
 
-    return ChargePeriodPrices(charge_period_prices)
+
+def read_charge_prices(
+    table_reader: TableReader,
+    period_start_datetime: datetime,
+    period_end_datetime: datetime,
+) -> DataFrame:
+    return _get_charge_price_points(
+        table_reader, period_start_datetime, period_end_datetime
+    )
 
 
 def read_charge_links(
@@ -105,32 +106,6 @@ def _get_charge_price_points(
 
     charge_price_points_df = _add_charge_key_column(charge_price_points_df)
     return charge_price_points_df
-
-
-def _join_with_charge_prices(
-    charge_master_data: DataFrame, charge_prices: DataFrame
-) -> DataFrame:
-    charge_master_data = charge_master_data.join(
-        charge_prices,
-        [
-            charge_prices[Colname.charge_key] == charge_master_data[Colname.charge_key],
-            charge_prices[Colname.charge_time] >= charge_master_data[Colname.from_date],
-            charge_prices[Colname.charge_time] < charge_master_data[Colname.to_date],
-        ],
-        "inner",
-    ).select(
-        charge_master_data[Colname.charge_key],
-        charge_master_data[Colname.charge_code],
-        charge_master_data[Colname.charge_type],
-        charge_master_data[Colname.charge_owner],
-        charge_master_data[Colname.charge_tax],
-        charge_master_data[Colname.resolution],
-        charge_master_data[Colname.from_date],
-        charge_master_data[Colname.to_date],
-        charge_prices[Colname.charge_time],
-        charge_prices[Colname.charge_price],
-    )
-    return charge_master_data
 
 
 def _add_charge_key_column(charge_df: DataFrame) -> DataFrame:
