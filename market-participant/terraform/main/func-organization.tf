@@ -28,8 +28,8 @@ module "func_entrypoint_marketparticipant" {
     SERVICE_BUS_HEALTH_CHECK_CONNECTION_STRING = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-manage-connection-string)",
     SBT_MARKET_PARTICIPANT_CHANGED_NAME        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-shres-integrationevent-received-name)",
     SEND_GRID_APIKEY                           = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_sendgrid_api_key.name})",
-    USER_INVITE_FROM_EMAIL                     = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_sendgrid_from_email.name})",
-    USER_INVITE_BCC_EMAIL                      = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_sendgrid_bcc_email.name})",
+    SENDER_EMAIL                               = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_sendgrid_from_email.name})",
+    BCC_EMAIL                                  = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_sendgrid_bcc_email.name})",
     USER_INVITE_FLOW                           = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=b2c-invitation-flow-uri)",
     AZURE_B2C_TENANT                           = var.b2c_tenant
     AZURE_B2C_SPN_ID                           = var.b2c_spn_id
@@ -38,6 +38,12 @@ module "func_entrypoint_marketparticipant" {
     AZURE_B2C_BACKEND_SPN_OBJECT_ID            = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-b2b-app-sp-id)"
     AZURE_B2C_BACKEND_ID                       = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-b2b-app-id)"
     ENVIRONMENT_DESC                           = local.ENV_DESC
+    CVR_BASE_ADDRESS                           = var.cvr_base_address
+    CVR_USERNAME                               = var.cvr_username
+    CVR_PASSWORD                               = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_cvr_password.name})"
+    CVR_ORG_UPDATED_NOTIFICATION_TO_EMAIL      = var.cvr_update_notification_to_email
+
+    FeatureManagement__EnabledOrganizationIdentityUpdateTrigger = var.enabled_organization_identitiy_update_trigger
   }
 
   role_assignments = [

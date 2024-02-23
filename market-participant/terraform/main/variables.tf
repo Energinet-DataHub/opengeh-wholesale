@@ -108,3 +108,14 @@ variable "cvr_password" {
   description = "Password for CVR register"
 }
 
+variable "cvr_update_notification_to_email" {
+  type        = string
+  description = "Email address for CVR update notifications"
+}
+
+variable "enabled_organization_identitiy_update_trigger" {
+  type        = bool
+  description = "Organization identity update trigger"
+  default     = false
+}
+
