@@ -36,7 +36,7 @@ energy_results_schema = StructType(
         StructField(EnergyResultColumnNames.quantity, DecimalType(18, 3), False),
         StructField(
             EnergyResultColumnNames.quantity_qualities,
-            ArrayType(StringType(), True),
+            ArrayType(StringType(), False),
             False,
         ),
         StructField(EnergyResultColumnNames.time, TimestampType(), False),

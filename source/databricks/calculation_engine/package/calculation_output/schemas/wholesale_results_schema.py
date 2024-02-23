@@ -53,10 +53,10 @@ wholesale_results_schema = StructType(
         StructField(WholesaleResultColumnNames.settlement_method, StringType(), True),
         StructField(WholesaleResultColumnNames.price, DecimalType(18, 6), True),
         StructField(WholesaleResultColumnNames.amount, DecimalType(18, 6), False),
-        StructField(WholesaleResultColumnNames.is_tax, BooleanType(), True),
-        StructField(WholesaleResultColumnNames.charge_code, StringType(), True),
-        StructField(WholesaleResultColumnNames.charge_type, StringType(), True),
-        StructField(WholesaleResultColumnNames.charge_owner_id, StringType(), True),
+        StructField(WholesaleResultColumnNames.is_tax, BooleanType(), False),
+        StructField(WholesaleResultColumnNames.charge_code, StringType(), False),
+        StructField(WholesaleResultColumnNames.charge_type, StringType(), False),
+        StructField(WholesaleResultColumnNames.charge_owner_id, StringType(), False),
         StructField(WholesaleResultColumnNames.amount_type, StringType(), False),
     ]
 )
