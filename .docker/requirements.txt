@@ -30,6 +30,6 @@ azure-monitor-query==1.2.0
 azure-servicebus==7.11.4
 azure-storage-file-datalake==12.11.0
 opengeh-spark-sql-migrations @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@mkq/implement_spark_sql_migrations#subdirectory=source/spark_sql_migrations
-pyspark == 3.5.*
+pyspark==3.5.*
 python-dateutil==2.8.2
 types-python-dateutil==2.8.19
