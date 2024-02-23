@@ -15,8 +15,14 @@ from ast import literal_eval
 from datetime import datetime
 
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import col
-from pyspark.sql.types import StructType, StructField, StringType, DecimalType
+from pyspark.sql.functions import col, udf
+from pyspark.sql.types import (
+    StructType,
+    StructField,
+    StringType,
+    DecimalType,
+    TimestampType,
+)
 
 from package.constants import Colname
 
@@ -25,19 +31,19 @@ def get_expected(*args) -> DataFrame:  # type: ignore
     spark: SparkSession = args[0]
     df: DataFrame = args[1]
 
-    # parse_time_window_udf = udf(
-    #     _parse_time_window,
-    #     StructType(
-    #         [
-    #             StructField(Colname.start, TimestampType()),
-    #             StructField(Colname.end, TimestampType()),
-    #         ]
-    #     ),
-    # )
-    #
-    # df = df.withColumn(
-    #     Colname.time_window, parse_time_window_udf(df[Colname.time_window])
-    # )
+    parse_time_window_udf = udf(
+        _parse_time_window,
+        StructType(
+            [
+                StructField(Colname.start, TimestampType()),
+                StructField(Colname.end, TimestampType()),
+            ]
+        ),
+    )
+
+    df = df.withColumn(
+        Colname.time_window, parse_time_window_udf(df[Colname.time_window])
+    )
     df = df.withColumn(
         Colname.sum_quantity, col(Colname.sum_quantity).cast(DecimalType(38, 6))
     )
