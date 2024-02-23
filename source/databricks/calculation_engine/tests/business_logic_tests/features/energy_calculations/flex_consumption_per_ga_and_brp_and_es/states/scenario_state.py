@@ -15,9 +15,10 @@ from ast import literal_eval
 from datetime import datetime
 
 from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql.types import StructType, StructField, StringType
 
 
-def get_expected(*args) -> DataFrame:
+def get_expected(*args) -> DataFrame:  # type: ignore
     spark: SparkSession = args[0]
     df: DataFrame = args[1]
 
@@ -45,7 +46,18 @@ def get_expected(*args) -> DataFrame:
     # df = df.withColumnRenamed(Colname.quantity, Colname.qualities)
     #
     # return spark.createDataFrame(df.rdd, energy_results_schema)
-    return spark.createDataFrame(df.rdd)
+    df.show()
+
+    schema = StructType(
+        [
+            StructField("column1", StringType(), True),
+            StructField("column2", StringType(), True),
+        ]
+    )
+
+    # Create an empty DataFrame
+    df = spark.createDataFrame([], schema)
+    return df
 
 
 def _parse_time_window(time_window_str: str) -> tuple[datetime, datetime]:
