@@ -31,7 +31,7 @@ from package.calculation.energy.energy_results import (
 from package.constants import Colname
 
 
-def get_expected(*args) -> DataFrame:
+def get_expected(*args) -> DataFrame:  # type: ignore
     spark: SparkSession = args[0]
     df: DataFrame = args[1]
 
