@@ -25,13 +25,13 @@ setup(
     # Make sure these packages are added to the docker container and pinned to the same versions
     install_requires=[
         "ConfigArgParse==1.5.3",
-        "pyspark==3.5.*",
+        "pyspark==3.5.0",
         "azure-identity==1.12.0",
         "azure-storage-file-datalake==12.11.0",
         "databricks-cli==0.18",
         "dependency_injector==4.41.0",
         "urllib3==2.2.*",
-        "delta-spark==2.3.0",
+        "delta-spark==3.1.0",
         "python-dateutil==2.8.2",
         "azure-monitor-opentelemetry==1.2.0",
         "opengeh-spark-sql-migrations @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@mkq/implement_spark_sql_migrations#subdirectory=source/spark_sql_migrations",
