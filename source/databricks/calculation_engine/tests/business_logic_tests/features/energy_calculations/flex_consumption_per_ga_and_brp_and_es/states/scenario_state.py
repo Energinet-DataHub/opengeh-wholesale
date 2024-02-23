@@ -22,6 +22,7 @@ from pyspark.sql.types import (
     StringType,
     DecimalType,
     TimestampType,
+    ArrayType,
 )
 
 
@@ -30,6 +31,7 @@ def get_expected(*args) -> DataFrame:  # type: ignore
     df: DataFrame = args[1]
 
     from package.constants import Colname
+    from package.calculation.energy.energy_results import energy_results_schema
 
     parse_time_window_udf = udf(
         _parse_time_window,
@@ -47,26 +49,14 @@ def get_expected(*args) -> DataFrame:  # type: ignore
     df = df.withColumn(
         Colname.sum_quantity, col(Colname.sum_quantity).cast(DecimalType(38, 6))
     )
-    #
-    # parse_qualities_string_udf = udf(_parse_qualities_string, ArrayType(StringType()))
-    # df = df.withColumn(
-    #     Colname.quantity, parse_qualities_string_udf(df[Colname.quantity])
-    # )
-    df = df.withColumnRenamed(Colname.quantity, Colname.qualities)
-    #
-    # return spark.createDataFrame(df.rdd, energy_results_schema)
-    df.show()
 
-    schema = StructType(
-        [
-            StructField("column1", StringType(), True),
-            StructField("column2", StringType(), True),
-        ]
+    parse_qualities_string_udf = udf(_parse_qualities_string, ArrayType(StringType()))
+    df = df.withColumn(
+        Colname.quantity, parse_qualities_string_udf(df[Colname.quantity])
     )
+    df = df.withColumnRenamed(Colname.quantity, Colname.qualities)
 
-    # Create an empty DataFrame
-    df = spark.createDataFrame([], schema)
-    return df
+    return spark.createDataFrame(df.rdd, energy_results_schema)
 
 
 def _parse_time_window(time_window_str: str) -> tuple[datetime, datetime]:
