@@ -15,7 +15,7 @@ from decimal import Decimal
 
 import pytest
 from datetime import datetime
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession, Row
 from pyspark.sql import functions as f
 
 from package.calculation.preparation.transformations import (
@@ -121,29 +121,36 @@ class TestWhenNoPricesForPeriod:
         spark: SparkSession,
     ) -> None:
         # Arrange
-        from_date = JAN_1ST
-        to_date = JAN_3RD
+        from_date = factory.DefaultValues.DEFAULT_FROM_DATE
+        to_date = factory.DefaultValues.DEFAULT_TO_DATE
+
         charge_link_metering_point_periods = (
             factory.create_charge_link_metering_point_periods(
                 spark,
-                [
-                    factory.create_charge_link_metering_point_periods_row(
-                        charge_type=e.ChargeType.SUBSCRIPTION,
-                        from_date=JAN_1ST,
-                        to_date=JAN_3RD,
-                    ),
-                ],
+                factory.create_charge_link_metering_point_periods_row(
+                    charge_type=e.ChargeType.SUBSCRIPTION,
+                ),
             )
         )
 
-        charge_period_prices = factory.create_charge_period_prices(
+        charge_period_prices_empty = factory.create_charge_prices(
             spark,
-            [],
+            Row(),
+        )
+
+        charge_master_data = factory.create_charge_master_data(
+            spark,
+            [
+                factory.create_charge_master_data_row(
+                    charge_type=e.ChargeType.SUBSCRIPTION,
+                )
+            ],
         )
 
         # Act
         actual_subscription = get_subscription_charges(
-            charge_period_prices,
+            charge_master_data,
+            charge_period_prices_empty,
             charge_link_metering_point_periods,
             time_zone=DEFAULT_TIME_ZONE,
         )
@@ -162,6 +169,17 @@ class TestWhenInputContainsOtherChargeTypes:
         spark: SparkSession,
     ) -> None:
         # Arrange
+        charge_master_data = factory.create_charge_master_data(
+            spark,
+            [
+                factory.create_charge_master_data_row(charge_type=e.ChargeType.FEE),
+                factory.create_charge_master_data_row(
+                    charge_type=e.ChargeType.SUBSCRIPTION
+                ),
+                factory.create_charge_master_data_row(charge_type=e.ChargeType.TARIFF),
+            ],
+        )
+
         charge_link_metering_point_periods = (
             factory.create_charge_link_metering_point_periods(
                 spark,
@@ -178,22 +196,19 @@ class TestWhenInputContainsOtherChargeTypes:
                 ],
             )
         )
-        charge_period_prices = factory.create_charge_period_prices(
+        charge_prices = factory.create_charge_prices(
             spark,
             [
-                factory.create_subscription_or_fee_charge_period_prices_row(
-                    charge_type=e.ChargeType.FEE
-                ),
-                factory.create_subscription_or_fee_charge_period_prices_row(
-                    charge_type=e.ChargeType.SUBSCRIPTION
-                ),
-                factory.create_tariff_charge_period_prices_row(),
+                factory.create_charge_prices_row(charge_type=e.ChargeType.FEE),
+                factory.create_charge_prices_row(charge_type=e.ChargeType.SUBSCRIPTION),
+                factory.create_charge_prices_row(charge_type=e.ChargeType.TARIFF),
             ],
         )
 
         # Act
         actual_subscription = get_subscription_charges(
-            charge_period_prices,
+            charge_master_data,
+            charge_prices,
             charge_link_metering_point_periods,
             time_zone=DEFAULT_TIME_ZONE,
         )
@@ -237,14 +252,22 @@ class TestWhenChargePriceChangesDuringPeriod:
                 ],
             )
         )
-        charge_period_prices = factory.create_charge_period_prices(
+        charge_master_data = factory.create_charge_master_data(
             spark,
             [
-                factory.create_subscription_or_fee_charge_period_prices_row(
-                    charge_time=time,
-                    charge_price=price,
+                factory.create_charge_master_data_row(
+                    charge_type=e.ChargeType.SUBSCRIPTION,
                     from_date=from_date,
                     to_date=to_date,
+                ),
+            ],
+        )
+        charge_prices = factory.create_charge_prices(
+            spark,
+            [
+                factory.create_charge_prices_row(
+                    charge_time=time,
+                    charge_price=price,
                     charge_type=e.ChargeType.SUBSCRIPTION,
                 )
                 for time, price in input_charge_time_and_price.items()
@@ -253,7 +276,8 @@ class TestWhenChargePriceChangesDuringPeriod:
 
         # Act
         actual_subscription = get_subscription_charges(
-            charge_period_prices,
+            charge_master_data,
+            charge_prices,
             charge_link_metering_point_periods,
             time_zone=DEFAULT_TIME_ZONE,
         )
