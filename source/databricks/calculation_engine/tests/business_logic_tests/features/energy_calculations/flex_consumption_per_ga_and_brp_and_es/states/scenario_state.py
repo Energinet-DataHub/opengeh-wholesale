@@ -24,12 +24,12 @@ from pyspark.sql.types import (
     TimestampType,
 )
 
-from package.constants import Colname
-
 
 def get_expected(*args) -> DataFrame:  # type: ignore
     spark: SparkSession = args[0]
     df: DataFrame = args[1]
+
+    from package.constants import Colname
 
     parse_time_window_udf = udf(
         _parse_time_window,
