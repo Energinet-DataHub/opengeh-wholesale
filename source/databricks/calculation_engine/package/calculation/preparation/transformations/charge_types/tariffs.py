@@ -54,7 +54,6 @@ def get_tariff_charges(
             metering_point_time_series, resolution
         )
     )
-    grouped_time_series.show()
 
     # join with grouped time series
     tariffs = _join_with_grouped_time_series(tariffs, grouped_time_series)

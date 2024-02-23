@@ -457,8 +457,8 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hou
     # Arrange
     charge_link_metering_points_rows = [
         factory.create_charge_link_metering_point_periods_row(
-            from_date=datetime(2020, 1, 1, 0),
-            to_date=datetime(2020, 1, 3, 0),
+            from_date=datetime(2020, 1, 1, 23),
+            to_date=datetime(2020, 1, 3, 23),
         )
     ]
     time_series_rows = []
@@ -474,8 +474,8 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hou
             charge_master_data_rows.append(
                 factory.create_charge_master_data_row(
                     resolution=charge_resolution,
-                    from_date=datetime(2020, 1, 1, 0),
-                    to_date=datetime(2020, 1, 3, 0),
+                    from_date=datetime(2020, 1, 1, 23),
+                    to_date=datetime(2020, 1, 3, 23),
                 )
             )
             charge_prices_rows.append(
@@ -501,6 +501,7 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hou
         charge_link_metering_point_periods,
         charge_resolution,
     )
+    actual.show()
 
     # Assert
     assert actual.count() == expected_rows
@@ -535,8 +536,8 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_qua
     # Arrange
     charge_link_metering_points_rows = [
         factory.create_charge_link_metering_point_periods_row(
-            from_date=datetime(2020, 1, 1, 0),
-            to_date=datetime(2020, 1, 3, 0),
+            from_date=datetime(2020, 1, 1, 23),
+            to_date=datetime(2020, 1, 3, 23),
         )
     ]
     time_series_rows = []
@@ -553,8 +554,8 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_qua
             charge_master_data_rows.append(
                 factory.create_charge_master_data_row(
                     resolution=charge_resolution,
-                    from_date=datetime(2020, 1, 1, 0),
-                    to_date=datetime(2020, 1, 3, 0),
+                    from_date=datetime(2020, 1, 1, 23),
+                    to_date=datetime(2020, 1, 3, 23),
                 )
             )
             charge_prices_rows.append(
