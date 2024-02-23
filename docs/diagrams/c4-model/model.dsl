@@ -2,12 +2,12 @@
 
 wholesaleDomain = group "Wholesale" {
     wholesaleDataLake = container "Wholesale DataLake" {
-        description "Contains calculation inputs and results"
+        description "Calculations inputs and results"
         technology "Azure Data Lake Gen 2"
         tags "Data Storage" "Microsoft Azure - Data Lake Store Gen1" "Mandalorian"
     }
     wholesaleCalculator = container "Calculation Engine" {
-        description "Executes calculations"
+        description "Executes calculation job"
         technology "Azure Databricks"
         tags "Microsoft Azure - Azure Databricks" "Mandalorian"
 
@@ -15,17 +15,38 @@ wholesaleDomain = group "Wholesale" {
         this -> wholesaleDataLake "Read inputs / write results"
     }
     wholesaleDb = container "Wholesale Database" {
-        description "Stores calculations and orchestration data"
+        description "Meta data of calculations and orchestrations"
         technology "SQL Database Schema"
         tags "Data Storage" "Microsoft Azure - SQL Database" "Mandalorian"
     }
     wholesaleApi = container "Wholesale API" {
-        description "Backend server providing external web API for wholesale operations"
+        description "Backend server providing external web API for Wholesale subsystem"
         technology "Asp.Net Core Web API"
         tags "Microsoft Azure - App Services" "Mandalorian"
 
         # Base model relationships
-        this -> dh3.sharedServiceBus "Sends calculations" "integration event/amqp"
+        dh3.sharedServiceBus -> this "Listens on Wholesale Inbox" "message/amqp"
+        this -> dh3.sharedServiceBus "Sends to EDI Inbox" "message/amqp"
+
+        # Subsystem relationships
+        this -> wholesaleDb "Uses" "EF Core"
+        this -> wholesaleDataLake "Retrieves results from"
+
+        # Subsystem-to-Subsystem relationships
+        edi -> this "Sends to Wholesale Inbox" "message/amqp" {
+            tags "Simple View"
+        }
+        this -> edi "Sends to EDI Inbox" "message/amqp" {
+            tags "Simple View"
+        }
+    }
+    wholesaleOrchestration = container "Wholesale Orchestration" {
+        description "Orchestrate calculation workflow"
+        technology "Azure function, C#"
+        tags "Microsoft Azure - Function Apps" "Mandalorian"
+
+        # Base model relationships
+        this -> dh3.sharedServiceBus "Sends calculation results" "integration event/amqp"
 
         # Subsystem relationships
         this -> wholesaleDb "Uses" "EF Core"
@@ -33,7 +54,7 @@ wholesaleDomain = group "Wholesale" {
         this -> wholesaleDataLake "Retrieves results from"
 
         # Subsystem-to-Subsystem relationships
-        this -> edi "Sends calculations" "integration event/amqp" {
+        this -> edi "Sends calculation results" "integration event/amqp" {
             tags "Simple View"
         }
     }
