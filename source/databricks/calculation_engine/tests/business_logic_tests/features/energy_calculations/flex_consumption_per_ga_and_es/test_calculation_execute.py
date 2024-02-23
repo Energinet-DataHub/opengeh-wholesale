@@ -14,6 +14,7 @@
 from business_logic_tests.features.energy_calculations.flex_consumption_per_ga_and_es.states.scenario_state import (
     get_expected,
 )
+from helpers.data_frame_utils import assert_dataframes
 
 
 def test_execute__returns_expected(
@@ -26,9 +27,9 @@ def test_execute__returns_expected(
     results = scenario_fixture.execute()
 
     # Assert
-    assert (
-        results.energy_results.flex_consumption_per_ga_and_es.df.subtract(
-            scenario_fixture.expected
-        ).count()
-        == 0
+    assert_dataframes(
+        results.energy_results.flex_consumption_per_ga_and_es.df,
+        scenario_fixture.expected,
+        ignore_schema=True,
+        ignore_decimal_precision=True,
     )
