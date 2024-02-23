@@ -21,7 +21,9 @@ public class UpdateCalculationExecutionStateHandler : IUpdateCalculationExecutio
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICalculationExecutionStateInfrastructureService _calculationExecutionStateInfrastructureService;
 
-    public UpdateCalculationExecutionStateHandler(IUnitOfWork unitOfWork, ICalculationExecutionStateInfrastructureService calculationExecutionStateInfrastructureService)
+    public UpdateCalculationExecutionStateHandler(
+        IUnitOfWork unitOfWork,
+        ICalculationExecutionStateInfrastructureService calculationExecutionStateInfrastructureService)
     {
         _unitOfWork = unitOfWork;
         _calculationExecutionStateInfrastructureService = calculationExecutionStateInfrastructureService;
