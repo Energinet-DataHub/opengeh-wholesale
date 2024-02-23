@@ -30,3 +30,9 @@ resource "azurerm_storage_container" "dropzonearchive" {
   storage_account_name  = module.st_dh2dropzone_archive.name
   container_access_type = "private"
 }
+
+resource "azurerm_storage_container" "dropzonetimeseriessyncarchive" {
+  name                  = "dropzonetimeseriessyncarchive"
+  storage_account_name  = module.st_dh2dropzone_archive.name
+  container_access_type = "private"
+}

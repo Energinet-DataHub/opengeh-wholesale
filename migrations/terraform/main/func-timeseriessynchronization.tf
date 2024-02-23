@@ -26,15 +26,22 @@ module "func_timeseriessynchronization" {
     {
       resource_id          = module.st_dh2data.id
       role_definition_name = "Storage Blob Data Contributor"
-    }
+    },
+    {
+      resource_id          = module.st_dh2dropzone_archive.id
+      role_definition_name = "Storage Blob Data Contributor"
+    },
   ]
 
   app_settings = {
-    WEBSITE_LOAD_CERTIFICATES                       = local.datahub2_certificate_thumbprint
-    StorageAccountSettings__Dh2StorageAccountUri    = "https://${module.st_dh2data.name}.blob.core.windows.net"
-    StorageAccountSettings__TimeSeriesContainerName = azurerm_storage_container.dh2_timeseries_synchronization.name
-    DataHub2ClientSettings__EndpointAddress         = var.datahub2_migration_url,
-    FeatureManagement__DataHub2HealthCheck          = var.feature_flag_datahub2_healthcheck
+    WEBSITE_LOAD_CERTIFICATES                                                    = local.datahub2_certificate_thumbprint
+    StorageAccountSettings__Dh2StorageAccountUri                                 = "https://${module.st_dh2data.name}.blob.core.windows.net"
+    StorageAccountSettings__TimeSeriesContainerName                              = azurerm_storage_container.dh2_timeseries_synchronization.name # Kept for backwards compatibility
+    StorageAccountSettings__Dh2TimeSeriesSynchronizationContainerName            = azurerm_storage_container.dh2_timeseries_synchronization.name
+    StorageAccountSettings__Dh2TimeSeriesSynchronizationArchiveStorageAccountUri = "https://${module.st_dh2dropzone_archive.name}.blob.core.windows.net"
+    StorageAccountSettings__Dh2TimeSeriesSynchronizationArchiveContainerName     = azurerm_storage_container.dropzonetimeseriessyncarchive.name
+    DataHub2ClientSettings__EndpointAddress                                      = var.datahub2_migration_url,
+    FeatureManagement__DataHub2HealthCheck                                       = var.feature_flag_datahub2_healthcheck
 
     # Logging Worker
     "Logging__LogLevel__Default"                      = local.LOGGING_LOGLEVEL_WORKER_DEFAULT
