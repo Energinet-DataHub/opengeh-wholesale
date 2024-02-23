@@ -61,7 +61,7 @@ def dataframes_show(
     actual: DataFrame,
     expected: DataFrame,
     print_schema: bool = False,
-    show_dataframe: bool = False,
+    show_dataframe: bool = True,
     save_expected_to_csv: bool = False,
     save_actual_to_csv: bool = False,
 ) -> None:
@@ -71,7 +71,9 @@ def dataframes_show(
         print(expected.schema)
 
     if show_dataframe:
+        print("ACTUAL: Count " + str(actual.count()))
         actual.show(1000, truncate=False)
+        print("EXPECTED: Count " + str(expected.count()))
         expected.show(1000, truncate=False)
 
     if save_actual_to_csv:
