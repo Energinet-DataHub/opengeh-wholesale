@@ -167,6 +167,66 @@ def charge_period_prices_factory(
 
 
 @pytest.fixture(scope="session")
+def charge_master_data_factory(
+    spark: SparkSession,
+) -> Callable[..., DataFrame]:
+    def factory(
+        charge_code: str = DataframeDefaults.default_charge_code,
+        charge_type: str = DataframeDefaults.default_charge_type,
+        charge_owner: str = DataframeDefaults.default_charge_owner,
+        charge_resolution: str = DataframeDefaults.default_charge_resolution,
+        charge_tax: str = DataframeDefaults.default_charge_tax,
+        from_date: datetime = DataframeDefaults.default_from_date,
+        to_date: datetime = DataframeDefaults.default_to_date,
+    ) -> DataFrame:
+        charge_key: str = f"{charge_code}-{charge_owner}-{charge_type}"
+
+        data = [
+            {
+                Colname.charge_key: charge_key,
+                Colname.charge_code: charge_code,
+                Colname.charge_type: charge_type,
+                Colname.charge_owner: charge_owner,
+                Colname.charge_tax: charge_tax,
+                Colname.resolution: charge_resolution,
+                Colname.from_date: from_date,
+                Colname.to_date: to_date,
+            }
+        ]
+        return spark.createDataFrame(data)
+
+    return factory
+
+
+@pytest.fixture(scope="session")
+def charge_prices_factory(
+    spark: SparkSession,
+) -> Callable[..., DataFrame]:
+    def factory(
+        charge_code: str = DataframeDefaults.default_charge_code,
+        charge_type: str = DataframeDefaults.default_charge_type,
+        charge_owner: str = DataframeDefaults.default_charge_owner,
+        charge_time: datetime = DataframeDefaults.default_charge_time,
+        charge_price: Decimal = DataframeDefaults.default_charge_price,
+    ) -> DataFrame:
+        charge_key: str = f"{charge_code}-{charge_owner}-{charge_type}"
+
+        data = [
+            {
+                Colname.charge_key: charge_key,
+                Colname.charge_code: charge_code,
+                Colname.charge_type: charge_type,
+                Colname.charge_owner: charge_owner,
+                Colname.charge_time: charge_time,
+                Colname.charge_price: charge_price,
+            }
+        ]
+        return spark.createDataFrame(data)
+
+    return factory
+
+
+@pytest.fixture(scope="session")
 def charge_link_metering_points_factory(
     spark: SparkSession,
 ) -> Callable[..., ChargeLinkMeteringPointPeriods]:
