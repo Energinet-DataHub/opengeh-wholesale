@@ -55,6 +55,7 @@ wholesale_results_schema = StructType(
         StructField(WholesaleResultColumnNames.settlement_method, StringType(), True),
         StructField(WholesaleResultColumnNames.price, DecimalType(18, 6), True),
         StructField(WholesaleResultColumnNames.amount, DecimalType(18, 6), False),
+        # TODO JMG: if this schema will not be used for total sum then is_tax, charge_code, charge_type and charge_owner_id could be NOT nullable!?
         StructField(WholesaleResultColumnNames.is_tax, BooleanType(), True),
         StructField(WholesaleResultColumnNames.charge_code, StringType(), True),
         StructField(WholesaleResultColumnNames.charge_type, StringType(), True),
