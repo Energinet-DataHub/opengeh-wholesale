@@ -307,6 +307,21 @@ class TestWhenChargeMasterPeriodStopsAndStartsAgain:
             datetime(2022, 1, 5, 23),
         ]
 
+        charge_master_data = factory.create_charge_master_data(
+            spark,
+            [
+                factory.create_charge_master_data_row(
+                    charge_type=e.ChargeType.SUBSCRIPTION,
+                    from_date=first_period_from_date,
+                    to_date=first_period_to_date,
+                ),
+                factory.create_charge_master_data_row(
+                    charge_type=e.ChargeType.SUBSCRIPTION,
+                    from_date=second_period_from_date,
+                    to_date=second_period_to_date,
+                ),
+            ],
+        )
         charge_link_metering_point_periods = (
             factory.create_charge_link_metering_point_periods(
                 spark,
@@ -324,19 +339,15 @@ class TestWhenChargeMasterPeriodStopsAndStartsAgain:
                 ],
             )
         )
-        charge_period_prices = factory.create_charge_period_prices(
+        charge_period_prices = factory.create_charge_prices(
             spark,
             [
-                factory.create_subscription_or_fee_charge_period_prices_row(
+                factory.create_charge_prices_row(
                     charge_time=first_period_from_date,
-                    from_date=first_period_from_date,
-                    to_date=first_period_to_date,
                     charge_type=e.ChargeType.SUBSCRIPTION,
                 ),
-                factory.create_subscription_or_fee_charge_period_prices_row(
+                factory.create_charge_prices_row(
                     charge_time=second_period_from_date,
-                    from_date=second_period_from_date,
-                    to_date=second_period_to_date,
                     charge_type=e.ChargeType.SUBSCRIPTION,
                 ),
             ],
@@ -397,14 +408,22 @@ class TestWhenChargeLinkPeriodStopsAndStartsAgain:
                 ],
             )
         )
-        charge_period_prices = factory.create_charge_period_prices(
+        charge_master_data = factory.create_charge_master_data(
             spark,
             [
-                factory.create_subscription_or_fee_charge_period_prices_row(
-                    charge_time=time,
-                    charge_price=price,
+                factory.create_charge_master_data_row(
+                    charge_type=e.ChargeType.SUBSCRIPTION,
                     from_date=first_link_from_date,
                     to_date=second_link_to_date,
+                ),
+            ],
+        )
+        charge_prices = factory.create_charge_prices(
+            spark,
+            [
+                factory.create_charge_prices_row(
+                    charge_time=time,
+                    charge_price=price,
                     charge_type=e.ChargeType.SUBSCRIPTION,
                 )
                 for time, price in input_charge_time_and_price.items()
@@ -413,7 +432,8 @@ class TestWhenChargeLinkPeriodStopsAndStartsAgain:
 
         # Act
         actual_subscription = get_subscription_charges(
-            charge_period_prices,
+            charge_master_data,
+            charge_prices,
             charge_link_metering_point_periods,
             time_zone=DEFAULT_TIME_ZONE,
         )
