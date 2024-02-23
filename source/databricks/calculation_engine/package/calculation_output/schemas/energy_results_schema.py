@@ -31,12 +31,11 @@ energy_results_schema = StructType(
         StructField(EnergyResultColumnNames.energy_supplier_id, StringType(), True),
         StructField(EnergyResultColumnNames.balance_responsible_id, StringType(), True),
         # Energy quantity in kWh for the given observation time.
-        # Null when quality is missing.
         # Example: 1234.534
-        StructField(EnergyResultColumnNames.quantity, DecimalType(18, 3), True),
+        StructField(EnergyResultColumnNames.quantity, DecimalType(18, 3), False),
         StructField(
             EnergyResultColumnNames.quantity_qualities,
-            ArrayType(StringType(), False),
+            ArrayType(StringType(), True),
             False,
         ),
         StructField(EnergyResultColumnNames.time, TimestampType(), False),

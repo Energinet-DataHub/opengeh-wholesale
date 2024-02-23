@@ -40,8 +40,10 @@ wholesale_results_schema = StructType(
         StructField(WholesaleResultColumnNames.grid_area, StringType(), False),
         # Wholesale results are per energy supplier therefore energy_supplier_id cannot be null.
         StructField(WholesaleResultColumnNames.energy_supplier_id, StringType(), False),
-        StructField(WholesaleResultColumnNames.quantity, DecimalType(18, 3), True),
-        StructField(WholesaleResultColumnNames.quantity_unit, StringType(), True),
+        # quantity is never null. If there are no time series points for the observation, then quanity is set to zero
+        StructField(WholesaleResultColumnNames.quantity, DecimalType(18, 3), False),
+        # TODO JMG: if this schema will also be used for total sum then this should be nullable!?
+        StructField(WholesaleResultColumnNames.quantity_unit, StringType(), False),
         StructField(
             WholesaleResultColumnNames.quantity_qualities,
             ArrayType(StringType()),
@@ -51,12 +53,13 @@ wholesale_results_schema = StructType(
         StructField(WholesaleResultColumnNames.resolution, StringType(), False),
         StructField(WholesaleResultColumnNames.metering_point_type, StringType(), True),
         StructField(WholesaleResultColumnNames.settlement_method, StringType(), True),
-        StructField(WholesaleResultColumnNames.price, DecimalType(18, 6), False),
+        StructField(WholesaleResultColumnNames.price, DecimalType(18, 6), True),
         StructField(WholesaleResultColumnNames.amount, DecimalType(18, 6), False),
-        StructField(WholesaleResultColumnNames.is_tax, BooleanType(), False),
-        StructField(WholesaleResultColumnNames.charge_code, StringType(), False),
-        StructField(WholesaleResultColumnNames.charge_type, StringType(), False),
-        StructField(WholesaleResultColumnNames.charge_owner_id, StringType(), False),
+        # TODO JMG: if this schema will not be used for total sum then is_tax, charge_code, charge_type and charge_owner_id could be NOT nullable!?
+        StructField(WholesaleResultColumnNames.is_tax, BooleanType(), True),
+        StructField(WholesaleResultColumnNames.charge_code, StringType(), True),
+        StructField(WholesaleResultColumnNames.charge_type, StringType(), True),
+        StructField(WholesaleResultColumnNames.charge_owner_id, StringType(), True),
         StructField(WholesaleResultColumnNames.amount_type, StringType(), False),
     ]
 )
