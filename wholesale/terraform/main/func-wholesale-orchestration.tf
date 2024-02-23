@@ -20,7 +20,7 @@ module "func_wholesale_orchestration" {
   role_assignments = [
     {
       // DataLake
-      resource_id          = data.azurerm_key_vault_secret.st_shared_data_lake_id.value
+      resource_id          = data.azurerm_key_vault_secret.st_data_lake_id.value
       role_definition_name = "Storage Blob Data Contributor"
     }
   ]

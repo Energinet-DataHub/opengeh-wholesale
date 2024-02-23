@@ -22,12 +22,12 @@ module "dbw" {
 
   private_dns_records = [
     {
-      resource_name = data.azurerm_key_vault_secret.st_shared_data_lake_name.value
+      resource_name = data.azurerm_key_vault_secret.st_data_lake_name.value
       dns_zone      = "privatelink.blob.core.windows.net"
       ip_record     = data.azurerm_key_vault_secret.st_data_lake_blob_private_ip_address.value
     },
     {
-      resource_name = data.azurerm_key_vault_secret.st_shared_data_lake_name.value
+      resource_name = data.azurerm_key_vault_secret.st_data_lake_name.value
       dns_zone      = "privatelink.dfs.core.windows.net"
       ip_record     = data.azurerm_key_vault_secret.st_data_lake_dfs_private_ip_address.value
     }

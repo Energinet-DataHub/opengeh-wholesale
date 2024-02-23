@@ -43,12 +43,12 @@ data "azurerm_key_vault_secret" "log_shared_id" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "st_shared_data_lake_name" {
+data "azurerm_key_vault_secret" "st_data_lake_name" {
   name         = "st-data-lake-name"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "st_shared_data_lake_id" {
+data "azurerm_key_vault_secret" "st_data_lake_id" {
   name         = "st-data-lake-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
