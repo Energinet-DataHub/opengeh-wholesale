@@ -40,6 +40,7 @@ wholesale_results_schema = StructType(
         StructField(WholesaleResultColumnNames.grid_area, StringType(), False),
         # Wholesale results are per energy supplier therefore energy_supplier_id cannot be null.
         StructField(WholesaleResultColumnNames.energy_supplier_id, StringType(), False),
+        # quantity is never null. If there are no time series points for the observation, then quanity is set to zero
         StructField(WholesaleResultColumnNames.quantity, DecimalType(18, 3), False),
         StructField(WholesaleResultColumnNames.quantity_unit, StringType(), False),
         StructField(
