@@ -31,7 +31,7 @@ from package.calculation.energy.energy_results import (
 from package.constants import Colname
 
 
-def get_expected_flex_consumption_per_ga_and_es(*args) -> DataFrame:
+def get_expected(*args) -> DataFrame:
     spark: SparkSession = args[0]
     df: DataFrame = args[1]
 
