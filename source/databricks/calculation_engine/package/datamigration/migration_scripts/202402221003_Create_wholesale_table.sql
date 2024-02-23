@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.wholesale_results
     -- Example: 1234.534
     quantity DECIMAL(18, 3) NOT NULL,
     quantity_unit STRING NOT NULL,
-    quantity_qualities ARRAY<STRING NOT NULL> NOT NULL,
+    quantity_qualities ARRAY<STRING> NOT NULL,
     -- The time when the energy was consumed/produced/exchanged
     time TIMESTAMP NOT NULL,
     resolution STRING NOT NULL,
