@@ -42,6 +42,7 @@ wholesale_results_schema = StructType(
         StructField(WholesaleResultColumnNames.energy_supplier_id, StringType(), False),
         # quantity is never null. If there are no time series points for the observation, then quanity is set to zero
         StructField(WholesaleResultColumnNames.quantity, DecimalType(18, 3), False),
+        # TODO JMG: if this schema will also be used for total sum then this should be nullable!?
         StructField(WholesaleResultColumnNames.quantity_unit, StringType(), False),
         StructField(
             WholesaleResultColumnNames.quantity_qualities,
