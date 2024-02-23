@@ -17,7 +17,7 @@ from pyspark.sql import SparkSession
 from business_logic_tests.scenario_factory import ScenarioFixture
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="class")
 def scenario_fixture(
     spark: SparkSession,
 ) -> ScenarioFixture:
