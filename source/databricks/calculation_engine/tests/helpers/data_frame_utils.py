@@ -57,16 +57,16 @@ def assert_dataframes(
     assert_dataframes_equal(actual, expected)
 
 
-def dataframes_show(
+def show_dataframes(
     actual: DataFrame,
     expected: DataFrame,
-    print_schema: bool = False,
+    show_schema: bool = False,
     show_dataframe: bool = True,
     save_expected_to_csv: bool = False,
     save_actual_to_csv: bool = False,
 ) -> None:
 
-    if print_schema:
+    if show_schema:
         print(actual.schema)
         print(expected.schema)
 
