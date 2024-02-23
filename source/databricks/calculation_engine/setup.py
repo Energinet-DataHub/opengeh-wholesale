@@ -28,7 +28,7 @@ setup(
         "pyspark==3.5.*",
         "azure-identity==1.12.0",
         "azure-storage-file-datalake==12.11.0",
-        "databricks-cli==0.17.6",
+        "databricks-cli==0.18",
         "dependency_injector==4.41.0",
         "urllib3==2.2.*",
         "delta-spark==3.1.0",
