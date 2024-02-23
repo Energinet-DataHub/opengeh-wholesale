@@ -699,8 +699,11 @@ def test__get_tariff_charges__can_handle_missing_charges(
         factory.create_time_series_row(observation_time=datetime(2019, 12, 31, 23)),
         factory.create_time_series_row(observation_time=datetime(2020, 1, 1, 0)),
     ]
-    charge_period_prices_rows = [
-        factory.create_tariff_charge_period_prices_row(),
+    charge_master_data_rows = [
+        factory.create_charge_master_data_row(),
+    ]
+    charge_prices_rows = [
+        factory.create_charge_prices_row(),
     ]
     charge_link_metering_points_rows = [
         factory.create_charge_link_metering_point_periods_row(
@@ -709,9 +712,8 @@ def test__get_tariff_charges__can_handle_missing_charges(
     ]
 
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
-    charge_period_prices = factory.create_charge_period_prices(
-        spark, charge_period_prices_rows
-    )
+    charge_master_data = spark.createDataFrame(charge_master_data_rows)
+    charge_prices = spark.createDataFrame(charge_prices_rows)
     charge_link_metering_point_periods = (
         factory.create_charge_link_metering_point_periods(
             spark, charge_link_metering_points_rows
@@ -721,7 +723,8 @@ def test__get_tariff_charges__can_handle_missing_charges(
     # Act
     actual = get_tariff_charges(
         time_series,
-        charge_period_prices,
+        charge_master_data,
+        charge_prices,
         charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
     )
@@ -758,18 +761,24 @@ def test__get_tariff_charges__can_handle_daylight_saving_time(
         factory.create_time_series_row(observation_time=date_time_1),
         factory.create_time_series_row(observation_time=date_time_2),
     ]
-    charge_period_prices_rows = [
-        factory.create_tariff_charge_period_prices_row(
-            charge_time=date_time_1,
+    create_charge_master_data_rows = [
+        factory.create_charge_master_data_row(
             from_date=date_time_1,
             to_date=date_time_2,
             resolution=e.ChargeResolution.DAY,
         ),
-        factory.create_tariff_charge_period_prices_row(
-            charge_time=date_time_2,
+        factory.create_charge_master_data_row(
             from_date=date_time_1,
             to_date=date_time_2,
             resolution=e.ChargeResolution.DAY,
+        ),
+    ]
+    create_charge_prices_rows = [
+        factory.create_charge_prices_row(
+            charge_time=date_time_1,
+        ),
+        factory.create_charge_prices_row(
+            charge_time=date_time_2,
         ),
     ]
     charge_link_metering_points_rows = [
@@ -780,9 +789,8 @@ def test__get_tariff_charges__can_handle_daylight_saving_time(
     ]
 
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
-    charge_period_prices = factory.create_charge_period_prices(
-        spark, charge_period_prices_rows
-    )
+    charge_master_data = spark.createDataFrame(create_charge_master_data_rows)
+    charge_prices = spark.createDataFrame(create_charge_prices_rows)
     charge_link_metering_point_periods = (
         factory.create_charge_link_metering_point_periods(
             spark, charge_link_metering_points_rows
@@ -792,7 +800,8 @@ def test__get_tariff_charges__can_handle_daylight_saving_time(
     # Act
     actual = get_tariff_charges(
         time_series,
-        charge_period_prices,
+        charge_master_data,
+        charge_prices,
         charge_link_metering_point_periods,
         e.ChargeResolution.DAY,
     )
