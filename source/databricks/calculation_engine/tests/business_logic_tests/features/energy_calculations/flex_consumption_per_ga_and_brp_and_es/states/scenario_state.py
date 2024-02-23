@@ -15,7 +15,10 @@ from ast import literal_eval
 from datetime import datetime
 
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.types import StructType, StructField, StringType
+from pyspark.sql.functions import col
+from pyspark.sql.types import StructType, StructField, StringType, DecimalType
+
+from package.constants import Colname
 
 
 def get_expected(*args) -> DataFrame:  # type: ignore
@@ -35,15 +38,15 @@ def get_expected(*args) -> DataFrame:  # type: ignore
     # df = df.withColumn(
     #     Colname.time_window, parse_time_window_udf(df[Colname.time_window])
     # )
-    # df = df.withColumn(
-    #     Colname.sum_quantity, col(Colname.sum_quantity).cast(DecimalType(38, 6))
-    # )
+    df = df.withColumn(
+        Colname.sum_quantity, col(Colname.sum_quantity).cast(DecimalType(38, 6))
+    )
     #
     # parse_qualities_string_udf = udf(_parse_qualities_string, ArrayType(StringType()))
     # df = df.withColumn(
     #     Colname.quantity, parse_qualities_string_udf(df[Colname.quantity])
     # )
-    # df = df.withColumnRenamed(Colname.quantity, Colname.qualities)
+    df = df.withColumnRenamed(Colname.quantity, Colname.qualities)
     #
     # return spark.createDataFrame(df.rdd, energy_results_schema)
     df.show()
