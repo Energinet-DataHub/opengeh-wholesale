@@ -19,36 +19,9 @@ from pyspark.sql.types import (
     BooleanType,
     DecimalType,
     ArrayType,
-    StructType,
-    StructField,
 )
 
-from package.constants import Colname
-
-schema = StructType(
-    [
-        StructField(Colname.calculation_id, StringType(), False),
-        StructField(Colname.calculation_type, StringType(), False),
-        StructField(Colname.calculation_execution_time_start, TimestampType(), False),
-        StructField("calculation_result_id", StringType(), True),
-        StructField("grid_area", StringType(), False),
-        StructField(Colname.energy_supplier_id, StringType(), True),
-        StructField(Colname.quantity, DecimalType(28, 3), True),
-        StructField("quantity_unit", StringType(), False),
-        StructField("quantity_qualities", ArrayType(StringType()), False),
-        StructField("time", TimestampType(), False),
-        StructField(Colname.resolution, StringType(), False),
-        StructField("metering_point_type", StringType(), False),
-        StructField(Colname.settlement_method, StringType(), True),
-        StructField("price", DecimalType(18, 6), False),
-        StructField("amount", DecimalType(38, 6), True),
-        StructField("is_tax", BooleanType(), False),
-        StructField(Colname.charge_code, StringType(), False),
-        StructField(Colname.charge_type, StringType(), False),
-        StructField(Colname.charge_owner, StringType(), False),
-        StructField("amount_type", StringType(), False),
-    ]
-)
+from package.calculation_output.schemas import wholesale_results_schema
 
 
 def get_expected(*args) -> DataFrame:  # type: ignore
@@ -56,7 +29,7 @@ def get_expected(*args) -> DataFrame:  # type: ignore
     df: DataFrame = args[1]
     calculation_args = args[2]
 
-    # Don't remove. Believed needed because this function an argument to the setup function
+    # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
     from package.constants import Colname
 
@@ -84,4 +57,4 @@ def get_expected(*args) -> DataFrame:  # type: ignore
         ).cast(ArrayType(StringType())),
     )
 
-    return spark.createDataFrame(df.rdd, schema)
+    return spark.createDataFrame(df.rdd, wholesale_results_schema)

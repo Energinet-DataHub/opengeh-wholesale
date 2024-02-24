@@ -30,7 +30,7 @@ def get_expected(*args) -> DataFrame:  # type: ignore
     spark: SparkSession = args[0]
     df: DataFrame = args[1]
 
-    # Don't remove. Believed needed because this function an argument to the setup function
+    # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
     from package.constants import Colname
     from package.calculation.energy.energy_results import energy_results_schema
