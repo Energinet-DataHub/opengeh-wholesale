@@ -15,14 +15,14 @@ from ast import literal_eval
 from datetime import datetime
 
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import col, udf
+from pyspark.sql.functions import udf, col
 from pyspark.sql.types import (
     StructType,
     StructField,
-    StringType,
-    DecimalType,
     TimestampType,
+    DecimalType,
     ArrayType,
+    StringType,
 )
 
 
@@ -30,6 +30,8 @@ def get_expected(*args) -> DataFrame:  # type: ignore
     spark: SparkSession = args[0]
     df: DataFrame = args[1]
 
+    # Don't remove. Believed needed because this function an argument to the setup function
+    # and therefore the following packages are not automatically included.
     from package.constants import Colname
     from package.calculation.energy.energy_results import energy_results_schema
 
@@ -50,7 +52,7 @@ def get_expected(*args) -> DataFrame:  # type: ignore
         Colname.sum_quantity, col(Colname.sum_quantity).cast(DecimalType(38, 6))
     )
 
-    parse_qualities_string_udf = udf(_parse_qualities, ArrayType(StringType()))
+    parse_qualities_string_udf = udf(_parse_qualities_string, ArrayType(StringType()))
     df = df.withColumn(
         Colname.quantity, parse_qualities_string_udf(df[Colname.quantity])
     )
@@ -67,5 +69,5 @@ def _parse_time_window(time_window_str: str) -> tuple[datetime, datetime]:
     return start, end
 
 
-def _parse_qualities(qualities_str: str) -> list[str]:
+def _parse_qualities_string(qualities_str: str) -> list[str]:
     return literal_eval(qualities_str)

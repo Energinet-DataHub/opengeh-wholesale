@@ -56,6 +56,10 @@ def get_expected(*args) -> DataFrame:  # type: ignore
     df: DataFrame = args[1]
     calculation_args = args[2]
 
+    # Don't remove. Believed needed because this function an argument to the setup function
+    # and therefore the following packages are not automatically included.
+    from package.constants import Colname
+
     df = df.withColumn(Colname.calculation_id, lit(calculation_args.calculation_id))
     df = df.withColumn(
         Colname.calculation_execution_time_start,

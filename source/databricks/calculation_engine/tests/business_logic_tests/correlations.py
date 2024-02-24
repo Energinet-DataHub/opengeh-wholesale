@@ -23,6 +23,10 @@ from package.calculation_input.schemas import (
 
 
 def get_correlations(table_reader: TableReader) -> dict[str, tuple]:
+    """
+    Contains the mapping between the csv file name, the schema name and the function
+    to be mocked.
+    """
     return {
         "metering_point_periods.csv": (
             metering_point_period_schema,

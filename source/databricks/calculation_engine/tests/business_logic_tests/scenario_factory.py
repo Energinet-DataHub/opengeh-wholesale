@@ -75,9 +75,9 @@ class ScenarioFixture:
 
         df = spark_session.read.csv(path, header=True, sep=";", schema=schema)
 
-        # All the types in the expected dataframe (build from the expected results file) are
-        # string types since the csv method doesn't support array types. These need to be convert
-        # first to the correct types before applying the schema.
+        # Because the expected result csv contains unsupported types (array type) it can't be
+        # parsed with a schema. Therefore, all types are converted the string type. It also
+        # means that the dataframe need type changes before applying the schema.
         if file_path.__contains__("expected_results.csv"):
             return df
 
@@ -88,6 +88,9 @@ class ScenarioFixture:
     def _read_files_in_parallel(
         self, correlations: dict[str, tuple]
     ) -> list[DataFrame]:
+        """
+        Reads all the csv files in parallel and converts them to dataframes.
+        """
         schemas = [t[0] for t in correlations.values()]
         with concurrent.futures.ThreadPoolExecutor() as executor:
             dataframes = list(
