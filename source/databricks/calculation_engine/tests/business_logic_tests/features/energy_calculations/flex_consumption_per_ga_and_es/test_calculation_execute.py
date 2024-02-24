@@ -17,7 +17,7 @@ from business_logic_tests.features.energy_calculations.flex_consumption_per_ga_a
 from helpers.data_frame_utils import assert_dataframes
 
 
-def test_execute__returns_expected(
+def test_execute__returns_expected(  # type: ignore
     scenario_fixture,
 ) -> None:
     # Arrange

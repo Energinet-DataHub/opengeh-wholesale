@@ -17,7 +17,7 @@ from business_logic_tests.features.wholesale_calculations.hourly_tariff_for_chil
 from helpers.data_frame_utils import assert_dataframes
 
 
-def test_execute__returns_expected(
+def test_execute__returns_expected(  # type: ignore
     scenario_fixture,
 ) -> None:
     # Arrange
