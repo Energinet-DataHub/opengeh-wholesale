@@ -66,22 +66,31 @@ class TestWhenValidInput:
         # Arrange
         charge_link_metering_points_rows = [
             factory.create_charge_link_metering_point_periods_row(
-                charge_type=e.ChargeType.FEE
+                charge_type=e.ChargeType.FEE,
+                from_date=from_date,
+                to_date=to_date,
             ),
             factory.create_charge_link_metering_point_periods_row(
-                charge_type=e.ChargeType.SUBSCRIPTION
+                charge_type=e.ChargeType.SUBSCRIPTION,
+                from_date=from_date,
+                to_date=to_date,
             ),
             factory.create_charge_link_metering_point_periods_row(
-                charge_type=e.ChargeType.FEE
+                charge_type=e.ChargeType.FEE,
+                from_date=from_date,
+                to_date=to_date,
             ),
         ]
         charge_master_data_rows = [
             factory.create_charge_master_data_row(
-                charge_type=e.ChargeType.FEE, resolution=e.ChargeResolution.MONTH
+                charge_type=e.ChargeType.FEE,
+                from_date=from_date,
+                to_date=to_date,
             ),
             factory.create_charge_master_data_row(
                 charge_type=e.ChargeType.SUBSCRIPTION,
-                resolution=e.ChargeResolution.MONTH,
+                from_date=from_date,
+                to_date=to_date,
             ),
             factory.create_charge_master_data_row(),
         ]
@@ -92,7 +101,9 @@ class TestWhenValidInput:
             factory.create_charge_prices_row(
                 charge_type=e.ChargeType.SUBSCRIPTION,
             ),
-            factory.create_charge_prices_row(),
+            factory.create_charge_prices_row(
+                charge_type=e.ChargeType.TARIFF,
+            ),
         ]
 
         charge_link_metering_point_periods = (

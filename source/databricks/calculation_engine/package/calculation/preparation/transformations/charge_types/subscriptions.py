@@ -31,13 +31,15 @@ def get_subscription_charges(
 ) -> DataFrame:
     subscription_links = _filter_subscriptions(charge_link_metering_point_periods.df)
     subscription_prices = _filter_subscriptions(charge_prices)
-    subscription_periods = _filter_subscriptions(charge_master_data)
+    subscription_master_data = _filter_subscriptions(charge_master_data)
 
-    subscription_period_prices = _join_with_prices(
-        subscription_periods, subscription_prices, time_zone
+    subscription_master_data_and_prices = _join_with_prices(
+        subscription_master_data, subscription_prices, time_zone
     )
 
-    subscriptions = _join_with_links(subscription_period_prices, subscription_links)
+    subscriptions = _join_with_links(
+        subscription_master_data_and_prices, subscription_links
+    )
 
     return subscriptions
 
@@ -47,25 +49,25 @@ def _filter_subscriptions(df: DataFrame) -> DataFrame:
 
 
 def _join_with_prices(
-    subscription_periods: DataFrame,
+    subscription_master_data: DataFrame,
     subscription_prices: DataFrame,
     time_zone: str,
 ) -> DataFrame:
     """
-    Join charge_periods with charge_prices.
+    Join subscription_master_data with subscription_prices.
     This method also ensure
     - Missing charge prices will be set to None.
     - The charge price is the last known charge price for the charge key.
     """
-    subscription_period_with_charge_time = _expand_with_daily_charge_time(
-        subscription_periods, time_zone
+    subscription_master_data_with_charge_time = _expand_with_daily_charge_time(
+        subscription_master_data, time_zone
     )
 
     w = Window.partitionBy(Colname.charge_key, Colname.from_date).orderBy(
         Colname.charge_time
     )
 
-    result = subscription_period_with_charge_time.join(
+    result = subscription_master_data_with_charge_time.join(
         subscription_prices, [Colname.charge_key, Colname.charge_time], "left"
     ).withColumn(
         Colname.charge_price,
@@ -76,7 +78,7 @@ def _join_with_prices(
 
 
 def _expand_with_daily_charge_time(
-    subscription_periods: DataFrame, time_zone: str
+    subscription_master_data: DataFrame, time_zone: str
 ) -> DataFrame:
     """
     Add charge_time column to subscription_periods DataFrame.
@@ -86,7 +88,7 @@ def _expand_with_daily_charge_time(
     charge_time_local = "charge_time_local"
 
     charge_periods_with_charge_time = (
-        subscription_periods.withColumn(
+        subscription_master_data.withColumn(
             charge_time_local,
             f.explode(
                 f.expr(
