@@ -31,7 +31,6 @@ charges_master_data_schema = StructType(
         StructField(Colname.charge_owner, StringType(), False),
         StructField(Colname.resolution, StringType(), False),
         StructField(Colname.charge_tax, BooleanType(), False),
-        StructField(Colname.currency, StringType(), False),
         StructField(Colname.from_date, TimestampType(), False),
         StructField(Colname.to_date, TimestampType(), False),
     ]

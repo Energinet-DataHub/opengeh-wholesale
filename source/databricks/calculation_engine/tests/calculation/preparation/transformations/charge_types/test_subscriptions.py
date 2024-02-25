@@ -144,7 +144,7 @@ class TestWhenNoPricesForPeriod:
             )
         )
 
-        charge_period_prices_empty = factory.create_charge_prices(
+        charge_prices_empty = factory.create_charge_prices(
             spark,
             Row(),
         )
@@ -161,7 +161,7 @@ class TestWhenNoPricesForPeriod:
         # Act
         actual_subscription = get_subscription_charges(
             charge_master_data,
-            charge_period_prices_empty,
+            charge_prices_empty,
             charge_link_metering_point_periods,
             time_zone=DEFAULT_TIME_ZONE,
         )
