@@ -86,8 +86,8 @@ def create_charge_master_data_row(
         Colname.charge_code: charge_code,
         Colname.charge_type: charge_type.value,
         Colname.charge_owner: charge_owner,
-        Colname.charge_tax: charge_tax,
         Colname.resolution: resolution.value,
+        Colname.charge_tax: charge_tax,
         Colname.from_date: from_date,
         Colname.to_date: to_date,
     }
@@ -106,9 +106,7 @@ def create_charge_prices_row(
 
     row = {
         Colname.charge_key: charge_key,
-        Colname.charge_code: charge_code,
         Colname.charge_type: charge_type.value,
-        Colname.charge_owner: charge_owner,
         Colname.charge_price: charge_price,
         Colname.charge_time: charge_time,
     }
