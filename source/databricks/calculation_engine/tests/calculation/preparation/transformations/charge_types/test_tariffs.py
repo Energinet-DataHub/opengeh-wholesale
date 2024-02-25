@@ -11,15 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-from datetime import datetime, timedelta
+from datetime import datetime
 from decimal import Decimal
 
 import pytest
 import package.codelists as e
 
-from pyspark.sql import SparkSession, Window
-import pyspark.sql.functions as f
+from pyspark.sql import SparkSession
 
 from package.calculation.preparation.transformations import (
     get_tariff_charges,
@@ -116,14 +114,14 @@ def test__get_tariff_charges__filters_on_resolution(
         )
     )
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
-    charge_period_prices = factory.create_charge_period_prices(
-        spark, charge_period_prices_df
-    )
+    charge_master_data = spark.createDataFrame(charge_master_data_rows)
+    charge_prices = spark.createDataFrame(charge_prices_rows)
 
     # Act
     actual = get_tariff_charges(
         time_series,
-        charge_period_prices,
+        charge_master_data,
+        charge_prices,
         charge_link_metering_point_periods,
         charge_resolution,
     )
@@ -131,188 +129,6 @@ def test__get_tariff_charges__filters_on_resolution(
     # Assert
     assert actual.count() == 1
     assert actual.collect()[0][Colname.resolution] == charge_resolution.value
-
-
-def test__t(
-    spark: SparkSession,
-) -> None:
-    start_datetime = datetime(2022, 1, 1, 0, 0, 0)
-    end_datetime = datetime(2022, 1, 3, 0, 0, 0)
-
-    # Specify the target time zone (replace 'UTC' with your desired time zone)
-    target_timezone = "America/New_York"
-
-    # Create a DataFrame with a single column containing the sequence of timestamps in the specified time zone
-    df = spark.range(1).select(
-        f.expr(
-            f"sequence(from_utc_timestamp('{start_datetime}', '{target_timezone}'), from_utc_timestamp('{end_datetime}', '{target_timezone}'), interval 1 hour)"
-        ).alias("timestamps")
-    )
-
-    # Show the resulting DataFrame
-    df.show(truncate=False)
-
-
-def test__temp0(
-    spark: SparkSession,
-) -> None:
-    # Define the data for the DataFrame
-    period_start_utc = datetime(2020, 2, 29, 23, 0)
-    period_end_utc = datetime(2020, 3, 31, 22, 0)
-
-    time_zone = "Europe/Copenhagen"
-
-    data = [
-        ("key1", period_start_utc, 100),
-    ]
-
-    # Define the schema for the DataFrame
-    schema = ["charge_key", "charge_time", "charge_price"]
-
-    # Create the DataFrame
-    df = spark.createDataFrame(data, schema)
-
-    df = df.withColumn(
-        "local_time",
-        f.explode(
-            f.expr(
-                f"sequence(from_utc_timestamp('{period_start_utc}', '{time_zone}'), from_utc_timestamp('{period_end_utc}', '{time_zone}'), interval 1 hour)"
-            )
-        ),
-    )
-
-    df.show()
-
-
-def test__temp1(
-    spark: SparkSession,
-) -> None:
-    # Define the data for the DataFrame
-    period_start_utc = datetime(2020, 2, 29, 23, 0)
-    period_end_utc = datetime(2020, 3, 31, 22, 0)
-
-    time_zone = "Europe/Copenhagen"
-    local_tz = pytz.timezone(time_zone)
-
-    data = [
-        ("key1", period_start_utc, 100),
-    ]
-
-    # Define the schema for the DataFrame
-    schema = ["charge_key", "charge_time", "charge_price"]
-
-    # Create the DataFrame
-    df = spark.createDataFrame(data, schema)
-
-    df = df.withColumn(
-        "period_start_local",
-        f.lit(period_start_utc.astimezone(local_tz)).cast(TimestampType()),
-    ).withColumn(
-        "period_start_end",
-        f.lit(period_end_utc.astimezone(local_tz)).cast(TimestampType()),
-    )
-
-    df.show()
-
-
-def test__temp(
-    spark: SparkSession,
-) -> None:
-    # Prepare the data
-    period_start_utc = datetime(2020, 2, 29, 23, 0)
-    period_end_utc = datetime(2020, 3, 31, 22, 0)
-    time_zone = "Europe/Copenhagen"
-
-    data = [
-        ("key1", period_start_utc, 100),
-        ("key1", period_start_utc + timedelta(days=10), 200),
-        ("key2", period_start_utc, 300),
-    ]
-    schema = ["charge_key", "charge_time", "charge_price"]
-    df = spark.createDataFrame(data, schema)
-
-    all_dates_df = (
-        df.select(Colname.charge_key)
-        .dropDuplicates()
-        .select(
-            Colname.charge_key,
-            f.explode(
-                f.expr(
-                    f"sequence(from_utc_timestamp('{period_start_utc}', '{time_zone}'), from_utc_timestamp('{period_end_utc}', '{time_zone}'), interval 1 day)"
-                )
-            ).alias("charge_time_local"),
-        )
-        .withColumn(
-            Colname.charge_time,
-            f.to_utc_timestamp(f.col("charge_time_local"), time_zone),
-        )
-        .drop("charge_time_local")
-    )
-
-    all_dates_df.show(100)
-
-    w = Window.partitionBy(Colname.charge_key).orderBy(Colname.charge_time)
-
-    result = all_dates_df.join(
-        df, [Colname.charge_key, Colname.charge_time], "left"
-    ).select(
-        Colname.charge_key,
-        Colname.charge_time,
-        *[
-            f.last(f.col(c), ignorenulls=True).over(w).alias(c)
-            for c in df.columns
-            if c not in (Colname.charge_key, Colname.charge_time)
-        ],
-    )
-
-    result.show(100)
-
-
-def test__temp_utc(
-    spark: SparkSession,
-) -> None:
-    # Prepare the data
-    period_start_utc = datetime(2020, 2, 29, 23, 0)
-    period_end_utc = datetime(2020, 3, 31, 22, 0)
-
-    data = [
-        ("key1", period_start_utc, 100),
-        ("key1", period_start_utc + timedelta(days=10), 200),
-        ("key2", period_start_utc, 300),
-    ]
-    schema = ["charge_key", "charge_time", "charge_price"]
-    df = spark.createDataFrame(data, schema)
-
-    all_dates_df = (
-        df.select(Colname.charge_key)
-        .dropDuplicates()
-        .select(
-            Colname.charge_key,
-            f.explode(
-                f.expr(
-                    f"sequence(to_timestamp('{period_start_utc}'), to_timestamp('{period_end_utc}'), interval 1 day)"
-                )
-            ).alias("charge_time"),
-        )
-    )
-
-    all_dates_df.show(100)
-
-    w = Window.partitionBy(Colname.charge_key).orderBy(Colname.charge_time)
-
-    result = all_dates_df.join(
-        df, [Colname.charge_key, Colname.charge_time], "left"
-    ).select(
-        Colname.charge_key,
-        Colname.charge_time,
-        *[
-            f.last(f.col(c), ignorenulls=True).over(w).alias(c)
-            for c in df.columns
-            if c not in (Colname.charge_key, Colname.charge_time)
-        ],
-    )
-
-    result.show(100)
 
 
 def test__get_tariff_charges__filters_on_tariff_charge_type(

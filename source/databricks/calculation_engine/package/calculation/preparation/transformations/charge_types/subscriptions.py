@@ -124,9 +124,6 @@ def _join_with_links(
         how="inner",
     ).select(
         subscription_period_prices[Colname.charge_key],
-        Colname.charge_code,
-        Colname.charge_type,
-        Colname.charge_owner,
         Colname.charge_time,
         Colname.charge_price,
         subscription_links[Colname.metering_point_type],
