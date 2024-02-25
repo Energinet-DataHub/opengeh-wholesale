@@ -42,6 +42,7 @@ var host = new HostBuilder()
         // => Sub-modules of Events
         services.AddEventsDatabase(context.Configuration);
         services.AddIntegrationEventPublishing(context.Configuration);
+        services.AddCompletedCalculationsHandling();
 
         var serviceBusOptions = context.Configuration.Get<ServiceBusOptions>()!;
         services.AddHealthChecks()

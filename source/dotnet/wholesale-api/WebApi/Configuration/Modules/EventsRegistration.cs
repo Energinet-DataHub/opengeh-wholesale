@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.MarketParticipant.Infrastructure.Model.Contracts;
 using Energinet.DataHub.Wholesale.Calculations.Application.IntegrationEvents;
@@ -21,11 +20,7 @@ using Energinet.DataHub.Wholesale.Calculations.Application.UseCases;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.GridArea;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.ReceivedIntegrationEvent;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
-using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
-using Energinet.DataHub.Wholesale.Events.Application.Triggers;
-using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Energinet.DataHub.Wholesale.Events.Application.Workers;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.Extensions.DependencyInjection;
 using Google.Protobuf.Reflection;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
@@ -37,10 +32,8 @@ public static class EventsRegistration
 {
     public static IServiceCollection AddEventsModule(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddEventsDatabase(configuration);
         services.AddIntegrationEventsSubscription();
         services.AddInboxHandling();
-        services.AddCompletedCalculationsHandling();
 
         return services;
     }
@@ -75,20 +68,6 @@ public static class EventsRegistration
     {
         services
             .AddHostedService<AggregatedTimeSeriesServiceBusWorker>();
-
-        return services;
-    }
-
-    private static IServiceCollection AddCompletedCalculationsHandling(this IServiceCollection services)
-    {
-        services
-            .AddScoped<ICompletedCalculationFactory, CompletedCalculationFactory>()
-            .AddScoped<IRegisterCompletedCalculationsHandler, RegisterCompletedCalculationsHandler>(); // This depends on services within Calculations sub-area
-
-        services
-            .AddHostedService<RegisterCompletedCalculationsTrigger>()
-            .AddHealthChecks()
-                .AddRepeatingTriggerHealthCheck<RegisterCompletedCalculationsTrigger>(TimeSpan.FromMinutes(1));
 
         return services;
     }
