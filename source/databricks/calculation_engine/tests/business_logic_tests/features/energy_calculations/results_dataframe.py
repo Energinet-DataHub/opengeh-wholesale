@@ -25,6 +25,8 @@ from pyspark.sql.types import (
     ArrayType,
 )
 
+CSV_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+
 
 def create_result_dataframe(*args) -> DataFrame:  # type: ignore
     spark: SparkSession = args[0]
@@ -64,8 +66,8 @@ def create_result_dataframe(*args) -> DataFrame:  # type: ignore
 def _parse_time_window(time_window_str: str) -> tuple[datetime, datetime]:
     time_window_str = time_window_str.replace("{", "").replace("}", "")
     start_str, end_str = time_window_str.split(",")
-    start = datetime.strptime(start_str, "%Y-%m-%d %H:%M:%S")
-    end = datetime.strptime(end_str, "%Y-%m-%d %H:%M:%S")
+    start = datetime.strptime(start_str, CSV_DATE_FORMAT)
+    end = datetime.strptime(end_str, CSV_DATE_FORMAT)
     return start, end
 
 

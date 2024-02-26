@@ -16,7 +16,6 @@ from datetime import datetime
 
 import yaml
 
-from business_logic_tests.conftest import CSV_DATE_FORMAT
 from package.calculation.calculator_args import CalculatorArgs
 from package.codelists import CalculationType
 from package.constants import Colname
@@ -26,6 +25,9 @@ class ArgsName:
     period_start = "period_start"
     period_end = "period_end"
     grid_areas = "grid_areas"
+
+
+CSV_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
 def create_calculation_args(test_path: str) -> CalculatorArgs:
