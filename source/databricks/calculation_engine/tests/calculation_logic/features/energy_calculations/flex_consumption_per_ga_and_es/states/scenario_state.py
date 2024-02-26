@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from calculation_logic_tests.features.energy_calculations.results_dataframe import (
+from pyspark.sql import DataFrame, SparkSession
+
+from calculation_logic.features.energy_calculations.results_dataframe import (
     create_result_dataframe,
 )
-from pyspark.sql import DataFrame, SparkSession
 
 
 def get_expected(*args) -> DataFrame:  # type: ignore
