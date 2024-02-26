@@ -13,6 +13,9 @@
 # limitations under the License.
 from datetime import datetime
 from decimal import Decimal
+
+from package.calculation.preparation.charge_master_data import charge_master_data_schema
+from package.calculation.preparation.charge_prices import charge_prices_schema
 from package.constants import Colname
 from package.calculation.wholesale.schemas.calculate_daily_subscription_price_schema import (
     calculate_daily_subscription_price_schema,
@@ -59,10 +62,10 @@ def test_calculate_daily_subscription_price(calculate_daily_subscription_price_f
     )
 
 
-def test_charges(charge_period_prices_factory):
-    df = charge_period_prices_factory().df
+def test_charge_master_data(charge_master_data_factory):
+    df = charge_master_data_factory().df
     result = df.collect()[0]
-    assert len(df.columns) == len(charges_schema.fields)
+    assert len(df.columns) == len(charge_master_data_schema.fields)
     assert (
         result[Colname.charge_key]
         == f"{DataframeDefaults.default_charge_code}-{DataframeDefaults.default_charge_owner}-{DataframeDefaults.default_charge_type}"
@@ -72,7 +75,20 @@ def test_charges(charge_period_prices_factory):
     assert result[Colname.charge_owner] == DataframeDefaults.default_charge_owner
     assert result[Colname.charge_tax] == DataframeDefaults.default_charge_tax
     assert result[Colname.resolution] == DataframeDefaults.default_charge_resolution
-    assert result[Colname.charge_time] == DataframeDefaults.default_charge_time
     assert result[Colname.from_date] == DataframeDefaults.default_from_date
     assert result[Colname.to_date] == DataframeDefaults.default_to_date
+
+
+def test_charge_prices(charge_prices_factory):
+    df = charge_prices_factory().df
+    result = df.collect()[0]
+    assert len(df.columns) == len(charge_prices_schema.fields)
+    assert (
+        result[Colname.charge_key]
+        == f"{DataframeDefaults.default_charge_code}-{DataframeDefaults.default_charge_owner}-{DataframeDefaults.default_charge_type}"
+    )
+    assert result[Colname.charge_code] == DataframeDefaults.default_charge_code
+    assert result[Colname.charge_type] == DataframeDefaults.default_charge_type
+    assert result[Colname.charge_owner] == DataframeDefaults.default_charge_owner
+    assert result[Colname.charge_time] == DataframeDefaults.default_charge_time
     assert result[Colname.charge_price] == DataframeDefaults.default_charge_price
