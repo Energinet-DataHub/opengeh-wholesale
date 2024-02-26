@@ -44,7 +44,7 @@ wholesaleDomain = group "Wholesale" {
     wholesaleOrchestration = container "Wholesale Orchestration" {
         description "Orchestrate calculation workflow"
         technology "Azure function, C#"
-        tags "Microsoft Azure - Function Apps" "Mandalorian"
+        tags "Microsoft Azure - Function Apps" "Mandalorian" "MarketParticipant Subscriber"
 
         # Base model relationships
         this -> dh3.sharedServiceBus "Publish calculation results" "integration event/amqp"
@@ -55,13 +55,15 @@ wholesaleDomain = group "Wholesale" {
         this -> wholesaleDataLake "Retrieves results from"
 
         # Subsystem-to-Subsystem relationships
-        # CONSIDER: Should live in EDI model(?)
+        # CONSIDER: Should live in EDI model(?) and be tagged as "Wholesale Subscriber"
         this -> edi "Publish calculation results" "integration event/amqp" {
-            tags "Simple View" "Wholesale Subscription"
+            tags "Simple View"
         }
-        # CONSIDER: Each subsystem model could exclude subscriptions based on their name; e.g. if Market Participant doesn't want to see subscribers they can exclude "MarketParticipant Subscription"
+        # CONSIDER:
+        #   Each subsystem model could exclude subscriptions based on their name.
+        #   E.g. if Market Participant doesn't want to see subscribers they can exclude "MarketParticipant Subscriber" (set as 'tag' on container level)
         markpartOrganizationManager -> this "Publish Grid Area Ownership Assigned" "integration event/amqp" {
-            tags "Simple View" "MarketParticipant Subscription"
+            tags "Simple View"
         }
     }
 }
