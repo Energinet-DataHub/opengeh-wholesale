@@ -104,6 +104,11 @@ def test__calculate_daily_subscription_price__charge_price_change(
     charge_link_metering_point_periods = charge_link_metering_points_factory(
         charge_type=ChargeType.SUBSCRIPTION.value, from_date=from_date, to_date=to_date
     )
+    charge_master_data_df = charge_master_data_factory(
+        charge_type=ChargeType.SUBSCRIPTION.value,
+        from_date=from_date,
+        to_date=to_date,
+    )
 
     subscription_1_charge_prices_charge_price = Decimal("3.124544")
     subscription_1_charge_prices_time = from_date
@@ -111,23 +116,13 @@ def test__calculate_daily_subscription_price__charge_price_change(
         charge_time=subscription_1_charge_prices_time,
         charge_price=subscription_1_charge_prices_charge_price,
     )
-    subscription_1_charge_master_data_df = charge_master_data_factory(
-        from_date=from_date,
-        to_date=to_date,
-    )
+
     subscription_2_charge_prices_time = datetime(2020, 2, 1, 0, 0)
     subscription_2_charge_prices_df = charge_prices_factory(
         charge_time=subscription_2_charge_prices_time,
     )
-    subscription_2_charge_master_data_df = charge_master_data_factory(
-        from_date=from_date,
-        to_date=to_date,
-    )
     charge_prices_df = subscription_1_charge_prices_df.union(
         subscription_2_charge_prices_df
-    )
-    charge_master_data_df = subscription_1_charge_master_data_df.union(
-        subscription_2_charge_master_data_df
     )
 
     expected_charge_price_subscription_1 = charge_prices_df.collect()[0][
