@@ -57,6 +57,9 @@ wholesaleDomain = group "Wholesale" {
         this -> edi "Publish calculation results" "integration event/amqp" {
             tags "Simple View"
         }
+        markpartOrganizationManager -> this "Publish Grid Area Ownership Assigned" "integration event/amqp" {
+            tags "Simple View"
+        }
     }
 }
 
