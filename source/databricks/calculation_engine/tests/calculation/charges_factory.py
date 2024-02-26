@@ -155,7 +155,6 @@ def create_charge_link_metering_point_periods(
     elif isinstance(data, Row):
         data = [data]
     df = spark.createDataFrame(data, charge_link_metering_point_periods_schema)
-    df.show()
     return ChargeLinkMeteringPointPeriods(df)
 
 

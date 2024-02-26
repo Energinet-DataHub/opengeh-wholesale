@@ -67,14 +67,29 @@ def _join_with_prices(
         Colname.charge_time
     )
 
-    result = subscription_master_data_with_charge_time.join(
-        subscription_prices, [Colname.charge_key, Colname.charge_time], "left"
-    ).withColumn(
-        Colname.charge_price,
-        f.last(Colname.charge_price, ignorenulls=True).over(w),
+    master_data_with_prices = (
+        subscription_master_data_with_charge_time.join(
+            subscription_prices, [Colname.charge_key, Colname.charge_time], "left"
+        )
+        .withColumn(
+            Colname.charge_price,
+            f.last(Colname.charge_price, ignorenulls=True).over(w),
+        )
+        .select(
+            subscription_master_data_with_charge_time[Colname.charge_key],
+            subscription_master_data_with_charge_time[Colname.charge_type],
+            subscription_master_data_with_charge_time[Colname.charge_owner],
+            subscription_master_data_with_charge_time[Colname.charge_code],
+            subscription_master_data_with_charge_time[Colname.from_date],
+            subscription_master_data_with_charge_time[Colname.to_date],
+            subscription_master_data_with_charge_time[Colname.resolution],
+            subscription_master_data_with_charge_time[Colname.charge_tax],
+            subscription_master_data_with_charge_time[Colname.charge_time],
+            Colname.charge_price,
+        )
     )
 
-    return result
+    return master_data_with_prices
 
 
 def _expand_with_daily_charge_time(
@@ -107,27 +122,30 @@ def _expand_with_daily_charge_time(
 
 
 def _join_with_links(
-    subscription_period_prices: DataFrame, subscription_links: DataFrame
+    subscription_master_data_and_prices: DataFrame, subscription_links: DataFrame
 ) -> DataFrame:
-    subscriptions = subscription_period_prices.join(
+    subscriptions = subscription_master_data_and_prices.join(
         subscription_links,
         (
-            subscription_period_prices[Colname.charge_key]
+            subscription_master_data_and_prices[Colname.charge_key]
             == subscription_links[Colname.charge_key]
         )
         & (
-            subscription_period_prices[Colname.charge_time]
+            subscription_master_data_and_prices[Colname.charge_time]
             >= subscription_links[Colname.from_date]
         )
         & (
-            subscription_period_prices[Colname.charge_time]
+            subscription_master_data_and_prices[Colname.charge_time]
             < subscription_links[Colname.to_date]
         ),
         how="inner",
     ).select(
-        subscription_period_prices[Colname.charge_key],
-        Colname.charge_time,
-        Colname.charge_price,
+        subscription_master_data_and_prices[Colname.charge_key],
+        subscription_master_data_and_prices[Colname.charge_type],
+        subscription_master_data_and_prices[Colname.charge_owner],
+        subscription_master_data_and_prices[Colname.charge_code],
+        subscription_master_data_and_prices[Colname.charge_time],
+        subscription_master_data_and_prices[Colname.charge_price],
         subscription_links[Colname.metering_point_type],
         subscription_links[Colname.settlement_method],
         subscription_links[Colname.grid_area],
