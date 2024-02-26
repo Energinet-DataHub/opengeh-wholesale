@@ -168,6 +168,7 @@ def _calculate_consumption_per_ga_and_brp_and_es(
             quarterly_metering_point_time_series
         )
     )
+
     return consumption_per_ga_and_brp_and_es
 
 
