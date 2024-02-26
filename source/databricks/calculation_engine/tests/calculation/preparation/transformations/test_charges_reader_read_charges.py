@@ -98,7 +98,7 @@ class TestWhenValidInput:
         # Act
         actual = read_charge_master_data(
             table_reader_mock, DEFAULT_FROM_DATE, DEFAULT_TO_DATE
-        )
+        ).df
 
         # Assert
         assert actual.count() == 1
@@ -124,7 +124,7 @@ class TestWhenValidInput:
         # Act
         actual = read_charge_prices(
             table_reader_mock, DEFAULT_FROM_DATE, DEFAULT_TO_DATE
-        )
+        ).df
 
         # Assert
         assert actual.count() == 1
@@ -173,7 +173,7 @@ class TestWhenChargeTimeIsOutsideCalculationPeriod:
         )
 
         # Act
-        actual = read_charge_prices(table_reader_mock, from_date, to_date)
+        actual = read_charge_prices(table_reader_mock, from_date, to_date).df
 
         # Assert
         assert actual.isEmpty()
@@ -210,7 +210,7 @@ class TestWhenChargeTimeIsInsideCalculationPeriod:
         )
 
         # Act
-        actual = read_charge_prices(table_reader_mock, from_date, to_date)
+        actual = read_charge_prices(table_reader_mock, from_date, to_date).df
 
         # Assert
         assert actual.count() == 1
@@ -274,7 +274,7 @@ class TestWhenChargePeriodExceedsCalculationPeriod:
         # Act
         actual = read_charge_master_data(
             table_reader_mock, calculation_from_date, calculation_to_date
-        )
+        ).df
 
         # Assert
         actual_row = actual.collect()[0]
