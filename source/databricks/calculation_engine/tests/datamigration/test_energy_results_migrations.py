@@ -15,10 +15,9 @@
 from datetime import datetime
 from decimal import Decimal
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import array, lit, col
+from pyspark.sql.functions import lit, col
 import pytest
 import uuid
-import tests.helpers.spark_sql_migration_helper as spark_sql_migration_helper
 from helpers.data_frame_utils import set_column
 from package.codelists import (
     AggregationLevel,
@@ -81,6 +80,7 @@ def test__migrated_table_rejects_invalid_data(
     spark: SparkSession,
     column_name: str,
     invalid_column_value: str | list,
+    migrations_executed: None,
 ) -> None:
     # Arrange
     results_df = _create_df(spark)
@@ -135,7 +135,6 @@ def test__migrated_table_accepts_valid_data(
     column_value: str | list,
 ) -> None:
     # Arrange
-    spark_sql_migration_helper.migrate(spark)
     result_df = _create_df(spark)
     result_df = set_column(result_df, column_name, column_value)
 
