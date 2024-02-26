@@ -21,7 +21,6 @@ from package.calculation.preparation.grid_loss_responsible import GridLossRespon
 
 from . import transformations as T
 from .charge_link_metering_point_periods import ChargeLinkMeteringPointPeriods
-from .charge_period_prices import ChargePeriodPrices
 
 
 class PreparedDataReader:
