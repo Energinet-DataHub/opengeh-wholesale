@@ -25,7 +25,7 @@ wholesaleDomain = group "Wholesale" {
         tags "Microsoft Azure - App Services" "Mandalorian"
 
         # Base model relationships
-        dh3.sharedServiceBus -> this "Listens on Wholesale Inbox" "message/amqp"
+        dh3.sharedServiceBus -> this "Listens on Wholesale Inbox + Integration Events" "message/amqp"
         this -> dh3.sharedServiceBus "Sends to EDI Inbox" "message/amqp"
 
         # Subsystem relationships
@@ -46,7 +46,7 @@ wholesaleDomain = group "Wholesale" {
         tags "Microsoft Azure - Function Apps" "Mandalorian"
 
         # Base model relationships
-        this -> dh3.sharedServiceBus "Sends calculation results" "integration event/amqp"
+        this -> dh3.sharedServiceBus "Publish calculation results" "integration event/amqp"
 
         # Subsystem relationships
         this -> wholesaleDb "Uses" "EF Core"
@@ -54,7 +54,7 @@ wholesaleDomain = group "Wholesale" {
         this -> wholesaleDataLake "Retrieves results from"
 
         # Subsystem-to-Subsystem relationships
-        this -> edi "Sends calculation results" "integration event/amqp" {
+        this -> edi "Publish calculation results" "integration event/amqp" {
             tags "Simple View"
         }
     }
