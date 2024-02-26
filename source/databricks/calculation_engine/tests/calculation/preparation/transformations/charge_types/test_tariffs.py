@@ -15,6 +15,8 @@ from datetime import datetime
 from decimal import Decimal
 
 import pytest
+from pyspark.sql.functions import lit
+
 import package.codelists as e
 
 from pyspark.sql import SparkSession
@@ -25,6 +27,7 @@ from package.calculation.preparation.transformations import (
 from package.calculation.wholesale.schemas.tariffs_schema import tariff_schema
 from package.calculation_input.schemas import (
     time_series_point_schema,
+    charge_price_points_schema,
 )
 
 from package.constants import Colname
@@ -729,13 +732,56 @@ def test__get_tariff_charges__can_handle_missing_charges(
         charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
     )
-
+    actual.show()
     # Assert
     assert actual.count() == 2
     assert (
         actual.collect()[0][Colname.charge_price]
         == factory.DefaultValues.DEFAULT_CHARGE_PRICE
     )
+    assert actual.collect()[1][Colname.charge_price] is None
+
+
+def test__get_tariff_charges__can_handle_missing_all_charges_prices(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    time_series_rows = [
+        factory.create_time_series_row(observation_time=datetime(2019, 12, 31, 23)),
+        factory.create_time_series_row(observation_time=datetime(2020, 1, 1, 0)),
+    ]
+    charge_master_data_rows = [
+        factory.create_charge_master_data_row(),
+    ]
+    charge_link_metering_points_rows = [
+        factory.create_charge_link_metering_point_periods_row(
+            charge_type=e.ChargeType.TARIFF,
+        ),
+    ]
+
+    time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
+    charge_master_data = spark.createDataFrame(charge_master_data_rows)
+    charge_prices = spark.createDataFrame(
+        spark.sparkContext.emptyRDD(), charge_price_points_schema
+    ).withColumn(Colname.charge_key, lit(None))
+    charge_link_metering_point_periods = (
+        factory.create_charge_link_metering_point_periods(
+            spark, charge_link_metering_points_rows
+        )
+    )
+
+    # Act
+    actual = get_tariff_charges(
+        time_series,
+        charge_master_data,
+        charge_prices,
+        charge_link_metering_point_periods,
+        e.ChargeResolution.HOUR,
+    )
+    actual.show()
+    # Assert
+    assert actual.count() == 2
+    assert actual.collect()[0][Colname.charge_price] is None
     assert actual.collect()[1][Colname.charge_price] is None
 
 

@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 from pyspark.sql.dataframe import DataFrame
 import pyspark.sql.functions as f
 from pyspark.sql.types import DecimalType, StringType, ArrayType
@@ -19,9 +18,6 @@ from pyspark.sql.types import DecimalType, StringType, ArrayType
 import package.calculation.energy.aggregators.transformations as t
 from package.calculation.preparation.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
-)
-from package.calculation.preparation.transformations.charge_types.helper import (
-    join_charge_master_data_and_charge_price,
 )
 from package.codelists import ChargeType, ChargeResolution
 from package.constants import Colname
@@ -34,15 +30,9 @@ def get_tariff_charges(
     charge_link_metering_points: ChargeLinkMeteringPointPeriods,
     resolution: ChargeResolution,
 ) -> DataFrame:
-    charge_period_prices = join_charge_master_data_and_charge_price(
-        charge_master_data, charge_prices
+    tariffs = _join_master_data_and_prices_add_missing_prices(
+        charge_master_data, charge_prices, resolution, ChargeType.TARIFF
     )
-
-    tariffs = charge_period_prices.df.filter(
-        f.col(Colname.charge_type) == ChargeType.TARIFF.value
-    ).filter(f.col(Colname.resolution) == resolution.value)
-
-    tariffs = _add_missing_prices(tariffs, resolution)
 
     tariffs = _join_with_charge_link_metering_points(
         tariffs, charge_link_metering_points
@@ -65,13 +55,19 @@ def get_tariff_charges(
     return tariffs
 
 
-def _add_missing_prices(
-    charges_with_prices: DataFrame,
+def _join_master_data_and_prices_add_missing_prices(
+    charge_master_data: DataFrame,
+    charge_prices: DataFrame,
     resolution: ChargeResolution,
+    charge_type: ChargeType,
 ) -> DataFrame:
+    charge_master_data_filtered = charge_master_data.filter(
+        f.col(Colname.charge_type) == charge_type.value
+    ).filter(f.col(Colname.resolution) == resolution.value)
+
     time_zone = "Europe/Copenhagen"
     charges_with_no_prices = (
-        charges_with_prices.select(
+        charge_master_data_filtered.select(
             Colname.charge_key,
             Colname.charge_code,
             Colname.charge_type,
@@ -98,6 +94,7 @@ def _add_missing_prices(
             Colname.from_date,
             Colname.to_date,
             f.explode("temp_time").alias(Colname.charge_time),
+            # f.lit(None).alias(Colname.charge_price),
         )
         .withColumn(
             Colname.charge_time,
@@ -106,7 +103,7 @@ def _add_missing_prices(
     )
 
     charges_with_prices_and_missing_prices = charges_with_no_prices.join(
-        charges_with_prices, [Colname.charge_key, Colname.charge_time], "left"
+        charge_prices, [Colname.charge_key, Colname.charge_time], "left"
     ).select(
         charges_with_no_prices[Colname.charge_key],
         charges_with_no_prices[Colname.charge_code],
