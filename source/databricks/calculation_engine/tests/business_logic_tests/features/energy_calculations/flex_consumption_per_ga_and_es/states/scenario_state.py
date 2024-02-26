@@ -11,63 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from ast import literal_eval
-from datetime import datetime
 
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import udf, col
-from pyspark.sql.types import (
-    StructType,
-    StructField,
-    TimestampType,
-    DecimalType,
-    ArrayType,
-    StringType,
+
+from business_logic_tests.features.energy_calculations.results_dataframe import (
+    create_result_dataframe,
 )
 
 
 def get_expected(*args) -> DataFrame:  # type: ignore
     spark: SparkSession = args[0]
-    df: DataFrame = args[1]
+    expected_dataframe: DataFrame = args[1]
 
-    # Don't remove. Believed needed because this function is an argument to the setup function
-    # and therefore the following packages are not automatically included.
-    from package.constants import Colname
-    from package.calculation.energy.energy_results import energy_results_schema
-
-    parse_time_window_udf = udf(
-        _parse_time_window,
-        StructType(
-            [
-                StructField(Colname.start, TimestampType()),
-                StructField(Colname.end, TimestampType()),
-            ]
-        ),
-    )
-
-    df = df.withColumn(
-        Colname.time_window, parse_time_window_udf(df[Colname.time_window])
-    )
-    df = df.withColumn(
-        Colname.sum_quantity, col(Colname.sum_quantity).cast(DecimalType(38, 6))
-    )
-
-    parse_qualities_string_udf = udf(_parse_qualities_string, ArrayType(StringType()))
-    df = df.withColumn(
-        Colname.quantity, parse_qualities_string_udf(df[Colname.quantity])
-    )
-    df = df.withColumnRenamed(Colname.quantity, Colname.qualities)
-
-    return spark.createDataFrame(df.rdd, energy_results_schema)
-
-
-def _parse_time_window(time_window_str: str) -> tuple[datetime, datetime]:
-    time_window_str = time_window_str.replace("{", "").replace("}", "")
-    start_str, end_str = time_window_str.split(",")
-    start = datetime.strptime(start_str, "%Y-%m-%d %H:%M:%S")
-    end = datetime.strptime(end_str, "%Y-%m-%d %H:%M:%S")
-    return start, end
-
-
-def _parse_qualities_string(qualities_str: str) -> list[str]:
-    return literal_eval(qualities_str)
+    return create_result_dataframe(spark, expected_dataframe)

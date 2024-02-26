@@ -11,13 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from business_logic_tests.features.energy_calculations.flex_consumption_per_ga_and_brp_and_es.states.scenario_state import (
+from helpers.data_frame_utils import assert_dataframes
+from .states.scenario_state import (
     get_expected,
 )
-from helpers.data_frame_utils import assert_dataframes
 
 
-def test_execute__returns_expected(
+def test_execute__returns_expected(  # type: ignore
     scenario_fixture,
 ) -> None:
     # Arrange

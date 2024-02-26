@@ -12,13 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import uuid
+from datetime import datetime
 
-import pandas as pd
 import yaml
 
 from package.calculation.calculator_args import CalculatorArgs
 from package.codelists import CalculationType
 from package.constants import Colname
+
+
+class ArgsName:
+    period_start = "period_start"
+    period_end = "period_end"
+    grid_areas = "grid_areas"
 
 
 def create_calculation_args(test_path: str) -> CalculatorArgs:
@@ -29,17 +35,17 @@ def create_calculation_args(test_path: str) -> CalculatorArgs:
 
     return CalculatorArgs(
         calculation_id=str(uuid.uuid4()),
-        calculation_grid_areas=calculation_args[0]["grid_areas"],
-        calculation_period_start_datetime=pd.to_datetime(
-            calculation_args[0]["period_start"], format=date_format
+        calculation_grid_areas=calculation_args[0][ArgsName.grid_areas],
+        calculation_period_start_datetime=datetime.strptime(
+            calculation_args[0][ArgsName.period_start], date_format
         ),
-        calculation_period_end_datetime=pd.to_datetime(
-            calculation_args[0]["period_end"], format=date_format
+        calculation_period_end_datetime=datetime.strptime(
+            calculation_args[0][ArgsName.period_end], date_format
         ),
         calculation_type=CalculationType(calculation_args[0][Colname.calculation_type]),
-        calculation_execution_time_start=pd.to_datetime(
+        calculation_execution_time_start=datetime.strptime(
             calculation_args[0][Colname.calculation_execution_time_start],
-            format=date_format,
+            date_format,
         ),
         time_zone="Europe/Copenhagen",
     )

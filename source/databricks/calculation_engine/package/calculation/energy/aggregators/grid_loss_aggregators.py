@@ -111,9 +111,12 @@ def calculate_negative_grid_loss(
         grid_loss_responsible, MeteringPointType.PRODUCTION
     )
 
+    # The Databricks engine cannot join on "metering point id"
+    # because it is ambiguous (in this case). Therefore, it is
+    # renamed before and back again after.
     only_grid_area_and_metering_point_id = (
         only_grid_area_and_metering_point_id.withColumnRenamed(
-            Colname.metering_point_id, "grid_loss_metering_point_id"
+            Colname.metering_point_id, Colname.grid_loss_metering_point_id
         )
     )
 
@@ -127,11 +130,11 @@ def calculate_negative_grid_loss(
         .alias(Colname.sum_quantity),
         f.lit(MeteringPointType.PRODUCTION.value).alias(Colname.metering_point_type),
         Colname.qualities,
-        only_grid_area_and_metering_point_id["grid_loss_metering_point_id"],
+        only_grid_area_and_metering_point_id[Colname.grid_loss_metering_point_id],
     )
 
     result = result.withColumnRenamed(
-        "grid_loss_metering_point_id", Colname.metering_point_id
+        Colname.grid_loss_metering_point_id, Colname.metering_point_id
     )
 
     return EnergyResults(result)
@@ -146,7 +149,7 @@ def calculate_positive_grid_loss(
 
     only_grid_area_and_metering_point_id = (
         only_grid_area_and_metering_point_id.withColumnRenamed(
-            Colname.metering_point_id, "grid_loss_metering_point_id"
+            Colname.metering_point_id, Colname.grid_loss_metering_point_id
         )
     )
 
@@ -160,11 +163,11 @@ def calculate_positive_grid_loss(
         .alias(Colname.sum_quantity),
         f.lit(MeteringPointType.CONSUMPTION.value).alias(Colname.metering_point_type),
         Colname.qualities,
-        only_grid_area_and_metering_point_id["grid_loss_metering_point_id"],
+        only_grid_area_and_metering_point_id[Colname.grid_loss_metering_point_id],
     )
 
     result = result.withColumnRenamed(
-        "grid_loss_metering_point_id", Colname.metering_point_id
+        Colname.grid_loss_metering_point_id, Colname.metering_point_id
     )
     return EnergyResults(result)
 
