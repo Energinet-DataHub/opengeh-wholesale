@@ -28,7 +28,7 @@ from package.calculation.wholesale.subscription_calculators import (
     calculate_daily_subscription_amount,
     calculate_price_per_day,
     filter_on_metering_point_type_and_settlement_method,
-    get_count_of_charges_and_total_daily_charge_price,
+    _add_count_of_charges_and_total_daily_charge_price,
 )
 from package.calculation.preparation.transformations import get_subscription_charges
 from calendar import monthrange
@@ -604,7 +604,7 @@ def test__get_count_of_charges_and_total_daily_charge_price__counts_and_sums_up_
     )
 
     # Act
-    result = get_count_of_charges_and_total_daily_charge_price(charges_per_day)
+    result = _add_count_of_charges_and_total_daily_charge_price(charges_per_day)
 
     # Assert
     result_collect = result.collect()

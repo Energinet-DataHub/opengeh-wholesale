@@ -11,31 +11,42 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import col, last_day, dayofmonth, count, sum
+from datetime import datetime
+import pytz
+
+from pyspark.sql import DataFrame
+from pyspark.sql.functions import col, lit, count, sum
 from pyspark.sql.types import DecimalType
+
 from package.codelists import MeteringPointType, SettlementMethod
-from package.calculation.wholesale.schemas.calculate_daily_subscription_price_schema import (
-    calculate_daily_subscription_price_schema,
-)
 from package.constants import Colname
 
 
-def calculate_daily_subscription_amount(subscription_charges: DataFrame) -> DataFrame:
+def calculate_daily_subscription_amount(
+    subscription_charges: DataFrame,
+    calculation_period_start: datetime,
+    calculation_period_end: datetime,
+    time_zone: str,
+) -> DataFrame:
     # filter on metering point type and settlement method
     charges_per_day_flex_consumption = (
         filter_on_metering_point_type_and_settlement_method(subscription_charges)
     )
 
     # calculate price per day
-    charges_per_day = calculate_price_per_day(charges_per_day_flex_consumption)
+    charges_per_day = calculate_price_per_day(
+        charges_per_day_flex_consumption,
+        calculation_period_start,
+        calculation_period_end,
+        time_zone,
+    )
 
     # get count of charges and total daily charge price
-    df = get_count_of_charges_and_total_daily_charge_price(charges_per_day)
+    subscription_result = _add_count_of_charges_and_total_daily_charge_price(
+        charges_per_day
+    )
 
-    return df
-
-    # return spark.createDataFrame(df.rdd, calculate_daily_subscription_price_schema)
+    return subscription_result
 
 
 def filter_on_metering_point_type_and_settlement_method(
@@ -49,20 +60,62 @@ def filter_on_metering_point_type_and_settlement_method(
 
 def calculate_price_per_day(
     charges_per_day_flex_consumption: DataFrame,
+    calculation_period_start: datetime,
+    calculation_period_end: datetime,
+    time_zone: str,
 ) -> DataFrame:
-    charges_per_day = charges_per_day_flex_consumption.withColumn(
-        Colname.price_per_day,
-        (
-            col(Colname.charge_price)
-            / dayofmonth(
-                last_day(col(Colname.charge_time))
-            )  # ToDo: is charge_time utc? doesn't it cross month boundaries?
-        ).cast(DecimalType(14, 8)),
+    days_in_month = _get_days_in_month(
+        calculation_period_start, calculation_period_end, time_zone
     )
+    charges_per_day = charges_per_day_flex_consumption.withColumn(
+        Colname.price_per_day, col(Colname.charge_price) / lit(days_in_month)
+    ).cast(DecimalType(14, 8))
+
     return charges_per_day
 
 
-def get_count_of_charges_and_total_daily_charge_price(
+def _get_days_in_month(
+    calculation_period_start: datetime, calculation_period_end: datetime, time_zone: str
+) -> int:
+    time_zone_info = pytz.timezone(time_zone)
+    period_start_local_time = calculation_period_start.astimezone(time_zone_info)
+    period_end_local_time = calculation_period_end.astimezone(time_zone_info)
+
+    if not _is_full_month_and_at_midnight(
+        period_start_local_time, period_end_local_time
+    ):
+        raise Exception(
+            f"The calculation period must be a full month starting and ending at midnight local time ({time_zone})) ."
+        )
+
+    # return days in month of the start time
+    return (period_end_local_time - period_start_local_time).days + 1
+
+
+def _is_full_month_and_at_midnight(period_start_local_time, period_end_local_time):
+    # Check if both times are at midnight
+    if not (
+        period_start_local_time.time()
+        == period_end_local_time.time()
+        == datetime.min.time()
+    ):
+        return False
+
+    # Check if start time is the first day of the month
+    if period_start_local_time.day != 1:
+        return False
+
+    # Check if end time is the first day of the next month
+    if not (
+        period_end_local_time.day == 1
+        and period_end_local_time.month == (period_start_local_time.month + 1)
+    ):
+        return False
+
+    return True
+
+
+def _add_count_of_charges_and_total_daily_charge_price(
     charges_per_day: DataFrame,
 ) -> DataFrame:
     grouped_charges_per_day = (
