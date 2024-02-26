@@ -457,3 +457,84 @@ class TestWhenChargeLinkPeriodStopsAndStartsAgain:
             for row in actual_subscription.orderBy(Colname.charge_time).collect()
         }
         assert actual_charge_times_and_price == expected_charge_time_and_price
+
+
+class TestWhenDaylightSavingTimeChanges:
+    @pytest.mark.parametrize(
+        "from_date, to_date, expected_first_charge_time, expected_last_charge_time",
+        [
+            (
+                datetime(2020, 2, 28, 23),
+                datetime(2020, 3, 31, 22),
+                datetime(2020, 2, 28, 23),
+                datetime(2020, 3, 30, 22),
+            ),
+            # non-leap year
+            (
+                datetime(2020, 9, 30, 22),
+                datetime(2020, 10, 31, 23),
+                datetime(2020, 9, 30, 22),
+                datetime(2020, 10, 30, 23),
+            ),
+        ],
+    )
+    def test__returns_result_with_expected_start_and_end_charge_time(
+        self,
+        spark: SparkSession,
+        from_date: datetime,
+        to_date: datetime,
+        expected_first_charge_time: datetime,
+        expected_last_charge_time: datetime,
+    ) -> None:
+        # Arrange
+        charge_link_metering_point_periods = (
+            factory.create_charge_link_metering_point_periods(
+                spark,
+                [
+                    factory.create_charge_link_metering_point_periods_row(
+                        charge_type=e.ChargeType.SUBSCRIPTION,
+                        from_date=from_date,
+                        to_date=to_date,
+                    ),
+                ],
+            )
+        )
+        charge_master_data = factory.create_charge_master_data(
+            spark,
+            [
+                factory.create_charge_master_data_row(
+                    charge_type=e.ChargeType.SUBSCRIPTION,
+                    from_date=from_date,
+                    to_date=to_date,
+                ),
+            ],
+        )
+
+        charge_prices = factory.create_charge_prices(
+            spark,
+            [
+                factory.create_charge_prices_row(
+                    charge_type=e.ChargeType.SUBSCRIPTION,
+                    charge_time=from_date,
+                ),
+            ],
+        )
+
+        # Act
+        actual_subscription = get_subscription_charges(
+            charge_master_data,
+            charge_prices,
+            charge_link_metering_point_periods,
+            DEFAULT_TIME_ZONE,
+        )
+
+        # Assert
+        assert (
+            actual_subscription.collect()[0][Colname.charge_time]
+            == expected_first_charge_time
+        )
+        assert (
+            actual_subscription.collect()[-1][Colname.charge_time]
+            == expected_last_charge_time
+        )
+        assert actual_subscription.count() == (to_date - from_date).days + 1
