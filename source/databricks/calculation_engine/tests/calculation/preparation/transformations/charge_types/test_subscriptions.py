@@ -461,20 +461,21 @@ class TestWhenChargeLinkPeriodStopsAndStartsAgain:
 
 class TestWhenDaylightSavingTimeChanges:
     @pytest.mark.parametrize(
-        "from_date, to_date, expected_first_charge_time, expected_last_charge_time",
+        "from_date, to_date, expected_first_charge_time, expected_last_charge_time, expected_day_count",
         [
-            (
-                datetime(2020, 2, 28, 23),
+            (  # Start of daylight saving time
+                datetime(2020, 2, 29, 23),
                 datetime(2020, 3, 31, 22),
-                datetime(2020, 2, 28, 23),
+                datetime(2020, 2, 29, 23),
                 datetime(2020, 3, 30, 22),
+                31,
             ),
-            # non-leap year
-            (
+            (  # End of daylight saving time
                 datetime(2020, 9, 30, 22),
                 datetime(2020, 10, 31, 23),
                 datetime(2020, 9, 30, 22),
                 datetime(2020, 10, 30, 23),
+                31,
             ),
         ],
     )
@@ -485,6 +486,7 @@ class TestWhenDaylightSavingTimeChanges:
         to_date: datetime,
         expected_first_charge_time: datetime,
         expected_last_charge_time: datetime,
+        expected_day_count: int,
     ) -> None:
         # Arrange
         charge_link_metering_point_periods = (
@@ -527,6 +529,7 @@ class TestWhenDaylightSavingTimeChanges:
             charge_link_metering_point_periods,
             DEFAULT_TIME_ZONE,
         )
+        actual_subscription.show(100)
 
         # Assert
         assert (
@@ -537,4 +540,4 @@ class TestWhenDaylightSavingTimeChanges:
             actual_subscription.collect()[-1][Colname.charge_time]
             == expected_last_charge_time
         )
-        assert actual_subscription.count() == (to_date - from_date).days + 1
+        assert actual_subscription.count() == expected_day_count
