@@ -17,6 +17,8 @@ from datetime import datetime
 from package.calculation.preparation.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
 )
+from package.calculation.preparation.charge_master_data import ChargeMasterData
+from package.calculation.preparation.charge_prices import ChargePrices
 from tests.helpers.test_schemas import (
     charges_flex_consumption_schema,
     charges_per_day_schema,
@@ -61,7 +63,7 @@ def test__calculate_daily_subscription_price__simple(
     )
 
     expected_date = datetime(2020, 1, 1, 0, 0)
-    expected_charge_price = charge_prices.collect()[0][Colname.charge_price]
+    expected_charge_price = charge_prices.df.collect()[0][Colname.charge_price]
     expected_price_per_day = Decimal(
         expected_charge_price / monthrange(expected_date.year, expected_date.month)[1]
     )
@@ -107,19 +109,19 @@ def test__calculate_daily_subscription_price__charge_price_change(
     subscription_1_charge_prices_df = charge_prices_factory(
         charge_time=subscription_1_charge_prices_time,
         charge_price=subscription_1_charge_prices_charge_price,
-    )
+    ).df
     subscription_1_charge_master_data_df = charge_master_data_factory(
         from_date=from_date,
         to_date=to_date,
-    )
+    ).df
     subscription_2_charge_prices_time = datetime(2020, 2, 1, 0, 0)
     subscription_2_charge_prices_df = charge_prices_factory(
         charge_time=subscription_2_charge_prices_time,
-    )
+    ).df
     subscription_2_charge_master_data_df = charge_master_data_factory(
         from_date=from_date,
         to_date=to_date,
-    )
+    ).df
     charge_prices_df = subscription_1_charge_prices_df.union(
         subscription_2_charge_prices_df
     )
@@ -151,8 +153,8 @@ def test__calculate_daily_subscription_price__charge_price_change(
 
     # Act
     subscription_charges = get_subscription_charges(
-        charge_master_data_df,
-        charge_prices_df,
+        ChargeMasterData(charge_master_data_df),
+        ChargePrices(charge_prices_df),
         charge_link_metering_point_periods,
     )
     result = calculate_daily_subscription_price(spark, subscription_charges).orderBy(
@@ -212,18 +214,18 @@ def test__calculate_daily_subscription_price__charge_price_change_with_two_diffe
     subscription_1_charge_prices_df_with_charge_key_1 = charge_prices_factory(
         charge_time=subcription_1_charge_prices_time,
         charge_price=subscription_1_charge_prices_charge_price,
-    )
+    ).df
     subscription_1_charge_master_data_df_with_charge_key_1 = charge_master_data_factory(
         from_date=from_date,
         to_date=to_date,
-    )
+    ).df
     subscription_2_charge_prices_df_with_charge_key_1 = charge_prices_factory(
         charge_time=subcription_2_charge_prices_time,
-    )
+    ).df
     subscription_2_charge_master_data_df_with_charge_key_1 = charge_master_data_factory(
         from_date=from_date,
         to_date=to_date,
-    )
+    ).df
     charge_prices_df_with_charge_key_1 = (
         subscription_1_charge_prices_df_with_charge_key_1.union(
             subscription_2_charge_prices_df_with_charge_key_1
@@ -239,21 +241,21 @@ def test__calculate_daily_subscription_price__charge_price_change_with_two_diffe
         charge_time=subcription_1_charge_prices_time,
         charge_price=subscription_1_charge_prices_charge_price,
         charge_code=charge_code,
-    )
+    ).df
     subscription_1_charge_master_data_df_with_charge_key_2 = charge_master_data_factory(
         charge_code=charge_code,
         from_date=from_date,
         to_date=to_date,
-    )
+    ).df
     subscription_2_charge_prices_df_with_charge_key_2 = charge_prices_factory(
         charge_time=subcription_2_charge_prices_time,
         charge_code=charge_code,
-    )
+    ).df
     subscription_2_charge_master_data_df_with_charge_key_2 = charge_master_data_factory(
         charge_code=charge_code,
         from_date=from_date,
         to_date=to_date,
-    )
+    ).df
     charge_prices_df_with_charge_key_2 = (
         subscription_1_charge_prices_df_with_charge_key_2.union(
             subscription_2_charge_prices_df_with_charge_key_2
@@ -274,8 +276,8 @@ def test__calculate_daily_subscription_price__charge_price_change_with_two_diffe
 
     # Act
     subscription_charges = get_subscription_charges(
-        charge_master_data_df,
-        charge_prices_df,
+        ChargeMasterData(charge_master_data_df),
+        ChargePrices(charge_prices_df),
         charge_links_metering_point_periods,
     )
     result = calculate_daily_subscription_price(spark, subscription_charges).orderBy(

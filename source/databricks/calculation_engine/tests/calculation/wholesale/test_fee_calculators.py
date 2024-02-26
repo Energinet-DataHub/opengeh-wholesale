@@ -14,6 +14,8 @@
 from decimal import Decimal
 from datetime import datetime
 
+from package.calculation.preparation.charge_master_data import ChargeMasterData
+from package.calculation.preparation.charge_prices import ChargePrices
 from tests.helpers.test_schemas import (
     charges_flex_consumption_schema,
 )
@@ -57,7 +59,7 @@ def test__calculate_fee_charge_price__simple(
     )
 
     expected_time = datetime(2020, 1, 1, 0, 0)
-    expected_charge_price = charge_prices.collect()[0][Colname.charge_price]
+    expected_charge_price = charge_prices.df.collect()[0][Colname.charge_price]
     expected_total_daily_charge_price = expected_charge_price
     expected_charge_count = 1
 
@@ -102,18 +104,18 @@ def test__calculate_fee_charge_price__two_fees(
         charge_type=ChargeType.FEE.value,
         charge_time=time,
         charge_price=fee_1_charge_prices_charge_price,
-    )
+    ).df
     fee_1_charge_master_data_df = charge_master_data_factory(
         charge_type=ChargeType.FEE.value,
         from_date=from_date,
         to_date=to_date,
-    )
+    ).df
     fee_2_charge_prices_df = charge_prices_factory(
         charge_type=ChargeType.FEE.value, charge_time=time
-    )
+    ).df
     fee_2_charge_master_data_df = charge_master_data_factory(
         charge_type=ChargeType.FEE.value,
-    )
+    ).df
     charge_prices_df = fee_1_charge_prices_df.union(fee_2_charge_prices_df)
     charge_master_data_df = fee_1_charge_master_data_df.union(
         fee_2_charge_master_data_df
@@ -129,8 +131,8 @@ def test__calculate_fee_charge_price__two_fees(
 
     # Act
     fee_charges = get_fee_charges(
-        charge_master_data_df,
-        charge_prices_df,
+        ChargeMasterData(charge_master_data_df),
+        ChargePrices(charge_prices_df),
         charge_link_metering_point_periods,
     )
     result = calculate_fee_charge_price(spark, fee_charges).orderBy(
