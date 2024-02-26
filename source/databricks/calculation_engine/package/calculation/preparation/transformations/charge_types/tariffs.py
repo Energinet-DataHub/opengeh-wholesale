@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql.dataframe import DataFrame
 import pyspark.sql.functions as f
+from pyspark.sql.dataframe import DataFrame
 from pyspark.sql.types import DecimalType, StringType, ArrayType
 
 import package.calculation.energy.aggregators.transformations as t
