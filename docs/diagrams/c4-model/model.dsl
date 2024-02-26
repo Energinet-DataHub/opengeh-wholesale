@@ -33,6 +33,7 @@ wholesaleDomain = group "Wholesale" {
         this -> wholesaleDataLake "Retrieves results from"
 
         # Subsystem-to-Subsystem relationships
+        # CONSIDER: Should live in EDI model(?)
         edi -> this "Sends to Wholesale Inbox" "message/amqp" {
             tags "Simple View"
         }
@@ -54,11 +55,13 @@ wholesaleDomain = group "Wholesale" {
         this -> wholesaleDataLake "Retrieves results from"
 
         # Subsystem-to-Subsystem relationships
+        # CONSIDER: Should live in EDI model(?)
         this -> edi "Publish calculation results" "integration event/amqp" {
-            tags "Simple View"
+            tags "Simple View", "Wholesale Subscription"
         }
+        # CONSIDER: Each subsystem model could exclude subscriptions based on their name; e.g. if Market Participant doesn't want to see subscribers they can exclude "MarketParticipant Subscription"
         markpartOrganizationManager -> this "Publish Grid Area Ownership Assigned" "integration event/amqp" {
-            tags "Simple View"
+            tags "Simple View", "MarketParticipant Subscription"
         }
     }
 }
