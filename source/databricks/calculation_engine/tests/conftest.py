@@ -19,6 +19,7 @@ defined in the geh_stream directory in our tests.
 import os
 import shutil
 import subprocess
+from shutil import rmtree
 from datetime import datetime
 from typing import Generator, Callable, Optional
 
@@ -57,6 +58,10 @@ def test_files_folder_path(tests_path: str) -> str:
 
 @pytest.fixture(scope="session")
 def spark() -> SparkSession:
+    warehouse_location = os.path.abspath("spark-warehouse")
+    if os.path.exists(warehouse_location):
+        rmtree(warehouse_location)
+
     session = (
         SparkSession.builder.config("spark.sql.streaming.schemaInference", True)
         .config("spark.ui.showConsoleProgress", "false")
