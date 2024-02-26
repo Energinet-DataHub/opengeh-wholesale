@@ -23,8 +23,7 @@ public class CompletedCalculationEntityConfiguration : IEntityTypeConfiguration<
 {
     public void Configure(EntityTypeBuilder<CompletedCalculation> builder)
     {
-        // TODO: Change to nameof(CompletedCalculation) when updating table name in database
-        builder.ToTable("CompletedBatch");
+        builder.ToTable(nameof(CompletedCalculation));
 
         builder.HasKey(b => b.Id);
         builder
@@ -33,7 +32,7 @@ public class CompletedCalculationEntityConfiguration : IEntityTypeConfiguration<
 
         builder.Property(b => b.PeriodStart);
         builder.Property(b => b.PeriodEnd);
-        builder.Property(b => b.ProcessType);
+        builder.Property(b => b.CalculationType);
         builder.Property(b => b.CompletedTime);
         builder.Property(b => b.PublishedTime);
 

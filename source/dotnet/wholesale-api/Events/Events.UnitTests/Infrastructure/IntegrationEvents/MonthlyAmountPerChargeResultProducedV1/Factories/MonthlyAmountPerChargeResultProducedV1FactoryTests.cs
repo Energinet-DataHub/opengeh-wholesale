@@ -115,9 +115,9 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
     }
 
     [Theory]
-    [InlineData(ProcessType.Aggregation)]
-    [InlineData(ProcessType.BalanceFixing)]
-    public void Create_WhenUnexpectedCalculationType_ThrowsException(ProcessType calculationType)
+    [InlineData(CalculationType.Aggregation)]
+    [InlineData(CalculationType.BalanceFixing)]
+    public void Create_WhenUnexpectedCalculationType_ThrowsException(CalculationType calculationType)
     {
         // Arrange
         var sut = new MonthlyAmountPerChargeResultProducedV1Factory();
@@ -172,6 +172,7 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
             IsTax = wholesaleResult.IsTax,
             Currency = Contracts.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1.Types.Currency.Dkk,
             Amount = wholesaleResult.TimeSeriesPoints.Single().Amount,
+            CalculationResultVersion = wholesaleResult.Version,
         };
 
         return monthlyAmountPerChargeResultProducedV1;

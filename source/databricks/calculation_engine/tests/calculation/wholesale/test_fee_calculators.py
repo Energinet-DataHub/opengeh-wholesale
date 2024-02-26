@@ -13,6 +13,8 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime
+
+from package.calculation.preparation.charge_period_prices import ChargePeriodPrices
 from tests.helpers.test_schemas import (
     charges_flex_consumption_schema,
 )
@@ -24,18 +26,15 @@ from package.calculation.wholesale.fee_calculators import (
     get_count_of_charges_and_total_daily_charge_price,
 )
 from package.calculation.preparation.transformations import get_fee_charges
-from package.calculation.preparation.transformations.charges_reader import (
-    _create_charges_df,
-)
+
 import pytest
 
 
 def test__calculate_fee_charge_price__simple(
     spark,
+    charge_link_metering_points_factory,
     charge_master_data_factory,
-    charge_links_factory,
     charge_prices_factory,
-    metering_point_period_factory,
     calculate_fee_charge_price_factory,
 ):
     # Test that calculate_fee_charge_price does as expected in with the most simple dataset
@@ -43,25 +42,31 @@ def test__calculate_fee_charge_price__simple(
     from_date = datetime(2020, 1, 1, 0, 0)
     to_date = datetime(2020, 1, 2, 0, 0)
     time = datetime(2020, 1, 1, 0, 0)
-    charges_master_data_df = charge_master_data_factory(
-        from_date, to_date, charge_type=ChargeType.FEE.value
+    charge_prices = charge_prices_factory(
+        charge_time=time,
+        charge_type=ChargeType.FEE.value,
     )
-    charge_links_df = charge_links_factory(from_date, to_date)
-    charge_prices_df = charge_prices_factory(time)
-    charges_df = _create_charges_df(
-        charges_master_data_df, charge_links_df, charge_prices_df
+    charge_master_data = charge_master_data_factory(
+        from_date=from_date,
+        to_date=to_date,
+        charge_type=ChargeType.FEE.value,
     )
-    metering_point_df = metering_point_period_factory(from_date, to_date)
+    charge_link_metering_point_periods = charge_link_metering_points_factory(
+        from_date=from_date,
+        to_date=to_date,
+        charge_type=ChargeType.FEE.value,
+    )
 
     expected_time = datetime(2020, 1, 1, 0, 0)
-    expected_charge_price = charge_prices_df.collect()[0][Colname.charge_price]
+    expected_charge_price = charge_prices.collect()[0][Colname.charge_price]
     expected_total_daily_charge_price = expected_charge_price
     expected_charge_count = 1
 
     # Act
     fee_charges = get_fee_charges(
-        charges_df,
-        metering_point_df,
+        charge_master_data,
+        charge_prices,
+        charge_link_metering_point_periods,
     )
     result = calculate_fee_charge_price(spark, fee_charges)
     expected = calculate_fee_charge_price_factory(
@@ -77,10 +82,9 @@ def test__calculate_fee_charge_price__simple(
 
 def test__calculate_fee_charge_price__two_fees(
     spark,
+    charge_link_metering_points_factory,
     charge_master_data_factory,
-    charge_links_factory,
     charge_prices_factory,
-    metering_point_period_factory,
     calculate_fee_charge_price_factory,
 ):
     # Test that calculate_fee_charge_price does as expected with two fees on the same day
@@ -88,20 +92,32 @@ def test__calculate_fee_charge_price__two_fees(
     from_date = datetime(2020, 1, 1, 0, 0)
     to_date = datetime(2020, 1, 2, 0, 0)
     time = datetime(2020, 1, 1, 0, 0)
-    charges_master_data_df = charge_master_data_factory(
-        from_date, to_date, charge_type=ChargeType.FEE.value
+    charge_link_metering_point_periods = charge_link_metering_points_factory(
+        from_date=from_date,
+        to_date=to_date,
+        charge_type=ChargeType.FEE.value,
     )
-    charge_links_df = charge_links_factory(from_date, to_date)
-    metering_point_df = metering_point_period_factory(from_date, to_date)
 
     fee_1_charge_prices_charge_price = Decimal("3.124544")
     fee_1_charge_prices_df = charge_prices_factory(
-        time, charge_price=fee_1_charge_prices_charge_price
+        charge_type=ChargeType.FEE.value,
+        charge_time=time,
+        charge_price=fee_1_charge_prices_charge_price,
     )
-    fee_2_charge_prices_df = charge_prices_factory(time)
+    fee_1_charge_master_data_df = charge_master_data_factory(
+        charge_type=ChargeType.FEE.value,
+        from_date=from_date,
+        to_date=to_date,
+    )
+    fee_2_charge_prices_df = charge_prices_factory(
+        charge_type=ChargeType.FEE.value, charge_time=time
+    )
+    fee_2_charge_master_data_df = charge_master_data_factory(
+        charge_type=ChargeType.FEE.value,
+    )
     charge_prices_df = fee_1_charge_prices_df.union(fee_2_charge_prices_df)
-    charges_df = _create_charges_df(
-        charges_master_data_df, charge_links_df, charge_prices_df
+    charge_master_data_df = fee_1_charge_master_data_df.union(
+        fee_2_charge_master_data_df
     )
 
     expected_time = datetime(2020, 1, 1, 0, 0)
@@ -114,8 +130,9 @@ def test__calculate_fee_charge_price__two_fees(
 
     # Act
     fee_charges = get_fee_charges(
-        charges_df,
-        metering_point_df,
+        charge_master_data_df,
+        charge_prices_df,
+        charge_link_metering_point_periods,
     )
     result = calculate_fee_charge_price(spark, fee_charges).orderBy(
         Colname.charge_price

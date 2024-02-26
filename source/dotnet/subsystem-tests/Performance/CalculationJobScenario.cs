@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Application.Model;
-using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using Energinet.DataHub.Wholesale.SubsystemTests.Performance.Fixtures;
@@ -42,7 +42,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance
             var createdByUserId = Guid.Parse("DED7734B-DD56-43AD-9EE8-0D7EFDA6C783");
             Fixture.ScenarioState.CalculationJobInput = new Calculation(
                 createdTime: createdTime,
-                processType: Common.Interfaces.Models.ProcessType.Aggregation,
+                calculationType: Common.Interfaces.Models.CalculationType.Aggregation,
                 gridAreaCodes: new List<GridAreaCode> { new GridAreaCode("791") },
                 periodStart: Instant.FromDateTimeOffset(new DateTimeOffset(2022, 11, 30, 23, 0, 0, TimeSpan.Zero)),
                 periodEnd: Instant.FromDateTimeOffset(new DateTimeOffset(2022, 12, 11, 23, 0, 0, TimeSpan.Zero)),
@@ -56,10 +56,10 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance
         [SubsystemFact]
         public async Task When_CalculationJobIsStarted()
         {
-            Fixture.ScenarioState.CalculationId = await Fixture.StartCalculationJobAsync(Fixture.ScenarioState.CalculationJobInput);
+            Fixture.ScenarioState.CalculationJobId = await Fixture.StartCalculationJobAsync(Fixture.ScenarioState.CalculationJobInput);
 
             // Assert
-            Fixture.ScenarioState.CalculationId.Should().NotBeNull();
+            Fixture.ScenarioState.CalculationJobId.Should().NotBeNull();
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance
         public async Task Then_CalculationJobIsCompletedWithinWaitTime()
         {
             var actualWaitResult = await Fixture.WaitForCalculationJobCompletedAsync(
-                Fixture.ScenarioState.CalculationId,
+                Fixture.ScenarioState.CalculationJobId,
                 waitTimeLimit: TimeSpan.FromMinutes(75));
 
             Fixture.ScenarioState.Run = actualWaitResult.Run;

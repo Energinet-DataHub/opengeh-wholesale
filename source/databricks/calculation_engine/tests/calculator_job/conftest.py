@@ -24,7 +24,9 @@ from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.preparation import PreparedDataReader
 
 from package.calculation_input import TableReader
-from package.codelists.process_type import ProcessType
+from package.codelists.calculation_type import (
+    CalculationType,
+)
 from package.constants import EnergyResultColumnNames, WholesaleResultColumnNames
 from package.infrastructure import paths
 from . import configuration as C
@@ -35,15 +37,8 @@ def calculator_args_balance_fixing(
     data_lake_path: str, calculation_input_path: str
 ) -> CalculatorArgs:
     return CalculatorArgs(
-        data_storage_account_name="foo",
-        data_storage_account_credentials=ClientSecretCredential("foo", "foo", "foo"),
-        wholesale_container_path=data_lake_path,
-        calculation_input_path=calculation_input_path,
-        time_series_points_table_name=None,
-        metering_point_periods_table_name=None,
-        grid_loss_metering_points_table_name=None,
-        calculation_id=C.executed_balance_fixing_batch_id,
-        calculation_process_type=ProcessType.BALANCE_FIXING,
+        calculation_id=C.executed_balance_fixing_calculation_id,
+        calculation_type=CalculationType.BALANCE_FIXING,
         calculation_grid_areas=["805", "806"],
         calculation_period_start_datetime=datetime(2018, 1, 1, 23, 0, 0),
         calculation_period_end_datetime=datetime(2018, 1, 3, 23, 0, 0),
@@ -57,16 +52,9 @@ def calculator_args_wholesale_fixing(
     calculator_args_balance_fixing: CalculatorArgs,
 ) -> CalculatorArgs:
     args = calculator_args_balance_fixing
-    args.calculation_id = C.executed_wholesale_batch_id
-    args.calculation_process_type = ProcessType.WHOLESALE_FIXING
+    args.calculation_id = C.executed_wholesale_calculation_id
+    args.calculation_type = CalculationType.WHOLESALE_FIXING
     return args
-
-
-@pytest.fixture(scope="session")
-def any_calculator_args(
-    calculator_args_balance_fixing: CalculatorArgs,
-) -> CalculatorArgs:
-    return calculator_args_balance_fixing
 
 
 @pytest.fixture(scope="session")
@@ -121,7 +109,7 @@ def balance_fixing_results_df(
     )
     return results_df.where(
         F.col(EnergyResultColumnNames.calculation_id)
-        == C.executed_balance_fixing_batch_id
+        == C.executed_balance_fixing_calculation_id
     )
 
 
@@ -134,7 +122,8 @@ def wholesale_fixing_energy_results_df(
         f"{paths.OUTPUT_DATABASE_NAME}.{paths.ENERGY_RESULT_TABLE_NAME}"
     )
     return results_df.where(
-        F.col(EnergyResultColumnNames.calculation_id) == C.executed_wholesale_batch_id
+        F.col(EnergyResultColumnNames.calculation_id)
+        == C.executed_wholesale_calculation_id
     )
 
 
@@ -148,5 +137,5 @@ def wholesale_fixing_wholesale_results_df(
     )
     return results_df.where(
         F.col(WholesaleResultColumnNames.calculation_id)
-        == C.executed_wholesale_batch_id
+        == C.executed_wholesale_calculation_id
     )

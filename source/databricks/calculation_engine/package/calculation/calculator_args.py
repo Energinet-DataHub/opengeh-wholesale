@@ -12,26 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from azure.identity import ClientSecretCredential
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
-from package.codelists.process_type import ProcessType
+
+from package.codelists.calculation_type import (
+    CalculationType,
+)
 
 
 @dataclass
 class CalculatorArgs:
-    data_storage_account_name: str
-    # Prevent the credentials from being printed or logged (using e.g. print() or repr())
-    data_storage_account_credentials: ClientSecretCredential = field(repr=False)
-    wholesale_container_path: str
-    calculation_input_path: str
-    time_series_points_table_name: str | None
-    metering_point_periods_table_name: str | None
-    grid_loss_metering_points_table_name: str | None
     calculation_id: str
     calculation_grid_areas: list[str]
     calculation_period_start_datetime: datetime
     calculation_period_end_datetime: datetime
-    calculation_process_type: ProcessType
+    calculation_type: CalculationType
     calculation_execution_time_start: datetime
     time_zone: str

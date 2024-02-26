@@ -15,6 +15,9 @@
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.EDI.Client;
 using Energinet.DataHub.Wholesale.EDI.Factories;
 using Energinet.DataHub.Wholesale.EDI.Mappers;
@@ -30,6 +33,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     private readonly IValidator<Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest> _validator;
     private readonly IAggregatedTimeSeriesQueries _aggregatedTimeSeriesQueries;
     private readonly ILogger<AggregatedTimeSeriesRequestHandler> _logger;
+    private readonly CompletedCalculationRetriever _completedCalculationRetriever;
     private static readonly ValidationError _noDataAvailable = new("Ingen data tilgængelig / No data available", "E0H");
     private static readonly ValidationError _noDataForRequestedGridArea = new("Forkert netområde / invalid grid area", "D46");
 
@@ -37,17 +41,19 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         IEdiClient ediClient,
         IValidator<Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest> validator,
         IAggregatedTimeSeriesQueries aggregatedTimeSeriesQueries,
-        ILogger<AggregatedTimeSeriesRequestHandler> logger)
+        ILogger<AggregatedTimeSeriesRequestHandler> logger,
+        CompletedCalculationRetriever completedCalculationRetriever)
     {
         _ediClient = ediClient;
         _validator = validator;
         _aggregatedTimeSeriesQueries = aggregatedTimeSeriesQueries;
         _logger = logger;
+        _completedCalculationRetriever = completedCalculationRetriever;
     }
 
     public async Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken)
     {
-        var aggregatedTimeSeriesRequest = Edi.Requests.AggregatedTimeSeriesRequest.Parser.ParseFrom(receivedMessage.Body);
+        var aggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest.Parser.ParseFrom(receivedMessage.Body);
 
         var validationErrors = await _validator.ValidateAsync(aggregatedTimeSeriesRequest).ConfigureAwait(false);
 
@@ -84,22 +90,14 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         AggregatedTimeSeriesRequest request,
         CancellationToken cancellationToken)
     {
-        var parameters = CreateAggregatedTimeSeriesQueryParametersWithoutProcessType(request);
-
-        if (request.RequestedProcessType == RequestedProcessType.LatestCorrection)
-        {
-            return await _aggregatedTimeSeriesQueries.GetLatestCorrectionForGridAreaAsync(parameters).ToListAsync(cancellationToken).ConfigureAwait(false);
-        }
+        var parameters = await CreateAggregatedTimeSeriesQueryParametersWithoutCalculationTypeAsync(request).ConfigureAwait(false);
 
         return await _aggregatedTimeSeriesQueries.GetAsync(
-            parameters with
-            {
-                ProcessType = ProcessTypeMapper.FromRequestedProcessType(request.RequestedProcessType),
-            }).ToListAsync(cancellationToken).ConfigureAwait(false);
+            parameters).ToListAsync(cancellationToken).ConfigureAwait(false);
     }
 
     private async Task<bool> EnergySupplierOrBalanceResponsibleHaveAggregatedTimeSeriesForAnotherGridAreasAsync(
-        Edi.Requests.AggregatedTimeSeriesRequest aggregatedTimeSeriesRequest,
+        Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest aggregatedTimeSeriesRequest,
         AggregatedTimeSeriesRequest aggregatedTimeSeriesRequestMessage)
     {
         if (aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea.GridAreaCode == null)
@@ -110,10 +108,10 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         {
             var newAggregationLevel = aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea with { GridAreaCode = null };
             var newRequest = aggregatedTimeSeriesRequestMessage with { AggregationPerRoleAndGridArea = newAggregationLevel };
-            var parameters = CreateAggregatedTimeSeriesQueryParametersWithoutProcessType(newRequest);
+            var parameters = await CreateAggregatedTimeSeriesQueryParametersWithoutCalculationTypeAsync(newRequest).ConfigureAwait(false);
 
             var results = _aggregatedTimeSeriesQueries.GetAsync(
-                    parameters with { ProcessType = ProcessTypeMapper.FromRequestedProcessType(newRequest.RequestedProcessType), })
+                    parameters)
                 .ConfigureAwait(false);
 
             await foreach (var result in results)
@@ -125,16 +123,18 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         return false;
     }
 
-    private static AggregatedTimeSeriesQueryParameters CreateAggregatedTimeSeriesQueryParametersWithoutProcessType(
+    private async Task<AggregatedTimeSeriesQueryParameters> CreateAggregatedTimeSeriesQueryParametersWithoutCalculationTypeAsync(
         AggregatedTimeSeriesRequest request)
     {
+        var latestCalculationsForRequest = await _completedCalculationRetriever.GetLatestCompletedCalculationForRequestAsync(request)
+            .ConfigureAwait(true);
+
         var parameters = new AggregatedTimeSeriesQueryParameters(
-            CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromEdi(request.TimeSeriesType),
-            request.Period.Start,
-            request.Period.End,
+            request.TimeSeriesTypes.Select(CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromEdi).ToList(),
             request.AggregationPerRoleAndGridArea.GridAreaCode,
             request.AggregationPerRoleAndGridArea.EnergySupplierId,
-            request.AggregationPerRoleAndGridArea.BalanceResponsibleId);
+            request.AggregationPerRoleAndGridArea.BalanceResponsibleId,
+            latestCalculationsForRequest);
         return parameters;
     }
 

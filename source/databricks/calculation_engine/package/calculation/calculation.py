@@ -14,21 +14,37 @@
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 
-from package.infrastructure import logging_configuration
-from package.calculation_output.basis_data_writer import BasisDataWriter
-from package.calculation_output.wholesale_calculation_result_writer import (
-    WholesaleCalculationResultWriter,
+from package.codelists import (
+    ChargeResolution,
+    MeteringPointType,
+    CalculationType,
 )
-from package.codelists import ChargeResolution, MeteringPointType, ProcessType
 from package.constants import Colname
+from package.infrastructure import logging_configuration
+from .CalculationResults import (
+    CalculationResultsContainer,
+)
 from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
+from .output import basis_data_factory
+from .output.basis_data_results import write_basis_data
+from .output.energy_results import write_energy_results
+from .output.wholesale_results import write as write_wholesale_results
 from .preparation import PreparedDataReader
 from .wholesale import wholesale_calculation
 
 
-@logging_configuration.use_span("calculation")
 def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> None:
+    results = _execute(args, prepared_data_reader)
+    _write_results(args, results)
+
+
+@logging_configuration.use_span("calculation")
+def _execute(
+    args: CalculatorArgs, prepared_data_reader: PreparedDataReader
+) -> CalculationResultsContainer:
+    results = CalculationResultsContainer()
+
     with logging_configuration.start_span("calculation.prepare"):
         # cache of metering_point_time_series had no effect on performance (01-12-2023)
         metering_point_periods_df = prepared_data_reader.get_metering_point_periods_df(
@@ -48,67 +64,67 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
             ).cache()
         )
 
-    energy_calculation.execute(
-        args.calculation_id,
-        args.calculation_process_type,
-        args.calculation_execution_time_start,
+    results.energy_results = energy_calculation.execute(
+        args.calculation_type,
         args.calculation_grid_areas,
         metering_point_time_series,
         grid_loss_responsible_df,
     )
 
     if (
-        args.calculation_process_type == ProcessType.WHOLESALE_FIXING
-        or args.calculation_process_type == ProcessType.FIRST_CORRECTION_SETTLEMENT
-        or args.calculation_process_type == ProcessType.SECOND_CORRECTION_SETTLEMENT
-        or args.calculation_process_type == ProcessType.THIRD_CORRECTION_SETTLEMENT
+        args.calculation_type == CalculationType.WHOLESALE_FIXING
+        or args.calculation_type == CalculationType.FIRST_CORRECTION_SETTLEMENT
+        or args.calculation_type == CalculationType.SECOND_CORRECTION_SETTLEMENT
+        or args.calculation_type == CalculationType.THIRD_CORRECTION_SETTLEMENT
     ):
-        wholesale_calculation_result_writer = WholesaleCalculationResultWriter(
-            args.calculation_id,
-            args.calculation_process_type,
-            args.calculation_execution_time_start,
+        charge_master_data = prepared_data_reader.get_charge_master_data(
+            args.calculation_period_start_datetime, args.calculation_period_end_datetime
         )
 
-        charges_df = prepared_data_reader.get_charges()
+        charge_prices = prepared_data_reader.get_charge_prices(
+            args.calculation_period_start_datetime, args.calculation_period_end_datetime
+        )
+
         metering_points_periods_for_wholesale_calculation_df = (
             _get_production_and_consumption_metering_points(metering_point_periods_df)
         )
 
+        charges_link_metering_point_periods = (
+            prepared_data_reader.get_charge_link_metering_point_periods(
+                args.calculation_period_start_datetime,
+                args.calculation_period_end_datetime,
+                metering_points_periods_for_wholesale_calculation_df,
+            )
+        )
+
         tariffs_hourly_df = prepared_data_reader.get_tariff_charges(
-            metering_points_periods_for_wholesale_calculation_df,
             metering_point_time_series,
-            charges_df,
+            charge_master_data,
+            charge_prices,
+            charges_link_metering_point_periods,
             ChargeResolution.HOUR,
         )
 
         tariffs_daily_df = prepared_data_reader.get_tariff_charges(
-            metering_points_periods_for_wholesale_calculation_df,
             metering_point_time_series,
-            charges_df,
+            charge_master_data,
+            charge_prices,
+            charges_link_metering_point_periods,
             ChargeResolution.DAY,
         )
 
-        subscription_df = prepared_data_reader.get_subscription_charges(
-            charges_df, metering_points_periods_for_wholesale_calculation_df
-        )
-
-        wholesale_calculation.execute(
-            wholesale_calculation_result_writer,
+        results.wholesale_results = wholesale_calculation.execute(
+            args,
             tariffs_hourly_df,
             tariffs_daily_df,
-            subscription_df,
-            args.calculation_period_start_datetime,
         )
 
-    # We write basis data at the end of the calculation to make it easier to analyze performance of the calculation part
-    basis_data_writer = BasisDataWriter(
-        args.wholesale_container_path, args.calculation_id
+    # Add basis data to results
+    results.basis_data = basis_data_factory.create(
+        metering_point_periods_df, metering_point_time_series, args.time_zone
     )
-    basis_data_writer.write(
-        metering_point_periods_df,
-        metering_point_time_series,
-        args.time_zone,
-    )
+
+    return results
 
 
 def _get_production_and_consumption_metering_points(
@@ -118,3 +134,11 @@ def _get_production_and_consumption_metering_points(
         (f.col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
         | (f.col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
     )
+
+
+def _write_results(args: CalculatorArgs, results: CalculationResultsContainer) -> None:
+    write_energy_results(args, results.energy_results)
+    if results.wholesale_results is not None:
+        write_wholesale_results(results.wholesale_results)
+    # We write basis data at the end of the calculation to make it easier to analyze performance of the calculation part
+    write_basis_data(args, results.basis_data)

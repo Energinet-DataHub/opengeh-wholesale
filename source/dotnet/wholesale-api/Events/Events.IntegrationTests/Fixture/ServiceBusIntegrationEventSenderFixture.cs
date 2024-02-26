@@ -44,7 +44,7 @@ public class ServiceBusIntegrationEventSenderFixture : IAsyncLifetime
         ServiceBusOptions = Options.Create(
             new ServiceBusOptions
             {
-                SERVICE_BUS_MANAGE_CONNECTION_STRING = integrationTestConfiguration.ServiceBusConnectionString,
+                SERVICE_BUS_TRANCEIVER_CONNECTION_STRING = integrationTestConfiguration.ServiceBusConnectionString,
                 INTEGRATIONEVENTS_SUBSCRIPTION_NAME = SubscriptionName,
             });
     }

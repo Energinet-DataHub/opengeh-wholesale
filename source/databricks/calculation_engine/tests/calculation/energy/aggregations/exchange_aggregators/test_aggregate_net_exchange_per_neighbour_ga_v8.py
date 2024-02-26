@@ -164,9 +164,13 @@ def add_row_of_data(pandas_df, domain, in_domain, out_domain, timestamp, quantit
         Colname.energy_supplier_id: "energy-supplier-id",
         Colname.balance_responsible_id: "balance-responsible-id",
         Colname.settlement_method: SettlementMethod.NON_PROFILED.value,
-        Colname.time_window: [timestamp, timestamp + timedelta(minutes=15)],
+        Colname.time_window: [
+            pd.to_datetime(timestamp).tz_convert(None),
+            pd.to_datetime(timestamp + timedelta(minutes=15)).tz_convert(None),
+        ],
     }
-    return pandas_df.append(new_row, ignore_index=True)
+    pandas_series = pd.Series(new_row)
+    return pd.concat([pandas_df, pandas_series.to_frame().T], axis=0, ignore_index=True)
 
 
 def test_aggregate_net_exchange_per_neighbour_ga_single_hour(single_quarter_test_data):

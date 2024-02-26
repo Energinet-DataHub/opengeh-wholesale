@@ -1,0 +1,28 @@
+{
+  "literals": [
+    {
+      "name": "BALANCE_FIXING",
+      "value": "BalanceFixing"
+    },
+    {
+      "name": "AGGREGATION",
+      "value": "Aggregation"
+    },
+    {
+      "name": "WHOLESALE_FIXING",
+      "value": "WholesaleFixing"
+    },
+    {
+      "name": "FIRST_CORRECTION_SETTLEMENT",
+      "value": "FirstCorrectionSettlement"
+    },
+    {
+      "name": "SECOND_CORRECTION_SETTLEMENT",
+      "value": "SecondCorrectionSettlement"
+    },
+    {
+      "name": "THIRD_CORRECTION_SETTLEMENT",
+      "value": "ThirdCorrectionSettlement"
+    }
+  ]
+}

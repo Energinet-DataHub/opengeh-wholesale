@@ -18,9 +18,9 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlState
 
 public class EnergyResultColumnNames
 {
-    public const string BatchId = "calculation_id";
-    public const string BatchExecutionTimeStart = "calculation_execution_time_start";
-    public const string BatchProcessType = "calculation_type";
+    public const string CalculationId = "calculation_id";
+    public const string CalculationExecutionTimeStart = "calculation_execution_time_start";
+    public const string CalculationType = "calculation_type";
     public const string CalculationResultId = "calculation_result_id";
     public const string GridArea = "grid_area";
     public const string EnergySupplierId = "energy_supplier_id";
@@ -51,9 +51,9 @@ public class EnergyResultColumnNames
              QuantityQualities => "array<string>",
              AggregationLevel => "string",
              TimeSeriesType => "string",
-             BatchId => "string",
-             BatchProcessType => "string",
-             BatchExecutionTimeStart => "timestamp",
+             CalculationId => "string",
+             CalculationType => "string",
+             CalculationExecutionTimeStart => "timestamp",
              FromGridArea => "string",
              Quantity => "decimal(18,3)",
              MeteringPointId => "string",

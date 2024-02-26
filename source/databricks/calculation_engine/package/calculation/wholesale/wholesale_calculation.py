@@ -14,84 +14,79 @@
 
 
 from pyspark.sql import DataFrame
-import package.calculation.wholesale.subscription_calculators as subscriptions
-import package.calculation.wholesale.tariff_calculators as tariffs
-from .schemas.tariffs_schema import tariff_schema
-from package.calculation_output.wholesale_calculation_result_writer import (
-    WholesaleCalculationResultWriter,
-)
-from datetime import datetime
 
+import package.calculation.output.wholesale_storage_model_factory as factory
+import package.calculation.wholesale.tariff_calculators as tariffs
 from package.common import assert_schema
-from package.codelists.amount_type import AmountType
+from .schemas.tariffs_schema import tariff_schema
+from ..CalculationResults import WholesaleResultsContainer
+from ..calculator_args import CalculatorArgs
+from ...codelists import AmountType
 from ...infrastructure import logging_configuration
 
 
 @logging_configuration.use_span("calculation.wholesale")
 def execute(
-    wholesale_calculation_result_writer: WholesaleCalculationResultWriter,
+    args: CalculatorArgs,
     tariffs_hourly_df: DataFrame,
     tariffs_daily_df: DataFrame,
-    subscription_charges_df,
-    period_start_datetime: datetime,
-) -> None:
+) -> WholesaleResultsContainer:
     assert_schema(tariffs_hourly_df.schema, tariff_schema)
 
-    # Calculate and write tariff charges to storage
+    results = WholesaleResultsContainer()
+
     _calculate_tariff_charges(
-        wholesale_calculation_result_writer,
+        args,
         tariffs_hourly_df,
         tariffs_daily_df,
-        period_start_datetime,
+        results,
     )
 
-    # Calculate and write subscription charges to storage
-    _calculate_subscription_charges(
-        wholesale_calculation_result_writer, subscription_charges_df
-    )
+    return results
 
 
 def _calculate_tariff_charges(
-    wholesale_calculation_result_writer: WholesaleCalculationResultWriter,
+    args: CalculatorArgs,
     tariffs_hourly_df: DataFrame,
     tariffs_daily_df: DataFrame,
-    period_start_datetime: datetime,
+    results: WholesaleResultsContainer,
 ) -> None:
     hourly_tariff_per_ga_co_es = tariffs.calculate_tariff_price_per_ga_co_es(
         tariffs_hourly_df
     )
 
-    with logging_configuration.start_span("hourly_tariff_per_ga_co_es"):
-        wholesale_calculation_result_writer.write(
-            hourly_tariff_per_ga_co_es, AmountType.AMOUNT_PER_CHARGE
-        )
-
-    monthly_tariff_per_ga_co_es = tariffs.sum_within_month(
-        hourly_tariff_per_ga_co_es, period_start_datetime
+    results.hourly_tariff_per_ga_co_es = factory.create(
+        args,
+        hourly_tariff_per_ga_co_es,
+        AmountType.AMOUNT_PER_CHARGE,
     )
-    with logging_configuration.start_span("monthly_tariff_per_ga_co_es"):
-        wholesale_calculation_result_writer.write(
-            monthly_tariff_per_ga_co_es, AmountType.MONTHLY_AMOUNT_PER_CHARGE
-        )
+
+    monthly_tariff_from_hourly_per_ga_co_es = tariffs.sum_within_month(
+        hourly_tariff_per_ga_co_es, args.calculation_period_start_datetime
+    )
+
+    results.monthly_tariff_from_hourly_per_ga_co_es = factory.create(
+        args,
+        monthly_tariff_from_hourly_per_ga_co_es,
+        AmountType.MONTHLY_AMOUNT_PER_CHARGE,
+    )
 
     daily_tariff_per_ga_co_es = tariffs.calculate_tariff_price_per_ga_co_es(
         tariffs_daily_df
     )
-    with logging_configuration.start_span("daily_tariff_per_ga_co_es"):
-        wholesale_calculation_result_writer.write(
-            daily_tariff_per_ga_co_es, AmountType.AMOUNT_PER_CHARGE
-        )
 
+    results.daily_tariff_per_ga_co_es = factory.create(
+        args,
+        daily_tariff_per_ga_co_es,
+        AmountType.AMOUNT_PER_CHARGE,
+    )
 
-def _calculate_subscription_charges(
-    wholesale_calculation_result_writer: WholesaleCalculationResultWriter,
-    subscription_charges_df: DataFrame,
-) -> None:
-    with logging_configuration.start_span("subscription_charges"):
-        subscription_amount_per_ga_co_es = (
-            subscriptions.calculate_daily_subscription_amount(subscription_charges_df)
-        )
+    monthly_tariff_from_daily_per_ga_co_es = tariffs.sum_within_month(
+        daily_tariff_per_ga_co_es, args.calculation_period_start_datetime
+    )
 
-        wholesale_calculation_result_writer.write(
-            subscription_charges_df, AmountType.AMOUNT_PER_CHARGE
-        )
+    results.monthly_tariff_from_daily_per_ga_co_es = factory.create(
+        args,
+        monthly_tariff_from_daily_per_ga_co_es,
+        AmountType.MONTHLY_AMOUNT_PER_CHARGE,
+    )

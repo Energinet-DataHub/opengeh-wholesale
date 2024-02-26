@@ -20,13 +20,28 @@ on:
 jobs:
   # Build all projects within solution
   dotnet_ci_build:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-build-prerelease.yml@v12
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-build-prerelease.yml@v13
     with:
       dotnet_version: 8.0.101
       solution_file_path: source/dotnet/Wholesale.sln
 
+  dotnet_ci_test_integrationtests_orchestration:
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v13
+    with:
+      dotnet_version: 8.0.101
+      tests_dll_file_path: \source\dotnet\wholesale-api\Orchestration.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Orchestration.IntegrationTests.dll
+      download_attempt_limit: 20
+      use_azure_functions_tools: true
+      environment: AzureAuth
+      run_integration_tests: true
+      azure_integrationtest_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
+      azure_integrationtest_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
+      azure_integrationtest_spn_id: ${{ vars.integration_test_azure_spn_id_oidc }}
+      azure_keyvault_url: ${{ vars.integration_test_azure_keyvault_url }}
+      azure_b2csecrets_keyvault_url: ${{ vars.integration_test_azure_b2csecrets_keyvault_url }}
+
   dotnet_ci_test_integrationtests_webapi:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v12
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v13
     with:
       dotnet_version: 8.0.101
       tests_dll_file_path: \source\dotnet\wholesale-api\WebApi.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.WebApi.IntegrationTests.dll
@@ -43,19 +58,18 @@ jobs:
       azure_b2csecrets_keyvault_url: ${{ vars.integration_test_azure_b2csecrets_keyvault_url }}
 
   dotnet_ci_test_webapi:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v12
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v13
     with:
       dotnet_version: 8.0.101
       tests_dll_file_path: \source\dotnet\wholesale-api\WebApi.UnitTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.WebApi.UnitTests.dll
       download_attempt_limit: 20
 
   dotnet_ci_test_integrationtests_calculation_results:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v12
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v13
     with:
       dotnet_version: 8.0.101
       tests_dll_file_path: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
       download_attempt_limit: 20
-      use_azure_functions_tools: true
       environment: AzureAuth
       run_integration_tests: true
       azure_integrationtest_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
@@ -65,34 +79,32 @@ jobs:
       azure_b2csecrets_keyvault_url: ${{ vars.integration_test_azure_b2csecrets_keyvault_url }}
 
   dotnet_ci_test_calculation_results:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v12
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v13
     with:
       dotnet_version: 8.0.101
       tests_dll_file_path: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.UnitTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.UnitTests.dll
       download_attempt_limit: 20
 
-  dotnet_ci_test_integrationtests_batches:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v12
+  dotnet_ci_test_integrationtests_calculations:
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v13
     with:
       dotnet_version: 8.0.101
-      tests_dll_file_path: \source\dotnet\wholesale-api\Batches\Batches.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Batches.IntegrationTests.dll
+      tests_dll_file_path: \source\dotnet\wholesale-api\Calculations\Calculations.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Calculations.IntegrationTests.dll
       download_attempt_limit: 20
-      use_azure_functions_tools: true
 
-  dotnet_ci_test_calculation_batches:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v12
+  dotnet_ci_test_calculation_calculations:
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v13
     with:
       dotnet_version: 8.0.101
-      tests_dll_file_path: \source\dotnet\wholesale-api\Batches\Batches.UnitTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Batches.UnitTests.dll
+      tests_dll_file_path: \source\dotnet\wholesale-api\Calculations\Calculations.UnitTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Calculations.UnitTests.dll
       download_attempt_limit: 20
 
   dotnet_ci_test_integrationtests_events:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v12
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v13
     with:
       dotnet_version: 8.0.101
       tests_dll_file_path: \source\dotnet\wholesale-api\Events\Events.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Events.IntegrationTests.dll
       download_attempt_limit: 20
-      use_azure_functions_tools: true
       environment: AzureAuth
       run_integration_tests: true
       azure_integrationtest_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
@@ -101,14 +113,14 @@ jobs:
       azure_keyvault_url: ${{ vars.integration_test_azure_keyvault_url }}
 
   dotnet_ci_test_events:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v12
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v13
     with:
       dotnet_version: 8.0.101
       tests_dll_file_path: \source\dotnet\wholesale-api\Events\Events.UnitTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Events.UnitTests.dll
       download_attempt_limit: 20
 
   dotnet_ci_test_edi:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v12
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v13
     with:
       dotnet_version: 8.0.101
       tests_dll_file_path: \source\dotnet\wholesale-api\Edi.UnitTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Edi.UnitTests.dll

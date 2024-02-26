@@ -11,7 +11,7 @@
       <SwaggerConfiguration>Clients\Wholesale\V3\swagger.json</SwaggerConfiguration>
       <WholesaleClient>Clients\Wholesale\V3\WholesaleClient.cs</WholesaleClient>
     </PropertyGroup>
-    
+
     <PropertyGroup>
       <!-- True if the swagger.json file was updated after the generated client -->
       <SwaggerConfigurationIsNewer>
@@ -23,17 +23,16 @@
   </Target>
 
   <ItemGroup>
-    <EmbeddedResource Include="Features\Calculations\TestData\amount_for_es_for_hourly_tarif_40000_for_e17_e02.csv" />
     <EmbeddedResource Include="Features\Calculations\TestData\Non_profiled_consumption_es_brp_ga_GA_543 for 5790001102357.csv" />
     <EmbeddedResource Include="Features\Calculations\TestData\Non_profiled_consumption_GA_804 for 5790001687137.csv" />
     <EmbeddedResource Include="Features\Calculations\TestData\Positive_gridLoss 543.csv" />
     <EmbeddedResource Include="Features\Calculations\TestData\Positive_gridLoss 804.csv" />
+    <EmbeddedResource Include="Features\Calculations\TestData\amount_for_es_for_hourly_tarif_40000_for_e17_e02.csv" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.17.2" />
     <PackageReference Include="Azure.Monitor.Query" Version="1.2.0" />
-    <PackageReference Include="Energinet.DataHub.Core.FunctionApp.TestCommon" Version="4.5.0" />
     <PackageReference Include="Microsoft.Azure.Databricks.Client" Version="2.2.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
@@ -43,7 +42,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
     <PackageReference Include="FluentAssertions" Version="6.12.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <PackageReference Include="xunit" Version="2.6.6" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.6">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -53,11 +52,11 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="NSwag.MSBuild" Version="14.0.2">
+    <PackageReference Include="NSwag.MSBuild" Version="14.0.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.8.14">
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.9.28">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -73,8 +72,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\wholesale-api\Batches\Batches.Application\Batches.Application.csproj" />
-    <ProjectReference Include="..\wholesale-api\Batches\Batches.Infrastructure\Batches.Infrastructure.csproj" />
+    <ProjectReference Include="..\wholesale-api\Calculations\Calculations.Application\Calculations.Application.csproj" />
+    <ProjectReference Include="..\wholesale-api\Calculations\Calculations.Infrastructure\Calculations.Infrastructure.csproj" />
     <ProjectReference Include="..\wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" />
     <ProjectReference Include="..\wholesale-api\Test.Core\Test.Core.csproj" />
   </ItemGroup>

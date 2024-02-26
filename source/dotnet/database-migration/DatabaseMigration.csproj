@@ -22,10 +22,6 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Scripts\202302091300_Add_ProcessType_column_To_Batch.sql" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="Scripts\202401110800_Add_Version.sql" />
     <EmbeddedResource Include="Scripts\202302031200_Drop_MessageHub.sql" />
     <EmbeddedResource Include="Scripts\202206161400_Create_Batch_Table.sql" />
@@ -49,12 +45,14 @@ limitations under the License.
     <EmbeddedResource Include="Scripts\202311291200_Add_Grid_Area_Owner_Table.sql" />
     <EmbeddedResource Include="Scripts\202311291200_Add_Received_Integration_Event_Table.sql" />
     <EmbeddedResource Include="Scripts\202401151200_Change_Batch_Version_Type.sql" />
+    <EmbeddedResource Include="Scripts\202401311400_Rename_Batch_To_Calculation.sql" />
+    <EmbeddedResource Include="Scripts\202402011100_Rename_ProcessType_To_CalculationType.sql" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="dbup-sqlserver" Version="5.0.37" />
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.4" />
-    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.8.14">
+    <PackageReference Include="dbup-sqlserver" Version="5.0.40" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.5" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.9.28">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

@@ -39,9 +39,9 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
         [SubsystemFact]
         public void Given_CalculationInput()
         {
-            Fixture.ScenarioState.CalculationInput = new Clients.v3.BatchRequestDto
+            Fixture.ScenarioState.CalculationInput = new Clients.v3.CalculationRequestDto
             {
-                ProcessType = Clients.v3.ProcessType.Aggregation,
+                CalculationType = Clients.v3.CalculationType.Aggregation,
                 GridAreaCodes = new List<string> { "543" },
                 StartDate = new DateTimeOffset(2022, 1, 13, 23, 0, 0, TimeSpan.Zero),
                 EndDate = new DateTimeOffset(2022, 1, 14, 23, 0, 0, TimeSpan.Zero),
@@ -62,7 +62,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
         [SubsystemFact]
         public void When_ExpectedTelemetryEvents()
         {
-            // From 'StartCalculationHandler' (handled in default http request pipeline)
+            // From 'StartCalculationHandler' (handled in Timer Trigger request pipeline within Orchestration host)
             Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new AppTraceMatch
             {
                 AppVersionContains = "PR:",
@@ -84,7 +84,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
         {
             var query = $@"
                 AppTraces
-                | where AppRoleName contains ""app-webapi-wholsal-""
+                | where AppRoleName contains ""-wholsal-""
                 | where Message contains ""{Fixture.ScenarioState.CalculationId}""
                 | extend parsedProp = parse_json(Properties)
                 | project TimeGenerated, OperationId, ParentId, Type, AppVersion, Subsystem=parsedProp.Subsystem, EventName=parsedProp.EventName, Message

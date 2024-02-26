@@ -34,7 +34,6 @@ charges_schema = StructType(
         StructField(Colname.from_date, TimestampType(), False),
         StructField(Colname.to_date, TimestampType(), False),
         StructField(Colname.charge_price, DecimalType(18, 6), False),
-        StructField(Colname.metering_point_id, StringType(), False),
     ]
 )
 
@@ -47,16 +46,6 @@ charges_master_data_schema = StructType(
         StructField(Colname.resolution, StringType(), False),
         StructField(Colname.charge_tax, BooleanType(), False),
         StructField(Colname.currency, StringType(), False),
-        StructField(Colname.from_date, TimestampType(), False),
-        StructField(Colname.to_date, TimestampType(), False),
-    ]
-)
-
-
-charge_links_schema = StructType(
-    [
-        StructField(Colname.charge_key, StringType(), False),
-        StructField(Colname.metering_point_id, StringType(), False),
         StructField(Colname.from_date, TimestampType(), False),
         StructField(Colname.to_date, TimestampType(), False),
     ]

@@ -20,12 +20,12 @@ on:
 
 jobs:
   #
-  # License and Markdown Check
+  # License and Markdown Check.
   #
   ci_base:
-    uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@v12
+    uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@v13
     secrets:
-      pat_token: ${{ secrets.internal_github_pat }}
+      dh3serviceaccount_privatekey: ${{ secrets.dh3serviceaccount_privatekey }}
 
   #
   # Detect changes to start relevant workflows
@@ -33,15 +33,24 @@ jobs:
   changes:
     uses: ./.github/workflows/detect-changes.yml
 
+  ci_docker:
+    needs: changes
+    uses: Energinet-DataHub/.github/.github/workflows/python-build-and-push-docker-image.yml@v13
+    with:
+      docker_changed: ${{ needs.changes.outputs.docker == 'true' }}
+      docker_changed_in_commit: ${{ needs.changes.outputs.docker_in_commit == 'true' }}
+
   ci_dotnet:
     needs: changes
     if: ${{ needs.changes.outputs.dotnet == 'true' }}
     uses: ./.github/workflows/ci-dotnet.yml
 
   ci_databricks:
-    needs: changes
+    needs: [changes, ci_docker]
     if: ${{ needs.changes.outputs.databricks == 'true' }}
     uses: ./.github/workflows/ci-databricks.yml
+    with:
+      image_tag: ${{ needs.ci_docker.outputs.image_tag }}
 
   ci_packages:
     needs: changes
@@ -51,12 +60,12 @@ jobs:
   render_c4model_views:
     needs: changes
     if: ${{ needs.changes.outputs.render_c4model_views == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/structurizr-render-diagrams.yml@v12
+    uses: Energinet-DataHub/.github/.github/workflows/structurizr-render-diagrams.yml@v13
     with:
       structurizr_workspace_filename: views
       included_model_filename: model
     secrets:
-      pat_token_retrigger_workflow: ${{ secrets.internal_github_pat }}
+      dh3serviceaccount_privatekey: ${{ secrets.dh3serviceaccount_privatekey }}
 
   #
   # Branch policy status check

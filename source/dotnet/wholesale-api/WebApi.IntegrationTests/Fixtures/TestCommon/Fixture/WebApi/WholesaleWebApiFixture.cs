@@ -18,10 +18,11 @@ using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Calculations.IntegrationTests.Fixture.Database;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.Components;
-using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.Database;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 using Microsoft.Extensions.Configuration;
 
@@ -32,7 +33,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
         public WholesaleWebApiFixture()
         {
             AzuriteManager = new AzuriteManager(useOAuth: true);
-            DatabaseManager = new WholesaleDatabaseManager();
+            DatabaseManager = new WholesaleDatabaseManager<DatabaseContext>();
             DatabricksTestManager = new DatabricksTestManager();
             IntegrationTestConfiguration = new IntegrationTestConfiguration();
 
@@ -44,7 +45,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
                 TestLogger);
         }
 
-        public WholesaleDatabaseManager DatabaseManager { get; }
+        public WholesaleDatabaseManager<DatabaseContext> DatabaseManager { get; }
 
         public DatabricksTestManager DatabricksTestManager { get; }
 
@@ -85,16 +86,17 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
             Environment.SetEnvironmentVariable(nameof(DataLakeOptions.STORAGE_ACCOUNT_URI), AzuriteManager.BlobStorageServiceUri.ToString());
             Environment.SetEnvironmentVariable(nameof(DataLakeOptions.STORAGE_CONTAINER_NAME), "wholesale");
 
+            Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING), ServiceBusResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING), ServiceBusResourceProvider.ConnectionString);
+
             await ServiceBusResourceProvider
                 .BuildTopic("integration-events")
                 .SetEnvironmentVariableToTopicName(nameof(ServiceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME))
+                .AddSubscription("subscription")
+                .SetEnvironmentVariableToSubscriptionName(nameof(ServiceBusOptions.INTEGRATIONEVENTS_SUBSCRIPTION_NAME))
                 .CreateAsync();
 
-            Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING), ServiceBusResourceProvider.ConnectionString);
-            Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING), ServiceBusResourceProvider.ConnectionString);
-
             // Add events configuration variables
-            Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING), ServiceBusResourceProvider.ConnectionString);
             await ServiceBusResourceProvider
                 .BuildQueue("sbq-wholesale-inbox")
                 .SetEnvironmentVariableToQueueName(nameof(ServiceBusOptions.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME))
@@ -127,7 +129,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
                 credential: new DefaultAzureCredential());
 
             var fileSystemClient = dataLakeServiceClient.GetFileSystemClient(
-                Environment.GetEnvironmentVariable("STORAGE_CONTAINER_NAME"));
+                Environment.GetEnvironmentVariable(nameof(DataLakeOptions.STORAGE_CONTAINER_NAME)));
 
             await fileSystemClient.CreateIfNotExistsAsync();
         }

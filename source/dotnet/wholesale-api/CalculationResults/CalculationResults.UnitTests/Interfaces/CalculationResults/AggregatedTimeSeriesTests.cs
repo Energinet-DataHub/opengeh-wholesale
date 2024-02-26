@@ -16,6 +16,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
+using NodaTime.Extensions;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Interfaces.CalculationResults;
@@ -27,7 +28,7 @@ public class AggregatedTimeSeriesTests
     public void Ctor_WhenNoPoints_ThrowsArgumentException(
         string anyGridArea,
         TimeSeriesType anyTimeSeriesType,
-        ProcessType anyProcessType)
+        CalculationType anyCalculationType)
     {
         // Arrange
         var emptyTimeSeriesPoints = Array.Empty<EnergyTimeSeriesPoint>();
@@ -35,9 +36,12 @@ public class AggregatedTimeSeriesTests
         // Act
         var act = () => new AggregatedTimeSeries(
             gridArea: anyGridArea,
-            timeSeriesType: anyTimeSeriesType,
             timeSeriesPoints: emptyTimeSeriesPoints,
-            processType: anyProcessType);
+            timeSeriesType: anyTimeSeriesType,
+            calculationType: anyCalculationType,
+            DateTimeOffset.Parse("2022-01-01T00:00Z").ToInstant(),
+            DateTimeOffset.Parse("2022-01-01T00:45Z").ToInstant(),
+            1);
 
         // Assert
         act.Should().Throw<ArgumentException>().WithMessage("*empty*");

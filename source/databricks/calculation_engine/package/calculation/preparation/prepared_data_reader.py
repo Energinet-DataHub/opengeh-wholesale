@@ -20,6 +20,8 @@ from package.codelists import ChargeResolution
 from package.calculation.preparation.grid_loss_responsible import GridLossResponsible
 
 from . import transformations as T
+from .charge_link_metering_point_periods import ChargeLinkMeteringPointPeriods
+from .charge_period_prices import ChargePeriodPrices
 
 
 class PreparedDataReader:
@@ -46,32 +48,71 @@ class PreparedDataReader:
             grid_areas, metering_point_periods_df, self._table_reader
         )
 
-    def get_charges(self) -> DataFrame:
-        return T.read_charges(self._table_reader)
+    def get_charge_master_data(
+        self,
+        period_start_datetime: datetime,
+        period_end_datetime: datetime,
+    ) -> DataFrame:
+        return T.read_charge_master_data(
+            self._table_reader, period_start_datetime, period_end_datetime
+        )
+
+    def get_charge_prices(
+        self,
+        period_start_datetime: datetime,
+        period_end_datetime: datetime,
+    ) -> DataFrame:
+        return T.read_charge_prices(
+            self._table_reader, period_start_datetime, period_end_datetime
+        )
+
+    def get_charge_link_metering_point_periods(
+        self,
+        period_start_datetime: datetime,
+        period_end_datetime: datetime,
+        metering_point_periods_df: DataFrame,
+    ) -> ChargeLinkMeteringPointPeriods:
+        charge_links = T.read_charge_links(
+            self._table_reader, period_start_datetime, period_end_datetime
+        )
+        return T.get_charge_link_metering_point_periods(
+            charge_links, metering_point_periods_df
+        )
 
     def get_fee_charges(
         self,
-        charges_df: DataFrame,
-        metering_points: DataFrame,
+        charge_master_data: DataFrame,
+        charge_prices: DataFrame,
+        charge_link_metering_points: ChargeLinkMeteringPointPeriods,
     ) -> DataFrame:
-        return T.get_fee_charges(charges_df, metering_points)
+        return T.get_fee_charges(
+            charge_master_data, charge_prices, charge_link_metering_points
+        )
 
     def get_subscription_charges(
         self,
-        charges_df: DataFrame,
-        metering_points: DataFrame,
+        charge_master_data: DataFrame,
+        charge_prices: DataFrame,
+        charge_link_metering_points: ChargeLinkMeteringPointPeriods,
     ) -> DataFrame:
-        return T.get_subscription_charges(charges_df, metering_points)
+        return T.get_subscription_charges(
+            charge_master_data, charge_prices, charge_link_metering_points
+        )
 
     def get_tariff_charges(
         self,
-        metering_points: DataFrame,
         time_series: DataFrame,
-        charges_df: DataFrame,
+        charge_master_data: DataFrame,
+        charge_prices: DataFrame,
+        charges_link_metering_point_periods: ChargeLinkMeteringPointPeriods,
         resolution: ChargeResolution,
     ) -> DataFrame:
         return T.get_tariff_charges(
-            metering_points, time_series, charges_df, resolution
+            time_series,
+            charge_master_data,
+            charge_prices,
+            charges_link_metering_point_periods,
+            resolution,
         )
 
     def get_metering_point_time_series(
@@ -80,10 +121,10 @@ class PreparedDataReader:
         period_end_datetime: datetime,
         metering_point_periods_df: DataFrame,
     ) -> DataFrame:
-        raw_time_series_points_df = self._table_reader.read_time_series_points(
-            period_start_datetime, period_end_datetime
+        time_series_points_df = T.get_time_series_points(
+            self._table_reader, period_start_datetime, period_end_datetime
         )
         return T.get_metering_point_time_series(
-            raw_time_series_points_df,
+            time_series_points_df,
             metering_point_periods_df,
         )

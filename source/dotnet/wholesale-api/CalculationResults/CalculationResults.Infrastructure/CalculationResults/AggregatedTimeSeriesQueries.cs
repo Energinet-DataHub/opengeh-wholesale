@@ -39,42 +39,21 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
         _deltaTableOptions = deltaTableOptions.Value;
     }
 
-    public async IAsyncEnumerable<AggregatedTimeSeries> GetLatestCorrectionForGridAreaAsync(AggregatedTimeSeriesQueryParameters parameters)
-    {
-        if (parameters.ProcessType != null)
-        {
-            throw new ArgumentException($"{nameof(parameters.ProcessType)} must be null, it will be overwritten.", nameof(parameters));
-        }
-
-        if (parameters.GridArea == null)
-        {
-            throw new ArgumentNullException(nameof(parameters), $"{nameof(parameters.GridArea)} may not be null.");
-        }
-
-        await foreach (var aggregatedTimeSeries in GetAggregatedTimeSeriesForLatestCorrectionAsync(parameters).ConfigureAwait(false))
-            yield return aggregatedTimeSeries;
-    }
-
     public async IAsyncEnumerable<AggregatedTimeSeries> GetAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
+        if (!parameters.LatestCalculationForPeriod.Any())
+        {
+            yield break;
+        }
+
         var sqlStatement = new AggregatedTimeSeriesQueryStatement(parameters, _deltaTableOptions);
-        await foreach (var aggregatedTimeSeries in GetInternalAsync(sqlStatement).ConfigureAwait(false))
+        await foreach (var aggregatedTimeSeries in GetInternalAsync(sqlStatement, parameters.LatestCalculationForPeriod).ConfigureAwait(false))
             yield return aggregatedTimeSeries;
     }
 
-    private async IAsyncEnumerable<AggregatedTimeSeries> GetAggregatedTimeSeriesForLatestCorrectionAsync(AggregatedTimeSeriesQueryParameters parameters)
-    {
-        await foreach (var aggregatedTimeSeries in GetAsync(parameters with { ProcessType = ProcessType.ThirdCorrectionSettlement }).ConfigureAwait(false))
-            yield return aggregatedTimeSeries;
-
-        await foreach (var aggregatedTimeSeries in GetAsync(parameters with { ProcessType = ProcessType.SecondCorrectionSettlement }).ConfigureAwait(false))
-            yield return aggregatedTimeSeries;
-
-        await foreach (var aggregatedTimeSeries in GetAsync(parameters with { ProcessType = ProcessType.FirstCorrectionSettlement }).ConfigureAwait(false))
-            yield return aggregatedTimeSeries;
-    }
-
-    private async IAsyncEnumerable<AggregatedTimeSeries> GetInternalAsync(AggregatedTimeSeriesQueryStatement sqlStatement)
+    private async IAsyncEnumerable<AggregatedTimeSeries> GetInternalAsync(
+        AggregatedTimeSeriesQueryStatement sqlStatement,
+        IReadOnlyCollection<CalculationForPeriod> latestCalculationsForPeriod)
     {
         var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
         DatabricksSqlRow? previousRow = null;
@@ -83,9 +62,17 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
             var currentRow = new DatabricksSqlRow(databricksCurrentRow);
             var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(currentRow);
 
-            if (previousRow != null && BelongsToDifferentGridArea(currentRow, previousRow))
+            if (previousRow != null && (BelongsToDifferentGridArea(currentRow, previousRow)
+                                        || HaveDifferentCalculationId(currentRow, previousRow)
+                                        || HaveDifferentTimeSeriesType(currentRow, previousRow)))
             {
-                yield return AggregatedTimeSeriesFactory.Create(previousRow, timeSeriesPoints);
+                var calculationForPeriod = GetCalculationForPeriod(previousRow, latestCalculationsForPeriod);
+                yield return AggregatedTimeSeriesFactory.Create(
+                    previousRow,
+                    calculationForPeriod.Period.Start,
+                    calculationForPeriod.Period.End,
+                    timeSeriesPoints,
+                    calculationForPeriod.CalculationVersion);
                 timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
             }
 
@@ -94,11 +81,35 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
         }
 
         if (previousRow != null)
-            yield return AggregatedTimeSeriesFactory.Create(previousRow, timeSeriesPoints);
+        {
+            var calculationForPeriod = GetCalculationForPeriod(previousRow, latestCalculationsForPeriod);
+            yield return AggregatedTimeSeriesFactory.Create(
+                previousRow,
+                calculationForPeriod.Period.Start,
+                calculationForPeriod.Period.End,
+                timeSeriesPoints,
+                calculationForPeriod.CalculationVersion);
+        }
+    }
+
+    private CalculationForPeriod GetCalculationForPeriod(DatabricksSqlRow row, IReadOnlyCollection<CalculationForPeriod> latestCalculationForPeriod)
+    {
+        return latestCalculationForPeriod
+            .First(x => x.CalculationId == Guid.Parse(row[EnergyResultColumnNames.CalculationId]!));
+    }
+
+    private static bool HaveDifferentCalculationId(DatabricksSqlRow row, DatabricksSqlRow otherRow)
+    {
+        return row[EnergyResultColumnNames.CalculationId] != otherRow[EnergyResultColumnNames.CalculationId];
     }
 
     private static bool BelongsToDifferentGridArea(DatabricksSqlRow row, DatabricksSqlRow otherRow)
     {
         return row[EnergyResultColumnNames.GridArea] != otherRow[EnergyResultColumnNames.GridArea];
+    }
+
+    private static bool HaveDifferentTimeSeriesType(DatabricksSqlRow row, DatabricksSqlRow otherRow)
+    {
+        return row[EnergyResultColumnNames.TimeSeriesType] != otherRow[EnergyResultColumnNames.TimeSeriesType];
     }
 }

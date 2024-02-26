@@ -29,6 +29,7 @@ from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType
 
+from package.calculation.calculator_args import CalculatorArgs
 from package.calculation_input.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
@@ -37,10 +38,13 @@ from package.calculation_input.schemas import (
     charge_price_points_schema,
     charge_link_periods_schema,
 )
+from package.codelists import CalculationType
+from package.container import create_and_configure_container, Container
 from package.datamigration.migration import _apply_migration
 from package.datamigration.migration_script_args import MigrationScriptArgs
 from package.datamigration.uncommitted_migrations import _get_all_migrations
 from package.infrastructure import paths
+from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
     OUTPUT_DATABASE_NAME,
     OUTPUT_FOLDER,
@@ -306,6 +310,45 @@ def integration_test_configuration(tests_path: str) -> IntegrationTestConfigurat
     raise Exception(
         "Failed to load integration test settings. Ensure that the Azure Key Vault URL is provided in the settings file or as an environment variable."
     )
+
+
+@pytest.fixture(scope="session")
+def any_calculator_args() -> CalculatorArgs:
+    return CalculatorArgs(
+        calculation_id="foo",
+        calculation_type=CalculationType.AGGREGATION,
+        calculation_grid_areas=["805", "806"],
+        calculation_period_start_datetime=datetime(2018, 1, 1, 23, 0, 0),
+        calculation_period_end_datetime=datetime(2018, 1, 3, 23, 0, 0),
+        calculation_execution_time_start=datetime(2018, 1, 5, 23, 0, 0),
+        time_zone="Europe/Copenhagen",
+    )
+
+
+@pytest.fixture(scope="session")
+def infrastructure_settings(
+    data_lake_path: str, calculation_input_path: str
+) -> InfrastructureSettings:
+    return InfrastructureSettings(
+        data_storage_account_name="foo",
+        data_storage_account_credentials=ClientSecretCredential("foo", "foo", "foo"),
+        wholesale_container_path=data_lake_path,
+        calculation_input_path=calculation_input_path,
+        time_series_points_table_name=None,
+        metering_point_periods_table_name=None,
+        grid_loss_metering_points_table_name=None,
+    )
+
+
+@pytest.fixture(scope="session", autouse=True)
+def dependency_injection_container(
+    infrastructure_settings: InfrastructureSettings,
+) -> Container:
+    """
+    This enables the use of dependency injection in all tests.
+    The container is created once for the entire test suite.
+    """
+    return create_and_configure_container(infrastructure_settings)
 
 
 @pytest.fixture(scope="session")

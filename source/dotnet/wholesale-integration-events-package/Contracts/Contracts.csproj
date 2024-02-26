@@ -21,7 +21,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Wholesale.Contracts</PackageId>
-    <PackageVersion>8.0.0$(VersionSuffix)</PackageVersion>
+    <PackageVersion>8.2.1$(VersionSuffix)</PackageVersion>
     <Title>Wholesale Contracts</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -42,7 +42,7 @@ limitations under the License.
       [Release Notes](https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/dotnet/Packages/Contracts.Documentation/release-notes/release-notes.md)
       [Documentation](https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/dotnet/Packages/Contracts.Documentation/documentation.md)
     </PackageDescription>
-    <Description>A package containing contracts for integrations with the wholesale domain in Energinet.DataHub.</Description>
+    <Description>A package containing contracts for integrations with the wholesale subsystem in Energinet.DataHub.</Description>
     <PackageTags>energinet;datahub;wholesale</PackageTags>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>

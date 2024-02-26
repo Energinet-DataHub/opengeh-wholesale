@@ -14,13 +14,13 @@
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
-using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -36,7 +36,11 @@ public class EnergyResultQueries : IEnergyResultQueries
     private readonly DeltaTableOptions _deltaTableOptions;
     private readonly ILogger<EnergyResultQueries> _logger;
 
-    public EnergyResultQueries(DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor, ICalculationsClient calculationsClient, IOptions<DeltaTableOptions> deltaTableOptions, ILogger<EnergyResultQueries> logger)
+    public EnergyResultQueries(
+        DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor,
+        ICalculationsClient calculationsClient,
+        IOptions<DeltaTableOptions> deltaTableOptions,
+        ILogger<EnergyResultQueries> logger)
     {
         _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
         _calculationsClient = calculationsClient;
@@ -44,13 +48,13 @@ public class EnergyResultQueries : IEnergyResultQueries
         _logger = logger;
     }
 
-    public async IAsyncEnumerable<EnergyResult> GetAsync(Guid batchId)
+    public async IAsyncEnumerable<EnergyResult> GetAsync(Guid calculationId)
     {
-        var batch = await _calculationsClient.GetAsync(batchId).ConfigureAwait(false);
-        var statement = new EnergyResultQueryStatement(batchId, _deltaTableOptions);
-        await foreach (var calculationResult in GetInternalAsync(statement, batch.PeriodStart.ToInstant(), batch.PeriodEnd.ToInstant(), batch.Version))
+        var calculation = await _calculationsClient.GetAsync(calculationId).ConfigureAwait(false);
+        var statement = new EnergyResultQueryStatement(calculationId, _deltaTableOptions);
+        await foreach (var calculationResult in GetInternalAsync(statement, calculation.PeriodStart.ToInstant(), calculation.PeriodEnd.ToInstant(), calculation.Version))
             yield return calculationResult;
-        _logger.LogDebug("Fetched all energy results for calculation {calculation_id}", batchId);
+        _logger.LogDebug("Fetched all energy results for calculation {calculation_id}", calculationId);
     }
 
     public static bool BelongsToDifferentResults(DatabricksSqlRow row, DatabricksSqlRow otherRow)
@@ -73,7 +77,9 @@ public class EnergyResultQueries : IEnergyResultQueries
             {
                 yield return EnergyResultFactory.CreateEnergyResult(currentRow!, timeSeriesPoints, periodStart, periodEnd, version);
                 resultCount++;
-                timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
+#pragma warning disable SA1010 // Opening square brackets should be spaced correctly
+                timeSeriesPoints = [];
+#pragma warning restore SA1010 // Opening square brackets should be spaced correctly
             }
 
             timeSeriesPoints.Add(timeSeriesPoint);
