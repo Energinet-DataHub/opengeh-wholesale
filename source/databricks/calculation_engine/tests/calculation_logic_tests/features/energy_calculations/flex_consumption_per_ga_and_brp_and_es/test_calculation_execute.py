@@ -11,7 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from helpers.data_frame_utils import assert_dataframes
+from helpers.data_frame_utils import assert_dataframes_equal
+from package.common import assert_schema
 from .states.scenario_state import (
     get_expected,
 )
@@ -27,9 +28,14 @@ def test_execute__returns_expected(  # type: ignore
     results = scenario_fixture.execute()
 
     # Assert
-    assert_dataframes(
-        results.energy_results.flex_consumption_per_ga_and_es.df,
-        scenario_fixture.expected,
-        ignore_schema=True,
+    actual = results.energy_results.flex_consumption_per_ga_and_brp_and_es.df
+    assert_schema(
+        actual.schema,
+        scenario_fixture.expected.schema,
         ignore_decimal_precision=True,
+        ignore_nullability=True,
+    )
+    assert_dataframes_equal(
+        actual,
+        scenario_fixture.expected,
     )

@@ -12,9 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pytest
+from calculation_logic_tests.scenario_factory import ScenarioFixture
 from pyspark.sql import SparkSession
-
-from business_logic_tests.scenario_factory import ScenarioFixture
 
 
 @pytest.fixture(scope="session")
