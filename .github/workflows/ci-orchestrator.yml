@@ -191,7 +191,7 @@ jobs:
         sauron_ci,
         render_c4model_deployment,
         render_c4model_ownership_views,
-        esett_deprecated_ci
+        esett_deprecated_ci,
       ]
     if: |
       always()
