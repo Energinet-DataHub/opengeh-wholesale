@@ -212,25 +212,17 @@ def test__calculate_daily_subscription_price__charge_price_change_with_two_diffe
         charge_time=subcription_1_charge_prices_time,
         charge_price=subscription_1_charge_prices_charge_price,
     )
-    subscription_1_charge_master_data_df_with_charge_key_1 = charge_master_data_factory(
+    charge_master_data_df_with_charge_key_1 = charge_master_data_factory(
         from_date=from_date,
         to_date=to_date,
     )
+
     subscription_2_charge_prices_df_with_charge_key_1 = charge_prices_factory(
         charge_time=subcription_2_charge_prices_time,
-    )
-    subscription_2_charge_master_data_df_with_charge_key_1 = charge_master_data_factory(
-        from_date=from_date,
-        to_date=to_date,
     )
     charge_prices_df_with_charge_key_1 = (
         subscription_1_charge_prices_df_with_charge_key_1.union(
             subscription_2_charge_prices_df_with_charge_key_1
-        )
-    )
-    charge_master_data_df_with_charge_key_1 = (
-        subscription_1_charge_master_data_df_with_charge_key_1.union(
-            subscription_2_charge_master_data_df_with_charge_key_1
         )
     )
 
@@ -239,7 +231,7 @@ def test__calculate_daily_subscription_price__charge_price_change_with_two_diffe
         charge_price=subscription_1_charge_prices_charge_price,
         charge_code=charge_code,
     )
-    subscription_1_charge_master_data_df_with_charge_key_2 = charge_master_data_factory(
+    charge_master_data_df_with_charge_key_2 = charge_master_data_factory(
         charge_code=charge_code,
         from_date=from_date,
         to_date=to_date,
@@ -248,19 +240,9 @@ def test__calculate_daily_subscription_price__charge_price_change_with_two_diffe
         charge_time=subcription_2_charge_prices_time,
         charge_code=charge_code,
     )
-    subscription_2_charge_master_data_df_with_charge_key_2 = charge_master_data_factory(
-        charge_code=charge_code,
-        from_date=from_date,
-        to_date=to_date,
-    )
     charge_prices_df_with_charge_key_2 = (
         subscription_1_charge_prices_df_with_charge_key_2.union(
             subscription_2_charge_prices_df_with_charge_key_2
-        )
-    )
-    charge_master_data_df_with_charge_key_2 = (
-        subscription_1_charge_master_data_df_with_charge_key_2.union(
-            subscription_2_charge_master_data_df_with_charge_key_2
         )
     )
 
