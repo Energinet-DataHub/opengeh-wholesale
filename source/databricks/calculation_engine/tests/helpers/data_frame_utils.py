@@ -15,6 +15,8 @@
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 
+from package.common import assert_schema
+
 
 def set_column(
     df: DataFrame,
@@ -31,6 +33,25 @@ def assert_dataframes_equal(actual: DataFrame, expected: DataFrame) -> None:
     assert actual.subtract(expected).count() == 0
     assert expected.subtract(actual).count() == 0
     assert actual.subtract(expected).count() == 0
+
+
+def assert_dataframe_and_schema(
+    actual: DataFrame,
+    expected: DataFrame,
+    ignore_nullability: bool = False,
+    ignore_column_order: bool = False,
+    ignore_decimal_scale: bool = False,
+    ignore_decimal_precision: bool = False,
+) -> None:
+    assert_schema(
+        actual.schema,
+        expected.schema,
+        ignore_nullability,
+        ignore_column_order,
+        ignore_decimal_scale,
+        ignore_decimal_precision,
+    )
+    assert_dataframes_equal(actual, expected)
 
 
 def show_dataframes(
