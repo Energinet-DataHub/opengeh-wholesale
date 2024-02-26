@@ -17,7 +17,6 @@ from datetime import datetime
 from package.calculation.preparation.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
 )
-from package.calculation.preparation.charge_period_prices import ChargePeriodPrices
 from tests.helpers.test_schemas import (
     charges_flex_consumption_schema,
     charges_per_day_schema,
@@ -34,6 +33,8 @@ from package.calculation.preparation.transformations import get_subscription_cha
 from calendar import monthrange
 import pytest
 from package.constants import Colname
+
+DEFAULT_TIME_ZONE = "Europe/Copenhagen"
 
 
 def test__calculate_daily_subscription_price__simple(
@@ -73,6 +74,7 @@ def test__calculate_daily_subscription_price__simple(
         charge_master_data,
         charge_prices,
         charge_link_metering_point_periods,
+        DEFAULT_TIME_ZONE,
     )
     result = calculate_daily_subscription_price(spark, subscription_charges)
     expected = calculate_daily_subscription_price_factory(
@@ -155,6 +157,7 @@ def test__calculate_daily_subscription_price__charge_price_change(
         charge_master_data_df,
         charge_prices_df,
         charge_link_metering_point_periods,
+        DEFAULT_TIME_ZONE,
     )
     result = calculate_daily_subscription_price(spark, subscription_charges).orderBy(
         Colname.charge_time
@@ -278,6 +281,7 @@ def test__calculate_daily_subscription_price__charge_price_change_with_two_diffe
         charge_master_data_df,
         charge_prices_df,
         charge_links_metering_point_periods,
+        DEFAULT_TIME_ZONE,
     )
     result = calculate_daily_subscription_price(spark, subscription_charges).orderBy(
         Colname.charge_time, Colname.charge_key

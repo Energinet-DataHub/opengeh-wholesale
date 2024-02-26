@@ -245,6 +245,7 @@ def charge_link_metering_points_factory(
         data = [
             {
                 Colname.charge_key: charge_key,
+                Colname.charge_type: charge_type,
                 Colname.metering_point_id: metering_point_id,
                 Colname.charge_quantity: charge_quantity,
                 Colname.metering_point_type: metering_point_type,
