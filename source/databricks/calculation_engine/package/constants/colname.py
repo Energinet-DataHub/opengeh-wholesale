@@ -38,6 +38,7 @@ class Colname:
     from_grid_area = "from_grid_area_code"
     "The grid area sending current"
     grid_area = "grid_area_code"
+    grid_loss_metering_point_id = "grid_loss_metering_point_id"
     is_positive_grid_loss_responsible = "is_positive_grid_loss_responsible"
     is_negative_grid_loss_responsible = "is_negative_grid_loss_responsible"
     local_date = "localDate"
