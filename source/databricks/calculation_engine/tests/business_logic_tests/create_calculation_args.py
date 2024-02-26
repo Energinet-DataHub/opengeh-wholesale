@@ -16,6 +16,7 @@ from datetime import datetime
 
 import yaml
 
+from business_logic_tests.conftest import CSV_DATE_FORMAT
 from package.calculation.calculator_args import CalculatorArgs
 from package.codelists import CalculationType
 from package.constants import Colname
@@ -31,21 +32,19 @@ def create_calculation_args(test_path: str) -> CalculatorArgs:
     with open(test_path + "calculation_arguments.yml", "r") as file:
         calculation_args = yaml.safe_load(file)
 
-    date_format = "%Y-%m-%d %H:%M:%S"
-
     return CalculatorArgs(
         calculation_id=str(uuid.uuid4()),
         calculation_grid_areas=calculation_args[0][ArgsName.grid_areas],
         calculation_period_start_datetime=datetime.strptime(
-            calculation_args[0][ArgsName.period_start], date_format
+            calculation_args[0][ArgsName.period_start], CSV_DATE_FORMAT
         ),
         calculation_period_end_datetime=datetime.strptime(
-            calculation_args[0][ArgsName.period_end], date_format
+            calculation_args[0][ArgsName.period_end], CSV_DATE_FORMAT
         ),
         calculation_type=CalculationType(calculation_args[0][Colname.calculation_type]),
         calculation_execution_time_start=datetime.strptime(
             calculation_args[0][Colname.calculation_execution_time_start],
-            date_format,
+            CSV_DATE_FORMAT,
         ),
         time_zone="Europe/Copenhagen",
     )

@@ -16,6 +16,8 @@ from pyspark.sql import SparkSession
 
 from business_logic_tests.scenario_factory import ScenarioFixture
 
+CSV_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+
 
 @pytest.fixture(scope="session")
 def scenario_fixture(
