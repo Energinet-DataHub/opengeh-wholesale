@@ -26,7 +26,7 @@ from typing import Generator, Callable, Optional
 import pytest
 import yaml
 from azure.identity import ClientSecretCredential
-from delta import configure_spark_with_delta_pip
+import tests.helpers.spark_sql_migration_helper as sql_migration_helper
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType
 
@@ -46,6 +46,7 @@ from package.infrastructure.infrastructure_settings import InfrastructureSetting
 from package.infrastructure.paths import (
     OUTPUT_FOLDER,
     INPUT_DATABASE_NAME,
+    OUTPUT_DATABASE_NAME
 )
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.integration_test_configuration import IntegrationTestConfiguration
@@ -190,6 +191,22 @@ def calculation_input_path(data_lake_path: str, calculation_input_folder: str) -
 @pytest.fixture(scope="session")
 def calculation_output_path(data_lake_path: str) -> str:
     return f"{data_lake_path}/{OUTPUT_FOLDER}"
+
+
+@pytest.fixture(scope="session")
+def migrations_executed(
+    spark: SparkSession,
+    data_lake_path: str,
+    calculation_input_folder: str,
+    calculation_output_path: str,
+    energy_input_data_written_to_delta: None,
+) -> None:
+    # Clean up to prevent problems from previous test runs
+    shutil.rmtree(calculation_output_path, ignore_errors=True)
+    spark.sql(f"DROP DATABASE IF EXISTS {OUTPUT_DATABASE_NAME} CASCADE")
+
+    # Execute all migrations
+    sql_migration_helper.migrate(spark)
 
 
 @pytest.fixture(scope="session")
