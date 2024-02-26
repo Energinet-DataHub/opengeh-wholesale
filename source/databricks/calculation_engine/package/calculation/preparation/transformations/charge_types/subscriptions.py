@@ -18,7 +18,8 @@ from pyspark.sql.dataframe import DataFrame
 from package.calculation.preparation.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
 )
-from package.calculation.preparation.charge_period_prices import ChargePeriodPrices
+from package.calculation.preparation.charge_master_data import ChargeMasterData
+from package.calculation.preparation.charge_prices import ChargePrices
 from package.calculation.preparation.transformations.charge_types.helper import (
     join_charge_master_data_and_charge_price,
 )
@@ -27,16 +28,18 @@ from package.constants import Colname
 
 
 def get_subscription_charges(
-    charge_master_data: DataFrame,
-    charge_prices: DataFrame,
+    charge_master_data: ChargeMasterData,
+    charge_prices: ChargePrices,
     charge_link_metering_point_periods: ChargeLinkMeteringPointPeriods,
 ) -> DataFrame:
+    charge_master_data = charge_master_data.df
+    charge_prices = charge_prices.df
     charge_period_prices = join_charge_master_data_and_charge_price(
         charge_master_data, charge_prices
     )
     charge_link_metering_points_df = charge_link_metering_point_periods.df
 
-    subscription_charges = charge_period_prices.df.filter(
+    subscription_charges = charge_period_prices.filter(
         f.col(Colname.charge_type) == ChargeType.SUBSCRIPTION.value
     )
 

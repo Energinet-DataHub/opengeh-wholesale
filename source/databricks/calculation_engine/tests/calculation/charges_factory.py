@@ -20,9 +20,13 @@ from package.calculation.preparation.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
     charge_link_metering_point_periods_schema,
 )
-from package.calculation.preparation.charge_period_prices import (
-    charge_period_prices_schema,
-    ChargePeriodPrices,
+from package.calculation.preparation.charge_master_data import (
+    ChargeMasterData,
+    charge_master_data_schema,
+)
+from package.calculation.preparation.charge_prices import (
+    ChargePrices,
+    charge_prices_schema,
 )
 from package.codelists import ChargeType
 from package.constants import Colname
@@ -148,15 +152,26 @@ def create_charge_link_metering_point_periods_row(
     return Row(**row)
 
 
-def create_charge_period_prices(
+def create_charge_master_data(
     spark: SparkSession, data: None | Row | list[Row] = None
-) -> ChargePeriodPrices:
+) -> ChargeMasterData:
     if data is None:
-        data = [create_charge_link_metering_point_periods_row()]
+        data = [create_charge_master_data_row()]
     elif isinstance(data, Row):
         data = [data]
-    df = spark.createDataFrame(data, charge_period_prices_schema)
-    return ChargePeriodPrices(df)
+    df = spark.createDataFrame(data, charge_master_data_schema)
+    return ChargeMasterData(df)
+
+
+def create_charge_prices(
+    spark: SparkSession, data: None | Row | list[Row] = None
+) -> ChargePrices:
+    if data is None:
+        data = [create_charge_prices_row()]
+    elif isinstance(data, Row):
+        data = [data]
+    df = spark.createDataFrame(data, charge_prices_schema)
+    return ChargePrices(df)
 
 
 def create_charge_link_metering_point_periods(

@@ -20,14 +20,16 @@ import package.calculation.energy.aggregators.transformations as t
 from package.calculation.preparation.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
 )
+from package.calculation.preparation.charge_master_data import ChargeMasterData
+from package.calculation.preparation.charge_prices import ChargePrices
 from package.codelists import ChargeType, ChargeResolution
 from package.constants import Colname
 
 
 def get_tariff_charges(
     metering_point_time_series: DataFrame,
-    charge_master_data: DataFrame,
-    charge_prices: DataFrame,
+    charge_master_data: ChargeMasterData,
+    charge_prices: ChargePrices,
     charge_link_metering_points: ChargeLinkMeteringPointPeriods,
     resolution: ChargeResolution,
 ) -> DataFrame:
@@ -57,12 +59,12 @@ def get_tariff_charges(
 
 
 def _join_master_data_and_prices_add_missing_prices(
-    charge_master_data: DataFrame,
-    charge_prices: DataFrame,
+    charge_master_data: ChargeMasterData,
+    charge_prices: ChargePrices,
     resolution: ChargeResolution,
     charge_type: ChargeType,
 ) -> DataFrame:
-    charge_master_data_filtered = charge_master_data.filter(
+    charge_master_data_filtered = charge_master_data.df.filter(
         f.col(Colname.charge_type) == charge_type.value
     ).filter(f.col(Colname.resolution) == resolution.value)
 
@@ -104,7 +106,7 @@ def _join_master_data_and_prices_add_missing_prices(
     )
 
     charges_with_prices_and_missing_prices = charges_with_no_prices.join(
-        charge_prices, [Colname.charge_key, Colname.charge_time], "left"
+        charge_prices.df, [Colname.charge_key, Colname.charge_time], "left"
     ).select(
         charges_with_no_prices[Colname.charge_key],
         charges_with_no_prices[Colname.charge_code],

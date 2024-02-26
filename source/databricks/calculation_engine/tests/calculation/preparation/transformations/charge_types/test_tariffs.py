@@ -117,8 +117,10 @@ def test__get_tariff_charges__filters_on_resolution(
         )
     )
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
-    charge_master_data = spark.createDataFrame(charge_master_data_rows)
-    charge_prices = spark.createDataFrame(charge_prices_rows)
+    charge_master_data = factory.create_charge_master_data(
+        spark, charge_master_data_rows
+    )
+    charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
     actual = get_tariff_charges(
@@ -175,8 +177,10 @@ def test__get_tariff_charges__filters_on_tariff_charge_type(
         )
     )
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
-    charge_master_data = spark.createDataFrame(charge_master_data_rows)
-    charge_prices = spark.createDataFrame(charge_prices_rows)
+    charge_master_data = factory.create_charge_master_data(
+        spark, charge_master_data_rows
+    )
+    charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
     actual_tariff = get_tariff_charges(
@@ -244,8 +248,10 @@ def test__get_tariff_charges__only_accepts_charges_in_metering_point_period(
         )
     )
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
-    charge_master_data = spark.createDataFrame(charge_master_data_rows)
-    charge_prices = spark.createDataFrame(charge_prices_rows)
+    charge_master_data = factory.create_charge_master_data(
+        spark, charge_master_data_rows
+    )
+    charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
     actual = get_tariff_charges(
@@ -286,8 +292,10 @@ def test__get_tariff_charges__when_same_metering_point_and_resolution__sums_quan
         )
     )
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
-    charge_master_data = spark.createDataFrame(charge_master_data_rows)
-    charge_prices = spark.createDataFrame(charge_prices_rows)
+    charge_master_data = factory.create_charge_master_data(
+        spark, charge_master_data_rows
+    )
+    charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
     actual = get_tariff_charges(
@@ -326,8 +334,10 @@ def test__get_tariff_charges__when_no_matching_charge_resolution__returns_empty_
             spark, charge_link_metering_points_rows
         )
     )
-    charge_master_data = spark.createDataFrame(charge_master_data_rows)
-    charge_prices = spark.createDataFrame(charge_prices_rows)
+    charge_master_data = factory.create_charge_master_data(
+        spark, charge_master_data_rows
+    )
+    charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
     actual = get_tariff_charges(
@@ -365,8 +375,10 @@ def test__get_tariff_charges__when_two_tariff_overlap__returns_both_tariffs(
     ]
 
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
-    charge_master_data = spark.createDataFrame(charge_master_data_rows)
-    charge_prices = spark.createDataFrame(charge_prices_rows)
+    charge_master_data = factory.create_charge_master_data(
+        spark, charge_master_data_rows
+    )
+    charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
     charge_link_metering_point_periods = (
         factory.create_charge_link_metering_point_periods(
             spark, charge_link_metering_points_rows
@@ -412,9 +424,10 @@ def test__get_tariff_charges__returns_expected_tariff_values(
         )
     )
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
-    charge_master_data = spark.createDataFrame(charge_master_data_rows)
-    charge_prices = spark.createDataFrame(charge_prices_rows)
-
+    charge_master_data = factory.create_charge_master_data(
+        spark, charge_master_data_rows
+    )
+    charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
     expected_tariff_charges = spark.createDataFrame(
         expected_tariff_charges_row, tariff_schema
     )
@@ -493,8 +506,10 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hou
         )
     )
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
-    charge_master_data = spark.createDataFrame(charge_master_data_rows)
-    charge_prices = spark.createDataFrame(charge_prices_rows)
+    charge_master_data = factory.create_charge_master_data(
+        spark, charge_master_data_rows
+    )
+    charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
     actual = get_tariff_charges(
@@ -573,8 +588,10 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_qua
         )
     )
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
-    charge_master_data = spark.createDataFrame(charge_master_data_rows)
-    charge_prices = spark.createDataFrame(charge_prices_rows)
+    charge_master_data = factory.create_charge_master_data(
+        spark, charge_master_data_rows
+    )
+    charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
     actual = get_tariff_charges(
@@ -680,8 +697,10 @@ def test__get_tariff_charges__per_day_only_accepts_time_series_and_change_times_
         )
     )
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
-    charge_master_data = spark.createDataFrame(charge_master_data_rows)
-    charge_prices = spark.createDataFrame(charge_prices_rows)
+    charge_master_data = factory.create_charge_master_data(
+        spark, charge_master_data_rows
+    )
+    charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
     # Act
     actual = get_tariff_charges(
         time_series,
@@ -716,8 +735,10 @@ def test__get_tariff_charges__can_handle_missing_charges(
     ]
 
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
-    charge_master_data = spark.createDataFrame(charge_master_data_rows)
-    charge_prices = spark.createDataFrame(charge_prices_rows)
+    charge_master_data = factory.create_charge_master_data(
+        spark, charge_master_data_rows
+    )
+    charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
     charge_link_metering_point_periods = (
         factory.create_charge_link_metering_point_periods(
             spark, charge_link_metering_points_rows
@@ -760,10 +781,10 @@ def test__get_tariff_charges__can_handle_missing_all_charges_prices(
     ]
 
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
-    charge_master_data = spark.createDataFrame(charge_master_data_rows)
-    charge_prices = spark.createDataFrame(
-        spark.sparkContext.emptyRDD(), charge_price_points_schema
-    ).withColumn(Colname.charge_key, lit(None))
+    charge_master_data = factory.create_charge_master_data(
+        spark, charge_master_data_rows
+    )
+    charge_prices = factory.create_charge_prices(spark, [])
     charge_link_metering_point_periods = (
         factory.create_charge_link_metering_point_periods(
             spark, charge_link_metering_points_rows
@@ -808,7 +829,7 @@ def test__get_tariff_charges__can_handle_daylight_saving_time(
         factory.create_time_series_row(observation_time=date_time_1),
         factory.create_time_series_row(observation_time=date_time_2),
     ]
-    create_charge_master_data_rows = [
+    charge_master_data_rows = [
         factory.create_charge_master_data_row(
             from_date=date_time_1,
             to_date=date_time_2,
@@ -820,7 +841,7 @@ def test__get_tariff_charges__can_handle_daylight_saving_time(
             resolution=e.ChargeResolution.DAY,
         ),
     ]
-    create_charge_prices_rows = [
+    charge_prices_rows = [
         factory.create_charge_prices_row(
             charge_time=date_time_1,
         ),
@@ -836,8 +857,10 @@ def test__get_tariff_charges__can_handle_daylight_saving_time(
     ]
 
     time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
-    charge_master_data = spark.createDataFrame(create_charge_master_data_rows)
-    charge_prices = spark.createDataFrame(create_charge_prices_rows)
+    charge_master_data = factory.create_charge_master_data(
+        spark, charge_master_data_rows
+    )
+    charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
     charge_link_metering_point_periods = (
         factory.create_charge_link_metering_point_periods(
             spark, charge_link_metering_points_rows

@@ -19,16 +19,16 @@ from package.common import DataFrameWrapper
 from package.constants import Colname
 
 
-class ChargePeriodPrices(DataFrameWrapper):
+class ChargePrices(DataFrameWrapper):
     """
-    Represents the charge prices enriched with information from the charge master basis data periods.
+    Represents the charge prices.
     All periods are clamped to least common period of the metering point and the charge master data period.
     """
 
     def __init__(self, df: DataFrame):
         super().__init__(
             df,
-            charge_period_prices_schema,
+            charge_prices_schema,
             # We ignore_nullability because it has turned out to be too hard and even possibly
             # introducing more errors than solving in order to stay in exact sync with the
             # logically correct schema.
@@ -40,16 +40,12 @@ class ChargePeriodPrices(DataFrameWrapper):
 
 # The nullability and decimal types are not precisely representative of the actual data frame schema at runtime,
 # See comments to the `assert_schema()` invocation.
-charge_period_prices_schema = t.StructType(
+charge_prices_schema = t.StructType(
     [
         t.StructField(Colname.charge_key, t.StringType(), False),
         t.StructField(Colname.charge_code, t.StringType(), False),
         t.StructField(Colname.charge_type, t.StringType(), False),
         t.StructField(Colname.charge_owner, t.StringType(), False),
-        t.StructField(Colname.charge_tax, t.BooleanType(), False),
-        t.StructField(Colname.resolution, t.StringType(), False),
-        t.StructField(Colname.from_date, t.TimestampType(), True),
-        t.StructField(Colname.to_date, t.TimestampType(), True),
         t.StructField(Colname.charge_price, t.DecimalType(18, 6), False),
         t.StructField(Colname.charge_time, t.TimestampType(), False),
     ]

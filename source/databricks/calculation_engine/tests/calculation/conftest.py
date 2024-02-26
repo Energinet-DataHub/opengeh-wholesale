@@ -22,9 +22,13 @@ from package.calculation.preparation.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
     charge_link_metering_point_periods_schema,
 )
-from package.calculation.preparation.charge_period_prices import (
-    charge_period_prices_schema,
-    ChargePeriodPrices,
+from package.calculation.preparation.charge_master_data import (
+    ChargeMasterData,
+    charge_master_data_schema,
+)
+from package.calculation.preparation.charge_prices import (
+    ChargePrices,
+    charge_prices_schema,
 )
 from package.codelists import ChargeType
 from package.calculation.wholesale.schemas.calculate_daily_subscription_price_schema import (
@@ -34,9 +38,7 @@ from package.calculation.wholesale.schemas.calculate_fee_charge_price_schema imp
     calculate_fee_charge_price_schema,
 )
 from tests.calculation.dataframe_defaults import DataframeDefaults
-from package.calculation.wholesale.schemas.charges_schema import (
-    charges_schema,
-)
+
 from package.calculation_input.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
@@ -129,47 +131,9 @@ def calculate_fee_charge_price_factory(spark: SparkSession) -> Callable[..., Dat
 
 
 @pytest.fixture(scope="session")
-def charge_period_prices_factory(
-    spark: SparkSession,
-) -> Callable[..., ChargePeriodPrices]:
-    def factory(
-        charge_code: str = DataframeDefaults.default_charge_code,
-        charge_type: str = DataframeDefaults.default_charge_type,
-        charge_owner: str = DataframeDefaults.default_charge_owner,
-        charge_resolution: str = DataframeDefaults.default_charge_resolution,
-        charge_tax: str = DataframeDefaults.default_charge_tax,
-        charge_time: datetime = DataframeDefaults.default_charge_time,
-        charge_price: Decimal = DataframeDefaults.default_charge_price,
-        from_date: datetime = DataframeDefaults.default_from_date,
-        to_date: datetime = DataframeDefaults.default_to_date,
-    ) -> ChargePeriodPrices:
-        charge_key: str = f"{charge_code}-{charge_owner}-{charge_type}"
-
-        data = [
-            {
-                Colname.charge_key: charge_key,
-                Colname.charge_code: charge_code,
-                Colname.charge_type: charge_type,
-                Colname.charge_owner: charge_owner,
-                Colname.charge_tax: charge_tax,
-                Colname.resolution: charge_resolution,
-                Colname.charge_time: charge_time,
-                Colname.from_date: from_date,
-                Colname.to_date: to_date,
-                Colname.charge_price: charge_price,
-            }
-        ]
-        return ChargePeriodPrices(
-            spark.createDataFrame(data, schema=charge_period_prices_schema)
-        )
-
-    return factory
-
-
-@pytest.fixture(scope="session")
 def charge_master_data_factory(
     spark: SparkSession,
-) -> Callable[..., DataFrame]:
+) -> Callable[..., ChargeMasterData]:
     def factory(
         charge_code: str = DataframeDefaults.default_charge_code,
         charge_type: str = DataframeDefaults.default_charge_type,
@@ -178,7 +142,7 @@ def charge_master_data_factory(
         charge_tax: str = DataframeDefaults.default_charge_tax,
         from_date: datetime = DataframeDefaults.default_from_date,
         to_date: datetime = DataframeDefaults.default_to_date,
-    ) -> DataFrame:
+    ) -> ChargeMasterData:
         charge_key: str = f"{charge_code}-{charge_owner}-{charge_type}"
 
         data = [
@@ -193,7 +157,7 @@ def charge_master_data_factory(
                 Colname.to_date: to_date,
             }
         ]
-        return spark.createDataFrame(data)
+        return ChargeMasterData(spark.createDataFrame(data, charge_master_data_schema))
 
     return factory
 
@@ -201,14 +165,14 @@ def charge_master_data_factory(
 @pytest.fixture(scope="session")
 def charge_prices_factory(
     spark: SparkSession,
-) -> Callable[..., DataFrame]:
+) -> Callable[..., ChargePrices]:
     def factory(
         charge_code: str = DataframeDefaults.default_charge_code,
         charge_type: str = DataframeDefaults.default_charge_type,
         charge_owner: str = DataframeDefaults.default_charge_owner,
         charge_time: datetime = DataframeDefaults.default_charge_time,
         charge_price: Decimal = DataframeDefaults.default_charge_price,
-    ) -> DataFrame:
+    ) -> ChargePrices:
         charge_key: str = f"{charge_code}-{charge_owner}-{charge_type}"
 
         data = [
@@ -221,7 +185,7 @@ def charge_prices_factory(
                 Colname.charge_price: charge_price,
             }
         ]
-        return spark.createDataFrame(data)
+        return ChargePrices(spark.createDataFrame(data, charge_prices_schema))
 
     return factory
 

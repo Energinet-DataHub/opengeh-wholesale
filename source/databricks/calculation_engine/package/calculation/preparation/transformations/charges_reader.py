@@ -16,6 +16,8 @@ from datetime import datetime
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, concat_ws
 
+from package.calculation.preparation.charge_master_data import ChargeMasterData
+from package.calculation.preparation.charge_prices import ChargePrices
 from package.calculation.preparation.transformations.clamp_period import clamp_period
 from package.calculation_input import TableReader
 from package.constants import Colname
@@ -25,7 +27,7 @@ def read_charge_master_data(
     table_reader: TableReader,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
-) -> DataFrame:
+) -> ChargeMasterData:
     return _get_charge_master_data_periods(
         table_reader, period_start_datetime, period_end_datetime
     )
@@ -35,7 +37,7 @@ def read_charge_prices(
     table_reader: TableReader,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
-) -> DataFrame:
+) -> ChargePrices:
     return _get_charge_price_points(
         table_reader, period_start_datetime, period_end_datetime
     )
@@ -71,7 +73,7 @@ def _get_charge_master_data_periods(
     table_reader: TableReader,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
-) -> DataFrame:
+) -> ChargeMasterData:
     charge_master_data_periods = (
         table_reader.read_charge_master_data_periods()
         .where(col(Colname.from_date) < period_end_datetime)
@@ -90,22 +92,22 @@ def _get_charge_master_data_periods(
     )
 
     charge_master_data_periods = _add_charge_key_column(charge_master_data_periods)
-    return charge_master_data_periods
+    return ChargeMasterData(charge_master_data_periods)
 
 
 def _get_charge_price_points(
     table_reader: TableReader,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
-) -> DataFrame:
-    charge_price_points_df = (
+) -> ChargePrices:
+    charge_price_points = (
         table_reader.read_charge_price_points()
         .where(col(Colname.charge_time) >= period_start_datetime)
         .where(col(Colname.charge_time) < period_end_datetime)
     )
 
-    charge_price_points_df = _add_charge_key_column(charge_price_points_df)
-    return charge_price_points_df
+    charge_price_points = _add_charge_key_column(charge_price_points)
+    return ChargePrices(charge_price_points)
 
 
 def _add_charge_key_column(charge_df: DataFrame) -> DataFrame:

@@ -14,7 +14,6 @@
 from decimal import Decimal
 from datetime import datetime
 
-from package.calculation.preparation.charge_period_prices import ChargePeriodPrices
 from tests.helpers.test_schemas import (
     charges_flex_consumption_schema,
 )

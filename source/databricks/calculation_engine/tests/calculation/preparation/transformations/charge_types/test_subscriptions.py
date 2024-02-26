@@ -64,8 +64,10 @@ def test__get_subscription_charges__filters_on_subscription_charge_type(
             spark, charge_link_metering_points_rows
         )
     )
-    charge_master_data = spark.createDataFrame(charge_master_data_rows)
-    charge_prices = spark.createDataFrame(charge_prices_rows)
+    charge_master_data = factory.create_charge_master_data(
+        spark, charge_master_data_rows
+    )
+    charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
     actual_subscription = get_subscription_charges(
@@ -121,8 +123,10 @@ def test__get_subscription_charges__split_into_days_between_from_and_to_date(
             spark, charge_link_metering_points_rows
         )
     )
-    charge_master_data = spark.createDataFrame(charge_master_data_rows)
-    charge_prices = spark.createDataFrame(charge_prices_rows)
+    charge_master_data = factory.create_charge_master_data(
+        spark, charge_master_data_rows
+    )
+    charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
     actual_subscription = get_subscription_charges(

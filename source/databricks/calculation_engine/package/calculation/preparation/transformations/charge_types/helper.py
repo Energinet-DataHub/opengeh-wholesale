@@ -13,13 +13,12 @@
 # limitations under the License.
 
 from pyspark.sql.dataframe import DataFrame
-from package.calculation.preparation.charge_period_prices import ChargePeriodPrices
 from package.constants import Colname
 
 
 def join_charge_master_data_and_charge_price(
     charge_master_data: DataFrame, charge_prices: DataFrame
-) -> ChargePeriodPrices:
+) -> DataFrame:
     charge_master_data = (
         charge_master_data.join(
             charge_prices,
@@ -47,4 +46,4 @@ def join_charge_master_data_and_charge_price(
             charge_prices[Colname.charge_price],
         )
     )
-    return ChargePeriodPrices(charge_master_data)
+    return charge_master_data
