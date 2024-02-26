@@ -12,25 +12,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql.dataframe import DataFrame
 import pyspark.sql.functions as f
+from pyspark.sql.dataframe import DataFrame
 from pyspark.sql.types import DecimalType, StringType, ArrayType
 
 import package.calculation.energy.aggregators.transformations as t
 from package.calculation.preparation.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
 )
-from package.calculation.preparation.charge_period_prices import ChargePeriodPrices
+from package.calculation.preparation.transformations.charge_types.helper import (
+    join_charge_master_data_and_charge_price,
+)
 from package.codelists import ChargeType, ChargeResolution
 from package.constants import Colname
 
 
 def get_tariff_charges(
     metering_point_time_series: DataFrame,
-    charge_period_prices: ChargePeriodPrices,
+    charge_master_data: DataFrame,
+    charge_prices: DataFrame,
     charge_link_metering_points: ChargeLinkMeteringPointPeriods,
     resolution: ChargeResolution,
 ) -> DataFrame:
+    charge_period_prices = join_charge_master_data_and_charge_price(
+        charge_master_data, charge_prices
+    )
+
     tariffs = charge_period_prices.df.filter(
         f.col(Colname.charge_type) == ChargeType.TARIFF.value
     ).filter(f.col(Colname.resolution) == resolution.value)
