@@ -97,7 +97,6 @@ def _join_master_data_and_prices_add_missing_prices(
             Colname.from_date,
             Colname.to_date,
             f.explode("temp_time").alias(Colname.charge_time),
-            # f.lit(None).alias(Colname.charge_price),
         )
         .withColumn(
             Colname.charge_time,
