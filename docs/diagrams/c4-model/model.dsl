@@ -57,11 +57,11 @@ wholesaleDomain = group "Wholesale" {
         # Subsystem-to-Subsystem relationships
         # CONSIDER: Should live in EDI model(?)
         this -> edi "Publish calculation results" "integration event/amqp" {
-            tags "Simple View", "Wholesale Subscription"
+            tags "Simple View" "Wholesale Subscription"
         }
         # CONSIDER: Each subsystem model could exclude subscriptions based on their name; e.g. if Market Participant doesn't want to see subscribers they can exclude "MarketParticipant Subscription"
         markpartOrganizationManager -> this "Publish Grid Area Ownership Assigned" "integration event/amqp" {
-            tags "Simple View", "MarketParticipant Subscription"
+            tags "Simple View" "MarketParticipant Subscription"
         }
     }
 }
