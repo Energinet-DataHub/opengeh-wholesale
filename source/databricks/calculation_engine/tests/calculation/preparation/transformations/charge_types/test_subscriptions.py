@@ -21,6 +21,7 @@ from pyspark.sql import functions as f
 from package.calculation.preparation.transformations import (
     get_subscription_charges,
 )
+from package.calculation.wholesale.schemas.charges_schema import charge_prices_schema
 from package.constants import Colname
 import package.codelists as e
 
@@ -140,20 +141,21 @@ class TestWhenNoPricesForPeriod:
                 spark,
                 factory.create_charge_link_metering_point_periods_row(
                     charge_type=e.ChargeType.SUBSCRIPTION,
+                    from_date=from_date,
+                    to_date=to_date,
                 ),
             )
         )
 
-        charge_prices_empty = factory.create_charge_prices(
-            spark,
-            Row(),
-        )
+        charge_prices_empty = spark.createDataFrame([], charge_prices_schema)
 
         charge_master_data = factory.create_charge_master_data(
             spark,
             [
                 factory.create_charge_master_data_row(
                     charge_type=e.ChargeType.SUBSCRIPTION,
+                    from_date=from_date,
+                    to_date=to_date,
                 )
             ],
         )
