@@ -26,7 +26,6 @@ from typing import Generator, Callable, Optional
 import pytest
 import yaml
 from azure.identity import ClientSecretCredential
-import tests.helpers.spark_sql_migration_helper as sql_migration_helper
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType
 
@@ -205,8 +204,8 @@ def migrations_executed(
     shutil.rmtree(calculation_output_path, ignore_errors=True)
     spark.sql(f"DROP DATABASE IF EXISTS {OUTPUT_DATABASE_NAME} CASCADE")
 
-    # Execute all migrations
-    sql_migration_helper.migrate(spark)
+    # # Execute all migrations
+    # sql_migration_helper.migrate(spark)
 
 
 @pytest.fixture(scope="session")
