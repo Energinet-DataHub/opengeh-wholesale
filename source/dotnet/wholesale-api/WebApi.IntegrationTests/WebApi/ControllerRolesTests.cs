@@ -20,7 +20,6 @@ using Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 using Energinet.DataHub.Wholesale.WebApi.V3.SettlementReport;
 using FluentAssertions;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Xunit;
 

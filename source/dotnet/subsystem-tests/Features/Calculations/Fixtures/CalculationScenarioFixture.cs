@@ -123,10 +123,10 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
                 }
                 else
                 {
-                    var result = ShouldCollectMessage(messageOrNull, calculationId, integrationEventNames);
-                    if (result.ShouldCollect)
+                    var (shouldCollect, eventMessage) = ShouldCollectMessage(messageOrNull, calculationId, integrationEventNames);
+                    if (shouldCollect)
                     {
-                        collectedIntegrationEvents.Add(result.EventMessage!);
+                        collectedIntegrationEvents.Add(eventMessage!);
                     }
 
                     // We should always complete (delete) messages since we use a subscription

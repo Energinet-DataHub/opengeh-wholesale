@@ -83,12 +83,12 @@ public class CalculationControllerTests : WebApiTestBase
 
     private static CalculationRequestDto CreateCalculationRequestDto()
     {
-        var period = Periods.January_EuropeCopenhagen;
+        var (periodStart, periodEnd, _) = Periods.January_EuropeCopenhagen;
         var calculationRequest = new CalculationRequestDto(
             CalculationType.BalanceFixing,
             new List<string> { "805" },
-            period.PeriodStart,
-            period.PeriodEnd);
+            periodStart,
+            periodEnd);
         return calculationRequest;
     }
 }

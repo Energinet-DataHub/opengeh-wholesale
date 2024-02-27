@@ -14,11 +14,10 @@
 
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.ReceivedIntegrationEvent;
-using Energinet.DataHub.Wholesale.Calculations.IntegrationTests.Fixture.Database;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.EntityFrameworkCore;
-using NodaTime;
+using Test.Core.Fixture.Database;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Calculations.IntegrationTests.Infrastructure.Persistence.ReceivedIntegrationEvent;

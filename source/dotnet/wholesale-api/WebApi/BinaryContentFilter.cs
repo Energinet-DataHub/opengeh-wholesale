@@ -32,23 +32,28 @@ public class BinaryContentFilter : IOperationFilter
             return;
         }
 
-        operation.Responses = new OpenApiResponses();
-        operation.Responses.Add("200", new OpenApiResponse()
+        operation.Responses = new OpenApiResponses
         {
-            Content = new Dictionary<string, OpenApiMediaType>()
             {
+                "200",
+                new OpenApiResponse()
                 {
-                    "application/octet-stream",
-                    new OpenApiMediaType()
+                    Content = new Dictionary<string, OpenApiMediaType>()
                     {
-                        Schema = new OpenApiSchema()
                         {
-                            Type = "string",
-                            Format = "binary",
+                            "application/octet-stream",
+                            new OpenApiMediaType()
+                            {
+                                Schema = new OpenApiSchema()
+                                {
+                                    Type = "string",
+                                    Format = "binary",
+                                },
+                            }
                         },
-                    }
-                },
+                    },
+                }
             },
-        });
+        };
     }
 }
