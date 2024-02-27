@@ -22,8 +22,10 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Gr
 
 public class GridLossResultProducedV1Factory : IGridLossResultProducedV1Factory
 {
-    public bool CanCreate(EnergyResult result) =>
-        result.TimeSeriesType is TimeSeriesType.NegativeGridLoss or TimeSeriesType.PositiveGridLoss;
+    public bool CanCreate(EnergyResult result)
+    {
+        return result.TimeSeriesType is TimeSeriesType.NegativeGridLoss or TimeSeriesType.PositiveGridLoss;
+    }
 
     public Contracts.IntegrationEvents.GridLossResultProducedV1 Create(EnergyResult result)
     {

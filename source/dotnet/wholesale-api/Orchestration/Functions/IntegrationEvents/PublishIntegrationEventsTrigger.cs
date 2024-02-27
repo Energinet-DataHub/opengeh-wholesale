@@ -16,28 +16,27 @@ using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
-namespace Energinet.DataHub.Wholesale.Orchestration.Functions.IntegrationEvents
+namespace Energinet.DataHub.Wholesale.Orchestration.Functions.IntegrationEvents;
+
+public class PublishIntegrationEventsTrigger
 {
-    public class PublishIntegrationEventsTrigger
+    private readonly ILogger _logger;
+    private readonly IPublisher _handler;
+
+    public PublishIntegrationEventsTrigger(
+        ILogger<PublishIntegrationEventsTrigger> logger,
+        IPublisher handler)
     {
-        private readonly ILogger _logger;
-        private readonly IPublisher _handler;
+        _logger = logger;
+        _handler = handler;
+    }
 
-        public PublishIntegrationEventsTrigger(
-            ILogger<PublishIntegrationEventsTrigger> logger,
-            IPublisher handler)
-        {
-            _logger = logger;
-            _handler = handler;
-        }
-
-        [Function(nameof(PublishIntegrationEventsTrigger))]
-        public async Task Run(
-            [TimerTrigger("00:00:10")]
-            TimerInfo timerInfo,
-            CancellationToken cancellationToken)
-        {
-            await _handler.PublishAsync(cancellationToken).ConfigureAwait(false);
-        }
+    [Function(nameof(PublishIntegrationEventsTrigger))]
+    public async Task Run(
+        [TimerTrigger("00:00:10")]
+        TimerInfo timerInfo,
+        CancellationToken cancellationToken)
+    {
+        await _handler.PublishAsync(cancellationToken).ConfigureAwait(false);
     }
 }

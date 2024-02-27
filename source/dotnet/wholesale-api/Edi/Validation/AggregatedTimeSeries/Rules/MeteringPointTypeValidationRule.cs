@@ -33,10 +33,7 @@ public class MeteringPointTypeValidationRule : IValidationRule<AggregatedTimeSer
 
     public Task<IList<ValidationError>> ValidateAsync(AggregatedTimeSeriesRequest subject)
     {
-        if (IsValidMeteringPointType(subject.MeteringPointType))
-            return Task.FromResult(NoError);
-
-        return Task.FromResult(InvalidMeteringPointType);
+        return IsValidMeteringPointType(subject.MeteringPointType) ? Task.FromResult(NoError) : Task.FromResult(InvalidMeteringPointType);
     }
 
     private static bool IsValidMeteringPointType(string meteringPointType)

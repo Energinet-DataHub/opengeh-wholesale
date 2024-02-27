@@ -19,5 +19,8 @@ public static class ObjectExtensions
     /// <summary>
     /// Returns the object wrapped in a list.
     /// </summary>
-    public static List<T> InList<T>(this T o) => new() { o };
+    public static List<T> InList<T>(this T o)
+    {
+        return [o];
+    }
 }

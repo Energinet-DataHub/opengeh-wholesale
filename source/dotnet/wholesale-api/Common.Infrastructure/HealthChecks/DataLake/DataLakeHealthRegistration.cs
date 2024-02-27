@@ -35,13 +35,10 @@ public class DataLakeHealthRegistration : IHealthCheck
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken)
     {
         var currentHour = _clock.GetCurrentInstant().ToDateTimeUtc().Hour;
-        if (_options.DATALAKE_HEALTH_CHECK_START.Hour <= currentHour && currentHour <= _options.DATALAKE_HEALTH_CHECK_END.Hour)
-        {
-            return await _dataLakeFileSystemClient.ExistsAsync(cancellationToken).ConfigureAwait(false)
+        return _options.DATALAKE_HEALTH_CHECK_START.Hour <= currentHour && currentHour <= _options.DATALAKE_HEALTH_CHECK_END.Hour
+            ? await _dataLakeFileSystemClient.ExistsAsync(cancellationToken).ConfigureAwait(false)
                 ? HealthCheckResult.Healthy()
-                : HealthCheckResult.Unhealthy();
-        }
-
-        return HealthCheckResult.Healthy();
+                : HealthCheckResult.Unhealthy()
+            : HealthCheckResult.Healthy();
     }
 }

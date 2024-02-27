@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry
+namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry;
+
+public static class TelemetryConstants
 {
-    public static class TelemetryConstants
-    {
-        public const string SubsystemName = "wholesale";
-    }
+    public const string SubsystemName = "wholesale";
 }

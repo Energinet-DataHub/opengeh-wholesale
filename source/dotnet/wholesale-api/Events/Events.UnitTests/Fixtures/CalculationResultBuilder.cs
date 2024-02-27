@@ -76,5 +76,8 @@ public sealed class CalculationResultBuilder
             _version);
     }
 
-    private string? GetMeteringPointId() => _timeSeriesType is TimeSeriesType.NegativeGridLoss or TimeSeriesType.PositiveGridLoss ? "123" : null;
+    private string? GetMeteringPointId()
+    {
+        return _timeSeriesType is TimeSeriesType.NegativeGridLoss or TimeSeriesType.PositiveGridLoss ? "123" : null;
+    }
 }

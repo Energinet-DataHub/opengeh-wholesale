@@ -20,8 +20,9 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlState
 
 public static class SettlementMethodMapper
 {
-    public static SettlementMethod? FromDeltaTableValue(string? settlementMethod) =>
-        settlementMethod switch
+    public static SettlementMethod? FromDeltaTableValue(string? settlementMethod)
+    {
+        return settlementMethod switch
         {
             "flex" => SettlementMethod.Flex,
             "non_profiled" => SettlementMethod.NonProfiled,
@@ -32,9 +33,11 @@ public static class SettlementMethodMapper
                 actualValue: settlementMethod,
                 "Value does not contain a valid string representation of a settlement method."),
         };
+    }
 
-    public static SettlementMethod? FromTimeSeriesTypeDeltaTableValue(string timeSeriesType) =>
-        TimeSeriesTypeMapper.FromDeltaTableValue(timeSeriesType) switch
+    public static SettlementMethod? FromTimeSeriesTypeDeltaTableValue(string timeSeriesType)
+    {
+        return TimeSeriesTypeMapper.FromDeltaTableValue(timeSeriesType) switch
         {
             TimeSeriesType.Production => null,
             TimeSeriesType.FlexConsumption => SettlementMethod.Flex,
@@ -53,4 +56,5 @@ public static class SettlementMethodMapper
                 actualValue: timeSeriesType,
                 "Value cannot be mapped to a settlement method."),
         };
+    }
 }

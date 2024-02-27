@@ -40,7 +40,10 @@ public class CalculationRepository : ICalculationRepository
         return await _context.Calculations.FirstAsync(x => x.Id == calculationId).ConfigureAwait(false);
     }
 
-    public Task<List<Calculation>> GetCreatedAsync() => GetByStateAsync(CalculationExecutionState.Created);
+    public Task<List<Calculation>> GetCreatedAsync()
+    {
+        return GetByStateAsync(CalculationExecutionState.Created);
+    }
 
     public async Task<List<Calculation>> GetByStatesAsync(IEnumerable<CalculationExecutionState> states)
     {

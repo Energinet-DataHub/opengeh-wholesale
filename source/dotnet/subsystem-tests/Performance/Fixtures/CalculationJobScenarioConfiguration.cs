@@ -15,25 +15,24 @@
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Configuration;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Extensions;
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance.Fixtures
-{
-    /// <summary>
-    /// Responsible for retrieving settings necessary for performing performance tests of 'CalculationJob' in Databricks.
-    ///
-    /// On developer machines we use the 'subsystemtest.local.settings.json' to set values.
-    /// On hosted agents we must set these using environment variables.
-    /// </summary>
-    public class CalculationJobScenarioConfiguration : SubsystemTestConfiguration
-    {
-        public CalculationJobScenarioConfiguration()
-        {
-            var secretsConfiguration = Root.BuildSecretsConfiguration();
-            DatabricksWorkspace = DatabricksWorkspaceConfiguration.CreateFromConfiguration(secretsConfiguration);
-        }
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance.Fixtures;
 
-        /// <summary>
-        /// Settings necessary to manage the Databricks workspace.
-        /// </summary>
-        public DatabricksWorkspaceConfiguration DatabricksWorkspace { get; }
+/// <summary>
+/// Responsible for retrieving settings necessary for performing performance tests of 'CalculationJob' in Databricks.
+///
+/// On developer machines we use the 'subsystemtest.local.settings.json' to set values.
+/// On hosted agents we must set these using environment variables.
+/// </summary>
+public class CalculationJobScenarioConfiguration : SubsystemTestConfiguration
+{
+    public CalculationJobScenarioConfiguration()
+    {
+        var secretsConfiguration = Root.BuildSecretsConfiguration();
+        DatabricksWorkspace = DatabricksWorkspaceConfiguration.CreateFromConfiguration(secretsConfiguration);
     }
+
+    /// <summary>
+    /// Settings necessary to manage the Databricks workspace.
+    /// </summary>
+    public DatabricksWorkspaceConfiguration DatabricksWorkspace { get; }
 }

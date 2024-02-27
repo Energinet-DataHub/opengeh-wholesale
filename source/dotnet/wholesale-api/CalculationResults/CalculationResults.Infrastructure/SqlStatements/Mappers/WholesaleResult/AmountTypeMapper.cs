@@ -18,8 +18,9 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlState
 
 public static class AmountTypeMapper
 {
-    public static AmountType FromDeltaTableValue(string amountType) =>
-        amountType switch
+    public static AmountType FromDeltaTableValue(string amountType)
+    {
+        return amountType switch
         {
             "amount_per_charge" => AmountType.AmountPerCharge,
             "monthly_amount_per_charge" => AmountType.MonthlyAmountPerCharge,
@@ -29,4 +30,5 @@ public static class AmountTypeMapper
                 actualValue: amountType,
                 "Value does not contain a valid string representation of a amount type."),
         };
+    }
 }

@@ -20,34 +20,31 @@ public static class RequestedCalculationTypeMapper
 {
     public static RequestedCalculationType ToRequestedCalculationType(string businessReason, string? settlementSeriesVersion)
     {
-        if (businessReason != BusinessReason.Correction && settlementSeriesVersion != null)
-        {
-            throw new ArgumentOutOfRangeException(
+        return businessReason != BusinessReason.Correction && settlementSeriesVersion != null
+            ? throw new ArgumentOutOfRangeException(
                 nameof(settlementSeriesVersion),
                 settlementSeriesVersion,
-                $"Value must be null when {nameof(BusinessReason)} is not {nameof(BusinessReason.Correction)}.");
-        }
-
-        return businessReason switch
-        {
-            BusinessReason.BalanceFixing => RequestedCalculationType.BalanceFixing,
-            BusinessReason.PreliminaryAggregation => RequestedCalculationType.PreliminaryAggregation,
-            BusinessReason.WholesaleFixing => RequestedCalculationType.WholesaleFixing,
-            BusinessReason.Correction => settlementSeriesVersion switch
+                $"Value must be null when {nameof(BusinessReason)} is not {nameof(BusinessReason.Correction)}.")
+            : businessReason switch
             {
-                SettlementSeriesVersion.FirstCorrection => RequestedCalculationType.FirstCorrection,
-                SettlementSeriesVersion.SecondCorrection => RequestedCalculationType.SecondCorrection,
-                SettlementSeriesVersion.ThirdCorrection => RequestedCalculationType.ThirdCorrection,
-                null => RequestedCalculationType.LatestCorrection,
+                BusinessReason.BalanceFixing => RequestedCalculationType.BalanceFixing,
+                BusinessReason.PreliminaryAggregation => RequestedCalculationType.PreliminaryAggregation,
+                BusinessReason.WholesaleFixing => RequestedCalculationType.WholesaleFixing,
+                BusinessReason.Correction => settlementSeriesVersion switch
+                {
+                    SettlementSeriesVersion.FirstCorrection => RequestedCalculationType.FirstCorrection,
+                    SettlementSeriesVersion.SecondCorrection => RequestedCalculationType.SecondCorrection,
+                    SettlementSeriesVersion.ThirdCorrection => RequestedCalculationType.ThirdCorrection,
+                    null => RequestedCalculationType.LatestCorrection,
+                    _ => throw new ArgumentOutOfRangeException(
+                        nameof(settlementSeriesVersion),
+                        settlementSeriesVersion,
+                        $"Value cannot be mapped to a {nameof(RequestedCalculationType)}."),
+                },
                 _ => throw new ArgumentOutOfRangeException(
-                    nameof(settlementSeriesVersion),
-                    settlementSeriesVersion,
+                    nameof(businessReason),
+                    businessReason,
                     $"Value cannot be mapped to a {nameof(RequestedCalculationType)}."),
-            },
-            _ => throw new ArgumentOutOfRangeException(
-                nameof(businessReason),
-                businessReason,
-                $"Value cannot be mapped to a {nameof(RequestedCalculationType)}."),
-        };
+            };
     }
 }

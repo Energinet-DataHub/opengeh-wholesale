@@ -16,19 +16,17 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.Edi.Exceptions;
-using Energinet.DataHub.Wholesale.EDI.Models;
 using Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using NodaTime;
-using NodaTime.Extensions;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Calculations;
 
 public class LatestCalculationsForPeriodTests
 {
-    private DateTimeZone _dateTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!;
+    private readonly DateTimeZone _dateTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!;
 
     [Fact]
     public void FindLatestCalculations_WithACalculationForWholePeriod_LatestCalculationsForPeriod()

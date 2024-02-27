@@ -29,16 +29,13 @@ public class EnergyResultProducedV2Factory : IEnergyResultProducedV2Factory
 {
     public Contracts.IntegrationEvents.EnergyResultProducedV2 Create(EnergyResult energyResult)
     {
-        if (energyResult.EnergySupplierId == null && energyResult.BalanceResponsibleId == null)
-            return CreateForGridArea(energyResult);
-
-        if (energyResult.EnergySupplierId != null && energyResult.BalanceResponsibleId == null)
-            return CreateForEnergySupplier(energyResult);
-
-        if (energyResult.EnergySupplierId == null && energyResult.BalanceResponsibleId != null)
-            return CreateForBalanceResponsibleParty(energyResult);
-
-        return CreateForEnergySupplierByBalanceResponsibleParty(energyResult);
+        return energyResult.EnergySupplierId == null && energyResult.BalanceResponsibleId == null
+            ? CreateForGridArea(energyResult)
+            : energyResult.EnergySupplierId != null && energyResult.BalanceResponsibleId == null
+            ? CreateForEnergySupplier(energyResult)
+            : energyResult.EnergySupplierId == null && energyResult.BalanceResponsibleId != null
+            ? CreateForBalanceResponsibleParty(energyResult)
+            : CreateForEnergySupplierByBalanceResponsibleParty(energyResult);
     }
 
     private Contracts.IntegrationEvents.EnergyResultProducedV2 CreateForGridArea(EnergyResult result)

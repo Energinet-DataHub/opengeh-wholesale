@@ -32,10 +32,13 @@ public class BinaryContentFilter : IOperationFilter
             return;
         }
 
-        operation.Responses = new OpenApiResponses();
-        operation.Responses.Add("200", new OpenApiResponse()
+        operation.Responses = new OpenApiResponses
         {
-            Content = new Dictionary<string, OpenApiMediaType>()
+            {
+                "200",
+                new OpenApiResponse()
+                {
+                    Content = new Dictionary<string, OpenApiMediaType>()
             {
                 {
                     "application/octet-stream",
@@ -49,6 +52,8 @@ public class BinaryContentFilter : IOperationFilter
                     }
                 },
             },
-        });
+                }
+            }
+        };
     }
 }

@@ -18,7 +18,6 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.EDI.Client;
@@ -382,7 +381,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
     {
         return new List<AggregatedTimeSeries>
         {
-            new AggregatedTimeSeries(
+            new(
                 gridArea: "543",
                 timeSeriesPoints: new EnergyTimeSeriesPoint[]
                 {

@@ -33,308 +33,308 @@ using Google.Protobuf.WellKnownTypes;
 using Test.Core;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtures
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtures;
+
+public sealed class CalculationScenarioFixture : LazyFixtureBase
 {
-    public sealed class CalculationScenarioFixture : LazyFixtureBase
+    private readonly string _subscriptionName = Guid.NewGuid().ToString();
+
+    public CalculationScenarioFixture(IMessageSink diagnosticMessageSink)
+        : base(diagnosticMessageSink)
     {
-        private readonly string _subscriptionName = Guid.NewGuid().ToString();
+        Configuration = new WholesaleSubsystemConfiguration();
+        ServiceBusAdministrationClient = new ServiceBusAdministrationClient(Configuration.ServiceBus.FullyQualifiedNamespace, new DefaultAzureCredential());
+        ServiceBusClient = CreateServiceBusClient(Configuration.ServiceBus.ConnectionString);
+        ScenarioState = new CalculationScenarioState();
+        LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
+    }
 
-        public CalculationScenarioFixture(IMessageSink diagnosticMessageSink)
-            : base(diagnosticMessageSink)
-        {
-            Configuration = new WholesaleSubsystemConfiguration();
-            ServiceBusAdministrationClient = new ServiceBusAdministrationClient(Configuration.ServiceBus.FullyQualifiedNamespace, new DefaultAzureCredential());
-            ServiceBusClient = CreateServiceBusClient(Configuration.ServiceBus.ConnectionString);
-            ScenarioState = new CalculationScenarioState();
-            LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
-        }
+    public CalculationScenarioState ScenarioState { get; }
 
-        public CalculationScenarioState ScenarioState { get; }
+    /// <summary>
+    /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
+    /// </summary>
+    private WholesaleClient_V3 WholesaleClient { get; set; } = null!;
 
-        /// <summary>
-        /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
-        /// </summary>
-        private WholesaleClient_V3 WholesaleClient { get; set; } = null!;
+    /// <summary>
+    /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
+    /// </summary>
+    private ServiceBusReceiver Receiver { get; set; } = null!;
 
-        /// <summary>
-        /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
-        /// </summary>
-        private ServiceBusReceiver Receiver { get; set; } = null!;
+    private WholesaleSubsystemConfiguration Configuration { get; }
 
-        private WholesaleSubsystemConfiguration Configuration { get; }
+    private ServiceBusAdministrationClient ServiceBusAdministrationClient { get; }
 
-        private ServiceBusAdministrationClient ServiceBusAdministrationClient { get; }
+    private ServiceBusClient ServiceBusClient { get; }
 
-        private ServiceBusClient ServiceBusClient { get; }
+    private LogsQueryClient LogsQueryClient { get; }
 
-        private LogsQueryClient LogsQueryClient { get; }
+    public async Task<Guid> StartCalculationAsync(CalculationRequestDto calculationInput)
+    {
+        var calculationId = await WholesaleClient.CreateCalculationAsync(calculationInput);
+        DiagnosticMessageSink.WriteDiagnosticMessage($"Calculation for {calculationInput.CalculationType} with id '{calculationId}' started.");
 
-        public async Task<Guid> StartCalculationAsync(CalculationRequestDto calculationInput)
-        {
-            var calculationId = await WholesaleClient.CreateCalculationAsync(calculationInput);
-            DiagnosticMessageSink.WriteDiagnosticMessage($"Calculation for {calculationInput.CalculationType} with id '{calculationId}' started.");
+        return calculationId;
+    }
 
-            return calculationId;
-        }
+    /// <summary>
+    /// Wait for the calculation to complete or fail.
+    /// </summary>
+    /// <returns>IsCompletedOrFailed: True if the calculation completed or failed; otherwise false.</returns>
+    public async Task<(bool IsCompletedOrFailed, CalculationDto? Calculation)> WaitForCalculationCompletedOrFailedAsync(
+        Guid calculationId,
+        TimeSpan waitTimeLimit)
+    {
+        var delay = TimeSpan.FromSeconds(30);
 
-        /// <summary>
-        /// Wait for the calculation to complete or fail.
-        /// </summary>
-        /// <returns>IsCompletedOrFailed: True if the calculation completed or failed; otherwise false.</returns>
-        public async Task<(bool IsCompletedOrFailed, CalculationDto? Calculation)> WaitForCalculationCompletedOrFailedAsync(
-            Guid calculationId,
-            TimeSpan waitTimeLimit)
-        {
-            var delay = TimeSpan.FromSeconds(30);
-
-            CalculationDto? calculation = null;
-            var isCompletedOrFailed = await Awaiter.TryWaitUntilConditionAsync(
-                async () =>
-                {
-                    calculation = await WholesaleClient.GetCalculationAsync(calculationId);
-                    return
-                        calculation?.ExecutionState == CalculationState.Completed
-                        || calculation?.ExecutionState == CalculationState.Failed;
-                },
-                waitTimeLimit,
-                delay);
-
-            DiagnosticMessageSink.WriteDiagnosticMessage($"Wait for calculation with id '{calculationId}' completed with '{nameof(calculation.ExecutionState)}={calculation?.ExecutionState}'.");
-
-            return (isCompletedOrFailed, calculation);
-        }
-
-        public async Task<IReadOnlyCollection<IEventMessage>> WaitForIntegrationEventsAsync(
-            Guid calculationId,
-            IReadOnlyCollection<string> integrationEventNames,
-            TimeSpan waitTimeLimit)
-        {
-            using var cts = new CancellationTokenSource(waitTimeLimit);
-            var stopwatch = Stopwatch.StartNew();
-
-            var collectedIntegrationEvents = new List<IEventMessage>();
-            while (!cts.Token.IsCancellationRequested)
+        CalculationDto? calculation = null;
+        var isCompletedOrFailed = await Awaiter.TryWaitUntilConditionAsync(
+            async () =>
             {
-                var messageOrNull = await Receiver.ReceiveMessageAsync(maxWaitTime: TimeSpan.FromMinutes(1));
-                if (messageOrNull?.Body == null)
-                {
-                    if (collectedIntegrationEvents.Count > 0)
-                        break;
-                }
-                else
-                {
-                    var result = ShouldCollectMessage(messageOrNull, calculationId, integrationEventNames);
-                    if (result.ShouldCollect)
-                    {
-                        collectedIntegrationEvents.Add(result.EventMessage!);
-                    }
+                calculation = await WholesaleClient.GetCalculationAsync(calculationId);
+                return
+                    calculation?.ExecutionState is CalculationState.Completed
+                    or CalculationState.Failed;
+            },
+            waitTimeLimit,
+            delay);
 
-                    // We should always complete (delete) messages since we use a subscription
-                    // and no other receiver is using the same, so we will never by mistake
-                    // interfere with other scenarios or message receivers in the live environment.
-                    await Receiver.CompleteMessageAsync(messageOrNull);
-                }
+        DiagnosticMessageSink.WriteDiagnosticMessage($"Wait for calculation with id '{calculationId}' completed with '{nameof(calculation.ExecutionState)}={calculation?.ExecutionState}'.");
+
+        return (isCompletedOrFailed, calculation);
+    }
+
+    public async Task<IReadOnlyCollection<IEventMessage>> WaitForIntegrationEventsAsync(
+        Guid calculationId,
+        IReadOnlyCollection<string> integrationEventNames,
+        TimeSpan waitTimeLimit)
+    {
+        using var cts = new CancellationTokenSource(waitTimeLimit);
+        var stopwatch = Stopwatch.StartNew();
+
+        var collectedIntegrationEvents = new List<IEventMessage>();
+        while (!cts.Token.IsCancellationRequested)
+        {
+            var messageOrNull = await Receiver.ReceiveMessageAsync(maxWaitTime: TimeSpan.FromMinutes(1));
+            if (messageOrNull?.Body == null)
+            {
+                if (collectedIntegrationEvents.Count > 0)
+                    break;
             }
+            else
+            {
+                var (ShouldCollect, EventMessage) = ShouldCollectMessage(messageOrNull, calculationId, integrationEventNames);
+                if (ShouldCollect)
+                {
+                    collectedIntegrationEvents.Add(EventMessage!);
+                }
 
-            stopwatch.Stop();
-            DiagnosticMessageSink.WriteDiagnosticMessage($"""
-                Message receiver loop for calculation with id '{calculationId}' took '{stopwatch.Elapsed}' to complete.
+                // We should always complete (delete) messages since we use a subscription
+                // and no other receiver is using the same, so we will never by mistake
+                // interfere with other scenarios or message receivers in the live environment.
+                await Receiver.CompleteMessageAsync(messageOrNull);
+            }
+        }
+
+        stopwatch.Stop();
+        DiagnosticMessageSink.WriteDiagnosticMessage($"""
+            Message receiver loop for calculation with id '{calculationId}' took '{stopwatch.Elapsed}' to complete.
                 It was listening for messages on entity path '{Receiver.EntityPath}', and collected '{collectedIntegrationEvents.Count}' messages spanning various event types.
                 """);
 
-            return collectedIntegrationEvents;
-        }
+        return collectedIntegrationEvents;
+    }
 
-        public async Task<Response<LogsQueryResult>> QueryLogAnalyticsAsync(string query, QueryTimeRange queryTimeRange)
+    public async Task<Response<LogsQueryResult>> QueryLogAnalyticsAsync(string query, QueryTimeRange queryTimeRange)
+    {
+        return await LogsQueryClient.QueryWorkspaceAsync(Configuration.LogAnalyticsWorkspaceId, query, queryTimeRange);
+    }
+
+    /// <summary>
+    /// Load CSV file and parse each data row into <see cref="AmountPerChargeResultProducedV1.Types.TimeSeriesPoint"/>.
+    /// </summary>
+    public async Task<IReadOnlyCollection<AmountPerChargeResultProducedV1.Types.TimeSeriesPoint>> ParseChargeResultTimeSeriesPointsFromCsvAsync(string testFileName)
+    {
+        return await ParseCsvAsync(
+            testFileName,
+            "grid_area,energy_supplier_id,quantity,time,price,amount,charge_code",
+            ParseAmountPerChargeResultProducedV1TimeSeriesPoint);
+    }
+
+    /// <summary>
+    /// Load CSV file and parse each data row into <see cref="EnergyResultProducedV2.Types.TimeSeriesPoint"/>.
+    /// </summary>
+    public async Task<IReadOnlyCollection<EnergyResultProducedV2.Types.TimeSeriesPoint>> ParseEnergyResultTimeSeriesPointsFromCsvAsync(string testFileName)
+    {
+        return await ParseCsvAsync(
+            testFileName,
+            "grid_area,energy_supplier_id,balance_responsible_id,quantity,quantity_qualities,time,aggregation_level,time_series_type,calculation_id,calculation_type,calculation_execution_time_start,out_grid_area,calculation_result_id",
+            ParseEnergyResultProducedV2TimeSeriesPoint);
+    }
+
+    /// <summary>
+    /// Load CSV file and parse each data line into a <see cref="GridLossResultProducedV1.Types.TimeSeriesPoint"/>.
+    /// </summary>
+    public async Task<IReadOnlyCollection<GridLossResultProducedV1.Types.TimeSeriesPoint>> ParseGridLossTimeSeriesPointsFromCsvAsync(string testFileName)
+    {
+        return await ParseCsvAsync(
+            testFileName,
+            "grid_area,energy_supplier_id,balance_responsible_id,quantity,quantity_qualities,time,aggregation_level,time_series_type,calculation_id,calculation_type,calculation_execution_time_start,out_grid_area,calculation_result_id,metering_point_id",
+            ParseGridLossProducedV1TimeSeriesPoint);
+    }
+
+    protected override async Task OnInitializeAsync()
+    {
+        await DatabricksClientExtensions.StartWarehouseAsync(Configuration.DatabricksWorkspace);
+        WholesaleClient = await WholesaleClientFactory.CreateAsync(Configuration, useAuthentication: true);
+        await CreateTopicSubscriptionAsync();
+        Receiver = ServiceBusClient.CreateReceiver(Configuration.ServiceBus.SubsystemRelayTopicName, _subscriptionName);
+    }
+
+    protected override async Task OnDisposeAsync()
+    {
+        await ServiceBusAdministrationClient.DeleteSubscriptionAsync(Configuration.ServiceBus.SubsystemRelayTopicName, _subscriptionName);
+        await ServiceBusClient.DisposeAsync();
+    }
+
+    /// <summary>
+    /// Load CSV file and parse each data row into T./>.
+    /// Expects the first row to be a specific header to ensure we read data from the correct columns.
+    /// </summary>
+    /// <param name="testFileName">Filename of file located in 'TestData' folder.</param>
+    /// <param name="expectedHeader">The expected headers in the CVS file.</param>
+    /// <param name="createResult">Delegate function that create an specific result object.</param>
+    private static async Task<IReadOnlyCollection<T>> ParseCsvAsync<T>(string testFileName, string expectedHeader, Func<string[], T> createResult)
+    {
+        var hasVerifiedHeader = false;
+        await using var stream = EmbeddedResources.GetStream<Root>($"Features.Calculations.TestData.{testFileName}");
+        using var reader = new StreamReader(stream);
+
+        var resultList = new List<T>();
+
+        while (!reader.EndOfStream)
         {
-            return await LogsQueryClient.QueryWorkspaceAsync(Configuration.LogAnalyticsWorkspaceId, query, queryTimeRange);
-        }
-
-        /// <summary>
-        /// Load CSV file and parse each data row into <see cref="AmountPerChargeResultProducedV1.Types.TimeSeriesPoint"/>.
-        /// </summary>
-        public async Task<IReadOnlyCollection<AmountPerChargeResultProducedV1.Types.TimeSeriesPoint>> ParseChargeResultTimeSeriesPointsFromCsvAsync(string testFileName)
-        {
-            return await ParseCsvAsync(
-                testFileName,
-                "grid_area,energy_supplier_id,quantity,time,price,amount,charge_code",
-                ParseAmountPerChargeResultProducedV1TimeSeriesPoint);
-        }
-
-        /// <summary>
-        /// Load CSV file and parse each data row into <see cref="EnergyResultProducedV2.Types.TimeSeriesPoint"/>.
-        /// </summary>
-        public async Task<IReadOnlyCollection<EnergyResultProducedV2.Types.TimeSeriesPoint>> ParseEnergyResultTimeSeriesPointsFromCsvAsync(string testFileName)
-        {
-            return await ParseCsvAsync(
-                testFileName,
-                "grid_area,energy_supplier_id,balance_responsible_id,quantity,quantity_qualities,time,aggregation_level,time_series_type,calculation_id,calculation_type,calculation_execution_time_start,out_grid_area,calculation_result_id",
-                ParseEnergyResultProducedV2TimeSeriesPoint);
-        }
-
-        /// <summary>
-        /// Load CSV file and parse each data line into a <see cref="GridLossResultProducedV1.Types.TimeSeriesPoint"/>.
-        /// </summary>
-        public async Task<IReadOnlyCollection<GridLossResultProducedV1.Types.TimeSeriesPoint>> ParseGridLossTimeSeriesPointsFromCsvAsync(string testFileName)
-        {
-            return await ParseCsvAsync(
-                testFileName,
-                "grid_area,energy_supplier_id,balance_responsible_id,quantity,quantity_qualities,time,aggregation_level,time_series_type,calculation_id,calculation_type,calculation_execution_time_start,out_grid_area,calculation_result_id,metering_point_id",
-                ParseGridLossProducedV1TimeSeriesPoint);
-        }
-
-        protected override async Task OnInitializeAsync()
-        {
-            await DatabricksClientExtensions.StartWarehouseAsync(Configuration.DatabricksWorkspace);
-            WholesaleClient = await WholesaleClientFactory.CreateAsync(Configuration, useAuthentication: true);
-            await CreateTopicSubscriptionAsync();
-            Receiver = ServiceBusClient.CreateReceiver(Configuration.ServiceBus.SubsystemRelayTopicName, _subscriptionName);
-        }
-
-        protected override async Task OnDisposeAsync()
-        {
-            await ServiceBusAdministrationClient.DeleteSubscriptionAsync(Configuration.ServiceBus.SubsystemRelayTopicName, _subscriptionName);
-            await ServiceBusClient.DisposeAsync();
-        }
-
-        /// <summary>
-        /// Load CSV file and parse each data row into T./>.
-        /// Expects the first row to be a specific header to ensure we read data from the correct columns.
-        /// </summary>
-        /// <param name="testFileName">Filename of file located in 'TestData' folder.</param>
-        /// <param name="expectedHeader">The expected headers in the CVS file.</param>
-        /// <param name="createResult">Delegate function that create an specific result object.</param>
-        private static async Task<IReadOnlyCollection<T>> ParseCsvAsync<T>(string testFileName, string expectedHeader, Func<string[], T> createResult)
-        {
-            var hasVerifiedHeader = false;
-            await using var stream = EmbeddedResources.GetStream<Root>($"Features.Calculations.TestData.{testFileName}");
-            using var reader = new StreamReader(stream);
-
-            var resultList = new List<T>();
-
-            while (!reader.EndOfStream)
+            var line = await reader.ReadLineAsync();
+            if (!hasVerifiedHeader)
             {
-                var line = await reader.ReadLineAsync();
-                if (!hasVerifiedHeader)
+                if (line != expectedHeader)
                 {
-                    if (line != expectedHeader)
-                    {
-                        throw new Exception($"Cannot parse CSV file. Header is '{line}', expected '{expectedHeader}'.");
-                    }
-
-                    hasVerifiedHeader = true;
-                    continue;
+                    throw new Exception($"Cannot parse CSV file. Header is '{line}', expected '{expectedHeader}'.");
                 }
 
-                var columns = line!.Split(',', ';');
-                var result = createResult(columns);
-                resultList.Add(result);
+                hasVerifiedHeader = true;
+                continue;
             }
 
-            return resultList;
+            var columns = line!.Split(',', ';');
+            var result = createResult(columns);
+            resultList.Add(result);
         }
 
-        private static AmountPerChargeResultProducedV1.Types.TimeSeriesPoint ParseAmountPerChargeResultProducedV1TimeSeriesPoint(IReadOnlyList<string> columns)
+        return resultList;
+    }
+
+    private static AmountPerChargeResultProducedV1.Types.TimeSeriesPoint ParseAmountPerChargeResultProducedV1TimeSeriesPoint(IReadOnlyList<string> columns)
+    {
+        return new AmountPerChargeResultProducedV1.Types.TimeSeriesPoint
         {
-            return new AmountPerChargeResultProducedV1.Types.TimeSeriesPoint
+            Time = ParseTimestamp(columns[3]),
+            Quantity = ParseDecimalValue(columns[2]),
+            Price = ParseDecimalValue(columns[4]),
+            Amount = ParseDecimalValue(columns[5]),
+        };
+    }
+
+    private static GridLossResultProducedV1.Types.TimeSeriesPoint ParseGridLossProducedV1TimeSeriesPoint(string[] columns)
+    {
+        var result = new GridLossResultProducedV1.Types.TimeSeriesPoint
+        {
+            Time = ParseTimestamp(columns[5]),
+            Quantity = ParseDecimalValue(columns[3]),
+        };
+        return result;
+    }
+
+    private static EnergyResultProducedV2.Types.TimeSeriesPoint ParseEnergyResultProducedV2TimeSeriesPoint(string[] columns)
+    {
+        var result = new EnergyResultProducedV2.Types.TimeSeriesPoint
+        {
+            Time = ParseTimestamp(columns[5]),
+            Quantity = ParseDecimalValue(columns[3]),
+        };
+        result.QuantityQualities.AddRange(ParseEnumValueTo(columns[4]));
+        return result;
+    }
+
+    /// <summary>
+    /// We configure the client to use <see cref="ServiceBusTransportType.AmqpWebSockets"/> to be able to
+    /// pass through the firewall, as it blocks the AMQP ports.
+    /// See "https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-faq#what-ports-do-i-need-to-open-on-the-firewall--"
+    /// </summary>
+    private static ServiceBusClient CreateServiceBusClient(string connectionString)
+    {
+        return new ServiceBusClient(
+            connectionString,
+            new ServiceBusClientOptions
             {
-                Time = ParseTimestamp(columns[3]),
-                Quantity = ParseDecimalValue(columns[2]),
-                Price = ParseDecimalValue(columns[4]),
-                Amount = ParseDecimalValue(columns[5]),
-            };
+                TransportType = ServiceBusTransportType.AmqpWebSockets,
+            });
+    }
+
+    private async Task CreateTopicSubscriptionAsync()
+    {
+        if (await ServiceBusAdministrationClient.SubscriptionExistsAsync(Configuration.ServiceBus.SubsystemRelayTopicName, _subscriptionName))
+        {
+            await ServiceBusAdministrationClient.DeleteSubscriptionAsync(Configuration.ServiceBus.SubsystemRelayTopicName, _subscriptionName);
         }
 
-        private static GridLossResultProducedV1.Types.TimeSeriesPoint ParseGridLossProducedV1TimeSeriesPoint(string[] columns)
+        var options = new CreateSubscriptionOptions(Configuration.ServiceBus.SubsystemRelayTopicName, _subscriptionName)
         {
-            var result = new GridLossResultProducedV1.Types.TimeSeriesPoint
-            {
-                Time = ParseTimestamp(columns[5]),
-                Quantity = ParseDecimalValue(columns[3]),
-            };
-            return result;
-        }
+            AutoDeleteOnIdle = TimeSpan.FromHours(1),
+        };
 
-        private static EnergyResultProducedV2.Types.TimeSeriesPoint ParseEnergyResultProducedV2TimeSeriesPoint(string[] columns)
+        await ServiceBusAdministrationClient.CreateSubscriptionAsync(options);
+        DiagnosticMessageSink.WriteDiagnosticMessage($"ServiceBus subscription '{options.SubscriptionName}' created for topic '{options.TopicName}'.");
+    }
+
+    /// <summary>
+    /// Returns <see langword="true"/> if we should collect the message type; otherwise <see langword="false"/> .
+    /// </summary>
+    private (bool ShouldCollect, IEventMessage? EventMessage) ShouldCollectMessage(ServiceBusReceivedMessage message, Guid calculationId, IReadOnlyCollection<string> integrationEventNames)
+    {
+        var shouldCollect = false;
+        IEventMessage? eventMessage = null;
+
+        if (integrationEventNames.Contains(message.Subject))
         {
-            var result = new EnergyResultProducedV2.Types.TimeSeriesPoint
+            var data = message.Body.ToArray();
+
+            switch (message.Subject)
             {
-                Time = ParseTimestamp(columns[5]),
-                Quantity = ParseDecimalValue(columns[3]),
-            };
-            result.QuantityQualities.AddRange(ParseEnumValueTo(columns[4]));
-            return result;
-        }
+                case EnergyResultProducedV2.EventName:
+                    var energyResultProduced = EnergyResultProducedV2.Parser.ParseFrom(data);
+                    if (energyResultProduced.CalculationId == calculationId.ToString())
+                    {
+                        eventMessage = energyResultProduced;
+                        shouldCollect = true;
+                    }
 
-        /// <summary>
-        /// We configure the client to use <see cref="ServiceBusTransportType.AmqpWebSockets"/> to be able to
-        /// pass through the firewall, as it blocks the AMQP ports.
-        /// See "https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-faq#what-ports-do-i-need-to-open-on-the-firewall--"
-        /// </summary>
-        private static ServiceBusClient CreateServiceBusClient(string connectionString)
-        {
-            return new ServiceBusClient(
-                connectionString,
-                new ServiceBusClientOptions
-                {
-                    TransportType = ServiceBusTransportType.AmqpWebSockets,
-                });
-        }
+                    break;
+                case GridLossResultProducedV1.EventName:
+                    var gridLossResultProduced = GridLossResultProducedV1.Parser.ParseFrom(data);
+                    if (gridLossResultProduced.CalculationId == calculationId.ToString())
+                    {
+                        eventMessage = gridLossResultProduced;
+                        shouldCollect = true;
+                    }
 
-        private async Task CreateTopicSubscriptionAsync()
-        {
-            if (await ServiceBusAdministrationClient.SubscriptionExistsAsync(Configuration.ServiceBus.SubsystemRelayTopicName, _subscriptionName))
-            {
-                await ServiceBusAdministrationClient.DeleteSubscriptionAsync(Configuration.ServiceBus.SubsystemRelayTopicName, _subscriptionName);
-            }
-
-            var options = new CreateSubscriptionOptions(Configuration.ServiceBus.SubsystemRelayTopicName, _subscriptionName)
-            {
-                AutoDeleteOnIdle = TimeSpan.FromHours(1),
-            };
-
-            await ServiceBusAdministrationClient.CreateSubscriptionAsync(options);
-            DiagnosticMessageSink.WriteDiagnosticMessage($"ServiceBus subscription '{options.SubscriptionName}' created for topic '{options.TopicName}'.");
-        }
-
-        /// <summary>
-        /// Returns <see langword="true"/> if we should collect the message type; otherwise <see langword="false"/> .
-        /// </summary>
-        private (bool ShouldCollect, IEventMessage? EventMessage) ShouldCollectMessage(ServiceBusReceivedMessage message, Guid calculationId, IReadOnlyCollection<string> integrationEventNames)
-        {
-            var shouldCollect = false;
-            IEventMessage? eventMessage = null;
-
-            if (integrationEventNames.Contains(message.Subject))
-            {
-                var data = message.Body.ToArray();
-
-                switch (message.Subject)
-                {
-                    case EnergyResultProducedV2.EventName:
-                        var energyResultProduced = EnergyResultProducedV2.Parser.ParseFrom(data);
-                        if (energyResultProduced.CalculationId == calculationId.ToString())
-                        {
-                            eventMessage = energyResultProduced;
-                            shouldCollect = true;
-                        }
-
-                        break;
-                    case GridLossResultProducedV1.EventName:
-                        var gridLossResultProduced = GridLossResultProducedV1.Parser.ParseFrom(data);
-                        if (gridLossResultProduced.CalculationId == calculationId.ToString())
-                        {
-                            eventMessage = gridLossResultProduced;
-                            shouldCollect = true;
-                        }
-
-                        break;
-                    case AmountPerChargeResultProducedV1.EventName:
-                        var amountPerChargeResultProduced = AmountPerChargeResultProducedV1.Parser.ParseFrom(data);
-                        if (amountPerChargeResultProduced.CalculationId == calculationId.ToString())
-                        {
-                            DiagnosticMessageSink.WriteDiagnosticMessage($"""
-                                {nameof(AmountPerChargeResultProducedV1)} received with values:
+                    break;
+                case AmountPerChargeResultProducedV1.EventName:
+                    var amountPerChargeResultProduced = AmountPerChargeResultProducedV1.Parser.ParseFrom(data);
+                    if (amountPerChargeResultProduced.CalculationId == calculationId.ToString())
+                    {
+                        DiagnosticMessageSink.WriteDiagnosticMessage($"""
+                            {nameof(AmountPerChargeResultProducedV1)} received with values:
                                     {nameof(amountPerChargeResultProduced.CalculationId)}={amountPerChargeResultProduced.CalculationId}
                                     {nameof(amountPerChargeResultProduced.GridAreaCode)}={amountPerChargeResultProduced.GridAreaCode}
                                     {nameof(amountPerChargeResultProduced.EnergySupplierId)}={amountPerChargeResultProduced.EnergySupplierId}
@@ -343,17 +343,17 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
                                     {nameof(amountPerChargeResultProduced.ChargeOwnerId)}={amountPerChargeResultProduced.ChargeOwnerId}
                                     {nameof(amountPerChargeResultProduced.SettlementMethod)}={amountPerChargeResultProduced.SettlementMethod}
                                 """);
-                            eventMessage = amountPerChargeResultProduced;
-                            shouldCollect = true;
-                        }
+                        eventMessage = amountPerChargeResultProduced;
+                        shouldCollect = true;
+                    }
 
-                        break;
-                    case MonthlyAmountPerChargeResultProducedV1.EventName:
-                        var monthlyAmountPerChargeResultProduced = MonthlyAmountPerChargeResultProducedV1.Parser.ParseFrom(data);
-                        if (monthlyAmountPerChargeResultProduced.CalculationId == calculationId.ToString())
-                        {
-                            DiagnosticMessageSink.WriteDiagnosticMessage($"""
-                                {nameof(MonthlyAmountPerChargeResultProducedV1)} received with values:
+                    break;
+                case MonthlyAmountPerChargeResultProducedV1.EventName:
+                    var monthlyAmountPerChargeResultProduced = MonthlyAmountPerChargeResultProducedV1.Parser.ParseFrom(data);
+                    if (monthlyAmountPerChargeResultProduced.CalculationId == calculationId.ToString())
+                    {
+                        DiagnosticMessageSink.WriteDiagnosticMessage($"""
+                            {nameof(MonthlyAmountPerChargeResultProducedV1)} received with values:
                                     {nameof(monthlyAmountPerChargeResultProduced.CalculationId)}={monthlyAmountPerChargeResultProduced.CalculationId}
                                     {nameof(monthlyAmountPerChargeResultProduced.GridAreaCode)}={monthlyAmountPerChargeResultProduced.GridAreaCode}
                                     {nameof(monthlyAmountPerChargeResultProduced.EnergySupplierId)}={monthlyAmountPerChargeResultProduced.EnergySupplierId}
@@ -362,49 +362,48 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
                                     {nameof(monthlyAmountPerChargeResultProduced.ChargeOwnerId)}={monthlyAmountPerChargeResultProduced.ChargeOwnerId}
                                     {nameof(monthlyAmountPerChargeResultProduced.Amount)}={monthlyAmountPerChargeResultProduced.Amount}
                                 """);
-                            eventMessage = monthlyAmountPerChargeResultProduced;
-                            shouldCollect = true;
-                        }
+                        eventMessage = monthlyAmountPerChargeResultProduced;
+                        shouldCollect = true;
+                    }
 
-                        break;
-                }
+                    break;
             }
-
-            return (shouldCollect, eventMessage);
         }
 
-        private static Timestamp ParseTimestamp(string value)
-        {
-            return DateTimeOffset.Parse(value, null, DateTimeStyles.AssumeUniversal).ToTimestamp();
-        }
+        return (shouldCollect, eventMessage);
+    }
 
-        private static Contracts.IntegrationEvents.Common.DecimalValue? ParseDecimalValue(string value)
-        {
-            return string.IsNullOrEmpty(value) ? null : new Contracts.IntegrationEvents.Common.DecimalValue(decimal.Parse(value, CultureInfo.InvariantCulture));
-        }
+    private static Timestamp ParseTimestamp(string value)
+    {
+        return DateTimeOffset.Parse(value, null, DateTimeStyles.AssumeUniversal).ToTimestamp();
+    }
 
-        private static List<EnergyResultProducedV2.Types.QuantityQuality> ParseEnumValueTo(string value)
+    private static Contracts.IntegrationEvents.Common.DecimalValue? ParseDecimalValue(string value)
+    {
+        return string.IsNullOrEmpty(value) ? null : new Contracts.IntegrationEvents.Common.DecimalValue(decimal.Parse(value, CultureInfo.InvariantCulture));
+    }
+
+    private static List<EnergyResultProducedV2.Types.QuantityQuality> ParseEnumValueTo(string value)
+    {
+        value = value.Replace("[", string.Empty).Replace("]", string.Empty).Replace("'", string.Empty);
+        var splits = value.Split(':');
+        var result = new List<EnergyResultProducedV2.Types.QuantityQuality>();
+        foreach (var split in splits)
         {
-            value = value.Replace("[", string.Empty).Replace("]", string.Empty).Replace("'", string.Empty);
-            var splits = value.Split(':');
-            var result = new List<EnergyResultProducedV2.Types.QuantityQuality>();
-            foreach (var split in splits)
+            switch (split)
             {
-                switch (split)
-                {
-                    case "measured":
-                        result.Add(EnergyResultProducedV2.Types.QuantityQuality.Measured);
-                        break;
-                    case "calculated":
-                        result.Add(EnergyResultProducedV2.Types.QuantityQuality.Calculated);
-                        break;
-                    case "missing":
-                        result.Add(EnergyResultProducedV2.Types.QuantityQuality.Missing);
-                        break;
-                }
+                case "measured":
+                    result.Add(EnergyResultProducedV2.Types.QuantityQuality.Measured);
+                    break;
+                case "calculated":
+                    result.Add(EnergyResultProducedV2.Types.QuantityQuality.Calculated);
+                    break;
+                case "missing":
+                    result.Add(EnergyResultProducedV2.Types.QuantityQuality.Missing);
+                    break;
             }
-
-            return result;
         }
+
+        return result;
     }
 }

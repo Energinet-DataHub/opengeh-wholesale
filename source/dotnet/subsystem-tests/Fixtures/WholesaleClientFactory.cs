@@ -16,26 +16,27 @@ using Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Configuration;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Identity;
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures;
+
+public static class WholesaleClientFactory
 {
-    public static class WholesaleClientFactory
+    public static async Task<WholesaleClient_V3> CreateAsync(WholesaleSubsystemConfiguration configuration, bool useAuthentication)
     {
-        public static async Task<WholesaleClient_V3> CreateAsync(WholesaleSubsystemConfiguration configuration, bool useAuthentication)
+        var httpClient = new HttpClient
         {
-            var httpClient = new HttpClient();
-            httpClient.BaseAddress = configuration.WebApiBaseAddress;
+            BaseAddress = configuration.WebApiBaseAddress
+        };
 
-            if (useAuthentication)
-            {
-                using var userAuthenticationClient = new B2CUserTokenAuthenticationClient(configuration.UserTokenConfiguration);
-                var accessToken = await userAuthenticationClient.AcquireAccessTokenAsync();
+        if (useAuthentication)
+        {
+            using var userAuthenticationClient = new B2CUserTokenAuthenticationClient(configuration.UserTokenConfiguration);
+            var accessToken = await userAuthenticationClient.AcquireAccessTokenAsync();
 
-                httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-            }
-
-            return new WholesaleClient_V3(
-                configuration.WebApiBaseAddress.ToString(),
-                httpClient);
+            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
         }
+
+        return new WholesaleClient_V3(
+            configuration.WebApiBaseAddress.ToString(),
+            httpClient);
     }
 }

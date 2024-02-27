@@ -30,105 +30,71 @@ using CalculationType = Energinet.DataHub.Wholesale.Common.Interfaces.Models.Cal
 using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.EventProviders
+namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.EventProviders;
+
+public class EnergyResultEventProviderTests
 {
-    public class EnergyResultEventProviderTests
+    private readonly Guid _calculationId = Guid.NewGuid();
+    private readonly string _gridArea = "543";
+    private readonly string? _energySupplierId = null;
+    private readonly string? _balanceResponsibleId = null;
+    private readonly string? _fromGridArea = null;
+    private readonly Instant _periodStart = Instant.FromUtc(2021, 1, 2, 23, 0);
+    private readonly Instant _periodEnd = Instant.FromUtc(2021, 1, 3, 23, 0);
+    private readonly CompletedCalculation _completedCalculation;
+
+    public EnergyResultEventProviderTests()
     {
-        private readonly Guid _calculationId = Guid.NewGuid();
-        private readonly string _gridArea = "543";
-        private readonly string? _energySupplierId = null;
-        private readonly string? _balanceResponsibleId = null;
-        private readonly string? _fromGridArea = null;
-        private readonly Instant _periodStart = Instant.FromUtc(2021, 1, 2, 23, 0);
-        private readonly Instant _periodEnd = Instant.FromUtc(2021, 1, 3, 23, 0);
-        private readonly CompletedCalculation _completedCalculation;
+        var fixture = new Fixture();
+        _completedCalculation = fixture
+            .Build<CompletedCalculation>()
+            .With(p => p.Id, _calculationId)
+            .Create();
+    }
 
-        public EnergyResultEventProviderTests()
-        {
-            var fixture = new Fixture();
-            _completedCalculation = fixture
-                .Build<CompletedCalculation>()
-                .With(p => p.Id, _calculationId)
-                .Create();
-        }
+    [Theory]
+    [InlineAutoMoqData(TimeSeriesType.NegativeGridLoss)]
+    [InlineAutoMoqData(TimeSeriesType.PositiveGridLoss)]
+    public async Task GetAsync_WhenNegativeOrPositiveGridLoss_ReturnsExactlyOneGridLossResultProducedV1Event(
+        TimeSeriesType positiveOrNegativeGridLoss,
+        [Frozen] Mock<IEnergyResultQueries> energyResultQueriesMock,
+        EnergyResultProducedV2Factory energyResultProducedV2Factory,
+        GridLossResultProducedV1Factory gridLossResultProducedV1Factory)
+    {
+        // Arrange
+        const string expectedEventName = Contracts.IntegrationEvents.GridLossResultProducedV1.EventName;
+        var energyResult = CreateEnergyResult(positiveOrNegativeGridLoss);
+        var energyResults = new[] { energyResult };
+        var sut = new EnergyResultEventProvider(
+            energyResultQueriesMock.Object,
+            energyResultProducedV2Factory,
+            gridLossResultProducedV1Factory);
 
-        [Theory]
-        [InlineAutoMoqData(TimeSeriesType.NegativeGridLoss)]
-        [InlineAutoMoqData(TimeSeriesType.PositiveGridLoss)]
-        public async Task GetAsync_WhenNegativeOrPositiveGridLoss_ReturnsExactlyOneGridLossResultProducedV1Event(
-            TimeSeriesType positiveOrNegativeGridLoss,
-            [Frozen] Mock<IEnergyResultQueries> energyResultQueriesMock,
-            EnergyResultProducedV2Factory energyResultProducedV2Factory,
-            GridLossResultProducedV1Factory gridLossResultProducedV1Factory)
-        {
-            // Arrange
-            const string expectedEventName = Contracts.IntegrationEvents.GridLossResultProducedV1.EventName;
-            var energyResult = CreateEnergyResult(positiveOrNegativeGridLoss);
-            var energyResults = new[] { energyResult };
-            var sut = new EnergyResultEventProvider(
-                energyResultQueriesMock.Object,
-                energyResultProducedV2Factory,
-                gridLossResultProducedV1Factory);
+        energyResultQueriesMock
+            .Setup(mock => mock.GetAsync(_completedCalculation.Id))
+            .Returns(energyResults.ToAsyncEnumerable());
 
-            energyResultQueriesMock
-                .Setup(mock => mock.GetAsync(_completedCalculation.Id))
-                .Returns(energyResults.ToAsyncEnumerable());
+        // Act
+        var actualIntegrationEvents = await sut.GetAsync(_completedCalculation).ToListAsync();
 
-            // Act
-            var actualIntegrationEvents = await sut.GetAsync(_completedCalculation).ToListAsync();
+        // Assert
+        actualIntegrationEvents.Where(e => e.EventName == expectedEventName).Should().ContainSingle();
+    }
 
-            // Assert
-            actualIntegrationEvents.Where(e => e.EventName == expectedEventName).Should().ContainSingle();
-        }
-
-        [Theory]
-        [AutoMoqData]
-        public async Task GetAsync_WhenNotNegativeOrPositiveGridLoss_ReturnsNoGridLossResultProducedV1Event(
-            [Frozen] Mock<IEnergyResultQueries> energyResultQueriesMock,
-            EnergyResultProducedV2Factory energyResultProducedV2Factory,
-            GridLossResultProducedV1Factory gridLossResultProducedV1Factory)
-        {
-            foreach (var timeSeriesType in Enum.GetValues(typeof(TimeSeriesType)).Cast<TimeSeriesType>())
-            {
-                // Arrange
-                if (timeSeriesType is TimeSeriesType.NegativeGridLoss or TimeSeriesType.PositiveGridLoss)
-                    continue;
-
-                const string gridLossEventName = Contracts.IntegrationEvents.GridLossResultProducedV1.EventName;
-                var energyResult = CreateEnergyResult(timeSeriesType);
-                var energyResults = new[] { energyResult };
-                var sut = new EnergyResultEventProvider(
-                    energyResultQueriesMock.Object,
-                    energyResultProducedV2Factory,
-                    gridLossResultProducedV1Factory);
-
-                energyResultQueriesMock
-                    .Setup(mock => mock.GetAsync(_completedCalculation.Id))
-                    .Returns(energyResults.ToAsyncEnumerable());
-
-                // Act
-                var actualIntegrationEvents = await sut.GetAsync(_completedCalculation).ToListAsync();
-
-                // Assert
-                actualIntegrationEvents.Where(e => e.EventName == gridLossEventName).Should().BeEmpty();
-            }
-        }
-
-        [Theory]
-        [InlineAutoMoqData(TimeSeriesType.Production)]
-        [InlineAutoMoqData(TimeSeriesType.FlexConsumption)]
-        [InlineAutoMoqData(TimeSeriesType.NonProfiledConsumption)]
-        [InlineAutoMoqData(TimeSeriesType.TotalConsumption)]
-        [InlineAutoMoqData(TimeSeriesType.NetExchangePerGa)]
-        [InlineAutoMoqData(TimeSeriesType.NetExchangePerNeighboringGa)]
-        public async Task GetAsync_WhenTimeSeriesTypeIsSupportedForEnergyResultProducedV2Event_ReturnsExactlyOneEnergyResultProducedV2Event(
-            TimeSeriesType timeSeriesType,
-            [Frozen] Mock<IEnergyResultQueries> energyResultQueriesMock,
-            EnergyResultProducedV2Factory energyResultProducedV2Factory,
-            GridLossResultProducedV1Factory gridLossResultProducedV1Factory)
+    [Theory]
+    [AutoMoqData]
+    public async Task GetAsync_WhenNotNegativeOrPositiveGridLoss_ReturnsNoGridLossResultProducedV1Event(
+        [Frozen] Mock<IEnergyResultQueries> energyResultQueriesMock,
+        EnergyResultProducedV2Factory energyResultProducedV2Factory,
+        GridLossResultProducedV1Factory gridLossResultProducedV1Factory)
+    {
+        foreach (var timeSeriesType in Enum.GetValues(typeof(TimeSeriesType)).Cast<TimeSeriesType>())
         {
             // Arrange
-            var expectedEventName = Contracts.IntegrationEvents.EnergyResultProducedV2.EventName;
+            if (timeSeriesType is TimeSeriesType.NegativeGridLoss or TimeSeriesType.PositiveGridLoss)
+                continue;
+
+            const string gridLossEventName = Contracts.IntegrationEvents.GridLossResultProducedV1.EventName;
             var energyResult = CreateEnergyResult(timeSeriesType);
             var energyResults = new[] { energyResult };
             var sut = new EnergyResultEventProvider(
@@ -144,34 +110,67 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
             var actualIntegrationEvents = await sut.GetAsync(_completedCalculation).ToListAsync();
 
             // Assert
-            actualIntegrationEvents.Where(e => e.EventName == expectedEventName).Should().ContainSingle();
+            actualIntegrationEvents.Where(e => e.EventName == gridLossEventName).Should().BeEmpty();
         }
+    }
 
-        private EnergyResult CreateEnergyResult(TimeSeriesType timeSeriesType)
-        {
-            var quantityQualities = new Collection<QuantityQuality> { QuantityQuality.Estimated };
-            var meteringPointType = timeSeriesType is TimeSeriesType.NegativeGridLoss or TimeSeriesType.PositiveGridLoss
-                ? "123"
-                : null;
-            return new EnergyResult(
-                Guid.NewGuid(),
-                _calculationId,
-                _gridArea,
-                timeSeriesType,
-                _energySupplierId,
-                _balanceResponsibleId,
-                new EnergyTimeSeriesPoint[]
-                {
-                    new(new DateTime(2021, 1, 1), 1, quantityQualities),
-                    new(new DateTime(2021, 1, 1), 2, quantityQualities),
-                    new(new DateTime(2021, 1, 1), 3, quantityQualities),
-                },
-                CalculationType.Aggregation,
-                _periodStart,
-                _periodEnd,
-                _fromGridArea,
-                meteringPointType,
-                1);
-        }
+    [Theory]
+    [InlineAutoMoqData(TimeSeriesType.Production)]
+    [InlineAutoMoqData(TimeSeriesType.FlexConsumption)]
+    [InlineAutoMoqData(TimeSeriesType.NonProfiledConsumption)]
+    [InlineAutoMoqData(TimeSeriesType.TotalConsumption)]
+    [InlineAutoMoqData(TimeSeriesType.NetExchangePerGa)]
+    [InlineAutoMoqData(TimeSeriesType.NetExchangePerNeighboringGa)]
+    public async Task GetAsync_WhenTimeSeriesTypeIsSupportedForEnergyResultProducedV2Event_ReturnsExactlyOneEnergyResultProducedV2Event(
+        TimeSeriesType timeSeriesType,
+        [Frozen] Mock<IEnergyResultQueries> energyResultQueriesMock,
+        EnergyResultProducedV2Factory energyResultProducedV2Factory,
+        GridLossResultProducedV1Factory gridLossResultProducedV1Factory)
+    {
+        // Arrange
+        var expectedEventName = Contracts.IntegrationEvents.EnergyResultProducedV2.EventName;
+        var energyResult = CreateEnergyResult(timeSeriesType);
+        var energyResults = new[] { energyResult };
+        var sut = new EnergyResultEventProvider(
+            energyResultQueriesMock.Object,
+            energyResultProducedV2Factory,
+            gridLossResultProducedV1Factory);
+
+        energyResultQueriesMock
+            .Setup(mock => mock.GetAsync(_completedCalculation.Id))
+            .Returns(energyResults.ToAsyncEnumerable());
+
+        // Act
+        var actualIntegrationEvents = await sut.GetAsync(_completedCalculation).ToListAsync();
+
+        // Assert
+        actualIntegrationEvents.Where(e => e.EventName == expectedEventName).Should().ContainSingle();
+    }
+
+    private EnergyResult CreateEnergyResult(TimeSeriesType timeSeriesType)
+    {
+        var quantityQualities = new Collection<QuantityQuality> { QuantityQuality.Estimated };
+        var meteringPointType = timeSeriesType is TimeSeriesType.NegativeGridLoss or TimeSeriesType.PositiveGridLoss
+            ? "123"
+            : null;
+        return new EnergyResult(
+            Guid.NewGuid(),
+            _calculationId,
+            _gridArea,
+            timeSeriesType,
+            _energySupplierId,
+            _balanceResponsibleId,
+            new EnergyTimeSeriesPoint[]
+            {
+                new(new DateTime(2021, 1, 1), 1, quantityQualities),
+                new(new DateTime(2021, 1, 1), 2, quantityQualities),
+                new(new DateTime(2021, 1, 1), 3, quantityQualities),
+            },
+            CalculationType.Aggregation,
+            _periodStart,
+            _periodEnd,
+            _fromGridArea,
+            meteringPointType,
+            1);
     }
 }

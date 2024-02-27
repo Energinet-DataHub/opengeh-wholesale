@@ -167,10 +167,14 @@ public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSe
             .Select(ats => (ats.Version, ats.GridArea, ats.TimeSeriesType))
             .Should()
             .BeEquivalentTo([
-                (256L, "101", TimeSeriesType.FlexConsumption), (512L, "101", TimeSeriesType.FlexConsumption),
-                (1024L, "101", TimeSeriesType.FlexConsumption), (2048L, "101", TimeSeriesType.FlexConsumption),
-                (256L, "101", TimeSeriesType.Production), (512L, "101", TimeSeriesType.Production),
-                (1024L, "101", TimeSeriesType.Production), (2048L, "101", TimeSeriesType.Production)
+                (256L, "101", TimeSeriesType.FlexConsumption),
+                (512L, "101", TimeSeriesType.FlexConsumption),
+                (1024L, "101", TimeSeriesType.FlexConsumption),
+                (2048L, "101", TimeSeriesType.FlexConsumption),
+                (256L, "101", TimeSeriesType.Production),
+                (512L, "101", TimeSeriesType.Production),
+                (1024L, "101", TimeSeriesType.Production),
+                (2048L, "101", TimeSeriesType.Production)
             ]);
     }
 
@@ -257,12 +261,18 @@ public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSe
             .Select(ats => (ats.Version, ats.GridArea, ats.TimeSeriesType))
             .Should()
             .BeEquivalentTo([
-                (11L, "301", TimeSeriesType.FlexConsumption), (22L, "301", TimeSeriesType.FlexConsumption),
-                (33L, "301", TimeSeriesType.FlexConsumption), (55L, "301", TimeSeriesType.FlexConsumption),
-                (77L, "301", TimeSeriesType.FlexConsumption), (88L, "301", TimeSeriesType.FlexConsumption),
-                (11L, "301", TimeSeriesType.Production), (22L, "301", TimeSeriesType.Production),
-                (33L, "301", TimeSeriesType.Production), (55L, "301", TimeSeriesType.Production),
-                (77L, "301", TimeSeriesType.Production), (88L, "301", TimeSeriesType.Production)
+                (11L, "301", TimeSeriesType.FlexConsumption),
+                (22L, "301", TimeSeriesType.FlexConsumption),
+                (33L, "301", TimeSeriesType.FlexConsumption),
+                (55L, "301", TimeSeriesType.FlexConsumption),
+                (77L, "301", TimeSeriesType.FlexConsumption),
+                (88L, "301", TimeSeriesType.FlexConsumption),
+                (11L, "301", TimeSeriesType.Production),
+                (22L, "301", TimeSeriesType.Production),
+                (33L, "301", TimeSeriesType.Production),
+                (55L, "301", TimeSeriesType.Production),
+                (77L, "301", TimeSeriesType.Production),
+                (88L, "301", TimeSeriesType.Production)
             ]);
     }
 
@@ -291,8 +301,14 @@ public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSe
         groupedByVersionAndGridArea.Select(g => g.Key)
             .Should()
             .BeEquivalentTo([
-                (256L, "101"), (512L, "101"), (1024L, "101"), (2048L, "101"),
-                (256L, "201"), (512L, "201"), (1024L, "201"), (2048L, "201")
+                (256L, "101"),
+                (512L, "101"),
+                (1024L, "101"),
+                (2048L, "101"),
+                (256L, "201"),
+                (512L, "201"),
+                (1024L, "201"),
+                (2048L, "201")
             ]);
 
         groupedByVersionAndGridArea.Single(g => g.Key == (256L, "101"))
@@ -419,12 +435,18 @@ public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSe
             .Select(ats => (ats.Version, ats.GridArea, ats.TimeSeriesType))
             .Should()
             .BeEquivalentTo([
-                (1L, "101", TimeSeriesType.FlexConsumption), (2L, "101", TimeSeriesType.FlexConsumption),
-                (3L, "101", TimeSeriesType.FlexConsumption), (5L, "101", TimeSeriesType.FlexConsumption),
-                (7L, "101", TimeSeriesType.FlexConsumption), (8L, "101", TimeSeriesType.FlexConsumption),
-                (1L, "101", TimeSeriesType.Production), (2L, "101", TimeSeriesType.Production),
-                (3L, "101", TimeSeriesType.Production), (5L, "101", TimeSeriesType.Production),
-                (7L, "101", TimeSeriesType.Production), (8L, "101", TimeSeriesType.Production)
+                (1L, "101", TimeSeriesType.FlexConsumption),
+                (2L, "101", TimeSeriesType.FlexConsumption),
+                (3L, "101", TimeSeriesType.FlexConsumption),
+                (5L, "101", TimeSeriesType.FlexConsumption),
+                (7L, "101", TimeSeriesType.FlexConsumption),
+                (8L, "101", TimeSeriesType.FlexConsumption),
+                (1L, "101", TimeSeriesType.Production),
+                (2L, "101", TimeSeriesType.Production),
+                (3L, "101", TimeSeriesType.Production),
+                (5L, "101", TimeSeriesType.Production),
+                (7L, "101", TimeSeriesType.Production),
+                (8L, "101", TimeSeriesType.Production)
             ]);
     }
 
@@ -573,15 +595,24 @@ public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSe
             .Select(ats => (ats.Version, ats.GridArea, ats.TimeSeriesType))
             .Should()
             .BeEquivalentTo([
-                (111L, "101", TimeSeriesType.FlexConsumption), (222L, "101", TimeSeriesType.FlexConsumption),
-                (333L, "101", TimeSeriesType.FlexConsumption), (555L, "101", TimeSeriesType.FlexConsumption),
-                (777L, "101", TimeSeriesType.FlexConsumption), (888L, "101", TimeSeriesType.FlexConsumption),
-                (111L, "101", TimeSeriesType.Production), (222L, "101", TimeSeriesType.Production),
-                (333L, "101", TimeSeriesType.Production), (555L, "101", TimeSeriesType.Production),
-                (777L, "101", TimeSeriesType.Production), (888L, "101", TimeSeriesType.Production),
-                (111L, "101", TimeSeriesType.NetExchangePerGa), (222L, "101", TimeSeriesType.NetExchangePerGa),
-                (333L, "101", TimeSeriesType.NetExchangePerGa), (555L, "101", TimeSeriesType.NetExchangePerGa),
-                (777L, "101", TimeSeriesType.NetExchangePerGa), (888L, "101", TimeSeriesType.NetExchangePerGa)
+                (111L, "101", TimeSeriesType.FlexConsumption),
+                (222L, "101", TimeSeriesType.FlexConsumption),
+                (333L, "101", TimeSeriesType.FlexConsumption),
+                (555L, "101", TimeSeriesType.FlexConsumption),
+                (777L, "101", TimeSeriesType.FlexConsumption),
+                (888L, "101", TimeSeriesType.FlexConsumption),
+                (111L, "101", TimeSeriesType.Production),
+                (222L, "101", TimeSeriesType.Production),
+                (333L, "101", TimeSeriesType.Production),
+                (555L, "101", TimeSeriesType.Production),
+                (777L, "101", TimeSeriesType.Production),
+                (888L, "101", TimeSeriesType.Production),
+                (111L, "101", TimeSeriesType.NetExchangePerGa),
+                (222L, "101", TimeSeriesType.NetExchangePerGa),
+                (333L, "101", TimeSeriesType.NetExchangePerGa),
+                (555L, "101", TimeSeriesType.NetExchangePerGa),
+                (777L, "101", TimeSeriesType.NetExchangePerGa),
+                (888L, "101", TimeSeriesType.NetExchangePerGa)
             ]);
     }
 

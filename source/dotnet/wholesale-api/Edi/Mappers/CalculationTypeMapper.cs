@@ -25,26 +25,23 @@ public static class CalculationTypeMapper
     /// <exception cref="ArgumentOutOfRangeException">Throws a ArgumentOutOfRangeException if the request calculation type is unknown or has the value LatestCorrection</exception>
     public static CalculationType FromRequestedCalculationType(RequestedCalculationType requestedCalculationType)
     {
-        if (requestedCalculationType == RequestedCalculationType.LatestCorrection)
-        {
-            throw new ArgumentOutOfRangeException(
+        return requestedCalculationType == RequestedCalculationType.LatestCorrection
+            ? throw new ArgumentOutOfRangeException(
                 nameof(requestedCalculationType),
                 actualValue: requestedCalculationType,
-                $"Value of type {nameof(RequestedCalculationType.LatestCorrection)} cannot be mapped to {nameof(CalculationType)}.");
-        }
-
-        return requestedCalculationType switch
-        {
-            RequestedCalculationType.BalanceFixing => CalculationType.BalanceFixing,
-            RequestedCalculationType.PreliminaryAggregation => CalculationType.Aggregation,
-            RequestedCalculationType.WholesaleFixing => CalculationType.WholesaleFixing,
-            RequestedCalculationType.FirstCorrection => CalculationType.FirstCorrectionSettlement,
-            RequestedCalculationType.SecondCorrection => CalculationType.SecondCorrectionSettlement,
-            RequestedCalculationType.ThirdCorrection => CalculationType.ThirdCorrectionSettlement,
-            _ => throw new ArgumentOutOfRangeException(
-                nameof(requestedCalculationType),
-                actualValue: requestedCalculationType,
-                $"Value cannot be mapped to a {nameof(CalculationType)}."),
-        };
+                $"Value of type {nameof(RequestedCalculationType.LatestCorrection)} cannot be mapped to {nameof(CalculationType)}.")
+            : requestedCalculationType switch
+            {
+                RequestedCalculationType.BalanceFixing => CalculationType.BalanceFixing,
+                RequestedCalculationType.PreliminaryAggregation => CalculationType.Aggregation,
+                RequestedCalculationType.WholesaleFixing => CalculationType.WholesaleFixing,
+                RequestedCalculationType.FirstCorrection => CalculationType.FirstCorrectionSettlement,
+                RequestedCalculationType.SecondCorrection => CalculationType.SecondCorrectionSettlement,
+                RequestedCalculationType.ThirdCorrection => CalculationType.ThirdCorrectionSettlement,
+                _ => throw new ArgumentOutOfRangeException(
+                    nameof(requestedCalculationType),
+                    actualValue: requestedCalculationType,
+                    $"Value cannot be mapped to a {nameof(CalculationType)}."),
+            };
     }
 }

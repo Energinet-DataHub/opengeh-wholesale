@@ -40,23 +40,25 @@ public class EnergyResultColumnNames
         return fieldInfos.Select(x => x.GetValue(null)).Cast<string>().ToList();
     }
 
-    public static string GetType(string columnName) =>
-         columnName switch
-         {
-             GridArea => "string",
-             BalanceResponsibleId => "string",
-             CalculationResultId => "string",
-             EnergySupplierId => "string",
-             Time => "timestamp",
-             QuantityQualities => "array<string>",
-             AggregationLevel => "string",
-             TimeSeriesType => "string",
-             CalculationId => "string",
-             CalculationType => "string",
-             CalculationExecutionTimeStart => "timestamp",
-             FromGridArea => "string",
-             Quantity => "decimal(18,3)",
-             MeteringPointId => "string",
-             _ => throw new ArgumentOutOfRangeException(nameof(columnName), actualValue: columnName, "Unexpected column name."),
-         };
+    public static string GetType(string columnName)
+    {
+        return columnName switch
+        {
+            GridArea => "string",
+            BalanceResponsibleId => "string",
+            CalculationResultId => "string",
+            EnergySupplierId => "string",
+            Time => "timestamp",
+            QuantityQualities => "array<string>",
+            AggregationLevel => "string",
+            TimeSeriesType => "string",
+            CalculationId => "string",
+            CalculationType => "string",
+            CalculationExecutionTimeStart => "timestamp",
+            FromGridArea => "string",
+            Quantity => "decimal(18,3)",
+            MeteringPointId => "string",
+            _ => throw new ArgumentOutOfRangeException(nameof(columnName), actualValue: columnName, "Unexpected column name."),
+        };
+    }
 }

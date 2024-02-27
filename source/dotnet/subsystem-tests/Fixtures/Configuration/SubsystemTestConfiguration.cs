@@ -14,33 +14,32 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Configuration
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Configuration;
+
+/// <summary>
+/// Responsible for building the configuration root used for extracting subsystem test values.
+///
+/// On developer machines we use the 'subsystemtest.local.settings.json' to set values.
+/// On hosted agents we must set these using environment variables.
+/// </summary>
+public class SubsystemTestConfiguration
 {
-    /// <summary>
-    /// Responsible for building the configuration root used for extracting subsystem test values.
-    ///
-    /// On developer machines we use the 'subsystemtest.local.settings.json' to set values.
-    /// On hosted agents we must set these using environment variables.
-    /// </summary>
-    public class SubsystemTestConfiguration
+    public SubsystemTestConfiguration()
     {
-        public SubsystemTestConfiguration()
-        {
-            Root = BuildConfigurationRoot();
-        }
+        Root = BuildConfigurationRoot();
+    }
 
-        public IConfigurationRoot Root { get; }
+    public IConfigurationRoot Root { get; }
 
-        /// <summary>
-        /// Load settings from file if available, but also allow
-        /// those settings to be overriden using environment variables.
-        /// </summary>
-        private static IConfigurationRoot BuildConfigurationRoot()
-        {
-            return new ConfigurationBuilder()
-                .AddJsonFile("subsystemtest.local.settings.json", optional: true)
-                .AddEnvironmentVariables()
-                .Build();
-        }
+    /// <summary>
+    /// Load settings from file if available, but also allow
+    /// those settings to be overriden using environment variables.
+    /// </summary>
+    private static IConfigurationRoot BuildConfigurationRoot()
+    {
+        return new ConfigurationBuilder()
+            .AddJsonFile("subsystemtest.local.settings.json", optional: true)
+            .AddEnvironmentVariables()
+            .Build();
     }
 }

@@ -14,17 +14,16 @@
 
 using Energinet.DataHub.Core.Messaging.Communication;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
+
+public abstract class ResultEventProvider
 {
-    public abstract class ResultEventProvider
+    protected static IntegrationEvent CreateIntegrationEvent(IEventMessage eventMessage)
     {
-        protected static IntegrationEvent CreateIntegrationEvent(IEventMessage eventMessage)
-        {
-            return new IntegrationEvent(
-                Guid.NewGuid(),
-                eventMessage.EventName,
-                eventMessage.EventMinorVersion,
-                eventMessage);
-        }
+        return new IntegrationEvent(
+            Guid.NewGuid(),
+            eventMessage.EventName,
+            eventMessage.EventMinorVersion,
+            eventMessage);
     }
 }

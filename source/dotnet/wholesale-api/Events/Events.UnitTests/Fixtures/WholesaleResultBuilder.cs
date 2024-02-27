@@ -31,13 +31,14 @@ public sealed class WholesaleResultBuilder
     private readonly string _chargeOwnerId = "charge_owner_id";
     private readonly ChargeType _chargeType = ChargeType.Tariff;
     private readonly bool _isTax = true;
+    private readonly long _version = 1;
+
     private IReadOnlyCollection<WholesaleTimeSeriesPoint> _wholesaleTimeSeriesPoint
         = new List<WholesaleTimeSeriesPoint> { new(new DateTime(2021, 1, 1), 1, new[] { QuantityQuality.Measured }, 2, 3) };
 
     private CalculationType _calculationType = CalculationType.WholesaleFixing;
     private AmountType _amountType = AmountType.AmountPerCharge;
     private Resolution _resolution = Resolution.Hour;
-    private long _version = 1;
 
     public WholesaleResultBuilder WithCalculationType(CalculationType calculationType)
     {

@@ -18,8 +18,9 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlState
 
 public static class ChargeTypeMapper
 {
-    public static ChargeType FromDeltaTableValue(string chargeType) =>
-        chargeType switch
+    public static ChargeType FromDeltaTableValue(string chargeType)
+    {
+        return chargeType switch
         {
             "fee" => ChargeType.Fee,
             "subscription" => ChargeType.Subscription,
@@ -30,4 +31,5 @@ public static class ChargeTypeMapper
                 actualValue: chargeType,
                 "Value does not contain a valid string representation of a charge type."),
         };
+    }
 }

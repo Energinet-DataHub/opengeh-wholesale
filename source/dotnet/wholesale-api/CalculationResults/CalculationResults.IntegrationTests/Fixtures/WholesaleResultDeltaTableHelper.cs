@@ -46,7 +46,7 @@ public static class WholesaleResultDeltaTableHelper
         {
             WholesaleResultColumnNames.CalculationId => $@"'{calculationId}'",
             WholesaleResultColumnNames.CalculationExecutionTimeStart => $@"'{calculationExecutionTimeStart}'",
-            WholesaleResultColumnNames.CalculationType =>$@"'{calculationType}'",
+            WholesaleResultColumnNames.CalculationType => $@"'{calculationType}'",
             WholesaleResultColumnNames.CalculationResultId => $@"'{calculationResultId}'",
             WholesaleResultColumnNames.GridArea => $@"'{gridArea}'",
             WholesaleResultColumnNames.EnergySupplierId => $@"'{energySupplierId}'",

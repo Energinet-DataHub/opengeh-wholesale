@@ -19,29 +19,28 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection
+namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
+
+/// <summary>
+/// Extension methods for <see cref="IServiceCollection"/>
+/// that allow adding NodaTime services to an application.
+/// </summary>
+public static class NodaTimeExtensions
 {
     /// <summary>
-    /// Extension methods for <see cref="IServiceCollection"/>
-    /// that allow adding NodaTime services to an application.
+    /// Register NodaTime services commonly used by DH3 applications.
     /// </summary>
-    public static class NodaTimeExtensions
+    public static IServiceCollection AddNodaTimeForApplication(this IServiceCollection services, IConfiguration configuration)
     {
-        /// <summary>
-        /// Register NodaTime services commonly used by DH3 applications.
-        /// </summary>
-        public static IServiceCollection AddNodaTimeForApplication(this IServiceCollection services, IConfiguration configuration)
+        services.TryAddSingleton<IClock>(_ => SystemClock.Instance);
+
+        services.AddOptions<DateTimeOptions>().Bind(configuration);
+        services.TryAddSingleton<DateTimeZone>(services =>
         {
-            services.TryAddSingleton<IClock>(_ => SystemClock.Instance);
+            var options = services.GetRequiredService<IOptions<DateTimeOptions>>().Value;
+            return DateTimeZoneProviders.Tzdb.GetZoneOrNull(options.TIME_ZONE)!;
+        });
 
-            services.AddOptions<DateTimeOptions>().Bind(configuration);
-            services.TryAddSingleton<DateTimeZone>(services =>
-            {
-                var options = services.GetRequiredService<IOptions<DateTimeOptions>>().Value;
-                return DateTimeZoneProviders.Tzdb.GetZoneOrNull(options.TIME_ZONE)!;
-            });
-
-            return services;
-        }
+        return services;
     }
 }

@@ -12,14 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Diagnostics.CodeAnalysis;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedCalculations;
 using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 
-[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local", Justification = "Private setters are needed by EF Core")]
 public class EventsDatabaseContext : DbContext, IEventsDatabaseContext
 {
     private const string Schema = "integrationevents";
@@ -36,7 +34,10 @@ public class EventsDatabaseContext : DbContext, IEventsDatabaseContext
 
     public virtual DbSet<CompletedCalculation> CompletedCalculations { get; private set; } = null!;
 
-    public Task<int> SaveChangesAsync() => base.SaveChangesAsync();
+    public Task<int> SaveChangesAsync()
+    {
+        return base.SaveChangesAsync();
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

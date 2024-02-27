@@ -28,5 +28,8 @@ public class IntegrationEventHandlerFactory
                 handler => handler));
     }
 
-    public IIntegrationEventHandler GetHandler(string eventType) => _handlers[eventType];
+    public IIntegrationEventHandler GetHandler(string eventType)
+    {
+        return _handlers[eventType];
+    }
 }

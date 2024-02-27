@@ -117,7 +117,9 @@ public class AggregatedTimeSeriesRequestFactoryTests
         // Assert
         using var assertionScope = new AssertionScope();
         actual.TimeSeriesTypes.Should().BeEquivalentTo([
-            TimeSeriesType.Production, TimeSeriesType.FlexConsumption, TimeSeriesType.NonProfiledConsumption
+            TimeSeriesType.Production,
+            TimeSeriesType.FlexConsumption,
+            TimeSeriesType.NonProfiledConsumption
         ]);
 
         var aggregationLevel = actual.AggregationPerRoleAndGridArea;
@@ -147,7 +149,9 @@ public class AggregatedTimeSeriesRequestFactoryTests
         // Assert
         using var assertionScope = new AssertionScope();
         actual.TimeSeriesTypes.Should().BeEquivalentTo([
-            TimeSeriesType.Production, TimeSeriesType.NonProfiledConsumption, TimeSeriesType.FlexConsumption
+            TimeSeriesType.Production,
+            TimeSeriesType.NonProfiledConsumption,
+            TimeSeriesType.FlexConsumption
         ]);
 
         var aggregationLevel = actual.AggregationPerRoleAndGridArea;
@@ -178,7 +182,9 @@ public class AggregatedTimeSeriesRequestFactoryTests
         // Assert
         using var assertionScope = new AssertionScope();
         actual.TimeSeriesTypes.Should().BeEquivalentTo([
-            TimeSeriesType.Production, TimeSeriesType.FlexConsumption, TimeSeriesType.NonProfiledConsumption
+            TimeSeriesType.Production,
+            TimeSeriesType.FlexConsumption,
+            TimeSeriesType.NonProfiledConsumption
         ]);
 
         var aggregationLevel = actual.AggregationPerRoleAndGridArea;

@@ -12,22 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes
-{
-    /// <summary>
-    /// Use this in combination with <see cref="Orderers.ScenarioStepOrderer"/> to execute xUnit test cases in
-    /// order according to step number. Lowest numbers are executed first.
-    ///
-    /// Inspired by: https://learn.microsoft.com/en-us/dotnet/core/testing/order-unit-tests?pivots=xunit#order-by-custom-attribute
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class ScenarioStepAttribute : Attribute
-    {
-        public ScenarioStepAttribute(int number)
-        {
-            Number = number;
-        }
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
 
-        public int Number { get; }
+/// <summary>
+/// Use this in combination with <see cref="Orderers.ScenarioStepOrderer"/> to execute xUnit test cases in
+/// order according to step number. Lowest numbers are executed first.
+///
+/// Inspired by: https://learn.microsoft.com/en-us/dotnet/core/testing/order-unit-tests?pivots=xunit#order-by-custom-attribute
+/// </summary>
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+public class ScenarioStepAttribute : Attribute
+{
+    public ScenarioStepAttribute(int number)
+    {
+        Number = number;
     }
+
+    public int Number { get; }
 }

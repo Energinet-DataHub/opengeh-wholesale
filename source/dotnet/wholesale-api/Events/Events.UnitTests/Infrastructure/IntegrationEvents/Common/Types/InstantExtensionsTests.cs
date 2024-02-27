@@ -17,19 +17,18 @@ using FluentAssertions;
 using NodaTime;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.Common.Types
+namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.Common.Types;
+
+public class InstantExtensionsTests
 {
-    public class InstantExtensionsTests
+    [Theory]
+    [InlineData(2021, 10, 12, 14, 27, 59)]
+    public void IsEndDefault_ReturnsExpectedResult(int year, int month, int day, int hour, int minute, int second)
     {
-        [Theory]
-        [InlineData(2021, 10, 12, 14, 27, 59)]
-        public void IsEndDefault_ReturnsExpectedResult(int year, int month, int day, int hour, int minute, int second)
-        {
-            var instant = Instant.FromUtc(year, month, day, hour, minute, second);
+        var instant = Instant.FromUtc(year, month, day, hour, minute, second);
 
-            var actual = instant.ToTimestamp();
+        var actual = instant.ToTimestamp();
 
-            actual.ToDateTimeOffset().Should().Be(instant.ToDateTimeOffset());
-        }
+        actual.ToDateTimeOffset().Should().Be(instant.ToDateTimeOffset());
     }
 }

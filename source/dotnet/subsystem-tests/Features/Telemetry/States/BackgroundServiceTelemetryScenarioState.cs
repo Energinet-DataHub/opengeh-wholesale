@@ -14,16 +14,15 @@
 
 using Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3;
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States;
+
+public class BackgroundServiceTelemetryScenarioState
 {
-    public class BackgroundServiceTelemetryScenarioState
-    {
-        public CalculationRequestDto CalculationInput { get; set; }
-            = new();
+    public CalculationRequestDto CalculationInput { get; set; }
+        = new();
 
-        public Guid CalculationId { get; set; }
+    public Guid CalculationId { get; set; }
 
-        public IList<TelemetryEventMatch> ExpectedTelemetryEvents { get; }
-            = new List<TelemetryEventMatch>();
-    }
+    public IList<TelemetryEventMatch> ExpectedTelemetryEvents { get; }
+        = new List<TelemetryEventMatch>();
 }

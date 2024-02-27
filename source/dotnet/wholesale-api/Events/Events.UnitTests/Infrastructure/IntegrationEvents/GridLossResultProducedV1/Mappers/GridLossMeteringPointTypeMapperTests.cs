@@ -36,7 +36,7 @@ public class GridLossMeteringPointTypeMapperTests
     {
         // Arrange
         var unexpectedValues = Enum.GetValues(typeof(TimeSeriesType)).Cast<TimeSeriesType>().Where(t =>
-            t != TimeSeriesType.NegativeGridLoss && t != TimeSeriesType.PositiveGridLoss);
+            t is not TimeSeriesType.NegativeGridLoss and not TimeSeriesType.PositiveGridLoss);
 
         foreach (var timeSeriesType in unexpectedValues)
         {

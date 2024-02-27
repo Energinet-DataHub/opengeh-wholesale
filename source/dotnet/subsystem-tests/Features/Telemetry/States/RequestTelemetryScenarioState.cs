@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States
-{
-    public class RequestTelemetryScenarioState
-    {
-        public Guid CalculationId { get; set; }
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States;
 
-        public IList<TelemetryEventMatch> ExpectedTelemetryEvents { get; }
-            = new List<TelemetryEventMatch>();
-    }
+public class RequestTelemetryScenarioState
+{
+    public Guid CalculationId { get; set; }
+
+    public IList<TelemetryEventMatch> ExpectedTelemetryEvents { get; }
+        = new List<TelemetryEventMatch>();
 }

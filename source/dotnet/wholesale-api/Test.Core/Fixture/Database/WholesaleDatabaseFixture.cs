@@ -15,7 +15,7 @@
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Calculations.IntegrationTests.Fixture.Database;
+namespace Test.Core.Fixture.Database;
 
 /// <summary>
 /// An xUnit fixture for sharing a wholesale database for integration tests.

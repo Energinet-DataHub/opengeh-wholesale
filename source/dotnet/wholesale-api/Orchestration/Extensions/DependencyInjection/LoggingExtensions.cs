@@ -12,27 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Api;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Energinet.DataHub.Wholesale.Orchestration.Extensions.DependencyInjection
+namespace Energinet.DataHub.Wholesale.Orchestration.Extensions.DependencyInjection;
+
+/// <summary>
+/// Extension methods for setting up logging services in an <see cref="ILoggingBuilder" />.
+/// </summary>
+public static class LoggingExtensions
 {
     /// <summary>
-    /// Extension methods for setting up logging services in an <see cref="ILoggingBuilder" />.
+    /// For use in a Function App isolated worker.
+    /// Make sure the Application Insights logging configuration is picked up from settings.
+    /// Found inspiration in https://github.com/Azure/azure-functions-dotnet-worker/issues/1447
     /// </summary>
-    public static class LoggingExtensions
+    public static ILoggingBuilder AddLoggingConfigurationForIsolatedWorker(this ILoggingBuilder logging, HostBuilderContext hostingContext)
     {
-        /// <summary>
-        /// For use in a Function App isolated worker.
-        /// Make sure the Application Insights logging configuration is picked up from settings.
-        /// Found inspiration in https://github.com/Azure/azure-functions-dotnet-worker/issues/1447
-        /// </summary>
-        public static ILoggingBuilder AddLoggingConfigurationForIsolatedWorker(this ILoggingBuilder logging, HostBuilderContext hostingContext)
-        {
-            logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+        logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
 
-            return logging;
-        }
+        return logging;
     }
 }

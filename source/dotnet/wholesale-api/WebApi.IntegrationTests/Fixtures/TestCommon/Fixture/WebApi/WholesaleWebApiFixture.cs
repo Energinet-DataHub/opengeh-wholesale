@@ -19,119 +19,118 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Calculations.IntegrationTests.Fixture.Database;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.Components;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 using Microsoft.Extensions.Configuration;
+using Test.Core.Fixture.Database;
 
-namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
+
+public class WholesaleWebApiFixture : WebApiFixture
 {
-    public class WholesaleWebApiFixture : WebApiFixture
+    public WholesaleWebApiFixture()
     {
-        public WholesaleWebApiFixture()
-        {
-            AzuriteManager = new AzuriteManager(useOAuth: true);
-            DatabaseManager = new WholesaleDatabaseManager<DatabaseContext>();
-            DatabricksTestManager = new DatabricksTestManager();
-            IntegrationTestConfiguration = new IntegrationTestConfiguration();
+        AzuriteManager = new AzuriteManager(useOAuth: true);
+        DatabaseManager = new WholesaleDatabaseManager<DatabaseContext>();
+        DatabricksTestManager = new DatabricksTestManager();
+        IntegrationTestConfiguration = new IntegrationTestConfiguration();
 
-            DatabricksTestManager.DatabricksUrl = IntegrationTestConfiguration.DatabricksSettings.WorkspaceUrl;
-            DatabricksTestManager.DatabricksToken = IntegrationTestConfiguration.DatabricksSettings.WorkspaceAccessToken;
+        DatabricksTestManager.DatabricksUrl = IntegrationTestConfiguration.DatabricksSettings.WorkspaceUrl;
+        DatabricksTestManager.DatabricksToken = IntegrationTestConfiguration.DatabricksSettings.WorkspaceAccessToken;
 
-            ServiceBusResourceProvider = new ServiceBusResourceProvider(
-                IntegrationTestConfiguration.ServiceBusConnectionString,
-                TestLogger);
-        }
+        ServiceBusResourceProvider = new ServiceBusResourceProvider(
+            IntegrationTestConfiguration.ServiceBusConnectionString,
+            TestLogger);
+    }
 
-        public WholesaleDatabaseManager<DatabaseContext> DatabaseManager { get; }
+    public WholesaleDatabaseManager<DatabaseContext> DatabaseManager { get; }
 
-        public DatabricksTestManager DatabricksTestManager { get; }
+    public DatabricksTestManager DatabricksTestManager { get; }
 
-        private AzuriteManager AzuriteManager { get; }
+    private AzuriteManager AzuriteManager { get; }
 
-        private ServiceBusResourceProvider ServiceBusResourceProvider { get; }
+    private ServiceBusResourceProvider ServiceBusResourceProvider { get; }
 
-        private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
+    private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
 
-        /// <inheritdoc/>
-        protected override void OnConfigureEnvironment()
-        {
-        }
+    /// <inheritdoc/>
+    protected override void OnConfigureEnvironment()
+    {
+    }
 
-        /// <inheritdoc/>
-        protected override async Task OnInitializeWebApiDependenciesAsync(IConfiguration localSettingsSnapshot)
-        {
-            AzuriteManager.StartAzurite();
-            await DatabaseManager.CreateDatabaseAsync();
+    /// <inheritdoc/>
+    protected override async Task OnInitializeWebApiDependenciesAsync(IConfiguration localSettingsSnapshot)
+    {
+        AzuriteManager.StartAzurite();
+        await DatabaseManager.CreateDatabaseAsync();
 
-            Environment.SetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING", IntegrationTestConfiguration.ApplicationInsightsConnectionString);
+        Environment.SetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING", IntegrationTestConfiguration.ApplicationInsightsConnectionString);
 
-            // Overwrites the setting so the Web Api app uses the database we have control of in the test
-            Environment.SetEnvironmentVariable(
-                $"{nameof(ConnectionStringsOptions.ConnectionStrings)}__{nameof(ConnectionStringsOptions.DB_CONNECTION_STRING)}",
-                DatabaseManager.ConnectionString);
+        // Overwrites the setting so the Web Api app uses the database we have control of in the test
+        Environment.SetEnvironmentVariable(
+            $"{nameof(ConnectionStringsOptions.ConnectionStrings)}__{nameof(ConnectionStringsOptions.DB_CONNECTION_STRING)}",
+            DatabaseManager.ConnectionString);
 
-            Environment.SetEnvironmentVariable(nameof(JwtOptions.EXTERNAL_OPEN_ID_URL), "disabled");
-            Environment.SetEnvironmentVariable(nameof(JwtOptions.INTERNAL_OPEN_ID_URL), "disabled");
-            Environment.SetEnvironmentVariable(nameof(JwtOptions.BACKEND_BFF_APP_ID), "disabled");
-            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
+        Environment.SetEnvironmentVariable(nameof(JwtOptions.EXTERNAL_OPEN_ID_URL), "disabled");
+        Environment.SetEnvironmentVariable(nameof(JwtOptions.INTERNAL_OPEN_ID_URL), "disabled");
+        Environment.SetEnvironmentVariable(nameof(JwtOptions.BACKEND_BFF_APP_ID), "disabled");
+        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
 
-            // New options property names
-            Environment.SetEnvironmentVariable(nameof(DatabricksJobsOptions.WorkspaceUrl), IntegrationTestConfiguration.DatabricksSettings.WorkspaceUrl);
-            Environment.SetEnvironmentVariable(nameof(DatabricksJobsOptions.WorkspaceToken), IntegrationTestConfiguration.DatabricksSettings.WorkspaceAccessToken);
-            Environment.SetEnvironmentVariable(nameof(DatabricksJobsOptions.WarehouseId), IntegrationTestConfiguration.DatabricksSettings.WarehouseId);
+        // New options property names
+        Environment.SetEnvironmentVariable(nameof(DatabricksJobsOptions.WorkspaceUrl), IntegrationTestConfiguration.DatabricksSettings.WorkspaceUrl);
+        Environment.SetEnvironmentVariable(nameof(DatabricksJobsOptions.WorkspaceToken), IntegrationTestConfiguration.DatabricksSettings.WorkspaceAccessToken);
+        Environment.SetEnvironmentVariable(nameof(DatabricksJobsOptions.WarehouseId), IntegrationTestConfiguration.DatabricksSettings.WarehouseId);
 
-            Environment.SetEnvironmentVariable(nameof(DataLakeOptions.STORAGE_ACCOUNT_URI), AzuriteManager.BlobStorageServiceUri.ToString());
-            Environment.SetEnvironmentVariable(nameof(DataLakeOptions.STORAGE_CONTAINER_NAME), "wholesale");
+        Environment.SetEnvironmentVariable(nameof(DataLakeOptions.STORAGE_ACCOUNT_URI), AzuriteManager.BlobStorageServiceUri.ToString());
+        Environment.SetEnvironmentVariable(nameof(DataLakeOptions.STORAGE_CONTAINER_NAME), "wholesale");
 
-            Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING), ServiceBusResourceProvider.ConnectionString);
-            Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING), ServiceBusResourceProvider.ConnectionString);
+        Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING), ServiceBusResourceProvider.ConnectionString);
+        Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING), ServiceBusResourceProvider.ConnectionString);
 
-            await ServiceBusResourceProvider
-                .BuildTopic("integration-events")
-                .SetEnvironmentVariableToTopicName(nameof(ServiceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME))
-                .AddSubscription("subscription")
-                .SetEnvironmentVariableToSubscriptionName(nameof(ServiceBusOptions.INTEGRATIONEVENTS_SUBSCRIPTION_NAME))
-                .CreateAsync();
+        await ServiceBusResourceProvider
+            .BuildTopic("integration-events")
+            .SetEnvironmentVariableToTopicName(nameof(ServiceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME))
+            .AddSubscription("subscription")
+            .SetEnvironmentVariableToSubscriptionName(nameof(ServiceBusOptions.INTEGRATIONEVENTS_SUBSCRIPTION_NAME))
+            .CreateAsync();
 
-            // Add events configuration variables
-            await ServiceBusResourceProvider
-                .BuildQueue("sbq-wholesale-inbox")
-                .SetEnvironmentVariableToQueueName(nameof(ServiceBusOptions.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME))
-                .CreateAsync();
+        // Add events configuration variables
+        await ServiceBusResourceProvider
+            .BuildQueue("sbq-wholesale-inbox")
+            .SetEnvironmentVariableToQueueName(nameof(ServiceBusOptions.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME))
+            .CreateAsync();
 
-            await ServiceBusResourceProvider
-                .BuildQueue("sbq-edi-inbox")
-                .SetEnvironmentVariableToQueueName(nameof(ServiceBusOptions.EDI_INBOX_MESSAGE_QUEUE_NAME))
-                .CreateAsync();
+        await ServiceBusResourceProvider
+            .BuildQueue("sbq-edi-inbox")
+            .SetEnvironmentVariableToQueueName(nameof(ServiceBusOptions.EDI_INBOX_MESSAGE_QUEUE_NAME))
+            .CreateAsync();
 
-            Environment.SetEnvironmentVariable(nameof(DateTimeOptions.TIME_ZONE), "Europe/Copenhagen");
+        Environment.SetEnvironmentVariable(nameof(DateTimeOptions.TIME_ZONE), "Europe/Copenhagen");
 
-            await EnsureCalculationStorageContainerExistsAsync();
-        }
+        await EnsureCalculationStorageContainerExistsAsync();
+    }
 
-        /// <inheritdoc/>
-        protected override Task OnDisposeWebApiDependenciesAsync()
-        {
-            AzuriteManager.Dispose();
-            return DatabaseManager.DeleteDatabaseAsync();
-        }
+    /// <inheritdoc/>
+    protected override Task OnDisposeWebApiDependenciesAsync()
+    {
+        AzuriteManager.Dispose();
+        return DatabaseManager.DeleteDatabaseAsync();
+    }
 
-        /// <summary>
-        /// Create storage container. Note: Azurite is based on the Blob Storage API, but sinceData Lake Storage Gen2 is built on top of it, we can still create the container like this
-        /// </summary>
-        private async Task EnsureCalculationStorageContainerExistsAsync()
-        {
-            var dataLakeServiceClient = new DataLakeServiceClient(
-                serviceUri: AzuriteManager.BlobStorageServiceUri,
-                credential: new DefaultAzureCredential());
+    /// <summary>
+    /// Create storage container. Note: Azurite is based on the Blob Storage API, but sinceData Lake Storage Gen2 is built on top of it, we can still create the container like this
+    /// </summary>
+    private async Task EnsureCalculationStorageContainerExistsAsync()
+    {
+        var dataLakeServiceClient = new DataLakeServiceClient(
+            serviceUri: AzuriteManager.BlobStorageServiceUri,
+            credential: new DefaultAzureCredential());
 
-            var fileSystemClient = dataLakeServiceClient.GetFileSystemClient(
-                Environment.GetEnvironmentVariable(nameof(DataLakeOptions.STORAGE_CONTAINER_NAME)));
+        var fileSystemClient = dataLakeServiceClient.GetFileSystemClient(
+            Environment.GetEnvironmentVariable(nameof(DataLakeOptions.STORAGE_CONTAINER_NAME)));
 
-            await fileSystemClient.CreateIfNotExistsAsync();
-        }
+        await fileSystemClient.CreateIfNotExistsAsync();
     }
 }

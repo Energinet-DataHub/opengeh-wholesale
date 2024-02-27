@@ -46,8 +46,9 @@ public class WholesaleResultColumnNames
         return fieldInfos.Select(x => x.GetValue(null)).Cast<string>().ToList();
     }
 
-    public static string GetType(string columnName) =>
-        columnName switch
+    public static string GetType(string columnName)
+    {
+        return columnName switch
         {
             CalculationId => "string",
             CalculationExecutionTimeStart => "timestamp",
@@ -70,4 +71,5 @@ public class WholesaleResultColumnNames
             Amount => "decimal(18,6)",
             _ => throw new ArgumentOutOfRangeException(nameof(columnName), actualValue: columnName, "Unexpected column name."),
         };
+    }
 }

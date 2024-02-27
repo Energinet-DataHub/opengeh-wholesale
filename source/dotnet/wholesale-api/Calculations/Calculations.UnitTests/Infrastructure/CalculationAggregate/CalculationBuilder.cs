@@ -28,7 +28,7 @@ public class CalculationBuilder
     private Instant _periodEnd;
 
     private CalculationExecutionState? _state;
-    private List<GridAreaCode> _gridAreaCodes = new() { new("805") };
+    private List<GridAreaCode> _gridAreaCodes = [new("805")];
     private CalculationType _calculationType = CalculationType.BalanceFixing;
 
     public CalculationBuilder()

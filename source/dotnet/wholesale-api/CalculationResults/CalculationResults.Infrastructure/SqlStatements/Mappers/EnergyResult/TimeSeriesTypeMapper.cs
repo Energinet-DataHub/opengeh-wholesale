@@ -19,8 +19,9 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlState
 
 public static class TimeSeriesTypeMapper
 {
-    public static TimeSeriesType FromDeltaTableValue(string timeSeriesType) =>
-        timeSeriesType switch
+    public static TimeSeriesType FromDeltaTableValue(string timeSeriesType)
+    {
+        return timeSeriesType switch
         {
             DeltaTableTimeSeriesType.Production => TimeSeriesType.Production,
             DeltaTableTimeSeriesType.FlexConsumption => TimeSeriesType.FlexConsumption,
@@ -39,9 +40,11 @@ public static class TimeSeriesTypeMapper
                 actualValue: timeSeriesType,
                 "Value does not contain a valid string representation of a time series type."),
         };
+    }
 
-    public static string ToDeltaTableValue(TimeSeriesType timeSeriesType) =>
-        timeSeriesType switch
+    public static string ToDeltaTableValue(TimeSeriesType timeSeriesType)
+    {
+        return timeSeriesType switch
         {
             TimeSeriesType.NonProfiledConsumption => DeltaTableTimeSeriesType.NonProfiledConsumption,
             TimeSeriesType.Production => DeltaTableTimeSeriesType.Production,
@@ -60,4 +63,5 @@ public static class TimeSeriesTypeMapper
                 actualValue: timeSeriesType,
                 "Value cannot be mapped to a string representation of a time series type."),
         };
+    }
 }

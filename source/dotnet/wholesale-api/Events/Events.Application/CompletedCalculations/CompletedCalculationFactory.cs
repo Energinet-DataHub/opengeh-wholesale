@@ -26,10 +26,9 @@ public class CompletedCalculationFactory : ICompletedCalculationFactory
 
     public CompletedCalculation CreateFromCalculation(CalculationDto completedCalculationDto)
     {
-        if (completedCalculationDto.ExecutionTimeEnd == null)
-            throw new ArgumentNullException($"{nameof(CalculationDto.ExecutionTimeEnd)} should not be null for a completed calculation.");
-
-        return new CompletedCalculation(
+        return completedCalculationDto.ExecutionTimeEnd == null
+            ? throw new ArgumentNullException($"{nameof(CalculationDto.ExecutionTimeEnd)} should not be null for a completed calculation.")
+            : new CompletedCalculation(
             completedCalculationDto.CalculationId,
             completedCalculationDto.GridAreaCodes.ToList(),
             completedCalculationDto.CalculationType,

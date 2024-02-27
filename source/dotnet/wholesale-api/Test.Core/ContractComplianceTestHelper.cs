@@ -105,19 +105,17 @@ public static class ContractComplianceTestHelper
 
     private static string[] MapToContractType(Type propertyType)
     {
-        if (propertyType.IsEnum)
-            return MapToContractType(Enum.GetUnderlyingType(propertyType));
-
-        if (Nullable.GetUnderlyingType(propertyType) is { } underlyingType)
-            return MapToContractType(underlyingType);
-
-        return propertyType.Name switch
-        {
-            "Int32" => new[] { "integer", "long" },
-            "String" => new[] { "string" },
-            "Guid" => new[] { "string" },
-            "Instant" => new[] { "timestamp" },
-            _ => throw new NotImplementedException($"Property type '{propertyType.Name}' not implemented."),
-        };
+        return propertyType.IsEnum
+            ? MapToContractType(Enum.GetUnderlyingType(propertyType))
+            : Nullable.GetUnderlyingType(propertyType) is { } underlyingType
+            ? MapToContractType(underlyingType)
+            : propertyType.Name switch
+            {
+                "Int32" => new[] { "integer", "long" },
+                "String" => new[] { "string" },
+                "Guid" => new[] { "string" },
+                "Instant" => new[] { "timestamp" },
+                _ => throw new NotImplementedException($"Property type '{propertyType.Name}' not implemented."),
+            };
     }
 }

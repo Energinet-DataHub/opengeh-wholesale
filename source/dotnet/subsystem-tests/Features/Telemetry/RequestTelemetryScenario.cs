@@ -20,71 +20,71 @@ using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using FluentAssertions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry;
+
+/// <summary>
+/// Verify telemetry is configured correctly so we can track http requests, dependencies, exceptions and traces.
+/// See also: https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
+/// </summary>
+[TestCaseOrderer(
+    ordererTypeName: "Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Orderers.ScenarioStepOrderer",
+    ordererAssemblyName: "Energinet.DataHub.Wholesale.SubsystemTests")]
+public class RequestTelemetryScenario : SubsystemTestsBase<TelemetryScenarioFixture<RequestTelemetryScenarioState>>
 {
-    /// <summary>
-    /// Verify telemetry is configured correctly so we can track http requests, dependencies, exceptions and traces.
-    /// See also: https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model-complete
-    /// </summary>
-    [TestCaseOrderer(
-        ordererTypeName: "Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Orderers.ScenarioStepOrderer",
-        ordererAssemblyName: "Energinet.DataHub.Wholesale.SubsystemTests")]
-    public class RequestTelemetryScenario : SubsystemTestsBase<TelemetryScenarioFixture<RequestTelemetryScenarioState>>
+    public RequestTelemetryScenario(LazyFixtureFactory<TelemetryScenarioFixture<RequestTelemetryScenarioState>> lazyFixtureFactory)
+        : base(lazyFixtureFactory)
     {
-        public RequestTelemetryScenario(LazyFixtureFactory<TelemetryScenarioFixture<RequestTelemetryScenarioState>> lazyFixtureFactory)
-            : base(lazyFixtureFactory)
-        {
-        }
+    }
 
-        [ScenarioStep(0)]
-        [SubsystemFact]
-        public void Given_UnknownCalculationId()
-        {
-            Fixture.ScenarioState.CalculationId = Guid.NewGuid();
-        }
+    [ScenarioStep(0)]
+    [SubsystemFact]
+    public void Given_UnknownCalculationId()
+    {
+        Fixture.ScenarioState.CalculationId = Guid.NewGuid();
+    }
 
-        [ScenarioStep(1)]
-        [SubsystemFact]
-        public void AndGiven_ExpectedTelemetryEvents()
+    [ScenarioStep(1)]
+    [SubsystemFact]
+    public void AndGiven_ExpectedTelemetryEvents()
+    {
+        Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new AppRequestMatch
         {
-            Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new AppRequestMatch
-            {
-                AppVersionContains = "PR:",
-                Subsystem = "wholesale",
-                Name = "GET Calculation/Get [calculationId]",
-            });
-            Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new AppDependencyMatch
-            {
-                AppVersionContains = "PR:",
-                Subsystem = "wholesale",
-                NameContains = "mssqldb-data-wholsal-",
-                DependencyType = "SQL",
-            });
-            Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new AppExceptionMatch
-            {
-                AppVersionContains = "PR:",
-                Subsystem = "wholesale",
-                EventName = "ApplicationError",
-                OuterType = "System.InvalidOperationException",
-                OuterMessage = "Sequence contains no elements.",
-            });
-        }
-
-        [ScenarioStep(2)]
-        [SubsystemFact]
-        public async Task When_RequestingCalculationById()
+            AppVersionContains = "PR:",
+            Subsystem = "wholesale",
+            Name = "GET Calculation/Get [calculationId]",
+        });
+        Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new AppDependencyMatch
         {
-            var act = async () => await Fixture.WholesaleClient.GetCalculationAsync(Fixture.ScenarioState.CalculationId);
-
-            // Assert request is failing
-            await act.Should().ThrowAsync<Clients.v3.ApiException>();
-        }
-
-        [ScenarioStep(3)]
-        [SubsystemFact]
-        public async Task Then_TelemetryEventsAreLoggedWithinWaitTime()
+            AppVersionContains = "PR:",
+            Subsystem = "wholesale",
+            NameContains = "mssqldb-data-wholsal-",
+            DependencyType = "SQL",
+        });
+        Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new AppExceptionMatch
         {
-            var query = $@"
+            AppVersionContains = "PR:",
+            Subsystem = "wholesale",
+            EventName = "ApplicationError",
+            OuterType = "System.InvalidOperationException",
+            OuterMessage = "Sequence contains no elements.",
+        });
+    }
+
+    [ScenarioStep(2)]
+    [SubsystemFact]
+    public async Task When_RequestingCalculationById()
+    {
+        var act = async () => await Fixture.WholesaleClient.GetCalculationAsync(Fixture.ScenarioState.CalculationId);
+
+        // Assert request is failing
+        await act.Should().ThrowAsync<Clients.v3.ApiException>();
+    }
+
+    [ScenarioStep(3)]
+    [SubsystemFact]
+    public async Task Then_TelemetryEventsAreLoggedWithinWaitTime()
+    {
+        var query = $@"
                 let OperationIds = AppRequests
                 | where AppRoleName contains ""app-webapi-wholsal-""
                 | where Url contains ""/v3/calculations/{Fixture.ScenarioState.CalculationId}""
@@ -97,14 +97,13 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
                 | project TimeGenerated, OperationId, ParentId, Id, Type, AppVersion, Subsystem=parsedProp.Subsystem, Name, DependencyType, EventName=parsedProp.EventName, Message, Url, OuterType, OuterMessage, Properties
                 | order by TimeGenerated asc";
 
-            var wasEventsLogged = await Fixture.WaitForTelemetryEventsAsync(
-                Fixture.ScenarioState.ExpectedTelemetryEvents.AsReadOnly(),
-                query,
-                queryTimeRange: new QueryTimeRange(TimeSpan.FromMinutes(10)),
-                waitTimeLimit: TimeSpan.FromMinutes(10),
-                delay: TimeSpan.FromSeconds(30));
+        var wasEventsLogged = await Fixture.WaitForTelemetryEventsAsync(
+            Fixture.ScenarioState.ExpectedTelemetryEvents.AsReadOnly(),
+            query,
+            queryTimeRange: new QueryTimeRange(TimeSpan.FromMinutes(10)),
+            waitTimeLimit: TimeSpan.FromMinutes(10),
+            delay: TimeSpan.FromSeconds(30));
 
-            wasEventsLogged.Should().BeTrue($"{nameof(Fixture.ScenarioState.ExpectedTelemetryEvents)} was not logged to Application Insights within time limit.");
-        }
+        wasEventsLogged.Should().BeTrue($"{nameof(Fixture.ScenarioState.ExpectedTelemetryEvents)} was not logged to Application Insights within time limit.");
     }
 }

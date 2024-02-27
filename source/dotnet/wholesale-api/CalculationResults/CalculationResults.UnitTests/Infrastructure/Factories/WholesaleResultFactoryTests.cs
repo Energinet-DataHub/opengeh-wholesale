@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
@@ -34,10 +33,10 @@ public class WholesaleResultFactoryTests
     private readonly Instant _defaultPeriodEnd = Instant.FromUtc(2022, 5, 2, 0, 0);
     private readonly Instant _defaultPeriodStart = Instant.FromUtc(2022, 5, 1, 0, 0);
     private readonly long _version = DateTime.Now.Ticks;
-    private readonly List<WholesaleTimeSeriesPoint> _defaultWholesaleTimeSeriesPoints = new()
-    {
+    private readonly List<WholesaleTimeSeriesPoint> _defaultWholesaleTimeSeriesPoints =
+    [
         new WholesaleTimeSeriesPoint(_defaultTime.ToDateTimeOffset(), 1.0m, new List<QuantityQuality> { QuantityQuality.Measured, QuantityQuality.Missing, }, DefaultPrice, DefaultAmount),
-    };
+    ];
 
     [Fact]
     public void CreateWholesaleResult_ReturnExpectedWholesaleResult()

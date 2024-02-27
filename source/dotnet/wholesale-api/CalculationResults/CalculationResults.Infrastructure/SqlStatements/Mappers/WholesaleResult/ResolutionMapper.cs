@@ -18,8 +18,9 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlState
 
 public static class ResolutionMapper
 {
-    public static Resolution FromDeltaTableValue(string resolution) =>
-        resolution switch
+    public static Resolution FromDeltaTableValue(string resolution)
+    {
+        return resolution switch
         {
             "P1M" => Resolution.Month,
             "P1D" => Resolution.Day,
@@ -29,4 +30,5 @@ public static class ResolutionMapper
                 actualValue: resolution,
                 "Value does not contain a valid string representation of a resolution."),
         };
+    }
 }

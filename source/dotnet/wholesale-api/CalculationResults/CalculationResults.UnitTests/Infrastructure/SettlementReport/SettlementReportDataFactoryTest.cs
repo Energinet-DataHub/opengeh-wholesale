@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
@@ -33,7 +32,7 @@ public class SettlementReportDataFactoryTests
 
     public SettlementReportDataFactoryTests()
     {
-        _rows = new List<DatabricksSqlRow>();
+        _rows = [];
         var row1 = CreateRow("123", "BalanceFixing", "2022-05-16T01:00:00.000Z", "non_profiled_consumption", "1.1");
         var row2 = CreateRow("234", "BalanceFixing", "2022-05-16T01:15:00.000Z", "production", "2.2");
         var row3 = CreateRow("234", "BalanceFixing", "2022-05-16T01:30:00.000Z", "production", "3.3");

@@ -22,9 +22,9 @@ public class CalculationDtoBuilder
 {
     private DateTimeOffset _periodStart;
     private DateTimeOffset _periodEnd;
-    private DateTimeOffset _executionStart;
-    private DateTimeOffset __executionEnd;
-    private Guid _calculationId;
+    private readonly DateTimeOffset _executionStart;
+    private readonly DateTimeOffset __executionEnd;
+    private readonly Guid _calculationId;
     private CalculationType _calculationType;
     private long _version;
 

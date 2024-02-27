@@ -15,41 +15,41 @@
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Test.Core
+namespace Test.Core;
+
+public static class ReflectionExtensions
 {
-    public static class ReflectionExtensions
+    /// <summary>
+    ///   Set property value. Example:
+    ///   <code>
+    ///     var myCustomerInstance = new Customer();
+    ///     myCustomerInstance.SetPropertyValue(c => c.Title, "Mr");
+    /// </code>
+    ///   See https://stackoverflow.com/questions/9601707/how-to-set-property-value-using-expressions.
+    /// </summary>
+    public static void SetPrivateProperty<T, TValue>(
+        this T target,
+        Expression<Func<T, TValue>> memberLambda,
+        TValue value)
     {
-        /// <summary>
-        ///   Set property value. Example:
-        ///   <code>
-        ///     var myCustomerInstance = new Customer();
-        ///     myCustomerInstance.SetPropertyValue(c => c.Title, "Mr");
-        /// </code>
-        ///   See https://stackoverflow.com/questions/9601707/how-to-set-property-value-using-expressions.
-        /// </summary>
-        public static void SetPrivateProperty<T, TValue>(
-            this T target,
-            Expression<Func<T, TValue>> memberLambda,
-            TValue value)
+        var expression = memberLambda.Body;
+
+        // Unbox if necessary
+        if (memberLambda.Body is UnaryExpression unaryExpression &&
+            unaryExpression.NodeType == ExpressionType.Convert)
         {
-            var expression = memberLambda.Body;
+            expression = unaryExpression.Operand;
+        }
 
-            // Unbox if necessary
-            if (memberLambda.Body is UnaryExpression unaryExpression &&
-                unaryExpression.NodeType == ExpressionType.Convert)
-                expression = unaryExpression.Operand;
-
-            if (expression is MemberExpression memberSelectorExpression)
-            {
-                var property = memberSelectorExpression.Member as PropertyInfo;
-                if (property != null)
-                    property.SetValue(target, value, null);
-            }
-            else
-            {
-                throw new ArgumentException(
-                    $"Argument '{nameof(memberLambda)}' must have body of type '{nameof(MemberExpression)}'.");
-            }
+        if (expression is MemberExpression memberSelectorExpression)
+        {
+            var property = memberSelectorExpression.Member as PropertyInfo;
+            property?.SetValue(target, value, null);
+        }
+        else
+        {
+            throw new ArgumentException(
+                $"Argument '{nameof(memberLambda)}' must have body of type '{nameof(MemberExpression)}'.");
         }
     }
 }

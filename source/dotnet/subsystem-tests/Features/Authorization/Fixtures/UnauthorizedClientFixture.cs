@@ -16,32 +16,31 @@ using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Configuration;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Authorization.Fixtures
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Authorization.Fixtures;
+
+public sealed class UnauthorizedClientFixture : LazyFixtureBase
 {
-    public sealed class UnauthorizedClientFixture : LazyFixtureBase
+    public UnauthorizedClientFixture(IMessageSink diagnosticMessageSink)
+        : base(diagnosticMessageSink)
     {
-        public UnauthorizedClientFixture(IMessageSink diagnosticMessageSink)
-            : base(diagnosticMessageSink)
+        var configuration = new WholesaleSubsystemConfiguration();
+        UnauthorizedHttpClient = new HttpClient
         {
-            var configuration = new WholesaleSubsystemConfiguration();
-            UnauthorizedHttpClient = new HttpClient
-            {
-                BaseAddress = configuration.WebApiBaseAddress,
-            };
-        }
+            BaseAddress = configuration.WebApiBaseAddress,
+        };
+    }
 
-        public HttpClient UnauthorizedHttpClient { get; }
+    public HttpClient UnauthorizedHttpClient { get; }
 
-        protected override Task OnInitializeAsync()
-        {
-            return Task.CompletedTask;
-        }
+    protected override Task OnInitializeAsync()
+    {
+        return Task.CompletedTask;
+    }
 
-        protected override Task OnDisposeAsync()
-        {
-            UnauthorizedHttpClient.Dispose();
+    protected override Task OnDisposeAsync()
+    {
+        UnauthorizedHttpClient.Dispose();
 
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }

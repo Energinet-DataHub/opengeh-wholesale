@@ -28,9 +28,10 @@ public class BalanceResponsibleValidationRule : IValidationRule<AggregatedTimeSe
     {
         IList<ValidationError> errors = new List<ValidationError>();
 
-        if (subject.RequestedByActorRole != ActorRoleCode.BalanceResponsibleParty) return Task.FromResult(errors);
+        if (subject.RequestedByActorRole != ActorRoleCode.BalanceResponsibleParty)
+            return Task.FromResult(errors);
 
-        if (subject.BusinessReason != BusinessReason.BalanceFixing && subject.BusinessReason != BusinessReason.PreliminaryAggregation)
+        if (subject.BusinessReason is not BusinessReason.BalanceFixing and not BusinessReason.PreliminaryAggregation)
             errors.Add(_invalidBusinessReason);
 
         if (string.IsNullOrWhiteSpace(subject.BalanceResponsibleId))

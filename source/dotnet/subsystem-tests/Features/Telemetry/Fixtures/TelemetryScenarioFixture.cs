@@ -21,91 +21,89 @@ using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Configuration;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Extensions;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
-using Microsoft.Extensions.Configuration;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures;
+
+public sealed class TelemetryScenarioFixture<TState> : LazyFixtureBase
+    where TState : new()
 {
-    public sealed class TelemetryScenarioFixture<TState> : LazyFixtureBase
-        where TState : new()
+    public TelemetryScenarioFixture(IMessageSink diagnosticMessageSink)
+        : base(diagnosticMessageSink)
     {
-        public TelemetryScenarioFixture(IMessageSink diagnosticMessageSink)
-            : base(diagnosticMessageSink)
-        {
-            Configuration = new WholesaleSubsystemConfiguration();
-            LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
+        Configuration = new WholesaleSubsystemConfiguration();
+        LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
 
-            ScenarioState = new TState();
-        }
+        ScenarioState = new TState();
+    }
 
-        public TState ScenarioState { get; }
+    public TState ScenarioState { get; }
 
-        /// <summary>
-        /// Support calling the Wholesale Web API using an authorized Wholesale client.
-        /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
-        /// </summary>
-        public WholesaleClient_V3 WholesaleClient { get; private set; } = null!;
+    /// <summary>
+    /// Support calling the Wholesale Web API using an authorized Wholesale client.
+    /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
+    /// </summary>
+    public WholesaleClient_V3 WholesaleClient { get; private set; } = null!;
 
-        private WholesaleSubsystemConfiguration Configuration { get; }
+    private WholesaleSubsystemConfiguration Configuration { get; }
 
-        private LogsQueryClient LogsQueryClient { get; }
+    private LogsQueryClient LogsQueryClient { get; }
 
-        public async Task<Guid> StartCalculationAsync(CalculationRequestDto calculationInput)
-        {
-            var calculationId = await WholesaleClient.CreateCalculationAsync(calculationInput);
-            DiagnosticMessageSink.WriteDiagnosticMessage($"Fixture {GetType().Name} - Calculation for {calculationInput.CalculationType} with id '{calculationId}' started.");
+    public async Task<Guid> StartCalculationAsync(CalculationRequestDto calculationInput)
+    {
+        var calculationId = await WholesaleClient.CreateCalculationAsync(calculationInput);
+        DiagnosticMessageSink.WriteDiagnosticMessage($"Fixture {GetType().Name} - Calculation for {calculationInput.CalculationType} with id '{calculationId}' started.");
 
-            return calculationId;
-        }
+        return calculationId;
+    }
 
-        public async Task<bool> WaitForTelemetryEventsAsync(
-            IReadOnlyCollection<TelemetryEventMatch> expectedEvents,
-            string query,
-            QueryTimeRange queryTimeRange,
-            TimeSpan waitTimeLimit,
-            TimeSpan delay)
-        {
-            var wasEventsLogged = await Awaiter
-                .TryWaitUntilConditionAsync(
-                    async () =>
-                    {
-                        var actualResponse = await LogsQueryClient.QueryWorkspaceAsync<TelemetryQueryResult>(
-                            Configuration.LogAnalyticsWorkspaceId,
-                            query,
-                            queryTimeRange);
-
-                        return TelemetryScenarioFixture<TState>.ContainsExpectedEvents(expectedEvents, actualResponse.Value);
-                    },
-                    waitTimeLimit,
-                    delay);
-
-            return wasEventsLogged;
-        }
-
-        protected override async Task OnInitializeAsync()
-        {
-            WholesaleClient = await WholesaleClientFactory.CreateAsync(Configuration, useAuthentication: true);
-        }
-
-        protected override Task OnDisposeAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        private static bool ContainsExpectedEvents(IReadOnlyCollection<TelemetryEventMatch> expectedEvents, IReadOnlyList<TelemetryQueryResult> actualResults)
-        {
-            if (actualResults.Count < expectedEvents.Count)
-                return false;
-
-            foreach (var expected in expectedEvents)
-            {
-                if (!actualResults.Any(actual => expected.IsMatch(actual)))
+    public async Task<bool> WaitForTelemetryEventsAsync(
+        IReadOnlyCollection<TelemetryEventMatch> expectedEvents,
+        string query,
+        QueryTimeRange queryTimeRange,
+        TimeSpan waitTimeLimit,
+        TimeSpan delay)
+    {
+        var wasEventsLogged = await Awaiter
+            .TryWaitUntilConditionAsync(
+                async () =>
                 {
-                    return false;
-                }
-            }
+                    var actualResponse = await LogsQueryClient.QueryWorkspaceAsync<TelemetryQueryResult>(
+                        Configuration.LogAnalyticsWorkspaceId,
+                        query,
+                        queryTimeRange);
 
-            return true;
+                    return TelemetryScenarioFixture<TState>.ContainsExpectedEvents(expectedEvents, actualResponse.Value);
+                },
+                waitTimeLimit,
+                delay);
+
+        return wasEventsLogged;
+    }
+
+    protected override async Task OnInitializeAsync()
+    {
+        WholesaleClient = await WholesaleClientFactory.CreateAsync(Configuration, useAuthentication: true);
+    }
+
+    protected override Task OnDisposeAsync()
+    {
+        return Task.CompletedTask;
+    }
+
+    private static bool ContainsExpectedEvents(IReadOnlyCollection<TelemetryEventMatch> expectedEvents, IReadOnlyList<TelemetryQueryResult> actualResults)
+    {
+        if (actualResults.Count < expectedEvents.Count)
+            return false;
+
+        foreach (var expected in expectedEvents)
+        {
+            if (!actualResults.Any(expected.IsMatch))
+            {
+                return false;
+            }
         }
+
+        return true;
     }
 }

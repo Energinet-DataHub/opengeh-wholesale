@@ -34,22 +34,19 @@ public static class CalculationStateMapper
 
     public static Calculations.Interfaces.Models.CalculationState? MapState(CalculationState? calculationDtoExecutionState)
     {
-        if (calculationDtoExecutionState == null)
-        {
-            return null;
-        }
+        return calculationDtoExecutionState == null
+            ? null
+            : calculationDtoExecutionState switch
+            {
+                CalculationState.Pending => Calculations.Interfaces.Models.CalculationState.Pending,
+                CalculationState.Executing => Calculations.Interfaces.Models.CalculationState.Executing,
+                CalculationState.Completed => Calculations.Interfaces.Models.CalculationState.Completed,
+                CalculationState.Failed => Calculations.Interfaces.Models.CalculationState.Failed,
 
-        return calculationDtoExecutionState switch
-        {
-            CalculationState.Pending => Calculations.Interfaces.Models.CalculationState.Pending,
-            CalculationState.Executing => Calculations.Interfaces.Models.CalculationState.Executing,
-            CalculationState.Completed => Calculations.Interfaces.Models.CalculationState.Completed,
-            CalculationState.Failed => Calculations.Interfaces.Models.CalculationState.Failed,
-
-            _ => throw new ArgumentOutOfRangeException(
-                nameof(calculationDtoExecutionState),
-                actualValue: calculationDtoExecutionState,
-                "Value cannot be mapped to a nullable calculation state."),
-        };
+                _ => throw new ArgumentOutOfRangeException(
+                    nameof(calculationDtoExecutionState),
+                    actualValue: calculationDtoExecutionState,
+                    "Value cannot be mapped to a nullable calculation state."),
+            };
     }
 }

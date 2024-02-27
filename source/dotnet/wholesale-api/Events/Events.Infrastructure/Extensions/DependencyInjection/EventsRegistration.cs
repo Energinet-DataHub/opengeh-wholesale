@@ -29,69 +29,68 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Extensions.DependencyInjection
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Extensions.DependencyInjection;
+
+/// <summary>
+/// Registration of services required for the Events module.
+/// </summary>
+public static class EventsRegistration
 {
     /// <summary>
-    /// Registration of services required for the Events module.
+    /// Registration if Events database (schema) with key services to support read/write.
     /// </summary>
-    public static class EventsRegistration
+    public static IServiceCollection AddEventsDatabase(this IServiceCollection services, IConfiguration configuration)
     {
-        /// <summary>
-        /// Registration if Events database (schema) with key services to support read/write.
-        /// </summary>
-        public static IServiceCollection AddEventsDatabase(this IServiceCollection services, IConfiguration configuration)
+        // We don't add a health check for this context, because it's just another schema
+        // in the database we already use for Calculations
+        services.AddScoped<IEventsDatabaseContext, EventsDatabaseContext>();
+        services.AddDbContext<EventsDatabaseContext>(
+            options => options.UseSqlServer(
+                configuration
+                    .GetSection(ConnectionStringsOptions.ConnectionStrings)
+                    .Get<ConnectionStringsOptions>()!.DB_CONNECTION_STRING,
+                o =>
+                {
+                    o.UseNodaTime();
+                    o.EnableRetryOnFailure();
+                }));
+
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<ICompletedCalculationRepository, CompletedCalculationRepository>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddIntegrationEventPublishing(this IServiceCollection services, IConfiguration configuration)
+    {
+        services
+            .AddScoped<IEnergyResultProducedV2Factory, EnergyResultProducedV2Factory>()
+            .AddScoped<IGridLossResultProducedV1Factory, GridLossResultProducedV1Factory>()
+            .AddScoped<IAmountPerChargeResultProducedV1Factory, AmountPerChargeResultProducedV1Factory>()
+            .AddScoped<IMonthlyAmountPerChargeResultProducedV1Factory, MonthlyAmountPerChargeResultProducedV1Factory>();
+
+        services
+            .AddScoped<IEnergyResultEventProvider, EnergyResultEventProvider>()
+            .AddScoped<IWholesaleResultEventProvider, WholesaleResultEventProvider>();
+
+        var serviceBusOptions = configuration.Get<ServiceBusOptions>()!;
+        services.Configure<PublisherOptions>(options =>
         {
-            // We don't add a health check for this context, because it's just another schema
-            // in the database we already use for Calculations
-            services.AddScoped<IEventsDatabaseContext, EventsDatabaseContext>();
-            services.AddDbContext<EventsDatabaseContext>(
-                options => options.UseSqlServer(
-                    configuration
-                        .GetSection(ConnectionStringsOptions.ConnectionStrings)
-                        .Get<ConnectionStringsOptions>()!.DB_CONNECTION_STRING,
-                    o =>
-                    {
-                        o.UseNodaTime();
-                        o.EnableRetryOnFailure();
-                    }));
+            options.ServiceBusConnectionString = serviceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING;
+            options.TopicName = serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME;
+            options.TransportType = Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpWebSockets;
+        });
+        services.AddPublisher<IntegrationEventProvider>();
 
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddScoped<ICompletedCalculationRepository, CompletedCalculationRepository>();
+        return services;
+    }
 
-            return services;
-        }
+    public static IServiceCollection AddCompletedCalculationsHandling(this IServiceCollection services)
+    {
+        services
+            .AddScoped<ICompletedCalculationFactory, CompletedCalculationFactory>()
+            .AddScoped<IRegisterCompletedCalculationsHandler, RegisterCompletedCalculationsHandler>(); // This depends on services within Calculations sub-area
 
-        public static IServiceCollection AddIntegrationEventPublishing(this IServiceCollection services, IConfiguration configuration)
-        {
-            services
-                .AddScoped<IEnergyResultProducedV2Factory, EnergyResultProducedV2Factory>()
-                .AddScoped<IGridLossResultProducedV1Factory, GridLossResultProducedV1Factory>()
-                .AddScoped<IAmountPerChargeResultProducedV1Factory, AmountPerChargeResultProducedV1Factory>()
-                .AddScoped<IMonthlyAmountPerChargeResultProducedV1Factory, MonthlyAmountPerChargeResultProducedV1Factory>();
-
-            services
-                .AddScoped<IEnergyResultEventProvider, EnergyResultEventProvider>()
-                .AddScoped<IWholesaleResultEventProvider, WholesaleResultEventProvider>();
-
-            var serviceBusOptions = configuration.Get<ServiceBusOptions>()!;
-            services.Configure<PublisherOptions>(options =>
-            {
-                options.ServiceBusConnectionString = serviceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING;
-                options.TopicName = serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME;
-                options.TransportType = Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpWebSockets;
-            });
-            services.AddPublisher<IntegrationEventProvider>();
-
-            return services;
-        }
-
-        public static IServiceCollection AddCompletedCalculationsHandling(this IServiceCollection services)
-        {
-            services
-                .AddScoped<ICompletedCalculationFactory, CompletedCalculationFactory>()
-                .AddScoped<IRegisterCompletedCalculationsHandler, RegisterCompletedCalculationsHandler>(); // This depends on services within Calculations sub-area
-
-            return services;
-        }
+        return services;
     }
 }

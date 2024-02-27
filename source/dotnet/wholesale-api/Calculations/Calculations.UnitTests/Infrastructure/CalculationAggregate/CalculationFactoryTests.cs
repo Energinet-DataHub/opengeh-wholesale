@@ -28,7 +28,7 @@ public class CalculationFactoryTests
     private readonly DateTimeOffset _startDate = DateTimeOffset.Parse("2021-12-31T23:00Z");
     private readonly DateTimeOffset _endDate = DateTimeOffset.Parse("2022-01-31T23:00Z");
     private readonly DateTimeZone _timeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!;
-    private readonly List<string> _someGridAreasIds = new() { "004", "805" };
+    private readonly List<string> _someGridAreasIds = ["004", "805"];
 
     [Fact]
     public void Create_ReturnsCalculationWithCorrectPeriod()

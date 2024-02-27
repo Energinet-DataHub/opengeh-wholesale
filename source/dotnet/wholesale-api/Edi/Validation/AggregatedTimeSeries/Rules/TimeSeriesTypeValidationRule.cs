@@ -26,13 +26,11 @@ public class TimeSeriesTypeValidationRule : IValidationRule<AggregatedTimeSeries
         if (subject.RequestedByActorRole == ActorRoleCode.MeteredDataResponsible)
             return Task.FromResult(NoError);
 
-        if (subject.MeteringPointType == MeteringPointType.Exchange)
-            return Task.FromResult(InvalidTimeSeriesTypeForActor(subject.RequestedByActorRole));
-
-        if (subject.MeteringPointType == MeteringPointType.Consumption && !subject.HasSettlementMethod)
-            return Task.FromResult(InvalidTimeSeriesTypeForActor(subject.RequestedByActorRole));
-
-        return Task.FromResult(NoError);
+        return subject.MeteringPointType == MeteringPointType.Exchange
+            ? Task.FromResult(InvalidTimeSeriesTypeForActor(subject.RequestedByActorRole))
+            : subject.MeteringPointType == MeteringPointType.Consumption && !subject.HasSettlementMethod
+            ? Task.FromResult(InvalidTimeSeriesTypeForActor(subject.RequestedByActorRole))
+            : Task.FromResult(NoError);
     }
 
     private IList<ValidationError> InvalidTimeSeriesTypeForActor(string actorRole)

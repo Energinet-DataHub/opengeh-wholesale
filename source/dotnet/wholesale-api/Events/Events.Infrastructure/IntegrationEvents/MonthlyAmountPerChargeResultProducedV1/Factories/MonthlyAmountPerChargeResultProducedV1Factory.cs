@@ -20,10 +20,12 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mo
 
 public class MonthlyAmountPerChargeResultProducedV1Factory : IMonthlyAmountPerChargeResultProducedV1Factory
 {
-    public bool CanCreate(WholesaleResult result) =>
-        result.AmountType == AmountType.MonthlyAmountPerCharge
+    public bool CanCreate(WholesaleResult result)
+    {
+        return result.AmountType == AmountType.MonthlyAmountPerCharge
         && result.Resolution is Resolution.Month
         && result.TimeSeriesPoints.Count == 1;
+    }
 
     public Contracts.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1 Create(WholesaleResult result)
     {

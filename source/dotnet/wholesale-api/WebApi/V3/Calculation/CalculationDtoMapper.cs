@@ -18,9 +18,9 @@ public static class CalculationDtoMapper
 {
     public static CalculationDto Map(Calculations.Interfaces.Models.CalculationDto calculationDto)
     {
-        if (calculationDto == null) throw new ArgumentNullException(nameof(calculationDto));
-
-        return new CalculationDto(
+        return calculationDto == null
+            ? throw new ArgumentNullException(nameof(calculationDto))
+            : new CalculationDto(
             calculationDto.RunId,
             calculationDto.CalculationId,
             calculationDto.PeriodStart,

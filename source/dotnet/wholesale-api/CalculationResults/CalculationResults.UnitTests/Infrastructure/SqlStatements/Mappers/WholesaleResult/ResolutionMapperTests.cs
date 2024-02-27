@@ -18,82 +18,81 @@ using FluentAssertions;
 using Test.Core;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SqlStatements.Mappers.WholesaleResult
+namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SqlStatements.Mappers.WholesaleResult;
+
+public class ResolutionMapperTests
 {
-    public class ResolutionMapperTests
+    private const string DocumentPath = "DeltaTableContracts.enums.wholesale-result-resolution.json";
+
+    [Fact]
+    public async Task ContractPropertyCount_Matches_ModelValuesCount()
     {
-        private const string DocumentPath = "DeltaTableContracts.enums.wholesale-result-resolution.json";
+        // Arrange
+        await using var stream = EmbeddedResources.GetStream<Root>(DocumentPath);
+        var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
 
-        [Fact]
-        public async Task ContractPropertyCount_Matches_ModelValuesCount()
-        {
-            // Arrange
-            await using var stream = EmbeddedResources.GetStream<Root>(DocumentPath);
-            var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
+        // Act
+        var expectedLength = Enum.GetNames(typeof(Resolution)).Length;
 
-            // Act
-            var expectedLength = Enum.GetNames(typeof(Resolution)).Length;
+        // Assert
+        expectedLength.Should().Be(validDeltaValues.Count);
+    }
 
-            // Assert
-            expectedLength.Should().Be(validDeltaValues.Count);
-        }
+    [Theory]
+    [InlineData("P1M")]
+    [InlineData("P1D")]
+    [InlineData("PT1H")]
+    public async Task ModelValues_Matches_DeltaTableValues(string deltaTableValue)
+    {
+        // Arrange
+        await using var stream = EmbeddedResources.GetStream<Root>(DocumentPath);
+        var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
 
-        [Theory]
-        [InlineData("P1M")]
-        [InlineData("P1D")]
-        [InlineData("PT1H")]
-        public async Task ModelValues_Matches_DeltaTableValues(string deltaTableValue)
-        {
-            // Arrange
-            await using var stream = EmbeddedResources.GetStream<Root>(DocumentPath);
-            var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
+        // Assert
+        deltaTableValue.Should().BeOneOf(validDeltaValues);
+    }
 
-            // Assert
-            deltaTableValue.Should().BeOneOf(validDeltaValues);
-        }
+    [Fact]
+    public async Task FromDeltaTableValue_MapsAllValidDeltaTableValues()
+    {
+        // Arrange
+        await using var stream = EmbeddedResources.GetStream<Root>(DocumentPath);
+        var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
 
-        [Fact]
-        public async Task FromDeltaTableValue_MapsAllValidDeltaTableValues()
-        {
-            // Arrange
-            await using var stream = EmbeddedResources.GetStream<Root>(DocumentPath);
-            var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
-
-            foreach (var validDeltaValue in validDeltaValues)
-            {
-                // Act
-                var actual = ResolutionMapper.FromDeltaTableValue(validDeltaValue);
-
-                // Assert it's a defined enum value (and not null)
-                actual.Should().BeDefined();
-            }
-        }
-
-        [Theory]
-        [InlineData("P1M", Resolution.Month)]
-        [InlineData("P1D", Resolution.Day)]
-        [InlineData("PT1H", Resolution.Hour)]
-        public void FromDeltaTableValue_WhenValidDeltaTableValue_ReturnsExpectedType(string deltaTableValue, Resolution expectedType)
+        foreach (var validDeltaValue in validDeltaValues)
         {
             // Act
-            var actualType = ResolutionMapper.FromDeltaTableValue(deltaTableValue);
+            var actual = ResolutionMapper.FromDeltaTableValue(validDeltaValue);
 
-            // Assert
-            actualType.Should().Be(expectedType);
+            // Assert it's a defined enum value (and not null)
+            actual.Should().BeDefined();
         }
+    }
 
-        [Fact]
-        public void FromDeltaTableValue_WhenInvalidDeltaTableValue_ThrowsArgumentOutOfRangeException()
-        {
-            // Arrange
-            var invalidDeltaTableValue = Guid.NewGuid().ToString();
+    [Theory]
+    [InlineData("P1M", Resolution.Month)]
+    [InlineData("P1D", Resolution.Day)]
+    [InlineData("PT1H", Resolution.Hour)]
+    public void FromDeltaTableValue_WhenValidDeltaTableValue_ReturnsExpectedType(string deltaTableValue, Resolution expectedType)
+    {
+        // Act
+        var actualType = ResolutionMapper.FromDeltaTableValue(deltaTableValue);
 
-            // Act
-            var act = () => ResolutionMapper.FromDeltaTableValue(invalidDeltaTableValue);
+        // Assert
+        actualType.Should().Be(expectedType);
+    }
 
-            // Assert
-            act.Should().Throw<ArgumentOutOfRangeException>()
-                .And.ActualValue.Should().Be(invalidDeltaTableValue);
-        }
+    [Fact]
+    public void FromDeltaTableValue_WhenInvalidDeltaTableValue_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        var invalidDeltaTableValue = Guid.NewGuid().ToString();
+
+        // Act
+        var act = () => ResolutionMapper.FromDeltaTableValue(invalidDeltaTableValue);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .And.ActualValue.Should().Be(invalidDeltaTableValue);
     }
 }

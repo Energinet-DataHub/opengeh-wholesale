@@ -17,26 +17,25 @@ using Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection
+namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
+
+/// <summary>
+/// Extension methods for <see cref="IServiceCollection"/>
+/// that allow adding Databricks services to an application.
+/// </summary>
+public static class DatabricksExtensions
 {
     /// <summary>
-    /// Extension methods for <see cref="IServiceCollection"/>
-    /// that allow adding Databricks services to an application.
+    /// Register DatabricksJobs services commonly used by DH3 applications.
     /// </summary>
-    public static class DatabricksExtensions
+    public static IServiceCollection AddDatabricksJobsForApplication(this IServiceCollection services, IConfiguration configuration)
     {
-        /// <summary>
-        /// Register DatabricksJobs services commonly used by DH3 applications.
-        /// </summary>
-        public static IServiceCollection AddDatabricksJobsForApplication(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddDatabricksJobs(configuration);
+        services.AddDatabricksJobs(configuration);
 
-            // Health checks
-            services.AddHealthChecks()
-                .AddDatabricksJobsApiHealthCheck();
+        // Health checks
+        services.AddHealthChecks()
+            .AddDatabricksJobsApiHealthCheck();
 
-            return services;
-        }
+        return services;
     }
 }

@@ -18,7 +18,7 @@ using Xunit;
 using EventSettlementMethod = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.AmountPerChargeResultProducedV1.Types.SettlementMethod;
 using ModelSettlementMethod = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.SettlementMethod;
 
-namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.Mappers.AmountPerChargeResultProducedV1;
+namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.AmountPerChargeResultProducedV1.Mappers;
 
 public class SettlementMethodMapperTests
 {

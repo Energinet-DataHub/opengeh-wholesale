@@ -29,13 +29,11 @@ public class SettlementMethodValidationRule : IValidationRule<AggregatedTimeSeri
         if (!subject.HasSettlementMethod)
             return Task.FromResult(NoError);
 
-        if (!IsValidSettlementMethod(subject.SettlementMethod))
-            return Task.FromResult(InvalidSettlementMethod);
-
-        if (!IsMeteringPointTypeConsumption(subject.MeteringPointType))
-            return Task.FromResult(InvalidSettlementMethod);
-
-        return Task.FromResult(NoError);
+        return !IsValidSettlementMethod(subject.SettlementMethod)
+            ? Task.FromResult(InvalidSettlementMethod)
+            : !IsMeteringPointTypeConsumption(subject.MeteringPointType)
+            ? Task.FromResult(InvalidSettlementMethod)
+            : Task.FromResult(NoError);
     }
 
     private bool IsValidSettlementMethod(string settlementMethod)

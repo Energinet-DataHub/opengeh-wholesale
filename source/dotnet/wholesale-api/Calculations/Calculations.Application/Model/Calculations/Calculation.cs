@@ -81,10 +81,10 @@ public class Calculation
 
         // Validate that period end is set to midnight
         if (periodEndInTimeZone.TimeOfDay != LocalTime.Midnight)
-            errors.Add($"The period end '{periodEnd.ToString()}' must be midnight.");
+            errors.Add($"The period end '{periodEnd}' must be midnight.");
 
         if (periodStartInTimeZone.TimeOfDay != LocalTime.Midnight)
-            errors.Add($"The period start '{periodStart.ToString()}' must be midnight.");
+            errors.Add($"The period start '{periodStart}' must be midnight.");
 
         if (calculationType is CalculationType.WholesaleFixing
             or CalculationType.FirstCorrectionSettlement
@@ -113,7 +113,7 @@ public class Calculation
     private Calculation()
     {
         Id = Guid.NewGuid();
-        _gridAreaCodes = new List<GridAreaCode>();
+        _gridAreaCodes = [];
         Version = 0;
     }
 
@@ -162,18 +162,11 @@ public class Calculation
     /// </summary>
     public string GetResolution()
     {
-        switch (CalculationType)
+        return CalculationType switch
         {
-            case CalculationType.BalanceFixing:
-            case CalculationType.Aggregation:
-            case CalculationType.WholesaleFixing:
-            case CalculationType.FirstCorrectionSettlement:
-            case CalculationType.SecondCorrectionSettlement:
-            case CalculationType.ThirdCorrectionSettlement:
-                return "PT15M";
-            default:
-                throw new NotImplementedException();
-        }
+            CalculationType.BalanceFixing or CalculationType.Aggregation or CalculationType.WholesaleFixing or CalculationType.FirstCorrectionSettlement or CalculationType.SecondCorrectionSettlement or CalculationType.ThirdCorrectionSettlement => "PT15M",
+            _ => throw new NotImplementedException(),
+        };
     }
 
     /// <summary>
@@ -181,18 +174,11 @@ public class Calculation
     /// </summary>
     public QuantityUnit GetQuantityUnit()
     {
-        switch (CalculationType)
+        return CalculationType switch
         {
-            case CalculationType.BalanceFixing:
-            case CalculationType.Aggregation:
-            case CalculationType.WholesaleFixing:
-            case CalculationType.FirstCorrectionSettlement:
-            case CalculationType.SecondCorrectionSettlement:
-            case CalculationType.ThirdCorrectionSettlement:
-                return QuantityUnit.Kwh;
-            default:
-                throw new NotImplementedException();
-        }
+            CalculationType.BalanceFixing or CalculationType.Aggregation or CalculationType.WholesaleFixing or CalculationType.FirstCorrectionSettlement or CalculationType.SecondCorrectionSettlement or CalculationType.ThirdCorrectionSettlement => QuantityUnit.Kwh,
+            _ => throw new NotImplementedException(),
+        };
     }
 
     public void MarkAsSubmitted(CalculationJobId calculationJobId)

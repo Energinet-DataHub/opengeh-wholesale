@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Wholesale.Calculations.Application;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Application.UseCases;
@@ -65,10 +66,13 @@ public static class CalculationsRegistration
         services.AddScoped<IStartCalculationHandler, StartCalculationHandler>();
         services.AddScoped<IUpdateCalculationExecutionStateHandler, UpdateCalculationExecutionStateHandler>();
 
+        services.AddHostedService<Energinet.DataHub.Wholesale.Calculations.Application.UseCases.UpdateCalculationExecutionStateTrigger>();
+
         // Health checks
         services.AddHealthChecks()
             .AddDbContextCheck<DatabaseContext>(
-                name: $"{nameof(DatabaseContext)}HealthCheck");
+                name: $"{nameof(DatabaseContext)}HealthCheck")
+            .AddRepeatingTriggerHealthCheck<Energinet.DataHub.Wholesale.Calculations.Application.UseCases.UpdateCalculationExecutionStateTrigger>(TimeSpan.FromMinutes(1));
 
         return services;
     }

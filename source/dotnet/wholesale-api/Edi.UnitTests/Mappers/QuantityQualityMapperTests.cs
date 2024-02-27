@@ -18,38 +18,37 @@ using Xunit;
 using EdiModel = Energinet.DataHub.Edi.Responses;
 using WholesaleModel = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
-namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Mappers
+namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Mappers;
+
+public class QuantityQualityMapperTests
 {
-    public class QuantityQualityMapperTests
+    [Theory]
+    [InlineData(WholesaleModel.QuantityQuality.Estimated, EdiModel.QuantityQuality.Estimated)]
+    [InlineData(WholesaleModel.QuantityQuality.Measured, EdiModel.QuantityQuality.Measured)]
+    [InlineData(WholesaleModel.QuantityQuality.Calculated, EdiModel.QuantityQuality.Calculated)]
+    [InlineData(WholesaleModel.QuantityQuality.Missing, EdiModel.QuantityQuality.Missing)]
+    public void ToDeltaTableValue_ReturnsExpectedString(
+        WholesaleModel.QuantityQuality type,
+        EdiModel.QuantityQuality expectedType)
     {
-        [Theory]
-        [InlineData(WholesaleModel.QuantityQuality.Estimated, EdiModel.QuantityQuality.Estimated)]
-        [InlineData(WholesaleModel.QuantityQuality.Measured, EdiModel.QuantityQuality.Measured)]
-        [InlineData(WholesaleModel.QuantityQuality.Calculated, EdiModel.QuantityQuality.Calculated)]
-        [InlineData(WholesaleModel.QuantityQuality.Missing, EdiModel.QuantityQuality.Missing)]
-        public void ToDeltaTableValue_ReturnsExpectedString(
-            WholesaleModel.QuantityQuality type,
-            EdiModel.QuantityQuality expectedType)
-        {
-            // Act
-            var actualType = QuantityQualityMapper.MapQuantityQuality(type);
+        // Act
+        var actualType = QuantityQualityMapper.MapQuantityQuality(type);
 
-            // Assert
-            actualType.Should().Be(expectedType);
-        }
+        // Assert
+        actualType.Should().Be(expectedType);
+    }
 
-        [Fact]
-        public void MapQuantityQuality_WhenInvalidEnumNumberForQuantityQuality_ThrowsArgumentOutOfRangeException()
-        {
-            // Arrange
-            var invalidValue = (WholesaleModel.QuantityQuality)99;
+    [Fact]
+    public void MapQuantityQuality_WhenInvalidEnumNumberForQuantityQuality_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        var invalidValue = (WholesaleModel.QuantityQuality)99;
 
-            // Act
-            var act = () => QuantityQualityMapper.MapQuantityQuality(invalidValue);
+        // Act
+        var act = () => QuantityQualityMapper.MapQuantityQuality(invalidValue);
 
-            // Assert
-            act.Should().Throw<ArgumentOutOfRangeException>()
-                .And.ActualValue.Should().Be(invalidValue);
-        }
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .And.ActualValue.Should().Be(invalidValue);
     }
 }

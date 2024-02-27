@@ -31,15 +31,14 @@ public class GridAreaValidationRule : IValidationRule<AggregatedTimeSeriesReques
 
     public async Task<IList<ValidationError>> ValidateAsync(AggregatedTimeSeriesRequest subject)
     {
-        if (subject.RequestedByActorRole != ActorRoleCode.MeteredDataResponsible) return NoError;
+        if (subject.RequestedByActorRole != ActorRoleCode.MeteredDataResponsible)
+            return NoError;
 
-        if (!subject.HasGridAreaCode)
-            return MissingGridAreaCodeError;
-
-        if (!await IsGridAreaOwnerAsync(subject.GridAreaCode, subject.RequestedByActorId).ConfigureAwait(false))
-            return InvalidGridAreaError;
-
-        return NoError;
+        return !subject.HasGridAreaCode
+            ? MissingGridAreaCodeError
+            : !await IsGridAreaOwnerAsync(subject.GridAreaCode, subject.RequestedByActorId).ConfigureAwait(false)
+            ? InvalidGridAreaError
+            : NoError;
     }
 
     private async Task<bool> IsGridAreaOwnerAsync(string gridAreaCode, string actorId)

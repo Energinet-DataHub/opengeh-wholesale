@@ -100,7 +100,7 @@ public class CalculationTests
             .WithPeriodEnd(Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022.AddDays(days)));
 
         // Act
-        var actual = Record.Exception(() => calculationBuilder.Build());
+        var actual = Record.Exception(calculationBuilder.Build);
 
         // Assert
         Assert.Equal(isValid, actual == null);
@@ -128,7 +128,9 @@ public class CalculationTests
         var someGridAreas = new List<GridAreaCode> { new("004"), new("805") };
 
         // Act
-        var createCalculation = () => new Calculation(
+        Calculation createCalculation()
+        {
+            return new Calculation(
             SystemClock.Instance.GetCurrentInstant(),
             CalculationType.WholesaleFixing,
             someGridAreas,
@@ -138,6 +140,7 @@ public class CalculationTests
             DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
             Guid.NewGuid(),
             SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks);
+        }
 
         // Assert
         if (isEntireMonth)
@@ -146,7 +149,7 @@ public class CalculationTests
         }
         else
         {
-            Assert.Throws<BusinessValidationException>(createCalculation);
+            Assert.Throws<BusinessValidationException>((Func<Calculation>)createCalculation);
         }
     }
 
@@ -285,7 +288,7 @@ public class CalculationTests
             SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks));
 
         // Assert
-        actual.Message.Should().Contain($"The period start '{startPeriod.ToString()}' must be midnight.");
+        actual.Message.Should().Contain($"The period start '{startPeriod}' must be midnight.");
     }
 
     [Fact]
@@ -335,14 +338,14 @@ public class CalculationTests
     public void MarkAsExecuting_WhenExecuting_ThrowsBusinessValidationException()
     {
         var sut = new CalculationBuilder().WithStateExecuting().Build();
-        Assert.Throws<BusinessValidationException>(() => sut.MarkAsExecuting());
+        Assert.Throws<BusinessValidationException>(sut.MarkAsExecuting);
     }
 
     [Fact]
     public void MarkAsExecuting_WhenComplete_ThrowsBusinessValidationException()
     {
         var sut = new CalculationBuilder().WithStateCompleted().Build();
-        Assert.Throws<BusinessValidationException>(() => sut.MarkAsExecuting());
+        Assert.Throws<BusinessValidationException>(sut.MarkAsExecuting);
     }
 
     [Fact]
@@ -389,6 +392,6 @@ public class CalculationTests
     public void Reset_WhenCompleted_ThrowsBusinessValidationException()
     {
         var sut = new CalculationBuilder().WithStateCompleted().Build();
-        Assert.Throws<BusinessValidationException>(() => sut.Reset());
+        Assert.Throws<BusinessValidationException>(sut.Reset);
     }
 }

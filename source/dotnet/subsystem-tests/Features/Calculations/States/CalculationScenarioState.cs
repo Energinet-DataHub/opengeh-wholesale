@@ -15,30 +15,29 @@
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3;
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.States
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.States;
+
+public class CalculationScenarioState
 {
-    public class CalculationScenarioState
-    {
-        public CalculationRequestDto CalculationInput { get; set; }
-            = new();
+    public CalculationRequestDto CalculationInput { get; set; }
+        = new();
 
-        public IList<string> SubscribedIntegrationEventNames { get; }
-            = new List<string>();
+    public IList<string> SubscribedIntegrationEventNames { get; }
+        = new List<string>();
 
-        public Guid CalculationId { get; set; }
+    public Guid CalculationId { get; set; }
 
-        public CalculationDto? Calculation { get; set; }
+    public CalculationDto? Calculation { get; set; }
 
-        public IReadOnlyCollection<EnergyResultProducedV2> ReceivedEnergyResultProducedV2 { get; set; }
-            = new List<EnergyResultProducedV2>();
+    public IReadOnlyCollection<EnergyResultProducedV2> ReceivedEnergyResultProducedV2 { get; set; }
+        = new List<EnergyResultProducedV2>();
 
-        public IReadOnlyCollection<GridLossResultProducedV1> ReceivedGridLossProducedV1 { get; set; }
-            = new List<GridLossResultProducedV1>();
+    public IReadOnlyCollection<GridLossResultProducedV1> ReceivedGridLossProducedV1 { get; set; }
+        = new List<GridLossResultProducedV1>();
 
-        public IReadOnlyCollection<AmountPerChargeResultProducedV1> ReceivedAmountPerChargeResultProducedV1 { get; set; }
-            = new List<AmountPerChargeResultProducedV1>();
+    public IReadOnlyCollection<AmountPerChargeResultProducedV1> ReceivedAmountPerChargeResultProducedV1 { get; set; }
+        = new List<AmountPerChargeResultProducedV1>();
 
-        public IReadOnlyCollection<MonthlyAmountPerChargeResultProducedV1> ReceivedMonthlyAmountPerChargeResultProducedV1 { get; set; }
-            = new List<MonthlyAmountPerChargeResultProducedV1>();
-    }
+    public IReadOnlyCollection<MonthlyAmountPerChargeResultProducedV1> ReceivedMonthlyAmountPerChargeResultProducedV1 { get; set; }
+        = new List<MonthlyAmountPerChargeResultProducedV1>();
 }

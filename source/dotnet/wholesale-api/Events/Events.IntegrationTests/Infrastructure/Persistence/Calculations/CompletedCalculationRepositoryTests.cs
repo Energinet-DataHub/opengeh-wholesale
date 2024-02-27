@@ -13,12 +13,12 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Calculations.IntegrationTests.Fixture.Database;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedCalculations;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Test.Core.Fixture.Database;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Events.IntegrationTests.Infrastructure.Persistence.Calculations;

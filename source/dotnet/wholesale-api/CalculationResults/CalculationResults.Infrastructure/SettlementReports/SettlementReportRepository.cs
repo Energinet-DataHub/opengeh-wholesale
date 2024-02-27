@@ -32,12 +32,12 @@ public class SettlementReportRepository : ISettlementReportRepository
     {
         _dataLakeClient = dataLakeClient;
         _streamZipper = streamZipper;
-        _fileIdentifierProviders = new List<Func<Guid, string, (string Directory, string Extension, string EntryPath)>>
-        {
+        _fileIdentifierProviders =
+        [
             GetTimeSeriesHourBasisDataForTotalGridAreaFileSpecification,
             GetTimeSeriesQuarterBasisDataForTotalGridAreaFileSpecification,
             GetMasterBasisDataFileForTotalGridAreaSpecification,
-        };
+        ];
     }
 
     public async Task CreateSettlementReportsAsync(CalculationInfo completedCalculationInfo)
@@ -65,36 +65,51 @@ public class SettlementReportRepository : ISettlementReportRepository
     }
 
     public static (string Directory, string Extension, string ZipEntryPath) GetTimeSeriesHourBasisDataForTotalGridAreaFileSpecification(Guid calculationId, string gridAreaCode)
-        => ($"calculation-output/batch_id={calculationId}/basis_data/time_series_hour/grouping=total_ga/grid_area={gridAreaCode}/",
-            ".csv",
-            $"{gridAreaCode}/Timeseries_PT1H.csv");
+    {
+        return ($"calculation-output/batch_id={calculationId}/basis_data/time_series_hour/grouping=total_ga/grid_area={gridAreaCode}/",
+                ".csv",
+                $"{gridAreaCode}/Timeseries_PT1H.csv");
+    }
 
     public static (string Directory, string Extension, string ZipEntryPath) GetTimeSeriesQuarterBasisDataForTotalGridAreaFileSpecification(Guid calculationId, string gridAreaCode)
-        => ($"calculation-output/batch_id={calculationId}/basis_data/time_series_quarter/grouping=total_ga/grid_area={gridAreaCode}/",
-            ".csv",
-            $"{gridAreaCode}/Timeseries_PT15M.csv");
+    {
+        return ($"calculation-output/batch_id={calculationId}/basis_data/time_series_quarter/grouping=total_ga/grid_area={gridAreaCode}/",
+                ".csv",
+                $"{gridAreaCode}/Timeseries_PT15M.csv");
+    }
 
     public static (string Directory, string Extension, string ZipEntryPath) GetMasterBasisDataFileForTotalGridAreaSpecification(Guid calculationId, string gridAreaCode)
-        => ($"calculation-output/batch_id={calculationId}/basis_data/master_basis_data/grouping=total_ga/grid_area={gridAreaCode}/",
-            ".csv",
-            $"{gridAreaCode}/MeteringPointMasterData.csv");
+    {
+        return ($"calculation-output/batch_id={calculationId}/basis_data/master_basis_data/grouping=total_ga/grid_area={gridAreaCode}/",
+                ".csv",
+                $"{gridAreaCode}/MeteringPointMasterData.csv");
+    }
 
     public static (string Directory, string Extension, string ZipEntryPath) GetTimeSeriesHourBasisDataForEsPerGaGridAreaFileSpecification(Guid calculationId, string gridAreaCode, string energySupplierId)
-        => ($"calculation-output/batch_id={calculationId}/basis_data/time_series_hour/grouping=es_ga/grid_area={gridAreaCode}/energy_supplier_gln={energySupplierId}/",
-            ".csv",
-            $"{gridAreaCode}/Timeseries_PT1H.csv");
+    {
+        return ($"calculation-output/batch_id={calculationId}/basis_data/time_series_hour/grouping=es_ga/grid_area={gridAreaCode}/energy_supplier_gln={energySupplierId}/",
+                ".csv",
+                $"{gridAreaCode}/Timeseries_PT1H.csv");
+    }
 
     public static (string Directory, string Extension, string ZipEntryPath) GetTimeSeriesQuarterBasisDataForEsPerGaFileSpecification(Guid calculationId, string gridAreaCode, string energySupplierId)
-        => ($"calculation-output/batch_id={calculationId}/basis_data/time_series_quarter/grouping=es_ga/grid_area={gridAreaCode}/energy_supplier_gln={energySupplierId}/",
-            ".csv",
-            $"{gridAreaCode}/Timeseries_PT15M.csv");
+    {
+        return ($"calculation-output/batch_id={calculationId}/basis_data/time_series_quarter/grouping=es_ga/grid_area={gridAreaCode}/energy_supplier_gln={energySupplierId}/",
+                ".csv",
+                $"{gridAreaCode}/Timeseries_PT15M.csv");
+    }
 
     public static (string Directory, string Extension, string ZipEntryPath) GetMasterBasisDataFileForForEsPerGaSpecification(Guid calculationId, string gridAreaCode, string energySupplierId)
-        => ($"calculation-output/batch_id={calculationId}/basis_data/master_basis_data/grouping=es_ga/grid_area={gridAreaCode}/energy_supplier_gln={energySupplierId}/",
-            ".csv",
-            $"{gridAreaCode}/MeteringPointMasterData.csv");
+    {
+        return ($"calculation-output/batch_id={calculationId}/basis_data/master_basis_data/grouping=es_ga/grid_area={gridAreaCode}/energy_supplier_gln={energySupplierId}/",
+                ".csv",
+                $"{gridAreaCode}/MeteringPointMasterData.csv");
+    }
 
-    public static string GetZipFileName(CalculationInfo calculationInfo) => $"calculation-output/batch_id={calculationInfo.Id}/zip/gln=grid_area/batch_{calculationInfo.Id}_{calculationInfo.PeriodStart}_{calculationInfo.PeriodEnd}.zip";
+    public static string GetZipFileName(CalculationInfo calculationInfo)
+    {
+        return $"calculation-output/batch_id={calculationInfo.Id}/zip/gln=grid_area/batch_{calculationInfo.Id}_{calculationInfo.PeriodStart}_{calculationInfo.PeriodEnd}.zip";
+    }
 
     private async Task<IEnumerable<(Stream FileStream, string EntryPath)>> GetCalculationBasisFileStreamsAsync(CalculationInfo calculationInfo)
     {

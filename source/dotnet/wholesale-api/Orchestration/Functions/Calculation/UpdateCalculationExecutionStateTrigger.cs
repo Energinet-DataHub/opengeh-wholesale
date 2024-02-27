@@ -16,27 +16,26 @@ using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
-namespace Energinet.DataHub.Wholesale.Orchestration.Functions.Calculation
+namespace Energinet.DataHub.Wholesale.Orchestration.Functions.Calculation;
+
+public class UpdateCalculationExecutionStateTrigger
 {
-    public class UpdateCalculationExecutionStateTrigger
+    private readonly ILogger _logger;
+    private readonly IUpdateCalculationExecutionStateHandler _handler;
+
+    public UpdateCalculationExecutionStateTrigger(
+        ILogger<UpdateCalculationExecutionStateTrigger> logger,
+        IUpdateCalculationExecutionStateHandler handler)
     {
-        private readonly ILogger _logger;
-        private readonly IUpdateCalculationExecutionStateHandler _handler;
+        _logger = logger;
+        _handler = handler;
+    }
 
-        public UpdateCalculationExecutionStateTrigger(
-            ILogger<UpdateCalculationExecutionStateTrigger> logger,
-            IUpdateCalculationExecutionStateHandler handler)
-        {
-            _logger = logger;
-            _handler = handler;
-        }
-
-        [Function(nameof(UpdateCalculationExecutionStateTrigger))]
-        public async Task Run(
-            [TimerTrigger("00:00:20")]
-            TimerInfo timerInfo)
-        {
-            await _handler.UpdateAsync().ConfigureAwait(false);
-        }
+    [Function(nameof(UpdateCalculationExecutionStateTrigger))]
+    public async Task Run(
+        [TimerTrigger("00:00:20")]
+        TimerInfo timerInfo)
+    {
+        await _handler.UpdateAsync().ConfigureAwait(false);
     }
 }

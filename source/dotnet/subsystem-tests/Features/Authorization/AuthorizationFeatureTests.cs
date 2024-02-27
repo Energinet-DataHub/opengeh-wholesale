@@ -18,80 +18,79 @@ using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using FluentAssertions;
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Authorization
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Authorization;
+
+/// <summary>
+/// Contains tests with focus on verifying authorization in the Web API running in a live environment.
+/// </summary>
+public class AuthorizationFeatureTests
 {
     /// <summary>
-    /// Contains tests with focus on verifying authorization in the Web API running in a live environment.
+    /// These tests uses an unauthorized http client to perform requests.
     /// </summary>
-    public class AuthorizationFeatureTests
+    public class Given_Unauthorized : SubsystemTestsBase<UnauthorizedClientFixture>
     {
-        /// <summary>
-        /// These tests uses an unauthorized http client to perform requests.
-        /// </summary>
-        public class Given_Unauthorized : SubsystemTestsBase<UnauthorizedClientFixture>
+        public Given_Unauthorized(LazyFixtureFactory<UnauthorizedClientFixture> lazyFixtureFactory)
+            : base(lazyFixtureFactory)
         {
-            public Given_Unauthorized(LazyFixtureFactory<UnauthorizedClientFixture> lazyFixtureFactory)
-                : base(lazyFixtureFactory)
-            {
-            }
-
-            /// <summary>
-            /// Perform a request that doesn't require authorization.
-            /// </summary>
-            [SubsystemFact]
-            public async Task WhenRequestReadinessStatus_ResponseIsOkAndHealthy()
-            {
-                // Act
-                using var actualResponse = await Fixture.UnauthorizedHttpClient.GetAsync("monitor/ready");
-
-                // Assert
-                actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-                var actualContent = await actualResponse.Content.ReadAsStringAsync();
-                actualContent.Should().StartWith("{\"status\":\"Healthy\"");
-            }
-
-            /// <summary>
-            /// Perform a request that do require authorization.
-            /// </summary>
-            [SubsystemFact]
-            public async Task WhenRequestCalculationId_ResponseIsUnauthorized()
-            {
-                // Arrange
-                var request = new HttpRequestMessage(HttpMethod.Get, "v3/calculations?calculationId=1");
-
-                // Act
-                using var actualResponse = await Fixture.UnauthorizedHttpClient.SendAsync(request);
-
-                // Assert
-                actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-            }
         }
 
         /// <summary>
-        /// These tests uses an authorized Wholesale client to perform requests.
+        /// Perform a request that doesn't require authorization.
         /// </summary>
-        public class Given_Authorized : SubsystemTestsBase<AuthorizedClientFixture>
+        [SubsystemFact]
+        public async Task WhenRequestReadinessStatus_ResponseIsOkAndHealthy()
         {
-            public Given_Authorized(LazyFixtureFactory<AuthorizedClientFixture> lazyFixtureFactory)
-                : base(lazyFixtureFactory)
-            {
-            }
+            // Act
+            using var actualResponse = await Fixture.UnauthorizedHttpClient.GetAsync("monitor/ready");
 
-            /// <summary>
-            /// Perform a request that do require authorization.
-            /// </summary>
-            [SubsystemFact]
-            public async Task WhenRequestingCalculations_ResponseIsOk()
-            {
-                // Arrange
+            // Assert
+            actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-                // Act
-                var actualResult = await Fixture.WholesaleClient.SearchCalculationsAsync();
+            var actualContent = await actualResponse.Content.ReadAsStringAsync();
+            actualContent.Should().StartWith("{\"status\":\"Healthy\"");
+        }
 
-                // Assert
-                actualResult.Should().NotBeNull();
-            }
+        /// <summary>
+        /// Perform a request that do require authorization.
+        /// </summary>
+        [SubsystemFact]
+        public async Task WhenRequestCalculationId_ResponseIsUnauthorized()
+        {
+            // Arrange
+            var request = new HttpRequestMessage(HttpMethod.Get, "v3/calculations?calculationId=1");
+
+            // Act
+            using var actualResponse = await Fixture.UnauthorizedHttpClient.SendAsync(request);
+
+            // Assert
+            actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+    }
+
+    /// <summary>
+    /// These tests uses an authorized Wholesale client to perform requests.
+    /// </summary>
+    public class Given_Authorized : SubsystemTestsBase<AuthorizedClientFixture>
+    {
+        public Given_Authorized(LazyFixtureFactory<AuthorizedClientFixture> lazyFixtureFactory)
+            : base(lazyFixtureFactory)
+        {
+        }
+
+        /// <summary>
+        /// Perform a request that do require authorization.
+        /// </summary>
+        [SubsystemFact]
+        public async Task WhenRequestingCalculations_ResponseIsOk()
+        {
+            // Arrange
+
+            // Act
+            var actualResult = await Fixture.WholesaleClient.SearchCalculationsAsync();
+
+            // Assert
+            actualResult.Should().NotBeNull();
         }
     }
 }

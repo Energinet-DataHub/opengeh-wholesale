@@ -23,15 +23,15 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Mappers;
 
 public class CalculationTimeSeriesTypeMapperTests
 {
-    private readonly List<CalculationTimeSeriesType> _notSupportedCalculationTypes = new()
-    {
+    private readonly List<CalculationTimeSeriesType> _notSupportedCalculationTypes =
+    [
         CalculationTimeSeriesType.GridLoss,
         CalculationTimeSeriesType.TempProduction,
         CalculationTimeSeriesType.NegativeGridLoss,
         CalculationTimeSeriesType.PositiveGridLoss,
         CalculationTimeSeriesType.TempFlexConsumption,
         CalculationTimeSeriesType.NetExchangePerNeighboringGa,
-    };
+    ];
 
     [Theory]
     [MemberData(nameof(TimeSeriesTypesEdiModel))]

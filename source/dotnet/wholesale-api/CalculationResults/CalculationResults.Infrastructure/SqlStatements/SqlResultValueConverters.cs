@@ -26,20 +26,17 @@ public static class SqlResultValueConverters
 {
     public static Instant? ToInstant(string? value)
     {
-        if (value == null) return null;
-        return InstantPattern.ExtendedIso.Parse(value).Value;
+        return value == null ? null : InstantPattern.ExtendedIso.Parse(value).Value;
     }
 
     public static decimal? ToDecimal(string? value)
     {
-        if (value == null) return null;
-        return decimal.Parse(value, CultureInfo.InvariantCulture);
+        return value == null ? null : decimal.Parse(value, CultureInfo.InvariantCulture);
     }
 
     public static DateTimeOffset? ToDateTimeOffset(string? value)
     {
-        if (value == null) return null;
-        return DateTimeOffset.Parse(value, CultureInfo.InvariantCulture);
+        return value == null ? null : DateTimeOffset.Parse(value, CultureInfo.InvariantCulture);
     }
 
     public static IReadOnlyCollection<QuantityQuality> ToQuantityQualities(string value)

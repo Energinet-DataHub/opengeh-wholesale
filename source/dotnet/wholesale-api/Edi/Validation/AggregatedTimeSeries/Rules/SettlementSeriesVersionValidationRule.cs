@@ -39,13 +39,11 @@ public class SettlementSeriesVersionValidationRule : IValidationRule<AggregatedT
         if (!isCorrection)
             return Task.FromResult(NoError);
 
-        if (!hasSettlementVersion)
-            return Task.FromResult(NoError);
-
-        if (!_validSettlementSeriesVersions.Contains(subject.SettlementSeriesVersion))
-            return Task.FromResult(InvalidSettlementVersionError);
-
-        return Task.FromResult(NoError);
+        return !hasSettlementVersion
+            ? Task.FromResult(NoError)
+            : !_validSettlementSeriesVersions.Contains(subject.SettlementSeriesVersion)
+            ? Task.FromResult(InvalidSettlementVersionError)
+            : Task.FromResult(NoError);
     }
 
     private static IList<ValidationError> NoError => new List<ValidationError>();

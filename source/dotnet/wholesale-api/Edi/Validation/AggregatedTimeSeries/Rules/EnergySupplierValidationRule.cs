@@ -25,18 +25,16 @@ public class EnergySupplierValidationRule : IValidationRule<AggregatedTimeSeries
     public Task<IList<ValidationError>> ValidateAsync(AggregatedTimeSeriesRequest subject)
     {
         if (subject.RequestedByActorRole != ActorRoleCode.EnergySupplier)
-             return Task.FromResult(NoError);
+            return Task.FromResult(NoError);
 
         if (string.IsNullOrEmpty(subject.EnergySupplierId))
             return Task.FromResult(InvalidEnergySupplierError);
 
-        if (!IsValidEnergySupplierIdFormat(subject.EnergySupplierId))
-            return Task.FromResult(InvalidEnergySupplierError);
-
-        if (!RequestedByIdEqualsEnergySupplier(subject.RequestedByActorId, subject.EnergySupplierId))
-            return Task.FromResult(NotEqualToRequestedByError);
-
-        return Task.FromResult(NoError);
+        return !IsValidEnergySupplierIdFormat(subject.EnergySupplierId)
+            ? Task.FromResult(InvalidEnergySupplierError)
+            : !RequestedByIdEqualsEnergySupplier(subject.RequestedByActorId, subject.EnergySupplierId)
+            ? Task.FromResult(NotEqualToRequestedByError)
+            : Task.FromResult(NoError);
     }
 
     private static bool IsValidEnergySupplierIdFormat(string energySupplierId)

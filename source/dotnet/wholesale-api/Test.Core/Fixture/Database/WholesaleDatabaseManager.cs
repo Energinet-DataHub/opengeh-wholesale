@@ -16,7 +16,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.Database;
 using Energinet.DataHub.Wholesale.DatabaseMigration;
 using Microsoft.EntityFrameworkCore;
 
-namespace Energinet.DataHub.Wholesale.Calculations.IntegrationTests.Fixture.Database;
+namespace Test.Core.Fixture.Database;
 
 public class WholesaleDatabaseManager<TDatabaseContext> : SqlServerDatabaseManager<TDatabaseContext>
 where TDatabaseContext : DbContext, new()
@@ -53,9 +53,6 @@ where TDatabaseContext : DbContext, new()
     protected override bool CreateDatabaseSchema(TDatabaseContext context)
     {
         var result = Upgrader.DatabaseUpgrade(ConnectionString);
-        if (!result.Successful)
-            throw new Exception("Database migration failed", result.Error);
-
-        return true;
+        return !result.Successful ? throw new Exception("Database migration failed", result.Error) : true;
     }
 }

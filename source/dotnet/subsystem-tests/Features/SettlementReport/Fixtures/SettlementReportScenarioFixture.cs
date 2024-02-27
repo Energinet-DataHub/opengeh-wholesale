@@ -21,96 +21,95 @@ using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Extensions;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReport.Fixtures
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReport.Fixtures;
+
+public sealed class SettlementReportScenarioFixture : LazyFixtureBase
 {
-    public sealed class SettlementReportScenarioFixture : LazyFixtureBase
+    public SettlementReportScenarioFixture(IMessageSink diagnosticMessageSink)
+        : base(diagnosticMessageSink)
     {
-        public SettlementReportScenarioFixture(IMessageSink diagnosticMessageSink)
-            : base(diagnosticMessageSink)
-        {
-            Configuration = new WholesaleSubsystemConfiguration();
-            ScenarioState = new SettlementReportScenarioState();
-        }
+        Configuration = new WholesaleSubsystemConfiguration();
+        ScenarioState = new SettlementReportScenarioState();
+    }
 
-        public SettlementReportScenarioState ScenarioState { get; }
+    public SettlementReportScenarioState ScenarioState { get; }
 
-        /// <summary>
-        /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
-        /// </summary>
-        private WholesaleClient_V3 WholesaleClient { get; set; } = null!;
+    /// <summary>
+    /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
+    /// </summary>
+    private WholesaleClient_V3 WholesaleClient { get; set; } = null!;
 
-        private WholesaleSubsystemConfiguration Configuration { get; }
+    private WholesaleSubsystemConfiguration Configuration { get; }
 
-        public async Task<ZipArchive> StartDownloadingAsync(SettlementDownloadInput settlementDownloadInput)
-        {
-            using var fileResponse = await WholesaleClient.DownloadAsync(
-                settlementDownloadInput.GridAreaCodes,
-                settlementDownloadInput.CalculationType,
-                settlementDownloadInput.CalculationPeriodStart,
-                settlementDownloadInput.CalculationPeriodEnd);
-            DiagnosticMessageSink.WriteDiagnosticMessage($"""
-                Downloading settlement report for
+    public async Task<ZipArchive> StartDownloadingAsync(SettlementDownloadInput settlementDownloadInput)
+    {
+        using var fileResponse = await WholesaleClient.DownloadAsync(
+            settlementDownloadInput.GridAreaCodes,
+            settlementDownloadInput.CalculationType,
+            settlementDownloadInput.CalculationPeriodStart,
+            settlementDownloadInput.CalculationPeriodEnd);
+        DiagnosticMessageSink.WriteDiagnosticMessage($"""
+            Downloading settlement report for
                 grid area codes {string.Join(", ", settlementDownloadInput.GridAreaCodes.ToArray())} and
                 calculation type {settlementDownloadInput.CalculationType} started.
                 """);
 
-            return new ZipArchive(fileResponse.Stream, ZipArchiveMode.Read);
-        }
+        return new ZipArchive(fileResponse.Stream, ZipArchiveMode.Read);
+    }
 
-        public async Task<string[]> SplitEntryIntoDataLinesAsync(ZipArchiveEntry entry)
+    public async Task<string[]> SplitEntryIntoDataLinesAsync(ZipArchiveEntry entry)
+    {
+        using var stringReader = new StreamReader(entry.Open());
+        var content = await stringReader.ReadToEndAsync();
+        var lines = content.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+        return lines[1..];  //// The first line is the header.
+    }
+
+    public (int ConsumptionLines, int ProductionLines, int ExchangeLines) CountLinesPerTimeSeriesTypes(IEnumerable<string> lines)
+    {
+        var productionLines = 0;
+        var exchangeLines = 0;
+        var consumptionLines = 0;
+
+        foreach (var line in lines)
         {
-            using var stringReader = new StreamReader(entry.Open());
-            var content = await stringReader.ReadToEndAsync();
-            var lines = content.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
-            return lines[1..];  //// The first line is the header.
-        }
-
-        public (int ConsumptionLines, int ProductionLines, int ExchangeLines) CountLinesPerTimeSeriesTypes(IEnumerable<string> lines)
-        {
-            var productionLines = 0;
-            var exchangeLines = 0;
-            var consumptionLines = 0;
-
-            foreach (var line in lines)
+            var timeSeriesType = line.Split(",")[4];
+            switch (timeSeriesType)
             {
-                var timeSeriesType = line.Split(",")[4];
-                switch (timeSeriesType)
-                {
-                    case "E17":
-                        consumptionLines++;
-                        break;
-                    case "E18":
-                        productionLines++;
-                        break;
-                    case "E20":
-                        exchangeLines++;
-                        break;
-                }
+                case "E17":
+                    consumptionLines++;
+                    break;
+                case "E18":
+                    productionLines++;
+                    break;
+                case "E20":
+                    exchangeLines++;
+                    break;
             }
-
-            return (ConsumptionLines: consumptionLines, ProductionLines: productionLines, ExchangeLines: exchangeLines);
         }
 
-        public string GetUtcDate(string line)
+        return (ConsumptionLines: consumptionLines, ProductionLines: productionLines, ExchangeLines: exchangeLines);
+    }
+
+    public string GetUtcDate(string line)
+    {
+        return line.Split(",")[2];
+    }
+
+    protected override async Task OnInitializeAsync()
+    {
+        var isState = await DatabricksClientExtensions.StartWarehouseAndWaitForWarehouseStateAsync(Configuration.DatabricksWorkspace);
+        DiagnosticMessageSink.WriteDiagnosticMessage($"Starting Databricks warehouse succeed: {isState}");
+        if (!isState)
         {
-            return line.Split(",")[2];
+            throw new Exception("Unable to start Databricks SQL warehouse. Reason unknown.");
         }
 
-        protected override async Task OnInitializeAsync()
-        {
-            var isState = await DatabricksClientExtensions.StartWarehouseAndWaitForWarehouseStateAsync(Configuration.DatabricksWorkspace);
-            DiagnosticMessageSink.WriteDiagnosticMessage($"Starting Databricks warehouse succeed: {isState}");
-            if (!isState)
-            {
-                throw new Exception("Unable to start Databricks SQL warehouse. Reason unknown.");
-            }
+        WholesaleClient = await WholesaleClientFactory.CreateAsync(Configuration, useAuthentication: true);
+    }
 
-            WholesaleClient = await WholesaleClientFactory.CreateAsync(Configuration, useAuthentication: true);
-        }
-
-        protected override Task OnDisposeAsync()
-        {
-            return Task.CompletedTask;
-        }
+    protected override Task OnDisposeAsync()
+    {
+        return Task.CompletedTask;
     }
 }

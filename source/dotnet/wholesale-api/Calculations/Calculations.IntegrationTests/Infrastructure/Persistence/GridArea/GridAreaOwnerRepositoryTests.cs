@@ -14,13 +14,13 @@
 
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.GridArea;
-using Energinet.DataHub.Wholesale.Calculations.IntegrationTests.Fixture.Database;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using NodaTime.Extensions;
+using Test.Core.Fixture.Database;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Calculations.IntegrationTests.Infrastructure.Persistence.GridArea;
