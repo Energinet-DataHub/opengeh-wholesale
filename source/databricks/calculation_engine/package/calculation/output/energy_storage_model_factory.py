@@ -17,7 +17,6 @@ from pyspark.sql import DataFrame
 from pyspark.sql.window import Window
 
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.energy.energy_results import EnergyResults
 from package.codelists import TimeSeriesType, AggregationLevel
 from package.constants import Colname, EnergyResultColumnNames
 
@@ -27,7 +26,7 @@ def create(
     df: DataFrame,
     time_series_type: TimeSeriesType,
     aggregation_level: AggregationLevel,
-) -> EnergyResults:
+) -> DataFrame:
 
     df = _add_aggregation_level_and_time_series_type(
         df, aggregation_level, time_series_type
@@ -36,7 +35,7 @@ def create(
     df = _add_calculation_result_id(df)
     df = _map_to_storage_dataframe(df)
 
-    return EnergyResults(df)
+    return df
 
 
 def _add_aggregation_level_and_time_series_type(
@@ -60,7 +59,7 @@ def _add_calculation_columns(args: CalculatorArgs, results: DataFrame) -> DataFr
         )
         .withColumn(
             EnergyResultColumnNames.calculation_type,
-            f.lit(args.calculation_type),
+            f.lit(args.calculation_type.value),
         )
         .withColumn(
             EnergyResultColumnNames.calculation_execution_time_start,

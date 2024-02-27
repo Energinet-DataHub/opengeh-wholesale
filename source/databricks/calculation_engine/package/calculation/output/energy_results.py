@@ -25,7 +25,7 @@ from package.infrastructure.paths import (
 )
 
 
-def write(energy_results: EnergyResultsContainer) -> None:
+def write_energy_results(energy_results: EnergyResultsContainer) -> None:
     """Write each energy result to the output table."""
     for field in fields(energy_results):
         _write(field.name, getattr(energy_results, field.name))
