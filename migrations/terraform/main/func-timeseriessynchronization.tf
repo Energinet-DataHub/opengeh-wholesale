@@ -17,6 +17,7 @@ module "func_timeseriessynchronization" {
   dotnet_framework_version                 = "v8.0"
   use_dotnet_isolated_runtime              = true
   durable_function                         = true
+  use_32_bit_worker                        = false
   health_check_path                        = "/api/monitor/ready"
   health_check_alert = {
     action_group_id = data.azurerm_key_vault_secret.primary_action_group_id.value
