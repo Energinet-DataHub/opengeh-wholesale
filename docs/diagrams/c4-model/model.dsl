@@ -2,7 +2,7 @@
 
 wholesaleDomain = group "Wholesale" {
     wholesaleDataLake = container "Wholesale DataLake" {
-        description "Calculations inputs and results"
+        description "Calculation inputs and results"
         technology "Azure Data Lake Gen 2"
         tags "Data Storage" "Microsoft Azure - Data Lake Store Gen1" "Mandalorian"
     }
