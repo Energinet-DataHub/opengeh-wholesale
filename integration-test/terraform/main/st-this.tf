@@ -15,6 +15,7 @@ resource "azurerm_storage_account" "this" {
 }
 
 #---- Roles
+
 resource "azurerm_role_assignment" "ra_migrations_subsystem_test_contributor" {
   scope                = azurerm_storage_account.this.id
   role_definition_name = "Storage Blob Data Contributor"
@@ -22,6 +23,12 @@ resource "azurerm_role_assignment" "ra_migrations_subsystem_test_contributor" {
 }
 
 #---- Containers
+resource "azurerm_storage_container" "domaintest" {
+  name                  = "domaintest"
+  storage_account_name  = azurerm_storage_account.this.name
+  container_access_type = "private"
+}
+
 resource "azurerm_storage_container" "subsystemtest" {
   name                  = "subsystemtest"
   storage_account_name  = azurerm_storage_account.this.name
