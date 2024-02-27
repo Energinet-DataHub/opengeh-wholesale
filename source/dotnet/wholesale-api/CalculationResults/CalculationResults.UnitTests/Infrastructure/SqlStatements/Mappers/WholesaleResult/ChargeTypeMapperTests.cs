@@ -14,8 +14,8 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
+using Energinet.DataHub.Wholesale.Test.Core;
 using FluentAssertions;
-using Test.Core;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SqlStatements.Mappers.WholesaleResult

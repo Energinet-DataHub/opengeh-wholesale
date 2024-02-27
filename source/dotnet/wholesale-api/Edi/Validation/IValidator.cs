@@ -20,7 +20,8 @@ public interface IValidator<T>
 
     public async Task<IList<ValidationError>> ValidateAsync(T subject)
     {
-        if (subject == null) throw new ArgumentNullException(nameof(subject));
+        if (subject == null)
+            throw new ArgumentNullException(nameof(subject));
 
         var errors = new List<ValidationError>();
         foreach (var rule in Rules)
