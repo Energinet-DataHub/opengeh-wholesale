@@ -11,25 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from helpers.data_frame_utils import assert_dataframes
-from .states.scenario_state import (
-    get_expected,
+
+from pyspark.sql import DataFrame, SparkSession
+
+from calculation_logic.features.energy_calculations.results_dataframe import (
+    create_result_dataframe,
 )
 
 
-def test_execute__returns_expected(  # type: ignore
-    scenario_fixture,
-) -> None:
-    # Arrange
-    scenario_fixture.setup(get_expected)
+def get_expected(*args) -> DataFrame:  # type: ignore
+    spark: SparkSession = args[0]
+    expected_dataframe: DataFrame = args[1]
 
-    # Act
-    results = scenario_fixture.execute()
-
-    # Assert
-    assert_dataframes(
-        results.energy_results.flex_consumption_per_ga_and_brp_and_es.df,
-        scenario_fixture.expected,
-        ignore_schema=True,
-        ignore_decimal_precision=True,
-    )
+    return create_result_dataframe(spark, expected_dataframe)
