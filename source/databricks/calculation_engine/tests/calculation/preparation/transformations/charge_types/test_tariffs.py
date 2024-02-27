@@ -494,7 +494,6 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hou
                     observation_time=datetime(2020, 1, day, hour)
                 )
             )
-                )
             charge_prices_rows.append(
                 factory.create_charge_prices_row(
                     charge_time=datetime(2020, 1, day, hour),
