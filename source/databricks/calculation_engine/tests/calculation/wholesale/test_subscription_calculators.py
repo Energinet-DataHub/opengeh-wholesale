@@ -63,7 +63,6 @@ def test__calculate_daily_subscription_price__simple(
         charge_type=ChargeType.SUBSCRIPTION.value,
         charge_time=time,
     )
-    charge_prices.show()
 
     expected_date = datetime(2020, 2, 1, 0, 0)
     expected_charge_price = charge_prices.collect()[0][Colname.charge_price]
