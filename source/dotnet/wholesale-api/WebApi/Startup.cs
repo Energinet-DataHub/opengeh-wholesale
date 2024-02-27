@@ -37,15 +37,12 @@ namespace Energinet.DataHub.Wholesale.WebApi;
 
 public class Startup
 {
-    public Startup(IConfiguration configuration, IWebHostEnvironment environment)
+    public Startup(IConfiguration configuration)
     {
         Configuration = configuration;
-        Environment = environment;
     }
 
     public IConfiguration Configuration { get; }
-
-    public IWebHostEnvironment Environment { get; }
 
     public void ConfigureServices(IServiceCollection serviceCollection)
     {
@@ -132,12 +129,12 @@ public class Startup
         serviceCollection.AddUserAuthentication<FrontendUser, FrontendUserProvider>();
     }
 
-    public void Configure(IApplicationBuilder app)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
     {
         app.UseRouting();
 
         // Configure the HTTP request pipeline.
-        if (Environment.IsDevelopment())
+        if (environment.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
         }
@@ -160,7 +157,7 @@ public class Startup
         app.UseAuthentication();
         app.UseAuthorization();
 
-        if (!Environment.IsEnvironment("Testing"))
+        if (!environment.IsEnvironment("Testing"))
         {
             app.UseUserMiddleware<FrontendUser>();
         }

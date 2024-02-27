@@ -12,19 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.WebApi;
+using Energinet.DataHub.Wholesale.WebApi;
 
-public static class Program
-{
-    public static void Main(string[] args)
-    {
-        CreateWebHostBuilder(args).Build().Run();
-    }
+var builder = WebApplication.CreateBuilder(args);
+var startup = new Startup(builder.Configuration);
 
-    private static IHostBuilder CreateWebHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseStartup<Startup>();
-            });
-}
+/*
+// Add services to the container.
+*/
+startup.ConfigureServices(builder.Services);
+
+var app = builder.Build();
+
+/*
+// Configure the HTTP request pipeline.
+*/
+startup.Configure(app, app.Environment);
+
+app.Run();
