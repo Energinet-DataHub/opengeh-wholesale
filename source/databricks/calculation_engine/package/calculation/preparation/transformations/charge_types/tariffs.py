@@ -70,10 +70,10 @@ def _join_master_data_and_prices_add_missing_prices(
     time_zone: str,
 ) -> DataFrame:
     charge_prices = charge_prices.df
-    charge_master_data = charge_master_data.df.filter(
+    charge_master_data_filtered = charge_master_data.df.filter(
         f.col(Colname.resolution) == resolution.value
     )
-    charges_with_no_prices = charge_master_data.withColumn(
+    charges_with_no_prices = charge_master_data_filtered.withColumn(
         Colname.charge_time,
         f.explode(
             f.sequence(
