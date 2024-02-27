@@ -20,7 +20,7 @@ public class CalculationInfo
 {
     public CalculationInfo()
     {
-        GridAreaCodes = new List<string>();
+        GridAreaCodes = [];
     }
 
     public Guid Id { get; set; }

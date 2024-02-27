@@ -21,7 +21,6 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatement
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
@@ -73,7 +72,7 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
                     calculationForPeriod.Period.End,
                     timeSeriesPoints,
                     calculationForPeriod.CalculationVersion);
-                timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
+                timeSeriesPoints = [];
             }
 
             timeSeriesPoints.Add(timeSeriesPoint);
