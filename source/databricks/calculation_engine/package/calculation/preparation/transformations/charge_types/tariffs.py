@@ -67,6 +67,9 @@ def _join_master_data_and_prices_add_missing_prices(
     charge_master_data_filtered = charge_master_data.df.filter(
         f.col(Colname.charge_type) == charge_type.value
     ).filter(f.col(Colname.resolution) == resolution.value)
+    charge_prices_filtered = charge_prices.df.filter(
+        f.col(Colname.charge_type) == charge_type.value
+    )
 
     time_zone = "Europe/Copenhagen"
     charges_with_no_prices = (
@@ -105,7 +108,7 @@ def _join_master_data_and_prices_add_missing_prices(
     )
 
     charges_with_prices_and_missing_prices = charges_with_no_prices.join(
-        charge_prices.df, [Colname.charge_key, Colname.charge_time], "left"
+        charge_prices_filtered, [Colname.charge_key, Colname.charge_time], "left"
     ).select(
         charges_with_no_prices[Colname.charge_key],
         charges_with_no_prices[Colname.charge_code],
