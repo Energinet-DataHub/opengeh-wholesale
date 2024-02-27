@@ -118,10 +118,10 @@ resource "databricks_instance_pool" "migration_pool_integration_test" {
 }
 
 resource "databricks_job" "migration_workflow" {
-  name = "Domaintest"
+  name = "Subsystemtest"
 
   job_cluster {
-    job_cluster_key = "domaintest_job_cluster"
+    job_cluster_key = "subsystemtest_job_cluster"
     new_cluster {
       instance_pool_id = databricks_instance_pool.migration_pool_integration_test.id
       spark_version    = data.databricks_spark_version.latest_lts.id
@@ -156,7 +156,7 @@ resource "databricks_job" "migration_workflow" {
     notebook_task {
       notebook_path = "dummy_task_1"
     }
-    job_cluster_key = "domaintest_job_cluster"
+    job_cluster_key = "subsystemtest_job_cluster"
   }
 
   depends_on = [
@@ -267,6 +267,70 @@ resource "azurerm_key_vault_secret" "kvs_databricks_dbw_domain_test_workspace_id
 
 resource "azurerm_key_vault_secret" "kvs_databricks_dbw_domain_test_storage_account_name" {
   name         = "dbw-domain-test-storage-account-name"
+  value        = azurerm_storage_account.this.name
+  key_vault_id = azurerm_key_vault.this.id
+
+  lifecycle {
+    ignore_changes = [
+      tags,
+    ]
+  }
+
+  depends_on = [
+    azurerm_key_vault_access_policy.kv_selfpermission
+  ]
+}
+
+resource "azurerm_key_vault_secret" "kvs_databricks_dbw_subsystem_test_workspace_token" {
+  name         = "dbw-subsystem-test-workspace-token"
+  value        = data.external.databricks_token_integration_test.result.pat_token
+  key_vault_id = azurerm_key_vault.this.id
+
+  lifecycle {
+    ignore_changes = [
+      tags,
+    ]
+  }
+
+  depends_on = [
+    azurerm_key_vault_access_policy.kv_selfpermission
+  ]
+}
+
+resource "azurerm_key_vault_secret" "kvs_databricks_dbw_subsystem_test_workspace_url" {
+  name         = "dbw-subsystem-test-workspace-url"
+  value        = azurerm_databricks_workspace.this.workspace_url
+  key_vault_id = azurerm_key_vault.this.id
+
+  lifecycle {
+    ignore_changes = [
+      tags,
+    ]
+  }
+
+  depends_on = [
+    azurerm_key_vault_access_policy.kv_selfpermission
+  ]
+}
+
+resource "azurerm_key_vault_secret" "kvs_databricks_dbw_subsystem_test_workspace_id" {
+  name         = "dbw-subsystem-test-workspace-id"
+  value        = azurerm_databricks_workspace.this.id
+  key_vault_id = azurerm_key_vault.this.id
+
+  lifecycle {
+    ignore_changes = [
+      tags,
+    ]
+  }
+
+  depends_on = [
+    azurerm_key_vault_access_policy.kv_selfpermission
+  ]
+}
+
+resource "azurerm_key_vault_secret" "kvs_databricks_dbw_subsystem_test_storage_account_name" {
+  name         = "dbw-subsystem-test-storage-account-name"
   value        = azurerm_storage_account.this.name
   key_vault_id = azurerm_key_vault.this.id
 
