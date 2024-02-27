@@ -75,9 +75,13 @@ def _join_master_data_and_prices_add_missing_prices(
     charges_with_no_prices = charge_master_data_filtered.withColumn(
         Colname.charge_time,
         f.explode(
-            f.expr(
-                f"sequence(from_utc_timestamp({Colname.from_date}, '{time_zone}'), from_utc_timestamp({Colname.to_date}, '{time_zone}'), interval {_get_window_duration_string_based_on_resolution(resolution)})"
-            ),
+            f.sequence(
+                f.from_utc_timestamp(Colname.from_date, time_zone),
+                f.from_utc_timestamp(Colname.to_date, time_zone),
+                f.expr(
+                    f"interval {_get_window_duration_string_based_on_resolution(resolution)}"
+                ),
+            )
         ),
     ).withColumn(
         Colname.charge_time,
