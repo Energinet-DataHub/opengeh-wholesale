@@ -140,9 +140,9 @@ def create_charge_link_metering_point_periods_row(
         Colname.from_date: from_date,
         Colname.to_date: to_date,
         Colname.metering_point_type: metering_point_type.value,
-        Colname.settlement_method: settlement_method.value
-        if settlement_method
-        else None,
+        Colname.settlement_method: (
+            settlement_method.value if settlement_method else None
+        ),
         Colname.grid_area: grid_area,
         Colname.energy_supplier_id: energy_supplier_id,
     }
