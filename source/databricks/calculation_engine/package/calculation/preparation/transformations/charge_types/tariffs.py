@@ -20,7 +20,9 @@ import package.calculation.energy.aggregators.transformations as t
 from package.calculation.preparation.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
 )
-from package.calculation.preparation.charge_master_data import ChargeMasterData
+from package.calculation.preparation.charge_master_data import (
+    ChargeMasterData,
+)
 from package.calculation.preparation.charge_prices import ChargePrices
 from package.codelists import ChargeType, ChargeResolution
 from package.constants import Colname
@@ -34,13 +36,15 @@ def get_tariff_charges(
     resolution: ChargeResolution,
     time_zone: str,
 ) -> DataFrame:
+    tariff_links = charge_link_metering_points.filter_by_charge_type(ChargeType.TARIFF)
+    tariff_master_data = charge_master_data.filter_by_charge_type(ChargeType.TARIFF)
+    tariff_prices = charge_prices.filter_by_charge_type(ChargeType.TARIFF)
+
     tariffs = _join_master_data_and_prices_add_missing_prices(
-        charge_master_data, charge_prices, resolution, ChargeType.TARIFF, time_zone
+        tariff_master_data, tariff_prices, resolution, time_zone
     )
 
-    tariffs = _join_with_charge_link_metering_points(
-        tariffs, charge_link_metering_points
-    )
+    tariffs = _join_with_charge_link_metering_points(tariffs, tariff_links)
 
     # group by time series on metering point id and resolution and sum quantity
     grouped_time_series = (
@@ -63,17 +67,13 @@ def _join_master_data_and_prices_add_missing_prices(
     charge_master_data: ChargeMasterData,
     charge_prices: ChargePrices,
     resolution: ChargeResolution,
-    charge_type: ChargeType,
     time_zone: str,
 ) -> DataFrame:
-    charge_master_data_filtered = charge_master_data.df.filter(
-        f.col(Colname.charge_type) == charge_type.value
-    ).filter(f.col(Colname.resolution) == resolution.value)
-    charge_prices_filtered = charge_prices.df.filter(
-        f.col(Colname.charge_type) == charge_type.value
+    charge_prices = charge_prices.df
+    charge_master_data = charge_master_data.df.filter(
+        f.col(Colname.resolution) == resolution.value
     )
-
-    charges_with_no_prices = charge_master_data_filtered.withColumn(
+    charges_with_no_prices = charge_master_data.withColumn(
         Colname.charge_time,
         f.explode(
             f.sequence(
@@ -90,7 +90,7 @@ def _join_master_data_and_prices_add_missing_prices(
     )
 
     charges_with_prices_and_missing_prices = charges_with_no_prices.join(
-        charge_prices_filtered, [Colname.charge_key, Colname.charge_time], "left"
+        charge_prices, [Colname.charge_key, Colname.charge_time], "left"
     ).select(
         charges_with_no_prices[Colname.charge_key],
         charges_with_no_prices[Colname.charge_code],

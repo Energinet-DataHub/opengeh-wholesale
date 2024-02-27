@@ -15,6 +15,7 @@
 import pyspark.sql.types as t
 from pyspark.sql import DataFrame
 
+from package.codelists import ChargeType
 from package.common import DataFrameWrapper
 from package.constants import Colname
 
@@ -36,6 +37,10 @@ class ChargeMasterData(DataFrameWrapper):
             ignore_decimal_scale=True,
             ignore_decimal_precision=True,
         )
+
+    def filter_by_charge_type(self, charge_type: ChargeType) -> "ChargeMasterData":
+        df = self._df.filter(self._df[Colname.charge_type] == charge_type.value)
+        return ChargeMasterData(df)
 
 
 # The nullability and decimal types are not precisely representative of the actual data frame schema at runtime,
