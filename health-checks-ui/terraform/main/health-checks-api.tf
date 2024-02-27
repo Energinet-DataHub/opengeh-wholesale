@@ -1,5 +1,5 @@
 module "apima_health_api" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=v13"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=13.45.0"
 
   name                       = "health-checks-api"
   project_name               = var.domain_name_short
