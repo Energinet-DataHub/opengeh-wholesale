@@ -56,7 +56,7 @@ public class CompositionRootTests
                     .ConfigureServices(collection => collection.AddControllers().AddControllersAsServices());
             });
 
-        // This will resolve the dependency injection
+        // Act
         var client = application.CreateClient();
     }
 }
