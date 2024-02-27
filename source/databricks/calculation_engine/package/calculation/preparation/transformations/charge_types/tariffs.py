@@ -72,39 +72,16 @@ def _join_master_data_and_prices_add_missing_prices(
     )
 
     time_zone = "Europe/Copenhagen"
-    charges_with_no_prices = (
-        charge_master_data_filtered.select(
-            Colname.charge_key,
-            Colname.charge_code,
-            Colname.charge_type,
-            Colname.charge_owner,
-            Colname.charge_tax,
-            Colname.resolution,
-            f.from_utc_timestamp(Colname.from_date, time_zone).alias(Colname.from_date),
-            f.from_utc_timestamp(Colname.to_date, time_zone).alias(Colname.to_date),
-        )
-        .distinct()
-        .withColumn(
-            "temp_time",
+    charges_with_no_prices = charge_master_data_filtered.withColumn(
+        Colname.charge_time,
+        f.explode(
             f.expr(
-                f"sequence({Colname.from_date}, {Colname.to_date}, interval {_get_window_duration_string_based_on_resolution(resolution)})"
+                f"sequence(from_utc_timestamp({Colname.from_date}, '{time_zone}'), from_utc_timestamp({Colname.to_date}, '{time_zone}'), interval {_get_window_duration_string_based_on_resolution(resolution)})"
             ),
-        )
-        .select(
-            Colname.charge_key,
-            Colname.charge_code,
-            Colname.charge_type,
-            Colname.charge_owner,
-            Colname.charge_tax,
-            Colname.resolution,
-            Colname.from_date,
-            Colname.to_date,
-            f.explode("temp_time").alias(Colname.charge_time),
-        )
-        .withColumn(
-            Colname.charge_time,
-            f.to_utc_timestamp(Colname.charge_time, time_zone),
-        )
+        ),
+    ).withColumn(
+        Colname.charge_time,
+        f.to_utc_timestamp(Colname.charge_time, time_zone),
     )
 
     charges_with_prices_and_missing_prices = charges_with_no_prices.join(

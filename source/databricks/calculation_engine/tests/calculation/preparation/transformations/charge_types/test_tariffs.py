@@ -480,6 +480,13 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hou
     time_series_rows = []
     charge_master_data_rows = []
     charge_prices_rows = []
+    charge_master_data_rows.append(
+        factory.create_charge_master_data_row(
+            resolution=charge_resolution,
+            from_date=datetime(2020, 1, 1, 23),
+            to_date=datetime(2020, 1, 3, 23),
+        )
+    )
     for day in range(1, 4):
         for hour in range(0, 24):
             time_series_rows.append(
@@ -487,13 +494,7 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hou
                     observation_time=datetime(2020, 1, day, hour)
                 )
             )
-            charge_master_data_rows.append(
-                factory.create_charge_master_data_row(
-                    resolution=charge_resolution,
-                    from_date=datetime(2020, 1, 1, 23),
-                    to_date=datetime(2020, 1, 3, 23),
                 )
-            )
             charge_prices_rows.append(
                 factory.create_charge_prices_row(
                     charge_time=datetime(2020, 1, day, hour),
@@ -519,7 +520,6 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hou
         charge_link_metering_point_periods,
         charge_resolution,
     )
-    actual.show()
 
     # Assert
     assert actual.count() == expected_rows
@@ -561,6 +561,13 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_qua
     time_series_rows = []
     charge_master_data_rows = []
     charge_prices_rows = []
+    charge_master_data_rows.append(
+        factory.create_charge_master_data_row(
+            resolution=charge_resolution,
+            from_date=datetime(2020, 1, 1, 23),
+            to_date=datetime(2020, 1, 3, 23),
+        )
+    )
     for day in range(1, 4):
         for hour in range(0, 24):
             for minute in range(0, 4):
@@ -569,13 +576,6 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_qua
                         observation_time=datetime(2020, 1, day, hour, minute * 15)
                     )
                 )
-            charge_master_data_rows.append(
-                factory.create_charge_master_data_row(
-                    resolution=charge_resolution,
-                    from_date=datetime(2020, 1, 1, 23),
-                    to_date=datetime(2020, 1, 3, 23),
-                )
-            )
             charge_prices_rows.append(
                 factory.create_charge_prices_row(
                     charge_time=datetime(2020, 1, day, hour),
@@ -676,11 +676,6 @@ def test__get_tariff_charges__per_day_only_accepts_time_series_and_change_times_
             from_date=datetime(2019, 12, 31, 23),
             to_date=datetime(2020, 1, 5, 23),
         ),
-        factory.create_charge_master_data_row(
-            resolution=e.ChargeResolution.DAY,
-            from_date=datetime(2019, 12, 31, 23),
-            to_date=datetime(2020, 1, 5, 23),
-        ),
     ]
     charge_prices_rows = [
         factory.create_charge_prices_row(
@@ -753,7 +748,7 @@ def test__get_tariff_charges__can_handle_missing_charges(
         charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
     )
-    actual.show()
+
     # Assert
     assert actual.count() == 2
     assert (
@@ -799,7 +794,7 @@ def test__get_tariff_charges__can_handle_missing_all_charges_prices(
         charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
     )
-    actual.show()
+
     # Assert
     assert actual.count() == 2
     assert actual.collect()[0][Colname.charge_price] is None
@@ -830,11 +825,6 @@ def test__get_tariff_charges__can_handle_daylight_saving_time(
         factory.create_time_series_row(observation_time=date_time_2),
     ]
     charge_master_data_rows = [
-        factory.create_charge_master_data_row(
-            from_date=date_time_1,
-            to_date=date_time_2,
-            resolution=e.ChargeResolution.DAY,
-        ),
         factory.create_charge_master_data_row(
             from_date=date_time_1,
             to_date=date_time_2,
