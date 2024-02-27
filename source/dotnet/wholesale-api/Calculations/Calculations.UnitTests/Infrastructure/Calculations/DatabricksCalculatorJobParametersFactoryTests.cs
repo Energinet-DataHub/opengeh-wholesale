@@ -17,11 +17,11 @@ using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Test.Core;
 using FluentAssertions;
 using Microsoft.Azure.Databricks.Client.Models;
 using NodaTime;
 using NodaTime.Extensions;
-using Test.Core;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Calculations.UnitTests.Infrastructure.Calculations;
