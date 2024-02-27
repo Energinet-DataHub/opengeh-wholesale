@@ -28,7 +28,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
 /// <summary>
 /// Registration of services required for the Events module.
 /// </summary>
-public static class EventsRegistration
+public static class EventsExtensions
 {
     public static IServiceCollection AddEventsModule(this IServiceCollection services, IConfiguration configuration)
     {
