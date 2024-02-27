@@ -34,6 +34,7 @@ def get_charge_link_metering_point_periods(
         "inner",
     ).select(
         charge_links[Colname.charge_key],
+        charge_links[Colname.charge_type],
         charge_links[Colname.metering_point_id],
         charge_links[Colname.charge_quantity],
         when(

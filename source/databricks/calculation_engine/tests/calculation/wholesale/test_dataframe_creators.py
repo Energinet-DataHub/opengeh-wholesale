@@ -17,9 +17,6 @@ from package.constants import Colname
 from package.calculation.wholesale.schemas.calculate_daily_subscription_price_schema import (
     calculate_daily_subscription_price_schema,
 )
-from package.calculation.wholesale.schemas.charges_schema import (
-    charges_schema,
-)
 from tests.calculation.dataframe_defaults import DataframeDefaults
 
 
@@ -57,22 +54,3 @@ def test_calculate_daily_subscription_price(calculate_daily_subscription_price_f
         result[Colname.energy_supplier_id]
         == DataframeDefaults.default_energy_supplier_id
     )
-
-
-def test_charges(charge_period_prices_factory):
-    df = charge_period_prices_factory().df
-    result = df.collect()[0]
-    assert len(df.columns) == len(charges_schema.fields)
-    assert (
-        result[Colname.charge_key]
-        == f"{DataframeDefaults.default_charge_code}-{DataframeDefaults.default_charge_owner}-{DataframeDefaults.default_charge_type}"
-    )
-    assert result[Colname.charge_code] == DataframeDefaults.default_charge_code
-    assert result[Colname.charge_type] == DataframeDefaults.default_charge_type
-    assert result[Colname.charge_owner] == DataframeDefaults.default_charge_owner
-    assert result[Colname.charge_tax] == DataframeDefaults.default_charge_tax
-    assert result[Colname.resolution] == DataframeDefaults.default_charge_resolution
-    assert result[Colname.charge_time] == DataframeDefaults.default_charge_time
-    assert result[Colname.from_date] == DataframeDefaults.default_from_date
-    assert result[Colname.to_date] == DataframeDefaults.default_to_date
-    assert result[Colname.charge_price] == DataframeDefaults.default_charge_price
