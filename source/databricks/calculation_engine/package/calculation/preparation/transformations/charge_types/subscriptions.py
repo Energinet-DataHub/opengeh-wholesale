@@ -13,14 +13,11 @@
 # limitations under the License.
 
 import pyspark.sql.functions as f
+from pyspark.sql import Window
 from pyspark.sql.dataframe import DataFrame
 
 from package.calculation.preparation.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
-)
-from package.calculation.preparation.charge_period_prices import ChargePeriodPrices
-from package.calculation.preparation.transformations.charge_types.helper import (
-    join_charge_master_data_and_charge_price,
 )
 from package.codelists import ChargeType
 from package.constants import Colname
@@ -30,72 +27,129 @@ def get_subscription_charges(
     charge_master_data: DataFrame,
     charge_prices: DataFrame,
     charge_link_metering_point_periods: ChargeLinkMeteringPointPeriods,
+    time_zone: str,
 ) -> DataFrame:
-    charge_period_prices = join_charge_master_data_and_charge_price(
-        charge_master_data, charge_prices
+    subscription_links = _filter_subscriptions(charge_link_metering_point_periods.df)
+    subscription_prices = _filter_subscriptions(charge_prices)
+    subscription_master_data = _filter_subscriptions(charge_master_data)
+
+    subscription_master_data_and_prices = _join_with_prices(
+        subscription_master_data, subscription_prices, time_zone
     )
-    charge_link_metering_points_df = charge_link_metering_point_periods.df
 
-    subscription_charges = charge_period_prices.df.filter(
-        f.col(Colname.charge_type) == ChargeType.SUBSCRIPTION.value
-    )
-
-    subscription_charges = _explode_subscription(subscription_charges)
-
-    subscriptions = subscription_charges.join(
-        charge_link_metering_points_df,
-        (
-            subscription_charges[Colname.charge_key]
-            == charge_link_metering_points_df[Colname.charge_key]
-        )
-        & (
-            subscription_charges[Colname.charge_time]
-            >= charge_link_metering_points_df[Colname.from_date]
-        )
-        & (
-            subscription_charges[Colname.charge_time]
-            < charge_link_metering_points_df[Colname.to_date]
-        ),
-        how="inner",
-    ).select(
-        subscription_charges[Colname.charge_key],
-        Colname.charge_code,
-        Colname.charge_type,
-        Colname.charge_owner,
-        Colname.charge_time,
-        Colname.charge_price,
-        charge_link_metering_points_df[Colname.metering_point_type],
-        charge_link_metering_points_df[Colname.settlement_method],
-        charge_link_metering_points_df[Colname.grid_area],
-        charge_link_metering_points_df[Colname.energy_supplier_id],
+    subscriptions = _join_with_links(
+        subscription_master_data_and_prices, subscription_links
     )
 
     return subscriptions
 
 
-def _explode_subscription(charges_df: DataFrame) -> DataFrame:
-    charges_df = (
-        charges_df.withColumn(
-            Colname.date,
-            f.explode(
-                f.expr(
-                    f"sequence({Colname.from_date}, {Colname.to_date}, interval 1 day)"
-                )
-            ),
+def _filter_subscriptions(df: DataFrame) -> DataFrame:
+    return df.filter(f.col(Colname.charge_type) == ChargeType.SUBSCRIPTION.value)
+
+
+def _join_with_prices(
+    subscription_master_data: DataFrame,
+    subscription_prices: DataFrame,
+    time_zone: str,
+) -> DataFrame:
+    """
+    Join subscription_master_data with subscription_prices.
+    This method also ensure
+    - Missing charge prices will be set to None.
+    - The charge price is the last known charge price for the charge key.
+    """
+    subscription_master_data_with_charge_time = _expand_with_daily_charge_time(
+        subscription_master_data, time_zone
+    )
+
+    w = Window.partitionBy(Colname.charge_key, Colname.from_date).orderBy(
+        Colname.charge_time
+    )
+
+    master_data_with_prices = (
+        subscription_master_data_with_charge_time.join(
+            subscription_prices, [Colname.charge_key, Colname.charge_time], "left"
         )
-        .filter((f.year(Colname.date) == f.year(Colname.charge_time)))
-        .filter((f.month(Colname.date) == f.month(Colname.charge_time)))
-        .drop(Colname.charge_time)
-        .withColumnRenamed(Colname.date, Colname.charge_time)
+        .withColumn(
+            Colname.charge_price,
+            f.last(Colname.charge_price, ignorenulls=True).over(w),
+        )
         .select(
-            Colname.charge_key,
-            Colname.charge_code,
-            Colname.charge_type,
-            Colname.charge_owner,
-            Colname.charge_tax,
-            Colname.resolution,
-            Colname.charge_time,
+            subscription_master_data_with_charge_time[Colname.charge_key],
+            subscription_master_data_with_charge_time[Colname.charge_type],
+            subscription_master_data_with_charge_time[Colname.charge_owner],
+            subscription_master_data_with_charge_time[Colname.charge_code],
+            subscription_master_data_with_charge_time[Colname.from_date],
+            subscription_master_data_with_charge_time[Colname.to_date],
+            subscription_master_data_with_charge_time[Colname.resolution],
+            subscription_master_data_with_charge_time[Colname.charge_tax],
+            subscription_master_data_with_charge_time[Colname.charge_time],
             Colname.charge_price,
         )
     )
-    return charges_df
+
+    return master_data_with_prices
+
+
+def _expand_with_daily_charge_time(
+    subscription_master_data: DataFrame, time_zone: str
+) -> DataFrame:
+    """
+    Add charge_time column to subscription_periods DataFrame.
+    The charge_time column is created by exploding subscription_periods using from_date and to_date with a resolution of 1 day.
+    """
+
+    charge_time_local = "charge_time_local"
+
+    charge_periods_with_charge_time = (
+        subscription_master_data.withColumn(
+            charge_time_local,
+            f.explode(
+                f.expr(
+                    f"sequence(from_utc_timestamp({Colname.from_date}, '{time_zone}'), from_utc_timestamp({Colname.to_date}, '{time_zone}'), interval 1 day)"
+                )
+            ).alias("charge_time_local"),
+        )
+        .withColumn(
+            Colname.charge_time,
+            f.to_utc_timestamp(f.col(charge_time_local), time_zone),
+        )
+        .drop(charge_time_local)
+    )
+
+    return charge_periods_with_charge_time
+
+
+def _join_with_links(
+    subscription_master_data_and_prices: DataFrame, subscription_links: DataFrame
+) -> DataFrame:
+    subscriptions = subscription_master_data_and_prices.join(
+        subscription_links,
+        (
+            subscription_master_data_and_prices[Colname.charge_key]
+            == subscription_links[Colname.charge_key]
+        )
+        & (
+            subscription_master_data_and_prices[Colname.charge_time]
+            >= subscription_links[Colname.from_date]
+        )
+        & (
+            subscription_master_data_and_prices[Colname.charge_time]
+            < subscription_links[Colname.to_date]
+        ),
+        how="inner",
+    ).select(
+        subscription_master_data_and_prices[Colname.charge_key],
+        subscription_master_data_and_prices[Colname.charge_type],
+        subscription_master_data_and_prices[Colname.charge_owner],
+        subscription_master_data_and_prices[Colname.charge_code],
+        subscription_master_data_and_prices[Colname.charge_time],
+        subscription_master_data_and_prices[Colname.charge_price],
+        subscription_links[Colname.metering_point_type],
+        subscription_links[Colname.settlement_method],
+        subscription_links[Colname.grid_area],
+        subscription_links[Colname.energy_supplier_id],
+    )
+
+    return subscriptions
