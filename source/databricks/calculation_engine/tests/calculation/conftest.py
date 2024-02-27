@@ -26,6 +26,7 @@ from package.calculation.preparation.charge_period_prices import (
     charge_period_prices_schema,
     ChargePeriodPrices,
 )
+from package.calculation.wholesale.schemas.charges_schema import charge_prices_schema
 from package.codelists import ChargeType
 from package.calculation.wholesale.schemas.calculate_daily_subscription_price_schema import (
     calculate_daily_subscription_price_schema,
@@ -218,7 +219,7 @@ def charge_prices_factory(
                 Colname.charge_price: charge_price,
             }
         ]
-        return spark.createDataFrame(data)
+        return spark.createDataFrame(data, charge_prices_schema)
 
     return factory
 
