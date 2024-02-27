@@ -4,7 +4,12 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
+    <!-- RunAnalyzersDuringXxx: https://learn.microsoft.com/en-us/visualstudio/code-quality/disable-code-analysis?view=vs-2022#net-framework-projects -->
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
+    <!-- EnforceCodeStyleInBuild: https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/overview?tabs=net-8#enable-on-build -->
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>

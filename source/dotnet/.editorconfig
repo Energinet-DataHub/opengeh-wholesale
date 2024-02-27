@@ -194,7 +194,8 @@ csharp_style_conditional_delegate_call = true:suggestion
 # Code block preferences
 csharp_prefer_braces = when_multiline:error
 csharp_braces_for_ifelse = required_for_multiline_statement
-csharp_style_namespace_declarations = file_scoped
+csharp_style_namespace_declarations = file_scoped:error
+dotnet_diagnostic.IDE0161.severity = error # When we move to .NET 9.0 we won't need this anymore: https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/language-rules#option-format
 
 # Unused value preferences
 csharp_style_unused_value_expression_statement_preference = discard_variable:silent
