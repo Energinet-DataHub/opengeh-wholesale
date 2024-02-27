@@ -32,9 +32,10 @@ def get_tariff_charges(
     charge_prices: ChargePrices,
     charge_link_metering_points: ChargeLinkMeteringPointPeriods,
     resolution: ChargeResolution,
+    time_zone: str,
 ) -> DataFrame:
     tariffs = _join_master_data_and_prices_add_missing_prices(
-        charge_master_data, charge_prices, resolution, ChargeType.TARIFF
+        charge_master_data, charge_prices, resolution, ChargeType.TARIFF, time_zone
     )
 
     tariffs = _join_with_charge_link_metering_points(
@@ -63,6 +64,7 @@ def _join_master_data_and_prices_add_missing_prices(
     charge_prices: ChargePrices,
     resolution: ChargeResolution,
     charge_type: ChargeType,
+    time_zone: str,
 ) -> DataFrame:
     charge_master_data_filtered = charge_master_data.df.filter(
         f.col(Colname.charge_type) == charge_type.value
@@ -71,7 +73,6 @@ def _join_master_data_and_prices_add_missing_prices(
         f.col(Colname.charge_type) == charge_type.value
     )
 
-    time_zone = "Europe/Copenhagen"
     charges_with_no_prices = charge_master_data_filtered.withColumn(
         Colname.charge_time,
         f.explode(

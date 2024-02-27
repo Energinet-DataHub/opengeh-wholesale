@@ -36,6 +36,9 @@ from pyspark.sql import Row
 import tests.calculation.charges_factory as factory
 
 
+DEFAULT_TIME_ZONE = "Europe/Copenhagen"
+
+
 def _create_expected_tariff_charges_row(
     charge_key: str = f"{factory.DefaultValues.DEFAULT_CHARGE_CODE}-{factory.DefaultValues.DEFAULT_CHARGE_OWNER}-{e.ChargeType.TARIFF.value}",
     charge_code: str = factory.DefaultValues.DEFAULT_CHARGE_CODE,
@@ -129,6 +132,7 @@ def test__get_tariff_charges__filters_on_resolution(
         charge_prices,
         charge_link_metering_point_periods,
         charge_resolution,
+        DEFAULT_TIME_ZONE,
     )
 
     # Assert
@@ -189,6 +193,7 @@ def test__get_tariff_charges__filters_on_tariff_charge_type(
         charge_prices,
         charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
+        DEFAULT_TIME_ZONE,
     )
 
     # Assert
@@ -260,6 +265,7 @@ def test__get_tariff_charges__only_accepts_charges_in_metering_point_period(
         charge_prices,
         charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
+        DEFAULT_TIME_ZONE,
     )
 
     # Assert
@@ -304,6 +310,7 @@ def test__get_tariff_charges__when_same_metering_point_and_resolution__sums_quan
         charge_prices,
         charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
+        DEFAULT_TIME_ZONE,
     )
 
     # Assert
@@ -346,6 +353,7 @@ def test__get_tariff_charges__when_no_matching_charge_resolution__returns_empty_
         charge_prices,
         charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
+        DEFAULT_TIME_ZONE,
     )
 
     # Assert
@@ -392,6 +400,7 @@ def test__get_tariff_charges__when_two_tariff_overlap__returns_both_tariffs(
         charge_prices,
         charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
+        DEFAULT_TIME_ZONE,
     )
 
     # Assert
@@ -439,6 +448,7 @@ def test__get_tariff_charges__returns_expected_tariff_values(
         charge_prices,
         charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
+        DEFAULT_TIME_ZONE,
     )
 
     # Assert
@@ -518,6 +528,7 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hou
         charge_prices,
         charge_link_metering_point_periods,
         charge_resolution,
+        DEFAULT_TIME_ZONE,
     )
 
     # Assert
@@ -599,6 +610,7 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_qua
         charge_prices,
         charge_link_metering_point_periods,
         charge_resolution,
+        DEFAULT_TIME_ZONE,
     )
 
     # Assert
@@ -702,6 +714,7 @@ def test__get_tariff_charges__per_day_only_accepts_time_series_and_change_times_
         charge_prices,
         charge_link_metering_point_periods,
         e.ChargeResolution.DAY,
+        DEFAULT_TIME_ZONE,
     )
 
     # Assert
@@ -746,6 +759,7 @@ def test__get_tariff_charges__can_handle_missing_charges(
         charge_prices,
         charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
+        DEFAULT_TIME_ZONE,
     ).orderBy(Colname.charge_time)
 
     # Assert
@@ -792,6 +806,7 @@ def test__get_tariff_charges__can_handle_missing_all_charges_prices(
         charge_prices,
         charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
+        DEFAULT_TIME_ZONE,
     )
 
     # Assert
@@ -863,6 +878,7 @@ def test__get_tariff_charges__can_handle_daylight_saving_time(
         charge_prices,
         charge_link_metering_point_periods,
         e.ChargeResolution.DAY,
+        DEFAULT_TIME_ZONE,
     )
 
     # Assert
