@@ -33,16 +33,9 @@ wholesaleDomain = group "Wholesale" {
         this -> wholesaleDataLake "Retrieves results from"
 
         # Subsystem-to-Subsystem relationships
-        # CONSIDER:
-        #  - Should live in EDI model(?) since they have a dependency on Wholesale Inbox
-        #  - However, its difficult to maintain models spanning subsystems because one subsystem
-        #    doesn't know which container (app) it depends on, it only knows the ServiceBus entity dependecy (e.g. queue)
         edi -> this "Sends to Wholesale Inbox" "message/amqp" {
             tags "Simple View"
         }
-        # CONSIDER:
-        #   Each subsystem model could exclude subscriptions based on their name.
-        #   E.g. if Market Participant doesn't want to see subscribers they can exclude "MarketParticipant Subscriber" (set as 'tag' on container level)
         markpartOrganizationManager -> this "Publish Grid Area Ownership Assigned" "integration event/amqp" {
             tags "Simple View"
         }
@@ -64,7 +57,6 @@ wholesaleDomain = group "Wholesale" {
         this -> wholesaleDataLake "Retrieves results from"
 
         # Subsystem-to-Subsystem relationships
-        # CONSIDER: Should live in EDI model(?) and be tagged as "Wholesale Subscriber"
         this -> edi "Publish calculation results" "integration event/amqp" {
             tags "Simple View"
         }
