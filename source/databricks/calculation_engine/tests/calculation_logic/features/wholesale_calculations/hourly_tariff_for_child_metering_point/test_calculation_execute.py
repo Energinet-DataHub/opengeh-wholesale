@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from helpers.data_frame_utils import assert_dataframes
+from helpers.data_frame_utils import assert_dataframes_equal
 from .states.scenario_state import (
     get_expected,
 )
@@ -27,7 +27,7 @@ def test_execute__returns_expected(  # type: ignore
     results = scenario_fixture.execute()
 
     # Assert
-    assert_dataframes(
+    assert_dataframes_equal(
         results.wholesale_results.hourly_tariff_per_ga_co_es.drop("metering_point_type")
         .drop("quantity_qualities")
         .drop("price")
@@ -42,5 +42,4 @@ def test_execute__returns_expected(  # type: ignore
         .drop("energy_supplier_id")
         .drop("quantity")
         .drop("calculation_result_id"),
-        ignore_nullability=True,
     )
