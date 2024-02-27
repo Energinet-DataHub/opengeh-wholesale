@@ -12,36 +12,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.DatabaseMigration
+namespace Energinet.DataHub.Wholesale.DatabaseMigration;
+
+internal static class Program
 {
-    internal static class Program
+    public static int Main(string[] args)
     {
-        public static int Main(string[] args)
+        // If you are migrating to SQL Server Express use connection string "Server=(LocalDb)\\MSSQLLocalDB;..."
+        // If you are migrating to SQL Server use connection string "Server=localhost;..."
+        var connectionString =
+            args.FirstOrDefault()
+            ?? "Server=localhost;Database=wholesale;Trusted_Connection=True;Encrypt=No;";
+
+        Console.WriteLine($"Performing upgrade on {connectionString}");
+        var result = Upgrader.DatabaseUpgrade(connectionString);
+
+        if (!result.Successful)
         {
-            // If you are migrating to SQL Server Express use connection string "Server=(LocalDb)\\MSSQLLocalDB;..."
-            // If you are migrating to SQL Server use connection string "Server=localhost;..."
-            var connectionString =
-                args.FirstOrDefault()
-                ?? "Server=localhost;Database=wholesale;Trusted_Connection=True;Encrypt=No;";
-
-            Console.WriteLine($"Performing upgrade on {connectionString}");
-            var result = Upgrader.DatabaseUpgrade(connectionString);
-
-            if (!result.Successful)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(result.Error);
-                Console.ResetColor();
-#if DEBUG
-                Console.ReadLine();
-#endif
-                return -1;
-            }
-
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Success!");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(result.Error);
             Console.ResetColor();
-            return 0;
+#if DEBUG
+            Console.ReadLine();
+#endif
+            return -1;
         }
+
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("Success!");
+        Console.ResetColor();
+        return 0;
     }
 }
