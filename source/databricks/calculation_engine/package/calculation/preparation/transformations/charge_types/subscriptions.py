@@ -111,7 +111,7 @@ def _expand_with_daily_charge_time(
             f.sequence(
                 f.from_utc_timestamp(Colname.from_date, time_zone),
                 f.from_utc_timestamp(Colname.to_date, time_zone),
-                f.expr(f"interval 1 day"),
+                f.expr("interval 1 day"),
             )
         ),
     ).withColumn(
