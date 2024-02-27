@@ -69,9 +69,7 @@ def calculate_price_per_day(
     )
     charges_per_day = charges_per_day_flex_consumption.withColumn(
         Colname.price_per_day,
-        (col(Colname.charge_price) / lit(days_in_month)).cast(
-            DecimalType(14, 0),
-        ),
+        (col(Colname.charge_price) / lit(days_in_month)).cast(DecimalType(14, 6)),
     )
 
     return charges_per_day
@@ -92,7 +90,7 @@ def _get_days_in_month(
         )
 
     # return days in month of the start time
-    return (period_end_local_time - period_start_local_time).days + 1
+    return (period_end_local_time - period_start_local_time).days
 
 
 def _is_full_month_and_at_midnight(period_start_local_time, period_end_local_time):
