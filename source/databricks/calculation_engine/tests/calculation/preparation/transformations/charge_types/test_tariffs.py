@@ -746,7 +746,7 @@ def test__get_tariff_charges__can_handle_missing_charges(
         charge_prices,
         charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
-    )
+    ).orderBy(Colname.charge_time)
 
     # Assert
     assert actual.count() == 2
