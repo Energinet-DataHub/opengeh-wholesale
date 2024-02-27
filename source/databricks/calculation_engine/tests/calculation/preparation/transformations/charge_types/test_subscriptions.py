@@ -149,8 +149,7 @@ class TestWhenNoPricesForPeriod:
             )
         )
 
-        charge_prices_empty = spark.createDataFrame([], charge_prices_schema)
-
+        charge_prices_empty = factory.create_charge_prices(spark, [])
         charge_master_data = factory.create_charge_master_data(
             spark,
             [
