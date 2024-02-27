@@ -21,7 +21,6 @@ using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Configuration;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Extensions;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
-using Microsoft.Extensions.Configuration;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures
@@ -99,7 +98,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures
 
             foreach (var expected in expectedEvents)
             {
-                if (!actualResults.Any(actual => expected.IsMatch(actual)))
+                if (!actualResults.Any(expected.IsMatch))
                 {
                     return false;
                 }

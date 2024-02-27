@@ -14,7 +14,6 @@
 
 using System.Net;
 using System.Text;
-using Microsoft.Azure.Databricks.Client;
 using Microsoft.Azure.Databricks.Client.Models;
 using Newtonsoft.Json;
 
@@ -31,7 +30,7 @@ public sealed class DatabricksTestHttpListener : IDisposable
     private const int JobId = 42;
     private readonly HttpListener _listener;
     private readonly CancellationTokenSource _cancellationTokenSource = new();
-    private readonly List<RunIdentifier> _runs = new();
+    private readonly List<RunIdentifier> _runs = [];
 
     public DatabricksTestHttpListener(string prefix)
     {
@@ -147,13 +146,13 @@ public sealed class DatabricksTestHttpListener : IDisposable
                 new JobSettings()
                 {
                     Name = "CalculatorJob",
-                    Tasks = new List<JobTaskSettings>
-                    {
+                    Tasks =
+                    [
                         new()
                         {
-                            PythonWheelTask = new PythonWheelTask { Parameters = new List<string>() },
+                            PythonWheelTask = new PythonWheelTask { Parameters = [] },
                         },
-                    },
+                    ],
                 },
         };
         return calculatorJob;

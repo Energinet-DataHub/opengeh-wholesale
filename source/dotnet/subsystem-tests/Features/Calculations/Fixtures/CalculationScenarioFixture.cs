@@ -29,8 +29,8 @@ using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Configuration;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Extensions;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
+using Energinet.DataHub.Wholesale.Test.Core;
 using Google.Protobuf.WellKnownTypes;
-using Test.Core;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtures
@@ -93,8 +93,8 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
                 {
                     calculation = await WholesaleClient.GetCalculationAsync(calculationId);
                     return
-                        calculation?.ExecutionState == CalculationState.Completed
-                        || calculation?.ExecutionState == CalculationState.Failed;
+                        calculation?.ExecutionState is CalculationState.Completed
+                        or CalculationState.Failed;
                 },
                 waitTimeLimit,
                 delay);
@@ -123,10 +123,10 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
                 }
                 else
                 {
-                    var result = ShouldCollectMessage(messageOrNull, calculationId, integrationEventNames);
-                    if (result.ShouldCollect)
+                    var (shouldCollect, eventMessage) = ShouldCollectMessage(messageOrNull, calculationId, integrationEventNames);
+                    if (shouldCollect)
                     {
-                        collectedIntegrationEvents.Add(result.EventMessage!);
+                        collectedIntegrationEvents.Add(eventMessage!);
                     }
 
                     // We should always complete (delete) messages since we use a subscription

@@ -38,7 +38,7 @@ public static class EnergyResultDeltaTableHelper
         {
             EnergyResultColumnNames.CalculationId => $@"'{calculationId}'",
             EnergyResultColumnNames.CalculationExecutionTimeStart => $@"'{calculationExecutionTimeStart}'",
-            EnergyResultColumnNames.CalculationType =>$@"'{calculationType}'",
+            EnergyResultColumnNames.CalculationType => $@"'{calculationType}'",
             EnergyResultColumnNames.CalculationResultId => $@"'{calculationResultId}'",
             EnergyResultColumnNames.TimeSeriesType => $@"'{timeSeriesType}'",
             EnergyResultColumnNames.GridArea => $@"'{gridArea}'",

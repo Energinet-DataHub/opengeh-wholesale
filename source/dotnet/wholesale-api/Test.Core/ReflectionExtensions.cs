@@ -15,7 +15,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Test.Core
+namespace Energinet.DataHub.Wholesale.Test.Core
 {
     public static class ReflectionExtensions
     {
@@ -37,13 +37,14 @@ namespace Test.Core
             // Unbox if necessary
             if (memberLambda.Body is UnaryExpression unaryExpression &&
                 unaryExpression.NodeType == ExpressionType.Convert)
+            {
                 expression = unaryExpression.Operand;
+            }
 
             if (expression is MemberExpression memberSelectorExpression)
             {
                 var property = memberSelectorExpression.Member as PropertyInfo;
-                if (property != null)
-                    property.SetValue(target, value, null);
+                property?.SetValue(target, value, null);
             }
             else
             {

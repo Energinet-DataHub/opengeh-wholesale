@@ -23,8 +23,8 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Calculations.IntegrationTests.Fixture.Database;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.Orchestration.IntegrationTests.Fixtures

@@ -22,8 +22,10 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures
     {
         public static async Task<WholesaleClient_V3> CreateAsync(WholesaleSubsystemConfiguration configuration, bool useAuthentication)
         {
-            var httpClient = new HttpClient();
-            httpClient.BaseAddress = configuration.WebApiBaseAddress;
+            var httpClient = new HttpClient
+            {
+                BaseAddress = configuration.WebApiBaseAddress,
+            };
 
             if (useAuthentication)
             {
