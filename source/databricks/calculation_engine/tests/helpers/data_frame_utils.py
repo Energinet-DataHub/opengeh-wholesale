@@ -35,25 +35,22 @@ def assert_dataframes_equal(actual: DataFrame, expected: DataFrame) -> None:
     assert actual.subtract(expected).count() == 0
 
 
-def assert_dataframes(
+def assert_dataframe_and_schema(
     actual: DataFrame,
     expected: DataFrame,
     ignore_nullability: bool = False,
     ignore_column_order: bool = False,
     ignore_decimal_scale: bool = False,
     ignore_decimal_precision: bool = False,
-    ignore_schema: bool = False,
 ) -> None:
-
-    if not ignore_schema:
-        assert_schema(
-            actual.schema,
-            expected.schema,
-            ignore_nullability,
-            ignore_column_order,
-            ignore_decimal_scale,
-            ignore_decimal_precision,
-        )
+    assert_schema(
+        actual.schema,
+        expected.schema,
+        ignore_nullability,
+        ignore_column_order,
+        ignore_decimal_scale,
+        ignore_decimal_precision,
+    )
     assert_dataframes_equal(actual, expected)
 
 
