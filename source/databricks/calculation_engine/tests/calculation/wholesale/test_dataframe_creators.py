@@ -20,9 +20,6 @@ from package.constants import Colname
 from package.calculation.wholesale.schemas.calculate_daily_subscription_price_schema import (
     calculate_daily_subscription_price_schema,
 )
-from package.calculation.wholesale.schemas.charges_schema import (
-    charges_schema,
-)
 from tests.calculation.dataframe_defaults import DataframeDefaults
 
 

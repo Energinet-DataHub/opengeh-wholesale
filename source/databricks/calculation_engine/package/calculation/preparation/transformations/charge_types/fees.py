@@ -60,7 +60,7 @@ def get_fee_charges(
     ).select(
         fees[Colname.charge_key],
         Colname.charge_code,
-        Colname.charge_type,
+        fees[Colname.charge_type],
         Colname.charge_owner,
         Colname.charge_time,
         Colname.charge_price,

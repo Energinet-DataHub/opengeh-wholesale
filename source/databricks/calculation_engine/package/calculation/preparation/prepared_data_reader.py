@@ -95,9 +95,10 @@ class PreparedDataReader:
         charge_master_data: ChargeMasterData,
         charge_prices: ChargePrices,
         charge_link_metering_points: ChargeLinkMeteringPointPeriods,
+        time_zone: str,
     ) -> DataFrame:
         return T.get_subscription_charges(
-            charge_master_data, charge_prices, charge_link_metering_points
+            charge_master_data, charge_prices, charge_link_metering_points, time_zone
         )
 
     def get_tariff_charges(
