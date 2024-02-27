@@ -17,7 +17,6 @@ from datetime import datetime
 from package.calculation.preparation.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
 )
-from package.calculation.preparation.charge_period_prices import ChargePeriodPrices
 from tests.helpers.test_schemas import (
     charges_flex_consumption_schema,
     charges_per_day_schema,
@@ -34,6 +33,9 @@ from package.calculation.preparation.transformations import get_subscription_cha
 from calendar import monthrange
 import pytest
 from package.constants import Colname
+
+
+DEFAULT_TIMEZONE = "Europe/Copenhagen"
 
 
 def test__calculate_daily_subscription_price__simple(
@@ -96,11 +98,15 @@ def test__calculate_daily_subscription_price__charge_price_change(
 ):
     # Test that calculate_daily_subscription_price act as expected when charge price changes in a given period
     # Arrange
-    from_date = datetime(2020, 1, 31, 0, 0)
-    to_date = datetime(2020, 2, 2, 0, 0)
+    from_date = datetime(2020, 2, 1, 0, 0)
+    to_date = datetime(2020, 2, 3, 0, 0)
+    calculation_period_start = datetime(2020, 1, 31, 23, 0)
+    calculation_period_end = datetime(2020, 2, 29, 23, 0)
 
     charge_link_metering_point_periods = charge_link_metering_points_factory(
-        charge_type=ChargeType.SUBSCRIPTION.value, from_date=from_date, to_date=to_date
+        charge_type=ChargeType.SUBSCRIPTION.value,
+        from_date=from_date,
+        to_date=to_date,
     )
 
     subscription_1_charge_prices_charge_price = Decimal("3.124544")
@@ -113,7 +119,7 @@ def test__calculate_daily_subscription_price__charge_price_change(
         from_date=from_date,
         to_date=to_date,
     )
-    subscription_2_charge_prices_time = datetime(2020, 2, 1, 0, 0)
+    subscription_2_charge_prices_time = datetime(2020, 2, 2, 0, 0)
     subscription_2_charge_prices_df = charge_prices_factory(
         charge_time=subscription_2_charge_prices_time,
     )
@@ -156,9 +162,12 @@ def test__calculate_daily_subscription_price__charge_price_change(
         charge_prices_df,
         charge_link_metering_point_periods,
     )
-    result = calculate_daily_subscription_amount(spark, subscription_charges).orderBy(
-        Colname.charge_time
-    )
+    result = calculate_daily_subscription_amount(
+        subscription_charges,
+        calculation_period_start,
+        calculation_period_end,
+        DEFAULT_TIMEZONE,
+    ).orderBy(Colname.charge_time)
 
     expected_subscription_1 = calculate_daily_subscription_price_factory(
         subscription_1_charge_prices_time,
