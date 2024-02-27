@@ -550,7 +550,7 @@ class TestWhenDaylightSavingTimeChanges:
             ),
         ],
     )
-    def test__returns_result_with_expected_start_and_end_charge_time(
+    def test__returns_result_with_expected_first_and_last_charge_time(
         self,
         spark: SparkSession,
         from_date: datetime,
@@ -600,15 +600,13 @@ class TestWhenDaylightSavingTimeChanges:
             charge_link_metering_point_periods,
             DEFAULT_TIME_ZONE,
         )
-        actual_subscription.show(100)
 
         # Assert
+        actual_charge_times = actual_subscription.orderBy(Colname.charge_time).collect()
+
+        assert actual_subscription.count() == expected_day_count
+        assert actual_charge_times[0][Colname.charge_time] == expected_first_charge_time
         assert (
-            actual_subscription.collect()[0][Colname.charge_time]
-            == expected_first_charge_time
-        )
-        assert (
-            actual_subscription.collect()[-1][Colname.charge_time]
+            actual_charge_times[expected_day_count - 1][Colname.charge_time]
             == expected_last_charge_time
         )
-        assert actual_subscription.count() == expected_day_count
