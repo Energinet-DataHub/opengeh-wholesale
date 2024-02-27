@@ -13,5 +13,5 @@
 # limitations under the License.
 
 from .basis_data_results import write_basis_data
-from .energy_results import write_energy_results
+from .energy_results import write
 from .wholesale_results import write

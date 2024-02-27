@@ -28,7 +28,7 @@ from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
 from .output import basis_data_factory
 from .output.basis_data_results import write_basis_data
-from .output.energy_results import write_energy_results
+from .output.energy_results import write as write_energy_results
 from .output.wholesale_results import write as write_wholesale_results
 from .preparation import PreparedDataReader
 from .wholesale import wholesale_calculation
@@ -65,8 +65,7 @@ def _execute(
         )
 
     results.energy_results = energy_calculation.execute(
-        args.calculation_type,
-        args.calculation_grid_areas,
+        args,
         metering_point_time_series,
         grid_loss_responsible_df,
     )
@@ -137,7 +136,7 @@ def _get_production_and_consumption_metering_points(
 
 
 def _write_results(args: CalculatorArgs, results: CalculationResultsContainer) -> None:
-    write_energy_results(args, results.energy_results)
+    write_energy_results(results.energy_results)
     if results.wholesale_results is not None:
         write_wholesale_results(results.wholesale_results)
     # We write basis data at the end of the calculation to make it easier to analyze performance of the calculation part

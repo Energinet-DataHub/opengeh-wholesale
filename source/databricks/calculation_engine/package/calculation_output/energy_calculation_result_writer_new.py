@@ -11,28 +11,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from dataclasses import fields
 
-from pyspark.sql import DataFrame
-
-from package.calculation.CalculationResults import (
-    EnergyResultsContainer,
-)
-from package.infrastructure import logging_configuration
-from package.infrastructure.paths import (
-    OUTPUT_DATABASE_NAME,
-    ENERGY_RESULT_TABLE_NAME,
-)
+from package.calculation.energy.energy_results import EnergyResults
+from package.infrastructure.paths import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
 
 
-def write(energy_results: EnergyResultsContainer) -> None:
-    """Write each energy result to the output table."""
-    for field in fields(energy_results):
-        _write(field.name, getattr(energy_results, field.name))
+class EnergyCalculationResultWriter:
 
-
-def _write(name: str, df: DataFrame) -> None:
-    with logging_configuration.start_span(name):
-        df.write.format("delta").mode("append").option(
+    @staticmethod
+    def write(
+        results: EnergyResults,
+    ) -> None:
+        """
+        Write result to storage.
+        """
+        results_df = results.df
+        results_df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
         ).insertInto(f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}")
