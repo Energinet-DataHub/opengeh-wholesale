@@ -55,6 +55,10 @@ class DataFrameWrapper:
 
         self._df: DataFrame = df
 
+    def __getattr__(self, attr):
+        # Delegate attribute access to the internal DataFrame
+        return getattr(self._df, attr)
+
     @property
     def df(self) -> DataFrame:
         return self._df
