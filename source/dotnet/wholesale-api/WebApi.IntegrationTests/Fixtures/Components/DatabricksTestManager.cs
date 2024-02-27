@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
-
 namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.Components
 {
     public sealed class DatabricksTestManager : IAsyncDisposable

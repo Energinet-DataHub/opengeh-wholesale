@@ -78,9 +78,9 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance.Fixtures
                     calculationState = ConvertToCalculationState(runState.Item1);
 
                     return
-                        calculationState == CalculationState.Completed
-                        || calculationState == CalculationState.Failed
-                        || calculationState == CalculationState.Canceled;
+                        calculationState is CalculationState.Completed
+                        or CalculationState.Failed
+                        or CalculationState.Canceled;
                 },
                 waitTimeLimit,
                 delay);
