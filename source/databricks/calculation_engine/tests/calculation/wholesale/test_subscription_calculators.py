@@ -46,9 +46,11 @@ def test__calculate_daily_subscription_price__simple(
 ):
     # Test that calculate_daily_subscription_price does as expected in with the most simple dataset
     # Arrange
-    from_date = datetime(2020, 1, 1, 0, 0)
-    to_date = datetime(2020, 1, 2, 0, 0)
-    time = datetime(2020, 1, 1, 0, 0)
+    calculation_period_start = datetime(2020, 1, 31, 23, 0)
+    calculation_period_end = datetime(2020, 2, 29, 23, 0)
+    from_date = datetime(2020, 2, 1, 0, 0)
+    to_date = datetime(2020, 2, 2, 0, 0)
+    time = datetime(2020, 2, 1, 0, 0)
     charge_link_metering_point_periods = charge_link_metering_points_factory(
         charge_type=ChargeType.SUBSCRIPTION.value, from_date=from_date, to_date=to_date
     )
@@ -61,8 +63,9 @@ def test__calculate_daily_subscription_price__simple(
         charge_type=ChargeType.SUBSCRIPTION.value,
         charge_time=time,
     )
+    charge_prices.show()
 
-    expected_date = datetime(2020, 1, 1, 0, 0)
+    expected_date = datetime(2020, 2, 1, 0, 0)
     expected_charge_price = charge_prices.collect()[0][Colname.charge_price]
     expected_price_per_day = Decimal(
         expected_charge_price / monthrange(expected_date.year, expected_date.month)[1]
@@ -76,7 +79,12 @@ def test__calculate_daily_subscription_price__simple(
         charge_link_metering_point_periods,
         DEFAULT_TIME_ZONE,
     )
-    result = calculate_daily_subscription_amount(spark, subscription_charges)
+    result = calculate_daily_subscription_amount(
+        subscription_charges,
+        calculation_period_start,
+        calculation_period_end,
+        DEFAULT_TIME_ZONE,
+    )
     expected = calculate_daily_subscription_price_factory(
         expected_date,
         expected_price_per_day,
@@ -98,8 +106,8 @@ def test__calculate_daily_subscription_price__charge_price_change(
 ):
     # Test that calculate_daily_subscription_price act as expected when charge price changes in a given period
     # Arrange
-    from_date = datetime(2020, 2, 1, 0, 0)
-    to_date = datetime(2020, 2, 3, 0, 0)
+    from_date = datetime(2020, 2, 1, 23, 0)
+    to_date = datetime(2020, 2, 3, 23, 0)
     calculation_period_start = datetime(2020, 1, 31, 23, 0)
     calculation_period_end = datetime(2020, 2, 29, 23, 0)
 
@@ -120,11 +128,7 @@ def test__calculate_daily_subscription_price__charge_price_change(
         charge_time=subscription_1_charge_prices_time,
         charge_price=subscription_1_charge_prices_charge_price,
     )
-    subscription_1_charge_master_data_df = charge_master_data_factory(
-        from_date=from_date,
-        to_date=to_date,
-    )
-    subscription_2_charge_prices_time = datetime(2020, 2, 2, 0, 0)
+    subscription_2_charge_prices_time = datetime(2020, 2, 2, 23, 0)
     subscription_2_charge_prices_df = charge_prices_factory(
         charge_time=subscription_2_charge_prices_time,
     )
@@ -470,7 +474,7 @@ def test__calculate_price_per_day__divides_charge_price_by_days_in_month(
     )
 
     # Act
-    result = calculate_price_per_day(charges_flex_consumption)
+    result = calculate_price_per_day(charges_flex_consumption, ca)
 
     # Assert
     assert result.collect()[0][Colname.price_per_day] == expected
