@@ -83,9 +83,11 @@ public class ServiceBusIntegrationEventSenderFixture : IAsyncLifetime
 
     private static ServiceBusMessage CreateReceivedIntegrationEvent(string body, string messageId, string subject)
     {
-        var message = new ServiceBusMessage(body);
-        message.MessageId = messageId;
-        message.Subject = subject;
+        var message = new ServiceBusMessage(body)
+        {
+            MessageId = messageId,
+            Subject = subject,
+        };
         return message;
     }
 }

@@ -27,7 +27,8 @@ public sealed class BusinessValidationExceptionFilter : IExceptionFilter
 {
     public void OnException(ExceptionContext context)
     {
-        if (context.Exception is not BusinessValidationException) return;
+        if (context.Exception is not BusinessValidationException)
+            return;
 
         context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
         context.Result = new BadRequestObjectResult(context.Exception.Message);
