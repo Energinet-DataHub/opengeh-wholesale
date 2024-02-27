@@ -50,9 +50,9 @@ public sealed class SettlementReportScenarioFixture : LazyFixtureBase
             settlementDownloadInput.CalculationPeriodEnd);
         DiagnosticMessageSink.WriteDiagnosticMessage($"""
             Downloading settlement report for
-                grid area codes {string.Join(", ", settlementDownloadInput.GridAreaCodes.ToArray())} and
-                calculation type {settlementDownloadInput.CalculationType} started.
-                """);
+            grid area codes {string.Join(", ", settlementDownloadInput.GridAreaCodes.ToArray())} and
+            calculation type {settlementDownloadInput.CalculationType} started.
+            """);
 
         return new ZipArchive(fileResponse.Stream, ZipArchiveMode.Read);
     }

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Messaging.Communication;
+using Energinet.DataHub.MarketParticipant.Infrastructure.Model.Contracts;
 using Energinet.DataHub.Wholesale.Calculations.Application.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Calculations.Application.IntegrationEvents.Handlers;
 using Energinet.DataHub.Wholesale.Calculations.Application.UseCases;

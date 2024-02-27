@@ -71,16 +71,16 @@ public class CalculationJobScenario : SubsystemTestsBase<CalculationJobScenarioF
     [SubsystemFact]
     public async Task Then_CalculationJobIsCompletedWithinWaitTime()
     {
-        var (IsCompleted, Run) = await Fixture.WaitForCalculationJobCompletedAsync(
+        var (isCompleted, run) = await Fixture.WaitForCalculationJobCompletedAsync(
             Fixture.ScenarioState.CalculationJobId,
             waitTimeLimit: TimeSpan.FromMinutes(75));
 
-        Fixture.ScenarioState.Run = Run;
+        Fixture.ScenarioState.Run = run;
 
         // Assert
         using var assertionScope = new AssertionScope();
-        IsCompleted.Should().BeTrue();
-        Run.Should().NotBeNull();
+        isCompleted.Should().BeTrue();
+        run.Should().NotBeNull();
     }
 
     /// <summary>

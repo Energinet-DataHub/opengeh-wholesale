@@ -128,7 +128,7 @@ public class CalculationTests
         var someGridAreas = new List<GridAreaCode> { new("004"), new("805") };
 
         // Act
-        Calculation createCalculation()
+        Calculation CreateCalculation()
         {
             return new Calculation(
             SystemClock.Instance.GetCurrentInstant(),
@@ -145,11 +145,11 @@ public class CalculationTests
         // Assert
         if (isEntireMonth)
         {
-            createCalculation();
+            CreateCalculation();
         }
         else
         {
-            Assert.Throws<BusinessValidationException>((Func<Calculation>)createCalculation);
+            Assert.Throws<BusinessValidationException>((Func<Calculation>)CreateCalculation);
         }
     }
 

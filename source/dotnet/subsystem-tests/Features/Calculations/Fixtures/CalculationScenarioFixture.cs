@@ -123,10 +123,10 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
             }
             else
             {
-                var (ShouldCollect, EventMessage) = ShouldCollectMessage(messageOrNull, calculationId, integrationEventNames);
-                if (ShouldCollect)
+                var (shouldCollect, eventMessage) = ShouldCollectMessage(messageOrNull, calculationId, integrationEventNames);
+                if (shouldCollect)
                 {
-                    collectedIntegrationEvents.Add(EventMessage!);
+                    collectedIntegrationEvents.Add(eventMessage!);
                 }
 
                 // We should always complete (delete) messages since we use a subscription
@@ -139,8 +139,8 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
         stopwatch.Stop();
         DiagnosticMessageSink.WriteDiagnosticMessage($"""
             Message receiver loop for calculation with id '{calculationId}' took '{stopwatch.Elapsed}' to complete.
-                It was listening for messages on entity path '{Receiver.EntityPath}', and collected '{collectedIntegrationEvents.Count}' messages spanning various event types.
-                """);
+            It was listening for messages on entity path '{Receiver.EntityPath}', and collected '{collectedIntegrationEvents.Count}' messages spanning various event types.
+            """);
 
         return collectedIntegrationEvents;
     }
@@ -342,7 +342,7 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
                                     {nameof(amountPerChargeResultProduced.ChargeType)}={amountPerChargeResultProduced.ChargeType}
                                     {nameof(amountPerChargeResultProduced.ChargeOwnerId)}={amountPerChargeResultProduced.ChargeOwnerId}
                                     {nameof(amountPerChargeResultProduced.SettlementMethod)}={amountPerChargeResultProduced.SettlementMethod}
-                                """);
+                            """);
                         eventMessage = amountPerChargeResultProduced;
                         shouldCollect = true;
                     }
@@ -361,7 +361,7 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
                                     {nameof(monthlyAmountPerChargeResultProduced.ChargeType)}={monthlyAmountPerChargeResultProduced.ChargeType}
                                     {nameof(monthlyAmountPerChargeResultProduced.ChargeOwnerId)}={monthlyAmountPerChargeResultProduced.ChargeOwnerId}
                                     {nameof(monthlyAmountPerChargeResultProduced.Amount)}={monthlyAmountPerChargeResultProduced.Amount}
-                                """);
+                            """);
                         eventMessage = monthlyAmountPerChargeResultProduced;
                         shouldCollect = true;
                     }

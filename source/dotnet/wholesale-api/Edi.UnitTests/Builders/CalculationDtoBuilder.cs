@@ -20,11 +20,12 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 
 public class CalculationDtoBuilder
 {
-    private DateTimeOffset _periodStart;
-    private DateTimeOffset _periodEnd;
     private readonly DateTimeOffset _executionStart;
     private readonly DateTimeOffset __executionEnd;
     private readonly Guid _calculationId;
+
+    private DateTimeOffset _periodStart;
+    private DateTimeOffset _periodEnd;
     private CalculationType _calculationType;
     private long _version;
 

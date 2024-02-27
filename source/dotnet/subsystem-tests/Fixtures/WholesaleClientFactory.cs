@@ -24,7 +24,7 @@ public static class WholesaleClientFactory
     {
         var httpClient = new HttpClient
         {
-            BaseAddress = configuration.WebApiBaseAddress
+            BaseAddress = configuration.WebApiBaseAddress,
         };
 
         if (useAuthentication)

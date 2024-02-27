@@ -69,18 +69,18 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
     [SubsystemFact]
     public async Task Then_CalculationIsCompletedWithinWaitTime()
     {
-        var (IsCompletedOrFailed, Calculation) = await Fixture.WaitForCalculationCompletedOrFailedAsync(
+        var (isCompletedOrFailed, calculation) = await Fixture.WaitForCalculationCompletedOrFailedAsync(
             Fixture.ScenarioState.CalculationId,
             waitTimeLimit: TimeSpan.FromMinutes(21));
 
-        Fixture.ScenarioState.Calculation = Calculation;
+        Fixture.ScenarioState.Calculation = calculation;
 
         // Assert
         using var assertionScope = new AssertionScope();
-        IsCompletedOrFailed.Should().BeTrue();
-        Calculation.Should().NotBeNull();
+        isCompletedOrFailed.Should().BeTrue();
+        calculation.Should().NotBeNull();
 
-        Calculation!.ExecutionState.Should().Be(Clients.v3.CalculationState.Completed);
+        calculation!.ExecutionState.Should().Be(Clients.v3.CalculationState.Completed);
     }
 
     [ScenarioStep(4)]

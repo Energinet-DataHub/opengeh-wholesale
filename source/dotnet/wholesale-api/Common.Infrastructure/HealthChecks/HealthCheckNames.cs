@@ -19,6 +19,4 @@ public static class HealthCheckNames
     public const string WholesaleInboxEventsQueue = "WholesaleInboxHealthCheck";
     public const string EdiInboxEventsQueue = "EdiInboxEventsQueueHealthCheck";
     public const string IntegrationEventsTopicSubscription = "IntegrationEventsTopicSubscriptionHealthCheck";
-    public const string RegisterCompletedCalculationsTrigger = nameof(RegisterCompletedCalculationsTrigger);
-    public const string UpdateCalculationExecutionStateTrigger = nameof(UpdateCalculationExecutionStateTrigger);
 }

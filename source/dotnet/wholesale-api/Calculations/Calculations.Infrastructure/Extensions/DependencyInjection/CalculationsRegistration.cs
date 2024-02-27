@@ -66,13 +66,10 @@ public static class CalculationsRegistration
         services.AddScoped<IStartCalculationHandler, StartCalculationHandler>();
         services.AddScoped<IUpdateCalculationExecutionStateHandler, UpdateCalculationExecutionStateHandler>();
 
-        services.AddHostedService<Energinet.DataHub.Wholesale.Calculations.Application.UseCases.UpdateCalculationExecutionStateTrigger>();
-
         // Health checks
         services.AddHealthChecks()
             .AddDbContextCheck<DatabaseContext>(
-                name: $"{nameof(DatabaseContext)}HealthCheck")
-            .AddRepeatingTriggerHealthCheck<Energinet.DataHub.Wholesale.Calculations.Application.UseCases.UpdateCalculationExecutionStateTrigger>(TimeSpan.FromMinutes(1));
+                name: $"{nameof(DatabaseContext)}HealthCheck");
 
         return services;
     }

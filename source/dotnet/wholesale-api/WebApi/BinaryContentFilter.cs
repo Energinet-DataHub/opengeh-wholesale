@@ -39,21 +39,21 @@ public class BinaryContentFilter : IOperationFilter
                 new OpenApiResponse()
                 {
                     Content = new Dictionary<string, OpenApiMediaType>()
-            {
-                {
-                    "application/octet-stream",
-                    new OpenApiMediaType()
                     {
-                        Schema = new OpenApiSchema()
                         {
-                            Type = "string",
-                            Format = "binary",
+                            "application/octet-stream",
+                            new OpenApiMediaType()
+                            {
+                                Schema = new OpenApiSchema()
+                                {
+                                    Type = "string",
+                                    Format = "binary",
+                                },
+                            }
                         },
-                    }
-                },
-            },
+                    },
                 }
-            }
+            },
         };
     }
 }
