@@ -44,7 +44,7 @@ def get_subscription_charges(
     )
 
     subscriptions = _join_with_links(
-        subscription_master_data_and_prices, subscription_links
+        subscription_master_data_and_prices, subscription_links.df
     )
 
     return subscriptions
@@ -124,9 +124,8 @@ def _expand_with_daily_charge_time(
 
 def _join_with_links(
     subscription_master_data_and_prices: DataFrame,
-    subscription_links: ChargeLinkMeteringPointPeriods,
+    subscription_links: DataFrame,
 ) -> DataFrame:
-    subscription_links = subscription_links.df
     subscriptions = subscription_master_data_and_prices.join(
         subscription_links,
         (
