@@ -25,9 +25,6 @@ from tests.helpers.test_schemas import (
 from package.codelists import MeteringPointType, SettlementMethod, ChargeType
 from package.calculation.wholesale.subscription_calculators import (
     calculate_daily_subscription_amount,
-    calculate_price_per_day,
-    filter_on_metering_point_type_and_settlement_method,
-    _add_count_of_charges_and_total_daily_charge_price,
 )
 from package.calculation.preparation.transformations import get_subscription_charges
 from calendar import monthrange
@@ -168,7 +165,7 @@ def test__calculate_daily_subscription_price__charge_price_change(
         subscription_charges,
         calculation_period_start,
         calculation_period_end,
-        DEFAULT_TIMEZONE,
+        DEFAULT_TIME_ZONE,
     ).orderBy(Colname.charge_time)
 
     expected_subscription_1 = calculate_daily_subscription_price_factory(
@@ -200,8 +197,10 @@ def test__calculate_daily_subscription_price__charge_price_change_with_two_diffe
 ):
     # Test that calculate_daily_subscription_price act as expected when charge price changes in a given period for two different charge keys
     # Arrange
-    from_date = datetime(2020, 1, 31, 0, 0)
-    to_date = datetime(2020, 2, 2, 0, 0)
+    from_date = datetime(2020, 2, 1, 23, 0)
+    to_date = datetime(2020, 2, 3, 23, 0)
+    calculation_period_start = datetime(2020, 1, 31, 23, 0)
+    calculation_period_end = datetime(2020, 2, 29, 23, 0)
     charge_code = "charge_code_b"
     charge_links_metering_point_periods_df = charge_link_metering_points_factory(
         from_date=from_date, to_date=to_date
@@ -218,7 +217,7 @@ def test__calculate_daily_subscription_price__charge_price_change_with_two_diffe
     )
 
     subscription_1_charge_prices_charge_price = Decimal("3.124544")
-    subcription_2_charge_prices_time = datetime(2020, 2, 1, 0, 0)
+    subcription_2_charge_prices_time = datetime(2020, 2, 2, 23, 0)
     subcription_1_charge_prices_time = from_date
 
     subscription_1_charge_prices_df_with_charge_key_1 = charge_prices_factory(
@@ -273,9 +272,12 @@ def test__calculate_daily_subscription_price__charge_price_change_with_two_diffe
         charge_links_metering_point_periods,
         DEFAULT_TIME_ZONE,
     )
-    result = calculate_daily_subscription_amount(spark, subscription_charges).orderBy(
-        Colname.charge_time, Colname.charge_key
-    )
+    result = calculate_daily_subscription_amount(
+        subscription_charges,
+        calculation_period_start,
+        calculation_period_end,
+        DEFAULT_TIME_ZONE,
+    ).orderBy(Colname.charge_time, Colname.charge_key)
 
     expected_price_per_day_subscription_1 = Decimal(
         charge_prices_df.collect()[0][Colname.charge_price]
@@ -434,7 +436,7 @@ charges_flex_consumption_dataset_1 = [
         "D01",
         "001",
         Decimal("100.10"),
-        datetime(2020, 1, 1, 0, 0),
+        datetime(2020, 2, 1, 0, 0),
         MeteringPointType.CONSUMPTION.value,
         SettlementMethod.FLEX.value,
         1,
@@ -473,7 +475,9 @@ def test__calculate_price_per_day__divides_charge_price_by_days_in_month(
     )
 
     # Act
-    result = calculate_price_per_day(charges_flex_consumption, ca)
+    result = calculate_daily_subscription_amount(
+        charges_flex_consumption,
+    )
 
     # Assert
     assert result.collect()[0][Colname.price_per_day] == expected
