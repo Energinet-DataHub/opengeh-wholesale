@@ -20,12 +20,12 @@ using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Application.UseCases;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Test.Core;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NodaTime;
 using NodaTime.Extensions;
-using Test.Core;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Calculations.UnitTests.Application.Calculations;

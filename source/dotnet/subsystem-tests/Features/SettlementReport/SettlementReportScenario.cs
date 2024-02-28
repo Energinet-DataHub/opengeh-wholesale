@@ -77,12 +77,12 @@ public class SettlementReportScenario : SubsystemTestsBase<SettlementReportScena
     public async Task AndThen_NumberOfLinesPrTimeSeriesTypesShouldBeCorrect()
     {
         Fixture.ScenarioState.EntryDataLines = await Fixture.SplitEntryIntoDataLinesAsync(Fixture.ScenarioState.Entry);
-        var typeSeriesTypeLines = Fixture.CountLinesPerTimeSeriesTypes(Fixture.ScenarioState.EntryDataLines);
+        var (consumptionLines, productionLines, exchangeLines) = Fixture.CountLinesPerTimeSeriesTypes(Fixture.ScenarioState.EntryDataLines);
 
         // Assert
-        typeSeriesTypeLines.ProductionLines.Should().Be(96); //// 4 x 15 minutes x 24 hours = 96
-        typeSeriesTypeLines.ExchangeLines.Should().Be(96);
-        typeSeriesTypeLines.ConsumptionLines.Should().Be(288); //// 4 x 15 minutes x 24 hours x 3 types of consumption = 288
+        productionLines.Should().Be(96); //// 4 x 15 minutes x 24 hours = 96
+        exchangeLines.Should().Be(96);
+        consumptionLines.Should().Be(288); //// 4 x 15 minutes x 24 hours x 3 types of consumption = 288
     }
 
     [ScenarioStep(5)]

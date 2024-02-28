@@ -14,7 +14,7 @@
 
 using System.Reflection;
 
-namespace Test.Core;
+namespace Energinet.DataHub.Wholesale.Test.Core;
 
 public static class EmbeddedResources
 {

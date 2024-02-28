@@ -15,8 +15,8 @@
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Test.Core;
 using NodaTime;
-using Test.Core;
 
 namespace Energinet.DataHub.Wholesale.Calculations.UnitTests.Infrastructure.CalculationAggregate;
 
@@ -28,7 +28,7 @@ public class CalculationBuilder
     private Instant _periodEnd;
 
     private CalculationExecutionState? _state;
-    private List<GridAreaCode> _gridAreaCodes = new() { new("805") };
+    private List<GridAreaCode> _gridAreaCodes = [new("805")];
     private CalculationType _calculationType = CalculationType.BalanceFixing;
 
     public CalculationBuilder()

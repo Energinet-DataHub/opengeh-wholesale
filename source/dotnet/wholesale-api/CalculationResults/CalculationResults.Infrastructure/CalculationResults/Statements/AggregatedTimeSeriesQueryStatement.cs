@@ -14,11 +14,9 @@
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.EnergyResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
@@ -70,8 +68,8 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
         var calculationPeriodFilter = parameters.LatestCalculationForPeriod
             .Select(calculationForPeriod => $@"
                 (t1.{EnergyResultColumnNames.CalculationId} == '{calculationForPeriod.CalculationId}'  
-                AND t1.{EnergyResultColumnNames.Time} >= '{calculationForPeriod.Period.Start.ToString()}'
-                AND t1.{EnergyResultColumnNames.Time} < '{calculationForPeriod.Period.End.ToString()}')")
+                AND t1.{EnergyResultColumnNames.Time} >= '{calculationForPeriod.Period.Start}'
+                AND t1.{EnergyResultColumnNames.Time} < '{calculationForPeriod.Period.End}')")
             .ToList();
 
         whereClausesSql += $" AND ({string.Join(" OR ", calculationPeriodFilter)})";
