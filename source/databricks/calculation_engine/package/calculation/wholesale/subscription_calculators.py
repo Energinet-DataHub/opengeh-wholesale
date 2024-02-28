@@ -95,13 +95,13 @@ def _add_count_of_charges_and_total_daily_charge_price(
 ) -> DataFrame:
     grouped_charges_per_day = (
         charges_per_day.groupBy(
-            Colname.charge_owner,
+            Colname.charge_key,
             Colname.grid_area,
             Colname.energy_supplier_id,
             Colname.charge_time,
         )
         .agg(
-            count("*").alias(Colname.charge_count),
+            sum(Colname.quantity).alias(Colname.charge_count),
             sum(Colname.price_per_day).alias(Colname.total_daily_charge_price),
         )
         .select(

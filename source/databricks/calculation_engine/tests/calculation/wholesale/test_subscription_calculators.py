@@ -39,6 +39,45 @@ DEFAULT_CALCULATION_PERIOD_START = datetime(2020, 1, 31, 23, 0)
 DEFAULT_CALCULATION_PERIOD_END = datetime(2020, 2, 29, 23, 0)
 
 
+def _create_subscription_row(
+    charge_key: str | None = None,
+    charge_code: str = DEFAULT_CHARGE_CODE,
+    charge_owner: str = DEFAULT_CHARGE_OWNER,
+    resolution: ChargeResolution = ChargeResolution.HOUR,
+    charge_time: datetime = DEFAULT_CHARGE_TIME_HOUR_0,
+    charge_price: Decimal | None = DEFAULT_CHARGE_PRICE,
+    energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
+    metering_point_id: str = DEFAULT_METERING_POINT_ID,
+    metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE,
+    settlement_method: SettlementMethod | None = DEFAULT_SETTLEMENT_METHOD,
+    grid_area: str = DEFAULT_GRID_AREA,
+    quantity: Decimal = DEFAULT_QUANTITY,
+    quality: ChargeQuality = DEFAULT_QUALITY,
+) -> Row:
+    row = {
+        Colname.charge_key: charge_key
+        or f"{charge_code}-{ChargeType.TARIFF.value}-{charge_owner}",
+        Colname.charge_code: charge_code,
+        Colname.charge_type: ChargeType.TARIFF.value,
+        Colname.charge_owner: charge_owner,
+        Colname.charge_tax: DEFAULT_CHARGE_TAX,
+        Colname.resolution: resolution.value,
+        Colname.charge_time: charge_time,
+        Colname.charge_price: charge_price,
+        Colname.metering_point_id: metering_point_id,
+        Colname.energy_supplier_id: energy_supplier_id,
+        Colname.metering_point_type: metering_point_type.value,
+        Colname.settlement_method: (
+            settlement_method.value if settlement_method else None
+        ),
+        Colname.grid_area: grid_area,
+        Colname.quantity: quantity,
+        Colname.qualities: [quality.value],
+    }
+
+    return Row(**row)
+
+
 def test__calculate_daily_subscription_price__simple(
     spark,
     calculate_daily_subscription_price_factory,
