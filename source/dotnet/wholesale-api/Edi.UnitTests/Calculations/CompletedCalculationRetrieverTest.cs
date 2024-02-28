@@ -277,7 +277,7 @@ public class CompletedCalculationRetrieverTest
         RequestedCalculationType? requestedCalculationType = null)
     {
         return new AggregatedTimeSeriesRequest(
-            new EDI.Models.Period(startOfPeriodFilter, endOfPeriodFilter),
+            new Edi.Models.Period(startOfPeriodFilter, endOfPeriodFilter),
             [TimeSeriesType.Production],
             new AggregationPerRoleAndGridArea("543"),
             requestedCalculationType ?? RequestedCalculationType.LatestCorrection);
