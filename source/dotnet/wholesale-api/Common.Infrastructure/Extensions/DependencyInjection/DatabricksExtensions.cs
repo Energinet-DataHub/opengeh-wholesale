@@ -14,6 +14,8 @@
 
 using Energinet.DataHub.Core.Databricks.Jobs.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -35,6 +37,20 @@ namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Dependenc
             // Health checks
             services.AddHealthChecks()
                 .AddDatabricksJobsApiHealthCheck();
+
+            return services;
+        }
+
+        /// <summary>
+        /// Register DatabricksSqlStatement services commonly used by DH3 applications.
+        /// </summary>
+        public static IServiceCollection AddDatabricksSqlStatementForApplication(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddDatabricksSqlStatementExecution(configuration);
+
+            // Health checks
+            services.AddHealthChecks()
+                .AddDatabricksSqlStatementApiHealthCheck();
 
             return services;
         }
