@@ -373,8 +373,10 @@ def _calculate_flex_consumption(
 
     # flex consumption per balance responsible
     if _is_aggregation_or_balance_fixing(args.calculation_type):
-        results.flex_consumption_per_ga_and_brp_and_es = (
-            flex_consumption_per_ga_and_brp_and_es
+        results.flex_consumption_per_ga_and_brp_and_es = factory.create(
+            args,
+            flex_consumption_per_ga_and_brp_and_es,
+
         )
 
         flex_consumption_per_ga_and_brp = grouping_aggr.aggregate_per_ga_and_brp(

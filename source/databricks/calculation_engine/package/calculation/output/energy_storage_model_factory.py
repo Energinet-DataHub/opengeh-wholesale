@@ -80,6 +80,24 @@ def _add_calculation_result_id(results: DataFrame) -> DataFrame:
     return results
 
 
+def _get_column_group_for_calculation_result_id() -> list[str]:
+    """
+    Get the columns that are required in order to define a single calculation result.
+
+    Calculation metadata is not included as it is the same for all rows in the data frame being written.
+    Metadata is: calculation_id, calculation_execution_time_start, calculation_type
+
+    Time series type and aggregation level is the same for all rows (applied in the writer itself)
+    and are thus neither part of this list.
+    """
+    return [
+        Colname.grid_area,
+        Colname.from_grid_area,
+        Colname.balance_responsible_id,
+        Colname.energy_supplier_id,
+    ]
+
+
 def _map_to_storage_dataframe(results: DataFrame) -> DataFrame:
     """
     Map column names to the Delta table field names
@@ -108,21 +126,3 @@ def _map_to_storage_dataframe(results: DataFrame) -> DataFrame:
         f.col(EnergyResultColumnNames.calculation_result_id),
         f.col(EnergyResultColumnNames.metering_point_id),
     )
-
-
-def _get_column_group_for_calculation_result_id() -> list[str]:
-    """
-    Get the columns that are required in order to define a single calculation result.
-
-    Calculation metadata is not included as it is the same for all rows in the data frame being written.
-    Metadata is: calculation_id, calculation_execution_time_start, calculation_type
-
-    Time series type and aggregation level is the same for all rows (applied in the writer itself)
-    and are thus neither part of this list.
-    """
-    return [
-        Colname.grid_area,
-        Colname.from_grid_area,
-        Colname.balance_responsible_id,
-        Colname.energy_supplier_id,
-    ]

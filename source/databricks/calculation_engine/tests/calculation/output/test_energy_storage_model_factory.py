@@ -18,12 +18,11 @@ from decimal import Decimal
 from typing import Any, List
 
 import pytest
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession, DataFrame
 
 import package.codelists as e
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.energy.energy_results import (
-    EnergyResults,
     energy_results_schema,
 )
 from package.calculation.output import energy_storage_model_factory as sut
@@ -104,14 +103,13 @@ def _create_result_row(
     return row
 
 
-def _create_result_df(spark: SparkSession, row: List[dict]) -> EnergyResults:
-    df = spark.createDataFrame(data=row, schema=energy_results_schema)
-    return EnergyResults(df)
+def _create_result_df(spark: SparkSession, row: List[dict]) -> DataFrame:
+    return spark.createDataFrame(data=row, schema=energy_results_schema)
 
 
 def _create_result_df_corresponding_to_four_calculation_results(
     spark: SparkSession,
-) -> EnergyResults:
+) -> DataFrame:
     OTHER_TIME_WINDOW_START = DEFAULT_TIME_WINDOW_END
     OTHER_TIME_WINDOW_END = OTHER_TIME_WINDOW_START + timedelta(hours=1)
     OTHER_GRID_AREA = "111"
@@ -163,7 +161,7 @@ def test__write__writes_aggregation_level(
     # Act
     actual = sut.create(
         any_calculator_args,
-        result_df.df,
+        result_df,
         e.TimeSeriesType.PRODUCTION,
         aggregation_level,
     )
@@ -214,7 +212,7 @@ def test__write__writes_column(
     # Act
     actual = sut.create(
         any_calculator_args,
-        result_df.df,
+        result_df,
         DEFAULT_TIME_SERIES_TYPE,
         DEFAULT_AGGREGATION_LEVEL,
     )
@@ -242,7 +240,7 @@ def test__write__writes_columns_matching_contract(
     # Act
     actual = sut.create(
         any_calculator_args,
-        result_df.df,
+        result_df,
         DEFAULT_TIME_SERIES_TYPE,
         DEFAULT_AGGREGATION_LEVEL,
     )
@@ -269,7 +267,7 @@ def test__write__writes_calculation_result_id(
     # Act
     actual = sut.create(
         any_calculator_args,
-        result_df.df,
+        result_df,
         DEFAULT_TIME_SERIES_TYPE,
         DEFAULT_AGGREGATION_LEVEL,
     )
@@ -319,15 +317,16 @@ def test__write__when_rows_belong_to_different_results__adds_different_calculati
     # Act
     actual = sut.create(
         any_calculator_args,
-        result_df.df,
+        result_df,
         DEFAULT_TIME_SERIES_TYPE,
         DEFAULT_AGGREGATION_LEVEL,
     )
 
     # Assert
+    rows = actual.collect()
     assert (
-        actual[0][EnergyResultColumnNames.calculation_result_id]
-        != actual[1][EnergyResultColumnNames.calculation_result_id]
+        rows[0][EnergyResultColumnNames.calculation_result_id]
+        != rows[1][EnergyResultColumnNames.calculation_result_id]
     )
 
 
@@ -379,15 +378,16 @@ def test__write__when_rows_belong_to_same_result__adds_same_calculation_result_i
     # Act
     actual = sut.create(
         any_calculator_args,
-        result_df.df,
+        result_df,
         DEFAULT_TIME_SERIES_TYPE,
         DEFAULT_AGGREGATION_LEVEL,
     )
 
     # Assert
+    rows = actual.collect()
     assert (
-        actual[0][EnergyResultColumnNames.calculation_result_id]
-        == actual[1][EnergyResultColumnNames.calculation_result_id]
+        rows[0][EnergyResultColumnNames.calculation_result_id]
+        != rows[1][EnergyResultColumnNames.calculation_result_id]
     )
 
 
