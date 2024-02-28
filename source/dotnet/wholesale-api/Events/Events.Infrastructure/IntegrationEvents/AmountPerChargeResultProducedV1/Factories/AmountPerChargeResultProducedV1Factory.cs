@@ -57,9 +57,9 @@ public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProd
                     var p = new Contracts.IntegrationEvents.AmountPerChargeResultProducedV1.Types.TimeSeriesPoint
                     {
                         Time = timeSeriesPoint.Time.ToTimestamp(),
-                        Quantity = new Contracts.IntegrationEvents.Common.DecimalValue(timeSeriesPoint.Quantity),
-                        Price = new Contracts.IntegrationEvents.Common.DecimalValue(timeSeriesPoint.Price),
-                        Amount = new Contracts.IntegrationEvents.Common.DecimalValue(timeSeriesPoint.Amount),
+                        Quantity = timeSeriesPoint.Quantity,
+                        Price = timeSeriesPoint.Price,
+                        Amount = timeSeriesPoint.Amount,
                     };
                     p.QuantityQualities.AddRange(timeSeriesPoint.Qualities.Select(QuantityQualityMapper.MapQuantityQuality).ToList());
                     return p;
