@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.Extensions.DependencyInjection
 {
     /// <summary>
     /// Extension methods for <see cref="IServiceCollection"/>
-    /// that allow adding Application Insights services to a ASP.NET Core app.
+    /// that allow adding Application Insights services to an ASP.NET Core app.
     /// </summary>
     public static class ApplicationInsightsExtensions
     {

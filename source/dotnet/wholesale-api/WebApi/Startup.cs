@@ -109,9 +109,7 @@ public class Startup
         services.ConfigureOptions<ConfigureSwaggerOptions>();
 
         // Options
-        services.AddOptions<JwtOptions>().Bind(Configuration);
         services.AddOptions<ServiceBusOptions>().Bind(Configuration);
-        services.AddOptions<DateTimeOptions>().Bind(Configuration);
         services.AddOptions<DataLakeOptions>().Bind(Configuration);
         services.AddOptions<DeltaTableOptions>();
 
@@ -126,7 +124,7 @@ public class Startup
                 });
         });
 
-        AddJwtTokenSecurity(services);
+        services.AddJwtTokenSecurityForWebApp(Configuration);
         AddHealthCheck(services);
 
         services.AddUserAuthentication<FrontendUser, FrontendUserProvider>();
@@ -173,16 +171,6 @@ public class Startup
             endpoints.MapLiveHealthChecks();
             endpoints.MapReadyHealthChecks();
         });
-    }
-
-    /// <summary>
-    /// Adds registrations of JwtTokenMiddleware and corresponding dependencies.
-    /// </summary>
-    private void AddJwtTokenSecurity(IServiceCollection services)
-    {
-        var options = Configuration.Get<JwtOptions>()!;
-        services.AddJwtBearerAuthentication(options.EXTERNAL_OPEN_ID_URL, options.INTERNAL_OPEN_ID_URL, options.BACKEND_BFF_APP_ID);
-        services.AddPermissionAuthorization();
     }
 
     private void AddHealthCheck(IServiceCollection services)
