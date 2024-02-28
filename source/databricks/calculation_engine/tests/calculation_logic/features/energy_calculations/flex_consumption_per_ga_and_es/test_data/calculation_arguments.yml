@@ -1,0 +1,5 @@
+- grid_areas: [ '804' ]
+  period_start: '2023-01-31 23:00:00'
+  period_end: '2023-02-01 23:00:00'
+  calculation_type: 'BalanceFixing'
+  calculation_execution_time_start: '2024-01-31 09:39:00'

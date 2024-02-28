@@ -22,9 +22,9 @@ from pyspark.sql.functions import col
 from package.calculation.preparation.grid_loss_responsible import (
     GridLossResponsible,
 )
+from package.calculation_input import TableReader
 from package.codelists import MeteringPointType
 from package.constants import Colname
-from package.calculation_input import TableReader
 
 
 def get_grid_loss_responsible(
@@ -40,7 +40,7 @@ def get_grid_loss_responsible(
             "inner",
         )
         .select(
-            metering_point_periods_df[Colname.metering_point_id],
+            col(Colname.metering_point_id),
             col(Colname.grid_area),
             col(Colname.from_date),
             col(Colname.to_date),

@@ -26,14 +26,14 @@ public class CompletedCalculationRepository : ICompletedCalculationRepository
         _context = context;
     }
 
-    public async Task AddAsync(IEnumerable<CompletedCalculation> completedBatches)
+    public async Task AddAsync(IEnumerable<CompletedCalculation> completedCalculations)
     {
-        await _context.CompletedBatches.AddRangeAsync(completedBatches).ConfigureAwait(false);
+        await _context.CompletedCalculations.AddRangeAsync(completedCalculations).ConfigureAwait(false);
     }
 
     public async Task<CompletedCalculation?> GetLastCompletedOrNullAsync()
     {
-        return await _context.CompletedBatches
+        return await _context.CompletedCalculations
             .OrderByDescending(x => x.CompletedTime)
             .FirstOrDefaultAsync()
             .ConfigureAwait(false);
@@ -41,7 +41,7 @@ public class CompletedCalculationRepository : ICompletedCalculationRepository
 
     public async Task<CompletedCalculation?> GetNextUnpublishedOrNullAsync()
     {
-        return await _context.CompletedBatches
+        return await _context.CompletedCalculations
             .OrderBy(x => x.CompletedTime)
             .Where(x => x.PublishedTime == null)
             .FirstOrDefaultAsync()

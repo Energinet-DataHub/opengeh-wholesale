@@ -38,12 +38,12 @@ public class SettlementReportResultQueries : ISettlementReportResultQueries
 
     public async Task<IEnumerable<SettlementReportResultRow>> GetRowsAsync(
         string[] gridAreaCodes,
-        ProcessType processType,
+        CalculationType calculationType,
         Instant periodStart,
         Instant periodEnd,
         string? energySupplier)
     {
-        var statement = new QuerySettlementReportStatement(_deltaTableOptions.SCHEMA_NAME, _deltaTableOptions.ENERGY_RESULTS_TABLE_NAME, gridAreaCodes, processType, periodStart, periodEnd, energySupplier);
+        var statement = new QuerySettlementReportStatement(_deltaTableOptions.SCHEMA_NAME, _deltaTableOptions.ENERGY_RESULTS_TABLE_NAME, gridAreaCodes, calculationType, periodStart, periodEnd, energySupplier);
         var rows = await _databricksSqlWarehouseQueryExecutor
             .ExecuteStatementAsync(statement, Format.JsonArray)
             .ToListAsync()

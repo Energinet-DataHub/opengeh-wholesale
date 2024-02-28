@@ -36,10 +36,13 @@ public class SettlementReportScenario : SubsystemTestsBase<SettlementReportScena
     [SubsystemFact]
     public void Given_SettlementDownloadInput()
     {
-        Fixture.ScenarioState.SettlementDownloadInput.GridAreaCodes.Add("804");
-        Fixture.ScenarioState.SettlementDownloadInput.ProcessType = ProcessType.BalanceFixing;
-        Fixture.ScenarioState.SettlementDownloadInput.CalculationPeriodStart = DateTimeOffset.Parse("2023-01-31T23:00:00");
-        Fixture.ScenarioState.SettlementDownloadInput.CalculationPeriodEnd = DateTimeOffset.Parse("2023-02-01T23:00:00");
+        // The values below are taken from BalanceFixingCalculationScenario. The tests below expects that the balance
+        // fixing calculation has been executed. This means that the tests will fail the very first time they are run,
+        // when there is no data in the delta table.
+        Fixture.ScenarioState.SettlementDownloadInput.GridAreaCodes.Add("543");
+        Fixture.ScenarioState.SettlementDownloadInput.CalculationType = CalculationType.BalanceFixing;
+        Fixture.ScenarioState.SettlementDownloadInput.CalculationPeriodStart = DateTimeOffset.Parse("2022-01-11T23:00:00");
+        Fixture.ScenarioState.SettlementDownloadInput.CalculationPeriodEnd = DateTimeOffset.Parse("2022-01-12T23:00:00");
     }
 
     [ScenarioStep(1)]
@@ -74,19 +77,19 @@ public class SettlementReportScenario : SubsystemTestsBase<SettlementReportScena
     public async Task AndThen_NumberOfLinesPrTimeSeriesTypesShouldBeCorrect()
     {
         Fixture.ScenarioState.EntryDataLines = await Fixture.SplitEntryIntoDataLinesAsync(Fixture.ScenarioState.Entry);
-        var typeSeriesTypeLines = Fixture.CountLinesPerTimeSeriesTypes(Fixture.ScenarioState.EntryDataLines);
+        var (consumptionLines, productionLines, exchangeLines) = Fixture.CountLinesPerTimeSeriesTypes(Fixture.ScenarioState.EntryDataLines);
 
         // Assert
-        typeSeriesTypeLines.ProductionLines.Should().Be(96); //// 4 x 15 minutes x 24 hours = 96
-        typeSeriesTypeLines.ExchangeLines.Should().Be(96);
-        typeSeriesTypeLines.ConsumptionLines.Should().Be(288); //// 4 x 15 minutes x 24 hours x 3 types of consumption = 288
+        productionLines.Should().Be(96); //// 4 x 15 minutes x 24 hours = 96
+        exchangeLines.Should().Be(96);
+        consumptionLines.Should().Be(288); //// 4 x 15 minutes x 24 hours x 3 types of consumption = 288
     }
 
     [ScenarioStep(5)]
     [SubsystemFact]
-    public void AndThen_SingleEntryShouldContainCorrectGridAreaCodesAndProcessType()
+    public void AndThen_SingleEntryShouldContainCorrectGridAreaCodesAndCalculationType()
     {
-        var expected = "804,D04,";
+        var expected = "543,D04,";
 
         // Assert
         using var assertionScope = new AssertionScope();
@@ -101,7 +104,7 @@ public class SettlementReportScenario : SubsystemTestsBase<SettlementReportScena
         // Assert
         Fixture.GetUtcDate(Fixture.ScenarioState.EntryDataLines.First())
             .Should()
-            .Be("2023-01-31T23:00:00Z");
+            .Be("2022-01-11T23:00:00Z");
     }
 
     [ScenarioStep(7)]
@@ -111,6 +114,6 @@ public class SettlementReportScenario : SubsystemTestsBase<SettlementReportScena
         // Assert
         Fixture.GetUtcDate(Fixture.ScenarioState.EntryDataLines.Last())
             .Should()
-            .Be("2023-02-01T22:45:00Z");
+            .Be("2022-01-12T22:45:00Z");
     }
 }

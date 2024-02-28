@@ -46,7 +46,7 @@ p.add('--telemetry-instrumentation-key', type=str, required=True,
       help='Instrumentation key used for telemetry')
 p.add('--grid-area', type=str, required=False,
       help='Run aggregation for specific grid areas format is { "areas": ["123","234"]}. If none is specifed. All grid areas are calculated')
-p.add('--process-type', type=str, required=True,
+p.add('--calcultion-type', type=str, required=True,
       help='D03 (Aggregation) or D04 (Balance fixing) '),
 p.add('--result-url', type=str, required=True, help="The target url to post result json"),
 p.add('--result-id', type=str, required=True, help="Postback id that will be added to header"),
@@ -182,7 +182,7 @@ def get_time_series_dataframe(args, areas, spark):
         .drop(metering_point_df.metering_point_id) \
         .drop(metering_point_df.from_date) \
         .drop(metering_point_df.to_date)
-    
+
     return time_series_with_metering_point
 
 # COMMAND ----------

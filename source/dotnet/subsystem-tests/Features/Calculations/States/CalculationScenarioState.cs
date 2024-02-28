@@ -19,7 +19,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.State
 {
     public class CalculationScenarioState
     {
-        public BatchRequestDto CalculationInput { get; set; }
+        public CalculationRequestDto CalculationInput { get; set; }
             = new();
 
         public IList<string> SubscribedIntegrationEventNames { get; }
@@ -27,7 +27,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.State
 
         public Guid CalculationId { get; set; }
 
-        public BatchDto? Batch { get; set; }
+        public CalculationDto? Calculation { get; set; }
 
         public IReadOnlyCollection<EnergyResultProducedV2> ReceivedEnergyResultProducedV2 { get; set; }
             = new List<EnergyResultProducedV2>();

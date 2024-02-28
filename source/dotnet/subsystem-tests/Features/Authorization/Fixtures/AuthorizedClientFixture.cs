@@ -16,7 +16,6 @@ using Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Configuration;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
-using Microsoft.Extensions.Configuration;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Authorization.Fixtures
@@ -30,15 +29,12 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Authorization.Fixt
             : base(diagnosticMessageSink)
         {
             Configuration = new WholesaleSubsystemConfiguration();
-            ExistingBatchId = Configuration.Root.GetValue<Guid>("EXISTING_BATCH_ID");
         }
 
         /// <summary>
         /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
         /// </summary>
         public WholesaleClient_V3 WholesaleClient { get; private set; } = null!;
-
-        public Guid ExistingBatchId { get; }
 
         private WholesaleSubsystemConfiguration Configuration { get; }
 

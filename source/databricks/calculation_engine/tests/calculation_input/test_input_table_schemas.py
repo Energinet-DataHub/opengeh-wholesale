@@ -37,8 +37,8 @@ def test__input_time_series_point_schema__matches_published_contract(
     )
 
     # When asserting both that the calculator creates output, and it does it with input data that matches
-    # the time series points contract from the time-series domain (in the same test), then we can infer that the
-    # calculator works with the format of the data published from the time-series domain.
+    # the time series points contract from the time-series subsystem (in the same test), then we can infer that the
+    # calculator works with the format of the data published from the time-series subsystem.
     # NOTE:It is not evident from this test that it uses the same input as the calculator job
     # Apparently nullability is ignored for CSV sources, so we have to compare schemas in this slightly odd way
     # See more at https://stackoverflow.com/questions/50609548/compare-schema-ignoring-nullable

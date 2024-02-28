@@ -17,14 +17,14 @@ namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 public class ServiceBusOptions
 {
     /// <summary>
-    /// Connection string to subscribe to the wholesale subsystem service bus queues and topics.
+    /// Connection string to send to the wholesale subsystem service bus queues and topics.
     /// </summary>
     public string SERVICE_BUS_SEND_CONNECTION_STRING { get; set; } = string.Empty;
 
     /// <summary>
-    /// Connection string to manage the wholesale subsystem service bus namespace.
+    /// Connection string to send and listen on the wholesale subsystem service bus namespace.
     /// </summary>
-    public string SERVICE_BUS_MANAGE_CONNECTION_STRING { get; set; } = string.Empty;
+    public string SERVICE_BUS_TRANCEIVER_CONNECTION_STRING { get; set; } = string.Empty;
 
     public string INTEGRATIONEVENTS_TOPIC_NAME { get; set; } = string.Empty;
 

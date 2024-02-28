@@ -27,7 +27,7 @@ public class SettlementReportResultsCsvWriterTests
     private static readonly CultureInfo _testCulture = new("da-DK");
     private static readonly SettlementReportResultRow _validRow = new(
         "500",
-        ProcessType.BalanceFixing,
+        CalculationType.BalanceFixing,
         Instant.FromUtc(2021, 1, 1, 0, 0),
         "PT15M",
         MeteringPointType.Consumption,
@@ -105,7 +105,7 @@ public class SettlementReportResultsCsvWriterTests
     }
 
     [Fact]
-    public static async Task WriteAsync_GivenValidRow_WritesCorrectlyFormattedProcessType()
+    public static async Task WriteAsync_GivenValidRow_WritesCorrectlyFormattedCalculationType()
     {
         // Arrange
         var memoryStream = new MemoryStream();
@@ -113,7 +113,7 @@ public class SettlementReportResultsCsvWriterTests
 
         var rows = new[]
         {
-            _validRow with { ProcessType = ProcessType.BalanceFixing },
+            _validRow with { CalculationType = CalculationType.BalanceFixing },
         };
 
         // Act

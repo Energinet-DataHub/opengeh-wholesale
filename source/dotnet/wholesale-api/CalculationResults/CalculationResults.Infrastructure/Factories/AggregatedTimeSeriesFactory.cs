@@ -16,6 +16,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatement
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 
@@ -23,16 +24,22 @@ public class AggregatedTimeSeriesFactory
 {
     public static AggregatedTimeSeries Create(
         DatabricksSqlRow databricksSqlRow,
-        IReadOnlyCollection<EnergyTimeSeriesPoint> timeSeriesPoints)
+        Instant periodStart,
+        Instant periodEnd,
+        IReadOnlyCollection<EnergyTimeSeriesPoint> timeSeriesPoints,
+        long version)
     {
         var gridArea = databricksSqlRow[EnergyResultColumnNames.GridArea];
         var timeSeriesType = databricksSqlRow[EnergyResultColumnNames.TimeSeriesType];
-        var processType = databricksSqlRow[EnergyResultColumnNames.BatchProcessType];
+        var calculationType = databricksSqlRow[EnergyResultColumnNames.CalculationType];
 
         return new AggregatedTimeSeries(
             gridArea: gridArea!,
             timeSeriesPoints: timeSeriesPoints.ToArray()!,
             timeSeriesType: SqlResultValueConverters.ToTimeSeriesType(timeSeriesType!),
-            processType: ProcessTypeMapper.FromDeltaTableValue(processType!));
+            calculationType: CalculationTypeMapper.FromDeltaTableValue(calculationType!),
+            periodStart: periodStart,
+            periodEnd: periodEnd,
+            version: version);
     }
 }

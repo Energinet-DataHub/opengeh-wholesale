@@ -14,8 +14,8 @@
 
 using System.Reflection;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
+using Energinet.DataHub.Wholesale.Test.Core;
 using FluentAssertions;
-using Test.Core;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SqlStatements.DeltaTableConstants;

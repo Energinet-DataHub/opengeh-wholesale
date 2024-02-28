@@ -4,6 +4,26 @@
 
 Removed  the following values from `TimeSeriesType`: `GridLoss`, `NegativeGridLoss`, `PostiveGridLoss`, `TempFlexConsumption`, `TempProduction`
 
+## Version 8.2.1
+
+No changes
+
+## Version 8.2.0
+
+Added `CalculationResultVersion` property to `AmountPerChargeResultProducedV1`
+
+## Version 8.1.0
+
+Added `CalculationResultVersion` property to `MonthlyAmountPerChargeResultProducedV1`
+
+## Version 8.0.2
+
+Renamed use of word "domain" to "subsystem.
+
+## Version 8.0.1
+
+Removed obsolete section from documentation.
+
 ## Version 8.0.0
 
 Removed deprecated `CalculationResultCompleted` event.

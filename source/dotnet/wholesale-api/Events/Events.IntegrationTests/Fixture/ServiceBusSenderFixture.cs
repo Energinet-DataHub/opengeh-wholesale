@@ -38,14 +38,14 @@ public class ServiceBusSenderFixture : IAsyncLifetime, IAsyncDisposable
         ServiceBusOptions = Options.Create(
             new ServiceBusOptions
             {
-                SERVICE_BUS_MANAGE_CONNECTION_STRING = integrationTestConfiguration.ServiceBusConnectionString,
+                SERVICE_BUS_TRANCEIVER_CONNECTION_STRING = integrationTestConfiguration.ServiceBusConnectionString,
             });
 
         _serviceBusResourceProvider = new ServiceBusResourceProvider(
-            ServiceBusOptions.Value.SERVICE_BUS_MANAGE_CONNECTION_STRING,
+            ServiceBusOptions.Value.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING,
             new TestDiagnosticsLogger());
 
-        ServiceBusClient = new ServiceBusClient(ServiceBusOptions.Value.SERVICE_BUS_MANAGE_CONNECTION_STRING);
+        ServiceBusClient = new ServiceBusClient(ServiceBusOptions.Value.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING);
     }
 
     public async Task InitializeAsync()

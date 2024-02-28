@@ -38,9 +38,9 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
 
         [ScenarioStep(0)]
         [SubsystemFact]
-        public void Given_UnknownBatchId()
+        public void Given_UnknownCalculationId()
         {
-            Fixture.ScenarioState.BatchId = Guid.NewGuid();
+            Fixture.ScenarioState.CalculationId = Guid.NewGuid();
         }
 
         [ScenarioStep(1)]
@@ -51,7 +51,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
             {
                 AppVersionContains = "PR:",
                 Subsystem = "wholesale",
-                Name = "GET Calculation/Get [batchId]",
+                Name = "GET Calculation/Get [calculationId]",
             });
             Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new AppDependencyMatch
             {
@@ -72,9 +72,9 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
 
         [ScenarioStep(2)]
         [SubsystemFact]
-        public async Task When_RequestingBatchById()
+        public async Task When_RequestingCalculationById()
         {
-            var act = async () => await Fixture.WholesaleClient.GetBatchAsync(Fixture.ScenarioState.BatchId);
+            var act = async () => await Fixture.WholesaleClient.GetCalculationAsync(Fixture.ScenarioState.CalculationId);
 
             // Assert request is failing
             await act.Should().ThrowAsync<Clients.v3.ApiException>();
@@ -87,7 +87,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
             var query = $@"
                 let OperationIds = AppRequests
                 | where AppRoleName contains ""app-webapi-wholsal-""
-                | where Url contains ""/v3/batches/{Fixture.ScenarioState.BatchId}""
+                | where Url contains ""/v3/calculations/{Fixture.ScenarioState.CalculationId}""
                 | order by TimeGenerated desc
                 | take 1
                 | project OperationId;

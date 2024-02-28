@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-executed_balance_fixing_batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
-executed_wholesale_batch_id = "ed6fe5b0-27a9-11ee-be56-0242ac120002"
+executed_balance_fixing_calculation_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
+executed_wholesale_calculation_id = "ed6fe5b0-27a9-11ee-be56-0242ac120002"
 energy_supplier_gln_a = "8100000000108"
 energy_supplier_gln_b = "8100000000109"
 balance_responsible_id_a = "1"

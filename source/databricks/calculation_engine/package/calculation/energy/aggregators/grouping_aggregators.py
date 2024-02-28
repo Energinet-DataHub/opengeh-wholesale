@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from package.calculation.energy.energy_results import EnergyResults
-from package.constants import Colname
 from package.calculation.energy.aggregators.transformations.aggregate_sum_and_quality import (
     aggregate_sum_quantity_and_qualities,
 )
+from package.calculation.energy.energy_results import EnergyResults
+from package.constants import Colname
 
 
 def aggregate_per_ga_and_es(df: EnergyResults) -> EnergyResults:

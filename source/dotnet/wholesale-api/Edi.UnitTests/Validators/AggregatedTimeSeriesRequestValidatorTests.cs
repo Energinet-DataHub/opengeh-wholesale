@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.GridArea;
-using Energinet.DataHub.Wholesale.Batches.Interfaces.GridArea;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.GridArea;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
 using Energinet.DataHub.Wholesale.EDI.Models;
 using Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.EDI.Validation;
@@ -159,6 +159,25 @@ public class AggregatedTimeSeriesRequestValidatorTests
             .WithRequestedByActorId(EnergySupplierValidatorTest.ValidGlnNumber)
             .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
             .WithEnergySupplierId(EnergySupplierValidatorTest.ValidGlnNumber)
+            .Build();
+
+        // Act
+        var validationErrors = await _sut.ValidateAsync(request);
+
+        // Assert
+        validationErrors.Should().ContainSingle()
+            .Which.ErrorCode.Should().Be("D11");
+    }
+
+    [Fact]
+    public async Task Validate_WhenWholesaleFixingForBalanceResponsible_ReturnsUnsuccessfulValidation()
+    {
+        // Arrange
+        var request = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithRequestedByActorRole(ActorRoleCode.BalanceResponsibleParty)
+            .WithBusinessReason("D05")
+            .WithBalanceResponsibleId(BalanceResponsibleValidatorTest.ValidGlnNumber)
             .Build();
 
         // Act

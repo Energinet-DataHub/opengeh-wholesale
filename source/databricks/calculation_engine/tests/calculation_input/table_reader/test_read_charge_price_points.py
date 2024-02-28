@@ -41,10 +41,6 @@ def _create_change_price_point_row() -> dict:
     }
 
 
-def _add_charge_key(df: DataFrame) -> DataFrame:
-    return df.withColumn(Colname.charge_key, f.lit("foo-foo-foo"))
-
-
 class TestWhenSchemaMismatch:
     def test__raises_assertion_error(
         self,
@@ -86,7 +82,7 @@ class TestWhenValidInput:
             table_location,
             charge_price_points_schema,
         )
-        expected = _add_charge_key(df)
+        expected = df
         reader = TableReader(spark, calculation_input_path)
 
         # Act

@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame
-
 import pyspark.sql.functions as F
+from pyspark.sql import DataFrame
 from pyspark.sql.window import Window
+
 from package.codelists import (
     MeteringPointResolution,
 )
@@ -34,7 +34,7 @@ def get_master_basis_data_df(
         F.col(Colname.from_grid_area).alias(BasisDataColname.from_grid_area),
         F.col(Colname.metering_point_type).alias(BasisDataColname.metering_point_type),
         F.col(Colname.settlement_method).alias(BasisDataColname.settlement_method),
-        F.col(Colname.energy_supplier_id).alias((BasisDataColname.energy_supplier_id)),
+        F.col(Colname.energy_supplier_id).alias(BasisDataColname.energy_supplier_id),
     )
 
 

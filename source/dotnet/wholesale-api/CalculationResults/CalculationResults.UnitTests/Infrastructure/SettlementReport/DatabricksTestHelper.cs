@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SettlementReport;
@@ -43,7 +42,7 @@ public static class DatabricksTestHelper
 
     private static Dictionary<string, object?> CreateNewRow(
         string gridAre = "123",
-        string batchProcessType = "BalanceFixing",
+        string calculationType = "BalanceFixing",
         string time = "2022-05-16T01:00:00.000Z",
         string timeSeriesType = "non_profiled_consumption",
         string quantity = "1.234")
@@ -51,7 +50,7 @@ public static class DatabricksTestHelper
         var newRow = new Dictionary<string, object?>
         {
             { EnergyResultColumnNames.GridArea, gridAre },
-            { EnergyResultColumnNames.BatchProcessType, batchProcessType },
+            { EnergyResultColumnNames.CalculationType, calculationType },
             { EnergyResultColumnNames.Time, time },
             { EnergyResultColumnNames.TimeSeriesType, timeSeriesType },
             { EnergyResultColumnNames.Quantity, $@"{quantity}" },

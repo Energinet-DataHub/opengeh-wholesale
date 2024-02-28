@@ -32,14 +32,14 @@ public class SettlementReportRepositoryTests
     public static async Task GetMasterBasisDataForTotalGridAreaFileSpecification_MatchesContract()
     {
         // Arrange
-        const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
+        const string calculationId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
         const string gridAreaCode = "123";
         var calculationFilePathsContract = await CalculationFilePathsContract.GetAsync();
         var expected = calculationFilePathsContract.MasterBasisDataFileForTotalGridArea;
 
         // Act
         var actual =
-            SettlementReportRepository.GetMasterBasisDataFileForTotalGridAreaSpecification(new Guid(batchId), gridAreaCode);
+            SettlementReportRepository.GetMasterBasisDataFileForTotalGridAreaSpecification(new Guid(calculationId), gridAreaCode);
 
         // Assert
         actual.Extension.Should().Be(expected.Extension);
@@ -50,7 +50,7 @@ public class SettlementReportRepositoryTests
     public static async Task GetTimeSeriesHourBasisDataForTotalGridAreaFileSpecification_MatchesContract()
     {
         // Arrange
-        const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
+        const string calculationId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
         const string gridAreaCode = "123";
         var calculationFilePathsContract = await CalculationFilePathsContract.GetAsync();
         var expected = calculationFilePathsContract.TimeSeriesHourBasisDataFileForTotalGridArea;
@@ -58,7 +58,7 @@ public class SettlementReportRepositoryTests
         // Act
         var actual =
             SettlementReportRepository.GetTimeSeriesHourBasisDataForTotalGridAreaFileSpecification(
-                new Guid(batchId),
+                new Guid(calculationId),
                 gridAreaCode);
 
         // Assert
@@ -70,7 +70,7 @@ public class SettlementReportRepositoryTests
     public static async Task GetTimeSeriesQuarterBasisDataForTotalGridAreaFileSpecification_MatchesContract()
     {
         // Arrange
-        const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
+        const string calculationId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
         const string gridAreaCode = "123";
         var calculationFilePathsContract = await CalculationFilePathsContract.GetAsync();
         var expected = calculationFilePathsContract.TimeSeriesQuarterBasisDataFileForTotalGridArea;
@@ -78,7 +78,7 @@ public class SettlementReportRepositoryTests
         // Act
         var actual =
             SettlementReportRepository.GetTimeSeriesQuarterBasisDataForTotalGridAreaFileSpecification(
-                new Guid(batchId),
+                new Guid(calculationId),
                 gridAreaCode);
 
         // Assert
@@ -90,14 +90,14 @@ public class SettlementReportRepositoryTests
     public static async Task GetMasterBasisDataForEsPerGaFileSpecification_MatchesContract()
     {
         // Arrange
-        const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
+        const string calculationId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
         const string gridAreaCode = "123";
         var calculationFilePathsContract = await CalculationFilePathsContract.GetAsync();
         var expected = calculationFilePathsContract.MasterBasisDataFileForEsPerGa;
 
         // Act
         var actual =
-            SettlementReportRepository.GetMasterBasisDataFileForForEsPerGaSpecification(new Guid(batchId), gridAreaCode, AnyActorId);
+            SettlementReportRepository.GetMasterBasisDataFileForForEsPerGaSpecification(new Guid(calculationId), gridAreaCode, AnyActorId);
 
         // Assert
         actual.Extension.Should().Be(expected.Extension);
@@ -108,7 +108,7 @@ public class SettlementReportRepositoryTests
     public static async Task GetTimeSeriesHourBasisDataForEsPerGaFileSpecification_MatchesContract()
     {
         // Arrange
-        const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
+        const string calculationId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
         const string gridAreaCode = "123";
         var calculationFilePathsContract = await CalculationFilePathsContract.GetAsync();
         var expected = calculationFilePathsContract.TimeSeriesHourBasisDataFileForEsPerGa;
@@ -116,7 +116,7 @@ public class SettlementReportRepositoryTests
         // Act
         var actual =
             SettlementReportRepository.GetTimeSeriesHourBasisDataForEsPerGaGridAreaFileSpecification(
-                new Guid(batchId),
+                new Guid(calculationId),
                 gridAreaCode,
                 AnyActorId);
 
@@ -129,7 +129,7 @@ public class SettlementReportRepositoryTests
     public static async Task GetTimeSeriesQuarterBasisDataForEsPerGaFileSpecification_MatchesContract()
     {
         // Arrange
-        const string batchId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
+        const string calculationId = "eac4a18d-ed5f-46ba-bfe7-435ec0323519";
         const string gridAreaCode = "123";
         var calculationFilePathsContract = await CalculationFilePathsContract.GetAsync();
         var expected = calculationFilePathsContract.TimeSeriesQuarterBasisDataFileForEsPerGa;
@@ -137,7 +137,7 @@ public class SettlementReportRepositoryTests
         // Act
         var actual =
             SettlementReportRepository.GetTimeSeriesQuarterBasisDataForEsPerGaFileSpecification(
-                new Guid(batchId),
+                new Guid(calculationId),
                 gridAreaCode,
                 AnyActorId);
 
@@ -148,7 +148,7 @@ public class SettlementReportRepositoryTests
 
     [Theory]
     [AutoMoqData]
-    public async Task GetSettlementReportAsync_WhenGivenBatch_ReturnCorrectStream(
+    public async Task GetSettlementReportAsync_WhenGivenCalculation_ReturnCorrectStream(
         CalculationInfo calculationInfo,
         [Frozen] Mock<IStreamZipper> streamZipperMock,
         [Frozen] Mock<IDataLakeClient> dataLakeClientMock)
@@ -175,7 +175,7 @@ public class SettlementReportRepositoryTests
 
     [Theory]
     [AutoMoqData]
-    public async Task GetSettlementReportAsync_WhenGivenBatchAndGridAreaCode_WritesToOutputStream(
+    public async Task GetSettlementReportAsync_WhenGivenCalculationAndGridAreaCode_WritesToOutputStream(
         CalculationInfo calculationInfo,
         [Frozen] Mock<IStreamZipper> streamZipperMock,
         [Frozen] Mock<IDataLakeClient> dataLakeClientMock)

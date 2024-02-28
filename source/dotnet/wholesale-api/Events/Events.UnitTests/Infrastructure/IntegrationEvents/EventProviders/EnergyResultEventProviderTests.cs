@@ -26,7 +26,7 @@ using FluentAssertions;
 using Moq;
 using NodaTime;
 using Xunit;
-using ProcessType = Energinet.DataHub.Wholesale.Common.Interfaces.Models.ProcessType;
+using CalculationType = Energinet.DataHub.Wholesale.Common.Interfaces.Models.CalculationType;
 using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
 
@@ -166,7 +166,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
                     new(new DateTime(2021, 1, 1), 2, quantityQualities),
                     new(new DateTime(2021, 1, 1), 3, quantityQualities),
                 },
-                ProcessType.Aggregation,
+                CalculationType.Aggregation,
                 _periodStart,
                 _periodEnd,
                 _fromGridArea,

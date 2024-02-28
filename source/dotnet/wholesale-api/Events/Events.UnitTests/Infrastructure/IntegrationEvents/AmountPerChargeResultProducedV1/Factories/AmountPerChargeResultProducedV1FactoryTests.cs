@@ -85,9 +85,9 @@ public class AmountPerChargeResultProducedV1FactoryTests
     }
 
     [Theory]
-    [InlineData(ProcessType.Aggregation)]
-    [InlineData(ProcessType.BalanceFixing)]
-    public void Create_WhenUnexpectedCalculationType_ThrowsException(ProcessType calculationType)
+    [InlineData(CalculationType.Aggregation)]
+    [InlineData(CalculationType.BalanceFixing)]
+    public void Create_WhenUnexpectedCalculationType_ThrowsException(CalculationType calculationType)
     {
         // Arrange
         var sut = new AmountPerChargeResultProducedV1Factory();
@@ -121,6 +121,7 @@ public class AmountPerChargeResultProducedV1FactoryTests
             SettlementMethod = Contracts.IntegrationEvents.AmountPerChargeResultProducedV1.Types.SettlementMethod.Unspecified,
             IsTax = wholesaleResult.IsTax,
             Currency = Contracts.IntegrationEvents.AmountPerChargeResultProducedV1.Types.Currency.Dkk,
+            CalculationResultVersion = wholesaleResult.Version,
         };
 
         var qualities = new List<Contracts.IntegrationEvents.AmountPerChargeResultProducedV1.Types.QuantityQuality>

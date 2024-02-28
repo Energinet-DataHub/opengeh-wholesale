@@ -26,7 +26,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes
     /// </summary>
     public sealed class SubsystemFactAttribute : FactAttribute
     {
-        private static readonly Lazy<bool> _shouldSkip = new Lazy<bool>(ShouldSkip);
+        private static readonly Lazy<bool> _shouldSkip = new(ShouldSkip);
 
         public SubsystemFactAttribute()
         {

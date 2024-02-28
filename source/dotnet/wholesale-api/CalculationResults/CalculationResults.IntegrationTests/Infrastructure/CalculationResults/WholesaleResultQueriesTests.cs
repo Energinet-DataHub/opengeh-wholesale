@@ -16,12 +16,12 @@ using System.Globalization;
 using AutoFixture;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Batches.Interfaces;
-using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Moq;
@@ -38,12 +38,12 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>, ICl
     private const string DefaultMonthlyAmount = "1.123456";
 
     private readonly DatabricksSqlStatementApiFixture _fixture;
-    private readonly Mock<ICalculationsClient> _batchesClientMock;
+    private readonly Mock<ICalculationsClient> _calculationsClientMock;
 
     public WholesaleResultQueriesTests(DatabricksSqlStatementApiFixture fixture)
     {
         _fixture = fixture;
-        _batchesClientMock = Fixture.Freeze<Mock<ICalculationsClient>>();
+        _calculationsClientMock = Fixture.Freeze<Mock<ICalculationsClient>>();
         Fixture.Inject(_fixture.DatabricksSchemaManager.DeltaTableOptions);
         Fixture.Inject(_fixture.GetDatabricksExecutor());
     }
@@ -54,13 +54,13 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>, ICl
     {
         // Arrange
         await InsertHourlyTariffAndMonthlyAmountTariffRowsAsync();
-        calculation = calculation with { BatchId = Guid.Parse(CalculationId) };
-        _batchesClientMock
+        calculation = calculation with { CalculationId = Guid.Parse(CalculationId) };
+        _calculationsClientMock
             .Setup(b => b.GetAsync(It.IsAny<Guid>()))
             .ReturnsAsync(calculation);
 
         // Act
-        var actual = await Sut.GetAsync(calculation.BatchId).ToListAsync();
+        var actual = await Sut.GetAsync(calculation.CalculationId).ToListAsync();
 
         // Assert
         using var assertionScope = new AssertionScope();

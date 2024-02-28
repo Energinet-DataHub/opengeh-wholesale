@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System.Net;
-using Energinet.DataHub.Wholesale.Batches.Interfaces;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -27,7 +27,8 @@ public sealed class BusinessValidationExceptionFilter : IExceptionFilter
 {
     public void OnException(ExceptionContext context)
     {
-        if (context.Exception is not BusinessValidationException) return;
+        if (context.Exception is not BusinessValidationException)
+            return;
 
         context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
         context.Result = new BadRequestObjectResult(context.Exception.Message);

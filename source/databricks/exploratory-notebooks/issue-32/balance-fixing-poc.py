@@ -21,7 +21,7 @@
 
 # General (future?) considerations
 # - In geh-timeseries: Why not enrich time series with metering point data (or simply publish the metering point data that was used for validation of the metering points)?
-#   Then we would not have to deal with metering point events in wholesale and perhaps more important both domains will have the same perspective about the points
+#   Then we would not have to deal with metering point events in wholesale and perhaps more important both subsystems will have the same perspective about the points
 # - There seems to be a problem with the modelling of grid areas vs grid area links in the actor register.
 #   How can a grid area have a (single) grid area link id when it's a one-to-many relation?
 

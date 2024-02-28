@@ -9,5 +9,5 @@
 --grid-areas=[805, 806, 033]
 --period-start-datetime=2022-05-31T22:00:00Z
 --period-end-datetime=2022-06-01T22:00:00Z
---process-type=BalanceFixing
+--calculation-type=BalanceFixing
 --execution-time-start=2022-06-04T22:00:00Z

@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
-using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -41,7 +41,7 @@ public class WebApiFactory : WebApplicationFactory<Startup>
     /// </summary>
     public Mock<ISettlementReportClient>? SettlementReportApplicationServiceMock { get; set; }
 
-    public Mock<ICalculationsClient>? BatchesClientMock { get; set; }
+    public Mock<ICalculationsClient>? CalculationsClientMock { get; set; }
 
     public Mock<IUserContext<FrontendUser>>? UserContextMock { get; }
 
@@ -71,7 +71,7 @@ public class WebApiFactory : WebApplicationFactory<Startup>
             services.AddScoped(_ =>
                 SettlementReportApplicationServiceMock?.Object ??
                 new Mock<ISettlementReportClient>().Object);
-            services.AddScoped(_ => BatchesClientMock?.Object ?? new Mock<ICalculationsClient>().Object);
+            services.AddScoped(_ => CalculationsClientMock?.Object ?? new Mock<ICalculationsClient>().Object);
 
             var defaultUserContext = new Mock<IUserContext<FrontendUser>>();
             defaultUserContext.Setup(x => x.CurrentUser)

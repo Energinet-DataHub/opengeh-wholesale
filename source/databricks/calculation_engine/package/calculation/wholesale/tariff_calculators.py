@@ -13,8 +13,9 @@
 # limitations under the License.
 
 from datetime import datetime
-from pyspark.sql import DataFrame
+
 import pyspark.sql.functions as f
+from pyspark.sql import DataFrame
 
 from package.codelists import WholesaleResultResolution, ChargeUnit
 from package.common import assert_schema
@@ -85,6 +86,7 @@ def _sum_quantity_and_count_charges(tariffs: DataFrame) -> DataFrame:
         f.count(Colname.metering_point_id).alias(Colname.charge_count),
         f.flatten(f.collect_set(Colname.qualities)).alias(Colname.qualities),
     )
+
     return agg_df
 
 

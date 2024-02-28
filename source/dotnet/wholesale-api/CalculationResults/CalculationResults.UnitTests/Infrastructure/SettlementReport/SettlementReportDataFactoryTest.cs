@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
@@ -33,7 +32,7 @@ public class SettlementReportDataFactoryTests
 
     public SettlementReportDataFactoryTests()
     {
-        _rows = new List<DatabricksSqlRow>();
+        _rows = [];
         var row1 = CreateRow("123", "BalanceFixing", "2022-05-16T01:00:00.000Z", "non_profiled_consumption", "1.1");
         var row2 = CreateRow("234", "BalanceFixing", "2022-05-16T01:15:00.000Z", "production", "2.2");
         var row3 = CreateRow("234", "BalanceFixing", "2022-05-16T01:30:00.000Z", "production", "3.3");
@@ -41,8 +40,8 @@ public class SettlementReportDataFactoryTests
         _rows.Add(row2);
         _rows.Add(row3);
 
-        _firstRow = new SettlementReportResultRow("123", ProcessType.BalanceFixing, Instant.FromUtc(2022, 5, 16, 1, 0, 0), "PT15M", MeteringPointType.Consumption, SettlementMethod.NonProfiled, new decimal(1.1));
-        _lastRow = new SettlementReportResultRow("234", ProcessType.BalanceFixing, Instant.FromUtc(2022, 5, 16, 1, 30, 0), "PT15M", MeteringPointType.Production, null, new decimal(3.3));
+        _firstRow = new SettlementReportResultRow("123", CalculationType.BalanceFixing, Instant.FromUtc(2022, 5, 16, 1, 0, 0), "PT15M", MeteringPointType.Consumption, SettlementMethod.NonProfiled, new decimal(1.1));
+        _lastRow = new SettlementReportResultRow("234", CalculationType.BalanceFixing, Instant.FromUtc(2022, 5, 16, 1, 30, 0), "PT15M", MeteringPointType.Production, null, new decimal(3.3));
     }
 
     [Fact]
@@ -72,7 +71,7 @@ public class SettlementReportDataFactoryTests
         var row = new Dictionary<string, object?>
         {
             { EnergyResultColumnNames.GridArea, gridArea },
-            { EnergyResultColumnNames.BatchProcessType, balanceFixing },
+            { EnergyResultColumnNames.CalculationType, balanceFixing },
             { EnergyResultColumnNames.Time, time },
             { EnergyResultColumnNames.TimeSeriesType, timeSeriesType },
             { EnergyResultColumnNames.Quantity, quantity },

@@ -11,53 +11,51 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from datetime import datetime
-from unittest.mock import patch
 
 import pytest
-from pyspark.sql import DataFrame
+from pyspark.sql import DataFrame, SparkSession
 
-from calculation.wholesale.test_tariff_calculators import _create_tariff_hour_row
-from package import calculation_output
+from calculation.wholesale.test_tariff_calculators import _create_tariff_row
+from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.wholesale import execute
 from package.calculation.wholesale.schemas.tariffs_schema import tariff_schema
-from package.calculation_output import WholesaleCalculationResultWriter
+from package.codelists import ChargeResolution
 
 
-@patch.object(calculation_output, WholesaleCalculationResultWriter.__name__)
 def test__execute__when_tariff_schema_is_valid__does_not_raise(
-    wholesale_calculation_result_writer_mock: WholesaleCalculationResultWriter, spark
-):
+    spark: SparkSession, any_calculator_args: CalculatorArgs
+) -> None:
     # Arrange
-    period_start_datetime = datetime(2020, 1, 1, 0, 0)
     tariffs_hourly_df = spark.createDataFrame(
-        data=[_create_tariff_hour_row()], schema=tariff_schema
+        data=[_create_tariff_row()], schema=tariff_schema
+    )
+    tariffs_daily_df = spark.createDataFrame(
+        data=[_create_tariff_row(resolution=ChargeResolution.DAY)], schema=tariff_schema
     )
 
     # Act
     execute(
-        wholesale_calculation_result_writer_mock,
+        any_calculator_args,
         tariffs_hourly_df,
-        period_start_datetime,
+        tariffs_daily_df,
     )
 
     # Assert
     # If execute raises an exception, the test fails automatically
 
 
-@patch.object(calculation_output, WholesaleCalculationResultWriter.__name__)
 def test__execute__when_tariff_schema_is_invalid__raises_assertion_error(
-    wholesale_calculation_result_writer_mock: WholesaleCalculationResultWriter, spark
-):
+    spark: SparkSession, any_calculator_args: CalculatorArgs
+) -> None:
     # Arrange
     data = [("John", "Dow")]
-    period_start_datetime: datetime = datetime(2020, 1, 1, 0, 0)
     tariffs_hourly_df: DataFrame = spark.createDataFrame(data)
+    tariffs_daily_df: DataFrame = spark.createDataFrame(data)
 
     # Act & Assert
     with pytest.raises(AssertionError):
         execute(
-            wholesale_calculation_result_writer_mock,
+            any_calculator_args,
             tariffs_hourly_df,
-            period_start_datetime,
+            tariffs_daily_df,
         )

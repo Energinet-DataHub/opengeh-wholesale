@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System.Diagnostics.CodeAnalysis;
-using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Microsoft.Azure.Databricks.Client.Models;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance.States
@@ -24,7 +24,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance.States
         public Calculation? CalculationJobInput { get; set; }
 
         [NotNull]
-        public CalculationId? CalculationId { get; set; }
+        public CalculationJobId? CalculationJobId { get; set; }
 
         [NotNull]
         public Run? Run { get; set; }

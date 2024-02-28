@@ -16,7 +16,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States
 {
     public class RequestTelemetryScenarioState
     {
-        public Guid BatchId { get; set; }
+        public Guid CalculationId { get; set; }
 
         public IList<TelemetryEventMatch> ExpectedTelemetryEvents { get; }
             = new List<TelemetryEventMatch>();

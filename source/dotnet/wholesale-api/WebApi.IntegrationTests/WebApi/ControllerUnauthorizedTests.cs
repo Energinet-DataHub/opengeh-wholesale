@@ -44,7 +44,7 @@ public class ControllerUnauthorizedTests :
         using var client = _factory.CreateClient();
 
         // Act
-        var response = await client.GetAsync("/v3/batches");
+        var response = await client.GetAsync("/v3/calculations");
 
         // Assert
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);

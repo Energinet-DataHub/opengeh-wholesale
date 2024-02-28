@@ -37,7 +37,7 @@ public class SettlementReportSqlStatementFactoryTests
         var expectedSql = GetExpectedSqlWhenNoEnergySupplier();
 
         // Act
-        var actual = SettlementReportSqlStatementFactory.Create(_schemaName, _tableName, _defaultGridAreasCodes, ProcessType.BalanceFixing, _defaultPeriodStart, _defaultPeriodEnd, null);
+        var actual = SettlementReportSqlStatementFactory.Create(_schemaName, _tableName, _defaultGridAreasCodes, CalculationType.BalanceFixing, _defaultPeriodStart, _defaultPeriodEnd, null);
 
         // Assert
         actual.Should().Be(expectedSql);
@@ -51,7 +51,7 @@ public class SettlementReportSqlStatementFactoryTests
         var expectedSql = GetExpectedSqlWhenWithEnergySupplier(someEnergySupplier);
 
         // Act
-        var actual = SettlementReportSqlStatementFactory.Create(_schemaName, _tableName, _defaultGridAreasCodes, ProcessType.BalanceFixing, _defaultPeriodStart, _defaultPeriodEnd, someEnergySupplier);
+        var actual = SettlementReportSqlStatementFactory.Create(_schemaName, _tableName, _defaultGridAreasCodes, CalculationType.BalanceFixing, _defaultPeriodStart, _defaultPeriodEnd, someEnergySupplier);
 
         // Assert
         actual.Should().Be(expectedSql);
@@ -61,20 +61,20 @@ public class SettlementReportSqlStatementFactoryTests
     {
         // This string must match the values of the private members that defines grid area codes, period start and period end
         return $@"
-SELECT t1.grid_area, t1.{EnergyResultColumnNames.BatchProcessType}, t1.time, t1.time_series_type, t1.quantity
+SELECT t1.grid_area, t1.{EnergyResultColumnNames.CalculationType}, t1.time, t1.time_series_type, t1.quantity
 FROM {_schemaName}.{_tableName} t1
 LEFT JOIN {_schemaName}.{_tableName} t2
     ON t1.time = t2.time
-        AND t1.{EnergyResultColumnNames.BatchExecutionTimeStart} < t2.{EnergyResultColumnNames.BatchExecutionTimeStart}
+        AND t1.{EnergyResultColumnNames.CalculationExecutionTimeStart} < t2.{EnergyResultColumnNames.CalculationExecutionTimeStart}
         AND t1.grid_area = t2.grid_area
         AND COALESCE(t1.out_grid_area, 'N/A') = COALESCE(t2.out_grid_area, 'N/A')
         AND t1.time_series_type = t2.time_series_type
-        AND t1.{EnergyResultColumnNames.BatchProcessType} = t2.{EnergyResultColumnNames.BatchProcessType}
+        AND t1.{EnergyResultColumnNames.CalculationType} = t2.{EnergyResultColumnNames.CalculationType}
         AND t1.aggregation_level = t2.aggregation_level
 WHERE t2.time IS NULL
     AND t1.{EnergyResultColumnNames.GridArea} IN (123,234,345)
     AND t1.{EnergyResultColumnNames.TimeSeriesType} IN ('production','flex_consumption','non_profiled_consumption','net_exchange_per_ga','total_consumption')
-    AND t1.{EnergyResultColumnNames.BatchProcessType} = 'BalanceFixing'
+    AND t1.{EnergyResultColumnNames.CalculationType} = 'BalanceFixing'
     AND t1.{EnergyResultColumnNames.Time} BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z'
     AND t1.{EnergyResultColumnNames.AggregationLevel} = '{DeltaTableAggregationLevel.GridArea}'
 ORDER BY t1.time
@@ -85,20 +85,20 @@ ORDER BY t1.time
     {
         // This string must match the values of the private members that defines grid area codes, period start and period end
         return $@"
-SELECT t1.grid_area, t1.{EnergyResultColumnNames.BatchProcessType}, t1.time, t1.time_series_type, t1.quantity
+SELECT t1.grid_area, t1.{EnergyResultColumnNames.CalculationType}, t1.time, t1.time_series_type, t1.quantity
 FROM {_schemaName}.{_tableName} t1
 LEFT JOIN {_schemaName}.{_tableName} t2
     ON t1.time = t2.time
-        AND t1.{EnergyResultColumnNames.BatchExecutionTimeStart} < t2.{EnergyResultColumnNames.BatchExecutionTimeStart}
+        AND t1.{EnergyResultColumnNames.CalculationExecutionTimeStart} < t2.{EnergyResultColumnNames.CalculationExecutionTimeStart}
         AND t1.grid_area = t2.grid_area
         AND COALESCE(t1.out_grid_area, 'N/A') = COALESCE(t2.out_grid_area, 'N/A')
         AND t1.time_series_type = t2.time_series_type
-        AND t1.{EnergyResultColumnNames.BatchProcessType} = t2.{EnergyResultColumnNames.BatchProcessType}
+        AND t1.{EnergyResultColumnNames.CalculationType} = t2.{EnergyResultColumnNames.CalculationType}
         AND t1.aggregation_level = t2.aggregation_level
 WHERE t2.time IS NULL
     AND t1.{EnergyResultColumnNames.GridArea} IN (123,234,345)
     AND t1.{EnergyResultColumnNames.TimeSeriesType} IN ('production','flex_consumption','non_profiled_consumption')
-    AND t1.{EnergyResultColumnNames.BatchProcessType} = 'BalanceFixing'
+    AND t1.{EnergyResultColumnNames.CalculationType} = 'BalanceFixing'
     AND t1.{EnergyResultColumnNames.Time} BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z'
     AND t1.{EnergyResultColumnNames.AggregationLevel} = '{DeltaTableAggregationLevel.EnergySupplierAndGridArea}'
     AND t1.{EnergyResultColumnNames.EnergySupplierId} = '{energySupplier}'

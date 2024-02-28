@@ -22,12 +22,12 @@ using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
+using Energinet.DataHub.Wholesale.Test.Core;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NodaTime;
-using Test.Core;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Application.Communication;
@@ -167,7 +167,7 @@ public class IntegrationEventProviderTests
         var fixture = new Fixture();
         var completedCalculation = fixture
             .Build<CompletedCalculation>()
-            .With(p => p.ProcessType, ProcessType.WholesaleFixing)
+            .With(p => p.CalculationType, CalculationType.WholesaleFixing)
             .Create();
 
         completedCalculationRepositoryMock
@@ -201,7 +201,7 @@ public class IntegrationEventProviderTests
         var fixture = new Fixture();
         var completedCalculation = fixture
             .Build<CompletedCalculation>()
-            .With(p => p.ProcessType, ProcessType.WholesaleFixing)
+            .With(p => p.CalculationType, CalculationType.WholesaleFixing)
             .Create();
 
         completedCalculationRepositoryMock
@@ -245,11 +245,11 @@ public class IntegrationEventProviderTests
         var fixture = new Fixture();
         var aggregationCalculation = fixture
             .Build<CompletedCalculation>()
-            .With(p => p.ProcessType, ProcessType.Aggregation)
+            .With(p => p.CalculationType, CalculationType.Aggregation)
             .Create();
         var wholesaleFixingCalculation = fixture
             .Build<CompletedCalculation>()
-            .With(p => p.ProcessType, ProcessType.WholesaleFixing)
+            .With(p => p.CalculationType, CalculationType.WholesaleFixing)
             .Create();
 
         completedCalculationRepositoryMock

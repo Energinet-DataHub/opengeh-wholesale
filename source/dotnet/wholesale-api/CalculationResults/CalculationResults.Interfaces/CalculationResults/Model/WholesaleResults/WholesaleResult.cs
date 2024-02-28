@@ -22,7 +22,7 @@ public sealed class WholesaleResult
     public WholesaleResult(
         Guid id,
         Guid calculationId,
-        ProcessType calculationType,
+        CalculationType calculationType,
         Instant periodStart,
         Instant periodEnd,
         string gridArea,
@@ -36,7 +36,8 @@ public sealed class WholesaleResult
         Resolution resolution,
         MeteringPointType? meteringPointType,
         SettlementMethod? settlementMethod,
-        IReadOnlyCollection<WholesaleTimeSeriesPoint> timeSeriesPoints)
+        IReadOnlyCollection<WholesaleTimeSeriesPoint> timeSeriesPoints,
+        long version)
     {
         if (timeSeriesPoints.Count == 0)
             throw new ArgumentException("Time series points empty");
@@ -57,15 +58,15 @@ public sealed class WholesaleResult
         Resolution = resolution;
         MeteringPointType = meteringPointType;
         SettlementMethod = settlementMethod;
-
         TimeSeriesPoints = timeSeriesPoints;
+        Version = version;
     }
 
     public Guid Id { get; }
 
     public Guid CalculationId { get; }
 
-    public ProcessType CalculationType { get; }
+    public CalculationType CalculationType { get; }
 
     public string GridArea { get; }
 
@@ -94,4 +95,6 @@ public sealed class WholesaleResult
     public SettlementMethod? SettlementMethod { get; }
 
     public IReadOnlyCollection<WholesaleTimeSeriesPoint> TimeSeriesPoints { get; }
+
+    public long Version { get; }
 }

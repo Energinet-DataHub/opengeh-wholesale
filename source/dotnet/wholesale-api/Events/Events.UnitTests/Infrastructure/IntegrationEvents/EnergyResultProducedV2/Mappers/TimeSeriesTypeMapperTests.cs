@@ -24,12 +24,12 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
 public class TimeSeriesTypeMapperTests
 {
     [Theory]
-    [InlineAutoMoqData(TimeSeriesType.Production,  EnergyResultProduced.Types.TimeSeriesType.Production)]
-    [InlineAutoMoqData(TimeSeriesType.FlexConsumption,  EnergyResultProduced.Types.TimeSeriesType.FlexConsumption)]
+    [InlineAutoMoqData(TimeSeriesType.Production, EnergyResultProduced.Types.TimeSeriesType.Production)]
+    [InlineAutoMoqData(TimeSeriesType.FlexConsumption, EnergyResultProduced.Types.TimeSeriesType.FlexConsumption)]
     [InlineAutoMoqData(TimeSeriesType.NonProfiledConsumption, EnergyResultProduced.Types.TimeSeriesType.NonProfiledConsumption)]
-    [InlineAutoMoqData(TimeSeriesType.NetExchangePerGa,  EnergyResultProduced.Types.TimeSeriesType.NetExchangePerGa)]
-    [InlineAutoMoqData(TimeSeriesType.NetExchangePerNeighboringGa,  EnergyResultProduced.Types.TimeSeriesType.NetExchangePerNeighboringGa)]
-    [InlineAutoMoqData(TimeSeriesType.TotalConsumption,  EnergyResultProduced.Types.TimeSeriesType.TotalConsumption)]
+    [InlineAutoMoqData(TimeSeriesType.NetExchangePerGa, EnergyResultProduced.Types.TimeSeriesType.NetExchangePerGa)]
+    [InlineAutoMoqData(TimeSeriesType.NetExchangePerNeighboringGa, EnergyResultProduced.Types.TimeSeriesType.NetExchangePerNeighboringGa)]
+    [InlineAutoMoqData(TimeSeriesType.TotalConsumption, EnergyResultProduced.Types.TimeSeriesType.TotalConsumption)]
     public void MapTimeSeriesType_WhenCalled_MapsCorrectly(TimeSeriesType timeSeriesType,  EnergyResultProduced.Types.TimeSeriesType expected)
     {
         // Act & Assert

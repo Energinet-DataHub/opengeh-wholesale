@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
@@ -33,10 +32,11 @@ public class WholesaleResultFactoryTests
     private static readonly Instant _defaultTime = Instant.FromUtc(2022, 5, 1, 1, 0);
     private readonly Instant _defaultPeriodEnd = Instant.FromUtc(2022, 5, 2, 0, 0);
     private readonly Instant _defaultPeriodStart = Instant.FromUtc(2022, 5, 1, 0, 0);
-    private readonly List<WholesaleTimeSeriesPoint> _defaultWholesaleTimeSeriesPoints = new()
-    {
+    private readonly long _version = DateTime.Now.Ticks;
+    private readonly List<WholesaleTimeSeriesPoint> _defaultWholesaleTimeSeriesPoints =
+    [
         new WholesaleTimeSeriesPoint(_defaultTime.ToDateTimeOffset(), 1.0m, new List<QuantityQuality> { QuantityQuality.Measured, QuantityQuality.Missing, }, DefaultPrice, DefaultAmount),
-    };
+    ];
 
     [Fact]
     public void CreateWholesaleResult_ReturnExpectedWholesaleResult()
@@ -45,7 +45,7 @@ public class WholesaleResultFactoryTests
         var row = CreateSqlResultRow();
 
         // Act
-        var actual = WholesaleResultFactory.CreateWholesaleResult(row, _defaultWholesaleTimeSeriesPoints, _defaultPeriodStart, _defaultPeriodEnd);
+        var actual = WholesaleResultFactory.CreateWholesaleResult(row, _defaultWholesaleTimeSeriesPoints, _defaultPeriodStart, _defaultPeriodEnd, _version);
 
         // Assert
         using var assertionScope = new AssertionScope();
@@ -62,7 +62,7 @@ public class WholesaleResultFactoryTests
         actual.SettlementMethod.Should().Be(SettlementMethod.Flex);
         actual.PeriodEnd.Should().Be(_defaultPeriodEnd);
         actual.PeriodStart.Should().Be(_defaultPeriodStart);
-        actual.CalculationType.Should().Be(ProcessType.WholesaleFixing);
+        actual.CalculationType.Should().Be(CalculationType.WholesaleFixing);
         actual.QuantityUnit.Should().Be(QuantityUnit.Kwh);
         actual.TimeSeriesPoints.Should().HaveCount(1);
     }

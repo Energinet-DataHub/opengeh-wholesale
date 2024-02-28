@@ -11,12 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import pytest
 from pyspark.sql import SparkSession
 from . import configuration as C
 from package.codelists import (
     BasisDataType,
 )
+import package.codelists as e
 from package.infrastructure import paths
 
 
@@ -27,7 +28,7 @@ def test__creates_hour_for_total_ga__with_expected_columns_names(
 ) -> None:
     # Arrange
     basis_data_relative_path = paths.get_basis_data_path(
-        BasisDataType.TIME_SERIES_HOUR, C.executed_balance_fixing_batch_id, "805"
+        BasisDataType.TIME_SERIES_HOUR, C.executed_balance_fixing_calculation_id, "805"
     )
 
     # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
@@ -52,7 +53,7 @@ def test__creates_hour_for_es_per_ga__with_expected_columns_names(
     # Arrange
     basis_data_relative_path = paths.get_basis_data_path(
         BasisDataType.TIME_SERIES_HOUR,
-        C.executed_balance_fixing_batch_id,
+        C.executed_balance_fixing_calculation_id,
         "805",
         C.energy_supplier_gln_a,
     )
@@ -78,7 +79,9 @@ def test__creates_quarter_for_total_ga__with_expected_columns_names(
 ) -> None:
     # Arrange
     relative_path = paths.get_basis_data_path(
-        BasisDataType.TIME_SERIES_QUARTER, C.executed_balance_fixing_batch_id, "805"
+        BasisDataType.TIME_SERIES_QUARTER,
+        C.executed_balance_fixing_calculation_id,
+        "805",
     )
 
     # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
@@ -104,7 +107,7 @@ def test__creates_quarter_for_es_per_ga__with_expected_columns_names(
     # Arrange
     relative_path = paths.get_basis_data_path(
         BasisDataType.TIME_SERIES_QUARTER,
-        C.executed_balance_fixing_batch_id,
+        C.executed_balance_fixing_calculation_id,
         "805",
         C.energy_supplier_gln_a,
     )
@@ -131,10 +134,14 @@ def test__creates_quarter_for_total_ga__per_grid_area(
 ) -> None:
     # Arrange
     basis_data_relative_path_805 = paths.get_basis_data_path(
-        BasisDataType.TIME_SERIES_QUARTER, C.executed_balance_fixing_batch_id, "805"
+        BasisDataType.TIME_SERIES_QUARTER,
+        C.executed_balance_fixing_calculation_id,
+        "805",
     )
     basis_data_relative_path_806 = paths.get_basis_data_path(
-        BasisDataType.TIME_SERIES_QUARTER, C.executed_balance_fixing_batch_id, "806"
+        BasisDataType.TIME_SERIES_QUARTER,
+        C.executed_balance_fixing_calculation_id,
+        "806",
     )
 
     # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
@@ -165,13 +172,13 @@ def test__creates_quarter_for_es_per_ga__per_energy_supplier(
     # Arrange
     basis_data_relative_path_a = paths.get_basis_data_path(
         BasisDataType.TIME_SERIES_QUARTER,
-        C.executed_balance_fixing_batch_id,
+        C.executed_balance_fixing_calculation_id,
         "805",
         C.energy_supplier_gln_a,
     )
     basis_data_relative_path_b = paths.get_basis_data_path(
         BasisDataType.TIME_SERIES_QUARTER,
-        C.executed_balance_fixing_batch_id,
+        C.executed_balance_fixing_calculation_id,
         "805",
         C.energy_supplier_gln_b,
     )
@@ -203,10 +210,10 @@ def test__creates_hour_for_total_ga__per_grid_area(
 ) -> None:
     # Arrange
     basis_data_relative_path_805 = paths.get_basis_data_path(
-        BasisDataType.TIME_SERIES_HOUR, C.executed_balance_fixing_batch_id, "805"
+        BasisDataType.TIME_SERIES_HOUR, C.executed_balance_fixing_calculation_id, "805"
     )
     basis_data_relative_path_806 = paths.get_basis_data_path(
-        BasisDataType.TIME_SERIES_HOUR, C.executed_balance_fixing_batch_id, "806"
+        BasisDataType.TIME_SERIES_HOUR, C.executed_balance_fixing_calculation_id, "806"
     )
 
     # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
@@ -237,13 +244,13 @@ def test__creates_hour_for_es_per_ga__per_energy_supplier(
     # Arrange
     basis_data_relative_path_a = paths.get_basis_data_path(
         BasisDataType.TIME_SERIES_HOUR,
-        C.executed_balance_fixing_batch_id,
+        C.executed_balance_fixing_calculation_id,
         "805",
         C.energy_supplier_gln_a,
     )
     basis_data_relative_path_b = paths.get_basis_data_path(
         BasisDataType.TIME_SERIES_HOUR,
-        C.executed_balance_fixing_batch_id,
+        C.executed_balance_fixing_calculation_id,
         "805",
         C.energy_supplier_gln_b,
     )
@@ -275,7 +282,7 @@ def test__master_basis_data_for_total_ga_has_expected_columns_names(
 ) -> None:
     # Arrange
     basis_data_path = paths.get_basis_data_path(
-        BasisDataType.MASTER_BASIS_DATA, C.executed_balance_fixing_batch_id, "805"
+        BasisDataType.MASTER_BASIS_DATA, C.executed_balance_fixing_calculation_id, "805"
     )
 
     # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
@@ -306,7 +313,7 @@ def test__master_basis_data_for_es_per_ga_has_expected_columns_names(
     # Arrange
     basis_data_path = paths.get_basis_data_path(
         BasisDataType.MASTER_BASIS_DATA,
-        C.executed_balance_fixing_batch_id,
+        C.executed_balance_fixing_calculation_id,
         "805",
         C.energy_supplier_gln_a,
     )
@@ -337,10 +344,10 @@ def test__creates_master_basis_data_per_grid_area(
 ) -> None:
     # Arrange
     basis_data_path_805 = paths.get_basis_data_path(
-        BasisDataType.MASTER_BASIS_DATA, C.executed_balance_fixing_batch_id, "805"
+        BasisDataType.MASTER_BASIS_DATA, C.executed_balance_fixing_calculation_id, "805"
     )
     basis_data_path_806 = paths.get_basis_data_path(
-        BasisDataType.MASTER_BASIS_DATA, C.executed_balance_fixing_batch_id, "806"
+        BasisDataType.MASTER_BASIS_DATA, C.executed_balance_fixing_calculation_id, "806"
     )
 
     # Act: Executed in fixture executed_balance_fixing
@@ -361,3 +368,30 @@ def test__creates_master_basis_data_per_grid_area(
     assert (
         master_basis_data_806.count() >= 1
     ), "Calculator job failed to write master basis data files for grid area 806"
+
+
+def test__basis_data_contains_all_metering_point_types(
+    spark: SparkSession,
+    data_lake_path: str,
+    executed_balance_fixing: None,
+) -> None:
+    # Arrange
+    basis_data_path = paths.get_basis_data_path(
+        BasisDataType.MASTER_BASIS_DATA,
+        C.executed_balance_fixing_calculation_id,
+        "805",
+        C.energy_supplier_gln_a,
+    )
+
+    # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
+
+    # Assert
+    actual = spark.read.option("header", "true").csv(
+        f"{data_lake_path}/{basis_data_path}"
+    )
+
+    # Loop instead of parameterize test for reduced test execution time
+    for metering_point_type in e.MeteringPointType:
+        assert (
+            actual.where(actual["TYPEOFMP"] == metering_point_type.value).count() > 0
+        ), f"Calculator job failed to write master basis data files for metering point type {metering_point_type.value}"

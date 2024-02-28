@@ -19,7 +19,7 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 
 public interface IEventsDatabaseContext
 {
-    DbSet<CompletedCalculation> CompletedBatches { get; }
+    DbSet<CompletedCalculation> CompletedCalculations { get; }
 
     /// <summary>
     /// Saves changes to the database.

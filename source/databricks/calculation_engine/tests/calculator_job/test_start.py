@@ -22,7 +22,6 @@ import pytest
 from azure.monitor.query import LogsQueryClient, LogsQueryResult
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculator_job import start, start_with_deps
-from package.calculator_job_args import parse_command_line_arguments
 
 from tests.integration_test_configuration import IntegrationTestConfiguration
 
@@ -37,13 +36,13 @@ class TestWhenInvokedWithInvalidArguments:
 
 
 class TestWhenInvokedWithValidArguments:
-    def test_does_not_raise(self, any_calculator_args):
+    def test_does_not_raise(self, any_calculator_args, infrastructure_settings):
         command_line_args = argparse.Namespace()
         command_line_args.calculation_id = any_calculator_args.calculation_id
 
         start_with_deps(
             parse_command_line_args=lambda: command_line_args,
-            create_calculation_args=lambda args: any_calculator_args,
+            parse_job_args=lambda args: (any_calculator_args, infrastructure_settings),
             calculation_executor=lambda args, reader: None,
             is_storage_locked_checker=lambda name, cred: False,
         )
@@ -112,7 +111,7 @@ AppTraces
         """
         Assert that the calculator job logs to Azure Monitor with the expected settings:
         - app role name = "dbr-calculation-engine"
-        - name = "calculation.create_calculation_arguments"
+        - name = "calculation.parse_job_arguments"
         - operation id has value
         - custom field "Subsystem" = "wholesale"
         - custom field "calculation_id" = <the calculation id>
@@ -134,7 +133,7 @@ AppTraces
         query = f"""
 AppDependencies
 | where AppRoleName == "dbr-calculation-engine"
-| where Name == "calculation.create_calculation_arguments"
+| where Name == "calculation.parse_job_arguments"
 | where OperationId != "00000000000000000000000000000000"
 | where Properties.Subsystem == "wholesale"
 | where Properties.calculation_id == "{any_calculator_args.calculation_id}"
@@ -219,7 +218,7 @@ AppExceptions
         sys.argv.append("--grid-areas=[123]")
         sys.argv.append("--period-start-datetime=2023-01-31T23:00:00Z")
         sys.argv.append("--period-end-datetime=2023-01-31T23:00:00Z")
-        sys.argv.append("--process-type=BalanceFixing")
+        sys.argv.append("--calculation-type=BalanceFixing")
         sys.argv.append("--execution-time-start=2023-01-31T23:00:00Z")
 
 

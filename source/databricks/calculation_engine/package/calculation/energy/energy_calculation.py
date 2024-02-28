@@ -12,27 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime
-
 from pyspark.sql import DataFrame
 
 import package.calculation.energy.aggregators.exchange_aggregators as exchange_aggr
 import package.calculation.energy.aggregators.grid_loss_aggregators as grid_loss_aggr
 import package.calculation.energy.aggregators.grouping_aggregators as grouping_aggr
 import package.calculation.energy.aggregators.metering_point_time_series_aggregators as mp_aggr
+from package.calculation.CalculationResults import EnergyResultsContainer
 from package.calculation.energy.energy_results import EnergyResults
 from package.calculation.energy.hour_to_quarter import transform_hour_to_quarter
 from package.calculation.preparation.grid_loss_responsible import GridLossResponsible
 from package.calculation.preparation.quarterly_metering_point_time_series import (
     QuarterlyMeteringPointTimeSeries,
 )
-from package.calculation_output.energy_calculation_result_writer import (
-    EnergyCalculationResultWriter,
-)
 from package.codelists import (
-    TimeSeriesType,
-    AggregationLevel,
-    ProcessType,
+    CalculationType,
     MeteringPointType,
 )
 from package.infrastructure import logging_configuration
@@ -40,58 +34,50 @@ from package.infrastructure import logging_configuration
 
 @logging_configuration.use_span("calculation.energy")
 def execute(
-    batch_id: str,
-    batch_process_type: ProcessType,
-    batch_execution_time_start: datetime,
-    batch_grid_areas: list[str],
+    calculation_type: CalculationType,
+    grid_areas: list[str],
     metering_point_time_series: DataFrame,
     grid_loss_responsible_df: GridLossResponsible,
-) -> None:
-    calculation_result_writer = EnergyCalculationResultWriter(
-        batch_id,
-        batch_process_type,
-        batch_execution_time_start,
-    )
-
+) -> EnergyResultsContainer:
     with logging_configuration.start_span("quarterly_metering_point_time_series"):
         quarterly_metering_point_time_series = transform_hour_to_quarter(
             metering_point_time_series
         )
         quarterly_metering_point_time_series.cache_internal()
 
-    _calculate(
-        batch_process_type,
-        batch_grid_areas,
-        calculation_result_writer,
+    return _calculate(
+        calculation_type,
+        grid_areas,
         quarterly_metering_point_time_series,
         grid_loss_responsible_df,
     )
 
 
 def _calculate(
-    process_type: ProcessType,
-    batch_grid_areas: list[str],
-    result_writer: EnergyCalculationResultWriter,
+    calculation_type: CalculationType,
+    grid_areas: list[str],
     quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
     grid_loss_responsible_df: GridLossResponsible,
-) -> None:
+) -> EnergyResultsContainer:
+    results = EnergyResultsContainer()
+
     # cache of net exchange per grid area did not improve performance (01/12/2023)
     net_exchange_per_ga = _calculate_net_exchange(
-        process_type,
-        batch_grid_areas,
-        result_writer,
+        calculation_type,
+        grid_areas,
         quarterly_metering_point_time_series,
+        results,
     )
 
     temporary_production_per_ga_and_brp_and_es = (
         _calculate_temporary_production_per_per_ga_and_brp_and_es(
-            result_writer, quarterly_metering_point_time_series
+            quarterly_metering_point_time_series, results
         )
     )
 
     temporary_flex_consumption_per_ga_and_brp_and_es = (
         _calculate_temporary_flex_consumption_per_per_ga_and_brp_and_es(
-            result_writer, quarterly_metering_point_time_series
+            quarterly_metering_point_time_series, results
         )
     )
 
@@ -101,12 +87,12 @@ def _calculate(
     consumption_per_ga_and_brp_and_es.cache_internal()
 
     positive_grid_loss, negative_grid_loss = _calculate_grid_loss(
-        result_writer,
         net_exchange_per_ga,
         temporary_production_per_ga_and_brp_and_es,
         temporary_flex_consumption_per_ga_and_brp_and_es,
         consumption_per_ga_and_brp_and_es,
         grid_loss_responsible_df,
+        results,
     )
 
     production_per_ga_and_brp_and_es = (
@@ -126,51 +112,49 @@ def _calculate(
     )
 
     _calculate_non_profiled_consumption(
-        process_type, result_writer, consumption_per_ga_and_brp_and_es
+        calculation_type,
+        consumption_per_ga_and_brp_and_es,
+        results,
     )
     production_per_ga = _calculate_production(
-        process_type, result_writer, production_per_ga_and_brp_and_es
+        calculation_type,
+        production_per_ga_and_brp_and_es,
+        results,
     )
     _calculate_flex_consumption(
-        process_type, result_writer, flex_consumption_per_ga_and_brp_and_es
+        calculation_type,
+        flex_consumption_per_ga_and_brp_and_es,
+        results,
     )
 
-    _calculate_total_consumption(result_writer, production_per_ga, net_exchange_per_ga)
+    _calculate_total_consumption(production_per_ga, net_exchange_per_ga, results)
+
+    return results
 
 
 def _calculate_net_exchange(
-    process_type: ProcessType,
-    batch_grid_areas: list[str],
-    result_writer: EnergyCalculationResultWriter,
+    calculation_type: CalculationType,
+    grid_areas: list[str],
     quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
+    results: EnergyResultsContainer,
 ) -> EnergyResults:
     exchange_per_neighbour_ga = exchange_aggr.aggregate_net_exchange_per_neighbour_ga(
-        quarterly_metering_point_time_series, batch_grid_areas
+        quarterly_metering_point_time_series, grid_areas
     )
-    if _is_aggregation_or_balance_fixing(process_type):
+    if _is_aggregation_or_balance_fixing(calculation_type):
         exchange_per_neighbour_ga = (
             exchange_aggr.aggregate_net_exchange_per_neighbour_ga(
-                quarterly_metering_point_time_series, batch_grid_areas
+                quarterly_metering_point_time_series, grid_areas
             )
         )
 
-        with logging_configuration.start_span("net_exchange_per_neighbour_ga"):
-            result_writer.write(
-                exchange_per_neighbour_ga,
-                TimeSeriesType.NET_EXCHANGE_PER_NEIGHBORING_GA,
-                AggregationLevel.TOTAL_GA,
-            )
+        results.exchange_per_neighbour_ga = exchange_per_neighbour_ga
 
     exchange_per_grid_area = exchange_aggr.aggregate_net_exchange_per_ga(
         exchange_per_neighbour_ga
     )
 
-    with logging_configuration.start_span("net_exchange_per_ga"):
-        result_writer.write(
-            exchange_per_grid_area,
-            TimeSeriesType.NET_EXCHANGE_PER_GA,
-            AggregationLevel.TOTAL_GA,
-        )
+    results.exchange_per_grid_area = exchange_per_grid_area
 
     return exchange_per_grid_area
 
@@ -184,12 +168,13 @@ def _calculate_consumption_per_ga_and_brp_and_es(
             quarterly_metering_point_time_series
         )
     )
+
     return consumption_per_ga_and_brp_and_es
 
 
 def _calculate_temporary_production_per_per_ga_and_brp_and_es(
-    result_writer: EnergyCalculationResultWriter,
     quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
+    results: EnergyResultsContainer,
 ) -> EnergyResults:
     temporary_production_per_ga_and_brp_and_es = mp_aggr.aggregate_production_ga_brp_es(
         quarterly_metering_point_time_series
@@ -200,19 +185,14 @@ def _calculate_temporary_production_per_per_ga_and_brp_and_es(
         temporary_production_per_ga_and_brp_and_es
     )
 
-    with logging_configuration.start_span("temporary_production_per_ga"):
-        result_writer.write(
-            temporary_production_per_ga,
-            TimeSeriesType.TEMP_PRODUCTION,
-            AggregationLevel.TOTAL_GA,
-        )
+    results.temporary_production_per_ga = temporary_production_per_ga
 
     return temporary_production_per_ga_and_brp_and_es
 
 
 def _calculate_temporary_flex_consumption_per_per_ga_and_brp_and_es(
-    result_writer: EnergyCalculationResultWriter,
     quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
+    results: EnergyResultsContainer,
 ) -> EnergyResults:
     temporary_flex_consumption_per_ga_and_brp_and_es = (
         mp_aggr.aggregate_flex_consumption_ga_brp_es(
@@ -225,23 +205,18 @@ def _calculate_temporary_flex_consumption_per_per_ga_and_brp_and_es(
         temporary_flex_consumption_per_ga_and_brp_and_es
     )
 
-    with logging_configuration.start_span("temporary_flex_consumption_per_ga"):
-        result_writer.write(
-            temporary_flex_consumption_per_ga,
-            TimeSeriesType.TEMP_FLEX_CONSUMPTION,
-            AggregationLevel.TOTAL_GA,
-        )
+    results.temporary_flex_consumption_per_ga = temporary_flex_consumption_per_ga
 
     return temporary_flex_consumption_per_ga_and_brp_and_es
 
 
 def _calculate_grid_loss(
-    result_writer: EnergyCalculationResultWriter,
     net_exchange_per_ga: EnergyResults,
     temporary_production_per_ga_and_brp_and_es: EnergyResults,
     temporary_flex_consumption_per_ga_and_brp_and_es: EnergyResults,
     consumption_per_ga_and_brp_and_es: EnergyResults,
     grid_loss_responsible_df: GridLossResponsible,
+    results: EnergyResultsContainer,
 ) -> tuple[EnergyResults, EnergyResults]:
     grid_loss = grid_loss_aggr.calculate_grid_loss(
         net_exchange_per_ga,
@@ -251,34 +226,19 @@ def _calculate_grid_loss(
     )
     grid_loss.cache_internal()
 
-    with logging_configuration.start_span("grid_loss"):
-        result_writer.write(
-            grid_loss,
-            TimeSeriesType.GRID_LOSS,
-            AggregationLevel.TOTAL_GA,
-        )
+    results.grid_loss = grid_loss
 
     positive_grid_loss = grid_loss_aggr.calculate_positive_grid_loss(
         grid_loss, grid_loss_responsible_df
     )
 
-    with logging_configuration.start_span("positive_grid_loss"):
-        result_writer.write(
-            positive_grid_loss,
-            TimeSeriesType.POSITIVE_GRID_LOSS,
-            AggregationLevel.TOTAL_GA,
-        )
+    results.positive_grid_loss = positive_grid_loss
 
     negative_grid_loss = grid_loss_aggr.calculate_negative_grid_loss(
         grid_loss, grid_loss_responsible_df
     )
 
-    with logging_configuration.start_span("negative_grid_loss"):
-        result_writer.write(
-            negative_grid_loss,
-            TimeSeriesType.NEGATIVE_GRID_LOSS,
-            AggregationLevel.TOTAL_GA,
-        )
+    results.negative_grid_loss = negative_grid_loss
 
     return positive_grid_loss, negative_grid_loss
 
@@ -314,172 +274,96 @@ def _calculate_adjust_flex_consumption_per_ga_and_brp_and_es(
 
 
 def _calculate_production(
-    process_type: ProcessType,
-    result_writer: EnergyCalculationResultWriter,
+    calculation_type: CalculationType,
     production_per_ga_and_brp_and_es: EnergyResults,
+    results: EnergyResultsContainer,
 ) -> EnergyResults:
-    if _is_aggregation_or_balance_fixing(process_type):
+    if _is_aggregation_or_balance_fixing(calculation_type):
         # production per balance responsible
-        with logging_configuration.start_span("production_per_ga_and_brp_and_es"):
-            result_writer.write(
-                production_per_ga_and_brp_and_es,
-                TimeSeriesType.PRODUCTION,
-                AggregationLevel.ES_PER_BRP_PER_GA,
-            )
+        results.production_per_ga_and_brp_and_es = production_per_ga_and_brp_and_es
 
-        production_per_ga_and_brp = grouping_aggr.aggregate_per_ga_and_brp(
+        results.production_per_ga_and_brp = grouping_aggr.aggregate_per_ga_and_brp(
             production_per_ga_and_brp_and_es
         )
 
-        with logging_configuration.start_span("production_per_ga_and_brp"):
-            result_writer.write(
-                production_per_ga_and_brp,
-                TimeSeriesType.PRODUCTION,
-                AggregationLevel.BRP_PER_GA,
-            )
-
     # production per energy supplier
-    production_per_ga_and_es = grouping_aggr.aggregate_per_ga_and_es(
+    results.production_per_ga_and_es = grouping_aggr.aggregate_per_ga_and_es(
         production_per_ga_and_brp_and_es
     )
 
-    with logging_configuration.start_span("production_per_ga_and_es"):
-        result_writer.write(
-            production_per_ga_and_es,
-            TimeSeriesType.PRODUCTION,
-            AggregationLevel.ES_PER_GA,
-        )
-
     # production per grid area
-    production_per_ga = grouping_aggr.aggregate_per_ga(production_per_ga_and_brp_and_es)
+    results.production_per_ga = grouping_aggr.aggregate_per_ga(
+        production_per_ga_and_brp_and_es
+    )
 
-    with logging_configuration.start_span("production_per_ga"):
-        result_writer.write(
-            production_per_ga, TimeSeriesType.PRODUCTION, AggregationLevel.TOTAL_GA
-        )
-
-    return production_per_ga
+    return results.production_per_ga
 
 
 def _calculate_flex_consumption(
-    process_type: ProcessType,
-    result_writer: EnergyCalculationResultWriter,
+    calculation_type: CalculationType,
     flex_consumption_per_ga_and_brp_and_es: EnergyResults,
+    results: EnergyResultsContainer,
 ) -> None:
     # flex consumption per grid area
-    flex_consumption_per_ga = grouping_aggr.aggregate_per_ga(
+    results.flex_consumption_per_ga = grouping_aggr.aggregate_per_ga(
         flex_consumption_per_ga_and_brp_and_es
     )
-
-    with logging_configuration.start_span("flex_consumption_per_ga"):
-        result_writer.write(
-            flex_consumption_per_ga,
-            TimeSeriesType.FLEX_CONSUMPTION,
-            AggregationLevel.TOTAL_GA,
-        )
 
     # flex consumption per energy supplier
-    flex_consumption_per_ga_and_es = grouping_aggr.aggregate_per_ga_and_es(
+    results.flex_consumption_per_ga_and_es = grouping_aggr.aggregate_per_ga_and_es(
         flex_consumption_per_ga_and_brp_and_es
     )
 
-    with logging_configuration.start_span("flex_consumption_per_ga_and_es"):
-        result_writer.write(
-            flex_consumption_per_ga_and_es,
-            TimeSeriesType.FLEX_CONSUMPTION,
-            AggregationLevel.ES_PER_GA,
-        )
-
     # flex consumption per balance responsible
-    if _is_aggregation_or_balance_fixing(process_type):
-        with logging_configuration.start_span("flex_consumption_per_ga_and_brp_and_es"):
-            result_writer.write(
-                flex_consumption_per_ga_and_brp_and_es,
-                TimeSeriesType.FLEX_CONSUMPTION,
-                AggregationLevel.ES_PER_BRP_PER_GA,
-            )
+    if _is_aggregation_or_balance_fixing(calculation_type):
+        results.flex_consumption_per_ga_and_brp_and_es = (
+            flex_consumption_per_ga_and_brp_and_es
+        )
 
         flex_consumption_per_ga_and_brp = grouping_aggr.aggregate_per_ga_and_brp(
             flex_consumption_per_ga_and_brp_and_es
         )
 
-        with logging_configuration.start_span("flex_consumption_per_ga_and_brp"):
-            result_writer.write(
-                flex_consumption_per_ga_and_brp,
-                TimeSeriesType.FLEX_CONSUMPTION,
-                AggregationLevel.BRP_PER_GA,
-            )
+        results.flex_consumption_per_ga_and_brp = flex_consumption_per_ga_and_brp
 
 
 def _calculate_non_profiled_consumption(
-    process_type: ProcessType,
-    result_writer: EnergyCalculationResultWriter,
+    calculation_type: CalculationType,
     consumption_per_ga_and_brp_and_es: EnergyResults,
+    results: EnergyResultsContainer,
 ) -> None:
     # Non-profiled consumption per balance responsible
-    if _is_aggregation_or_balance_fixing(process_type):
+    if _is_aggregation_or_balance_fixing(calculation_type):
         consumption_per_ga_and_brp = grouping_aggr.aggregate_per_ga_and_brp(
             consumption_per_ga_and_brp_and_es
         )
 
-        with logging_configuration.start_span("consumption_per_ga_and_brp"):
-            result_writer.write(
-                consumption_per_ga_and_brp,
-                TimeSeriesType.NON_PROFILED_CONSUMPTION,
-                AggregationLevel.BRP_PER_GA,
-            )
-
-        with logging_configuration.start_span("consumption_per_ga_and_brp_and_es"):
-            result_writer.write(
-                consumption_per_ga_and_brp_and_es,
-                TimeSeriesType.NON_PROFILED_CONSUMPTION,
-                AggregationLevel.ES_PER_BRP_PER_GA,
-            )
+        results.consumption_per_ga_and_brp = consumption_per_ga_and_brp
+        results.consumption_per_ga_and_brp_and_es = consumption_per_ga_and_brp_and_es
 
     # Non-profiled consumption per energy supplier
-    consumption_per_ga_and_es = grouping_aggr.aggregate_per_ga_and_es(
+    results.consumption_per_ga_and_es = grouping_aggr.aggregate_per_ga_and_es(
         consumption_per_ga_and_brp_and_es
     )
-
-    with logging_configuration.start_span("consumption_per_ga_and_es"):
-        result_writer.write(
-            consumption_per_ga_and_es,
-            TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            AggregationLevel.ES_PER_GA,
-        )
 
     # Non-profiled consumption per grid area
-    consumption_per_ga = grouping_aggr.aggregate_per_ga(
+    results.consumption_per_ga = grouping_aggr.aggregate_per_ga(
         consumption_per_ga_and_brp_and_es
     )
-
-    with logging_configuration.start_span("consumption_per_ga"):
-        result_writer.write(
-            consumption_per_ga,
-            TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            AggregationLevel.TOTAL_GA,
-        )
 
 
 def _calculate_total_consumption(
-    result_writer: EnergyCalculationResultWriter,
     production_per_ga: EnergyResults,
     net_exchange_per_ga: EnergyResults,
+    results: EnergyResultsContainer,
 ) -> None:
-    total_consumption = grid_loss_aggr.calculate_total_consumption(
+    results.total_consumption = grid_loss_aggr.calculate_total_consumption(
         production_per_ga, net_exchange_per_ga
     )
 
-    with logging_configuration.start_span("total_consumption"):
-        result_writer.write(
-            total_consumption,
-            TimeSeriesType.TOTAL_CONSUMPTION,
-            AggregationLevel.TOTAL_GA,
-        )
 
-
-def _is_aggregation_or_balance_fixing(process_type: ProcessType) -> bool:
+def _is_aggregation_or_balance_fixing(calculation_type: CalculationType) -> bool:
     return (
-        process_type == ProcessType.AGGREGATION
-        or process_type == ProcessType.BALANCE_FIXING
+        calculation_type == CalculationType.AGGREGATION
+        or calculation_type == CalculationType.BALANCE_FIXING
     )

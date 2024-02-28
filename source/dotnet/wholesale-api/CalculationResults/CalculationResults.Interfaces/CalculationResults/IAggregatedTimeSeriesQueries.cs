@@ -23,10 +23,4 @@ public interface IAggregatedTimeSeriesQueries
     /// </summary>
     /// <returns>Returns an empty list if the aggregated time series does not contain any points.</returns>
     IAsyncEnumerable<AggregatedTimeSeries> GetAsync(AggregatedTimeSeriesQueryParameters parameters);
-
-    /// <summary>
-    /// Gets the most recent aggregated time series for the last correction settlements.
-    /// </summary>
-    /// <returns>Returns an empty list if the aggregated time series does not contain any points.</returns>
-    IAsyncEnumerable<AggregatedTimeSeries> GetLatestCorrectionForGridAreaAsync(AggregatedTimeSeriesQueryParameters parameters);
 }

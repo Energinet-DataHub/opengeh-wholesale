@@ -36,7 +36,7 @@ public class SettlementReportController : V3ControllerBase
     /// Downloads a compressed settlement report for the specified parameters.
     /// </summary>
     /// <param name="gridAreaCodes">A list of grid areas to create the settlement report for.</param>
-    /// <param name="processType">Currently expects BalanceFixing only.</param>
+    /// <param name="calculationType">Currently expects BalanceFixing only.</param>
     /// <param name="periodStart">The start date and time of the period covered by the settlement report.</param>
     /// <param name="periodEnd">The end date and time of the period covered by the settlement report.</param>
     /// <param name="energySupplier">Optional GLN/EIC identifier for an energy supplier.</param>
@@ -47,7 +47,7 @@ public class SettlementReportController : V3ControllerBase
     [Authorize(Roles = Permissions.SettlementReportsManage)]
     public Task DownloadSettlementReportAsync(
         [Required, FromQuery] string[] gridAreaCodes,
-        [Required, FromQuery] ProcessType processType,
+        [Required, FromQuery] CalculationType calculationType,
         [Required, FromQuery] DateTimeOffset periodStart,
         [Required, FromQuery] DateTimeOffset periodEnd,
         [FromQuery] string? energySupplier,
@@ -59,7 +59,7 @@ public class SettlementReportController : V3ControllerBase
                 {
                     var settlementReportFileName = GetSettlementReportFileName(
                         gridAreaCodes,
-                        processType,
+                        calculationType,
                         periodStart,
                         periodEnd,
                         energySupplier);
@@ -70,7 +70,7 @@ public class SettlementReportController : V3ControllerBase
                     return Response.BodyWriter.AsStream();
                 },
                 gridAreaCodes,
-                ProcessTypeMapper.Map(processType),
+                CalculationTypeMapper.Map(calculationType),
                 periodStart,
                 periodEnd,
                 energySupplier,
@@ -78,55 +78,55 @@ public class SettlementReportController : V3ControllerBase
     }
 
     /// <summary>
-    /// Returns a stream containing the settlement report for batch with <paramref name="batchId" /> and <paramref name="gridAreaCode" />.
+    /// Returns a stream containing the settlement report for calculation with <paramref name="calculationId" /> and <paramref name="gridAreaCode" />.
     /// </summary>
-    /// <param name="batchId">BatchId</param>
+    /// <param name="calculationId">CalculationId</param>
     /// <param name="gridAreaCode">GridAreaCode</param>
     [HttpGet(Name = "GetSettlementReportAsStreamAsync")]
     [MapToApiVersion(Version)]
     [BinaryContent]
     [Authorize(Roles = Permissions.SettlementReportsManage)]
-    public async Task GetAsync([Required] Guid batchId, [Required] string gridAreaCode)
+    public async Task GetAsync([Required] Guid calculationId, [Required] string gridAreaCode)
     {
         var outputStream = Response.BodyWriter.AsStream();
 
         await using (outputStream.ConfigureAwait(false))
         {
             await _settlementReportClient
-                .GetSettlementReportAsync(batchId, gridAreaCode, outputStream)
+                .GetSettlementReportAsync(calculationId, gridAreaCode, outputStream)
                 .ConfigureAwait(false);
         }
     }
 
     /// <summary>
-    /// Returns a stream containing the settlement report for a batch matching <paramref name="batchId"/>
+    /// Returns a stream containing the settlement report for a calculation matching <paramref name="calculationId"/>
     /// </summary>
-    /// <param name="batchId">BatchId</param>
+    /// <param name="calculationId">CalculationId</param>
     [HttpGet("ZippedBasisDataStream")]
     [MapToApiVersion(Version)]
     [BinaryContent]
     [Authorize(Roles = Permissions.SettlementReportsManage)]
-    public async Task<IActionResult> GetSettlementReportAsync([Required] Guid batchId)
+    public async Task<IActionResult> GetSettlementReportAsync([Required] Guid calculationId)
     {
-        var report = await _settlementReportClient.GetSettlementReportAsync(batchId).ConfigureAwait(false);
+        var report = await _settlementReportClient.GetSettlementReportAsync(calculationId).ConfigureAwait(false);
         return Ok(report.Stream);
     }
 
     private static string GetSettlementReportFileName(
         string[] gridAreaCode,
-        ProcessType processType,
+        CalculationType calculationType,
         DateTimeOffset periodStart,
         DateTimeOffset periodEnd,
         string? energySupplier)
     {
         var energySupplierString = energySupplier is null ? string.Empty : $"_{energySupplier}";
         var gridAreaCodeString = string.Join("+", gridAreaCode);
-        var processTypeString = processType switch
+        var calculationTypeString = calculationType switch
         {
-            ProcessType.BalanceFixing => "D04",
+            CalculationType.BalanceFixing => "D04",
             _ => string.Empty,
         };
 
-        return $"Result_{gridAreaCodeString}{energySupplierString}_{periodStart:dd-MM-yyyy}_{periodEnd:dd-MM-yyyy}_{processTypeString}.zip";
+        return $"Result_{gridAreaCodeString}{energySupplierString}_{periodStart:dd-MM-yyyy}_{periodEnd:dd-MM-yyyy}_{calculationTypeString}.zip";
     }
 }

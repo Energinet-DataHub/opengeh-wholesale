@@ -12,27 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 
 public class CompletedCalculationFactory : ICompletedCalculationFactory
 {
-    public IEnumerable<CompletedCalculation> CreateFromBatches(IEnumerable<CalculationDto> completedBatchDtos)
+    public IEnumerable<CompletedCalculation> CreateFromCalculations(IEnumerable<CalculationDto> completedCalculationDtos)
     {
-        return completedBatchDtos.Select(CreateFromBatch);
+        return completedCalculationDtos.Select(CreateFromCalculation);
     }
 
-    public CompletedCalculation CreateFromBatch(CalculationDto completedCalculationDto)
+    public CompletedCalculation CreateFromCalculation(CalculationDto completedCalculationDto)
     {
         if (completedCalculationDto.ExecutionTimeEnd == null)
-            throw new ArgumentNullException($"{nameof(CalculationDto.ExecutionTimeEnd)} should not be null for a completed batch.");
+            throw new ArgumentNullException($"{nameof(CalculationDto.ExecutionTimeEnd)} should not be null for a completed calculation.");
 
         return new CompletedCalculation(
-            completedCalculationDto.BatchId,
+            completedCalculationDto.CalculationId,
             completedCalculationDto.GridAreaCodes.ToList(),
-            completedCalculationDto.ProcessType,
+            completedCalculationDto.CalculationType,
             completedCalculationDto.PeriodStart.ToInstant(),
             completedCalculationDto.PeriodEnd.ToInstant(),
             completedTime: completedCalculationDto.ExecutionTimeEnd.Value.ToInstant());

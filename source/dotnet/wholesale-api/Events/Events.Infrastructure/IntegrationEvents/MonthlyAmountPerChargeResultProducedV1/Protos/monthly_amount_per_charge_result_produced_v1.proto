@@ -68,6 +68,11 @@ message MonthlyAmountPerChargeResultProducedV1 {
    */
   optional DecimalValue amount = 13;
 
+  /*
+   * The version of the calculation result. It is a positive integer (int64).
+  */
+  int64 calculation_result_version = 14;
+
   // ---------------------------- NESTED TYPES BELOW ----------------------------------------
 
   enum CalculationType {

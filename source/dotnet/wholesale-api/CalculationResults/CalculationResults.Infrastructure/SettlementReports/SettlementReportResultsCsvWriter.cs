@@ -50,9 +50,9 @@ public sealed class SettlementReportResultsCsvWriter : ISettlementReportResultsC
             Map(r => r.GridArea)
                 .Name("METERINGGRIDAREAID");
 
-            Map(r => r.ProcessType)
+            Map(r => r.CalculationType)
                 .Name("ENERGYBUSINESSPROCESS")
-                .Convert(ConvertProcessTypeToCsvField);
+                .Convert(ConvertCalculationTypeToCsvField);
 
             Map(r => r.Time)
                 .Name("STARTDATETIME");
@@ -73,12 +73,12 @@ public sealed class SettlementReportResultsCsvWriter : ISettlementReportResultsC
                 .Data.TypeConverterOptions.Formats = new[] { "0.000" };
         }
 
-        private static string ConvertProcessTypeToCsvField(ConvertToStringArgs<SettlementReportResultRow> row)
+        private static string ConvertCalculationTypeToCsvField(ConvertToStringArgs<SettlementReportResultRow> row)
         {
-            return row.Value.ProcessType switch
+            return row.Value.CalculationType switch
             {
-                ProcessType.BalanceFixing => "D04",
-                ProcessType.Aggregation => throw new NotSupportedException(),
+                CalculationType.BalanceFixing => "D04",
+                CalculationType.Aggregation => throw new NotSupportedException(),
                 _ => throw new ArgumentOutOfRangeException(nameof(row)),
             };
         }

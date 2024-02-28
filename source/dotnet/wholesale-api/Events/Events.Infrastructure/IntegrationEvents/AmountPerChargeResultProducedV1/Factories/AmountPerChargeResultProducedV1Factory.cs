@@ -47,6 +47,7 @@ public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProd
             SettlementMethod = SettlementMethodMapper.MapSettlementMethod(result.SettlementMethod),
             Currency = Contracts.IntegrationEvents.AmountPerChargeResultProducedV1.Types.Currency.Dkk,
             IsTax = result.IsTax,
+            CalculationResultVersion = result.Version,
         };
 
         amountPerChargeResultProducedV1.TimeSeriesPoints
