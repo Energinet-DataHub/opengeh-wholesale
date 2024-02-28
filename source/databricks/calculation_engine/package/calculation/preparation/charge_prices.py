@@ -23,7 +23,6 @@ from package.constants import Colname
 class ChargePrices(DataFrameWrapper):
     """
     Represents the charge prices.
-    All periods are clamped to least common period of the metering point and the charge master data period.
     """
 
     def __init__(self, df: DataFrame):
