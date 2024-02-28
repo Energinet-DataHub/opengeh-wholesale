@@ -19,7 +19,6 @@ using Asp.Versioning.ApiExplorer;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
-using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
@@ -29,8 +28,6 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks.ServiceBus;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
-using Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
-using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.Extensions.DependencyInjection;
 using Microsoft.Extensions.Azure;
 using Microsoft.OpenApi.Models;
@@ -125,9 +122,24 @@ public class Startup
         });
 
         services.AddJwtTokenSecurityForWebApp(Configuration);
-        AddHealthCheck(services);
-
         services.AddUserAuthentication<FrontendUser, FrontendUserProvider>();
+
+        var serviceBusOptions = Configuration.Get<ServiceBusOptions>()!;
+        services.AddHealthChecks()
+            .AddLiveCheck()
+            .AddAzureServiceBusSubscriptionUsingWebSockets(
+                serviceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING,
+                serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
+                serviceBusOptions.INTEGRATIONEVENTS_SUBSCRIPTION_NAME,
+                name: HealthCheckNames.IntegrationEventsTopicSubscription)
+            .AddAzureServiceBusQueueUsingWebSockets(
+                serviceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING,
+                serviceBusOptions.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME,
+                name: HealthCheckNames.WholesaleInboxEventsQueue)
+            .AddAzureServiceBusQueueUsingWebSockets(
+                serviceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING,
+                serviceBusOptions.EDI_INBOX_MESSAGE_QUEUE_NAME,
+                name: HealthCheckNames.EdiInboxEventsQueue);
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
@@ -171,25 +183,5 @@ public class Startup
             endpoints.MapLiveHealthChecks();
             endpoints.MapReadyHealthChecks();
         });
-    }
-
-    private void AddHealthCheck(IServiceCollection services)
-    {
-        var serviceBusOptions = Configuration.Get<ServiceBusOptions>()!;
-        services.AddHealthChecks()
-            .AddLiveCheck()
-            .AddAzureServiceBusSubscriptionUsingWebSockets(
-                serviceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING,
-                serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
-                serviceBusOptions.INTEGRATIONEVENTS_SUBSCRIPTION_NAME,
-                name: HealthCheckNames.IntegrationEventsTopicSubscription)
-            .AddAzureServiceBusQueueUsingWebSockets(
-                serviceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING,
-                serviceBusOptions.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME,
-                name: HealthCheckNames.WholesaleInboxEventsQueue)
-            .AddAzureServiceBusQueueUsingWebSockets(
-                serviceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING,
-                serviceBusOptions.EDI_INBOX_MESSAGE_QUEUE_NAME,
-                name: HealthCheckNames.EdiInboxEventsQueue);
     }
 }
