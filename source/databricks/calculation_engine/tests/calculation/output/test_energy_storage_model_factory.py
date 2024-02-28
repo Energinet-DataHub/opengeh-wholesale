@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import uuid
+from copy import copy
 from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import Any, List
@@ -70,6 +71,16 @@ OTHER_SETTLEMENT_METHOD = e.SettlementMethod.NON_PROFILED
 
 
 TABLE_NAME = f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}"
+
+
+@pytest.fixture(scope="module")
+def args(any_calculator_args: CalculatorArgs) -> CalculatorArgs:
+    args = copy(any_calculator_args)
+    args.calculation_type = DEFAULT_CALCULATION_TYPE
+    args.calculation_id = str(uuid.uuid4())
+    args.calculation_execution_time_start = DEFAULT_CALCULATION_EXECUTION_START
+
+    return args
 
 
 def _create_result_row(
@@ -152,7 +163,7 @@ def test__write__writes_aggregation_level(
     spark: SparkSession,
     aggregation_level: e.AggregationLevel,
     migrations_executed: None,
-    any_calculator_args: CalculatorArgs,
+    args: CalculatorArgs,
 ) -> None:
     # Arrange
     row = [_create_result_row()]
@@ -160,15 +171,14 @@ def test__write__writes_aggregation_level(
 
     # Act
     actual = sut.create(
-        any_calculator_args,
+        args,
         result_df,
         e.TimeSeriesType.PRODUCTION,
         aggregation_level,
     )
 
     # Assert
-    actual_row = actual.collect()[0]
-    assert actual_row[Colname.aggregation_level] == aggregation_level.value
+    assert actual.collect()[0][Colname.aggregation_level] == aggregation_level.value
 
 
 @pytest.mark.parametrize(
@@ -198,20 +208,15 @@ def test__write__writes_column(
     column_name: str,
     column_value: Any,
     migrations_executed: None,
-    any_calculator_args: CalculatorArgs,
+    args: CalculatorArgs,
 ) -> None:
     # Arrange
     row = [_create_result_row()]
     result_df = _create_result_df(spark, row)
-    any_calculator_args.calculation_id = DEFAULT_CALCULATION_ID
-    any_calculator_args.calculation_type = DEFAULT_CALCULATION_TYPE
-    any_calculator_args.calculation_execution_time_start = (
-        DEFAULT_CALCULATION_EXECUTION_START
-    )
 
     # Act
     actual = sut.create(
-        any_calculator_args,
+        args,
         result_df,
         DEFAULT_TIME_SERIES_TYPE,
         DEFAULT_AGGREGATION_LEVEL,
@@ -225,21 +230,16 @@ def test__write__writes_columns_matching_contract(
     spark: SparkSession,
     contracts_path: str,
     migrations_executed: None,
-    any_calculator_args: CalculatorArgs,
+    args: CalculatorArgs,
 ) -> None:
     # Arrange
     contract_path = f"{contracts_path}/energy-result-table-column-names.json"
     row = [_create_result_row()]
     result_df = _create_result_df(spark, row)
-    any_calculator_args.calculation_id = DEFAULT_CALCULATION_ID
-    any_calculator_args.calculation_type = DEFAULT_CALCULATION_TYPE
-    any_calculator_args.calculation_execution_time_start = (
-        DEFAULT_CALCULATION_EXECUTION_START
-    )
 
     # Act
     actual = sut.create(
-        any_calculator_args,
+        args,
         result_df,
         DEFAULT_TIME_SERIES_TYPE,
         DEFAULT_AGGREGATION_LEVEL,
@@ -253,20 +253,15 @@ def test__write__writes_calculation_result_id(
     spark: SparkSession,
     contracts_path: str,
     migrations_executed: None,
-    any_calculator_args: CalculatorArgs,
+    args: CalculatorArgs,
 ) -> None:
     # Arrange
     result_df = _create_result_df_corresponding_to_four_calculation_results(spark)
     EXPECTED_NUMBER_OF_CALCULATION_RESULT_IDS = 4
-    any_calculator_args.calculation_id = str(uuid.uuid4())
-    any_calculator_args.calculation_type = DEFAULT_CALCULATION_TYPE
-    any_calculator_args.calculation_execution_time_start = (
-        DEFAULT_CALCULATION_EXECUTION_START
-    )
 
     # Act
     actual = sut.create(
-        any_calculator_args,
+        args,
         result_df,
         DEFAULT_TIME_SERIES_TYPE,
         DEFAULT_AGGREGATION_LEVEL,
@@ -299,7 +294,7 @@ def test__write__when_rows_belong_to_different_results__adds_different_calculati
     value: Any,
     other_value: Any,
     migrations_executed: None,
-    any_calculator_args: CalculatorArgs,
+    args: CalculatorArgs,
 ) -> None:
     # Arrange
     row1 = _create_result_row()
@@ -308,15 +303,9 @@ def test__write__when_rows_belong_to_different_results__adds_different_calculati
     row2[column_name] = other_value
     result_df = _create_result_df(spark, [row1, row2])
 
-    any_calculator_args.calculation_id = str(uuid.uuid4())
-    any_calculator_args.calculation_type = DEFAULT_CALCULATION_TYPE
-    any_calculator_args.calculation_execution_time_start = (
-        DEFAULT_CALCULATION_EXECUTION_START
-    )
-
     # Act
     actual = sut.create(
-        any_calculator_args,
+        args,
         result_df,
         DEFAULT_TIME_SERIES_TYPE,
         DEFAULT_AGGREGATION_LEVEL,
@@ -360,24 +349,18 @@ def test__write__when_rows_belong_to_same_result__adds_same_calculation_result_i
     value: Any,
     other_value: Any,
     migrations_executed: None,
-    any_calculator_args: CalculatorArgs,
+    args: CalculatorArgs,
 ) -> None:
     # Arrange
-    row1 = _create_result_row()
+    row1 = _create_result_row(grid_area="804")
     row1[column_name] = value
-    row2 = _create_result_row()
+    row2 = _create_result_row(grid_area="803")
     row2[column_name] = other_value
     result_df = _create_result_df(spark, [row1, row2])
 
-    any_calculator_args.calculation_id = str(uuid.uuid4())
-    any_calculator_args.calculation_type = DEFAULT_CALCULATION_TYPE
-    any_calculator_args.calculation_execution_time_start = (
-        DEFAULT_CALCULATION_EXECUTION_START
-    )
-
     # Act
     actual = sut.create(
-        any_calculator_args,
+        args,
         result_df,
         DEFAULT_TIME_SERIES_TYPE,
         DEFAULT_AGGREGATION_LEVEL,
