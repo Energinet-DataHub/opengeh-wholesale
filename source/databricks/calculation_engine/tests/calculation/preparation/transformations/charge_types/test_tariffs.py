@@ -721,7 +721,7 @@ def test__get_tariff_charges__per_day_only_accepts_time_series_and_change_times_
     assert actual.count() == expected_rows
 
 
-def test__get_tariff_charges__can_handle_missing_charges(
+def test__get_tariff_charges__can_handle_missing_charge_prices(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -730,10 +730,12 @@ def test__get_tariff_charges__can_handle_missing_charges(
         factory.create_time_series_row(observation_time=datetime(2020, 1, 1, 0)),
     ]
     charge_master_data_rows = [
-        factory.create_charge_master_data_row(),
+        factory.create_charge_master_data_row(
+            from_date=datetime(2019, 12, 31, 23), to_date=datetime(2020, 1, 1, 0)
+        ),
     ]
     charge_prices_rows = [
-        factory.create_charge_prices_row(),
+        factory.create_charge_prices_row(charge_time=datetime(2019, 12, 31, 23)),
     ]
     charge_link_metering_points_rows = [
         factory.create_charge_link_metering_point_periods_row(
@@ -780,7 +782,9 @@ def test__get_tariff_charges__can_handle_missing_all_charges_prices(
         factory.create_time_series_row(observation_time=datetime(2020, 1, 1, 0)),
     ]
     charge_master_data_rows = [
-        factory.create_charge_master_data_row(),
+        factory.create_charge_master_data_row(
+            from_date=datetime(2019, 12, 31, 23), to_date=datetime(2020, 1, 1, 0)
+        ),
     ]
     charge_link_metering_points_rows = [
         factory.create_charge_link_metering_point_periods_row(

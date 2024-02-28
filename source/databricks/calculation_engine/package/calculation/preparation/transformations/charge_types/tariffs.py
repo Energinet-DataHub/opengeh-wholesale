@@ -36,6 +36,9 @@ def get_tariff_charges(
     resolution: ChargeResolution,
     time_zone: str,
 ) -> DataFrame:
+    """
+    metering_point_time_series always hava a row for each resolution time in the given period.
+    """
     tariff_links = charge_link_metering_points.filter_by_charge_type(ChargeType.TARIFF)
     tariff_master_data = charge_master_data.filter_by_charge_type(ChargeType.TARIFF)
     tariff_prices = charge_prices.filter_by_charge_type(ChargeType.TARIFF)
