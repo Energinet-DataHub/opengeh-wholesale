@@ -19,7 +19,7 @@ from pyspark.sql.dataframe import DataFrame
 from package.calculation.preparation.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
 )
-from package.codelists import ChargeType
+from package.codelists import ChargeType, SettlementMethod, MeteringPointType
 from package.constants import Colname
 
 
@@ -29,9 +29,10 @@ def get_subscription_charges(
     charge_link_metering_point_periods: ChargeLinkMeteringPointPeriods,
     time_zone: str,
 ) -> DataFrame:
-    subscription_links = _filter_subscriptions(charge_link_metering_point_periods.df)
     subscription_prices = _filter_subscriptions(charge_prices)
     subscription_master_data = _filter_subscriptions(charge_master_data)
+    subscription_links = _filter_subscriptions(charge_link_metering_point_periods.df)
+    subscription_links = _filter_on_flex_consumption(subscription_links)
 
     subscription_master_data_and_prices = _join_with_prices(
         subscription_master_data, subscription_prices, time_zone
@@ -46,6 +47,15 @@ def get_subscription_charges(
 
 def _filter_subscriptions(df: DataFrame) -> DataFrame:
     return df.filter(f.col(Colname.charge_type) == ChargeType.SUBSCRIPTION.value)
+
+
+def _filter_on_flex_consumption(
+    subscription_links: DataFrame,
+) -> DataFrame:
+    subscription_links = subscription_links.filter(
+        f.col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value
+    ).filter(f.col(Colname.settlement_method) == SettlementMethod.FLEX.value)
+    return subscription_links
 
 
 def _join_with_prices(
