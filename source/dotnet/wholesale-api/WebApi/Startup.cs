@@ -106,11 +106,14 @@ public class Startup
         });
         services.ConfigureOptions<ConfigureSwaggerOptions>();
 
-        // Options
-        services.AddOptions<ServiceBusOptions>().Bind(Configuration);
-        services.AddOptions<DeltaTableOptions>();
+        // Authentication/authorization
+        services
+            .AddTokenAuthenticationForWebApp(Configuration)
+            .AddUserAuthenticationForWebApp<FrontendUser, FrontendUserProvider>()
+            .AddPermissionAuthorization();
 
         // ServiceBus
+        services.AddOptions<ServiceBusOptions>().Bind(Configuration);
         services.AddAzureClients(builder =>
         {
             builder
@@ -120,11 +123,6 @@ public class Startup
                     options.TransportType = ServiceBusTransportType.AmqpWebSockets;
                 });
         });
-
-        services
-            .AddTokenAuthenticationForWebApp(Configuration)
-            .AddUserAuthenticationForWebApp<FrontendUser, FrontendUserProvider>()
-            .AddPermissionAuthorization();
 
         var serviceBusOptions = Configuration.Get<ServiceBusOptions>()!;
         services.AddHealthChecks()
