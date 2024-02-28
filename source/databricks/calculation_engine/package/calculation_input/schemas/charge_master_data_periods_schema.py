@@ -55,13 +55,13 @@ charge_master_data_periods_schema = StructType(
         StructField("is_tax", BooleanType(), False),
         # The start date of the master data period. The start date must be the UTC time of the beginning of a date in the given timezone/DST.
         # The date is inclusive.
-        # Master data periods with the same combination of charge code, charge type and charge owner id must not overlap
+        # Master data periods with the same combination of charge code, charge type and charge owner id must not overlap in time
         StructField("from_date", TimestampType(), False),
         # The to-date of the master data period. The to-date must be the UTC time of the beginning of a date in the given timezone/DST.
         # The moment is exclusive.
         # All but the `to_date` of the last master data period must have value.
         # If the last master data period has a `to_date` value it means that the charge is stopped.
-        # Master data periods with the same combination of charge code, charge type and charge owner id must not overlap
+        # Master data periods with the same combination of charge code, charge type and charge owner id must not overlap in time
         StructField("to_date", TimestampType(), True),
     ]
 )
