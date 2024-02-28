@@ -77,9 +77,7 @@ public class EnergyResultQueries : IEnergyResultQueries
             {
                 yield return EnergyResultFactory.CreateEnergyResult(currentRow!, timeSeriesPoints, periodStart, periodEnd, version);
                 resultCount++;
-#pragma warning disable SA1010 // Opening square brackets should be spaced correctly
                 timeSeriesPoints = [];
-#pragma warning restore SA1010 // Opening square brackets should be spaced correctly
             }
 
             timeSeriesPoints.Add(timeSeriesPoint);

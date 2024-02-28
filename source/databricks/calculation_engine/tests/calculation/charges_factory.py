@@ -14,15 +14,15 @@
 
 from datetime import datetime
 from decimal import Decimal
-from pyspark.sql import Row, SparkSession
+from pyspark.sql import Row, SparkSession, DataFrame
 
 from package.calculation.preparation.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
     charge_link_metering_point_periods_schema,
 )
-from package.calculation.preparation.charge_period_prices import (
-    charge_period_prices_schema,
-    ChargePeriodPrices,
+from package.calculation.wholesale.schemas.charges_schema import (
+    charge_prices_schema,
+    charges_master_data_schema,
 )
 from package.codelists import ChargeType
 from package.constants import Colname
@@ -86,8 +86,8 @@ def create_charge_master_data_row(
         Colname.charge_code: charge_code,
         Colname.charge_type: charge_type.value,
         Colname.charge_owner: charge_owner,
-        Colname.charge_tax: charge_tax,
         Colname.resolution: resolution.value,
+        Colname.charge_tax: charge_tax,
         Colname.from_date: from_date,
         Colname.to_date: to_date,
     }
@@ -106,9 +106,7 @@ def create_charge_prices_row(
 
     row = {
         Colname.charge_key: charge_key,
-        Colname.charge_code: charge_code,
         Colname.charge_type: charge_type.value,
-        Colname.charge_owner: charge_owner,
         Colname.charge_price: charge_price,
         Colname.charge_time: charge_time,
     }
@@ -135,6 +133,7 @@ def create_charge_link_metering_point_periods_row(
 
     row = {
         Colname.charge_key: charge_key,
+        Colname.charge_type: charge_type.value,
         Colname.metering_point_id: metering_point_id,
         Colname.charge_quantity: charge_quantity,
         Colname.from_date: from_date,
@@ -148,17 +147,6 @@ def create_charge_link_metering_point_periods_row(
     return Row(**row)
 
 
-def create_charge_period_prices(
-    spark: SparkSession, data: None | Row | list[Row] = None
-) -> ChargePeriodPrices:
-    if data is None:
-        data = [create_charge_link_metering_point_periods_row()]
-    elif isinstance(data, Row):
-        data = [data]
-    df = spark.createDataFrame(data, charge_period_prices_schema)
-    return ChargePeriodPrices(df)
-
-
 def create_charge_link_metering_point_periods(
     spark: SparkSession, data: None | Row | list[Row] = None
 ) -> ChargeLinkMeteringPointPeriods:
@@ -168,3 +156,25 @@ def create_charge_link_metering_point_periods(
         data = [data]
     df = spark.createDataFrame(data, charge_link_metering_point_periods_schema)
     return ChargeLinkMeteringPointPeriods(df)
+
+
+def create_charge_prices(
+    spark: SparkSession, data: None | Row | list[Row] = None
+) -> DataFrame:
+    if data is None:
+        data = [create_charge_prices_row()]
+    elif isinstance(data, Row):
+        data = [data]
+    df = spark.createDataFrame(data, charge_prices_schema)
+    return df
+
+
+def create_charge_master_data(
+    spark: SparkSession, data: None | Row | list[Row] = None
+) -> DataFrame:
+    if data is None:
+        data = [create_charge_master_data_row()]
+    elif isinstance(data, Row):
+        data = [data]
+    df = spark.createDataFrame(data, charges_master_data_schema)
+    return df
