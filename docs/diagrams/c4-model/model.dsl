@@ -15,7 +15,7 @@ wholesaleDomain = group "Wholesale" {
         this -> wholesaleDataLake "Read inputs / write results"
     }
     wholesaleDb = container "Wholesale Database" {
-        description "Meta data of calculations and orchestrations"
+        description "Meta data of calculations"
         technology "SQL Database Schema"
         tags "Data Storage" "Microsoft Azure - SQL Database" "Mandalorian"
     }
