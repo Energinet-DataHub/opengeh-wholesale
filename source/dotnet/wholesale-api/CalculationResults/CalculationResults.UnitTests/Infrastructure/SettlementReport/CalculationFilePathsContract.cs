@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Test.Core;
+using Energinet.DataHub.Wholesale.Test.Core;
 using YamlDotNet.Serialization.NamingConventions;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SettlementReport;
