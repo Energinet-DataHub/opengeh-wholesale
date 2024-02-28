@@ -33,7 +33,7 @@ def calculate_daily_subscription_amount(
 ) -> DataFrame:
     # calculate price per day
     charges_per_day = calculate_price_per_day(
-        charges_per_day_flex_consumption,
+        subscription_charges,
         calculation_period_start,
         calculation_period_end,
         time_zone,

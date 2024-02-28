@@ -25,6 +25,7 @@ from tests.helpers.test_schemas import (
 from package.codelists import MeteringPointType, SettlementMethod, ChargeType
 from package.calculation.wholesale.subscription_calculators import (
     calculate_daily_subscription_amount,
+    _add_count_of_charges_and_total_daily_charge_price,
 )
 from package.calculation.preparation.transformations import get_subscription_charges
 from calendar import monthrange
@@ -512,7 +513,7 @@ charges_per_day_dataset_4 = [
         (charges_per_day_dataset_4, 1, Decimal("3.22903226")),
     ],
 )
-def test__get_count_of_charges_and_total_daily_charge_price__counts_and_sums_up_amount_per_day(
+def test__add_count_of_charges_and_total_daily_charge_price__counts_and_sums_up_amount_per_day(
     spark, charges_per_day, expected_charge_count, expected_total_daily_charge_price
 ):
     # Arrange
