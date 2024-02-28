@@ -22,6 +22,7 @@ from package.calculation.preparation.transformations import (
     get_subscription_charges,
 )
 from package.calculation.wholesale.schemas.charges_schema import charge_prices_schema
+from package.codelists import MeteringPointType, SettlementMethod
 from package.constants import Colname
 import package.codelists as e
 
@@ -127,6 +128,76 @@ class TestWhenValidInput:
 
         # Assert
         assert actual_subscription.count() == expected_day_count
+
+    @pytest.mark.parametrize(
+        "metering_point_type, settlement_method, expected_included",
+        [
+            (
+                MeteringPointType.CONSUMPTION,
+                SettlementMethod.FLEX,
+                True,
+            ),
+            (
+                MeteringPointType.CONSUMPTION,
+                SettlementMethod.NON_PROFILED,
+                False,
+            ),
+            (
+                MeteringPointType.PRODUCTION,
+                None,
+                False,
+            ),
+            (
+                MeteringPointType.EXCHANGE,
+                None,
+                False,
+            ),
+        ],
+    )
+    def test__returns_only_charges_for_flex_consumption_metering_points(
+        self,
+        spark: SparkSession,
+        metering_point_type: MeteringPointType,
+        settlement_method: SettlementMethod,
+        expected_included: bool,
+    ) -> None:
+        # Arrange
+        charge_link_metering_points_rows = [
+            factory.create_charge_link_metering_point_periods_row(
+                charge_type=e.ChargeType.SUBSCRIPTION,
+                metering_point_type=metering_point_type,
+                settlement_method=settlement_method,
+            ),
+        ]
+        charge_master_data_rows = [
+            factory.create_charge_master_data_row(
+                charge_type=e.ChargeType.SUBSCRIPTION,
+            ),
+        ]
+        charge_prices_rows = [
+            factory.create_charge_prices_row(
+                charge_type=e.ChargeType.SUBSCRIPTION,
+            ),
+        ]
+
+        charge_link_metering_point_periods = (
+            factory.create_charge_link_metering_point_periods(
+                spark, charge_link_metering_points_rows
+            )
+        )
+        charge_master_data = spark.createDataFrame(charge_master_data_rows)
+        charge_prices = spark.createDataFrame(charge_prices_rows)
+
+        # Act
+        actual_subscription = get_subscription_charges(
+            charge_master_data,
+            charge_prices,
+            charge_link_metering_point_periods,
+            DEFAULT_TIME_ZONE,
+        )
+
+        # Assert
+        assert actual_subscription.isEmpty() != expected_included
 
 
 class TestWhenNoPricesForPeriod:
@@ -480,7 +551,7 @@ class TestWhenDaylightSavingTimeChanges:
             ),
         ],
     )
-    def test__returns_result_with_expected_start_and_end_charge_time(
+    def test__returns_result_with_expected_first_and_last_charge_time(
         self,
         spark: SparkSession,
         from_date: datetime,
@@ -530,15 +601,13 @@ class TestWhenDaylightSavingTimeChanges:
             charge_link_metering_point_periods,
             DEFAULT_TIME_ZONE,
         )
-        actual_subscription.show(100)
 
         # Assert
+        actual_charge_times = actual_subscription.orderBy(Colname.charge_time).collect()
+
+        assert actual_subscription.count() == expected_day_count
+        assert actual_charge_times[0][Colname.charge_time] == expected_first_charge_time
         assert (
-            actual_subscription.collect()[0][Colname.charge_time]
-            == expected_first_charge_time
-        )
-        assert (
-            actual_subscription.collect()[-1][Colname.charge_time]
+            actual_charge_times[expected_day_count - 1][Colname.charge_time]
             == expected_last_charge_time
         )
-        assert actual_subscription.count() == expected_day_count

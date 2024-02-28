@@ -28,7 +28,6 @@ from package.codelists import MeteringPointType, SettlementMethod, ChargeType
 from package.calculation.wholesale.subscription_calculators import (
     calculate_daily_subscription_price,
     calculate_price_per_day,
-    filter_on_metering_point_type_and_settlement_method,
     get_count_of_charges_and_total_daily_charge_price,
 )
 from package.calculation.preparation.transformations import get_subscription_charges
@@ -333,87 +332,6 @@ def test__calculate_daily_subscription_price__charge_price_change_with_two_diffe
 
     # Assert
     assert result.collect() == expected.collect()
-
-
-subscription_charges_dataset_1 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        Decimal("200.50"),
-        datetime(2020, 1, 1, 0, 0),
-        MeteringPointType.CONSUMPTION.value,
-        SettlementMethod.FLEX.value,
-        1,
-        1,
-    )
-]
-subscription_charges_dataset_2 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        Decimal("200.50"),
-        datetime(2020, 2, 1, 0, 0),
-        MeteringPointType.PRODUCTION.value,
-        SettlementMethod.FLEX.value,
-        1,
-        1,
-    )
-]
-subscription_charges_dataset_3 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        Decimal("200.50"),
-        datetime(2020, 2, 1, 0, 0),
-        MeteringPointType.CONSUMPTION.value,
-        "001",
-        1,
-        1,
-    )
-]
-subscription_charges_dataset_4 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        Decimal("200.50"),
-        datetime(2020, 2, 1, 0, 0),
-        MeteringPointType.PRODUCTION.value,
-        SettlementMethod.FLEX.value,
-        1,
-        1,
-    )
-]
-
-
-@pytest.mark.parametrize(
-    "subscription_charges,expected",
-    [
-        (subscription_charges_dataset_1, 1),
-        (subscription_charges_dataset_2, 0),
-        (subscription_charges_dataset_3, 0),
-        (subscription_charges_dataset_4, 0),
-    ],
-)
-def test__filter_on_metering_point_type_and_settlement_method__filters_on_consumption_and_flex(
-    spark, subscription_charges, expected
-):
-    # Arrange
-    subscription_charges = spark.createDataFrame(
-        subscription_charges, schema=charges_flex_consumption_schema
-    )  # subscription_charges and charges_flex_consumption has the same schema
-    # Act
-    result = filter_on_metering_point_type_and_settlement_method(subscription_charges)
-
-    # Assert
-    assert result.count() == expected
 
 
 charges_flex_consumption_dataset_1 = [
