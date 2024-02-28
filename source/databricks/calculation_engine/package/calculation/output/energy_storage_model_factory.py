@@ -17,19 +17,20 @@ from pyspark.sql import DataFrame
 from pyspark.sql.window import Window
 
 from package.calculation.calculator_args import CalculatorArgs
+from package.calculation.energy.energy_results import EnergyResults
 from package.codelists import TimeSeriesType, AggregationLevel
 from package.constants import Colname, EnergyResultColumnNames
 
 
 def create(
     args: CalculatorArgs,
-    df: DataFrame,
+    energy_results: EnergyResults,
     time_series_type: TimeSeriesType,
     aggregation_level: AggregationLevel,
 ) -> DataFrame:
 
     df = _add_aggregation_level_and_time_series_type(
-        df, aggregation_level, time_series_type
+        energy_results.df, aggregation_level, time_series_type
     )
     df = _add_calculation_columns(args, df)
     df = _add_calculation_result_id(df)

@@ -19,12 +19,13 @@ from decimal import Decimal
 from typing import Any, List
 
 import pytest
-from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql import SparkSession
 
 import package.codelists as e
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.energy.energy_results import (
     energy_results_schema,
+    EnergyResults,
 )
 from package.calculation.output import energy_storage_model_factory as sut
 from package.constants import Colname, EnergyResultColumnNames
@@ -114,13 +115,13 @@ def _create_result_row(
     return row
 
 
-def _create_result_df(spark: SparkSession, row: List[dict]) -> DataFrame:
-    return spark.createDataFrame(data=row, schema=energy_results_schema)
+def _create_result_df(spark: SparkSession, row: List[dict]) -> EnergyResults:
+    return EnergyResults(spark.createDataFrame(row, schema=energy_results_schema))
 
 
 def _create_result_df_corresponding_to_four_calculation_results(
     spark: SparkSession,
-) -> DataFrame:
+) -> EnergyResults:
     OTHER_TIME_WINDOW_START = DEFAULT_TIME_WINDOW_END
     OTHER_TIME_WINDOW_END = OTHER_TIME_WINDOW_START + timedelta(hours=1)
     OTHER_GRID_AREA = "111"
@@ -159,7 +160,7 @@ def _create_result_df_corresponding_to_four_calculation_results(
     "aggregation_level",
     e.AggregationLevel,
 )
-def test__write__writes_aggregation_level(
+def test__create__with_correct_aggregation_level(
     spark: SparkSession,
     aggregation_level: e.AggregationLevel,
     migrations_executed: None,
@@ -203,7 +204,7 @@ def test__write__writes_aggregation_level(
         (EnergyResultColumnNames.quantity_qualities, [DEFAULT_QUALITY.value]),
     ],
 )
-def test__write__writes_column(
+def test__create__with_correct_column_names_and_values(
     spark: SparkSession,
     column_name: str,
     column_value: Any,
@@ -213,6 +214,7 @@ def test__write__writes_column(
     # Arrange
     row = [_create_result_row()]
     result_df = _create_result_df(spark, row)
+    args.calculation_id = DEFAULT_CALCULATION_ID
 
     # Act
     actual = sut.create(
@@ -226,7 +228,7 @@ def test__write__writes_column(
     assert actual.collect()[0][column_name] == column_value
 
 
-def test__write__writes_columns_matching_contract(
+def test__create__columns_matching_contract(
     spark: SparkSession,
     contracts_path: str,
     migrations_executed: None,
@@ -246,10 +248,12 @@ def test__write__writes_columns_matching_contract(
     )
 
     # Assert
+    actual.show()
+    print(actual.schema)
     assert_contract_matches_schema(contract_path, actual.schema)
 
 
-def test__write__writes_calculation_result_id(
+def test__create__with_correct_calculation_result_id(
     spark: SparkSession,
     contracts_path: str,
     migrations_executed: None,
@@ -288,7 +292,7 @@ def test__write__writes_calculation_result_id(
         ),
     ],
 )
-def test__write__when_rows_belong_to_different_results__adds_different_calculation_result_id(
+def test__create__when_rows_belong_to_different_results__adds_different_calculation_result_id(
     spark: SparkSession,
     column_name: str,
     value: Any,
