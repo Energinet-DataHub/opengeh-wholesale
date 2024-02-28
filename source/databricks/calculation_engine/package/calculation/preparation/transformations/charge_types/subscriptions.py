@@ -135,21 +135,23 @@ def _expand_with_daily_charge_time(
 
 def _join_with_links(
     subscription_master_data_and_prices: DataFrame,
-    subscription_links: DataFrame,
+    subscription_links_df: ChargeLinkMeteringPointPeriods,
 ) -> DataFrame:
+    subscription_links_df = subscription_links_df.df
+
     subscriptions = subscription_master_data_and_prices.join(
-        subscription_links,
+        subscription_links_df,
         (
             subscription_master_data_and_prices[Colname.charge_key]
-            == subscription_links[Colname.charge_key]
+            == subscription_links_df[Colname.charge_key]
         )
         & (
             subscription_master_data_and_prices[Colname.charge_time]
-            >= subscription_links[Colname.from_date]
+            >= subscription_links_df[Colname.from_date]
         )
         & (
             subscription_master_data_and_prices[Colname.charge_time]
-            < subscription_links[Colname.to_date]
+            < subscription_links_df[Colname.to_date]
         ),
         how="inner",
     ).select(
@@ -159,10 +161,11 @@ def _join_with_links(
         subscription_master_data_and_prices[Colname.charge_code],
         subscription_master_data_and_prices[Colname.charge_time],
         subscription_master_data_and_prices[Colname.charge_price],
-        subscription_links[Colname.metering_point_type],
-        subscription_links[Colname.settlement_method],
-        subscription_links[Colname.grid_area],
-        subscription_links[Colname.energy_supplier_id],
+        subscription_links_df[Colname.charge_quantity],
+        subscription_links_df[Colname.metering_point_type],
+        subscription_links_df[Colname.settlement_method],
+        subscription_links_df[Colname.grid_area],
+        subscription_links_df[Colname.energy_supplier_id],
     )
 
     return subscriptions
