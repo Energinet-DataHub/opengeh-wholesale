@@ -63,6 +63,7 @@ public class Startup
             .AddControllers(options => options.Filters.Add<BusinessValidationExceptionFilter>())
             .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 
+        // TODO: We should be able to delete the following, see: https://stackoverflow.com/questions/71932980/what-is-addendpointsapiexplorer-in-asp-net-core-6
         services.AddEndpointsApiExplorer();
         // Register the Swagger generator, defining 1 or more Swagger documents.
         services.AddSwaggerGen(config =>
@@ -107,7 +108,6 @@ public class Startup
 
         // Options
         services.AddOptions<ServiceBusOptions>().Bind(Configuration);
-        services.AddOptions<DataLakeOptions>().Bind(Configuration);
         services.AddOptions<DeltaTableOptions>();
 
         // ServiceBus
