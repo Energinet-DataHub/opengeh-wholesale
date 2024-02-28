@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
-using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Extensions.DependencyInjection;
@@ -28,12 +28,26 @@ public static class AuthenticationExtensions
     /// Register services necessary for enabling an ASP.NET Core app
     /// to use JWT bearer authentication and permission authorization.
     /// </summary>
-    public static IServiceCollection AddJwtTokenSecurityForWebApp(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddTokenAuthenticationForWebApp(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddOptions<JwtOptions>().Bind(configuration);
         var options = configuration.Get<JwtOptions>()!;
         services.AddJwtBearerAuthentication(options.EXTERNAL_OPEN_ID_URL, options.INTERNAL_OPEN_ID_URL, options.BACKEND_BFF_APP_ID);
-        services.AddPermissionAuthorization();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Register services necessary for enabling an ASP.NET Core app
+    /// user authentication.
+    /// </summary>
+    public static IServiceCollection AddUserAuthenticationForWebApp<TUser, TUserProvider>(this IServiceCollection services)
+        where TUser : class
+        where TUserProvider : class, IUserProvider<TUser>
+    {
+        // TODO: The UserMiddleware depends on IHttpContextAccessor, it should be registered by AddUserAuthentication
+        services.AddHttpContextAccessor();
+        services.AddUserAuthentication<TUser, TUserProvider>();
 
         return services;
     }

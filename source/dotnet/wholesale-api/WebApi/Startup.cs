@@ -19,6 +19,7 @@ using Asp.Versioning.ApiExplorer;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
+using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
@@ -58,10 +59,9 @@ public class Startup
         services.AddEventsModule(Configuration);
         services.AddEdiModule();
 
-        services.AddHttpContextAccessor();
-
-        services.AddControllers(options => options.Filters.Add<BusinessValidationExceptionFilter>()).AddJsonOptions(
-            options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
+        services
+            .AddControllers(options => options.Filters.Add<BusinessValidationExceptionFilter>())
+            .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 
         services.AddEndpointsApiExplorer();
         // Register the Swagger generator, defining 1 or more Swagger documents.
@@ -121,8 +121,10 @@ public class Startup
                 });
         });
 
-        services.AddJwtTokenSecurityForWebApp(Configuration);
-        services.AddUserAuthentication<FrontendUser, FrontendUserProvider>();
+        services
+            .AddTokenAuthenticationForWebApp(Configuration)
+            .AddUserAuthenticationForWebApp<FrontendUser, FrontendUserProvider>()
+            .AddPermissionAuthorization();
 
         var serviceBusOptions = Configuration.Get<ServiceBusOptions>()!;
         services.AddHealthChecks()
