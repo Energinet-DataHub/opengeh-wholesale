@@ -115,6 +115,26 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
     }
 
     [Theory]
+    [InlineAutoMoqData]
+    public void Create_WhenAmountIsNull_ReturnsExpectedObject(
+        MonthlyAmountPerChargeResultProducedV1Factory sut)
+    {
+        // Arrange
+        var wholesaleResult = new WholesaleResultBuilder()
+            .WithTimeSeriesPoints(new List<WholesaleTimeSeriesPoint> { new(new DateTime(2021, 1, 1), 1, new[] { QuantityQuality.Measured }, 2, null) })
+            .WithResolution(Resolution.Month)
+            .WithAmountType(AmountType.MonthlyAmountPerCharge)
+            .Build();
+        var expected = CreateExpected(wholesaleResult);
+
+        // Act
+        var actual = sut.Create(wholesaleResult);
+
+        // Assert
+        actual.Should().BeEquivalentTo(expected);
+    }
+
+    [Theory]
     [InlineData(CalculationType.Aggregation)]
     [InlineData(CalculationType.BalanceFixing)]
     public void Create_WhenUnexpectedCalculationType_ThrowsException(CalculationType calculationType)

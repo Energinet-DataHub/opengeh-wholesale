@@ -18,11 +18,11 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Test.Core;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 using FluentAssertions;
 using Moq;
-using Test.Core;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -83,12 +83,12 @@ public class CalculationControllerTests : WebApiTestBase
 
     private static CalculationRequestDto CreateCalculationRequestDto()
     {
-        var period = Periods.January_EuropeCopenhagen;
+        var (periodStart, periodEnd, _) = Periods.January_EuropeCopenhagen;
         var calculationRequest = new CalculationRequestDto(
             CalculationType.BalanceFixing,
             new List<string> { "805" },
-            period.PeriodStart,
-            period.PeriodEnd);
+            periodStart,
+            periodEnd);
         return calculationRequest;
     }
 }

@@ -61,8 +61,10 @@ def test__get_fee_charges__filters_on_fee_charge_type(
             spark, charge_link_metering_points_rows
         )
     )
-    charge_master_data = spark.createDataFrame(charge_master_data_rows)
-    charge_prices = spark.createDataFrame(charge_prices_rows)
+    charge_master_data = factory.create_charge_master_data(
+        spark, charge_master_data_rows
+    )
+    charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
     actual_fee = get_fee_charges(

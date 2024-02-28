@@ -14,15 +14,19 @@
 
 from datetime import datetime
 from decimal import Decimal
-from pyspark.sql import Row, SparkSession, DataFrame
+from pyspark.sql import Row, SparkSession
 
 from package.calculation.preparation.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
     charge_link_metering_point_periods_schema,
 )
-from package.calculation.wholesale.schemas.charges_schema import (
+from package.calculation.preparation.charge_master_data import (
+    ChargeMasterData,
+    charge_master_data_schema,
+)
+from package.calculation.preparation.charge_prices import (
+    ChargePrices,
     charge_prices_schema,
-    charges_master_data_schema,
 )
 from package.codelists import ChargeType
 from package.constants import Colname
@@ -86,8 +90,8 @@ def create_charge_master_data_row(
         Colname.charge_code: charge_code,
         Colname.charge_type: charge_type.value,
         Colname.charge_owner: charge_owner,
-        Colname.resolution: resolution.value,
         Colname.charge_tax: charge_tax,
+        Colname.resolution: resolution.value,
         Colname.from_date: from_date,
         Colname.to_date: to_date,
     }
@@ -106,7 +110,9 @@ def create_charge_prices_row(
 
     row = {
         Colname.charge_key: charge_key,
+        Colname.charge_code: charge_code,
         Colname.charge_type: charge_type.value,
+        Colname.charge_owner: charge_owner,
         Colname.charge_price: charge_price,
         Colname.charge_time: charge_time,
     }
@@ -123,7 +129,9 @@ def create_charge_link_metering_point_periods_row(
     metering_point_type: (
         e.MeteringPointType
     ) = DefaultValues.DEFAULT_METERING_POINT_TYPE,
-    settlement_method: e.SettlementMethod = DefaultValues.DEFAULT_SETTLEMENT_METHOD,
+    settlement_method: (
+        e.SettlementMethod | None
+    ) = DefaultValues.DEFAULT_SETTLEMENT_METHOD,
     grid_area: str = DefaultValues.DEFAULT_GRID_AREA,
     energy_supplier_id: str | None = DefaultValues.DEFAULT_ENERGY_SUPPLIER_ID,
     from_date: datetime = DefaultValues.DEFAULT_FROM_DATE,
@@ -139,12 +147,36 @@ def create_charge_link_metering_point_periods_row(
         Colname.from_date: from_date,
         Colname.to_date: to_date,
         Colname.metering_point_type: metering_point_type.value,
-        Colname.settlement_method: settlement_method.value,
+        Colname.settlement_method: (
+            settlement_method.value if settlement_method else None
+        ),
         Colname.grid_area: grid_area,
         Colname.energy_supplier_id: energy_supplier_id,
     }
 
     return Row(**row)
+
+
+def create_charge_master_data(
+    spark: SparkSession, data: None | Row | list[Row] = None
+) -> ChargeMasterData:
+    if data is None:
+        data = [create_charge_master_data_row()]
+    elif isinstance(data, Row):
+        data = [data]
+    df = spark.createDataFrame(data, charge_master_data_schema)
+    return ChargeMasterData(df)
+
+
+def create_charge_prices(
+    spark: SparkSession, data: None | Row | list[Row] = None
+) -> ChargePrices:
+    if data is None:
+        data = [create_charge_prices_row()]
+    elif isinstance(data, Row):
+        data = [data]
+    df = spark.createDataFrame(data, charge_prices_schema)
+    return ChargePrices(df)
 
 
 def create_charge_link_metering_point_periods(
@@ -156,25 +188,3 @@ def create_charge_link_metering_point_periods(
         data = [data]
     df = spark.createDataFrame(data, charge_link_metering_point_periods_schema)
     return ChargeLinkMeteringPointPeriods(df)
-
-
-def create_charge_prices(
-    spark: SparkSession, data: None | Row | list[Row] = None
-) -> DataFrame:
-    if data is None:
-        data = [create_charge_prices_row()]
-    elif isinstance(data, Row):
-        data = [data]
-    df = spark.createDataFrame(data, charge_prices_schema)
-    return df
-
-
-def create_charge_master_data(
-    spark: SparkSession, data: None | Row | list[Row] = None
-) -> DataFrame:
-    if data is None:
-        data = [create_charge_master_data_row()]
-    elif isinstance(data, Row):
-        data = [data]
-    df = spark.createDataFrame(data, charges_master_data_schema)
-    return df
