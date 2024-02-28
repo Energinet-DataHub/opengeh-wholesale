@@ -29,6 +29,14 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             # Include Frontend model
             !include https://raw.githubusercontent.com/Energinet-DataHub/greenforce-frontend/main/docs/diagrams/c4-model/model.dsl
 
+            ##################################################################################
+            # Includes below require a token because its located in a private repository     #
+            # Run this file to open a browser on each model.dsl file easing token copy/paste #
+            #                                                                                #
+            #  ------->  docs\diagrams\c4-model\Open-ModelDslFiles.ps1 <------               #
+            #                                                                                #
+            ##################################################################################
+
             # Include Esett Exchange model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
             !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-esett-exchange/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACIBG65SDJSYCBIOHJXLR6RAZKXGYMQ

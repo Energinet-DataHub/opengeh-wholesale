@@ -36,19 +36,19 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
 
             # Include Esett Exchange model
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-esett-exchange/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACCM3YJB2QHZXBOF5Q7FSCXSZM74KOA
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-esett-exchange/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACFOVCSKJ7DKGZ4DEGMQYLZEZO7ARMQ
 
             # Include Migration model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACCM3YJB4SGYT574OIAU52BYZM74KVQ
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACFOVCSLN2MMVLLT5UNNSMQ4ZO7ARNQ
 
             # Include Sauron - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/dh3-operations/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACCM3YJB4Z2LLHY2L5PLQV26ZM74KZQ
+            !include https://raw.githubusercontent.com/Energinet-DataHub/dh3-operations/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACFOVCSLKRYB46OAPRT43J5IZO7ARPA
 
             # Include DH2 Bridge model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/dh2-bridge/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACCM3YJAY7ZHNXGI5P4M2JKSZM74K5Q
+            !include https://raw.githubusercontent.com/Energinet-DataHub/dh2-bridge/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACFOVCSKC27TQG4SYNR4TRFQZO7ARQA
         }
 
         # Deployment model
@@ -209,6 +209,13 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
 
                         wholesaleApiInstance = containerInstance wholesaleApi
                     }
+                    deploymentNode "Wholesale Orchestration" {
+                        description ""
+                        technology "App Service"
+                        tags "Microsoft Azure - Function Apps"
+
+                        wholesaleOrchestrationInstance = containerInstance wholesaleOrchestration
+                    }
                     deploymentNode "Market Participant API" {
                         description ""
                         technology "App Service"
@@ -343,14 +350,14 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
 
         container dh3 "Migration" {
             title "[Container] DataHub 3.0 - Migration (Detailed with OAuth)"
-            include ->migrationDomain->
+            include ->migrationSubsystem->
             exclude "relationship.tag==Deployment Diagram"
             exclude "relationship.tag==Simple View"
         }
 
         container dh3 "Wholesale" {
             title "[Container] DataHub 3.0 - Wholesale (Detailed with OAuth)"
-            include ->wholesaleDomain->
+            include ->wholesaleSubsystem->
             exclude "relationship.tag==Deployment Diagram"
             exclude "relationship.tag==Simple View"
         }
@@ -360,6 +367,7 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             include ->markpartDomain->
             exclude "relationship.tag==Deployment Diagram"
             exclude "relationship.tag==Simple View"
+            exclude "element.tag==MarketParticipant Subscriber"
         }
 
         container dh3 "EDI" {
