@@ -18,14 +18,14 @@ using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Edi.Calculations;
-using Energinet.DataHub.Wholesale.EDI.Models;
-using Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
+using Energinet.DataHub.Wholesale.Edi.Models;
+using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Moq;
 using NodaTime;
 using Xunit;
-using AggregatedTimeSeriesRequest = Energinet.DataHub.Wholesale.EDI.Models.AggregatedTimeSeriesRequest;
+using AggregatedTimeSeriesRequest = Energinet.DataHub.Wholesale.Edi.Models.AggregatedTimeSeriesRequest;
 
 namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Calculations;
 

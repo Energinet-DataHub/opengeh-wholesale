@@ -14,7 +14,7 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
-using Energinet.DataHub.Wholesale.EDI;
+using Energinet.DataHub.Wholesale.Edi;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

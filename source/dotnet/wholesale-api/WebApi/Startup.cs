@@ -21,11 +21,15 @@ using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.DependencyInjection;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks.ServiceBus;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
-using Energinet.DataHub.Wholesale.WebApi.Configuration;
+using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
+using Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.Extensions.DependencyInjection;
 using Microsoft.Extensions.Azure;
@@ -47,7 +51,16 @@ public class Startup
         // Common
         services.AddApplicationInsightsForWebApp();
 
-        services.AddModules(Configuration);
+        // Shared by modules
+        services.AddNodaTimeForApplication(Configuration);
+        services.AddDatabricksJobsForApplication(Configuration);
+
+        // Modules
+        services.AddCalculationsModule(Configuration);
+        services.AddCalculationResultsModule(Configuration);
+        services.AddEventsModule(Configuration);
+        services.AddEdiModule();
+
         services.AddHttpContextAccessor();
 
         services.AddControllers(options => options.Filters.Add<BusinessValidationExceptionFilter>()).AddJsonOptions(
