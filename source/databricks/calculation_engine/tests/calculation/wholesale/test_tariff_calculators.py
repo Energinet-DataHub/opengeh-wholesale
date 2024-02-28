@@ -509,9 +509,6 @@ def test__calculate_tariff_price_per_ga_co_es__when_charge_price_is_null__return
     # Arrange
     rows = [
         _create_tariff_row(charge_price=None, quantity=Decimal("2.000000")),
-        _create_tariff_row(
-            charge_price=Decimal("1.000000"), quantity=Decimal("2.000000")
-        ),
     ]
     tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
 
@@ -520,7 +517,6 @@ def test__calculate_tariff_price_per_ga_co_es__when_charge_price_is_null__return
 
     # Assert
     assert actual.collect()[0][Colname.total_amount] is None
-    assert actual.collect()[1][Colname.total_amount] == Decimal("2.000000")
 
 
 def test__sum_within_month__when_all_charge_prices_are_none__sums_charge_price_and_total_amount_per_month_to_none(
@@ -542,4 +538,27 @@ def test__sum_within_month__when_all_charge_prices_are_none__sums_charge_price_a
     # Assert
     assert actual.collect()[0][Colname.total_amount] is None
     assert actual.collect()[0][Colname.charge_price] is None
+    assert actual.count() == 1
+
+
+def test__sum_within_month__when_one_tariff_has_charge_price_none__sums_charge_price_and_total_amount_per_month_to_expected_value(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    rows = [
+        _create_tariff_row(charge_price=None),
+        _create_tariff_row(
+            charge_price=Decimal("2.000000"), quantity=Decimal("3.000000")
+        ),
+    ]
+    tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
+
+    # Act
+    actual = sum_within_month(
+        calculate_tariff_price_per_ga_co_es(tariffs),
+        DEFAULT_PERIOD_START_DATETIME,
+    )
+
+    # Assert
+    assert actual.collect()[0][Colname.total_amount] == Decimal("6.000000")
     assert actual.count() == 1
