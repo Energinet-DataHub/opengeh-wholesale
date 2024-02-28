@@ -819,6 +819,58 @@ def test__get_tariff_charges__can_handle_missing_all_charges_prices(
     assert actual.collect()[1][Colname.charge_price] is None
 
 
+def test__get_tariff_charges__can_handle_missing_charge_links(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    time_series_rows = [
+        factory.create_time_series_row(observation_time=datetime(2019, 12, 31, 23)),
+        factory.create_time_series_row(observation_time=datetime(2020, 1, 1, 0)),
+        factory.create_time_series_row(observation_time=datetime(2020, 1, 1, 1)),
+    ]
+    charge_master_data_rows = [
+        factory.create_charge_master_data_row(
+            from_date=datetime(2019, 12, 31, 23), to_date=datetime(2020, 1, 1, 1)
+        ),
+    ]
+    charge_prices_rows = [
+        factory.create_charge_prices_row(charge_time=datetime(2019, 12, 31, 23)),
+        factory.create_charge_prices_row(charge_time=datetime(2020, 1, 1, 0)),
+        factory.create_charge_prices_row(charge_time=datetime(2020, 1, 1, 1)),
+    ]
+    charge_link_metering_points_rows = [
+        factory.create_charge_link_metering_point_periods_row(
+            charge_type=e.ChargeType.TARIFF,
+            from_date=datetime(2019, 12, 31, 23),
+            to_date=datetime(2020, 1, 1, 1),
+        ),
+    ]
+
+    time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
+    charge_master_data = factory.create_charge_master_data(
+        spark, charge_master_data_rows
+    )
+    charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
+    charge_link_metering_point_periods = (
+        factory.create_charge_link_metering_point_periods(
+            spark, charge_link_metering_points_rows
+        )
+    )
+
+    # Act
+    actual = get_tariff_charges(
+        time_series,
+        charge_master_data,
+        charge_prices,
+        charge_link_metering_point_periods,
+        e.ChargeResolution.HOUR,
+        DEFAULT_TIME_ZONE,
+    ).orderBy(Colname.charge_time)
+
+    # Assert
+    assert actual.count() == 2
+
+
 @pytest.mark.parametrize(
     "date_time_1, date_time_2",
     [
