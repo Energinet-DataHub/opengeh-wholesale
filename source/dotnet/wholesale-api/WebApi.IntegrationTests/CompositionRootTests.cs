@@ -40,7 +40,7 @@ public class CompositionRootTests
     [Fact]
     public void AllServicesConstructSuccessfully()
     {
-        var application = new WebApplicationFactory<Program>()
+        using var application = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
             {
                 builder
@@ -57,6 +57,6 @@ public class CompositionRootTests
             });
 
         // Act
-        var client = application.CreateClient();
+        using var client = application.CreateClient();
     }
 }
