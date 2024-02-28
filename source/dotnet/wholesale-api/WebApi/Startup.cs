@@ -18,7 +18,6 @@ using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.App.Common.Reflection;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
@@ -26,10 +25,9 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks.ServiceBus;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
-using Microsoft.ApplicationInsights.Extensibility;
+using Energinet.DataHub.Wholesale.WebApi.Extensions.DependencyInjection;
 using Microsoft.Extensions.Azure;
 using Microsoft.OpenApi.Models;
 
@@ -46,6 +44,9 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection serviceCollection)
     {
+        // Common
+        serviceCollection.AddApplicationInsightsForWebApp();
+
         serviceCollection.AddModules(Configuration);
         serviceCollection.AddHttpContextAccessor();
 
@@ -114,17 +115,6 @@ public class Startup
 
         AddJwtTokenSecurity(serviceCollection);
         AddHealthCheck(serviceCollection);
-
-        serviceCollection.AddSingleton<ITelemetryInitializer>(new SubsystemInitializer(TelemetryConstants.SubsystemName));
-        serviceCollection.AddApplicationInsightsTelemetry(options =>
-        {
-            options.EnableAdaptiveSampling = false;
-            options.ApplicationVersion = Assembly
-                .GetEntryAssembly()!
-                .GetAssemblyInformationalVersionAttribute()!
-                .GetSourceVersionInformation()
-                .ToString();
-        });
 
         serviceCollection.AddUserAuthentication<FrontendUser, FrontendUserProvider>();
     }
