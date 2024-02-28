@@ -1,0 +1,3 @@
+ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
+    ALTER COLUMN amount DROP NOT NULL
+GO
