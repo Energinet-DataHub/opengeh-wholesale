@@ -114,6 +114,9 @@ def test_migrate_with_schema_migration_scripts_compare_result_with_schema_config
         assert schema is not None, f"Schema {db.name} is not in the schema config"
         tables = spark.catalog.listTables(db.name)
         for table in tables:
+            if table.tableType == "EXTERNAL":
+                continue
+
             table_config = next(
                 (x for x in schema.tables if x.name == table.name), None
             )

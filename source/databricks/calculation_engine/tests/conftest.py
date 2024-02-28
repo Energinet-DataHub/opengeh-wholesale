@@ -26,6 +26,7 @@ from typing import Generator, Callable, Optional
 import pytest
 import yaml
 from azure.identity import ClientSecretCredential
+from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType
 
@@ -62,7 +63,7 @@ def spark() -> SparkSession:
     if os.path.exists(warehouse_location):
         rmtree(warehouse_location)
 
-    session = (
+    session = configure_spark_with_delta_pip(
         SparkSession.builder.config("spark.sql.streaming.schemaInference", True)
         .config("spark.ui.showConsoleProgress", "false")
         .config("spark.ui.enabled", "false")
