@@ -48,7 +48,7 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
 
     views {
         container dh3 "Wholesale" {
-            title "[Container] DataHub 3.0 - Wholesale (Simplified) "
+            title "[Container] DataHub 3.0 - Wholesale (Simplified)"
             include ->wholesaleSubsystem->
             exclude "relationship.tag==OAuth"
             exclude "element.tag==Intermediate Technology"
