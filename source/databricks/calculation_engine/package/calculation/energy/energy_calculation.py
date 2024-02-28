@@ -375,8 +375,9 @@ def _calculate_flex_consumption(
     if _is_aggregation_or_balance_fixing(args.calculation_type):
         results.flex_consumption_per_ga_and_brp_and_es = factory.create(
             args,
-            flex_consumption_per_ga_and_brp_and_es,
-
+            flex_consumption_per_ga_and_brp_and_es.df,
+            TimeSeriesType.FLEX_CONSUMPTION,
+            AggregationLevel.ES_PER_BRP_PER_GA,
         )
 
         flex_consumption_per_ga_and_brp = grouping_aggr.aggregate_per_ga_and_brp(
