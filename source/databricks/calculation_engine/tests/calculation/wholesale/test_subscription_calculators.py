@@ -35,6 +35,8 @@ import pytest
 from package.constants import Colname
 
 DEFAULT_TIME_ZONE = "Europe/Copenhagen"
+DEFAULT_CALCULATION_PERIOD_START = datetime(2020, 1, 31, 23, 0)
+DEFAULT_CALCULATION_PERIOD_END = datetime(2020, 2, 29, 23, 0)
 
 
 def test__calculate_daily_subscription_price__simple(
@@ -399,6 +401,9 @@ def test__calculate_price_per_day__divides_charge_price_by_days_in_month(
     # Act
     result = calculate_daily_subscription_amount(
         charges_flex_consumption,
+        DEFAULT_CALCULATION_PERIOD_START,
+        DEFAULT_CALCULATION_PERIOD_END,
+        DEFAULT_TIME_ZONE,
     )
 
     # Assert

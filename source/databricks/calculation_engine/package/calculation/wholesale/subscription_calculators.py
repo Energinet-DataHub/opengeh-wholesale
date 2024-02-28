@@ -12,16 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from datetime import datetime
-import pytz
+from zoneinfo import ZoneInfo
 
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, lit, count, sum
 from pyspark.sql.types import DecimalType
-
-from package.codelists import MeteringPointType, SettlementMethod
-from package.calculation.wholesale.schemas.calculate_daily_subscription_price_schema import (
-    calculate_daily_subscription_price_schema,
-)
 from package.constants import Colname
 
 
@@ -67,7 +62,7 @@ def calculate_price_per_day(
 def _get_days_in_month(
     calculation_period_start: datetime, calculation_period_end: datetime, time_zone: str
 ) -> int:
-    time_zone_info = pytz.timezone(time_zone)
+    time_zone_info = ZoneInfo(time_zone)
     period_start_local_time = calculation_period_start.astimezone(time_zone_info)
     period_end_local_time = calculation_period_end.astimezone(time_zone_info)
 
