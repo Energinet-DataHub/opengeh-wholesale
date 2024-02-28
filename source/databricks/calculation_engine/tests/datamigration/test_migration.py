@@ -11,10 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
 
 from pyspark.sql import SparkSession
 from unittest.mock import Mock
 import tests.helpers.spark_helper as spark_helper
+import tests.helpers.spark_sql_migration_helper as spark_sql_migration_helper
 import package.datamigration.schema_config as schema_config
 import package.datamigration.migration as sut
 import tests.helpers.mock_helper as mock_helper
@@ -125,3 +127,86 @@ def test_migrate_with_schema_migration_scripts_compare_result_with_schema_config
             ), f"Table {table.name} is not in the schema config"
             actual_table = spark.table(f"{db.name}.{table.name}")
             assert actual_table.schema == table_config.schema
+
+
+def test_schema_config_when_current_state_script_files_are_executed(
+    mocker: Mock,
+    spark: SparkSession
+) -> None:
+    # Arrange
+    mocker.patch.object(
+        sut.paths,
+        sut.paths.get_storage_account_url.__name__,
+        side_effect=mock_helper.base_path_helper,
+    )
+
+    mocker.patch.object(
+        sut.env_vars,
+        sut.env_vars.get_storage_account_name.__name__,
+        return_value="storage_account",
+    )
+
+    mocker.patch.object(
+        sut.env_vars,
+        sut.env_vars.get_calculation_input_folder_name.__name__,
+        return_value="storage_account_2",
+    )
+
+    mocker.patch.object(
+        sut.paths,
+        sut.paths.get_container_url.__name__,
+        return_value="storage_account",
+    )
+
+    spark_helper.reset_spark_catalog(spark)
+    spark_sql_migration_helper.migrate_with_current_state(spark)
+
+    # Act
+    sut.migrate_data_lake()
+
+    # Assert
+    schemas = spark.catalog.listDatabases()
+    for schema in schema_config.schema_config:
+        assert schema.name in [schema.name for schema in schemas]
+
+
+def test_schema_config_when_schema_and__table_script_files_are_executed(
+        mocker: Mock,
+        spark: SparkSession
+) -> None:
+    # Arrange
+    mocker.patch.object(
+        sut.paths,
+        sut.paths.get_storage_account_url.__name__,
+        side_effect=mock_helper.base_path_helper,
+    )
+
+    mocker.patch.object(
+        sut.env_vars,
+        sut.env_vars.get_storage_account_name.__name__,
+        return_value="storage_account",
+    )
+
+    mocker.patch.object(
+        sut.env_vars,
+        sut.env_vars.get_calculation_input_folder_name.__name__,
+        return_value="storage_account_2",
+    )
+
+    mocker.patch.object(
+        sut.paths,
+        sut.paths.get_container_url.__name__,
+        return_value="storage_account",
+    )
+
+    spark_helper.reset_spark_catalog(spark)
+    spark_sql_migration_helper.migrate_with_current_state(spark)
+
+    # Act
+    sut.migrate_data_lake()
+
+    # Assert
+    for schema in schema_config.schema_config:
+        for table in schema.tables:
+            actual_table = spark.table(f"{schema.name}.{table.name}")
+            assert actual_table.schema == table.schema
