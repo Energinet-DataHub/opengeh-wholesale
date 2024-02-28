@@ -21,7 +21,6 @@ from pyspark.sql import functions as f
 from package.calculation.preparation.transformations import (
     get_subscription_charges,
 )
-from package.calculation.wholesale.schemas.charges_schema import charge_prices_schema
 from package.codelists import MeteringPointType, SettlementMethod
 from package.constants import Colname
 import package.codelists as e
