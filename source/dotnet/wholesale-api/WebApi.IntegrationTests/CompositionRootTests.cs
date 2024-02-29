@@ -52,7 +52,7 @@ public class CompositionRootTests
                     })
                     // Add controllers as services to enable validation of controller dependencies
                     // See https://andrewlock.net/new-in-asp-net-core-3-service-provider-validation/#1-controller-constructor-dependencies-aren-t-checked
-                    .ConfigureServices(collection => collection.AddControllers().AddControllersAsServices());
+                    .ConfigureServices(services => services.AddControllers().AddControllersAsServices());
             });
 
         // Act
