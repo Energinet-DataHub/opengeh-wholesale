@@ -27,7 +27,7 @@ from package.calculation_output.schemas import wholesale_results_schema
 def get_expected(*args) -> DataFrame:  # type: ignore
     spark: SparkSession = args[0]
     df: DataFrame = args[1]
-    args = args[2]
+    args: any = args[2]
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.

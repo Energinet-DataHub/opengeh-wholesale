@@ -12,16 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql import DataFrame
 
-from calculation_logic.features.energy_calculations.results_dataframe import (
+from calculation_logic.features.energy_calculations.energy_results_dataframe import (
     create_energy_result_dataframe,
 )
 
 
 def get_expected(*args) -> DataFrame:  # type: ignore
-    spark: SparkSession = args[0]
-    expected_dataframe: DataFrame = args[1]
-    args = args[2]
-
-    return create_energy_result_dataframe(spark, expected_dataframe, args)
+    """
+    This function can be used to custom build the expected results (dataframe).
+    It is also used a reference to locate the test scenario.
+    """
+    return create_energy_result_dataframe(*args)
