@@ -14,6 +14,7 @@
 from helpers.data_frame_utils import (
     assert_dataframe_and_schema,
 )
+from package.constants import EnergyResultColumnNames
 from .states.scenario_state import (
     get_expected,
 )
@@ -28,22 +29,15 @@ def test_execute__returns_expected(  # type: ignore
     # Act
     results = scenario_fixture.execute()
 
-    results.energy_results.flex_consumption_per_ga_and_brp_and_es.show()
-    scenario_fixture.expected.show()
-
-    actual = results.energy_results.flex_consumption_per_ga_and_brp_and_es.drop(
-        "calculation_execution_time_start"
-    ).drop("calculation_result_id")
-
-    exp = scenario_fixture.expected.drop("calculation_execution_time_start").drop(
-        "calculation_result_id"
-    )
-
     # Assert
     assert_dataframe_and_schema(
-        actual,
-        exp,
+        results.energy_results.flex_consumption_per_ga_and_brp_and_es,
+        scenario_fixture.expected,
         ignore_decimal_precision=True,
         ignore_decimal_scale=True,
         ignore_nullability=True,
+        columns_to_skip=[
+            EnergyResultColumnNames.calculation_execution_time_start,
+            EnergyResultColumnNames.calculation_result_id,
+        ],
     )
