@@ -14,7 +14,7 @@
 
 using Azure.Messaging.ServiceBus;
 
-namespace Energinet.DataHub.Wholesale.EDI;
+namespace Energinet.DataHub.Wholesale.Edi;
 
 public interface IAggregatedTimeSeriesRequestHandler
 {

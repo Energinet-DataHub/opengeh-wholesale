@@ -14,7 +14,7 @@
 
 using Azure.Messaging.ServiceBus;
 
-namespace Energinet.DataHub.Wholesale.EDI.Client;
+namespace Energinet.DataHub.Wholesale.Edi.Client;
 
 public interface IEdiClient
 {

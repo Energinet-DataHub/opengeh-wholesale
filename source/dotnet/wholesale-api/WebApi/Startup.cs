@@ -37,27 +37,24 @@ namespace Energinet.DataHub.Wholesale.WebApi;
 
 public class Startup
 {
-    public Startup(IConfiguration configuration, IWebHostEnvironment environment)
+    public Startup(IConfiguration configuration)
     {
         Configuration = configuration;
-        Environment = environment;
     }
 
     public IConfiguration Configuration { get; }
 
-    public IWebHostEnvironment Environment { get; }
-
-    public void ConfigureServices(IServiceCollection serviceCollection)
+    public void ConfigureServices(IServiceCollection services)
     {
-        serviceCollection.AddModules(Configuration);
-        serviceCollection.AddHttpContextAccessor();
+        services.AddModules(Configuration);
+        services.AddHttpContextAccessor();
 
-        serviceCollection.AddControllers(options => options.Filters.Add<BusinessValidationExceptionFilter>()).AddJsonOptions(
+        services.AddControllers(options => options.Filters.Add<BusinessValidationExceptionFilter>()).AddJsonOptions(
             options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 
-        serviceCollection.AddEndpointsApiExplorer();
+        services.AddEndpointsApiExplorer();
         // Register the Swagger generator, defining 1 or more Swagger documents.
-        serviceCollection.AddSwaggerGen(config =>
+        services.AddSwaggerGen(config =>
         {
             config.SupportNonNullableReferenceTypes();
             config.OperationFilter<BinaryContentFilter>();
@@ -84,7 +81,7 @@ public class Startup
             config.AddSecurityRequirement(securityRequirement);
         });
 
-        var apiVersioningBuilder = serviceCollection.AddApiVersioning(config =>
+        var apiVersioningBuilder = services.AddApiVersioning(config =>
         {
             config.DefaultApiVersion = new ApiVersion(3, 0);
             config.AssumeDefaultVersionWhenUnspecified = true;
@@ -95,17 +92,17 @@ public class Startup
             setup.GroupNameFormat = "'v'VVV";
             setup.SubstituteApiVersionInUrl = true;
         });
-        serviceCollection.ConfigureOptions<ConfigureSwaggerOptions>();
+        services.ConfigureOptions<ConfigureSwaggerOptions>();
 
         // Options
-        serviceCollection.AddOptions<JwtOptions>().Bind(Configuration);
-        serviceCollection.AddOptions<ServiceBusOptions>().Bind(Configuration);
-        serviceCollection.AddOptions<DateTimeOptions>().Bind(Configuration);
-        serviceCollection.AddOptions<DataLakeOptions>().Bind(Configuration);
-        serviceCollection.AddOptions<DeltaTableOptions>();
+        services.AddOptions<JwtOptions>().Bind(Configuration);
+        services.AddOptions<ServiceBusOptions>().Bind(Configuration);
+        services.AddOptions<DateTimeOptions>().Bind(Configuration);
+        services.AddOptions<DataLakeOptions>().Bind(Configuration);
+        services.AddOptions<DeltaTableOptions>();
 
         // ServiceBus
-        serviceCollection.AddAzureClients(builder =>
+        services.AddAzureClients(builder =>
         {
             builder
                 .AddServiceBusClient(Configuration.Get<ServiceBusOptions>()!.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING)
@@ -115,11 +112,11 @@ public class Startup
                 });
         });
 
-        AddJwtTokenSecurity(serviceCollection);
-        AddHealthCheck(serviceCollection);
+        AddJwtTokenSecurity(services);
+        AddHealthCheck(services);
 
-        serviceCollection.AddSingleton<ITelemetryInitializer>(new SubsystemInitializer(TelemetryConstants.SubsystemName));
-        serviceCollection.AddApplicationInsightsTelemetry(options =>
+        services.AddSingleton<ITelemetryInitializer>(new SubsystemInitializer(TelemetryConstants.SubsystemName));
+        services.AddApplicationInsightsTelemetry(options =>
         {
             options.EnableAdaptiveSampling = false;
             options.ApplicationVersion = Assembly
@@ -129,15 +126,15 @@ public class Startup
                 .ToString();
         });
 
-        serviceCollection.AddUserAuthentication<FrontendUser, FrontendUserProvider>();
+        services.AddUserAuthentication<FrontendUser, FrontendUserProvider>();
     }
 
-    public void Configure(IApplicationBuilder app)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
     {
         app.UseRouting();
 
         // Configure the HTTP request pipeline.
-        if (Environment.IsDevelopment())
+        if (environment.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
         }
@@ -160,7 +157,7 @@ public class Startup
         app.UseAuthentication();
         app.UseAuthorization();
 
-        if (!Environment.IsEnvironment("Testing"))
+        if (!environment.IsEnvironment("Testing"))
         {
             app.UseUserMiddleware<FrontendUser>();
         }
@@ -178,17 +175,17 @@ public class Startup
     /// <summary>
     /// Adds registrations of JwtTokenMiddleware and corresponding dependencies.
     /// </summary>
-    private void AddJwtTokenSecurity(IServiceCollection serviceCollection)
+    private void AddJwtTokenSecurity(IServiceCollection services)
     {
         var options = Configuration.Get<JwtOptions>()!;
-        serviceCollection.AddJwtBearerAuthentication(options.EXTERNAL_OPEN_ID_URL, options.INTERNAL_OPEN_ID_URL, options.BACKEND_BFF_APP_ID);
-        serviceCollection.AddPermissionAuthorization();
+        services.AddJwtBearerAuthentication(options.EXTERNAL_OPEN_ID_URL, options.INTERNAL_OPEN_ID_URL, options.BACKEND_BFF_APP_ID);
+        services.AddPermissionAuthorization();
     }
 
-    private void AddHealthCheck(IServiceCollection serviceCollection)
+    private void AddHealthCheck(IServiceCollection services)
     {
         var serviceBusOptions = Configuration.Get<ServiceBusOptions>()!;
-        serviceCollection.AddHealthChecks()
+        services.AddHealthChecks()
             .AddLiveCheck()
             .AddAzureServiceBusSubscriptionUsingWebSockets(
                 serviceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING,
