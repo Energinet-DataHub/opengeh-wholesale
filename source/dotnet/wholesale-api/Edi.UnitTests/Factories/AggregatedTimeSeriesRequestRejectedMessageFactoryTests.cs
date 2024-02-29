@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using Energinet.DataHub.Edi.Responses;
-using Energinet.DataHub.Wholesale.EDI.Factories;
-using Energinet.DataHub.Wholesale.EDI.Validation;
+using Energinet.DataHub.Wholesale.Edi.Factories;
+using Energinet.DataHub.Wholesale.Edi.Validation;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Xunit;

@@ -15,7 +15,7 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
-using Energinet.DataHub.Wholesale.EDI;
+using Energinet.DataHub.Wholesale.Edi;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;

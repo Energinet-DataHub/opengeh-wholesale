@@ -15,7 +15,7 @@
 using EdiModel = Energinet.DataHub.Edi.Responses;
 using WholesaleModel = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
-namespace Energinet.DataHub.Wholesale.EDI.Mappers;
+namespace Energinet.DataHub.Wholesale.Edi.Mappers;
 
 public static class QuantityQualityMapper
 {
