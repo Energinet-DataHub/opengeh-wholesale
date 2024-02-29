@@ -253,7 +253,7 @@ def test__create__columns_matching_contract(
     assert_contract_matches_schema(contract_path, actual.schema)
 
 
-def test__create__with_correct_calculation_result_id(
+def test__create__with_correct_number_of_calculation_result_ids(
     spark: SparkSession,
     contracts_path: str,
     migrations_executed: None,
