@@ -36,17 +36,13 @@ def test_execute__returns_expected(  # type: ignore
             "time_series_type"
         )
         .drop("calculation_execution_time_start")
-        .drop("from_grid_area")
         .drop("calculation_result_id")
-        .drop("metering_point_id")
     )
 
     exp = (
         scenario_fixture.expected.drop("time_series_type")
         .drop("calculation_execution_time_start")
-        .drop("from_grid_area")
         .drop("calculation_result_id")
-        .drop("metering_point_id")
     )
 
     # Assert
