@@ -12,6 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from .charges_flex_consumption_schema import (
-    charges_flex_consumption_schema,
+    subscription_charge_schema,
 )
 from .charges_per_day_schema import charges_per_day_schema

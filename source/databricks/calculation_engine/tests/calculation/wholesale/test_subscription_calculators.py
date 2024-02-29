@@ -23,7 +23,7 @@ from package.calculation.preparation.charge_link_metering_point_periods import (
 from package.calculation.preparation.charge_master_data import ChargeMasterData
 from package.calculation.preparation.charge_prices import ChargePrices
 from tests.helpers.test_schemas import (
-    charges_flex_consumption_schema,
+    subscription_charge_schema,
     charges_per_day_schema,
 )
 
@@ -97,7 +97,7 @@ def _create_default_subscription_charges(spark: SparkSession) -> DataFrame:
         [
             _create_subscription_row(),
         ],
-        schema=charges_flex_consumption_schema,
+        schema=subscription_charge_schema,
     )
 
 
@@ -109,13 +109,13 @@ class TestWhenValidInput:
                 datetime(2020, 1, 31, 23, 0),
                 datetime(2020, 2, 29, 22, 0),
                 Decimal("10"),
-                Decimal("0.34482759"),  # 10 / 29 (days)
+                Decimal("0.344828"),  # 10 / 29 (days)
             ),
             (  # Exiting daylights saving time
                 datetime(2020, 9, 30, 22, 0),
                 datetime(2020, 10, 31, 23, 0),
                 Decimal("10"),
-                Decimal("0.32258065"),  # 10 / 31 (days)
+                Decimal("0.322581"),  # 10 / 31 (days)
             ),
         ],
     )
@@ -130,21 +130,21 @@ class TestWhenValidInput:
         # Arrange
         subscription_row = _create_subscription_row(charge_price=input_charge_price)
         subscription_charges = spark.createDataFrame(
-            [subscription_row], schema=charges_flex_consumption_schema
+            [subscription_row], schema=subscription_charge_schema
         )
 
         # Act
         daily_subscriptions = calculate_daily_subscription_amount(
             subscription_charges,
-            DefaultValues.CALCULATION_PERIOD_START,
-            DefaultValues.CALCULATION_PERIOD_END,
+            period_start,
+            period_end,
             DefaultValues.TIME_ZONE,
         )
 
         # Assert
         assert (
             daily_subscriptions.collect()[0][Colname.charge_price]
-            == DefaultValues.CHARGE_PRICE / DefaultValues.DAYS_IN_MONTH
+            == expected_output_charge_price
         )
 
 
@@ -486,7 +486,7 @@ def test__calculate_price_per_day__divides_charge_price_by_days_in_month(
 ):
     # Arrange
     charges_flex_consumption = spark.createDataFrame(
-        charges_flex_consumption, schema=charges_flex_consumption_schema
+        charges_flex_consumption, schema=subscription_charge_schema
     )
 
     # Act

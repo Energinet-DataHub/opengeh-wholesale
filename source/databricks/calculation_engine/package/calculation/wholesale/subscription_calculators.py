@@ -15,7 +15,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, lit, count, sum
+from pyspark.sql.functions import col, lit, sum
 from pyspark.sql.types import DecimalType
 from package.constants import Colname
 
@@ -51,11 +51,13 @@ def calculate_price_per_day(
     days_in_month = _get_days_in_month(
         calculation_period_start, calculation_period_end, time_zone
     )
+
+    print("days_in_month:")
+    print(days_in_month)
     charges_per_day = charges_per_day_flex_consumption.withColumn(
-        Colname.price_per_day,
+        Colname.charge_price,
         (col(Colname.charge_price) / lit(days_in_month)).cast(DecimalType(14, 6)),
     )
-
     return charges_per_day
 
 
@@ -93,54 +95,17 @@ def _is_full_month_and_at_midnight(
 def _add_count_of_charges_and_total_daily_charge_price(
     charges_per_day: DataFrame,
 ) -> DataFrame:
-    grouped_charges_per_day = (
-        charges_per_day.groupBy(
-            Colname.charge_key,
-            Colname.grid_area,
-            Colname.energy_supplier_id,
-            Colname.charge_time,
-        )
-        .agg(
-            sum(Colname.quantity).alias(Colname.charge_count),
-            sum(Colname.price_per_day).alias(Colname.total_daily_charge_price),
-        )
-        .select(
-            Colname.charge_owner,
-            Colname.grid_area,
-            Colname.energy_supplier_id,
-            Colname.charge_time,
-            Colname.charge_count,
-            Colname.total_daily_charge_price,
-        )
+    df = charges_per_day.groupBy(
+        Colname.charge_key,
+        Colname.charge_type,
+        Colname.charge_owner,
+        Colname.charge_price,
+        Colname.grid_area,
+        Colname.energy_supplier_id,
+        Colname.charge_time,
+    ).agg(
+        sum(Colname.charge_quantity).alias(Colname.charge_count),
+        sum(Colname.charge_price).alias(Colname.total_amount),
     )
 
-    df = (
-        charges_per_day.select("*")
-        .distinct()
-        .join(
-            grouped_charges_per_day,
-            [
-                Colname.charge_owner,
-                Colname.grid_area,
-                Colname.energy_supplier_id,
-                Colname.charge_time,
-            ],
-            "inner",
-        )
-        .select(
-            Colname.charge_key,
-            Colname.charge_code,
-            Colname.charge_type,
-            Colname.charge_owner,
-            Colname.charge_price,
-            Colname.charge_time,
-            Colname.price_per_day,
-            Colname.charge_count,
-            Colname.total_daily_charge_price,
-            Colname.metering_point_type,
-            Colname.settlement_method,
-            Colname.grid_area,
-            Colname.energy_supplier_id,
-        )
-    )
     return df
