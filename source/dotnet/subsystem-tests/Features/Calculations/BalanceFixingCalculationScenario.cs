@@ -154,6 +154,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
             "NetExchangePerGa",
             "NetExchangePerNeighboringGa"
         ];
+
         var actualTimeSeriesTypesForEnergyResultProducedV2 = Fixture.ScenarioState.ReceivedEnergyResultProducedV2
             .Select(x => Enum.GetName(x.TimeSeriesType))
             .Distinct()
