@@ -119,7 +119,7 @@ class TestWhenValidInput:
             ),
         ],
     )
-    def test__returns_expected_charge_price(
+    def test__returns_charge_price_divided_by_number_of_days(
         self,
         spark: SparkSession,
         period_start: datetime,
