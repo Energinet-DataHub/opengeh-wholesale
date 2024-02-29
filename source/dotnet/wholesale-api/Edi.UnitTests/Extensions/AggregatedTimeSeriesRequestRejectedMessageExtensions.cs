@@ -15,7 +15,7 @@
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Edi.Responses;
 
-namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Extensions;
+namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Extensions;
 
 public static class AggregatedTimeSeriesRequestRejectedMessageExtensions
 {

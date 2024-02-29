@@ -12,6 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.EDI.Models;
+namespace Energinet.DataHub.Wholesale.Edi.Models;
 
 public record AggregationPerRoleAndGridArea(string? GridAreaCode, string? EnergySupplierId = null, string? BalanceResponsibleId = null);

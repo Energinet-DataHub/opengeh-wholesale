@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.EDI.Exceptions;
-using Energinet.DataHub.Wholesale.EDI.Models;
+using Energinet.DataHub.Wholesale.Edi.Exceptions;
+using Energinet.DataHub.Wholesale.Edi.Models;
 using CalculationTimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
 using TimeSeriesTypeContract = Energinet.DataHub.Edi.Responses.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.EDI.Mappers;
+namespace Energinet.DataHub.Wholesale.Edi.Mappers;
 
 public static class CalculationTimeSeriesTypeMapper
 {

@@ -16,50 +16,49 @@ using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Extensions;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Identity;
 using Microsoft.Extensions.Configuration;
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Configuration
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Configuration;
+
+/// <summary>
+/// Responsible for retrieving settings necessary for performing subsystem tests of 'Wholesale'.
+///
+/// On developer machines we use the 'subsystemtest.local.settings.json' to set values.
+/// On hosted agents we must set these using environment variables.
+/// </summary>
+public sealed class WholesaleSubsystemConfiguration : SubsystemTestConfiguration
 {
-    /// <summary>
-    /// Responsible for retrieving settings necessary for performing subsystem tests of 'Wholesale'.
-    ///
-    /// On developer machines we use the 'subsystemtest.local.settings.json' to set values.
-    /// On hosted agents we must set these using environment variables.
-    /// </summary>
-    public sealed class WholesaleSubsystemConfiguration : SubsystemTestConfiguration
+    public WholesaleSubsystemConfiguration()
     {
-        public WholesaleSubsystemConfiguration()
-        {
-            WebApiBaseAddress = new Uri(Root.GetValue<string>("WEBAPI_BASEADDRESS")!);
-            UserTokenConfiguration = B2CUserTokenConfiguration.CreateFromConfiguration(Root);
+        WebApiBaseAddress = new Uri(Root.GetValue<string>("WEBAPI_BASEADDRESS")!);
+        UserTokenConfiguration = B2CUserTokenConfiguration.CreateFromConfiguration(Root);
 
-            var secretsConfiguration = Root.BuildSecretsConfiguration();
-            ServiceBus = ServiceBusConfiguration.CreateFromConfiguration(secretsConfiguration);
-            DatabricksWorkspace = DatabricksWorkspaceConfiguration.CreateFromConfiguration(secretsConfiguration);
-            LogAnalyticsWorkspaceId = secretsConfiguration.GetValue<string>("log-shared-workspace-id")!;
-        }
-
-        /// <summary>
-        /// Base address setting for Wholesale Web API in live environment.
-        /// </summary>
-        public Uri WebApiBaseAddress { get; }
-
-        /// <summary>
-        /// Settings necessary to retrieve a user token for authentication with Wholesale Web API in live environment.
-        /// </summary>
-        public B2CUserTokenConfiguration UserTokenConfiguration { get; }
-
-        /// <summary>
-        /// Settings necessary to use the shared Service Bus.
-        /// </summary>
-        public ServiceBusConfiguration ServiceBus { get; }
-
-        /// <summary>
-        /// Settings necessary to start the Databricks workspace SQL warehouse.
-        /// </summary>
-        public DatabricksWorkspaceConfiguration DatabricksWorkspace { get; }
-
-        /// <summary>
-        /// Setting necessary to use the shared Log Analytics workspace.
-        /// </summary>
-        public string LogAnalyticsWorkspaceId { get; }
+        var secretsConfiguration = Root.BuildSecretsConfiguration();
+        ServiceBus = ServiceBusConfiguration.CreateFromConfiguration(secretsConfiguration);
+        DatabricksWorkspace = DatabricksWorkspaceConfiguration.CreateFromConfiguration(secretsConfiguration);
+        LogAnalyticsWorkspaceId = secretsConfiguration.GetValue<string>("log-shared-workspace-id")!;
     }
+
+    /// <summary>
+    /// Base address setting for Wholesale Web API in live environment.
+    /// </summary>
+    public Uri WebApiBaseAddress { get; }
+
+    /// <summary>
+    /// Settings necessary to retrieve a user token for authentication with Wholesale Web API in live environment.
+    /// </summary>
+    public B2CUserTokenConfiguration UserTokenConfiguration { get; }
+
+    /// <summary>
+    /// Settings necessary to use the shared Service Bus.
+    /// </summary>
+    public ServiceBusConfiguration ServiceBus { get; }
+
+    /// <summary>
+    /// Settings necessary to start the Databricks workspace SQL warehouse.
+    /// </summary>
+    public DatabricksWorkspaceConfiguration DatabricksWorkspace { get; }
+
+    /// <summary>
+    /// Setting necessary to use the shared Log Analytics workspace.
+    /// </summary>
+    public string LogAnalyticsWorkspaceId { get; }
 }

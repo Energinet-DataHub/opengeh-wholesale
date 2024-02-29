@@ -14,10 +14,10 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Edi.Responses;
-using Energinet.DataHub.Wholesale.EDI.Validation;
+using Energinet.DataHub.Wholesale.Edi.Validation;
 using Google.Protobuf;
 
-namespace Energinet.DataHub.Wholesale.EDI.Factories;
+namespace Energinet.DataHub.Wholesale.Edi.Factories;
 
 public static class AggregatedTimeSeriesRequestRejectedMessageFactory
 {
