@@ -9,4 +9,7 @@ module "mssql_data_additional" {
     min_capacity = 0
     max_capacity = 125
   }
+
+  # This enables zone redundancy for the SQL server and all databases in the pool
+  zone_redundant = true
 }
