@@ -16,27 +16,26 @@ using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
-namespace Energinet.DataHub.Wholesale.Orchestration.Functions.Calculation
+namespace Energinet.DataHub.Wholesale.Orchestration.Functions.Calculation;
+
+public class RegisterCompletedCalculationsTrigger
 {
-    public class RegisterCompletedCalculationsTrigger
+    private readonly ILogger _logger;
+    private readonly IRegisterCompletedCalculationsHandler _handler;
+
+    public RegisterCompletedCalculationsTrigger(
+        ILogger<RegisterCompletedCalculationsTrigger> logger,
+        IRegisterCompletedCalculationsHandler handler)
     {
-        private readonly ILogger _logger;
-        private readonly IRegisterCompletedCalculationsHandler _handler;
+        _logger = logger;
+        _handler = handler;
+    }
 
-        public RegisterCompletedCalculationsTrigger(
-            ILogger<RegisterCompletedCalculationsTrigger> logger,
-            IRegisterCompletedCalculationsHandler handler)
-        {
-            _logger = logger;
-            _handler = handler;
-        }
-
-        [Function(nameof(RegisterCompletedCalculationsTrigger))]
-        public async Task Run(
-            [TimerTrigger("00:00:10")]
-            TimerInfo timerInfo)
-        {
-            await _handler.RegisterCompletedCalculationsAsync().ConfigureAwait(false);
-        }
+    [Function(nameof(RegisterCompletedCalculationsTrigger))]
+    public async Task Run(
+        [TimerTrigger("00:00:10")]
+        TimerInfo timerInfo)
+    {
+        await _handler.RegisterCompletedCalculationsAsync().ConfigureAwait(false);
     }
 }

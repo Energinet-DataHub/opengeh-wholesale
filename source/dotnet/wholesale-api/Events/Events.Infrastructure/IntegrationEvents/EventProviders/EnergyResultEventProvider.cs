@@ -34,9 +34,8 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ev
                 if (energyResultProducedV2Factory.CanCreate(energyResult))
                     yield return CreateIntegrationEvent(energyResultProducedV2Factory.Create(energyResult));
 
-                if (gridLossResultProducedV2Factory.CanCreate(energyResult))
-                    yield return CreateIntegrationEvent(gridLossResultProducedV2Factory.Create(energyResult));
-            }
+            if (gridLossResultProducedV2Factory.CanCreate(energyResult))
+                yield return CreateIntegrationEvent(gridLossResultProducedV2Factory.Create(energyResult));
         }
     }
 }

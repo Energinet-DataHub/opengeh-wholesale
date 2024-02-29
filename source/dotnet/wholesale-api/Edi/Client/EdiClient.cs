@@ -16,7 +16,7 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Extensions.Options;
 
-namespace Energinet.DataHub.Wholesale.EDI.Client;
+namespace Energinet.DataHub.Wholesale.Edi.Client;
 
 public class EdiClient : IEdiClient, IAsyncDisposable
 {
