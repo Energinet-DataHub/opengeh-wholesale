@@ -14,6 +14,7 @@
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Xunit;
@@ -49,6 +50,21 @@ public class CompositionRootTests
                         options.ValidateScopes = true;
                         // Validate the service provider during build
                         options.ValidateOnBuild = true;
+                    })
+                    // TODO: Should be refactored in the future.
+                    // Currently there is no way for us to only build the services without starting the server.
+                    // This means our hosted services will start and hence cause the test to fail if certain settings are not configured.
+                    .ConfigureAppConfiguration((context, configurationBuilder) =>
+                    {
+                        configurationBuilder.AddInMemoryCollection(new Dictionary<string, string?>
+                        {
+                            ["SERVICE_BUS_SEND_CONNECTION_STRING"] = "NotEmpty",
+                            ["SERVICE_BUS_TRANCEIVER_CONNECTION_STRING"] = "NotEmpty",
+                            ["INTEGRATIONEVENTS_TOPIC_NAME"] = "NotEmpty",
+                            ["INTEGRATIONEVENTS_SUBSCRIPTION_NAME"] = "NotEmpty",
+                            ["WHOLESALE_INBOX_MESSAGE_QUEUE_NAME"] = "NotEmpty",
+                            ["EDI_INBOX_MESSAGE_QUEUE_NAME"] = "NotEmpty",
+                        });
                     })
                     // Add controllers as services to enable validation of controller dependencies
                     // See https://andrewlock.net/new-in-asp-net-core-3-service-provider-validation/#1-controller-constructor-dependencies-aren-t-checked
