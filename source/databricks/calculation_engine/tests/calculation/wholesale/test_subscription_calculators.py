@@ -14,6 +14,8 @@
 from decimal import Decimal
 from datetime import datetime
 
+from pyspark import Row
+
 from package.calculation.preparation.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
 )
@@ -24,7 +26,12 @@ from tests.helpers.test_schemas import (
     charges_per_day_schema,
 )
 
-from package.codelists import MeteringPointType, SettlementMethod, ChargeType
+from package.codelists import (
+    MeteringPointType,
+    SettlementMethod,
+    ChargeType,
+    QuantityQuality,
+)
 from package.calculation.wholesale.subscription_calculators import (
     calculate_daily_subscription_amount,
     _add_count_of_charges_and_total_daily_charge_price,
@@ -48,18 +55,8 @@ class DefaultValues:
     CHARGE_QUANTITY = 1
     ENERGY_SUPPLIER_ID = "1234567890123"
     METERING_POINT_ID = "123456789012345678901234567"
-    METERING_POINT_TYPE = e.MeteringPointType.CONSUMPTION
-    SETTLEMENT_METHOD = e.SettlementMethod.FLEX
     QUANTITY = Decimal("1.005")
     QUALITY = e.ChargeQuality.CALCULATED
-    PERIOD_START_DATETIME = datetime(2019, 12, 31, 23)
-    BALANCE_RESPONSIBLE_ID = "1234567890123"
-    FROM_GRID_AREA = None
-    TO_GRID_AREA = None
-    FROM_DATE: datetime = datetime(2019, 12, 31, 23)
-    TO_DATE: datetime = datetime(2020, 1, 31, 23)
-    PARENT_METERING_POINT_ID = None
-    CALCULATION_TYPE = None
 
 
 def _create_subscription_row(
@@ -70,10 +67,8 @@ def _create_subscription_row(
     charge_price: Decimal | None = DefaultValues.CHARGE_PRICE,
     charge_quantity: int = DefaultValues.CHARGE_QUANTITY,
     energy_supplier_id: str = DefaultValues.ENERGY_SUPPLIER_ID,
-    metering_point_type: MeteringPointType = DefaultValues.METERING_POINT_TYPE,
     grid_area: str = DefaultValues.GRID_AREA,
-    quantity: Decimal = DEFAULT_QUANTITY,
-    quality: Quality = DEFAULT_QUALITY,
+    quality: QuantityQuality = QuantityQuality.CALCULATED,
 ) -> Row:
     charge_type = ChargeType.SUBSCRIPTION.value
     row = {
@@ -84,28 +79,15 @@ def _create_subscription_row(
         Colname.charge_time: charge_time,
         Colname.charge_price: charge_price,
         Colname.charge_tax: False,
-        Colname.energy_supplier_id: energy_supplier_id,
-        Colname.metering_point_type: metering_point_type.value,
+        Colname.charge_quantity: charge_quantity,
+        Colname.metering_point_type: MeteringPointType.CONSUMPTION.value,
+        Colname.settlement_method: SettlementMethod.FLEX.value,
         Colname.grid_area: grid_area,
-        Colname.charge_quantity: quantity,
+        Colname.energy_supplier_id: energy_supplier_id,
         Colname.qualities: [quality.value],
     }
 
     return Row(**row)
-
-
-subscription_master_data_and_prices[Colname.charge_key],
-subscription_master_data_and_prices[Colname.charge_type],
-subscription_master_data_and_prices[Colname.charge_owner],
-subscription_master_data_and_prices[Colname.charge_code],
-subscription_master_data_and_prices[Colname.charge_time],
-subscription_master_data_and_prices[Colname.charge_price],
-subscription_master_data_and_prices[Colname.charge_tax],
-subscription_links[Colname.charge_quantity],
-subscription_links[Colname.metering_point_type],
-subscription_links[Colname.settlement_method],
-subscription_links[Colname.grid_area],
-subscription_links[Colname.energy_supplier_id],
 
 
 def test__calculate_daily_subscription_price__simple(
