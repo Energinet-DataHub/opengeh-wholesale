@@ -143,6 +143,9 @@ message EnergyResultProducedV2 {
     int64 calculation_result_version = 18;
 
     enum TimeSeriesType {
+
+        reserved 6, 7, 8, 10, 11; // No longer used
+
         /*
          * Unspecified is unused but according to best practice.
          * Read more at https://protobuf.dev/programming-guides/style/#enums.
@@ -153,9 +156,7 @@ message EnergyResultProducedV2 {
         TIME_SERIES_TYPE_FLEX_CONSUMPTION = 3;
         TIME_SERIES_TYPE_NET_EXCHANGE_PER_GA = 4;
         TIME_SERIES_TYPE_NET_EXCHANGE_PER_NEIGHBORING_GA = 5;
-        reserved 6, 7, 8; // No longer used
         TIME_SERIES_TYPE_TOTAL_CONSUMPTION = 9;
-        reserved 10, 11; // No longer used
     }
 
     message AggregationPerGridArea {
