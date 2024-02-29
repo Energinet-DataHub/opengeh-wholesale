@@ -30,7 +30,7 @@ def test_execute__returns_expected(  # type: ignore
 
     # Assert
     assert_dataframe_and_schema(
-        results.energy_results.flex_consumption_per_ga_and_es.df,
+        results.energy_results.flex_consumption_per_ga_and_es,
         scenario_fixture.expected,
         ignore_decimal_precision=True,
         ignore_nullability=True,
