@@ -19,6 +19,7 @@ class MeteringPointType(Enum):
     PRODUCTION = "production"
     CONSUMPTION = "consumption"
     EXCHANGE = "exchange"
+    # The following are for child metering points
     VE_PRODUCTION = "ve_production"
     NET_PRODUCTION = "net_production"
     SUPPLY_TO_GRID = "supply_to_grid"

@@ -85,15 +85,39 @@ def _execute(
             args.calculation_period_start_datetime, args.calculation_period_end_datetime
         )
 
-        metering_points_periods_for_wholesale_calculation_df = (
+        production_and_consumption_metering_points = (
             _get_production_and_consumption_metering_points(metering_point_periods_df)
+        )
+        all_metering_points = _get_all_child_metering_points(metering_point_periods_df)
+
+        metering_points_periods_for_wholesale_calculation = all_metering_points.join(
+            production_and_consumption_metering_points,
+            production_and_consumption_metering_points[Colname.metering_point_id]
+            == all_metering_points[Colname.parent_metering_point_id],
+            "left",
+        ).select(
+            all_metering_points[Colname.metering_point_id],
+            all_metering_points[Colname.metering_point_type],
+            all_metering_points[Colname.calculation_type],
+            all_metering_points[Colname.settlement_method],
+            all_metering_points[Colname.grid_area],
+            all_metering_points[Colname.resolution],
+            all_metering_points[Colname.from_grid_area],
+            all_metering_points[Colname.to_grid_area],
+            all_metering_points[Colname.parent_metering_point_id],
+            production_and_consumption_metering_points[
+                Colname.energy_supplier_id
+            ],  # energy_supplier_id is always null on child metering points
+            all_metering_points[Colname.balance_responsible_id],
+            all_metering_points[Colname.from_date],
+            all_metering_points[Colname.to_date],
         )
 
         charges_link_metering_point_periods = (
             prepared_data_reader.get_charge_link_metering_point_periods(
                 args.calculation_period_start_datetime,
                 args.calculation_period_end_datetime,
-                metering_points_periods_for_wholesale_calculation_df,
+                metering_points_periods_for_wholesale_calculation,
             )
         )
 
@@ -135,6 +159,45 @@ def _get_production_and_consumption_metering_points(
     return metering_points_periods_df.filter(
         (f.col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
         | (f.col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
+    )
+
+
+def _get_all_child_metering_points(
+    metering_points_periods_df: DataFrame,
+) -> DataFrame:
+    return metering_points_periods_df.filter(
+        (f.col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
+        | (f.col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
+        | (f.col(Colname.metering_point_type) == MeteringPointType.VE_PRODUCTION.value)
+        | (f.col(Colname.metering_point_type) == MeteringPointType.NET_PRODUCTION.value)
+        | (f.col(Colname.metering_point_type) == MeteringPointType.SUPPLY_TO_GRID.value)
+        | (
+            f.col(Colname.metering_point_type)
+            == MeteringPointType.CONSUMPTION_FROM_GRID.value
+        )
+        | (
+            f.col(Colname.metering_point_type)
+            == MeteringPointType.WHOLESALE_SERVICES_INFORMATION.value
+        )
+        | (f.col(Colname.metering_point_type) == MeteringPointType.OWN_PRODUCTION.value)
+        | (f.col(Colname.metering_point_type) == MeteringPointType.NET_FROM_GRID.value)
+        | (f.col(Colname.metering_point_type) == MeteringPointType.NET_TO_GRID.value)
+        | (
+            f.col(Colname.metering_point_type)
+            == MeteringPointType.TOTAL_CONSUMPTION.value
+        )
+        | (
+            f.col(Colname.metering_point_type)
+            == MeteringPointType.ELECTRICAL_HEATING.value
+        )
+        | (
+            f.col(Colname.metering_point_type)
+            == MeteringPointType.NET_CONSUMPTION.value
+        )
+        | (
+            f.col(Colname.metering_point_type)
+            == MeteringPointType.EFFECT_SETTLEMENT.value
+        )
     )
 
 
