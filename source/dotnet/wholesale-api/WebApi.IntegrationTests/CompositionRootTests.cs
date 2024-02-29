@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Xunit;
@@ -38,10 +39,10 @@ public class CompositionRootTests
     [Fact]
     public void AllServicesConstructSuccessfully()
     {
-        Host.CreateDefaultBuilder()
-            .ConfigureWebHostDefaults(webBuilder =>
+        using var application = new WebApplicationFactory<Program>()
+            .WithWebHostBuilder(builder =>
             {
-                webBuilder
+                builder
                     .UseDefaultServiceProvider((_, options) =>
                     {
                         // See https://learn.microsoft.com/en-us/aspnet/core/fundamentals/host/web-host?view=aspnetcore-7.0#scope-validation
@@ -51,8 +52,10 @@ public class CompositionRootTests
                     })
                     // Add controllers as services to enable validation of controller dependencies
                     // See https://andrewlock.net/new-in-asp-net-core-3-service-provider-validation/#1-controller-constructor-dependencies-aren-t-checked
-                    .ConfigureServices(collection => collection.AddControllers().AddControllersAsServices())
-                    .UseStartup<Startup>();
-            }).Build();
+                    .ConfigureServices(collection => collection.AddControllers().AddControllersAsServices());
+            });
+
+        // Act
+        using var client = application.CreateClient();
     }
 }
