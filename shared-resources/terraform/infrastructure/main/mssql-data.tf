@@ -1,7 +1,6 @@
 module "mssql_data_additional" { # Needs to be a named like this or it would delete all databases
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-server?ref=13.37.2"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-server?ref=13.47.0"
 
-  name                 = "data"
   project_name         = var.domain_name_short
   environment_short    = var.environment_short
   environment_instance = var.environment_instance
@@ -46,7 +45,7 @@ resource "azurerm_mssql_firewall_rule" "github_largerunner" {
 }
 
 module "kvs_mssql_data_elastic_pool_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.37.2"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.47.0"
 
   name         = "mssql-data-elastic-pool-id"
   value        = module.mssql_data_additional.elastic_pool_id
@@ -54,7 +53,7 @@ module "kvs_mssql_data_elastic_pool_id" {
 }
 
 module "kvs_mssql_data_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.37.2"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.47.0"
 
   name         = "mssql-data-url"
   value        = module.mssql_data_additional.fully_qualified_domain_name
@@ -62,7 +61,7 @@ module "kvs_mssql_data_url" {
 }
 
 module "kvs_mssql_data_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.37.2"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.47.0"
 
   name         = "mssql-data-name"
   value        = module.mssql_data_additional.name

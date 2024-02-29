@@ -1,5 +1,5 @@
 module "func_healthchecks" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=13.37.2"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=13.47.0"
 
   name                                     = "healthchecks"
   project_name                             = var.domain_name_short
@@ -24,7 +24,7 @@ module "func_healthchecks" {
 
 // Access policy to allow checking access to Shared Resources keyvault
 module "kv_shared_access_policy_func_entrypoint_marketparticipant" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-access-policy?ref=13.37.2"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-access-policy?ref=13.47.0"
 
   key_vault_id = module.kv_shared.id
   app_identity = module.func_healthchecks.identity.0
