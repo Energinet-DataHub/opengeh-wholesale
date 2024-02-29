@@ -12,34 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from decimal import Decimal
-from datetime import datetime
+from datetime import datetime, timedelta
+
+import pytest
 
 from pyspark import Row
 from pyspark.sql import DataFrame, SparkSession
 
-from package.calculation.preparation.charge_link_metering_point_periods import (
-    ChargeLinkMeteringPointPeriods,
+from package.calculation.wholesale.subscription_calculators import (
+    calculate_daily_subscription_amount,
 )
-from package.calculation.preparation.charge_master_data import ChargeMasterData
-from package.calculation.preparation.charge_prices import ChargePrices
-from tests.helpers.test_schemas import (
-    subscription_charge_schema,
-    charges_per_day_schema,
-)
-
 from package.codelists import (
     MeteringPointType,
     SettlementMethod,
     ChargeType,
     QuantityQuality,
 )
-from package.calculation.wholesale.subscription_calculators import (
-    calculate_daily_subscription_amount,
-)
-from package.calculation.preparation.transformations import get_subscription_charges
-from calendar import monthrange
-import pytest
 from package.constants import Colname
+from tests.helpers.test_schemas import subscription_charge_schema
 
 
 class DefaultValues:
@@ -135,7 +125,7 @@ class TestWhenValidInput:
         )
 
         # Act
-        daily_subscriptions = calculate_daily_subscription_amount(
+        actual = calculate_daily_subscription_amount(
             subscription_charges,
             period_start,
             period_end,
@@ -143,10 +133,7 @@ class TestWhenValidInput:
         )
 
         # Assert
-        assert (
-            daily_subscriptions.collect()[0][Colname.charge_price]
-            == expected_output_charge_price
-        )
+        assert actual.collect()[0][Colname.charge_price] == expected_output_charge_price
 
     def test__returns_expected_charge_count(
         self,
@@ -165,7 +152,7 @@ class TestWhenValidInput:
         )
 
         # Act
-        daily_subscriptions = calculate_daily_subscription_amount(
+        actual = calculate_daily_subscription_amount(
             subscription_charges,
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
@@ -173,9 +160,7 @@ class TestWhenValidInput:
         )
 
         # Assert
-        assert (
-            daily_subscriptions.collect()[0][Colname.charge_count] == expected_quantity
-        )
+        assert actual.collect()[0][Colname.charge_count] == expected_quantity
 
     def test__returns_expected_amount(
         self,
@@ -206,7 +191,7 @@ class TestWhenValidInput:
         )
 
         # Act
-        daily_subscriptions = calculate_daily_subscription_amount(
+        actual = calculate_daily_subscription_amount(
             subscription_charges,
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
@@ -214,7 +199,60 @@ class TestWhenValidInput:
         )
 
         # Assert
-        assert daily_subscriptions.collect()[0][Colname.total_amount] == expected_amount
+        assert actual.collect()[0][Colname.total_amount] == expected_amount
+
+
+class TestWhenMultipleMeteringPointsPerChargeTime:
+    def test__returns_sum_charge_quantity_per_charge_time(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        time_1 = DefaultValues.CALCULATION_PERIOD_START
+        time_2 = time_1 + timedelta(days=1)
+        quantity_1 = 3
+        quantity_2 = 4
+        expected_charge_count_1 = 2 * quantity_1
+        expected_charge_count_2 = 2 * quantity_2
+
+        subscription_rows = [
+            _create_subscription_row(
+                metering_point_id="1",
+                charge_time=time_1,
+                charge_quantity=quantity_1,
+            ),
+            _create_subscription_row(
+                metering_point_id="2",
+                charge_time=time_1,
+                charge_quantity=quantity_1,
+            ),
+            _create_subscription_row(
+                metering_point_id="1",
+                charge_time=time_2,
+                charge_quantity=quantity_2,
+            ),
+            _create_subscription_row(
+                metering_point_id="2",
+                charge_time=time_2,
+                charge_quantity=quantity_2,
+            ),
+        ]
+        subscription_charges = spark.createDataFrame(
+            subscription_rows, schema=subscription_charge_schema
+        )
+
+        # Act
+        actual = calculate_daily_subscription_amount(
+            subscription_charges,
+            DefaultValues.CALCULATION_PERIOD_START,
+            DefaultValues.CALCULATION_PERIOD_END,
+            DefaultValues.TIME_ZONE,
+        )
+
+        # Assert
+        actual_rows = actual.orderBy(Colname.charge_time).collect()
+        assert actual_rows[0][Colname.charge_count] == expected_charge_count_1
+        assert actual_rows[1][Colname.charge_count] == expected_charge_count_2
 
 
 class TestWhenCalculationPeriodIsNotFullMonth:
