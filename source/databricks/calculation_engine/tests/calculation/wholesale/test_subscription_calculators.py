@@ -35,7 +35,7 @@ from package.codelists import (
 )
 from package.calculation.wholesale.subscription_calculators import (
     calculate_daily_subscription_amount,
-    _add_count_of_charges_and_total_daily_charge_price,
+    _calculate_charge_count_and_amount,
 )
 from package.calculation.preparation.transformations import get_subscription_charges
 from calendar import monthrange
@@ -185,19 +185,21 @@ class TestWhenValidInput:
         # Arrange
         quantity_1 = 1
         quantity_2 = 2
-        price_1 = Decimal("3.0")
-        price_2 = Decimal("4.0")
-        expected_amount = price_1 * quantity_1 + price_2 * quantity_2
+        price = Decimal("3.0")
+        price_per_day = price / DefaultValues.DAYS_IN_MONTH
+        expected_amount_not_rounded = (quantity_1 + quantity_2) * price_per_day
+        expected_amount = round(expected_amount_not_rounded, 6)
+
         subscription_rows = [
             _create_subscription_row(
                 metering_point_id="1",
                 charge_quantity=quantity_1,
-                charge_price=price_1,
+                charge_price=price,
             ),
             _create_subscription_row(
                 metering_point_id="2",
                 charge_quantity=quantity_2,
-                charge_price=price_2,
+                charge_price=price,
             ),
         ]
         subscription_charges = spark.createDataFrame(
@@ -688,7 +690,7 @@ def test__add_count_of_charges_and_total_daily_charge_price__counts_and_sums_up_
     )
 
     # Act
-    result = _add_count_of_charges_and_total_daily_charge_price(charges_per_day)
+    result = _calculate_charge_count_and_amount(charges_per_day)
 
     # Assert
     result_collect = result.collect()
