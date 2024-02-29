@@ -14,18 +14,17 @@
 
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Extensions
-{
-    public static class MessageSinkExtensions
-    {
-        public static void WriteDiagnosticMessage(this IMessageSink messageSink, string message)
-        {
-            messageSink.OnMessage(CreateDiagnosticMessage(message));
-        }
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Extensions;
 
-        private static Xunit.Sdk.DiagnosticMessage CreateDiagnosticMessage(string message)
-        {
-            return new Xunit.Sdk.DiagnosticMessage($"Mandalorian: {message}");
-        }
+public static class MessageSinkExtensions
+{
+    public static void WriteDiagnosticMessage(this IMessageSink messageSink, string message)
+    {
+        messageSink.OnMessage(CreateDiagnosticMessage(message));
+    }
+
+    private static Xunit.Sdk.DiagnosticMessage CreateDiagnosticMessage(string message)
+    {
+        return new Xunit.Sdk.DiagnosticMessage($"Mandalorian: {message}");
     }
 }

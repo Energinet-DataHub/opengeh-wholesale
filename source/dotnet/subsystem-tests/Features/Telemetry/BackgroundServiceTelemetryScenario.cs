@@ -20,69 +20,69 @@ using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using FluentAssertions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry;
+
+/// <summary>
+/// Verify telemetry is configured correctly so traces are logged from background services.
+/// </summary>
+[TestCaseOrderer(
+    ordererTypeName: "Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Orderers.ScenarioStepOrderer",
+    ordererAssemblyName: "Energinet.DataHub.Wholesale.SubsystemTests")]
+public class BackgroundServiceTelemetryScenario : SubsystemTestsBase<TelemetryScenarioFixture<BackgroundServiceTelemetryScenarioState>>
 {
-    /// <summary>
-    /// Verify telemetry is configured correctly so traces are logged from background services.
-    /// </summary>
-    [TestCaseOrderer(
-        ordererTypeName: "Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Orderers.ScenarioStepOrderer",
-        ordererAssemblyName: "Energinet.DataHub.Wholesale.SubsystemTests")]
-    public class BackgroundServiceTelemetryScenario : SubsystemTestsBase<TelemetryScenarioFixture<BackgroundServiceTelemetryScenarioState>>
+    public BackgroundServiceTelemetryScenario(LazyFixtureFactory<TelemetryScenarioFixture<BackgroundServiceTelemetryScenarioState>> lazyFixtureFactory)
+        : base(lazyFixtureFactory)
     {
-        public BackgroundServiceTelemetryScenario(LazyFixtureFactory<TelemetryScenarioFixture<BackgroundServiceTelemetryScenarioState>> lazyFixtureFactory)
-            : base(lazyFixtureFactory)
-        {
-        }
+    }
 
-        [ScenarioStep(0)]
-        [SubsystemFact]
-        public void Given_CalculationInput()
+    [ScenarioStep(0)]
+    [SubsystemFact]
+    public void Given_CalculationInput()
+    {
+        Fixture.ScenarioState.CalculationInput = new Clients.v3.CalculationRequestDto
         {
-            Fixture.ScenarioState.CalculationInput = new Clients.v3.CalculationRequestDto
-            {
-                CalculationType = Clients.v3.CalculationType.Aggregation,
-                GridAreaCodes = new List<string> { "543" },
-                StartDate = new DateTimeOffset(2022, 1, 13, 23, 0, 0, TimeSpan.Zero),
-                EndDate = new DateTimeOffset(2022, 1, 14, 23, 0, 0, TimeSpan.Zero),
-            };
-        }
+            CalculationType = Clients.v3.CalculationType.Aggregation,
+            GridAreaCodes = new List<string> { "543" },
+            StartDate = new DateTimeOffset(2022, 1, 13, 23, 0, 0, TimeSpan.Zero),
+            EndDate = new DateTimeOffset(2022, 1, 14, 23, 0, 0, TimeSpan.Zero),
+        };
+    }
 
-        [ScenarioStep(1)]
-        [SubsystemFact]
-        public async Task AndGiven_CalculationIsStarted()
+    [ScenarioStep(1)]
+    [SubsystemFact]
+    public async Task AndGiven_CalculationIsStarted()
+    {
+        Fixture.ScenarioState.CalculationId = await Fixture.StartCalculationAsync(Fixture.ScenarioState.CalculationInput);
+
+        // Assert
+        Fixture.ScenarioState.CalculationId.Should().NotBeEmpty();
+    }
+
+    [ScenarioStep(2)]
+    [SubsystemFact]
+    public void When_ExpectedTelemetryEvents()
+    {
+        // From 'StartCalculationHandler' (handled in Timer Trigger request pipeline within Orchestration host)
+        Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new AppTraceMatch
         {
-            Fixture.ScenarioState.CalculationId = await Fixture.StartCalculationAsync(Fixture.ScenarioState.CalculationInput);
-
-            // Assert
-            Fixture.ScenarioState.CalculationId.Should().NotBeEmpty();
-        }
-
-        [ScenarioStep(2)]
-        [SubsystemFact]
-        public void When_ExpectedTelemetryEvents()
+            AppVersionContains = "PR:",
+            Subsystem = "wholesale",
+            MessageContains = $"Calculation with id {Fixture.ScenarioState.CalculationId} started",
+        });
+        // From 'IntegrationEventProvider' (handled in background service)
+        Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new AppTraceMatch
         {
-            // From 'StartCalculationHandler' (handled in Timer Trigger request pipeline within Orchestration host)
-            Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new AppTraceMatch
-            {
-                AppVersionContains = "PR:",
-                Subsystem = "wholesale",
-                MessageContains = $"Calculation with id {Fixture.ScenarioState.CalculationId} started",
-            });
-            // From 'IntegrationEventProvider' (handled in background service)
-            Fixture.ScenarioState.ExpectedTelemetryEvents.Add(new AppTraceMatch
-            {
-                AppVersionContains = "PR:",
-                Subsystem = "wholesale",
-                MessageContains = $"Published results for succeeded energy calculation {Fixture.ScenarioState.CalculationId} to the service bus",
-            });
-        }
+            AppVersionContains = "PR:",
+            Subsystem = "wholesale",
+            MessageContains = $"Published results for succeeded energy calculation {Fixture.ScenarioState.CalculationId} to the service bus",
+        });
+    }
 
-        [ScenarioStep(3)]
-        [SubsystemFact]
-        public async Task Then_TelemetryEventsAreLoggedWithinWaitTime()
-        {
-            var query = $@"
+    [ScenarioStep(3)]
+    [SubsystemFact]
+    public async Task Then_TelemetryEventsAreLoggedWithinWaitTime()
+    {
+        var query = $@"
                 AppTraces
                 | where AppRoleName contains ""-wholsal-""
                 | where Message contains ""{Fixture.ScenarioState.CalculationId}""
@@ -90,14 +90,13 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry
                 | project TimeGenerated, OperationId, ParentId, Type, AppVersion, Subsystem=parsedProp.Subsystem, EventName=parsedProp.EventName, Message
                 | order by TimeGenerated asc";
 
-            var wasEventsLogged = await Fixture.WaitForTelemetryEventsAsync(
-                Fixture.ScenarioState.ExpectedTelemetryEvents.AsReadOnly(),
-                query,
-                queryTimeRange: new QueryTimeRange(TimeSpan.FromMinutes(15)),
-                waitTimeLimit: TimeSpan.FromMinutes(15),
-                delay: TimeSpan.FromSeconds(60));
+        var wasEventsLogged = await Fixture.WaitForTelemetryEventsAsync(
+            Fixture.ScenarioState.ExpectedTelemetryEvents.AsReadOnly(),
+            query,
+            queryTimeRange: new QueryTimeRange(TimeSpan.FromMinutes(15)),
+            waitTimeLimit: TimeSpan.FromMinutes(15),
+            delay: TimeSpan.FromSeconds(60));
 
-            wasEventsLogged.Should().BeTrue($"{nameof(Fixture.ScenarioState.ExpectedTelemetryEvents)} was not logged to Application Insights within time limit.");
-        }
+        wasEventsLogged.Should().BeTrue($"{nameof(Fixture.ScenarioState.ExpectedTelemetryEvents)} was not logged to Application Insights within time limit.");
     }
 }
