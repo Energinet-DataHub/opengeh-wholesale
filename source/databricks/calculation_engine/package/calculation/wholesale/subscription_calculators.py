@@ -16,7 +16,6 @@ from zoneinfo import ZoneInfo
 
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
-from pyspark.sql.types import DecimalType
 from package.constants import Colname
 
 
