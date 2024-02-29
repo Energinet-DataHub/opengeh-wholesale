@@ -31,7 +31,8 @@ public class EnergyResultEventProvider(
     {
         await foreach (var energyResult in energyResultQueries.GetAsync(calculation.Id).ConfigureAwait(false))
         {
-            yield return CreateIntegrationEvent(energyResultProducedV2Factory.Create(energyResult));
+            if (energyResultProducedV2Factory.CanCreate(energyResult))
+                yield return CreateIntegrationEvent(energyResultProducedV2Factory.Create(energyResult));
 
             if (gridLossResultProducedV2Factory.CanCreate(energyResult))
                 yield return CreateIntegrationEvent(gridLossResultProducedV2Factory.Create(energyResult));
