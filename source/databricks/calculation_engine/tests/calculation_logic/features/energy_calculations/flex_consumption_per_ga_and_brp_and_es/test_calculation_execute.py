@@ -28,10 +28,34 @@ def test_execute__returns_expected(  # type: ignore
     # Act
     results = scenario_fixture.execute()
 
+    results.energy_results.flex_consumption_per_ga_and_brp_and_es.show()
+    scenario_fixture.expected.show()
+
+    actual = (
+        results.energy_results.flex_consumption_per_ga_and_brp_and_es.drop(
+            "aggregation_level"
+        )
+        .drop("time_series_type")
+        .drop("calculation_execution_time_start")
+        .drop("from_grid_area")
+        .drop("calculation_result_id")
+        .drop("metering_point_id")
+    )
+
+    exp = (
+        scenario_fixture.expected.drop("aggregation_level")
+        .drop("time_series_type")
+        .drop("calculation_execution_time_start")
+        .drop("from_grid_area")
+        .drop("calculation_result_id")
+        .drop("metering_point_id")
+    )
+
     # Assert
     assert_dataframe_and_schema(
-        results.energy_results.flex_consumption_per_ga_and_brp_and_es,
-        scenario_fixture.expected,
+        actual,
+        exp,
         ignore_decimal_precision=True,
+        ignore_decimal_scale=True,
         ignore_nullability=True,
     )

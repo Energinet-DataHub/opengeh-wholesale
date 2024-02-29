@@ -27,16 +27,16 @@ from package.calculation_output.schemas import wholesale_results_schema
 def get_expected(*args) -> DataFrame:  # type: ignore
     spark: SparkSession = args[0]
     df: DataFrame = args[1]
-    calculation_args = args[2]
+    args = args[2]
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
     from package.constants import Colname
 
-    df = df.withColumn(Colname.calculation_id, lit(calculation_args.calculation_id))
+    df = df.withColumn(Colname.calculation_id, lit(args.calculation_id))
     df = df.withColumn(
         Colname.calculation_execution_time_start,
-        lit(calculation_args.calculation_execution_time_start).cast(TimestampType()),
+        lit(args.calculation_execution_time_start).cast(TimestampType()),
     )
     df = df.withColumn("calculation_result_id", lit(""))
     df = df.withColumn("quantity_unit", lit("kWh"))  # TODO AJW

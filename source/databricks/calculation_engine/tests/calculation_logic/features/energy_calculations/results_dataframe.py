@@ -15,15 +15,17 @@ from ast import literal_eval
 from datetime import datetime
 
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import col, udf
+from pyspark.sql.functions import col, udf, lit
 from pyspark.sql.types import (
-    StructType,
-    StructField,
     StringType,
     DecimalType,
     TimestampType,
     ArrayType,
 )
+
+from package.calculation_output.schemas import energy_results_schema
+from package.codelists import TimeSeriesType, AggregationLevel, CalculationType
+from package.constants import EnergyResultColumnNames
 
 CSV_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
@@ -31,44 +33,55 @@ CSV_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 def create_result_dataframe(*args) -> DataFrame:  # type: ignore
     spark: SparkSession = args[0]
     df: DataFrame = args[1]
+    calculation_args = args[2]
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
-    from package.constants import Colname
-    from package.calculation.energy.energy_results import energy_results_schema
-
-    parse_time_window_udf = udf(
-        _parse_time_window,
-        StructType(
-            [
-                StructField(Colname.start, TimestampType()),
-                StructField(Colname.end, TimestampType()),
-            ]
-        ),
-    )
 
     df = df.withColumn(
-        Colname.time_window, parse_time_window_udf(df[Colname.time_window])
+        EnergyResultColumnNames.time,
+        col(EnergyResultColumnNames.time).cast(TimestampType()),
     )
     df = df.withColumn(
-        Colname.sum_quantity, col(Colname.sum_quantity).cast(DecimalType(38, 6))
+        EnergyResultColumnNames.quantity,
+        col(EnergyResultColumnNames.quantity).cast(DecimalType(18, 3)),
     )
 
     parse_qualities_string_udf = udf(_parse_qualities, ArrayType(StringType()))
     df = df.withColumn(
-        Colname.quantity, parse_qualities_string_udf(df[Colname.quantity])
+        EnergyResultColumnNames.quantity_qualities,
+        parse_qualities_string_udf(df[EnergyResultColumnNames.quantity_qualities]),
     )
-    df = df.withColumnRenamed(Colname.quantity, Colname.qualities)
+
+    df = df.withColumn(
+        EnergyResultColumnNames.aggregation_level,
+        lit(str(AggregationLevel.ES_PER_GA.value)),
+    )
+
+    df = df.withColumn(
+        EnergyResultColumnNames.calculation_id, lit(calculation_args.calculation_id)
+    )
+
+    df = df.withColumn(
+        EnergyResultColumnNames.calculation_type,
+        lit(CalculationType(calculation_args.calculation_type).value),
+    )
+
+    df = df.withColumn(
+        EnergyResultColumnNames.calculation_execution_time_start, lit(datetime.now())
+    )
+
+    df = df.withColumn(
+        EnergyResultColumnNames.time_series_type,
+        lit(TimeSeriesType.FLEX_CONSUMPTION.value),
+    )
+
+    df = df.withColumn(
+        EnergyResultColumnNames.calculation_result_id,
+        lit(calculation_args.calculation_id),
+    )
 
     return spark.createDataFrame(df.rdd, energy_results_schema)
-
-
-def _parse_time_window(time_window_str: str) -> tuple[datetime, datetime]:
-    time_window_str = time_window_str.replace("{", "").replace("}", "")
-    start_str, end_str = time_window_str.split(",")
-    start = datetime.strptime(start_str, CSV_DATE_FORMAT)
-    end = datetime.strptime(end_str, CSV_DATE_FORMAT)
-    return start, end
 
 
 def _parse_qualities(qualities_str: str) -> list[str]:

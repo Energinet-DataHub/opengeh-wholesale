@@ -249,8 +249,6 @@ def test__create__columns_matching_contract(
     )
 
     # Assert
-    actual.show()
-    print(actual.schema)
     assert_contract_matches_schema(contract_path, actual.schema)
 
 
