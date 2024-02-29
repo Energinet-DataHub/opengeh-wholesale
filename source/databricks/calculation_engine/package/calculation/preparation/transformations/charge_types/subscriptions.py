@@ -159,6 +159,7 @@ def _join_with_links(
         subscription_master_data_and_prices[Colname.charge_code],
         subscription_master_data_and_prices[Colname.charge_time],
         subscription_master_data_and_prices[Colname.charge_price],
+        subscription_master_data_and_prices[Colname.charge_tax],
         subscription_links[Colname.charge_quantity],
         subscription_links[Colname.metering_point_type],
         subscription_links[Colname.settlement_method],

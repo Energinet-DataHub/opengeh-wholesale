@@ -39,43 +39,73 @@ DEFAULT_CALCULATION_PERIOD_START = datetime(2020, 1, 31, 23, 0)
 DEFAULT_CALCULATION_PERIOD_END = datetime(2020, 2, 29, 23, 0)
 
 
+class DefaultValues:
+    GRID_AREA = "543"
+    CHARGE_CODE = "4000"
+    CHARGE_OWNER = "001"
+    CHARGE_TIME_HOUR_0 = datetime(2019, 12, 31, 23)
+    CHARGE_PRICE = Decimal("2.000005")
+    CHARGE_QUANTITY = 1
+    ENERGY_SUPPLIER_ID = "1234567890123"
+    METERING_POINT_ID = "123456789012345678901234567"
+    METERING_POINT_TYPE = e.MeteringPointType.CONSUMPTION
+    SETTLEMENT_METHOD = e.SettlementMethod.FLEX
+    QUANTITY = Decimal("1.005")
+    QUALITY = e.ChargeQuality.CALCULATED
+    PERIOD_START_DATETIME = datetime(2019, 12, 31, 23)
+    BALANCE_RESPONSIBLE_ID = "1234567890123"
+    FROM_GRID_AREA = None
+    TO_GRID_AREA = None
+    FROM_DATE: datetime = datetime(2019, 12, 31, 23)
+    TO_DATE: datetime = datetime(2020, 1, 31, 23)
+    PARENT_METERING_POINT_ID = None
+    CALCULATION_TYPE = None
+
+
 def _create_subscription_row(
     charge_key: str | None = None,
-    charge_code: str = DEFAULT_CHARGE_CODE,
-    charge_owner: str = DEFAULT_CHARGE_OWNER,
-    resolution: ChargeResolution = ChargeResolution.HOUR,
-    charge_time: datetime = DEFAULT_CHARGE_TIME_HOUR_0,
-    charge_price: Decimal | None = DEFAULT_CHARGE_PRICE,
-    energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
-    metering_point_id: str = DEFAULT_METERING_POINT_ID,
-    metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE,
-    settlement_method: SettlementMethod | None = DEFAULT_SETTLEMENT_METHOD,
-    grid_area: str = DEFAULT_GRID_AREA,
+    charge_code: str = DefaultValues.CHARGE_CODE,
+    charge_owner: str = DefaultValues.CHARGE_OWNER,
+    charge_time: datetime = DefaultValues.CHARGE_TIME_HOUR_0,
+    charge_price: Decimal | None = DefaultValues.CHARGE_PRICE,
+    charge_quantity: int = DefaultValues.CHARGE_QUANTITY,
+    energy_supplier_id: str = DefaultValues.ENERGY_SUPPLIER_ID,
+    metering_point_type: MeteringPointType = DefaultValues.METERING_POINT_TYPE,
+    grid_area: str = DefaultValues.GRID_AREA,
     quantity: Decimal = DEFAULT_QUANTITY,
-    quality: ChargeQuality = DEFAULT_QUALITY,
+    quality: Quality = DEFAULT_QUALITY,
 ) -> Row:
+    charge_type = ChargeType.SUBSCRIPTION.value
     row = {
-        Colname.charge_key: charge_key
-        or f"{charge_code}-{ChargeType.TARIFF.value}-{charge_owner}",
-        Colname.charge_code: charge_code,
-        Colname.charge_type: ChargeType.TARIFF.value,
+        Colname.charge_key: charge_key or f"{charge_code}-{charge_type}-{charge_owner}",
+        Colname.charge_type: charge_type,
         Colname.charge_owner: charge_owner,
-        Colname.charge_tax: DEFAULT_CHARGE_TAX,
-        Colname.resolution: resolution.value,
+        Colname.charge_code: charge_code,
         Colname.charge_time: charge_time,
         Colname.charge_price: charge_price,
-        Colname.metering_point_id: metering_point_id,
+        Colname.charge_tax: False,
         Colname.energy_supplier_id: energy_supplier_id,
         Colname.metering_point_type: metering_point_type.value,
-        Colname.settlement_method: (
-            settlement_method.value if settlement_method else None
-        ),
         Colname.grid_area: grid_area,
-        Colname.quantity: quantity,
+        Colname.charge_quantity: quantity,
         Colname.qualities: [quality.value],
     }
 
     return Row(**row)
+
+
+subscription_master_data_and_prices[Colname.charge_key],
+subscription_master_data_and_prices[Colname.charge_type],
+subscription_master_data_and_prices[Colname.charge_owner],
+subscription_master_data_and_prices[Colname.charge_code],
+subscription_master_data_and_prices[Colname.charge_time],
+subscription_master_data_and_prices[Colname.charge_price],
+subscription_master_data_and_prices[Colname.charge_tax],
+subscription_links[Colname.charge_quantity],
+subscription_links[Colname.metering_point_type],
+subscription_links[Colname.settlement_method],
+subscription_links[Colname.grid_area],
+subscription_links[Colname.energy_supplier_id],
 
 
 def test__calculate_daily_subscription_price__simple(
