@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.EDI.Mappers;
+using Energinet.DataHub.Wholesale.Edi.Mappers;
 using FluentAssertions;
 using Xunit;
 using EdiModel = Energinet.DataHub.Edi.Responses;
 using WholesaleModel = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
-namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Mappers
+namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Mappers
 {
     public class QuantityQualityMapperTests
     {

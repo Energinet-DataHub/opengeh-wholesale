@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.Edi.Exceptions;
-using Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
+using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using NodaTime;

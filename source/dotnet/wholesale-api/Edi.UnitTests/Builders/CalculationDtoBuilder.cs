@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
+namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 
 public class CalculationDtoBuilder
 {

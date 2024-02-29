@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.EDI.Mappers;
-using Energinet.DataHub.Wholesale.EDI.Models;
+using Energinet.DataHub.Wholesale.Edi.Mappers;
+using Energinet.DataHub.Wholesale.Edi.Models;
 using NodaTime.Text;
-using Period = Energinet.DataHub.Wholesale.EDI.Models.Period;
+using Period = Energinet.DataHub.Wholesale.Edi.Models.Period;
 
-namespace Energinet.DataHub.Wholesale.EDI.Factories;
+namespace Energinet.DataHub.Wholesale.Edi.Factories;
 
 public static class AggregatedTimeSeriesRequestFactory
 {
