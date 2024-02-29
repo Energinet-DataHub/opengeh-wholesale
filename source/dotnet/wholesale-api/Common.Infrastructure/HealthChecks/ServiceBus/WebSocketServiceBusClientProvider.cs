@@ -16,21 +16,20 @@ using Azure.Core;
 using Azure.Messaging.ServiceBus;
 using HealthChecks.AzureServiceBus;
 
-namespace Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks.ServiceBus
-{
-    /// <summary>
-    /// Allow us to use the transport type AWMP over WebSocket when communicating with ServiceBus.
-    /// </summary>
-    internal class WebSocketServiceBusClientProvider : ServiceBusClientProvider
-    {
-        public override ServiceBusClient CreateClient(string? connectionString)
-        {
-            return new ServiceBusClient(connectionString, new ServiceBusClientOptions { TransportType = ServiceBusTransportType.AmqpWebSockets });
-        }
+namespace Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks.ServiceBus;
 
-        public override ServiceBusClient CreateClient(string? fullyQualifiedName, TokenCredential credential)
-        {
-            return new ServiceBusClient(fullyQualifiedName, credential, new ServiceBusClientOptions { TransportType = ServiceBusTransportType.AmqpWebSockets });
-        }
+/// <summary>
+/// Allow us to use the transport type AWMP over WebSocket when communicating with ServiceBus.
+/// </summary>
+internal class WebSocketServiceBusClientProvider : ServiceBusClientProvider
+{
+    public override ServiceBusClient CreateClient(string? connectionString)
+    {
+        return new ServiceBusClient(connectionString, new ServiceBusClientOptions { TransportType = ServiceBusTransportType.AmqpWebSockets });
+    }
+
+    public override ServiceBusClient CreateClient(string? fullyQualifiedName, TokenCredential credential)
+    {
+        return new ServiceBusClient(fullyQualifiedName, credential, new ServiceBusClientOptions { TransportType = ServiceBusTransportType.AmqpWebSockets });
     }
 }

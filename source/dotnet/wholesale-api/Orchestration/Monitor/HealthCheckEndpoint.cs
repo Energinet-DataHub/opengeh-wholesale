@@ -16,24 +16,23 @@ using Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 
-namespace Energinet.DataHub.Wholesale.Orchestration.Monitor
+namespace Energinet.DataHub.Wholesale.Orchestration.Monitor;
+
+public class HealthCheckEndpoint
 {
-    public class HealthCheckEndpoint
+    public HealthCheckEndpoint(IHealthCheckEndpointHandler healthCheckEndpointHandler)
     {
-        public HealthCheckEndpoint(IHealthCheckEndpointHandler healthCheckEndpointHandler)
-        {
-            EndpointHandler = healthCheckEndpointHandler;
-        }
+        EndpointHandler = healthCheckEndpointHandler;
+    }
 
-        private IHealthCheckEndpointHandler EndpointHandler { get; }
+    private IHealthCheckEndpointHandler EndpointHandler { get; }
 
-        [Function("HealthCheck")]
-        public Task<HttpResponseData> RunAsync(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "monitor/{endpoint}")]
-            HttpRequestData httpRequest,
-            string endpoint)
-        {
-            return EndpointHandler.HandleAsync(httpRequest, endpoint);
-        }
+    [Function("HealthCheck")]
+    public Task<HttpResponseData> RunAsync(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "monitor/{endpoint}")]
+        HttpRequestData httpRequest,
+        string endpoint)
+    {
+        return EndpointHandler.HandleAsync(httpRequest, endpoint);
     }
 }

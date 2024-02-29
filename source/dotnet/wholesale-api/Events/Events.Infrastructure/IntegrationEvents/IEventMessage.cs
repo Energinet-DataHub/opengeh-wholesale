@@ -14,22 +14,21 @@
 
 using Google.Protobuf;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents;
+
+/// <summary>
+/// Extends the generated protobuf message types with additional properties
+/// to support generic creation of the type "IntegrationEvent".
+/// </summary>
+public interface IEventMessage : IMessage
 {
     /// <summary>
-    /// Extends the generated protobuf message types with additional properties
-    /// to support generic creation of the type "IntegrationEvent".
+    /// The message type for transport message meta data in accordance with ADR-008.
     /// </summary>
-    public interface IEventMessage : IMessage
-    {
-        /// <summary>
-        /// The message type for transport message meta data in accordance with ADR-008.
-        /// </summary>
-        string EventName { get; }
+    string EventName { get; }
 
-        /// <summary>
-        /// For new events we start this version at zero (0).
-        /// </summary>
-        int EventMinorVersion { get; }
-    }
+    /// <summary>
+    /// For new events we start this version at zero (0).
+    /// </summary>
+    int EventMinorVersion { get; }
 }
