@@ -130,8 +130,7 @@ def test_migrate_with_schema_migration_scripts_compare_result_with_schema_config
 
 
 def test_schema_config_when_current_state_script_files_are_executed(
-    mocker: Mock,
-    spark: SparkSession
+    mocker: Mock, spark: SparkSession
 ) -> None:
     # Arrange
     mocker.patch.object(
@@ -171,8 +170,7 @@ def test_schema_config_when_current_state_script_files_are_executed(
 
 
 def test_schema_config_when_schema_and__table_script_files_are_executed(
-        mocker: Mock,
-        spark: SparkSession
+    mocker: Mock, spark: SparkSession
 ) -> None:
     # Arrange
     mocker.patch.object(

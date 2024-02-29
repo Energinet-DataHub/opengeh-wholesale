@@ -17,7 +17,7 @@ from package.infrastructure.paths import (
     WHOLESALE_RESULT_TABLE_NAME,
     OUTPUT_DATABASE_NAME,
     ENERGY_RESULT_TABLE_NAME,
-    INPUT_DATABASE_NAME
+    INPUT_DATABASE_NAME,
 )
 
 # calculation_output
@@ -47,5 +47,5 @@ schema_config = [
         # This will be changed to Views in the future.
         name=INPUT_DATABASE_NAME,
         tables=[],
-    )
+    ),
 ]

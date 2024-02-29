@@ -20,7 +20,7 @@ import package.datamigration.constants as c
 from spark_sql_migrations import (
     SparkSqlMigrationsConfiguration,
     create_and_configure_container,
-    schema_migration_pipeline
+    schema_migration_pipeline,
 )
 from package.datamigration.substitutions import substitutions
 from package.datamigration.schema_config import schema_config
@@ -60,13 +60,21 @@ def migrate(spark: SparkSession) -> None:
 
 def migrate_with_current_state(spark: SparkSession) -> None:
     spark.sql(f"CREATE DATABASE IF NOT EXISTS {schema_migration_schema_name}")
-    spark.sql(f"CREATE TABLE IF NOT EXISTS {schema_migration_schema_name}.{schema_migration_table_name} (migration_name STRING NOT NULL, execution_datetime TIMESTAMP NOT NULL) USING delta LOCATION '{schema_migration_location}/{schema_migration_table_name}'")
+    spark.sql(
+        f"CREATE TABLE IF NOT EXISTS {schema_migration_schema_name}.{schema_migration_table_name} (migration_name STRING NOT NULL, execution_datetime TIMESTAMP NOT NULL) USING delta LOCATION '{schema_migration_location}/{schema_migration_table_name}'"
+    )
 
     # Get all SQL files from migration_scripts folder
     directory_path = f"{os.path.dirname(c.__file__)}/migration_scripts/"
-    files = [file for file in os.listdir(directory_path) if os.path.isfile(os.path.join(directory_path, file))]
+    files = [
+        file
+        for file in os.listdir(directory_path)
+        if os.path.isfile(os.path.join(directory_path, file))
+    ]
 
     # Filter only SQL files
-    sql_files = [file for file in files if file.endswith('.sql')]
+    sql_files = [file for file in files if file.endswith(".sql")]
     for sql_file in sql_files:
-        spark.sql(f"INSERT INTO {schema_migration_schema_name}.{schema_migration_table_name} (migration_name, execution_datetime) VALUES ('{sql_file}', '2021-01-01')")
+        spark.sql(
+            f"INSERT INTO {schema_migration_schema_name}.{schema_migration_table_name} (migration_name, execution_datetime) VALUES ('{sql_file}', '2021-01-01')"
+        )

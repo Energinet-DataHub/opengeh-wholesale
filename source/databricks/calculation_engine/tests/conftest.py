@@ -46,7 +46,7 @@ from package.infrastructure.infrastructure_settings import InfrastructureSetting
 from package.infrastructure.paths import (
     OUTPUT_FOLDER,
     INPUT_DATABASE_NAME,
-    OUTPUT_DATABASE_NAME
+    OUTPUT_DATABASE_NAME,
 )
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.integration_test_configuration import IntegrationTestConfiguration
