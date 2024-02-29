@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.EDI.Models;
-using Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
-using Energinet.DataHub.Wholesale.EDI.Validation;
-using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSeries.Rules;
+using Energinet.DataHub.Wholesale.Edi.Models;
+using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
+using Energinet.DataHub.Wholesale.Edi.Validation;
+using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeries.Rules;
 using FluentAssertions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
+namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators;
 
 public class TimeSeriesTypeValidatorTests
 {

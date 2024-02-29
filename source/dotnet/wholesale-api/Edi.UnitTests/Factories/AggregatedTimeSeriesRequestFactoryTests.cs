@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.EDI.Factories;
-using Energinet.DataHub.Wholesale.EDI.Models;
+using Energinet.DataHub.Wholesale.Edi.Factories;
+using Energinet.DataHub.Wholesale.Edi.Models;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Xunit;

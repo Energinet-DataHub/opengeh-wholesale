@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.EDI.Validation;
+namespace Energinet.DataHub.Wholesale.Edi.Validation;
 
 /// <summary>
 /// Contains the business logic for validating a specific type of entity.
