@@ -15,29 +15,28 @@
 using System.Diagnostics;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
+
+[DebuggerStepThrough]
+public abstract class WebApiTestBase<TFixture> : IDisposable
+    where TFixture : WebApiFixture
 {
-    [DebuggerStepThrough]
-    public abstract class WebApiTestBase<TFixture> : IDisposable
-        where TFixture : WebApiFixture
+    protected WebApiTestBase(TFixture fixture, ITestOutputHelper testOutputHelper)
     {
-        protected WebApiTestBase(TFixture fixture, ITestOutputHelper testOutputHelper)
-        {
-            Fixture = fixture;
-            Fixture.SetTestOutputHelper(testOutputHelper);
-        }
+        Fixture = fixture;
+        Fixture.SetTestOutputHelper(testOutputHelper);
+    }
 
-        protected TFixture Fixture { get; }
+    protected TFixture Fixture { get; }
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            Fixture.SetTestOutputHelper(null!);
-        }
+    protected virtual void Dispose(bool disposing)
+    {
+        Fixture.SetTestOutputHelper(null!);
     }
 }
