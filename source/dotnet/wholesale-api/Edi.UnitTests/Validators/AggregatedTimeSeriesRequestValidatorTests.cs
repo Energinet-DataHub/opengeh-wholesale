@@ -39,7 +39,9 @@ public class AggregatedTimeSeriesRequestValidatorTests
         services.AddTransient<IClock>(s => SystemClock.Instance);
         services.AddScoped<IGridAreaOwnerRepository, GridAreaOwnerRepository>();
         services.AddScoped<IDatabaseContext, DatabaseContext>();
-        EdiExtensions.AddAggregatedTimeSeriesRequestValidation(services);
+
+        services.AddAggregatedTimeSeriesRequestValidation();
+
         var serviceProvider = services.BuildServiceProvider();
 
         _sut = serviceProvider.GetRequiredService<IValidator<AggregatedTimeSeriesRequest>>();

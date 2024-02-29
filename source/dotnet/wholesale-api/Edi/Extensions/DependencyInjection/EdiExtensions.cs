@@ -33,10 +33,11 @@ public static class EdiExtensions
         services.AddScoped<LatestCalculationsForPeriod>();
         services.AddScoped<CompletedCalculationRetriever>();
         services.AddSingleton<IEdiClient, EdiClient>();
-        AddAggregatedTimeSeriesRequestValidation(services);
+
+        services.AddAggregatedTimeSeriesRequestValidation();
     }
 
-    public static void AddAggregatedTimeSeriesRequestValidation(IServiceCollection services)
+    public static IServiceCollection AddAggregatedTimeSeriesRequestValidation(this IServiceCollection services)
     {
         services.AddScoped<IValidator<AggregatedTimeSeriesRequest>, AggregatedTimeSeriesRequestValidator>();
         services.AddScoped<IValidationRule<AggregatedTimeSeriesRequest>, PeriodValidationRule>();
@@ -47,5 +48,7 @@ public static class EdiExtensions
         services.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, BalanceResponsibleValidationRule>();
         services.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, SettlementSeriesVersionValidationRule>();
         services.AddScoped<IValidationRule<AggregatedTimeSeriesRequest>, GridAreaValidationRule>();
+
+        return services;
     }
 }
