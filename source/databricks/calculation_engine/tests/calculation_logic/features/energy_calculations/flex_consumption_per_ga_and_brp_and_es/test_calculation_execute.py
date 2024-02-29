@@ -31,18 +31,12 @@ def test_execute__returns_expected(  # type: ignore
     results.energy_results.flex_consumption_per_ga_and_brp_and_es.show()
     scenario_fixture.expected.show()
 
-    actual = (
-        results.energy_results.flex_consumption_per_ga_and_brp_and_es.drop(
-            "time_series_type"
-        )
-        .drop("calculation_execution_time_start")
-        .drop("calculation_result_id")
-    )
+    actual = results.energy_results.flex_consumption_per_ga_and_brp_and_es.drop(
+        "calculation_execution_time_start"
+    ).drop("calculation_result_id")
 
-    exp = (
-        scenario_fixture.expected.drop("time_series_type")
-        .drop("calculation_execution_time_start")
-        .drop("calculation_result_id")
+    exp = scenario_fixture.expected.drop("calculation_execution_time_start").drop(
+        "calculation_result_id"
     )
 
     # Assert

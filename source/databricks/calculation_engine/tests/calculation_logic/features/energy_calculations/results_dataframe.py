@@ -24,7 +24,7 @@ from pyspark.sql.types import (
 )
 
 from package.calculation_output.schemas import energy_results_schema
-from package.codelists import TimeSeriesType, CalculationType
+from package.codelists import CalculationType
 from package.constants import EnergyResultColumnNames
 
 CSV_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
@@ -66,10 +66,10 @@ def create_result_dataframe(*args) -> DataFrame:  # type: ignore
         EnergyResultColumnNames.calculation_execution_time_start, lit(datetime.now())
     )
 
-    df = df.withColumn(
-        EnergyResultColumnNames.time_series_type,
-        lit(TimeSeriesType.FLEX_CONSUMPTION.value),
-    )
+    # df = df.withColumn(
+    #     EnergyResultColumnNames.time_series_type,
+    #     lit(TimeSeriesType(df[EnergyResultColumnNames.time_series_type]).value),
+    # )
 
     df = df.withColumn(
         EnergyResultColumnNames.calculation_result_id,
