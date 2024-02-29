@@ -50,6 +50,7 @@ from package.infrastructure.paths import (
 )
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.integration_test_configuration import IntegrationTestConfiguration
+import tests.helpers.spark_sql_migration_helper as sql_migration_helper
 
 
 @pytest.fixture(scope="session")
@@ -206,7 +207,7 @@ def migrations_executed(
     spark.sql(f"DROP DATABASE IF EXISTS {OUTPUT_DATABASE_NAME} CASCADE")
 
     # # Execute all migrations
-    # sql_migration_helper.migrate(spark)
+    sql_migration_helper.migrate(spark)
 
 
 @pytest.fixture(scope="session")
