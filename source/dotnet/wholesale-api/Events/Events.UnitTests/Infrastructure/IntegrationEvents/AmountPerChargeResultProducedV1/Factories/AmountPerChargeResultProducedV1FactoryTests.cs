@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.AmountPerChargeResultProducedV1.Factories;
@@ -66,6 +67,42 @@ public class AmountPerChargeResultProducedV1FactoryTests
 
         // Assert
         actual.Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public void Create_WhenAmountIsNull_ReturnsExpectedObject(
+        AmountPerChargeResultProducedV1Factory sut)
+    {
+        // Arrange
+        var wholesaleResult = new WholesaleResultBuilder()
+            .WithTimeSeriesPoints(new List<WholesaleTimeSeriesPoint> { new(new DateTime(2021, 1, 1), 1, new[] { QuantityQuality.Measured }, 2, null) })
+            .Build();
+        var expected = CreateExpected(wholesaleResult);
+
+        // Act
+        var actual = sut.Create(wholesaleResult);
+
+        // Assert
+        actual.Should().BeEquivalentTo(expected);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public void Create_WhenPriceIsNull_ReturnsExpectedObject(
+        AmountPerChargeResultProducedV1Factory sut)
+    {
+        // Arrange
+        var wholesaleResult = new WholesaleResultBuilder()
+            .WithTimeSeriesPoints(new List<WholesaleTimeSeriesPoint> { new(new DateTime(2021, 1, 1), 1, new[] { QuantityQuality.Measured }, null, 2) })
+            .Build();
+        var expected = CreateExpected(wholesaleResult);
+
+        // Act
+        var actual = sut.Create(wholesaleResult);
+
+        // Assert
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Theory]
