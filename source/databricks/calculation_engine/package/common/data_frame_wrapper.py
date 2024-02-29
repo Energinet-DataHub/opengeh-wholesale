@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import Any
 
 import pyspark.sql.functions as f
 import pyspark.sql.types as t
@@ -54,6 +55,10 @@ class DataFrameWrapper:
         )
 
         self._df: DataFrame = df
+
+    def __getattr__(self, attr: Any) -> None:
+        # Delegate attribute access to the internal DataFrame
+        getattr(self._df, attr)
 
     @property
     def df(self) -> DataFrame:
