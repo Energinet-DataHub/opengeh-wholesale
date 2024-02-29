@@ -154,10 +154,12 @@ class TestWhenValidInput:
         spark: SparkSession,
     ) -> None:
         # Arrange
-        expected_quantity = 3
+        quantity_1 = 1
+        quantity_2 = 2
+        expected_quantity = quantity_1 + quantity_2
         subscription_rows = [
-            _create_subscription_row(metering_point_id="1", charge_quantity=1),
-            _create_subscription_row(metering_point_id="2", charge_quantity=2),
+            _create_subscription_row(metering_point_id="1", charge_quantity=quantity_1),
+            _create_subscription_row(metering_point_id="2", charge_quantity=quantity_2),
         ]
         subscription_charges = spark.createDataFrame(
             subscription_rows, schema=subscription_charge_schema
@@ -175,6 +177,43 @@ class TestWhenValidInput:
         assert (
             daily_subscriptions.collect()[0][Colname.charge_count] == expected_quantity
         )
+
+    def test__returns_expected_amount(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        quantity_1 = 1
+        quantity_2 = 2
+        price_1 = Decimal("3.0")
+        price_2 = Decimal("4.0")
+        expected_amount = price_1 * quantity_1 + price_2 * quantity_2
+        subscription_rows = [
+            _create_subscription_row(
+                metering_point_id="1",
+                charge_quantity=quantity_1,
+                charge_price=price_1,
+            ),
+            _create_subscription_row(
+                metering_point_id="2",
+                charge_quantity=quantity_2,
+                charge_price=price_2,
+            ),
+        ]
+        subscription_charges = spark.createDataFrame(
+            subscription_rows, schema=subscription_charge_schema
+        )
+
+        # Act
+        daily_subscriptions = calculate_daily_subscription_amount(
+            subscription_charges,
+            DefaultValues.CALCULATION_PERIOD_START,
+            DefaultValues.CALCULATION_PERIOD_END,
+            DefaultValues.TIME_ZONE,
+        )
+
+        # Assert
+        assert daily_subscriptions.collect()[0][Colname.total_amount] == expected_amount
 
 
 class TestWhenCalculationPeriodIsNotFullMonth:
