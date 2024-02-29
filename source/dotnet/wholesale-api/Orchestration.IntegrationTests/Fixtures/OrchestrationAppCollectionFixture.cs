@@ -12,16 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Orchestration.IntegrationTests.Fixtures
+namespace Energinet.DataHub.Wholesale.Orchestration.IntegrationTests.Fixtures;
+
+/// <summary>
+/// A xUnit collection fixture for ensuring tests don't run in parallel.
+///
+/// xUnit documentation of collection fixtures:
+///  * https://xunit.net/docs/shared-context#collection-fixture
+/// </summary>
+[CollectionDefinition(nameof(OrchestrationAppCollectionFixture))]
+public class OrchestrationAppCollectionFixture : ICollectionFixture<OrchestrationAppFixture>
 {
-    /// <summary>
-    /// A xUnit collection fixture for ensuring tests don't run in parallel.
-    ///
-    /// xUnit documentation of collection fixtures:
-    ///  * https://xunit.net/docs/shared-context#collection-fixture
-    /// </summary>
-    [CollectionDefinition(nameof(OrchestrationAppCollectionFixture))]
-    public class OrchestrationAppCollectionFixture : ICollectionFixture<OrchestrationAppFixture>
-    {
-    }
 }
