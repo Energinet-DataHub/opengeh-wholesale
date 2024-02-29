@@ -43,7 +43,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance
             Fixture.ScenarioState.CalculationJobInput = new Calculation(
                 createdTime: createdTime,
                 calculationType: Common.Interfaces.Models.CalculationType.Aggregation,
-                gridAreaCodes: new List<GridAreaCode> { new GridAreaCode("791") },
+                gridAreaCodes: new List<GridAreaCode> { new("791") },
                 periodStart: Instant.FromDateTimeOffset(new DateTimeOffset(2022, 11, 30, 23, 0, 0, TimeSpan.Zero)),
                 periodEnd: Instant.FromDateTimeOffset(new DateTimeOffset(2022, 12, 11, 23, 0, 0, TimeSpan.Zero)),
                 executionTimeStart: createdTime, // As long as scheduling is not implemented, execution time start is the same as created time
@@ -71,16 +71,16 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance
         [SubsystemFact]
         public async Task Then_CalculationJobIsCompletedWithinWaitTime()
         {
-            var actualWaitResult = await Fixture.WaitForCalculationJobCompletedAsync(
+            var (isCompleted, run) = await Fixture.WaitForCalculationJobCompletedAsync(
                 Fixture.ScenarioState.CalculationJobId,
                 waitTimeLimit: TimeSpan.FromMinutes(75));
 
-            Fixture.ScenarioState.Run = actualWaitResult.Run;
+            Fixture.ScenarioState.Run = run;
 
             // Assert
             using var assertionScope = new AssertionScope();
-            actualWaitResult.IsCompleted.Should().BeTrue();
-            actualWaitResult.Run.Should().NotBeNull();
+            isCompleted.Should().BeTrue();
+            run.Should().NotBeNull();
         }
 
         /// <summary>

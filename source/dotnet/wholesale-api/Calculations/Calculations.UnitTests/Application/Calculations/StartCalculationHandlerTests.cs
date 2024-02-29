@@ -18,9 +18,9 @@ using Energinet.DataHub.Wholesale.Calculations.Application;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Application.UseCases;
 using Energinet.DataHub.Wholesale.Calculations.UnitTests.Infrastructure.CalculationAggregate;
+using Energinet.DataHub.Wholesale.Test.Core;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Test.Core;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Calculations.UnitTests.Application.Calculations;

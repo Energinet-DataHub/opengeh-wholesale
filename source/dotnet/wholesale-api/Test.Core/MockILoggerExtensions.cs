@@ -15,7 +15,7 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace Test.Core;
+namespace Energinet.DataHub.Wholesale.Test.Core;
 
 public static class MockILoggerExtensions
 {

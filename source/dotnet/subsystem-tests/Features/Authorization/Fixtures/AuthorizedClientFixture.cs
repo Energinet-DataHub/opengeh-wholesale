@@ -16,7 +16,6 @@ using Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Configuration;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
-using Microsoft.Extensions.Configuration;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Authorization.Fixtures

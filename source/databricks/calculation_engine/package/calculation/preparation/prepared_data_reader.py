@@ -21,6 +21,8 @@ from package.calculation.preparation.grid_loss_responsible import GridLossRespon
 
 from . import transformations as T
 from .charge_link_metering_point_periods import ChargeLinkMeteringPointPeriods
+from .charge_master_data import ChargeMasterData
+from .charge_prices import ChargePrices
 
 
 class PreparedDataReader:
@@ -51,7 +53,7 @@ class PreparedDataReader:
         self,
         period_start_datetime: datetime,
         period_end_datetime: datetime,
-    ) -> DataFrame:
+    ) -> ChargeMasterData:
         return T.read_charge_master_data(
             self._table_reader, period_start_datetime, period_end_datetime
         )
@@ -60,7 +62,7 @@ class PreparedDataReader:
         self,
         period_start_datetime: datetime,
         period_end_datetime: datetime,
-    ) -> DataFrame:
+    ) -> ChargePrices:
         return T.read_charge_prices(
             self._table_reader, period_start_datetime, period_end_datetime
         )
@@ -80,8 +82,8 @@ class PreparedDataReader:
 
     def get_fee_charges(
         self,
-        charge_master_data: DataFrame,
-        charge_prices: DataFrame,
+        charge_master_data: ChargeMasterData,
+        charge_prices: ChargePrices,
         charge_link_metering_points: ChargeLinkMeteringPointPeriods,
     ) -> DataFrame:
         return T.get_fee_charges(
@@ -90,8 +92,8 @@ class PreparedDataReader:
 
     def get_subscription_charges(
         self,
-        charge_master_data: DataFrame,
-        charge_prices: DataFrame,
+        charge_master_data: ChargeMasterData,
+        charge_prices: ChargePrices,
         charge_link_metering_points: ChargeLinkMeteringPointPeriods,
         time_zone: str,
     ) -> DataFrame:
@@ -102,10 +104,11 @@ class PreparedDataReader:
     def get_tariff_charges(
         self,
         time_series: DataFrame,
-        charge_master_data: DataFrame,
-        charge_prices: DataFrame,
+        charge_master_data: ChargeMasterData,
+        charge_prices: ChargePrices,
         charges_link_metering_point_periods: ChargeLinkMeteringPointPeriods,
         resolution: ChargeResolution,
+        time_zone: str,
     ) -> DataFrame:
         return T.get_tariff_charges(
             time_series,
@@ -113,6 +116,7 @@ class PreparedDataReader:
             charge_prices,
             charges_link_metering_point_periods,
             resolution,
+            time_zone,
         )
 
     def get_metering_point_time_series(
