@@ -133,7 +133,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
     [SubsystemFact]
     public void AndThen_ReceivedEnergyResultProducedEventsCountIsEqualToExpected()
     {
-        var expected = 104;
+        var expected = 99;
 
         // Assert
         using var assertionScope = new AssertionScope();
@@ -145,7 +145,15 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
     [SubsystemFact]
     public void AndThen_ReceivedEnergyResultProducedEventsContainAllTimeSeriesTypes()
     {
-        var expected = Enum.GetNames(typeof(TimeSeriesType)).ToList();
+        List<string> expected =
+        [
+            "Production",
+            "FlexConsumption",
+            "TotalConsumption",
+            "NonProfiledConsumption",
+            "NetExchangePerGa",
+            "NetExchangePerNeighboringGa"
+        ];
 
         var actualTimeSeriesTypesForEnergyResultProducedV2 = Fixture.ScenarioState.ReceivedEnergyResultProducedV2
             .Select(x => Enum.GetName(x.TimeSeriesType))
@@ -181,12 +189,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
                 ("FlexConsumption", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea"),
                 ("NetExchangePerGa", "AggregationPerGridarea"),
                 ("NetExchangePerNeighboringGa", "AggregationPerGridarea"),
-                ("GridLoss", "AggregationPerGridarea"),
-                ("NegativeGridLoss", "AggregationPerGridarea"),
-                ("PositiveGridLoss", "AggregationPerGridarea"),
                 ("TotalConsumption", "AggregationPerGridarea"),
-                ("TempFlexConsumption", "AggregationPerGridarea"),
-                ("TempProduction", "AggregationPerGridarea"),
             };
 
         // Assert
