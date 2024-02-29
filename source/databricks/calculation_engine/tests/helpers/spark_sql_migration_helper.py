@@ -70,4 +70,3 @@ def migrate_with_current_state(spark: SparkSession) -> None:
     sql_files = [file for file in files if file.endswith('.sql')]
     for sql_file in sql_files:
         spark.sql(f"INSERT INTO {schema_migration_schema_name}.{schema_migration_table_name} (migration_name, execution_datetime) VALUES ('{sql_file}', '2021-01-01')")
-
