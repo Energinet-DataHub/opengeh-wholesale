@@ -27,25 +27,25 @@ namespace Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
 /// </summary>
 public static class EdiExtensions
 {
-    public static void AddEdiModule(this IServiceCollection serviceCollection)
+    public static void AddEdiModule(this IServiceCollection services)
     {
-        serviceCollection.AddScoped<IAggregatedTimeSeriesRequestHandler, AggregatedTimeSeriesRequestHandler>();
-        serviceCollection.AddScoped<LatestCalculationsForPeriod>();
-        serviceCollection.AddScoped<CompletedCalculationRetriever>();
-        serviceCollection.AddSingleton<IEdiClient, EdiClient>();
-        AddAggregatedTimeSeriesRequestValidation(serviceCollection);
+        services.AddScoped<IAggregatedTimeSeriesRequestHandler, AggregatedTimeSeriesRequestHandler>();
+        services.AddScoped<LatestCalculationsForPeriod>();
+        services.AddScoped<CompletedCalculationRetriever>();
+        services.AddSingleton<IEdiClient, EdiClient>();
+        AddAggregatedTimeSeriesRequestValidation(services);
     }
 
-    public static void AddAggregatedTimeSeriesRequestValidation(IServiceCollection serviceCollection)
+    public static void AddAggregatedTimeSeriesRequestValidation(IServiceCollection services)
     {
-        serviceCollection.AddScoped<IValidator<AggregatedTimeSeriesRequest>, AggregatedTimeSeriesRequestValidator>();
-        serviceCollection.AddScoped<IValidationRule<AggregatedTimeSeriesRequest>, PeriodValidationRule>();
-        serviceCollection.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, MeteringPointTypeValidationRule>();
-        serviceCollection.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, EnergySupplierValidationRule>();
-        serviceCollection.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, SettlementMethodValidationRule>();
-        serviceCollection.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, TimeSeriesTypeValidationRule>();
-        serviceCollection.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, BalanceResponsibleValidationRule>();
-        serviceCollection.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, SettlementSeriesVersionValidationRule>();
-        serviceCollection.AddScoped<IValidationRule<AggregatedTimeSeriesRequest>, GridAreaValidationRule>();
+        services.AddScoped<IValidator<AggregatedTimeSeriesRequest>, AggregatedTimeSeriesRequestValidator>();
+        services.AddScoped<IValidationRule<AggregatedTimeSeriesRequest>, PeriodValidationRule>();
+        services.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, MeteringPointTypeValidationRule>();
+        services.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, EnergySupplierValidationRule>();
+        services.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, SettlementMethodValidationRule>();
+        services.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, TimeSeriesTypeValidationRule>();
+        services.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, BalanceResponsibleValidationRule>();
+        services.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, SettlementSeriesVersionValidationRule>();
+        services.AddScoped<IValidationRule<AggregatedTimeSeriesRequest>, GridAreaValidationRule>();
     }
 }

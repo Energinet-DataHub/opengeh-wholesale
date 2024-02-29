@@ -33,14 +33,14 @@ public class AggregatedTimeSeriesRequestValidatorTests
 
     public AggregatedTimeSeriesRequestValidatorTests()
     {
-        IServiceCollection serviceCollection = new ServiceCollection();
+        IServiceCollection services = new ServiceCollection();
 
-        serviceCollection.AddTransient<DateTimeZone>(s => DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
-        serviceCollection.AddTransient<IClock>(s => SystemClock.Instance);
-        serviceCollection.AddScoped<IGridAreaOwnerRepository, GridAreaOwnerRepository>();
-        serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
-        EdiExtensions.AddAggregatedTimeSeriesRequestValidation(serviceCollection);
-        var serviceProvider = serviceCollection.BuildServiceProvider();
+        services.AddTransient<DateTimeZone>(s => DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
+        services.AddTransient<IClock>(s => SystemClock.Instance);
+        services.AddScoped<IGridAreaOwnerRepository, GridAreaOwnerRepository>();
+        services.AddScoped<IDatabaseContext, DatabaseContext>();
+        EdiExtensions.AddAggregatedTimeSeriesRequestValidation(services);
+        var serviceProvider = services.BuildServiceProvider();
 
         _sut = serviceProvider.GetRequiredService<IValidator<AggregatedTimeSeriesRequest>>();
     }
