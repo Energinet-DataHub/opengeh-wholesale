@@ -42,9 +42,6 @@ setup(
             "lock_storage = package.infrastructure.storage_account_access.lock_storage:lock",
             "unlock_storage = package.infrastructure.storage_account_access.lock_storage:unlock",
             "migrate_data_lake = package.datamigration.migration:migrate_data_lake",
-            "uncommitted_migrations_count = package.datamigration.uncommitted_migrations:print_count",
-            # Entry point used for integration testing
-            "list_migrations_in_package = package.datamigration.uncommitted_migrations:print_all_migrations_in_package",
         ]
     },
 )
