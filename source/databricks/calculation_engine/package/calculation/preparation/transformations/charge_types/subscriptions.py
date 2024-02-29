@@ -19,19 +19,27 @@ from pyspark.sql.dataframe import DataFrame
 from package.calculation.preparation.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
 )
+from package.codelists import SettlementMethod, MeteringPointType
+from package.calculation.preparation.charge_master_data import ChargeMasterData
+from package.calculation.preparation.charge_prices import ChargePrices
 from package.codelists import ChargeType
 from package.constants import Colname
 
 
 def get_subscription_charges(
-    charge_master_data: DataFrame,
-    charge_prices: DataFrame,
+    charge_master_data: ChargeMasterData,
+    charge_prices: ChargePrices,
     charge_link_metering_point_periods: ChargeLinkMeteringPointPeriods,
     time_zone: str,
 ) -> DataFrame:
-    subscription_links = _filter_subscriptions(charge_link_metering_point_periods.df)
-    subscription_prices = _filter_subscriptions(charge_prices)
-    subscription_master_data = _filter_subscriptions(charge_master_data)
+    subscription_links = charge_link_metering_point_periods.filter_by_charge_type(
+        ChargeType.SUBSCRIPTION
+    )
+    subscription_links = _filter_on_flex_consumption(subscription_links.df)
+    subscription_prices = charge_prices.filter_by_charge_type(ChargeType.SUBSCRIPTION)
+    subscription_master_data = charge_master_data.filter_by_charge_type(
+        ChargeType.SUBSCRIPTION
+    )
 
     subscription_master_data_and_prices = _join_with_prices(
         subscription_master_data, subscription_prices, time_zone
@@ -44,13 +52,18 @@ def get_subscription_charges(
     return subscriptions
 
 
-def _filter_subscriptions(df: DataFrame) -> DataFrame:
-    return df.filter(f.col(Colname.charge_type) == ChargeType.SUBSCRIPTION.value)
+def _filter_on_flex_consumption(
+    subscription_links: DataFrame,
+) -> DataFrame:
+    subscription_links = subscription_links.filter(
+        f.col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value
+    ).filter(f.col(Colname.settlement_method) == SettlementMethod.FLEX.value)
+    return subscription_links
 
 
 def _join_with_prices(
-    subscription_master_data: DataFrame,
-    subscription_prices: DataFrame,
+    subscription_master_data: ChargeMasterData,
+    subscription_prices: ChargePrices,
     time_zone: str,
 ) -> DataFrame:
     """
@@ -59,6 +72,9 @@ def _join_with_prices(
     - Missing charge prices will be set to None.
     - The charge price is the last known charge price for the charge key.
     """
+    subscription_prices = subscription_prices.df
+    subscription_master_data = subscription_master_data.df
+
     subscription_master_data_with_charge_time = _expand_with_daily_charge_time(
         subscription_master_data, time_zone
     )
@@ -100,29 +116,26 @@ def _expand_with_daily_charge_time(
     The charge_time column is created by exploding subscription_periods using from_date and to_date with a resolution of 1 day.
     """
 
-    charge_time_local = "charge_time_local"
-
-    charge_periods_with_charge_time = (
-        subscription_master_data.withColumn(
-            charge_time_local,
-            f.explode(
-                f.expr(
-                    f"sequence(from_utc_timestamp({Colname.from_date}, '{time_zone}'), from_utc_timestamp({Colname.to_date}, '{time_zone}'), interval 1 day)"
-                )
-            ).alias("charge_time_local"),
-        )
-        .withColumn(
-            Colname.charge_time,
-            f.to_utc_timestamp(f.col(charge_time_local), time_zone),
-        )
-        .drop(charge_time_local)
+    charge_periods_with_charge_time = subscription_master_data.withColumn(
+        Colname.charge_time,
+        f.explode(
+            f.sequence(
+                f.from_utc_timestamp(Colname.from_date, time_zone),
+                f.from_utc_timestamp(Colname.to_date, time_zone),
+                f.expr("interval 1 day"),
+            )
+        ),
+    ).withColumn(
+        Colname.charge_time,
+        f.to_utc_timestamp(Colname.charge_time, time_zone),
     )
 
     return charge_periods_with_charge_time
 
 
 def _join_with_links(
-    subscription_master_data_and_prices: DataFrame, subscription_links: DataFrame
+    subscription_master_data_and_prices: DataFrame,
+    subscription_links: DataFrame,
 ) -> DataFrame:
     subscriptions = subscription_master_data_and_prices.join(
         subscription_links,
