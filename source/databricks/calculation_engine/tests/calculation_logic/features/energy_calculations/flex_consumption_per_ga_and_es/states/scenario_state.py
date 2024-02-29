@@ -15,7 +15,7 @@
 from pyspark.sql import DataFrame, SparkSession
 
 from calculation_logic.features.energy_calculations.results_dataframe import (
-    create_result_dataframe,
+    create_energy_result_dataframe,
 )
 
 
@@ -23,4 +23,4 @@ def get_expected(*args) -> DataFrame:  # type: ignore
     spark: SparkSession = args[0]
     expected_dataframe: DataFrame = args[1]
 
-    return create_result_dataframe(spark, expected_dataframe)
+    return create_energy_result_dataframe(spark, expected_dataframe)

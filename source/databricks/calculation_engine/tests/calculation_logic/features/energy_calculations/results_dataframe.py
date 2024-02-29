@@ -23,20 +23,17 @@ from pyspark.sql.types import (
     ArrayType,
 )
 
-from package.calculation_output.schemas import energy_results_schema
-from package.codelists import CalculationType
-from package.constants import EnergyResultColumnNames
 
-CSV_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
-
-
-def create_result_dataframe(*args) -> DataFrame:  # type: ignore
+def create_energy_result_dataframe(*args) -> DataFrame:  # type: ignore
     spark: SparkSession = args[0]
     df: DataFrame = args[1]
     calculation_args = args[2]
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
+    from package.calculation_output.schemas import energy_results_schema
+    from package.codelists import CalculationType
+    from package.constants import EnergyResultColumnNames
 
     df = df.withColumn(
         EnergyResultColumnNames.time,
@@ -65,11 +62,6 @@ def create_result_dataframe(*args) -> DataFrame:  # type: ignore
     df = df.withColumn(
         EnergyResultColumnNames.calculation_execution_time_start, lit(datetime.now())
     )
-
-    # df = df.withColumn(
-    #     EnergyResultColumnNames.time_series_type,
-    #     lit(TimeSeriesType(df[EnergyResultColumnNames.time_series_type]).value),
-    # )
 
     df = df.withColumn(
         EnergyResultColumnNames.calculation_result_id,
