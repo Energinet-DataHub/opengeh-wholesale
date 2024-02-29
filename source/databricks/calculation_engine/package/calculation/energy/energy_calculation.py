@@ -343,7 +343,7 @@ def _calculate_production(
         args,
         aggregate_per_ga,
         TimeSeriesType.PRODUCTION,
-        AggregationLevel.ES_PER_BRP_PER_GA,
+        AggregationLevel.TOTAL_GA,
     )
 
     return aggregate_per_ga

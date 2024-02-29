@@ -33,6 +33,11 @@ def write_energy_results(energy_results: EnergyResultsContainer) -> None:
 
 def _write(name: str, df: DataFrame) -> None:
     with logging_configuration.start_span(name):
+
+        # Not all energy results have a value - it depends on the type of calculation
+        if df is None:
+            return None
+
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
         ).insertInto(f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}")
