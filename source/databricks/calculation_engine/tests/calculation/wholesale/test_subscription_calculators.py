@@ -15,6 +15,7 @@ from decimal import Decimal
 from datetime import datetime
 
 from pyspark import Row
+from pyspark.sql import DataFrame, SparkSession
 
 from package.calculation.preparation.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
@@ -41,10 +42,6 @@ from calendar import monthrange
 import pytest
 from package.constants import Colname
 
-DEFAULT_TIME_ZONE = "Europe/Copenhagen"
-DEFAULT_CALCULATION_PERIOD_START = datetime(2020, 1, 31, 23, 0)
-DEFAULT_CALCULATION_PERIOD_END = datetime(2020, 2, 29, 23, 0)
-
 
 class DefaultValues:
     GRID_AREA = "543"
@@ -56,7 +53,12 @@ class DefaultValues:
     ENERGY_SUPPLIER_ID = "1234567890123"
     METERING_POINT_ID = "123456789012345678901234567"
     QUANTITY = Decimal("1.005")
-    QUALITY = e.ChargeQuality.CALCULATED
+    QUALITY = QuantityQuality.CALCULATED
+    CALCULATION_PERIOD_START = datetime(2020, 1, 31, 23, 0)
+    CALCULATION_PERIOD_END = datetime(2020, 2, 29, 23, 0)
+    DAYS_IN_MONTH = 29
+    CALCULATION_MONTH = 2
+    TIME_ZONE = "Europe/Copenhagen"
 
 
 def _create_subscription_row(
@@ -68,7 +70,7 @@ def _create_subscription_row(
     charge_quantity: int = DefaultValues.CHARGE_QUANTITY,
     energy_supplier_id: str = DefaultValues.ENERGY_SUPPLIER_ID,
     grid_area: str = DefaultValues.GRID_AREA,
-    quality: QuantityQuality = QuantityQuality.CALCULATED,
+    quality: QuantityQuality = DefaultValues.QUALITY,
 ) -> Row:
     charge_type = ChargeType.SUBSCRIPTION.value
     row = {
@@ -90,6 +92,62 @@ def _create_subscription_row(
     return Row(**row)
 
 
+def _create_default_subscription_charges(spark: SparkSession) -> DataFrame:
+    return spark.createDataFrame(
+        [
+            _create_subscription_row(),
+        ],
+        schema=charges_flex_consumption_schema,
+    )
+
+
+class TestWhenValidInput:
+    @pytest.mark.parametrize(
+        "period_start, period_end, input_charge_price, expected_output_charge_price",
+        [
+            (  # Entering daylights saving time
+                datetime(2020, 1, 31, 23, 0),
+                datetime(2020, 2, 29, 22, 0),
+                Decimal("10"),
+                Decimal("0.34482759"),  # 10 / 29 (days)
+            ),
+            (  # Exiting daylights saving time
+                datetime(2020, 9, 30, 22, 0),
+                datetime(2020, 10, 31, 23, 0),
+                Decimal("10"),
+                Decimal("0.32258065"),  # 10 / 31 (days)
+            ),
+        ],
+    )
+    def test__returns_expected_charge_price(
+        self,
+        spark: SparkSession,
+        period_start: datetime,
+        period_end: datetime,
+        input_charge_price: Decimal,
+        expected_output_charge_price: Decimal,
+    ) -> None:
+        # Arrange
+        subscription_row = _create_subscription_row(charge_price=input_charge_price)
+        subscription_charges = spark.createDataFrame(
+            [subscription_row], schema=charges_flex_consumption_schema
+        )
+
+        # Act
+        daily_subscriptions = calculate_daily_subscription_amount(
+            subscription_charges,
+            DefaultValues.CALCULATION_PERIOD_START,
+            DefaultValues.CALCULATION_PERIOD_END,
+            DefaultValues.TIME_ZONE,
+        )
+
+        # Assert
+        assert (
+            daily_subscriptions.collect()[0][Colname.charge_price]
+            == DefaultValues.CHARGE_PRICE / DefaultValues.DAYS_IN_MONTH
+        )
+
+
 def test__calculate_daily_subscription_price__simple(
     spark,
     calculate_daily_subscription_price_factory,
@@ -101,21 +159,7 @@ def test__calculate_daily_subscription_price__simple(
     # Arrange
     calculation_period_start = datetime(2020, 1, 31, 23, 0)
     calculation_period_end = datetime(2020, 2, 29, 23, 0)
-    from_date = datetime(2020, 2, 1, 0, 0)
-    to_date = datetime(2020, 2, 2, 0, 0)
     time = datetime(2020, 2, 1, 0, 0)
-    charge_link_metering_point_periods = charge_link_metering_points_factory(
-        charge_type=ChargeType.SUBSCRIPTION.value, from_date=from_date, to_date=to_date
-    )
-    charge_master_data = charge_master_data_factory(
-        charge_type=ChargeType.SUBSCRIPTION.value,
-        to_date=to_date,
-        from_date=from_date,
-    )
-    charge_prices = charge_prices_factory(
-        charge_type=ChargeType.SUBSCRIPTION.value,
-        charge_time=time,
-    )
 
     expected_date = datetime(2020, 2, 1, 0, 0)
     expected_charge_price = charge_prices.df.collect()[0][Colname.charge_price]
@@ -124,13 +168,9 @@ def test__calculate_daily_subscription_price__simple(
     )
     expected_subscription_count = 1
 
+    _create_subscription_row()
+
     # Act
-    subscription_charges = get_subscription_charges(
-        charge_master_data,
-        charge_prices,
-        charge_link_metering_point_periods,
-        DEFAULT_TIME_ZONE,
-    )
     result = calculate_daily_subscription_amount(
         subscription_charges,
         calculation_period_start,
