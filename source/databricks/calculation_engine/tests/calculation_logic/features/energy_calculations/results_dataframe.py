@@ -24,7 +24,7 @@ from pyspark.sql.types import (
 )
 
 from package.calculation_output.schemas import energy_results_schema
-from package.codelists import TimeSeriesType, AggregationLevel, CalculationType
+from package.codelists import TimeSeriesType, CalculationType
 from package.constants import EnergyResultColumnNames
 
 CSV_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
@@ -51,11 +51,6 @@ def create_result_dataframe(*args) -> DataFrame:  # type: ignore
     df = df.withColumn(
         EnergyResultColumnNames.quantity_qualities,
         parse_qualities_string_udf(df[EnergyResultColumnNames.quantity_qualities]),
-    )
-
-    df = df.withColumn(
-        EnergyResultColumnNames.aggregation_level,
-        lit(str(AggregationLevel.ES_PER_GA.value)),
     )
 
     df = df.withColumn(

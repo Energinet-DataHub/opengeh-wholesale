@@ -33,9 +33,8 @@ def test_execute__returns_expected(  # type: ignore
 
     actual = (
         results.energy_results.flex_consumption_per_ga_and_brp_and_es.drop(
-            "aggregation_level"
+            "time_series_type"
         )
-        .drop("time_series_type")
         .drop("calculation_execution_time_start")
         .drop("from_grid_area")
         .drop("calculation_result_id")
@@ -43,8 +42,7 @@ def test_execute__returns_expected(  # type: ignore
     )
 
     exp = (
-        scenario_fixture.expected.drop("aggregation_level")
-        .drop("time_series_type")
+        scenario_fixture.expected.drop("time_series_type")
         .drop("calculation_execution_time_start")
         .drop("from_grid_area")
         .drop("calculation_result_id")
