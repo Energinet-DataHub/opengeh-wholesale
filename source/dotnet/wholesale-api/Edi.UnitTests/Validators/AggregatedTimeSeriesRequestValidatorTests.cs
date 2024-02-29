@@ -15,6 +15,7 @@
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.GridArea;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
+using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.Validation;
@@ -38,7 +39,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
         serviceCollection.AddTransient<IClock>(s => SystemClock.Instance);
         serviceCollection.AddScoped<IGridAreaOwnerRepository, GridAreaOwnerRepository>();
         serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
-        EdiRegistration.AddAggregatedTimeSeriesRequestValidation(serviceCollection);
+        EdiExtensions.AddAggregatedTimeSeriesRequestValidation(serviceCollection);
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
         _sut = serviceProvider.GetRequiredService<IValidator<AggregatedTimeSeriesRequest>>();

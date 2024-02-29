@@ -20,12 +20,12 @@ using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeries;
 using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeries.Rules;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Energinet.DataHub.Wholesale.Edi;
+namespace Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
 
 /// <summary>
 /// Registration of services required for the Calculations module.
 /// </summary>
-public static class EdiRegistration
+public static class EdiExtensions
 {
     public static void AddEdiModule(this IServiceCollection serviceCollection)
     {

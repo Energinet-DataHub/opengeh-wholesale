@@ -34,7 +34,7 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Extensions.Dependenc
 /// <summary>
 /// Registration of services required for the Events module.
 /// </summary>
-public static class EventsRegistration
+public static class EventsExtensions
 {
     /// <summary>
     /// Registration if Events database (schema) with key services to support read/write.
