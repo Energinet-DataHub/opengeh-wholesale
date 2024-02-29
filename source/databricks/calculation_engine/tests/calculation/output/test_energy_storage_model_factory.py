@@ -20,6 +20,7 @@ from typing import Any, List
 
 import pytest
 from pyspark.sql import SparkSession
+from pyspark.sql.functions import col
 
 import package.codelists as e
 from package.calculation.calculator_args import CalculatorArgs
@@ -116,7 +117,7 @@ def _create_result_row(
 
 
 def _create_result_df(spark: SparkSession, row: List[dict]) -> EnergyResults:
-    return EnergyResults(spark.createDataFrame(row, schema=energy_results_schema))
+    return EnergyResults(spark.createDataFrame(data=row, schema=energy_results_schema))
 
 
 def _create_result_df_corresponding_to_four_calculation_results(
@@ -272,7 +273,13 @@ def test__create__with_correct_number_of_calculation_result_ids(
     )
 
     # Assert
-    assert actual.distinct().count() == EXPECTED_NUMBER_OF_CALCULATION_RESULT_IDS
+    distinct_calculation_result_ids = (
+        actual.where(col(EnergyResultColumnNames.calculation_id) == args.calculation_id)
+        .select(col(EnergyResultColumnNames.calculation_result_id))
+        .distinct()
+        .count()
+    )
+    assert distinct_calculation_result_ids == EXPECTED_NUMBER_OF_CALCULATION_RESULT_IDS
 
 
 @pytest.mark.parametrize(
