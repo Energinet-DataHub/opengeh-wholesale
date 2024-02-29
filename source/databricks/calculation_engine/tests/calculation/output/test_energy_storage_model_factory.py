@@ -116,11 +116,12 @@ def _create_result_row(
     return row
 
 
-def _create_result_df(spark: SparkSession, row: List[dict]) -> EnergyResults:
-    return EnergyResults(spark.createDataFrame(data=row, schema=energy_results_schema))
+def _create_energy_results(spark: SparkSession, row: List[dict]) -> EnergyResults:
+    df = spark.createDataFrame(data=row, schema=energy_results_schema)
+    return EnergyResults(df)
 
 
-def _create_result_df_corresponding_to_four_calculation_results(
+def _create_energy_results_corresponding_to_four_calculation_results(
     spark: SparkSession,
 ) -> EnergyResults:
     OTHER_TIME_WINDOW_START = DEFAULT_TIME_WINDOW_END
@@ -154,7 +155,7 @@ def _create_result_df_corresponding_to_four_calculation_results(
         _create_result_row(energy_supplier_id=OTHER_ENERGY_SUPPLIER_ID),
     ]
 
-    return _create_result_df(spark, rows)
+    return _create_energy_results(spark, rows)
 
 
 @pytest.mark.parametrize(
@@ -169,7 +170,7 @@ def test__create__with_correct_aggregation_level(
 ) -> None:
     # Arrange
     row = [_create_result_row()]
-    result_df = _create_result_df(spark, row)
+    result_df = _create_energy_results(spark, row)
 
     # Act
     actual = sut.create(
@@ -205,7 +206,7 @@ def test__create__with_correct_aggregation_level(
         (EnergyResultColumnNames.quantity_qualities, [DEFAULT_QUALITY.value]),
     ],
 )
-def test__create__with_correct_column_names_and_values(
+def test__create__with_correct_row_values(
     spark: SparkSession,
     column_name: str,
     column_value: Any,
@@ -214,7 +215,7 @@ def test__create__with_correct_column_names_and_values(
 ) -> None:
     # Arrange
     row = [_create_result_row()]
-    result_df = _create_result_df(spark, row)
+    result_df = _create_energy_results(spark, row)
     args.calculation_id = DEFAULT_CALCULATION_ID
 
     # Act
@@ -238,7 +239,7 @@ def test__create__columns_matching_contract(
     # Arrange
     contract_path = f"{contracts_path}/energy-result-table-column-names.json"
     row = [_create_result_row()]
-    result_df = _create_result_df(spark, row)
+    result_df = _create_energy_results(spark, row)
 
     # Act
     actual = sut.create(
@@ -259,7 +260,7 @@ def test__create__with_correct_number_of_calculation_result_ids(
     args: CalculatorArgs,
 ) -> None:
     # Arrange
-    result_df = _create_result_df_corresponding_to_four_calculation_results(spark)
+    result_df = _create_energy_results_corresponding_to_four_calculation_results(spark)
     EXPECTED_NUMBER_OF_CALCULATION_RESULT_IDS = 4
 
     # Act
@@ -310,7 +311,7 @@ def test__create__when_rows_belong_to_different_results__adds_different_calculat
     row1[column_name] = value
     row2 = _create_result_row()
     row2[column_name] = other_value
-    result_df = _create_result_df(spark, [row1, row2])
+    result_df = _create_energy_results(spark, [row1, row2])
 
     # Act
     actual = sut.create(
@@ -365,7 +366,7 @@ def test__write__when_rows_belong_to_same_result__adds_same_calculation_result_i
     row1[column_name] = value
     row2 = _create_result_row(grid_area="803")
     row2[column_name] = other_value
-    result_df = _create_result_df(spark, [row1, row2])
+    result_df = _create_energy_results(spark, [row1, row2])
 
     # Act
     actual = sut.create(
