@@ -81,6 +81,10 @@ def _get_days_in_month(
 def _is_full_month_and_at_midnight(
     period_start_local_time: datetime, period_end_local_time: datetime
 ) -> bool:
+    print(period_start_local_time.time())
+    print(period_end_local_time.time())
+    print(datetime.min.time())
+
     return (
         period_start_local_time.time()
         == period_end_local_time.time()

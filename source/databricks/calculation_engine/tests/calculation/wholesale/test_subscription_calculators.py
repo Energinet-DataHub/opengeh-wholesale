@@ -157,8 +157,8 @@ class TestWhenCalculationPeriodIsNotFullMonth:
                 datetime(2020, 2, 12, 23, 0),
             ),
             (  # Entering daylights saving time - not ending at midnight
-                datetime(2020, 1, 31, 23, 0),
                 datetime(2020, 2, 29, 23, 0),
+                datetime(2020, 3, 31, 23, 0),
             ),
             (  # Exiting daylights saving time - not ending at midnight
                 datetime(2020, 9, 30, 22, 0),
