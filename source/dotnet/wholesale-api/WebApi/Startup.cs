@@ -48,6 +48,7 @@ public class Startup
     {
         // Common
         services.AddApplicationInsightsForWebApp();
+        services.AddHealthChecksForWebApp();
 
         // Shared by modules
         services.AddNodaTimeForApplication(Configuration);
@@ -123,7 +124,6 @@ public class Startup
         });
         var serviceBusOptions = Configuration.Get<ServiceBusOptions>()!;
         services.AddHealthChecks()
-            .AddLiveCheck()
             .AddAzureServiceBusSubscriptionUsingWebSockets(
                 serviceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING,
                 serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
