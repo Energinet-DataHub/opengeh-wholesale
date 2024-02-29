@@ -162,6 +162,7 @@ def _join_with_links(
         subscription_master_data_and_prices[Colname.charge_tax],
         subscription_links[Colname.charge_quantity],
         subscription_links[Colname.metering_point_type],
+        subscription_links[Colname.metering_point_id],
         subscription_links[Colname.settlement_method],
         subscription_links[Colname.grid_area],
         subscription_links[Colname.energy_supplier_id],

@@ -69,6 +69,7 @@ def _create_subscription_row(
     charge_price: Decimal | None = DefaultValues.CHARGE_PRICE,
     charge_quantity: int = DefaultValues.CHARGE_QUANTITY,
     energy_supplier_id: str = DefaultValues.ENERGY_SUPPLIER_ID,
+    metering_point_id: str = DefaultValues.METERING_POINT_ID,
     grid_area: str = DefaultValues.GRID_AREA,
     quality: QuantityQuality = DefaultValues.QUALITY,
 ) -> Row:
@@ -84,6 +85,7 @@ def _create_subscription_row(
         Colname.charge_quantity: charge_quantity,
         Colname.metering_point_type: MeteringPointType.CONSUMPTION.value,
         Colname.settlement_method: SettlementMethod.FLEX.value,
+        Colname.metering_point_id: metering_point_id,
         Colname.grid_area: grid_area,
         Colname.energy_supplier_id: energy_supplier_id,
         Colname.qualities: [quality.value],
@@ -119,7 +121,7 @@ class TestWhenValidInput:
             ),
         ],
     )
-    def test__returns_charge_price_divided_by_number_of_days(
+    def test__returns_expected_charge_price(
         self,
         spark: SparkSession,
         period_start: datetime,
@@ -147,14 +149,45 @@ class TestWhenValidInput:
             == expected_output_charge_price
         )
 
+    def test__returns_expected_charge_count(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        expected_quantity = 3
+        subscription_rows = [
+            _create_subscription_row(metering_point_id="1", charge_quantity=1),
+            _create_subscription_row(metering_point_id="2", charge_quantity=2),
+        ]
+        subscription_charges = spark.createDataFrame(
+            subscription_rows, schema=subscription_charge_schema
+        )
+
+        # Act
+        daily_subscriptions = calculate_daily_subscription_amount(
+            subscription_charges,
+            DefaultValues.CALCULATION_PERIOD_START,
+            DefaultValues.CALCULATION_PERIOD_END,
+            DefaultValues.TIME_ZONE,
+        )
+
+        # Assert
+        assert (
+            daily_subscriptions.collect()[0][Colname.charge_count] == expected_quantity
+        )
+
 
 class TestWhenCalculationPeriodIsNotFullMonth:
     @pytest.mark.parametrize(
         "period_start, period_end",
         [
-            (
+            (  # Less than a month
                 datetime(2020, 1, 10, 23, 0),
                 datetime(2020, 2, 12, 23, 0),
+            ),
+            (  # More than a month
+                datetime(2020, 1, 10, 23, 0),
+                datetime(2020, 3, 12, 23, 0),
             ),
             (  # Entering daylights saving time - not ending at midnight
                 datetime(2020, 2, 29, 23, 0),
@@ -183,47 +216,6 @@ class TestWhenCalculationPeriodIsNotFullMonth:
                 period_end,
                 DefaultValues.TIME_ZONE,
             )
-
-
-def test__calculate_daily_subscription_price__simple(
-    spark,
-    calculate_daily_subscription_price_factory,
-    charge_master_data_factory,
-    charge_prices_factory,
-    charge_link_metering_points_factory,
-):
-    # Test that calculate_daily_subscription_price does as expected in with the most simple dataset
-    # Arrange
-    calculation_period_start = datetime(2020, 1, 31, 23, 0)
-    calculation_period_end = datetime(2020, 2, 29, 23, 0)
-    time = datetime(2020, 2, 1, 0, 0)
-
-    expected_date = datetime(2020, 2, 1, 0, 0)
-    expected_charge_price = charge_prices.df.collect()[0][Colname.charge_price]
-    expected_price_per_day = Decimal(
-        expected_charge_price / monthrange(expected_date.year, expected_date.month)[1]
-    )
-    expected_subscription_count = 1
-
-    _create_subscription_row()
-
-    # Act
-    result = calculate_daily_subscription_amount(
-        subscription_charges,
-        calculation_period_start,
-        calculation_period_end,
-        DEFAULT_TIME_ZONE,
-    )
-    expected = calculate_daily_subscription_price_factory(
-        expected_date,
-        expected_price_per_day,
-        expected_subscription_count,
-        expected_price_per_day,
-        charge_price=expected_charge_price,
-    )
-
-    # Assert
-    assert result.collect() == expected.collect()
 
 
 def test__calculate_daily_subscription_price__charge_price_change(

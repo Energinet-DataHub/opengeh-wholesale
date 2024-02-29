@@ -52,7 +52,6 @@ def calculate_price_per_day(
         calculation_period_start, calculation_period_end, time_zone
     )
 
-    print(days_in_month)
     charges_per_day = charges_per_day_flex_consumption.withColumn(
         Colname.charge_price,
         (col(Colname.charge_price) / lit(days_in_month)).cast(DecimalType(14, 6)),
@@ -81,10 +80,6 @@ def _get_days_in_month(
 def _is_full_month_and_at_midnight(
     period_start_local_time: datetime, period_end_local_time: datetime
 ) -> bool:
-    print(period_start_local_time.time())
-    print(period_end_local_time.time())
-    print(datetime.min.time())
-
     return (
         period_start_local_time.time()
         == period_end_local_time.time()

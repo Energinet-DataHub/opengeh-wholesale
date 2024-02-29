@@ -37,6 +37,7 @@ subscription_charge_schema = StructType(
         StructField(Colname.charge_quantity, IntegerType(), False),
         StructField(Colname.metering_point_type, StringType(), False),
         StructField(Colname.settlement_method, StringType(), False),
+        StructField(Colname.metering_point_id, StringType(), False),
         StructField(Colname.grid_area, StringType(), False),
         StructField(Colname.energy_supplier_id, StringType(), False),
         StructField(Colname.qualities, ArrayType(StringType()), False),
