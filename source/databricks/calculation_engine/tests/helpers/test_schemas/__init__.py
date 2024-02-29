@@ -11,7 +11,5 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from .charges_flex_consumption_schema import (
-    subscription_charge_schema,
-)
+
 from .charges_per_day_schema import charges_per_day_schema

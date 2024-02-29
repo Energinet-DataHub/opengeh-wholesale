@@ -18,7 +18,7 @@ from package.calculation.preparation.charge_master_data import charge_master_dat
 from package.calculation.preparation.charge_prices import charge_prices_schema
 from package.constants import Colname
 from package.calculation.wholesale.schemas.calculate_daily_subscription_price_schema import (
-    calculate_daily_subscription_price_schema,
+    subscriptions_schema,
 )
 from tests.calculation.dataframe_defaults import DataframeDefaults
 
@@ -32,7 +32,7 @@ def test_calculate_daily_subscription_price(calculate_daily_subscription_price_f
         time, price_per_day, charge_count, total_daily_charge_price
     )
     result = df.collect()[0]
-    assert len(df.columns) == len(calculate_daily_subscription_price_schema.fields)
+    assert len(df.columns) == len(subscriptions_schema.fields)
     assert (
         result[Colname.charge_key]
         == f"{DataframeDefaults.default_charge_code}-{DataframeDefaults.default_charge_owner}-{DataframeDefaults.default_charge_type}"

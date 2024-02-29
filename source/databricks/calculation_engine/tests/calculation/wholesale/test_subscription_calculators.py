@@ -19,6 +19,9 @@ import pytest
 from pyspark import Row
 from pyspark.sql import DataFrame, SparkSession
 
+from package.calculation.wholesale.schemas.calculate_daily_subscription_price_schema import (
+    subscriptions_schema,
+)
 from package.calculation.wholesale.subscription_calculators import (
     calculate_daily_subscription_amount,
 )
@@ -29,7 +32,6 @@ from package.codelists import (
     QuantityQuality,
 )
 from package.constants import Colname
-from tests.helpers.test_schemas import subscription_charge_schema
 
 
 class DefaultValues:
@@ -88,7 +90,7 @@ def _create_default_subscription_charges(spark: SparkSession) -> DataFrame:
         [
             _create_subscription_row(),
         ],
-        schema=subscription_charge_schema,
+        schema=subscriptions_schema,
     )
 
 
@@ -121,7 +123,7 @@ class TestWhenValidInput:
         # Arrange
         subscription_row = _create_subscription_row(charge_price=input_charge_price)
         subscription_charges = spark.createDataFrame(
-            [subscription_row], schema=subscription_charge_schema
+            [subscription_row], schema=subscriptions_schema
         )
 
         # Act
@@ -148,7 +150,7 @@ class TestWhenValidInput:
             _create_subscription_row(metering_point_id="2", charge_quantity=quantity_2),
         ]
         subscription_charges = spark.createDataFrame(
-            subscription_rows, schema=subscription_charge_schema
+            subscription_rows, schema=subscriptions_schema
         )
 
         # Act
@@ -187,7 +189,7 @@ class TestWhenValidInput:
             ),
         ]
         subscription_charges = spark.createDataFrame(
-            subscription_rows, schema=subscription_charge_schema
+            subscription_rows, schema=subscriptions_schema
         )
 
         # Act
@@ -238,7 +240,7 @@ class TestWhenMultipleMeteringPointsPerChargeTime:
             ),
         ]
         subscription_charges = spark.createDataFrame(
-            subscription_rows, schema=subscription_charge_schema
+            subscription_rows, schema=subscriptions_schema
         )
 
         # Act
@@ -283,7 +285,7 @@ class TestWhenCalculationPeriodIsNotFullMonth:
         # Arrange
         subscription_row = _create_subscription_row(charge_time=period_start)
         subscription_charges = spark.createDataFrame(
-            [subscription_row], schema=subscription_charge_schema
+            [subscription_row], schema=subscriptions_schema
         )
 
         # Act & Assert

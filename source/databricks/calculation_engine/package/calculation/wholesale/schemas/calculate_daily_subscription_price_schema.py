@@ -20,23 +20,26 @@ from pyspark.sql.types import (
     StructField,
     StringType,
     TimestampType,
+    BooleanType,
+    ArrayType,
 )
 
 
-calculate_daily_subscription_price_schema = StructType(
+subscriptions_schema = StructType(
     [
         StructField(Colname.charge_key, StringType(), False),
-        StructField(Colname.charge_code, StringType(), False),
         StructField(Colname.charge_type, StringType(), False),
         StructField(Colname.charge_owner, StringType(), False),
-        StructField(Colname.charge_price, DecimalType(18, 6), False),
+        StructField(Colname.charge_code, StringType(), False),
         StructField(Colname.charge_time, TimestampType(), False),
-        StructField(Colname.price_per_day, DecimalType(18, 6), False),
-        StructField(Colname.charge_count, IntegerType(), False),
-        StructField(Colname.total_daily_charge_price, DecimalType(18, 6), False),
+        StructField(Colname.charge_price, DecimalType(18, 8), False),
+        StructField(Colname.charge_tax, BooleanType(), False),
+        StructField(Colname.charge_quantity, IntegerType(), False),
         StructField(Colname.metering_point_type, StringType(), False),
         StructField(Colname.settlement_method, StringType(), False),
+        StructField(Colname.metering_point_id, StringType(), False),
         StructField(Colname.grid_area, StringType(), False),
         StructField(Colname.energy_supplier_id, StringType(), False),
+        StructField(Colname.qualities, ArrayType(StringType()), False),
     ]
 )

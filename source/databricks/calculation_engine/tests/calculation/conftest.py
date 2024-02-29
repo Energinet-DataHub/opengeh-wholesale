@@ -32,7 +32,7 @@ from package.calculation.preparation.charge_prices import (
 )
 from package.codelists import ChargeType
 from package.calculation.wholesale.schemas.calculate_daily_subscription_price_schema import (
-    calculate_daily_subscription_price_schema,
+    subscriptions_schema,
 )
 from package.calculation.wholesale.schemas.calculate_fee_charge_price_schema import (
     calculate_fee_charge_price_schema,
@@ -83,9 +83,7 @@ def calculate_daily_subscription_price_factory(
             }
         ]
 
-        return spark.createDataFrame(
-            data, schema=calculate_daily_subscription_price_schema
-        )
+        return spark.createDataFrame(data, schema=subscriptions_schema)
 
     return factory
 
