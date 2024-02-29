@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 9.0.0
+
+Removed  the following values from `TimeSeriesType`: `GridLoss`, `NegativeGridLoss`, `PostiveGridLoss`, `TempFlexConsumption`, `TempProduction`
+
 ## Version 8.2.1
 
 No changes
