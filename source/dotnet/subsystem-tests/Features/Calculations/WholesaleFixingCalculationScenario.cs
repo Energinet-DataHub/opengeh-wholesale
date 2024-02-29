@@ -126,29 +126,29 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
         Fixture.ScenarioState.ReceivedGridLossProducedV1.Should().NotBeEmpty();
     }
 
-        [ScenarioStep(6)]
-        [SubsystemFact]
-        public void AndThen_ReceivedEnergyResultProducedEventsCountIsEqualToExpected()
-        {
-            var expected = 116;
+    [ScenarioStep(6)]
+    [SubsystemFact]
+    public void AndThen_ReceivedEnergyResultProducedEventsCountIsEqualToExpected()
+    {
+        var expected = 116;
 
         // Assert
         using var assertionScope = new AssertionScope();
         Fixture.ScenarioState.ReceivedEnergyResultProducedV2.Count.Should().Be(expected);
     }
 
-        [ScenarioStep(7)]
-        [SubsystemFact]
-        public void AndThen_ReceivedEnergyResultProducedEventsContainExpectedTimeSeriesTypes()
-        {
-            List<string> expected =
-            [
-                "Production",
-                "FlexConsumption",
-                "TotalConsumption",
-                "NonProfiledConsumption",
-                "NetExchangePerGa"
-            ];
+    [ScenarioStep(7)]
+    [SubsystemFact]
+    public void AndThen_ReceivedEnergyResultProducedEventsContainExpectedTimeSeriesTypes()
+    {
+        List<string> expected =
+        [
+            "Production",
+            "FlexConsumption",
+            "TotalConsumption",
+            "NonProfiledConsumption",
+            "NetExchangePerGa"
+        ];
 
         var actualTimeSeriesTypesForEnergyResultProducedV2 = Fixture.ScenarioState.ReceivedEnergyResultProducedV2
             .Select(x => Enum.GetName(x.TimeSeriesType))
@@ -163,22 +163,22 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
         }
     }
 
-        [ScenarioStep(8)]
-        [SubsystemFact]
-        public void AndThen_ReceivedEnergyResultProducedEventsContainExpectedTuplesOfTimeSeriesTypeAndAggregationLevel()
-        {
-            IEnumerable<(string TimeSeriesType, string AggregationLevel)> expected =
-                new List<(string, string)>
-                {
-                    ("NonProfiledConsumption", "AggregationPerGridarea"),
-                    ("NonProfiledConsumption", "AggregationPerEnergysupplierPerGridarea"),
-                    ("Production", "AggregationPerGridarea"),
-                    ("Production", "AggregationPerEnergysupplierPerGridarea"),
-                    ("FlexConsumption", "AggregationPerGridarea"),
-                    ("FlexConsumption", "AggregationPerEnergysupplierPerGridarea"),
-                    ("NetExchangePerGa", "AggregationPerGridarea"),
-                    ("TotalConsumption", "AggregationPerGridarea"),
-                };
+    [ScenarioStep(8)]
+    [SubsystemFact]
+    public void AndThen_ReceivedEnergyResultProducedEventsContainExpectedTuplesOfTimeSeriesTypeAndAggregationLevel()
+    {
+        IEnumerable<(string TimeSeriesType, string AggregationLevel)> expected =
+            new List<(string, string)>
+            {
+                ("NonProfiledConsumption", "AggregationPerGridarea"),
+                ("NonProfiledConsumption", "AggregationPerEnergysupplierPerGridarea"),
+                ("Production", "AggregationPerGridarea"),
+                ("Production", "AggregationPerEnergysupplierPerGridarea"),
+                ("FlexConsumption", "AggregationPerGridarea"),
+                ("FlexConsumption", "AggregationPerEnergysupplierPerGridarea"),
+                ("NetExchangePerGa", "AggregationPerGridarea"),
+                ("TotalConsumption", "AggregationPerGridarea"),
+            };
 
         // Assert
         using var assertionScope = new AssertionScope();

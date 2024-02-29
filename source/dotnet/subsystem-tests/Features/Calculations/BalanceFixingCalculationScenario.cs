@@ -129,11 +129,11 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
         Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1.Should().BeEmpty();
     }
 
-        [ScenarioStep(6)]
-        [SubsystemFact]
-        public void AndThen_ReceivedEnergyResultProducedEventsCountIsEqualToExpected()
-        {
-            var expected = 99;
+    [ScenarioStep(6)]
+    [SubsystemFact]
+    public void AndThen_ReceivedEnergyResultProducedEventsCountIsEqualToExpected()
+    {
+        var expected = 99;
 
         // Assert
         using var assertionScope = new AssertionScope();
@@ -141,56 +141,55 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
         Fixture.ScenarioState.ReceivedGridLossProducedV1.Count.Should().Be(2);
     }
 
-        [ScenarioStep(7)]
-        [SubsystemFact]
-        public void AndThen_ReceivedEnergyResultProducedEventsContainAllTimeSeriesTypes()
+    [ScenarioStep(7)]
+    [SubsystemFact]
+    public void AndThen_ReceivedEnergyResultProducedEventsContainAllTimeSeriesTypes()
+    {
+        List<string> expected =
+        [
+            "Production",
+            "FlexConsumption",
+            "TotalConsumption",
+            "NonProfiledConsumption",
+            "NetExchangePerGa",
+            "NetExchangePerNeighboringGa"
+        ];
+        var actualTimeSeriesTypesForEnergyResultProducedV2 = Fixture.ScenarioState.ReceivedEnergyResultProducedV2
+            .Select(x => Enum.GetName(x.TimeSeriesType))
+            .Distinct()
+            .ToList();
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        foreach (var timeSeriesType in expected)
         {
-            List<string> expected =
-            [
-                "Production",
-                "FlexConsumption",
-                "TotalConsumption",
-                "NonProfiledConsumption",
-                "NetExchangePerGa",
-                "NetExchangePerNeighboringGa"
-            ];
-
-            var actualTimeSeriesTypesForEnergyResultProducedV2 = Fixture.ScenarioState.ReceivedEnergyResultProducedV2
-                .Select(x => Enum.GetName(x.TimeSeriesType))
-                .Distinct()
-                .ToList();
-
-            // Assert
-            using var assertionScope = new AssertionScope();
-            foreach (var timeSeriesType in expected)
-            {
-                actualTimeSeriesTypesForEnergyResultProducedV2.Should().Contain(timeSeriesType);
-            }
+            actualTimeSeriesTypesForEnergyResultProducedV2.Should().Contain(timeSeriesType);
         }
+    }
 
-        [ScenarioStep(8)]
-        [SubsystemFact]
-        public void AndThen_ReceivedEnergyResultProducedEventsContainExpectedTuplesOfTimeSeriesTypeAndAggregationLevel()
-        {
-            IEnumerable<(string TimeSeriesType, string AggregationLevel)> expected =
-                new List<(string, string)>
-                {
-                    ("NonProfiledConsumption", "AggregationPerGridarea"),
-                    ("NonProfiledConsumption", "AggregationPerEnergysupplierPerGridarea"),
-                    ("NonProfiledConsumption", "AggregationPerBalanceresponsiblepartyPerGridarea"),
-                    ("NonProfiledConsumption", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea"),
-                    ("Production", "AggregationPerGridarea"),
-                    ("Production", "AggregationPerEnergysupplierPerGridarea"),
-                    ("Production", "AggregationPerBalanceresponsiblepartyPerGridarea"),
-                    ("Production", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea"),
-                    ("FlexConsumption", "AggregationPerGridarea"),
-                    ("FlexConsumption", "AggregationPerEnergysupplierPerGridarea"),
-                    ("FlexConsumption", "AggregationPerBalanceresponsiblepartyPerGridarea"),
-                    ("FlexConsumption", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea"),
-                    ("NetExchangePerGa", "AggregationPerGridarea"),
-                    ("NetExchangePerNeighboringGa", "AggregationPerGridarea"),
-                    ("TotalConsumption", "AggregationPerGridarea"),
-                };
+    [ScenarioStep(8)]
+    [SubsystemFact]
+    public void AndThen_ReceivedEnergyResultProducedEventsContainExpectedTuplesOfTimeSeriesTypeAndAggregationLevel()
+    {
+        IEnumerable<(string TimeSeriesType, string AggregationLevel)> expected =
+            new List<(string, string)>
+            {
+                ("NonProfiledConsumption", "AggregationPerGridarea"),
+                ("NonProfiledConsumption", "AggregationPerEnergysupplierPerGridarea"),
+                ("NonProfiledConsumption", "AggregationPerBalanceresponsiblepartyPerGridarea"),
+                ("NonProfiledConsumption", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea"),
+                ("Production", "AggregationPerGridarea"),
+                ("Production", "AggregationPerEnergysupplierPerGridarea"),
+                ("Production", "AggregationPerBalanceresponsiblepartyPerGridarea"),
+                ("Production", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea"),
+                ("FlexConsumption", "AggregationPerGridarea"),
+                ("FlexConsumption", "AggregationPerEnergysupplierPerGridarea"),
+                ("FlexConsumption", "AggregationPerBalanceresponsiblepartyPerGridarea"),
+                ("FlexConsumption", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea"),
+                ("NetExchangePerGa", "AggregationPerGridarea"),
+                ("NetExchangePerNeighboringGa", "AggregationPerGridarea"),
+                ("TotalConsumption", "AggregationPerGridarea"),
+            };
 
         // Assert
         using var assertionScope = new AssertionScope();
