@@ -52,7 +52,6 @@ def calculate_price_per_day(
         calculation_period_start, calculation_period_end, time_zone
     )
 
-    print("days_in_month:")
     print(days_in_month)
     charges_per_day = charges_per_day_flex_consumption.withColumn(
         Colname.charge_price,

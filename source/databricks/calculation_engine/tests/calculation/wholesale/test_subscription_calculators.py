@@ -148,6 +148,43 @@ class TestWhenValidInput:
         )
 
 
+class TestWhenCalculationPeriodIsNotFullMonth:
+    @pytest.mark.parametrize(
+        "period_start, period_end",
+        [
+            (
+                datetime(2020, 1, 10, 23, 0),
+                datetime(2020, 2, 12, 23, 0),
+            ),
+            (  # Entering daylights saving time - not ending at midnight
+                datetime(2020, 1, 31, 23, 0),
+                datetime(2020, 2, 29, 23, 0),
+            ),
+            (  # Exiting daylights saving time - not ending at midnight
+                datetime(2020, 9, 30, 22, 0),
+                datetime(2020, 10, 31, 22, 0),
+            ),
+        ],
+    )
+    def test__raises_exception(
+        self, spark: SparkSession, period_start: datetime, period_end: datetime
+    ) -> None:
+        # Arrange
+        subscription_row = _create_subscription_row(charge_time=period_start)
+        subscription_charges = spark.createDataFrame(
+            [subscription_row], schema=subscription_charge_schema
+        )
+
+        # Act & Assert
+        with pytest.raises(Exception):
+            calculate_daily_subscription_amount(
+                subscription_charges,
+                period_start,
+                period_end,
+                DefaultValues.TIME_ZONE,
+            )
+
+
 def test__calculate_daily_subscription_price__simple(
     spark,
     calculate_daily_subscription_price_factory,
