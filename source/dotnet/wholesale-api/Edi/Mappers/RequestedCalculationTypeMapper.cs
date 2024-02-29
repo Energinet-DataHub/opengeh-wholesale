@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.EDI.Models;
+using Energinet.DataHub.Wholesale.Edi.Models;
 
-namespace Energinet.DataHub.Wholesale.EDI.Mappers;
+namespace Energinet.DataHub.Wholesale.Edi.Mappers;
 
 public static class RequestedCalculationTypeMapper
 {

@@ -14,13 +14,13 @@
 
 using Energinet.DataHub.Edi.Requests;
 using Energinet.DataHub.Wholesale.Edi.Calculations;
-using Energinet.DataHub.Wholesale.EDI.Client;
-using Energinet.DataHub.Wholesale.EDI.Validation;
-using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSeries;
-using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSeries.Rules;
+using Energinet.DataHub.Wholesale.Edi.Client;
+using Energinet.DataHub.Wholesale.Edi.Validation;
+using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeries;
+using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeries.Rules;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Energinet.DataHub.Wholesale.EDI;
+namespace Energinet.DataHub.Wholesale.Edi;
 
 /// <summary>
 /// Registration of services required for the Calculations module.

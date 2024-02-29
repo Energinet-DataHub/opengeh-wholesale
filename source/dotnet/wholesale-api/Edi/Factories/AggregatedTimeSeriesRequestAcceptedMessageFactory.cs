@@ -15,14 +15,14 @@
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.EDI.Mappers;
+using Energinet.DataHub.Wholesale.Edi.Mappers;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using NodaTime.Serialization.Protobuf;
 using Period = Energinet.DataHub.Edi.Responses.Period;
 using TimeSeriesPoint = Energinet.DataHub.Edi.Responses.TimeSeriesPoint;
 
-namespace Energinet.DataHub.Wholesale.EDI.Factories;
+namespace Energinet.DataHub.Wholesale.Edi.Factories;
 
 public class AggregatedTimeSeriesRequestAcceptedMessageFactory
 {
