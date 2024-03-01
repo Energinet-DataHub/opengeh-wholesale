@@ -39,11 +39,6 @@ def create(
     df = _add_calculation_result_id(df)
     df = _map_to_storage_dataframe(df)
 
-    df = df.withColumn(
-        EnergyResultColumnNames.quantity,
-        f.col(EnergyResultColumnNames.quantity).cast(DecimalType(18, 3)),
-    )
-
     return df
 
 
@@ -121,9 +116,9 @@ def _map_to_storage_dataframe(results: DataFrame) -> DataFrame:
             EnergyResultColumnNames.balance_responsible_id
         ),
         # TODO JVM: This is a temporary fix for the fact that the sum_quantity column is not nullable
-        f.coalesce(f.col(Colname.sum_quantity), f.lit(0)).alias(
-            EnergyResultColumnNames.quantity
-        ),
+        f.coalesce(f.col(Colname.sum_quantity), f.lit(0))
+        .alias(EnergyResultColumnNames.quantity)
+        .cast(DecimalType(18, 3)),
         f.col(Colname.qualities).alias(EnergyResultColumnNames.quantity_qualities),
         f.col(Colname.time_window_start).alias(EnergyResultColumnNames.time),
         f.col(EnergyResultColumnNames.aggregation_level),
