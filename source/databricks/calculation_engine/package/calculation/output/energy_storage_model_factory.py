@@ -14,6 +14,7 @@
 
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
+from pyspark.sql.types import DecimalType
 from pyspark.sql.window import Window
 
 from package.calculation.calculator_args import CalculatorArgs
@@ -29,12 +30,19 @@ def create(
     aggregation_level: AggregationLevel,
 ) -> DataFrame:
 
+    energy_results.df.printSchema()
+
     df = _add_aggregation_level_and_time_series_type(
         energy_results.df, aggregation_level, time_series_type
     )
     df = _add_calculation_columns(args, df)
     df = _add_calculation_result_id(df)
     df = _map_to_storage_dataframe(df)
+
+    df = df.withColumn(
+        EnergyResultColumnNames.quantity,
+        f.col(EnergyResultColumnNames.quantity).cast(DecimalType(18, 3)),
+    )
 
     return df
 
