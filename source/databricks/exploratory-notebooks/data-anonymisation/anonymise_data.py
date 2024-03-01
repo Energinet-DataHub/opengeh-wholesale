@@ -34,15 +34,27 @@ database = "..."
 source_mp_table_name = "metering_point_periods"
 source_ts_table_name = "time_series_points"
 source_gl_table_name = "grid_loss_metering_points"
+#
+source_mp_table = (
+    spark.read.table(f"{database}.{source_mp_table_name}")
+    .filter("'2010-08-19T22:00:00Z' <= from_date")
+    .filter("from_date <= '2023-06-01T21:00:00Z'")
+    .filter("'2010-08-19T22:00:00Z' <= to_date")
+    .filter("to_date <= '2023-06-01T21:00:00Z'")
+)
 
-source_mp_table = spark.read.table(f"{database}.{source_mp_table_name}")
-source_ts_table = spark.read.table(f"{database}.{source_ts_table_name}")
+source_ts_table = (
+    spark.read.table(f"{database}.{source_ts_table_name}")
+    .filter("'2010-08-19T22:00:00Z' <= observation_time")
+    .filter("observation_time <= '2023-06-01T21:00:00Z'")
+)
+
 source_gl_table = spark.read.table(f"{database}.{source_gl_table_name}")
 
 target_database = database
 target_mp_table_name = "metering_point_periods_performance_test"
 target_ts_table_name = "time_series_points_performance_test"
-target_ts_table_name = "grid_loss_metering_points_performance_test"
+target_gl_table_name = "grid_loss_metering_points_performance_test"
 
 # COMMAND ----------
 
@@ -100,7 +112,14 @@ all_metering_point_ids = (
 w = Window.orderBy(F.rand())
 anonymised_metering_points = (
     all_metering_point_ids.withColumn(
-        "anonymised_mp_id", F.rpad(F.rank().over(w), 18, "0")
+        "anonymised_mp_id",
+        F.rpad(
+            F.concat(
+                F.lit("5"), F.lpad(F.row_number().over(w), df_count, "0"), F.lit("5")
+            ),
+            18,
+            "0",
+        ),
     )
     .withColumn(
         "anonymised_mp_id",
@@ -110,6 +129,16 @@ anonymised_metering_points = (
         ).otherwise(F.col("anonymised_mp_id")),
     )
     .na.drop()
+)
+
+# COMMAND ----------
+
+assert (
+    anonymised_metering_points.groupBy("anonymised_mp_id")
+    .agg(F.sum(F.lit(1)).alias("C"))
+    .filter("C > 1")
+    .count()
+    == 0
 )
 
 # COMMAND ----------
@@ -125,7 +154,8 @@ all_supplier_and_balancers = (
 w = Window.orderBy(F.rand())
 anonymised_suppliers_and_balancers = (
     all_supplier_and_balancers.withColumn(
-        "anonymised_balance_or_supplier_id", F.rpad(F.rank().over(w), 13, "0")
+        "anonymised_balance_or_supplier_id",
+        F.reverse(F.lpad(F.rank().over(w), 13, "0")),
     )
     .withColumn(
         "anonymised_balance_or_supplier_id",
@@ -134,6 +164,15 @@ anonymised_suppliers_and_balancers = (
         ),
     )
     .na.drop()
+)
+# COMMAND ----------
+
+assert (
+    anonymised_suppliers_and_balancers.groupBy("anonymised_balance_or_supplier_id")
+    .agg(F.sum(F.lit(1)).alias("C"))
+    .filter("C > 1")
+    .count()
+    == 0
 )
 
 # COMMAND ----------
@@ -173,11 +212,16 @@ source_mp_table_anonymised = (
     .select(source_mp_table.columns)
 )
 
-
 # COMMAND ----------
 
-source_mp_table_anonymised.write.format("delta").mode("append").saveAsTable(
-    f"{target_database}.{target_mp_table_name}"
+assert (
+    source_mp_table_anonymised.select("metering_point_id", "type")
+    .distinct()
+    .groupBy("metering_point_id")
+    .agg(F.sum(F.lit(1)).alias("C"))
+    .filter("C > 1")
+    .count()
+    == 0
 )
 
 # COMMAND ----------
@@ -189,17 +233,27 @@ source_mp_table_anonymised.write.format("delta").mode("append").saveAsTable(
 
 # COMMAND ----------
 
+# TODO
+mps_to_anonymise = ["fill in when running"]
+
 source_ts_table_anonymised = (
-    source_ts_table.join(anonymised_metering_points, "metering_point_id").withColumn(
-        "metering_point_id", F.col("anonymised_mp_id")
+    source_ts_table.join(anonymised_metering_points, "metering_point_id")
+    .withColumn("metering_point_id", F.col("anonymised_mp_id"))
+    .withColumn(
+        "quantity",
+        F.when(
+            F.col("metering_point_id").isin(mps_to_anonymise), F.rand(seed=42) * 100
+        ).otherwise(F.col("quantity")),
     )
     .select(source_ts_table.columns)
 )
 
+
 # COMMAND ----------
 
-source_ts_table_anonymised.write.format("delta").mode("append").saveAsTable(
-    f"{target_database}.{target_ts_table_name}"
+assert (
+    source_ts_table_anonymised.select("metering_point_id").distinct().count()
+    == source_ts_table.select("metering_point_id").distinct().count()
 )
 
 # COMMAND ----------
@@ -213,6 +267,24 @@ source_gl_table_anonymised = (
     source_gl_table.join(anonymised_metering_points, "metering_point_id")
     .withColumn("metering_point_id", F.col("anonymised_mp_id"))
     .select(source_gl_table.columns)
+)
+
+# COMMAND ----------
+
+assert (
+    source_gl_table_anonymised.select("metering_point_id").distinct().count()
+    == source_gl_table_anonymised.select("metering_point_id").distinct().count()
+)
+
+# COMMAND ----------
+
+source_mp_table_anonymised.write.format("delta").mode("append").saveAsTable(
+    f"{target_database}.{target_mp_table_name}"
+)
+# COMMAND ----------
+
+source_ts_table_anonymised.write.format("delta").mode("append").saveAsTable(
+    f"{target_database}.{target_ts_table_name}"
 )
 
 # COMMAND ----------
