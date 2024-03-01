@@ -72,11 +72,6 @@ variable "calculation_input_folder" {
   default     = "calculation_input"
 }
 
-variable "github_username" {
-  type        = string
-  description = "Username used to access Github from Databricks jobs."
-}
-
 variable "github_personal_access_token" {
   type        = string
   description = "Personal access token for Github access"

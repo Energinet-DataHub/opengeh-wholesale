@@ -10,4 +10,3 @@ ip_restrictions=[{
 developer_ad_group_name="SEC-A-GreenForce-DevelopmentTeamAzure"
 tenant_id="f7619355-6c67-4100-9a78-1847f30742e2"
 developers_security_group_object_id="ffad55e0-f314-4852-9796-1d094a236e7b"
-github_username="dh-system-account"
