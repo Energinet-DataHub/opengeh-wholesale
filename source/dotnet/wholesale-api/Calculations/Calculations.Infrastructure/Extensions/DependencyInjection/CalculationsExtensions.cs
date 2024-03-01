@@ -30,7 +30,7 @@ namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.Dep
 /// <summary>
 /// Registration of services required for the Calculations module.
 /// </summary>
-public static class CalculationsRegistration
+public static class CalculationsExtensions
 {
     public static IServiceCollection AddCalculationsModule(this IServiceCollection services, IConfiguration configuration)
     {

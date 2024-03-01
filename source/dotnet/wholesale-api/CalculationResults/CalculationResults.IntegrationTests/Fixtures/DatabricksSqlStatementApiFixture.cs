@@ -54,10 +54,10 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
             ["WarehouseId"] = DatabricksSchemaManager.Settings.WarehouseId,
             ["WorkspaceToken"] = DatabricksSchemaManager.Settings.WorkspaceAccessToken,
         });
-        var serviceCollection = new ServiceCollection();
+        var services = new ServiceCollection();
         var configuration = builder.Build();
-        serviceCollection.AddDatabricksSqlStatementExecution(configuration);
-        var serviceProvider = serviceCollection.BuildServiceProvider();
+        services.AddDatabricksSqlStatementExecution(configuration);
+        var serviceProvider = services.BuildServiceProvider();
         return serviceProvider.GetService<DatabricksSqlWarehouseQueryExecutor>()!;
     }
 }
