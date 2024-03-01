@@ -21,7 +21,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
-using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
+using Energinet.DataHub.Wholesale.WebApi.Extensions.Options;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.Components;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 using Microsoft.Extensions.Configuration;
