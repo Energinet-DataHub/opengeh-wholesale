@@ -279,6 +279,7 @@ def test__current_state_and_migration_scripts__should_give_same_result(
             current_state_table_df = spark.table(current_state_script_tag)
             assert migration_script_table_df.schema == current_state_table_df.schema
 
+            # Assert constraints
             migration_script_details = (
                 spark.sql(f"DESCRIBE DETAIL {migration_script_table_name}")
                 .select("properties")
