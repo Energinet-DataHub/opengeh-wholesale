@@ -29,7 +29,7 @@ def _diff(schema1, schema2):
     }
 
 
-def test_migrate_with_schema_migration_scripts_compare_schemas(
+def test__migrate__when_schema_migration_scripts_are_executed__compare_schemas(
     mocker: Mock, spark: SparkSession
 ) -> None:
     # Arrange
@@ -70,7 +70,7 @@ def test_migrate_with_schema_migration_scripts_compare_schemas(
             assert actual_table.schema == table.schema
 
 
-def test_migrate_with_schema_migration_scripts_compare_result_with_schema_config(
+def test__migrate__when_schema_migration_scripts_are_executed__compare_result_with_schema_config(
     mocker: Mock, spark: SparkSession
 ) -> None:
     """If this test fails, it indicates that a SQL script is creating something that the Schema Config does not know
@@ -129,7 +129,7 @@ def test_migrate_with_schema_migration_scripts_compare_result_with_schema_config
             assert actual_table.schema == table_config.schema
 
 
-def test_schema_config_when_current_state_script_files_are_executed(
+def test__schema_config__when_current_state_script_files_are_executed(
     mocker: Mock, spark: SparkSession
 ) -> None:
     # Arrange
@@ -169,7 +169,7 @@ def test_schema_config_when_current_state_script_files_are_executed(
         assert schema.name in [schema.name for schema in schemas]
 
 
-def test_schema_config_when_schema_and__table_script_files_are_executed(
+def test__schema_config__when_schema_and_table_script_files_are_executed(
     mocker: Mock, spark: SparkSession
 ) -> None:
     # Arrange
