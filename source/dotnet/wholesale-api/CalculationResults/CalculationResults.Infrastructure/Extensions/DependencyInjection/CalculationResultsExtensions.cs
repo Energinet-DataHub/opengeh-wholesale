@@ -12,10 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Identity;
-using Azure.Storage.Files.DataLake;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Diagnostics.HealthChecks;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
@@ -23,7 +19,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonSerializ
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks.DataLake;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,45 +29,26 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensio
 /// <summary>
 /// Registration of services required for the CalculationResults module.
 /// </summary>
-public static class CalculationResultsRegistration
+public static class CalculationResultsExtensions
 {
     public static IServiceCollection AddCalculationResultsModule(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddDatabricksSqlStatementForApplication(configuration);
+        services.AddDataLakeClientForApplication(configuration);
+
         services.AddScoped<ISettlementReportClient, SettlementReportClient>();
-
-        services.AddDatabricksSqlStatementExecution(configuration);
-        services.AddDataLakeFileSystemClient(configuration);
-
         services.AddScoped<ISettlementReportResultsCsvWriter, SettlementReportResultsCsvWriter>();
         services.AddScoped<IDataLakeClient, DataLakeClient>();
         services.AddScoped<IStreamZipper, StreamZipper>();
+        services.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
+        services.AddScoped<ISettlementReportRepository, SettlementReportRepository>();
+
+        // Used by sql statements (queries)
+        services.AddOptions<DeltaTableOptions>().Bind(configuration);
         services.AddScoped<IEnergyResultQueries, EnergyResultQueries>();
         services.AddScoped<IWholesaleResultQueries, WholesaleResultQueries>();
         services.AddScoped<IAggregatedTimeSeriesQueries, AggregatedTimeSeriesQueries>();
-        services.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
-        services.AddScoped<ISettlementReportRepository>(
-            provider => new SettlementReportRepository(
-                provider.GetRequiredService<IDataLakeClient>(),
-                provider.GetRequiredService<IStreamZipper>()));
         services.AddScoped<ISettlementReportResultQueries, SettlementReportResultQueries>();
-
-        // Health checks
-        services.AddHealthChecks()
-            .AddDatabricksSqlStatementApiHealthCheck()
-            .AddDataLakeHealthCheck(
-                _ => configuration.Get<DataLakeOptions>()!);
-
-        return services;
-    }
-
-    private static IServiceCollection AddDataLakeFileSystemClient(this IServiceCollection services, IConfiguration configuration)
-    {
-        var options = configuration.Get<DataLakeOptions>()!;
-        services.AddSingleton<DataLakeFileSystemClient>(_ =>
-        {
-            var dataLakeServiceClient = new DataLakeServiceClient(new Uri(options.STORAGE_ACCOUNT_URI), new DefaultAzureCredential());
-            return dataLakeServiceClient.GetFileSystemClient(options.STORAGE_CONTAINER_NAME);
-        });
 
         return services;
     }
