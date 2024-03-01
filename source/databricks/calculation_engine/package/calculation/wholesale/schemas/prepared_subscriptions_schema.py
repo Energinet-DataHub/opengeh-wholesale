@@ -25,7 +25,7 @@ from pyspark.sql.types import (
 )
 
 
-subscriptions_schema = StructType(
+prepared_subscriptions_schema = StructType(
     [
         StructField(Colname.charge_key, StringType(), False),
         StructField(Colname.charge_type, StringType(), False),
