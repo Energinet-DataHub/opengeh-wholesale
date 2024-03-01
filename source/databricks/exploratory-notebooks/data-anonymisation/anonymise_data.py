@@ -109,6 +109,7 @@ all_metering_point_ids = (
     .distinct()
 )
 
+df_count = len(str(all_metering_point_ids.count()))
 w = Window.orderBy(F.rand())
 anonymised_metering_points = (
     all_metering_point_ids.withColumn(
@@ -151,11 +152,18 @@ all_supplier_and_balancers = (
     .distinct()
 )
 
+df_count = len(str(all_supplier_and_balancers.count()))
 w = Window.orderBy(F.rand())
 anonymised_suppliers_and_balancers = (
     all_supplier_and_balancers.withColumn(
         "anonymised_balance_or_supplier_id",
-        F.reverse(F.lpad(F.rank().over(w), 13, "0")),
+        F.rpad(
+            F.concat(
+                F.lit("4"), F.lpad(F.row_number().over(w), df_count, "0"), F.lit("4")
+            ),
+            13,
+            "0",
+        ),
     )
     .withColumn(
         "anonymised_balance_or_supplier_id",
