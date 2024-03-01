@@ -245,14 +245,14 @@ assert (
 mps_to_anonymise = ["fill in when running"]
 
 source_ts_table_anonymised = (
-    source_ts_table.join(anonymised_metering_points, "metering_point_id")
-    .withColumn("metering_point_id", F.col("anonymised_mp_id"))
-    .withColumn(
+    source_ts_table.withColumn(
         "quantity",
         F.when(
-            F.col("metering_point_id").isin(mps_to_anonymise), F.rand(seed=42) * 100
+            F.col("metering_point_id").isin(mps_to_anonymise), F.rand() * 100
         ).otherwise(F.col("quantity")),
     )
+    .join(anonymised_metering_points, "metering_point_id")
+    .withColumn("metering_point_id", F.col("anonymised_mp_id"))
     .select(source_ts_table.columns)
 )
 
