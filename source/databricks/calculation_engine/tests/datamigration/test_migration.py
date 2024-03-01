@@ -15,6 +15,9 @@ import os
 
 from pyspark.sql import SparkSession
 from unittest.mock import Mock
+
+from pyspark.sql.types import StructType, StructField
+
 import tests.helpers.spark_helper as spark_helper
 import tests.helpers.spark_sql_migration_helper as spark_sql_migration_helper
 import package.datamigration.schema_config as schema_config
@@ -22,7 +25,7 @@ import package.datamigration.migration as sut
 import tests.helpers.mock_helper as mock_helper
 
 
-def _diff(schema1, schema2):
+def _diff(schema1: StructType, schema2: StructType) -> dict[str, set[StructField]]:
     return {
         "fields_in_1_not_2": set(schema1) - set(schema2),
         "fields_in_2_not_1": set(schema2) - set(schema1),
@@ -66,8 +69,10 @@ def test__migrate__when_schema_migration_scripts_are_executed__compare_schemas(
     for schema in schema_config.schema_config:
         for table in schema.tables:
             actual_table = spark.table(f"{schema.name}.{table.name}")
-            _diff(actual_table.schema, table.schema)
-            assert actual_table.schema == table.schema
+
+            assert (
+                actual_table.schema == table.schema
+            ), f"Difference in schema {_diff(actual_table.schema, table.schema)}"
 
 
 def test__migrate__when_schema_migration_scripts_are_executed__compare_result_with_schema_config(
@@ -208,3 +213,81 @@ def test__schema_config__when_schema_and_table_script_files_are_executed(
         for table in schema.tables:
             actual_table = spark.table(f"{schema.name}.{table.name}")
             assert actual_table.schema == table.schema
+
+
+def test__current_state_and_migration_scripts__should_give_same_result(
+    mocker: Mock, spark: SparkSession
+) -> None:
+    # Arrange
+    mocker.patch.object(
+        sut.paths,
+        sut.paths.get_storage_account_url.__name__,
+        side_effect=mock_helper.base_path_helper,
+    )
+
+    mocker.patch.object(
+        sut.env_vars,
+        sut.env_vars.get_storage_account_name.__name__,
+        return_value="storage_account",
+    )
+
+    mocker.patch.object(
+        sut.env_vars,
+        sut.env_vars.get_calculation_input_folder_name.__name__,
+        return_value="storage_account_2",
+    )
+
+    mocker.patch.object(
+        sut.paths,
+        sut.paths.get_container_url.__name__,
+        return_value="storage_account",
+    )
+    spark_helper.reset_spark_catalog(spark)
+
+    # Act migration scripts
+    migration_script_prefix = "migration_scripts"
+    spark_sql_migration_helper.migrate(
+        spark,
+        schema_prefix=migration_script_prefix,
+    )
+
+    # Act current state scripts
+    current_state_prefix = "current_state"
+    spark_sql_migration_helper.migrate(
+        spark,
+        schema_prefix=current_state_prefix,
+    )
+
+    # Assert
+    migration_databases = spark.catalog.listDatabases()
+    assert len(migration_databases) > 0
+
+    for db in migration_databases:
+        table = spark.catalog.listTables(db.name)
+        assert table is not None
+
+    for schema in schema_config.schema_config:
+        for table in schema.tables:
+            migration_script_table_name = (
+                f"{migration_script_prefix}{schema.name}.{table.name}"
+            )
+            current_state_script_tag = (
+                f"{current_state_prefix}{schema.name}.{table.name}"
+            )
+
+            migration_script_table_df = spark.table(migration_script_table_name)
+            current_state_table_df = spark.table(current_state_script_tag)
+            assert migration_script_table_df.schema == current_state_table_df.schema
+
+            migration_script_details = (
+                spark.sql(f"DESCRIBE DETAIL {migration_script_table_name}")
+                .select("properties")
+                .collect()
+            )
+            current_state_details = (
+                spark.sql(f"DESCRIBE DETAIL {current_state_script_tag}")
+                .select("properties")
+                .collect()
+            )
+
+            assert migration_script_details == current_state_details
