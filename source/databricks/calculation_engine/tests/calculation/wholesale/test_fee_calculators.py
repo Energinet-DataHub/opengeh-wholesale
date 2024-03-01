@@ -16,10 +16,9 @@ from datetime import datetime
 
 from package.calculation.preparation.charge_master_data import ChargeMasterData
 from package.calculation.preparation.charge_prices import ChargePrices
-from package.calculation.wholesale.schemas.calculate_fee_charge_price_schema import (
-    calculate_fee_charge_price_schema,
+from tests.helpers.test_schemas import (
+    charges_flex_consumption_schema,
 )
-
 from package.constants import Colname
 from package.codelists import ChargeType, MeteringPointType, SettlementMethod
 from package.calculation.wholesale.fee_calculators import (
@@ -229,7 +228,7 @@ def test__filter_on_metering_point_type_and_settlement_method__filters_on_consum
 ):
     # Arrange
     fee_charges = spark.createDataFrame(
-        fee_charges, schema=calculate_fee_charge_price_schema
+        fee_charges, schema=charges_flex_consumption_schema
     )  # fee_charges and charges_flex_consumption has the same schema
 
     # Act
@@ -323,7 +322,7 @@ def test__get_count_of_charges_and_total_daily_charge_price__counts_and_sums_up_
 ):
     # Arrange
     charges_flex_consumption = spark.createDataFrame(
-        charges_flex_consumption, schema=calculate_fee_charge_price_schema
+        charges_flex_consumption, schema=charges_flex_consumption_schema
     )
 
     # Act

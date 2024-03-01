@@ -15,7 +15,7 @@ from decimal import Decimal
 
 import pytest
 from datetime import datetime
-from pyspark.sql import SparkSession, Row
+from pyspark.sql import SparkSession
 from pyspark.sql import functions as f
 
 from package.calculation.preparation.transformations import (
