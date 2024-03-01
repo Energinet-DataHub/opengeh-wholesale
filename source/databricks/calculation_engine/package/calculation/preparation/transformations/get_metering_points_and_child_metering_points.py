@@ -25,7 +25,6 @@ from package.constants import Colname
 def get_metering_points_and_child_metering_points(
     metering_point_periods_df: DataFrame,
 ) -> DataFrame:
-    metering_point_periods_df.show()
     production_and_consumption_metering_points = (
         _get_production_and_consumption_metering_points(metering_point_periods_df)
     )
@@ -36,9 +35,7 @@ def get_metering_points_and_child_metering_points(
             Colname.energy_supplier_id, es
         ).withColumnRenamed(Colname.metering_point_id, mp)
     )
-    production_and_consumption_metering_points.show()
     all_metering_points = _get_all_child_metering_points(metering_point_periods_df)
-    all_metering_points.show()
     metering_points_periods_for_wholesale_calculation = all_metering_points.join(
         production_and_consumption_metering_points,
         production_and_consumption_metering_points[mp]
@@ -47,7 +44,6 @@ def get_metering_points_and_child_metering_points(
         ],  # parent_metering_point_id is always null on child metering points
         "left",
     )
-    metering_points_periods_for_wholesale_calculation.show()
     metering_points_periods_for_wholesale_calculation.select(
         all_metering_points[Colname.metering_point_id],
         all_metering_points[Colname.metering_point_type],
@@ -65,7 +61,6 @@ def get_metering_points_and_child_metering_points(
         all_metering_points[Colname.from_date],
         all_metering_points[Colname.to_date],
     )
-    metering_points_periods_for_wholesale_calculation.show()
     return metering_points_periods_for_wholesale_calculation
 
 
