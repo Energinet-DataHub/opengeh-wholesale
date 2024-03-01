@@ -13,8 +13,9 @@
 # limitations under the License.
 
 import json
-from pyspark.sql.types import StructType
 from typing import Dict, List
+
+from pyspark.sql.types import StructType
 
 
 def read_contract(path: str) -> Dict:
