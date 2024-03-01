@@ -98,15 +98,15 @@ class TestWhenValidInput:
     @pytest.mark.parametrize(
         "period_start, period_end, input_charge_price, expected_output_charge_price",
         [
-            (  # Entering daylights saving time
+            (  # month with 29 days
                 datetime(2020, 1, 31, 23, 0),
-                datetime(2020, 2, 29, 22, 0),
+                datetime(2020, 2, 29, 23, 0),
                 Decimal("10"),
                 Decimal("0.344828"),  # 10 / 29 (days)
             ),
-            (  # Exiting daylights saving time
-                datetime(2020, 9, 30, 22, 0),
-                datetime(2020, 10, 31, 23, 0),
+            (  # month with 31 days
+                datetime(2020, 4, 30, 22, 0),
+                datetime(2020, 5, 31, 22, 0),
                 Decimal("10"),
                 Decimal("0.322581"),  # 10 / 31 (days)
             ),
