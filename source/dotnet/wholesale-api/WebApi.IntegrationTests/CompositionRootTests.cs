@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Xunit;
@@ -39,20 +42,26 @@ public class CompositionRootTests
     [Fact]
     public void AllServicesConstructSuccessfully()
     {
-        // TODO: Should be refactored in the future.
-        // Currently there is no way for us to only build the services without starting the server.
-        // This means our hosted services will start and hence cause the test to fail if certain settings are not configured.
-        Environment.SetEnvironmentVariable("SERVICE_BUS_SEND_CONNECTION_STRING", "Endpoint=sb://unknown.servicebus.windows.net/;SharedAccessKeyName=Yyy;SharedAccessKey=Xxx");
-        Environment.SetEnvironmentVariable("SERVICE_BUS_TRANCEIVER_CONNECTION_STRING", "Endpoint=sb://unknown.servicebus.windows.net/;SharedAccessKeyName=Yyy;SharedAccessKey=Xxx");
-        Environment.SetEnvironmentVariable("INTEGRATIONEVENTS_TOPIC_NAME", "NotEmpty");
-        Environment.SetEnvironmentVariable("INTEGRATIONEVENTS_SUBSCRIPTION_NAME", "NotEmpty");
-        Environment.SetEnvironmentVariable("WHOLESALE_INBOX_MESSAGE_QUEUE_NAME", "NotEmpty");
-        Environment.SetEnvironmentVariable("EDI_INBOX_MESSAGE_QUEUE_NAME", "NotEmpty");
+        // Configure settings before the creation of services (e.g. hosted services).
+        // Workaround for settings overrides with minimal hosting model.
+        // See comment (and issue) here: https://github.com/dotnet/aspnetcore/issues/37680#issuecomment-1402081903
+        var testConfiguration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["SERVICE_BUS_SEND_CONNECTION_STRING"] = "Endpoint=sb://unknown.servicebus.windows.net/;SharedAccessKeyName=Yyy;SharedAccessKey=Xxx",
+                ["SERVICE_BUS_TRANCEIVER_CONNECTION_STRING"] = "Endpoint=sb://unknown.servicebus.windows.net/;SharedAccessKeyName=Yyy;SharedAccessKey=Xxx",
+                ["INTEGRATIONEVENTS_TOPIC_NAME"] = "NotEmpty",
+                ["INTEGRATIONEVENTS_SUBSCRIPTION_NAME"] = "NotEmpty",
+                ["WHOLESALE_INBOX_MESSAGE_QUEUE_NAME"] = "NotEmpty",
+                ["EDI_INBOX_MESSAGE_QUEUE_NAME"] = "NotEmpty",
+            })
+            .Build();
 
         using var application = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
             {
                 builder
+                    .UseConfiguration(testConfiguration)
                     .UseDefaultServiceProvider((_, options) =>
                     {
                         // See https://learn.microsoft.com/en-us/aspnet/core/fundamentals/host/web-host?view=aspnetcore-7.0#scope-validation
