@@ -28,7 +28,9 @@ def test_execute__returns_expected(  # type: ignore
 
     # Assert
     assert_dataframes_equal(
-        results.wholesale_results.hourly_tariff_per_ga_co_es.drop("metering_point_type")
+        results.wholesale_results.tariff_amount_per_charge_from_hourly.drop(
+            "metering_point_type"
+        )
         .drop("quantity_qualities")
         .drop("price")
         .drop("amount")
