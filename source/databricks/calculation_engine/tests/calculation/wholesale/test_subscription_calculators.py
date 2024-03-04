@@ -135,6 +135,7 @@ class TestWhenValidInput:
         )
 
         # Assert
+        assert actual.count() == 1
         assert actual.collect()[0][Colname.charge_price] == expected_output_charge_price
 
     def test__returns_expected_charge_count(
@@ -242,6 +243,7 @@ class TestWhenMissingSomeInputChargePrice:
         )
 
         # Assert
+        assert actual.count() == 1
         assert actual.collect()[0][Colname.charge_count] == expected_charge_count
         assert actual.collect()[0][Colname.charge_price] == expected_charge_price
         assert actual.collect()[0][Colname.total_amount] == expected_charge_amount
@@ -282,6 +284,7 @@ class TestWhenMissingAllInputChargePrices:
         )
 
         # Assert
+        assert actual.count() == 1
         assert actual.collect()[0][Colname.charge_count] == expected_charge_count
         assert actual.collect()[0][Colname.charge_price] is None
         assert actual.collect()[0][Colname.total_amount] is None
@@ -336,6 +339,7 @@ class TestWhenMultipleMeteringPointsPerChargeTime:
 
         # Assert
         actual_rows = actual.orderBy(Colname.charge_time).collect()
+        assert len(actual_rows) == 2
         assert actual_rows[0][Colname.charge_count] == expected_charge_count_1
         assert actual_rows[1][Colname.charge_count] == expected_charge_count_2
 
