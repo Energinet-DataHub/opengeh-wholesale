@@ -36,7 +36,7 @@ from package.codelists import (
 from package.infrastructure import logging_configuration
 
 
-@logging_configuration.use_span("calculation.energy")
+@logging_configuration.use_span("calculation.execute.energy")
 def execute(
     args: CalculatorArgs,
     metering_point_time_series: DataFrame,
