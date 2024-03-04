@@ -148,7 +148,7 @@ def _calculate_net_exchange(
             )
         )
 
-        results.exchange_per_neighbour_ga = factory.create(
+        results.net_exchange_per_neighbour_ga = factory.create(
             args,
             exchange_per_neighbour_ga,
             TimeSeriesType.NET_EXCHANGE_PER_NEIGHBORING_GA,
