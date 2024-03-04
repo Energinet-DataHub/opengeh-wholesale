@@ -23,13 +23,11 @@ from pyspark.sql.types import (
     ArrayType,
 )
 
-from package.calculation.calculator_args import CalculatorArgs
-
 
 def create_energy_result_dataframe(*args) -> DataFrame:  # type: ignore
     spark: SparkSession = args[0]
     df: DataFrame = args[1]
-    calculator_args: CalculatorArgs = args[2]
+    calculator_args: any = args[2]
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.

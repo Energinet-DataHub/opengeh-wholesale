@@ -21,19 +21,17 @@ from pyspark.sql.types import (
     ArrayType,
 )
 
-from package.calculation.calculator_args import CalculatorArgs
-from package.calculation_output.schemas import wholesale_results_schema
-from package.constants import WholesaleResultColumnNames
-
 
 def get_expected(*args) -> DataFrame:  # type: ignore
     spark: SparkSession = args[0]
     df: DataFrame = args[1]
-    calculator_args: CalculatorArgs = args[2]
+    calculator_args: any = args[2]
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
     from package.constants import Colname
+    from package.calculation_output.schemas import wholesale_results_schema
+    from package.constants import WholesaleResultColumnNames
 
     df = df.withColumn(
         WholesaleResultColumnNames.calculation_id, lit(calculator_args.calculation_id)
