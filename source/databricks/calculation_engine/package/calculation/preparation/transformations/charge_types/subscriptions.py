@@ -31,6 +31,14 @@ def get_subscription_charges(
     charge_link_metering_point_periods: ChargeLinkMeteringPointPeriods,
     time_zone: str,
 ) -> DataFrame:
+    """
+    This method does the following:
+    - Joins charge_master_data, charge_prices and charge_link_metering_point_periods
+    - Filters the result to only include subscription charges
+    - Explodes the result from monthly to daily resolution
+    - Add missing charge prices (None) to the result
+    """
+
     subscription_links = charge_link_metering_point_periods.filter_by_charge_type(
         ChargeType.SUBSCRIPTION
     )
