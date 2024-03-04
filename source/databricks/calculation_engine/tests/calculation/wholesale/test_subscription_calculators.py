@@ -23,7 +23,7 @@ from package.calculation.wholesale.schemas.prepared_subscriptions_schema import 
     prepared_subscriptions_schema,
 )
 from package.calculation.wholesale.subscription_calculators import (
-    calculate_daily_subscription_amount,
+    calculate,
 )
 from package.codelists import (
     MeteringPointType,
@@ -127,7 +127,7 @@ class TestWhenValidInput:
         )
 
         # Act
-        actual = calculate_daily_subscription_amount(
+        actual = calculate(
             subscription_charges,
             period_start,
             period_end,
@@ -154,7 +154,7 @@ class TestWhenValidInput:
         )
 
         # Act
-        actual = calculate_daily_subscription_amount(
+        actual = calculate(
             subscription_charges,
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
@@ -193,7 +193,7 @@ class TestWhenValidInput:
         )
 
         # Act
-        actual = calculate_daily_subscription_amount(
+        actual = calculate(
             subscription_charges,
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
@@ -244,7 +244,7 @@ class TestWhenMultipleMeteringPointsPerChargeTime:
         )
 
         # Act
-        actual = calculate_daily_subscription_amount(
+        actual = calculate(
             subscription_charges,
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
@@ -290,7 +290,7 @@ class TestWhenCalculationPeriodIsNotFullMonth:
 
         # Act & Assert
         with pytest.raises(Exception):
-            calculate_daily_subscription_amount(
+            calculate(
                 subscription_charges,
                 period_start,
                 period_end,

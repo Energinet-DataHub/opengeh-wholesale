@@ -19,7 +19,7 @@ import pyspark.sql.functions as f
 from package.constants import Colname
 
 
-def calculate_daily_subscription_amount(
+def calculate(
     subscription_charges: DataFrame,
     calculation_period_start: datetime,
     calculation_period_end: datetime,
