@@ -23,12 +23,12 @@ using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
 using Energinet.DataHub.Wholesale.Events.Application.Workers;
 using Google.Protobuf.Reflection;
 
-namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
+namespace Energinet.DataHub.Wholesale.WebApi.Extensions.DependencyInjection;
 
 /// <summary>
 /// Registration of services required for the Events module.
 /// </summary>
-public static class EventsRegistration
+public static class EventsExtensions
 {
     public static IServiceCollection AddEventsModule(this IServiceCollection services, IConfiguration configuration)
     {

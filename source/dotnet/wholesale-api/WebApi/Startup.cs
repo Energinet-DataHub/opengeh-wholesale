@@ -17,19 +17,18 @@ using System.Text.Json.Serialization;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.App.Common.Reflection;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.DependencyInjection;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks.ServiceBus;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry;
-using Energinet.DataHub.Wholesale.WebApi.Configuration;
-using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
-using Microsoft.ApplicationInsights.Extensibility;
+using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
+using Energinet.DataHub.Wholesale.WebApi.Extensions.DependencyInjection;
 using Microsoft.Extensions.Azure;
 using Microsoft.OpenApi.Models;
 
@@ -46,13 +45,24 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddModules(Configuration);
-        services.AddHttpContextAccessor();
+        // Common
+        services.AddApplicationInsightsForWebApp();
+        services.AddHealthChecksForWebApp();
 
-        services.AddControllers(options => options.Filters.Add<BusinessValidationExceptionFilter>()).AddJsonOptions(
-            options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
+        // Shared by modules
+        services.AddNodaTimeForApplication(Configuration);
+        services.AddDatabricksJobsForApplication(Configuration);
 
-        services.AddEndpointsApiExplorer();
+        // Modules
+        services.AddCalculationsModule(Configuration);
+        services.AddCalculationResultsModule(Configuration);
+        services.AddEventsModule(Configuration);
+        services.AddEdiModule();
+
+        services
+            .AddControllers(options => options.Filters.Add<BusinessValidationExceptionFilter>())
+            .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
+
         // Register the Swagger generator, defining 1 or more Swagger documents.
         services.AddSwaggerGen(config =>
         {
@@ -94,14 +104,14 @@ public class Startup
         });
         services.ConfigureOptions<ConfigureSwaggerOptions>();
 
-        // Options
-        services.AddOptions<JwtOptions>().Bind(Configuration);
-        services.AddOptions<ServiceBusOptions>().Bind(Configuration);
-        services.AddOptions<DateTimeOptions>().Bind(Configuration);
-        services.AddOptions<DataLakeOptions>().Bind(Configuration);
-        services.AddOptions<DeltaTableOptions>();
+        // Authentication/authorization
+        services
+            .AddTokenAuthenticationForWebApp(Configuration)
+            .AddUserAuthenticationForWebApp<FrontendUser, FrontendUserProvider>()
+            .AddPermissionAuthorization();
 
         // ServiceBus
+        services.AddOptions<ServiceBusOptions>().Bind(Configuration);
         services.AddAzureClients(builder =>
         {
             builder
@@ -111,22 +121,21 @@ public class Startup
                     options.TransportType = ServiceBusTransportType.AmqpWebSockets;
                 });
         });
-
-        AddJwtTokenSecurity(services);
-        AddHealthCheck(services);
-
-        services.AddSingleton<ITelemetryInitializer>(new SubsystemInitializer(TelemetryConstants.SubsystemName));
-        services.AddApplicationInsightsTelemetry(options =>
-        {
-            options.EnableAdaptiveSampling = false;
-            options.ApplicationVersion = Assembly
-                .GetEntryAssembly()!
-                .GetAssemblyInformationalVersionAttribute()!
-                .GetSourceVersionInformation()
-                .ToString();
-        });
-
-        services.AddUserAuthentication<FrontendUser, FrontendUserProvider>();
+        var serviceBusOptions = Configuration.Get<ServiceBusOptions>()!;
+        services.AddHealthChecks()
+            .AddAzureServiceBusSubscriptionUsingWebSockets(
+                serviceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING,
+                serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
+                serviceBusOptions.INTEGRATIONEVENTS_SUBSCRIPTION_NAME,
+                name: HealthCheckNames.IntegrationEventsTopicSubscription)
+            .AddAzureServiceBusQueueUsingWebSockets(
+                serviceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING,
+                serviceBusOptions.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME,
+                name: HealthCheckNames.WholesaleInboxEventsQueue)
+            .AddAzureServiceBusQueueUsingWebSockets(
+                serviceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING,
+                serviceBusOptions.EDI_INBOX_MESSAGE_QUEUE_NAME,
+                name: HealthCheckNames.EdiInboxEventsQueue);
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
@@ -140,10 +149,10 @@ public class Startup
         }
 
         app.UseSwagger();
-
-        var apiVersionDescriptionProvider = app.ApplicationServices.GetRequiredService<IApiVersionDescriptionProvider>();
         app.UseSwaggerUI(options =>
         {
+            var apiVersionDescriptionProvider = app.ApplicationServices.GetRequiredService<IApiVersionDescriptionProvider>();
+
             // Reverse the APIs in order to make the latest API versions appear first in select box in UI
             foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions.Reverse())
             {
@@ -170,35 +179,5 @@ public class Startup
             endpoints.MapLiveHealthChecks();
             endpoints.MapReadyHealthChecks();
         });
-    }
-
-    /// <summary>
-    /// Adds registrations of JwtTokenMiddleware and corresponding dependencies.
-    /// </summary>
-    private void AddJwtTokenSecurity(IServiceCollection services)
-    {
-        var options = Configuration.Get<JwtOptions>()!;
-        services.AddJwtBearerAuthentication(options.EXTERNAL_OPEN_ID_URL, options.INTERNAL_OPEN_ID_URL, options.BACKEND_BFF_APP_ID);
-        services.AddPermissionAuthorization();
-    }
-
-    private void AddHealthCheck(IServiceCollection services)
-    {
-        var serviceBusOptions = Configuration.Get<ServiceBusOptions>()!;
-        services.AddHealthChecks()
-            .AddLiveCheck()
-            .AddAzureServiceBusSubscriptionUsingWebSockets(
-                serviceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING,
-                serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
-                serviceBusOptions.INTEGRATIONEVENTS_SUBSCRIPTION_NAME,
-                name: HealthCheckNames.IntegrationEventsTopicSubscription)
-            .AddAzureServiceBusQueueUsingWebSockets(
-                serviceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING,
-                serviceBusOptions.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME,
-                name: HealthCheckNames.WholesaleInboxEventsQueue)
-            .AddAzureServiceBusQueueUsingWebSockets(
-                serviceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING,
-                serviceBusOptions.EDI_INBOX_MESSAGE_QUEUE_NAME,
-                name: HealthCheckNames.EdiInboxEventsQueue);
     }
 }
