@@ -27,8 +27,11 @@ from .output.basis_data_results import write_basis_data
 from .output.energy_results import write_energy_results
 from .output.wholesale_results import write_wholesale_results
 from .preparation import PreparedDataReader
-from .preparation.transformations import get_metering_points_and_child_metering_points
+
 from .wholesale import wholesale_calculation
+from .wholesale.get_metering_points_and_child_metering_points import (
+    get_metering_points_and_child_metering_points,
+)
 
 
 @logging_configuration.use_span("calculation")
