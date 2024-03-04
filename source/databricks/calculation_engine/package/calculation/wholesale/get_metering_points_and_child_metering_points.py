@@ -25,6 +25,10 @@ from package.constants import Colname
 def get_metering_points_and_child_metering_points(
     metering_point_periods_df: DataFrame,
 ) -> DataFrame:
+    """
+    Returns a DataFrame with all metering points and child metering points
+    except for exchange metering points
+    """
     production_and_consumption_metering_points = (
         _get_production_and_consumption_metering_points(metering_point_periods_df)
     )
