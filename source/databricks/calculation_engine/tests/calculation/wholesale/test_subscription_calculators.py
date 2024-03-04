@@ -274,7 +274,7 @@ class TestWhenValidInput:
         )
 
         # Assert
-        expected = [SettlementMethod.FLEX, SettlementMethod.NON_PROFILED]
+        expected = [SettlementMethod.FLEX.value, SettlementMethod.NON_PROFILED.value]
         assert actual.count() == 2
         actual_settlement_methods = [
             row[Colname.settlement_method] for row in actual.collect()
