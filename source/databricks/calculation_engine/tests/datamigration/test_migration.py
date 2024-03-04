@@ -248,7 +248,6 @@ def test__current_state_and_migration_scripts__should_give_same_result(
         spark,
         schema_prefix=migration_script_prefix,
         table_prefix=migration_script_prefix,
-        schema_migration_location="schema_migration_migration_scripts",
     )
 
     # Act current state scripts
@@ -257,7 +256,6 @@ def test__current_state_and_migration_scripts__should_give_same_result(
         spark,
         schema_prefix=current_state_prefix,
         table_prefix=current_state_prefix,
-        schema_migration_location="schema_migration_current_state",
     )
 
     # Clean up DI
