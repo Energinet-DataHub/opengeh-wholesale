@@ -32,7 +32,7 @@ def execute(
 ) -> WholesaleResultsContainer:
     results = WholesaleResultsContainer()
 
-    _calculate_tariff_charges(
+    _calculate_tariff_amounts(
         args,
         prepared_hourly_tariffs,
         prepared_daily_tariffs,
@@ -42,7 +42,7 @@ def execute(
     return results
 
 
-def _calculate_tariff_charges(
+def _calculate_tariff_amounts(
     args: CalculatorArgs,
     prepared_hourly_tariffs: PreparedTariffs,
     prepared_daily_tariffs: PreparedTariffs,
