@@ -16,7 +16,6 @@ from datetime import datetime
 
 import pyspark.sql.functions as F
 import pytest
-from azure.identity import ClientSecretCredential
 from pyspark.sql import SparkSession, DataFrame
 
 import package.calculation as calculation

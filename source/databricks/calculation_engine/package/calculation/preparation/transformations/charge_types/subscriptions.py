@@ -54,7 +54,7 @@ def get_subscription_charges(
     )
 
     subscriptions = subscriptions.withColumn(
-        f.lit(WholesaleResultResolution.DAY.value).alias(Colname.resolution)
+        Colname.resolution, f.lit(WholesaleResultResolution.DAY.value)
     )
 
     return subscriptions

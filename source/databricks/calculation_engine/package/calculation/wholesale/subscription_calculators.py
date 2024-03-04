@@ -50,13 +50,11 @@ def calculate(
         Colname.charge_owner,
         Colname.charge_tax,
         Colname.resolution,
-        Colname.charge_price,
         Colname.total_quantity,
-        Colname.charge_count,
         f.round(Colname.charge_price, 6).alias(Colname.charge_price),
-        f.round(Colname.total_amount, 6),
+        f.round(Colname.total_amount, 6).alias(Colname.total_amount),
         f.lit(ChargeUnit.PIECES.value).alias(Colname.unit),
-        Colname.qualities,
+        f.lit(None).alias(Colname.qualities),
     )
 
 
@@ -114,12 +112,17 @@ def _calculate_charge_count_and_amount(
     df = subscriptions_with_daily_price.groupBy(
         Colname.charge_key,
         Colname.charge_type,
+        Colname.charge_code,
         Colname.charge_owner,
         Colname.grid_area,
         Colname.energy_supplier_id,
         Colname.charge_time,
+        Colname.metering_point_type,
+        Colname.settlement_method,
+        Colname.resolution,
+        Colname.charge_tax,
     ).agg(
-        f.sum(Colname.charge_quantity).alias(Colname.charge_count),
+        f.sum(Colname.charge_quantity).alias(Colname.total_quantity),
         f.sum(
             f.when(
                 f.col(Colname.charge_price).isNotNull(),
