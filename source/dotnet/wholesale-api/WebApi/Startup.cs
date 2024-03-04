@@ -64,15 +64,15 @@ public class Startup
             .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 
         // Register the Swagger generator, defining 1 or more Swagger documents.
-        services.AddSwaggerGen(config =>
+        services.AddSwaggerGen(options =>
         {
-            config.SupportNonNullableReferenceTypes();
-            config.OperationFilter<BinaryContentFilter>();
+            options.SupportNonNullableReferenceTypes();
+            options.OperationFilter<BinaryContentFilter>();
 
             // Set the comments path for the Swagger JSON and UI.
             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-            config.IncludeXmlComments(xmlPath);
+            options.IncludeXmlComments(xmlPath);
 
             var securitySchema = new OpenApiSecurityScheme
             {
@@ -83,24 +83,22 @@ public class Startup
                 Scheme = "bearer",
                 Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer", },
             };
-
-            config.AddSecurityDefinition("Bearer", securitySchema);
+            options.AddSecurityDefinition("Bearer", securitySchema);
 
             var securityRequirement = new OpenApiSecurityRequirement { { securitySchema, new[] { "Bearer" } }, };
-
-            config.AddSecurityRequirement(securityRequirement);
+            options.AddSecurityRequirement(securityRequirement);
         });
 
-        var apiVersioningBuilder = services.AddApiVersioning(config =>
+        var apiVersioningBuilder = services.AddApiVersioning(options =>
         {
-            config.DefaultApiVersion = new ApiVersion(3, 0);
-            config.AssumeDefaultVersionWhenUnspecified = true;
-            config.ReportApiVersions = true;
+            options.DefaultApiVersion = new ApiVersion(3, 0);
+            options.AssumeDefaultVersionWhenUnspecified = true;
+            options.ReportApiVersions = true;
         });
-        apiVersioningBuilder.AddApiExplorer(setup =>
+        apiVersioningBuilder.AddApiExplorer(options =>
         {
-            setup.GroupNameFormat = "'v'VVV";
-            setup.SubstituteApiVersionInUrl = true;
+            options.GroupNameFormat = "'v'VVV";
+            options.SubstituteApiVersionInUrl = true;
         });
         services.ConfigureOptions<ConfigureSwaggerOptions>();
 
@@ -156,6 +154,7 @@ public class Startup
             // Reverse the APIs in order to make the latest API versions appear first in select box in UI
             foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions.Reverse())
             {
+                // GroupName is the version (e.g. 'v1') as configured using the AddApiExplorer and the 'GroupNameFormat' property.
                 options.SwaggerEndpoint(
                     $"/swagger/{description.GroupName}/swagger.json",
                     description.GroupName.ToUpperInvariant());
