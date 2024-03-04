@@ -40,12 +40,7 @@ def test_execute__returns_expected(  # type: ignore
         ignore_decimal_scale=True,
         ignore_nullability=True,
         columns_to_skip=[
+            WholesaleResultColumnNames.calculation_execution_time_start,
             WholesaleResultColumnNames.calculation_result_id,
-            WholesaleResultColumnNames.quantity_qualities,
-            WholesaleResultColumnNames.amount,
-            WholesaleResultColumnNames.price,
-            WholesaleResultColumnNames.metering_point_type,
-            WholesaleResultColumnNames.energy_supplier_id,
-            WholesaleResultColumnNames.quantity,
         ],
     )

@@ -29,18 +29,18 @@ from package.constants import WholesaleResultColumnNames
 def get_expected(*args) -> DataFrame:  # type: ignore
     spark: SparkSession = args[0]
     df: DataFrame = args[1]
-    args: CalculatorArgs = args[2]
+    calculator_args: CalculatorArgs = args[2]
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
     from package.constants import Colname
 
     df = df.withColumn(
-        WholesaleResultColumnNames.calculation_id, lit(args.calculation_id)
+        WholesaleResultColumnNames.calculation_id, lit(calculator_args.calculation_id)
     )
     df = df.withColumn(
         Colname.calculation_execution_time_start,
-        lit(args.calculation_execution_time_start).cast(TimestampType()),
+        lit(calculator_args.calculation_execution_time_start).cast(TimestampType()),
     )
     df = df.withColumn(WholesaleResultColumnNames.calculation_result_id, lit(""))
     df = df.withColumn(
@@ -59,6 +59,7 @@ def get_expected(*args) -> DataFrame:  # type: ignore
         WholesaleResultColumnNames.time,
         col(WholesaleResultColumnNames.time).cast(TimestampType()),
     )
+
     df = df.withColumn(
         WholesaleResultColumnNames.is_tax,
         col(WholesaleResultColumnNames.is_tax).cast(BooleanType()),

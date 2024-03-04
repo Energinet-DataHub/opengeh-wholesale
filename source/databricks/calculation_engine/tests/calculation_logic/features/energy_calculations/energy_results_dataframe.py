@@ -23,11 +23,13 @@ from pyspark.sql.types import (
     ArrayType,
 )
 
+from package.calculation.calculator_args import CalculatorArgs
+
 
 def create_energy_result_dataframe(*args) -> DataFrame:  # type: ignore
     spark: SparkSession = args[0]
     df: DataFrame = args[1]
-    args = args[2]
+    calculator_args: CalculatorArgs = args[2]
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
@@ -50,11 +52,13 @@ def create_energy_result_dataframe(*args) -> DataFrame:  # type: ignore
         parse_qualities_string_udf(df[EnergyResultColumnNames.quantity_qualities]),
     )
 
-    df = df.withColumn(EnergyResultColumnNames.calculation_id, lit(args.calculation_id))
+    df = df.withColumn(
+        EnergyResultColumnNames.calculation_id, lit(calculator_args.calculation_id)
+    )
 
     df = df.withColumn(
         EnergyResultColumnNames.calculation_type,
-        lit(CalculationType(args.calculation_type).value),
+        lit(CalculationType(calculator_args.calculation_type).value),
     )
 
     df = df.withColumn(
@@ -63,7 +67,7 @@ def create_energy_result_dataframe(*args) -> DataFrame:  # type: ignore
 
     df = df.withColumn(
         EnergyResultColumnNames.calculation_result_id,
-        lit(args.calculation_id),
+        lit(calculator_args.calculation_id),
     )
 
     return spark.createDataFrame(df.rdd, energy_results_schema)
