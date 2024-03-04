@@ -21,30 +21,48 @@ from pyspark.sql.types import (
     ArrayType,
 )
 
+from package.calculation.calculator_args import CalculatorArgs
 from package.calculation_output.schemas import wholesale_results_schema
+from package.constants import WholesaleResultColumnNames
 
 
 def get_expected(*args) -> DataFrame:  # type: ignore
     spark: SparkSession = args[0]
     df: DataFrame = args[1]
-    args: any = args[2]
+    args: CalculatorArgs = args[2]
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
     from package.constants import Colname
 
-    df = df.withColumn(Colname.calculation_id, lit(args.calculation_id))
+    df = df.withColumn(
+        WholesaleResultColumnNames.calculation_id, lit(args.calculation_id)
+    )
     df = df.withColumn(
         Colname.calculation_execution_time_start,
         lit(args.calculation_execution_time_start).cast(TimestampType()),
     )
-    df = df.withColumn("calculation_result_id", lit(""))
-    df = df.withColumn("quantity_unit", lit("kWh"))  # TODO AJW
-    df = df.withColumn("quantity", col("quantity").cast(DecimalType(28, 3)))
-    df = df.withColumn("price", col("price").cast(DecimalType(28, 3)))
-    df = df.withColumn("amount", col("amount").cast(DecimalType(38, 6)))
-    df = df.withColumn("time", col("time").cast(TimestampType()))
-    df = df.withColumn("is_tax", col("is_tax").cast(BooleanType()))
+    df = df.withColumn(WholesaleResultColumnNames.calculation_result_id, lit(""))
+    df = df.withColumn(
+        WholesaleResultColumnNames.quantity,
+        col(WholesaleResultColumnNames.quantity).cast(DecimalType(28, 3)),
+    )
+    df = df.withColumn(
+        WholesaleResultColumnNames.price,
+        col(WholesaleResultColumnNames.price).cast(DecimalType(28, 3)),
+    )
+    df = df.withColumn(
+        WholesaleResultColumnNames.amount,
+        col(WholesaleResultColumnNames.amount).cast(DecimalType(38, 6)),
+    )
+    df = df.withColumn(
+        WholesaleResultColumnNames.time,
+        col(WholesaleResultColumnNames.time).cast(TimestampType()),
+    )
+    df = df.withColumn(
+        WholesaleResultColumnNames.is_tax,
+        col(WholesaleResultColumnNames.is_tax).cast(BooleanType()),
+    )
     df = df.withColumn(Colname.settlement_method, lit("flex"))  # TODO AJW
 
     df = df.withColumn(
