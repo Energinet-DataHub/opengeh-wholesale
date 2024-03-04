@@ -42,7 +42,7 @@ def _execute(
 ) -> CalculationResultsContainer:
     results = CalculationResultsContainer()
 
-    with logging_configuration.use_span("calculation.energy.prepare"):
+    with logging_configuration.start_span("calculation.energy.prepare"):
         # cache of metering_point_time_series had no effect on performance (01-12-2023)
         metering_point_periods_df = prepared_data_reader.get_metering_point_periods_df(
             args.calculation_period_start_datetime,
@@ -74,8 +74,7 @@ def _execute(
         or args.calculation_type == CalculationType.SECOND_CORRECTION_SETTLEMENT
         or args.calculation_type == CalculationType.THIRD_CORRECTION_SETTLEMENT
     ):
-
-        with logging_configuration.use_span("calculation.wholesale.prepare"):
+        with logging_configuration.start_span("calculation.wholesale.prepare"):
             charge_master_data = prepared_data_reader.get_charge_master_data(
                 args.calculation_period_start_datetime,
                 args.calculation_period_end_datetime,
