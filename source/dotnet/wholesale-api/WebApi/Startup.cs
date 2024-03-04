@@ -26,6 +26,7 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks.ServiceBus;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
+using Energinet.DataHub.Wholesale.WebApi.Extensions.Builder;
 using Energinet.DataHub.Wholesale.WebApi.Extensions.DependencyInjection;
 using Microsoft.Extensions.Azure;
 
