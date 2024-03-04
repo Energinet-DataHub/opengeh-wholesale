@@ -44,6 +44,7 @@ class DefaultValues:
     ENERGY_SUPPLIER_ID = "1234567890123"
     METERING_POINT_ID = "123456789012345678901234567"
     METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
+    SETTLEMENT_METHOD = SettlementMethod.FLEX
     QUANTITY = Decimal("1.005")
     QUALITY = QuantityQuality.CALCULATED
     CALCULATION_PERIOD_START = datetime(2020, 1, 31, 23, 0)
@@ -62,6 +63,7 @@ def _create_subscription_row(
     charge_quantity: int | None = DefaultValues.CHARGE_QUANTITY,
     energy_supplier_id: str = DefaultValues.ENERGY_SUPPLIER_ID,
     metering_point_type: MeteringPointType = DefaultValues.METERING_POINT_TYPE,
+    settlement_method: SettlementMethod = DefaultValues.SETTLEMENT_METHOD,
     metering_point_id: str = DefaultValues.METERING_POINT_ID,
     grid_area: str = DefaultValues.GRID_AREA,
     quality: QuantityQuality = DefaultValues.QUALITY,
@@ -77,7 +79,7 @@ def _create_subscription_row(
         Colname.charge_tax: False,
         Colname.charge_quantity: charge_quantity,
         Colname.metering_point_type: metering_point_type.value,
-        Colname.settlement_method: SettlementMethod.FLEX.value,
+        Colname.settlement_method: settlement_method.value,
         Colname.metering_point_id: metering_point_id,
         Colname.grid_area: grid_area,
         Colname.energy_supplier_id: energy_supplier_id,
@@ -219,31 +221,18 @@ class TestWhenValidInput:
         spark: SparkSession,
     ) -> None:
         # Arrange
-        quantity_1 = 1
-        quantity_2 = 2
-        price = Decimal("3.0")
-        price_per_day = price / DefaultValues.DAYS_IN_MONTH
-        expected_amount_not_rounded = (quantity_1 + quantity_2) * price_per_day
-        expected_amount = round(expected_amount_not_rounded, 6)
+        all_metering_point_types = _get_all_wholesale_metering_point_types()
 
         subscription_rows = [
-            _create_subscription_row(
-                metering_point_id="1",
-                charge_quantity=quantity_1,
-                charge_price=price,
-            ),
-            _create_subscription_row(
-                metering_point_id="2",
-                charge_quantity=quantity_2,
-                charge_price=price,
-            ),
+            _create_subscription_row(metering_point_type=metering_point_type)
+            for metering_point_type in all_metering_point_types
         ]
         subscription_charges = spark.createDataFrame(
             subscription_rows, schema=prepared_subscriptions_schema
         )
 
         # Act
-        actual = calculate_daily_subscription_amount(
+        actual = calculate_subscription_amount(
             subscription_charges,
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
@@ -251,7 +240,45 @@ class TestWhenValidInput:
         )
 
         # Assert
-        assert actual.collect()[0][Colname.total_amount] == expected_amount
+        expected = [
+            metering_point_type.value
+            for metering_point_type in all_metering_point_types
+        ]
+        assert actual.count() == len(expected)
+        actual_metering_point_types = [
+            row[Colname.metering_point_type] for row in actual.collect()
+        ]
+        assert set(actual_metering_point_types) == set(expected)
+
+    def test__returns_result_per_settlement_method(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+
+        subscription_rows = [
+            _create_subscription_row(settlement_method=SettlementMethod.FLEX),
+            _create_subscription_row(settlement_method=SettlementMethod.NON_PROFILED),
+        ]
+        subscription_charges = spark.createDataFrame(
+            subscription_rows, schema=prepared_subscriptions_schema
+        )
+
+        # Act
+        actual = calculate_subscription_amount(
+            subscription_charges,
+            DefaultValues.CALCULATION_PERIOD_START,
+            DefaultValues.CALCULATION_PERIOD_END,
+            DefaultValues.TIME_ZONE,
+        )
+
+        # Assert
+        expected = [SettlementMethod.FLEX, SettlementMethod.NON_PROFILED]
+        assert actual.count() == 2
+        actual_settlement_methods = [
+            row[Colname.settlement_method] for row in actual.collect()
+        ]
+        assert set(actual_settlement_methods) == set(expected)
 
 
 class TestWhenMissingSomeInputChargePrice:
@@ -337,42 +364,6 @@ class TestWhenMissingAllInputChargePrices:
         assert actual.collect()[0][Colname.charge_count] == expected_charge_count
         assert actual.collect()[0][Colname.charge_price] is None
         assert actual.collect()[0][Colname.total_amount] is None
-
-
-class TestWhenMultipleMeteringPoints:
-    def test__returns_result_per_metering_point_type(
-        self,
-        spark: SparkSession,
-    ) -> None:
-        # Arrange
-        all_metering_point_types = _get_all_wholesale_metering_point_types()
-
-        subscription_rows = [
-            _create_subscription_row(metering_point_type=metering_point_type)
-            for metering_point_type in all_metering_point_types
-        ]
-        subscription_charges = spark.createDataFrame(
-            subscription_rows, schema=prepared_subscriptions_schema
-        )
-
-        # Act
-        actual = calculate_subscription_amount(
-            subscription_charges,
-            DefaultValues.CALCULATION_PERIOD_START,
-            DefaultValues.CALCULATION_PERIOD_END,
-            DefaultValues.TIME_ZONE,
-        )
-
-        # Assert
-        expected = [
-            metering_point_type.value
-            for metering_point_type in all_metering_point_types
-        ]
-        assert actual.count() == len(expected)
-        actual_metering_point_types = [
-            row[Colname.metering_point_type] for row in actual.collect()
-        ]
-        assert set(actual_metering_point_types) == set(expected)
 
 
 class TestWhenCalculationPeriodIsNotFullMonth:
