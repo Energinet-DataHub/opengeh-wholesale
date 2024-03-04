@@ -26,8 +26,9 @@ def get_metering_points_and_child_metering_points(
     metering_point_periods_df: DataFrame,
 ) -> DataFrame:
     """
-    Returns a DataFrame with all metering points and child metering points
-    except for exchange metering points
+    Returns only metering points used in wholesale calculations.
+    This includes all metering point types except exchange metering points.
+    The energy supplier of child metering points is added from its parent metering point.
     """
     production_and_consumption_metering_points = (
         _get_production_and_consumption_metering_points(metering_point_periods_df)
