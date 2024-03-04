@@ -13,4 +13,4 @@
 # limitations under the License.
 
 from .wholesale_calculation import execute
-from .schemas import tariffs_schema
+from .schemas import prepared_tariffs_schema

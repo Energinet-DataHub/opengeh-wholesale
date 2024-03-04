@@ -15,19 +15,16 @@ from datetime import datetime
 from decimal import Decimal
 
 import pytest
-from pyspark.sql.functions import lit
 
 import package.codelists as e
 
 from pyspark.sql import SparkSession
 
 from package.calculation.preparation.transformations import (
-    get_tariff_charges,
+    get_prepared_tariffs,
 )
-from package.calculation.wholesale.schemas.tariffs_schema import tariff_schema
 from package.calculation_input.schemas import (
     time_series_point_schema,
-    charge_price_points_schema,
 )
 
 from package.constants import Colname
@@ -126,7 +123,7 @@ def test__get_tariff_charges__filters_on_resolution(
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
-    actual = get_tariff_charges(
+    actual = get_prepared_tariffs(
         time_series,
         charge_master_data,
         charge_prices,
@@ -136,8 +133,8 @@ def test__get_tariff_charges__filters_on_resolution(
     )
 
     # Assert
-    assert actual.count() == 1
-    assert actual.collect()[0][Colname.resolution] == charge_resolution.value
+    assert actual.df.count() == 1
+    assert actual.df.collect()[0][Colname.resolution] == charge_resolution.value
 
 
 def test__get_tariff_charges__filters_on_tariff_charge_type(
@@ -187,7 +184,7 @@ def test__get_tariff_charges__filters_on_tariff_charge_type(
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
-    actual_tariff = get_tariff_charges(
+    actual_tariff = get_prepared_tariffs(
         time_series,
         charge_master_data,
         charge_prices,
@@ -197,7 +194,9 @@ def test__get_tariff_charges__filters_on_tariff_charge_type(
     )
 
     # Assert
-    assert actual_tariff.collect()[0][Colname.charge_type] == e.ChargeType.TARIFF.value
+    assert (
+        actual_tariff.df.collect()[0][Colname.charge_type] == e.ChargeType.TARIFF.value
+    )
 
 
 @pytest.mark.parametrize(
@@ -259,7 +258,7 @@ def test__get_tariff_charges__only_accepts_charges_in_metering_point_period(
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
-    actual = get_tariff_charges(
+    actual = get_prepared_tariffs(
         time_series,
         charge_master_data,
         charge_prices,
@@ -269,7 +268,7 @@ def test__get_tariff_charges__only_accepts_charges_in_metering_point_period(
     )
 
     # Assert
-    assert actual.count() == expected_rows
+    assert actual.df.count() == expected_rows
 
 
 def test__get_tariff_charges__when_same_metering_point_and_resolution__sums_quantity(
@@ -304,7 +303,7 @@ def test__get_tariff_charges__when_same_metering_point_and_resolution__sums_quan
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
-    actual = get_tariff_charges(
+    actual = get_prepared_tariffs(
         time_series,
         charge_master_data,
         charge_prices,
@@ -315,7 +314,7 @@ def test__get_tariff_charges__when_same_metering_point_and_resolution__sums_quan
 
     # Assert
     assert (
-        actual.collect()[0][Colname.sum_quantity]
+        actual.df.collect()[0][Colname.sum_quantity]
         == 2 * factory.DefaultValues.DEFAULT_QUANTITY
     )
 
@@ -347,7 +346,7 @@ def test__get_tariff_charges__when_no_matching_charge_resolution__returns_empty_
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
-    actual = get_tariff_charges(
+    actual = get_prepared_tariffs(
         time_series,
         charge_master_data,
         charge_prices,
@@ -357,7 +356,7 @@ def test__get_tariff_charges__when_no_matching_charge_resolution__returns_empty_
     )
 
     # Assert
-    assert actual.count() == 0
+    assert actual.df.count() == 0
 
 
 def test__get_tariff_charges__when_two_tariff_overlap__returns_both_tariffs(
@@ -394,7 +393,7 @@ def test__get_tariff_charges__when_two_tariff_overlap__returns_both_tariffs(
     )
 
     # Act
-    actual = get_tariff_charges(
+    actual = get_prepared_tariffs(
         time_series,
         charge_master_data,
         charge_prices,
@@ -404,7 +403,7 @@ def test__get_tariff_charges__when_two_tariff_overlap__returns_both_tariffs(
     )
 
     # Assert
-    assert actual.count() == 2
+    assert actual.df.count() == 2
 
 
 def test__get_tariff_charges__returns_expected_tariff_values(
@@ -438,11 +437,11 @@ def test__get_tariff_charges__returns_expected_tariff_values(
     )
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
     expected_tariff_charges = spark.createDataFrame(
-        expected_tariff_charges_row, tariff_schema
+        expected_tariff_charges_row, prepared_tariffs_schema
     )
 
     # Act
-    actual = get_tariff_charges(
+    actual = get_prepared_tariffs(
         time_series,
         charge_master_data,
         charge_prices,
@@ -452,7 +451,7 @@ def test__get_tariff_charges__returns_expected_tariff_values(
     )
 
     # Assert
-    assert actual.collect() == expected_tariff_charges.collect()
+    assert actual.df.collect() == expected_tariff_charges.collect()
 
 
 @pytest.mark.parametrize(
@@ -522,7 +521,7 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hou
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
-    actual = get_tariff_charges(
+    actual = get_prepared_tariffs(
         time_series,
         charge_master_data,
         charge_prices,
@@ -532,8 +531,8 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hou
     )
 
     # Assert
-    assert actual.count() == expected_rows
-    assert actual.collect()[0][Colname.sum_quantity] == expected_sum_quantity
+    assert actual.df.count() == expected_rows
+    assert actual.df.collect()[0][Colname.sum_quantity] == expected_sum_quantity
 
 
 @pytest.mark.parametrize(
@@ -604,7 +603,7 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_qua
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
-    actual = get_tariff_charges(
+    actual = get_prepared_tariffs(
         time_series,
         charge_master_data,
         charge_prices,
@@ -614,8 +613,8 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_qua
     )
 
     # Assert
-    assert actual.count() == expected_rows
-    assert actual.collect()[0][Colname.sum_quantity] == expected_sum_quantity
+    assert actual.df.count() == expected_rows
+    assert actual.df.collect()[0][Colname.sum_quantity] == expected_sum_quantity
 
 
 @pytest.mark.parametrize(
@@ -708,7 +707,7 @@ def test__get_tariff_charges__per_day_only_accepts_time_series_and_change_times_
     )
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
     # Act
-    actual = get_tariff_charges(
+    actual = get_prepared_tariffs(
         time_series,
         charge_master_data,
         charge_prices,
@@ -718,7 +717,7 @@ def test__get_tariff_charges__per_day_only_accepts_time_series_and_change_times_
     )
 
     # Assert
-    assert actual.count() == expected_rows
+    assert actual.df.count() == expected_rows
 
 
 def test__get_tariff_charges__can_handle_missing_charge_prices(
@@ -755,7 +754,7 @@ def test__get_tariff_charges__can_handle_missing_charge_prices(
     )
 
     # Act
-    actual = get_tariff_charges(
+    actual = get_prepared_tariffs(
         time_series,
         charge_master_data,
         charge_prices,
@@ -765,12 +764,12 @@ def test__get_tariff_charges__can_handle_missing_charge_prices(
     ).orderBy(Colname.charge_time)
 
     # Assert
-    assert actual.count() == 2
+    assert actual.df.count() == 2
     assert (
-        actual.collect()[0][Colname.charge_price]
+        actual.df.collect()[0][Colname.charge_price]
         == factory.DefaultValues.DEFAULT_CHARGE_PRICE
     )
-    assert actual.collect()[1][Colname.charge_price] is None
+    assert actual.df.collect()[1][Colname.charge_price] is None
 
 
 def test__get_tariff_charges__can_handle_missing_all_charges_prices(
@@ -804,7 +803,7 @@ def test__get_tariff_charges__can_handle_missing_all_charges_prices(
     )
 
     # Act
-    actual = get_tariff_charges(
+    actual = get_prepared_tariffs(
         time_series,
         charge_master_data,
         charge_prices,
@@ -814,9 +813,9 @@ def test__get_tariff_charges__can_handle_missing_all_charges_prices(
     )
 
     # Assert
-    assert actual.count() == 2
-    assert actual.collect()[0][Colname.charge_price] is None
-    assert actual.collect()[1][Colname.charge_price] is None
+    assert actual.df.count() == 2
+    assert actual.df.collect()[0][Colname.charge_price] is None
+    assert actual.df.collect()[1][Colname.charge_price] is None
 
 
 def test__get_tariff_charges__can_handle_missing_charge_links(
@@ -858,7 +857,7 @@ def test__get_tariff_charges__can_handle_missing_charge_links(
     )
 
     # Act
-    actual = get_tariff_charges(
+    actual = get_prepared_tariffs(
         time_series,
         charge_master_data,
         charge_prices,
@@ -868,7 +867,7 @@ def test__get_tariff_charges__can_handle_missing_charge_links(
     ).orderBy(Colname.charge_time)
 
     # Assert
-    assert actual.count() == 2
+    assert actual.df.count() == 2
 
 
 @pytest.mark.parametrize(
@@ -928,7 +927,7 @@ def test__get_tariff_charges__can_handle_daylight_saving_time(
     )
 
     # Act
-    actual = get_tariff_charges(
+    actual = get_prepared_tariffs(
         time_series,
         charge_master_data,
         charge_prices,
@@ -938,4 +937,4 @@ def test__get_tariff_charges__can_handle_daylight_saving_time(
     )
 
     # Assert
-    assert actual.count() == 2
+    assert actual.df.count() == 2

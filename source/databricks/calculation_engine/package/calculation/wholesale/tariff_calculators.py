@@ -17,15 +17,14 @@ from datetime import datetime
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 
+from package.calculation.preparation.prepared_tariffs import PreparedTariffs
 from package.codelists import WholesaleResultResolution, ChargeUnit
-from package.common import assert_schema
 from package.constants import Colname
-from .schemas.tariffs_schema import tariff_schema
 
 
-def calculate_tariff_price_per_ga_co_es(tariffs: DataFrame) -> DataFrame:
+def calculate_amount_per_charge(prepared_tariffs: PreparedTariffs) -> DataFrame:
     """
-    Calculate tariff price time series.
+    Calculate tariff amount time series.
     A result is calculated per
     - grid area
     - charge key (charge id, charge type, charge owner)
@@ -38,9 +37,7 @@ def calculate_tariff_price_per_ga_co_es(tariffs: DataFrame) -> DataFrame:
     resolution is managed outside this module.
     """
 
-    assert_schema(tariffs.schema, tariff_schema)
-
-    df = _sum_quantity_and_count_charges(tariffs)
+    df = _sum_quantity_and_count_charges(prepared_tariffs)
 
     return df.select(
         Colname.energy_supplier_id,
@@ -65,10 +62,10 @@ def calculate_tariff_price_per_ga_co_es(tariffs: DataFrame) -> DataFrame:
     )
 
 
-def _sum_quantity_and_count_charges(tariffs: DataFrame) -> DataFrame:
+def _sum_quantity_and_count_charges(prepared_tariffs: PreparedTariffs) -> DataFrame:
     # Group by all columns that actually defines the groups, but also the additional
     # columns that need to be present after aggregation
-    agg_df = tariffs.groupBy(
+    agg_df = prepared_tariffs.df.groupBy(
         Colname.energy_supplier_id,
         Colname.grid_area,
         Colname.charge_time,

@@ -18,9 +18,9 @@ from pyspark.sql import DataFrame
 import package.calculation.output.wholesale_storage_model_factory as factory
 import package.calculation.wholesale.tariff_calculators as tariffs
 from package.common import assert_schema
-from .schemas.tariffs_schema import tariff_schema
 from ..CalculationResults import WholesaleResultsContainer
 from ..calculator_args import CalculatorArgs
+from ..preparation.prepared_tariffs import PreparedTariffs
 from ...codelists import AmountType
 from ...infrastructure import logging_configuration
 
@@ -28,17 +28,15 @@ from ...infrastructure import logging_configuration
 @logging_configuration.use_span("calculation.wholesale")
 def execute(
     args: CalculatorArgs,
-    tariffs_hourly_df: DataFrame,
-    tariffs_daily_df: DataFrame,
+    prepared_hourly_tariffs: PreparedTariffs,
+    prepared_daily_tariffs: PreparedTariffs,
 ) -> WholesaleResultsContainer:
-    assert_schema(tariffs_hourly_df.schema, tariff_schema)
-
     results = WholesaleResultsContainer()
 
     _calculate_tariff_charges(
         args,
-        tariffs_hourly_df,
-        tariffs_daily_df,
+        prepared_hourly_tariffs,
+        prepared_daily_tariffs,
         results,
     )
 
@@ -47,22 +45,22 @@ def execute(
 
 def _calculate_tariff_charges(
     args: CalculatorArgs,
-    tariffs_hourly_df: DataFrame,
-    tariffs_daily_df: DataFrame,
+    prepared_hourly_tariffs: PreparedTariffs,
+    prepared_daily_tariffs: PreparedTariffs,
     results: WholesaleResultsContainer,
 ) -> None:
-    hourly_tariff_per_ga_co_es = tariffs.calculate_tariff_price_per_ga_co_es(
-        tariffs_hourly_df
+    tariff_hourly_amount_per_charge = tariffs.calculate_amount_per_charge(
+        prepared_hourly_tariffs
     )
 
     results.hourly_tariff_per_ga_co_es = factory.create(
         args,
-        hourly_tariff_per_ga_co_es,
+        tariff_hourly_amount_per_charge,
         AmountType.AMOUNT_PER_CHARGE,
     )
 
     monthly_tariff_from_hourly_per_ga_co_es = tariffs.sum_within_month(
-        hourly_tariff_per_ga_co_es, args.calculation_period_start_datetime
+        tariff_hourly_amount_per_charge, args.calculation_period_start_datetime
     )
 
     results.monthly_tariff_from_hourly_per_ga_co_es = factory.create(
@@ -71,8 +69,8 @@ def _calculate_tariff_charges(
         AmountType.MONTHLY_AMOUNT_PER_CHARGE,
     )
 
-    daily_tariff_per_ga_co_es = tariffs.calculate_tariff_price_per_ga_co_es(
-        tariffs_daily_df
+    daily_tariff_per_ga_co_es = tariffs.calculate_amount_per_charge(
+        prepared_daily_tariffs
     )
 
     results.daily_tariff_per_ga_co_es = factory.create(

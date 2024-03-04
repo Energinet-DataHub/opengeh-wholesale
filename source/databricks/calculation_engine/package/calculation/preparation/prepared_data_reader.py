@@ -110,7 +110,7 @@ class PreparedDataReader:
         resolution: ChargeResolution,
         time_zone: str,
     ) -> DataFrame:
-        return T.get_tariff_charges(
+        return T.get_prepared_tariffs(
             time_series,
             charge_master_data,
             charge_prices,
