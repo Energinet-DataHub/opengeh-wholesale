@@ -19,7 +19,11 @@ from pyspark.sql.dataframe import DataFrame
 from package.calculation.preparation.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
 )
-from package.codelists import SettlementMethod, MeteringPointType
+from package.codelists import (
+    SettlementMethod,
+    MeteringPointType,
+    WholesaleResultResolution,
+)
 from package.calculation.preparation.charge_master_data import ChargeMasterData
 from package.calculation.preparation.charge_prices import ChargePrices
 from package.codelists import ChargeType
@@ -47,6 +51,10 @@ def get_subscription_charges(
 
     subscriptions = _join_with_links(
         subscription_master_data_and_prices, subscription_links
+    )
+
+    subscriptions = subscriptions.withColumn(
+        f.lit(WholesaleResultResolution.DAY.value).alias(Colname.resolution)
     )
 
     return subscriptions
