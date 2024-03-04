@@ -249,7 +249,6 @@ def test__current_state_and_migration_scripts__should_give_same_result(
     spark_sql_migration_helper.migrate(
         spark,
         schema_prefix=migration_script_prefix,
-        table_prefix=migration_script_prefix,
     )
 
     # Act current state scripts
@@ -257,7 +256,6 @@ def test__current_state_and_migration_scripts__should_give_same_result(
     spark_sql_migration_helper.migrate(
         spark,
         schema_prefix=current_state_prefix,
-        table_prefix=current_state_prefix,
     )
 
     # Clean up DI
