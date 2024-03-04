@@ -45,5 +45,4 @@ public static class ApiVersioningExtensions
 
         return services;
     }
-
 }
