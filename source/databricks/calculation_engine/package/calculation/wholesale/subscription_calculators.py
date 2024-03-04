@@ -17,6 +17,7 @@ from zoneinfo import ZoneInfo
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
 
+from package.codelists import ChargeUnit
 from package.constants import Colname
 
 
@@ -37,9 +38,25 @@ def calculate_subscription_amount(
         subscriptions_with_daily_price
     )
 
-    subscription_result = subscription_result.withColumn(
-        Colname.charge_price, f.round(Colname.charge_price, 6)
-    ).withColumn(Colname.total_amount, f.round(Colname.total_amount, 6))
+    return subscription_result.select(
+        Colname.energy_supplier_id,
+        Colname.grid_area,
+        Colname.charge_time,
+        Colname.metering_point_type,
+        Colname.settlement_method,
+        Colname.charge_key,
+        Colname.charge_code,
+        Colname.charge_type,
+        Colname.charge_owner,
+        Colname.charge_tax,
+        Colname.resolution,
+        f.round(Colname.charge_price, 6).alias(Colname.charge_price),
+        Colname.total_quantity,
+        Colname.charge_count,
+        f.round(Colname.total_amount, 6).alias(Colname.total_amount),
+        f.lit(ChargeUnit.PIECES.value).alias(Colname.unit),
+        f.lit(None).alias(Colname.qualities),
+    )
 
     return subscription_result
 
@@ -103,6 +120,8 @@ def _calculate_charge_count_and_amount(
         Colname.energy_supplier_id,
         Colname.charge_time,
         Colname.metering_point_type,
+        Colname.settlement_method,
+        Colname.resolution,
     ).agg(
         f.sum(Colname.charge_quantity).alias(Colname.charge_count),
         f.sum(
