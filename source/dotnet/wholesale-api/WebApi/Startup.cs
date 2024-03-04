@@ -54,7 +54,8 @@ public class Startup
         // Modules
         services.AddCalculationsModule(Configuration);
         services.AddCalculationResultsModule(Configuration);
-        services.AddEventsModule(Configuration);
+        services.AddIntegrationEventsSubscription();
+        services.AddInboxHandling();
         services.AddEdiModule();
 
         services

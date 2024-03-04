@@ -30,15 +30,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.Extensions.DependencyInjection;
 /// </summary>
 public static class EventsExtensions
 {
-    public static IServiceCollection AddEventsModule(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.AddIntegrationEventsSubscription();
-        services.AddInboxHandling();
-
-        return services;
-    }
-
-    private static IServiceCollection AddIntegrationEventsSubscription(this IServiceCollection services)
+    public static IServiceCollection AddIntegrationEventsSubscription(this IServiceCollection services)
     {
         // These are located within Calculations sub-area
         services
@@ -64,7 +56,7 @@ public static class EventsExtensions
         return services;
     }
 
-    private static IServiceCollection AddInboxHandling(this IServiceCollection services)
+    public static IServiceCollection AddInboxHandling(this IServiceCollection services)
     {
         services
             .AddHostedService<AggregatedTimeSeriesServiceBusWorker>();
