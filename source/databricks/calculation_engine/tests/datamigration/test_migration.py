@@ -257,6 +257,9 @@ def test__current_state_and_migration_scripts__should_give_same_result(
         schema_prefix=current_state_prefix,
     )
 
+    # Clean up DI
+    spark_sql_migration_helper.configure_spark_sql_migration(spark)
+
     # Assert
     migration_databases = spark.catalog.listDatabases()
     assert len(migration_databases) > 0

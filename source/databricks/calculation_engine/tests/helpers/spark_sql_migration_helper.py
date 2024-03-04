@@ -36,6 +36,13 @@ def migrate(
     schema_prefix: str = "",
     table_prefix: str = "",
 ) -> None:
+    configure_spark_sql_migration(spark, schema_prefix, table_prefix)
+    schema_migration_pipeline.migrate()
+
+
+def configure_spark_sql_migration(
+    spark: SparkSession, schema_prefix: str = "", table_prefix: str = ""
+) -> None:
     migration_args = MigrationScriptArgs(
         data_storage_account_url="url",
         data_storage_account_name="data",
@@ -58,7 +65,6 @@ def migrate(
     )
 
     create_and_configure_container(configuration)
-    schema_migration_pipeline.migrate()
 
 
 def migrate_with_current_state(spark: SparkSession) -> None:
