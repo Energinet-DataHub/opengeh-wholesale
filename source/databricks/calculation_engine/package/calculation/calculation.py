@@ -42,9 +42,25 @@ def _execute(
 ) -> CalculationResultsContainer:
     results = CalculationResultsContainer()
 
-    grid_loss_responsible_df, metering_point_periods_df, metering_point_time_series = (
-        prepare_energy_calculation(args, prepared_data_reader)
-    )
+    with logging_configuration.use_span("calculation.energy.prepare"):
+        # cache of metering_point_time_series had no effect on performance (01-12-2023)
+        metering_point_periods_df = prepared_data_reader.get_metering_point_periods_df(
+            args.calculation_period_start_datetime,
+            args.calculation_period_end_datetime,
+            args.calculation_grid_areas,
+        )
+
+        grid_loss_responsible_df = prepared_data_reader.get_grid_loss_responsible(
+            args.calculation_grid_areas, metering_point_periods_df
+        )
+
+        metering_point_time_series = (
+            prepared_data_reader.get_metering_point_time_series(
+                args.calculation_period_start_datetime,
+                args.calculation_period_end_datetime,
+                metering_point_periods_df,
+            ).cache()
+        )
 
     results.energy_results = energy_calculation.execute(
         args,
@@ -58,12 +74,47 @@ def _execute(
         or args.calculation_type == CalculationType.SECOND_CORRECTION_SETTLEMENT
         or args.calculation_type == CalculationType.THIRD_CORRECTION_SETTLEMENT
     ):
-        tariffs_daily_df, tariffs_hourly_df = prepare_wholesale_calculation(
-            args,
-            metering_point_periods_df,
-            metering_point_time_series,
-            prepared_data_reader,
-        )
+
+        with logging_configuration.use_span("calculation.wholesale.prepare"):
+            charge_master_data = prepared_data_reader.get_charge_master_data(
+                args.calculation_period_start_datetime,
+                args.calculation_period_end_datetime,
+            )
+
+            charge_prices = prepared_data_reader.get_charge_prices(
+                args.calculation_period_start_datetime,
+                args.calculation_period_end_datetime,
+            )
+
+            metering_points_periods_for_wholesale_calculation = (
+                get_metering_points_and_child_metering_points(metering_point_periods_df)
+            )
+
+            charges_link_metering_point_periods = (
+                prepared_data_reader.get_charge_link_metering_point_periods(
+                    args.calculation_period_start_datetime,
+                    args.calculation_period_end_datetime,
+                    metering_points_periods_for_wholesale_calculation,
+                )
+            )
+
+            tariffs_hourly_df = prepared_data_reader.get_tariff_charges(
+                metering_point_time_series,
+                charge_master_data,
+                charge_prices,
+                charges_link_metering_point_periods,
+                ChargeResolution.HOUR,
+                args.time_zone,
+            )
+
+            tariffs_daily_df = prepared_data_reader.get_tariff_charges(
+                metering_point_time_series,
+                charge_master_data,
+                charge_prices,
+                charges_link_metering_point_periods,
+                ChargeResolution.DAY,
+                args.time_zone,
+            )
 
         results.wholesale_results = wholesale_calculation.execute(
             args,
@@ -77,77 +128,6 @@ def _execute(
     )
 
     return results
-
-
-@logging_configuration.use_span("calculation.wholesale.prepare")
-def prepare_wholesale_calculation(
-    args, metering_point_periods_df, metering_point_time_series, prepared_data_reader
-):
-    charge_master_data = prepared_data_reader.get_charge_master_data(
-        args.calculation_period_start_datetime, args.calculation_period_end_datetime
-    )
-
-    charge_prices = prepared_data_reader.get_charge_prices(
-        args.calculation_period_start_datetime, args.calculation_period_end_datetime
-    )
-
-    metering_points_periods_for_wholesale_calculation = (
-        get_metering_points_and_child_metering_points(metering_point_periods_df)
-    )
-
-    charges_link_metering_point_periods = (
-        prepared_data_reader.get_charge_link_metering_point_periods(
-            args.calculation_period_start_datetime,
-            args.calculation_period_end_datetime,
-            metering_points_periods_for_wholesale_calculation,
-        )
-    )
-
-    tariffs_hourly_df = prepared_data_reader.get_tariff_charges(
-        metering_point_time_series,
-        charge_master_data,
-        charge_prices,
-        charges_link_metering_point_periods,
-        ChargeResolution.HOUR,
-        args.time_zone,
-    )
-
-    tariffs_daily_df = prepared_data_reader.get_tariff_charges(
-        metering_point_time_series,
-        charge_master_data,
-        charge_prices,
-        charges_link_metering_point_periods,
-        ChargeResolution.DAY,
-        args.time_zone,
-    )
-
-    return tariffs_daily_df, tariffs_hourly_df
-
-
-@logging_configuration.use_span("calculation.energy.prepare")
-def prepare_energy_calculation(args, prepared_data_reader):
-    # cache of metering_point_time_series had no effect on performance (01-12-2023)
-    metering_point_periods_df = prepared_data_reader.get_metering_point_periods_df(
-        args.calculation_period_start_datetime,
-        args.calculation_period_end_datetime,
-        args.calculation_grid_areas,
-    )
-
-    grid_loss_responsible_df = prepared_data_reader.get_grid_loss_responsible(
-        args.calculation_grid_areas, metering_point_periods_df
-    )
-
-    metering_point_time_series = prepared_data_reader.get_metering_point_time_series(
-        args.calculation_period_start_datetime,
-        args.calculation_period_end_datetime,
-        metering_point_periods_df,
-    ).cache()
-
-    return (
-        grid_loss_responsible_df,
-        metering_point_periods_df,
-        metering_point_time_series,
-    )
 
 
 @logging_configuration.use_span("calculation.write")
