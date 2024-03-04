@@ -329,40 +329,19 @@ class TestWhenMissingAllInputChargePrices:
         assert actual.collect()[0][Colname.total_amount] is None
 
 
-class TestWhenMultipleMeteringPointsPerChargeTime:
-    def test__returns_sum_charge_quantity_per_charge_time(
+class TestWhenMultipleMeteringPoints:
+    def test__returns_result_per_metering_point_type(
         self,
         spark: SparkSession,
     ) -> None:
         # Arrange
-        time_1 = DefaultValues.CALCULATION_PERIOD_START
-        time_2 = time_1 + timedelta(days=1)
-        quantity_1 = 3
-        quantity_2 = 4
-        expected_charge_count_1 = 2 * quantity_1
-        expected_charge_count_2 = 2 * quantity_2
-
+        metering_point_id_1 = "1"
+        metering_point_id_2 = "2"
         subscription_rows = [
             _create_subscription_row(
-                metering_point_id="1",
-                charge_time=time_1,
-                charge_quantity=quantity_1,
+                metering_point_type=MeteringPointType.CONSUMPTION.value
             ),
-            _create_subscription_row(
-                metering_point_id="2",
-                charge_time=time_1,
-                charge_quantity=quantity_1,
-            ),
-            _create_subscription_row(
-                metering_point_id="1",
-                charge_time=time_2,
-                charge_quantity=quantity_2,
-            ),
-            _create_subscription_row(
-                metering_point_id="2",
-                charge_time=time_2,
-                charge_quantity=quantity_2,
-            ),
+            _create_subscription_row(metering_point_id=metering_point_id_2),
         ]
         subscription_charges = spark.createDataFrame(
             subscription_rows, schema=prepared_subscriptions_schema
@@ -377,10 +356,12 @@ class TestWhenMultipleMeteringPointsPerChargeTime:
         )
 
         # Assert
-        actual_rows = actual.orderBy(Colname.charge_time).collect()
-        assert len(actual_rows) == 2
-        assert actual_rows[0][Colname.charge_count] == expected_charge_count_1
-        assert actual_rows[1][Colname.charge_count] == expected_charge_count_2
+        assert actual.count() == 2
+        actual_metering_point_ids = [
+            row[Colname.metering_point_id] for row in actual.collect()
+        ]
+        assert metering_point_id_1 in actual_metering_point_ids
+        assert metering_point_id_2 in actual_metering_point_ids
 
 
 class TestWhenCalculationPeriodIsNotFullMonth:
