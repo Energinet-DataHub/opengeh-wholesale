@@ -20,3 +20,7 @@ def reset_spark_catalog(spark: SparkSession) -> None:
     for schema in schemas:
         if schema.name != "default":
             spark.sql(f"DROP DATABASE IF EXISTS {schema.name} CASCADE")
+
+
+def drop_schema_migration_table(spark: SparkSession) -> None:
+    spark.sql("DROP DATABASE IF EXISTS schema_migration CASCADE")

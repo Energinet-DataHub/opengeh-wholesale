@@ -242,6 +242,8 @@ def test__current_state_and_migration_scripts__should_give_same_result(
         return_value="storage_account",
     )
 
+    spark_helper.drop_schema_migration_table(spark)
+
     # Act migration scripts
     migration_script_prefix = "migration_scripts"
     spark_sql_migration_helper.migrate(
