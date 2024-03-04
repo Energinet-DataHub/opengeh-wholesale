@@ -21,7 +21,6 @@ from pyspark.sql.types import (
     StringType,
     TimestampType,
     BooleanType,
-    ArrayType,
 )
 
 
