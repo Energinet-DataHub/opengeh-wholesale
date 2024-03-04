@@ -12,10 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Reflection;
 using System.Text.Json.Serialization;
 using Asp.Versioning;
-using Asp.Versioning.ApiExplorer;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
@@ -28,9 +26,9 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks.ServiceBus;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
+using Energinet.DataHub.Wholesale.WebApi.Extensions.Builder;
 using Energinet.DataHub.Wholesale.WebApi.Extensions.DependencyInjection;
 using Microsoft.Extensions.Azure;
-using Microsoft.OpenApi.Models;
 
 namespace Energinet.DataHub.Wholesale.WebApi;
 
@@ -63,46 +61,11 @@ public class Startup
             .AddControllers(options => options.Filters.Add<BusinessValidationExceptionFilter>())
             .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 
-        // Register the Swagger generator, defining 1 or more Swagger documents.
-        services.AddSwaggerGen(config =>
-        {
-            config.SupportNonNullableReferenceTypes();
-            config.OperationFilter<BinaryContentFilter>();
+        // Open API generation
+        services.AddSwaggerForWebApplication();
 
-            // Set the comments path for the Swagger JSON and UI.
-            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-            config.IncludeXmlComments(xmlPath);
-
-            var securitySchema = new OpenApiSecurityScheme
-            {
-                Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-                Name = "Authorization",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.Http,
-                Scheme = "bearer",
-                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer", },
-            };
-
-            config.AddSecurityDefinition("Bearer", securitySchema);
-
-            var securityRequirement = new OpenApiSecurityRequirement { { securitySchema, new[] { "Bearer" } }, };
-
-            config.AddSecurityRequirement(securityRequirement);
-        });
-
-        var apiVersioningBuilder = services.AddApiVersioning(config =>
-        {
-            config.DefaultApiVersion = new ApiVersion(3, 0);
-            config.AssumeDefaultVersionWhenUnspecified = true;
-            config.ReportApiVersions = true;
-        });
-        apiVersioningBuilder.AddApiExplorer(setup =>
-        {
-            setup.GroupNameFormat = "'v'VVV";
-            setup.SubstituteApiVersionInUrl = true;
-        });
-        services.ConfigureOptions<ConfigureSwaggerOptions>();
+        // API versioning
+        services.AddApiVersioningForWebApplication(new ApiVersion(3, 0));
 
         // Authentication/authorization
         services
@@ -148,19 +111,7 @@ public class Startup
             app.UseDeveloperExceptionPage();
         }
 
-        app.UseSwagger();
-        app.UseSwaggerUI(options =>
-        {
-            var apiVersionDescriptionProvider = app.ApplicationServices.GetRequiredService<IApiVersionDescriptionProvider>();
-
-            // Reverse the APIs in order to make the latest API versions appear first in select box in UI
-            foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions.Reverse())
-            {
-                options.SwaggerEndpoint(
-                    $"/swagger/{description.GroupName}/swagger.json",
-                    description.GroupName.ToUpperInvariant());
-            }
-        });
+        app.UseSwaggerForWebApplication();
 
         app.UseHttpsRedirection();
         app.UseAuthentication();
