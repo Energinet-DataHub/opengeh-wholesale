@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import uuid
+from copy import copy
 from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import Any, List
@@ -22,11 +23,12 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
 
 import package.codelists as e
+from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.energy.energy_results import (
-    EnergyResults,
     energy_results_schema,
+    EnergyResults,
 )
-from package.calculation_output import EnergyCalculationResultWriter
+from package.calculation.output import energy_storage_model_factory as sut
 from package.constants import Colname, EnergyResultColumnNames
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
 from tests.contract_utils import (
@@ -73,6 +75,16 @@ OTHER_SETTLEMENT_METHOD = e.SettlementMethod.NON_PROFILED
 TABLE_NAME = f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}"
 
 
+@pytest.fixture(scope="module")
+def args(any_calculator_args: CalculatorArgs) -> CalculatorArgs:
+    args = copy(any_calculator_args)
+    args.calculation_type = DEFAULT_CALCULATION_TYPE
+    args.calculation_id = str(uuid.uuid4())
+    args.calculation_execution_time_start = DEFAULT_CALCULATION_EXECUTION_START
+
+    return args
+
+
 def _create_result_row(
     grid_area: str = DEFAULT_GRID_AREA,
     to_grid_area: str = DEFAULT_TO_GRID_AREA,
@@ -104,12 +116,12 @@ def _create_result_row(
     return row
 
 
-def _create_result_df(spark: SparkSession, row: List[dict]) -> EnergyResults:
+def _create_energy_results(spark: SparkSession, row: List[dict]) -> EnergyResults:
     df = spark.createDataFrame(data=row, schema=energy_results_schema)
     return EnergyResults(df)
 
 
-def _create_result_df_corresponding_to_four_calculation_results(
+def _create_energy_results_corresponding_to_four_calculation_results(
     spark: SparkSession,
 ) -> EnergyResults:
     OTHER_TIME_WINDOW_START = DEFAULT_TIME_WINDOW_END
@@ -143,40 +155,33 @@ def _create_result_df_corresponding_to_four_calculation_results(
         _create_result_row(energy_supplier_id=OTHER_ENERGY_SUPPLIER_ID),
     ]
 
-    return _create_result_df(spark, rows)
+    return _create_energy_results(spark, rows)
 
 
 @pytest.mark.parametrize(
     "aggregation_level",
     e.AggregationLevel,
 )
-def test__write__writes_aggregation_level(
+def test__create__with_correct_aggregation_level(
     spark: SparkSession,
     aggregation_level: e.AggregationLevel,
     migrations_executed: None,
+    args: CalculatorArgs,
 ) -> None:
     # Arrange
     row = [_create_result_row()]
-    result_df = _create_result_df(spark, row)
-    calculation_id = str(uuid.uuid4())
-    sut = EnergyCalculationResultWriter(
-        calculation_id,
-        DEFAULT_CALCULATION_TYPE,
-        DEFAULT_CALCULATION_EXECUTION_START,
-    )
+    result_df = _create_energy_results(spark, row)
 
     # Act
-    sut.write(
+    actual = sut.create(
+        args,
         result_df,
         e.TimeSeriesType.PRODUCTION,
         aggregation_level,
     )
 
     # Assert
-    actual_df = spark.read.table(TABLE_NAME).where(
-        col(EnergyResultColumnNames.calculation_id) == calculation_id
-    )
-    assert actual_df.collect()[0][Colname.aggregation_level] == aggregation_level.value
+    assert actual.collect()[0][Colname.aggregation_level] == aggregation_level.value
 
 
 @pytest.mark.parametrize(
@@ -201,93 +206,79 @@ def test__write__writes_aggregation_level(
         (EnergyResultColumnNames.quantity_qualities, [DEFAULT_QUALITY.value]),
     ],
 )
-def test__write__writes_column(
+def test__create__with_correct_row_values(
     spark: SparkSession,
     column_name: str,
     column_value: Any,
     migrations_executed: None,
+    args: CalculatorArgs,
 ) -> None:
     # Arrange
     row = [_create_result_row()]
-    result_df = _create_result_df(spark, row)
-    sut = EnergyCalculationResultWriter(
-        DEFAULT_CALCULATION_ID,
-        DEFAULT_CALCULATION_TYPE,
-        DEFAULT_CALCULATION_EXECUTION_START,
-    )
+    result_df = _create_energy_results(spark, row)
+    args.calculation_id = DEFAULT_CALCULATION_ID
 
     # Act
-    sut.write(
+    actual = sut.create(
+        args,
         result_df,
         DEFAULT_TIME_SERIES_TYPE,
         DEFAULT_AGGREGATION_LEVEL,
     )
 
     # Assert
-    actual_df = spark.read.table(TABLE_NAME).where(
-        col(EnergyResultColumnNames.calculation_id) == DEFAULT_CALCULATION_ID
-    )
-    assert actual_df.collect()[0][column_name] == column_value
+    assert actual.collect()[0][column_name] == column_value
 
 
-def test__write__writes_columns_matching_contract(
+def test__create__columns_matching_contract(
     spark: SparkSession,
     contracts_path: str,
     migrations_executed: None,
+    args: CalculatorArgs,
 ) -> None:
     # Arrange
     contract_path = f"{contracts_path}/energy-result-table-column-names.json"
     row = [_create_result_row()]
-    result_df = _create_result_df(spark, row)
-    sut = EnergyCalculationResultWriter(
-        DEFAULT_CALCULATION_ID,
-        DEFAULT_CALCULATION_TYPE,
-        DEFAULT_CALCULATION_EXECUTION_START,
-    )
+    result_df = _create_energy_results(spark, row)
 
     # Act
-    sut.write(
+    actual = sut.create(
+        args,
         result_df,
         DEFAULT_TIME_SERIES_TYPE,
         DEFAULT_AGGREGATION_LEVEL,
     )
 
     # Assert
-    actual_df = spark.read.table(TABLE_NAME).where(
-        col(EnergyResultColumnNames.calculation_id) == DEFAULT_CALCULATION_ID
-    )
-
-    assert_contract_matches_schema(contract_path, actual_df.schema)
+    assert_contract_matches_schema(contract_path, actual.schema)
 
 
-def test__write__writes_calculation_result_id(
-    spark: SparkSession, contracts_path: str, migrations_executed: None
+def test__create__with_correct_number_of_calculation_result_ids(
+    spark: SparkSession,
+    contracts_path: str,
+    migrations_executed: None,
+    args: CalculatorArgs,
 ) -> None:
     # Arrange
-    result_df = _create_result_df_corresponding_to_four_calculation_results(spark)
+    result_df = _create_energy_results_corresponding_to_four_calculation_results(spark)
     EXPECTED_NUMBER_OF_CALCULATION_RESULT_IDS = 4
-    calculation_id = str(uuid.uuid4())
-    sut = EnergyCalculationResultWriter(
-        calculation_id,
-        DEFAULT_CALCULATION_TYPE,
-        DEFAULT_CALCULATION_EXECUTION_START,
-    )
 
     # Act
-    sut.write(
+    actual = sut.create(
+        args,
         result_df,
         DEFAULT_TIME_SERIES_TYPE,
         DEFAULT_AGGREGATION_LEVEL,
     )
 
     # Assert
-    actual_df = (
-        spark.read.table(TABLE_NAME)
-        .where(col(EnergyResultColumnNames.calculation_id) == calculation_id)
+    distinct_calculation_result_ids = (
+        actual.where(col(EnergyResultColumnNames.calculation_id) == args.calculation_id)
         .select(col(EnergyResultColumnNames.calculation_result_id))
+        .distinct()
+        .count()
     )
-
-    assert actual_df.distinct().count() == EXPECTED_NUMBER_OF_CALCULATION_RESULT_IDS
+    assert distinct_calculation_result_ids == EXPECTED_NUMBER_OF_CALCULATION_RESULT_IDS
 
 
 @pytest.mark.parametrize(
@@ -307,43 +298,34 @@ def test__write__writes_calculation_result_id(
         ),
     ],
 )
-def test__write__when_rows_belong_to_different_results__adds_different_calculation_result_id(
+def test__create__when_rows_belong_to_different_results__adds_different_calculation_result_id(
     spark: SparkSession,
     column_name: str,
     value: Any,
     other_value: Any,
     migrations_executed: None,
+    args: CalculatorArgs,
 ) -> None:
     # Arrange
     row1 = _create_result_row()
     row1[column_name] = value
     row2 = _create_result_row()
     row2[column_name] = other_value
-    result_df = _create_result_df(spark, [row1, row2])
-
-    calculation_id = str(uuid.uuid4())
-    sut = EnergyCalculationResultWriter(
-        calculation_id,
-        DEFAULT_CALCULATION_TYPE,
-        DEFAULT_CALCULATION_EXECUTION_START,
-    )
+    result_df = _create_energy_results(spark, [row1, row2])
 
     # Act
-    sut.write(
+    actual = sut.create(
+        args,
         result_df,
         DEFAULT_TIME_SERIES_TYPE,
         DEFAULT_AGGREGATION_LEVEL,
     )
 
     # Assert
-    actual = (
-        spark.read.table(TABLE_NAME)
-        .where(col(EnergyResultColumnNames.calculation_id) == calculation_id)
-        .collect()
-    )
+    rows = actual.collect()
     assert (
-        actual[0][EnergyResultColumnNames.calculation_result_id]
-        != actual[1][EnergyResultColumnNames.calculation_result_id]
+        rows[0][EnergyResultColumnNames.calculation_result_id]
+        != rows[1][EnergyResultColumnNames.calculation_result_id]
     )
 
 
@@ -377,37 +359,28 @@ def test__write__when_rows_belong_to_same_result__adds_same_calculation_result_i
     value: Any,
     other_value: Any,
     migrations_executed: None,
+    args: CalculatorArgs,
 ) -> None:
     # Arrange
-    row1 = _create_result_row()
+    row1 = _create_result_row(grid_area="804")
     row1[column_name] = value
-    row2 = _create_result_row()
+    row2 = _create_result_row(grid_area="803")
     row2[column_name] = other_value
-    result_df = _create_result_df(spark, [row1, row2])
-
-    calculation_id = str(uuid.uuid4())
-    sut = EnergyCalculationResultWriter(
-        calculation_id,
-        DEFAULT_CALCULATION_TYPE,
-        DEFAULT_CALCULATION_EXECUTION_START,
-    )
+    result_df = _create_energy_results(spark, [row1, row2])
 
     # Act
-    sut.write(
+    actual = sut.create(
+        args,
         result_df,
         DEFAULT_TIME_SERIES_TYPE,
         DEFAULT_AGGREGATION_LEVEL,
     )
 
     # Assert
-    actual = (
-        spark.read.table(TABLE_NAME)
-        .where(col(EnergyResultColumnNames.calculation_id) == calculation_id)
-        .collect()
-    )
+    rows = actual.collect()
     assert (
-        actual[0][EnergyResultColumnNames.calculation_result_id]
-        == actual[1][EnergyResultColumnNames.calculation_result_id]
+        rows[0][EnergyResultColumnNames.calculation_result_id]
+        != rows[1][EnergyResultColumnNames.calculation_result_id]
     )
 
 
@@ -436,9 +409,7 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
     all_columns = get_column_names_from_contract(contract_path)
 
     # Act
-    included_columns = (
-        EnergyCalculationResultWriter._get_column_group_for_calculation_result_id()
-    )
+    included_columns = sut._get_column_group_for_calculation_result_id()
 
     # Assert
     included_columns = list(
