@@ -11,13 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
-
 from pyspark.sql import SparkSession
 from unittest.mock import Mock
-
 from pyspark.sql.types import StructType, StructField
 
+import pytest
 import tests.helpers.spark_helper as spark_helper
 import tests.helpers.spark_sql_migration_helper as spark_sql_migration_helper
 import package.datamigration.schema_config as schema_config
@@ -215,6 +213,7 @@ def test__schema_config__when_schema_and_table_script_files_are_executed(
             assert actual_table.schema == table.schema
 
 
+@pytest.mark.last
 def test__current_state_and_migration_scripts__should_give_same_result(
     mocker: Mock, spark: SparkSession
 ) -> None:
