@@ -1,11 +1,13 @@
 <!--- 🙏 Thank you for your submission, we really appreciate it. Like many open-source projects, we ask that you sign our [Contributor License Agreement](https://cla-assistant.io/Energinet-DataHub/opengeh-wholesale) before we can accept your contribution. --->
 
-## TODO
+# Description
 
-Please complete and remove this TODO section before entering PR ready for review state.
+INSERT DESCRIPTION HERE
 
-- [ ] Title: Follow [this guide](https://github.com/Mech0z/GitHubGuidelines)
-- [ ] Write tests
-- [ ] Update documentation
-- [ ] Update [event catalog](https://energinet.atlassian.net/wiki/spaces/D3/pages/555581556/Event+catalog) if there are relevant changes to integration events
-- [ ] Inform team Outlaws if there are relevant C4 changes
+Pull-request quality:
+- [ ] The title adheres to [this guide](https://github.com/Mech0z/GitHubGuidelines)
+- [ ] Tests are written and executed locally
+- [ ] Subsystem tests have been tested (by manually deploying to `dev_002` or `sandbox_002`)
+- [ ] Documentation has been updated
+- [ ] The integration [event catalog](https://energinet.atlassian.net/wiki/spaces/D3/pages/555581556/Event+catalog) has been updated
+- [ ] C4 diagrams have been updated and Team Outlaws has been informed about relevant changes
