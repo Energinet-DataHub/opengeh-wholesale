@@ -59,7 +59,7 @@ def test__when_metering_point_type_is_not_exchange__returns_metering_point(
     assert actual.count() == 1
 
 
-def test__when_metering_point_type_is_exchange__returns_metering_point(
+def test__when_metering_point_type_is_exchange__returns_none(
     spark: SparkSession,
 ):
     # Arrange
