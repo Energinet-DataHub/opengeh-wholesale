@@ -21,14 +21,10 @@ using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks.ServiceBus;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.WebApi.Extensions.Builder;
 using Energinet.DataHub.Wholesale.WebApi.Extensions.DependencyInjection;
-using Microsoft.Extensions.Azure;
 
 namespace Energinet.DataHub.Wholesale.WebApi;
 
@@ -50,56 +46,33 @@ public class Startup
         // Shared by modules
         services.AddNodaTimeForApplication(Configuration);
         services.AddDatabricksJobsForApplication(Configuration);
+        services.AddServiceBusClientForApplication(Configuration);
 
         // Modules
         services.AddCalculationsModule(Configuration);
         services.AddCalculationResultsModule(Configuration);
+
+        // ServieBus channels
         services.AddIntegrationEventsSubscription();
         services.AddInboxHandling();
         services.AddEdiModule();
 
+        // Http channels
         services
             .AddControllers(options => options.Filters.Add<BusinessValidationExceptionFilter>())
             .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 
-        // Open API generation
+        // => Open API generation
         services.AddSwaggerForWebApplication();
 
-        // API versioning
+        // => API versioning
         services.AddApiVersioningForWebApplication(new ApiVersion(3, 0));
 
-        // Authentication/authorization
+        // => Authentication/authorization
         services
             .AddTokenAuthenticationForWebApp(Configuration)
             .AddUserAuthenticationForWebApp<FrontendUser, FrontendUserProvider>()
             .AddPermissionAuthorization();
-
-        // ServiceBus
-        services.AddOptions<ServiceBusOptions>().Bind(Configuration);
-        services.AddAzureClients(builder =>
-        {
-            builder
-                .AddServiceBusClient(Configuration.Get<ServiceBusOptions>()!.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING)
-                .ConfigureOptions(options =>
-                {
-                    options.TransportType = ServiceBusTransportType.AmqpWebSockets;
-                });
-        });
-        var serviceBusOptions = Configuration.Get<ServiceBusOptions>()!;
-        services.AddHealthChecks()
-            .AddAzureServiceBusSubscriptionUsingWebSockets(
-                serviceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING,
-                serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
-                serviceBusOptions.INTEGRATIONEVENTS_SUBSCRIPTION_NAME,
-                name: HealthCheckNames.IntegrationEventsTopicSubscription)
-            .AddAzureServiceBusQueueUsingWebSockets(
-                serviceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING,
-                serviceBusOptions.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME,
-                name: HealthCheckNames.WholesaleInboxEventsQueue)
-            .AddAzureServiceBusQueueUsingWebSockets(
-                serviceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING,
-                serviceBusOptions.EDI_INBOX_MESSAGE_QUEUE_NAME,
-                name: HealthCheckNames.EdiInboxEventsQueue);
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
