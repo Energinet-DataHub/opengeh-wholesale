@@ -40,6 +40,6 @@ prepared_subscriptions_schema = StructType(
         StructField(Colname.metering_point_id, StringType(), False),
         StructField(Colname.grid_area, StringType(), False),
         StructField(Colname.energy_supplier_id, StringType(), False),
-        StructField(Colname.qualities, ArrayType(StringType()), False),
+        StructField(Colname.resolution, StringType(), False),
     ]
 )

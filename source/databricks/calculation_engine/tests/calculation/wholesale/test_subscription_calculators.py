@@ -30,6 +30,7 @@ from package.codelists import (
     SettlementMethod,
     ChargeType,
     QuantityQuality,
+    WholesaleResultResolution,
 )
 from package.constants import Colname
 
@@ -66,7 +67,7 @@ def _create_subscription_row(
     settlement_method: SettlementMethod = DefaultValues.SETTLEMENT_METHOD,
     metering_point_id: str = DefaultValues.METERING_POINT_ID,
     grid_area: str = DefaultValues.GRID_AREA,
-    quality: QuantityQuality = DefaultValues.QUALITY,
+    resolution: WholesaleResultResolution = WholesaleResultResolution.DAY,
 ) -> Row:
     charge_type = ChargeType.SUBSCRIPTION.value
     row = {
@@ -83,7 +84,7 @@ def _create_subscription_row(
         Colname.metering_point_id: metering_point_id,
         Colname.grid_area: grid_area,
         Colname.energy_supplier_id: energy_supplier_id,
-        Colname.qualities: [quality.value],
+        Colname.resolution: resolution.value,
     }
 
     return Row(**row)
