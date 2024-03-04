@@ -25,9 +25,15 @@ from package.constants import Colname
 def get_metering_points_and_child_metering_points(
     metering_point_periods_df: DataFrame,
 ) -> DataFrame:
+    """
+    Returns only metering points used in wholesale calculations.
+    This includes all metering point types except exchange metering points.
+    The energy supplier of child metering points is added from its parent metering point.
+    """
     production_and_consumption_metering_points = (
         _get_production_and_consumption_metering_points(metering_point_periods_df)
     )
+
     es = "energy_supplier_id_temp"
     mp = "metering_point_id_temp"
     production_and_consumption_metering_points = (
@@ -35,7 +41,9 @@ def get_metering_points_and_child_metering_points(
             Colname.energy_supplier_id, es
         ).withColumnRenamed(Colname.metering_point_id, mp)
     )
+
     all_metering_points = _get_all_child_metering_points(metering_point_periods_df)
+
     metering_points_periods_for_wholesale_calculation = all_metering_points.join(
         production_and_consumption_metering_points,
         production_and_consumption_metering_points[mp]
@@ -44,7 +52,8 @@ def get_metering_points_and_child_metering_points(
         ],  # parent_metering_point_id is always null on child metering points
         "left",
     )
-    metering_points_periods_for_wholesale_calculation.select(
+
+    return metering_points_periods_for_wholesale_calculation.select(
         all_metering_points[Colname.metering_point_id],
         all_metering_points[Colname.metering_point_type],
         all_metering_points[Colname.calculation_type],
@@ -54,14 +63,16 @@ def get_metering_points_and_child_metering_points(
         all_metering_points[Colname.from_grid_area],
         all_metering_points[Colname.to_grid_area],
         all_metering_points[Colname.parent_metering_point_id],
-        production_and_consumption_metering_points[es].alias(
+        f.coalesce(
+            all_metering_points[Colname.energy_supplier_id],
+            production_and_consumption_metering_points[es],
+        ).alias(
             Colname.energy_supplier_id
         ),  # energy_supplier_id is always null on child metering points
         all_metering_points[Colname.balance_responsible_id],
         all_metering_points[Colname.from_date],
         all_metering_points[Colname.to_date],
     )
-    return metering_points_periods_for_wholesale_calculation
 
 
 def _get_production_and_consumption_metering_points(
