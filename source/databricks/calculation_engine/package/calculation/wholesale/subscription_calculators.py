@@ -102,6 +102,7 @@ def _calculate_charge_count_and_amount(
         Colname.grid_area,
         Colname.energy_supplier_id,
         Colname.charge_time,
+        Colname.metering_point_type,
     ).agg(
         f.sum(Colname.charge_quantity).alias(Colname.charge_count),
         f.sum(

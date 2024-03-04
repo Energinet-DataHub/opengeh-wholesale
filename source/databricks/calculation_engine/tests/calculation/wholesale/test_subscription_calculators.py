@@ -43,6 +43,7 @@ class DefaultValues:
     CHARGE_QUANTITY = 1
     ENERGY_SUPPLIER_ID = "1234567890123"
     METERING_POINT_ID = "123456789012345678901234567"
+    METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
     QUANTITY = Decimal("1.005")
     QUALITY = QuantityQuality.CALCULATED
     CALCULATION_PERIOD_START = datetime(2020, 1, 31, 23, 0)
@@ -60,6 +61,7 @@ def _create_subscription_row(
     charge_price: Decimal | None = DefaultValues.CHARGE_PRICE,
     charge_quantity: int | None = DefaultValues.CHARGE_QUANTITY,
     energy_supplier_id: str = DefaultValues.ENERGY_SUPPLIER_ID,
+    metering_point_type: MeteringPointType = DefaultValues.METERING_POINT_TYPE,
     metering_point_id: str = DefaultValues.METERING_POINT_ID,
     grid_area: str = DefaultValues.GRID_AREA,
     quality: QuantityQuality = DefaultValues.QUALITY,
@@ -74,7 +76,7 @@ def _create_subscription_row(
         Colname.charge_price: charge_price,
         Colname.charge_tax: False,
         Colname.charge_quantity: charge_quantity,
-        Colname.metering_point_type: MeteringPointType.CONSUMPTION.value,
+        Colname.metering_point_type: metering_point_type.value,
         Colname.settlement_method: SettlementMethod.FLEX.value,
         Colname.metering_point_id: metering_point_id,
         Colname.grid_area: grid_area,
@@ -92,6 +94,14 @@ def _create_default_subscription_charges(spark: SparkSession) -> DataFrame:
         ],
         schema=prepared_subscriptions_schema,
     )
+
+
+def _get_all_wholesale_metering_point_types() -> list[MeteringPointType]:
+    return [
+        metering_point_type
+        for metering_point_type in MeteringPointType
+        if metering_point_type != MeteringPointType.EXCHANGE
+    ]
 
 
 class TestWhenValidInput:
@@ -335,13 +345,11 @@ class TestWhenMultipleMeteringPoints:
         spark: SparkSession,
     ) -> None:
         # Arrange
-        metering_point_id_1 = "1"
-        metering_point_id_2 = "2"
+        all_metering_point_types = _get_all_wholesale_metering_point_types()
+
         subscription_rows = [
-            _create_subscription_row(
-                metering_point_type=MeteringPointType.CONSUMPTION.value
-            ),
-            _create_subscription_row(metering_point_id=metering_point_id_2),
+            _create_subscription_row(metering_point_type=metering_point_type)
+            for metering_point_type in all_metering_point_types
         ]
         subscription_charges = spark.createDataFrame(
             subscription_rows, schema=prepared_subscriptions_schema
@@ -356,12 +364,15 @@ class TestWhenMultipleMeteringPoints:
         )
 
         # Assert
-        assert actual.count() == 2
-        actual_metering_point_ids = [
-            row[Colname.metering_point_id] for row in actual.collect()
+        expected = [
+            metering_point_type.value
+            for metering_point_type in all_metering_point_types
         ]
-        assert metering_point_id_1 in actual_metering_point_ids
-        assert metering_point_id_2 in actual_metering_point_ids
+        assert actual.count() == len(expected)
+        actual_metering_point_types = [
+            row[Colname.metering_point_type] for row in actual.collect()
+        ]
+        assert set(actual_metering_point_types) == set(expected)
 
 
 class TestWhenCalculationPeriodIsNotFullMonth:
