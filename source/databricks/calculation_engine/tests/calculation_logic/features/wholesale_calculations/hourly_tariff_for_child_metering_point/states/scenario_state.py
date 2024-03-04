@@ -49,7 +49,7 @@ def get_expected(*args) -> DataFrame:  # type: ignore
     )
     df = df.withColumn(
         WholesaleResultColumnNames.price,
-        col(WholesaleResultColumnNames.price).cast(DecimalType(28, 3)),
+        col(WholesaleResultColumnNames.price).cast(DecimalType(18, 6)),
     )
     df = df.withColumn(
         WholesaleResultColumnNames.amount,
@@ -64,13 +64,16 @@ def get_expected(*args) -> DataFrame:  # type: ignore
         WholesaleResultColumnNames.is_tax,
         col(WholesaleResultColumnNames.is_tax).cast(BooleanType()),
     )
-    df = df.withColumn(Colname.settlement_method, lit("flex"))  # TODO AJW
 
     df = df.withColumn(
-        "quantity_qualities",
+        WholesaleResultColumnNames.quantity_qualities,
         f.split(
             f.regexp_replace(
-                f.regexp_replace(f.col("quantity_qualities"), r"[\[\]']", ""), " ", ""
+                f.regexp_replace(
+                    f.col(WholesaleResultColumnNames.quantity_qualities), r"[\[\]']", ""
+                ),
+                " ",
+                "",
             ),
             ",",
         ).cast(ArrayType(StringType())),
