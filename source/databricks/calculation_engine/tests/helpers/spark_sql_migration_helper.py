@@ -35,13 +35,17 @@ def migrate(
     spark: SparkSession,
     schema_prefix: str = "",
     table_prefix: str = "",
+    location: str = schema_migration_location,
 ) -> None:
-    configure_spark_sql_migration(spark, schema_prefix, table_prefix)
+    configure_spark_sql_migration(spark, schema_prefix, table_prefix, location)
     schema_migration_pipeline.migrate()
 
 
 def configure_spark_sql_migration(
-    spark: SparkSession, schema_prefix: str = "", table_prefix: str = ""
+    spark: SparkSession,
+    schema_prefix: str = "",
+    table_prefix: str = "",
+    location: str = schema_migration_location,
 ) -> None:
     migration_args = MigrationScriptArgs(
         data_storage_account_url="url",
@@ -53,9 +57,9 @@ def configure_spark_sql_migration(
 
     configuration = SparkSqlMigrationsConfiguration(
         migration_schema_name=schema_migration_schema_name,
-        migration_schema_location=schema_migration_location,
+        migration_schema_location=location,
         migration_table_name=schema_migration_table_name,
-        migration_table_location=schema_migration_location,
+        migration_table_location=location,
         migration_scripts_folder_path=c.MIGRATION_SCRIPTS_FOLDER_PATH,
         current_state_schemas_folder_path=c.CURRENT_STATE_SCHEMAS_FOLDER_PATH,
         current_state_tables_folder_path=c.CURRENT_STATE_TABLES_FOLDER_PATH,

@@ -241,13 +241,14 @@ def test__current_state_and_migration_scripts__should_give_same_result(
         sut.paths.get_container_url.__name__,
         return_value="storage_account",
     )
-    spark_helper.reset_spark_catalog(spark)
 
     # Act migration scripts
     migration_script_prefix = "migration_scripts"
     spark_sql_migration_helper.migrate(
         spark,
         schema_prefix=migration_script_prefix,
+        table_prefix=migration_script_prefix,
+        schema_migration_location="schema_migration_migration_scripts",
     )
 
     # Act current state scripts
@@ -255,6 +256,8 @@ def test__current_state_and_migration_scripts__should_give_same_result(
     spark_sql_migration_helper.migrate(
         spark,
         schema_prefix=current_state_prefix,
+        table_prefix=current_state_prefix,
+        schema_migration_location="schema_migration_current_state",
     )
 
     # Clean up DI
