@@ -29,9 +29,6 @@ def create(
     time_series_type: TimeSeriesType,
     aggregation_level: AggregationLevel,
 ) -> DataFrame:
-
-    energy_results.df.printSchema()
-
     df = _add_aggregation_level_and_time_series_type(
         energy_results.df, aggregation_level, time_series_type
     )

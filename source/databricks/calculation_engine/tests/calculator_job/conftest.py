@@ -54,6 +54,10 @@ def calculator_args_wholesale_fixing(
     args = calculator_args_balance_fixing
     args.calculation_id = C.executed_wholesale_calculation_id
     args.calculation_type = CalculationType.WHOLESALE_FIXING
+    args.calculation_period_start_datetime = datetime(2017, 12, 31, 23, 0, 0)
+    args.calculation_period_end_datetime = datetime(2018, 1, 31, 23, 0, 0)
+    args.calculation_execution_time_start = datetime(2018, 2, 1, 15, 0, 0)
+
     return args
 
 
