@@ -22,36 +22,10 @@ from package.constants import Colname
 
 
 @pytest.mark.parametrize(
-    "metering_point_type, expected_count",
-    [
-        (MeteringPointType.CONSUMPTION, 1),
-        (MeteringPointType.PRODUCTION, 1),
-        (MeteringPointType.EXCHANGE, 0),
-    ],
-)
-def test__filters_on_metering_point_type(
-    metering_point_type: MeteringPointType,
-    expected_count: int,
-    spark: SparkSession,
-):
-    # Arrange
-    row = factory.create_row(
-        metering_point_type=metering_point_type,
-    )
-    metering_point_periods = factory.create(spark, row)
-
-    # Act
-    actual = get_metering_points_and_child_metering_points(
-        metering_point_periods,
-    )
-
-    # Assert
-    assert actual.count() == expected_count
-
-
-@pytest.mark.parametrize(
     "metering_point_type",
     [
+        MeteringPointType.CONSUMPTION,
+        MeteringPointType.PRODUCTION,
         MeteringPointType.VE_PRODUCTION,
         MeteringPointType.NET_PRODUCTION,
         MeteringPointType.SUPPLY_TO_GRID,
@@ -66,7 +40,7 @@ def test__filters_on_metering_point_type(
         MeteringPointType.EFFECT_SETTLEMENT,
     ],
 )
-def test__filters_on_child_metering_point_type(
+def test__when_metering_point_type_is_not_exchange__returns_metering_point(
     metering_point_type: MeteringPointType,
     spark: SparkSession,
 ):
@@ -85,7 +59,25 @@ def test__filters_on_child_metering_point_type(
     assert actual.count() == 1
 
 
-def test__child_metering_point_get_energy_supplier_from_parent_metering_point(
+def test__when_metering_point_type_is_exchange__returns_metering_point(
+    spark: SparkSession,
+):
+    # Arrange
+    row = factory.create_row(
+        metering_point_type=MeteringPointType.EXCHANGE,
+    )
+    metering_point_periods = factory.create(spark, row)
+
+    # Act
+    actual = get_metering_points_and_child_metering_points(
+        metering_point_periods,
+    )
+
+    # Assert
+    assert actual.count() == 0
+
+
+def test__when_child_metering_point__get_energy_supplier_from_parent_metering_point(
     spark: SparkSession,
 ):
     # Arrange
