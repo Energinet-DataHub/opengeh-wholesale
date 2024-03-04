@@ -22,9 +22,8 @@ from package.container import Container
 from package.infrastructure import logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 
-logging_configuration.use_span("calculation.basis_data")
 
-
+@logging_configuration.use_span("calculation.write.basis_data")
 def write_basis_data(args: CalculatorArgs, basis_data: BasisDataContainer) -> None:
     _write_basis_data(args, basis_data)
 
