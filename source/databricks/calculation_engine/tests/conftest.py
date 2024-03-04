@@ -206,7 +206,7 @@ def migrations_executed(
     shutil.rmtree(calculation_output_path, ignore_errors=True)
     spark.sql(f"DROP DATABASE IF EXISTS {OUTPUT_DATABASE_NAME} CASCADE")
 
-    # # Execute all migrations
+    # Execute all migrations
     sql_migration_helper.migrate(spark)
 
 

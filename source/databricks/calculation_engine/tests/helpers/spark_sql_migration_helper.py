@@ -94,6 +94,9 @@ def updated_substitutions(
     _substitutions["{INPUT_DATABASE_NAME}"] = (
         schema_prefix + _substitutions["{INPUT_DATABASE_NAME}"]
     )
-    _substitutions["{TEST}"] = "--"
+
+    _substitutions["{OUTPUT_FOLDER}"] = (
+        schema_prefix + _substitutions["{OUTPUT_FOLDER}"]
+    )
 
     return _substitutions
