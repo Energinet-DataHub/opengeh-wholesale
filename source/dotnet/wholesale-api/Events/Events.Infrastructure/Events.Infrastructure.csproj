@@ -4,7 +4,7 @@
     <RootNamespace>Energinet.DataHub.Wholesale.Events.Infrastructure</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.17.2" />
+    <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.17.3" />
     <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.17.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.2" />
     <PackageReference Include="NodaTime.Serialization.Protobuf" Version="2.0.1" />
