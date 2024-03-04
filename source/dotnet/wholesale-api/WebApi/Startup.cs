@@ -14,7 +14,6 @@
 
 using System.Text.Json.Serialization;
 using Asp.Versioning;
-using Asp.Versioning.ApiExplorer;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
@@ -111,20 +110,7 @@ public class Startup
             app.UseDeveloperExceptionPage();
         }
 
-        app.UseSwagger();
-        app.UseSwaggerUI(options =>
-        {
-            var apiVersionDescriptionProvider = app.ApplicationServices.GetRequiredService<IApiVersionDescriptionProvider>();
-
-            // Reverse the APIs in order to make the latest API versions appear first in select box in UI
-            foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions.Reverse())
-            {
-                // GroupName is the version (e.g. 'v1') as configured using the AddApiExplorer and the 'GroupNameFormat' property.
-                options.SwaggerEndpoint(
-                    url: $"/swagger/{description.GroupName}/swagger.json",
-                    name: description.GroupName.ToUpperInvariant());
-            }
-        });
+        app.UseSwaggerForWebApplication();
 
         app.UseHttpsRedirection();
         app.UseAuthentication();

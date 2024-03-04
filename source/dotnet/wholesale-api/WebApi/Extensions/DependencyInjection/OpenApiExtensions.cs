@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Reflection;
+using Asp.Versioning.ApiExplorer;
 using Energinet.DataHub.Wholesale.WebApi.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
@@ -64,5 +65,29 @@ public static class OpenApiExtensions
         });
 
         return services;
+    }
+
+    /// <summary>
+    /// Register services necessary for enabling an ASP.NET Core app
+    /// to generate Open API specifications and work with Swagger UI.
+    /// </summary>
+    public static IApplicationBuilder UseSwaggerForWebApplication(this IApplicationBuilder app)
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI(options =>
+        {
+            var apiVersionDescriptionProvider = app.ApplicationServices.GetRequiredService<IApiVersionDescriptionProvider>();
+
+            // Reverse the APIs in order to make the latest API versions appear first in select box in UI
+            foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions.Reverse())
+            {
+                // GroupName is the version (e.g. 'v1') as configured using the AddApiExplorer and the 'GroupNameFormat' property.
+                options.SwaggerEndpoint(
+                    url: $"/swagger/{description.GroupName}/swagger.json",
+                    name: description.GroupName.ToUpperInvariant());
+            }
+        });
+
+        return app;
     }
 }
