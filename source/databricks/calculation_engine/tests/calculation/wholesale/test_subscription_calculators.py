@@ -23,7 +23,7 @@ from package.calculation.wholesale.schemas.prepared_subscriptions_schema import 
     prepared_subscriptions_schema,
 )
 from package.calculation.wholesale.subscription_calculators import (
-    calculate_daily_subscription_amount,
+    calculate_subscription_amount,
 )
 from package.codelists import (
     MeteringPointType,
@@ -58,7 +58,7 @@ def _create_subscription_row(
     charge_owner: str = DefaultValues.CHARGE_OWNER,
     charge_time: datetime = DefaultValues.CHARGE_TIME_HOUR_0,
     charge_price: Decimal | None = DefaultValues.CHARGE_PRICE,
-    charge_quantity: int = DefaultValues.CHARGE_QUANTITY,
+    charge_quantity: int | None = DefaultValues.CHARGE_QUANTITY,
     energy_supplier_id: str = DefaultValues.ENERGY_SUPPLIER_ID,
     metering_point_id: str = DefaultValues.METERING_POINT_ID,
     grid_area: str = DefaultValues.GRID_AREA,
@@ -127,7 +127,7 @@ class TestWhenValidInput:
         )
 
         # Act
-        actual = calculate_daily_subscription_amount(
+        actual = calculate_subscription_amount(
             subscription_charges,
             period_start,
             period_end,
@@ -135,6 +135,7 @@ class TestWhenValidInput:
         )
 
         # Assert
+        assert actual.count() == 1
         assert actual.collect()[0][Colname.charge_price] == expected_output_charge_price
 
     def test__returns_expected_charge_count(
@@ -154,7 +155,7 @@ class TestWhenValidInput:
         )
 
         # Act
-        actual = calculate_daily_subscription_amount(
+        actual = calculate_subscription_amount(
             subscription_charges,
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
@@ -193,7 +194,7 @@ class TestWhenValidInput:
         )
 
         # Act
-        actual = calculate_daily_subscription_amount(
+        actual = calculate_subscription_amount(
             subscription_charges,
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
@@ -243,6 +244,91 @@ class TestWhenValidInput:
         assert actual.collect()[0][Colname.total_amount] == expected_amount
 
 
+class TestWhenMissingSomeInputChargePrice:
+    def test__returns_expected_result(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        charge_quantity_1 = 1
+        charge_quantity_2 = 2
+        charge_price = Decimal("1.123456")
+        expected_charge_count = charge_quantity_1 + charge_quantity_2
+        expected_charge_price = round(charge_price / DefaultValues.DAYS_IN_MONTH, 6)
+        expected_charge_amount = charge_quantity_2 * expected_charge_price
+
+        prepared_subscriptions_rows = [
+            _create_subscription_row(
+                metering_point_id="1",
+                charge_quantity=charge_quantity_1,
+                charge_price=None,
+            ),
+            _create_subscription_row(
+                metering_point_id="2",
+                charge_quantity=charge_quantity_2,
+                charge_price=charge_price,
+            ),
+        ]
+        prepared_subscriptions = spark.createDataFrame(
+            prepared_subscriptions_rows, schema=prepared_subscriptions_schema
+        )
+
+        # Act
+        actual = calculate_subscription_amount(
+            prepared_subscriptions,
+            DefaultValues.CALCULATION_PERIOD_START,
+            DefaultValues.CALCULATION_PERIOD_END,
+            DefaultValues.TIME_ZONE,
+        )
+
+        # Assert
+        assert actual.count() == 1
+        assert actual.collect()[0][Colname.charge_count] == expected_charge_count
+        assert actual.collect()[0][Colname.charge_price] == expected_charge_price
+        assert actual.collect()[0][Colname.total_amount] == expected_charge_amount
+
+
+class TestWhenMissingAllInputChargePrices:
+    def test__returns_expected_result(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        charge_quantity_1 = 1
+        charge_quantity_2 = 2
+        expected_charge_count = charge_quantity_1 + charge_quantity_2
+
+        prepared_subscriptions_rows = [
+            _create_subscription_row(
+                metering_point_id="1",
+                charge_quantity=charge_quantity_1,
+                charge_price=None,
+            ),
+            _create_subscription_row(
+                metering_point_id="2",
+                charge_quantity=charge_quantity_2,
+                charge_price=None,
+            ),
+        ]
+        prepared_subscriptions = spark.createDataFrame(
+            prepared_subscriptions_rows, schema=prepared_subscriptions_schema
+        )
+
+        # Act
+        actual = calculate_subscription_amount(
+            prepared_subscriptions,
+            DefaultValues.CALCULATION_PERIOD_START,
+            DefaultValues.CALCULATION_PERIOD_END,
+            DefaultValues.TIME_ZONE,
+        )
+
+        # Assert
+        assert actual.count() == 1
+        assert actual.collect()[0][Colname.charge_count] == expected_charge_count
+        assert actual.collect()[0][Colname.charge_price] is None
+        assert actual.collect()[0][Colname.total_amount] is None
+
+
 class TestWhenMultipleMeteringPointsPerChargeTime:
     def test__returns_sum_charge_quantity_per_charge_time(
         self,
@@ -283,7 +369,7 @@ class TestWhenMultipleMeteringPointsPerChargeTime:
         )
 
         # Act
-        actual = calculate_daily_subscription_amount(
+        actual = calculate_subscription_amount(
             subscription_charges,
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
@@ -292,6 +378,7 @@ class TestWhenMultipleMeteringPointsPerChargeTime:
 
         # Assert
         actual_rows = actual.orderBy(Colname.charge_time).collect()
+        assert len(actual_rows) == 2
         assert actual_rows[0][Colname.charge_count] == expected_charge_count_1
         assert actual_rows[1][Colname.charge_count] == expected_charge_count_2
 
@@ -329,7 +416,7 @@ class TestWhenCalculationPeriodIsNotFullMonth:
 
         # Act & Assert
         with pytest.raises(Exception):
-            calculate_daily_subscription_amount(
+            calculate_subscription_amount(
                 subscription_charges,
                 period_start,
                 period_end,

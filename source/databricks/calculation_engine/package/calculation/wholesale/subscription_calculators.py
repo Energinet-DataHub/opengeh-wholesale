@@ -16,23 +16,26 @@ from zoneinfo import ZoneInfo
 
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
+
 from package.constants import Colname
 
 
-def calculate_daily_subscription_amount(
-    subscription_charges: DataFrame,
+def calculate_subscription_amount(
+    prepared_subscriptions: DataFrame,
     calculation_period_start: datetime,
     calculation_period_end: datetime,
     time_zone: str,
 ) -> DataFrame:
-    subscription_per_day = _calculate_price_per_day(
-        subscription_charges,
+    subscriptions_with_daily_price = _calculate_price_per_day(
+        prepared_subscriptions,
         calculation_period_start,
         calculation_period_end,
         time_zone,
     )
 
-    subscription_result = _calculate_charge_count_and_amount(subscription_per_day)
+    subscription_result = _calculate_charge_count_and_amount(
+        subscriptions_with_daily_price
+    )
 
     subscription_result = subscription_result.withColumn(
         Colname.charge_price, f.round(Colname.charge_price, 6)
@@ -42,7 +45,7 @@ def calculate_daily_subscription_amount(
 
 
 def _calculate_price_per_day(
-    charges_per_day_flex_consumption: DataFrame,
+    prepared_subscriptions: DataFrame,
     calculation_period_start: datetime,
     calculation_period_end: datetime,
     time_zone: str,
@@ -51,10 +54,11 @@ def _calculate_price_per_day(
         calculation_period_start, calculation_period_end, time_zone
     )
 
-    charges_per_day = charges_per_day_flex_consumption.withColumn(
+    subscriptions_with_daily_price = prepared_subscriptions.withColumn(
         Colname.charge_price, (f.col(Colname.charge_price) / f.lit(days_in_month))
     )
-    return charges_per_day
+
+    return subscriptions_with_daily_price
 
 
 def _get_days_in_month(
@@ -89,21 +93,24 @@ def _is_full_month_and_at_midnight(
 
 
 def _calculate_charge_count_and_amount(
-    charges_per_day: DataFrame,
+    subscriptions_with_daily_price: DataFrame,
 ) -> DataFrame:
-    df = charges_per_day.groupBy(
+    df = subscriptions_with_daily_price.groupBy(
         Colname.charge_key,
         Colname.charge_type,
         Colname.charge_owner,
-        Colname.charge_price,
         Colname.grid_area,
         Colname.energy_supplier_id,
         Colname.charge_time,
     ).agg(
         f.sum(Colname.charge_quantity).alias(Colname.charge_count),
-        f.sum(f.col(Colname.charge_quantity) * f.col(Colname.charge_price)).alias(
-            Colname.total_amount
-        ),
+        f.sum(
+            f.when(
+                f.col(Colname.charge_price).isNotNull(),
+                f.col(Colname.charge_quantity) * f.col(Colname.charge_price),
+            )
+        ).alias(Colname.total_amount),
+        f.first(Colname.charge_price, ignorenulls=True).alias(Colname.charge_price),
     )
 
     return df
