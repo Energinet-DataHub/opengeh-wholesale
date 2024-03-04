@@ -203,6 +203,45 @@ class TestWhenValidInput:
         # Assert
         assert actual.collect()[0][Colname.total_amount] == expected_amount
 
+    def test__returns_result_per_metering_point_type(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        quantity_1 = 1
+        quantity_2 = 2
+        price = Decimal("3.0")
+        price_per_day = price / DefaultValues.DAYS_IN_MONTH
+        expected_amount_not_rounded = (quantity_1 + quantity_2) * price_per_day
+        expected_amount = round(expected_amount_not_rounded, 6)
+
+        subscription_rows = [
+            _create_subscription_row(
+                metering_point_id="1",
+                charge_quantity=quantity_1,
+                charge_price=price,
+            ),
+            _create_subscription_row(
+                metering_point_id="2",
+                charge_quantity=quantity_2,
+                charge_price=price,
+            ),
+        ]
+        subscription_charges = spark.createDataFrame(
+            subscription_rows, schema=prepared_subscriptions_schema
+        )
+
+        # Act
+        actual = calculate_daily_subscription_amount(
+            subscription_charges,
+            DefaultValues.CALCULATION_PERIOD_START,
+            DefaultValues.CALCULATION_PERIOD_END,
+            DefaultValues.TIME_ZONE,
+        )
+
+        # Assert
+        assert actual.collect()[0][Colname.total_amount] == expected_amount
+
 
 class TestWhenMultipleMeteringPointsPerChargeTime:
     def test__returns_sum_charge_quantity_per_charge_time(
