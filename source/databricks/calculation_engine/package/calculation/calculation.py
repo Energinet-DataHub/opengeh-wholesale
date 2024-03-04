@@ -11,15 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import pyspark.sql.functions as f
-from pyspark.sql import DataFrame
 
 from package.codelists import (
     ChargeResolution,
-    MeteringPointType,
     CalculationType,
 )
-from package.constants import Colname
 from package.infrastructure import logging_configuration
 from .CalculationResults import (
     CalculationResultsContainer,
@@ -31,6 +27,7 @@ from .output.basis_data_results import write_basis_data
 from .output.energy_results import write_energy_results
 from .output.wholesale_results import write_wholesale_results
 from .preparation import PreparedDataReader
+from .preparation.transformations import get_metering_points_and_child_metering_points
 from .wholesale import wholesale_calculation
 
 
@@ -84,15 +81,15 @@ def _execute(
             args.calculation_period_start_datetime, args.calculation_period_end_datetime
         )
 
-        metering_points_periods_for_wholesale_calculation_df = (
-            _get_production_and_consumption_metering_points(metering_point_periods_df)
+        metering_points_periods_for_wholesale_calculation = (
+            get_metering_points_and_child_metering_points(metering_point_periods_df)
         )
 
         charges_link_metering_point_periods = (
             prepared_data_reader.get_charge_link_metering_point_periods(
                 args.calculation_period_start_datetime,
                 args.calculation_period_end_datetime,
-                metering_points_periods_for_wholesale_calculation_df,
+                metering_points_periods_for_wholesale_calculation,
             )
         )
 
@@ -126,15 +123,6 @@ def _execute(
     )
 
     return results
-
-
-def _get_production_and_consumption_metering_points(
-    metering_points_periods_df: DataFrame,
-) -> DataFrame:
-    return metering_points_periods_df.filter(
-        (f.col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
-        | (f.col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
-    )
 
 
 def _write_results(args: CalculatorArgs, results: CalculationResultsContainer) -> None:
