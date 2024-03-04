@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Reflection;
 using System.Text.Json.Serialization;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
@@ -29,9 +28,7 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.WebApi.Extensions.DependencyInjection;
-using Energinet.DataHub.Wholesale.WebApi.Extensions.Options;
 using Microsoft.Extensions.Azure;
-using Microsoft.OpenApi.Models;
 
 namespace Energinet.DataHub.Wholesale.WebApi;
 
@@ -65,54 +62,10 @@ public class Startup
             .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 
         // Open API generation
-        // The following article is a good read and shows many of the pieces that we have used: https://medium.com/@mo.esmp/api-versioning-and-swagger-in-asp-net-core-7-0-fe45f67d8419
-        // TODO: EDI does this differently but the following has some similar parts: https://learn.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-8.0&tabs=visual-studio#xml-comments
-        services.ConfigureOptions<ConfigureSwaggerOptions>();
-        services.AddSwaggerGen(options =>
-        {
-            options.SupportNonNullableReferenceTypes();
-
-            // Set the comments path for the Swagger JSON and UI.
-            // See: https://learn.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-8.0&tabs=visual-studio#xml-comments
-            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-            options.IncludeXmlComments(xmlPath);
-
-            var securitySchema = new OpenApiSecurityScheme
-            {
-                Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-                Name = "Authorization",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.Http,
-                Scheme = "bearer",
-                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer", },
-            };
-            options.AddSecurityDefinition("Bearer", securitySchema);
-
-            // TODO: EDI does this differently and so does: https://learn.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-8.0&tabs=visual-studio#xml-comments
-            var securityRequirement = new OpenApiSecurityRequirement { { securitySchema, new[] { "Bearer" } }, };
-            options.AddSecurityRequirement(securityRequirement);
-
-            // TODO: Wholesale specific
-            // Support binary content, e.g. for Settlement download
-            options.OperationFilter<BinaryContentFilter>();
-        });
+        services.AddSwaggerForWebApplication();
 
         // API versioning
-        services
-            .AddApiVersioning(options =>
-            {
-                // If client doesn't specify version, we assume the following default
-                options.DefaultApiVersion = new ApiVersion(3, 0);
-                options.AssumeDefaultVersionWhenUnspecified = true;
-                options.ReportApiVersions = true;
-            })
-            .AddApiExplorer(options =>
-            {
-                // API version format strings: https://github.com/dotnet/aspnet-api-versioning/wiki/Version-Format#custom-api-version-format-strings
-                options.GroupNameFormat = "'v'VVV";
-                options.SubstituteApiVersionInUrl = true;
-            });
+        services.AddApiVersioningForWebApplication(new ApiVersion(3, 0));
 
         // Authentication/authorization
         services
