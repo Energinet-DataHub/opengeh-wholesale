@@ -29,7 +29,4 @@ from .metering_point_time_series import get_metering_point_time_series
 from .get_charge_link_metering_point_periods import (
     get_charge_link_metering_point_periods,
 )
-from .get_metering_points_and_child_metering_points import (
-    get_metering_points_and_child_metering_points,
-)
 from .time_series_points import get_time_series_points
