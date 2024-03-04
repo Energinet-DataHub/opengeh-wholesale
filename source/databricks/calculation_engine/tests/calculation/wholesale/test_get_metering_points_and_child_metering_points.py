@@ -24,22 +24,7 @@ from package.constants import Colname
 
 @pytest.mark.parametrize(
     "metering_point_type",
-    [
-        MeteringPointType.CONSUMPTION,
-        MeteringPointType.PRODUCTION,
-        MeteringPointType.VE_PRODUCTION,
-        MeteringPointType.NET_PRODUCTION,
-        MeteringPointType.SUPPLY_TO_GRID,
-        MeteringPointType.CONSUMPTION_FROM_GRID,
-        MeteringPointType.WHOLESALE_SERVICES_INFORMATION,
-        MeteringPointType.OWN_PRODUCTION,
-        MeteringPointType.NET_FROM_GRID,
-        MeteringPointType.NET_TO_GRID,
-        MeteringPointType.TOTAL_CONSUMPTION,
-        MeteringPointType.ELECTRICAL_HEATING,
-        MeteringPointType.NET_CONSUMPTION,
-        MeteringPointType.EFFECT_SETTLEMENT,
-    ],
+    [t for t in MeteringPointType if t != MeteringPointType.EXCHANGE],
 )
 def test__when_metering_point_type_is_not_exchange__returns_metering_point(
     metering_point_type: MeteringPointType,
