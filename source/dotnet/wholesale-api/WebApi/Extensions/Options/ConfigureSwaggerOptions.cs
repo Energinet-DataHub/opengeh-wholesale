@@ -17,7 +17,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Energinet.DataHub.Wholesale.WebApi;
+namespace Energinet.DataHub.Wholesale.WebApi.Extensions.Options;
 
 /// <summary>
 /// Code origin <see href="https://blog.christian-schou.dk/how-to-use-api-versioning-in-net-core-web-api/" />.
@@ -73,9 +73,7 @@ public class ConfigureSwaggerOptions
         };
 
         if (description.IsDeprecated)
-        {
             info.Description += " This API version has been deprecated. Please use one of the new APIs available from the explorer.";
-        }
 
         return info;
     }
