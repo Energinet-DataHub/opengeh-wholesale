@@ -17,7 +17,6 @@ from pyspark.sql import DataFrame
 
 import package.calculation.output.wholesale_storage_model_factory as factory
 import package.calculation.wholesale.tariff_calculators as tariffs
-from package.common import assert_schema
 from ..CalculationResults import WholesaleResultsContainer
 from ..calculator_args import CalculatorArgs
 from ..preparation.prepared_tariffs import PreparedTariffs
