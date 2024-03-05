@@ -14,6 +14,9 @@
 
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Publisher;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks.ServiceBus;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
@@ -61,7 +64,7 @@ public static class EventsExtensions
         return services;
     }
 
-    public static IServiceCollection AddIntegrationEventPublishing(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddIntegrationEventsPublishing(this IServiceCollection services, IConfiguration configuration)
     {
         services
             .AddScoped<IEnergyResultProducedV2Factory, EnergyResultProducedV2Factory>()
@@ -73,14 +76,29 @@ public static class EventsExtensions
             .AddScoped<IEnergyResultEventProvider, EnergyResultEventProvider>()
             .AddScoped<IWholesaleResultEventProvider, WholesaleResultEventProvider>();
 
-        var serviceBusOptions = configuration.Get<ServiceBusOptions>()!;
+        var serviceBusNamespaceOptions = configuration
+            .GetRequiredSection(ServiceBusNamespaceOptions.SectionName)
+            .Get<ServiceBusNamespaceOptions>();
+        var integrationEventsOptions = configuration
+            .GetRequiredSection(IntegrationEventsOptions.SectionName)
+            .Get<IntegrationEventsOptions>();
+
         services.Configure<PublisherOptions>(options =>
         {
-            options.ServiceBusConnectionString = serviceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING;
-            options.TopicName = serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME;
+            options.ServiceBusConnectionString = serviceBusNamespaceOptions!.ConnectionString;
+            options.TopicName = integrationEventsOptions!.TopicName;
             options.TransportType = Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpWebSockets;
         });
         services.AddPublisher<IntegrationEventProvider>();
+
+        // Health checks
+        services.AddHealthChecks()
+            // Must use a listener connection string
+            .AddAzureServiceBusSubscriptionUsingWebSockets(
+                serviceBusNamespaceOptions!.ConnectionString,
+                integrationEventsOptions!.TopicName,
+                integrationEventsOptions.SubscriptionName,
+                name: HealthCheckNames.IntegrationEventsTopicSubscription);
 
         return services;
     }
