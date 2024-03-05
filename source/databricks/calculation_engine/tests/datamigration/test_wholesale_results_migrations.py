@@ -19,7 +19,7 @@ from pyspark.sql.functions import array, col, lit
 import pytest
 import uuid
 
-from helpers.data_frame_utils import set_column
+from tests.helpers.data_frame_utils import set_column
 from package.codelists import (
     AmountType,
     ChargeQuality,
@@ -276,6 +276,24 @@ def test__migrated_table_does_not_round_valid_decimal(
         f"{OUTPUT_DATABASE_NAME}.{WHOLESALE_RESULT_TABLE_NAME}"
     ).where(col(WholesaleResultColumnNames.calculation_id) == calculation_id)
     assert actual_df.collect()[0].quantity == quantity
+
+
+def test__migrated_table__accepts_quantity_qualities_equals_none_for_subscriptions(
+    spark: SparkSession, migrations_executed: None
+) -> None:
+    # Arrange
+    result_df = _create_df(spark)
+    result_df = result_df.withColumn(
+        WholesaleResultColumnNames.quantity_qualities, array(lit(None))
+    )
+    result_df = result_df.withColumn(
+        WholesaleResultColumnNames.charge_type, lit(ChargeType.SUBSCRIPTION.value)
+    )
+
+    # Act and assert: Expectation is that no exception is raised
+    result_df.write.format("delta").option("mergeSchema", "false").insertInto(
+        f"{OUTPUT_DATABASE_NAME}.{WHOLESALE_RESULT_TABLE_NAME}"
+    )
 
 
 def test__wholesale_results_table__is_not_managed(

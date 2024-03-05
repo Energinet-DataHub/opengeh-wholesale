@@ -47,8 +47,8 @@ ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
 GO
 ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
     ADD CONSTRAINT quantity_qualities_chk
-    CHECK (array_size(array_except(quantity_qualities, array('missing', 'calculated', 'measured', 'estimated'))) = 0
-           AND array_size(quantity_qualities) > 0)
+    CHECK ((quantity_qualities IS NULL) OR (array_size(array_except(quantity_qualities, array('missing', 'calculated', 'measured', 'estimated'))) = 0
+           AND array_size(quantity_qualities) > 0))
 GO
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
