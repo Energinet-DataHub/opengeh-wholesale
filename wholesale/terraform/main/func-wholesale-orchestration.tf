@@ -43,12 +43,9 @@ module "func_wholesale_orchestration" {
     STORAGE_ACCOUNT_URI    = local.STORAGE_ACCOUNT_URI
 
     # Service Bus
-    SERVICE_BUS_SEND_CONNECTION_STRING       = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-send-connection-string)"
-    SERVICE_BUS_TRANCEIVER_CONNECTION_STRING = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-transceiver-connection-string)"
-    INTEGRATIONEVENTS_TOPIC_NAME             = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-shres-integrationevent-received-name)"
-    INTEGRATIONEVENTS_SUBSCRIPTION_NAME      = module.sbtsub_wholesale_integration_event_listener.name
-    EDI_INBOX_MESSAGE_QUEUE_NAME             = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbq-edi-inbox-messagequeue-name)"
-    WHOLESALE_INBOX_MESSAGE_QUEUE_NAME       = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbq-wholesale-inbox-messagequeue-name)"
+    "ServiceBus__ConnectionString"        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-transceiver-connection-string)"
+    "IntegrationEvents__TopicName"        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-shres-integrationevent-received-name)"
+    "IntegrationEvents__SubscriptionName" = module.sbtsub_wholesale_integration_event_listener.name
 
     # Databricks
     WorkspaceToken = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-workspace-token)"
