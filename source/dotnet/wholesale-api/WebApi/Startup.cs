@@ -14,7 +14,6 @@
 
 using System.Text.Json.Serialization;
 using Asp.Versioning;
-using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
