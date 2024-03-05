@@ -15,12 +15,12 @@ from pyspark.sql import SparkSession
 from unittest.mock import Mock
 from pyspark.sql.types import StructType, StructField
 
-import pytest
+import tests.helpers.mock_helper as mock_helper
 import tests.helpers.spark_helper as spark_helper
 import tests.helpers.spark_sql_migration_helper as spark_sql_migration_helper
-import package.datamigration.schema_config as schema_config
 import package.datamigration.migration as sut
-import tests.helpers.mock_helper as mock_helper
+import package.datamigration.schema_config as schema_config
+import spark_sql_migrations.schema_migration_pipeline as schema_migration_pipeline
 
 
 def _diff(schema1: StructType, schema2: StructType) -> dict[str, set[StructField]]:
@@ -213,7 +213,6 @@ def test__schema_config__when_schema_and_table_script_files_are_executed(
             assert actual_table.schema == table.schema
 
 
-@pytest.mark.last
 def test__current_state_and_migration_scripts__should_give_same_result(
     mocker: Mock, spark: SparkSession
 ) -> None:
@@ -242,21 +241,16 @@ def test__current_state_and_migration_scripts__should_give_same_result(
         return_value="storage_account",
     )
 
-    spark_helper.drop_schema_migration_table(spark)
-
     # Act migration scripts
-    migration_script_prefix = "migration_scripts"
-    spark_sql_migration_helper.migrate(
-        spark,
-        schema_prefix=migration_script_prefix,
-    )
+    spark_sql_migration_helper.migrate(spark)
 
     # Act current state scripts
     current_state_prefix = "current_state"
-    spark_sql_migration_helper.migrate(
+    spark_sql_migration_helper.configure_spark_sql_migration(
         spark,
         schema_prefix=current_state_prefix,
     )
+    schema_migration_pipeline._migrate(0)
 
     # Clean up DI
     spark_sql_migration_helper.configure_spark_sql_migration(spark)
@@ -271,9 +265,7 @@ def test__current_state_and_migration_scripts__should_give_same_result(
 
     for schema in schema_config.schema_config:
         for table in schema.tables:
-            migration_script_table_name = (
-                f"{migration_script_prefix}{schema.name}.{table.name}"
-            )
+            migration_script_table_name = f"{schema.name}.{table.name}"
             current_state_script_tag = (
                 f"{current_state_prefix}{schema.name}.{table.name}"
             )
