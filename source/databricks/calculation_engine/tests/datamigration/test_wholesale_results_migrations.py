@@ -89,7 +89,6 @@ def _create_df(spark: SparkSession) -> DataFrame:
         (WholesaleResultColumnNames.quantity, None),
         (WholesaleResultColumnNames.quantity_unit, None),
         (WholesaleResultColumnNames.quantity_unit, "foo"),
-        (WholesaleResultColumnNames.quantity_qualities, None),
         (WholesaleResultColumnNames.quantity_qualities, []),
         (WholesaleResultColumnNames.quantity_qualities, ["foo"]),
         (WholesaleResultColumnNames.time, None),
@@ -157,6 +156,7 @@ actor_eic = "1234567890123456"
         (WholesaleResultColumnNames.quantity, min_18_3_decimal),
         (WholesaleResultColumnNames.quantity_unit, "kWh"),
         (WholesaleResultColumnNames.quantity_qualities, ["missing", "estimated"]),
+        (WholesaleResultColumnNames.quantity_qualities, None),
         (WholesaleResultColumnNames.time, datetime(2020, 1, 1, 0, 0)),
         (WholesaleResultColumnNames.resolution, "P1D"),
         (WholesaleResultColumnNames.metering_point_type, None),
@@ -276,24 +276,6 @@ def test__migrated_table_does_not_round_valid_decimal(
         f"{OUTPUT_DATABASE_NAME}.{WHOLESALE_RESULT_TABLE_NAME}"
     ).where(col(WholesaleResultColumnNames.calculation_id) == calculation_id)
     assert actual_df.collect()[0].quantity == quantity
-
-
-def test__migrated_table__accepts_quantity_qualities_equals_none_for_subscriptions(
-    spark: SparkSession, migrations_executed: None
-) -> None:
-    # Arrange
-    result_df = _create_df(spark)
-    result_df = result_df.withColumn(
-        WholesaleResultColumnNames.quantity_qualities, array(lit(None))
-    )
-    result_df = result_df.withColumn(
-        WholesaleResultColumnNames.charge_type, lit(ChargeType.SUBSCRIPTION.value)
-    )
-
-    # Act and assert: Expectation is that no exception is raised
-    result_df.write.format("delta").option("mergeSchema", "false").insertInto(
-        f"{OUTPUT_DATABASE_NAME}.{WHOLESALE_RESULT_TABLE_NAME}"
-    )
 
 
 def test__wholesale_results_table__is_not_managed(
