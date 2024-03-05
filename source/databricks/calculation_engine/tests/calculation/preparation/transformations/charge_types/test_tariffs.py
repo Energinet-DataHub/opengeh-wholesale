@@ -20,6 +20,7 @@ import package.codelists as e
 
 from pyspark.sql import SparkSession
 
+from package.calculation.preparation.prepared_tariffs import prepared_tariffs_schema
 from package.calculation.preparation.transformations import (
     get_prepared_tariffs,
 )
