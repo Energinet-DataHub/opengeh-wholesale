@@ -25,7 +25,7 @@ from ...codelists import AmountType
 from ...infrastructure import logging_configuration
 
 
-@logging_configuration.use_span("calculation.wholesale")
+@logging_configuration.use_span("calculation.wholesale.execute")
 def execute(
     args: CalculatorArgs,
     tariffs_hourly_df: DataFrame,
@@ -45,6 +45,7 @@ def execute(
     return results
 
 
+@logging_configuration.use_span("calculate_tariff_charges")
 def _calculate_tariff_charges(
     args: CalculatorArgs,
     tariffs_hourly_df: DataFrame,
