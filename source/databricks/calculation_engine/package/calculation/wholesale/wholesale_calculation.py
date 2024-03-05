@@ -45,6 +45,7 @@ def execute(
     return results
 
 
+@logging_configuration.use_span("calculate_tariff_charges")
 def _calculate_tariff_charges(
     args: CalculatorArgs,
     tariffs_hourly_df: DataFrame,
