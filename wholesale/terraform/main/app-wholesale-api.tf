@@ -25,8 +25,9 @@ module "app_wholesale_api" {
     }
   ]
 
-  # Ensure that IHostedServices are not terminated due to unloading of the application in periods with no traffic
-  always_on = true
+  # Always on would make Azure poll /GET frequently to keep the app warm.
+  # But (1) that endpoint doesn't exist and generates 404 responses, and (2) it's not needed as the app is being kept warm by the health checks
+  always_on = false
 
   app_settings = {
     # Authentication/authorization
