@@ -51,7 +51,7 @@ def get_expected(*args) -> DataFrame:  # type: ignore
     )
     df = df.withColumn(
         WholesaleResultColumnNames.amount,
-        col(WholesaleResultColumnNames.amount).cast(DecimalType(38, 6)),
+        col(WholesaleResultColumnNames.amount).cast(DecimalType(18, 6)),
     )
     df = df.withColumn(
         WholesaleResultColumnNames.time,
