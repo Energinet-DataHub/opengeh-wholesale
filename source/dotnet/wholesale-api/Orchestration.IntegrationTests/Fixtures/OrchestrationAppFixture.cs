@@ -23,6 +23,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
 using Xunit.Abstractions;
@@ -80,10 +81,10 @@ public class OrchestrationAppFixture : IAsyncLifetime
         await ServiceBusResourceProvider
             .BuildTopic("integration-events")
                 .Do(topic => appHostSettings.ProcessEnvironmentVariables
-                    .Add(nameof(ServiceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME), topic.Name))
+                    .Add($"{IntegrationEventsOptions.SectionName}__{nameof(IntegrationEventsOptions.TopicName)}", topic.Name))
             .AddSubscription("subscription")
                 .Do(subscription => appHostSettings.ProcessEnvironmentVariables
-                    .Add(nameof(ServiceBusOptions.INTEGRATIONEVENTS_SUBSCRIPTION_NAME), subscription.SubscriptionName))
+                    .Add($"{IntegrationEventsOptions.SectionName}__{nameof(IntegrationEventsOptions.SubscriptionName)}", subscription.SubscriptionName))
             .CreateAsync();
 
         // DataLake
@@ -154,10 +155,7 @@ public class OrchestrationAppFixture : IAsyncLifetime
 
         // ServiceBus connection strings
         appHostSettings.ProcessEnvironmentVariables.Add(
-            nameof(ServiceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING),
-            ServiceBusResourceProvider.ConnectionString);
-        appHostSettings.ProcessEnvironmentVariables.Add(
-            nameof(ServiceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING),
+            $"{ServiceBusNamespaceOptions.SectionName}__{nameof(ServiceBusNamespaceOptions.ConnectionString)}",
             ServiceBusResourceProvider.ConnectionString);
 
         return appHostSettings;
