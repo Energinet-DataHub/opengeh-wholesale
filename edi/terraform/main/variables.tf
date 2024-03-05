@@ -63,3 +63,9 @@ variable "feature_management_use_amount_per_charge_result_produced" {
   description = "Should use amount per charge result produced."
   default     = false
 }
+
+variable "feature_management_use_request_wholesale_settlement_receiver" {
+  type        = bool
+  description = "Used to enable request wholesale settlement receiver."
+  default     = false
+}
