@@ -60,6 +60,10 @@ locals {
       role         = "meteroperator"
       display_name = "Serial Energy Trader"
     }
+    delegated = {
+      role         = "delegated"
+      display_name = "Delegated"
+    }
   }
 
   timeseriesapi_app_roles = {
