@@ -20,8 +20,10 @@ from package.codelists import (
     MeteringPointResolution,
 )
 from package.constants import Colname, BasisDataColname
+from package.infrastructure import logging_configuration
 
 
+@logging_configuration.use_span("get_master_basis_data")
 def get_master_basis_data_df(
     metering_point_df: DataFrame,
 ) -> DataFrame:
@@ -38,6 +40,7 @@ def get_master_basis_data_df(
     )
 
 
+@logging_configuration.use_span("get_metering_point_time_series_basis_data")
 def get_metering_point_time_series_basis_data_dfs(
     metering_point_time_series: DataFrame, time_zone: str
 ) -> tuple[DataFrame, DataFrame]:
