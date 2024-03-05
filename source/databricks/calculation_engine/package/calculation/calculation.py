@@ -34,12 +34,12 @@ from .wholesale.get_metering_points_and_child_metering_points import (
 )
 
 
+@logging_configuration.use_span("calculation")
 def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> None:
     results = _execute(args, prepared_data_reader)
     _write_results(args, results)
 
 
-@logging_configuration.use_span("calculation")
 def _execute(
     args: CalculatorArgs, prepared_data_reader: PreparedDataReader
 ) -> CalculationResultsContainer:
@@ -52,6 +52,7 @@ def _execute(
             args.calculation_period_end_datetime,
             args.calculation_grid_areas,
         )
+
         grid_loss_responsible_df = prepared_data_reader.get_grid_loss_responsible(
             args.calculation_grid_areas, metering_point_periods_df
         )
@@ -76,43 +77,46 @@ def _execute(
         or args.calculation_type == CalculationType.SECOND_CORRECTION_SETTLEMENT
         or args.calculation_type == CalculationType.THIRD_CORRECTION_SETTLEMENT
     ):
-        charge_master_data = prepared_data_reader.get_charge_master_data(
-            args.calculation_period_start_datetime, args.calculation_period_end_datetime
-        )
-
-        charge_prices = prepared_data_reader.get_charge_prices(
-            args.calculation_period_start_datetime, args.calculation_period_end_datetime
-        )
-
-        metering_points_periods_for_wholesale_calculation = (
-            get_metering_points_and_child_metering_points(metering_point_periods_df)
-        )
-
-        charges_link_metering_point_periods = (
-            prepared_data_reader.get_charge_link_metering_point_periods(
+        with logging_configuration.start_span("calculation.wholesale.prepare"):
+            charge_master_data = prepared_data_reader.get_charge_master_data(
                 args.calculation_period_start_datetime,
                 args.calculation_period_end_datetime,
-                metering_points_periods_for_wholesale_calculation,
             )
-        )
 
-        tariffs_hourly_df = prepared_data_reader.get_tariff_charges(
-            metering_point_time_series,
-            charge_master_data,
-            charge_prices,
-            charges_link_metering_point_periods,
-            ChargeResolution.HOUR,
-            args.time_zone,
-        )
+            charge_prices = prepared_data_reader.get_charge_prices(
+                args.calculation_period_start_datetime,
+                args.calculation_period_end_datetime,
+            )
 
-        tariffs_daily_df = prepared_data_reader.get_tariff_charges(
-            metering_point_time_series,
-            charge_master_data,
-            charge_prices,
-            charges_link_metering_point_periods,
-            ChargeResolution.DAY,
-            args.time_zone,
-        )
+            metering_points_periods_for_wholesale_calculation = (
+                get_metering_points_and_child_metering_points(metering_point_periods_df)
+            )
+
+            charges_link_metering_point_periods = (
+                prepared_data_reader.get_charge_link_metering_point_periods(
+                    args.calculation_period_start_datetime,
+                    args.calculation_period_end_datetime,
+                    metering_points_periods_for_wholesale_calculation,
+                )
+            )
+
+            tariffs_hourly_df = prepared_data_reader.get_tariff_charges(
+                metering_point_time_series,
+                charge_master_data,
+                charge_prices,
+                charges_link_metering_point_periods,
+                ChargeResolution.HOUR,
+                args.time_zone,
+            )
+
+            tariffs_daily_df = prepared_data_reader.get_tariff_charges(
+                metering_point_time_series,
+                charge_master_data,
+                charge_prices,
+                charges_link_metering_point_periods,
+                ChargeResolution.DAY,
+                args.time_zone,
+            )
 
         results.wholesale_results = wholesale_calculation.execute(
             args,
@@ -128,9 +132,11 @@ def _execute(
     return results
 
 
+@logging_configuration.use_span("calculation.write")
 def _write_results(args: CalculatorArgs, results: CalculationResultsContainer) -> None:
     write_energy_results(results.energy_results)
     if results.wholesale_results is not None:
         write_wholesale_results(results.wholesale_results)
+
     # We write basis data at the end of the calculation to make it easier to analyze performance of the calculation part
     write_basis_data(args, results.basis_data)

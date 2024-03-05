@@ -12,16 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
+from pyspark.sql import DataFrame
 
-from package.calculation.preparation.charge_link_metering_point_periods import (
-    ChargeLinkMeteringPointPeriods,
-)
 from package.codelists import MeteringPointType
 from package.constants import Colname
+from package.infrastructure import logging_configuration
 
 
+@logging_configuration.use_span("get_metering_points_and_child_metering_points")
 def get_metering_points_and_child_metering_points(
     metering_point_periods_df: DataFrame,
 ) -> DataFrame:

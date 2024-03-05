@@ -25,6 +25,7 @@ from package.infrastructure.paths import (
 )
 
 
+@logging_configuration.use_span("calculation.write.energy")
 def write_energy_results(energy_results: EnergyResultsContainer) -> None:
     """Write each energy result to the output table."""
     for field in fields(energy_results):
