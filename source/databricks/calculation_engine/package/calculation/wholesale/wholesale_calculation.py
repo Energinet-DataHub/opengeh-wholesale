@@ -24,7 +24,7 @@ from ...codelists import AmountType
 from ...infrastructure import logging_configuration
 
 
-@logging_configuration.use_span("calculation.wholesale")
+@logging_configuration.use_span("calculation.wholesale.execute")
 def execute(
     args: CalculatorArgs,
     prepared_hourly_tariffs: PreparedTariffs,
@@ -42,6 +42,7 @@ def execute(
     return results
 
 
+@logging_configuration.use_span("calculate_tariff_amounts")
 def _calculate_tariff_amounts(
     args: CalculatorArgs,
     prepared_hourly_tariffs: PreparedTariffs,

@@ -53,7 +53,6 @@ def calculate_amount_per_charge(prepared_tariffs: PreparedTariffs) -> DataFrame:
         Colname.resolution,
         Colname.charge_price,
         Colname.total_quantity,
-        Colname.charge_count,
         (f.col(Colname.charge_price) * f.col(Colname.total_quantity)).alias(
             Colname.total_amount
         ),
@@ -80,7 +79,6 @@ def _sum_quantity_and_count_charges(prepared_tariffs: PreparedTariffs) -> DataFr
         Colname.charge_price,
     ).agg(
         f.sum(Colname.sum_quantity).alias(Colname.total_quantity),
-        f.count(Colname.metering_point_id).alias(Colname.charge_count),
         f.flatten(f.collect_set(Colname.qualities)).alias(Colname.qualities),
     )
 
