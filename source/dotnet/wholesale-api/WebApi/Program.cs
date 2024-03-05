@@ -12,22 +12,84 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text.Json.Serialization;
+using Asp.Versioning;
+using Energinet.DataHub.Core.App.WebApp.Authentication;
+using Energinet.DataHub.Core.App.WebApp.Authorization;
+using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.DependencyInjection;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
+using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.WebApi;
+using Energinet.DataHub.Wholesale.WebApi.Extensions.Builder;
+using Energinet.DataHub.Wholesale.WebApi.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
-var startup = new Startup(builder.Configuration);
 
 /*
 // Add services to the container.
 */
-startup.ConfigureServices(builder.Services);
+
+// Common
+builder.Services.AddApplicationInsightsForWebApp();
+builder.Services.AddHealthChecksForWebApp();
+
+// Shared by modules
+builder.Services.AddNodaTimeForApplication(builder.Configuration);
+builder.Services.AddDatabricksJobsForApplication(builder.Configuration);
+builder.Services.AddServiceBusClientForApplication(builder.Configuration);
+
+// Modules
+builder.Services.AddCalculationsModule(builder.Configuration);
+builder.Services.AddCalculationResultsModule(builder.Configuration);
+
+// ServieBus channels
+builder.Services.AddIntegrationEventsSubscription();
+builder.Services.AddInboxHandling();
+builder.Services.AddEdiModule();
+
+// Http channels
+builder.Services
+    .AddControllers(options => options.Filters.Add<BusinessValidationExceptionFilter>())
+    .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
+
+// => Open API generation
+builder.Services.AddSwaggerForWebApplication();
+
+// => API versioning
+builder.Services.AddApiVersioningForWebApplication(new ApiVersion(3, 0));
+
+// => Authentication/authorization
+builder.Services
+    .AddTokenAuthenticationForWebApp(builder.Configuration)
+    .AddUserAuthenticationForWebApp<FrontendUser, FrontendUserProvider>()
+    .AddPermissionAuthorization();
 
 var app = builder.Build();
 
 /*
 // Configure the HTTP request pipeline.
 */
-startup.Configure(app, app.Environment);
+
+app.UseRouting();
+app.UseSwaggerForWebApplication();
+app.UseHttpsRedirection();
+
+// Authentication/authorization
+app.UseAuthentication();
+app.UseAuthorization();
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    app.UseUserMiddleware<FrontendUser>();
+}
+
+app.MapControllers().RequireAuthorization();
+
+// Health check
+app.MapLiveHealthChecks();
+app.MapReadyHealthChecks();
 
 app.Run();
 
