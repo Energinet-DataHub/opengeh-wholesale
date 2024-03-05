@@ -20,8 +20,12 @@ using Energinet.DataHub.Wholesale.Calculations.Application.UseCases;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.GridArea;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.ReceivedIntegrationEvent;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks.ServiceBus;
 using Energinet.DataHub.Wholesale.Events.Application.Workers;
 using Google.Protobuf.Reflection;
+using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Extensions.DependencyInjection;
 
@@ -30,15 +34,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.Extensions.DependencyInjection;
 /// </summary>
 public static class EventsExtensions
 {
-    public static IServiceCollection AddEventsModule(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.AddIntegrationEventsSubscription();
-        services.AddInboxHandling();
-
-        return services;
-    }
-
-    private static IServiceCollection AddIntegrationEventsSubscription(this IServiceCollection services)
+    public static IServiceCollection AddIntegrationEventsSubscription(this IServiceCollection services)
     {
         // These are located within Calculations sub-area
         services
@@ -61,11 +57,37 @@ public static class EventsExtensions
         services
             .AddHostedService<ReceiveIntegrationEventServiceBusWorker>();
 
+        services
+            .AddOptions<IntegrationEventsOptions>()
+            .BindConfiguration(IntegrationEventsOptions.SectionName)
+            .ValidateDataAnnotations();
+
+        // Health checks
+        services.AddHealthChecks()
+            .AddAzureServiceBusSubscriptionUsingWebSockets(
+                sp => sp.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>().Value.ConnectionString,
+                sp => sp.GetRequiredService<IOptions<IntegrationEventsOptions>>().Value.TopicName,
+                sp => sp.GetRequiredService<IOptions<IntegrationEventsOptions>>().Value.SubscriptionName,
+                name: HealthCheckNames.IntegrationEventsTopicSubscription);
+
         return services;
     }
 
-    private static IServiceCollection AddInboxHandling(this IServiceCollection services)
+    public static IServiceCollection AddInboxHandling(this IServiceCollection services)
     {
+        services
+            .AddOptions<WholesaleInboxQueueOptions>()
+            .BindConfiguration(WholesaleInboxQueueOptions.SectionName)
+            .ValidateDataAnnotations();
+
+        // Health checks
+        services.AddHealthChecks()
+            // Must use a listener connection string
+            .AddAzureServiceBusQueueUsingWebSockets(
+                sp => sp.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>().Value.ConnectionString,
+                sp => sp.GetRequiredService<IOptions<WholesaleInboxQueueOptions>>().Value.QueueName,
+                name: "WholesaleInboxHealthCheck");
+
         services
             .AddHostedService<AggregatedTimeSeriesServiceBusWorker>();
 

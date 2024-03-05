@@ -12,9 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
+using System.ComponentModel.DataAnnotations;
 
-public static class HealthCheckNames
+namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
+
+/// <summary>
+/// Options for the ServiceBus namespace used in the DH3 system.
+/// </summary>
+public class ServiceBusNamespaceOptions
 {
-    public const string IntegrationEventsTopicSubscription = "IntegrationEventsTopicSubscriptionHealthCheck";
+    public const string SectionName = "ServiceBus";
+
+    [Required]
+    public string ConnectionString { get; set; } = string.Empty;
 }

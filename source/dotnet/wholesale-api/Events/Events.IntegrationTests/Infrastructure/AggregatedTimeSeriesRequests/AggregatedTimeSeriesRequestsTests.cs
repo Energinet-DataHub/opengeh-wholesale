@@ -71,7 +71,7 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
         var sut = new AggregatedTimeSeriesServiceBusWorker(
             serviceProviderMock.Object,
             loggerMock.Object,
-            _sender.ServiceBusOptions,
+            _sender.WholesaleInboxQueueOptions,
             _sender.ServiceBusClient);
 
         // Act
@@ -108,7 +108,7 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
         var sut = new AggregatedTimeSeriesServiceBusWorker(
             serviceProviderMock.Object,
             loggerMock.Object,
-            _sender.ServiceBusOptions,
+            _sender.WholesaleInboxQueueOptions,
             _sender.ServiceBusClient);
 
         // Act

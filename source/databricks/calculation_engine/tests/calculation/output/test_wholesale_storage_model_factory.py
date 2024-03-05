@@ -63,7 +63,6 @@ DEFAULT_CHARGE_TAX = True
 DEFAULT_RESOLUTION = WholesaleResultResolution.HOUR
 DEFAULT_CHARGE_PRICE = Decimal("0.756998")
 DEFAULT_TOTAL_QUANTITY = Decimal("1.1")
-DEFAULT_CHARGE_COUNT = "3"
 DEFAULT_TOTAL_AMOUNT = Decimal("123.456")
 DEFAULT_UNIT = ChargeUnit.KWH
 DEFAULT_QUALITY = ChargeQuality.CALCULATED
@@ -94,7 +93,6 @@ def _create_result_row(
     resolution: WholesaleResultResolution = DEFAULT_RESOLUTION,
     charge_price: Decimal = DEFAULT_CHARGE_PRICE,
     total_quantity: Decimal = DEFAULT_TOTAL_QUANTITY,
-    charge_count: str = DEFAULT_CHARGE_COUNT,
     total_amount: Decimal = DEFAULT_TOTAL_AMOUNT,
     unit: ChargeUnit = DEFAULT_UNIT,
     quality: ChargeQuality = DEFAULT_QUALITY,
@@ -113,7 +111,6 @@ def _create_result_row(
         Colname.resolution: resolution.value,
         Colname.charge_price: charge_price,
         Colname.total_quantity: total_quantity,
-        Colname.charge_count: charge_count,
         Colname.total_amount: total_amount,
         Colname.unit: unit.value,
         Colname.qualities: [quality.value],

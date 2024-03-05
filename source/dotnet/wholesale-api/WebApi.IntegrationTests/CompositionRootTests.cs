@@ -48,12 +48,11 @@ public class CompositionRootTests
         var testConfiguration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["SERVICE_BUS_SEND_CONNECTION_STRING"] = "Endpoint=sb://unknown.servicebus.windows.net/;SharedAccessKeyName=Yyy;SharedAccessKey=Xxx",
-                ["SERVICE_BUS_TRANCEIVER_CONNECTION_STRING"] = "Endpoint=sb://unknown.servicebus.windows.net/;SharedAccessKeyName=Yyy;SharedAccessKey=Xxx",
-                ["INTEGRATIONEVENTS_TOPIC_NAME"] = "NotEmpty",
-                ["INTEGRATIONEVENTS_SUBSCRIPTION_NAME"] = "NotEmpty",
-                ["WHOLESALE_INBOX_MESSAGE_QUEUE_NAME"] = "NotEmpty",
-                ["EDI_INBOX_MESSAGE_QUEUE_NAME"] = "NotEmpty",
+                ["ServiceBus__ConnectionString"] = "Endpoint=sb://unknown.servicebus.windows.net/;SharedAccessKeyName=Yyy;SharedAccessKey=Xxx",
+                ["IntegrationEvents__TopicName"] = "NotEmpty",
+                ["IntegrationEvents__SubscriptionName"] = "NotEmpty",
+                ["WholesaleInbox__QueueName"] = "NotEmpty",
+                ["EdiInbox__QueueName"] = "NotEmpty",
             })
             .Build();
 
