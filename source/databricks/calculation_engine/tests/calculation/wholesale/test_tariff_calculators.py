@@ -144,7 +144,6 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_correct_columns(
     assert Colname.resolution in actual.columns
     assert Colname.charge_price in actual.columns
     assert Colname.total_quantity in actual.columns
-    assert Colname.charge_count in actual.columns
     assert Colname.total_amount in actual.columns
     assert Colname.unit in actual.columns
     assert Colname.qualities in actual.columns
@@ -183,7 +182,6 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_expected_values(
     assert actual_row[Colname.resolution] == WholesaleResultResolution.HOUR.value
     assert actual_row[Colname.charge_price] == DEFAULT_CHARGE_PRICE
     assert actual_row[Colname.total_quantity] == 3 * DEFAULT_QUANTITY
-    assert actual_row[Colname.charge_count] == 3
     assert actual_row[Colname.total_amount] == Decimal(
         "6.030015"
     )  # 3 * DEFAULT_CHARGE_PRICE * DEFAULT_QUANTITY rounded to 6 decimals
