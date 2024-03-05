@@ -11,7 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from helpers.data_frame_utils import assert_dataframes_equal
+from helpers.data_frame_utils import (
+    assert_dataframe_and_schema,
+)
+from package.constants import WholesaleResultColumnNames
 from .states.scenario_state import (
     get_expected,
 )
@@ -27,21 +30,13 @@ def test_execute__returns_expected(  # type: ignore
     results = scenario_fixture.execute()
 
     # Assert
-    assert_dataframes_equal(
-        results.wholesale_results.tariff_amount_per_charge_from_hourly.drop(
-            "metering_point_type"
-        )
-        .drop("quantity_qualities")
-        .drop("price")
-        .drop("amount")
-        .drop("energy_supplier_id")
-        .drop("quantity")
-        .drop("calculation_result_id"),
-        scenario_fixture.expected.drop("metering_point_type")
-        .drop("quantity_qualities")
-        .drop("price")
-        .drop("amount")
-        .drop("energy_supplier_id")
-        .drop("quantity")
-        .drop("calculation_result_id"),
+    assert_dataframe_and_schema(
+        results.wholesale_results.hourly_tariff_per_ga_co_es,
+        scenario_fixture.expected,
+        ignore_decimal_precision=True,
+        ignore_nullability=True,
+        columns_to_skip=[
+            WholesaleResultColumnNames.calculation_execution_time_start,
+            WholesaleResultColumnNames.calculation_result_id,
+        ],
     )
