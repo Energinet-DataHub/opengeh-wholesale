@@ -6,6 +6,12 @@
     <RootNamespace>Energinet.DataHub.Wholesale.SubsystemTests</RootNamespace>
   </PropertyGroup>
 
+<Target Name="LogLastWriteTimes" BeforeTargets="Build">
+  <Message Importance="high" Text="SwaggerConfiguration last write time: $([System.IO.File]::GetLastWriteTime('$(SwaggerConfiguration)'))" />
+  <Message Importance="high" Text="WholesaleClient last write time: $([System.IO.File]::GetLastWriteTime('$(WholesaleClient)'))" />
+  <Message Importance="high" Text="SwaggerConfigurationIsNewer: $(SwaggerConfigurationIsNewer)" />
+</Target>
+
   <Target Name="NSwag" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)' == 'Debug' ">
     <PropertyGroup>
       <SwaggerConfiguration>Clients\Wholesale\V3\swagger.json</SwaggerConfiguration>
