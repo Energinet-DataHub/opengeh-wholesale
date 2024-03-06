@@ -61,7 +61,7 @@ public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProd
                         Price = timeSeriesPoint.Price,
                         Amount = timeSeriesPoint.Amount,
                     };
-                    p.QuantityQualities.AddRange(timeSeriesPoint.Qualities.Select(QuantityQualityMapper.MapQuantityQuality).ToList());
+                    p.QuantityQualities.AddRange(timeSeriesPoint.Qualities?.Select(QuantityQualityMapper.MapQuantityQuality).ToList());
                     return p;
                 }));
         return amountPerChargeResultProducedV1;
