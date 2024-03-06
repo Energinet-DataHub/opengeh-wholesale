@@ -1,6 +1,6 @@
 # This file contains values that are the same across all environments
 # For environment-specific values, refer to /env/<env_name>/environment.auto.tfvars
-github_username="dh-system-account"
+github_username="PerTHenriksen"
 developers_security_group_object_id="ffad55e0-f314-4852-9796-1d094a236e7b"
 kv_variables=[{
   "name": "AZURE-B2C-TENANT",
