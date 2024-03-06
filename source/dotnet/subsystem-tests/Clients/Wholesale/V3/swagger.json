@@ -137,8 +137,8 @@
           {
             "name": "calculationId",
             "in": "path",
-            "description": "CalculationId",
             "required": true,
+            "description": "CalculationId",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -165,12 +165,13 @@
           "SettlementReport"
         ],
         "summary": "Downloads a compressed settlement report for the specified parameters.",
+        "operationId": "Download",
         "parameters": [
           {
             "name": "gridAreaCodes",
             "in": "query",
-            "description": "A list of grid areas to create the settlement report for.",
             "required": true,
+            "description": "A list of grid areas to create the settlement report for.",
             "schema": {
               "type": "array",
               "items": {
@@ -181,8 +182,8 @@
           {
             "name": "calculationType",
             "in": "query",
-            "description": "Currently expects BalanceFixing only.",
             "required": true,
+            "description": "Currently expects BalanceFixing only.",
             "schema": {
               "$ref": "#/components/schemas/CalculationType"
             }
@@ -190,8 +191,8 @@
           {
             "name": "periodStart",
             "in": "query",
-            "description": "The start date and time of the period covered by the settlement report.",
             "required": true,
+            "description": "The start date and time of the period covered by the settlement report.",
             "schema": {
               "type": "string",
               "format": "date-time"
@@ -200,8 +201,8 @@
           {
             "name": "periodEnd",
             "in": "query",
-            "description": "The end date and time of the period covered by the settlement report.",
             "required": true,
+            "description": "The end date and time of the period covered by the settlement report.",
             "schema": {
               "type": "string",
               "format": "date-time"
@@ -245,12 +246,13 @@
           "SettlementReport"
         ],
         "summary": "Returns a stream containing the settlement report for a calculation matching calculationId",
+        "operationId": "ZippedBasisDataStream",
         "parameters": [
           {
             "name": "calculationId",
             "in": "query",
-            "description": "CalculationId",
             "required": true,
+            "description": "CalculationId",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -277,6 +279,8 @@
     "schemas": {
       "CalculationDto": {
         "type": "object",
+        "description": "An immutable calculation.",
+        "additionalProperties": false,
         "properties": {
           "runId": {
             "type": "integer",
@@ -330,12 +334,12 @@
             "type": "string",
             "format": "uuid"
           }
-        },
-        "additionalProperties": false,
-        "description": "An immutable calculation."
+        }
       },
       "CalculationRequestDto": {
         "type": "object",
+        "description": "An immutable request to create a calculation.",
+        "additionalProperties": false,
         "properties": {
           "calculationType": {
             "$ref": "#/components/schemas/CalculationType"
@@ -354,20 +358,20 @@
             "type": "string",
             "format": "date-time"
           }
-        },
-        "additionalProperties": false,
-        "description": "An immutable request to create a calculation."
+        }
       },
       "CalculationState": {
+        "type": "string",
         "enum": [
           "Pending",
           "Executing",
           "Completed",
           "Failed"
-        ],
-        "type": "string"
+        ]
       },
       "CalculationType": {
+        "type": "string",
+        "description": "Defines the wholesale calculation type",
         "enum": [
           "BalanceFixing",
           "Aggregation",
@@ -375,9 +379,7 @@
           "FirstCorrectionSettlement",
           "SecondCorrectionSettlement",
           "ThirdCorrectionSettlement"
-        ],
-        "type": "string",
-        "description": "Defines the wholesale calculation type"
+        ]
       }
     },
     "securitySchemes": {
