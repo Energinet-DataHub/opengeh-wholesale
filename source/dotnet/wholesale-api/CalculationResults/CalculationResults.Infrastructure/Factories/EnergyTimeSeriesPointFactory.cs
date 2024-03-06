@@ -24,11 +24,14 @@ public static class EnergyTimeSeriesPointFactory
     {
         var time = databricksSqlRow[EnergyResultColumnNames.Time];
         var quantity = databricksSqlRow[EnergyResultColumnNames.Quantity];
-        var quality = databricksSqlRow[EnergyResultColumnNames.QuantityQualities];
+        var qualities = databricksSqlRow[EnergyResultColumnNames.QuantityQualities];
+
+        if (qualities == null)
+            throw new ArgumentNullException(nameof(qualities));
 
         return new EnergyTimeSeriesPoint(
             SqlResultValueConverters.ToDateTimeOffset(time)!.Value,
             SqlResultValueConverters.ToDecimal(quantity)!.Value,
-            SqlResultValueConverters.ToQuantityQualities(quality!));
+            SqlResultValueConverters.ToQuantityQualities(qualities)!);
     }
 }
