@@ -233,7 +233,7 @@ class TestWhenValidInput:
         )
 
         # Act
-        actual = calculate_subscription_amount(
+        actual = calculate(
             subscription_charges,
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
@@ -266,7 +266,7 @@ class TestWhenValidInput:
         )
 
         # Act
-        actual = calculate_subscription_amount(
+        actual = calculate(
             subscription_charges,
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
@@ -312,7 +312,7 @@ class TestWhenMissingSomeInputChargePrice:
         )
 
         # Act
-        actual = calculate_subscription_amount(
+        actual = calculate(
             prepared_subscriptions,
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
@@ -353,7 +353,7 @@ class TestWhenMissingAllInputChargePrices:
         )
 
         # Act
-        actual = calculate_subscription_amount(
+        actual = calculate(
             prepared_subscriptions,
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
