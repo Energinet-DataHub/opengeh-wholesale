@@ -160,14 +160,8 @@ def test__given_parent_and_child_metering_points__returns_updated_child_metering
         == "es_parent_2"
     )
 
-    assert (
-        actual_only_child_metering_points[0][Colname.settlement_method]
-        == SettlementMethod.FLEX.value
-    )
-    assert (
-        actual_only_child_metering_points[1][Colname.settlement_method]
-        == SettlementMethod.NON_PROFILED.value
-    )
+    assert actual_only_child_metering_points[0][Colname.settlement_method] is None
+    assert actual_only_child_metering_points[1][Colname.settlement_method] is None
 
     assert actual_only_child_metering_points[0][Colname.to_date] == datetime(
         2020, 1, 15, 23
