@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <IsPackable>false</IsPackable>
@@ -14,12 +14,10 @@
 
     <PropertyGroup>
       <!-- True if the swagger.json file was updated after the generated client -->
-      <SwaggerConfigurationIsNewer>
-        $(([System.IO.File]::GetLastWriteTime('$(SwaggerConfiguration)') -gt ([System.IO.File]::GetLastWriteTime('$(WholesaleClient)')))
-      </SwaggerConfigurationIsNewer>
+      <SwaggerConfigurationIsNewer>$([MSBuild]::Subtract($([System.IO.File]::GetLastWriteTime('$(SwaggerConfiguration)').Ticks), $([System.IO.File]::GetLastWriteTime('$(WholesaleClient)').Ticks)))</SwaggerConfigurationIsNewer>
     </PropertyGroup>
 
-    <Exec WorkingDirectory="$(ProjectDir)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" Command="$(NSwagExe_Net60) run Clients/Wholesale/V3/nswag.json /variables:Configuration=$(Configuration)" Condition="'$(SwaggerConfigurationIsNewer)' == 'true'" />
+    <Exec WorkingDirectory="$(ProjectDir)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" Command="$(NSwagExe_Net60) run Clients/Wholesale/V3/nswag.json /variables:Configuration=$(Configuration)" Condition="$(SwaggerConfigurationIsNewer) > 0" />
   </Target>
 
   <ItemGroup>

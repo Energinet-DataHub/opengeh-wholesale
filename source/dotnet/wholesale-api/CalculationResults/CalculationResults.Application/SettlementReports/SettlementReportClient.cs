@@ -88,14 +88,6 @@ public class SettlementReportClient : ISettlementReportClient
         }
     }
 
-    public async Task GetSettlementReportAsync(Guid calculationId, string gridAreaCode, Stream outputStream)
-    {
-        var calculation = await _calculationsClient.GetAsync(calculationId).ConfigureAwait(false);
-        await _settlementReportRepository
-            .GetSettlementReportAsync(Map(calculation), gridAreaCode, outputStream)
-            .ConfigureAwait(false);
-    }
-
     private CalculationInfo Map(CalculationDto calculation)
     {
         return new CalculationInfo
