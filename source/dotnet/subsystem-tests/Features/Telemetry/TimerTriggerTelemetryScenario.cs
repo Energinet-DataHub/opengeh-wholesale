@@ -23,14 +23,14 @@ using Xunit;
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry;
 
 /// <summary>
-/// Verify telemetry is configured correctly so traces are logged from background services.
+/// Verify telemetry is configured correctly so traces are logged from TimerTriggers in Orchestration.
 /// </summary>
 [TestCaseOrderer(
     ordererTypeName: "Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Orderers.ScenarioStepOrderer",
     ordererAssemblyName: "Energinet.DataHub.Wholesale.SubsystemTests")]
-public class BackgroundServiceTelemetryScenario : SubsystemTestsBase<TelemetryScenarioFixture<BackgroundServiceTelemetryScenarioState>>
+public class TimerTriggerTelemetryScenario : SubsystemTestsBase<TelemetryScenarioFixture<BackgroundServiceTelemetryScenarioState>>
 {
-    public BackgroundServiceTelemetryScenario(LazyFixtureFactory<TelemetryScenarioFixture<BackgroundServiceTelemetryScenarioState>> lazyFixtureFactory)
+    public TimerTriggerTelemetryScenario(LazyFixtureFactory<TelemetryScenarioFixture<BackgroundServiceTelemetryScenarioState>> lazyFixtureFactory)
         : base(lazyFixtureFactory)
     {
     }
