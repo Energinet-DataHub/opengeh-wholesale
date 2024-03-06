@@ -116,14 +116,14 @@ def _execute(
             args.time_zone,
         )
 
-            tariffs_daily_df = prepared_data_reader.get_tariff_charges(
-                metering_point_time_series,
-                charge_master_data,
-                charge_prices,
-                charges_link_metering_point_periods,
-                ChargeResolution.DAY,
-                args.time_zone,
-            )
+        tariffs_daily_df = prepared_data_reader.get_tariff_charges(
+            metering_point_time_series,
+            charge_master_data,
+            charge_prices,
+            charges_link_metering_point_periods,
+            ChargeResolution.DAY,
+            args.time_zone,
+        )
 
         results.wholesale_results = wholesale_calculation.execute(
             args,
