@@ -15,7 +15,7 @@ module "ag_wholesale_exceptions" {
   resource_group_name  = azurerm_resource_group.this.name
   location             = azurerm_resource_group.this.location
 
-  short_name             = "Wholesale Exceptions"
+  short_name             = "Exceptions"
   email_receiver_name    = local.email_receiver_name
   email_receiver_address = local.email_receiver_address
 
@@ -43,7 +43,7 @@ module "ag_wholesale_request_errors" {
   resource_group_name  = azurerm_resource_group.this.name
   location             = azurerm_resource_group.this.location
 
-  short_name             = "Wholesale Request Errors"
+  short_name             = "Req Errors"
   email_receiver_name    = local.email_receiver_name
   email_receiver_address = local.email_receiver_address
 
