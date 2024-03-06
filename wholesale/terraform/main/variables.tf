@@ -72,11 +72,6 @@ variable "calculation_input_folder" {
   default     = "calculation_input"
 }
 
-variable "github_personal_access_token" {
-  type        = string
-  description = "Personal access token for Github access"
-}
-
 variable "pim_sql_reader_ad_group_name" {
   type        = string
   description = "Name of the AD group with db_datareader permissions on the SQL database."
