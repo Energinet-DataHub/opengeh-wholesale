@@ -17,7 +17,7 @@ from zoneinfo import ZoneInfo
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
 
-from package.codelists import ChargeUnit, WholesaleResultResolution
+from package.codelists import ChargeUnit
 from package.constants import Colname
 
 
