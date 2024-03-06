@@ -12,9 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
+using System.ComponentModel.DataAnnotations;
 
-public static class HealthCheckNames
+namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
+
+/// <summary>
+/// Options for the inbox to receive instructions to be processed by this subsystem.
+/// </summary>
+public class WholesaleInboxQueueOptions
 {
-    public const string IntegrationEventsTopicSubscription = "IntegrationEventsTopicSubscriptionHealthCheck";
+    public const string SectionName = "WholesaleInbox";
+
+    [Required]
+    public string QueueName { get; set; } = string.Empty;
 }

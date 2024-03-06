@@ -36,10 +36,17 @@ def get_subscription_charges(
     charge_link_metering_point_periods: ChargeLinkMeteringPointPeriods,
     time_zone: str,
 ) -> DataFrame:
+    """
+    This method does the following:
+    - Joins charge_master_data, charge_prices and charge_link_metering_point_periods
+    - Filters the result to only include subscription charges
+    - Explodes the result from monthly to daily resolution
+    - Add missing charge prices (None) to the result
+    """
+
     subscription_links = charge_link_metering_point_periods.filter_by_charge_type(
         ChargeType.SUBSCRIPTION
     )
-    subscription_links = _filter_on_flex_consumption(subscription_links.df)
     subscription_prices = charge_prices.filter_by_charge_type(ChargeType.SUBSCRIPTION)
     subscription_master_data = charge_master_data.filter_by_charge_type(
         ChargeType.SUBSCRIPTION
@@ -50,7 +57,7 @@ def get_subscription_charges(
     )
 
     subscriptions = _join_with_links(
-        subscription_master_data_and_prices, subscription_links
+        subscription_master_data_and_prices, subscription_links.df
     )
 
     subscriptions = subscriptions.withColumn(
@@ -58,15 +65,6 @@ def get_subscription_charges(
     )
 
     return subscriptions
-
-
-def _filter_on_flex_consumption(
-    subscription_links: DataFrame,
-) -> DataFrame:
-    subscription_links = subscription_links.filter(
-        f.col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value
-    ).filter(f.col(Colname.settlement_method) == SettlementMethod.FLEX.value)
-    return subscription_links
 
 
 def _join_with_prices(
