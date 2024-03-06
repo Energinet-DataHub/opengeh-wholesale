@@ -105,6 +105,21 @@ class PreparedDataReader:
             time_zone,
         )
 
+    @logging_configuration.use_span("get_subscription_charges")
+    def get_subscription_charges(
+        self,
+        charge_master_data: ChargeMasterData,
+        charge_prices: ChargePrices,
+        charges_link_metering_point_periods: ChargeLinkMeteringPointPeriods,
+        time_zone: str,
+    ) -> DataFrame:
+        return T.get_subscription_charges(
+            charge_master_data,
+            charge_prices,
+            charges_link_metering_point_periods,
+            time_zone,
+        )
+
     @logging_configuration.use_span("get_metering_point_time_series")
     def get_metering_point_time_series(
         self,
