@@ -30,7 +30,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 ///     during creation, we must set the path to the 'content root' using an environment variable
 ///     named 'ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI'.
 /// </summary>
-public class WebApiFactory : WebApplicationFactory<Startup>
+public class WebApiFactory : WebApplicationFactory<Program>
 {
     private bool _authenticationEnabled;
 
