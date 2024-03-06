@@ -32,7 +32,8 @@ public static class EdiExtensions
 {
     public static void AddEdiModule(this IServiceCollection services)
     {
-        services.AddScoped<IAggregatedTimeSeriesRequestHandler, AggregatedTimeSeriesRequestHandler>();
+        services.AddScoped<IWholesaleInboxRequestHandler, AggregatedTimeSeriesRequestHandler>();
+        services.AddScoped<IWholesaleInboxRequestHandler, WholesaleServicesRequestHandler>();
         services.AddScoped<LatestCalculationsForPeriod>();
         services.AddScoped<CompletedCalculationRetriever>();
 

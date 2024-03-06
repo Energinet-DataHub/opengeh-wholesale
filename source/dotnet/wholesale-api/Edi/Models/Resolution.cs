@@ -12,17 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Messaging.ServiceBus;
+namespace Energinet.DataHub.Wholesale.Edi.Models;
 
-namespace Energinet.DataHub.Wholesale.Edi;
-
-public interface IAggregatedTimeSeriesRequestHandler
+public static class Resolution
 {
-    /// <summary>
-    /// Handles the process of consuming the request for aggregated time series, then getting the required time series and creating and sending the response.
-    /// </summary>
-    /// <param name="receivedMessage"></param>
-    /// <param name="referenceId"></param>
-    /// <param name="cancellationToken"></param>
-    Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken);
+    public const string Monthly = "P1M";
 }

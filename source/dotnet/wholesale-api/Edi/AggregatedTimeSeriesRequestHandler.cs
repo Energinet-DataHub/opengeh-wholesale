@@ -21,11 +21,15 @@ using Energinet.DataHub.Wholesale.Edi.Factories;
 using Energinet.DataHub.Wholesale.Edi.Mappers;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.Validation;
+using Google.Protobuf.Reflection;
 using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Edi;
 
-public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHandler
+/// <summary>
+/// Handles AggregatedTimeSeriesRequest messages (typically received from EDI through the WholesaleInbox service bus queue)
+/// </summary>
+public class AggregatedTimeSeriesRequestHandler : IWholesaleInboxRequestHandler
 {
     private readonly IEdiClient _ediClient;
     private readonly IValidator<Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest> _validator;
@@ -49,6 +53,11 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         _completedCalculationRetriever = completedCalculationRetriever;
     }
 
+    public bool CanHandle(string requestSubject) => requestSubject.Equals(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest.Descriptor.Name);
+
+    /// <summary>
+    /// Handles the process of consuming the request for aggregated time series, then getting the required time series and creating and sending the response.
+    /// </summary>
     public async Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken)
     {
         var aggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest.Parser.ParseFrom(receivedMessage.Body);

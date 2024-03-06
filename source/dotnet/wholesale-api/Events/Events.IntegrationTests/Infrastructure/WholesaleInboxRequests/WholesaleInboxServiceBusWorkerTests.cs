@@ -25,11 +25,11 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Events.IntegrationTests.Infrastructure.AggregatedTimeSeriesRequests;
 
-public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderFixture>
+public class WholesaleInboxServiceBusWorkerTests : IClassFixture<ServiceBusSenderFixture>
 {
     private readonly ServiceBusSenderFixture _sender;
 
-    public AggregatedTimeSeriesRequestsTests(ServiceBusSenderFixture fixture)
+    public WholesaleInboxServiceBusWorkerTests(ServiceBusSenderFixture fixture)
     {
         _sender = fixture;
     }
@@ -38,8 +38,8 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
     [InlineAutoMoqData]
     public async Task ReceiveAggregatedTimeSeriesRequest_WhenMessageHasReference_ReceivesMessage(
         Mock<IServiceProvider> serviceProviderMock,
-        Mock<IAggregatedTimeSeriesRequestHandler> handlerMock,
-        Mock<ILogger<AggregatedTimeSeriesServiceBusWorker>> loggerMock)
+        Mock<IWholesaleInboxRequestHandler> handlerMock,
+        Mock<ILogger<WholesaleInboxServiceBusWorker>> loggerMock)
     {
         // Arrange
         var messageHasBeenReceivedEvent = new AutoResetEvent(false);
@@ -52,9 +52,16 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
                 messageHasBeenReceivedEvent.Set();
             });
 
+        handlerMock
+            .Setup(handler => handler.CanHandle(It.IsAny<string>()))
+            .Returns(true);
+
         serviceProviderMock
-            .Setup(x => x.GetService(typeof(IAggregatedTimeSeriesRequestHandler)))
-            .Returns(handlerMock.Object);
+            .Setup(x => x.GetService(typeof(IEnumerable<IWholesaleInboxRequestHandler>)))
+            .Returns(new List<IWholesaleInboxRequestHandler>
+            {
+                handlerMock.Object,
+            });
 
         var serviceScope = new Mock<IServiceScope>();
         serviceScope.Setup(x => x.ServiceProvider).Returns(serviceProviderMock.Object);
@@ -68,7 +75,7 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
             .Setup(x => x.GetService(typeof(IServiceScopeFactory)))
             .Returns(serviceScopeFactory.Object);
 
-        var sut = new AggregatedTimeSeriesServiceBusWorker(
+        var sut = new WholesaleInboxServiceBusWorker(
             serviceProviderMock.Object,
             loggerMock.Object,
             _sender.WholesaleInboxQueueOptions,
@@ -87,8 +94,8 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
     [InlineAutoMoqData]
     public async Task ReceiveAggregatedTimeSeriesRequest_WhenMessageIsMissingReference_DoesNotReceivesMessage(
         Mock<IServiceProvider> serviceProviderMock,
-        Mock<IAggregatedTimeSeriesRequestHandler> handlerMock,
-        Mock<ILogger<AggregatedTimeSeriesServiceBusWorker>> loggerMock)
+        Mock<IWholesaleInboxRequestHandler> handlerMock,
+        Mock<ILogger<WholesaleInboxServiceBusWorker>> loggerMock)
     {
         // Arrange
         var messageHasBeenReceivedEvent = new AutoResetEvent(false);
@@ -102,10 +109,10 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
             });
 
         serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IAggregatedTimeSeriesRequestHandler)))
+            .Setup(sp => sp.GetService(typeof(IWholesaleInboxRequestHandler)))
             .Returns(handlerMock.Object);
 
-        var sut = new AggregatedTimeSeriesServiceBusWorker(
+        var sut = new WholesaleInboxServiceBusWorker(
             serviceProviderMock.Object,
             loggerMock.Object,
             _sender.WholesaleInboxQueueOptions,
