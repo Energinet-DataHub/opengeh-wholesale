@@ -93,8 +93,8 @@ public class TimerTriggerTelemetryScenario : SubsystemTestsBase<TelemetryScenari
         var wasEventsLogged = await Fixture.WaitForTelemetryEventsAsync(
             Fixture.ScenarioState.ExpectedTelemetryEvents.AsReadOnly(),
             query,
-            queryTimeRange: new QueryTimeRange(TimeSpan.FromMinutes(15)),
-            waitTimeLimit: TimeSpan.FromMinutes(15),
+            queryTimeRange: new QueryTimeRange(TimeSpan.FromMinutes(20)),
+            waitTimeLimit: TimeSpan.FromMinutes(20),
             delay: TimeSpan.FromSeconds(60));
 
         wasEventsLogged.Should().BeTrue($"{nameof(Fixture.ScenarioState.ExpectedTelemetryEvents)} was not logged to Application Insights within time limit.");
