@@ -37,6 +37,7 @@ def get_metering_points_and_child_metering_points(
     mp = "metering_point_id_temp"
     fd = "from_date_temp"
     td = "to_date_temp"
+    sm = "settlement_method_temp"
     production_and_consumption_metering_points = (
         production_and_consumption_metering_points.withColumnRenamed(
             Colname.energy_supplier_id, es
@@ -44,6 +45,7 @@ def get_metering_points_and_child_metering_points(
         .withColumnRenamed(Colname.metering_point_id, mp)
         .withColumnRenamed(Colname.from_date, fd)
         .withColumnRenamed(Colname.to_date, td)
+        .withColumnRenamed(Colname.settlement_method, sm)
     )
 
     all_metering_points = _get_all_child_metering_points(metering_point_periods_df)
@@ -67,7 +69,10 @@ def get_metering_points_and_child_metering_points(
         all_metering_points[Colname.metering_point_id],
         all_metering_points[Colname.metering_point_type],
         all_metering_points[Colname.calculation_type],
-        all_metering_points[Colname.settlement_method],
+        f.coalesce(
+            all_metering_points[Colname.settlement_method],
+            production_and_consumption_metering_points[sm],
+        ).alias(Colname.settlement_method),
         all_metering_points[Colname.grid_area],
         all_metering_points[Colname.resolution],
         all_metering_points[Colname.from_grid_area],
@@ -110,6 +115,7 @@ def _get_production_and_consumption_metering_points(
         Colname.energy_supplier_id,
         Colname.from_date,
         Colname.to_date,
+        Colname.settlement_method,
     )
 
 
