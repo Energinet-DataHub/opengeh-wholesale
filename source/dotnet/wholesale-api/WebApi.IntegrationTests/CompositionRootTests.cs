@@ -12,10 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -48,11 +46,11 @@ public class CompositionRootTests
         var testConfiguration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["ServiceBus__ConnectionString"] = "Endpoint=sb://unknown.servicebus.windows.net/;SharedAccessKeyName=Yyy;SharedAccessKey=Xxx",
-                ["IntegrationEvents__TopicName"] = "NotEmpty",
-                ["IntegrationEvents__SubscriptionName"] = "NotEmpty",
-                ["WholesaleInbox__QueueName"] = "NotEmpty",
-                ["EdiInbox__QueueName"] = "NotEmpty",
+                ["ServiceBus:ConnectionString"] = "Endpoint=sb://unknown.servicebus.windows.net/;SharedAccessKeyName=Yyy;SharedAccessKey=Xxx",
+                ["IntegrationEvents:TopicName"] = "NotEmpty",
+                ["IntegrationEvents:SubscriptionName"] = "NotEmpty",
+                ["WholesaleInbox:QueueName"] = "NotEmpty",
+                ["EdiInbox:QueueName"] = "NotEmpty",
             })
             .Build();
 
