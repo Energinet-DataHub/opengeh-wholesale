@@ -16,13 +16,5 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementRe
 
 public interface ISettlementReportRepository
 {
-    /// <summary>
-    /// Create zip archives for each process in the calculation.
-    /// The archive contains the basis data files and the result file.
-    /// </summary>
-    Task CreateSettlementReportsAsync(CalculationInfo completedCalculationInfo);
-
     Task<SettlementReport> GetSettlementReportAsync(CalculationInfo calculationInfo);
-
-    Task GetSettlementReportAsync(CalculationInfo completedCalculationInfo, string gridAreaCode, Stream outputStream);
 }
