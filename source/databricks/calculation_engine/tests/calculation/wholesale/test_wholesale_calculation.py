@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from datetime import datetime
 
 import pytest
 from pyspark.sql import DataFrame, SparkSession
@@ -29,7 +30,7 @@ from package.codelists import ChargeResolution
 
 
 def test__execute__when_tariff_schema_is_valid__does_not_raise(
-    spark: SparkSession, any_calculator_args: CalculatorArgs
+    spark: SparkSession, any_calculator_args_for_wholesale: CalculatorArgs
 ) -> None:
     # Arrange
     tariffs_hourly_df = spark.createDataFrame(
@@ -44,7 +45,7 @@ def test__execute__when_tariff_schema_is_valid__does_not_raise(
 
     # Act
     execute(
-        any_calculator_args,
+        any_calculator_args_for_wholesale,
         prepared_subscriptions,
         tariffs_hourly_df,
         tariffs_daily_df,
@@ -55,7 +56,7 @@ def test__execute__when_tariff_schema_is_valid__does_not_raise(
 
 
 def test__execute__when_tariff_schema_is_invalid__raises_assertion_error(
-    spark: SparkSession, any_calculator_args: CalculatorArgs
+    spark: SparkSession, any_calculator_args_for_wholesale: CalculatorArgs
 ) -> None:
     # Arrange
     data = [("John", "Dow")]
@@ -68,7 +69,7 @@ def test__execute__when_tariff_schema_is_invalid__raises_assertion_error(
     # Act & Assert
     with pytest.raises(AssertionError):
         execute(
-            any_calculator_args,
+            any_calculator_args_for_wholesale,
             prepared_subscriptions,
             tariffs_hourly_df,
             tariffs_daily_df,
