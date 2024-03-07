@@ -762,12 +762,14 @@ def test__get_tariff_charges__can_handle_missing_charge_prices(
         charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
         DEFAULT_TIME_ZONE,
-    ).orderBy(Colname.charge_time)
+    )
+
+    actual_df = actual.df.orderBy(Colname.charge_time)
 
     # Assert
-    assert actual.df.count() == 2
+    assert actual_df.count() == 2
     assert (
-        actual.df.collect()[0][Colname.charge_price]
+        actual_df.collect()[0][Colname.charge_price]
         == factory.DefaultValues.DEFAULT_CHARGE_PRICE
     )
     assert actual.df.collect()[1][Colname.charge_price] is None
@@ -865,7 +867,7 @@ def test__get_tariff_charges__can_handle_missing_charge_links(
         charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
         DEFAULT_TIME_ZONE,
-    ).orderBy(Colname.charge_time)
+    )
 
     # Assert
     assert actual.df.count() == 2
