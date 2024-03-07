@@ -16,7 +16,6 @@ from decimal import Decimal
 from datetime import datetime, timedelta
 import uuid
 
-from pyspark import Row
 from pyspark.sql import SparkSession
 import pytest
 from typing import Any
@@ -24,7 +23,6 @@ from typing import Any
 from package.calculation.preparation.prepared_tariffs import prepared_tariffs_schema
 from package.codelists import (
     ChargeQuality,
-    ChargeResolution,
     ChargeType,
     ChargeUnit,
     MeteringPointType,
@@ -38,84 +36,20 @@ from package.calculation.wholesale.tariff_calculators import (
     sum_within_month,
 )
 from package.constants import Colname
-
-
-DEFAULT_GRID_AREA = "543"
-DEFAULT_CHARGE_CODE = "4000"
-DEFAULT_CHARGE_OWNER = "001"
-DEFAULT_CHARGE_TAX = True
-DEFAULT_CHARGE_TIME_HOUR_0 = datetime(2020, 1, 1, 0)
-DEFAULT_CHARGE_PRICE = Decimal("2.000005")
-DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
-DEFAULT_METERING_POINT_ID = "123456789012345678901234567"
-DEFAULT_METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
-DEFAULT_SETTLEMENT_METHOD = SettlementMethod.FLEX
-DEFAULT_QUANTITY = Decimal("1.005")
-DEFAULT_QUALITY = ChargeQuality.CALCULATED
-DEFAULT_PERIOD_START_DATETIME = datetime(2019, 12, 31, 23)
-
-
-def _create_prepared_tariff_row(
-    charge_key: str | None = None,
-    charge_code: str = DEFAULT_CHARGE_CODE,
-    charge_owner: str = DEFAULT_CHARGE_OWNER,
-    resolution: ChargeResolution = ChargeResolution.HOUR,
-    charge_time: datetime = DEFAULT_CHARGE_TIME_HOUR_0,
-    charge_price: Decimal | None = DEFAULT_CHARGE_PRICE,
-    energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
-    metering_point_id: str = DEFAULT_METERING_POINT_ID,
-    metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE,
-    settlement_method: SettlementMethod | None = DEFAULT_SETTLEMENT_METHOD,
-    grid_area: str = DEFAULT_GRID_AREA,
-    quantity: Decimal = DEFAULT_QUANTITY,
-    quality: ChargeQuality = DEFAULT_QUALITY,
-) -> Row:
-    row = {
-        Colname.charge_key: charge_key
-        or f"{charge_code}-{ChargeType.TARIFF.value}-{charge_owner}",
-        Colname.charge_code: charge_code,
-        Colname.charge_type: ChargeType.TARIFF.value,
-        Colname.charge_owner: charge_owner,
-        Colname.charge_tax: DEFAULT_CHARGE_TAX,
-        Colname.resolution: resolution.value,
-        Colname.charge_time: charge_time,
-        Colname.charge_price: charge_price,
-        Colname.metering_point_id: metering_point_id,
-        Colname.energy_supplier_id: energy_supplier_id,
-        Colname.metering_point_type: metering_point_type.value,
-        Colname.settlement_method: (
-            settlement_method.value if settlement_method else None
-        ),
-        Colname.grid_area: grid_area,
-        Colname.quantity: quantity,
-        Colname.qualities: [quality.value],
-    }
-
-    return Row(**row)
-
-
-def test__calculate_tariff_price_per_ga_co_es__raises_value_error_when_input_df_has_wrong_schema(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    tariffs = spark.createDataFrame(data=[{"Hello": "World"}])
-
-    # Act
-    with pytest.raises(AssertionError) as excinfo:
-        calculate_tariff_price_per_ga_co_es(tariffs)
-
-    # Assert
-    assert "Schema mismatch" in str(excinfo.value)
+from tests.calculation.wholesale.prepared_tariff_factory import (
+    create_prepared_tariffs_row,
+    create_prepared_tariffs,
+)
 
 
 def test__calculate_tariff_price_per_ga_co_es__returns_empty_df_when_input_df_is_empty(
     spark: SparkSession,
 ) -> None:
     # Arrange
-    tariffs = spark.createDataFrame(data=[], schema=prepared_tariffs_schema)
+    prepared_tariff = create_prepared_tariffs(spark, [])
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(tariffs)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariff)
 
     # Assert
     assert actual.count() == 0
@@ -125,10 +59,10 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_correct_columns(
     spark: SparkSession,
 ) -> None:
     # Arrange
-    tariffs = spark.createDataFrame(data=[], schema=prepared_tariffs_schema)
+    prepared_tariff = create_prepared_tariffs(spark, [])
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(tariffs)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariff)
 
     # Assert
     assert Colname.energy_supplier_id in actual.columns
@@ -155,15 +89,15 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_expected_values(
     # Arrange: 3 rows that should all be aggregated into a single row
     CHARGE_KEY = "charge-key"
     rows = [
-        _create_prepared_tariff_row(metering_point_id="1", charge_key=CHARGE_KEY),
-        _create_prepared_tariff_row(metering_point_id="2", charge_key=CHARGE_KEY),
-        _create_prepared_tariff_row(metering_point_id="3", charge_key=CHARGE_KEY),
+        create_prepared_tariffs_row(metering_point_id="1", charge_key=CHARGE_KEY),
+        create_prepared_tariffs_row(metering_point_id="2", charge_key=CHARGE_KEY),
+        create_prepared_tariffs_row(metering_point_id="3", charge_key=CHARGE_KEY),
     ]
 
-    tariffs = spark.createDataFrame(data=rows, schema=prepared_tariffs_schema)
+    prepared_tariffs = create_prepared_tariffs(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(tariffs)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs)
 
     # Assert
     assert actual.count() == 1
@@ -201,15 +135,15 @@ def test__calculate_tariff_price_per_ga_co_es__returns_all_qualities(
     expected_quality_values = [quality.value for quality in expected_qualities]
 
     rows = [
-        _create_prepared_tariff_row(
+        create_prepared_tariffs_row(
             metering_point_id=str(uuid.uuid4()), quality=quality
         )
         for quality in expected_qualities
     ]
-    tariffs = spark.createDataFrame(data=rows, schema=prepared_tariffs_schema)
+    prepared_tariffs = create_prepared_tariffs(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(tariffs)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs)
 
     # Assert
     actual_row = actual.collect()[0]
@@ -248,13 +182,13 @@ def test__calculate_tariff_price_per_ga_co_es__does_not_aggregate_across_group_s
 
     # Arrange
     rows = [
-        _create_prepared_tariff_row(**{column_name: value}),
-        _create_prepared_tariff_row(**{column_name: other_value}),
+        create_prepared_tariffs_row(**{column_name: value}),
+        create_prepared_tariffs_row(**{column_name: other_value}),
     ]
-    tariffs = spark.createDataFrame(data=rows, schema=prepared_tariffs_schema)
+    prepared_tariffs = create_prepared_tariffs(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(tariffs)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs)
 
     # Assert
     assert actual.count() == 2
@@ -271,14 +205,14 @@ def test__calculate_tariff_price_per_ga_co_es__when_settlement_method_is_null__r
 
     # Arrange
     rows = [
-        _create_prepared_tariff_row(
+        create_prepared_tariffs_row(
             metering_point_type=MeteringPointType.PRODUCTION, settlement_method=None
         )
     ]
-    tariffs = spark.createDataFrame(data=rows, schema=prepared_tariffs_schema)
+    prepared_tariffs = create_prepared_tariffs(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(tariffs)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs)
 
     # Assert
     assert actual.count() == 1
@@ -296,11 +230,11 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_expected_scale(
     spark: SparkSession, column_name: str, expected_scale: int
 ) -> None:
     # Arrange
-    rows = [_create_prepared_tariff_row()]
-    tariffs = spark.createDataFrame(data=rows, schema=prepared_tariffs_schema)
+    rows = [create_prepared_tariffs_row()]
+    prepared_tariffs = create_prepared_tariffs(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(tariffs)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs)
 
     # Assert
     assert actual.schema[column_name].dataType.scale == expected_scale
@@ -310,11 +244,11 @@ def test__calculate_tariff_price_per_ga_co_es__when_production__returns_df_with_
     spark: SparkSession,
 ) -> None:
     # Arrange
-    rows = [_create_prepared_tariff_row()]
-    tariffs = spark.createDataFrame(data=rows, schema=prepared_tariffs_schema)
+    rows = [create_prepared_tariffs_row()]
+    prepared_tariffs = create_prepared_tariffs(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(tariffs)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs)
 
     # Assert
     assert actual.schema[Colname.total_amount].dataType.precision >= 18
@@ -336,11 +270,11 @@ def test__calculate_tariff_price_per_ga_co_es__rounds_total_amount_correctly(
     expected_total_amount: Decimal,
 ) -> None:
     # Arrange
-    rows = [_create_prepared_tariff_row(charge_price=charge_price, quantity=quantity)]
-    tariffs = spark.createDataFrame(data=rows, schema=prepared_tariffs_schema)
+    rows = [create_prepared_tariffs_row(charge_price=charge_price, quantity=quantity)]
+    prepared_tariffs = create_prepared_tariffs(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(tariffs)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs)
 
     # Assert
     actual_amount = actual.collect()[0][Colname.total_amount]
@@ -352,14 +286,14 @@ def test__sum_within_month__sums_amount_per_month(
 ) -> None:
     # Arrange
     rows = [
-        _create_prepared_tariff_row(charge_time=datetime(2020, 1, 1, 1)),
-        _create_prepared_tariff_row(charge_time=datetime(2020, 1, 1, 0)),
+        create_prepared_tariffs_row(charge_time=datetime(2020, 1, 1, 1)),
+        create_prepared_tariffs_row(charge_time=datetime(2020, 1, 1, 0)),
     ]
-    tariffs = spark.createDataFrame(data=rows, schema=prepared_tariffs_schema)
+    prepared_tariffs = create_prepared_tariffs(spark, rows)
 
     # Act
     actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(tariffs),
+        calculate_tariff_price_per_ga_co_es(prepared_tariffs),
         DEFAULT_PERIOD_START_DATETIME,
     )
 
@@ -373,14 +307,14 @@ def test__sum_within_month__sums_across_metering_point_types(
 ) -> None:
     # Arrange
     rows = [
-        _create_prepared_tariff_row(metering_point_type=MeteringPointType.PRODUCTION),
-        _create_prepared_tariff_row(metering_point_type=MeteringPointType.CONSUMPTION),
+        create_prepared_tariffs_row(metering_point_type=MeteringPointType.PRODUCTION),
+        create_prepared_tariffs_row(metering_point_type=MeteringPointType.CONSUMPTION),
     ]
-    tariffs = spark.createDataFrame(data=rows, schema=prepared_tariffs_schema)
+    prepared_tariffs = create_prepared_tariffs(spark, rows)
 
     # Act
     actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(tariffs),
+        calculate_tariff_price_per_ga_co_es(prepared_tariffs),
         DEFAULT_PERIOD_START_DATETIME,
     )
 
@@ -394,14 +328,14 @@ def test__sum_within_month__joins_qualities(
 ) -> None:
     # Arrange
     rows = [
-        _create_prepared_tariff_row(quality=ChargeQuality.CALCULATED),
-        _create_prepared_tariff_row(quality=ChargeQuality.ESTIMATED),
+        create_prepared_tariffs_row(quality=ChargeQuality.CALCULATED),
+        create_prepared_tariffs_row(quality=ChargeQuality.ESTIMATED),
     ]
-    tariffs = spark.createDataFrame(data=rows, schema=prepared_tariffs_schema)
+    prepared_tariffs = create_prepared_tariffs(spark, rows)
 
     # Act
     actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(tariffs),
+        calculate_tariff_price_per_ga_co_es(prepared_tariffs),
         DEFAULT_PERIOD_START_DATETIME,
     )
 
@@ -416,14 +350,14 @@ def test__sum_within_month__groups_by_local_time_months(
 ) -> None:
     # Arrange
     rows = [
-        _create_prepared_tariff_row(charge_time=datetime(2020, 1, 1, 0)),
-        _create_prepared_tariff_row(charge_time=datetime(2019, 12, 31, 23)),
+        create_prepared_tariffs_row(charge_time=datetime(2020, 1, 1, 0)),
+        create_prepared_tariffs_row(charge_time=datetime(2019, 12, 31, 23)),
     ]
-    tariffs = spark.createDataFrame(data=rows, schema=prepared_tariffs_schema)
+    prepared_tariffs = create_prepared_tariffs(spark, rows)
 
     # Act
     actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(tariffs),
+        calculate_tariff_price_per_ga_co_es(prepared_tariffs),
         DEFAULT_PERIOD_START_DATETIME,
     )
 
@@ -438,13 +372,13 @@ def test__sum_within_month__charge_time_always_start_of_month(
 ) -> None:
     # Arrange
     rows = [
-        _create_prepared_tariff_row(charge_time=datetime(2020, 1, 3, 0)),
+        create_prepared_tariffs_row(charge_time=datetime(2020, 1, 3, 0)),
     ]
-    tariffs = spark.createDataFrame(data=rows, schema=prepared_tariffs_schema)
+    prepared_tariffs = create_prepared_tariffs(spark, rows)
 
     # Act
     actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(tariffs),
+        calculate_tariff_price_per_ga_co_es(prepared_tariffs),
         DEFAULT_PERIOD_START_DATETIME,
     )
 
@@ -457,14 +391,14 @@ def test__sum_within_month__sums_quantity_per_month(
 ) -> None:
     # Arrange
     rows = [
-        _create_prepared_tariff_row(quantity=Decimal("1.111")),
-        _create_prepared_tariff_row(quantity=Decimal("1.111")),
+        create_prepared_tariffs_row(quantity=Decimal("1.111")),
+        create_prepared_tariffs_row(quantity=Decimal("1.111")),
     ]
-    tariffs = spark.createDataFrame(data=rows, schema=prepared_tariffs_schema)
+    prepared_tariffs = create_prepared_tariffs(spark, rows)
 
     # Act
     actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(tariffs),
+        calculate_tariff_price_per_ga_co_es(prepared_tariffs),
         DEFAULT_PERIOD_START_DATETIME,
     )
 
@@ -478,18 +412,18 @@ def test__sum_within_month__sums_charge_price_per_month(
 ) -> None:
     # Arrange
     rows = [
-        _create_prepared_tariff_row(
+        create_prepared_tariffs_row(
             charge_time=datetime(2020, 1, 1, 0), charge_price=Decimal("1.111111")
         ),
-        _create_prepared_tariff_row(
+        create_prepared_tariffs_row(
             charge_time=datetime(2020, 1, 1, 1), charge_price=Decimal("1.111111")
         ),
     ]
-    tariffs = spark.createDataFrame(data=rows, schema=prepared_tariffs_schema)
+    prepared_tariffs = create_prepared_tariffs(spark, rows)
 
     # Act
     actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(tariffs),
+        calculate_tariff_price_per_ga_co_es(prepared_tariffs),
         DEFAULT_PERIOD_START_DATETIME,
     )
 
@@ -508,12 +442,12 @@ def test__calculate_tariff_price_per_ga_co_es__when_charge_price_is_null__return
 
     # Arrange
     rows = [
-        _create_prepared_tariff_row(charge_price=None, quantity=Decimal("2.000000")),
+        create_prepared_tariffs_row(charge_price=None, quantity=Decimal("2.000000")),
     ]
-    tariffs = spark.createDataFrame(data=rows, schema=prepared_tariffs_schema)
+    prepared_tariffs = create_prepared_tariffs(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(tariffs)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs)
 
     # Assert
     assert actual.collect()[0][Colname.total_amount] is None
@@ -524,14 +458,14 @@ def test__sum_within_month__when_all_charge_prices_are_none__sums_charge_price_a
 ) -> None:
     # Arrange
     rows = [
-        _create_prepared_tariff_row(charge_price=None),
-        _create_prepared_tariff_row(charge_price=None),
+        create_prepared_tariffs_row(charge_price=None),
+        create_prepared_tariffs_row(charge_price=None),
     ]
-    tariffs = spark.createDataFrame(data=rows, schema=prepared_tariffs_schema)
+    prepared_tariffs = create_prepared_tariffs(spark, rows)
 
     # Act
     actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(tariffs),
+        calculate_tariff_price_per_ga_co_es(prepared_tariffs),
         DEFAULT_PERIOD_START_DATETIME,
     )
 
@@ -546,16 +480,16 @@ def test__sum_within_month__when_one_tariff_has_charge_price_none__sums_charge_p
 ) -> None:
     # Arrange
     rows = [
-        _create_prepared_tariff_row(charge_price=None),
-        _create_prepared_tariff_row(
+        create_prepared_tariffs_row(charge_price=None),
+        create_prepared_tariffs_row(
             charge_price=Decimal("2.000000"), quantity=Decimal("3.000000")
         ),
     ]
-    tariffs = spark.createDataFrame(data=rows, schema=prepared_tariffs_schema)
+    prepared_tariffs = create_prepared_tariffs(spark, rows)
 
     # Act
     actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(tariffs),
+        calculate_tariff_price_per_ga_co_es(prepared_tariffs),
         DEFAULT_PERIOD_START_DATETIME,
     )
 

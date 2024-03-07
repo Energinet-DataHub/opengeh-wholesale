@@ -20,8 +20,8 @@ from package.calculation.preparation.prepared_tariffs import prepared_tariffs_sc
 from package.calculation.wholesale import execute
 from package.codelists import ChargeResolution
 
-from tests.calculation.wholesale.test_tariff_calculators import (
-    _create_prepared_tariff_row,
+from tests.calculation.wholesale.prepared_tariff_factory import (
+    create_prepared_tariffs_row,
 )
 
 
@@ -30,10 +30,10 @@ def test__execute__when_tariff_schema_is_valid__does_not_raise(
 ) -> None:
     # Arrange
     tariffs_hourly_df = spark.createDataFrame(
-        data=[_create_prepared_tariff_row()], schema=prepared_tariffs_schema
+        data=[create_prepared_tariffs_row()], schema=prepared_tariffs_schema
     )
     tariffs_daily_df = spark.createDataFrame(
-        data=[_create_prepared_tariff_row(resolution=ChargeResolution.DAY)],
+        data=[create_prepared_tariffs_row(resolution=ChargeResolution.DAY)],
         schema=prepared_tariffs_schema,
     )
 
