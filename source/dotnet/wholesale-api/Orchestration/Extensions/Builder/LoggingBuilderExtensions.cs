@@ -15,12 +15,12 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Energinet.DataHub.Wholesale.Orchestration.Extensions.DependencyInjection;
+namespace Energinet.DataHub.Wholesale.Orchestration.Extensions.Builder;
 
 /// <summary>
 /// Extension methods for setting up logging services in an <see cref="ILoggingBuilder" />.
 /// </summary>
-public static class LoggingExtensions
+public static class LoggingBuilderExtensions
 {
     /// <summary>
     /// For use in a Function App isolated worker.
