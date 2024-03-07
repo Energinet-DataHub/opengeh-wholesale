@@ -16,6 +16,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.D
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Extensions.DependencyInjection;
+using Energinet.DataHub.Wholesale.Orchestration.Extensions.Builder;
 using Energinet.DataHub.Wholesale.Orchestration.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
