@@ -22,7 +22,7 @@ from pyspark.sql.types import (
 )
 
 
-def get_expected(*args) -> DataFrame:  # type: ignore
+def create_wholesale_result_dataframe(*args) -> DataFrame:  # type: ignore
     spark: SparkSession = args[0]
     df: DataFrame = args[1]
     calculator_args: any = args[2]

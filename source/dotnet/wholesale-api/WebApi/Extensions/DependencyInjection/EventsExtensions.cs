@@ -86,7 +86,7 @@ public static class EventsExtensions
             .AddAzureServiceBusQueueUsingWebSockets(
                 sp => sp.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>().Value.ConnectionString,
                 sp => sp.GetRequiredService<IOptions<WholesaleInboxQueueOptions>>().Value.QueueName,
-                name: "WholesaleInboxHealthCheck");
+                name: "WholesaleInboxQueue");
 
         services
             .AddHostedService<AggregatedTimeSeriesServiceBusWorker>();

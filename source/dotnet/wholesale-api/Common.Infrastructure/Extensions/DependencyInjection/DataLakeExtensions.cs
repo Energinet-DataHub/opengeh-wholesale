@@ -42,7 +42,9 @@ public static class DataLakeExtensions
 
         // Health checks
         services.AddHealthChecks()
-            .AddDataLakeHealthCheck(_ => configuration.Get<DataLakeOptions>()!);
+            .AddDataLakeHealthCheck(
+                _ => configuration.Get<DataLakeOptions>()!,
+                name: "DataLake");
 
         return services;
     }
