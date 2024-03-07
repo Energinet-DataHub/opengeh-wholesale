@@ -39,32 +39,45 @@ public abstract class ServiceBusWorker : BackgroundService, IAsyncDisposable
         GC.SuppressFinalize(this);
     }
 
+    public override Task StartAsync(CancellationToken cancellationToken)
+    {
+        Logger.LogInformation("Starting worker");
+
+        return base.StartAsync(cancellationToken);
+    }
+
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
+        Logger.LogWarning("Stopping worker");
+
         await _serviceBusProcessor.StopProcessingAsync(cancellationToken).ConfigureAwait(false);
         await base.StopAsync(cancellationToken).ConfigureAwait(false);
-        Logger.LogWarning("Worker has stopped.");
+        Logger.LogWarning("Worker has stopped");
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        Logger.LogInformation("Worker started.");
+        Logger.LogInformation("Worker started (ExecuteAsync called)");
         _serviceBusProcessor.ProcessMessageAsync += ProcessMessageAsync;
         _serviceBusProcessor.ProcessErrorAsync += ProcessErrorAsync;
 
+        Logger.LogInformation("Starting ServiceBusProcessor");
         await _serviceBusProcessor.StartProcessingAsync(stoppingToken).ConfigureAwait(false);
+        Logger.LogInformation("Started ServiceBusProcessor");
     }
 
     protected abstract Task ProcessAsync(ProcessMessageEventArgs arg);
 
     private async Task ProcessMessageAsync(ProcessMessageEventArgs arg)
     {
+        Logger.LogInformation("Process message with id {message_id} started", arg.Message.MessageId);
         var stopWatch = Stopwatch.StartNew();
         await ProcessAsync(arg).ConfigureAwait(false);
         stopWatch.Stop();
         Logger.LogInformation("Processed message with id {message_id} in {elapsed_milliseconds} ms.", arg.Message.MessageId, stopWatch.ElapsedMilliseconds);
 
         await arg.CompleteMessageAsync(arg.Message).ConfigureAwait(false);
+        Logger.LogInformation("Completed message with id {message_id}", arg.Message.MessageId);
     }
 
     private Task ProcessErrorAsync(ProcessErrorEventArgs arg)
