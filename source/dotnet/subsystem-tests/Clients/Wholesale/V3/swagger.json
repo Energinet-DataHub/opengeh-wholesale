@@ -239,40 +239,6 @@
           }
         }
       }
-    },
-    "/v3/SettlementReport/ZippedBasisDataStream": {
-      "get": {
-        "tags": [
-          "SettlementReport"
-        ],
-        "summary": "Returns a stream containing the settlement report for a calculation matching calculationId",
-        "operationId": "ZippedBasisDataStream",
-        "parameters": [
-          {
-            "name": "calculationId",
-            "in": "query",
-            "required": true,
-            "description": "CalculationId",
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": null,
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          }
-        }
-      }
     }
   },
   "components": {

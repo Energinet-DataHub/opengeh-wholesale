@@ -15,9 +15,7 @@
 using System.Globalization;
 using System.IO.Compression;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
-using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using NodaTime;
 
@@ -25,28 +23,15 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementR
 
 public class SettlementReportClient : ISettlementReportClient
 {
-    private readonly ICalculationsClient _calculationsClient;
     private readonly ISettlementReportResultsCsvWriter _settlementReportResultsCsvWriter;
     private readonly ISettlementReportResultQueries _settlementReportResultQueries;
-    private readonly ISettlementReportRepository _settlementReportRepository;
 
     public SettlementReportClient(
-        ICalculationsClient calculationsClient,
         ISettlementReportResultsCsvWriter settlementReportResultsCsvWriter,
-        ISettlementReportRepository settlementReportRepository,
         ISettlementReportResultQueries settlementReportResultQueries)
     {
-        _calculationsClient = calculationsClient;
         _settlementReportResultQueries = settlementReportResultQueries;
         _settlementReportResultsCsvWriter = settlementReportResultsCsvWriter;
-        _settlementReportRepository = settlementReportRepository;
-    }
-
-    public async Task<SettlementReportDto> GetSettlementReportAsync(Guid calculationId)
-    {
-        var calculation = await _calculationsClient.GetAsync(calculationId).ConfigureAwait(false);
-        var report = await _settlementReportRepository.GetSettlementReportAsync(Map(calculation)).ConfigureAwait(false);
-        return new SettlementReportDto(report.Stream);
     }
 
     public async Task CreateCompressedSettlementReportAsync(
@@ -86,16 +71,5 @@ public class SettlementReportClient : ISettlementReportClient
                     .ConfigureAwait(false);
             }
         }
-    }
-
-    private CalculationInfo Map(CalculationDto calculation)
-    {
-        return new CalculationInfo
-        {
-            Id = calculation.CalculationId,
-            PeriodStart = Instant.FromDateTimeOffset(calculation.PeriodStart),
-            PeriodEnd = Instant.FromDateTimeOffset(calculation.PeriodEnd),
-            GridAreaCodes = calculation.GridAreaCodes.ToList(),
-        };
     }
 }
