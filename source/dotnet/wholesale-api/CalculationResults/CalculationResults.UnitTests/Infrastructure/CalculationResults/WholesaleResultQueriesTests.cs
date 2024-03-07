@@ -133,7 +133,7 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
         actualPoint.Time.Should().Be(new DateTimeOffset(2022, 5, 16, 22, 0, 0, TimeSpan.Zero));
         actualPoint.Quantity.Should().Be(1.111m);
         actualPoint.Qualities.Should().Contain(QuantityQuality.Measured);
-        actualPoint.Qualities.Count.Should().Be(1);
+        actualPoint.Qualities.Should().HaveCount(1);
         actualPoint.Price.Should().Be(2.123456m);
         actualPoint.Amount.Should().Be(3.123456m);
     }

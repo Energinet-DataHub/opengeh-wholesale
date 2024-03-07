@@ -24,23 +24,22 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 public class MeteringPointTypeMapperTests
 {
     [Fact]
-    public async Task QuantityQuality_Matches_Contract()
+    public async Task FromDeltaTableValue_WhenValidDeltaTableValue_ReturnsExpectedType()
     {
+        // Arrange
         await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.metering-point-type.json");
-        await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<MeteringPointType>(stream);
-    }
+        var deltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
 
-    [Theory]
-    [InlineData("production", MeteringPointType.Production)]
-    [InlineData("consumption", MeteringPointType.Consumption)]
-    [InlineData(null, null)]
-    public void FromDeltaTableValue_WhenValidDeltaTableValue_ReturnsExpectedType(string? deltaTableValue, MeteringPointType? expectedType)
-    {
-        // Act
-        var actualType = MeteringPointTypeMapper.FromDeltaTableValue(deltaTableValue);
+        foreach (var deltaValue in deltaValues)
+        {
+            var expected = deltaValue.Replace("_", string.Empty);
 
-        // Assert
-        actualType.Should().Be(expectedType);
+            // Act
+            var actualType = MeteringPointTypeMapper.FromDeltaTableValue(deltaValue);
+
+            // Assert
+            actualType.ToString().Should().BeEquivalentTo(expected);
+        }
     }
 
     [Fact]
