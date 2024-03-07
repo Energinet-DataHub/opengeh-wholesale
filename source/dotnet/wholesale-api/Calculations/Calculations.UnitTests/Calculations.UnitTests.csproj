@@ -25,6 +25,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
     <ProjectReference Include="..\..\Common.Interfaces\Common.Interfaces.csproj" />
     <ProjectReference Include="..\..\Test.Core\Test.Core.csproj" />
     <ProjectReference Include="..\Calculations.Infrastructure\Calculations.Infrastructure.csproj" />
