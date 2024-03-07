@@ -21,7 +21,6 @@ using Energinet.DataHub.Wholesale.Edi.Factories;
 using Energinet.DataHub.Wholesale.Edi.Mappers;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.Validation;
-using Google.Protobuf.Reflection;
 using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Edi;
