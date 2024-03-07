@@ -105,7 +105,6 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         actual = get_metering_points_and_child_metering_points(
             metering_point_periods,
         )
-        actual.show()
 
         # Assert
         assert actual.count() == 4
@@ -179,7 +178,6 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         actual = get_metering_points_and_child_metering_points(
             metering_point_periods,
         )
-        actual.show()
 
         # Assert
         assert actual.count() == 4
@@ -253,7 +251,6 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         actual = get_metering_points_and_child_metering_points(
             metering_point_periods,
         )
-        actual.show()
 
         # Assert
         assert actual.count() == 4
@@ -336,7 +333,6 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         actual = get_metering_points_and_child_metering_points(
             metering_point_periods,
         )
-        actual.show()
 
         # Assert
         assert actual.count() == 6
