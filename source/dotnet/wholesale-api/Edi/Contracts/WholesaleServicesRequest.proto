@@ -21,7 +21,7 @@ message WholesaleServicesRequest {
   string requested_by_actor_id = 1; // GLN or EIC for the requesting party. This is the party that receives the settlement request.
   string requested_by_actor_role = 2; //The kind of market roles that can be played by parties for given domains within the electricity market. Eg. GridOperator, EnergySupplier etc.
   string business_reason = 3; // The requested business reason for the settlement request. eg. WholesaleFixing or Correction.
-  string resolution = 6; // Is this used for determining if they are requesting monthly sums (Monthly) or amount pr. charge (Daily)
+  optional string resolution = 6; // Is this used for determining if they are requesting monthly sums (Monthly) or amount pr. charge (Daily) - only used in rsm17 and setting p1m else its daily/hour depinding on the charge
   string period_start = 7; // The start of the requested period.
   optional string period_end = 8; // The end of the requested period.
   optional string energy_supplier_id = 9; // GLN or EIC for the energy supplier on the charge.

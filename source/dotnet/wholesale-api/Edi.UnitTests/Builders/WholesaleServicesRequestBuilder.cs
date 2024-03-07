@@ -24,7 +24,7 @@ public class WholesaleServicesRequestBuilder
     private string _requestedByActorId = EnergySupplierValidatorTest.ValidGlnNumber;
     private string _requestedByActorRole = ActorRoleCode.EnergySupplier;
     private string _businessReason = BusinessReason.WholesaleFixing;
-    private string _resolution = Resolution.Monthly;
+    private string? _resolution;
     private string _periodStart = Instant.FromUtc(2023, 1, 1, 23, 0, 0).ToString();
     private string? _periodEnd;
     private string? _energySupplierId;
@@ -40,10 +40,11 @@ public class WholesaleServicesRequestBuilder
             RequestedByActorId = _requestedByActorId,
             RequestedByActorRole = _requestedByActorRole,
             BusinessReason = _businessReason,
-            Resolution = _resolution,
             PeriodStart = _periodStart,
         };
 
+        if (_resolution != null)
+            request.Resolution = _resolution;
         if (_periodEnd != null)
             request.PeriodEnd = _periodEnd;
         if (_energySupplierId != null)
