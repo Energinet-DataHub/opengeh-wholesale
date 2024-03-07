@@ -17,7 +17,7 @@ using Azure.Messaging.ServiceBus;
 namespace Energinet.DataHub.Wholesale.Edi;
 
 /// <summary>
-/// Handles specific messages sent to the WholesaleInbox service bus queue (typically received from EDI)
+/// Handles specific messages sent to the WholesaleInbox service bus queue (typically received from the EDI subsystem)
 /// </summary>
 public interface IWholesaleInboxRequestHandler
 {

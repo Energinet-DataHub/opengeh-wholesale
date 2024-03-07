@@ -20,7 +20,7 @@ using Microsoft.Extensions.Logging;
 namespace Energinet.DataHub.Wholesale.Edi;
 
 /// <summary>
-/// Handles WholesaleServicesRequest messages (typically received from EDI through the WholesaleInbox service bus queue)
+/// Handles WholesaleServicesRequest messages (typically received from the EDI subsystem through the WholesaleInbox service bus queue)
 /// </summary>
 public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
 {
