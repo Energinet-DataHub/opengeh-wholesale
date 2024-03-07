@@ -22,7 +22,12 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Am
 public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProducedV1Factory
 {
     public bool CanCreate(WholesaleResult result) =>
-        result is { AmountType: AmountType.AmountPerCharge, Resolution: Resolution.Hour or Resolution.Day, ChargeType: ChargeType.Tariff };
+        result is
+        {
+            AmountType: AmountType.AmountPerCharge,
+            Resolution: Resolution.Hour or Resolution.Day,
+            ChargeType: ChargeType.Tariff
+        };
 
     public Contracts.IntegrationEvents.AmountPerChargeResultProducedV1 Create(WholesaleResult result)
     {
