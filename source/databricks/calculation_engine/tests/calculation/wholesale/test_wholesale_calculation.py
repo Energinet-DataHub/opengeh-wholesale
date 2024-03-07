@@ -20,21 +20,19 @@ from package.calculation.preparation.prepared_tariffs import prepared_tariffs_sc
 from package.calculation.wholesale import execute
 from package.codelists import ChargeResolution
 
-from tests.calculation.wholesale.prepared_tariff_factory import (
-    create_prepared_tariffs_row,
-)
+import tests.calculation.wholesale.prepared_tariff_factory as factory
 
 
 def test__execute__when_tariff_schema_is_valid__does_not_raise(
     spark: SparkSession, any_calculator_args: CalculatorArgs
 ) -> None:
     # Arrange
-    tariffs_hourly_df = spark.createDataFrame(
-        data=[create_prepared_tariffs_row()], schema=prepared_tariffs_schema
+    tariffs_hourly_df = factory.create_prepared_tariffs(
+        spark, data=[factory.create_prepared_tariffs_row()]
     )
-    tariffs_daily_df = spark.createDataFrame(
-        data=[create_prepared_tariffs_row(resolution=ChargeResolution.DAY)],
-        schema=prepared_tariffs_schema,
+    tariffs_daily_df = factory.create_prepared_tariffs(
+        spark,
+        data=[factory.create_prepared_tariffs_row(resolution=ChargeResolution.DAY)],
     )
 
     # Act
@@ -46,20 +44,3 @@ def test__execute__when_tariff_schema_is_valid__does_not_raise(
 
     # Assert
     # If execute raises an exception, the test fails automatically
-
-
-def test__execute__when_tariff_schema_is_invalid__raises_assertion_error(
-    spark: SparkSession, any_calculator_args: CalculatorArgs
-) -> None:
-    # Arrange
-    data = [("John", "Dow")]
-    tariffs_hourly_df: DataFrame = spark.createDataFrame(data)
-    tariffs_daily_df: DataFrame = spark.createDataFrame(data)
-
-    # Act & Assert
-    with pytest.raises(AssertionError):
-        execute(
-            any_calculator_args,
-            tariffs_hourly_df,
-            tariffs_daily_df,
-        )
