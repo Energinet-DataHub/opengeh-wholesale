@@ -15,9 +15,7 @@ from helpers.data_frame_utils import (
     assert_dataframe_and_schema,
 )
 from package.constants import WholesaleResultColumnNames
-from .states.scenario_state import (
-    get_expected,
-)
+from .states.scenario_state import get_expected
 
 
 def test_execute__returns_expected(  # type: ignore
@@ -28,6 +26,9 @@ def test_execute__returns_expected(  # type: ignore
 
     # Act
     results = scenario_fixture.execute()
+
+    results.wholesale_results.hourly_tariff_per_ga_co_es.show()
+    scenario_fixture.expected.show()
 
     # Assert
     assert_dataframe_and_schema(

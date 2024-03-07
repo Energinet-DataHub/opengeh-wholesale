@@ -57,13 +57,6 @@ public class SettlementReportRepository : ISettlementReportRepository
         return new SettlementReport(stream);
     }
 
-    public async Task GetSettlementReportAsync(CalculationInfo completedCalculationInfo, string gridAreaCode, Stream outputStream)
-    {
-        var calculationBasisFileStreams = await GetProcessBasisFileStreamsAsync(completedCalculationInfo.Id, gridAreaCode)
-            .ConfigureAwait(false);
-        await _streamZipper.ZipAsync(calculationBasisFileStreams, outputStream).ConfigureAwait(false);
-    }
-
     public static (string Directory, string Extension, string ZipEntryPath) GetTimeSeriesHourBasisDataForTotalGridAreaFileSpecification(Guid calculationId, string gridAreaCode)
         => ($"calculation-output/batch_id={calculationId}/basis_data/time_series_hour/grouping=total_ga/grid_area={gridAreaCode}/",
             ".csv",
