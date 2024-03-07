@@ -78,27 +78,6 @@ public class SettlementReportController : V3ControllerBase
     }
 
     /// <summary>
-    /// Returns a stream containing the settlement report for calculation with <paramref name="calculationId" /> and <paramref name="gridAreaCode" />.
-    /// </summary>
-    /// <param name="calculationId">CalculationId</param>
-    /// <param name="gridAreaCode">GridAreaCode</param>
-    [HttpGet(Name = "GetSettlementReportAsStreamAsync")]
-    [MapToApiVersion(Version)]
-    [BinaryContent]
-    [Authorize(Roles = Permissions.SettlementReportsManage)]
-    public async Task GetAsync([Required] Guid calculationId, [Required] string gridAreaCode)
-    {
-        var outputStream = Response.BodyWriter.AsStream();
-
-        await using (outputStream.ConfigureAwait(false))
-        {
-            await _settlementReportClient
-                .GetSettlementReportAsync(calculationId, gridAreaCode, outputStream)
-                .ConfigureAwait(false);
-        }
-    }
-
-    /// <summary>
     /// Returns a stream containing the settlement report for a calculation matching <paramref name="calculationId"/>
     /// </summary>
     /// <param name="calculationId">CalculationId</param>
