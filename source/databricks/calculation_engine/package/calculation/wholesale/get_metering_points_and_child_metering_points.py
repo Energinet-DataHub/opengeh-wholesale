@@ -61,7 +61,7 @@ def get_metering_points_and_child_metering_points(
         & (
             production_and_consumption_metering_points[from_date]
             < all_metering_points[Colname.to_date]
-        ),  # parent_metering_point_id is always null on child metering points
+        ),
         "left",
     ).select(
         all_metering_points[Colname.metering_point_id],
