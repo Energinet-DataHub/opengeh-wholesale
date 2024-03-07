@@ -35,15 +35,15 @@ def get_metering_points_and_child_metering_points(
 
     es = "energy_supplier_id_temp"
     mp = "metering_point_id_temp"
-    fd = "from_date_temp"
-    td = "to_date_temp"
+    from_date = "from_date_temp"
+    to_date = "to_date_temp"
     production_and_consumption_metering_points = (
         production_and_consumption_metering_points.withColumnRenamed(
             Colname.energy_supplier_id, es
         )
         .withColumnRenamed(Colname.metering_point_id, mp)
-        .withColumnRenamed(Colname.from_date, fd)
-        .withColumnRenamed(Colname.to_date, td)
+        .withColumnRenamed(Colname.from_date, from_date)
+        .withColumnRenamed(Colname.to_date, to_date)
     )
 
     all_metering_points = _get_all_child_metering_points(metering_point_periods_df)
@@ -55,11 +55,11 @@ def get_metering_points_and_child_metering_points(
             == all_metering_points[Colname.parent_metering_point_id]
         )
         & (
-            production_and_consumption_metering_points[fd]
+            production_and_consumption_metering_points[from_date]
             >= all_metering_points[Colname.from_date]
         )
         & (
-            production_and_consumption_metering_points[fd]
+            production_and_consumption_metering_points[from_date]
             < all_metering_points[Colname.to_date]
         ),  # parent_metering_point_id is always null on child metering points
         "left",
@@ -81,16 +81,16 @@ def get_metering_points_and_child_metering_points(
         ),  # energy_supplier_id is always null on child metering points
         all_metering_points[Colname.balance_responsible_id],
         f.when(
-            production_and_consumption_metering_points[fd]
+            production_and_consumption_metering_points[from_date]
             > all_metering_points[Colname.from_date],
-            production_and_consumption_metering_points[fd],
+            production_and_consumption_metering_points[from_date],
         )
         .otherwise(all_metering_points[Colname.from_date])
         .alias(Colname.from_date),
         f.when(
-            production_and_consumption_metering_points[td]
+            production_and_consumption_metering_points[to_date]
             < all_metering_points[Colname.to_date],
-            production_and_consumption_metering_points[td],
+            production_and_consumption_metering_points[to_date],
         )
         .otherwise(all_metering_points[Colname.to_date])
         .alias(Colname.to_date),
