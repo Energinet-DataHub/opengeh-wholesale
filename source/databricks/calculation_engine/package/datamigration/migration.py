@@ -54,7 +54,7 @@ def migrate_data_lake() -> None:
 
     spark_config = SparkSqlMigrationsConfiguration(
         migration_schema_name="schema_migration",
-        migration_schema_location=migration_args.storage_container_path,
+        migration_schema_location="",
         migration_table_name="executed_migrations",
         migration_table_location=migration_args.storage_container_path,
         migration_scripts_folder_path=c.MIGRATION_SCRIPTS_FOLDER_PATH,
