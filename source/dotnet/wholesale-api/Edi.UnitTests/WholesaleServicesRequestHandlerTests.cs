@@ -72,6 +72,7 @@ public class WholesaleServicesRequestHandlerTests
             CancellationToken.None);
 
         // Assert
+        // TODO: Update to "sends accepted message"
         await act.Should().NotThrowAsync();
     }
 
@@ -110,6 +111,7 @@ public class WholesaleServicesRequestHandlerTests
             CancellationToken.None);
 
         // Assert
+        // TODO: Update to "sends rejected message"
         await act.Should().ThrowExactlyAsync<NotImplementedException>();
     }
 }
