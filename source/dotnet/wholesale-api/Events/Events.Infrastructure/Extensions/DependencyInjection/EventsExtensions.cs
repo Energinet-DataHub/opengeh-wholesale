@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Publisher;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks.ServiceBus;
@@ -44,8 +45,6 @@ public static class EventsExtensions
     /// </summary>
     public static IServiceCollection AddEventsDatabase(this IServiceCollection services, IConfiguration configuration)
     {
-        // We don't add a health check for this context, because it's just another schema
-        // in the database we already use for Calculations
         services.AddScoped<IEventsDatabaseContext, EventsDatabaseContext>();
         services.AddDbContext<EventsDatabaseContext>(
             options => options.UseSqlServer(
@@ -57,6 +56,13 @@ public static class EventsExtensions
                     o.UseNodaTime();
                     o.EnableRetryOnFailure();
                 }));
+        // Database Health check
+        services.TryAddHealthChecks(
+            registrationKey: HealthCheckNames.WholesaleDatabase,
+            (key, builder) =>
+        {
+            builder.AddDbContextCheck<EventsDatabaseContext>(name: key);
+        });
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ICompletedCalculationRepository, CompletedCalculationRepository>();
