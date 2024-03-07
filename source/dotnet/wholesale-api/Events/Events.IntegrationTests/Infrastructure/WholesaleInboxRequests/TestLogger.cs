@@ -41,7 +41,7 @@ public class TestLogger<T> : ILogger<T>
 
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
-        _testOutput.WriteLine("Test log message: {0}", formatter(state, exception));
+        _testOutput.WriteLine("Test log message: [{0}] {1}", logLevel.ToString(), formatter(state, exception));
         _baseLogger.Log(logLevel, eventId, state, exception, formatter);
     }
 }
