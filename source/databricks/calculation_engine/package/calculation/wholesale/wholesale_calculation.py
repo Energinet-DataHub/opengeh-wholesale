@@ -53,6 +53,7 @@ def execute(
     return results
 
 
+@logging_configuration.use_span("calculate_subscriptions")
 def _calculate_subscriptions(
     args: CalculatorArgs,
     prepared_subscriptions: DataFrame,
@@ -64,7 +65,7 @@ def _calculate_subscriptions(
         args.calculation_period_end_datetime,
         args.time_zone,
     )
-    results.subscription_amount_per_charge = factory.create(
+    results.subscription_per_ga_co_es = factory.create(
         args, subscription_amount_per_charge, AmountType.AMOUNT_PER_CHARGE
     )
 
