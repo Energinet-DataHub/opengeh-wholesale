@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Diagnostics;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Edi;
@@ -46,6 +47,7 @@ public class WholesaleInboxServiceBusWorkerTests : IClassFixture<ServiceBusSende
         Mock<ILogger<WholesaleInboxServiceBusWorker>> loggerMock)
     {
         // Arrange
+        var stopwatch = new Stopwatch();
         var testLogger = new TestLogger<WholesaleInboxServiceBusWorker>(loggerMock.Object, _testOutputHelper);
         var messageHasBeenReceivedEvent = new AutoResetEvent(false);
         var expectedReferenceId = Guid.NewGuid().ToString();
@@ -54,7 +56,7 @@ public class WholesaleInboxServiceBusWorkerTests : IClassFixture<ServiceBusSende
             .Setup(handler => handler.ProcessAsync(It.IsAny<ServiceBusReceivedMessage>(), expectedReferenceId, It.IsAny<CancellationToken>()))
             .Callback(() =>
             {
-                testLogger.LogInformation("ProcessAsync callback - Setting messageHasBeenReceivedEvent");
+                testLogger.LogInformation("Received ProcessAsync callback, time elapsed: {0}", stopwatch.Elapsed);
                 messageHasBeenReceivedEvent.Set();
                 testLogger.LogInformation("ProcessAsync callback - Did set messageHasBeenReceivedEvent");
             });
@@ -90,13 +92,16 @@ public class WholesaleInboxServiceBusWorkerTests : IClassFixture<ServiceBusSende
 
         // Act
         await sut.StartAsync(CancellationToken.None);
+
+        stopwatch.Start();
         await _sender.PublishAsync("Hello World", expectedReferenceId);
 
         // Assert
-        testLogger.LogInformation("Waiting for messageHasBeenReceivedEvent");
+        testLogger.LogInformation("Waiting for messageHasBeenReceivedEvent, time elapsed: {0}", stopwatch.Elapsed);
         var messageHasBeenReceived = messageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(10));
-        testLogger.LogInformation("Finished waiting for messageHasBeenReceivedEvent, result: {0}", messageHasBeenReceived);
+        testLogger.LogInformation("Finished waiting for messageHasBeenReceivedEvent, result: {0}, time elapsed: {1}", messageHasBeenReceived, stopwatch.Elapsed);
         messageHasBeenReceived.Should().BeTrue();
+        stopwatch.Stop();
     }
 
     [Theory]
