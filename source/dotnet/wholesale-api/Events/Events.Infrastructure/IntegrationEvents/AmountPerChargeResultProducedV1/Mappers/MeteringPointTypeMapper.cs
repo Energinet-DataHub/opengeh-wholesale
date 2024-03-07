@@ -21,15 +21,19 @@ public static class MeteringPointTypeMapper
 {
     public static EventMeteringPointType MapMeteringPointType(ModelMeteringPointType? meteringPointType)
     {
-        return meteringPointType switch
+        if (meteringPointType == null)
+            return EventMeteringPointType.Unspecified;
+
+        var type = Enum.Parse<EventMeteringPointType>(meteringPointType.Value.ToString());
+
+        if (!Enum.IsDefined(type))
         {
-            ModelMeteringPointType.Consumption => EventMeteringPointType.Consumption,
-            ModelMeteringPointType.Production => EventMeteringPointType.Production,
-            null => EventMeteringPointType.Unspecified,
-            _ => throw new ArgumentOutOfRangeException(
+            throw new ArgumentOutOfRangeException(
                 nameof(meteringPointType),
                 actualValue: meteringPointType,
-                "Value cannot be mapped to a metering point type."),
-        };
+                "Value cannot be mapped to a metering point type.");
+        }
+
+        return type;
     }
 }
