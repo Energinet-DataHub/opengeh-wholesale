@@ -25,6 +25,18 @@ public static class MeteringPointTypeMapper
         {
             ModelMeteringPointType.Consumption => EventMeteringPointType.Consumption,
             ModelMeteringPointType.Production => EventMeteringPointType.Production,
+            ModelMeteringPointType.VeProduction => EventMeteringPointType.VeProduction,
+            ModelMeteringPointType.NetProduction => EventMeteringPointType.NetProduction,
+            ModelMeteringPointType.SupplyToGrid => EventMeteringPointType.SupplyToGrid,
+            ModelMeteringPointType.ConsumptionFromGrid => EventMeteringPointType.ConsumptionFromGrid,
+            ModelMeteringPointType.WholesaleServicesInformation => EventMeteringPointType.WholesaleServicesInformation,
+            ModelMeteringPointType.OwnProduction => EventMeteringPointType.OwnProduction,
+            ModelMeteringPointType.NetFromGrid => EventMeteringPointType.NetFromGrid,
+            ModelMeteringPointType.NetToGrid => EventMeteringPointType.NetToGrid,
+            ModelMeteringPointType.TotalConsumption => EventMeteringPointType.TotalConsumption,
+            ModelMeteringPointType.ElectricalHeating => EventMeteringPointType.ElectricalHeating,
+            ModelMeteringPointType.NetConsumption => EventMeteringPointType.NetConsumption,
+            ModelMeteringPointType.EffectSettlement => EventMeteringPointType.EffectSettlement,
             null => EventMeteringPointType.Unspecified,
             _ => throw new ArgumentOutOfRangeException(
                 nameof(meteringPointType),
