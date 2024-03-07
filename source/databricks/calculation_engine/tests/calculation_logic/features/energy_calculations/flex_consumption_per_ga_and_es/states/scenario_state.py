@@ -19,7 +19,7 @@ from calculation_logic.features.energy_calculations.energy_results_dataframe imp
 )
 
 
-def get_expected(*args) -> DataFrame:  # type: ignore
+def get_expected(*args) -> DataFrame:
     """
     This function can be used to custom build the expected results (dataframe).
     It is also used a reference to locate the test scenario.
