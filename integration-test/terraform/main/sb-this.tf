@@ -1,9 +1,10 @@
 resource "azurerm_servicebus_namespace" "this" {
-  name                = "sb-${local.resource_suffix_with_dash}"
-  location            = azurerm_resource_group.this.location
-  resource_group_name = azurerm_resource_group.this.name
-  sku                 = "Premium"
-  capacity            = 1
+  name                          = "sb-${local.resource_suffix_with_dash}"
+  location                      = azurerm_resource_group.this.location
+  resource_group_name           = azurerm_resource_group.this.name
+  sku                           = "Premium"
+  premium_messaging_partitions  = 1
+  capacity                      = 1
 
   lifecycle {
     ignore_changes = [
