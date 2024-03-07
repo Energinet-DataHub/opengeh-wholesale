@@ -48,7 +48,6 @@ public class WholesaleInboxServiceBusWorker : ServiceBusWorker
             Logger.LogInformation("Processing message with reference id {reference_id}.", referenceId);
             using var scope = _serviceProvider.CreateScope();
             var requestHandlers = scope.ServiceProvider.GetServices<IWholesaleInboxRequestHandler>();
-
             var requestHandler = requestHandlers.Single(h => h.CanHandle(arg.Message.Subject));
             await requestHandler.ProcessAsync(arg.Message, referenceId, arg.CancellationToken).ConfigureAwait(true);
         }

@@ -59,7 +59,6 @@ public abstract class ServiceBusWorker : BackgroundService, IAsyncDisposable
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         Logger.LogInformation("Worker started");
-
         _serviceBusProcessor.ProcessMessageAsync += ProcessMessageAsync;
         _serviceBusProcessor.ProcessErrorAsync += ProcessErrorAsync;
         await _serviceBusProcessor.StartProcessingAsync(stoppingToken).ConfigureAwait(false);
