@@ -142,11 +142,6 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         self,
         spark: SparkSession,
     ):
-        """
-        When parent mp changes energy supplier within child mp period,
-        but parent from date is before child from date and parent to date is after child to date,
-        then returns two child and two parent metering points
-        """
         # Arrange
         rows = [
             factory.create_row(
@@ -215,11 +210,6 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         self,
         spark: SparkSession,
     ):
-        """
-        When parent changes energy supplier within child period,
-        but parent from date is before child from data and parent to date is after child to date,
-        then returns two child and two parent metering points
-        """
         # Arrange
         rows = [
             factory.create_row(
