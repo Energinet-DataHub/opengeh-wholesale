@@ -22,14 +22,29 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
 
 public class MeteringPointTypeMapperTests
 {
-    [Theory]
-    [InlineData(ModelMeteringPointType.Consumption, EventMeteringPointType.Consumption)]
-    [InlineData(ModelMeteringPointType.Production, EventMeteringPointType.Production)]
-    [InlineData(null, EventMeteringPointType.Unspecified)]
-    public void MapMeteringPointType_WhenCalledWithValidMeteringTypes_MapsCorrectly(ModelMeteringPointType? meteringPointType, EventMeteringPointType expected)
+    [Fact]
+    public void MapMeteringPointType_WhenCalledWithNull_MapsToUnspecified()
     {
         // Act & Assert
-        MeteringPointTypeMapper.MapMeteringPointType(meteringPointType).Should().Be(expected);
+        MeteringPointTypeMapper.MapMeteringPointType(null).Should().Be(EventMeteringPointType.Unspecified);
+    }
+
+    [Fact]
+    public void MapMeteringPointType_WhenCalledWithValidMeteringTypes_MapsCorrectly()
+    {
+        // Arrange
+        var validTypes = Enum
+            .GetValues<ModelMeteringPointType>()
+            .Except(new[] { ModelMeteringPointType.Exchange });
+
+        foreach (var expectedType in validTypes)
+        {
+            // Act
+            var actualType = MeteringPointTypeMapper.MapMeteringPointType(expectedType);
+
+            // Assert
+            actualType.ToString().Should().Be(expectedType.ToString());
+        }
     }
 
     [Fact]
