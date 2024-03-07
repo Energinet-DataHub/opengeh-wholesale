@@ -32,7 +32,7 @@ def execute(
 ) -> WholesaleResultsContainer:
     results = WholesaleResultsContainer()
 
-    _calculate_tariff_amounts(
+    _calculate_tariff_charges(
         args,
         prepared_hourly_tariffs,
         prepared_daily_tariffs,
@@ -42,49 +42,49 @@ def execute(
     return results
 
 
-@logging_configuration.use_span("calculate_tariff_amounts")
-def _calculate_tariff_amounts(
+@logging_configuration.use_span("calculate_tariff_charges")
+def _calculate_tariff_charges(
     args: CalculatorArgs,
     prepared_hourly_tariffs: PreparedTariffs,
     prepared_daily_tariffs: PreparedTariffs,
     results: WholesaleResultsContainer,
 ) -> None:
-    tariff_amount_per_charge_from_hourly = tariffs.calculate_amount_per_charge(
+    hourly_tariff_per_ga_co_es = tariffs.calculate_tariff_price_per_ga_co_es(
         prepared_hourly_tariffs
     )
 
-    results.tariff_amount_per_charge_from_hourly = factory.create(
+    results.hourly_tariff_per_ga_co_es = factory.create(
         args,
-        tariff_amount_per_charge_from_hourly,
+        hourly_tariff_per_ga_co_es,
         AmountType.AMOUNT_PER_CHARGE,
     )
 
-    tariff_monthly_amount_per_charge_from_hourly = tariffs.sum_within_month(
-        tariff_amount_per_charge_from_hourly, args.calculation_period_start_datetime
+    monthly_tariff_from_hourly_per_ga_co_es = tariffs.sum_within_month(
+        hourly_tariff_per_ga_co_es, args.calculation_period_start_datetime
     )
 
-    results.tariff_monthly_amount_per_charge_from_hourly = factory.create(
+    results.monthly_tariff_from_hourly_per_ga_co_es = factory.create(
         args,
-        tariff_monthly_amount_per_charge_from_hourly,
+        monthly_tariff_from_hourly_per_ga_co_es,
         AmountType.MONTHLY_AMOUNT_PER_CHARGE,
     )
 
-    tariff_amount_per_charge_from_daily = tariffs.calculate_amount_per_charge(
+    daily_tariff_per_ga_co_es = tariffs.calculate_tariff_price_per_ga_co_es(
         prepared_daily_tariffs
     )
 
-    results.tariff_amount_per_charge_from_daily = factory.create(
+    results.daily_tariff_per_ga_co_es = factory.create(
         args,
-        tariff_amount_per_charge_from_daily,
+        daily_tariff_per_ga_co_es,
         AmountType.AMOUNT_PER_CHARGE,
     )
 
-    tariff_monthly_amount_per_charge_from_daily = tariffs.sum_within_month(
-        tariff_amount_per_charge_from_daily, args.calculation_period_start_datetime
+    monthly_tariff_from_daily_per_ga_co_es = tariffs.sum_within_month(
+        daily_tariff_per_ga_co_es, args.calculation_period_start_datetime
     )
 
-    results.tariff_monthly_amount_per_charge_from_daily = factory.create(
+    results.monthly_tariff_from_daily_per_ga_co_es = factory.create(
         args,
-        tariff_monthly_amount_per_charge_from_daily,
+        monthly_tariff_from_daily_per_ga_co_es,
         AmountType.MONTHLY_AMOUNT_PER_CHARGE,
     )

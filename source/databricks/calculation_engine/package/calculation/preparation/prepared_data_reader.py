@@ -23,6 +23,7 @@ from . import transformations as T
 from .charge_link_metering_point_periods import ChargeLinkMeteringPointPeriods
 from .charge_master_data import ChargeMasterData
 from .charge_prices import ChargePrices
+from .prepared_tariffs import PreparedTariffs
 from ...infrastructure import logging_configuration
 
 
@@ -95,7 +96,7 @@ class PreparedDataReader:
         charges_link_metering_point_periods: ChargeLinkMeteringPointPeriods,
         resolution: ChargeResolution,
         time_zone: str,
-    ) -> DataFrame:
+    ) -> PreparedTariffs:
         return T.get_prepared_tariffs(
             time_series,
             charge_master_data,

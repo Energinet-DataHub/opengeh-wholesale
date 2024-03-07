@@ -15,13 +15,14 @@
 import pytest
 from pyspark.sql import DataFrame, SparkSession
 
-from calculation.wholesale.test_tariff_calculators import _create_tariff_row
 from package.calculation.calculator_args import CalculatorArgs
+from package.calculation.preparation.prepared_tariffs import prepared_tariffs_schema
 from package.calculation.wholesale import execute
-from package.calculation.wholesale.schemas.prepared_tariffs_schema import (
-    prepared_tariffs_schema,
-)
 from package.codelists import ChargeResolution
+
+from tests.calculation.wholesale.test_tariff_calculators import (
+    _create_prepared_tariff_row,
+)
 
 
 def test__execute__when_tariff_schema_is_valid__does_not_raise(
@@ -29,10 +30,10 @@ def test__execute__when_tariff_schema_is_valid__does_not_raise(
 ) -> None:
     # Arrange
     tariffs_hourly_df = spark.createDataFrame(
-        data=[_create_tariff_row()], schema=prepared_tariffs_schema
+        data=[_create_prepared_tariff_row()], schema=prepared_tariffs_schema
     )
     tariffs_daily_df = spark.createDataFrame(
-        data=[_create_tariff_row(resolution=ChargeResolution.DAY)],
+        data=[_create_prepared_tariff_row(resolution=ChargeResolution.DAY)],
         schema=prepared_tariffs_schema,
     )
 

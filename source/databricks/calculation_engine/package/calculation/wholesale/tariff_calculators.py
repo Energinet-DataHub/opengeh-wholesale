@@ -22,7 +22,7 @@ from package.codelists import WholesaleResultResolution, ChargeUnit
 from package.constants import Colname
 
 
-def calculate_amount_per_charge(prepared_tariffs: PreparedTariffs) -> DataFrame:
+def calculate_tariff_price_per_ga_co_es(prepared_tariffs: PreparedTariffs) -> DataFrame:
     """
     Calculate tariff amount time series.
     A result is calculated per

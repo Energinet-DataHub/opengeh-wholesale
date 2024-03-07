@@ -43,10 +43,10 @@ class EnergyResultsContainer:
 
 @dataclass
 class WholesaleResultsContainer:
-    tariff_amount_per_charge_from_hourly: DataFrame | None = None
-    tariff_monthly_amount_per_charge_from_hourly: DataFrame | None = None
-    tariff_amount_per_charge_from_daily: DataFrame | None = None
-    tariff_monthly_amount_per_charge_from_daily: DataFrame | None = None
+    hourly_tariff_per_ga_co_es: DataFrame | None = None
+    monthly_tariff_from_hourly_per_ga_co_es: DataFrame | None = None
+    daily_tariff_per_ga_co_es: DataFrame | None = None
+    monthly_tariff_from_daily_per_ga_co_es: DataFrame | None = None
 
 
 @dataclass
