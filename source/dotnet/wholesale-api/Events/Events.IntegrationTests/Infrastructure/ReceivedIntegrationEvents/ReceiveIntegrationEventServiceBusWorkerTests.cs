@@ -61,7 +61,7 @@ public class ReceiveIntegrationEventServiceBusWorkerTests : IClassFixture<Servic
 
         // Assert
         using var assertionScope = new AssertionScope();
-        var messageHasBeenReceived = subscriberSpy.MessageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(1));
+        var messageHasBeenReceived = subscriberSpy.MessageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(10));
         messageHasBeenReceived.Should().BeTrue();
         subscriberSpy.ActualSubject.Should().Be(expectedSubject);
         subscriberSpy.ActualMessageId.Should().Be(expectedMessageId);

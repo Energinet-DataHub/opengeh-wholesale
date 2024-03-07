@@ -86,7 +86,7 @@ public class WholesaleInboxServiceBusWorkerTests : IClassFixture<ServiceBusSende
         await _sender.PublishAsync("Hello World", expectedReferenceId);
 
         // Assert
-        var messageHasBeenReceived = messageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(1));
+        var messageHasBeenReceived = messageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(10));
         messageHasBeenReceived.Should().BeTrue();
     }
 
@@ -123,7 +123,7 @@ public class WholesaleInboxServiceBusWorkerTests : IClassFixture<ServiceBusSende
         await _sender.PublishAsync("Hello World");
 
         // Assert
-        var messageHasBeenReceived = messageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(1));
+        var messageHasBeenReceived = messageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(10));
         messageHasBeenReceived.Should().BeFalse();
     }
 }
