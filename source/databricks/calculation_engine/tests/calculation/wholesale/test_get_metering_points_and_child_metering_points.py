@@ -20,152 +20,354 @@ from package.calculation.wholesale.get_metering_points_and_child_metering_points
     get_metering_points_and_child_metering_points,
 )
 
-from package.codelists import MeteringPointType, SettlementMethod
+from package.codelists import MeteringPointType
 from package.constants import Colname
 
 
-@pytest.mark.parametrize(
-    "metering_point_type",
-    [t for t in MeteringPointType if t != MeteringPointType.EXCHANGE],
-)
-def test__when_metering_point_type_is_not_exchange__returns_metering_point(
-    metering_point_type: MeteringPointType,
-    spark: SparkSession,
-):
-    # Arrange
-    row = factory.create_row(
-        metering_point_type=metering_point_type,
+class TestWhenMeteringPointPeriodsHasMeteringPointTypesThatIsNotExchange:
+    @pytest.mark.parametrize(
+        "metering_point_type",
+        [t for t in MeteringPointType if t != MeteringPointType.EXCHANGE],
     )
-    metering_point_periods = factory.create(spark, row)
-
-    # Act
-    actual = get_metering_points_and_child_metering_points(
-        metering_point_periods,
-    )
-
-    # Assert
-    assert actual.count() == 1
-
-
-def test__when_metering_point_type_is_exchange__returns_result_without_the_metering_point(
-    spark: SparkSession,
-):
-    # Arrange
-    row = factory.create_row(
-        metering_point_type=MeteringPointType.EXCHANGE,
-    )
-    metering_point_periods = factory.create(spark, row)
-
-    # Act
-    actual = get_metering_points_and_child_metering_points(
-        metering_point_periods,
-    )
-
-    # Assert
-    assert actual.count() == 0
-
-
-def test__when_child_metering_point__get_energy_supplier_from_parent_metering_point(
-    spark: SparkSession,
-):
-    # Arrange
-    rows = [
-        factory.create_row(
-            metering_point_id="parent_metering_point_id",
-            metering_point_type=MeteringPointType.CONSUMPTION,
-            energy_supplier_id="energy_supplier_id_from_parent",
-        ),
-        factory.create_row(
-            parent_metering_point_id="parent_metering_point_id",
-            metering_point_type=MeteringPointType.NET_CONSUMPTION,
-            energy_supplier_id=None,
-        ),
-    ]
-    metering_point_periods = factory.create(spark, rows)
-
-    # Act
-    actual = get_metering_points_and_child_metering_points(
-        metering_point_periods,
-    )
-
-    # Assert
-    assert actual.count() == 2
-    actual = actual.collect()
-    assert actual[0][Colname.energy_supplier_id] == "energy_supplier_id_from_parent"
-    assert actual[1][Colname.energy_supplier_id] == "energy_supplier_id_from_parent"
-
-
-def test__given_parent_and_child_metering_points__returns_updated_child_metering_points(
-    spark: SparkSession,
-):
-    # Arrange
-    rows = [
-        factory.create_row(
-            metering_point_id="parent_metering_point_id",
-            metering_point_type=MeteringPointType.CONSUMPTION,
-            energy_supplier_id="es_parent_1",
-            from_date=datetime(2019, 12, 31, 23),
-            to_date=datetime(2020, 1, 15, 23),
-            settlement_method=SettlementMethod.FLEX,
-        ),
-        factory.create_row(
-            metering_point_id="parent_metering_point_id",
-            metering_point_type=MeteringPointType.CONSUMPTION,
-            energy_supplier_id="es_parent_2",
-            from_date=datetime(2020, 1, 15, 23),
-            to_date=datetime(2020, 1, 20, 23),
-            settlement_method=SettlementMethod.NON_PROFILED,
-        ),
-        factory.create_row(
-            metering_point_id="parent_metering_point_id",
-            metering_point_type=MeteringPointType.CONSUMPTION,
-            energy_supplier_id="es_parent_3",
-            from_date=datetime(2020, 1, 31, 23),
-            to_date=datetime(2020, 2, 15, 23),
-            settlement_method=SettlementMethod.FLEX,
-        ),
-        factory.create_row(
-            parent_metering_point_id="parent_metering_point_id",
-            metering_point_type=MeteringPointType.NET_CONSUMPTION,
-            energy_supplier_id=None,
-            from_date=datetime(2019, 12, 31, 23),
-            to_date=datetime(2020, 1, 31, 23),
-            settlement_method=None,
-        ),
-    ]
-    metering_point_periods = factory.create(spark, rows)
-
-    # Act
-    actual = get_metering_points_and_child_metering_points(
-        metering_point_periods,
-    )
-
-    # Assert
-    assert actual.count() == 5
-    actual_only_child_metering_points = (
-        actual.filter(
-            actual[Colname.metering_point_type]
-            == MeteringPointType.NET_CONSUMPTION.value
+    def test__then_return_metering_points(
+        self,
+        metering_point_type: MeteringPointType,
+        spark: SparkSession,
+    ):
+        # Arrange
+        row = factory.create_row(
+            metering_point_type=metering_point_type,
         )
-        .sort(Colname.from_date)
-        .collect()
-    )
+        metering_point_periods = factory.create(spark, row)
 
-    assert (
-        actual_only_child_metering_points[0][Colname.energy_supplier_id]
-        == "es_parent_1"
-    )
-    assert (
-        actual_only_child_metering_points[1][Colname.energy_supplier_id]
-        == "es_parent_2"
-    )
+        # Act
+        actual = get_metering_points_and_child_metering_points(
+            metering_point_periods,
+        )
 
-    assert actual_only_child_metering_points[0][Colname.settlement_method] is None
-    assert actual_only_child_metering_points[1][Colname.settlement_method] is None
+        # Assert
+        assert actual.count() == 1
 
-    assert actual_only_child_metering_points[0][Colname.to_date] == datetime(
-        2020, 1, 15, 23
-    )
-    assert actual_only_child_metering_points[1][Colname.to_date] == datetime(
-        2020, 1, 20, 23
-    )
+
+class TestWhenMeteringPointPeriodsHasMeteringPointTypesThatIsExchange:
+    def test__then_return_result_without_the_metering_point(
+        self,
+        spark: SparkSession,
+    ):
+        # Arrange
+        row = factory.create_row(
+            metering_point_type=MeteringPointType.EXCHANGE,
+        )
+        metering_point_periods = factory.create(spark, row)
+
+        # Act
+        actual = get_metering_points_and_child_metering_points(
+            metering_point_periods,
+        )
+
+        # Assert
+        assert actual.count() == 0
+
+
+class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPeriod:
+    def test__1(
+        self,
+        spark: SparkSession,
+    ):
+        # Arrange
+        rows = [
+            factory.create_row(
+                metering_point_id="parent_metering_point_id",
+                metering_point_type=MeteringPointType.CONSUMPTION,
+                energy_supplier_id="es_parent_1",
+                from_date=datetime(2019, 12, 31, 23),
+                to_date=datetime(2020, 1, 15, 23),
+            ),
+            factory.create_row(
+                metering_point_id="parent_metering_point_id",
+                metering_point_type=MeteringPointType.CONSUMPTION,
+                energy_supplier_id="es_parent_2",
+                from_date=datetime(2020, 1, 15, 23),
+                to_date=datetime(2020, 1, 31, 23),
+            ),
+            factory.create_row(
+                parent_metering_point_id="parent_metering_point_id",
+                metering_point_type=MeteringPointType.NET_CONSUMPTION,
+                energy_supplier_id=None,
+                from_date=datetime(2019, 12, 31, 23),
+                to_date=datetime(2020, 1, 31, 23),
+                settlement_method=None,
+            ),
+        ]
+        metering_point_periods = factory.create(spark, rows)
+
+        # Act
+        actual = get_metering_points_and_child_metering_points(
+            metering_point_periods,
+        )
+        actual.show()
+
+        # Assert
+        assert actual.count() == 4
+        actual_only_child_metering_points = (
+            actual.filter(
+                actual[Colname.metering_point_type]
+                == MeteringPointType.NET_CONSUMPTION.value
+            )
+            .sort(Colname.from_date)
+            .collect()
+        )
+
+        assert (
+            actual_only_child_metering_points[0][Colname.energy_supplier_id]
+            == "es_parent_1"
+        )
+        assert (
+            actual_only_child_metering_points[1][Colname.energy_supplier_id]
+            == "es_parent_2"
+        )
+        assert actual_only_child_metering_points[0][Colname.from_date] == datetime(
+            2019, 12, 31, 23
+        )
+        assert actual_only_child_metering_points[1][Colname.from_date] == datetime(
+            2020, 1, 15, 23
+        )
+        assert actual_only_child_metering_points[0][Colname.to_date] == datetime(
+            2020, 1, 15, 23
+        )
+        assert actual_only_child_metering_points[1][Colname.to_date] == datetime(
+            2020, 1, 31, 23
+        )
+
+    def test__2(
+        self,
+        spark: SparkSession,
+    ):
+        """
+        When parent mp changes energy supplier within child mp period,
+        but parent from date is before child from date and parent to date is after child to date,
+        then returns two child and two parent metering points
+        """
+        # Arrange
+        rows = [
+            factory.create_row(
+                metering_point_id="parent_metering_point_id",
+                metering_point_type=MeteringPointType.CONSUMPTION,
+                energy_supplier_id="es_parent_1",
+                from_date=datetime(2019, 12, 15, 23),
+                to_date=datetime(2020, 1, 15, 23),
+            ),
+            factory.create_row(
+                metering_point_id="parent_metering_point_id",
+                metering_point_type=MeteringPointType.CONSUMPTION,
+                energy_supplier_id="es_parent_2",
+                from_date=datetime(2020, 1, 15, 23),
+                to_date=datetime(2020, 2, 15, 23),
+            ),
+            factory.create_row(
+                parent_metering_point_id="parent_metering_point_id",
+                metering_point_type=MeteringPointType.NET_CONSUMPTION,
+                energy_supplier_id=None,
+                from_date=datetime(2019, 12, 31, 23),
+                to_date=datetime(2020, 1, 31, 23),
+                settlement_method=None,
+            ),
+        ]
+        metering_point_periods = factory.create(spark, rows)
+
+        # Act
+        actual = get_metering_points_and_child_metering_points(
+            metering_point_periods,
+        )
+        actual.show()
+
+        # Assert
+        assert actual.count() == 4
+        actual_only_child_metering_points = (
+            actual.filter(
+                actual[Colname.metering_point_type]
+                == MeteringPointType.NET_CONSUMPTION.value
+            )
+            .sort(Colname.from_date)
+            .collect()
+        )
+
+        assert (
+            actual_only_child_metering_points[0][Colname.energy_supplier_id]
+            == "es_parent_1"
+        )
+        assert (
+            actual_only_child_metering_points[1][Colname.energy_supplier_id]
+            == "es_parent_2"
+        )
+        assert actual_only_child_metering_points[0][Colname.from_date] == datetime(
+            2019, 12, 31, 23
+        )
+        assert actual_only_child_metering_points[1][Colname.from_date] == datetime(
+            2020, 1, 15, 23
+        )
+        assert actual_only_child_metering_points[0][Colname.to_date] == datetime(
+            2020, 1, 15, 23
+        )
+        assert actual_only_child_metering_points[1][Colname.to_date] == datetime(
+            2020, 1, 31, 23
+        )
+
+    def test__3(
+        self,
+        spark: SparkSession,
+    ):
+        """
+        When parent changes energy supplier within child period,
+        but parent from date is before child from data and parent to date is after child to date,
+        then returns two child and two parent metering points
+        """
+        # Arrange
+        rows = [
+            factory.create_row(
+                metering_point_id="parent_metering_point_id",
+                metering_point_type=MeteringPointType.CONSUMPTION,
+                energy_supplier_id="es_parent_1",
+                from_date=datetime(2020, 1, 5, 23),
+                to_date=datetime(2020, 1, 15, 23),
+            ),
+            factory.create_row(
+                metering_point_id="parent_metering_point_id",
+                metering_point_type=MeteringPointType.CONSUMPTION,
+                energy_supplier_id="es_parent_2",
+                from_date=datetime(2020, 1, 15, 23),
+                to_date=datetime(2020, 1, 25, 23),
+            ),
+            factory.create_row(
+                parent_metering_point_id="parent_metering_point_id",
+                metering_point_type=MeteringPointType.NET_CONSUMPTION,
+                energy_supplier_id=None,
+                from_date=datetime(2019, 12, 31, 23),
+                to_date=datetime(2020, 1, 31, 23),
+                settlement_method=None,
+            ),
+        ]
+        metering_point_periods = factory.create(spark, rows)
+
+        # Act
+        actual = get_metering_points_and_child_metering_points(
+            metering_point_periods,
+        )
+        actual.show()
+
+        # Assert
+        assert actual.count() == 4
+        actual_only_child_metering_points = (
+            actual.filter(
+                actual[Colname.metering_point_type]
+                == MeteringPointType.NET_CONSUMPTION.value
+            )
+            .sort(Colname.from_date)
+            .collect()
+        )
+
+        assert (
+            actual_only_child_metering_points[0][Colname.energy_supplier_id]
+            == "es_parent_1"
+        )
+        assert (
+            actual_only_child_metering_points[1][Colname.energy_supplier_id]
+            == "es_parent_2"
+        )
+        assert actual_only_child_metering_points[0][Colname.from_date] == datetime(
+            2020, 1, 5, 23
+        )
+        assert actual_only_child_metering_points[1][Colname.from_date] == datetime(
+            2020, 1, 15, 23
+        )
+        assert actual_only_child_metering_points[0][Colname.to_date] == datetime(
+            2020, 1, 15, 23
+        )
+        assert actual_only_child_metering_points[1][Colname.to_date] == datetime(
+            2020, 1, 25, 23
+        )
+
+    def test__4(
+        self,
+        spark: SparkSession,
+    ):
+        # Arrange
+        rows = [
+            factory.create_row(
+                metering_point_id="parent_metering_point_id",
+                metering_point_type=MeteringPointType.CONSUMPTION,
+                energy_supplier_id="es_parent_1",
+                from_date=datetime(2019, 12, 31, 23),
+                to_date=datetime(2020, 1, 15, 23),
+            ),
+            factory.create_row(
+                metering_point_id="parent_metering_point_id",
+                metering_point_type=MeteringPointType.CONSUMPTION,
+                energy_supplier_id="es_parent_2",
+                from_date=datetime(2020, 1, 15, 23),
+                to_date=datetime(2020, 1, 31, 23),
+            ),
+            factory.create_row(
+                metering_point_id="parent_metering_point_id",
+                metering_point_type=MeteringPointType.CONSUMPTION,
+                energy_supplier_id="es_parent_3",
+                from_date=datetime(2020, 1, 31, 23),
+                to_date=datetime(2020, 2, 15, 23),
+            ),
+            factory.create_row(
+                metering_point_id="parent_metering_point_id",
+                metering_point_type=MeteringPointType.CONSUMPTION,
+                energy_supplier_id="es_parent_4",
+                from_date=datetime(2019, 12, 15, 23),
+                to_date=datetime(2019, 12, 31, 23),
+            ),
+            factory.create_row(
+                parent_metering_point_id="parent_metering_point_id",
+                metering_point_type=MeteringPointType.NET_CONSUMPTION,
+                energy_supplier_id=None,
+                from_date=datetime(2019, 12, 31, 23),
+                to_date=datetime(2020, 1, 31, 23),
+                settlement_method=None,
+            ),
+        ]
+        metering_point_periods = factory.create(spark, rows)
+
+        # Act
+        actual = get_metering_points_and_child_metering_points(
+            metering_point_periods,
+        )
+        actual.show()
+
+        # Assert
+        assert actual.count() == 6
+        actual_only_child_metering_points = (
+            actual.filter(
+                actual[Colname.metering_point_type]
+                == MeteringPointType.NET_CONSUMPTION.value
+            )
+            .sort(Colname.from_date)
+            .collect()
+        )
+
+        assert (
+            actual_only_child_metering_points[0][Colname.energy_supplier_id]
+            == "es_parent_1"
+        )
+        assert (
+            actual_only_child_metering_points[1][Colname.energy_supplier_id]
+            == "es_parent_2"
+        )
+
+        assert actual_only_child_metering_points[0][Colname.from_date] == datetime(
+            2019, 12, 31, 23
+        )
+        assert actual_only_child_metering_points[1][Colname.from_date] == datetime(
+            2020, 1, 15, 23
+        )
+
+        assert actual_only_child_metering_points[0][Colname.to_date] == datetime(
+            2020, 1, 15, 23
+        )
+        assert actual_only_child_metering_points[1][Colname.to_date] == datetime(
+            2020, 1, 31, 23
+        )
