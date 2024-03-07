@@ -29,35 +29,37 @@ from package.codelists import (
 )
 from package.constants import Colname
 
-DEFAULT_GRID_AREA = "543"
-DEFAULT_CHARGE_CODE = "4000"
-DEFAULT_CHARGE_OWNER = "001"
-DEFAULT_CHARGE_TAX = True
-DEFAULT_CHARGE_TIME_HOUR_0 = datetime(2020, 1, 1, 0)
-DEFAULT_CHARGE_PRICE = Decimal("2.000005")
-DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
-DEFAULT_METERING_POINT_ID = "123456789012345678901234567"
-DEFAULT_METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
-DEFAULT_SETTLEMENT_METHOD = SettlementMethod.FLEX
-DEFAULT_QUANTITY = Decimal("1.005")
-DEFAULT_QUALITY = ChargeQuality.CALCULATED
-DEFAULT_PERIOD_START_DATETIME = datetime(2019, 12, 31, 23)
+
+class DefaultValues:
+    GRID_AREA = "543"
+    CHARGE_CODE = "4000"
+    CHARGE_OWNER = "001"
+    CHARGE_TAX = True
+    CHARGE_TIME_HOUR_0 = datetime(2020, 1, 1, 0)
+    CHARGE_PRICE = Decimal("2.000005")
+    ENERGY_SUPPLIER_ID = "1234567890123"
+    METERING_POINT_ID = "123456789012345678901234567"
+    METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
+    SETTLEMENT_METHOD = SettlementMethod.FLEX
+    QUANTITY = Decimal("1.005")
+    QUALITY = ChargeQuality.CALCULATED
+    PERIOD_START_DATETIME = datetime(2019, 12, 31, 23)
 
 
 def create_prepared_tariffs_row(
     charge_key: str | None = None,
-    charge_code: str = DEFAULT_CHARGE_CODE,
-    charge_owner: str = DEFAULT_CHARGE_OWNER,
+    charge_code: str = DefaultValues.CHARGE_CODE,
+    charge_owner: str = DefaultValues.CHARGE_OWNER,
     resolution: ChargeResolution = ChargeResolution.HOUR,
-    charge_time: datetime = DEFAULT_CHARGE_TIME_HOUR_0,
-    charge_price: Decimal | None = DEFAULT_CHARGE_PRICE,
-    energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
-    metering_point_id: str = DEFAULT_METERING_POINT_ID,
-    metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE,
-    settlement_method: SettlementMethod | None = DEFAULT_SETTLEMENT_METHOD,
-    grid_area: str = DEFAULT_GRID_AREA,
-    quantity: Decimal = DEFAULT_QUANTITY,
-    quality: ChargeQuality = DEFAULT_QUALITY,
+    charge_time: datetime = DefaultValues.CHARGE_TIME_HOUR_0,
+    charge_price: Decimal | None = DefaultValues.CHARGE_PRICE,
+    energy_supplier_id: str = DefaultValues.ENERGY_SUPPLIER_ID,
+    metering_point_id: str = DefaultValues.METERING_POINT_ID,
+    metering_point_type: MeteringPointType = DefaultValues.METERING_POINT_TYPE,
+    settlement_method: SettlementMethod | None = DefaultValues.SETTLEMENT_METHOD,
+    grid_area: str = DefaultValues.GRID_AREA,
+    quantity: Decimal = DefaultValues.QUANTITY,
+    quality: ChargeQuality = DefaultValues.QUALITY,
 ) -> Row:
     row = {
         Colname.charge_key: charge_key
@@ -65,7 +67,7 @@ def create_prepared_tariffs_row(
         Colname.charge_code: charge_code,
         Colname.charge_type: ChargeType.TARIFF.value,
         Colname.charge_owner: charge_owner,
-        Colname.charge_tax: DEFAULT_CHARGE_TAX,
+        Colname.charge_tax: DefaultValues.CHARGE_TAX,
         Colname.resolution: resolution.value,
         Colname.charge_time: charge_time,
         Colname.charge_price: charge_price,
