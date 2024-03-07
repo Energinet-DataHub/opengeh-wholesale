@@ -23,7 +23,7 @@ public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProd
 {
     public bool CanCreate(WholesaleResult result) =>
         result.AmountType == AmountType.AmountPerCharge
-        && result.Resolution is Resolution.Hour or Resolution.Day;
+        && result.Resolution is Resolution.Hour or Resolution.Day && result.ChargeType == ChargeType.Tariff;
 
     public Contracts.IntegrationEvents.AmountPerChargeResultProducedV1 Create(WholesaleResult result)
     {
@@ -61,10 +61,7 @@ public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProd
                         Price = timeSeriesPoint.Price,
                         Amount = timeSeriesPoint.Amount,
                     };
-                    var qualities = timeSeriesPoint.Qualities;
-                    if (qualities != null)
-                        p.QuantityQualities.AddRange(qualities.Select(QuantityQualityMapper.MapQuantityQuality).ToList());
-
+                    p.QuantityQualities.AddRange(timeSeriesPoint.Qualities!.Select(QuantityQualityMapper.MapQuantityQuality).ToList());
                     return p;
                 }));
         return amountPerChargeResultProducedV1;
