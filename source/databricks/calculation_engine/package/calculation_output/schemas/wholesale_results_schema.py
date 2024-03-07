@@ -45,7 +45,7 @@ wholesale_results_schema = StructType(
         StructField(
             WholesaleResultColumnNames.quantity_qualities,
             ArrayType(StringType()),
-            True,
+            False,
         ),
         StructField(WholesaleResultColumnNames.time, TimestampType(), False),
         StructField(WholesaleResultColumnNames.resolution, StringType(), False),
