@@ -56,9 +56,7 @@ public class WholesaleInboxServiceBusWorkerTests : IClassFixture<ServiceBusSende
             .Setup(handler => handler.ProcessAsync(It.IsAny<ServiceBusReceivedMessage>(), expectedReferenceId, It.IsAny<CancellationToken>()))
             .Callback(() =>
             {
-                testLogger.LogInformation("Received ProcessAsync callback, time elapsed: {0}", stopwatch.Elapsed);
                 messageHasBeenReceivedEvent.Set();
-                testLogger.LogInformation("ProcessAsync callback - Did set messageHasBeenReceivedEvent");
             });
 
         handlerMock
@@ -84,7 +82,8 @@ public class WholesaleInboxServiceBusWorkerTests : IClassFixture<ServiceBusSende
             .Setup(x => x.GetService(typeof(IServiceScopeFactory)))
             .Returns(serviceScopeFactory.Object);
 
-        var sut = new WholesaleInboxServiceBusWorker(
+        // Without "using" the service bus worker is not disposed correctly before next test starts
+        await using var sut = new WholesaleInboxServiceBusWorker(
             serviceProviderMock.Object,
             testLogger,
             _sender.WholesaleInboxQueueOptions,
@@ -96,8 +95,7 @@ public class WholesaleInboxServiceBusWorkerTests : IClassFixture<ServiceBusSende
         await _sender.PublishAsync("Hello World", expectedReferenceId);
 
         // Assert
-        testLogger.LogInformation("Waiting for messageHasBeenReceivedEvent, time elapsed: {0}", stopwatch.Elapsed);
-        var messageHasBeenReceived = messageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(60));
+        var messageHasBeenReceived = messageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(5));
         testLogger.LogInformation("Finished waiting for messageHasBeenReceivedEvent, result: {0}, time elapsed: {1}", messageHasBeenReceived, stopwatch.Elapsed);
         messageHasBeenReceived.Should().BeTrue();
         stopwatch.Stop();
@@ -111,6 +109,7 @@ public class WholesaleInboxServiceBusWorkerTests : IClassFixture<ServiceBusSende
         Mock<ILogger<WholesaleInboxServiceBusWorker>> loggerMock)
     {
         // Arrange
+        var testLogger = new TestLogger<WholesaleInboxServiceBusWorker>(loggerMock.Object, _testOutputHelper);
         var messageHasBeenReceivedEvent = new AutoResetEvent(false);
         var expectedReferenceId = Guid.NewGuid().ToString();
         // ProcessAsync is expected to trigger when a service bus message has been received.
@@ -125,9 +124,10 @@ public class WholesaleInboxServiceBusWorkerTests : IClassFixture<ServiceBusSende
             .Setup(sp => sp.GetService(typeof(IWholesaleInboxRequestHandler)))
             .Returns(handlerMock.Object);
 
-        var sut = new WholesaleInboxServiceBusWorker(
+        // Without "using" the service bus worker is not disposed correctly before next test starts
+        await using var sut = new WholesaleInboxServiceBusWorker(
             serviceProviderMock.Object,
-            loggerMock.Object,
+            testLogger,
             _sender.WholesaleInboxQueueOptions,
             _sender.ServiceBusClient);
 
