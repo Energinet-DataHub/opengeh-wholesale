@@ -45,7 +45,7 @@ public class DatabricksCalculatorJobParametersFactoryTests
             Guid.NewGuid(),
             SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks);
 
-        using var stream = EmbeddedResources.GetStream<Root>("Infrastructure.Calculations.calculation-job-parameters-reference.txt");
+        using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.calculation-job-parameters-reference.txt");
         using var reader = new StreamReader(stream);
 
         var pythonParams = reader

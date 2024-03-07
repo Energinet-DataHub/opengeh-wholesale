@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 9.1.0
+
+Added all child metering point types to contract `AmountPerChargeResultProducedV1`.
+
 ## Version 9.0.0
 
 Removed  the following values from `TimeSeriesType`: `GridLoss`, `NegativeGridLoss`, `PostiveGridLoss`, `TempFlexConsumption`, `TempProduction`
