@@ -15,7 +15,7 @@
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Subscriber;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -28,13 +28,13 @@ public class ReceiveIntegrationEventServiceBusWorker : ServiceBusWorker
 
     public ReceiveIntegrationEventServiceBusWorker(
         ILogger<ReceiveIntegrationEventServiceBusWorker> logger,
-        IOptions<ServiceBusOptions> options,
+        IOptions<IntegrationEventsOptions> options,
         ServiceBusClient serviceBusClient,
         IServiceProvider serviceProvider)
         : base(
             serviceBusClient.CreateProcessor(
-                options.Value.INTEGRATIONEVENTS_TOPIC_NAME,
-                options.Value.INTEGRATIONEVENTS_SUBSCRIPTION_NAME),
+                options.Value.TopicName,
+                options.Value.SubscriptionName),
             logger)
     {
         _serviceProvider = serviceProvider;

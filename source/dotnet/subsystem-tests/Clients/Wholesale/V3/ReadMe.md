@@ -7,11 +7,13 @@
 
 # How to generate the client code
 
-1. Update the swagger.json file with the content of <https://app-webapi-wholsal-d-we-001.azurewebsites.net/swagger/v3/swagger.json>
-2. Rebuild the SubsystemTest project.
-3. Manually re-add the license header to the WholesaleClient.cs file.
+1. Run WebApi.
+2. Copy the content of the swagger.json (from Swagger website) to the local swagger.json file.
+3. Rebuild the SubsystemTest project.
+4. Manually re-add the license header to the WholesaleClient.cs file.
 
-The WholesaleClient.cs file will be updated in step 2.
+The WholesaleClient.cs file will be updated in step 3.
+The ASP.NET Core 6.0 RunTime might be needed.
 
 # How to build the client from a different swagger.json file, than the one specified in nswag.json
 

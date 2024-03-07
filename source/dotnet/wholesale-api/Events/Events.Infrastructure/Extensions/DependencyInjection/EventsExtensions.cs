@@ -14,6 +14,10 @@
 
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Publisher;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks.ServiceBus;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
@@ -41,8 +45,6 @@ public static class EventsExtensions
     /// </summary>
     public static IServiceCollection AddEventsDatabase(this IServiceCollection services, IConfiguration configuration)
     {
-        // We don't add a health check for this context, because it's just another schema
-        // in the database we already use for Calculations
         services.AddScoped<IEventsDatabaseContext, EventsDatabaseContext>();
         services.AddDbContext<EventsDatabaseContext>(
             options => options.UseSqlServer(
@@ -54,6 +56,13 @@ public static class EventsExtensions
                     o.UseNodaTime();
                     o.EnableRetryOnFailure();
                 }));
+        // Database Health check
+        services.TryAddHealthChecks(
+            registrationKey: HealthCheckNames.WholesaleDatabase,
+            (key, builder) =>
+        {
+            builder.AddDbContextCheck<EventsDatabaseContext>(name: key);
+        });
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ICompletedCalculationRepository, CompletedCalculationRepository>();
@@ -61,7 +70,7 @@ public static class EventsExtensions
         return services;
     }
 
-    public static IServiceCollection AddIntegrationEventPublishing(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddIntegrationEventsPublishing(this IServiceCollection services, IConfiguration configuration)
     {
         services
             .AddScoped<IEnergyResultProducedV2Factory, EnergyResultProducedV2Factory>()
@@ -73,14 +82,29 @@ public static class EventsExtensions
             .AddScoped<IEnergyResultEventProvider, EnergyResultEventProvider>()
             .AddScoped<IWholesaleResultEventProvider, WholesaleResultEventProvider>();
 
-        var serviceBusOptions = configuration.Get<ServiceBusOptions>()!;
+        var serviceBusNamespaceOptions = configuration
+            .GetRequiredSection(ServiceBusNamespaceOptions.SectionName)
+            .Get<ServiceBusNamespaceOptions>();
+        var integrationEventsOptions = configuration
+            .GetRequiredSection(IntegrationEventsOptions.SectionName)
+            .Get<IntegrationEventsOptions>();
+
         services.Configure<PublisherOptions>(options =>
         {
-            options.ServiceBusConnectionString = serviceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING;
-            options.TopicName = serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME;
+            options.ServiceBusConnectionString = serviceBusNamespaceOptions!.ConnectionString;
+            options.TopicName = integrationEventsOptions!.TopicName;
             options.TransportType = Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpWebSockets;
         });
         services.AddPublisher<IntegrationEventProvider>();
+
+        // Health checks
+        services.AddHealthChecks()
+            // Must use a listener connection string
+            .AddAzureServiceBusSubscriptionUsingWebSockets(
+                serviceBusNamespaceOptions!.ConnectionString,
+                integrationEventsOptions!.TopicName,
+                integrationEventsOptions.SubscriptionName,
+                name: HealthCheckNames.IntegrationEventsTopicSubscription);
 
         return services;
     }

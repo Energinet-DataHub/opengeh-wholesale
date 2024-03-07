@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+using System.ComponentModel.DataAnnotations;
 
-public interface ISettlementReportRepository
+namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
+
+public class IntegrationEventsOptions
 {
-    /// <summary>
-    /// Create zip archives for each process in the calculation.
-    /// The archive contains the basis data files and the result file.
-    /// </summary>
-    Task CreateSettlementReportsAsync(CalculationInfo completedCalculationInfo);
+    public const string SectionName = "IntegrationEvents";
 
-    Task<SettlementReport> GetSettlementReportAsync(CalculationInfo calculationInfo);
+    [Required]
+    public string TopicName { get; set; } = string.Empty;
 
-    Task GetSettlementReportAsync(CalculationInfo completedCalculationInfo, string gridAreaCode, Stream outputStream);
+    [Required]
+    public string SubscriptionName { get; set; } = string.Empty;
 }
