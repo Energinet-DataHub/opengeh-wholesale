@@ -30,7 +30,7 @@ public class WholesaleTimeSeriesPointFactoryTests
     public void Create_WhenNullableFieldsNull_ReturnsNullForThoseFields()
     {
         // Arrange
-        var row = CreateDefaultSqlResultRow(DefaultTime, null, null, null, null);
+        var row = CreateDefaultSqlResultRow(DefaultTime, null, DefaultQuantityQualities, null, null);
 
         // Act
         var actual = WholesaleTimeSeriesPointFactory.Create(row);
