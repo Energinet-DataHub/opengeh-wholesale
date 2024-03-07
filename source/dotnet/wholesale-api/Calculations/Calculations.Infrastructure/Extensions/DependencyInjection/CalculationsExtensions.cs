@@ -20,6 +20,8 @@ using Energinet.DataHub.Wholesale.Calculations.Infrastructure.CalculationState;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -57,6 +59,13 @@ public static class CalculationsExtensions
                     o.UseNodaTime();
                     o.EnableRetryOnFailure();
                 }));
+        // Database Health check
+        services.TryAddHealthChecks(
+            registrationKey: HealthCheckNames.WholesaleDatabase,
+            (key, builder) =>
+            {
+                builder.AddDbContextCheck<DatabaseContext>(name: key);
+            });
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ICalculationDtoMapper, CalculationDtoMapper>();
@@ -64,11 +73,6 @@ public static class CalculationsExtensions
         services.AddScoped<ICreateCalculationHandler, CreateCalculationHandler>();
         services.AddScoped<IStartCalculationHandler, StartCalculationHandler>();
         services.AddScoped<IUpdateCalculationExecutionStateHandler, UpdateCalculationExecutionStateHandler>();
-
-        // Health checks
-        services.AddHealthChecks()
-            .AddDbContextCheck<DatabaseContext>(
-                name: $"{nameof(DatabaseContext)}HealthCheck");
 
         return services;
     }

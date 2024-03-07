@@ -12,9 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.Test.Core;
+using Xunit;
 
-public interface ISettlementReportRepository
+namespace Energinet.DataHub.Wholesale.Calculations.UnitTests.Interfaces.CalculationResults.Model;
+
+public class MeteringPointTypeTests
 {
-    Task<SettlementReport> GetSettlementReportAsync(CalculationInfo calculationInfo);
+    [Fact]
+    public async Task MeteringPointType_Matches_Contract()
+    {
+        await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.metering-point-type.json");
+        await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<MeteringPointType>(stream);
+    }
 }
