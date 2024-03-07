@@ -46,7 +46,7 @@ def get_metering_points_and_child_metering_points(
         .withColumnRenamed(Colname.to_date, to_date)
     )
 
-    all_metering_points = _get_all_child_metering_points(metering_point_periods_df)
+    all_metering_points = _get_all_metering_points(metering_point_periods_df)
 
     metering_points_periods_for_wholesale_calculation = all_metering_points.join(
         production_and_consumption_metering_points,
@@ -113,9 +113,13 @@ def _get_production_and_consumption_metering_points(
     )
 
 
-def _get_all_child_metering_points(
+def _get_all_metering_points(
     metering_points_periods_df: DataFrame,
 ) -> DataFrame:
+    """
+    Returns all metering points used in wholesale calculations.
+    This includes all metering point types except exchange metering points.
+    """
     return metering_points_periods_df.filter(
         (f.col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
         | (f.col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
