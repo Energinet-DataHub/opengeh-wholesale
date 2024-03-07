@@ -23,7 +23,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Events.IntegrationTests.Infrastructure.AggregatedTimeSeriesRequests;
+namespace Energinet.DataHub.Wholesale.Events.IntegrationTests.Infrastructure.WholesaleInboxRequests;
 
 public class WholesaleInboxServiceBusWorkerTests : IClassFixture<ServiceBusSenderFixture>
 {
@@ -36,7 +36,7 @@ public class WholesaleInboxServiceBusWorkerTests : IClassFixture<ServiceBusSende
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task ReceiveAggregatedTimeSeriesRequest_WhenMessageHasReference_ReceivesMessage(
+    public async Task ReceiveWholesaleInboxRequest_WhenMessageHasReference_ReceivesMessage(
         Mock<IServiceProvider> serviceProviderMock,
         Mock<IWholesaleInboxRequestHandler> handlerMock,
         Mock<ILogger<WholesaleInboxServiceBusWorker>> loggerMock)
@@ -92,7 +92,7 @@ public class WholesaleInboxServiceBusWorkerTests : IClassFixture<ServiceBusSende
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task ReceiveAggregatedTimeSeriesRequest_WhenMessageIsMissingReference_DoesNotReceivesMessage(
+    public async Task ReceiveWholesaleInboxRequest_WhenMessageIsMissingReference_DoesNotReceivesMessage(
         Mock<IServiceProvider> serviceProviderMock,
         Mock<IWholesaleInboxRequestHandler> handlerMock,
         Mock<ILogger<WholesaleInboxServiceBusWorker>> loggerMock)
