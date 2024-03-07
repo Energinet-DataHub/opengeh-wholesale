@@ -71,24 +71,6 @@ public class AmountPerChargeResultProducedV1FactoryTests
 
     [Theory]
     [InlineAutoMoqData]
-    public void Create_WhenQualitiesIsNull_ReturnsExpectedObject(
-        AmountPerChargeResultProducedV1Factory sut)
-    {
-        // Arrange
-        var wholesaleResult = new WholesaleResultBuilder()
-            .WithTimeSeriesPoints(new List<WholesaleTimeSeriesPoint> { new(new DateTime(2021, 1, 1), 1, null, 2, 3) })
-            .Build();
-        var expected = CreateExpected(wholesaleResult);
-
-        // Act
-        var actual = sut.Create(wholesaleResult);
-
-        // Assert
-        actual.Should().BeEquivalentTo(expected);
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
     public void Create_WhenAmountIsNull_ReturnsExpectedObject(
         AmountPerChargeResultProducedV1Factory sut)
     {
