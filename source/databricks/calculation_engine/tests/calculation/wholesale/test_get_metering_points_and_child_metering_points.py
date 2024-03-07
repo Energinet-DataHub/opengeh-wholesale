@@ -74,6 +74,17 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         self,
         spark: SparkSession,
     ):
+        """
+        input metering points:
+        parent:  |-----------------|
+        parent:                    |-----------------|
+        child:   |-----------------------------------|
+        output metering points:
+        parent:  |-----------------|
+        parent:                    |-----------------|
+        child:   |-----------------|
+        child:                     |-----------------|
+        """
         # Arrange
         rows = [
             factory.create_row(
@@ -142,6 +153,17 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         self,
         spark: SparkSession,
     ):
+        """
+        input metering points:
+        parent:  |-----------------|
+        parent:                    |-----------------|
+        child:       |--------------------------|
+        output metering points:
+        parent:  |-----------------|
+        parent:                    |-----------------|
+        child:       |-------------|
+        child:                     |------------|
+        """
         # Arrange
         rows = [
             factory.create_row(
@@ -210,6 +232,17 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         self,
         spark: SparkSession,
     ):
+        """
+        input metering points:
+        parent:       |------------|
+        parent:                    |------------|
+        child:   |-----------------------------------|
+        output metering points:
+        parent:       |------------|
+        parent:                    |------------|
+        child:        |------------|
+        child:                     |------------|
+        """
         # Arrange
         rows = [
             factory.create_row(
@@ -278,6 +311,21 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         self,
         spark: SparkSession,
     ):
+        """
+        input metering points:
+        parent:           |--------|
+        parent:                    |--------|
+        parent:  |--------|
+        parent:                             |--------|
+        child:   |-----------------------------------|
+        output metering points:
+        parent:           |--------|
+        parent:                    |--------|
+        parent:  |--------|
+        parent:                             |--------|
+        child:            |--------|
+        child:                     |--------|
+        """
         # Arrange
         rows = [
             factory.create_row(
