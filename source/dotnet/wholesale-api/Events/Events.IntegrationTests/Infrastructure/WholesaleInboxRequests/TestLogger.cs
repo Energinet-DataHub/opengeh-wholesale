@@ -47,8 +47,7 @@ public class TestLogger<T> : ILogger<T>
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Error logging to test output. Exception: {e}");
-            Console.WriteLine($"Original log message: [{logLevel}] {formatter(state, exception)}");
+            Console.WriteLine($"Error logging to test output. Exception: {e}{Environment.NewLine}Original log message: [{logLevel}] {formatter(state, exception)}");
         }
 
         _baseLogger.Log(logLevel, eventId, state, exception, formatter);
