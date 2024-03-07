@@ -77,20 +77,6 @@ public class SettlementReportController : V3ControllerBase
                 csvFormatLocale);
     }
 
-    /// <summary>
-    /// Returns a stream containing the settlement report for a calculation matching <paramref name="calculationId"/>
-    /// </summary>
-    /// <param name="calculationId">CalculationId</param>
-    [HttpGet("ZippedBasisDataStream")]
-    [MapToApiVersion(Version)]
-    [BinaryContent]
-    [Authorize(Roles = Permissions.SettlementReportsManage)]
-    public async Task<IActionResult> GetSettlementReportAsync([Required] Guid calculationId)
-    {
-        var report = await _settlementReportClient.GetSettlementReportAsync(calculationId).ConfigureAwait(false);
-        return Ok(report.Stream);
-    }
-
     private static string GetSettlementReportFileName(
         string[] gridAreaCode,
         CalculationType calculationType,
