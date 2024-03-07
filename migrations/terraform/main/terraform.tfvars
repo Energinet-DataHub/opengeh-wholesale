@@ -7,6 +7,6 @@ ip_restrictions=[{
   ip_address = "20.120.143.248/29"
   name = "github_largerunner"
 }]
-github_username="PerTHenriksen"
+github_username="dh-system-account"
 datalake_readeraccess_group_name="SEC-A-GreenForce-DevelopmentTeamAzure"
 developers_security_group_object_id="ffad55e0-f314-4852-9796-1d094a236e7b"
