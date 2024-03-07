@@ -12,15 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 
 public interface ISettlementReportClient
 {
-    Task<SettlementReportDto> GetSettlementReportAsync(Guid calculationId);
-
     Task CreateCompressedSettlementReportAsync(
         Func<Stream> openDestinationStream,
         string[] gridAreaCodes,
