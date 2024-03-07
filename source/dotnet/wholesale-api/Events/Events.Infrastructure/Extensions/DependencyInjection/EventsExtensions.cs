@@ -57,8 +57,12 @@ public static class EventsExtensions
                     o.EnableRetryOnFailure();
                 }));
         // Database Health check
-        services.TryAddHealthChecks(registrationKey: HealthCheckNames.WholesaleDatabase)
-            .AddDbContextCheck<EventsDatabaseContext>(name: HealthCheckNames.WholesaleDatabase);
+        services.TryAddHealthChecks(
+            registrationKey: HealthCheckNames.WholesaleDatabase,
+            (key, builder) =>
+        {
+            builder.AddDbContextCheck<EventsDatabaseContext>(name: key);
+        });
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ICompletedCalculationRepository, CompletedCalculationRepository>();

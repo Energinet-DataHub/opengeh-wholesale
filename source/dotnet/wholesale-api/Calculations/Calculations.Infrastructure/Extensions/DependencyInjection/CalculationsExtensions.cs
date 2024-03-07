@@ -60,8 +60,12 @@ public static class CalculationsExtensions
                     o.EnableRetryOnFailure();
                 }));
         // Database Health check
-        services.TryAddHealthChecks(registrationKey: HealthCheckNames.WholesaleDatabase)
-            .AddDbContextCheck<DatabaseContext>(name: HealthCheckNames.WholesaleDatabase);
+        services.TryAddHealthChecks(
+            registrationKey: HealthCheckNames.WholesaleDatabase,
+            (key, builder) =>
+            {
+                builder.AddDbContextCheck<DatabaseContext>(name: key);
+            });
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ICalculationDtoMapper, CalculationDtoMapper>();

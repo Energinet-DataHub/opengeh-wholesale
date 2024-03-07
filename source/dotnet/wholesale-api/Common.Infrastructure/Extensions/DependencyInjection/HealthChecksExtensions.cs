@@ -25,26 +25,28 @@ public static class HealthChecksExtensions
 {
     /// <summary>
     /// This operation is idempotent with respect to the given <paramref name="registrationKey"/>.
-    /// Multiple invocations using the same key will only result in a single registration of the
-    /// health checks added using the returned builder.
+    /// Multiple invocations using the same key will only result in a single call to the <paramref name="builderDelegate"/>.
     ///
     /// Verifies if the given registration key has already been used to add health checks.
-    /// If that is the case it returns a "no operations" health checks builder which means
-    /// no health checks will be added.
-    /// Otherwise a normal health checks builder will be returned and health checks will
+    /// If that is the case the <paramref name="builderDelegate"/> is never called.
+    /// Otherwise the <paramref name="builderDelegate"/> is called and health checks will
     /// be added in the usual fashion.
     /// </summary>
-    public static IHealthChecksBuilder TryAddHealthChecks(this IServiceCollection services, string registrationKey)
+    public static IServiceCollection TryAddHealthChecks(
+        this IServiceCollection services,
+        string registrationKey,
+        Action<string, IHealthChecksBuilder> builderDelegate)
     {
         ArgumentNullException.ThrowIfNull(registrationKey);
+        ArgumentNullException.ThrowIfNull(builderDelegate);
 
-        if (IsHealthCheckAdded(services, registrationKey))
+        if (!IsHealthCheckAdded(services, registrationKey))
         {
-            return new NoOperationsHealthCheckBuilder(services);
+            services.AddSingleton(new HealthCheckRegistrationGuard(registrationKey));
+            builderDelegate(registrationKey, services.AddHealthChecks());
         }
 
-        services.AddSingleton(new HealthCheckRegistrationGuard(registrationKey));
-        return services.AddHealthChecks();
+        return services;
     }
 
     /// <summary>
@@ -64,22 +66,4 @@ public static class HealthChecksExtensions
     /// health check registration using the given key has been performed.
     /// </summary>
     private sealed record HealthCheckRegistrationGuard(string Key);
-
-    /// <summary>
-    /// "No operations" health check builder that doesn't add any health checks.
-    /// </summary>
-    private sealed class NoOperationsHealthCheckBuilder : IHealthChecksBuilder
-    {
-        public NoOperationsHealthCheckBuilder(IServiceCollection services)
-        {
-            Services = services ?? throw new ArgumentNullException(nameof(services));
-        }
-
-        public IServiceCollection Services { get; }
-
-        public IHealthChecksBuilder Add(HealthCheckRegistration registration)
-        {
-            return this;
-        }
-    }
 }
