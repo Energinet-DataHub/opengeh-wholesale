@@ -16,6 +16,6 @@ namespace Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
 
 public static class HealthCheckNames
 {
-    public const string WholesaleDatabase = "WholesaleDatabaseHealthCheck";
-    public const string IntegrationEventsTopicSubscription = "IntegrationEventsTopicSubscriptionHealthCheck";
+    public const string WholesaleDatabase = "WholesaleDatabase";
+    public const string IntegrationEventsTopicSubscription = "IntegrationEventsTopicSubscription";
 }

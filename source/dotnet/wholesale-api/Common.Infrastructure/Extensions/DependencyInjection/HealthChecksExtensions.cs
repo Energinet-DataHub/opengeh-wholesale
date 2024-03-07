@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 
