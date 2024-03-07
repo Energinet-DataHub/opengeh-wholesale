@@ -16,5 +16,7 @@ namespace Energinet.DataHub.Wholesale.Edi.Models;
 
 public static class Resolution
 {
-    public const string Monthly = "P1M";
+    public const string Monthly = "Monthly";
+    public const string Daily = "Daily";
+    public const string Hourly = "Hourly";
 }
