@@ -21,9 +21,7 @@ from pyspark.sql import SparkSession
 import pytest
 from typing import Any
 
-from package.calculation.wholesale.schemas.prepared_tariffs_schema import (
-    prepared_tariffs_schema,
-)
+from package.calculation.preparation.prepared_tariffs import prepared_tariffs_schema
 from package.codelists import (
     ChargeQuality,
     ChargeResolution,
