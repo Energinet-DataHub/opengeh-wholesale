@@ -41,7 +41,6 @@ public static class CalculationResultsExtensions
         services.AddScoped<IDataLakeClient, DataLakeClient>();
         services.AddScoped<IStreamZipper, StreamZipper>();
         services.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
-        services.AddScoped<ISettlementReportRepository, SettlementReportRepository>();
 
         // Used by sql statements (queries)
         services.AddOptions<DeltaTableOptions>().Bind(configuration);
