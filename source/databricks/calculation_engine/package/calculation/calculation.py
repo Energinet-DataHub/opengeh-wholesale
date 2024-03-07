@@ -125,12 +125,12 @@ def _execute(
                 args.time_zone,
             )
 
-            results.wholesale_results = wholesale_calculation.execute(
-                args,
-                prepared_subscriptions,
-                tariffs_hourly_df,
-                tariffs_daily_df,
-            )
+        results.wholesale_results = wholesale_calculation.execute(
+            args,
+            prepared_subscriptions,
+            tariffs_hourly_df,
+            tariffs_daily_df,
+        )
 
     # Add basis data to results
     results.basis_data = basis_data_factory.create(
