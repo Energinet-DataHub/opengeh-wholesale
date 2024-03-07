@@ -22,16 +22,20 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
+using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace Energinet.DataHub.Wholesale.Events.IntegrationTests.Infrastructure.WholesaleInboxRequests;
 
 public class WholesaleInboxServiceBusWorkerTests : IClassFixture<ServiceBusSenderFixture>
 {
     private readonly ServiceBusSenderFixture _sender;
+    private readonly ITestOutputHelper _testOutputHelper;
 
-    public WholesaleInboxServiceBusWorkerTests(ServiceBusSenderFixture fixture)
+    public WholesaleInboxServiceBusWorkerTests(ServiceBusSenderFixture fixture, ITestOutputHelper testOutputHelper)
     {
         _sender = fixture;
+        _testOutputHelper = testOutputHelper;
     }
 
     [Theory]
@@ -49,7 +53,9 @@ public class WholesaleInboxServiceBusWorkerTests : IClassFixture<ServiceBusSende
             .Setup(handler => handler.ProcessAsync(It.IsAny<ServiceBusReceivedMessage>(), expectedReferenceId, It.IsAny<CancellationToken>()))
             .Callback(() =>
             {
+                _testOutputHelper.WriteLine("ProcessAsync callback - Setting messageHasBeenReceivedEvent");
                 messageHasBeenReceivedEvent.Set();
+                _testOutputHelper.WriteLine("ProcessAsync callback - Did set messageHasBeenReceivedEvent");
             });
 
         handlerMock
@@ -77,7 +83,7 @@ public class WholesaleInboxServiceBusWorkerTests : IClassFixture<ServiceBusSende
 
         var sut = new WholesaleInboxServiceBusWorker(
             serviceProviderMock.Object,
-            loggerMock.Object,
+            new TestLogger<WholesaleInboxServiceBusWorker>(loggerMock.Object, _testOutputHelper),
             _sender.WholesaleInboxQueueOptions,
             _sender.ServiceBusClient);
 
@@ -86,7 +92,9 @@ public class WholesaleInboxServiceBusWorkerTests : IClassFixture<ServiceBusSende
         await _sender.PublishAsync("Hello World", expectedReferenceId);
 
         // Assert
+        _testOutputHelper.WriteLine("Waiting for messageHasBeenReceivedEvent");
         var messageHasBeenReceived = messageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(10));
+        _testOutputHelper.WriteLine("Finished waiting for messageHasBeenReceivedEvent, result: {0}", messageHasBeenReceived);
         messageHasBeenReceived.Should().BeTrue();
     }
 

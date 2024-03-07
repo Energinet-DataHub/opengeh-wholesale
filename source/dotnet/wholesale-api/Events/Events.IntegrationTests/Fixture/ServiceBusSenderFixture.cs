@@ -83,15 +83,8 @@ public class ServiceBusSenderFixture : IAsyncLifetime, IAsyncDisposable
 
     private ServiceBusMessage CreateAggregatedTimeSeriesRequestMessage(string body, string referenceId)
     {
-        var message = new ServiceBusMessage(body)
-        {
-            Subject = "subject",
-            ApplicationProperties =
-            {
-                { "ReferenceId", referenceId },
-            },
-        };
-
+        var message = new ServiceBusMessage(body);
+        message.ApplicationProperties.Add("ReferenceId", referenceId);
         return message;
     }
 }
