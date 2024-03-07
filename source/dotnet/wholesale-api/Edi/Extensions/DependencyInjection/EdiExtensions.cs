@@ -51,7 +51,7 @@ public static class EdiExtensions
             .AddAzureServiceBusQueueUsingWebSockets(
                 sp => sp.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>().Value.ConnectionString,
                 sp => sp.GetRequiredService<IOptions<EdiInboxQueueOptions>>().Value.QueueName,
-                name: "EdiInboxHealthCheck");
+                name: "EdiInboxQueue");
 
         services.AddAggregatedTimeSeriesRequestValidation();
         services.AddWholesaleServicesRequestValidation();

@@ -36,7 +36,7 @@ public static class DatabricksExtensions
 
         // Health checks
         services.AddHealthChecks()
-            .AddDatabricksJobsApiHealthCheck();
+            .AddDatabricksJobsApiHealthCheck(name: "DatabricksJobsApi");
 
         return services;
     }
@@ -50,7 +50,7 @@ public static class DatabricksExtensions
 
         // Health checks
         services.AddHealthChecks()
-            .AddDatabricksSqlStatementApiHealthCheck();
+            .AddDatabricksSqlStatementApiHealthCheck(name: "DatabricksSqlStatementApi");
 
         return services;
     }
