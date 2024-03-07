@@ -13,11 +13,10 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Edi.Models;
-using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 
-namespace Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeries.Rules;
+namespace Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
 
-public class MeteringPointTypeValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
+public class MeteringPointTypeValidationRule : IValidationRule<DataHub.Edi.Requests.AggregatedTimeSeriesRequest>
 {
     private static readonly IReadOnlyList<string> _validMeteringPointTypes = new List<string>
     {
@@ -31,7 +30,7 @@ public class MeteringPointTypeValidationRule : IValidationRule<AggregatedTimeSer
             "Metering point type skal være tom eller en af følgende: {PropertyName} / Metering point type has to be empty or one of the following: {PropertyName}",
             "D18");
 
-    public Task<IList<ValidationError>> ValidateAsync(AggregatedTimeSeriesRequest subject)
+    public Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.AggregatedTimeSeriesRequest subject)
     {
         if (IsValidMeteringPointType(subject.MeteringPointType))
             return Task.FromResult(NoError);
