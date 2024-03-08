@@ -21,7 +21,7 @@ from package.calculation.preparation.charge_link_metering_point_periods import (
 )
 from package.calculation.preparation.charge_master_data import ChargeMasterData
 from package.calculation.preparation.charge_prices import ChargePrices
-from package.codelists import ChargeType
+from package.codelists import ChargeType, WholesaleResultResolution
 from package.constants import Colname
 
 
@@ -53,6 +53,10 @@ def get_subscription_charges(
 
     subscriptions = _join_with_links(
         subscription_master_data_and_prices, subscription_links.df
+    )
+
+    subscriptions = subscriptions.withColumn(
+        Colname.resolution, f.lit(WholesaleResultResolution.DAY.value)
     )
 
     return subscriptions
