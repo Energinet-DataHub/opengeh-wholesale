@@ -27,9 +27,6 @@ def test_execute__returns_expected(  # type: ignore
     # Act
     results = scenario_fixture.execute()
 
-    results.wholesale_results.hourly_tariff_per_ga_co_es.show()
-    scenario_fixture.expected.show()
-
     # Assert
     assert_dataframe_and_schema(
         results.wholesale_results.hourly_tariff_per_ga_co_es,

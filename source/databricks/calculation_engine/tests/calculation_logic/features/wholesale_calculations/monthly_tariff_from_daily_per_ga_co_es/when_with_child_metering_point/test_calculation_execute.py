@@ -29,9 +29,6 @@ def test_execute__returns_expected(  # type: ignore
     # Act
     results = scenario_fixture.execute()
 
-    results.wholesale_results.monthly_tariff_from_daily_per_ga_co_es.show()
-    scenario_fixture.expected.show()
-
     # Assert
     assert_dataframe_and_schema(
         results.wholesale_results.monthly_tariff_from_daily_per_ga_co_es,
@@ -39,7 +36,6 @@ def test_execute__returns_expected(  # type: ignore
         ignore_decimal_precision=True,
         ignore_nullability=True,
         columns_to_skip=[
-            WholesaleResultColumnNames.calculation_execution_time_start,
             WholesaleResultColumnNames.calculation_result_id,
         ],
     )
