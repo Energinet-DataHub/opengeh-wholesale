@@ -25,7 +25,6 @@ public class TestLogger<T> : ILogger<T>
     public TestLogger(ILogger<T> baseLogger, ITestOutputHelper testOutput)
     {
         _baseLogger = baseLogger;
-        
         _testOutput = testOutput;
     }
 
