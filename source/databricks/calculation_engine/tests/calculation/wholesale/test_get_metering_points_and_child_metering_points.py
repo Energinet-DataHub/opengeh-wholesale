@@ -317,7 +317,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         parent:                    |--------|
         parent:  |--------|
         parent:                             |--------|
-        child:   |-----------------------------------|
+        child:            |-----------------|
         output metering points:
         parent:           |--------|
         parent:                    |--------|
