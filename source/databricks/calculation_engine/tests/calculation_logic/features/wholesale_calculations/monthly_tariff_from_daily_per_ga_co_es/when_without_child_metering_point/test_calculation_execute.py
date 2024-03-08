@@ -11,11 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from calculation_logic.features.wholesale_calculations.monthly_tariff_from_daily_per_ga_co_es.when_without_child_metering_point.states.scenario_state import (
+    get_expected,
+)
 from helpers.data_frame_utils import (
     assert_dataframe_and_schema,
 )
 from package.constants import WholesaleResultColumnNames
-from .states.scenario_state import get_expected
 
 
 def test_execute__returns_expected(  # type: ignore
@@ -27,17 +29,13 @@ def test_execute__returns_expected(  # type: ignore
     # Act
     results = scenario_fixture.execute()
 
-    results.wholesale_results.hourly_tariff_per_ga_co_es.show()
-    scenario_fixture.expected.show()
-
     # Assert
     assert_dataframe_and_schema(
-        results.wholesale_results.hourly_tariff_per_ga_co_es,
+        results.wholesale_results.monthly_tariff_from_daily_per_ga_co_es,
         scenario_fixture.expected,
         ignore_decimal_precision=True,
         ignore_nullability=True,
         columns_to_skip=[
-            WholesaleResultColumnNames.calculation_execution_time_start,
             WholesaleResultColumnNames.calculation_result_id,
         ],
     )
