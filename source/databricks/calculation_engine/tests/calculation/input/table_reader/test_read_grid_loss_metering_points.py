@@ -19,7 +19,7 @@ from pyspark.sql import SparkSession
 import pyspark.sql.functions as f
 
 from package.calculation.input.table_reader import TableReader
-from package.calculation.input import (
+from package.calculation.input.schemas import (
     grid_loss_metering_points_schema,
 )
 from package.constants import Colname

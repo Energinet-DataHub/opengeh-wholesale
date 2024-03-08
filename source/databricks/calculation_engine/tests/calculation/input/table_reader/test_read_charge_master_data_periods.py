@@ -20,7 +20,7 @@ import pyspark.sql.functions as f
 
 
 from package.calculation.input.table_reader import TableReader
-from package.calculation.input import charge_master_data_periods_schema
+from package.calculation.input.schemas import charge_master_data_periods_schema
 from package.constants import Colname
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.helpers.data_frame_utils import assert_dataframes_equal

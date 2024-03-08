@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from package.calculation.input import TableReader
-from package.calculation.input import (
+from package.calculation.input.schemas import (
     metering_point_period_schema,
     time_series_point_schema,
     grid_loss_metering_points_schema,
