@@ -15,7 +15,9 @@ from helpers.data_frame_utils import (
     assert_dataframe_and_schema,
 )
 from package.constants import WholesaleResultColumnNames
-from .states.scenario_state import get_expected
+from .states.scenario_state import (
+    get_expected,
+)
 
 
 def test_execute__returns_expected(  # type: ignore
@@ -29,12 +31,11 @@ def test_execute__returns_expected(  # type: ignore
 
     # Assert
     assert_dataframe_and_schema(
-        results.wholesale_results.hourly_tariff_per_ga_co_es,
+        results.wholesale_results.daily_tariff_per_ga_co_es,
         scenario_fixture.expected,
         ignore_decimal_precision=True,
         ignore_nullability=True,
         columns_to_skip=[
-            WholesaleResultColumnNames.calculation_execution_time_start,
             WholesaleResultColumnNames.calculation_result_id,
         ],
     )
