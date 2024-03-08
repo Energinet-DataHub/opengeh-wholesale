@@ -30,7 +30,7 @@ public class WholesaleTimeSeriesPointFactoryTests
     public void Create_WhenNullableFieldsNull_ReturnsNullForThoseFields()
     {
         // Arrange
-        var row = CreateDefaultSqlResultRow(DefaultTime, null, DefaultQuantityQualities, null, null);
+        var row = CreateDefaultSqlResultRow(DefaultTime, null, null, null, null);
 
         // Act
         var actual = WholesaleTimeSeriesPointFactory.Create(row);
@@ -40,9 +40,10 @@ public class WholesaleTimeSeriesPointFactoryTests
         actual.Quantity.Should().BeNull();
         actual.Price.Should().BeNull();
         actual.Amount.Should().BeNull();
+        actual.Qualities.Should().BeNull();
     }
 
-    private static DatabricksSqlRow CreateDefaultSqlResultRow(string time, string? quantity, string quantityQualities, string? price, string? amount)
+    private static DatabricksSqlRow CreateDefaultSqlResultRow(string time, string? quantity, string? quantityQualities, string? price, string? amount)
     {
         return new DatabricksSqlRow(new Dictionary<string, object?>
         {

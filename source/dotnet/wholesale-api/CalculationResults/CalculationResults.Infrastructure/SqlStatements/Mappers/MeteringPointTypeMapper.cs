@@ -20,18 +20,23 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlState
 
 public static class MeteringPointTypeMapper
 {
-    public static MeteringPointType? FromDeltaTableValue(string? meteringPointType) =>
-        meteringPointType switch
-        {
-            "production" => MeteringPointType.Production,
-            "consumption" => MeteringPointType.Consumption,
-            null => null,
+    public static MeteringPointType? FromDeltaTableValue(string? meteringPointType)
+    {
+        if (meteringPointType == null) return null;
 
-            _ => throw new ArgumentOutOfRangeException(
+        try
+        {
+            var normalized = meteringPointType.Replace("_", string.Empty);
+            return Enum.Parse<MeteringPointType>(normalized, ignoreCase: true);
+        }
+        catch (ArgumentException)
+        {
+            throw new ArgumentOutOfRangeException(
                 nameof(meteringPointType),
                 actualValue: meteringPointType,
-                "Value does not contain a valid string representation of a metering point type."),
-        };
+                "Value does not contain a valid string representation of a metering point type.");
+        }
+    }
 
     public static MeteringPointType FromTimeSeriesTypeDeltaTableValue(string timeSeriesType) =>
         TimeSeriesTypeMapper.FromDeltaTableValue(timeSeriesType) switch

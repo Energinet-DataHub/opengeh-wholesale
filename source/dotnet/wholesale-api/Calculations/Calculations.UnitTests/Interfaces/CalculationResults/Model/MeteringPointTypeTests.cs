@@ -12,19 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text.Json;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.Test.Core;
+using Xunit;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
+namespace Energinet.DataHub.Wholesale.Calculations.UnitTests.Interfaces.CalculationResults.Model;
 
-public static class QuantityQualitiesMapper
+public class MeteringPointTypeTests
 {
-    public static IReadOnlyCollection<QuantityQuality>? FromDeltaTableValue(string? value)
+    [Fact]
+    public async Task MeteringPointType_Matches_Contract()
     {
-        if (value == null) return null;
-
-        var qualities = JsonSerializer.Deserialize<string[]>(value)!;
-
-        return qualities.Select(QuantityQualityMapper.FromDeltaTableValue).ToArray();
+        await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.metering-point-type.json");
+        await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<MeteringPointType>(stream);
     }
 }
