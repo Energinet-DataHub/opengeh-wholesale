@@ -35,61 +35,119 @@ def get_metering_points_and_child_metering_points(
 
     es = "energy_supplier_id_temp"
     mp = "metering_point_id_temp"
-    production_and_consumption_metering_points = (
-        production_and_consumption_metering_points.withColumnRenamed(
-            Colname.energy_supplier_id, es
-        ).withColumnRenamed(Colname.metering_point_id, mp)
+    from_date = "from_date_temp"
+    to_date = "to_date_temp"
+    potential_parent_metering_points = (
+        production_and_consumption_metering_points.select(
+            f.col(Colname.metering_point_id).alias(mp),
+            f.col(Colname.energy_supplier_id).alias(es),
+            f.col(Colname.from_date).alias(from_date),
+            f.col(Colname.to_date).alias(to_date),
+        )
     )
 
-    all_metering_points = _get_all_child_metering_points(metering_point_periods_df)
+    all_child_metering_points = _get_all_child_metering_points(
+        metering_point_periods_df
+    )
 
-    metering_points_periods_for_wholesale_calculation = all_metering_points.join(
-        production_and_consumption_metering_points,
-        production_and_consumption_metering_points[mp]
-        == all_metering_points[
-            Colname.parent_metering_point_id
-        ],  # parent_metering_point_id is always null on child metering points
+    child_metering_points_with_energy_suppliers = all_child_metering_points.join(
+        potential_parent_metering_points,
+        (
+            potential_parent_metering_points[mp]
+            == all_child_metering_points[Colname.parent_metering_point_id]
+        )
+        & (
+            (  # When child from date is within parent period
+                (
+                    all_child_metering_points[Colname.from_date]
+                    >= potential_parent_metering_points[from_date]
+                )
+                & (
+                    all_child_metering_points[Colname.from_date]
+                    < potential_parent_metering_points[to_date]
+                )
+            )
+            | (  # When child to date is within parent period
+                (
+                    all_child_metering_points[Colname.to_date]
+                    > potential_parent_metering_points[from_date]
+                )
+                & (
+                    all_child_metering_points[Colname.to_date]
+                    <= potential_parent_metering_points[to_date]
+                )
+            )
+            | (  # When child from date is before parent from date and to date is after parent to date
+                (
+                    all_child_metering_points[Colname.to_date]
+                    > potential_parent_metering_points[to_date]
+                )
+                & (
+                    all_child_metering_points[Colname.from_date]
+                    < potential_parent_metering_points[from_date]
+                )
+            )
+        ),
         "left",
-    )
-
-    return metering_points_periods_for_wholesale_calculation.select(
-        all_metering_points[Colname.metering_point_id],
-        all_metering_points[Colname.metering_point_type],
-        all_metering_points[Colname.calculation_type],
-        all_metering_points[Colname.settlement_method],
-        all_metering_points[Colname.grid_area],
-        all_metering_points[Colname.resolution],
-        all_metering_points[Colname.from_grid_area],
-        all_metering_points[Colname.to_grid_area],
-        all_metering_points[Colname.parent_metering_point_id],
-        f.coalesce(
-            all_metering_points[Colname.energy_supplier_id],
-            production_and_consumption_metering_points[es],
-        ).alias(
+    ).select(
+        all_child_metering_points[Colname.metering_point_id],
+        all_child_metering_points[Colname.metering_point_type],
+        all_child_metering_points[Colname.calculation_type],
+        all_child_metering_points[Colname.settlement_method],
+        all_child_metering_points[Colname.grid_area],
+        all_child_metering_points[Colname.resolution],
+        all_child_metering_points[Colname.from_grid_area],
+        all_child_metering_points[Colname.to_grid_area],
+        all_child_metering_points[Colname.parent_metering_point_id],
+        potential_parent_metering_points[es].alias(
             Colname.energy_supplier_id
         ),  # energy_supplier_id is always null on child metering points
-        all_metering_points[Colname.balance_responsible_id],
-        all_metering_points[Colname.from_date],
-        all_metering_points[Colname.to_date],
+        all_child_metering_points[Colname.balance_responsible_id],
+        f.when(
+            potential_parent_metering_points[from_date]
+            > all_child_metering_points[Colname.from_date],
+            potential_parent_metering_points[from_date],
+        )
+        .otherwise(all_child_metering_points[Colname.from_date])
+        .alias(Colname.from_date),
+        f.when(
+            potential_parent_metering_points[to_date]
+            < all_child_metering_points[Colname.to_date],
+            potential_parent_metering_points[to_date],
+        )
+        .otherwise(all_child_metering_points[Colname.to_date])
+        .alias(Colname.to_date),
     )
+
+    metering_points_periods_for_wholesale_calculation = (
+        production_and_consumption_metering_points.union(
+            child_metering_points_with_energy_suppliers
+        )
+    )
+
+    return metering_points_periods_for_wholesale_calculation
 
 
 def _get_production_and_consumption_metering_points(
     metering_points_periods_df: DataFrame,
 ) -> DataFrame:
+    """
+    Returns only production and consumption metering points.
+    """
     return metering_points_periods_df.filter(
         (f.col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
         | (f.col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
-    ).select(Colname.metering_point_id, Colname.energy_supplier_id)
+    )
 
 
 def _get_all_child_metering_points(
     metering_points_periods_df: DataFrame,
 ) -> DataFrame:
+    """
+    Returns all child metering points.
+    """
     return metering_points_periods_df.filter(
-        (f.col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
-        | (f.col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
-        | (f.col(Colname.metering_point_type) == MeteringPointType.VE_PRODUCTION.value)
+        (f.col(Colname.metering_point_type) == MeteringPointType.VE_PRODUCTION.value)
         | (f.col(Colname.metering_point_type) == MeteringPointType.NET_PRODUCTION.value)
         | (f.col(Colname.metering_point_type) == MeteringPointType.SUPPLY_TO_GRID.value)
         | (
