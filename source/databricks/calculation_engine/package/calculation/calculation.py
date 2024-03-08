@@ -112,6 +112,7 @@ def _execute(
                     results.energy_results.positive_grid_loss,
                     results.energy_results.negative_grid_loss,
                 )
+            )
 
             prepared_subscriptions = prepared_data_reader.get_subscription_charges(
                 charge_master_data,
