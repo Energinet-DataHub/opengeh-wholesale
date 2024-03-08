@@ -57,7 +57,7 @@ def get_metering_points_and_child_metering_points(
             == all_child_metering_points[Colname.parent_metering_point_id]
         )
         & (
-            (
+            (  # When child from date is within parent period
                 (
                     all_child_metering_points[Colname.from_date]
                     >= potential_parent_metering_points[from_date]
