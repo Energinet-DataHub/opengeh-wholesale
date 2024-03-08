@@ -109,10 +109,7 @@ def get_metering_points_and_child_metering_points(
         all_child_metering_points[Colname.from_grid_area],
         all_child_metering_points[Colname.to_grid_area],
         all_child_metering_points[Colname.parent_metering_point_id],
-        f.coalesce(
-            all_child_metering_points[Colname.energy_supplier_id],
-            potential_parent_metering_points[es],
-        ).alias(
+        potential_parent_metering_points[es].alias(
             Colname.energy_supplier_id
         ),  # energy_supplier_id is always null on child metering points
         all_child_metering_points[Colname.balance_responsible_id],
