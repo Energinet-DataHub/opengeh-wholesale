@@ -34,6 +34,7 @@ def test__migrate__when_schema_migration_scripts_are_executed__compare_schemas(
     mocker: Mock, spark: SparkSession
 ) -> None:
     # Arrange
+    storage_account = "storage_account_1"
     mocker.patch.object(
         sut.paths,
         sut.paths.get_storage_account_url.__name__,
@@ -43,19 +44,19 @@ def test__migrate__when_schema_migration_scripts_are_executed__compare_schemas(
     mocker.patch.object(
         sut.env_vars,
         sut.env_vars.get_storage_account_name.__name__,
-        return_value="storage_account",
+        return_value=storage_account,
     )
 
     mocker.patch.object(
         sut.env_vars,
         sut.env_vars.get_calculation_input_folder_name.__name__,
-        return_value="storage_account_2",
+        return_value=storage_account,
     )
 
     mocker.patch.object(
         sut.paths,
         sut.paths.get_container_url.__name__,
-        return_value="storage_account",
+        return_value=storage_account,
     )
 
     spark_helper.reset_spark_catalog(spark)
@@ -79,6 +80,7 @@ def test__migrate__when_schema_migration_scripts_are_executed__compare_result_wi
     """If this test fails, it indicates that a SQL script is creating something that the Schema Config does not know
     about"""
     # Arrange
+    storage_account = "storage_account_2"
     mocker.patch.object(
         sut.paths,
         sut.paths.get_storage_account_url.__name__,
@@ -88,19 +90,19 @@ def test__migrate__when_schema_migration_scripts_are_executed__compare_result_wi
     mocker.patch.object(
         sut.env_vars,
         sut.env_vars.get_storage_account_name.__name__,
-        return_value="storage_account",
+        return_value=storage_account,
     )
 
     mocker.patch.object(
         sut.env_vars,
         sut.env_vars.get_calculation_input_folder_name.__name__,
-        return_value="storage_account",
+        return_value=storage_account,
     )
 
     mocker.patch.object(
         sut.paths,
         sut.paths.get_container_url.__name__,
-        return_value="storage_account",
+        return_value=storage_account,
     )
 
     spark_helper.reset_spark_catalog(spark)
@@ -136,6 +138,7 @@ def test__schema_config__when_current_state_script_files_are_executed(
     mocker: Mock, spark: SparkSession
 ) -> None:
     # Arrange
+    storage_account = "storage_account_3"
     mocker.patch.object(
         sut.paths,
         sut.paths.get_storage_account_url.__name__,
@@ -145,19 +148,19 @@ def test__schema_config__when_current_state_script_files_are_executed(
     mocker.patch.object(
         sut.env_vars,
         sut.env_vars.get_storage_account_name.__name__,
-        return_value="storage_account",
+        return_value=storage_account,
     )
 
     mocker.patch.object(
         sut.env_vars,
         sut.env_vars.get_calculation_input_folder_name.__name__,
-        return_value="storage_account_2",
+        return_value=storage_account,
     )
 
     mocker.patch.object(
         sut.paths,
         sut.paths.get_container_url.__name__,
-        return_value="storage_account",
+        return_value=storage_account,
     )
 
     spark_helper.reset_spark_catalog(spark)
@@ -176,6 +179,7 @@ def test__schema_config__when_schema_and_table_script_files_are_executed(
     mocker: Mock, spark: SparkSession
 ) -> None:
     # Arrange
+    storage_account = "storage_account_4"
     mocker.patch.object(
         sut.paths,
         sut.paths.get_storage_account_url.__name__,
@@ -185,19 +189,19 @@ def test__schema_config__when_schema_and_table_script_files_are_executed(
     mocker.patch.object(
         sut.env_vars,
         sut.env_vars.get_storage_account_name.__name__,
-        return_value="storage_account",
+        return_value=storage_account,
     )
 
     mocker.patch.object(
         sut.env_vars,
         sut.env_vars.get_calculation_input_folder_name.__name__,
-        return_value="storage_account_2",
+        return_value=storage_account,
     )
 
     mocker.patch.object(
         sut.paths,
         sut.paths.get_container_url.__name__,
-        return_value="storage_account",
+        return_value=storage_account,
     )
 
     spark_helper.reset_spark_catalog(spark)
@@ -217,6 +221,7 @@ def test__current_state_and_migration_scripts__should_give_same_result(
     mocker: Mock, spark: SparkSession
 ) -> None:
     # Arrange
+    storage_account = "storage_account_5"
     mocker.patch.object(
         sut.paths,
         sut.paths.get_storage_account_url.__name__,
@@ -226,19 +231,19 @@ def test__current_state_and_migration_scripts__should_give_same_result(
     mocker.patch.object(
         sut.env_vars,
         sut.env_vars.get_storage_account_name.__name__,
-        return_value="storage_account",
+        return_value=storage_account,
     )
 
     mocker.patch.object(
         sut.env_vars,
         sut.env_vars.get_calculation_input_folder_name.__name__,
-        return_value="storage_account_2",
+        return_value=storage_account,
     )
 
     mocker.patch.object(
         sut.paths,
         sut.paths.get_container_url.__name__,
-        return_value="storage_account",
+        return_value=storage_account,
     )
 
     # Act migration scripts
