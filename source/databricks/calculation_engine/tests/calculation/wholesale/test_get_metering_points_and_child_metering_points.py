@@ -29,7 +29,7 @@ class TestWhenMeteringPointPeriodsHasMeteringPointTypesThatIsNotExchange:
         "metering_point_type",
         [t for t in MeteringPointType if t != MeteringPointType.EXCHANGE],
     )
-    def test__then_return_metering_points(
+    def test__returns_metering_points(
         self,
         metering_point_type: MeteringPointType,
         spark: SparkSession,
@@ -50,7 +50,7 @@ class TestWhenMeteringPointPeriodsHasMeteringPointTypesThatIsNotExchange:
 
 
 class TestWhenMeteringPointPeriodsHasMeteringPointTypesThatIsExchange:
-    def test__then_return_result_without_the_metering_point(
+    def test__returns_result_without_the_metering_point(
         self,
         spark: SparkSession,
     ):
@@ -79,9 +79,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         parent:  |-----------------|
         parent:                    |-----------------|
         child:   |-----------------------------------|
-        output metering points:
-        parent:  |-----------------|
-        parent:                    |-----------------|
+        output metering points (only child):
         child:   |-----------------|
         child:                     |-----------------|
         """
@@ -158,9 +156,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         parent:  |-----------------|
         parent:                    |-----------------|
         child:       |--------------------------|
-        output metering points:
-        parent:  |-----------------|
-        parent:                    |-----------------|
+        output metering points (only child):
         child:       |-------------|
         child:                     |------------|
         """
@@ -237,9 +233,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         parent:       |------------|
         parent:                    |------------|
         child:   |-----------------------------------|
-        output metering points:
-        parent:       |------------|
-        parent:                    |------------|
+        output metering points (only child):
         child:        |------------|
         child:                     |------------|
         """
@@ -318,11 +312,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         parent:  |--------|
         parent:                             |--------|
         child:            |-----------------|
-        output metering points:
-        parent:           |--------|
-        parent:                    |--------|
-        parent:  |--------|
-        parent:                             |--------|
+        output metering points (only child):
         child:            |--------|
         child:                     |--------|
         """
