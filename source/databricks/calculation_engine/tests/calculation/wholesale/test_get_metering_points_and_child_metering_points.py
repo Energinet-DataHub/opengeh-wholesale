@@ -70,7 +70,7 @@ class TestWhenMeteringPointPeriodsHasMeteringPointTypesThatIsExchange:
 
 
 class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPeriod:
-    def test__1(
+    def test__returns_two_child_metering_points_with_the_same_period_as_the_parent_metering_points(
         self,
         spark: SparkSession,
     ):
@@ -149,7 +149,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
             2020, 1, 31, 23
         )
 
-    def test__2(
+    def test__returns_two_child_metering_points_with_the_same_from_and_to_date(
         self,
         spark: SparkSession,
     ):
@@ -228,7 +228,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
             2020, 1, 31, 23
         )
 
-    def test__3(
+    def test__returns_two_child_metering_points_with_parent_metering_points_from_and_to_date(
         self,
         spark: SparkSession,
     ):
@@ -307,7 +307,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
             2020, 1, 25, 23
         )
 
-    def test__4(
+    def test__returns_two_child_metering_points_with_the_same_period_as_parent_metering_points_in_child_period(
         self,
         spark: SparkSession,
     ):
