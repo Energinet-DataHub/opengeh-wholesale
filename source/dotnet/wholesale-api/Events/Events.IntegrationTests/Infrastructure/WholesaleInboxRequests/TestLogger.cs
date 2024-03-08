@@ -17,6 +17,9 @@ using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.Events.IntegrationTests.Infrastructure.WholesaleInboxRequests;
 
+/// <summary>
+/// Test logger implements ILogger interface, but also logs using the ITestOutputHelper from XUnit, which displays the log statements in the actual test output
+/// </summary>
 public class TestLogger<T> : ILogger<T>
 {
     private readonly ILogger<T> _baseLogger;
@@ -47,6 +50,7 @@ public class TestLogger<T> : ILogger<T>
         }
         catch (Exception e)
         {
+            // Test output can fail if the test is over but some log statements still needs to be written (this can happen if there is log statements in dispose method)
             Console.WriteLine($"Error logging to test output. Exception: {e}{Environment.NewLine}Original log message: [{logLevel}] {formatter(state, exception)}");
         }
 
