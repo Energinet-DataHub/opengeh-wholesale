@@ -22,8 +22,12 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Am
 public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProducedV1Factory
 {
     public bool CanCreate(WholesaleResult result) =>
-        result.AmountType == AmountType.AmountPerCharge
-        && result.Resolution is Resolution.Hour or Resolution.Day;
+        result is
+        {
+            AmountType: AmountType.AmountPerCharge,
+            Resolution: Resolution.Hour or Resolution.Day,
+            ChargeType: ChargeType.Tariff
+        };
 
     public Contracts.IntegrationEvents.AmountPerChargeResultProducedV1 Create(WholesaleResult result)
     {
@@ -61,7 +65,7 @@ public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProd
                         Price = timeSeriesPoint.Price,
                         Amount = timeSeriesPoint.Amount,
                     };
-                    p.QuantityQualities.AddRange(timeSeriesPoint.Qualities.Select(QuantityQualityMapper.MapQuantityQuality).ToList());
+                    p.QuantityQualities.AddRange(timeSeriesPoint.Qualities!.Select(QuantityQualityMapper.MapQuantityQuality).ToList());
                     return p;
                 }));
         return amountPerChargeResultProducedV1;
