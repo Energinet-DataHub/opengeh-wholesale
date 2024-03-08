@@ -196,7 +196,7 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
     [SubsystemFact]
     public void AndThen_ReceivedAmountPerChargeResultProducedEventsCountIsEqualToExpected()
     {
-        var expected = 70; // 28 hourly tariff + 42 daily tariff
+        var expected = 82; // 31 hourly tariff + 51 daily tariff
 
         // Assert
         Fixture.ScenarioState.ReceivedAmountPerChargeResultProducedV1.Count.Should().Be(expected);
@@ -206,7 +206,7 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
     [SubsystemFact]
     public void AndThen_ReceivedMonthlyAmountPerChargeResultProducedEventsCountIsEqualToExpected()
     {
-        var expected = 40; // 16 monthly tariff from hourly + 24 monthly tariff from daily
+        var expected = 42; // 17 monthly tariff from hourly + 25 monthly tariff from daily
 
         // Assert
         Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1.Count.Should().Be(expected);
