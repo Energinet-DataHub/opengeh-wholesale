@@ -99,7 +99,7 @@ public class WholesaleResultEventProviderTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_WhenCannotCreateAnyEvents_ThrowsException(
+    public async Task GetAsync_WhenCannotCreateEventFromResult_IgnoresThatResult(
         [Frozen] Mock<IAmountPerChargeResultProducedV1Factory> amountPerChargeResultProducedV1FactoryMock,
         [Frozen] Mock<IMonthlyAmountPerChargeResultProducedV1Factory> monthlyAmountPerChargeResultProducedV1FactoryMock,
         [Frozen] Mock<IWholesaleResultQueries> wholesaleResultQueriesMock,
@@ -122,10 +122,10 @@ public class WholesaleResultEventProviderTests
             .Returns(false);
 
         // Act
-        var act = async () => await sut.GetAsync(wholesaleFixingCalculation).SingleAsync();
+        var actualIntegrationEvents = await sut.GetAsync(wholesaleFixingCalculation).ToListAsync();
 
         // Assert
-        await act.Should().ThrowAsync<ArgumentException>();
+        actualIntegrationEvents.Should().BeEmpty();
     }
 
     [Theory]
