@@ -112,6 +112,12 @@ def _execute(
                     results.energy_results.positive_grid_loss,
                     results.energy_results.negative_grid_loss,
                 )
+
+            prepared_subscriptions = prepared_data_reader.get_subscription_charges(
+                charge_master_data,
+                charge_prices,
+                charges_link_metering_point_periods,
+                args.time_zone,
             )
 
             tariffs_hourly_df = prepared_data_reader.get_tariff_charges(
@@ -134,6 +140,7 @@ def _execute(
 
         results.wholesale_results = wholesale_calculation.execute(
             args,
+            prepared_subscriptions,
             tariffs_hourly_df,
             tariffs_daily_df,
         )
