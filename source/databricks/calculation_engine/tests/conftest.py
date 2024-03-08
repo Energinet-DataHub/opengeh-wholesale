@@ -30,7 +30,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType
 
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.input import (
+from package.calculation.input.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
     grid_loss_metering_points_schema,
