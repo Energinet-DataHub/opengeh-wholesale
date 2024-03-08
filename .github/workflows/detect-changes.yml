@@ -63,9 +63,9 @@ jobs:
             databricks:
               - '.github/workflows/cd.yml'
               - '.github/workflows/ci-databricks.yml'
-              - '.github/actions/python-*/**'
               - 'source/databricks/!(exploratory-notebooks/**)/**'
               - '.devcontainer/docker-compose.yml'
+              - '.docker/requirements.txt'
             dotnet:
               - '.github/workflows/cd.yml'
               - '.github/workflows/ci-dotnet.yml'

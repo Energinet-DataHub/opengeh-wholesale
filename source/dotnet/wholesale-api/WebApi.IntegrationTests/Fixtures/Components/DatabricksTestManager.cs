@@ -12,34 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.Components;
 
-namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.Components
+public sealed class DatabricksTestManager : IAsyncDisposable
 {
-    public sealed class DatabricksTestManager : IAsyncDisposable
+    private readonly DatabricksTestHttpListener _listener;
+
+    public DatabricksTestManager()
     {
-        private readonly DatabricksTestHttpListener _listener;
+        _listener = new DatabricksTestHttpListener(DatabricksUrl);
+    }
 
-        public DatabricksTestManager()
-        {
-            _listener = new DatabricksTestHttpListener(DatabricksUrl);
-        }
+    public string DatabricksUrl { get; set; } = "http://localhost:8000/";
 
-        public string DatabricksUrl { get; set; } = "http://localhost:8000/";
+    public string DatabricksToken { get; set; } = "no_token";
 
-        public string DatabricksToken { get; set; } = "no_token";
-
-        public void BeginListen()
-        {
+    public void BeginListen()
+    {
 #pragma warning disable VSTHRD110, CS4014
-            _listener.BeginListenAsync();
+        _listener.BeginListenAsync();
 #pragma warning restore VSTHRD110, CS4014
-        }
+    }
 
-        public ValueTask DisposeAsync()
-        {
-            _listener.Dispose();
-            return ValueTask.CompletedTask;
-        }
+    public ValueTask DisposeAsync()
+    {
+        _listener.Dispose();
+        return ValueTask.CompletedTask;
     }
 }

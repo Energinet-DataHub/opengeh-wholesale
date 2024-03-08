@@ -14,9 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Energinet.DataHub.Wholesale.Test.Core</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Wholesale.Test.Core</RootNamespace>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Energinet.DataHub.Core.FunctionApp.TestCommon" Version="4.6.0" />
-    <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="4.6.0" />
+    <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="4.6.1" />
     <PackageReference Include="FluentAssertions" Version="6.12.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Version="8.0.0" />

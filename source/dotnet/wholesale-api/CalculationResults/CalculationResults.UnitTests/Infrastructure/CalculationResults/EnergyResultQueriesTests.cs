@@ -83,8 +83,7 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
         _calculationsClientMock
             .Setup(client => client.GetAsync(calculation.CalculationId))
             .ReturnsAsync(calculation);
-        _databricksSqlWarehouseQueryExecutorMock
-            .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>(), CancellationToken.None))
+        _databricksSqlWarehouseQueryExecutorMock.Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>(), default))
             .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 0));
 
         // Act
@@ -103,7 +102,7 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
             .Setup(client => client.GetAsync(calculation.CalculationId))
             .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock
-            .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>(), CancellationToken.None))
+            .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>(), default))
             .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 1));
 
         // Act
@@ -122,7 +121,7 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
             .Setup(client => client.GetAsync(calculation.CalculationId))
             .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock
-            .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>(), CancellationToken.None))
+            .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>(), default))
             .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 1));
 
         // Act
@@ -154,7 +153,7 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
             .Setup(client => client.GetAsync(calculation.CalculationId))
             .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock
-            .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>(), CancellationToken.None))
+            .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>(), default))
             .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 2));
 
         // Act

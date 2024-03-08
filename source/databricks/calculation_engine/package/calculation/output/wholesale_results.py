@@ -23,7 +23,8 @@ from package.infrastructure.paths import (
 )
 
 
-def write(wholesale_results: WholesaleResultsContainer) -> None:
+@logging_configuration.use_span("calculation.write.wholesale")
+def write_wholesale_results(wholesale_results: WholesaleResultsContainer) -> None:
     """Write each wholesale result to the output table."""
     for field in fields(wholesale_results):
         _write(field.name, getattr(wholesale_results, field.name))

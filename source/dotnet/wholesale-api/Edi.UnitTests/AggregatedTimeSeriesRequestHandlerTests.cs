@@ -18,14 +18,13 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Edi.Calculations;
-using Energinet.DataHub.Wholesale.EDI.Client;
-using Energinet.DataHub.Wholesale.EDI.Models;
-using Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
-using Energinet.DataHub.Wholesale.EDI.UnitTests.Extensions;
-using Energinet.DataHub.Wholesale.EDI.Validation;
+using Energinet.DataHub.Wholesale.Edi.Client;
+using Energinet.DataHub.Wholesale.Edi.Models;
+using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
+using Energinet.DataHub.Wholesale.Edi.UnitTests.Extensions;
+using Energinet.DataHub.Wholesale.Edi.Validation;
 using Google.Protobuf;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -35,7 +34,7 @@ using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTim
 using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.EDI.UnitTests;
+namespace Energinet.DataHub.Wholesale.Edi.UnitTests;
 
 public class AggregatedTimeSeriesRequestHandlerTests
 {
@@ -382,7 +381,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
     {
         return new List<AggregatedTimeSeries>
         {
-            new AggregatedTimeSeries(
+            new(
                 gridArea: "543",
                 timeSeriesPoints: new EnergyTimeSeriesPoint[]
                 {

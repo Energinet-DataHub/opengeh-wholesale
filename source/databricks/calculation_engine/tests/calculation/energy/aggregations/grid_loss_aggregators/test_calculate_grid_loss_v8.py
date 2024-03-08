@@ -71,21 +71,32 @@ def agg_result_factory(
                 }
             )
             for i in range(10):
-                pandas_df = pandas_df.append(
-                    {
-                        Colname.grid_area: str(i),
-                        Colname.to_grid_area: None,
-                        Colname.from_grid_area: None,
-                        Colname.balance_responsible_id: "balance_responsible_id",
-                        Colname.energy_supplier_id: "energy_supplier_id",
-                        Colname.time_window: {
-                            Colname.start: default_obs_time + timedelta(hours=i),
-                            Colname.end: default_obs_time + timedelta(hours=i + 1),
-                        },
-                        Colname.sum_quantity: Decimal(20 + i),
-                        Colname.qualities: [QuantityQuality.ESTIMATED.value],
-                        Colname.metering_point_id: None,
-                    },
+                pandas_df = pd.concat(
+                    [
+                        pandas_df,
+                        pd.Series(
+                            {
+                                Colname.grid_area: str(i),
+                                Colname.to_grid_area: None,
+                                Colname.from_grid_area: None,
+                                Colname.balance_responsible_id: "balance_responsible_id",
+                                Colname.energy_supplier_id: "energy_supplier_id",
+                                Colname.time_window: {
+                                    Colname.start: pd.to_datetime(
+                                        default_obs_time + timedelta(hours=i)
+                                    ).tz_convert(None),
+                                    Colname.end: pd.to_datetime(
+                                        default_obs_time + timedelta(hours=i + 1)
+                                    ).tz_convert(None),
+                                },
+                                Colname.sum_quantity: Decimal(20 + i),
+                                Colname.qualities: [QuantityQuality.ESTIMATED.value],
+                                Colname.metering_point_id: None,
+                            },
+                        )
+                        .to_frame()
+                        .T,
+                    ],
                     ignore_index=True,
                 )
             df = spark.createDataFrame(pandas_df, schema=energy_results_schema)
@@ -105,21 +116,32 @@ def agg_result_factory(
                 }
             )
             for i in range(10):
-                pandas_df = pandas_df.append(
-                    {
-                        Colname.grid_area: str(i),
-                        Colname.to_grid_area: None,
-                        Colname.from_grid_area: None,
-                        Colname.balance_responsible_id: str(i),
-                        Colname.energy_supplier_id: str(i),
-                        Colname.time_window: {
-                            Colname.start: default_obs_time + timedelta(hours=i),
-                            Colname.end: default_obs_time + timedelta(hours=i + 1),
-                        },
-                        Colname.sum_quantity: Decimal(13 + i),
-                        Colname.qualities: [QuantityQuality.ESTIMATED.value],
-                        Colname.metering_point_id: None,
-                    },
+                pandas_df = pd.concat(
+                    [
+                        pandas_df,
+                        pd.Series(
+                            {
+                                Colname.grid_area: str(i),
+                                Colname.to_grid_area: None,
+                                Colname.from_grid_area: None,
+                                Colname.balance_responsible_id: str(i),
+                                Colname.energy_supplier_id: str(i),
+                                Colname.time_window: {
+                                    Colname.start: pd.to_datetime(
+                                        default_obs_time + timedelta(hours=i)
+                                    ).tz_convert(None),
+                                    Colname.end: pd.to_datetime(
+                                        default_obs_time + timedelta(hours=i + 1)
+                                    ).tz_convert(None),
+                                },
+                                Colname.sum_quantity: Decimal(13 + i),
+                                Colname.qualities: [QuantityQuality.ESTIMATED.value],
+                                Colname.metering_point_id: None,
+                            },
+                        )
+                        .to_frame()
+                        .T,
+                    ],
                     ignore_index=True,
                 )
             df = spark.createDataFrame(pandas_df, schema=energy_results_schema)
@@ -139,21 +161,32 @@ def agg_result_factory(
                 }
             )
             for i in range(10):
-                pandas_df = pandas_df.append(
-                    {
-                        Colname.grid_area: str(i),
-                        Colname.to_grid_area: None,
-                        Colname.from_grid_area: None,
-                        Colname.balance_responsible_id: str(i),
-                        Colname.energy_supplier_id: str(i),
-                        Colname.time_window: {
-                            Colname.start: default_obs_time + timedelta(hours=i),
-                            Colname.end: default_obs_time + timedelta(hours=i + 1),
-                        },
-                        Colname.sum_quantity: Decimal(14 + i),
-                        Colname.qualities: [QuantityQuality.ESTIMATED.value],
-                        Colname.metering_point_id: None,
-                    },
+                pandas_df = pd.concat(
+                    [
+                        pandas_df,
+                        pd.Series(
+                            {
+                                Colname.grid_area: str(i),
+                                Colname.to_grid_area: None,
+                                Colname.from_grid_area: None,
+                                Colname.balance_responsible_id: str(i),
+                                Colname.energy_supplier_id: str(i),
+                                Colname.time_window: {
+                                    Colname.start: pd.to_datetime(
+                                        default_obs_time + timedelta(hours=i)
+                                    ).tz_convert(None),
+                                    Colname.end: pd.to_datetime(
+                                        default_obs_time + timedelta(hours=i + 1)
+                                    ).tz_convert(None),
+                                },
+                                Colname.sum_quantity: Decimal(14 + i),
+                                Colname.qualities: [QuantityQuality.ESTIMATED.value],
+                                Colname.metering_point_id: None,
+                            },
+                        )
+                        .to_frame()
+                        .T,
+                    ],
                     ignore_index=True,
                 )
             df = spark.createDataFrame(pandas_df, schema=energy_results_schema)
@@ -173,21 +206,32 @@ def agg_result_factory(
                 }
             )
             for i in range(10):
-                pandas_df = pandas_df.append(
-                    {
-                        Colname.grid_area: str(i),
-                        Colname.to_grid_area: None,
-                        Colname.from_grid_area: None,
-                        Colname.balance_responsible_id: str(i),
-                        Colname.energy_supplier_id: str(i),
-                        Colname.time_window: {
-                            Colname.start: default_obs_time + timedelta(hours=i),
-                            Colname.end: default_obs_time + timedelta(hours=i + 1),
-                        },
-                        Colname.sum_quantity: Decimal(50 + i),
-                        Colname.qualities: [QuantityQuality.ESTIMATED.value],
-                        Colname.metering_point_id: None,
-                    },
+                pandas_df = pd.concat(
+                    [
+                        pandas_df,
+                        pd.Series(
+                            {
+                                Colname.grid_area: str(i),
+                                Colname.to_grid_area: None,
+                                Colname.from_grid_area: None,
+                                Colname.balance_responsible_id: str(i),
+                                Colname.energy_supplier_id: str(i),
+                                Colname.time_window: {
+                                    Colname.start: pd.to_datetime(
+                                        default_obs_time + timedelta(hours=i)
+                                    ).tz_convert(None),
+                                    Colname.end: pd.to_datetime(
+                                        default_obs_time + timedelta(hours=i + 1)
+                                    ).tz_convert(None),
+                                },
+                                Colname.sum_quantity: Decimal(50 + i),
+                                Colname.qualities: [QuantityQuality.ESTIMATED.value],
+                                Colname.metering_point_id: None,
+                            },
+                        )
+                        .to_frame()
+                        .T,
+                    ],
                     ignore_index=True,
                 )
             df = spark.createDataFrame(pandas_df, schema=energy_results_schema)
@@ -208,28 +252,40 @@ def agg_net_exchange_factory(spark: SparkSession) -> Callable[[], EnergyResults]
                 Colname.energy_supplier_id: ["1", "1", "2", "1", "1", "1"],
                 Colname.time_window: [
                     {
-                        Colname.start: datetime(2020, 1, 1, 0, 0),
-                        Colname.end: datetime(2020, 1, 1, 1, 0),
+                        Colname.start: pd.to_datetime(2020, 1, 1, 0, 0).tz_convert(
+                            None
+                        ),
+                        Colname.end: pd.to_datetime(2020, 1, 1, 1, 0).tz_convert(None),
                     },
                     {
-                        Colname.start: datetime(2020, 1, 1, 1, 0),
-                        Colname.end: datetime(2020, 1, 1, 2, 0),
+                        Colname.start: pd.to_datetime(2020, 1, 1, 1, 0).tz_convert(
+                            None
+                        ),
+                        Colname.end: pd.to_datetime(2020, 1, 1, 2, 0).tz_convert(None),
                     },
                     {
-                        Colname.start: datetime(2020, 1, 1, 2, 0),
-                        Colname.end: datetime(2020, 1, 1, 3, 0),
+                        Colname.start: pd.to_datetime(2020, 1, 1, 2, 0).tz_convert(
+                            None
+                        ),
+                        Colname.end: pd.to_datetime(2020, 1, 1, 3, 0).tz_convert(None),
                     },
                     {
-                        Colname.start: datetime(2020, 1, 1, 0, 0),
-                        Colname.end: datetime(2020, 1, 1, 1, 0),
+                        Colname.start: pd.to_datetime(2020, 1, 1, 0, 0).tz_convert(
+                            None
+                        ),
+                        Colname.end: pd.to_datetime(2020, 1, 1, 1, 0).tz_convert(None),
                     },
                     {
-                        Colname.start: datetime(2020, 1, 1, 1, 0),
-                        Colname.end: datetime(2020, 1, 1, 2, 0),
+                        Colname.start: pd.to_datetime(2020, 1, 1, 1, 0).tz_convert(
+                            None
+                        ),
+                        Colname.end: pd.to_datetime(2020, 1, 1, 2, 0).tz_convert(None),
                     },
                     {
-                        Colname.start: datetime(2020, 1, 1, 0, 0),
-                        Colname.end: datetime(2020, 1, 1, 1, 0),
+                        Colname.start: pd.to_datetime(2020, 1, 1, 0, 0).tz_convert(
+                            None
+                        ),
+                        Colname.end: pd.to_datetime(2020, 1, 1, 1, 0).tz_convert(None),
                     },
                 ],
                 Colname.sum_quantity: [
@@ -263,28 +319,40 @@ def agg_flex_consumption_factory(spark: SparkSession) -> Callable[[], EnergyResu
                 Colname.energy_supplier_id: ["1", "1", "2", "1", "1", "1"],
                 Colname.time_window: [
                     {
-                        Colname.start: datetime(2020, 1, 1, 0, 0),
-                        Colname.end: datetime(2020, 1, 1, 1, 0),
+                        Colname.start: pd.to_datetime(2020, 1, 1, 0, 0).tz_convert(
+                            None
+                        ),
+                        Colname.end: pd.to_datetime(2020, 1, 1, 1, 0).tz_convert(None),
                     },
                     {
-                        Colname.start: datetime(2020, 1, 1, 1, 0),
-                        Colname.end: datetime(2020, 1, 1, 2, 0),
+                        Colname.start: pd.to_datetime(2020, 1, 1, 1, 0).tz_convert(
+                            None
+                        ),
+                        Colname.end: pd.to_datetime(2020, 1, 1, 2, 0).tz_convert(None),
                     },
                     {
-                        Colname.start: datetime(2020, 1, 1, 2, 0),
-                        Colname.end: datetime(2020, 1, 1, 3, 0),
+                        Colname.start: pd.to_datetime(2020, 1, 1, 2, 0).tz_convert(
+                            None
+                        ),
+                        Colname.end: pd.to_datetime(2020, 1, 1, 3, 0).tz_convert(None),
                     },
                     {
-                        Colname.start: datetime(2020, 1, 1, 0, 0),
-                        Colname.end: datetime(2020, 1, 1, 1, 0),
+                        Colname.start: pd.to_datetime(2020, 1, 1, 0, 0).tz_convert(
+                            None
+                        ),
+                        Colname.end: pd.to_datetime(2020, 1, 1, 1, 0).tz_convert(None),
                     },
                     {
-                        Colname.start: datetime(2020, 1, 1, 1, 0),
-                        Colname.end: datetime(2020, 1, 1, 2, 0),
+                        Colname.start: pd.to_datetime(2020, 1, 1, 1, 0).tz_convert(
+                            None
+                        ),
+                        Colname.end: pd.to_datetime(2020, 1, 1, 2, 0).tz_convert(None),
                     },
                     {
-                        Colname.start: datetime(2020, 1, 1, 0, 0),
-                        Colname.end: datetime(2020, 1, 1, 1, 0),
+                        Colname.start: pd.to_datetime(2020, 1, 1, 0, 0).tz_convert(
+                            None
+                        ),
+                        Colname.end: pd.to_datetime(2020, 1, 1, 1, 0).tz_convert(None),
                     },
                 ],
                 Colname.sum_quantity: [
@@ -318,28 +386,40 @@ def agg_hourly_consumption_factory(spark: SparkSession) -> Callable[[], EnergyRe
                 Colname.energy_supplier_id: ["1", "1", "2", "1", "1", "1"],
                 Colname.time_window: [
                     {
-                        Colname.start: datetime(2020, 1, 1, 0, 0),
-                        Colname.end: datetime(2020, 1, 1, 1, 0),
+                        Colname.start: pd.to_datetime(2020, 1, 1, 0, 0).tz_convert(
+                            None
+                        ),
+                        Colname.end: pd.to_datetime(2020, 1, 1, 1, 0).tz_convert(None),
                     },
                     {
-                        Colname.start: datetime(2020, 1, 1, 0, 0),
-                        Colname.end: datetime(2020, 1, 1, 1, 0),
+                        Colname.start: pd.to_datetime(2020, 1, 1, 0, 0).tz_convert(
+                            None
+                        ),
+                        Colname.end: pd.to_datetime(2020, 1, 1, 1, 0).tz_convert(None),
                     },
                     {
-                        Colname.start: datetime(2020, 1, 1, 0, 0),
-                        Colname.end: datetime(2020, 1, 1, 1, 0),
+                        Colname.start: pd.to_datetime(2020, 1, 1, 0, 0).tz_convert(
+                            None
+                        ),
+                        Colname.end: pd.to_datetime(2020, 1, 1, 1, 0).tz_convert(None),
                     },
                     {
-                        Colname.start: datetime(2020, 1, 1, 0, 0),
-                        Colname.end: datetime(2020, 1, 1, 1, 0),
+                        Colname.start: pd.to_datetime(2020, 1, 1, 0, 0).tz_convert(
+                            None
+                        ),
+                        Colname.end: pd.to_datetime(2020, 1, 1, 1, 0).tz_convert(None),
                     },
                     {
-                        Colname.start: datetime(2020, 1, 1, 1, 0),
-                        Colname.end: datetime(2020, 1, 1, 2, 0),
+                        Colname.start: pd.to_datetime(2020, 1, 1, 1, 0).tz_convert(
+                            None
+                        ),
+                        Colname.end: pd.to_datetime(2020, 1, 1, 2, 0).tz_convert(None),
                     },
                     {
-                        Colname.start: datetime(2020, 1, 1, 0, 0),
-                        Colname.end: datetime(2020, 1, 1, 1, 0),
+                        Colname.start: pd.to_datetime(2020, 1, 1, 0, 0).tz_convert(
+                            None
+                        ),
+                        Colname.end: pd.to_datetime(2020, 1, 1, 1, 0).tz_convert(None),
                     },
                 ],
                 Colname.sum_quantity: [
@@ -373,28 +453,40 @@ def agg_hourly_production_factory(spark: SparkSession) -> Callable[[], EnergyRes
                 Colname.energy_supplier_id: ["1", "1", "2", "1", "1", "1"],
                 Colname.time_window: [
                     {
-                        Colname.start: datetime(2020, 1, 1, 0, 0),
-                        Colname.end: datetime(2020, 1, 1, 1, 0),
+                        Colname.start: pd.to_datetime(2020, 1, 1, 0, 0).tz_convert(
+                            None
+                        ),
+                        Colname.end: pd.to_datetime(2020, 1, 1, 1, 0).tz_convert(None),
                     },
                     {
-                        Colname.start: datetime(2020, 1, 1, 0, 0),
-                        Colname.end: datetime(2020, 1, 1, 1, 0),
+                        Colname.start: pd.to_datetime(2020, 1, 1, 0, 0).tz_convert(
+                            None
+                        ),
+                        Colname.end: pd.to_datetime(2020, 1, 1, 1, 0).tz_convert(None),
                     },
                     {
-                        Colname.start: datetime(2020, 1, 1, 0, 0),
-                        Colname.end: datetime(2020, 1, 1, 1, 0),
+                        Colname.start: pd.to_datetime(2020, 1, 1, 0, 0).tz_convert(
+                            None
+                        ),
+                        Colname.end: pd.to_datetime(2020, 1, 1, 1, 0).tz_convert(None),
                     },
                     {
-                        Colname.start: datetime(2020, 1, 1, 0, 0),
-                        Colname.end: datetime(2020, 1, 1, 1, 0),
+                        Colname.start: pd.to_datetime(2020, 1, 1, 0, 0).tz_convert(
+                            None
+                        ),
+                        Colname.end: pd.to_datetime(2020, 1, 1, 1, 0).tz_convert(None),
                     },
                     {
-                        Colname.start: datetime(2020, 1, 1, 1, 0),
-                        Colname.end: datetime(2020, 1, 1, 2, 0),
+                        Colname.start: pd.to_datetime(2020, 1, 1, 1, 0).tz_convert(
+                            None
+                        ),
+                        Colname.end: pd.to_datetime(2020, 1, 1, 2, 0).tz_convert(None),
                     },
                     {
-                        Colname.start: datetime(2020, 1, 1, 0, 0),
-                        Colname.end: datetime(2020, 1, 1, 1, 0),
+                        Colname.start: pd.to_datetime(2020, 1, 1, 0, 0).tz_convert(
+                            None
+                        ),
+                        Colname.end: pd.to_datetime(2020, 1, 1, 1, 0).tz_convert(None),
                     },
                 ],
                 Colname.sum_quantity: [

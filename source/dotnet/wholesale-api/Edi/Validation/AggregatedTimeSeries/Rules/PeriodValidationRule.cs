@@ -16,7 +16,7 @@ using Energinet.DataHub.Edi.Requests;
 using NodaTime;
 using NodaTime.Text;
 
-namespace Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSeries.Rules;
+namespace Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeries.Rules;
 
 public class PeriodValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
 {
@@ -40,17 +40,21 @@ public class PeriodValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
 
     public Task<IList<ValidationError>> ValidateAsync(AggregatedTimeSeriesRequest subject)
     {
-        if (subject == null) throw new ArgumentNullException(nameof(subject));
+        if (subject == null)
+            throw new ArgumentNullException(nameof(subject));
         var period = subject.Period;
-        if (period == null) throw new ArgumentNullException(nameof(period));
+        if (period == null)
+            throw new ArgumentNullException(nameof(period));
         IList<ValidationError> errors = new List<ValidationError>();
 
-        if (MissingDates(period.Start, period.End, errors)) return Task.FromResult(errors);
+        if (MissingDates(period.Start, period.End, errors))
+            return Task.FromResult(errors);
 
         var startInstant = ParseToInstant(period.Start, "Start date", errors);
         var endInstant = ParseToInstant(period.End, "End date", errors);
 
-        if (startInstant == null || endInstant == null) return Task.FromResult(errors);
+        if (startInstant == null || endInstant == null)
+            return Task.FromResult(errors);
 
         MustBeMidnight(startInstant.Value, "Start date", errors);
         MustBeMidnight(endInstant.Value, "End date", errors);
@@ -105,7 +109,8 @@ public class PeriodValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
     {
         var zonedDateTime = new ZonedDateTime(instant, _dateTimeZone);
 
-        if (zonedDateTime.TimeOfDay == LocalTime.Midnight) return;
+        if (zonedDateTime.TimeOfDay == LocalTime.Midnight)
+            return;
 
         if (zonedDateTime.IsDaylightSavingTime())
         {

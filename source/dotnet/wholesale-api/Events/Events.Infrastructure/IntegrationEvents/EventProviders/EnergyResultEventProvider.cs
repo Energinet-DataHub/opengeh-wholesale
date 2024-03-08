@@ -19,23 +19,23 @@ using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.GridLossResultProducedV1.Factories;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
+
+public class EnergyResultEventProvider(
+    IEnergyResultQueries energyResultQueries,
+    IEnergyResultProducedV2Factory energyResultProducedV2Factory,
+    IGridLossResultProducedV1Factory gridLossResultProducedV2Factory)
+    : ResultEventProvider, IEnergyResultEventProvider
 {
-    public class EnergyResultEventProvider(
-        IEnergyResultQueries energyResultQueries,
-        IEnergyResultProducedV2Factory energyResultProducedV2Factory,
-        IGridLossResultProducedV1Factory gridLossResultProducedV2Factory)
-        : ResultEventProvider, IEnergyResultEventProvider
+    public async IAsyncEnumerable<IntegrationEvent> GetAsync(CompletedCalculation calculation)
     {
-        public async IAsyncEnumerable<IntegrationEvent> GetAsync(CompletedCalculation calculation)
+        await foreach (var energyResult in energyResultQueries.GetAsync(calculation.Id).ConfigureAwait(false))
         {
-            await foreach (var energyResult in energyResultQueries.GetAsync(calculation.Id).ConfigureAwait(false))
-            {
+            if (energyResultProducedV2Factory.CanCreate(energyResult))
                 yield return CreateIntegrationEvent(energyResultProducedV2Factory.Create(energyResult));
 
-                if (gridLossResultProducedV2Factory.CanCreate(energyResult))
-                    yield return CreateIntegrationEvent(gridLossResultProducedV2Factory.Create(energyResult));
-            }
+            if (gridLossResultProducedV2Factory.CanCreate(energyResult))
+                yield return CreateIntegrationEvent(gridLossResultProducedV2Factory.Create(energyResult));
         }
     }
 }

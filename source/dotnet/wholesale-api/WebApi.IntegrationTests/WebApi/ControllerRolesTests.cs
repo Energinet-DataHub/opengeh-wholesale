@@ -20,7 +20,6 @@ using Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 using Energinet.DataHub.Wholesale.WebApi.V3.SettlementReport;
 using FluentAssertions;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Xunit;
 
@@ -78,8 +77,6 @@ public class ControllerRolesTests
     [InlineAutoData(typeof(CalculationController), "GetCalculation", Permissions.CalculationsManage)]
     [InlineAutoData(typeof(CalculationController), "SearchCalculations", Permissions.CalculationsManage)]
     [InlineAutoData(typeof(SettlementReportController), "Download", Permissions.SettlementReportsManage)]
-    [InlineAutoData(typeof(SettlementReportController), "GetSettlementReportAsStreamAsync", Permissions.SettlementReportsManage)]
-    [InlineAutoData(typeof(SettlementReportController), "ZippedBasisDataStream", Permissions.SettlementReportsManage)]
     public void EndpointsMustHaveCorrectPermissions(Type controllerType, string endpoint, string expectedPermissions)
     {
         // Arrange & Act

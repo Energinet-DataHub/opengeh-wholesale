@@ -11,105 +11,125 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import col, last_day, dayofmonth, count, sum
-from pyspark.sql.types import DecimalType
-from package.codelists import MeteringPointType, SettlementMethod
-from package.calculation.wholesale.schemas.calculate_daily_subscription_price_schema import (
-    calculate_daily_subscription_price_schema,
-)
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
+from pyspark.sql import DataFrame
+import pyspark.sql.functions as f
+
+from package.codelists import ChargeUnit
 from package.constants import Colname
 
 
-def calculate_daily_subscription_price(
-    spark: SparkSession, subscription_charges: DataFrame
+def calculate(
+    prepared_subscriptions: DataFrame,
+    calculation_period_start: datetime,
+    calculation_period_end: datetime,
+    time_zone: str,
 ) -> DataFrame:
-    # filter on metering point type and settlement method
-    charges_per_day_flex_consumption = (
-        filter_on_metering_point_type_and_settlement_method(subscription_charges)
+    subscriptions_with_daily_price = _calculate_price_per_day(
+        prepared_subscriptions,
+        calculation_period_start,
+        calculation_period_end,
+        time_zone,
     )
 
-    # calculate price per day
-    charges_per_day = calculate_price_per_day(charges_per_day_flex_consumption)
-
-    # get count of charges and total daily charge price
-    df = get_count_of_charges_and_total_daily_charge_price(charges_per_day)
-
-    return spark.createDataFrame(df.rdd, calculate_daily_subscription_price_schema)
-
-
-def filter_on_metering_point_type_and_settlement_method(
-    subscription_charges: DataFrame,
-) -> DataFrame:
-    charges_per_day_flex_consumption = subscription_charges.filter(
-        col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value
-    ).filter(col(Colname.settlement_method) == SettlementMethod.FLEX.value)
-    return charges_per_day_flex_consumption
-
-
-def calculate_price_per_day(
-    charges_per_day_flex_consumption: DataFrame,
-) -> DataFrame:
-    charges_per_day = charges_per_day_flex_consumption.withColumn(
-        Colname.price_per_day,
-        (
-            col(Colname.charge_price) / dayofmonth(last_day(col(Colname.charge_time)))
-        ).cast(DecimalType(14, 8)),
-    )
-    return charges_per_day
-
-
-def get_count_of_charges_and_total_daily_charge_price(
-    charges_per_day: DataFrame,
-) -> DataFrame:
-    grouped_charges_per_day = (
-        charges_per_day.groupBy(
-            Colname.charge_owner,
-            Colname.grid_area,
-            Colname.energy_supplier_id,
-            Colname.charge_time,
-        )
-        .agg(
-            count("*").alias(Colname.charge_count),
-            sum(Colname.price_per_day).alias(Colname.total_daily_charge_price),
-        )
-        .select(
-            Colname.charge_owner,
-            Colname.grid_area,
-            Colname.energy_supplier_id,
-            Colname.charge_time,
-            Colname.charge_count,
-            Colname.total_daily_charge_price,
-        )
+    subscription_amount_per_charge = _calculate_charge_count_and_amount(
+        subscriptions_with_daily_price
     )
 
-    df = (
-        charges_per_day.select("*")
-        .distinct()
-        .join(
-            grouped_charges_per_day,
-            [
-                Colname.charge_owner,
-                Colname.grid_area,
-                Colname.energy_supplier_id,
-                Colname.charge_time,
-            ],
-            "inner",
-        )
-        .select(
-            Colname.charge_key,
-            Colname.charge_code,
-            Colname.charge_type,
-            Colname.charge_owner,
-            Colname.charge_price,
-            Colname.charge_time,
-            Colname.price_per_day,
-            Colname.charge_count,
-            Colname.total_daily_charge_price,
-            Colname.metering_point_type,
-            Colname.settlement_method,
-            Colname.grid_area,
-            Colname.energy_supplier_id,
-        )
+    return subscription_amount_per_charge.select(
+        Colname.energy_supplier_id,
+        Colname.grid_area,
+        Colname.charge_time,
+        Colname.metering_point_type,
+        Colname.settlement_method,
+        Colname.charge_key,
+        Colname.charge_code,
+        Colname.charge_type,
+        Colname.charge_owner,
+        Colname.charge_tax,
+        Colname.resolution,
+        Colname.total_quantity,
+        f.round(Colname.charge_price, 6).alias(Colname.charge_price),
+        f.round(Colname.total_amount, 6).alias(Colname.total_amount),
+        f.lit(ChargeUnit.PIECES.value).alias(Colname.unit),
+        f.lit(None).alias(Colname.qualities),
     )
+
+
+def _calculate_price_per_day(
+    prepared_subscriptions: DataFrame,
+    calculation_period_start: datetime,
+    calculation_period_end: datetime,
+    time_zone: str,
+) -> DataFrame:
+    days_in_month = _get_days_in_month(
+        calculation_period_start, calculation_period_end, time_zone
+    )
+
+    subscriptions_with_daily_price = prepared_subscriptions.withColumn(
+        Colname.charge_price, (f.col(Colname.charge_price) / f.lit(days_in_month))
+    )
+
+    return subscriptions_with_daily_price
+
+
+def _get_days_in_month(
+    calculation_period_start: datetime, calculation_period_end: datetime, time_zone: str
+) -> int:
+    time_zone_info = ZoneInfo(time_zone)
+    period_start_local_time = calculation_period_start.astimezone(time_zone_info)
+    period_end_local_time = calculation_period_end.astimezone(time_zone_info)
+
+    if not _is_full_month_and_at_midnight(
+        period_start_local_time, period_end_local_time
+    ):
+        raise Exception(
+            f"The calculation period must be a full month starting and ending at midnight local time ({time_zone})) ."
+        )
+
+    # return days in month of the start time
+    return (period_end_local_time - period_start_local_time).days
+
+
+def _is_full_month_and_at_midnight(
+    period_start_local_time: datetime, period_end_local_time: datetime
+) -> bool:
+    return (
+        period_start_local_time.time()
+        == period_end_local_time.time()
+        == datetime.min.time()
+        and period_start_local_time.day == 1
+        and period_end_local_time.day == 1
+        and period_end_local_time.month == (period_start_local_time.month % 12) + 1
+    )
+
+
+def _calculate_charge_count_and_amount(
+    subscriptions_with_daily_price: DataFrame,
+) -> DataFrame:
+    df = subscriptions_with_daily_price.groupBy(
+        Colname.charge_key,
+        Colname.charge_type,
+        Colname.charge_code,
+        Colname.charge_owner,
+        Colname.grid_area,
+        Colname.energy_supplier_id,
+        Colname.charge_time,
+        Colname.metering_point_type,
+        Colname.settlement_method,
+        Colname.resolution,
+        Colname.charge_tax,
+    ).agg(
+        f.sum(Colname.charge_quantity).alias(Colname.total_quantity),
+        f.sum(
+            f.when(
+                f.col(Colname.charge_price).isNotNull(),
+                f.col(Colname.charge_quantity) * f.col(Colname.charge_price),
+            )
+        ).alias(Colname.total_amount),
+        f.first(Colname.charge_price, ignorenulls=True).alias(Colname.charge_price),
+    )
+
     return df

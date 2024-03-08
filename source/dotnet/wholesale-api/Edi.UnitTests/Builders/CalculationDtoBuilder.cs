@@ -16,15 +16,16 @@ using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
+namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 
 public class CalculationDtoBuilder
 {
+    private readonly DateTimeOffset _executionStart;
+    private readonly DateTimeOffset __executionEnd;
+    private readonly Guid _calculationId;
+
     private DateTimeOffset _periodStart;
     private DateTimeOffset _periodEnd;
-    private DateTimeOffset _executionStart;
-    private DateTimeOffset __executionEnd;
-    private Guid _calculationId;
     private CalculationType _calculationType;
     private long _version;
 

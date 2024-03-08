@@ -14,7 +14,7 @@
 
 using System.Text.Json;
 
-namespace Energinet.DataHub.Wholesale.EDI.Logging;
+namespace Energinet.DataHub.Wholesale.Edi.Logging;
 
 public static class LoggerExtensions
 {

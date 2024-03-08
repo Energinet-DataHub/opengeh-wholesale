@@ -16,17 +16,16 @@ using System.Diagnostics.CodeAnalysis;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Microsoft.Azure.Databricks.Client.Models;
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance.States
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance.States;
+
+public class CalculationJobScenarioState
 {
-    public class CalculationJobScenarioState
-    {
-        [NotNull]
-        public Calculation? CalculationJobInput { get; set; }
+    [NotNull]
+    public Calculation? CalculationJobInput { get; set; }
 
-        [NotNull]
-        public CalculationJobId? CalculationJobId { get; set; }
+    [NotNull]
+    public CalculationJobId? CalculationJobId { get; set; }
 
-        [NotNull]
-        public Run? Run { get; set; }
-    }
+    [NotNull]
+    public Run? Run { get; set; }
 }

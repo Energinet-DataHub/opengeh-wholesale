@@ -11,29 +11,43 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 from pyspark.sql.dataframe import DataFrame
+
 import pyspark.sql.functions as f
 from pyspark.sql.types import DecimalType, StringType, ArrayType
 
 import package.calculation.energy.aggregators.transformations as t
+from package.calculation.preparation.charge_link_metering_point_periods import (
+    ChargeLinkMeteringPointPeriods,
+)
+from package.calculation.preparation.charge_master_data import (
+    ChargeMasterData,
+)
+from package.calculation.preparation.charge_prices import ChargePrices
 from package.codelists import ChargeType, ChargeResolution
 from package.constants import Colname
 
 
 def get_tariff_charges(
     metering_point_time_series: DataFrame,
-    charges: DataFrame,
-    charge_link_metering_points: DataFrame,
+    charge_master_data: ChargeMasterData,
+    charge_prices: ChargePrices,
+    charge_link_metering_points: ChargeLinkMeteringPointPeriods,
     resolution: ChargeResolution,
+    time_zone: str,
 ) -> DataFrame:
-    tariffs = charges.filter(
-        f.col(Colname.charge_type) == ChargeType.TARIFF.value
-    ).filter(f.col(Colname.resolution) == resolution.value)
+    """
+    metering_point_time_series always hava a row for each resolution time in the given period.
+    """
+    tariff_links = charge_link_metering_points.filter_by_charge_type(ChargeType.TARIFF)
+    tariff_master_data = charge_master_data.filter_by_charge_type(ChargeType.TARIFF)
+    tariff_prices = charge_prices.filter_by_charge_type(ChargeType.TARIFF)
 
-    tariffs = _join_with_charge_link_metering_points(
-        tariffs, charge_link_metering_points
+    tariffs = _join_master_data_and_prices_add_missing_prices(
+        tariff_master_data, tariff_prices, resolution, time_zone
     )
+
+    tariffs = _join_with_charge_link_metering_points(tariffs, tariff_links)
 
     # group by time series on metering point id and resolution and sum quantity
     grouped_time_series = (
@@ -52,17 +66,64 @@ def get_tariff_charges(
     return tariffs
 
 
-def _join_with_charge_link_metering_points(
-    tariffs: DataFrame, charge_link_metering_points: DataFrame
+def _join_master_data_and_prices_add_missing_prices(
+    charge_master_data: ChargeMasterData,
+    charge_prices: ChargePrices,
+    resolution: ChargeResolution,
+    time_zone: str,
 ) -> DataFrame:
+    charge_prices = charge_prices.df
+    charge_master_data_filtered = charge_master_data.df.filter(
+        f.col(Colname.resolution) == resolution.value
+    )
+    charges_with_no_prices = charge_master_data_filtered.withColumn(
+        Colname.charge_time,
+        f.explode(
+            f.sequence(
+                f.from_utc_timestamp(Colname.from_date, time_zone),
+                f.from_utc_timestamp(Colname.to_date, time_zone),
+                f.expr(
+                    f"interval {_get_window_duration_string_based_on_resolution(resolution)}"
+                ),
+            )
+        ),
+    ).withColumn(
+        Colname.charge_time,
+        f.to_utc_timestamp(Colname.charge_time, time_zone),
+    )
+
+    charges_with_prices_and_missing_prices = charges_with_no_prices.join(
+        charge_prices, [Colname.charge_key, Colname.charge_time], "left"
+    ).select(
+        charges_with_no_prices[Colname.charge_key],
+        charges_with_no_prices[Colname.charge_code],
+        charges_with_no_prices[Colname.charge_type],
+        charges_with_no_prices[Colname.charge_owner],
+        charges_with_no_prices[Colname.charge_tax],
+        charges_with_no_prices[Colname.resolution],
+        charges_with_no_prices[Colname.charge_time],
+        charges_with_no_prices[Colname.from_date],
+        charges_with_no_prices[Colname.to_date],
+        Colname.charge_price,
+    )
+
+    return charges_with_prices_and_missing_prices
+
+
+def _join_with_charge_link_metering_points(
+    tariffs: DataFrame, charge_link_metering_points: ChargeLinkMeteringPointPeriods
+) -> DataFrame:
+    charge_link_metering_point_periods_df = charge_link_metering_points.df
+
     df = tariffs.join(
-        charge_link_metering_points,
+        charge_link_metering_point_periods_df,
         [
             tariffs[Colname.charge_key]
-            == charge_link_metering_points[Colname.charge_key],
+            == charge_link_metering_point_periods_df[Colname.charge_key],
             tariffs[Colname.charge_time]
-            >= charge_link_metering_points[Colname.from_date],
-            tariffs[Colname.charge_time] < charge_link_metering_points[Colname.to_date],
+            >= charge_link_metering_point_periods_df[Colname.from_date],
+            tariffs[Colname.charge_time]
+            < charge_link_metering_point_periods_df[Colname.to_date],
         ],
         "inner",
     ).select(
@@ -74,11 +135,11 @@ def _join_with_charge_link_metering_points(
         tariffs[Colname.resolution],
         tariffs[Colname.charge_time],
         tariffs[Colname.charge_price],
-        charge_link_metering_points[Colname.metering_point_id],
-        charge_link_metering_points[Colname.metering_point_type],
-        charge_link_metering_points[Colname.settlement_method],
-        charge_link_metering_points[Colname.grid_area],
-        charge_link_metering_points[Colname.energy_supplier_id],
+        charge_link_metering_point_periods_df[Colname.metering_point_id],
+        charge_link_metering_point_periods_df[Colname.metering_point_type],
+        charge_link_metering_point_periods_df[Colname.settlement_method],
+        charge_link_metering_point_periods_df[Colname.grid_area],
+        charge_link_metering_point_periods_df[Colname.energy_supplier_id],
     )
     return df
 

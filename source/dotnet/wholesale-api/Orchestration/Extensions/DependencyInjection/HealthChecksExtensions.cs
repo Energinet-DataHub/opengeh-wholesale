@@ -16,32 +16,31 @@ using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Energinet.DataHub.Wholesale.Orchestration.Extensions.DependencyInjection
+namespace Energinet.DataHub.Wholesale.Orchestration.Extensions.DependencyInjection;
+
+/// <summary>
+/// Extension methods for <see cref="IServiceCollection"/>
+/// that allow adding HealthChecks services to a Function App.
+/// </summary>
+public static class HealthChecksExtensions
 {
     /// <summary>
-    /// Extension methods for <see cref="IServiceCollection"/>
-    /// that allow adding HealthChecks services to a Function App.
+    /// Register services necessary for using Health Checks in a Function App.
     /// </summary>
-    public static class HealthChecksExtensions
+    public static IServiceCollection AddHealthChecksForIsolatedWorker(this IServiceCollection services)
     {
-        /// <summary>
-        /// Register services necessary for using Health Checks in a Function App.
-        /// </summary>
-        public static IServiceCollection AddHealthChecksForIsolatedWorker(this IServiceCollection services)
+        if (!IsHealthChecksAdded(services))
         {
-            if (!IsHealthChecksAdded(services))
-            {
-                services.AddScoped<IHealthCheckEndpointHandler, HealthCheckEndpointHandler>();
-                services.AddHealthChecks()
-                    .AddLiveCheck();
-            }
-
-            return services;
+            services.AddScoped<IHealthCheckEndpointHandler, HealthCheckEndpointHandler>();
+            services.AddHealthChecks()
+                .AddLiveCheck();
         }
 
-        private static bool IsHealthChecksAdded(IServiceCollection services)
-        {
-            return services.Any((ServiceDescriptor service) => service.ServiceType == typeof(HealthCheckEndpointHandler));
-        }
+        return services;
+    }
+
+    private static bool IsHealthChecksAdded(IServiceCollection services)
+    {
+        return services.Any((ServiceDescriptor service) => service.ServiceType == typeof(HealthCheckEndpointHandler));
     }
 }

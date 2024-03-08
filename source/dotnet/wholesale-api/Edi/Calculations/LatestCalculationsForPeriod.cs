@@ -46,7 +46,7 @@ public class LatestCalculationsForPeriod
                 var daysInPeriod = GetDaysInPeriod(
                     periodWhereCalculationIsLatest.Period.Start,
                     periodWhereCalculationIsLatest.Period.End);
-                foreach (var day in daysInPeriod.Where(x => remainingDaysInPeriod.Contains(x)))
+                foreach (var day in daysInPeriod.Where(remainingDaysInPeriod.Contains))
                 {
                     remainingDaysInPeriod.Remove(day);
                 }
@@ -58,10 +58,9 @@ public class LatestCalculationsForPeriod
                 return latestCalculationsForPeriod.OrderBy(x => x.Period.Start).ToList();
         }
 
-        if (latestCalculationsForPeriod.Count == 0)
-            return latestCalculationsForPeriod.OrderBy(x => x.Period.Start).ToList();
-
-        throw new MissingCalculationException($"No calculation found for dates: {string.Join(", ", remainingDaysInPeriod)}");
+        return latestCalculationsForPeriod.Count == 0
+            ? (IReadOnlyCollection<CalculationForPeriod>)latestCalculationsForPeriod.OrderBy(x => x.Period.Start).ToList()
+            : throw new MissingCalculationException($"No calculation found for dates: {string.Join(", ", remainingDaysInPeriod)}");
     }
 
     private static IReadOnlyCollection<CalculationForPeriod> GetPeriodsWhereCalculationIsLatest(

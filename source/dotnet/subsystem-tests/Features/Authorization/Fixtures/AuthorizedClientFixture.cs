@@ -16,37 +16,35 @@ using Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Configuration;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
-using Microsoft.Extensions.Configuration;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Authorization.Fixtures
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Authorization.Fixtures;
+
+/// <summary>
+/// Support calling the Wholesale Web API using an authorized Wholesale client.
+/// </summary>
+public sealed class AuthorizedClientFixture : LazyFixtureBase
 {
-    /// <summary>
-    /// Support calling the Wholesale Web API using an authorized Wholesale client.
-    /// </summary>
-    public sealed class AuthorizedClientFixture : LazyFixtureBase
+    public AuthorizedClientFixture(IMessageSink diagnosticMessageSink)
+        : base(diagnosticMessageSink)
     {
-        public AuthorizedClientFixture(IMessageSink diagnosticMessageSink)
-            : base(diagnosticMessageSink)
-        {
-            Configuration = new WholesaleSubsystemConfiguration();
-        }
+        Configuration = new WholesaleSubsystemConfiguration();
+    }
 
-        /// <summary>
-        /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
-        /// </summary>
-        public WholesaleClient_V3 WholesaleClient { get; private set; } = null!;
+    /// <summary>
+    /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
+    /// </summary>
+    public WholesaleClient_V3 WholesaleClient { get; private set; } = null!;
 
-        private WholesaleSubsystemConfiguration Configuration { get; }
+    private WholesaleSubsystemConfiguration Configuration { get; }
 
-        protected override async Task OnInitializeAsync()
-        {
-            WholesaleClient = await WholesaleClientFactory.CreateAsync(Configuration, useAuthentication: true);
-        }
+    protected override async Task OnInitializeAsync()
+    {
+        WholesaleClient = await WholesaleClientFactory.CreateAsync(Configuration, useAuthentication: true);
+    }
 
-        protected override Task OnDisposeAsync()
-        {
-            return Task.CompletedTask;
-        }
+    protected override Task OnDisposeAsync()
+    {
+        return Task.CompletedTask;
     }
 }

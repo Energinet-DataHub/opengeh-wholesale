@@ -14,7 +14,7 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.EDI;
+using Energinet.DataHub.Wholesale.Edi;
 using Energinet.DataHub.Wholesale.Events.Application.Workers;
 using Energinet.DataHub.Wholesale.Events.IntegrationTests.Fixture;
 using FluentAssertions;
@@ -71,7 +71,7 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
         var sut = new AggregatedTimeSeriesServiceBusWorker(
             serviceProviderMock.Object,
             loggerMock.Object,
-            _sender.ServiceBusOptions,
+            _sender.WholesaleInboxQueueOptions,
             _sender.ServiceBusClient);
 
         // Act
@@ -108,7 +108,7 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
         var sut = new AggregatedTimeSeriesServiceBusWorker(
             serviceProviderMock.Object,
             loggerMock.Object,
-            _sender.ServiceBusOptions,
+            _sender.WholesaleInboxQueueOptions,
             _sender.ServiceBusClient);
 
         // Act

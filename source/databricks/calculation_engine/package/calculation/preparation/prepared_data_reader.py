@@ -13,19 +13,24 @@
 # limitations under the License.
 
 from datetime import datetime
+
 from pyspark.sql import DataFrame
 
+from package.calculation.preparation.grid_loss_responsible import GridLossResponsible
 from package.calculation_input import TableReader
 from package.codelists import ChargeResolution
-from package.calculation.preparation.grid_loss_responsible import GridLossResponsible
-
 from . import transformations as T
+from .charge_link_metering_point_periods import ChargeLinkMeteringPointPeriods
+from .charge_master_data import ChargeMasterData
+from .charge_prices import ChargePrices
+from ...infrastructure import logging_configuration
 
 
 class PreparedDataReader:
     def __init__(self, delta_table_reader: TableReader) -> None:
         self._table_reader = delta_table_reader
 
+    @logging_configuration.use_span("get_metering_point_periods")
     def get_metering_point_periods_df(
         self,
         period_start_datetime: datetime,
@@ -39,6 +44,7 @@ class PreparedDataReader:
             grid_areas,
         )
 
+    @logging_configuration.use_span("get_grid_loss_responsible")
     def get_grid_loss_responsible(
         self, grid_areas: list[str], metering_point_periods_df: DataFrame
     ) -> GridLossResponsible:
@@ -46,53 +52,75 @@ class PreparedDataReader:
             grid_areas, metering_point_periods_df, self._table_reader
         )
 
-    def get_charges(
+    @logging_configuration.use_span("get_charge_master_data")
+    def get_charge_master_data(
         self,
         period_start_datetime: datetime,
         period_end_datetime: datetime,
-    ) -> DataFrame:
-        return T.read_charges(
+    ) -> ChargeMasterData:
+        return T.read_charge_master_data(
             self._table_reader, period_start_datetime, period_end_datetime
         )
 
-    def get_charge_link_metering_points(
+    @logging_configuration.use_span("get_charge_prices")
+    def get_charge_prices(
+        self,
+        period_start_datetime: datetime,
+        period_end_datetime: datetime,
+    ) -> ChargePrices:
+        return T.read_charge_prices(
+            self._table_reader, period_start_datetime, period_end_datetime
+        )
+
+    @logging_configuration.use_span("get_metering_points_and_child_metering_points")
+    def get_charge_link_metering_point_periods(
         self,
         period_start_datetime: datetime,
         period_end_datetime: datetime,
         metering_point_periods_df: DataFrame,
-    ) -> DataFrame:
+    ) -> ChargeLinkMeteringPointPeriods:
         charge_links = T.read_charge_links(
             self._table_reader, period_start_datetime, period_end_datetime
         )
-        return T.get_charge_link_metering_points(
+        return T.get_charge_link_metering_point_periods(
             charge_links, metering_point_periods_df
         )
 
-    def get_fee_charges(
-        self,
-        charges_df: DataFrame,
-        charge_link_metering_points: DataFrame,
-    ) -> DataFrame:
-        return T.get_fee_charges(charges_df, charge_link_metering_points)
-
-    def get_subscription_charges(
-        self,
-        charges_df: DataFrame,
-        charge_link_metering_points: DataFrame,
-    ) -> DataFrame:
-        return T.get_subscription_charges(charges_df, charge_link_metering_points)
-
+    @logging_configuration.use_span("get_tariff_charges")
     def get_tariff_charges(
         self,
         time_series: DataFrame,
-        charges_df: DataFrame,
-        metering_point_charges_links: DataFrame,
+        charge_master_data: ChargeMasterData,
+        charge_prices: ChargePrices,
+        charges_link_metering_point_periods: ChargeLinkMeteringPointPeriods,
         resolution: ChargeResolution,
+        time_zone: str,
     ) -> DataFrame:
         return T.get_tariff_charges(
-            time_series, charges_df, metering_point_charges_links, resolution
+            time_series,
+            charge_master_data,
+            charge_prices,
+            charges_link_metering_point_periods,
+            resolution,
+            time_zone,
         )
 
+    @logging_configuration.use_span("get_subscription_charges")
+    def get_subscription_charges(
+        self,
+        charge_master_data: ChargeMasterData,
+        charge_prices: ChargePrices,
+        charges_link_metering_point_periods: ChargeLinkMeteringPointPeriods,
+        time_zone: str,
+    ) -> DataFrame:
+        return T.get_subscription_charges(
+            charge_master_data,
+            charge_prices,
+            charges_link_metering_point_periods,
+            time_zone,
+        )
+
+    @logging_configuration.use_span("get_metering_point_time_series")
     def get_metering_point_time_series(
         self,
         period_start_datetime: datetime,

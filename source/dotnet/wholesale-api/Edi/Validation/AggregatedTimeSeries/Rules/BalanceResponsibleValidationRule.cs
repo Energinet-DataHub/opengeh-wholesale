@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.EDI.Models;
+using Energinet.DataHub.Wholesale.Edi.Models;
 using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 
-namespace Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSeries.Rules;
+namespace Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeries.Rules;
 
 public class BalanceResponsibleValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
 {
@@ -28,9 +28,10 @@ public class BalanceResponsibleValidationRule : IValidationRule<AggregatedTimeSe
     {
         IList<ValidationError> errors = new List<ValidationError>();
 
-        if (subject.RequestedByActorRole != ActorRoleCode.BalanceResponsibleParty) return Task.FromResult(errors);
+        if (subject.RequestedByActorRole != ActorRoleCode.BalanceResponsibleParty)
+            return Task.FromResult(errors);
 
-        if (subject.BusinessReason != BusinessReason.BalanceFixing && subject.BusinessReason != BusinessReason.PreliminaryAggregation)
+        if (subject.BusinessReason is not BusinessReason.BalanceFixing and not BusinessReason.PreliminaryAggregation)
             errors.Add(_invalidBusinessReason);
 
         if (string.IsNullOrWhiteSpace(subject.BalanceResponsibleId))

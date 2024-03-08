@@ -56,48 +56,72 @@ def agg_result_factory(spark: SparkSession) -> Callable[[], EnergyResults]:
                 Colname.metering_point_id: [],
             }
         )
-        pandas_df = pandas_df.append(
+        pandas_df = pd.concat(
             [
-                {
-                    Colname.grid_area: str(1),
-                    Colname.to_grid_area: None,
-                    Colname.from_grid_area: None,
-                    Colname.balance_responsible_id: "balance_responsible_id",
-                    Colname.energy_supplier_id: "energy_supplier_id",
-                    Colname.time_window: {
-                        Colname.start: datetime(2020, 1, 1, 0, 0),
-                        Colname.end: datetime(2020, 1, 1, 1, 0),
-                    },
-                    Colname.sum_quantity: Decimal(-12.567),
-                    Colname.qualities: [QuantityQuality.ESTIMATED.value],
-                },
-                {
-                    Colname.grid_area: str(2),
-                    Colname.to_grid_area: None,
-                    Colname.from_grid_area: None,
-                    Colname.balance_responsible_id: "balance_responsible_id",
-                    Colname.energy_supplier_id: "energy_supplier_id",
-                    Colname.time_window: {
-                        Colname.start: datetime(2020, 1, 1, 0, 0),
-                        Colname.end: datetime(2020, 1, 1, 1, 0),
-                    },
-                    Colname.sum_quantity: Decimal(34.32),
-                    Colname.qualities: [QuantityQuality.ESTIMATED.value],
-                },
-                {
-                    Colname.grid_area: str(3),
-                    Colname.to_grid_area: None,
-                    Colname.from_grid_area: None,
-                    Colname.balance_responsible_id: "balance_responsible_id",
-                    Colname.energy_supplier_id: "energy_supplier_id",
-                    Colname.time_window: {
-                        Colname.start: datetime(2020, 1, 1, 0, 0),
-                        Colname.end: datetime(2020, 1, 1, 1, 0),
-                    },
-                    Colname.sum_quantity: Decimal(0.0),
-                    Colname.qualities: [QuantityQuality.ESTIMATED.value],
-                    Colname.metering_point_id: None,
-                },
+                pandas_df,
+                pd.Series(
+                    {
+                        Colname.grid_area: str(1),
+                        Colname.to_grid_area: None,
+                        Colname.from_grid_area: None,
+                        Colname.balance_responsible_id: "balance_responsible_id",
+                        Colname.energy_supplier_id: "energy_supplier_id",
+                        Colname.time_window: {
+                            Colname.start: pd.to_datetime(
+                                datetime(2020, 1, 1, 1, 0)
+                            ).tz_localize(None),
+                            Colname.end: pd.to_datetime(
+                                datetime(2020, 1, 1, 1, 0)
+                            ).tz_localize(None),
+                        },
+                        Colname.sum_quantity: Decimal(-12.567),
+                        Colname.qualities: [QuantityQuality.ESTIMATED.value],
+                    }
+                )
+                .to_frame()
+                .T,
+                pd.Series(
+                    {
+                        Colname.grid_area: str(2),
+                        Colname.to_grid_area: None,
+                        Colname.from_grid_area: None,
+                        Colname.balance_responsible_id: "balance_responsible_id",
+                        Colname.energy_supplier_id: "energy_supplier_id",
+                        Colname.time_window: {
+                            Colname.start: pd.to_datetime(
+                                datetime(2020, 1, 1, 1, 0)
+                            ).tz_localize(None),
+                            Colname.end: pd.to_datetime(
+                                datetime(2020, 1, 1, 1, 0)
+                            ).tz_localize(None),
+                        },
+                        Colname.sum_quantity: Decimal(34.32),
+                        Colname.qualities: [QuantityQuality.ESTIMATED.value],
+                    }
+                )
+                .to_frame()
+                .T,
+                pd.Series(
+                    {
+                        Colname.grid_area: str(3),
+                        Colname.to_grid_area: None,
+                        Colname.from_grid_area: None,
+                        Colname.balance_responsible_id: "balance_responsible_id",
+                        Colname.energy_supplier_id: "energy_supplier_id",
+                        Colname.time_window: {
+                            Colname.start: pd.to_datetime(
+                                datetime(2020, 1, 1, 1, 0)
+                            ).tz_localize(None),
+                            Colname.end: pd.to_datetime(
+                                datetime(2020, 1, 1, 1, 0)
+                            ).tz_localize(None),
+                        },
+                        Colname.sum_quantity: Decimal(0.0),
+                        Colname.qualities: [QuantityQuality.ESTIMATED.value],
+                    }
+                )
+                .to_frame()
+                .T,
             ],
             ignore_index=True,
         )

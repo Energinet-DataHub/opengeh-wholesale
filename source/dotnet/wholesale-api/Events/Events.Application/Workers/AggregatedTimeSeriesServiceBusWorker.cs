@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
-using Energinet.DataHub.Wholesale.EDI;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
+using Energinet.DataHub.Wholesale.Edi;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -31,10 +31,10 @@ public class AggregatedTimeSeriesServiceBusWorker : ServiceBusWorker
     public AggregatedTimeSeriesServiceBusWorker(
         IServiceProvider serviceProvider,
         ILogger<AggregatedTimeSeriesServiceBusWorker> logger,
-        IOptions<ServiceBusOptions> options,
+        IOptions<WholesaleInboxQueueOptions> options,
         ServiceBusClient serviceBusClient)
     : base(
-        serviceBusClient.CreateProcessor(options.Value.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME),
+        serviceBusClient.CreateProcessor(options.Value.QueueName),
         logger)
     {
         _serviceProvider = serviceProvider;

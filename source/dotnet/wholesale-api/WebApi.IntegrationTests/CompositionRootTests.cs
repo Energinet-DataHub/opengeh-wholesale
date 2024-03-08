@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Xunit;
@@ -38,10 +40,25 @@ public class CompositionRootTests
     [Fact]
     public void AllServicesConstructSuccessfully()
     {
-        Host.CreateDefaultBuilder()
-            .ConfigureWebHostDefaults(webBuilder =>
+        // Configure settings before the creation of services (e.g. hosted services).
+        // Workaround for settings overrides with minimal hosting model.
+        // See comment (and issue) here: https://github.com/dotnet/aspnetcore/issues/37680#issuecomment-1402081903
+        var testConfiguration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                webBuilder
+                ["ServiceBus:ConnectionString"] = "Endpoint=sb://unknown.servicebus.windows.net/;SharedAccessKeyName=Yyy;SharedAccessKey=Xxx",
+                ["IntegrationEvents:TopicName"] = "NotEmpty",
+                ["IntegrationEvents:SubscriptionName"] = "NotEmpty",
+                ["WholesaleInbox:QueueName"] = "NotEmpty",
+                ["EdiInbox:QueueName"] = "NotEmpty",
+            })
+            .Build();
+
+        using var application = new WebApplicationFactory<Program>()
+            .WithWebHostBuilder(builder =>
+            {
+                builder
+                    .UseConfiguration(testConfiguration)
                     .UseDefaultServiceProvider((_, options) =>
                     {
                         // See https://learn.microsoft.com/en-us/aspnet/core/fundamentals/host/web-host?view=aspnetcore-7.0#scope-validation
@@ -51,8 +68,13 @@ public class CompositionRootTests
                     })
                     // Add controllers as services to enable validation of controller dependencies
                     // See https://andrewlock.net/new-in-asp-net-core-3-service-provider-validation/#1-controller-constructor-dependencies-aren-t-checked
-                    .ConfigureServices(collection => collection.AddControllers().AddControllersAsServices())
-                    .UseStartup<Startup>();
-            }).Build();
+                    .ConfigureServices(services =>
+                    {
+                        services.AddControllers().AddControllersAsServices();
+                    });
+            });
+
+        // Act
+        using var client = application.CreateClient();
     }
 }

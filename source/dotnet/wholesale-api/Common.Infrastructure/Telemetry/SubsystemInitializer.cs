@@ -15,23 +15,22 @@
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility;
 
-namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry
+namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry;
+
+public class SubsystemInitializer : ITelemetryInitializer
 {
-    public class SubsystemInitializer : ITelemetryInitializer
+    private readonly string _subsystemName;
+
+    public SubsystemInitializer(string subsystemName)
     {
-        private readonly string _subsystemName;
+        if (string.IsNullOrWhiteSpace(subsystemName))
+            throw new ArgumentException("Cannot be null or whitespace.", nameof(subsystemName));
 
-        public SubsystemInitializer(string subsystemName)
-        {
-            if (string.IsNullOrWhiteSpace(subsystemName))
-                throw new ArgumentException("Cannot be null or whitespace.", nameof(subsystemName));
+        _subsystemName = subsystemName;
+    }
 
-            _subsystemName = subsystemName;
-        }
-
-        public void Initialize(ITelemetry telemetry)
-        {
-            telemetry.Context.GlobalProperties["Subsystem"] = _subsystemName;
-        }
+    public void Initialize(ITelemetry telemetry)
+    {
+        telemetry.Context.GlobalProperties["Subsystem"] = _subsystemName;
     }
 }

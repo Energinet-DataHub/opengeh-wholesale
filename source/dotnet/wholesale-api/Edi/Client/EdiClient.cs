@@ -13,20 +13,20 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Microsoft.Extensions.Options;
 
-namespace Energinet.DataHub.Wholesale.EDI.Client;
+namespace Energinet.DataHub.Wholesale.Edi.Client;
 
 public class EdiClient : IEdiClient, IAsyncDisposable
 {
     private readonly ServiceBusSender _sender;
 
     public EdiClient(
-        IOptions<ServiceBusOptions> serviceBusOptions,
+        IOptions<EdiInboxQueueOptions> ediInboxQueueOptions,
         ServiceBusClient serviceBusClient)
     {
-        _sender = serviceBusClient.CreateSender(serviceBusOptions.Value.EDI_INBOX_MESSAGE_QUEUE_NAME);
+        _sender = serviceBusClient.CreateSender(ediInboxQueueOptions.Value.QueueName);
     }
 
     public async Task SendAsync(ServiceBusMessage message, CancellationToken cancellationToken)

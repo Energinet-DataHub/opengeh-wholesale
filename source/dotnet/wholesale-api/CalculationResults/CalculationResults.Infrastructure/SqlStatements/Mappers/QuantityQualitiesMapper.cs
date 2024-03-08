@@ -19,8 +19,10 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlState
 
 public static class QuantityQualitiesMapper
 {
-    public static IReadOnlyCollection<QuantityQuality> FromDeltaTableValue(string value)
+    public static IReadOnlyCollection<QuantityQuality>? FromDeltaTableValue(string? value)
     {
+        if (value == null) return null;
+
         var qualities = JsonSerializer.Deserialize<string[]>(value)!;
 
         return qualities.Select(QuantityQualityMapper.FromDeltaTableValue).ToArray();

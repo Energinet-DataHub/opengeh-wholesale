@@ -15,16 +15,17 @@
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.GridArea;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
-using Energinet.DataHub.Wholesale.EDI.Models;
-using Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
-using Energinet.DataHub.Wholesale.EDI.Validation;
+using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
+using Energinet.DataHub.Wholesale.Edi.Models;
+using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
+using Energinet.DataHub.Wholesale.Edi.Validation;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using Xunit;
 using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 
-namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
+namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators;
 
 public class AggregatedTimeSeriesRequestValidatorTests
 {
@@ -32,14 +33,16 @@ public class AggregatedTimeSeriesRequestValidatorTests
 
     public AggregatedTimeSeriesRequestValidatorTests()
     {
-        IServiceCollection serviceCollection = new ServiceCollection();
+        IServiceCollection services = new ServiceCollection();
 
-        serviceCollection.AddTransient<DateTimeZone>(s => DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
-        serviceCollection.AddTransient<IClock>(s => SystemClock.Instance);
-        serviceCollection.AddScoped<IGridAreaOwnerRepository, GridAreaOwnerRepository>();
-        serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
-        EdiRegistration.AddAggregatedTimeSeriesRequestValidation(serviceCollection);
-        var serviceProvider = serviceCollection.BuildServiceProvider();
+        services.AddTransient<DateTimeZone>(s => DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
+        services.AddTransient<IClock>(s => SystemClock.Instance);
+        services.AddScoped<IGridAreaOwnerRepository, GridAreaOwnerRepository>();
+        services.AddScoped<IDatabaseContext, DatabaseContext>();
+
+        services.AddAggregatedTimeSeriesRequestValidation();
+
+        var serviceProvider = services.BuildServiceProvider();
 
         _sut = serviceProvider.GetRequiredService<IValidator<AggregatedTimeSeriesRequest>>();
     }

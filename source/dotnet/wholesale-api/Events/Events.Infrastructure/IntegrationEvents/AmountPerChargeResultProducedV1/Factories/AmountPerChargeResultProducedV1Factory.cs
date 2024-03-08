@@ -22,8 +22,12 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Am
 public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProducedV1Factory
 {
     public bool CanCreate(WholesaleResult result) =>
-        result.AmountType == AmountType.AmountPerCharge
-        && result.Resolution is Resolution.Hour or Resolution.Day;
+        result is
+        {
+            AmountType: AmountType.AmountPerCharge,
+            Resolution: Resolution.Hour or Resolution.Day,
+            ChargeType: ChargeType.Tariff
+        };
 
     public Contracts.IntegrationEvents.AmountPerChargeResultProducedV1 Create(WholesaleResult result)
     {
@@ -47,6 +51,7 @@ public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProd
             SettlementMethod = SettlementMethodMapper.MapSettlementMethod(result.SettlementMethod),
             Currency = Contracts.IntegrationEvents.AmountPerChargeResultProducedV1.Types.Currency.Dkk,
             IsTax = result.IsTax,
+            CalculationResultVersion = result.Version,
         };
 
         amountPerChargeResultProducedV1.TimeSeriesPoints
@@ -56,11 +61,11 @@ public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProd
                     var p = new Contracts.IntegrationEvents.AmountPerChargeResultProducedV1.Types.TimeSeriesPoint
                     {
                         Time = timeSeriesPoint.Time.ToTimestamp(),
-                        Quantity = new Contracts.IntegrationEvents.Common.DecimalValue(timeSeriesPoint.Quantity),
-                        Price = new Contracts.IntegrationEvents.Common.DecimalValue(timeSeriesPoint.Price),
-                        Amount = new Contracts.IntegrationEvents.Common.DecimalValue(timeSeriesPoint.Amount),
+                        Quantity = timeSeriesPoint.Quantity,
+                        Price = timeSeriesPoint.Price,
+                        Amount = timeSeriesPoint.Amount,
                     };
-                    p.QuantityQualities.AddRange(timeSeriesPoint.Qualities.Select(QuantityQualityMapper.MapQuantityQuality).ToList());
+                    p.QuantityQualities.AddRange(timeSeriesPoint.Qualities!.Select(QuantityQualityMapper.MapQuantityQuality).ToList());
                     return p;
                 }));
         return amountPerChargeResultProducedV1;

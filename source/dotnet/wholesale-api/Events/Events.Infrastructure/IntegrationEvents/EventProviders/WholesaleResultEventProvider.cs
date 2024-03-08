@@ -21,50 +21,42 @@ using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.AmountPerChargeResultProducedV1.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1.Factories;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
+
+public class WholesaleResultEventProvider : ResultEventProvider, IWholesaleResultEventProvider
 {
-    public class WholesaleResultEventProvider : ResultEventProvider, IWholesaleResultEventProvider
+    private readonly IWholesaleResultQueries _wholesaleResultQueries;
+    private readonly IAmountPerChargeResultProducedV1Factory _amountPerChargeResultProducedV1Factory;
+    private readonly IMonthlyAmountPerChargeResultProducedV1Factory _monthlyAmountPerChargeResultProducedV1Factory;
+
+    public WholesaleResultEventProvider(
+        IWholesaleResultQueries wholesaleResultQueries,
+        IAmountPerChargeResultProducedV1Factory amountPerChargeResultProducedV1Factory,
+        IMonthlyAmountPerChargeResultProducedV1Factory monthlyAmountPerChargeResultProducedV1Factory)
     {
-        private readonly IWholesaleResultQueries _wholesaleResultQueries;
-        private readonly IAmountPerChargeResultProducedV1Factory _amountPerChargeResultProducedV1Factory;
-        private readonly IMonthlyAmountPerChargeResultProducedV1Factory _monthlyAmountPerChargeResultProducedV1Factory;
+        _wholesaleResultQueries = wholesaleResultQueries;
+        _amountPerChargeResultProducedV1Factory = amountPerChargeResultProducedV1Factory;
+        _monthlyAmountPerChargeResultProducedV1Factory = monthlyAmountPerChargeResultProducedV1Factory;
+    }
 
-        public WholesaleResultEventProvider(
-            IWholesaleResultQueries wholesaleResultQueries,
-            IAmountPerChargeResultProducedV1Factory amountPerChargeResultProducedV1Factory,
-            IMonthlyAmountPerChargeResultProducedV1Factory monthlyAmountPerChargeResultProducedV1Factory)
-        {
-            _wholesaleResultQueries = wholesaleResultQueries;
-            _amountPerChargeResultProducedV1Factory = amountPerChargeResultProducedV1Factory;
-            _monthlyAmountPerChargeResultProducedV1Factory = monthlyAmountPerChargeResultProducedV1Factory;
-        }
+    public bool CanContainWholesaleResults(CompletedCalculation calculation)
+    {
+        return calculation.CalculationType
+            is CalculationType.WholesaleFixing
+            or CalculationType.FirstCorrectionSettlement
+            or CalculationType.SecondCorrectionSettlement
+            or CalculationType.ThirdCorrectionSettlement;
+    }
 
-        public bool CanContainWholesaleResults(CompletedCalculation calculation)
-        {
-            return calculation.CalculationType
-                is CalculationType.WholesaleFixing
-                or CalculationType.FirstCorrectionSettlement
-                or CalculationType.SecondCorrectionSettlement
-                or CalculationType.ThirdCorrectionSettlement;
-        }
-
-        public async IAsyncEnumerable<IntegrationEvent> GetAsync(CompletedCalculation calculation)
-        {
-            await foreach (var wholesaleResult in _wholesaleResultQueries.GetAsync(calculation.Id).ConfigureAwait(false))
-            {
-                yield return CreateEventFromWholesaleResult(wholesaleResult);
-            }
-        }
-
-        private IntegrationEvent CreateEventFromWholesaleResult(WholesaleResult wholesaleResult)
+    public async IAsyncEnumerable<IntegrationEvent> GetAsync(CompletedCalculation calculation)
+    {
+        await foreach (var wholesaleResult in _wholesaleResultQueries.GetAsync(calculation.Id).ConfigureAwait(false))
         {
             if (_amountPerChargeResultProducedV1Factory.CanCreate(wholesaleResult))
-                return CreateIntegrationEvent(_amountPerChargeResultProducedV1Factory.Create(wholesaleResult));
+                yield return CreateIntegrationEvent(_amountPerChargeResultProducedV1Factory.Create(wholesaleResult));
 
             if (_monthlyAmountPerChargeResultProducedV1Factory.CanCreate(wholesaleResult))
-                return CreateIntegrationEvent(_monthlyAmountPerChargeResultProducedV1Factory.Create(wholesaleResult));
-
-            throw new ArgumentException("Cannot create event from wholesale result.", nameof(wholesaleResult));
+                yield return CreateIntegrationEvent(_monthlyAmountPerChargeResultProducedV1Factory.Create(wholesaleResult));
         }
     }
 }

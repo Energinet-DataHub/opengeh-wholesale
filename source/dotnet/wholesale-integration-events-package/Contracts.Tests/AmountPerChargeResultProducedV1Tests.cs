@@ -63,7 +63,7 @@ public class AmountPerChargeResultProducedV1Tests
         Assert.Equal(LastKnownContentOfContract, actualContent, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
     }
 
-    private const int LastKnownMinorEventVersion = 3;
+    private const int LastKnownMinorEventVersion = 5;
     private const string LastKnownContentOfContract = @"/* Copyright 2020 Energinet DataHub A/S
  *
  * Licensed under the Apache License, Version 2.0 (the ""License2"");
@@ -140,6 +140,11 @@ message AmountPerChargeResultProducedV1 {
 
   repeated TimeSeriesPoint time_series_points = 16;
 
+  /*
+   * The version of the calculation result. It is a positive integer (int64).
+  */
+  int64 calculation_result_version = 17;
+
    // ---------------------------- NESTED TYPES BELOW ----------------------------------------
 
   enum CalculationType {
@@ -169,10 +174,24 @@ message AmountPerChargeResultProducedV1 {
     /*
      * Unspecified is unused but according to best practice.
      * Read more at https://protobuf.dev/programming-guides/style/#enums.
+     *
+     * Possible values for metering point type are any but the exchange metering point type.
      */
     METERING_POINT_TYPE_UNSPECIFIED = 0;
     METERING_POINT_TYPE_PRODUCTION = 1;
     METERING_POINT_TYPE_CONSUMPTION = 2;
+    METERING_POINT_TYPE_VE_PRODUCTION = 3;
+    METERING_POINT_TYPE_NET_PRODUCTION = 4;
+    METERING_POINT_TYPE_SUPPLY_TO_GRID = 5;
+    METERING_POINT_TYPE_CONSUMPTION_FROM_GRID = 6;
+    METERING_POINT_TYPE_WHOLESALE_SERVICES_INFORMATION = 7;
+    METERING_POINT_TYPE_OWN_PRODUCTION = 8;
+    METERING_POINT_TYPE_NET_FROM_GRID = 9;
+    METERING_POINT_TYPE_NET_TO_GRID = 10;
+    METERING_POINT_TYPE_TOTAL_CONSUMPTION = 11;
+    METERING_POINT_TYPE_ELECTRICAL_HEATING = 12;
+    METERING_POINT_TYPE_NET_CONSUMPTION = 13;
+    METERING_POINT_TYPE_EFFECT_SETTLEMENT = 14;
   }
 
   enum QuantityUnit {

@@ -13,8 +13,10 @@
 # limitations under the License.
 
 from datetime import datetime
-from pyspark.sql import DataFrame
+
 import pyspark.sql.functions as f
+from pyspark.sql import DataFrame
+from pyspark.sql.types import StringType, DecimalType
 
 from package.codelists import WholesaleResultResolution, ChargeUnit
 from package.common import assert_schema
@@ -55,7 +57,6 @@ def calculate_tariff_price_per_ga_co_es(tariffs: DataFrame) -> DataFrame:
         Colname.resolution,
         Colname.charge_price,
         Colname.total_quantity,
-        Colname.charge_count,
         (f.col(Colname.charge_price) * f.col(Colname.total_quantity)).alias(
             Colname.total_amount
         ),
@@ -82,9 +83,9 @@ def _sum_quantity_and_count_charges(tariffs: DataFrame) -> DataFrame:
         Colname.charge_price,
     ).agg(
         f.sum(Colname.sum_quantity).alias(Colname.total_quantity),
-        f.count(Colname.metering_point_id).alias(Colname.charge_count),
         f.flatten(f.collect_set(Colname.qualities)).alias(Colname.qualities),
     )
+
     return agg_df
 
 
@@ -116,9 +117,9 @@ def sum_within_month(df: DataFrame, period_start_datetime: datetime) -> DataFram
             f.col(Colname.qualities),
             f.lit(period_start_datetime).alias(Colname.charge_time),
             f.lit(WholesaleResultResolution.MONTH.value).alias(Colname.resolution),
-            f.lit(None).alias(Colname.metering_point_type),
-            f.lit(None).alias(Colname.settlement_method),
-            f.col(Colname.charge_price),
+            f.lit(None).cast(StringType()).alias(Colname.metering_point_type),
+            f.lit(None).cast(StringType()).alias(Colname.settlement_method),
+            f.lit(None).cast(DecimalType(18, 6)).alias(Colname.charge_price),
             f.col(Colname.total_amount),
             f.col(Colname.charge_tax),
             f.col(Colname.charge_code),

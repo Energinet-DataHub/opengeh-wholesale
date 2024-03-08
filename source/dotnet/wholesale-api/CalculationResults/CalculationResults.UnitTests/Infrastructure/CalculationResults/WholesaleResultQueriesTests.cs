@@ -75,7 +75,7 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
             .Setup(client => client.GetAsync(calculation.CalculationId))
             .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock
-            .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>(), CancellationToken.None))
+            .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>(), default))
             .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 0));
 
         // Act
@@ -93,8 +93,7 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
         _calculationsClientMock
             .Setup(client => client.GetAsync(calculation.CalculationId))
             .ReturnsAsync(calculation);
-        _databricksSqlWarehouseQueryExecutorMock
-            .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>(), CancellationToken.None))
+        _databricksSqlWarehouseQueryExecutorMock.Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>(), default))
             .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 1));
 
         // Act
@@ -114,7 +113,7 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
             .Setup(client => client.GetAsync(calculation.CalculationId))
             .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock
-            .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>(), CancellationToken.None))
+            .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>(), default))
             .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 1));
 
         // Act
@@ -134,7 +133,7 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
         actualPoint.Time.Should().Be(new DateTimeOffset(2022, 5, 16, 22, 0, 0, TimeSpan.Zero));
         actualPoint.Quantity.Should().Be(1.111m);
         actualPoint.Qualities.Should().Contain(QuantityQuality.Measured);
-        actualPoint.Qualities.Count.Should().Be(1);
+        actualPoint.Qualities.Should().HaveCount(1);
         actualPoint.Price.Should().Be(2.123456m);
         actualPoint.Amount.Should().Be(3.123456m);
     }
@@ -148,7 +147,7 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
             .Setup(client => client.GetAsync(calculation.CalculationId))
             .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock
-            .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>(), CancellationToken.None))
+            .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>(), default))
             .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 2));
 
         // Act

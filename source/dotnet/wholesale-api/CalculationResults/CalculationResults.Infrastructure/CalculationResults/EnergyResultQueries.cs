@@ -36,7 +36,11 @@ public class EnergyResultQueries : IEnergyResultQueries
     private readonly DeltaTableOptions _deltaTableOptions;
     private readonly ILogger<EnergyResultQueries> _logger;
 
-    public EnergyResultQueries(DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor, ICalculationsClient calculationsClient, IOptions<DeltaTableOptions> deltaTableOptions, ILogger<EnergyResultQueries> logger)
+    public EnergyResultQueries(
+        DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor,
+        ICalculationsClient calculationsClient,
+        IOptions<DeltaTableOptions> deltaTableOptions,
+        ILogger<EnergyResultQueries> logger)
     {
         _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
         _calculationsClient = calculationsClient;
@@ -73,9 +77,7 @@ public class EnergyResultQueries : IEnergyResultQueries
             {
                 yield return EnergyResultFactory.CreateEnergyResult(currentRow!, timeSeriesPoints, periodStart, periodEnd, version);
                 resultCount++;
-#pragma warning disable SA1010 // Opening square brackets should be spaced correctly
                 timeSeriesPoints = [];
-#pragma warning restore SA1010 // Opening square brackets should be spaced correctly
             }
 
             timeSeriesPoints.Add(timeSeriesPoint);

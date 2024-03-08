@@ -15,17 +15,15 @@
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.Calculations.Interfaces;
-using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Edi.Calculations;
-using Energinet.DataHub.Wholesale.EDI.Client;
-using Energinet.DataHub.Wholesale.EDI.Factories;
-using Energinet.DataHub.Wholesale.EDI.Mappers;
-using Energinet.DataHub.Wholesale.EDI.Models;
-using Energinet.DataHub.Wholesale.EDI.Validation;
+using Energinet.DataHub.Wholesale.Edi.Client;
+using Energinet.DataHub.Wholesale.Edi.Factories;
+using Energinet.DataHub.Wholesale.Edi.Mappers;
+using Energinet.DataHub.Wholesale.Edi.Models;
+using Energinet.DataHub.Wholesale.Edi.Validation;
 using Microsoft.Extensions.Logging;
 
-namespace Energinet.DataHub.Wholesale.EDI;
+namespace Energinet.DataHub.Wholesale.Edi;
 
 public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHandler
 {
@@ -74,7 +72,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
             var error = new List<ValidationError> { _noDataAvailable };
             if (await EnergySupplierOrBalanceResponsibleHaveAggregatedTimeSeriesForAnotherGridAreasAsync(aggregatedTimeSeriesRequest, aggregatedTimeSeriesRequestMessage).ConfigureAwait(false))
             {
-                error = new List<ValidationError> { _noDataForRequestedGridArea };
+                error = [_noDataForRequestedGridArea];
             }
 
             _logger.LogInformation("No data available for message with reference id {reference_id}", referenceId);
@@ -104,7 +102,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
             return false;
 
         var actorRole = aggregatedTimeSeriesRequest.RequestedByActorRole;
-        if (actorRole == ActorRoleCode.EnergySupplier || actorRole == ActorRoleCode.BalanceResponsibleParty)
+        if (actorRole is ActorRoleCode.EnergySupplier or ActorRoleCode.BalanceResponsibleParty)
         {
             var newAggregationLevel = aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea with { GridAreaCode = null };
             var newRequest = aggregatedTimeSeriesRequestMessage with { AggregationPerRoleAndGridArea = newAggregationLevel };
@@ -146,7 +144,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
 
     private async Task SendAcceptedMessageAsync(IReadOnlyCollection<AggregatedTimeSeries> results, string referenceId, CancellationToken cancellationToken)
     {
-       var message = AggregatedTimeSeriesRequestAcceptedMessageFactory.Create(results, referenceId);
-       await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
+        var message = AggregatedTimeSeriesRequestAcceptedMessageFactory.Create(results, referenceId);
+        await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
     }
 }

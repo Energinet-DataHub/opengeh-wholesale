@@ -12,16 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from decimal import Decimal
-from datetime import datetime, timedelta
 import uuid
-
-from pyspark import Row
-from pyspark.sql import SparkSession
-import pytest
+from datetime import datetime, timedelta
+from decimal import Decimal
 from typing import Any
 
+import pytest
+from pyspark import Row
+from pyspark.sql import SparkSession
+
 from package.calculation.wholesale.schemas.tariffs_schema import tariff_schema
+from package.calculation.wholesale.tariff_calculators import (
+    calculate_tariff_price_per_ga_co_es,
+)
+from package.calculation.wholesale.tariff_calculators import (
+    sum_within_month,
+)
 from package.codelists import (
     ChargeQuality,
     ChargeResolution,
@@ -31,14 +37,7 @@ from package.codelists import (
     SettlementMethod,
     WholesaleResultResolution,
 )
-from package.calculation.wholesale.tariff_calculators import (
-    calculate_tariff_price_per_ga_co_es,
-)
-from package.calculation.wholesale.tariff_calculators import (
-    sum_within_month,
-)
 from package.constants import Colname
-
 
 DEFAULT_GRID_AREA = "543"
 DEFAULT_CHARGE_CODE = "4000"
@@ -61,7 +60,7 @@ def _create_tariff_row(
     charge_owner: str = DEFAULT_CHARGE_OWNER,
     resolution: ChargeResolution = ChargeResolution.HOUR,
     charge_time: datetime = DEFAULT_CHARGE_TIME_HOUR_0,
-    charge_price: Decimal = DEFAULT_CHARGE_PRICE,
+    charge_price: Decimal | None = DEFAULT_CHARGE_PRICE,
     energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
     metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE,
@@ -144,7 +143,6 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_correct_columns(
     assert Colname.resolution in actual.columns
     assert Colname.charge_price in actual.columns
     assert Colname.total_quantity in actual.columns
-    assert Colname.charge_count in actual.columns
     assert Colname.total_amount in actual.columns
     assert Colname.unit in actual.columns
     assert Colname.qualities in actual.columns
@@ -183,7 +181,6 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_expected_values(
     assert actual_row[Colname.resolution] == WholesaleResultResolution.HOUR.value
     assert actual_row[Colname.charge_price] == DEFAULT_CHARGE_PRICE
     assert actual_row[Colname.total_quantity] == 3 * DEFAULT_QUANTITY
-    assert actual_row[Colname.charge_count] == 3
     assert actual_row[Colname.total_amount] == Decimal(
         "6.030015"
     )  # 3 * DEFAULT_CHARGE_PRICE * DEFAULT_QUANTITY rounded to 6 decimals
@@ -473,7 +470,7 @@ def test__sum_within_month__sums_quantity_per_month(
     assert actual.count() == 1
 
 
-def test__sum_within_month__sums_charge_price_per_month(
+def test__sum_within_month__sets_charge_price_to_none(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -494,5 +491,71 @@ def test__sum_within_month__sums_charge_price_per_month(
     )
 
     # Assert
-    assert actual.collect()[0][Colname.charge_price] == Decimal("2.222222")
+    assert actual.collect()[0][Colname.charge_price] is None
+    assert actual.count() == 1
+
+
+def test__calculate_tariff_price_per_ga_co_es__when_charge_price_is_null__returns_total_amount_as_none(
+    spark: SparkSession,
+) -> None:
+    """
+    This is a test for a case where the charge price is none.
+    When charge_price is null, the total_amount should also be none.
+    """
+
+    # Arrange
+    rows = [
+        _create_tariff_row(charge_price=None, quantity=Decimal("2.000000")),
+    ]
+    tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
+
+    # Act
+    actual = calculate_tariff_price_per_ga_co_es(tariffs)
+
+    # Assert
+    assert actual.collect()[0][Colname.total_amount] is None
+
+
+def test__sum_within_month__when_all_charge_prices_are_none__sums_charge_price_and_total_amount_per_month_to_none(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    rows = [
+        _create_tariff_row(charge_price=None),
+        _create_tariff_row(charge_price=None),
+    ]
+    tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
+
+    # Act
+    actual = sum_within_month(
+        calculate_tariff_price_per_ga_co_es(tariffs),
+        DEFAULT_PERIOD_START_DATETIME,
+    )
+
+    # Assert
+    assert actual.collect()[0][Colname.total_amount] is None
+    assert actual.collect()[0][Colname.charge_price] is None
+    assert actual.count() == 1
+
+
+def test__sum_within_month__when_one_tariff_has_charge_price_none__sums_charge_price_and_total_amount_per_month_to_expected_value(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    rows = [
+        _create_tariff_row(charge_price=None),
+        _create_tariff_row(
+            charge_price=Decimal("2.000000"), quantity=Decimal("3.000000")
+        ),
+    ]
+    tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
+
+    # Act
+    actual = sum_within_month(
+        calculate_tariff_price_per_ga_co_es(tariffs),
+        DEFAULT_PERIOD_START_DATETIME,
+    )
+
+    # Assert
+    assert actual.collect()[0][Colname.total_amount] == Decimal("6.000000")
     assert actual.count() == 1

@@ -18,10 +18,10 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Common;
+using Energinet.DataHub.Wholesale.Test.Core;
 using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
 using NodaTime;
-using Test.Core;
 using Xunit;
 using EnergyResultProduced = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV2;
 using EnergyResultProducedFactory = Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Factories.EnergyResultProducedV2Factory;

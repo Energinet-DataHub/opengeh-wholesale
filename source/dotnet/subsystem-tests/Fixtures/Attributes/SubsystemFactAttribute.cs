@@ -16,28 +16,27 @@ using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Configuration;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
+
+/// <summary>
+/// Use this to mark subsystem tests (facts).
+///
+/// On developer machines we use the 'subsystemtest.local.settings.json' to set the 'SUBSYSTEMFACT_SKIP' value.
+/// On hosted agents we must set it using an environment variable.
+/// </summary>
+public sealed class SubsystemFactAttribute : FactAttribute
 {
-    /// <summary>
-    /// Use this to mark subsystem tests (facts).
-    ///
-    /// On developer machines we use the 'subsystemtest.local.settings.json' to set the 'SUBSYSTEMFACT_SKIP' value.
-    /// On hosted agents we must set it using an environment variable.
-    /// </summary>
-    public sealed class SubsystemFactAttribute : FactAttribute
+    private static readonly Lazy<bool> _shouldSkip = new(ShouldSkip);
+
+    public SubsystemFactAttribute()
     {
-        private static readonly Lazy<bool> _shouldSkip = new Lazy<bool>(ShouldSkip);
+        if (_shouldSkip.Value)
+            Skip = "Subsystem fact was configured to be skipped.";
+    }
 
-        public SubsystemFactAttribute()
-        {
-            if (_shouldSkip.Value)
-                Skip = "Subsystem fact was configured to be skipped.";
-        }
-
-        private static bool ShouldSkip()
-        {
-            var configuration = new SubsystemTestConfiguration();
-            return configuration.Root.GetValue("SUBSYSTEMFACT_SKIP", defaultValue: true);
-        }
+    private static bool ShouldSkip()
+    {
+        var configuration = new SubsystemTestConfiguration();
+        return configuration.Root.GetValue("SUBSYSTEMFACT_SKIP", defaultValue: true);
     }
 }

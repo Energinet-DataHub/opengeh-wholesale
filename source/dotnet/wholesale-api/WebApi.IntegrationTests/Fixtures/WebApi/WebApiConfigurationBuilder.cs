@@ -14,22 +14,21 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi
-{
-    public static class WebApiConfigurationBuilder
-    {
-        /// <summary>
-        /// Load settings from "local.settings.json" if available, but also allow
-        /// those settings to be overriden using environment variables.
-        /// </summary>
-        public static IConfiguration BuildLocalSettingsConfiguration()
-        {
-            var localSettingsConfiguration = new ConfigurationBuilder()
-                .AddJsonFile("local.settings.json", optional: true)
-                .AddEnvironmentVariables()
-                .Build();
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 
-            return localSettingsConfiguration;
-        }
+public static class WebApiConfigurationBuilder
+{
+    /// <summary>
+    /// Load settings from "local.settings.json" if available, but also allow
+    /// those settings to be overriden using environment variables.
+    /// </summary>
+    public static IConfiguration BuildLocalSettingsConfiguration()
+    {
+        var localSettingsConfiguration = new ConfigurationBuilder()
+            .AddJsonFile("local.settings.json", optional: true)
+            .AddEnvironmentVariables()
+            .Build();
+
+        return localSettingsConfiguration;
     }
 }

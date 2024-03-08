@@ -15,7 +15,7 @@
 using FluentAssertions;
 using Newtonsoft.Json;
 
-namespace Test.Core;
+namespace Energinet.DataHub.Wholesale.Test.Core;
 
 public static class ContractComplianceTestHelper
 {

@@ -16,7 +16,7 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Microsoft.Extensions.Options;
 using Xunit;
 
@@ -41,15 +41,14 @@ public class ServiceBusIntegrationEventSenderFixture : IAsyncLifetime
 
         ServiceBusClient = new ServiceBusClient(integrationTestConfiguration.ServiceBusConnectionString);
 
-        ServiceBusOptions = Options.Create(
-            new ServiceBusOptions
+        IntegrationEventsOptions = Options.Create(
+            new IntegrationEventsOptions
             {
-                SERVICE_BUS_TRANCEIVER_CONNECTION_STRING = integrationTestConfiguration.ServiceBusConnectionString,
-                INTEGRATIONEVENTS_SUBSCRIPTION_NAME = SubscriptionName,
+                SubscriptionName = SubscriptionName,
             });
     }
 
-    public IOptions<ServiceBusOptions> ServiceBusOptions { get; }
+    public IOptions<IntegrationEventsOptions> IntegrationEventsOptions { get; }
 
     public ServiceBusClient ServiceBusClient { get; }
 
@@ -57,14 +56,14 @@ public class ServiceBusIntegrationEventSenderFixture : IAsyncLifetime
     {
         await _serviceBusResourceProvider
             .BuildTopic(TopicNamePrefix)
-            .Do(topicProperties =>
-            {
-                ServiceBusOptions.Value.INTEGRATIONEVENTS_TOPIC_NAME = topicProperties.Name;
-            })
-            .AddSubscription(ServiceBusOptions.Value.INTEGRATIONEVENTS_SUBSCRIPTION_NAME)
+                .Do(topicProperties =>
+                {
+                    IntegrationEventsOptions.Value.TopicName = topicProperties.Name;
+                })
+            .AddSubscription(IntegrationEventsOptions.Value.SubscriptionName)
             .CreateAsync();
 
-        _sender = ServiceBusClient.CreateSender(ServiceBusOptions.Value.INTEGRATIONEVENTS_TOPIC_NAME);
+        _sender = ServiceBusClient.CreateSender(IntegrationEventsOptions.Value.TopicName);
     }
 
     public async Task DisposeAsync()
@@ -83,9 +82,11 @@ public class ServiceBusIntegrationEventSenderFixture : IAsyncLifetime
 
     private static ServiceBusMessage CreateReceivedIntegrationEvent(string body, string messageId, string subject)
     {
-        var message = new ServiceBusMessage(body);
-        message.MessageId = messageId;
-        message.Subject = subject;
+        var message = new ServiceBusMessage(body)
+        {
+            MessageId = messageId,
+            Subject = subject,
+        };
         return message;
     }
 }
