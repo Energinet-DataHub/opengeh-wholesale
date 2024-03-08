@@ -19,9 +19,8 @@ import pytest
 from pyspark import Row
 from pyspark.sql import SparkSession
 
-from package.calculation import input
 from package.calculation.preparation.transformations import read_charge_links
-from package.calculation.input import charge_link_periods_schema
+from package.calculation.input.schemas import charge_link_periods_schema
 
 from package.calculation.input.table_reader import TableReader
 from package.codelists import ChargeType

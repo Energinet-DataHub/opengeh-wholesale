@@ -20,12 +20,11 @@ import pytest
 from pyspark import Row
 from pyspark.sql import SparkSession
 
-from package.calculation import input
 from package.calculation.preparation.transformations import (
     read_charge_prices,
     read_charge_master_data,
 )
-from package.calculation.input import charge_master_data_periods_schema
+from package.calculation.input.schemas import charge_master_data_periods_schema
 
 from package.calculation.input.table_reader import TableReader
 from package.codelists import ChargeType

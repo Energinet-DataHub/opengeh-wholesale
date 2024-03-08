@@ -23,7 +23,7 @@ from package.calculation.preparation.transformations.grid_loss_responsible impor
 )
 import metering_point_periods_factory as factory
 from package.calculation.input import TableReader
-from package.calculation.input import (
+from package.calculation.input.schemas import (
     grid_loss_metering_points_schema,
 )
 from package.codelists import MeteringPointType
