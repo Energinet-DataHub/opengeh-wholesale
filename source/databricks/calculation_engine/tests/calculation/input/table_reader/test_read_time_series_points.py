@@ -19,8 +19,8 @@ import pytest
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as f
 
-from package.calculation_input.table_reader import TableReader
-from package.calculation_input.schemas import time_series_point_schema
+from package.calculation.input.table_reader import TableReader
+from package.calculation.input import time_series_point_schema
 from package.constants import Colname
 from package.infrastructure import paths
 from tests.helpers.delta_table_utils import write_dataframe_to_table

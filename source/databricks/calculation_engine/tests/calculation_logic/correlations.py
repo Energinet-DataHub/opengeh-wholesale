@@ -11,8 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from package.calculation_input import TableReader
-from package.calculation_input.schemas import (
+from package.calculation.input import TableReader
+from package.calculation.input import (
     metering_point_period_schema,
     time_series_point_schema,
     grid_loss_metering_points_schema,

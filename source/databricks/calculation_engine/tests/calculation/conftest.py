@@ -35,7 +35,7 @@ from package.calculation.wholesale.schemas.calculate_fee_charge_price_schema imp
     calculate_fee_charge_price_schema,
 )
 from tests.calculation.dataframe_defaults import DataframeDefaults
-from package.calculation_input.schemas import (
+from package.calculation.input import (
     time_series_point_schema,
     metering_point_period_schema,
 )

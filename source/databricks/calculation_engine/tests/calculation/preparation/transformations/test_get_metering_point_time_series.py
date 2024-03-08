@@ -30,7 +30,7 @@ from package.codelists import (
     QuantityQuality,
 )
 from pyspark.sql.functions import col
-from package.calculation_input.schemas import (
+from package.calculation.input import (
     time_series_point_schema,
     metering_point_period_schema,
 )

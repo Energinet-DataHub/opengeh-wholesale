@@ -19,11 +19,11 @@ import pytest
 from pyspark import Row
 from pyspark.sql import SparkSession
 
-from package import calculation_input
+from package.calculation import input
 from package.calculation.preparation.transformations import read_charge_links
-from package.calculation_input.schemas import charge_link_periods_schema
+from package.calculation.input import charge_link_periods_schema
 
-from package.calculation_input.table_reader import TableReader
+from package.calculation.input.table_reader import TableReader
 from package.codelists import ChargeType
 from package.constants import Colname
 
@@ -61,7 +61,7 @@ def _create_charge_link_periods_row(
 
 
 class TestWhenValidInput:
-    @patch.object(calculation_input, TableReader.__name__)
+    @patch.object(input, TableReader.__name__)
     def test_returns_expected_joined_row_values(
         self, table_reader_mock: TableReader, spark: SparkSession
     ) -> None:
@@ -120,7 +120,7 @@ class TestWhenChargeLinkPeriodExceedsCalculationPeriod:
             ),
         ],
     )
-    @patch.object(calculation_input, TableReader.__name__)
+    @patch.object(input, TableReader.__name__)
     def test__returns_expected_to_and_from_date(
         self,
         table_reader_mock: TableReader,

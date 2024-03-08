@@ -20,8 +20,8 @@ from pyspark.sql.functions import when, col
 import pytest
 from unittest.mock import patch, Mock
 
-from package import calculation_input
-from package.calculation_input.table_reader import TableReader
+from package.calculation import input
+from package.calculation.input.table_reader import TableReader
 from package.calculation.preparation.transformations import (
     get_metering_point_periods_df,
 )
@@ -33,7 +33,7 @@ from package.codelists import (
 )
 from package.constants import Colname
 
-import tests.calculation_input.table_reader.input_metering_point_periods_factory as factory
+import calculation.input.table_reader.input_metering_point_periods_factory as factory
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 
 june_1th = datetime(2022, 5, 31, 22, 0)
@@ -99,7 +99,7 @@ class TestWhenValidInput:
             ],
         ],
     )
-    @patch.object(calculation_input, TableReader.__name__)
+    @patch.object(input, TableReader.__name__)
     def test_returns_df_with_correct_metering_point_types(
         self,
         mock_calculation_input_reader: Mock,
@@ -133,7 +133,7 @@ class TestWhenValidInput:
             [InputSettlementMethod.NON_PROFILED, SettlementMethod.NON_PROFILED],
         ],
     )
-    @patch.object(calculation_input, TableReader.__name__)
+    @patch.object(input, TableReader.__name__)
     def test_returns_df_with_correct_settlement_methods(
         self,
         mock_calculation_input_reader: Mock,
@@ -158,7 +158,7 @@ class TestWhenValidInput:
         # Assert
         assert actual.collect()[0][Colname.settlement_method] == expected.value
 
-    @patch.object(calculation_input, TableReader.__name__)
+    @patch.object(input, TableReader.__name__)
     def test_returns_dataframe_with_expected_columns(
         self,
         mock_calculation_input_reader: Mock,
@@ -209,7 +209,7 @@ class TestWhenValidInput:
             == factory.DEFAULT_BALANCE_RESPONSIBLE_ID
         )
 
-    @patch.object(calculation_input, TableReader.__name__)
+    @patch.object(input, TableReader.__name__)
     def test_returns_expected_df(
         self,
         mock_calculation_input_reader: Mock,
@@ -280,7 +280,7 @@ class TestWhenValidInput:
             ),  # period starts at metering point from date and has no end date
         ],
     )
-    @patch.object(calculation_input, TableReader.__name__)
+    @patch.object(input, TableReader.__name__)
     def test_returns_dataframe_with_expect_from_and_to_date(
         self,
         mock_calculation_input_reader: Mock,
@@ -314,7 +314,7 @@ class TestWhenValidInput:
 
 
 class TestWhenThreeGridAreasExchangingWithEachOther:
-    @patch.object(calculation_input, TableReader.__name__)
+    @patch.object(input, TableReader.__name__)
     def test_returns_expected(
         self,
         mock_calculation_input_reader: Mock,
@@ -371,7 +371,7 @@ class TestWhenExchangeMeteringPoint:
             ("111", "222", "111", "111", 1),
         ],
     )
-    @patch.object(calculation_input, TableReader.__name__)
+    @patch.object(input, TableReader.__name__)
     def test_returns_metering_point_if_it_associates_to_relevant_grid_area(
         self,
         mock_calculation_input_reader: Mock,

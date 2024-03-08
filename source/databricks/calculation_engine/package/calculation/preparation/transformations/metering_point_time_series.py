@@ -19,7 +19,7 @@ from pyspark.sql.types import DecimalType
 from package.constants import Colname
 from package.codelists import MeteringPointResolution, QuantityQuality
 from package.common import assert_schema
-from package.calculation_input.schemas import (
+from package.calculation.input import (
     time_series_point_schema,
     metering_point_period_schema,
 )
