@@ -16,6 +16,7 @@ from datetime import datetime
 
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
+from pyspark.sql.types import StringType
 
 from package.calculation.preparation.prepared_tariffs import PreparedTariffs
 from package.codelists import WholesaleResultResolution, ChargeUnit
@@ -113,8 +114,8 @@ def sum_within_month(df: DataFrame, period_start_datetime: datetime) -> DataFram
             f.col(Colname.qualities),
             f.lit(period_start_datetime).alias(Colname.charge_time),
             f.lit(WholesaleResultResolution.MONTH.value).alias(Colname.resolution),
-            f.lit(None).alias(Colname.metering_point_type),
-            f.lit(None).alias(Colname.settlement_method),
+            f.lit(None).cast(StringType()).alias(Colname.metering_point_type),
+            f.lit(None).cast(StringType()).alias(Colname.settlement_method),
             f.col(Colname.charge_price),
             f.col(Colname.total_amount),
             f.col(Colname.charge_tax),
