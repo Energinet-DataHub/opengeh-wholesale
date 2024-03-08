@@ -21,7 +21,7 @@ from package.codelists import ChargeUnit
 from package.constants import Colname
 
 
-def calculate_subscription_amount(
+def calculate(
     prepared_subscriptions: DataFrame,
     calculation_period_start: datetime,
     calculation_period_end: datetime,
@@ -34,11 +34,11 @@ def calculate_subscription_amount(
         time_zone,
     )
 
-    subscription_result = _calculate_charge_count_and_amount(
+    subscription_amount_per_charge = _calculate_charge_count_and_amount(
         subscriptions_with_daily_price
     )
 
-    return subscription_result.select(
+    return subscription_amount_per_charge.select(
         Colname.energy_supplier_id,
         Colname.grid_area,
         Colname.charge_time,
@@ -50,8 +50,8 @@ def calculate_subscription_amount(
         Colname.charge_owner,
         Colname.charge_tax,
         Colname.resolution,
+        Colname.total_quantity,
         f.round(Colname.charge_price, 6).alias(Colname.charge_price),
-        Colname.charge_count,
         f.round(Colname.total_amount, 6).alias(Colname.total_amount),
         f.lit(ChargeUnit.PIECES.value).alias(Colname.unit),
         f.lit(None).alias(Colname.qualities),
@@ -122,7 +122,7 @@ def _calculate_charge_count_and_amount(
         Colname.resolution,
         Colname.charge_tax,
     ).agg(
-        f.sum(Colname.charge_quantity).alias(Colname.charge_count),
+        f.sum(Colname.charge_quantity).alias(Colname.total_quantity),
         f.sum(
             f.when(
                 f.col(Colname.charge_price).isNotNull(),
