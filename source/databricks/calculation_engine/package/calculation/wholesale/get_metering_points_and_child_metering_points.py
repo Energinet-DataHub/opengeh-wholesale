@@ -57,7 +57,7 @@ def get_metering_points_and_child_metering_points(
             == all_child_metering_points[Colname.parent_metering_point_id]
         )
         & (
-            (  # When child from date is within parent period
+            (
                 (
                     all_child_metering_points[Colname.from_date]
                     >= potential_parent_metering_points[from_date]
@@ -77,24 +77,14 @@ def get_metering_points_and_child_metering_points(
                     <= potential_parent_metering_points[to_date]
                 )
             )
-            | (  # When parent from date is within child period
+            | (  # When child from date is before parent from date and to date is after parent to date
                 (
-                    potential_parent_metering_points[from_date]
-                    >= all_child_metering_points[Colname.from_date]
+                    all_child_metering_points[Colname.to_date]
+                    > potential_parent_metering_points[to_date]
                 )
                 & (
-                    potential_parent_metering_points[from_date]
-                    < all_child_metering_points[Colname.to_date]
-                )
-            )
-            | (  # When parent to date is within child period
-                (
-                    potential_parent_metering_points[to_date]
-                    > all_child_metering_points[Colname.from_date]
-                )
-                & (
-                    potential_parent_metering_points[to_date]
-                    <= all_child_metering_points[Colname.to_date]
+                    all_child_metering_points[Colname.from_date]
+                    < potential_parent_metering_points[from_date]
                 )
             )
         ),
