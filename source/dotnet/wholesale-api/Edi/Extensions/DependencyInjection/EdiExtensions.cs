@@ -18,6 +18,7 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks.ServiceBus;
 using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.Edi.Client;
 using Energinet.DataHub.Wholesale.Edi.Validation;
+using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeries.Rules;
 using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest;
 using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
 using Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest;

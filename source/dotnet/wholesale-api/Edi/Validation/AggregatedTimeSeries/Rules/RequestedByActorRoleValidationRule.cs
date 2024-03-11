@@ -17,9 +17,9 @@ using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTim
 
 namespace Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeries.Rules;
 
-public sealed class RequestedByActorRoleValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
+public sealed class RequestedByActorRoleValidationRule : IValidationRule<DataHub.Edi.Requests.AggregatedTimeSeriesRequest>
 {
-    public Task<IList<ValidationError>> ValidateAsync(AggregatedTimeSeriesRequest subject)
+    public Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.AggregatedTimeSeriesRequest subject)
     {
         return Task.FromResult(subject.RequestedByActorRole switch
         {
