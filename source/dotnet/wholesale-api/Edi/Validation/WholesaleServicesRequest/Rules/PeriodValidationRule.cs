@@ -24,6 +24,20 @@ public sealed class PeriodValidationRule : IValidationRule<DataHub.Edi.Requests.
             "Forkert dato format for {PropertyName}, skal være YYYY-MM-DDT22:00:00Z eller YYYY-MM-DDT23:00:00Z / Wrong date format for {PropertyName}, must be YYYY-MM-DDT22:00:00Z or YYYY-MM-DDT23:00:00Z",
             "D66");
 
+    private static readonly ValidationError _startDateMustBeLessThanOrEqualTo3YearsAnd2Months =
+        new(
+            "Der kan ikke anmodes om data for mere end 3 år og 2 måneder tilbage i tid / It is not possible to request data longer than 3 years and 2 months back in time",
+            "E17");
+
+    private readonly DateTimeZone _dateTimeZone;
+    private readonly IClock _clock;
+
+    public PeriodValidationRule(DateTimeZone dateTimeZone, IClock clock)
+    {
+        _dateTimeZone = dateTimeZone;
+        _clock = clock;
+    }
+
     public Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.WholesaleServicesRequest subject)
     {
         ArgumentNullException.ThrowIfNull(subject);
@@ -35,7 +49,12 @@ public sealed class PeriodValidationRule : IValidationRule<DataHub.Edi.Requests.
 
         var errors = new List<ValidationError>();
 
-        var startInstant = ParseToInstant(periodStart, "Start date", errors);
+        var startInstant = ParseToInstant(periodStart, "Period Start", errors);
+
+        if (startInstant is null)
+            return Task.FromResult<IList<ValidationError>>(errors);
+
+        AddErrorIfPeriodStartIsTooOld(startInstant.Value, errors);
 
         return Task.FromResult<IList<ValidationError>>(errors);
     }
@@ -52,5 +71,15 @@ public sealed class PeriodValidationRule : IValidationRule<DataHub.Edi.Requests.
 
         errors.Add(_invalidDateFormat.WithPropertyName(propertyName));
         return null;
+    }
+
+    private void AddErrorIfPeriodStartIsTooOld(Instant periodStart, ICollection<ValidationError> errors)
+    {
+        var zonedStartDateTime = new ZonedDateTime(periodStart, _dateTimeZone);
+        var zonedCurrentDateTime = new ZonedDateTime(_clock.GetCurrentInstant(), _dateTimeZone);
+        var latestStartDate = zonedCurrentDateTime.LocalDateTime.PlusYears(-3).PlusMonths(-2);
+
+        if (zonedStartDateTime.LocalDateTime <= latestStartDate)
+            errors.Add(_startDateMustBeLessThanOrEqualTo3YearsAnd2Months);
     }
 }
