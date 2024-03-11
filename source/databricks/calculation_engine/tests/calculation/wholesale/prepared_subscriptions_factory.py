@@ -17,13 +17,14 @@ from decimal import Decimal
 
 from pyspark.sql import Row, SparkSession
 
-from package.calculation.preparation.prepared_subscriptions import PreparedSubscriptions
-from package.calculation.preparation.prepared_tariffs import prepared_tariffs_schema
+from package.calculation.preparation.prepared_subscriptions import (
+    PreparedSubscriptions,
+    prepared_subscriptions_schema,
+)
 from package.codelists import (
     ChargeType,
     MeteringPointType,
     SettlementMethod,
-    ChargeQuality,
     WholesaleResultResolution,
 )
 from package.constants import Colname
@@ -33,7 +34,6 @@ class DefaultValues:
     GRID_AREA = "543"
     CHARGE_CODE = "4000"
     CHARGE_OWNER = "001"
-    CHARGE_TAX = True
     CHARGE_TIME_HOUR_0 = datetime(2020, 1, 1, 0)
     CHARGE_PRICE = Decimal("2.000005")
     CHARGE_QUANTITY = 1
@@ -41,8 +41,6 @@ class DefaultValues:
     METERING_POINT_ID = "123456789012345678901234567"
     METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
     SETTLEMENT_METHOD = SettlementMethod.FLEX
-    QUANTITY = Decimal("1.005")
-    QUALITY = ChargeQuality.CALCULATED
     PERIOD_START_DATETIME = datetime(2019, 12, 31, 23)
 
 
@@ -87,5 +85,5 @@ def create_prepared_subscriptions(
         data = [_create_prepared_subscriptions_row()]
     elif isinstance(data, Row):
         data = [data]
-    df = spark.createDataFrame(data, prepared_tariffs_schema)
+    df = spark.createDataFrame(data, prepared_subscriptions_schema)
     return PreparedSubscriptions(df)
