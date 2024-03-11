@@ -21,10 +21,10 @@ from package.infrastructure.paths import (
 )
 
 # calculation_output
-from package.calculation_output.schemas.wholesale_results_schema import (
+from package.calculation.output.schemas.wholesale_results_schema import (
     wholesale_results_schema,
 )
-from package.calculation_output.schemas.energy_results_schema import (
+from package.calculation.output.schemas.energy_results_schema import (
     energy_results_schema,
 )
 
