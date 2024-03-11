@@ -25,6 +25,7 @@ from .charge_link_metering_point_periods import ChargeLinkMeteringPointPeriods
 from .charge_master_data import ChargeMasterData
 from .charge_prices import ChargePrices
 from .prepared_tariffs import PreparedTariffs
+from .prepared_subscriptions import PreparedSubscriptions
 from ...infrastructure import logging_configuration
 
 
