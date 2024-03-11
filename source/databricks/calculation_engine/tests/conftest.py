@@ -31,7 +31,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType
 
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation_input.schemas import (
+from package.calculation.input.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
     grid_loss_metering_points_schema,
@@ -181,7 +181,7 @@ def data_lake_path(tests_path: str, worker_id: str) -> str:
 
 @pytest.fixture(scope="session")
 def calculation_input_folder(data_lake_path: str) -> str:
-    return "calculation_input"
+    return "input"
 
 
 @pytest.fixture(scope="session")

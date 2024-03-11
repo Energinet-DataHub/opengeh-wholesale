@@ -19,7 +19,7 @@ from pyspark.sql.functions import col, concat_ws
 from package.calculation.preparation.charge_master_data import ChargeMasterData
 from package.calculation.preparation.charge_prices import ChargePrices
 from package.calculation.preparation.transformations.clamp_period import clamp_period
-from package.calculation_input import TableReader
+from package.calculation.input import TableReader
 from package.constants import Colname
 
 
