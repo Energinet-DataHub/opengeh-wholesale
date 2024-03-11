@@ -124,10 +124,9 @@ public class PeriodValidationRuleTests
     [Fact]
     public async Task Validate_WhenPeriodStartIs1DayTooOld_ReturnsNoValidationError()
     {
-        // 1 day too old is the smallest possible period it can be too old
-
         // Arrange
         var message = new WholesaleServicesRequestBuilder()
+            // 1 day too old is the smallest possible period it can be too old
             .WithPeriodStart(_mockClock.GetCurrentInstant().ToDateTimeOffset().AddYears(-3).AddMonths(-2).AddDays(-1).ToInstant().ToString())
             .Build();
 
