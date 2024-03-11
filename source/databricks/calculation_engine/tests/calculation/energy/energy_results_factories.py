@@ -51,6 +51,7 @@ def create_row(
     qualities: None | QuantityQuality | list[QuantityQuality] = None,
     energy_supplier_id: str | None = DEFAULT_ENERGY_SUPPLIER_ID,
     balance_responsible_id: str | None = DEFAULT_BALANCE_RESPONSIBLE_ID,
+    metering_point_id: str | None = None,
     metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE,
     resolution: MeteringPointResolution = DEFAULT_RESOLUTION,
 ) -> Row:
@@ -75,6 +76,7 @@ def create_row(
         },
         Colname.sum_quantity: sum_quantity,
         Colname.qualities: qualities,
+        Colname.metering_point_id: metering_point_id,
         Colname.metering_point_type: metering_point_type.value,
         Colname.resolution: resolution.value,
     }

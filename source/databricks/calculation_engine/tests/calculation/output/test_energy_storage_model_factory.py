@@ -29,7 +29,7 @@ from package.calculation.energy.energy_results import (
     EnergyResults,
 )
 from package.calculation.output import energy_storage_model_factory as sut
-from package.codelists import MeteringPointType
+from package.codelists import MeteringPointType, MeteringPointResolution
 from package.constants import Colname, EnergyResultColumnNames
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
 from tests.contract_utils import (
@@ -86,6 +86,7 @@ def args(any_calculator_args: CalculatorArgs) -> CalculatorArgs:
     return args
 
 
+# TODO BJM: This ought to be replaced by the EnergyResults factory
 def _create_result_row(
     grid_area: str = DEFAULT_GRID_AREA,
     to_grid_area: str = DEFAULT_TO_GRID_AREA,
@@ -97,8 +98,8 @@ def _create_result_row(
     time_window_start: datetime = DEFAULT_TIME_WINDOW_START,
     time_window_end: datetime = DEFAULT_TIME_WINDOW_END,
     metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE,
-) -> Row:
-    row = {
+) -> dict:
+    return {
         Colname.grid_area: grid_area,
         Colname.to_grid_area: to_grid_area,
         Colname.from_grid_area: from_grid_area,
@@ -110,13 +111,13 @@ def _create_result_row(
         },
         Colname.sum_quantity: Decimal(quantity),
         Colname.qualities: [quality.value],
-        Colname.settlement_method: [],
+        Colname.metering_point_id: None,
         Colname.metering_point_type: metering_point_type.value,
+        Colname.resolution: MeteringPointResolution.QUARTER.value,
     }
 
-    return Row(**row)
 
-
+# TODO BJM: This ought to be replaced by the EnergyResults factory
 def _create_energy_results(spark: SparkSession, rows: List[Row]) -> EnergyResults:
     df = spark.createDataFrame(data=rows, schema=energy_results_schema)
     return EnergyResults(df)
@@ -156,7 +157,7 @@ def _create_energy_results_corresponding_to_four_calculation_results(
         _create_result_row(energy_supplier_id=OTHER_ENERGY_SUPPLIER_ID),
     ]
 
-    return _create_energy_results(spark, rows)
+    return _create_energy_results(spark, [Row(**row) for row in rows])
 
 
 @pytest.mark.parametrize(
@@ -170,8 +171,8 @@ def test__create__with_correct_aggregation_level(
     args: CalculatorArgs,
 ) -> None:
     # Arrange
-    row = [_create_result_row()]
-    result_df = _create_energy_results(spark, row)
+    rows = [Row(**_create_result_row())]
+    result_df = _create_energy_results(spark, rows)
 
     # Act
     actual = sut.create(
@@ -215,8 +216,8 @@ def test__create__with_correct_row_values(
     args: CalculatorArgs,
 ) -> None:
     # Arrange
-    row = [_create_result_row()]
-    result_df = _create_energy_results(spark, row)
+    rows = [Row(**_create_result_row())]
+    result_df = _create_energy_results(spark, rows)
     args.calculation_id = DEFAULT_CALCULATION_ID
 
     # Act
@@ -239,8 +240,8 @@ def test__create__columns_matching_contract(
 ) -> None:
     # Arrange
     contract_path = f"{contracts_path}/energy-result-table-column-names.json"
-    row = [_create_result_row()]
-    result_df = _create_energy_results(spark, row)
+    rows = [Row(**_create_result_row())]
+    result_df = _create_energy_results(spark, rows)
 
     # Act
     actual = sut.create(
@@ -312,7 +313,7 @@ def test__create__when_rows_belong_to_different_results__adds_different_calculat
     row1[column_name] = value
     row2 = _create_result_row()
     row2[column_name] = other_value
-    result_df = _create_energy_results(spark, [row1, row2])
+    result_df = _create_energy_results(spark, [Row(**row1), Row(**row2)])
 
     # Act
     actual = sut.create(
@@ -367,7 +368,7 @@ def test__write__when_rows_belong_to_same_result__adds_same_calculation_result_i
     row1[column_name] = value
     row2 = _create_result_row(grid_area="803")
     row2[column_name] = other_value
-    result_df = _create_energy_results(spark, [row1, row2])
+    result_df = _create_energy_results(spark, [Row(**row1), Row(**row2)])
 
     # Act
     actual = sut.create(
