@@ -21,7 +21,7 @@ from pyspark.sql import functions as f
 from package.calculation.preparation.transformations import (
     get_subscription_charges,
 )
-from package.codelists import MeteringPointType, SettlementMethod
+
 from package.constants import Colname
 import package.codelists as e
 
@@ -126,7 +126,7 @@ class TestWhenValidInput:
         )
 
         # Assert
-        assert actual_subscription.count() == expected_day_count
+        assert actual_subscription.df.count() == expected_day_count
 
 
 class TestWhenNoPricesForPeriod:
@@ -170,7 +170,7 @@ class TestWhenNoPricesForPeriod:
         )
 
         # Assert
-        actual_prices = actual_subscription.select(Colname.charge_price)
+        actual_prices = actual_subscription.df.select(Colname.charge_price)
         assert actual_prices.count() == (to_date - from_date).days
         assert (
             actual_prices.filter(f.col(Colname.charge_price).isNotNull()).count() == 0
@@ -229,7 +229,7 @@ class TestWhenInputContainsOtherChargeTypes:
 
         # Assert
         assert (
-            actual_subscription.collect()[0][Colname.charge_type]
+            actual_subscription.df.collect()[0][Colname.charge_type]
             == e.ChargeType.SUBSCRIPTION.value
         )
 
@@ -299,7 +299,7 @@ class TestWhenChargePriceChangesDuringPeriod:
         # Assert
         actual_charge_times_and_price = {
             row[Colname.charge_time]: row[Colname.charge_price]
-            for row in actual_subscription.orderBy(Colname.charge_time).collect()
+            for row in actual_subscription.df.orderBy(Colname.charge_time).collect()
         }
         assert actual_charge_times_and_price == expected_charge_time_and_price
 
@@ -377,7 +377,8 @@ class TestWhenChargeMasterPeriodStopsAndStartsAgain:
 
         # Assert
         actual_charge_times = set(
-            row[0] for row in actual_subscription.select(Colname.charge_time).collect()
+            row[0]
+            for row in actual_subscription.df.select(Colname.charge_time).collect()
         )
         expected_charge_times_set = set(expected_charge_times)
 
@@ -455,7 +456,7 @@ class TestWhenChargeLinkPeriodStopsAndStartsAgain:
         # Assert
         actual_charge_times_and_price = {
             row[Colname.charge_time]: row[Colname.charge_price]
-            for row in actual_subscription.orderBy(Colname.charge_time).collect()
+            for row in actual_subscription.df.orderBy(Colname.charge_time).collect()
         }
         assert actual_charge_times_and_price == expected_charge_time_and_price
 
@@ -532,9 +533,11 @@ class TestWhenDaylightSavingTimeChanges:
         )
 
         # Assert
-        actual_charge_times = actual_subscription.orderBy(Colname.charge_time).collect()
+        actual_charge_times = actual_subscription.df.orderBy(
+            Colname.charge_time
+        ).collect()
 
-        assert actual_subscription.count() == expected_day_count
+        assert actual_subscription.df.count() == expected_day_count
         assert actual_charge_times[0][Colname.charge_time] == expected_first_charge_time
         assert (
             actual_charge_times[expected_day_count - 1][Colname.charge_time]
