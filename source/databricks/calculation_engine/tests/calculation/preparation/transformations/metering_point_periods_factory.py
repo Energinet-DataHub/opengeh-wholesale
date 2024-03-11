@@ -44,7 +44,7 @@ DEFAULT_TO_DATE = datetime(2020, 2, 1, 0, 0)
 def create_row(
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
     metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE,
-    settlement_method: SettlementMethod = DEFAULT_SETTLEMENT_METHOD,
+    settlement_method: SettlementMethod | None = DEFAULT_SETTLEMENT_METHOD,
     grid_area: str = DEFAULT_GRID_AREA,
     resolution: MeteringPointResolution = DEFAULT_RESOLUTION,
     from_grid_area: str | None = DEFAULT_FROM_GRID_AREA,
@@ -61,7 +61,9 @@ def create_row(
         Colname.metering_point_id: metering_point_id,
         Colname.metering_point_type: metering_point_type.value,
         Colname.calculation_type: calculation_type,
-        Colname.settlement_method: settlement_method.value,
+        Colname.settlement_method: (
+            settlement_method.value if settlement_method else None
+        ),
         Colname.grid_area: grid_area,
         Colname.resolution: resolution.value,
         Colname.from_grid_area: from_grid_area,

@@ -319,6 +319,19 @@ def any_calculator_args() -> CalculatorArgs:
 
 
 @pytest.fixture(scope="session")
+def any_calculator_args_for_wholesale() -> CalculatorArgs:
+    return CalculatorArgs(
+        calculation_id="foo",
+        calculation_type=CalculationType.WHOLESALE_FIXING,
+        calculation_grid_areas=["805", "806"],
+        calculation_period_start_datetime=datetime(2022, 6, 30, 22, 0, 0),
+        calculation_period_end_datetime=datetime(2022, 7, 31, 22, 0, 0),
+        calculation_execution_time_start=datetime(2022, 8, 1, 22, 0, 0),
+        time_zone="Europe/Copenhagen",
+    )
+
+
+@pytest.fixture(scope="session")
 def infrastructure_settings(
     data_lake_path: str, calculation_input_path: str
 ) -> InfrastructureSettings:
