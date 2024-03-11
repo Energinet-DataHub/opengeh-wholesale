@@ -35,7 +35,7 @@ public class PeriodValidationRuleTests
 
     private readonly PeriodValidationRule _sut = new(
         DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
-        SystemClock.Instance);
+        new MockClock(Instant.FromUtc(2024, 1, 1, 23, 0, 0)));
 
     [Fact]
     public async Task Validate_WhenPeriodStartIsNonsense_ReturnsExpectedValidationErrors()
@@ -100,5 +100,10 @@ public class PeriodValidationRuleTests
         var error = errors.First();
         error.ErrorCode.Should().Be(_startDateMustBeLessThanOrEqualTo3YearsAnd2Months.ErrorCode);
         error.Message.Should().Be(_startDateMustBeLessThanOrEqualTo3YearsAnd2Months.Message);
+    }
+
+    private sealed class MockClock(Instant instant) : IClock
+    {
+        public Instant GetCurrentInstant() => instant;
     }
 }
