@@ -46,7 +46,7 @@ class DefaultValues:
     PERIOD_START_DATETIME = datetime(2019, 12, 31, 23)
 
 
-def create_prepared_tariffs_row(
+def create_row(
     charge_key: str | None = None,
     charge_code: str = DefaultValues.CHARGE_CODE,
     charge_owner: str = DefaultValues.CHARGE_OWNER,
@@ -85,11 +85,9 @@ def create_prepared_tariffs_row(
     return Row(**row)
 
 
-def create_prepared_tariffs(
-    spark: SparkSession, data: None | Row | list[Row] = None
-) -> PreparedTariffs:
+def create(spark: SparkSession, data: None | Row | list[Row] = None) -> PreparedTariffs:
     if data is None:
-        data = [create_prepared_tariffs_row()]
+        data = [create_row()]
     elif isinstance(data, Row):
         data = [data]
     df = spark.createDataFrame(data, prepared_tariffs_schema)

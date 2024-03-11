@@ -26,14 +26,12 @@ def test__execute__when_tariff_schema_is_valid__does_not_raise(
     spark: SparkSession, any_calculator_args_for_wholesale: CalculatorArgs
 ) -> None:
     # Arrange
-    tariffs_hourly_df = tariffs_factory.create_prepared_tariffs(
-        spark, data=[tariffs_factory.create_prepared_tariffs_row()]
+    tariffs_hourly_df = tariffs_factory.create(
+        spark, data=[tariffs_factory.create_row()]
     )
-    tariffs_daily_df = tariffs_factory.create_prepared_tariffs(
+    tariffs_daily_df = tariffs_factory.create(
         spark,
-        data=[
-            tariffs_factory.create_prepared_tariffs_row(resolution=ChargeResolution.DAY)
-        ],
+        data=[tariffs_factory.create_row(resolution=ChargeResolution.DAY)],
     )
     prepared_subscriptions = subscriptions_factory.create(spark)
 
