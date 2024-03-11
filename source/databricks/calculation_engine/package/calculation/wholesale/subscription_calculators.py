@@ -17,18 +17,20 @@ from zoneinfo import ZoneInfo
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
 
+from package.calculation.preparation.prepared_subscriptions import PreparedSubscriptions
 from package.codelists import ChargeUnit
 from package.constants import Colname
 
 
 def calculate(
-    prepared_subscriptions: DataFrame,
+    prepared_subscriptions: PreparedSubscriptions,
     calculation_period_start: datetime,
     calculation_period_end: datetime,
     time_zone: str,
 ) -> DataFrame:
+    prepared_subscriptions_df = prepared_subscriptions.df
     subscriptions_with_daily_price = _calculate_price_per_day(
-        prepared_subscriptions,
+        prepared_subscriptions_df,
         calculation_period_start,
         calculation_period_end,
         time_zone,

@@ -21,6 +21,7 @@ from package.calculation.preparation.charge_link_metering_point_periods import (
 )
 from package.calculation.preparation.charge_master_data import ChargeMasterData
 from package.calculation.preparation.charge_prices import ChargePrices
+from package.calculation.preparation.prepared_subscriptions import PreparedSubscriptions
 from package.codelists import ChargeType, WholesaleResultResolution
 from package.constants import Colname
 
@@ -30,7 +31,7 @@ def get_subscription_charges(
     charge_prices: ChargePrices,
     charge_link_metering_point_periods: ChargeLinkMeteringPointPeriods,
     time_zone: str,
-) -> DataFrame:
+) -> PreparedSubscriptions:
     """
     This method does the following:
     - Joins charge_master_data, charge_prices and charge_link_metering_point_periods
@@ -59,7 +60,7 @@ def get_subscription_charges(
         Colname.resolution, f.lit(WholesaleResultResolution.DAY.value)
     )
 
-    return subscriptions
+    return PreparedSubscriptions(subscriptions)
 
 
 def _join_with_prices(

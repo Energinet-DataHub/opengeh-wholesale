@@ -22,6 +22,7 @@ import package.calculation.wholesale.subscription_calculators as subscription_ca
 
 from ..CalculationResults import WholesaleResultsContainer
 from ..calculator_args import CalculatorArgs
+from ..preparation.prepared_subscriptions import PreparedSubscriptions
 from ..preparation.prepared_tariffs import PreparedTariffs
 from ...codelists import AmountType
 from ...infrastructure import logging_configuration
@@ -30,7 +31,7 @@ from ...infrastructure import logging_configuration
 @logging_configuration.use_span("calculation.wholesale.execute")
 def execute(
     args: CalculatorArgs,
-    prepared_subscriptions: DataFrame,
+    prepared_subscriptions: PreparedSubscriptions,
     prepared_hourly_tariffs: PreparedTariffs,
     prepared_daily_tariffs: PreparedTariffs,
 ) -> WholesaleResultsContainer:
@@ -55,7 +56,7 @@ def execute(
 @logging_configuration.use_span("calculate_subscriptions")
 def _calculate_subscriptions(
     args: CalculatorArgs,
-    prepared_subscriptions: DataFrame,
+    prepared_subscriptions: PreparedSubscriptions,
     results: WholesaleResultsContainer,
 ) -> None:
     subscription_amount_per_charge = subscription_calculator.calculate(
