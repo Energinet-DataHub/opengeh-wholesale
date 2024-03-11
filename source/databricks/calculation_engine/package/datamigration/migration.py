@@ -14,12 +14,8 @@
 
 from package.infrastructure import paths, initialize_spark
 import package.infrastructure.environment_variables as env_vars
-from package.infrastructure.paths import (
-    WHOLESALE_CONTAINER_NAME,
-)
 from .migration_script_args import MigrationScriptArgs
 import package.datamigration.constants as c
-
 from spark_sql_migrations import (
     create_and_configure_container,
     schema_migration_pipeline,
@@ -40,9 +36,7 @@ def migrate_data_lake() -> None:
         storage_account_name,
     )
 
-    container_url = paths.get_container_url(
-        storage_account_name, WHOLESALE_CONTAINER_NAME
-    )
+    container_url = paths.get_spark_sql_migrations_path(storage_account_name)
 
     migration_args = MigrationScriptArgs(
         data_storage_account_url=storage_account_url,
@@ -54,7 +48,7 @@ def migrate_data_lake() -> None:
 
     spark_config = SparkSqlMigrationsConfiguration(
         migration_schema_name="schema_migration",
-        migration_schema_location="",
+        migration_schema_location=migration_args.storage_container_path,
         migration_table_name="executed_migrations",
         migration_table_location=migration_args.storage_container_path,
         migration_scripts_folder_path=c.MIGRATION_SCRIPTS_FOLDER_PATH,
