@@ -22,15 +22,15 @@ using Microsoft.Extensions.Options;
 namespace Energinet.DataHub.Wholesale.Events.Application.Workers;
 
 /// <summary>
-/// Responsible for establishing the service bus connection on a background thread.
+/// Receives messages from the WholesaleInbox service bus queue (typically sent from the EDI subsystem)
 /// </summary>
-public class AggregatedTimeSeriesServiceBusWorker : ServiceBusWorker
+public class WholesaleInboxServiceBusWorker : ServiceBusWorker
 {
     private readonly IServiceProvider _serviceProvider;
 
-    public AggregatedTimeSeriesServiceBusWorker(
+    public WholesaleInboxServiceBusWorker(
         IServiceProvider serviceProvider,
-        ILogger<AggregatedTimeSeriesServiceBusWorker> logger,
+        ILogger<WholesaleInboxServiceBusWorker> logger,
         IOptions<WholesaleInboxQueueOptions> options,
         ServiceBusClient serviceBusClient)
     : base(
@@ -47,7 +47,8 @@ public class AggregatedTimeSeriesServiceBusWorker : ServiceBusWorker
         {
             Logger.LogInformation("Processing message with reference id {reference_id}.", referenceId);
             using var scope = _serviceProvider.CreateScope();
-            var requestHandler = scope.ServiceProvider.GetRequiredService<IAggregatedTimeSeriesRequestHandler>();
+            var requestHandlers = scope.ServiceProvider.GetServices<IWholesaleInboxRequestHandler>();
+            var requestHandler = requestHandlers.Single(h => h.CanHandle(arg.Message.Subject));
             await requestHandler.ProcessAsync(arg.Message, referenceId, arg.CancellationToken).ConfigureAwait(true);
         }
         else

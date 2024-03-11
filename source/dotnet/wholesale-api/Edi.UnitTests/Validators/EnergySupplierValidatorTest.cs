@@ -16,7 +16,7 @@ using System.Diagnostics.CodeAnalysis;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.Validation;
-using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeries.Rules;
+using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Xunit;

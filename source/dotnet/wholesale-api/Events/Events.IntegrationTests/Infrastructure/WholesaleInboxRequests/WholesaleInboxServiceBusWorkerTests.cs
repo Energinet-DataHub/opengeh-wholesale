@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Diagnostics;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Edi;
@@ -22,26 +23,32 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
+using Xunit.Abstractions;
+using Xunit.Sdk;
 
-namespace Energinet.DataHub.Wholesale.Events.IntegrationTests.Infrastructure.AggregatedTimeSeriesRequests;
+namespace Energinet.DataHub.Wholesale.Events.IntegrationTests.Infrastructure.WholesaleInboxRequests;
 
-public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderFixture>
+public class WholesaleInboxServiceBusWorkerTests : IClassFixture<ServiceBusSenderFixture>
 {
     private readonly ServiceBusSenderFixture _sender;
+    private readonly ITestOutputHelper _testOutputHelper;
 
-    public AggregatedTimeSeriesRequestsTests(ServiceBusSenderFixture fixture)
+    public WholesaleInboxServiceBusWorkerTests(ServiceBusSenderFixture fixture, ITestOutputHelper testOutputHelper)
     {
         _sender = fixture;
+        _testOutputHelper = testOutputHelper;
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task ReceiveAggregatedTimeSeriesRequest_WhenMessageHasReference_ReceivesMessage(
+    public async Task ReceiveWholesaleInboxRequest_WhenMessageHasReference_ReceivesMessage(
         Mock<IServiceProvider> serviceProviderMock,
-        Mock<IAggregatedTimeSeriesRequestHandler> handlerMock,
-        Mock<ILogger<AggregatedTimeSeriesServiceBusWorker>> loggerMock)
+        Mock<IWholesaleInboxRequestHandler> handlerMock,
+        Mock<ILogger<WholesaleInboxServiceBusWorker>> loggerMock)
     {
         // Arrange
+        var stopwatch = new Stopwatch();
+        var testLogger = new TestLogger<WholesaleInboxServiceBusWorker>(loggerMock.Object, _testOutputHelper);
         var messageHasBeenReceivedEvent = new AutoResetEvent(false);
         var expectedReferenceId = Guid.NewGuid().ToString();
         // ProcessAsync is expected to trigger when a service bus message has been received.
@@ -52,9 +59,16 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
                 messageHasBeenReceivedEvent.Set();
             });
 
+        handlerMock
+            .Setup(handler => handler.CanHandle(It.IsAny<string>()))
+            .Returns(true);
+
         serviceProviderMock
-            .Setup(x => x.GetService(typeof(IAggregatedTimeSeriesRequestHandler)))
-            .Returns(handlerMock.Object);
+            .Setup(x => x.GetService(typeof(IEnumerable<IWholesaleInboxRequestHandler>)))
+            .Returns(new List<IWholesaleInboxRequestHandler>
+            {
+                handlerMock.Object,
+            });
 
         var serviceScope = new Mock<IServiceScope>();
         serviceScope.Setup(x => x.ServiceProvider).Returns(serviceProviderMock.Object);
@@ -68,29 +82,34 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
             .Setup(x => x.GetService(typeof(IServiceScopeFactory)))
             .Returns(serviceScopeFactory.Object);
 
-        var sut = new AggregatedTimeSeriesServiceBusWorker(
+        // Without "using" the service bus worker is not disposed correctly before next test starts
+        await using var sut = new WholesaleInboxServiceBusWorker(
             serviceProviderMock.Object,
-            loggerMock.Object,
+            testLogger,
             _sender.WholesaleInboxQueueOptions,
             _sender.ServiceBusClient);
 
         // Act
         await sut.StartAsync(CancellationToken.None);
+        stopwatch.Start();
         await _sender.PublishAsync("Hello World", expectedReferenceId);
 
         // Assert
-        var messageHasBeenReceived = messageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(1));
+        var messageHasBeenReceived = messageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(5));
+        testLogger.LogInformation("Finished waiting for messageHasBeenReceivedEvent, result: {0}, time elapsed: {1}", messageHasBeenReceived, stopwatch.Elapsed);
         messageHasBeenReceived.Should().BeTrue();
+        stopwatch.Stop();
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task ReceiveAggregatedTimeSeriesRequest_WhenMessageIsMissingReference_DoesNotReceivesMessage(
+    public async Task ReceiveWholesaleInboxRequest_WhenMessageIsMissingReference_DoesNotReceivesMessage(
         Mock<IServiceProvider> serviceProviderMock,
-        Mock<IAggregatedTimeSeriesRequestHandler> handlerMock,
-        Mock<ILogger<AggregatedTimeSeriesServiceBusWorker>> loggerMock)
+        Mock<IWholesaleInboxRequestHandler> handlerMock,
+        Mock<ILogger<WholesaleInboxServiceBusWorker>> loggerMock)
     {
         // Arrange
+        var testLogger = new TestLogger<WholesaleInboxServiceBusWorker>(loggerMock.Object, _testOutputHelper);
         var messageHasBeenReceivedEvent = new AutoResetEvent(false);
         var expectedReferenceId = Guid.NewGuid().ToString();
         // ProcessAsync is expected to trigger when a service bus message has been received.
@@ -102,12 +121,13 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
             });
 
         serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IAggregatedTimeSeriesRequestHandler)))
+            .Setup(sp => sp.GetService(typeof(IWholesaleInboxRequestHandler)))
             .Returns(handlerMock.Object);
 
-        var sut = new AggregatedTimeSeriesServiceBusWorker(
+        // Without "using" the service bus worker is not disposed correctly before next test starts
+        await using var sut = new WholesaleInboxServiceBusWorker(
             serviceProviderMock.Object,
-            loggerMock.Object,
+            testLogger,
             _sender.WholesaleInboxQueueOptions,
             _sender.ServiceBusClient);
 
@@ -116,7 +136,7 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
         await _sender.PublishAsync("Hello World");
 
         // Assert
-        var messageHasBeenReceived = messageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(1));
+        var messageHasBeenReceived = messageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(5));
         messageHasBeenReceived.Should().BeFalse();
     }
 }
