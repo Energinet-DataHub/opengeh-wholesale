@@ -55,41 +55,6 @@ class DefaultValues:
     TIME_ZONE = "Europe/Copenhagen"
 
 
-def _create_subscription_row(
-    charge_key: str | None = None,
-    charge_code: str = DefaultValues.CHARGE_CODE,
-    charge_owner: str = DefaultValues.CHARGE_OWNER,
-    charge_time: datetime = DefaultValues.CHARGE_TIME_HOUR_0,
-    charge_price: Decimal | None = DefaultValues.CHARGE_PRICE,
-    charge_quantity: int | None = DefaultValues.CHARGE_QUANTITY,
-    energy_supplier_id: str = DefaultValues.ENERGY_SUPPLIER_ID,
-    metering_point_type: MeteringPointType = DefaultValues.METERING_POINT_TYPE,
-    settlement_method: SettlementMethod = DefaultValues.SETTLEMENT_METHOD,
-    metering_point_id: str = DefaultValues.METERING_POINT_ID,
-    grid_area: str = DefaultValues.GRID_AREA,
-    resolution: WholesaleResultResolution = WholesaleResultResolution.DAY,
-) -> Row:
-    charge_type = ChargeType.SUBSCRIPTION.value
-    row = {
-        Colname.charge_key: charge_key or f"{charge_code}-{charge_type}-{charge_owner}",
-        Colname.charge_type: charge_type,
-        Colname.charge_owner: charge_owner,
-        Colname.charge_code: charge_code,
-        Colname.charge_time: charge_time,
-        Colname.charge_price: charge_price,
-        Colname.charge_tax: False,
-        Colname.charge_quantity: charge_quantity,
-        Colname.metering_point_type: metering_point_type.value,
-        Colname.settlement_method: settlement_method.value,
-        Colname.metering_point_id: metering_point_id,
-        Colname.grid_area: grid_area,
-        Colname.energy_supplier_id: energy_supplier_id,
-        Colname.resolution: resolution.value,
-    }
-
-    return Row(**row)
-
-
 def _create_default_subscription_charges(spark: SparkSession) -> DataFrame:
     return spark.createDataFrame(
         [

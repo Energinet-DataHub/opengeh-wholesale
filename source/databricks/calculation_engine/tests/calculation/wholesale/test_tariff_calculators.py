@@ -35,7 +35,7 @@ from package.codelists import (
     WholesaleResultResolution,
 )
 from package.constants import Colname
-import tests.calculation.wholesale.prepared_tariff_factory as factory
+import tests.calculation.wholesale.prepared_tariffs_factory as factory
 
 
 def test__calculate_tariff_price_per_ga_co_es__returns_empty_df_when_input_df_is_empty(

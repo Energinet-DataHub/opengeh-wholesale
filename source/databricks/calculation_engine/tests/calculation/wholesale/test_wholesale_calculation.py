@@ -14,9 +14,6 @@
 
 from pyspark.sql import SparkSession
 
-from package.calculation.wholesale.schemas.prepared_subscriptions_schema import (
-    prepared_subscriptions_schema,
-)
 from tests.calculation.wholesale.test_subscription_calculators import (
     _create_subscription_row,
 )
@@ -24,7 +21,7 @@ from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.wholesale import execute
 from package.codelists import ChargeResolution
 
-import tests.calculation.wholesale.prepared_tariff_factory as factory
+import tests.calculation.wholesale.prepared_tariffs_factory as factory
 
 
 def test__execute__when_tariff_schema_is_valid__does_not_raise(
