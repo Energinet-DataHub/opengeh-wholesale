@@ -13,37 +13,44 @@
 # limitations under the License.
 import pathlib
 from datetime import datetime
-from decimal import Decimal
 from unittest import mock
 import pytest
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as f
 
-from package.calculation_input.table_reader import TableReader
-from package.calculation_input.schemas import time_series_point_schema
+
+from package.calculation.input import TableReader
+from package.calculation.input.schemas import charge_link_periods_schema
+
 from package.constants import Colname
-from package.infrastructure import paths
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 
+DEFAULT_FROM_DATE = datetime(2022, 6, 8, 22, 0, 0)
+DEFAULT_TO_DATE = datetime(2022, 6, 8, 22, 0, 0)
 
-def _create_time_series_point_row(
-    metering_point_id: str = "some-metering-point-id",
-) -> dict:
+
+def _create_charge_link_period_row() -> dict:
     return {
-        Colname.metering_point_id: metering_point_id,
-        Colname.quantity: Decimal("1.123456"),
-        Colname.quality: "foo",
-        Colname.observation_time: datetime(2022, 6, 8, 22, 0, 0),
+        Colname.charge_code: "foo",
+        Colname.charge_type: "foo",
+        Colname.charge_owner: "foo",
+        Colname.metering_point_id: "foo",
+        Colname.quantity: 1,
+        Colname.from_date: DEFAULT_FROM_DATE,
+        Colname.to_date: DEFAULT_TO_DATE,
     }
 
 
 class TestWhenSchemaMismatch:
-    def test_raises_assertion_error(self, spark: SparkSession) -> None:
+    def test__raises_assertion_error(
+        self,
+        spark: SparkSession,
+    ) -> None:
         # Arrange
-        row = _create_time_series_point_row()
+        row = _create_charge_link_period_row()
         reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
-        df = spark.createDataFrame(data=[row], schema=time_series_point_schema)
+        df = spark.createDataFrame(data=[row], schema=charge_link_periods_schema)
         df = df.withColumn("test", f.lit("test"))
 
         # Act & Assert
@@ -51,7 +58,7 @@ class TestWhenSchemaMismatch:
             reader._spark.read.format("delta"), "load", return_value=df
         ):
             with pytest.raises(AssertionError) as exc_info:
-                reader.read_time_series_points()
+                reader.read_charge_links_periods()
 
             assert "Schema mismatch" in str(exc_info.value)
 
@@ -65,25 +72,22 @@ class TestWhenValidInput:
     ) -> None:
         # Arrange
         calculation_input_path = f"{str(tmp_path)}/{calculation_input_folder}"
-        time_series_points_table_location = (
-            f"{calculation_input_path}/{paths.TIME_SERIES_POINTS_TABLE_NAME}"
-        )
-        row = _create_time_series_point_row()
-        df = spark.createDataFrame(data=[row], schema=time_series_point_schema)
+        table_location = f"{calculation_input_path}/charge_link_periods"
+        row = _create_charge_link_period_row()
+        df = spark.createDataFrame(data=[row], schema=charge_link_periods_schema)
         write_dataframe_to_table(
             spark,
             df,
-            "the_test_database",
-            paths.TIME_SERIES_POINTS_TABLE_NAME,
-            time_series_points_table_location,
-            time_series_point_schema,
+            "test_database",
+            "charge_link_periods",
+            table_location,
+            charge_link_periods_schema,
         )
         expected = df
-
         reader = TableReader(spark, calculation_input_path)
 
         # Act
-        actual = reader.read_time_series_points()
+        actual = reader.read_charge_links_periods()
 
         # Assert
         assert_dataframes_equal(actual, expected)

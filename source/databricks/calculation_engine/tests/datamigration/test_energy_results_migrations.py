@@ -15,7 +15,7 @@
 from datetime import datetime
 from decimal import Decimal
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import array, lit, col
+from pyspark.sql.functions import lit, col
 import pytest
 import uuid
 
@@ -28,7 +28,7 @@ from package.codelists import (
 )
 from package.constants import EnergyResultColumnNames
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
-from package.calculation_output.schemas import energy_results_schema
+from package.calculation.output.schemas import energy_results_schema
 
 
 def _create_df(spark: SparkSession) -> DataFrame:

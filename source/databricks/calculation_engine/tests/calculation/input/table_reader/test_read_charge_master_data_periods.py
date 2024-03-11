@@ -15,13 +15,12 @@ import pathlib
 from datetime import datetime
 from unittest import mock
 import pytest
-from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql import SparkSession
 import pyspark.sql.functions as f
 
 
-from package.calculation_input.table_reader import TableReader
-from package.calculation_input.schemas import charge_link_periods_schema
-
+from package.calculation.input import TableReader
+from package.calculation.input.schemas import charge_master_data_periods_schema
 from package.constants import Colname
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.helpers.data_frame_utils import assert_dataframes_equal
@@ -30,13 +29,13 @@ DEFAULT_FROM_DATE = datetime(2022, 6, 8, 22, 0, 0)
 DEFAULT_TO_DATE = datetime(2022, 6, 8, 22, 0, 0)
 
 
-def _create_charge_link_period_row() -> dict:
+def _create_charge_master_period_row() -> dict:
     return {
         Colname.charge_code: "foo",
         Colname.charge_type: "foo",
         Colname.charge_owner: "foo",
-        Colname.metering_point_id: "foo",
-        Colname.quantity: 1,
+        Colname.resolution: "foo",
+        Colname.charge_tax: False,
         Colname.from_date: DEFAULT_FROM_DATE,
         Colname.to_date: DEFAULT_TO_DATE,
     }
@@ -48,9 +47,9 @@ class TestWhenSchemaMismatch:
         spark: SparkSession,
     ) -> None:
         # Arrange
-        row = _create_charge_link_period_row()
+        row = _create_charge_master_period_row()
         reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
-        df = spark.createDataFrame(data=[row], schema=charge_link_periods_schema)
+        df = spark.createDataFrame(data=[row], schema=charge_master_data_periods_schema)
         df = df.withColumn("test", f.lit("test"))
 
         # Act & Assert
@@ -58,7 +57,7 @@ class TestWhenSchemaMismatch:
             reader._spark.read.format("delta"), "load", return_value=df
         ):
             with pytest.raises(AssertionError) as exc_info:
-                reader.read_charge_links_periods()
+                reader.read_charge_master_data_periods()
 
             assert "Schema mismatch" in str(exc_info.value)
 
@@ -72,22 +71,22 @@ class TestWhenValidInput:
     ) -> None:
         # Arrange
         calculation_input_path = f"{str(tmp_path)}/{calculation_input_folder}"
-        table_location = f"{calculation_input_path}/charge_link_periods"
-        row = _create_charge_link_period_row()
-        df = spark.createDataFrame(data=[row], schema=charge_link_periods_schema)
+        table_location = f"{calculation_input_path}/charge_masterdata_periods"
+        row = _create_charge_master_period_row()
+        df = spark.createDataFrame(data=[row], schema=charge_master_data_periods_schema)
         write_dataframe_to_table(
             spark,
             df,
             "test_database",
-            "charge_link_periods",
+            "charge_master_data_periods",
             table_location,
-            charge_link_periods_schema,
+            charge_master_data_periods_schema,
         )
         expected = df
         reader = TableReader(spark, calculation_input_path)
 
         # Act
-        actual = reader.read_charge_links_periods()
+        actual = reader.read_charge_master_data_periods()
 
         # Assert
         assert_dataframes_equal(actual, expected)

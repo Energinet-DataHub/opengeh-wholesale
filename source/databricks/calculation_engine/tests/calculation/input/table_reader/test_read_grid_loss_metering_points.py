@@ -13,43 +13,36 @@
 # limitations under the License.
 import pathlib
 from datetime import datetime
-from decimal import Decimal
 from unittest import mock
 import pytest
-from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql import SparkSession
 import pyspark.sql.functions as f
 
-
-from package.calculation_input.table_reader import TableReader
-from package.calculation_input.schemas import charge_price_points_schema
+from package.calculation.input import TableReader
+from package.calculation.input.schemas import (
+    grid_loss_metering_points_schema,
+)
 from package.constants import Colname
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 
 DEFAULT_OBSERVATION_TIME = datetime(2022, 6, 8, 22, 0, 0)
 DEFAULT_FROM_DATE = datetime(2022, 6, 8, 22, 0, 0)
-DEFAULT_TO_DATE = datetime(2022, 6, 8, 22, 0, 0)
+DEFAULT_TO_DATE = datetime(2022, 6, 9, 22, 0, 0)
 
 
-def _create_change_price_point_row() -> dict:
+def _create_grid_loss_metering_point_row() -> dict:
     return {
-        Colname.charge_code: "foo",
-        Colname.charge_type: "foo",
-        Colname.charge_owner: "foo",
-        Colname.charge_price: Decimal("1.123456"),
-        Colname.charge_time: DEFAULT_OBSERVATION_TIME,
+        Colname.metering_point_id: "570715000000682292",
     }
 
 
 class TestWhenSchemaMismatch:
-    def test__raises_assertion_error(
-        self,
-        spark: SparkSession,
-    ) -> None:
+    def test_raises_assertion_error(self, spark: SparkSession) -> None:
         # Arrange
-        row = _create_change_price_point_row()
+        row = _create_grid_loss_metering_point_row()
         reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
-        df = spark.createDataFrame(data=[row], schema=charge_price_points_schema)
+        df = spark.createDataFrame(data=[row], schema=grid_loss_metering_points_schema)
         df = df.withColumn("test", f.lit("test"))
 
         # Act & Assert
@@ -57,7 +50,7 @@ class TestWhenSchemaMismatch:
             reader._spark.read.format("delta"), "load", return_value=df
         ):
             with pytest.raises(AssertionError) as exc_info:
-                reader.read_charge_price_points()
+                reader.read_grid_loss_metering_points()
 
             assert "Schema mismatch" in str(exc_info.value)
 
@@ -67,26 +60,25 @@ class TestWhenValidInput:
         self,
         spark: SparkSession,
         tmp_path: pathlib.Path,
-        calculation_input_folder: str,
     ) -> None:
         # Arrange
-        calculation_input_path = f"{str(tmp_path)}/{calculation_input_folder}"
-        table_location = f"{calculation_input_path}/charge_price_points"
-        row = _create_change_price_point_row()
-        df = spark.createDataFrame(data=[row], schema=charge_price_points_schema)
+        calculation_input_path = f"{str(tmp_path)}/calculation_input"
+        table_location = f"{calculation_input_path}/grid_loss_metering_points"
+        row = _create_grid_loss_metering_point_row()
+        df = spark.createDataFrame(data=[row], schema=grid_loss_metering_points_schema)
         write_dataframe_to_table(
             spark,
             df,
             "test_database",
-            "charge_price_points",
+            "grid_loss_metering_points",
             table_location,
-            charge_price_points_schema,
+            grid_loss_metering_points_schema,
         )
         expected = df
         reader = TableReader(spark, calculation_input_path)
 
         # Act
-        actual = reader.read_charge_price_points()
+        actual = reader.read_grid_loss_metering_points()
 
         # Assert
         assert_dataframes_equal(actual, expected)

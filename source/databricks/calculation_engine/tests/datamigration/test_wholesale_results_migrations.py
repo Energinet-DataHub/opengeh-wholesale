@@ -15,7 +15,7 @@
 from datetime import datetime
 from decimal import Decimal
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import array, col, lit
+from pyspark.sql.functions import col, lit
 import pytest
 import uuid
 
@@ -35,7 +35,7 @@ from package.infrastructure.paths import (
     OUTPUT_DATABASE_NAME,
     WHOLESALE_RESULT_TABLE_NAME,
 )
-from package.calculation_output.schemas import wholesale_results_schema
+from package.calculation.output.schemas import wholesale_results_schema
 
 
 def _create_df(spark: SparkSession) -> DataFrame:
