@@ -26,7 +26,7 @@ public sealed class RequestedByActorRoleValidationRuleTest
     [InlineData(ActorRoleCode.MeteredDataResponsible)]
     [InlineData(ActorRoleCode.EnergySupplier)]
     [InlineData(ActorRoleCode.BalanceResponsibleParty)]
-    public async Task ValidateAsync_ValidActorRole_ReturnsEmptyErrorListAsync(string actorRole)
+    public async Task ValidateAsync_WhenRequestingWithValidActorRole_ReturnsEmptyErrorListAsync(string actorRole)
     {
         // Arrange
         var request = new AggregatedTimeSeriesRequest { RequestedByActorRole = actorRole };
@@ -43,7 +43,7 @@ public sealed class RequestedByActorRoleValidationRuleTest
     [InlineData("DLG")]
     [InlineData("TSO")]
     [InlineData("FOO")]
-    public async Task ValidateAsync_UnexpectedActorRole_ReturnsEmptyErrorListAsync(string actorRole)
+    public async Task ValidateAsync_WhenRequestingWithUnexpectedActorRole_ReturnsEmptyErrorListAsync(string actorRole)
     {
         // Arrange
         var request = new AggregatedTimeSeriesRequest { RequestedByActorRole = actorRole };
@@ -57,7 +57,7 @@ public sealed class RequestedByActorRoleValidationRuleTest
     }
 
     [Fact]
-    public async Task ValidateAsync_DdmActorRole_ReturnsDdmShouldRequestAsMdrErrorAsync()
+    public async Task ValidateAsync_WhenRequestingWithDdmActorRole_ReturnsDdmShouldRequestAsMdrErrorAsync()
     {
         // Arrange
         var request = new AggregatedTimeSeriesRequest { RequestedByActorRole = "DDM" };
