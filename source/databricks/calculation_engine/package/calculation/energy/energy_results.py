@@ -34,7 +34,7 @@ class EnergyResults(DataFrameWrapper):
         super().__init__(
             df,
             energy_results_schema,
-            # We ignore_nullability because it has turned out to be too hard and even possibly
+            # We ignore_nullability because it has turned out to be too hard, and even possibly
             # introducing more errors than solving in order to stay in exact sync with the
             # logically correct schema.
             ignore_nullability=True,

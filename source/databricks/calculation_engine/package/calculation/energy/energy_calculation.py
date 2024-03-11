@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import Tuple
 
 from pyspark.sql import DataFrame
 
@@ -41,7 +42,10 @@ def execute(
     args: CalculatorArgs,
     metering_point_time_series: DataFrame,
     grid_loss_responsible_df: GridLossResponsible,
-) -> EnergyResultsContainer:
+) -> Tuple[EnergyResultsContainer, EnergyResults, EnergyResults]:
+    """
+    Returns: EnergyResultsContainer, EnergyResults (positive grid loss), EnergyResults (negative grid loss)
+    """
     with logging_configuration.start_span("quarterly_metering_point_time_series"):
         quarterly_metering_point_time_series = transform_hour_to_quarter(
             metering_point_time_series
@@ -59,7 +63,7 @@ def _calculate(
     args: CalculatorArgs,
     quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
     grid_loss_responsible_df: GridLossResponsible,
-) -> EnergyResultsContainer:
+) -> Tuple[EnergyResultsContainer, EnergyResults, EnergyResults]:
     results = EnergyResultsContainer()
 
     # cache of net exchange per grid area did not improve performance (01/12/2023)
@@ -130,7 +134,7 @@ def _calculate(
 
     _calculate_total_consumption(args, production_per_ga, net_exchange_per_ga, results)
 
-    return results
+    return results, positive_grid_loss, negative_grid_loss
 
 
 @logging_configuration.use_span("calculate_net_exchange")
