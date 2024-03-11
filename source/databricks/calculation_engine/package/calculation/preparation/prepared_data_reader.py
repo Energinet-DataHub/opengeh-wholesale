@@ -119,8 +119,8 @@ class PreparedDataReader:
         )
 
         subscriptions = T.get_subscription_charges(
-            charge_master_data,
-            charge_prices,
+            input_charges.charge_master_data,
+            input_charges.charge_prices,
             charge_link_metering_point_periods,
             time_zone,
         )
