@@ -31,8 +31,6 @@ from ...infrastructure import logging_configuration
 def execute(
     args: CalculatorArgs,
     prepared_subscriptions: DataFrame,
-    tariffs_hourly_df: DataFrame,
-    tariffs_daily_df: DataFrame,
     prepared_hourly_tariffs: PreparedTariffs,
     prepared_daily_tariffs: PreparedTariffs,
 ) -> WholesaleResultsContainer:
