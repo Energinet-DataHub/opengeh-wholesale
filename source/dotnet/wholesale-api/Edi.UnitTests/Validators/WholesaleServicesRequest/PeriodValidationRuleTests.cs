@@ -16,7 +16,10 @@ using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.Validation;
 using Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules;
 using FluentAssertions;
+using FluentAssertions.Execution;
+using Microsoft.EntityFrameworkCore.SqlServer.NodaTime.Extensions;
 using NodaTime;
+using NodaTime.Extensions;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.WholesaleServicesRequest;
@@ -33,9 +36,11 @@ public class PeriodValidationRuleTests
             "Der kan ikke anmodes om data for mere end 3 år og 2 måneder tilbage i tid / It is not possible to request data longer than 3 years and 2 months back in time",
             "E17");
 
+    private static readonly MockClock _mockClock = new(Instant.FromUtc(2024, 6, 1, 23, 0, 0));
+
     private readonly PeriodValidationRule _sut = new(
         DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
-        new MockClock(Instant.FromUtc(2024, 1, 1, 23, 0, 0)));
+        _mockClock);
 
     [Fact]
     public async Task Validate_WhenPeriodStartIsNonsense_ReturnsExpectedValidationErrors()
@@ -84,18 +89,53 @@ public class PeriodValidationRuleTests
     }
 
     [Fact]
-    public async Task Validate_WhenPeriodIsOlderThenAllowed_ReturnsExpectedValidationError()
+    public async Task Validate_WhenPeriodStartIsOlderThanAllowed_ReturnsExpectedValidationError()
     {
         // Arrange
         var message = new WholesaleServicesRequestBuilder()
-            .WithPeriodStart(Instant.FromUtc(2018, 1, 1, 23, 0, 0).ToString())
-            .WithPeriodEnd(Instant.FromUtc(2018, 1, 2, 23, 0, 0).ToString())
+            .WithPeriodStart(_mockClock.GetCurrentInstant().ToDateTimeOffset().AddYears(-5).ToInstant().ToString())
             .Build();
 
         // Act
         var errors = await _sut.ValidateAsync(message);
 
         // Assert
+        errors.Should().ContainSingle();
+        var error = errors.First();
+        error.ErrorCode.Should().Be(_startDateMustBeLessThanOrEqualTo3YearsAnd2Months.ErrorCode);
+        error.Message.Should().Be(_startDateMustBeLessThanOrEqualTo3YearsAnd2Months.Message);
+    }
+
+    [Fact]
+    public async Task Validate_WhenPeriodStartIsExactly3YearsAnd2MonthsOld_ReturnsNoValidationError()
+    {
+        // Arrange
+        var message = new WholesaleServicesRequestBuilder()
+            .WithPeriodStart(_mockClock.GetCurrentInstant().ToDateTimeOffset().AddYears(-3).AddMonths(-2).ToInstant().ToString())
+            .Build();
+
+        // Act
+        var errors = await _sut.ValidateAsync(message);
+
+        // Assert
+        errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Validate_WhenPeriodStartIs1DayTooOld_ReturnsNoValidationError()
+    {
+        // 1 day too old is the smallest possible period it can be too old
+
+        // Arrange
+        var message = new WholesaleServicesRequestBuilder()
+            .WithPeriodStart(_mockClock.GetCurrentInstant().ToDateTimeOffset().AddYears(-3).AddMonths(-2).AddDays(-1).ToInstant().ToString())
+            .Build();
+
+        // Act
+        var errors = await _sut.ValidateAsync(message);
+
+        // Assert
+        using var assertionScope = new AssertionScope();
         errors.Should().ContainSingle();
         var error = errors.First();
         error.ErrorCode.Should().Be(_startDateMustBeLessThanOrEqualTo3YearsAnd2Months.ErrorCode);
