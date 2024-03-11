@@ -114,7 +114,7 @@ def _execute(
                 )
             )
 
-            prepared_subscriptions = prepared_data_reader.get_subscription_charges(
+            prepared_subscriptions = prepared_data_reader.get_prepared_subscriptions(
                 charge_master_data,
                 charge_prices,
                 charges_link_metering_point_periods,

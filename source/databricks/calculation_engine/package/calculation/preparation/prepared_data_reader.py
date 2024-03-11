@@ -23,6 +23,7 @@ from . import transformations as T
 from .charge_link_metering_point_periods import ChargeLinkMeteringPointPeriods
 from .charge_master_data import ChargeMasterData
 from .charge_prices import ChargePrices
+from .prepared_subscriptions import PreparedSubscriptions
 from ...infrastructure import logging_configuration
 
 
@@ -105,14 +106,14 @@ class PreparedDataReader:
             time_zone,
         )
 
-    @logging_configuration.use_span("get_subscription_charges")
-    def get_subscription_charges(
+    @logging_configuration.use_span("get_prepared_subscriptions")
+    def get_prepared_subscriptions(
         self,
         charge_master_data: ChargeMasterData,
         charge_prices: ChargePrices,
         charges_link_metering_point_periods: ChargeLinkMeteringPointPeriods,
         time_zone: str,
-    ) -> DataFrame:
+    ) -> PreparedSubscriptions:
         return T.get_subscription_charges(
             charge_master_data,
             charge_prices,
