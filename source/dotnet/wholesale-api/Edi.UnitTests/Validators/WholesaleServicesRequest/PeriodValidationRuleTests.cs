@@ -23,12 +23,63 @@ namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.WholesaleServices
 
 public class PeriodValidationRuleTests
 {
+    private static readonly ValidationError _invalidDateFormat =
+        new(
+            "Forkert dato format for {PropertyName}, skal være YYYY-MM-DDT22:00:00Z eller YYYY-MM-DDT23:00:00Z / Wrong date format for {PropertyName}, must be YYYY-MM-DDT22:00:00Z or YYYY-MM-DDT23:00:00Z",
+            "D66");
+
     private static readonly ValidationError _startDateMustBeLessThanOrEqualTo3YearsAnd2Months =
         new(
             "Der kan ikke anmodes om data for mere end 3 år og 2 måneder tilbage i tid/It is not possible to request data longer than 3 years and 2 months back in time",
             "E17");
 
     private readonly PeriodValidationRule _sut = new();
+
+    [Fact]
+    public async Task Validate_WhenPeriodStartIsNonsense_ReturnsExpectedValidationErrors()
+    {
+        // Arrange
+        var message = new WholesaleServicesRequestBuilder()
+            .WithPeriodStart("string.Empty")
+            .Build();
+
+        // Act
+        var errors = await _sut.ValidateAsync(message);
+
+        // Assert
+        errors.Should().ContainSingle();
+        errors.Should().Contain(error =>
+            error.Message.Contains(_invalidDateFormat.WithPropertyName("Start date").Message)
+            && error.ErrorCode.Equals(_invalidDateFormat.ErrorCode));
+    }
+
+    [Fact]
+    public async Task Validate_WhenPeriodStartIsInAnInvalidFormat_ReturnsExpectedValidationErrors()
+    {
+        // Arrange
+        var message1 = new WholesaleServicesRequestBuilder()
+            .WithPeriodStart("2024-08-17")
+            .Build();
+
+        var message2 = new WholesaleServicesRequestBuilder()
+            .WithPeriodStart("2024-08-17T23:00:00")
+            .Build();
+
+        // Act
+        var errors1 = await _sut.ValidateAsync(message1);
+        var errors2 = await _sut.ValidateAsync(message2);
+
+        // Assert
+        errors1.Should().ContainSingle();
+        errors1.Should().Contain(error =>
+            error.Message.Contains(_invalidDateFormat.WithPropertyName("Start date").Message)
+            && error.ErrorCode.Equals(_invalidDateFormat.ErrorCode));
+
+        errors2.Should().ContainSingle();
+        errors2.Should().Contain(error =>
+            error.Message.Contains(_invalidDateFormat.WithPropertyName("Start date").Message)
+            && error.ErrorCode.Equals(_invalidDateFormat.ErrorCode));
+    }
 
     [Fact]
     public async Task Validate_WhenPeriodIsOlderThenAllowed_ReturnsExpectedValidationError()
