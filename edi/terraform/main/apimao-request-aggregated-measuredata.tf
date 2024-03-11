@@ -22,6 +22,7 @@ module "apimao_request_aggregated_measure_data" {
                         <value>energysupplier</value>
                         <value>balanceresponsibleparty</value>
                         <value>gridoperator</value>
+                        <value>delegated</value>
                     </claim>
                 </required-claims>
             </validate-jwt>
