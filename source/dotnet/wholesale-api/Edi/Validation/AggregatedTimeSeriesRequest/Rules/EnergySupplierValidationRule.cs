@@ -13,16 +13,15 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Edi.Models;
-using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 
-namespace Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeries.Rules;
+namespace Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
 
-public class EnergySupplierValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
+public class EnergySupplierValidationRule : IValidationRule<DataHub.Edi.Requests.AggregatedTimeSeriesRequest>
 {
     private static readonly ValidationError _invalidEnergySupplierField = new("Feltet EnergySupplier skal være udfyldt med et valid GLN/EIC nummer når en elleverandør anmoder om data / EnergySupplier must be submitted with a valid GLN/EIC number when an energy supplier requests data", "E16");
     private static readonly ValidationError _notEqualToRequestedBy = new("Elleverandør i besked stemmer ikke overenes med elleverandør i header / Energy supplier in message does not correspond with energy supplier in header", "E16");
 
-    public Task<IList<ValidationError>> ValidateAsync(AggregatedTimeSeriesRequest subject)
+    public Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.AggregatedTimeSeriesRequest subject)
     {
         if (subject.RequestedByActorRole != ActorRoleCode.EnergySupplier)
              return Task.FromResult(NoError);

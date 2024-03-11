@@ -35,23 +35,32 @@ public abstract class ServiceBusWorker : BackgroundService, IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
+        Logger.LogWarning("Disposing worker");
+        await StopAsync(CancellationToken.None).ConfigureAwait(false);
         await _serviceBusProcessor.DisposeAsync().ConfigureAwait(false);
+        Logger.LogWarning("Disposed worker");
         GC.SuppressFinalize(this);
+    }
+
+    public override Task StartAsync(CancellationToken cancellationToken)
+    {
+        Logger.LogInformation("Starting worker");
+        return base.StartAsync(cancellationToken);
     }
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
+        Logger.LogWarning("Stopping worker");
         await _serviceBusProcessor.StopProcessingAsync(cancellationToken).ConfigureAwait(false);
         await base.StopAsync(cancellationToken).ConfigureAwait(false);
-        Logger.LogWarning("Worker has stopped.");
+        Logger.LogWarning("Worker has stopped");
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        Logger.LogInformation("Worker started.");
+        Logger.LogInformation("Worker started");
         _serviceBusProcessor.ProcessMessageAsync += ProcessMessageAsync;
         _serviceBusProcessor.ProcessErrorAsync += ProcessErrorAsync;
-
         await _serviceBusProcessor.StartProcessingAsync(stoppingToken).ConfigureAwait(false);
     }
 
