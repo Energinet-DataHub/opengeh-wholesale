@@ -14,11 +14,10 @@
 
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
 using Energinet.DataHub.Wholesale.Edi.Models;
-using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 
-namespace Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeries.Rules;
+namespace Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
 
-public class GridAreaValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
+public class GridAreaValidationRule : IValidationRule<DataHub.Edi.Requests.AggregatedTimeSeriesRequest>
 {
     private readonly IGridAreaOwnerRepository _gridAreaOwnerRepository;
     private static readonly ValidationError _missingGridAreaCode = new("Netområde er obligatorisk for rollen MDR / Grid area is mandatory for the role MDR.", "D64");
@@ -29,7 +28,7 @@ public class GridAreaValidationRule : IValidationRule<AggregatedTimeSeriesReques
         _gridAreaOwnerRepository = gridAreaOwnerRepository;
     }
 
-    public async Task<IList<ValidationError>> ValidateAsync(AggregatedTimeSeriesRequest subject)
+    public async Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.AggregatedTimeSeriesRequest subject)
     {
         if (subject.RequestedByActorRole != ActorRoleCode.MeteredDataResponsible) return NoError;
 

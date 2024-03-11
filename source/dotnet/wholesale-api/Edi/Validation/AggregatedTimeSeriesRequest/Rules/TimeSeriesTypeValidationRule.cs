@@ -13,15 +13,14 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Edi.Models;
-using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 
-namespace Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeries.Rules;
+namespace Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
 
-public class TimeSeriesTypeValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
+public class TimeSeriesTypeValidationRule : IValidationRule<DataHub.Edi.Requests.AggregatedTimeSeriesRequest>
 {
     private static readonly ValidationError _invalidTimeSeriesTypeForActor = new("Den forespurgte tidsserie type kan ikke forespørges som en {PropertyName} / The requested time series type can not be requested as a {PropertyName}", "D11");
 
-    public Task<IList<ValidationError>> ValidateAsync(AggregatedTimeSeriesRequest subject)
+    public Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.AggregatedTimeSeriesRequest subject)
     {
         if (subject.RequestedByActorRole == ActorRoleCode.MeteredDataResponsible)
             return Task.FromResult(NoError);

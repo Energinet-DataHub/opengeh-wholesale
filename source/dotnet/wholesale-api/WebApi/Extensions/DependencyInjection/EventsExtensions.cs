@@ -89,7 +89,7 @@ public static class EventsExtensions
                 name: "WholesaleInboxQueue");
 
         services
-            .AddHostedService<AggregatedTimeSeriesServiceBusWorker>();
+            .AddHostedService<WholesaleInboxServiceBusWorker>();
 
         return services;
     }
