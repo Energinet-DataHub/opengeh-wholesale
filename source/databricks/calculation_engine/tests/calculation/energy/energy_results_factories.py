@@ -21,16 +21,22 @@ from package.calculation.energy.energy_results import (
     EnergyResults,
     energy_results_schema,
 )
-from package.codelists import MeteringPointType, QuantityQuality, SettlementMethod
+from package.codelists import (
+    MeteringPointType,
+    QuantityQuality,
+    SettlementMethod,
+    MeteringPointResolution,
+)
 from package.constants import Colname
 
 DEFAULT_GRID_AREA = "100"
-DEFAULT_FROM_GRID_AREA = "200"  # TODO BJM: Should this be None?
-DEFAULT_TO_GRID_AREA = "300"
+DEFAULT_FROM_GRID_AREA = None
+DEFAULT_TO_GRID_AREA = None
 DEFAULT_OBSERVATION_TIME = datetime.datetime.now()
 DEFAULT_SUM_QUANTITY = Decimal("999.123456")
 DEFAULT_QUALITIES = [QuantityQuality.MEASURED]
 DEFAULT_METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
+DEFAULT_RESOLUTION = MeteringPointResolution.QUARTER
 DEFAULT_SETTLEMENT_METHOD = SettlementMethod.NON_PROFILED
 DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
 DEFAULT_BALANCE_RESPONSIBLE_ID = "9999999999999"
@@ -45,7 +51,8 @@ def create_row(
     qualities: None | QuantityQuality | list[QuantityQuality] = None,
     energy_supplier_id: str | None = DEFAULT_ENERGY_SUPPLIER_ID,
     balance_responsible_id: str | None = DEFAULT_BALANCE_RESPONSIBLE_ID,
-    metering_point_id: str | None = None,
+    metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE,
+    resolution: MeteringPointResolution = DEFAULT_RESOLUTION,
 ) -> Row:
     if isinstance(sum_quantity, int):
         sum_quantity = Decimal(sum_quantity)
@@ -68,7 +75,8 @@ def create_row(
         },
         Colname.sum_quantity: sum_quantity,
         Colname.qualities: qualities,
-        Colname.metering_point_type: metering_point_id,
+        Colname.metering_point_type: metering_point_type.value,
+        Colname.resolution: resolution.value,
     }
 
     return Row(**row)

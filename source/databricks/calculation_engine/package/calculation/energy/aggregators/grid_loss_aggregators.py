@@ -307,6 +307,7 @@ def apply_grid_loss_adjustment(
         Colname.time_window,
         f.col(adjusted_sum_quantity).alias(Colname.sum_quantity),
         Colname.qualities,
+        f.lit(metering_point_type.value).alias(Colname.metering_point_type),
     ).orderBy(
         Colname.grid_area,
         Colname.balance_responsible_id,

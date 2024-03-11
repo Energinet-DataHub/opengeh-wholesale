@@ -121,6 +121,7 @@ def aggregate_net_exchange_per_neighbour_ga(
             F.array_union(Colname.qualities, from_qualities).alias(Colname.qualities),
             Colname.sum_quantity,
             F.col(Colname.to_grid_area).alias(Colname.grid_area),
+            F.lit(MeteringPointType.EXCHANGE.value).alias(Colname.metering_point_type),
         )
     )
 
@@ -139,6 +140,6 @@ def aggregate_net_exchange_per_ga(
 
     result_df = T.aggregate_sum_quantity_and_qualities(
         exchange_per_neighbour_ga.df, [Colname.grid_area, Colname.time_window]
-    )
+    ).withColumn(Colname.metering_point_type, F.lit(MeteringPointType.EXCHANGE.value))
 
     return EnergyResults(result_df)

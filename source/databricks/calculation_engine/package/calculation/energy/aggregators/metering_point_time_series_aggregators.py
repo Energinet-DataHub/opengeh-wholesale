@@ -61,7 +61,9 @@ def aggregate_per_ga_and_brp_and_es(
         Colname.energy_supplier_id,
         Colname.time_window,
     ]
-    result = aggregate_quantity_and_quality(result, sum_group_by)
+    result = aggregate_quantity_and_quality(result, sum_group_by).withColumn(
+        Colname.metering_point_type, f.lit(metering_point_type.value)
+    )
 
     return EnergyResults(result)
 

@@ -105,12 +105,11 @@ def _execute(
                 )
             )
 
-            wholesale_metering_point_time_series = (
-                get_wholesale_metering_point_times_series(
-                    metering_point_time_series,
-                    positive_grid_loss,
-                    negative_grid_loss,
-                )
+            # This extends the content of metering_point_time_series with wholesale data
+            metering_point_time_series = get_wholesale_metering_point_times_series(
+                metering_point_time_series,
+                positive_grid_loss,
+                negative_grid_loss,
             )
 
             prepared_subscriptions = prepared_data_reader.get_subscription_charges(
@@ -121,7 +120,7 @@ def _execute(
             )
 
             tariffs_hourly_df = prepared_data_reader.get_tariff_charges(
-                wholesale_metering_point_time_series,
+                metering_point_time_series,
                 charge_master_data,
                 charge_prices,
                 charges_link_metering_point_periods,
@@ -130,7 +129,7 @@ def _execute(
             )
 
             tariffs_daily_df = prepared_data_reader.get_tariff_charges(
-                wholesale_metering_point_time_series,
+                metering_point_time_series,
                 charge_master_data,
                 charge_prices,
                 charges_link_metering_point_periods,
@@ -147,7 +146,7 @@ def _execute(
 
     # Add basis data to results
     results.basis_data = basis_data_factory.create(
-        metering_point_periods_df, wholesale_metering_point_time_series, args.time_zone
+        metering_point_periods_df, metering_point_time_series, args.time_zone
     )
 
     return results

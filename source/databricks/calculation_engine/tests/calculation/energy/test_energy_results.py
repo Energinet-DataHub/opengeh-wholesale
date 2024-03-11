@@ -11,70 +11,28 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-
 from decimal import Decimal
-from datetime import datetime
-from typing import Callable
-import pytest
-from pyspark.sql import DataFrame, Row, SparkSession
+
+from pyspark.sql import SparkSession
 from pyspark.sql.functions import lit
 from pyspark.sql.types import DecimalType
 
+import tests.calculation.energy.energy_results_factories as factory
 from package.calculation.energy.energy_results import (
     EnergyResults,
     energy_results_schema,
 )
-
 from package.constants import Colname
-
-from tests.calculation.dataframe_defaults import DataframeDefaults
-
-
-@pytest.fixture(scope="module")
-def dataframe_with_energy_result_schema_factory(
-    spark: SparkSession,
-) -> Callable[..., DataFrame]:
-    def factory(
-        grid_area: str = DataframeDefaults.default_grid_area,
-        to_grid_area: str | None = None,
-        from_grid_area: str | None = None,
-        balance_responsible_id: str | None = None,
-        energy_supplier_id: str | None = None,
-        time_window_start: datetime = DataframeDefaults.default_time_window_start,
-        time_window_end: datetime = DataframeDefaults.default_time_window_end,
-        sum_quantity: Decimal = DataframeDefaults.default_sum_quantity,
-        quality: str = DataframeDefaults.default_quality,
-        metering_point_id: str | None = None,
-    ) -> DataFrame:
-        row = {
-            Colname.grid_area: grid_area,
-            Colname.to_grid_area: to_grid_area,
-            Colname.from_grid_area: from_grid_area,
-            Colname.balance_responsible_id: balance_responsible_id,
-            Colname.energy_supplier_id: energy_supplier_id,
-            Colname.time_window: {
-                Colname.start: time_window_start,
-                Colname.end: time_window_end,
-            },
-            Colname.sum_quantity: sum_quantity,
-            Colname.qualities: [quality],
-            Colname.metering_point_id: metering_point_id,
-        }
-
-        return spark.createDataFrame([Row(**row)], schema=energy_results_schema)
-
-    return factory
 
 
 class TestCtor:
     class TestWhenNullableColumnsAreMissingInInputDataframe:
         def test_returns_dataframe_that_includes_missing_column(
-            self,
-            dataframe_with_energy_result_schema_factory,
+            self, spark: SparkSession
         ) -> None:
             # Arrange
-            df = dataframe_with_energy_result_schema_factory()
+            row = factory.create_row()
+            df = factory.create(spark, row)
             nullable_columns = [
                 Colname.to_grid_area,
                 Colname.from_grid_area,
@@ -82,7 +40,7 @@ class TestCtor:
                 Colname.energy_supplier_id,
                 Colname.metering_point_id,
             ]
-            df_with_missing_columns = df.drop(*nullable_columns)
+            df_with_missing_columns = df.df.drop(*nullable_columns)
 
             # Act
             actual = EnergyResults(df_with_missing_columns)
@@ -91,12 +49,12 @@ class TestCtor:
             assert set(nullable_columns).issubset(set(actual.df.schema.fieldNames()))
 
     class TestWhenMismatchInNullability:
-        def test_respects_nullability_of_input_dataframe(
-            self,
-            dataframe_with_energy_result_schema_factory,
+        def test_accepts_nullability_of_input_dataframe(
+            self, spark: SparkSession
         ) -> None:
             # Arrange
-            df = dataframe_with_energy_result_schema_factory()
+            row = factory.create_row()
+            df = spark.createDataFrame(row, schema=energy_results_schema)
             df = df.withColumn(Colname.sum_quantity, lit(None).cast(DecimalType(18, 6)))
 
             # Act
@@ -107,28 +65,26 @@ class TestCtor:
             assert actual.df.schema[Colname.sum_quantity].nullable is True
 
     class TestWhenValidInput:
-        def test_returns_expected_dataframe(
-            self,
-            dataframe_with_energy_result_schema_factory: Callable[..., DataFrame],
-        ) -> None:
+        def test_returns_expected_dataframe(self, spark: SparkSession) -> None:
             # Arrange
-            df = dataframe_with_energy_result_schema_factory()
+            row = factory.create_row()
+            df = factory.create(spark, row)
 
             # Act
-            actual = EnergyResults(df)
+            actual = EnergyResults(df.df)
 
             # Assert
-            assert actual.df.collect() == df.collect()
+            assert actual.df.collect() == df.df.collect()
 
     class TestWhenInputContainsIrrelevantColumn:
         def test_returns_schema_without_irrelevant_column(
-            self,
-            dataframe_with_energy_result_schema_factory,
+            self, spark: SparkSession
         ) -> None:
             # Arrange
-            df = dataframe_with_energy_result_schema_factory()
+            row = factory.create_row()
+            df = factory.create(spark, row)
             irrelevant_column = "irrelevant_column"
-            df.withColumn(irrelevant_column, lit("test"))
+            df = df.df.withColumn(irrelevant_column, lit("test"))
 
             # Act
             actual = EnergyResults(df)
@@ -137,10 +93,7 @@ class TestCtor:
             assert irrelevant_column not in actual.df.schema.fieldNames()
 
     class TestWhenInputDecimalScaleIsHigherThanSix:
-        def test_respects_input_scale(
-            self,
-            dataframe_with_energy_result_schema_factory,
-        ):
+        def test_respects_input_scale(self, spark: SparkSession) -> None:
             """
             In practice the sum_quantity column in EnergyResult can be represented by 5 decimals, because time
             series has 3 decimals and is divided by four (quarters). The end result should be stored with 6 decimals.
@@ -150,8 +103,9 @@ class TestCtor:
 
             # Arrange
             expected_scale = 8
-            df = dataframe_with_energy_result_schema_factory()
-            df = df.withColumn(
+            row = factory.create_row()
+            df = factory.create(spark, row)
+            df = df.df.withColumn(
                 Colname.sum_quantity,
                 lit(Decimal("0.12345678")).cast(DecimalType(18, expected_scale)),
             )

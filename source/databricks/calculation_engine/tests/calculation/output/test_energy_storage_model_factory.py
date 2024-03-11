@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from pyspark.sql.types import Row
 import uuid
 from copy import copy
 from datetime import datetime, timedelta
@@ -29,6 +29,7 @@ from package.calculation.energy.energy_results import (
     EnergyResults,
 )
 from package.calculation.output import energy_storage_model_factory as sut
+from package.codelists import MeteringPointType
 from package.constants import Colname, EnergyResultColumnNames
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
 from tests.contract_utils import (
@@ -95,8 +96,8 @@ def _create_result_row(
     quality: e.QuantityQuality = DEFAULT_QUALITY,
     time_window_start: datetime = DEFAULT_TIME_WINDOW_START,
     time_window_end: datetime = DEFAULT_TIME_WINDOW_END,
-    metering_point_id: str | None = None,
-) -> dict:
+    metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE,
+) -> Row:
     row = {
         Colname.grid_area: grid_area,
         Colname.to_grid_area: to_grid_area,
@@ -110,14 +111,14 @@ def _create_result_row(
         Colname.sum_quantity: Decimal(quantity),
         Colname.qualities: [quality.value],
         Colname.settlement_method: [],
-        Colname.metering_point_id: metering_point_id,
+        Colname.metering_point_type: metering_point_type.value,
     }
 
-    return row
+    return Row(**row)
 
 
-def _create_energy_results(spark: SparkSession, row: List[dict]) -> EnergyResults:
-    df = spark.createDataFrame(data=row, schema=energy_results_schema)
+def _create_energy_results(spark: SparkSession, rows: List[Row]) -> EnergyResults:
+    df = spark.createDataFrame(data=rows, schema=energy_results_schema)
     return EnergyResults(df)
 
 

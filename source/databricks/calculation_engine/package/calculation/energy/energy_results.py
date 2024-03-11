@@ -11,10 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import pyspark.sql.functions as f
 import pyspark.sql.types as t
 from pyspark.sql import DataFrame
 
+from package.codelists import MeteringPointResolution
 from package.common import DataFrameWrapper
 from package.constants import Colname
 
@@ -30,6 +31,11 @@ class EnergyResults(DataFrameWrapper):
         """
         Fit data frame in a general DataFrame. This is used for all results and missing columns will be null.
         """
+
+        # Resolution of energy results is always quarter
+        df = df.withColumn(
+            Colname.resolution, f.lit(MeteringPointResolution.QUARTER.value)
+        )
 
         super().__init__(
             df,
@@ -67,5 +73,7 @@ energy_results_schema = t.StructType(
         t.StructField(Colname.sum_quantity, t.DecimalType(18, 6), False),
         t.StructField(Colname.qualities, t.ArrayType(t.StringType(), False), False),
         t.StructField(Colname.metering_point_id, t.StringType(), True),
+        t.StructField(Colname.metering_point_type, t.StringType(), False),
+        t.StructField(Colname.resolution, t.StringType(), False),
     ]
 )
