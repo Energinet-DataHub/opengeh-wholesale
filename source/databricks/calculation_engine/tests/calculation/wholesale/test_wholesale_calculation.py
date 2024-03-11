@@ -15,6 +15,13 @@
 import pytest
 from pyspark.sql import DataFrame, SparkSession
 
+from package.calculation.wholesale.schemas.prepared_subscriptions_schema import (
+    prepared_subscriptions_schema,
+)
+from tests.calculation.wholesale.test_tariff_calculators import _create_tariff_row
+from tests.calculation.wholesale.test_subscription_calculators import (
+    _create_subscription_row,
+)
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.preparation.prepared_tariffs import prepared_tariffs_schema
 from package.calculation.wholesale import execute
@@ -24,7 +31,7 @@ import tests.calculation.wholesale.prepared_tariff_factory as factory
 
 
 def test__execute__when_tariff_schema_is_valid__does_not_raise(
-    spark: SparkSession, any_calculator_args: CalculatorArgs
+    spark: SparkSession, any_calculator_args_for_wholesale: CalculatorArgs
 ) -> None:
     # Arrange
     tariffs_hourly_df = factory.create_prepared_tariffs(
@@ -34,10 +41,14 @@ def test__execute__when_tariff_schema_is_valid__does_not_raise(
         spark,
         data=[factory.create_prepared_tariffs_row(resolution=ChargeResolution.DAY)],
     )
+    prepared_subscriptions = spark.createDataFrame(
+        data=[_create_subscription_row()], schema=prepared_subscriptions_schema
+    )
 
     # Act
     execute(
-        any_calculator_args,
+        any_calculator_args_for_wholesale,
+        prepared_subscriptions,
         tariffs_hourly_df,
         tariffs_daily_df,
     )

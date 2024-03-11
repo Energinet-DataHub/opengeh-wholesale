@@ -12,14 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from decimal import Decimal
-from datetime import datetime, timedelta
 import uuid
-
-from pyspark.sql import SparkSession
-import pytest
+from datetime import datetime, timedelta
+from decimal import Decimal
 from typing import Any
 
+import pytest
+from pyspark import Row
+from pyspark.sql import SparkSession
+
+from package.calculation.wholesale.schemas.tariffs_schema import tariff_schema
+from package.calculation.wholesale.tariff_calculators import (
+    calculate_tariff_price_per_ga_co_es,
+)
+from package.calculation.wholesale.tariff_calculators import (
+    sum_within_month,
+)
 from package.codelists import (
     ChargeQuality,
     ChargeType,
@@ -27,12 +35,6 @@ from package.codelists import (
     MeteringPointType,
     SettlementMethod,
     WholesaleResultResolution,
-)
-from package.calculation.wholesale.tariff_calculators import (
-    calculate_tariff_price_per_ga_co_es,
-)
-from package.calculation.wholesale.tariff_calculators import (
-    sum_within_month,
 )
 from package.constants import Colname
 import tests.calculation.wholesale.prepared_tariff_factory as factory
@@ -426,7 +428,7 @@ def test__sum_within_month__sums_quantity_per_month(
     assert actual.count() == 1
 
 
-def test__sum_within_month__sums_charge_price_per_month(
+def test__sum_within_month__sets_charge_price_to_none(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -447,7 +449,7 @@ def test__sum_within_month__sums_charge_price_per_month(
     )
 
     # Assert
-    assert actual.collect()[0][Colname.charge_price] == Decimal("2.222222")
+    assert actual.collect()[0][Colname.charge_price] is None
     assert actual.count() == 1
 
 
