@@ -22,6 +22,7 @@ from pyspark.sql import SparkSession
 from package.calculation.preparation.transformations import read_charge_links
 from package.calculation.input.schemas import charge_link_periods_schema
 
+from package.calculation import input
 from package.calculation.input import TableReader
 from package.codelists import ChargeType
 from package.constants import Colname
