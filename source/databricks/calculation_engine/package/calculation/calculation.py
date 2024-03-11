@@ -104,7 +104,7 @@ def _execute(
                 args.calculation_period_end_datetime,
             )
 
-            get_prepared_charges(
+            prepared_charges = prepared_data_reader.get_prepared_charges(
                 wholesale_metering_point_periods,
                 wholesale_metering_point_time_series,
                 charge_master_data,
@@ -115,9 +115,7 @@ def _execute(
 
         results.wholesale_results = wholesale_calculation.execute(
             args,
-            prepared_subscriptions,
-            prepared_tariffs_from_hourly,
-            prepared_tariffs_from_daily,
+            prepared_charges,
         )
 
     # Add basis data to results

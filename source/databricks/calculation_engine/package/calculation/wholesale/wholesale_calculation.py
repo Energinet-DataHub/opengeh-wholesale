@@ -22,6 +22,7 @@ import package.calculation.wholesale.subscription_calculators as subscription_ca
 
 from ..CalculationResults import WholesaleResultsContainer
 from ..calculator_args import CalculatorArgs
+from ..preparation.prepared_charges import PreparedChargesContainer
 from ..preparation.prepared_subscriptions import PreparedSubscriptions
 from ..preparation.prepared_tariffs import PreparedTariffs
 from ...codelists import AmountType
@@ -31,22 +32,20 @@ from ...infrastructure import logging_configuration
 @logging_configuration.use_span("calculation.wholesale.execute")
 def execute(
     args: CalculatorArgs,
-    prepared_subscriptions: PreparedSubscriptions,
-    prepared_hourly_tariffs: PreparedTariffs,
-    prepared_daily_tariffs: PreparedTariffs,
+    prepared_charges: PreparedChargesContainer,
 ) -> WholesaleResultsContainer:
     results = WholesaleResultsContainer()
 
     _calculate_subscriptions(
         args,
-        prepared_subscriptions,
+        prepared_charges.subscriptions,
         results,
     )
 
     _calculate_tariff_charges(
         args,
-        prepared_hourly_tariffs,
-        prepared_daily_tariffs,
+        prepared_charges.hourly_tariffs,
+        prepared_charges.daily_tariffs,
         results,
     )
 

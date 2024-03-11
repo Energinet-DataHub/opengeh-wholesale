@@ -21,11 +21,10 @@ from package.calculation.preparation.grid_loss_responsible import GridLossRespon
 from package.calculation.input import TableReader
 from package.codelists import ChargeResolution
 from . import transformations as T
-from .charge_link_metering_point_periods import ChargeLinkMeteringPointPeriods
 from .charge_master_data import ChargeMasterData
 from .charge_prices import ChargePrices
-from .prepared_tariffs import PreparedTariffs
-from .prepared_subscriptions import PreparedSubscriptions
+from .input_charges import InputChargesContainer
+from .prepared_charges import PreparedChargesContainer
 from ...infrastructure import logging_configuration
 
 
@@ -94,41 +93,41 @@ class PreparedDataReader:
         self,
         metering_point_periods: DataFrame,
         time_series: DataFrame,
-        charge_master_data: ChargeMasterData,
-        charge_prices: ChargePrices,
-        charge_links: DataFrame,
+        input_charges: InputChargesContainer,
         time_zone: str,
-    ) -> Tuple[PreparedTariffs, PreparedTariffs, DataFrame]:
+    ) -> PreparedChargesContainer:
         charge_link_metering_point_periods = T.get_charge_link_metering_point_periods(
-            charge_links, metering_point_periods
+            input_charges.charge_links, metering_point_periods
         )
 
-        prepared_tariffs_from_hourly = T.get_prepared_tariffs(
+        hourly_tariffs = T.get_prepared_tariffs(
             time_series,
-            charge_master_data,
-            charge_prices,
+            input_charges.charge_master_data,
+            input_charges.charge_prices,
             charge_link_metering_point_periods,
             ChargeResolution.HOUR,
             time_zone,
         )
 
-        prepared_tariffs_from_daily = T.get_prepared_tariffs(
+        daily_tariffs = T.get_prepared_tariffs(
             time_series,
-            charge_master_data,
-            charge_prices,
+            input_charges.charge_master_data,
+            input_charges.charge_prices,
             charge_link_metering_point_periods,
             ChargeResolution.DAY,
             time_zone,
         )
 
-        prepared_subscription = T.get_subscription_charges(
+        subscriptions = T.get_subscription_charges(
             charge_master_data,
             charge_prices,
             charge_link_metering_point_periods,
             time_zone,
         )
-        return (
-            prepared_tariffs_from_hourly,
-            prepared_tariffs_from_daily,
-            prepared_subscription,
-        )
+
+        prepared_charges_container = PreparedChargesContainer()
+        prepared_charges_container.hourly_tariffs = hourly_tariffs
+        prepared_charges_container.daily_tariffs = daily_tariffs
+        prepared_charges_container.subscriptions = subscriptions
+
+        return prepared_charges_container
