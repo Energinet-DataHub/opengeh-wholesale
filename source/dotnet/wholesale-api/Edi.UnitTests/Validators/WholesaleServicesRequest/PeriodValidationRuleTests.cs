@@ -123,7 +123,7 @@ public class PeriodValidationRuleTests
     }
 
     [Fact]
-    public async Task Validate_WhenPeriodStartIs1DayTooOld_ReturnsNoValidationError()
+    public async Task Validate_WhenPeriodStartIs1DayTooOld_ReturnsExpectedValidationError()
     {
         // Arrange
         var message = new WholesaleServicesRequestBuilder()
