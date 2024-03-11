@@ -17,7 +17,7 @@ from datetime import datetime
 
 from pyspark.sql import DataFrame, Row, SparkSession
 
-from package.calculation_input.schemas import (
+from package.calculation.input.schemas import (
     metering_point_period_schema,
 )
 from package.codelists import (

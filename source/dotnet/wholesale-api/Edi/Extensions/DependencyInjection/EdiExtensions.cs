@@ -18,8 +18,9 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks.ServiceBus;
 using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.Edi.Client;
 using Energinet.DataHub.Wholesale.Edi.Validation;
-using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeries;
-using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeries.Rules;
+using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest;
+using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
+using Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -32,7 +33,8 @@ public static class EdiExtensions
 {
     public static void AddEdiModule(this IServiceCollection services)
     {
-        services.AddScoped<IAggregatedTimeSeriesRequestHandler, AggregatedTimeSeriesRequestHandler>();
+        services.AddScoped<IWholesaleInboxRequestHandler, AggregatedTimeSeriesRequestHandler>();
+        services.AddScoped<IWholesaleInboxRequestHandler, WholesaleServicesRequestHandler>();
         services.AddScoped<LatestCalculationsForPeriod>();
         services.AddScoped<CompletedCalculationRetriever>();
 
@@ -52,6 +54,7 @@ public static class EdiExtensions
                 name: "EdiInboxQueue");
 
         services.AddAggregatedTimeSeriesRequestValidation();
+        services.AddWholesaleServicesRequestValidation();
     }
 
     public static IServiceCollection AddAggregatedTimeSeriesRequestValidation(this IServiceCollection services)
@@ -66,6 +69,13 @@ public static class EdiExtensions
         services.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, SettlementSeriesVersionValidationRule>();
         services.AddScoped<IValidationRule<AggregatedTimeSeriesRequest>, GridAreaValidationRule>();
         services.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, RequestedByActorRoleValidationRule>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddWholesaleServicesRequestValidation(this IServiceCollection services)
+    {
+        services.AddScoped<IValidator<WholesaleServicesRequest>, WholesaleServicesRequestValidator>();
 
         return services;
     }

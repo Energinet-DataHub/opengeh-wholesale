@@ -20,14 +20,14 @@ import pytest
 from pyspark import Row
 from pyspark.sql import SparkSession
 
-from package import calculation_input
 from package.calculation.preparation.transformations import (
     read_charge_prices,
     read_charge_master_data,
 )
-from package.calculation_input.schemas import charge_master_data_periods_schema
+from package.calculation.input.schemas import charge_master_data_periods_schema
 
-from package.calculation_input.table_reader import TableReader
+from package.calculation import input
+from package.calculation.input import TableReader
 from package.codelists import ChargeType
 from package.constants import Colname
 
@@ -86,7 +86,7 @@ def _create_charges_price_points_row(
 
 
 class TestWhenValidInput:
-    @patch.object(calculation_input, TableReader.__name__)
+    @patch.object(input, TableReader.__name__)
     def test_read_charge_master_data_returns_expected_row_values(
         self, table_reader_mock: TableReader, spark: SparkSession
     ) -> None:
@@ -112,7 +112,7 @@ class TestWhenValidInput:
         assert actual_row[Colname.from_date] == DEFAULT_FROM_DATE
         assert actual_row[Colname.to_date] == DEFAULT_TO_DATE
 
-    @patch.object(calculation_input, TableReader.__name__)
+    @patch.object(input, TableReader.__name__)
     def test_read_charge_prices_returns_expected_row_values(
         self, table_reader_mock: TableReader, spark: SparkSession
     ) -> None:
@@ -158,7 +158,7 @@ class TestWhenChargeTimeIsOutsideCalculationPeriod:
             ),
         ],
     )
-    @patch.object(calculation_input, TableReader.__name__)
+    @patch.object(input, TableReader.__name__)
     def test__returns_empty_result(
         self,
         table_reader_mock: TableReader,
@@ -195,7 +195,7 @@ class TestWhenChargeTimeIsInsideCalculationPeriod:
             ),
         ],
     )
-    @patch.object(calculation_input, TableReader.__name__)
+    @patch.object(input, TableReader.__name__)
     def test__returns_charge(
         self,
         table_reader_mock: TableReader,
@@ -246,7 +246,7 @@ class TestWhenChargePeriodExceedsCalculationPeriod:
             ),
         ],
     )
-    @patch.object(calculation_input, TableReader.__name__)
+    @patch.object(input, TableReader.__name__)
     def test__returns_expected_to_and_from_date(
         self,
         table_reader_mock: TableReader,

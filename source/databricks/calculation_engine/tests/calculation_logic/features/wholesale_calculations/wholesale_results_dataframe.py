@@ -30,7 +30,7 @@ def create_wholesale_result_dataframe(*args) -> DataFrame:  # type: ignore
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
     from package.constants import Colname
-    from package.calculation_output.schemas import wholesale_results_schema
+    from package.calculation.output.schemas import wholesale_results_schema
     from package.constants import WholesaleResultColumnNames
 
     df = df.withColumn(
