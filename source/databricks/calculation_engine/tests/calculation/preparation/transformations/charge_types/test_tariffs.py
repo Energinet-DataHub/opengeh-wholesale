@@ -762,7 +762,7 @@ def test__get_prepared_tariffs__can_handle_missing_charge_prices(
         actual_df.collect()[0][Colname.charge_price]
         == factory.DefaultValues.DEFAULT_CHARGE_PRICE
     )
-    assert actual.df.collect()[1][Colname.charge_price] is None
+    assert actual_df.collect()[1][Colname.charge_price] is None
 
 
 def test__get_prepared_tariffs__can_handle_missing_all_charges_prices(
