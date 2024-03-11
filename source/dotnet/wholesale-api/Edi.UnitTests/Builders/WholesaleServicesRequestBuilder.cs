@@ -15,6 +15,7 @@
 using Energinet.DataHub.Edi.Requests;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Validators;
+using Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.AggregatedTimeSeriesRequest;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
