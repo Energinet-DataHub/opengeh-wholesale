@@ -95,11 +95,7 @@ def _execute(
                 )
             )
 
-            (
-                charge_master_data,
-                charge_prices,
-                charge_links,
-            ) = prepared_data_reader.get_input_charges(
+            input_charges = prepared_data_reader.get_input_charges(
                 args.calculation_period_start_datetime,
                 args.calculation_period_end_datetime,
             )
@@ -107,9 +103,7 @@ def _execute(
             prepared_charges = prepared_data_reader.get_prepared_charges(
                 wholesale_metering_point_periods,
                 wholesale_metering_point_time_series,
-                charge_master_data,
-                charge_prices,
-                charge_links,
+                input_charges,
                 args.time_zone,
             )
 

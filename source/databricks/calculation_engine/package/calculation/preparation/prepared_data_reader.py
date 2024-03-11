@@ -74,7 +74,7 @@ class PreparedDataReader:
         self,
         period_start_datetime: datetime,
         period_end_datetime: datetime,
-    ) -> Tuple[ChargeMasterData, ChargePrices, DataFrame]:
+    ) -> InputChargesContainer:
         charge_master_data = T.read_charge_master_data(
             self._table_reader, period_start_datetime, period_end_datetime
         )
@@ -87,7 +87,11 @@ class PreparedDataReader:
             self._table_reader, period_start_datetime, period_end_datetime
         )
 
-        return charge_master_data, charge_prices, charge_links
+        return InputChargesContainer(
+            charge_master_data=charge_master_data,
+            charge_prices=charge_prices,
+            charge_links=charge_links,
+        )
 
     def get_prepared_charges(
         self,
@@ -125,9 +129,8 @@ class PreparedDataReader:
             time_zone,
         )
 
-        prepared_charges_container = PreparedChargesContainer()
-        prepared_charges_container.hourly_tariffs = hourly_tariffs
-        prepared_charges_container.daily_tariffs = daily_tariffs
-        prepared_charges_container.subscriptions = subscriptions
-
-        return prepared_charges_container
+        return PreparedChargesContainer(
+            hourly_tariffs=hourly_tariffs,
+            daily_tariffs=daily_tariffs,
+            subscriptions=subscriptions,
+        )
