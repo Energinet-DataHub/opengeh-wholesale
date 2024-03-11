@@ -12,18 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest
-from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql import SparkSession
 
 from package.calculation.wholesale.schemas.prepared_subscriptions_schema import (
     prepared_subscriptions_schema,
 )
-from tests.calculation.wholesale.test_tariff_calculators import _create_tariff_row
 from tests.calculation.wholesale.test_subscription_calculators import (
     _create_subscription_row,
 )
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.preparation.prepared_tariffs import prepared_tariffs_schema
 from package.calculation.wholesale import execute
 from package.codelists import ChargeResolution
 
