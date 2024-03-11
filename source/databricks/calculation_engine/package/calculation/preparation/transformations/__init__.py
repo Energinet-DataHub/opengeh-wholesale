@@ -23,7 +23,7 @@ from .charges_reader import (
 from .charge_types import (
     get_fee_charges,
     get_subscription_charges,
-    get_tariff_charges,
+    get_prepared_tariffs,
 )
 from .metering_point_time_series import get_metering_point_time_series
 from .get_charge_link_metering_point_periods import (
