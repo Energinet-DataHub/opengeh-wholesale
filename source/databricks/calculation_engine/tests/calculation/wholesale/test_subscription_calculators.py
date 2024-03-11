@@ -16,23 +16,18 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from pyspark import Row
-from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql import SparkSession
 
-from package.calculation.wholesale.schemas.prepared_subscriptions_schema import (
-    prepared_subscriptions_schema,
-)
 from package.calculation.wholesale.subscription_calculators import (
     calculate,
 )
 from package.codelists import (
     MeteringPointType,
     SettlementMethod,
-    ChargeType,
     QuantityQuality,
-    WholesaleResultResolution,
 )
 from package.constants import Colname
+import tests.calculation.wholesale.prepared_subscriptions_factory as factory
 
 
 class DefaultValues:
@@ -53,15 +48,6 @@ class DefaultValues:
     DAYS_IN_MONTH = 29
     CALCULATION_MONTH = 2
     TIME_ZONE = "Europe/Copenhagen"
-
-
-def _create_default_subscription_charges(spark: SparkSession) -> DataFrame:
-    return spark.createDataFrame(
-        [
-            _create_subscription_row(),
-        ],
-        schema=prepared_subscriptions_schema,
-    )
 
 
 def _get_all_wholesale_metering_point_types() -> list[MeteringPointType]:
@@ -99,14 +85,12 @@ class TestWhenValidInput:
         expected_output_charge_price: Decimal,
     ) -> None:
         # Arrange
-        subscription_row = _create_subscription_row(charge_price=input_charge_price)
-        subscription_charges = spark.createDataFrame(
-            [subscription_row], schema=prepared_subscriptions_schema
-        )
+        subscriptions_row = factory.create_row(charge_price=input_charge_price)
+        prepared_subscriptions_charges = factory.create(spark, [subscriptions_row])
 
         # Act
         actual = calculate(
-            subscription_charges,
+            prepared_subscriptions_charges,
             period_start,
             period_end,
             DefaultValues.TIME_ZONE,
@@ -124,17 +108,15 @@ class TestWhenValidInput:
         quantity_1 = 1
         quantity_2 = 2
         expected_total_quantity = quantity_1 + quantity_2
-        subscription_rows = [
-            _create_subscription_row(metering_point_id="1", charge_quantity=quantity_1),
-            _create_subscription_row(metering_point_id="2", charge_quantity=quantity_2),
+        prepared_subscriptions_rows = [
+            factory.create_row(metering_point_id="1", charge_quantity=quantity_1),
+            factory.create_row(metering_point_id="2", charge_quantity=quantity_2),
         ]
-        subscription_charges = spark.createDataFrame(
-            subscription_rows, schema=prepared_subscriptions_schema
-        )
+        prepared_subscriptions = factory.create(spark, prepared_subscriptions_rows)
 
         # Act
         actual = calculate(
-            subscription_charges,
+            prepared_subscriptions,
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
             DefaultValues.TIME_ZONE,
@@ -155,25 +137,23 @@ class TestWhenValidInput:
         expected_amount_not_rounded = (quantity_1 + quantity_2) * price_per_day
         expected_amount = round(expected_amount_not_rounded, 6)
 
-        subscription_rows = [
-            _create_subscription_row(
+        prepared_subscriptions_rows = [
+            factory.create_row(
                 metering_point_id="1",
                 charge_quantity=quantity_1,
                 charge_price=price,
             ),
-            _create_subscription_row(
+            factory.create_row(
                 metering_point_id="2",
                 charge_quantity=quantity_2,
                 charge_price=price,
             ),
         ]
-        subscription_charges = spark.createDataFrame(
-            subscription_rows, schema=prepared_subscriptions_schema
-        )
+        prepared_subscriptions = factory.create(spark, prepared_subscriptions_rows)
 
         # Act
         actual = calculate(
-            subscription_charges,
+            prepared_subscriptions,
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
             DefaultValues.TIME_ZONE,
@@ -189,17 +169,15 @@ class TestWhenValidInput:
         # Arrange
         all_metering_point_types = _get_all_wholesale_metering_point_types()
 
-        subscription_rows = [
-            _create_subscription_row(metering_point_type=metering_point_type)
+        subscriptions_rows = [
+            factory.create_row(metering_point_type=metering_point_type)
             for metering_point_type in all_metering_point_types
         ]
-        subscription_charges = spark.createDataFrame(
-            subscription_rows, schema=prepared_subscriptions_schema
-        )
+        prepared_subscriptions = factory.create(spark, subscriptions_rows)
 
         # Act
         actual = calculate(
-            subscription_charges,
+            prepared_subscriptions,
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
             DefaultValues.TIME_ZONE,
@@ -222,17 +200,15 @@ class TestWhenValidInput:
     ) -> None:
         # Arrange
 
-        subscription_rows = [
-            _create_subscription_row(settlement_method=SettlementMethod.FLEX),
-            _create_subscription_row(settlement_method=SettlementMethod.NON_PROFILED),
+        prepared_subscriptions_rows = [
+            factory.create_row(settlement_method=SettlementMethod.FLEX),
+            factory.create_row(settlement_method=SettlementMethod.NON_PROFILED),
         ]
-        subscription_charges = spark.createDataFrame(
-            subscription_rows, schema=prepared_subscriptions_schema
-        )
+        prepared_subscriptions = factory.create(spark, prepared_subscriptions_rows)
 
         # Act
         actual = calculate(
-            subscription_charges,
+            prepared_subscriptions,
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
             DefaultValues.TIME_ZONE,
@@ -261,20 +237,18 @@ class TestWhenMissingSomeInputChargePrice:
         expected_charge_amount = charge_quantity_2 * expected_charge_price
 
         prepared_subscriptions_rows = [
-            _create_subscription_row(
+            factory.create_row(
                 metering_point_id="1",
                 charge_quantity=charge_quantity_1,
                 charge_price=None,
             ),
-            _create_subscription_row(
+            factory.create_row(
                 metering_point_id="2",
                 charge_quantity=charge_quantity_2,
                 charge_price=charge_price,
             ),
         ]
-        prepared_subscriptions = spark.createDataFrame(
-            prepared_subscriptions_rows, schema=prepared_subscriptions_schema
-        )
+        prepared_subscriptions = factory.create(spark, prepared_subscriptions_rows)
 
         # Act
         actual = calculate(
@@ -302,20 +276,18 @@ class TestWhenMissingAllInputChargePrices:
         expected_total_quantity = charge_quantity_1 + charge_quantity_2
 
         prepared_subscriptions_rows = [
-            _create_subscription_row(
+            factory.create_row(
                 metering_point_id="1",
                 charge_quantity=charge_quantity_1,
                 charge_price=None,
             ),
-            _create_subscription_row(
+            factory.create_row(
                 metering_point_id="2",
                 charge_quantity=charge_quantity_2,
                 charge_price=None,
             ),
         ]
-        prepared_subscriptions = spark.createDataFrame(
-            prepared_subscriptions_rows, schema=prepared_subscriptions_schema
-        )
+        prepared_subscriptions = factory.create(spark, prepared_subscriptions_rows)
 
         # Act
         actual = calculate(
@@ -345,35 +317,33 @@ class TestWhenMultipleMeteringPointsPerChargeTime:
         expected_total_quantity_1 = 2 * quantity_1
         expected_total_quantity_2 = 2 * quantity_2
 
-        subscription_rows = [
-            _create_subscription_row(
+        prepared_subscriptions_rows = [
+            factory.create_row(
                 metering_point_id="1",
                 charge_time=time_1,
                 charge_quantity=quantity_1,
             ),
-            _create_subscription_row(
+            factory.create_row(
                 metering_point_id="2",
                 charge_time=time_1,
                 charge_quantity=quantity_1,
             ),
-            _create_subscription_row(
+            factory.create_row(
                 metering_point_id="1",
                 charge_time=time_2,
                 charge_quantity=quantity_2,
             ),
-            _create_subscription_row(
+            factory.create_row(
                 metering_point_id="2",
                 charge_time=time_2,
                 charge_quantity=quantity_2,
             ),
         ]
-        subscription_charges = spark.createDataFrame(
-            subscription_rows, schema=prepared_subscriptions_schema
-        )
+        prepared_subscriptions = factory.create(spark, prepared_subscriptions_rows)
 
         # Act
         actual = calculate(
-            subscription_charges,
+            prepared_subscriptions,
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
             DefaultValues.TIME_ZONE,
@@ -412,15 +382,13 @@ class TestWhenCalculationPeriodIsNotFullMonth:
         self, spark: SparkSession, period_start: datetime, period_end: datetime
     ) -> None:
         # Arrange
-        subscription_row = _create_subscription_row(charge_time=period_start)
-        subscription_charges = spark.createDataFrame(
-            [subscription_row], schema=prepared_subscriptions_schema
-        )
+        prepared_subscriptions_rows = factory.create_row(charge_time=period_start)
+        prepared_subscriptions = factory.create(spark, prepared_subscriptions_rows)
 
         # Act & Assert
         with pytest.raises(Exception):
             calculate(
-                subscription_charges,
+                prepared_subscriptions,
                 period_start,
                 period_end,
                 DefaultValues.TIME_ZONE,

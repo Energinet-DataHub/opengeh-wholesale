@@ -44,7 +44,7 @@ class DefaultValues:
     PERIOD_START_DATETIME = datetime(2019, 12, 31, 23)
 
 
-def _create_prepared_subscriptions_row(
+def create_row(
     charge_key: str | None = None,
     charge_code: str = DefaultValues.CHARGE_CODE,
     charge_owner: str = DefaultValues.CHARGE_OWNER,
@@ -78,11 +78,11 @@ def _create_prepared_subscriptions_row(
     return Row(**row)
 
 
-def create_prepared_subscriptions(
+def create(
     spark: SparkSession, data: None | Row | list[Row] = None
 ) -> PreparedSubscriptions:
     if data is None:
-        data = [_create_prepared_subscriptions_row()]
+        data = [create_row()]
     elif isinstance(data, Row):
         data = [data]
     df = spark.createDataFrame(data, prepared_subscriptions_schema)
