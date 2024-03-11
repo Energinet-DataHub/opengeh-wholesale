@@ -30,10 +30,12 @@ public class PeriodValidationRuleTests
 
     private static readonly ValidationError _startDateMustBeLessThanOrEqualTo3YearsAnd2Months =
         new(
-            "Der kan ikke anmodes om data for mere end 3 år og 2 måneder tilbage i tid/It is not possible to request data longer than 3 years and 2 months back in time",
+            "Der kan ikke anmodes om data for mere end 3 år og 2 måneder tilbage i tid / It is not possible to request data longer than 3 years and 2 months back in time",
             "E17");
 
-    private readonly PeriodValidationRule _sut = new();
+    private readonly PeriodValidationRule _sut = new(
+        DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
+        SystemClock.Instance);
 
     [Fact]
     public async Task Validate_WhenPeriodStartIsNonsense_ReturnsExpectedValidationErrors()
@@ -49,7 +51,7 @@ public class PeriodValidationRuleTests
         // Assert
         errors.Should().ContainSingle();
         errors.Should().Contain(error =>
-            error.Message.Contains(_invalidDateFormat.WithPropertyName("Start date").Message)
+            error.Message.Contains(_invalidDateFormat.WithPropertyName("Period Start").Message)
             && error.ErrorCode.Equals(_invalidDateFormat.ErrorCode));
     }
 
@@ -72,12 +74,12 @@ public class PeriodValidationRuleTests
         // Assert
         errors1.Should().ContainSingle();
         errors1.Should().Contain(error =>
-            error.Message.Contains(_invalidDateFormat.WithPropertyName("Start date").Message)
+            error.Message.Contains(_invalidDateFormat.WithPropertyName("Period Start").Message)
             && error.ErrorCode.Equals(_invalidDateFormat.ErrorCode));
 
         errors2.Should().ContainSingle();
         errors2.Should().Contain(error =>
-            error.Message.Contains(_invalidDateFormat.WithPropertyName("Start date").Message)
+            error.Message.Contains(_invalidDateFormat.WithPropertyName("Period Start").Message)
             && error.ErrorCode.Equals(_invalidDateFormat.ErrorCode));
     }
 
