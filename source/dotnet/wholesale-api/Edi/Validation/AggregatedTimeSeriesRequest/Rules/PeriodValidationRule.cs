@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Edi.Requests;
 using NodaTime;
 using NodaTime.Text;
 
-namespace Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeries.Rules;
+namespace Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
 
-public class PeriodValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
+public class PeriodValidationRule : IValidationRule<DataHub.Edi.Requests.AggregatedTimeSeriesRequest>
 {
     private readonly DateTimeZone _dateTimeZone;
     private readonly IClock _clock;
@@ -38,7 +37,7 @@ public class PeriodValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
         _clock = clock;
     }
 
-    public Task<IList<ValidationError>> ValidateAsync(AggregatedTimeSeriesRequest subject)
+    public Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.AggregatedTimeSeriesRequest subject)
     {
         if (subject == null)
             throw new ArgumentNullException(nameof(subject));

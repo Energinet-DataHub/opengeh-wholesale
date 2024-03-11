@@ -16,10 +16,18 @@ using Azure.Messaging.ServiceBus;
 
 namespace Energinet.DataHub.Wholesale.Edi;
 
-public interface IAggregatedTimeSeriesRequestHandler
+/// <summary>
+/// Handles specific messages sent to the WholesaleInbox service bus queue (typically received from the EDI subsystem)
+/// </summary>
+public interface IWholesaleInboxRequestHandler
 {
     /// <summary>
-    /// Handles the process of consuming the request for aggregated time series, then getting the required time series and creating and sending the response.
+    /// Get whether the handler can/should handle the incoming WholesaleInboxRequest type (the message subject)
+    /// </summary>
+    bool CanHandle(string requestSubject);
+
+    /// <summary>
+    /// Handles the process of consuming the WholesaleInboxRequest, then getting the required data and creating and sending the response.
     /// </summary>
     /// <param name="receivedMessage"></param>
     /// <param name="referenceId"></param>
