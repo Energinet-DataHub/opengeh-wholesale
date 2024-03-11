@@ -11,17 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
-from pyspark.sql.types import (
-    DecimalType,
-    StructType,
-    StructField,
-    StringType,
-    TimestampType,
-)
 
+from package.calculation.preparation.metering_point_time_series_schema import (
+    metering_point_time_series_schema,
+)
 from package.calculation.preparation.quarterly_metering_point_time_series import (
     QuarterlyMeteringPointTimeSeries,
 )
@@ -74,21 +69,3 @@ def transform_hour_to_quarter(
     )
 
     return QuarterlyMeteringPointTimeSeries(result)
-
-
-metering_point_time_series_schema = StructType(
-    [
-        StructField(Colname.grid_area, StringType(), False),
-        StructField(Colname.to_grid_area, StringType(), True),
-        StructField(Colname.from_grid_area, StringType(), True),
-        StructField(Colname.metering_point_id, StringType(), False),
-        StructField(Colname.metering_point_type, StringType(), False),
-        StructField(Colname.resolution, StringType(), False),
-        StructField(Colname.observation_time, TimestampType(), False),
-        StructField(Colname.quantity, DecimalType(18, 6), False),
-        StructField(Colname.quality, StringType(), False),
-        StructField(Colname.energy_supplier_id, StringType(), True),
-        StructField(Colname.balance_responsible_id, StringType(), True),
-        StructField(Colname.settlement_method, StringType(), True),
-    ]
-)

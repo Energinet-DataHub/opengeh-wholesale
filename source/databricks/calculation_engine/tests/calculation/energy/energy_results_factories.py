@@ -25,7 +25,7 @@ from package.codelists import MeteringPointType, QuantityQuality, SettlementMeth
 from package.constants import Colname
 
 DEFAULT_GRID_AREA = "100"
-DEFAULT_FROM_GRID_AREA = "200"
+DEFAULT_FROM_GRID_AREA = "200"  # TODO BJM: Should this be None?
 DEFAULT_TO_GRID_AREA = "300"
 DEFAULT_OBSERVATION_TIME = datetime.datetime.now()
 DEFAULT_SUM_QUANTITY = Decimal("999.123456")
@@ -40,7 +40,7 @@ def create_row(
     grid_area: str = DEFAULT_GRID_AREA,
     from_grid_area: str | None = DEFAULT_FROM_GRID_AREA,
     to_grid_area: str | None = DEFAULT_TO_GRID_AREA,
-    observation_time: datetime = DEFAULT_OBSERVATION_TIME,
+    observation_time: datetime.datetime = DEFAULT_OBSERVATION_TIME,
     sum_quantity: int | Decimal = DEFAULT_SUM_QUANTITY,
     qualities: None | QuantityQuality | list[QuantityQuality] = None,
     energy_supplier_id: str | None = DEFAULT_ENERGY_SUPPLIER_ID,
