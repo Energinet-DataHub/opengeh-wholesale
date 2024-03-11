@@ -17,7 +17,6 @@ using Energinet.DataHub.Wholesale.Edi.Validation;
 using Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Microsoft.EntityFrameworkCore.SqlServer.NodaTime.Extensions;
 using NodaTime;
 using NodaTime.Extensions;
 using Xunit;
@@ -141,6 +140,44 @@ public class PeriodValidationRuleTests
         var error = errors.First();
         error.ErrorCode.Should().Be(_startDateMustBeLessThanOrEqualTo3YearsAnd2Months.ErrorCode);
         error.Message.Should().Be(_startDateMustBeLessThanOrEqualTo3YearsAnd2Months.Message);
+    }
+
+    [Fact]
+    public async Task Validate_WhenPeriodOverlapSummerDaylightSavingTime_ReturnsNoValidationErrors()
+    {
+        // Arrange
+        var winterTime = Instant.FromUtc(_now.ToDateTimeOffset().Year, 2, 26, 23, 0, 0).ToString();
+        var summerTime = Instant.FromUtc(_now.ToDateTimeOffset().Year, 3, 26, 22, 0, 0).ToString();
+
+        var message = new WholesaleServicesRequestBuilder()
+            .WithPeriodStart(winterTime)
+            .WithPeriodEnd(summerTime)
+            .Build();
+
+        // Act
+        var errors = await _sut.ValidateAsync(message);
+
+        // Assert
+        errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Validate_WhenPeriodOverlapWinterDaylightSavingTime_ReturnsNoValidationErrors()
+    {
+        // Arrange
+        var summerTime = Instant.FromUtc(_now.ToDateTimeOffset().Year, 9, 29, 22, 0, 0).ToString();
+        var winterTime = Instant.FromUtc(_now.ToDateTimeOffset().Year, 10, 29, 23, 0, 0).ToString();
+
+        var message = new WholesaleServicesRequestBuilder()
+            .WithPeriodStart(summerTime)
+            .WithPeriodEnd(winterTime)
+            .Build();
+
+        // Act
+        var errors = await _sut.ValidateAsync(message);
+
+        // Assert
+        errors.Should().BeEmpty();
     }
 
     private sealed class MockClock(Instant instant) : IClock
