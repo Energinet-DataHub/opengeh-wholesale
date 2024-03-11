@@ -18,10 +18,8 @@ from decimal import Decimal
 from typing import Any
 
 import pytest
-from pyspark import Row
 from pyspark.sql import SparkSession
 
-from package.calculation.wholesale.schemas.tariffs_schema import tariff_schema
 from package.calculation.wholesale.tariff_calculators import (
     calculate_tariff_price_per_ga_co_es,
 )
