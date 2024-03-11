@@ -79,7 +79,7 @@ public sealed class PeriodValidationRule : IValidationRule<DataHub.Edi.Requests.
         var zonedCurrentDateTime = new ZonedDateTime(_clock.GetCurrentInstant(), _dateTimeZone);
         var latestStartDate = zonedCurrentDateTime.LocalDateTime.PlusYears(-3).PlusMonths(-2);
 
-        if (zonedStartDateTime.LocalDateTime <= latestStartDate)
+        if (zonedStartDateTime.LocalDateTime < latestStartDate)
             errors.Add(_startDateMustBeLessThanOrEqualTo3YearsAnd2Months);
     }
 }
