@@ -36,7 +36,9 @@ public class PeriodValidationRuleTests
             "Der kan ikke anmodes om data for mere end 3 år og 2 måneder tilbage i tid / It is not possible to request data longer than 3 years and 2 months back in time",
             "E17");
 
-    private static readonly MockClock _mockClock = new(Instant.FromUtc(2024, 6, 1, 23, 0, 0));
+    private static readonly Instant _now = Instant.FromUtc(2024, 6, 1, 23, 0, 0);
+
+    private static readonly MockClock _mockClock = new(_now);
 
     private readonly PeriodValidationRule _sut = new(
         DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
@@ -93,7 +95,7 @@ public class PeriodValidationRuleTests
     {
         // Arrange
         var message = new WholesaleServicesRequestBuilder()
-            .WithPeriodStart(_mockClock.GetCurrentInstant().ToDateTimeOffset().AddYears(-5).ToInstant().ToString())
+            .WithPeriodStart(_now.ToDateTimeOffset().AddYears(-5).ToInstant().ToString())
             .Build();
 
         // Act
@@ -111,7 +113,7 @@ public class PeriodValidationRuleTests
     {
         // Arrange
         var message = new WholesaleServicesRequestBuilder()
-            .WithPeriodStart(_mockClock.GetCurrentInstant().ToDateTimeOffset().AddYears(-3).AddMonths(-2).ToInstant().ToString())
+            .WithPeriodStart(_now.ToDateTimeOffset().AddYears(-3).AddMonths(-2).ToInstant().ToString())
             .Build();
 
         // Act
@@ -127,7 +129,7 @@ public class PeriodValidationRuleTests
         // Arrange
         var message = new WholesaleServicesRequestBuilder()
             // 1 day too old is the smallest possible period it can be too old
-            .WithPeriodStart(_mockClock.GetCurrentInstant().ToDateTimeOffset().AddYears(-3).AddMonths(-2).AddDays(-1).ToInstant().ToString())
+            .WithPeriodStart(_now.ToDateTimeOffset().AddYears(-3).AddMonths(-2).AddDays(-1).ToInstant().ToString())
             .Build();
 
         // Act
