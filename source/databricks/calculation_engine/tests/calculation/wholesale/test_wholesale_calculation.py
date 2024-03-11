@@ -14,30 +14,28 @@
 
 from pyspark.sql import SparkSession
 
-from tests.calculation.wholesale.test_subscription_calculators import (
-    _create_subscription_row,
-)
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.wholesale import execute
 from package.codelists import ChargeResolution
 
-import tests.calculation.wholesale.prepared_tariffs_factory as factory
+import tests.calculation.wholesale.prepared_tariffs_factory as tariffs_factory
+import tests.calculation.wholesale.prepared_subscriptions_factory as subscriptions_factory
 
 
 def test__execute__when_tariff_schema_is_valid__does_not_raise(
     spark: SparkSession, any_calculator_args_for_wholesale: CalculatorArgs
 ) -> None:
     # Arrange
-    tariffs_hourly_df = factory.create_prepared_tariffs(
-        spark, data=[factory.create_prepared_tariffs_row()]
+    tariffs_hourly_df = tariffs_factory.create_prepared_tariffs(
+        spark, data=[tariffs_factory.create_prepared_tariffs_row()]
     )
-    tariffs_daily_df = factory.create_prepared_tariffs(
+    tariffs_daily_df = tariffs_factory.create_prepared_tariffs(
         spark,
-        data=[factory.create_prepared_tariffs_row(resolution=ChargeResolution.DAY)],
+        data=[
+            tariffs_factory.create_prepared_tariffs_row(resolution=ChargeResolution.DAY)
+        ],
     )
-    prepared_subscriptions = spark.createDataFrame(
-        data=[_create_subscription_row()], schema=prepared_subscriptions_schema
-    )
+    prepared_subscriptions = subscriptions_factory.create(spark)
 
     # Act
     execute(
