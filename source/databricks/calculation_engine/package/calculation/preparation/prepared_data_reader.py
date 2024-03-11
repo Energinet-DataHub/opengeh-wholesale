@@ -87,8 +87,8 @@ class PreparedDataReader:
             charge_links, metering_point_periods_df
         )
 
-    @logging_configuration.use_span("get_tariff_charges")
-    def get_tariff_charges(
+    @logging_configuration.use_span("get_prepared_tariffs")
+    def get_prepared_tariffs(
         self,
         time_series: DataFrame,
         charge_master_data: ChargeMasterData,
