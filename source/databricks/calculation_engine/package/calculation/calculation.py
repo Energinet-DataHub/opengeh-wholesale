@@ -121,7 +121,7 @@ def _execute(
                 args.time_zone,
             )
 
-            tariffs_hourly_df = prepared_data_reader.get_tariff_charges(
+            tariffs_hourly_df = prepared_data_reader.get_prepared_tariffs(
                 wholesale_metering_point_time_series,
                 charge_master_data,
                 charge_prices,
@@ -130,7 +130,7 @@ def _execute(
                 args.time_zone,
             )
 
-            tariffs_daily_df = prepared_data_reader.get_tariff_charges(
+            tariffs_daily_df = prepared_data_reader.get_prepared_tariffs(
                 wholesale_metering_point_time_series,
                 charge_master_data,
                 charge_prices,
