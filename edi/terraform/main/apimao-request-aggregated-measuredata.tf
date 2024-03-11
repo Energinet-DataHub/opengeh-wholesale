@@ -21,7 +21,7 @@ module "apimao_request_aggregated_measure_data" {
                         <value>metereddataresponsible</value>
                         <value>energysupplier</value>
                         <value>balanceresponsibleparty</value>
-                        <value>gridoperator</value>
+                        <value>gridaccessprovider</value>
                         <value>delegated</value>
                     </claim>
                 </required-claims>
