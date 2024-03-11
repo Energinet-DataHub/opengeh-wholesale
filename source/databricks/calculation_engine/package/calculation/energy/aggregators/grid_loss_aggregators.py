@@ -54,6 +54,8 @@ def calculate_grid_loss(
         [Colname.grid_area, Colname.time_window],
     ).withColumnRenamed(Colname.sum_quantity, prod_result)
 
+    net_exchange_per_ga.df.show()
+
     result = (
         net_exchange_per_ga.df.withColumnRenamed(
             Colname.sum_quantity, net_exchange_result
