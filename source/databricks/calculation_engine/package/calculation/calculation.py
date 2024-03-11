@@ -15,7 +15,6 @@ from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
 
 from package.codelists import (
-    ChargeResolution,
     CalculationType,
     SettlementMethod,
     MeteringPointType,
@@ -84,26 +83,8 @@ def _execute(
         or args.calculation_type == CalculationType.THIRD_CORRECTION_SETTLEMENT
     ):
         with logging_configuration.start_span("calculation.wholesale.prepare"):
-            charge_master_data = prepared_data_reader.get_charge_master_data(
-                args.calculation_period_start_datetime,
-                args.calculation_period_end_datetime,
-            )
-
-            charge_prices = prepared_data_reader.get_charge_prices(
-                args.calculation_period_start_datetime,
-                args.calculation_period_end_datetime,
-            )
-
-            metering_points_periods_for_wholesale_calculation = (
+            wholesale_metering_point_periods = (
                 get_metering_points_and_child_metering_points(metering_point_periods_df)
-            )
-
-            charges_link_metering_point_periods = (
-                prepared_data_reader.get_charge_link_metering_point_periods(
-                    args.calculation_period_start_datetime,
-                    args.calculation_period_end_datetime,
-                    metering_points_periods_for_wholesale_calculation,
-                )
             )
 
             wholesale_metering_point_time_series = (
@@ -114,36 +95,29 @@ def _execute(
                 )
             )
 
-            prepared_subscriptions = prepared_data_reader.get_subscription_charges(
+            (
                 charge_master_data,
                 charge_prices,
-                charges_link_metering_point_periods,
-                args.time_zone,
+                charge_links,
+            ) = prepared_data_reader.get_input_charges(
+                args.calculation_period_start_datetime,
+                args.calculation_period_end_datetime,
             )
 
-            tariffs_hourly_df = prepared_data_reader.get_prepared_tariffs(
+            get_prepared_charges(
+                wholesale_metering_point_periods,
                 wholesale_metering_point_time_series,
                 charge_master_data,
                 charge_prices,
-                charges_link_metering_point_periods,
-                ChargeResolution.HOUR,
-                args.time_zone,
-            )
-
-            tariffs_daily_df = prepared_data_reader.get_prepared_tariffs(
-                wholesale_metering_point_time_series,
-                charge_master_data,
-                charge_prices,
-                charges_link_metering_point_periods,
-                ChargeResolution.DAY,
+                charge_links,
                 args.time_zone,
             )
 
         results.wholesale_results = wholesale_calculation.execute(
             args,
             prepared_subscriptions,
-            tariffs_hourly_df,
-            tariffs_daily_df,
+            prepared_tariffs_from_hourly,
+            prepared_tariffs_from_daily,
         )
 
     # Add basis data to results
