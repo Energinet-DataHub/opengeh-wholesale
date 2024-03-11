@@ -21,7 +21,7 @@ from pyspark.sql import SparkSession
 
 from package.calculation import input
 from package.calculation.preparation.transformations import get_time_series_points
-from package.calculation.input.table_reader import TableReader
+from package.calculation.input import TableReader
 from package.calculation.input.schemas import (
     time_series_point_schema,
     grid_loss_metering_points_schema,

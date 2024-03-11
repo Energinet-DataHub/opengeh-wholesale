@@ -18,7 +18,7 @@ import pytest
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as f
 
-from package.calculation.input.table_reader import TableReader
+from package.calculation.input import TableReader
 from package.calculation.input.schemas import (
     grid_loss_metering_points_schema,
 )

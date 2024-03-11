@@ -21,7 +21,7 @@ import pytest
 from unittest.mock import patch, Mock
 
 from package.calculation import input
-from package.calculation.input.table_reader import TableReader
+from package.calculation.input import TableReader
 from package.calculation.preparation.transformations import (
     get_metering_point_periods_df,
 )

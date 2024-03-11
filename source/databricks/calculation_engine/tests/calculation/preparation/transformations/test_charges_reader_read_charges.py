@@ -26,7 +26,7 @@ from package.calculation.preparation.transformations import (
 )
 from package.calculation.input.schemas import charge_master_data_periods_schema
 
-from package.calculation.input.table_reader import TableReader
+from package.calculation.input import TableReader
 from package.codelists import ChargeType
 from package.constants import Colname
 

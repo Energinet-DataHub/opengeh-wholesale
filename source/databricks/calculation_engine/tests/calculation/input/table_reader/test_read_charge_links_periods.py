@@ -19,7 +19,7 @@ from pyspark.sql import SparkSession
 import pyspark.sql.functions as f
 
 
-from package.calculation.input.table_reader import TableReader
+from package.calculation.input import TableReader
 from package.calculation.input.schemas import charge_link_periods_schema
 
 from package.constants import Colname

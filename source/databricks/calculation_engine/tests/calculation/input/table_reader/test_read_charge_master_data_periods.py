@@ -19,7 +19,7 @@ from pyspark.sql import SparkSession
 import pyspark.sql.functions as f
 
 
-from package.calculation.input.table_reader import TableReader
+from package.calculation.input import TableReader
 from package.calculation.input.schemas import charge_master_data_periods_schema
 from package.constants import Colname
 from tests.helpers.delta_table_utils import write_dataframe_to_table
