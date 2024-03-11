@@ -14,3 +14,4 @@
 
 from .preparation import PreparedDataReader
 from .calculation import execute
+from .input import TableReader

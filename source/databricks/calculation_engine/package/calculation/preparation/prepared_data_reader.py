@@ -17,7 +17,7 @@ from datetime import datetime
 from pyspark.sql import DataFrame
 
 from package.calculation.preparation.grid_loss_responsible import GridLossResponsible
-from package.calculation_input import TableReader
+from package.calculation.input import TableReader
 from package.codelists import ChargeResolution
 from . import transformations as T
 from .charge_link_metering_point_periods import ChargeLinkMeteringPointPeriods

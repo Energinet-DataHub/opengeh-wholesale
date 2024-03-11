@@ -21,7 +21,7 @@ from opentelemetry.trace import SpanKind, Status, StatusCode, Span
 
 import package.infrastructure.logging_configuration as config
 from package import calculation
-from package import calculation_input
+from package.calculation import input
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculator_job_args import (
     parse_job_arguments,
@@ -113,7 +113,7 @@ def create_prepared_data_reader(
 ) -> calculation.PreparedDataReader:
     """Create calculation execution dependencies."""
     spark = initialize_spark()
-    delta_table_reader = calculation_input.TableReader(
+    delta_table_reader = input.TableReader(
         spark,
         settings.calculation_input_path,
         settings.time_series_points_table_name,
