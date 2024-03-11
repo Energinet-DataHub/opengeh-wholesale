@@ -22,7 +22,7 @@ from pyspark.sql.functions import (
 from package.calculation.preparation.transformations.clamp_period import clamp_period
 from package.constants import Colname
 from datetime import datetime
-from package.calculation_input import TableReader
+from package.calculation.input import TableReader
 from package.codelists import (
     InputMeteringPointType,
     InputSettlementMethod,

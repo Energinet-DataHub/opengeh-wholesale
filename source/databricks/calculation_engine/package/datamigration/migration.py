@@ -67,7 +67,7 @@ def _substitute_placeholders(
         .replace("{OUTPUT_FOLDER}", OUTPUT_FOLDER)  # "calculation-output"
         .replace(
             "{INPUT_FOLDER}", migration_args.calculation_input_folder
-        )  # Usually "calculation_input"
+        )  # Usually "input"
         .replace("{TEST}", TEST)
     )
 
