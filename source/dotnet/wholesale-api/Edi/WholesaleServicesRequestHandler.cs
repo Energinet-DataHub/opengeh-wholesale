@@ -13,9 +13,15 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.Edi.Client;
+using Energinet.DataHub.Wholesale.Edi.Factories;
+using Energinet.DataHub.Wholesale.Edi.Mappers;
+using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.Validation;
 using Microsoft.Extensions.Logging;
+using NodaTime.Text;
 
 namespace Energinet.DataHub.Wholesale.Edi;
 
@@ -24,20 +30,30 @@ namespace Energinet.DataHub.Wholesale.Edi;
 /// </summary>
 public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
 {
+    // TODO: Is this the correct error code?
+    private static readonly ValidationError _noDataAvailable = new("Ingen data tilgængelig / No data available", "E0H");
+    private static readonly ValidationError _noDataForRequestedGridArea = new("Forkert netområde / invalid grid area", "D46");
+
     private readonly IEdiClient _ediClient;
     private readonly IValidator<Energinet.DataHub.Edi.Requests.WholesaleServicesRequest> _validator;
     private readonly ILogger<WholesaleServicesRequestHandler> _logger;
-
-    // TODO: Is this the correct error code?
-    private static readonly ValidationError _noDataAvailable = new("Ingen data tilgængelig / No data available", "E0H");
+    private readonly CompletedCalculationRetriever _completedCalculationRetriever;
+    private readonly IWholesaleResultQueries _wholesaleResultQueries;
+    private readonly WholesaleServicesRequestMapper _wholesaleServicesRequestMapper;
 
     public WholesaleServicesRequestHandler(
         IEdiClient ediClient,
         IValidator<Energinet.DataHub.Edi.Requests.WholesaleServicesRequest> validator,
+        CompletedCalculationRetriever completedCalculationRetriever,
+        IWholesaleResultQueries wholesaleResultQueries,
+        WholesaleServicesRequestMapper wholesaleServicesRequestMapper,
         ILogger<WholesaleServicesRequestHandler> logger)
     {
         _ediClient = ediClient;
         _validator = validator;
+        _completedCalculationRetriever = completedCalculationRetriever;
+        _wholesaleResultQueries = wholesaleResultQueries;
+        _wholesaleServicesRequestMapper = wholesaleServicesRequestMapper;
         _logger = logger;
     }
 
@@ -45,43 +61,85 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
 
     public async Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken)
     {
-        var request = Energinet.DataHub.Edi.Requests.WholesaleServicesRequest.Parser.ParseFrom(receivedMessage.Body);
+        var incomingRequest = Energinet.DataHub.Edi.Requests.WholesaleServicesRequest.Parser.ParseFrom(receivedMessage.Body);
 
-        var validationErrors = await _validator.ValidateAsync(request).ConfigureAwait(false);
+        var validationErrors = await _validator.ValidateAsync(incomingRequest).ConfigureAwait(false);
 
         if (validationErrors.Any())
         {
-            _logger.LogWarning("Validation errors for message with reference id {reference_id}", referenceId);
+            _logger.LogWarning("Validation errors for WholesaleServicesRequest message with reference id {reference_id}", referenceId);
             await SendRejectedMessageAsync(validationErrors.ToList(), referenceId, cancellationToken).ConfigureAwait(false);
             return;
         }
 
+        var request = _wholesaleServicesRequestMapper.Map(incomingRequest);
         var data = await GetWholesaleServicesDataAsync(request, cancellationToken).ConfigureAwait(false);
-        /* TODO: Check if data exists, else return rejected
+
         if (!data.Any())
         {
-            var error = new List<ValidationError> { _noDataAvailable };
-            if (await EnergySupplierOrBalanceResponsibleHaveAggregatedTimeSeriesForAnotherGridAreasAsync(aggregatedTimeSeriesRequest, aggregatedTimeSeriesRequestMessage).ConfigureAwait(false))
-            {
-                error = [_noDataForRequestedGridArea];
-            }
+          var errors = new List<ValidationError>
+          {
+              await HasDataInAnotherGridAreaAsync(incomingRequest, request, cancellationToken).ConfigureAwait(false)
+                  ? _noDataForRequestedGridArea
+                  : _noDataAvailable,
+          };
 
-            _logger.LogInformation("No data available for message with reference id {reference_id}", referenceId);
-            await SendRejectedMessageAsync(error, referenceId, cancellationToken).ConfigureAwait(false);
-            return;
+          _logger.LogInformation("No data available for WholesaleServicesRequest message with reference id {reference_id}", referenceId);
+          await SendRejectedMessageAsync(errors, referenceId, cancellationToken).ConfigureAwait(false);
+          return;
         }
-        */
 
-        _logger.LogInformation("Sending message with reference id {reference_id}", referenceId);
+        _logger.LogInformation("Sending WholesaleServicesRequest accepted message with reference id {reference_id}", referenceId);
         await SendAcceptedMessageAsync(data, referenceId, cancellationToken).ConfigureAwait(false);
     }
 
-    private Task<List<object>> GetWholesaleServicesDataAsync(
-        Energinet.DataHub.Edi.Requests.WholesaleServicesRequest request,
+    private async Task<List<object>> GetWholesaleServicesDataAsync(
+        WholesaleServicesRequest request,
         CancellationToken cancellationToken)
     {
+        var latestCalculationsForRequest = await _completedCalculationRetriever.GetLatestCompletedCalculationsForPeriodAsync(
+                request.GridArea,
+                new Period(request.Period.Start, request.Period.End),
+                request.RequestedCalculationType)
+            .ConfigureAwait(true);
+
         // TODO: Implement data lookup
-        return Task.FromResult(new List<object>());
+        // var queryParameters = CreateQueryParameters(request, latestCalculationsForRequest);
+        // var queryResult = await _wholesaleResultQueries.GetAsync(queryParameters).ToListAsync(cancellationToken).ConfigureAwait(false);
+        // return queryResult;
+        return
+        [
+            new()
+        ];
+    }
+
+    private async Task<bool> HasDataInAnotherGridAreaAsync(
+        Energinet.DataHub.Edi.Requests.WholesaleServicesRequest incomingRequest,
+        WholesaleServicesRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (request.GridArea == null) // If grid area is null, we already retrieved all data across multiple grid areas
+            return false;
+
+        var actorRole = incomingRequest.RequestedByActorRole;
+        if (actorRole is ActorRoleCode.EnergySupplier or ActorRoleCode.BalanceResponsibleParty)
+        {
+            var requestWithoutGridArea = request with
+            {
+                GridArea = null,
+            };
+
+            var results = await GetWholesaleServicesDataAsync(request, cancellationToken).ConfigureAwait(false);
+
+            if (results.Any())
+                return true;
+            // await foreach (var result in results)
+            // {
+            //     return true;
+            // }
+        }
+
+        return false;
     }
 
     private Task SendRejectedMessageAsync(IReadOnlyCollection<ValidationError> validationErrors, string referenceId, CancellationToken cancellationToken)
