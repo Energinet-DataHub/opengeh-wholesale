@@ -28,9 +28,9 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.wholesale_results
     amount DECIMAL(18, 6),
     -- Applies only to tariff. Null when subscription or fee.
     is_tax BOOLEAN,
-    charge_code STRING NOT NULL,
-    charge_type STRING NOT NULL,
-    charge_owner_id STRING NOT NULL,
+    charge_code STRING,
+    charge_type STRING,
+    charge_owner_id STRING,
     amount_type STRING NOT NULL
 )
 USING DELTA
