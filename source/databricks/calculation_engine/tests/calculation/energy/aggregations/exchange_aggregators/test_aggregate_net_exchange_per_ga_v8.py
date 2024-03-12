@@ -181,5 +181,5 @@ def check_aggregation_row(
         col(f"{Colname.time_window_start}").alias("start"),
         col(f"{Colname.time_window_end}").alias("end"),
     )
-    res = gridfiltered.filter(gridfiltered["start"] == time).toPandas()
-    assert res[Colname.sum_quantity][0] == sum_quantity
+    res = gridfiltered.filter(gridfiltered["start"] == time).collect()
+    assert res[0][Colname.sum_quantity] == sum_quantity
