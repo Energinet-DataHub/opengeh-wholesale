@@ -53,6 +53,7 @@ def configure_spark_sql_migration(
         calculation_input_folder="calculation_input",
         spark=spark,
         storage_container_path="container",
+        schema_migration_storage_container_path="spark_sql_container",
     )
 
     configuration = SparkSqlMigrationsConfiguration(
