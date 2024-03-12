@@ -1,7 +1,4 @@
 {
-  "AZURE_KEYVAULT_URL": "<Integration test key vault url>",
-
-  // B2C information that allows us to retrieve an access token from tests:
-  // => Key vault containing relevant B2C information (url's, usernames, secrets etc.)
-  "AZURE_B2CSECRETS_KEYVAULT_URL": "<B2C information key vault url>",
+  // On your developer machine download the file below to be able to run integration tests locally:
+  // github.com/Energinet-DataHub/dh3-dev-secrets/blob/main/opengeh-wholesale/apps/WebApi/IntegrationTests/integrationtest.local.settings.json
 }

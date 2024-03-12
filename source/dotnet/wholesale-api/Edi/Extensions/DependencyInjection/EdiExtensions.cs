@@ -76,6 +76,10 @@ public static class EdiExtensions
     public static IServiceCollection AddWholesaleServicesRequestValidation(this IServiceCollection services)
     {
         services.AddScoped<IValidator<WholesaleServicesRequest>, WholesaleServicesRequestValidator>();
+        services
+            .AddScoped<
+                IValidationRule<WholesaleServicesRequest>,
+                Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules.PeriodValidationRule>();
 
         return services;
     }

@@ -12,35 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Edi.Requests;
-using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.GridArea;
-using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
 using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
-using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.Validation;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
+using NodaTime.Extensions;
 using Xunit;
-using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 
-namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators;
+namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.WholesaleServicesRequest;
 
-public class WholesaleServicesRequestValidatorTests
+public sealed class WholesaleServicesRequestValidatorTests
 {
-    private readonly IValidator<WholesaleServicesRequest> _sut;
+    private readonly IValidator<DataHub.Edi.Requests.WholesaleServicesRequest> _sut;
 
     public WholesaleServicesRequestValidatorTests()
     {
         IServiceCollection services = new ServiceCollection();
 
+        services.AddTransient<DateTimeZone>(s => DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
+        services.AddTransient<IClock>(s => SystemClock.Instance);
+
         services.AddWholesaleServicesRequestValidation();
 
         var serviceProvider = services.BuildServiceProvider();
 
-        _sut = serviceProvider.GetRequiredService<IValidator<WholesaleServicesRequest>>();
+        _sut = serviceProvider.GetRequiredService<IValidator<DataHub.Edi.Requests.WholesaleServicesRequest>>();
     }
 
     [Fact]
@@ -55,5 +53,21 @@ public class WholesaleServicesRequestValidatorTests
 
         // Assert
         validationErrors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Validate_WhenPeriodStartIsTooOld_ReturnsUnsuccessfulValidation()
+    {
+        // Arrange
+        var request = new WholesaleServicesRequestBuilder()
+            .WithPeriodStart(SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset().AddYears(-5).ToInstant().ToString())
+            .Build();
+
+        // Act
+        var validationErrors = await _sut.ValidateAsync(request);
+
+        // Assert
+        validationErrors.Should().ContainSingle()
+            .Which.ErrorCode.Should().Be("E17");
     }
 }
