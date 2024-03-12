@@ -71,7 +71,7 @@ def create_time_series_row(
     return prepared_metering_point_time_series_factory.create_row(
         metering_point_id=metering_point_id,
         quantity=quantity,
-        quality=quality.value,
+        quality=quality,
         observation_time=observation_time,
     )
 
