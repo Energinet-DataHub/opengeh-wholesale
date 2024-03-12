@@ -64,6 +64,7 @@ def _calculate_subscriptions(
         args.calculation_period_end_datetime,
         args.time_zone,
     )
+
     results.subscription_per_ga_co_es = factory.create(
         args, subscription_amount_per_charge, AmountType.AMOUNT_PER_CHARGE
     )

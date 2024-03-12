@@ -26,14 +26,25 @@ def test_execute__returns_expected(
 ) -> None:
     # Arrange
     scenario_fixture.setup(get_expected)
+    expected = scenario_fixture.expected.orderBy(
+        WholesaleResultColumnNames.metering_point_type,
+        WholesaleResultColumnNames.time,
+    )
 
     # Act
     results = scenario_fixture.execute()
 
     # Assert
+    actual = results.wholesale_results.subscription_per_ga_co_es.orderBy(
+        WholesaleResultColumnNames.metering_point_type,
+        WholesaleResultColumnNames.time,
+    )
+    actual.show(100)
+    expected.show(100)
+
     assert_dataframe_and_schema(
-        results.wholesale_results.subscription_per_ga_co_es,
-        scenario_fixture.expected,
+        actual,
+        expected,
         ignore_decimal_precision=True,
         ignore_nullability=True,
         columns_to_skip=[
