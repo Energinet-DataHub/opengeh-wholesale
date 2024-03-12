@@ -26,6 +26,7 @@ using Moq;
 using NodaTime;
 using Xunit;
 using AggregatedTimeSeriesRequest = Energinet.DataHub.Wholesale.Edi.Models.AggregatedTimeSeriesRequest;
+using Period = Energinet.DataHub.Wholesale.Edi.Models.Period;
 
 namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Calculations;
 
@@ -61,7 +62,7 @@ public class CompletedCalculationRetrieverTest
         var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object);
 
         // Act
-        var actual = await sut.GetLatestCompletedCalculationForRequestAsync(request);
+        var actual = await sut.GetLatestCompletedCalculationForRequestAsync(request.GridArea, request.Period, request.RequestedCalculationType);
 
         // Assert
         actual.Should().HaveCount(1);
@@ -97,7 +98,7 @@ public class CompletedCalculationRetrieverTest
         var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object);
 
         // Act
-        var actual = await sut.GetLatestCompletedCalculationForRequestAsync(request);
+        var actual = await sut.GetLatestCompletedCalculationForRequestAsync(request.GridArea, request.Period, request.RequestedCalculationType);
 
         // Assert
         actual.Should().HaveCount(1);
@@ -133,7 +134,7 @@ public class CompletedCalculationRetrieverTest
         var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object);
 
         // Act
-        var actual = await sut.GetLatestCompletedCalculationForRequestAsync(request);
+        var actual = await sut.GetLatestCompletedCalculationForRequestAsync(request.GridArea, request.Period, request.RequestedCalculationType);
 
         // Assert
         actual.Should().HaveCount(1);
@@ -153,7 +154,7 @@ public class CompletedCalculationRetrieverTest
         var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object);
 
         // Act
-        var actual = await sut.GetLatestCompletedCalculationForRequestAsync(request);
+        var actual = await sut.GetLatestCompletedCalculationForRequestAsync(request.GridArea, request.Period, request.RequestedCalculationType);
 
         // Assert
         actual.Should().HaveCount(0);
@@ -207,7 +208,7 @@ public class CompletedCalculationRetrieverTest
         var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object);
 
         // Act
-        var actual = await sut.GetLatestCompletedCalculationForRequestAsync(request);
+        var actual = await sut.GetLatestCompletedCalculationForRequestAsync(request.GridArea, request.Period, request.RequestedCalculationType);
 
         // Assert
         using var assertionScope = new AssertionScope();
@@ -263,7 +264,7 @@ public class CompletedCalculationRetrieverTest
         var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object);
 
         // Act
-        var actual = await sut.GetLatestCompletedCalculationForRequestAsync(request);
+        var actual = await sut.GetLatestCompletedCalculationForRequestAsync(request.GridArea, request.Period, request.RequestedCalculationType);
 
         // Assert
         using var assertionScope = new AssertionScope();
@@ -271,15 +272,20 @@ public class CompletedCalculationRetrieverTest
         actual.Should().ContainSingle(x => x.CalculationId == calculationWithSecondCorrection.CalculationId);
     }
 
-    private static AggregatedTimeSeriesRequest CreateAggregatedTimeSeriesRequest(
+    private static (string? GridArea, Period Period, RequestedCalculationType RequestedCalculationType) CreateAggregatedTimeSeriesRequest(
         Instant startOfPeriodFilter,
         Instant endOfPeriodFilter,
         RequestedCalculationType? requestedCalculationType = null)
     {
-        return new AggregatedTimeSeriesRequest(
+        return (
+            "543",
             new Edi.Models.Period(startOfPeriodFilter, endOfPeriodFilter),
-            [TimeSeriesType.Production],
-            new AggregationPerRoleAndGridArea("543"),
             requestedCalculationType ?? RequestedCalculationType.LatestCorrection);
+
+        // return new AggregatedTimeSeriesRequest(
+        //     new Edi.Models.Period(startOfPeriodFilter, endOfPeriodFilter),
+        //     [TimeSeriesType.Production],
+        //     new AggregationPerRoleAndGridArea("543"),
+        //     requestedCalculationType ?? RequestedCalculationType.LatestCorrection);
     }
 }
