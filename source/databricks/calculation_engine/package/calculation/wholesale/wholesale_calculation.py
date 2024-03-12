@@ -16,12 +16,14 @@
 from pyspark.sql import DataFrame
 
 import package.calculation.output.wholesale_storage_model_factory as factory
+import package.calculation.wholesale.tariff_calculators as tariffs
 import package.calculation.wholesale.tariff_calculators as tariff_calculator
 import package.calculation.wholesale.subscription_calculators as subscription_calculator
-from package.common import assert_schema
-from .schemas.tariffs_schema import tariff_schema
+
 from ..CalculationResults import WholesaleResultsContainer
 from ..calculator_args import CalculatorArgs
+from ..preparation.prepared_subscriptions import PreparedSubscriptions
+from ..preparation.prepared_tariffs import PreparedTariffs
 from ...codelists import AmountType
 from ...infrastructure import logging_configuration
 
@@ -29,12 +31,10 @@ from ...infrastructure import logging_configuration
 @logging_configuration.use_span("calculation.wholesale.execute")
 def execute(
     args: CalculatorArgs,
-    prepared_subscriptions: DataFrame,
-    tariffs_hourly_df: DataFrame,
-    tariffs_daily_df: DataFrame,
+    prepared_subscriptions: PreparedSubscriptions,
+    prepared_hourly_tariffs: PreparedTariffs,
+    prepared_daily_tariffs: PreparedTariffs,
 ) -> WholesaleResultsContainer:
-    assert_schema(tariffs_hourly_df.schema, tariff_schema)
-
     results = WholesaleResultsContainer()
 
     _calculate_subscriptions(
@@ -45,8 +45,8 @@ def execute(
 
     _calculate_tariff_charges(
         args,
-        tariffs_hourly_df,
-        tariffs_daily_df,
+        prepared_hourly_tariffs,
+        prepared_daily_tariffs,
         results,
     )
 
@@ -56,7 +56,7 @@ def execute(
 @logging_configuration.use_span("calculate_subscriptions")
 def _calculate_subscriptions(
     args: CalculatorArgs,
-    prepared_subscriptions: DataFrame,
+    prepared_subscriptions: PreparedSubscriptions,
     results: WholesaleResultsContainer,
 ) -> None:
     subscription_amount_per_charge = subscription_calculator.calculate(
@@ -73,12 +73,12 @@ def _calculate_subscriptions(
 @logging_configuration.use_span("calculate_tariff_charges")
 def _calculate_tariff_charges(
     args: CalculatorArgs,
-    tariffs_hourly_df: DataFrame,
-    tariffs_daily_df: DataFrame,
+    prepared_hourly_tariffs: PreparedTariffs,
+    prepared_daily_tariffs: PreparedTariffs,
     results: WholesaleResultsContainer,
 ) -> None:
     hourly_tariff_per_ga_co_es = tariff_calculator.calculate_tariff_price_per_ga_co_es(
-        tariffs_hourly_df
+        prepared_hourly_tariffs
     )
 
     results.hourly_tariff_per_ga_co_es = factory.create(
@@ -97,8 +97,8 @@ def _calculate_tariff_charges(
         AmountType.MONTHLY_AMOUNT_PER_CHARGE,
     )
 
-    daily_tariff_per_ga_co_es = tariff_calculator.calculate_tariff_price_per_ga_co_es(
-        tariffs_daily_df
+    daily_tariff_per_ga_co_es = tariffs.calculate_tariff_price_per_ga_co_es(
+        prepared_daily_tariffs
     )
 
     results.daily_tariff_per_ga_co_es = factory.create(

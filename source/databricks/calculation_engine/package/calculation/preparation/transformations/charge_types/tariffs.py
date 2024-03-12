@@ -24,18 +24,19 @@ from package.calculation.preparation.charge_master_data import (
     ChargeMasterData,
 )
 from package.calculation.preparation.charge_prices import ChargePrices
+from package.calculation.preparation.prepared_tariffs import PreparedTariffs
 from package.codelists import ChargeType, ChargeResolution
 from package.constants import Colname
 
 
-def get_tariff_charges(
+def get_prepared_tariffs(
     metering_point_time_series: DataFrame,
     charge_master_data: ChargeMasterData,
     charge_prices: ChargePrices,
     charge_link_metering_points: ChargeLinkMeteringPointPeriods,
     resolution: ChargeResolution,
     time_zone: str,
-) -> DataFrame:
+) -> PreparedTariffs:
     """
     metering_point_time_series always hava a row for each resolution time in the given period.
     """
@@ -63,7 +64,7 @@ def get_tariff_charges(
     # TODO JVM - find a solution to this
     tariffs.schema[Colname.energy_supplier_id].nullable = False
 
-    return tariffs
+    return PreparedTariffs(tariffs)
 
 
 def _join_master_data_and_prices_add_missing_prices(

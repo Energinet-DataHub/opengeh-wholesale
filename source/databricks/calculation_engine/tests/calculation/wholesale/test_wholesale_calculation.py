@@ -12,35 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest
-from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql import SparkSession
 
-from package.calculation.wholesale.schemas.prepared_subscriptions_schema import (
-    prepared_subscriptions_schema,
-)
-from tests.calculation.wholesale.test_tariff_calculators import _create_tariff_row
-from tests.calculation.wholesale.test_subscription_calculators import (
-    _create_subscription_row,
-)
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.wholesale import execute
-from package.calculation.wholesale.schemas.tariffs_schema import tariff_schema
 from package.codelists import ChargeResolution
+
+import tests.calculation.wholesale.prepared_tariffs_factory as tariffs_factory
+import tests.calculation.wholesale.prepared_subscriptions_factory as subscriptions_factory
 
 
 def test__execute__when_tariff_schema_is_valid__does_not_raise(
     spark: SparkSession, any_calculator_args_for_wholesale: CalculatorArgs
 ) -> None:
     # Arrange
-    tariffs_hourly_df = spark.createDataFrame(
-        data=[_create_tariff_row()], schema=tariff_schema
+    tariffs_hourly_df = tariffs_factory.create(
+        spark, data=[tariffs_factory.create_row()]
     )
-    tariffs_daily_df = spark.createDataFrame(
-        data=[_create_tariff_row(resolution=ChargeResolution.DAY)], schema=tariff_schema
+    tariffs_daily_df = tariffs_factory.create(
+        spark,
+        data=[tariffs_factory.create_row(resolution=ChargeResolution.DAY)],
     )
-    prepared_subscriptions = spark.createDataFrame(
-        data=[_create_subscription_row()], schema=prepared_subscriptions_schema
-    )
+    prepared_subscriptions = subscriptions_factory.create(spark)
 
     # Act
     execute(
@@ -52,24 +45,3 @@ def test__execute__when_tariff_schema_is_valid__does_not_raise(
 
     # Assert
     # If execute raises an exception, the test fails automatically
-
-
-def test__execute__when_tariff_schema_is_invalid__raises_assertion_error(
-    spark: SparkSession, any_calculator_args_for_wholesale: CalculatorArgs
-) -> None:
-    # Arrange
-    data = [("John", "Dow")]
-    tariffs_hourly_df: DataFrame = spark.createDataFrame(data)
-    tariffs_daily_df: DataFrame = spark.createDataFrame(data)
-    prepared_subscriptions = spark.createDataFrame(
-        data=[_create_subscription_row()], schema=prepared_subscriptions_schema
-    )
-
-    # Act & Assert
-    with pytest.raises(AssertionError):
-        execute(
-            any_calculator_args_for_wholesale,
-            prepared_subscriptions,
-            tariffs_hourly_df,
-            tariffs_daily_df,
-        )

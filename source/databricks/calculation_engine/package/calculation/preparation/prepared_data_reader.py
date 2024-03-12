@@ -23,6 +23,8 @@ from . import transformations as T
 from .charge_link_metering_point_periods import ChargeLinkMeteringPointPeriods
 from .charge_master_data import ChargeMasterData
 from .charge_prices import ChargePrices
+from .prepared_tariffs import PreparedTariffs
+from .prepared_subscriptions import PreparedSubscriptions
 from ...infrastructure import logging_configuration
 
 
@@ -86,8 +88,8 @@ class PreparedDataReader:
             charge_links, metering_point_periods_df
         )
 
-    @logging_configuration.use_span("get_tariff_charges")
-    def get_tariff_charges(
+    @logging_configuration.use_span("get_prepared_tariffs")
+    def get_prepared_tariffs(
         self,
         time_series: DataFrame,
         charge_master_data: ChargeMasterData,
@@ -95,8 +97,8 @@ class PreparedDataReader:
         charges_link_metering_point_periods: ChargeLinkMeteringPointPeriods,
         resolution: ChargeResolution,
         time_zone: str,
-    ) -> DataFrame:
-        return T.get_tariff_charges(
+    ) -> PreparedTariffs:
+        return T.get_prepared_tariffs(
             time_series,
             charge_master_data,
             charge_prices,
@@ -105,14 +107,14 @@ class PreparedDataReader:
             time_zone,
         )
 
-    @logging_configuration.use_span("get_subscription_charges")
-    def get_subscription_charges(
+    @logging_configuration.use_span("get_prepared_subscriptions")
+    def get_prepared_subscriptions(
         self,
         charge_master_data: ChargeMasterData,
         charge_prices: ChargePrices,
         charges_link_metering_point_periods: ChargeLinkMeteringPointPeriods,
         time_zone: str,
-    ) -> DataFrame:
+    ) -> PreparedSubscriptions:
         return T.get_subscription_charges(
             charge_master_data,
             charge_prices,
