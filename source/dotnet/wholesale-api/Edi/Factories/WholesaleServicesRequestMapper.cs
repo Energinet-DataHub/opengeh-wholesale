@@ -26,8 +26,7 @@ public class WholesaleServicesRequestMapper(DateTimeZone dateTimeZone)
     {
         var periodStart = InstantPattern.General.Parse(request.PeriodStart).Value;
 
-        Instant periodEnd;
-        periodEnd = request.HasPeriodEnd
+        var periodEnd = request.HasPeriodEnd
             ? InstantPattern.General.Parse(request.PeriodEnd).Value
             : CalculateMaxPeriodEnd(periodStart);
 
