@@ -70,7 +70,7 @@ public class CompletedCalculationRetriever
                 .ConfigureAwait(true);
         }
 
-        return _latestCalculationsForPeriod.CalculateLatestCalculationsForPeriod(
+        return _latestCalculationsForPeriod.FindLatestCalculationsForPeriod(
             period.Start,
             period.End,
             completedCalculationsForPeriod);

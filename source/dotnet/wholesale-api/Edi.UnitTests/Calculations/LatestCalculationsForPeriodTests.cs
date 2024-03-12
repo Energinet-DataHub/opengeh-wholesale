@@ -43,7 +43,7 @@ public class LatestCalculationsForPeriodTests
 
         // Act
         var actual = sut
-            .CalculateLatestCalculationsForPeriod(periodStart, periodEnd, new List<CalculationDto>() { calculation });
+            .FindLatestCalculationsForPeriod(periodStart, periodEnd, new List<CalculationDto>() { calculation });
 
         // Assert
         using var assertionScope = new AssertionScope();
@@ -70,7 +70,7 @@ public class LatestCalculationsForPeriodTests
 
         // Act
         var actual = sut
-            .CalculateLatestCalculationsForPeriod(periodStart, periodEnd, new List<CalculationDto>() { calculation });
+            .FindLatestCalculationsForPeriod(periodStart, periodEnd, new List<CalculationDto>() { calculation });
 
         // Assert
         using var assertionScope = new AssertionScope();
@@ -105,7 +105,7 @@ public class LatestCalculationsForPeriodTests
 
         // Act
         var actual = sut
-            .CalculateLatestCalculationsForPeriod(periodStart, periodEnd, new List<CalculationDto>() { calculation, calculation2 });
+            .FindLatestCalculationsForPeriod(periodStart, periodEnd, new List<CalculationDto>() { calculation, calculation2 });
 
         // Assert
         using var assertionScope = new AssertionScope();
@@ -136,7 +136,7 @@ public class LatestCalculationsForPeriodTests
 
         // Act
         var actual = sut
-            .CalculateLatestCalculationsForPeriod(
+            .FindLatestCalculationsForPeriod(
                 firstPeriodStart,
                 secondPeriodEnd,
                 new List<CalculationDto>() { firstCalculation, secondCalculation, });
@@ -174,7 +174,7 @@ public class LatestCalculationsForPeriodTests
 
         // Act
         var actual = sut
-            .CalculateLatestCalculationsForPeriod(
+            .FindLatestCalculationsForPeriod(
                 firstPeriodStart,
                 secondPeriodEnd,
                 new List<CalculationDto>() { firstCalculation, secondCalculation, });
@@ -212,7 +212,7 @@ public class LatestCalculationsForPeriodTests
 
         // Act
         var actual = sut
-            .CalculateLatestCalculationsForPeriod(
+            .FindLatestCalculationsForPeriod(
                 secondPeriodStart,
                 firstPeriodEnd,
                 new List<CalculationDto>() { firstCalculation, secondCalculation, });
@@ -251,7 +251,7 @@ public class LatestCalculationsForPeriodTests
 
         // Act
         var actual = sut
-            .CalculateLatestCalculationsForPeriod(
+            .FindLatestCalculationsForPeriod(
                 firstPeriodStart,
                 firstPeriodEnd,
                 new List<CalculationDto>() { firstCalculation, secondCalculation, });
@@ -299,7 +299,7 @@ public class LatestCalculationsForPeriodTests
 
         // Act
         var actual = sut
-            .CalculateLatestCalculationsForPeriod(
+            .FindLatestCalculationsForPeriod(
                 firstPeriodStart,
                 firstPeriodEnd,
                 new List<CalculationDto>() { firstCalculation, secondCalculation, thirdCalculation, });
@@ -344,7 +344,7 @@ public class LatestCalculationsForPeriodTests
 
         // Act
         var actual = () => sut
-            .CalculateLatestCalculationsForPeriod(
+            .FindLatestCalculationsForPeriod(
                 firstPeriodStart,
                 secondPeriodEnd,
                 new List<CalculationDto>() { firstCalculation, secondCalculation, });
@@ -364,7 +364,7 @@ public class LatestCalculationsForPeriodTests
 
         // Act
         var actual = sut
-            .CalculateLatestCalculationsForPeriod(
+            .FindLatestCalculationsForPeriod(
                 periodStart,
                 periodEnd,
                 new List<CalculationDto>() { });
