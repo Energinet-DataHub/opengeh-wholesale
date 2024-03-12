@@ -23,13 +23,12 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using Xunit;
-using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 
-namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators;
+namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.AggregatedTimeSeriesRequest;
 
 public class AggregatedTimeSeriesRequestValidatorTests
 {
-    private readonly IValidator<AggregatedTimeSeriesRequest> _sut;
+    private readonly IValidator<DataHub.Edi.Requests.AggregatedTimeSeriesRequest> _sut;
 
     public AggregatedTimeSeriesRequestValidatorTests()
     {
@@ -44,7 +43,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
 
         var serviceProvider = services.BuildServiceProvider();
 
-        _sut = serviceProvider.GetRequiredService<IValidator<AggregatedTimeSeriesRequest>>();
+        _sut = serviceProvider.GetRequiredService<IValidator<DataHub.Edi.Requests.AggregatedTimeSeriesRequest>>();
     }
 
     [Fact]
