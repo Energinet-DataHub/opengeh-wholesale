@@ -25,8 +25,6 @@ from package.codelists import MeteringPointType, QuantityQuality, SettlementMeth
 from package.constants import Colname
 
 DEFAULT_GRID_AREA = "100"
-DEFAULT_FROM_GRID_AREA = "200"
-DEFAULT_TO_GRID_AREA = "300"
 DEFAULT_OBSERVATION_TIME = datetime.datetime.now()
 DEFAULT_SUM_QUANTITY = Decimal("999.123456")
 DEFAULT_QUALITIES = [QuantityQuality.MEASURED]
@@ -38,8 +36,8 @@ DEFAULT_BALANCE_RESPONSIBLE_ID = "9999999999999"
 
 def create_row(
     grid_area: str = DEFAULT_GRID_AREA,
-    from_grid_area: str | None = DEFAULT_FROM_GRID_AREA,
-    to_grid_area: str | None = DEFAULT_TO_GRID_AREA,
+    from_grid_area: str | None = None,
+    to_grid_area: str | None = None,
     observation_time: datetime = DEFAULT_OBSERVATION_TIME,
     sum_quantity: int | Decimal = DEFAULT_SUM_QUANTITY,
     qualities: None | QuantityQuality | list[QuantityQuality] = None,
@@ -75,6 +73,7 @@ def create_row(
 
 
 def create(spark: SparkSession, data: None | Row | list[Row] = None) -> EnergyResults:
+    """If data is None, a single row with default values is created."""
     if data is None:
         data = [create_row()]
     elif isinstance(data, Row):

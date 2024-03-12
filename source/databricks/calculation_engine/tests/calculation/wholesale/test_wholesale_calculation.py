@@ -15,6 +15,7 @@
 from pyspark.sql import SparkSession
 
 from package.calculation.calculator_args import CalculatorArgs
+from package.calculation.preparation.prepared_charges import PreparedChargesContainer
 from package.calculation.wholesale import execute
 from package.codelists import ChargeResolution
 
@@ -35,12 +36,16 @@ def test__execute__when_tariff_schema_is_valid__does_not_raise(
     )
     prepared_subscriptions = subscriptions_factory.create(spark)
 
+    prepared_charges = PreparedChargesContainer(
+        subscriptions=prepared_subscriptions,
+        hourly_tariffs=tariffs_hourly_df,
+        daily_tariffs=tariffs_daily_df,
+    )
+
     # Act
     execute(
         any_calculator_args_for_wholesale,
-        prepared_subscriptions,
-        tariffs_hourly_df,
-        tariffs_daily_df,
+        prepared_charges,
     )
 
     # Assert

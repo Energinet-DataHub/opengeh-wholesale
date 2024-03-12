@@ -17,6 +17,8 @@ using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.Validation;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using NodaTime;
+using NodaTime.Extensions;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.WholesaleServicesRequest;
@@ -28,6 +30,9 @@ public sealed class WholesaleServicesRequestValidatorTests
     public WholesaleServicesRequestValidatorTests()
     {
         IServiceCollection services = new ServiceCollection();
+
+        services.AddTransient<DateTimeZone>(s => DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
+        services.AddTransient<IClock>(s => SystemClock.Instance);
 
         services.AddWholesaleServicesRequestValidation();
 
@@ -48,5 +53,21 @@ public sealed class WholesaleServicesRequestValidatorTests
 
         // Assert
         validationErrors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Validate_WhenPeriodStartIsTooOld_ReturnsUnsuccessfulValidation()
+    {
+        // Arrange
+        var request = new WholesaleServicesRequestBuilder()
+            .WithPeriodStart(SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset().AddYears(-5).ToInstant().ToString())
+            .Build();
+
+        // Act
+        var validationErrors = await _sut.ValidateAsync(request);
+
+        // Assert
+        validationErrors.Should().ContainSingle()
+            .Which.ErrorCode.Should().Be("E17");
     }
 }
