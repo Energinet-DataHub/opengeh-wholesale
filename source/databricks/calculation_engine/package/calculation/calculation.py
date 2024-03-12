@@ -68,10 +68,12 @@ def _execute(
             ).cache()
         )
 
-    results.energy_results = energy_calculation.execute(
-        args,
-        metering_point_time_series,
-        grid_loss_responsible_df,
+    results.energy_results, positive_grid_loss, negative_grid_loss = (
+        energy_calculation.execute(
+            args,
+            metering_point_time_series,
+            grid_loss_responsible_df,
+        )
     )
 
     if (
@@ -106,8 +108,8 @@ def _execute(
             # This extends the content of metering_point_time_series with wholesale data.
             metering_point_time_series = get_wholesale_metering_point_times_series(
                 metering_point_time_series,
-                results.energy_results.positive_grid_loss,
-                results.energy_results.negative_grid_loss,
+                positive_grid_loss,
+                negative_grid_loss,
             )
 
             prepared_subscriptions = prepared_data_reader.get_prepared_subscriptions(
