@@ -29,7 +29,7 @@ public class LatestCalculationsForPeriod
         _dateTimeZone = dateTimeZone;
     }
 
-    public IReadOnlyCollection<CalculationForPeriod> FindLatestCalculationsForPeriod(
+    public IReadOnlyCollection<CalculationForPeriod> CalculateLatestCalculationsForPeriod(
         Instant periodStart,
         Instant periodEnd,
         IReadOnlyCollection<CalculationDto> calculations)

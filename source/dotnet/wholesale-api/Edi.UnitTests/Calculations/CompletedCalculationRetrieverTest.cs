@@ -62,7 +62,7 @@ public class CompletedCalculationRetrieverTest
         var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object);
 
         // Act
-        var actual = await sut.GetLatestCompletedCalculationForRequestAsync(request.GridArea, request.Period, request.RequestedCalculationType);
+        var actual = await sut.GetLatestCompletedCalculationsForPeriodAsync(request.GridArea, request.Period, request.RequestedCalculationType);
 
         // Assert
         actual.Should().HaveCount(1);
@@ -98,7 +98,7 @@ public class CompletedCalculationRetrieverTest
         var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object);
 
         // Act
-        var actual = await sut.GetLatestCompletedCalculationForRequestAsync(request.GridArea, request.Period, request.RequestedCalculationType);
+        var actual = await sut.GetLatestCompletedCalculationsForPeriodAsync(request.GridArea, request.Period, request.RequestedCalculationType);
 
         // Assert
         actual.Should().HaveCount(1);
@@ -134,7 +134,7 @@ public class CompletedCalculationRetrieverTest
         var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object);
 
         // Act
-        var actual = await sut.GetLatestCompletedCalculationForRequestAsync(request.GridArea, request.Period, request.RequestedCalculationType);
+        var actual = await sut.GetLatestCompletedCalculationsForPeriodAsync(request.GridArea, request.Period, request.RequestedCalculationType);
 
         // Assert
         actual.Should().HaveCount(1);
@@ -154,7 +154,7 @@ public class CompletedCalculationRetrieverTest
         var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object);
 
         // Act
-        var actual = await sut.GetLatestCompletedCalculationForRequestAsync(request.GridArea, request.Period, request.RequestedCalculationType);
+        var actual = await sut.GetLatestCompletedCalculationsForPeriodAsync(request.GridArea, request.Period, request.RequestedCalculationType);
 
         // Assert
         actual.Should().HaveCount(0);
@@ -208,7 +208,7 @@ public class CompletedCalculationRetrieverTest
         var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object);
 
         // Act
-        var actual = await sut.GetLatestCompletedCalculationForRequestAsync(request.GridArea, request.Period, request.RequestedCalculationType);
+        var actual = await sut.GetLatestCompletedCalculationsForPeriodAsync(request.GridArea, request.Period, request.RequestedCalculationType);
 
         // Assert
         using var assertionScope = new AssertionScope();
@@ -264,7 +264,7 @@ public class CompletedCalculationRetrieverTest
         var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object);
 
         // Act
-        var actual = await sut.GetLatestCompletedCalculationForRequestAsync(request.GridArea, request.Period, request.RequestedCalculationType);
+        var actual = await sut.GetLatestCompletedCalculationsForPeriodAsync(request.GridArea, request.Period, request.RequestedCalculationType);
 
         // Assert
         using var assertionScope = new AssertionScope();
