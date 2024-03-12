@@ -20,6 +20,9 @@ from package.calculation.preparation.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
     charge_link_metering_point_periods_schema,
 )
+from calculation.preparation.transformations import (
+    prepared_metering_point_time_series_factory,
+)
 from package.calculation.preparation.charge_master_data import (
     ChargeMasterData,
     charge_master_data_schema,
@@ -65,13 +68,12 @@ def create_time_series_row(
     quality: e.QuantityQuality = e.QuantityQuality.CALCULATED,
     observation_time: datetime = datetime(2019, 12, 31, 23),
 ) -> Row:
-    row = {
-        Colname.metering_point_id: metering_point_id,
-        Colname.quantity: quantity,
-        Colname.quality: quality.value,
-        Colname.observation_time: observation_time,
-    }
-    return Row(**row)
+    return prepared_metering_point_time_series_factory.create_row(
+        metering_point_id=metering_point_id,
+        quantity=quantity,
+        quality=quality.value,
+        observation_time=observation_time,
+    )
 
 
 def create_charge_master_data_row(

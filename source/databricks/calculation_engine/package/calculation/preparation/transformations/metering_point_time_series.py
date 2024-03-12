@@ -16,6 +16,9 @@ from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
 from pyspark.sql.types import DecimalType
 
+from package.calculation.preparation.prepared_metering_point_time_series import (
+    PreparedMeteringPointTimeSeries,
+)
 from package.constants import Colname
 from package.codelists import MeteringPointResolution, QuantityQuality
 from package.common import assert_schema
@@ -28,7 +31,7 @@ from package.calculation.input.schemas import (
 def get_metering_point_time_series(
     raw_time_series_points_df: DataFrame,
     metering_point_periods_df: DataFrame,
-) -> DataFrame:
+) -> PreparedMeteringPointTimeSeries:
     """
     Get metering point time-series points - both for metering points with hourly and quarterly resolution.
     All missing time series points for a given metering point is added with quantity=0 and quality=MISSING.
@@ -164,4 +167,4 @@ def get_metering_point_time_series(
         )
     )
 
-    return result
+    return PreparedMeteringPointTimeSeries(result)

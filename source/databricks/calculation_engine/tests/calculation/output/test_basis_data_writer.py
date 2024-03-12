@@ -12,22 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from datetime import datetime
-from decimal import Decimal
 from pathlib import Path
-from typing import Any, Callable
+from typing import Callable
 from unittest.mock import patch
 
 import pytest
 from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql.types import Row
 
+import calculation.preparation.transformations.prepared_metering_point_time_series_factory as factories
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.output import basis_data_results, basis_data_factory
+from package.calculation.preparation.prepared_metering_point_time_series import (
+    PreparedMeteringPointTimeSeries,
+)
 from package.codelists import (
     BasisDataType,
     MeteringPointResolution,
-    MeteringPointType,
     SettlementMethod,
-    QuantityQuality,
 )
 from package.constants import Colname
 from package.container import Container
@@ -47,16 +49,15 @@ TIME_ZONE = "Europe/Copenhagen"
 
 
 @pytest.fixture(scope="module")
-def metering_point_time_series_factory(spark: SparkSession) -> Callable[..., DataFrame]:
-    def factory() -> DataFrame:
-        df = []
-        df.append(
-            _create_metering_point_time_series_point(MeteringPointResolution.HOUR)
-        )
-        df.append(
-            _create_metering_point_time_series_point(MeteringPointResolution.QUARTER)
-        )
-        return spark.createDataFrame(df)
+def metering_point_time_series_factory(
+    spark: SparkSession,
+) -> Callable[..., PreparedMeteringPointTimeSeries]:
+    def factory() -> PreparedMeteringPointTimeSeries:
+        rows = [
+            factories.create_row(resolution=MeteringPointResolution.HOUR),
+            factories.create_row(resolution=MeteringPointResolution.QUARTER),
+        ]
+        return factories.create(spark, rows)
 
     return factory
 
@@ -64,34 +65,18 @@ def metering_point_time_series_factory(spark: SparkSession) -> Callable[..., Dat
 @pytest.fixture(scope="module")
 def metering_point_period_df_factory(spark: SparkSession) -> Callable[..., DataFrame]:
     def factory() -> DataFrame:
-        df = []
-        df.append(_create_metering_point_period(MeteringPointResolution.HOUR))
-        df.append(_create_metering_point_period(MeteringPointResolution.QUARTER))
+        df = [
+            _create_metering_point_period(MeteringPointResolution.HOUR),
+            _create_metering_point_period(MeteringPointResolution.QUARTER),
+        ]
         return spark.createDataFrame(df)
 
     return factory
 
 
-def _create_metering_point_time_series_point(
-    resolution: MeteringPointResolution,
-) -> dict[str, Any]:
-    data = {
-        Colname.metering_point_id: "metering_point_id",
-        Colname.metering_point_type: MeteringPointType.PRODUCTION.value,
-        Colname.grid_area: DEFAULT_GRID_AREA,
-        Colname.balance_responsible_id: "someId",
-        Colname.energy_supplier_id: DEFAULT_ENERGY_SUPPLIER,
-        Colname.quantity: Decimal("1"),
-        Colname.observation_time: PERIOD_START,
-        Colname.quality: QuantityQuality.ESTIMATED.value,
-        Colname.resolution: resolution.value,
-    }
-    return data
-
-
 def _create_metering_point_period(
     resolution: MeteringPointResolution,
-) -> dict[str, Any]:
+) -> Row:
     data = {
         Colname.metering_point_id: "the-meteringpoint-id",
         Colname.grid_area: DEFAULT_GRID_AREA,
@@ -105,7 +90,7 @@ def _create_metering_point_period(
         Colname.energy_supplier_id: DEFAULT_ENERGY_SUPPLIER,
         Colname.balance_responsible_id: "someId",
     }
-    return data
+    return Row(**data)
 
 
 def _get_basis_data_paths(calculation_filetype: CalculationFileType) -> str:
