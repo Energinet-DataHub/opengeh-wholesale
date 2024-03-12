@@ -19,7 +19,7 @@ using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rul
 using FluentAssertions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators;
+namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.AggregatedTimeSeriesRequest;
 
 public class TimeSeriesTypeValidatorTests
 {

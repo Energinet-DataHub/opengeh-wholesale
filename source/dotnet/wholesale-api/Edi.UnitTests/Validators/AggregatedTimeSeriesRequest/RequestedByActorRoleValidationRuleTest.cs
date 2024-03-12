@@ -16,9 +16,8 @@ using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
 using FluentAssertions;
 using Xunit;
-using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 
-namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators;
+namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.AggregatedTimeSeriesRequest;
 
 public sealed class RequestedByActorRoleValidationRuleTest
 {
@@ -29,7 +28,7 @@ public sealed class RequestedByActorRoleValidationRuleTest
     public async Task ValidateAsync_WhenRequestingWithValidActorRole_ReturnsEmptyErrorListAsync(string actorRole)
     {
         // Arrange
-        var request = new AggregatedTimeSeriesRequest { RequestedByActorRole = actorRole };
+        var request = new DataHub.Edi.Requests.AggregatedTimeSeriesRequest { RequestedByActorRole = actorRole };
         var rule = new RequestedByActorRoleValidationRule();
 
         // Act
@@ -46,7 +45,7 @@ public sealed class RequestedByActorRoleValidationRuleTest
     public async Task ValidateAsync_WhenRequestingWithUnexpectedActorRole_ReturnsEmptyErrorListAsync(string actorRole)
     {
         // Arrange
-        var request = new AggregatedTimeSeriesRequest { RequestedByActorRole = actorRole };
+        var request = new DataHub.Edi.Requests.AggregatedTimeSeriesRequest { RequestedByActorRole = actorRole };
         var rule = new RequestedByActorRoleValidationRule();
 
         // Act
@@ -60,7 +59,7 @@ public sealed class RequestedByActorRoleValidationRuleTest
     public async Task ValidateAsync_WhenRequestingWithDdmActorRole_ReturnsDdmShouldRequestAsMdrErrorAsync()
     {
         // Arrange
-        var request = new AggregatedTimeSeriesRequest { RequestedByActorRole = "DDM" };
+        var request = new DataHub.Edi.Requests.AggregatedTimeSeriesRequest { RequestedByActorRole = "DDM" };
         var rule = new RequestedByActorRoleValidationRule();
 
         // Act
