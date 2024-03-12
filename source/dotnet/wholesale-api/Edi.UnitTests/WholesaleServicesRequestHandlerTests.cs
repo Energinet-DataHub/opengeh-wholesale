@@ -57,10 +57,11 @@ public class WholesaleServicesRequestHandlerTests
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(new WholesaleServicesRequestBuilder().Build().ToByteArray()));
 
+        var wholesaleResult = CreateWholesaleResult();
         wholesaleResultQueries.Setup(q => q.GetAsync(It.IsAny<WholesaleResultQueryParameters>()))
             .Returns(new List<WholesaleResult>
             {
-                CreateWholesaleResult(),
+                wholesaleResult,
             }.ToAsyncEnumerable());
 
         var sut = new WholesaleServicesRequestHandler(
@@ -79,7 +80,7 @@ public class WholesaleServicesRequestHandlerTests
 
         // Assert
         // TODO: Update to "sends accepted message"
-        await act.Should().NotThrowAsync();
+        (await act.Should().ThrowAsync<NotImplementedException>()).WithMessage(wholesaleResult.Id.ToString());
         // ediClient.Verify(
         //     client => client.SendAsync(
         //         It.Is<ServiceBusMessage>(message =>
@@ -101,14 +102,12 @@ public class WholesaleServicesRequestHandlerTests
         [Frozen] Mock<CompletedCalculationRetriever> completedCalculationRetriever)
     {
         // Arrange
+        var expectedValidationErrorCode = "E0H";
         var expectedReferenceId = Guid.NewGuid().ToString();
 
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(new WholesaleServicesRequestBuilder().Build().ToByteArray()));
-
-        wholesaleResultQueries.Setup(q => q.GetAsync(It.IsAny<WholesaleResultQueryParameters>()))
-            .Returns(Array.Empty<WholesaleResult>().ToAsyncEnumerable());
 
         var sut = new WholesaleServicesRequestHandler(
             ediClient.Object,
@@ -126,7 +125,7 @@ public class WholesaleServicesRequestHandlerTests
 
         // Assert
         // TODO: Update to "sends rejected message"
-        await act.Should().ThrowExactlyAsync<NotImplementedException>();
+        (await act.Should().ThrowAsync<NotImplementedException>()).WithMessage(expectedValidationErrorCode);
         // ediClient.Verify(
         //     client => client.SendAsync(
         //         It.Is<ServiceBusMessage>(message =>
@@ -149,6 +148,7 @@ public class WholesaleServicesRequestHandlerTests
         [Frozen] Mock<CompletedCalculationRetriever> completedCalculationRetriever)
     {
         // Arrange
+        var expectedValidationErrorCode = "001";
         var expectedReferenceId = Guid.NewGuid().ToString();
 
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
@@ -159,7 +159,7 @@ public class WholesaleServicesRequestHandlerTests
                 It.IsAny<WholesaleServicesRequest>()))
             .ReturnsAsync(() => new List<ValidationError>
             {
-                new("A validation error", "001"),
+                new("A validation error", expectedValidationErrorCode),
             });
 
         var sut = new WholesaleServicesRequestHandler(
@@ -178,7 +178,7 @@ public class WholesaleServicesRequestHandlerTests
 
         // Assert
         // TODO: Update to "sends rejected message"
-        await act.Should().ThrowExactlyAsync<NotImplementedException>();
+        (await act.Should().ThrowAsync<NotImplementedException>()).WithMessage(expectedValidationErrorCode);
         // ediClient.Verify(
         //     client => client.SendAsync(
         //         It.Is<ServiceBusMessage>(message =>

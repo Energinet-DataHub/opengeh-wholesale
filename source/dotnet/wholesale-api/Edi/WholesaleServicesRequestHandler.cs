@@ -130,12 +130,12 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
     private Task SendRejectedMessageAsync(IReadOnlyCollection<ValidationError> validationErrors, string referenceId, CancellationToken cancellationToken)
     {
         // TODO: Implement rejected message
-        throw new NotImplementedException();
+        throw new NotImplementedException(string.Join(", ", validationErrors.Select(e => e.ErrorCode)));
     }
 
-    private Task SendAcceptedMessageAsync(IReadOnlyCollection<object> results, string referenceId, CancellationToken cancellationToken)
+    private Task SendAcceptedMessageAsync(IReadOnlyCollection<WholesaleResult> results, string referenceId, CancellationToken cancellationToken)
     {
         // TODO: Implement accepted message
-        return Task.CompletedTask;
+        throw new NotImplementedException(string.Join(", ", results.Select(e => e.Id)));
     }
 }
