@@ -38,7 +38,7 @@ public static class EdiExtensions
         services.AddScoped<IWholesaleInboxRequestHandler, WholesaleServicesRequestHandler>();
         services.AddScoped<LatestCalculationsForPeriod>();
         services.AddScoped<CompletedCalculationRetriever>();
-        services.AddScoped<WholesaleServicesRequestMapper>();
+        services.AddTransient<WholesaleServicesRequestMapper>();
 
         services.AddSingleton<IEdiClient, EdiClient>();
 
