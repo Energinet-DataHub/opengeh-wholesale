@@ -104,7 +104,7 @@ def _execute(
             )
 
             # This extends the content of metering_point_time_series with wholesale data.
-            metering_point_time_series = _get_wholesale_metering_point_times_series(
+            metering_point_time_series = get_wholesale_metering_point_times_series(
                 metering_point_time_series,
                 results.energy_results.positive_grid_loss,
                 results.energy_results.negative_grid_loss,
