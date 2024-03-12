@@ -187,10 +187,10 @@ variable "cert_ebix_datahub3_password" {
 }
 
 variable "ip_restrictions" {
-  type        = list(object({
-    ip_address  = string
-    name        = string
-    priority    = optional(number)
+  type = list(object({
+    ip_address = string
+    name       = string
+    priority   = optional(number)
   }))
   description = "A list of IP restrictions defining allowed access to domain services. Each entry should include an 'ip_address' representing the allowed IP, a 'name' for identification, and an optional 'priority' for rule order. Defaults to `[]`."
   default     = []
