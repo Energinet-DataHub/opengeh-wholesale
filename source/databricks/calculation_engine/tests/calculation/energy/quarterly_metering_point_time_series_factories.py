@@ -42,7 +42,7 @@ def create_row(
     from_grid_area: str | None = None,
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
     metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE,
-    observation_time: datetime = DEFAULT_OBSERVATION_TIME,
+    observation_time: datetime.datetime = DEFAULT_OBSERVATION_TIME,
     quantity: int | Decimal = DEFAULT_QUANTITY,
     quality: QuantityQuality = DEFAULT_QUALITY,
     energy_supplier_id: str | None = DEFAULT_ENERGY_SUPPLIER_ID,

@@ -11,24 +11,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 from datetime import datetime, timedelta
 from decimal import Decimal
 
-import pandas as pd
 import pytest
+from pyspark.sql import SparkSession
+from pyspark.sql.types import Row
 
+from calculation.energy import quarterly_metering_point_time_series_factories
 from package.calculation.energy.aggregators.exchange_aggregators import (
     aggregate_net_exchange_per_neighbour_ga,
 )
 from package.calculation.preparation.quarterly_metering_point_time_series import (
     QuarterlyMeteringPointTimeSeries,
-    _quarterly_metering_point_time_series_schema,
 )
 from package.codelists import (
     MeteringPointType,
-    QuantityQuality,
-    SettlementMethod,
 )
 from package.constants import Colname
 
@@ -37,140 +35,53 @@ default_obs_time = datetime.strptime(
     "2020-01-01T00:00:00+0000", date_time_formatting_string
 )
 numberOfTestQuarters = 96
-estimated_quality = QuantityQuality.ESTIMATED.value
 
 ALL_GRID_AREAS = ["A", "B", "C"]
 
-df_template = {
-    Colname.grid_area: [],
-    Colname.to_grid_area: [],
-    Colname.from_grid_area: [],
-    Colname.metering_point_id: [],
-    Colname.metering_point_type: [],
-    Colname.quantity: [],
-    Colname.quality: [],
-    Colname.energy_supplier_id: [],
-    Colname.balance_responsible_id: [],
-    Colname.settlement_method: [],
-}
+
+@pytest.fixture(scope="module")
+def single_quarter_test_data(spark: SparkSession) -> QuarterlyMeteringPointTimeSeries:
+    rows = [
+        _create_row("A", "A", "B", default_obs_time, Decimal("10")),
+        _create_row("A", "A", "B", default_obs_time, Decimal("15")),
+        _create_row("A", "B", "A", default_obs_time, Decimal("5")),
+        _create_row("B", "B", "A", default_obs_time, Decimal("10")),
+        _create_row("A", "A", "C", default_obs_time, Decimal("20")),
+        _create_row("C", "C", "A", default_obs_time, Decimal("10")),
+        _create_row("C", "C", "A", default_obs_time, Decimal("5")),
+    ]
+    return quarterly_metering_point_time_series_factories.create(spark, rows)
 
 
 @pytest.fixture(scope="module")
-def single_quarter_test_data(spark):
-    pandas_df = pd.DataFrame(df_template)
-    pandas_df = add_row_of_data(
-        pandas_df, "A", "A", "B", default_obs_time, Decimal("10")
-    )
-    pandas_df = add_row_of_data(
-        pandas_df, "A", "A", "B", default_obs_time, Decimal("15")
-    )
-    pandas_df = add_row_of_data(
-        pandas_df, "A", "B", "A", default_obs_time, Decimal("5")
-    )
-    pandas_df = add_row_of_data(
-        pandas_df, "B", "B", "A", default_obs_time, Decimal("10")
-    )
-    pandas_df = add_row_of_data(
-        pandas_df, "A", "A", "C", default_obs_time, Decimal("20")
-    )
-    pandas_df = add_row_of_data(
-        pandas_df, "C", "C", "A", default_obs_time, Decimal("10")
-    )
-    pandas_df = add_row_of_data(
-        pandas_df, "C", "C", "A", default_obs_time, Decimal("5")
-    )
+def multi_quarter_test_data(spark: SparkSession) -> QuarterlyMeteringPointTimeSeries:
+    rows = []
 
-    df = spark.createDataFrame(pandas_df, _quarterly_metering_point_time_series_schema)
-
-    return QuarterlyMeteringPointTimeSeries(df)
-
-
-@pytest.fixture(scope="module")
-def multi_quarter_test_data(spark):
-    pandas_df = pd.DataFrame(df_template)
     for i in range(numberOfTestQuarters):
-        pandas_df = add_row_of_data(
-            pandas_df,
-            "A",
-            "A",
-            "B",
-            default_obs_time + timedelta(minutes=i * 15),
-            Decimal("10"),
-        )
-        pandas_df = add_row_of_data(
-            pandas_df,
-            "A",
-            "A",
-            "B",
-            default_obs_time + timedelta(minutes=i * 15),
-            Decimal("15"),
-        )
-        pandas_df = add_row_of_data(
-            pandas_df,
-            "A",
-            "B",
-            "A",
-            default_obs_time + timedelta(minutes=i * 15),
-            Decimal("5"),
-        )
-        pandas_df = add_row_of_data(
-            pandas_df,
-            "B",
-            "B",
-            "A",
-            default_obs_time + timedelta(minutes=i * 15),
-            Decimal("10"),
-        )
-        pandas_df = add_row_of_data(
-            pandas_df,
-            "A",
-            "A",
-            "C",
-            default_obs_time + timedelta(minutes=i * 15),
-            Decimal("20"),
-        )
-        pandas_df = add_row_of_data(
-            pandas_df,
-            "C",
-            "C",
-            "A",
-            default_obs_time + timedelta(minutes=i * 15),
-            Decimal("10"),
-        )
-        pandas_df = add_row_of_data(
-            pandas_df,
-            "C",
-            "C",
-            "A",
-            default_obs_time + timedelta(minutes=i * 15),
-            Decimal("5"),
-        )
-    df = spark.createDataFrame(
-        pandas_df, schema=_quarterly_metering_point_time_series_schema
+        obs_time = default_obs_time + timedelta(minutes=15 * i)
+
+        rows.append(_create_row("A", "A", "B", obs_time, Decimal("10")))
+        rows.append(_create_row("A", "A", "B", obs_time, Decimal("15")))
+        rows.append(_create_row("A", "B", "A", obs_time, Decimal("5")))
+        rows.append(_create_row("B", "B", "A", obs_time, Decimal("10")))
+        rows.append(_create_row("A", "A", "C", obs_time, Decimal("20")))
+        rows.append(_create_row("C", "C", "A", obs_time, Decimal("10")))
+        rows.append(_create_row("C", "C", "A", obs_time, Decimal("5")))
+
+    return quarterly_metering_point_time_series_factories.create(spark, rows)
+
+
+def _create_row(
+    domain: str, in_domain: str, out_domain: str, timestamp: datetime, quantity: Decimal
+) -> Row:
+    return quarterly_metering_point_time_series_factories.create_row(
+        grid_area=domain,
+        to_grid_area=in_domain,
+        from_grid_area=out_domain,
+        metering_point_type=MeteringPointType.EXCHANGE,
+        quantity=quantity,
+        observation_time=timestamp,
     )
-
-    return QuarterlyMeteringPointTimeSeries(df)
-
-
-def add_row_of_data(pandas_df, domain, in_domain, out_domain, timestamp, quantity):
-    new_row = {
-        Colname.grid_area: domain,
-        Colname.to_grid_area: in_domain,
-        Colname.from_grid_area: out_domain,
-        Colname.metering_point_id: ["metering-point-id"],
-        Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
-        Colname.quantity: quantity,
-        Colname.quality: estimated_quality,
-        Colname.energy_supplier_id: "energy-supplier-id",
-        Colname.balance_responsible_id: "balance-responsible-id",
-        Colname.settlement_method: SettlementMethod.NON_PROFILED.value,
-        Colname.time_window: [
-            pd.to_datetime(timestamp).tz_convert(None),
-            pd.to_datetime(timestamp + timedelta(minutes=15)).tz_convert(None),
-        ],
-    }
-    pandas_series = pd.Series(new_row)
-    return pd.concat([pandas_df, pandas_series.to_frame().T], axis=0, ignore_index=True)
 
 
 def test_aggregate_net_exchange_per_neighbour_ga_single_hour(single_quarter_test_data):
