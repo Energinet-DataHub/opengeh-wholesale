@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from pyspark.sql import functions as f, DataFrame, SparkSession
 from pyspark.sql.functions import lit, col
 from pyspark.sql.types import (
@@ -29,7 +30,6 @@ def create_wholesale_result_dataframe(*args) -> DataFrame:  # type: ignore
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
-    from package.constants import Colname
     from package.calculation_output.schemas import wholesale_results_schema
     from package.constants import WholesaleResultColumnNames
 
@@ -37,10 +37,12 @@ def create_wholesale_result_dataframe(*args) -> DataFrame:  # type: ignore
         WholesaleResultColumnNames.calculation_id, lit(calculator_args.calculation_id)
     )
     df = df.withColumn(
-        Colname.calculation_execution_time_start,
+        WholesaleResultColumnNames.calculation_execution_time_start,
         lit(calculator_args.calculation_execution_time_start).cast(TimestampType()),
     )
+
     df = df.withColumn(WholesaleResultColumnNames.calculation_result_id, lit(""))
+
     df = df.withColumn(
         WholesaleResultColumnNames.quantity,
         col(WholesaleResultColumnNames.quantity).cast(DecimalType(28, 3)),
