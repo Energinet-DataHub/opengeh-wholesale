@@ -11,14 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import pytest
-from pyspark.sql import SparkSession
-
-from tests.calculation_logic.scenario_factory import ScenarioFixture
-
-
-@pytest.fixture(scope="session")
-def scenario_fixture(
-    spark: SparkSession,
-) -> ScenarioFixture:
-    return ScenarioFixture(spark)

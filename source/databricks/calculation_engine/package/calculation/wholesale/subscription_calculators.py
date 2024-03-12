@@ -16,6 +16,7 @@ from zoneinfo import ZoneInfo
 
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
+from pyspark.sql.types import DecimalType, ArrayType, StringType
 
 from package.calculation.preparation.prepared_subscriptions import PreparedSubscriptions
 from package.codelists import ChargeUnit
@@ -52,11 +53,11 @@ def calculate(
         Colname.charge_owner,
         Colname.charge_tax,
         Colname.resolution,
-        Colname.total_quantity,
+        f.col(Colname.total_quantity).cast(DecimalType(18, 3)),
         f.round(Colname.charge_price, 6).alias(Colname.charge_price),
         f.round(Colname.total_amount, 6).alias(Colname.total_amount),
         f.lit(ChargeUnit.PIECES.value).alias(Colname.unit),
-        f.lit(None).alias(Colname.qualities),
+        f.lit(None).alias(Colname.qualities).cast(ArrayType(StringType())),
     )
 
 

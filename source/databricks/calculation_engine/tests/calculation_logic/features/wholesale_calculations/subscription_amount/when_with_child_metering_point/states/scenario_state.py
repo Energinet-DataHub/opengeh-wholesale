@@ -11,14 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import pytest
-from pyspark.sql import SparkSession
+from pyspark.sql import DataFrame
 
-from tests.calculation_logic.scenario_factory import ScenarioFixture
+from tests.calculation_logic.features.wholesale_calculations.wholesale_results_dataframe import (
+    create_wholesale_result_dataframe,
+)
 
 
-@pytest.fixture(scope="session")
-def scenario_fixture(
-    spark: SparkSession,
-) -> ScenarioFixture:
-    return ScenarioFixture(spark)
+def get_expected(*args) -> DataFrame:
+    """
+    This function can be used to custom build the expected results (dataframe).
+    It is also used a reference to locate the test scenario.
+    """
+    return create_wholesale_result_dataframe(*args)
