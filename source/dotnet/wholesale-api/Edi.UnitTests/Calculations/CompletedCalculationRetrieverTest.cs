@@ -279,13 +279,7 @@ public class CompletedCalculationRetrieverTest
     {
         return (
             "543",
-            new Edi.Models.Period(startOfPeriodFilter, endOfPeriodFilter),
+            new Period(startOfPeriodFilter, endOfPeriodFilter),
             requestedCalculationType ?? RequestedCalculationType.LatestCorrection);
-
-        // return new AggregatedTimeSeriesRequest(
-        //     new Edi.Models.Period(startOfPeriodFilter, endOfPeriodFilter),
-        //     [TimeSeriesType.Production],
-        //     new AggregationPerRoleAndGridArea("543"),
-        //     requestedCalculationType ?? RequestedCalculationType.LatestCorrection);
     }
 }
