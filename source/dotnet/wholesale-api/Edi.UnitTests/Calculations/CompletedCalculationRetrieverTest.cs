@@ -25,7 +25,6 @@ using FluentAssertions.Execution;
 using Moq;
 using NodaTime;
 using Xunit;
-using AggregatedTimeSeriesRequest = Energinet.DataHub.Wholesale.Edi.Models.AggregatedTimeSeriesRequest;
 using Period = Energinet.DataHub.Wholesale.Edi.Models.Period;
 
 namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Calculations;
@@ -57,7 +56,7 @@ public class CompletedCalculationRetrieverTest
                     .Build(),
             });
 
-        var request = CreateAggregatedTimeSeriesRequest(startOfPeriodFilter, endOfPeriodFilter);
+        var request = CreateRequestParameters(startOfPeriodFilter, endOfPeriodFilter);
 
         var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object);
 
@@ -93,7 +92,7 @@ public class CompletedCalculationRetrieverTest
                     .Build(),
             });
 
-        var request = CreateAggregatedTimeSeriesRequest(startOfPeriodFilter, endOfPeriodFilter);
+        var request = CreateRequestParameters(startOfPeriodFilter, endOfPeriodFilter);
 
         var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object);
 
@@ -129,7 +128,7 @@ public class CompletedCalculationRetrieverTest
                     .Build(),
             });
 
-        var request = CreateAggregatedTimeSeriesRequest(startOfPeriodFilter, endOfPeriodFilter);
+        var request = CreateRequestParameters(startOfPeriodFilter, endOfPeriodFilter);
 
         var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object);
 
@@ -149,7 +148,7 @@ public class CompletedCalculationRetrieverTest
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
 
-        var request = CreateAggregatedTimeSeriesRequest(startOfPeriodFilter, endOfPeriodFilter);
+        var request = CreateRequestParameters(startOfPeriodFilter, endOfPeriodFilter);
 
         var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object);
 
@@ -203,7 +202,7 @@ public class CompletedCalculationRetrieverTest
                 calculationWithSecondCorrection,
             });
 
-        var request = CreateAggregatedTimeSeriesRequest(startOfPeriodFilter, endOfPeriodFilter);
+        var request = CreateRequestParameters(startOfPeriodFilter, endOfPeriodFilter);
 
         var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object);
 
@@ -259,7 +258,7 @@ public class CompletedCalculationRetrieverTest
                 calculationWithThirdCorrection,
             });
 
-        var request = CreateAggregatedTimeSeriesRequest(startOfPeriodFilter, endOfPeriodFilter, RequestedCalculationType.SecondCorrection);
+        var request = CreateRequestParameters(startOfPeriodFilter, endOfPeriodFilter, RequestedCalculationType.SecondCorrection);
 
         var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object);
 
@@ -272,7 +271,7 @@ public class CompletedCalculationRetrieverTest
         actual.Should().ContainSingle(x => x.CalculationId == calculationWithSecondCorrection.CalculationId);
     }
 
-    private static (string? GridArea, Period Period, RequestedCalculationType RequestedCalculationType) CreateAggregatedTimeSeriesRequest(
+    private static (string? GridArea, Period Period, RequestedCalculationType RequestedCalculationType) CreateRequestParameters(
         Instant startOfPeriodFilter,
         Instant endOfPeriodFilter,
         RequestedCalculationType? requestedCalculationType = null)

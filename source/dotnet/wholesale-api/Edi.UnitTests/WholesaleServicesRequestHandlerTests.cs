@@ -22,9 +22,7 @@ using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.Edi.Client;
 using Energinet.DataHub.Wholesale.Edi.Factories;
-using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
-using Energinet.DataHub.Wholesale.Edi.UnitTests.Extensions;
 using Energinet.DataHub.Wholesale.Edi.Validation;
 using FluentAssertions;
 using Google.Protobuf;
@@ -32,7 +30,6 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NodaTime;
 using Xunit;
-using Period = Energinet.DataHub.Wholesale.Edi.Models.Period;
 using Resolution = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution;
 using WholesaleServicesRequest = Energinet.DataHub.Edi.Requests.WholesaleServicesRequest;
 
