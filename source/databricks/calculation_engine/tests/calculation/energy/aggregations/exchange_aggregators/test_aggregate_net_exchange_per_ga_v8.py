@@ -11,32 +11,30 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 from datetime import datetime, timedelta
 from decimal import Decimal
 
-import pandas as pd
 import pytest
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
+from pyspark.sql.types import Row
 
-from package.calculation.energy.energy_results import (
-    EnergyResults,
-)
 from package.calculation.energy.aggregators.exchange_aggregators import (
     aggregate_net_exchange_per_ga,
     aggregate_net_exchange_per_neighbour_ga,
+)
+from package.calculation.energy.energy_results import (
+    EnergyResults,
 )
 from package.calculation.preparation.quarterly_metering_point_time_series import (
     QuarterlyMeteringPointTimeSeries,
     _quarterly_metering_point_time_series_schema,
 )
-from package.codelists import (
-    MeteringPointType,
-    QuantityQuality,
-    SettlementMethod,
-)
+from package.codelists import MeteringPointType
 from package.constants import Colname
+from tests.calculation.energy import (
+    quarterly_metering_point_time_series_factories as factories,
+)
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(
@@ -51,171 +49,48 @@ ALL_GRID_AREAS = ["A", "B", "C", "D", "E", "F", "X", "Y"]
 def quarterly_metering_point_time_series(
     spark: SparkSession,
 ) -> QuarterlyMeteringPointTimeSeries:
-    """Sample Time Series DataFrame"""
-
-    # Create empty pandas df
-    pandas_df = pd.DataFrame(
-        {
-            Colname.grid_area: [],
-            Colname.to_grid_area: [],
-            Colname.from_grid_area: [],
-            Colname.metering_point_id: [],
-            Colname.metering_point_type: [],
-            Colname.quantity: [],
-            Colname.quality: [],
-            Colname.energy_supplier_id: [],
-            Colname.balance_responsible_id: [],
-            Colname.settlement_method: [],
-            Colname.time_window: [],
-        }
-    )
+    rows = []
 
     # add 24 hours of exchange with different examples of exchange between grid areas. See readme.md for more info
-
     for quarter_number in range(numberOfQuarters):
-        pandas_df = add_row_of_data(
-            pandas_df,
-            MeteringPointType.EXCHANGE.value,
-            "B",
-            "A",
-            Decimal(2) * quarter_number,
-            default_obs_time + timedelta(minutes=quarter_number * 15),
-        )
+        obs_time = default_obs_time + timedelta(minutes=quarter_number * 15)
 
-        pandas_df = add_row_of_data(
-            pandas_df,
-            MeteringPointType.EXCHANGE.value,
-            "B",
-            "A",
-            Decimal("0.5") * quarter_number,
-            default_obs_time + timedelta(minutes=quarter_number * 15),
-        )
-        pandas_df = add_row_of_data(
-            pandas_df,
-            MeteringPointType.EXCHANGE.value,
-            "B",
-            "A",
-            Decimal("0.7") * quarter_number,
-            default_obs_time + timedelta(minutes=quarter_number * 15),
-        )
-
-        pandas_df = add_row_of_data(
-            pandas_df,
-            MeteringPointType.EXCHANGE.value,
-            "A",
-            "B",
-            Decimal(3) * quarter_number,
-            default_obs_time + timedelta(minutes=quarter_number * 15),
-        )
-        pandas_df = add_row_of_data(
-            pandas_df,
-            MeteringPointType.EXCHANGE.value,
-            "A",
-            "B",
-            Decimal("0.9") * quarter_number,
-            default_obs_time + timedelta(minutes=quarter_number * 15),
-        )
-        pandas_df = add_row_of_data(
-            pandas_df,
-            MeteringPointType.EXCHANGE.value,
-            "A",
-            "B",
-            Decimal("1.2") * quarter_number,
-            default_obs_time + timedelta(minutes=quarter_number * 15),
-        )
-
-        pandas_df = add_row_of_data(
-            pandas_df,
-            MeteringPointType.EXCHANGE.value,
-            "C",
-            "A",
-            Decimal("0.7") * quarter_number,
-            default_obs_time + timedelta(minutes=quarter_number * 15),
-        )
-        pandas_df = add_row_of_data(
-            pandas_df,
-            MeteringPointType.EXCHANGE.value,
-            "A",
-            "C",
-            Decimal("1.1") * quarter_number,
-            default_obs_time + timedelta(minutes=quarter_number * 15),
-        )
-        pandas_df = add_row_of_data(
-            pandas_df,
-            MeteringPointType.EXCHANGE.value,
-            "A",
-            "C",
-            Decimal("1.5") * quarter_number,
-            default_obs_time + timedelta(minutes=quarter_number * 15),
-        )
+        rows.append(_create_row("B", "A", Decimal(2) * quarter_number, obs_time))
+        rows.append(_create_row("B", "A", Decimal("0.5") * quarter_number, obs_time))
+        rows.append(_create_row("B", "A", Decimal("0.7") * quarter_number, obs_time))
+        rows.append(_create_row("A", "B", Decimal(3) * quarter_number, obs_time))
+        rows.append(_create_row("A", "B", Decimal("0.9") * quarter_number, obs_time))
+        rows.append(_create_row("A", "B", Decimal("1.2") * quarter_number, obs_time))
+        rows.append(_create_row("C", "A", Decimal("0.7") * quarter_number, obs_time))
+        rows.append(_create_row("A", "C", Decimal("1.1") * quarter_number, obs_time))
+        rows.append(_create_row("A", "C", Decimal("1.5") * quarter_number, obs_time))
         # "D" only appears as a from-grid-area (case used to prove bug in implementation)
-        pandas_df = add_row_of_data(
-            pandas_df,
-            MeteringPointType.EXCHANGE.value,
-            "A",
-            "D",
-            Decimal("1.6") * quarter_number,
-            default_obs_time + timedelta(minutes=quarter_number * 15),
-        )
+        rows.append(_create_row("A", "D", Decimal("1.6") * quarter_number, obs_time))
         # "E" only appears as a to-grid-area (case used to prove bug in implementation)
-        pandas_df = add_row_of_data(
-            pandas_df,
-            MeteringPointType.EXCHANGE.value,
-            "E",
-            "F",
-            Decimal("44.4") * quarter_number,
-            default_obs_time + timedelta(minutes=quarter_number * 15),
-        )
+        rows.append(_create_row("E", "F", Decimal("44.4") * quarter_number, obs_time))
         # Test sign of net exchange. Net exchange should be TO - FROM
-        pandas_df = add_row_of_data(
-            pandas_df,
-            MeteringPointType.EXCHANGE.value,
-            "X",
-            "Y",
-            Decimal("42") * quarter_number,
-            default_obs_time + timedelta(minutes=quarter_number * 15),
-        )
-        pandas_df = add_row_of_data(
-            pandas_df,
-            MeteringPointType.EXCHANGE.value,
-            "Y",
-            "X",
-            Decimal("12") * quarter_number,
-            default_obs_time + timedelta(minutes=quarter_number * 15),
-        )
-    df = spark.createDataFrame(pandas_df, _quarterly_metering_point_time_series_schema)
+        rows.append(_create_row("X", "Y", Decimal("42") * quarter_number, obs_time))
+        rows.append(_create_row("Y", "X", Decimal("12") * quarter_number, obs_time))
+
+    df = spark.createDataFrame(
+        data=rows, schema=_quarterly_metering_point_time_series_schema
+    )
     return QuarterlyMeteringPointTimeSeries(df)
 
 
-def add_row_of_data(
-    pandas_df: pd.DataFrame,
-    point_type,
-    to_grid_area,
-    from_grid_area,
+def _create_row(
+    to_grid_area: str,
+    from_grid_area: str,
     quantity: Decimal,
     timestamp: datetime,
-):
-    """
-    Helper method to create a new row in the dataframe to improve readability and maintainability
-    """
-    new_row = {
-        Colname.grid_area: ALL_GRID_AREAS,
-        Colname.to_grid_area: to_grid_area,
-        Colname.from_grid_area: from_grid_area,
-        Colname.metering_point_id: "metering-point-id",
-        Colname.metering_point_type: point_type,
-        Colname.quantity: quantity,
-        Colname.quality: QuantityQuality.ESTIMATED.value,
-        Colname.energy_supplier_id: "energy-supplier-id",
-        Colname.balance_responsible_id: "balance-responsible-id",
-        Colname.settlement_method: SettlementMethod.NON_PROFILED.value,
-        Colname.time_window: [
-            pd.to_datetime(timestamp).tz_convert(None),
-            pd.to_datetime(timestamp + timedelta(minutes=15)).tz_convert(None),
-        ],
-    }
-    pandas_series = pd.Series(new_row)
-    return pd.concat([pandas_df, pandas_series.to_frame().T], axis=0, ignore_index=True)
+) -> Row:
+    return factories.create_row(
+        to_grid_area=to_grid_area,
+        from_grid_area=from_grid_area,
+        metering_point_type=MeteringPointType.EXCHANGE,
+        quantity=quantity,
+        observation_time=timestamp,
+    )
 
 
 @pytest.fixture(scope="module")
@@ -306,5 +181,5 @@ def check_aggregation_row(
         col(f"{Colname.time_window_start}").alias("start"),
         col(f"{Colname.time_window_end}").alias("end"),
     )
-    res = gridfiltered.filter(gridfiltered["start"] == time).toPandas()
-    assert res[Colname.sum_quantity][0] == sum_quantity
+    res = gridfiltered.filter(gridfiltered["start"] == time).collect()
+    assert res[0][Colname.sum_quantity] == sum_quantity

@@ -19,7 +19,7 @@ from pyspark.sql.functions import col, concat_ws
 from package.calculation.preparation.charge_master_data import ChargeMasterData
 from package.calculation.preparation.charge_prices import ChargePrices
 from package.calculation.preparation.transformations.clamp_period import clamp_period
-from package.calculation_input import TableReader
+from package.calculation.input import TableReader
 from package.constants import Colname
 
 
@@ -28,9 +28,25 @@ def read_charge_master_data(
     period_start_datetime: datetime,
     period_end_datetime: datetime,
 ) -> ChargeMasterData:
-    return _get_charge_master_data_periods(
-        table_reader, period_start_datetime, period_end_datetime
+    charge_master_data_periods = (
+        table_reader.read_charge_master_data_periods()
+        .where(col(Colname.from_date) < period_end_datetime)
+        .where(
+            col(Colname.to_date).isNull()
+            | (col(Colname.to_date) > period_start_datetime)
+        )
     )
+
+    charge_master_data_periods = clamp_period(
+        charge_master_data_periods,
+        period_start_datetime,
+        period_end_datetime,
+        Colname.from_date,
+        Colname.to_date,
+    )
+
+    charge_master_data_periods = _add_charge_key_column(charge_master_data_periods)
+    return ChargeMasterData(charge_master_data_periods)
 
 
 def read_charge_prices(
@@ -38,9 +54,14 @@ def read_charge_prices(
     period_start_datetime: datetime,
     period_end_datetime: datetime,
 ) -> ChargePrices:
-    return _get_charge_price_points(
-        table_reader, period_start_datetime, period_end_datetime
+    charge_price_points = (
+        table_reader.read_charge_price_points()
+        .where(col(Colname.charge_time) >= period_start_datetime)
+        .where(col(Colname.charge_time) < period_end_datetime)
     )
+
+    charge_price_points = _add_charge_key_column(charge_price_points)
+    return ChargePrices(charge_price_points)
 
 
 def read_charge_links(
@@ -67,47 +88,6 @@ def read_charge_links(
     charge_links_df = _add_charge_key_column(charge_links_df)
 
     return charge_links_df
-
-
-def _get_charge_master_data_periods(
-    table_reader: TableReader,
-    period_start_datetime: datetime,
-    period_end_datetime: datetime,
-) -> ChargeMasterData:
-    charge_master_data_periods = (
-        table_reader.read_charge_master_data_periods()
-        .where(col(Colname.from_date) < period_end_datetime)
-        .where(
-            col(Colname.to_date).isNull()
-            | (col(Colname.to_date) > period_start_datetime)
-        )
-    )
-
-    charge_master_data_periods = clamp_period(
-        charge_master_data_periods,
-        period_start_datetime,
-        period_end_datetime,
-        Colname.from_date,
-        Colname.to_date,
-    )
-
-    charge_master_data_periods = _add_charge_key_column(charge_master_data_periods)
-    return ChargeMasterData(charge_master_data_periods)
-
-
-def _get_charge_price_points(
-    table_reader: TableReader,
-    period_start_datetime: datetime,
-    period_end_datetime: datetime,
-) -> ChargePrices:
-    charge_price_points = (
-        table_reader.read_charge_price_points()
-        .where(col(Colname.charge_time) >= period_start_datetime)
-        .where(col(Colname.charge_time) < period_end_datetime)
-    )
-
-    charge_price_points = _add_charge_key_column(charge_price_points)
-    return ChargePrices(charge_price_points)
 
 
 def _add_charge_key_column(charge_df: DataFrame) -> DataFrame:

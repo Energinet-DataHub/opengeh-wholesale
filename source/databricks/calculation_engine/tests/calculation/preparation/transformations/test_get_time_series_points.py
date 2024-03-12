@@ -19,10 +19,10 @@ from unittest.mock import patch, Mock
 
 from pyspark.sql import SparkSession
 
-from package import calculation_input
+from package.calculation import input
 from package.calculation.preparation.transformations import get_time_series_points
-from package.calculation_input.table_reader import TableReader
-from package.calculation_input.schemas import (
+from package.calculation.input import TableReader
+from package.calculation.input.schemas import (
     time_series_point_schema,
     grid_loss_metering_points_schema,
 )
@@ -54,7 +54,7 @@ def _create_grid_loss_metering_point_row(
 
 
 class TestWhenValidInput:
-    @patch.object(calculation_input, TableReader.__name__)
+    @patch.object(input, TableReader.__name__)
     def test_returns_expected_df(
         self,
         mock_calculation_input_reader: Mock,
@@ -85,7 +85,7 @@ class TestWhenValidInput:
         # Assert
         assert_dataframes_equal(actual, expected)
 
-    @patch.object(calculation_input, TableReader.__name__)
+    @patch.object(input, TableReader.__name__)
     def test_returns_df_without_time_series_of_grid_loss_metering_points(
         self,
         mock_calculation_input_reader: Mock,

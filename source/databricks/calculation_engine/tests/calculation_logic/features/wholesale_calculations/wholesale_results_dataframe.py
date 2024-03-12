@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 from pyspark.sql import functions as f, DataFrame, SparkSession
 from pyspark.sql.functions import lit, col
 from pyspark.sql.types import (
@@ -30,7 +29,8 @@ def create_wholesale_result_dataframe(*args) -> DataFrame:  # type: ignore
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
-    from package.calculation_output.schemas import wholesale_results_schema
+    from package.constants import Colname
+    from package.calculation.output.schemas import wholesale_results_schema
     from package.constants import WholesaleResultColumnNames
 
     df = df.withColumn(

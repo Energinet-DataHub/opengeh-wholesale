@@ -52,18 +52,11 @@ public class WholesaleResultEventProvider : ResultEventProvider, IWholesaleResul
     {
         await foreach (var wholesaleResult in _wholesaleResultQueries.GetAsync(calculation.Id).ConfigureAwait(false))
         {
-            yield return CreateEventFromWholesaleResult(wholesaleResult);
+            if (_amountPerChargeResultProducedV1Factory.CanCreate(wholesaleResult))
+                yield return CreateIntegrationEvent(_amountPerChargeResultProducedV1Factory.Create(wholesaleResult));
+
+            if (_monthlyAmountPerChargeResultProducedV1Factory.CanCreate(wholesaleResult))
+                yield return CreateIntegrationEvent(_monthlyAmountPerChargeResultProducedV1Factory.Create(wholesaleResult));
         }
-    }
-
-    private IntegrationEvent CreateEventFromWholesaleResult(WholesaleResult wholesaleResult)
-    {
-        if (_amountPerChargeResultProducedV1Factory.CanCreate(wholesaleResult))
-            return CreateIntegrationEvent(_amountPerChargeResultProducedV1Factory.Create(wholesaleResult));
-
-        if (_monthlyAmountPerChargeResultProducedV1Factory.CanCreate(wholesaleResult))
-            return CreateIntegrationEvent(_monthlyAmountPerChargeResultProducedV1Factory.Create(wholesaleResult));
-
-        throw new ArgumentException("Cannot create event from wholesale result.", nameof(wholesaleResult));
     }
 }

@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from package.codelists import (
-    ChargeResolution,
     CalculationType,
 )
 from package.infrastructure import logging_configuration
@@ -31,6 +30,9 @@ from .preparation import PreparedDataReader
 from .wholesale import wholesale_calculation
 from .wholesale.get_metering_points_and_child_metering_points import (
     get_metering_points_and_child_metering_points,
+)
+from .wholesale.get_wholesale_metering_point_time_series import (
+    get_wholesale_metering_point_times_series,
 )
 
 
@@ -65,10 +67,12 @@ def _execute(
             ).cache()
         )
 
-    results.energy_results = energy_calculation.execute(
-        args,
-        metering_point_time_series,
-        grid_loss_responsible_df,
+    results.energy_results, positive_grid_loss, negative_grid_loss = (
+        energy_calculation.execute(
+            args,
+            metering_point_time_series,
+            grid_loss_responsible_df,
+        )
     )
 
     if (
@@ -78,58 +82,32 @@ def _execute(
         or args.calculation_type == CalculationType.THIRD_CORRECTION_SETTLEMENT
     ):
         with logging_configuration.start_span("calculation.wholesale.prepare"):
-            charge_master_data = prepared_data_reader.get_charge_master_data(
-                args.calculation_period_start_datetime,
-                args.calculation_period_end_datetime,
-            )
-
-            charge_prices = prepared_data_reader.get_charge_prices(
-                args.calculation_period_start_datetime,
-                args.calculation_period_end_datetime,
-            )
-
-            metering_points_periods_for_wholesale_calculation = (
+            wholesale_metering_point_periods = (
                 get_metering_points_and_child_metering_points(metering_point_periods_df)
             )
 
-            charges_link_metering_point_periods = (
-                prepared_data_reader.get_charge_link_metering_point_periods(
-                    args.calculation_period_start_datetime,
-                    args.calculation_period_end_datetime,
-                    metering_points_periods_for_wholesale_calculation,
-                )
-            )
-
-            prepared_subscriptions = prepared_data_reader.get_subscription_charges(
-                charge_master_data,
-                charge_prices,
-                charges_link_metering_point_periods,
-                args.time_zone,
-            )
-
-            tariffs_hourly_df = prepared_data_reader.get_tariff_charges(
+            # This extends the content of metering_point_time_series with wholesale data.
+            metering_point_time_series = get_wholesale_metering_point_times_series(
                 metering_point_time_series,
-                charge_master_data,
-                charge_prices,
-                charges_link_metering_point_periods,
-                ChargeResolution.HOUR,
-                args.time_zone,
+                positive_grid_loss,
+                negative_grid_loss,
             )
 
-            tariffs_daily_df = prepared_data_reader.get_tariff_charges(
+            input_charges = prepared_data_reader.get_input_charges(
+                args.calculation_period_start_datetime,
+                args.calculation_period_end_datetime,
+            )
+
+            prepared_charges = prepared_data_reader.get_prepared_charges(
+                wholesale_metering_point_periods,
                 metering_point_time_series,
-                charge_master_data,
-                charge_prices,
-                charges_link_metering_point_periods,
-                ChargeResolution.DAY,
+                input_charges,
                 args.time_zone,
             )
 
         results.wholesale_results = wholesale_calculation.execute(
             args,
-            prepared_subscriptions,
-            tariffs_hourly_df,
-            tariffs_daily_df,
+            prepared_charges,
         )
 
     # Add basis data to results

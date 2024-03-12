@@ -30,7 +30,7 @@ def create_energy_result_dataframe(*args) -> DataFrame:
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
-    from package.calculation_output.schemas import energy_results_schema
+    from package.calculation.output.schemas import energy_results_schema
     from package.codelists import CalculationType
     from package.constants import EnergyResultColumnNames
 
