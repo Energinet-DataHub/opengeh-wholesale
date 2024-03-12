@@ -59,8 +59,15 @@ public sealed class WholesaleServicesRequestValidatorTests
     public async Task Validate_WhenPeriodStartIsTooOld_ReturnsUnsuccessfulValidation()
     {
         // Arrange
+        var now = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset();
+
         var request = new WholesaleServicesRequestBuilder()
-            .WithPeriodStart(SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset().AddYears(-5).ToInstant().ToString())
+            .WithPeriodStart(
+                new LocalDate(now.Year - 5, now.Month, now.Day)
+                    .AtMidnight()
+                    .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+                    .ToInstant()
+                    .ToString())
             .Build();
 
         // Act
