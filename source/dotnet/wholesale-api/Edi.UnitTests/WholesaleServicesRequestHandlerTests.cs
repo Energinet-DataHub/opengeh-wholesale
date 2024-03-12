@@ -15,26 +15,20 @@
 using AutoFixture.Xunit2;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Edi.Requests;
-using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.Edi.Client;
+using Energinet.DataHub.Wholesale.Edi.Factories;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
-using Energinet.DataHub.Wholesale.Edi.UnitTests.Extensions;
 using Energinet.DataHub.Wholesale.Edi.Validation;
 using FluentAssertions;
 using Google.Protobuf;
 using Microsoft.Extensions.Logging;
 using Moq;
-using NodaTime.Extensions;
 using Xunit;
-using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
-using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
-using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
+using Period = Energinet.DataHub.Wholesale.Edi.Models.Period;
+using WholesaleServicesRequest = Energinet.DataHub.Edi.Requests.WholesaleServicesRequest;
 
 namespace Energinet.DataHub.Wholesale.Edi.UnitTests;
 
@@ -44,17 +38,18 @@ public class WholesaleServicesRequestHandlerTests
     [InlineAutoMoqData]
     public async Task ProcessAsync_WithNoValidationErrors_RunsSuccessfully(
         [Frozen] Mock<IEdiClient> ediClient,
+        [Frozen] Mock<IWholesaleResultQueries> wholesaleResultQueries,
         [Frozen] Mock<IValidator<WholesaleServicesRequest>> validator,
-        [Frozen] Mock<ILogger<WholesaleServicesRequestHandler>> logger)
+        [Frozen] Mock<WholesaleServicesRequestMapper> mapper,
+        [Frozen] Mock<ILogger<WholesaleServicesRequestHandler>> logger,
+        [Frozen] Mock<CompletedCalculationRetriever> completedCalculationRetriever)
     {
         // Arrange
         var expectedReferenceId = Guid.NewGuid().ToString();
-        var request = new WholesaleServicesRequestBuilder()
-            .Build();
 
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
-            body: new BinaryData(request.ToByteArray()));
+            body: new BinaryData(new WholesaleServicesRequestBuilder().Build().ToByteArray()));
 
         validator.Setup(v => v.ValidateAsync(
                 It.IsAny<WholesaleServicesRequest>()))
@@ -63,6 +58,9 @@ public class WholesaleServicesRequestHandlerTests
         var sut = new WholesaleServicesRequestHandler(
             ediClient.Object,
             validator.Object,
+            completedCalculationRetriever.Object,
+            wholesaleResultQueries.Object,
+            mapper.Object,
             logger.Object);
 
         // Act
@@ -80,17 +78,18 @@ public class WholesaleServicesRequestHandlerTests
     [InlineAutoMoqData]
     public async Task ProcessAsync_WithValidationErrors_ThrowsNotImplementedException(
         [Frozen] Mock<IEdiClient> ediClient,
+        [Frozen] Mock<IWholesaleResultQueries> wholesaleResultQueries,
         [Frozen] Mock<IValidator<WholesaleServicesRequest>> validator,
-        [Frozen] Mock<ILogger<WholesaleServicesRequestHandler>> logger)
+        [Frozen] Mock<WholesaleServicesRequestMapper> mapper,
+        [Frozen] Mock<ILogger<WholesaleServicesRequestHandler>> logger,
+        [Frozen] Mock<CompletedCalculationRetriever> completedCalculationRetriever)
     {
         // Arrange
         var expectedReferenceId = Guid.NewGuid().ToString();
-        var request = new WholesaleServicesRequestBuilder()
-            .Build();
 
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
-            body: new BinaryData(request.ToByteArray()));
+            body: new BinaryData(new WholesaleServicesRequestBuilder().Build().ToByteArray()));
 
         validator.Setup(v => v.ValidateAsync(
                 It.IsAny<WholesaleServicesRequest>()))
@@ -102,6 +101,9 @@ public class WholesaleServicesRequestHandlerTests
         var sut = new WholesaleServicesRequestHandler(
             ediClient.Object,
             validator.Object,
+            completedCalculationRetriever.Object,
+            wholesaleResultQueries.Object,
+            mapper.Object,
             logger.Object);
 
         // Act
