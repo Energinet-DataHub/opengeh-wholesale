@@ -14,6 +14,8 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.Edi.Client;
 using Energinet.DataHub.Wholesale.Edi.Factories;
@@ -22,6 +24,7 @@ using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.Validation;
 using Microsoft.Extensions.Logging;
 using NodaTime.Text;
+using Period = Energinet.DataHub.Wholesale.Edi.Models.Period;
 
 namespace Energinet.DataHub.Wholesale.Edi;
 
@@ -73,13 +76,14 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
         }
 
         var request = _wholesaleServicesRequestMapper.Map(incomingRequest);
-        var data = await GetWholesaleServicesDataAsync(request, cancellationToken).ConfigureAwait(false);
+        var queryParameters = await GetWholesaleResultQueryParametersAsync(request).ConfigureAwait(false);
+        var data = await _wholesaleResultQueries.GetAsync(queryParameters).ToListAsync(cancellationToken).ConfigureAwait(false);
 
         if (!data.Any())
         {
           var errors = new List<ValidationError>
           {
-              await HasDataInAnotherGridAreaAsync(incomingRequest, request, cancellationToken).ConfigureAwait(false)
+              await HasDataInAnotherGridAreaAsync(incomingRequest.RequestedByActorRole, queryParameters).ConfigureAwait(false)
                   ? _noDataForRequestedGridArea
                   : _noDataAvailable,
           };
@@ -93,9 +97,7 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
         await SendAcceptedMessageAsync(data, referenceId, cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task<List<object>> GetWholesaleServicesDataAsync(
-        WholesaleServicesRequest request,
-        CancellationToken cancellationToken)
+    private async Task<WholesaleResultQueryParameters> GetWholesaleResultQueryParametersAsync(WholesaleServicesRequest request)
     {
         var latestCalculationsForRequest = await _completedCalculationRetriever.GetLatestCompletedCalculationsForPeriodAsync(
                 request.GridArea,
@@ -103,40 +105,26 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
                 request.RequestedCalculationType)
             .ConfigureAwait(true);
 
-        // TODO: Implement data lookup
-        // var queryParameters = CreateQueryParameters(request, latestCalculationsForRequest);
-        // var queryResult = await _wholesaleResultQueries.GetAsync(queryParameters).ToListAsync(cancellationToken).ConfigureAwait(false);
-        // return queryResult;
-        return
-        [
-            new()
-        ];
+        return new WholesaleResultQueryParameters(request.GridArea, latestCalculationsForRequest);
     }
 
     private async Task<bool> HasDataInAnotherGridAreaAsync(
-        Energinet.DataHub.Edi.Requests.WholesaleServicesRequest incomingRequest,
-        WholesaleServicesRequest request,
-        CancellationToken cancellationToken)
+        string? requestedByActorRole,
+        WholesaleResultQueryParameters queryParameters)
     {
-        if (request.GridArea == null) // If grid area is null, we already retrieved all data across multiple grid areas
+        if (queryParameters.GridArea == null) // If grid area is null, we already retrieved any data across all grid areas
             return false;
 
-        var actorRole = incomingRequest.RequestedByActorRole;
-        if (actorRole is ActorRoleCode.EnergySupplier or ActorRoleCode.BalanceResponsibleParty)
+        if (requestedByActorRole is ActorRoleCode.EnergySupplier or ActorRoleCode.BalanceResponsibleParty)
         {
-            var requestWithoutGridArea = request with
+            var queryParametersWithoutGridArea = queryParameters with
             {
                 GridArea = null,
             };
 
-            var results = await GetWholesaleServicesDataAsync(request, cancellationToken).ConfigureAwait(false);
+            var anyResultsExists = await _wholesaleResultQueries.AnyAsync(queryParametersWithoutGridArea).ConfigureAwait(false);
 
-            if (results.Any())
-                return true;
-            // await foreach (var result in results)
-            // {
-            //     return true;
-            // }
+            return anyResultsExists;
         }
 
         return false;
