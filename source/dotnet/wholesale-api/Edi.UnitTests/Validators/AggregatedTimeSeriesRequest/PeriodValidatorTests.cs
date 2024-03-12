@@ -19,7 +19,7 @@ using FluentAssertions;
 using NodaTime;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators;
+namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.AggregatedTimeSeriesRequest;
 
 public class PeriodValidatorTests
 {
