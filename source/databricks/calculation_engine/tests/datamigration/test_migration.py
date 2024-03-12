@@ -59,6 +59,12 @@ def test__migrate__when_schema_migration_scripts_are_executed__compare_schemas(
         return_value=storage_account,
     )
 
+    mocker.patch.object(
+        sut.paths,
+        sut.paths.get_container_root_path.__name__,
+        return_value=storage_account,
+    )
+
     spark_helper.reset_spark_catalog(spark)
 
     # Act
@@ -102,6 +108,12 @@ def test__migrate__when_schema_migration_scripts_are_executed__compare_result_wi
     mocker.patch.object(
         sut.paths,
         sut.paths.get_spark_sql_migrations_path.__name__,
+        return_value=storage_account,
+    )
+
+    mocker.patch.object(
+        sut.paths,
+        sut.paths.get_container_root_path.__name__,
         return_value=storage_account,
     )
 
@@ -163,6 +175,12 @@ def test__schema_config__when_current_state_script_files_are_executed(
         return_value=storage_account,
     )
 
+    mocker.patch.object(
+        sut.paths,
+        sut.paths.get_container_root_path.__name__,
+        return_value=storage_account,
+    )
+
     spark_helper.reset_spark_catalog(spark)
     spark_sql_migration_helper.migrate_with_current_state(spark)
 
@@ -201,6 +219,12 @@ def test__schema_config__when_schema_and_table_script_files_are_executed(
     mocker.patch.object(
         sut.paths,
         sut.paths.get_spark_sql_migrations_path.__name__,
+        return_value=storage_account,
+    )
+
+    mocker.patch.object(
+        sut.paths,
+        sut.paths.get_container_root_path.__name__,
         return_value=storage_account,
     )
 
@@ -243,6 +267,12 @@ def test__current_state_and_migration_scripts__should_give_same_result(
     mocker.patch.object(
         sut.paths,
         sut.paths.get_spark_sql_migrations_path.__name__,
+        return_value=storage_account,
+    )
+
+    mocker.patch.object(
+        sut.paths,
+        sut.paths.get_container_root_path.__name__,
         return_value=storage_account,
     )
 
