@@ -11,15 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pyspark.sql import DataFrame
-import pyspark.sql.functions as f
 
 from package.codelists import (
     ChargeResolution,
     CalculationType,
-    SettlementMethod,
-    MeteringPointType,
-    MeteringPointResolution,
 )
 from package.infrastructure import logging_configuration
 from .CalculationResults import (
@@ -37,7 +32,9 @@ from .wholesale import wholesale_calculation
 from .wholesale.get_metering_points_and_child_metering_points import (
     get_metering_points_and_child_metering_points,
 )
-from ..constants import EnergyResultColumnNames, Colname
+from .wholesale.get_wholesale_metering_point_time_series import (
+    get_wholesale_metering_point_times_series,
+)
 
 
 @logging_configuration.use_span("calculation")
@@ -107,7 +104,7 @@ def _execute(
             )
 
             wholesale_metering_point_time_series = (
-                _get_wholesale_metering_point_times_series(
+                get_wholesale_metering_point_times_series(
                     metering_point_time_series,
                     results.energy_results.positive_grid_loss,
                     results.energy_results.negative_grid_loss,
@@ -162,55 +159,3 @@ def _write_results(args: CalculatorArgs, results: CalculationResultsContainer) -
 
     # We write basis data at the end of the calculation to make it easier to analyze performance of the calculation part
     write_basis_data(args, results.basis_data)
-
-
-def _get_wholesale_metering_point_times_series(
-    metering_point_time_series: DataFrame,
-    positive_grid_loss: DataFrame,
-    negative_grid_loss: DataFrame,
-) -> DataFrame:
-    """
-    Metering point time series for wholesale calculation includes all calculation input metering point time series,
-    and positive and negative grid loss metering point time series.
-    """
-    positive_grid_loss_transformed = _transform(
-        positive_grid_loss, MeteringPointType.CONSUMPTION
-    )
-    negative_grid_loss_transformed = _transform(
-        negative_grid_loss, MeteringPointType.PRODUCTION
-    )
-
-    return metering_point_time_series.union(positive_grid_loss_transformed).union(
-        negative_grid_loss_transformed
-    )
-
-
-def _transform(
-    grid_loss: DataFrame, metering_point_type: MeteringPointType
-) -> DataFrame:
-    """
-    Transforms calculated grid loss dataframes to the format of the calculation input metering point time series.
-    """
-    return grid_loss.select(
-        f.col(EnergyResultColumnNames.grid_area).alias(Colname.grid_area),
-        f.lit(None).alias(Colname.to_grid_area),
-        f.lit(None).alias(Colname.from_grid_area),
-        f.col(EnergyResultColumnNames.metering_point_id).alias(
-            Colname.metering_point_id
-        ),
-        f.lit(metering_point_type.value).alias(Colname.metering_point_type),
-        f.lit(MeteringPointResolution.QUARTER.value).alias(
-            Colname.resolution
-        ),  # This will change when we must support HOURLY before 1st of May 2023
-        f.col(EnergyResultColumnNames.time).alias(Colname.observation_time),
-        f.col(EnergyResultColumnNames.quantity).alias(Colname.quantity),
-        # Quality for grid loss is always "calculated"
-        f.col(EnergyResultColumnNames.quantity_qualities)[0].alias(Colname.quality),
-        f.col(EnergyResultColumnNames.energy_supplier_id).alias(
-            Colname.energy_supplier_id
-        ),
-        f.col(EnergyResultColumnNames.balance_responsible_id).alias(
-            Colname.balance_responsible_id
-        ),
-        f.lit(SettlementMethod.FLEX.value).alias(Colname.settlement_method),
-    )
