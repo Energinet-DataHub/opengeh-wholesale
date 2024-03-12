@@ -19,6 +19,7 @@ from package.codelists import (
     SettlementMethod,
     MeteringPointType,
     MeteringPointResolution,
+    QuantityQuality,
 )
 from package.constants import Colname
 
@@ -35,15 +36,16 @@ def get_wholesale_metering_point_times_series(
 
     # Union positive and negative grid loss metering point time series and transform them to the same format as the
     # calculation input metering point time series before final union.
+    positive = positive_grid_loss.df.withColumn(
+        Colname.metering_point_type, f.lit(MeteringPointType.CONSUMPTION.value)
+    ).withColumn(Colname.settlement_method, f.lit(SettlementMethod.FLEX.value))
+
+    negative = negative_grid_loss.df.withColumn(
+        Colname.metering_point_type, f.lit(MeteringPointType.PRODUCTION.value)
+    ).withColumn(Colname.settlement_method, f.lit(None))
+
     return (
-        positive_grid_loss.df.withColumn(
-            Colname.metering_point_type, f.lit(MeteringPointType.CONSUMPTION.value)
-        )
-        .union(
-            negative_grid_loss.df.withColumn(
-                Colname.metering_point_type, f.lit(MeteringPointType.PRODUCTION.value)
-            )
-        )
+        positive.union(negative)
         .select(
             f.col(Colname.grid_area),
             f.col(Colname.to_grid_area),
@@ -55,13 +57,9 @@ def get_wholesale_metering_point_times_series(
             ),  # This will change when we must support HOURLY for calculations before 1st of May 2023
             f.col(Colname.time_window_start).alias(Colname.observation_time),
             f.col(Colname.sum_quantity).alias(Colname.quantity),
-            # Quality for grid loss is always "calculated"
-            f.col(Colname.qualities)[0].alias(Colname.quality),
+            f.lit(QuantityQuality.CALCULATED.value).alias(Colname.quality),
             f.col(Colname.energy_supplier_id),
             f.col(Colname.balance_responsible_id),
-            # It would make sense to get the settlement method from the input data, but it is not available
-            # in EnergyResults, and it didn't seem worth the effort at the moment of this implementation
-            f.lit(SettlementMethod.FLEX.value).alias(Colname.settlement_method),
         )
         .union(metering_point_time_series)
     )
