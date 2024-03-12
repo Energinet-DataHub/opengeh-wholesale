@@ -84,12 +84,11 @@ def _execute(
                 get_metering_points_and_child_metering_points(metering_point_periods_df)
             )
 
-            wholesale_metering_point_time_series = (
-                get_wholesale_metering_point_times_series(
-                    metering_point_time_series,
-                    results.energy_results.positive_grid_loss,
-                    results.energy_results.negative_grid_loss,
-                )
+            # This extends the content of metering_point_time_series with wholesale data.
+            metering_point_time_series = get_wholesale_metering_point_times_series(
+                metering_point_time_series,
+                results.energy_results.positive_grid_loss,
+                results.energy_results.negative_grid_loss,
             )
 
             input_charges = prepared_data_reader.get_input_charges(
@@ -99,7 +98,7 @@ def _execute(
 
             prepared_charges = prepared_data_reader.get_prepared_charges(
                 wholesale_metering_point_periods,
-                wholesale_metering_point_time_series,
+                metering_point_time_series,
                 input_charges,
                 args.time_zone,
             )
