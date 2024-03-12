@@ -96,7 +96,7 @@ public class AggregatedTimeSeriesRequestHandler : IWholesaleInboxRequestHandler
         AggregatedTimeSeriesRequest request,
         CancellationToken cancellationToken)
     {
-        var parameters = await CreateAggregatedTimeSeriesQueryParametersForLatestCalculationsAsync(request).ConfigureAwait(false);
+        var parameters = await CreateAggregatedTimeSeriesQueryParametersWithoutCalculationTypeAsync(request).ConfigureAwait(false);
 
         return await _aggregatedTimeSeriesQueries.GetAsync(
             parameters).ToListAsync(cancellationToken).ConfigureAwait(false);
@@ -114,7 +114,7 @@ public class AggregatedTimeSeriesRequestHandler : IWholesaleInboxRequestHandler
         {
             var newAggregationLevel = aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea with { GridAreaCode = null };
             var newRequest = aggregatedTimeSeriesRequestMessage with { AggregationPerRoleAndGridArea = newAggregationLevel };
-            var parameters = await CreateAggregatedTimeSeriesQueryParametersForLatestCalculationsAsync(newRequest).ConfigureAwait(false);
+            var parameters = await CreateAggregatedTimeSeriesQueryParametersWithoutCalculationTypeAsync(newRequest).ConfigureAwait(false);
 
             var results = _aggregatedTimeSeriesQueries.GetAsync(
                     parameters)
@@ -129,7 +129,7 @@ public class AggregatedTimeSeriesRequestHandler : IWholesaleInboxRequestHandler
         return false;
     }
 
-    private async Task<AggregatedTimeSeriesQueryParameters> CreateAggregatedTimeSeriesQueryParametersForLatestCalculationsAsync(
+    private async Task<AggregatedTimeSeriesQueryParameters> CreateAggregatedTimeSeriesQueryParametersWithoutCalculationTypeAsync(
         AggregatedTimeSeriesRequest request)
     {
         var latestCalculationsForRequest = await _completedCalculationRetriever.GetLatestCompletedCalculationsForPeriodAsync(
