@@ -60,6 +60,7 @@ def get_wholesale_metering_point_times_series(
             f.lit(QuantityQuality.CALCULATED.value).alias(Colname.quality),
             f.col(Colname.energy_supplier_id),
             f.col(Colname.balance_responsible_id),
+            f.col(Colname.settlement_method),
         )
         .union(metering_point_time_series)
     )
