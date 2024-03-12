@@ -13,18 +13,16 @@
 # limitations under the License.
 
 from datetime import datetime
-from typing import Tuple
 
 from pyspark.sql import DataFrame
 
-from package.calculation.preparation.grid_loss_responsible import GridLossResponsible
 from package.calculation.input import TableReader
+from package.calculation.preparation.grid_loss_responsible import GridLossResponsible
 from package.codelists import ChargeResolution
 from . import transformations as T
-from .charge_master_data import ChargeMasterData
-from .charge_prices import ChargePrices
 from .input_charges import InputChargesContainer
 from .prepared_charges import PreparedChargesContainer
+from ...constants import Colname
 from ...infrastructure import logging_configuration
 
 
@@ -64,6 +62,7 @@ class PreparedDataReader:
         time_series_points_df = T.get_time_series_points(
             self._table_reader, period_start_datetime, period_end_datetime
         )
+
         return T.get_metering_point_time_series(
             time_series_points_df,
             metering_point_periods_df,
@@ -133,4 +132,15 @@ class PreparedDataReader:
             hourly_tariffs=hourly_tariffs,
             daily_tariffs=daily_tariffs,
             subscriptions=subscriptions,
+        )
+
+    def get_metering_point_periods_without_grid_loss(
+        self, metering_point_periods_df
+    ) -> DataFrame:
+
+        # Remove grid loss metering point periods
+        return metering_point_periods_df.join(
+            self._table_reader.read_grid_loss_metering_points(),
+            Colname.metering_point_id,
+            "left_anti",
         )

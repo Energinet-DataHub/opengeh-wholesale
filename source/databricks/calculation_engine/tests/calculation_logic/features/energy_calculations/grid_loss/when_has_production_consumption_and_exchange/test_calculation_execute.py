@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from calculation_logic.features.energy_calculations.grid_loss.when_happy_path.states.scenario_state import (
+from calculation_logic.features.energy_calculations.grid_loss.when_has_production_consumption_and_exchange.states.scenario_state import (
     get_expected,
 )
 from helpers.data_frame_utils import (
@@ -28,9 +28,6 @@ def test_execute__returns_expected(  # type: ignore
 
     # Act
     results = scenario_fixture.execute()
-
-    results.energy_results.grid_loss.show(n=2000)
-    scenario_fixture.expected.show(n=2000)
 
     # Assert
     assert_dataframe_and_schema(

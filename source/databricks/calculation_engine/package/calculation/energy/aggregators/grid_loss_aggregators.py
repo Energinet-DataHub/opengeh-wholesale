@@ -39,6 +39,7 @@ def calculate_grid_loss(
     flex_consumption: EnergyResults,
     production: EnergyResults,
 ) -> EnergyResults:
+
     agg_non_profiled_consumption_result = t.aggregate_sum_quantity_and_qualities(
         non_profiled_consumption.df,
         [Colname.grid_area, Colname.time_window],
@@ -69,6 +70,13 @@ def calculate_grid_loss(
             "left",
         )
         .orderBy(Colname.grid_area, Colname.time_window)
+    )
+
+    result = (
+        result.na.fill({net_exchange_result: 0})
+        .na.fill({prod_result: 0})
+        .na.fill({hourly_result: 0})
+        .na.fill({flex_result: 0})
     )
 
     result = result.withColumn(
