@@ -39,8 +39,6 @@ def test_execute__returns_expected(
         WholesaleResultColumnNames.metering_point_type,
         WholesaleResultColumnNames.time,
     )
-    actual.show(100)
-    expected.show(100)
 
     assert_dataframe_and_schema(
         actual,
