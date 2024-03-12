@@ -135,7 +135,7 @@ class PreparedDataReader:
         )
 
     def get_metering_point_periods_without_grid_loss(
-        self, metering_point_periods_df
+        self, metering_point_periods_df: DataFrame
     ) -> DataFrame:
 
         # Remove grid loss metering point periods
