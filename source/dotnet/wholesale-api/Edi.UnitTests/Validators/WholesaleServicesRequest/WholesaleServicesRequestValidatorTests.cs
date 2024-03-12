@@ -12,25 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Edi.Requests;
-using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.GridArea;
-using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
 using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
-using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.Validation;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using NodaTime;
 using Xunit;
-using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 
-namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators;
+namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.WholesaleServicesRequest;
 
-public class WholesaleServicesRequestValidatorTests
+public sealed class WholesaleServicesRequestValidatorTests
 {
-    private readonly IValidator<WholesaleServicesRequest> _sut;
+    private readonly IValidator<DataHub.Edi.Requests.WholesaleServicesRequest> _sut;
 
     public WholesaleServicesRequestValidatorTests()
     {
@@ -40,7 +33,7 @@ public class WholesaleServicesRequestValidatorTests
 
         var serviceProvider = services.BuildServiceProvider();
 
-        _sut = serviceProvider.GetRequiredService<IValidator<WholesaleServicesRequest>>();
+        _sut = serviceProvider.GetRequiredService<IValidator<DataHub.Edi.Requests.WholesaleServicesRequest>>();
     }
 
     [Fact]
