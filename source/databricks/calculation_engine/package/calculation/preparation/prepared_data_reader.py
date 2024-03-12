@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from datetime import datetime
+from typing import Tuple
 
 from pyspark.sql import DataFrame
 
@@ -20,11 +21,10 @@ from package.calculation.preparation.grid_loss_responsible import GridLossRespon
 from package.calculation.input import TableReader
 from package.codelists import ChargeResolution
 from . import transformations as T
-from .charge_link_metering_point_periods import ChargeLinkMeteringPointPeriods
 from .charge_master_data import ChargeMasterData
 from .charge_prices import ChargePrices
-from .prepared_tariffs import PreparedTariffs
-from .prepared_subscriptions import PreparedSubscriptions
+from .input_charges import InputChargesContainer
+from .prepared_charges import PreparedChargesContainer
 from ...infrastructure import logging_configuration
 
 
@@ -54,74 +54,6 @@ class PreparedDataReader:
             grid_areas, metering_point_periods_df, self._table_reader
         )
 
-    @logging_configuration.use_span("get_charge_master_data")
-    def get_charge_master_data(
-        self,
-        period_start_datetime: datetime,
-        period_end_datetime: datetime,
-    ) -> ChargeMasterData:
-        return T.read_charge_master_data(
-            self._table_reader, period_start_datetime, period_end_datetime
-        )
-
-    @logging_configuration.use_span("get_charge_prices")
-    def get_charge_prices(
-        self,
-        period_start_datetime: datetime,
-        period_end_datetime: datetime,
-    ) -> ChargePrices:
-        return T.read_charge_prices(
-            self._table_reader, period_start_datetime, period_end_datetime
-        )
-
-    @logging_configuration.use_span("get_metering_points_and_child_metering_points")
-    def get_charge_link_metering_point_periods(
-        self,
-        period_start_datetime: datetime,
-        period_end_datetime: datetime,
-        metering_point_periods_df: DataFrame,
-    ) -> ChargeLinkMeteringPointPeriods:
-        charge_links = T.read_charge_links(
-            self._table_reader, period_start_datetime, period_end_datetime
-        )
-        return T.get_charge_link_metering_point_periods(
-            charge_links, metering_point_periods_df
-        )
-
-    @logging_configuration.use_span("get_prepared_tariffs")
-    def get_prepared_tariffs(
-        self,
-        time_series: DataFrame,
-        charge_master_data: ChargeMasterData,
-        charge_prices: ChargePrices,
-        charges_link_metering_point_periods: ChargeLinkMeteringPointPeriods,
-        resolution: ChargeResolution,
-        time_zone: str,
-    ) -> PreparedTariffs:
-        return T.get_prepared_tariffs(
-            time_series,
-            charge_master_data,
-            charge_prices,
-            charges_link_metering_point_periods,
-            resolution,
-            time_zone,
-        )
-
-    @logging_configuration.use_span("get_prepared_subscriptions")
-    def get_prepared_subscriptions(
-        self,
-        charge_master_data: ChargeMasterData,
-        charge_prices: ChargePrices,
-        charges_link_metering_point_periods: ChargeLinkMeteringPointPeriods,
-        time_zone: str,
-    ) -> PreparedSubscriptions:
-        return T.get_subscription_charges(
-            charge_master_data,
-            charge_prices,
-            charges_link_metering_point_periods,
-            time_zone,
-        )
-
     @logging_configuration.use_span("get_metering_point_time_series")
     def get_metering_point_time_series(
         self,
@@ -135,4 +67,70 @@ class PreparedDataReader:
         return T.get_metering_point_time_series(
             time_series_points_df,
             metering_point_periods_df,
+        )
+
+    @logging_configuration.use_span("get_input_charges")
+    def get_input_charges(
+        self,
+        period_start_datetime: datetime,
+        period_end_datetime: datetime,
+    ) -> InputChargesContainer:
+        charge_master_data = T.read_charge_master_data(
+            self._table_reader, period_start_datetime, period_end_datetime
+        )
+
+        charge_prices = T.read_charge_prices(
+            self._table_reader, period_start_datetime, period_end_datetime
+        )
+
+        charge_links = T.read_charge_links(
+            self._table_reader, period_start_datetime, period_end_datetime
+        )
+
+        return InputChargesContainer(
+            charge_master_data=charge_master_data,
+            charge_prices=charge_prices,
+            charge_links=charge_links,
+        )
+
+    def get_prepared_charges(
+        self,
+        metering_point_periods: DataFrame,
+        time_series: DataFrame,
+        input_charges: InputChargesContainer,
+        time_zone: str,
+    ) -> PreparedChargesContainer:
+        charge_link_metering_point_periods = T.get_charge_link_metering_point_periods(
+            input_charges.charge_links, metering_point_periods
+        )
+
+        hourly_tariffs = T.get_prepared_tariffs(
+            time_series,
+            input_charges.charge_master_data,
+            input_charges.charge_prices,
+            charge_link_metering_point_periods,
+            ChargeResolution.HOUR,
+            time_zone,
+        )
+
+        daily_tariffs = T.get_prepared_tariffs(
+            time_series,
+            input_charges.charge_master_data,
+            input_charges.charge_prices,
+            charge_link_metering_point_periods,
+            ChargeResolution.DAY,
+            time_zone,
+        )
+
+        subscriptions = T.get_subscription_charges(
+            input_charges.charge_master_data,
+            input_charges.charge_prices,
+            charge_link_metering_point_periods,
+            time_zone,
+        )
+
+        return PreparedChargesContainer(
+            hourly_tariffs=hourly_tariffs,
+            daily_tariffs=daily_tariffs,
+            subscriptions=subscriptions,
         )
