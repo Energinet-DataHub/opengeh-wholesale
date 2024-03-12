@@ -106,12 +106,11 @@ def _execute(
                 )
             )
 
-            wholesale_metering_point_time_series = (
-                _get_wholesale_metering_point_times_series(
-                    metering_point_time_series,
-                    results.energy_results.positive_grid_loss,
-                    results.energy_results.negative_grid_loss,
-                )
+            # This extends the content of metering_point_time_series with wholesale data.
+            metering_point_time_series = _get_wholesale_metering_point_times_series(
+                metering_point_time_series,
+                results.energy_results.positive_grid_loss,
+                results.energy_results.negative_grid_loss,
             )
 
             prepared_subscriptions = prepared_data_reader.get_prepared_subscriptions(
@@ -122,7 +121,7 @@ def _execute(
             )
 
             tariffs_hourly_df = prepared_data_reader.get_prepared_tariffs(
-                wholesale_metering_point_time_series,
+                metering_point_time_series,
                 charge_master_data,
                 charge_prices,
                 charges_link_metering_point_periods,
@@ -131,7 +130,7 @@ def _execute(
             )
 
             tariffs_daily_df = prepared_data_reader.get_prepared_tariffs(
-                wholesale_metering_point_time_series,
+                metering_point_time_series,
                 charge_master_data,
                 charge_prices,
                 charges_link_metering_point_periods,
