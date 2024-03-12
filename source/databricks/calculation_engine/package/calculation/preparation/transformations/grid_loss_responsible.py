@@ -32,6 +32,8 @@ def get_grid_loss_responsible(
     metering_point_periods_df: DataFrame,
     table_reader: TableReader,
 ) -> GridLossResponsible:
+    metering_point_periods_df.show()
+    table_reader.read_grid_loss_metering_points().show()
     grid_loss_responsible = (
         table_reader.read_grid_loss_metering_points()
         .join(
@@ -57,6 +59,8 @@ def get_grid_loss_responsible(
 def _throw_if_no_grid_loss_responsible(
     grid_areas: list[str], grid_loss_responsible_df: DataFrame
 ) -> None:
+    grid_loss_responsible_df.show()
+
     for grid_area in grid_areas:
         current_grid_loss_metering_points = grid_loss_responsible_df.filter(
             col(Colname.grid_area) == grid_area

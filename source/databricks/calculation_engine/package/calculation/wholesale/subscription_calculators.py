@@ -57,7 +57,7 @@ def calculate(
         f.round(Colname.charge_price, 6).alias(Colname.charge_price),
         f.round(Colname.total_amount, 6).alias(Colname.total_amount),
         f.lit(ChargeUnit.PIECES.value).alias(Colname.unit),
-        f.lit(None).alias(Colname.qualities).cast(ArrayType(StringType())),
+        f.lit(None).cast(ArrayType(StringType())).alias(Colname.qualities),
     )
 
 
