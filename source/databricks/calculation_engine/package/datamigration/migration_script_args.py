@@ -28,12 +28,14 @@ class MigrationScriptArgs:
         self,
         data_storage_account_url: str,
         data_storage_account_name: str,
+        spark_storage_container_path: str,
         storage_container_path: str,
         spark: SparkSession,
         calculation_input_folder: str,
     ) -> None:
         self.storage_account_url = data_storage_account_url
         self.storage_account_name = data_storage_account_name
+        self.spark_storage_container_path = spark_storage_container_path
         self.storage_container_path = storage_container_path
         self.spark = spark
         self.calculation_input_folder = calculation_input_folder

@@ -36,11 +36,13 @@ def migrate_data_lake() -> None:
         storage_account_name,
     )
 
-    container_url = paths.get_spark_sql_migrations_path(storage_account_name)
+    spark_container_url = paths.get_spark_sql_migrations_path(storage_account_name)
+    container_url = paths.get_container_root_path(storage_account_name)
 
     migration_args = MigrationScriptArgs(
         data_storage_account_url=storage_account_url,
         data_storage_account_name=storage_account_name,
+        spark_storage_container_path=spark_container_url,
         storage_container_path=container_url,
         spark=spark,
         calculation_input_folder=calculation_input_folder,
