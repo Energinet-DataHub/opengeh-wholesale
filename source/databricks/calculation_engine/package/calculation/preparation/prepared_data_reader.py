@@ -23,6 +23,7 @@ from . import transformations as T
 from .input_charges import InputChargesContainer
 from .prepared_charges import PreparedChargesContainer
 from ...constants import Colname
+from .prepared_metering_point_time_series import PreparedMeteringPointTimeSeries
 from ...infrastructure import logging_configuration
 
 
@@ -58,11 +59,10 @@ class PreparedDataReader:
         period_start_datetime: datetime,
         period_end_datetime: datetime,
         metering_point_periods_df: DataFrame,
-    ) -> DataFrame:
+    ) -> PreparedMeteringPointTimeSeries:
         time_series_points_df = T.get_time_series_points(
             self._table_reader, period_start_datetime, period_end_datetime
         )
-
         return T.get_metering_point_time_series(
             time_series_points_df,
             metering_point_periods_df,
@@ -95,7 +95,7 @@ class PreparedDataReader:
     def get_prepared_charges(
         self,
         metering_point_periods: DataFrame,
-        time_series: DataFrame,
+        time_series: PreparedMeteringPointTimeSeries,
         input_charges: InputChargesContainer,
         time_zone: str,
     ) -> PreparedChargesContainer:

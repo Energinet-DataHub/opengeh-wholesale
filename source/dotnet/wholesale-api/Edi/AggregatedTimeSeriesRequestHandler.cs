@@ -65,7 +65,7 @@ public class AggregatedTimeSeriesRequestHandler : IWholesaleInboxRequestHandler
 
         if (validationErrors.Any())
         {
-            _logger.LogWarning("Validation errors for message with reference id {reference_id}", referenceId);
+            _logger.LogWarning("Validation errors for AggregatedTimeSeriesRequest message with reference id {reference_id}", referenceId);
             await SendRejectedMessageAsync(validationErrors.ToList(), referenceId, cancellationToken).ConfigureAwait(false);
             return;
         }
@@ -83,12 +83,12 @@ public class AggregatedTimeSeriesRequestHandler : IWholesaleInboxRequestHandler
                 error = [_noDataForRequestedGridArea];
             }
 
-            _logger.LogInformation("No data available for message with reference id {reference_id}", referenceId);
+            _logger.LogInformation("No data available for AggregatedTimeSeriesRequest message with reference id {reference_id}", referenceId);
             await SendRejectedMessageAsync(error, referenceId, cancellationToken).ConfigureAwait(false);
             return;
         }
 
-        _logger.LogInformation("Sending message with reference id {reference_id}", referenceId);
+        _logger.LogInformation("Sending AggregatedTimeSeriesRequest accepted message with reference id {reference_id}", referenceId);
         await SendAcceptedMessageAsync(results, referenceId, cancellationToken).ConfigureAwait(false);
     }
 
@@ -132,7 +132,10 @@ public class AggregatedTimeSeriesRequestHandler : IWholesaleInboxRequestHandler
     private async Task<AggregatedTimeSeriesQueryParameters> CreateAggregatedTimeSeriesQueryParametersWithoutCalculationTypeAsync(
         AggregatedTimeSeriesRequest request)
     {
-        var latestCalculationsForRequest = await _completedCalculationRetriever.GetLatestCompletedCalculationForRequestAsync(request)
+        var latestCalculationsForRequest = await _completedCalculationRetriever.GetLatestCompletedCalculationsForPeriodAsync(
+                request.AggregationPerRoleAndGridArea.GridAreaCode,
+                request.Period,
+                request.RequestedCalculationType)
             .ConfigureAwait(true);
 
         var parameters = new AggregatedTimeSeriesQueryParameters(
