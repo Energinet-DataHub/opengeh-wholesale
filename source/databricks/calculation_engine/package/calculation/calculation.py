@@ -66,7 +66,7 @@ def _execute(
                 metering_point_periods_df,
             )
         )
-        metering_point_time_series.df.cache()
+        metering_point_time_series.cache_internal()
 
     results.energy_results, positive_grid_loss, negative_grid_loss = (
         energy_calculation.execute(
