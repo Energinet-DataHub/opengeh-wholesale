@@ -70,7 +70,7 @@ def _execute(
                 args.calculation_period_start_datetime,
                 args.calculation_period_end_datetime,
                 metering_point_periods_df_without_grid_loss,
-            ).cache()
+            )
         )
         metering_point_time_series.cache_internal()
 
