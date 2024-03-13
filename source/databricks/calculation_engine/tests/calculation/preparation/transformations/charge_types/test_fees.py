@@ -172,54 +172,60 @@ class TestWhenTwoLinksAndOnePrice:
         assert actual_df.collect()[1][Colname.metering_point_id] == metering_point_id_2
 
 
-def test__get_fee_charges__filters_on_fee_charge_type(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    charge_link_metering_points_rows = [
-        factory.create_charge_link_metering_point_periods_row(
-            charge_type=e.ChargeType.FEE
-        ),
-        factory.create_charge_link_metering_point_periods_row(
-            charge_type=e.ChargeType.SUBSCRIPTION
-        ),
-        factory.create_charge_link_metering_point_periods_row(
-            charge_type=e.ChargeType.TARIFF
-        ),
-    ]
-    charge_master_data_rows = [
-        factory.create_charge_master_data_row(
-            charge_type=e.ChargeType.FEE, resolution=e.ChargeResolution.MONTH
-        ),
-        factory.create_charge_master_data_row(
-            charge_type=e.ChargeType.SUBSCRIPTION, resolution=e.ChargeResolution.MONTH
-        ),
-        factory.create_charge_master_data_row(),
-    ]
-    charge_prices_rows = [
-        factory.create_charge_prices_row(
-            charge_type=e.ChargeType.FEE,
-        ),
-        factory.create_charge_prices_row(
-            charge_type=e.ChargeType.SUBSCRIPTION,
-        ),
-        factory.create_charge_prices_row(),
-    ]
+class TestWhenValidInput:
+    def test__filters_on_fee_charge_type(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        charge_link_metering_points_rows = [
+            factory.create_charge_link_metering_point_periods_row(
+                charge_type=e.ChargeType.FEE
+            ),
+            factory.create_charge_link_metering_point_periods_row(
+                charge_type=e.ChargeType.SUBSCRIPTION
+            ),
+            factory.create_charge_link_metering_point_periods_row(
+                charge_type=e.ChargeType.TARIFF
+            ),
+        ]
+        charge_master_data_rows = [
+            factory.create_charge_master_data_row(
+                charge_type=e.ChargeType.FEE, resolution=e.ChargeResolution.MONTH
+            ),
+            factory.create_charge_master_data_row(
+                charge_type=e.ChargeType.SUBSCRIPTION,
+                resolution=e.ChargeResolution.MONTH,
+            ),
+            factory.create_charge_master_data_row(),
+        ]
+        charge_prices_rows = [
+            factory.create_charge_prices_row(
+                charge_type=e.ChargeType.FEE,
+            ),
+            factory.create_charge_prices_row(
+                charge_type=e.ChargeType.SUBSCRIPTION,
+            ),
+            factory.create_charge_prices_row(),
+        ]
 
-    charge_link_metering_point_periods = (
-        factory.create_charge_link_metering_point_periods(
-            spark, charge_link_metering_points_rows
+        charge_link_metering_point_periods = (
+            factory.create_charge_link_metering_point_periods(
+                spark, charge_link_metering_points_rows
+            )
         )
-    )
-    charge_master_data = factory.create_charge_master_data(
-        spark, charge_master_data_rows
-    )
-    charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
+        charge_master_data = factory.create_charge_master_data(
+            spark, charge_master_data_rows
+        )
+        charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
-    # Act
-    actual_fee = get_fee_charges(
-        charge_master_data, charge_prices, charge_link_metering_point_periods
-    )
+        # Act
+        actual = get_fee_charges(
+            charge_master_data,
+            charge_prices,
+            charge_link_metering_point_periods,
+            DEFAULT_TIME_ZONE,
+        )
 
-    # Assert
-    assert actual_fee.collect()[0][Colname.charge_type] == e.ChargeType.FEE.value
+        # Assert
+        assert actual.df.collect()[0][Colname.charge_type] == e.ChargeType.FEE.value

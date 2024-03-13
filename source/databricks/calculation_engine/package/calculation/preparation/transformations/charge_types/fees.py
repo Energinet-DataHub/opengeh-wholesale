@@ -64,7 +64,7 @@ def get_fee_charges(
     """
     This method does the following:
     - Joins charge_master_data, charge_prices and charge_link_metering_point_periods
-    - Filters the result to only include subscription charges
+    - Filters the result to only include fee charges
     - Explodes the result from monthly to daily resolution
     - Add missing charge prices (None) to the result
     """
@@ -73,13 +73,13 @@ def get_fee_charges(
     fee_prices = charge_prices.filter_by_charge_type(ChargeType.FEE)
     fee_master_data = charge_master_data.filter_by_charge_type(ChargeType.FEE)
 
-    subscription_master_data_and_prices = _join_with_prices(
+    fee_master_data_and_prices = _join_with_prices(
         fee_master_data, fee_prices, time_zone
     )
 
-    subscriptions = _join_with_links(subscription_master_data_and_prices, fee_links.df)
+    fee = _join_with_links(fee_master_data_and_prices, fee_links.df)
 
-    fees = subscriptions.withColumn(
+    fees = fee.withColumn(
         Colname.resolution, f.lit(WholesaleResultResolution.DAY.value)
     )
 
@@ -87,45 +87,43 @@ def get_fee_charges(
 
 
 def _join_with_prices(
-    subscription_master_data: ChargeMasterData,
-    subscription_prices: ChargePrices,
+    fee_master_data: ChargeMasterData,
+    fee_prices: ChargePrices,
     time_zone: str,
 ) -> DataFrame:
     """
-    Join subscription_master_data with subscription_prices.
+    Join fee_master_data with fee_prices.
     This method also ensure
     - Missing charge prices will be set to None.
     - The charge price is the last known charge price for the charge key.
     """
-    subscription_prices = subscription_prices.df
-    subscription_master_data = subscription_master_data.df
+    fee_prices = fee_prices.df
+    fee_master_data = fee_master_data.df
 
-    subscription_master_data_with_charge_time = _add_charge_time(
-        subscription_master_data, time_zone
-    )
+    fee_master_data_with_charge_time = _add_charge_time(fee_master_data, time_zone)
 
     w = Window.partitionBy(Colname.charge_key, Colname.from_date).orderBy(
         Colname.charge_time
     )
 
     master_data_with_prices = (
-        subscription_master_data_with_charge_time.join(
-            subscription_prices, [Colname.charge_key, Colname.charge_time], "left"
+        fee_master_data_with_charge_time.join(
+            fee_prices, [Colname.charge_key, Colname.charge_time], "left"
         )
         .withColumn(
             Colname.charge_price,
             f.last(Colname.charge_price, ignorenulls=True).over(w),
         )
         .select(
-            subscription_master_data_with_charge_time[Colname.charge_key],
-            subscription_master_data_with_charge_time[Colname.charge_type],
-            subscription_master_data_with_charge_time[Colname.charge_owner],
-            subscription_master_data_with_charge_time[Colname.charge_code],
-            subscription_master_data_with_charge_time[Colname.from_date],
-            subscription_master_data_with_charge_time[Colname.to_date],
-            subscription_master_data_with_charge_time[Colname.resolution],
-            subscription_master_data_with_charge_time[Colname.charge_tax],
-            subscription_master_data_with_charge_time[Colname.charge_time],
+            fee_master_data_with_charge_time[Colname.charge_key],
+            fee_master_data_with_charge_time[Colname.charge_type],
+            fee_master_data_with_charge_time[Colname.charge_owner],
+            fee_master_data_with_charge_time[Colname.charge_code],
+            fee_master_data_with_charge_time[Colname.from_date],
+            fee_master_data_with_charge_time[Colname.to_date],
+            fee_master_data_with_charge_time[Colname.resolution],
+            fee_master_data_with_charge_time[Colname.charge_tax],
+            fee_master_data_with_charge_time[Colname.charge_time],
             Colname.charge_price,
         )
     )
@@ -133,13 +131,13 @@ def _join_with_prices(
     return master_data_with_prices
 
 
-def _add_charge_time(subscription_master_data: DataFrame, time_zone: str) -> DataFrame:
+def _add_charge_time(fee_master_data: DataFrame, time_zone: str) -> DataFrame:
     """
-    Add charge_time column to subscription_periods DataFrame.
-    The charge_time column is created by exploding subscription_periods using from_date and to_date with a resolution of 1 day.
+    Add charge_time column to fee_periods DataFrame.
+    The charge_time column is created by exploding fee_periods using from_date and to_date with a resolution of 1 day.
     """
 
-    charge_periods_with_charge_time = subscription_master_data.withColumn(
+    charge_periods_with_charge_time = fee_master_data.withColumn(
         Colname.charge_time,
         f.explode(
             f.sequence(
@@ -157,38 +155,37 @@ def _add_charge_time(subscription_master_data: DataFrame, time_zone: str) -> Dat
 
 
 def _join_with_links(
-    subscription_master_data_and_prices: DataFrame,
-    subscription_links: DataFrame,
+    fee_master_data_and_prices: DataFrame,
+    fee_links: DataFrame,
 ) -> DataFrame:
-    subscriptions = subscription_master_data_and_prices.join(
-        subscription_links,
+    fees = fee_master_data_and_prices.join(
+        fee_links,
         (
-            subscription_master_data_and_prices[Colname.charge_key]
-            == subscription_links[Colname.charge_key]
+            fee_master_data_and_prices[Colname.charge_key]
+            == fee_links[Colname.charge_key]
         )
         & (
-            subscription_master_data_and_prices[Colname.charge_time]
-            >= subscription_links[Colname.from_date]
+            fee_master_data_and_prices[Colname.charge_time]
+            >= fee_links[Colname.from_date]
         )
         & (
-            subscription_master_data_and_prices[Colname.charge_time]
-            < subscription_links[Colname.to_date]
+            fee_master_data_and_prices[Colname.charge_time] < fee_links[Colname.to_date]
         ),
         how="inner",
     ).select(
-        subscription_master_data_and_prices[Colname.charge_key],
-        subscription_master_data_and_prices[Colname.charge_type],
-        subscription_master_data_and_prices[Colname.charge_owner],
-        subscription_master_data_and_prices[Colname.charge_code],
-        subscription_master_data_and_prices[Colname.charge_time],
-        subscription_master_data_and_prices[Colname.charge_price],
-        subscription_master_data_and_prices[Colname.charge_tax],
-        subscription_links[Colname.charge_quantity],
-        subscription_links[Colname.metering_point_type],
-        subscription_links[Colname.metering_point_id],
-        subscription_links[Colname.settlement_method],
-        subscription_links[Colname.grid_area],
-        subscription_links[Colname.energy_supplier_id],
+        fee_master_data_and_prices[Colname.charge_key],
+        fee_master_data_and_prices[Colname.charge_type],
+        fee_master_data_and_prices[Colname.charge_owner],
+        fee_master_data_and_prices[Colname.charge_code],
+        fee_master_data_and_prices[Colname.charge_time],
+        fee_master_data_and_prices[Colname.charge_price],
+        fee_master_data_and_prices[Colname.charge_tax],
+        fee_links[Colname.charge_quantity],
+        fee_links[Colname.metering_point_type],
+        fee_links[Colname.metering_point_id],
+        fee_links[Colname.settlement_method],
+        fee_links[Colname.grid_area],
+        fee_links[Colname.energy_supplier_id],
     )
 
-    return subscriptions
+    return fees
