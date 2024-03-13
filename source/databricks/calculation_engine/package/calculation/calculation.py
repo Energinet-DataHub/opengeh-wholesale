@@ -16,7 +16,7 @@ from package.codelists import (
     CalculationType,
 )
 from package.infrastructure import logging_configuration
-from .CalculationResults import (
+from .calculation_results import (
     CalculationResultsContainer,
 )
 from .calculator_args import CalculatorArgs
