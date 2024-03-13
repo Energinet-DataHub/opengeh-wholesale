@@ -13,18 +13,16 @@
 # limitations under the License.
 
 from datetime import datetime
-from typing import Tuple
 
 from pyspark.sql import DataFrame
 
-from package.calculation.preparation.grid_loss_responsible import GridLossResponsible
 from package.calculation.input import TableReader
+from package.calculation.preparation.grid_loss_responsible import GridLossResponsible
 from package.codelists import ChargeResolution
 from . import transformations as T
-from .charge_master_data import ChargeMasterData
-from .charge_prices import ChargePrices
 from .input_charges import InputChargesContainer
 from .prepared_charges import PreparedChargesContainer
+from .prepared_metering_point_time_series import PreparedMeteringPointTimeSeries
 from ...infrastructure import logging_configuration
 
 
@@ -60,7 +58,7 @@ class PreparedDataReader:
         period_start_datetime: datetime,
         period_end_datetime: datetime,
         metering_point_periods_df: DataFrame,
-    ) -> DataFrame:
+    ) -> PreparedMeteringPointTimeSeries:
         time_series_points_df = T.get_time_series_points(
             self._table_reader, period_start_datetime, period_end_datetime
         )
@@ -96,7 +94,7 @@ class PreparedDataReader:
     def get_prepared_charges(
         self,
         metering_point_periods: DataFrame,
-        time_series: DataFrame,
+        time_series: PreparedMeteringPointTimeSeries,
         input_charges: InputChargesContainer,
         time_zone: str,
     ) -> PreparedChargesContainer:

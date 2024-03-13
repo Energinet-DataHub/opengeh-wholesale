@@ -79,7 +79,7 @@ def create_exchange_row(
     to_grid_area: str | None = None,
     from_grid_area: str | None = None,
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
-    observation_time: datetime = DEFAULT_OBSERVATION_TIME,
+    observation_time: datetime.datetime = DEFAULT_OBSERVATION_TIME,
     quantity: int | Decimal = DEFAULT_QUANTITY,
     quality: QuantityQuality = DEFAULT_QUALITY,
 ) -> Row:
