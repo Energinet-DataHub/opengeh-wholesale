@@ -59,8 +59,15 @@ public sealed class WholesaleServicesRequestValidatorTests
     public async Task Validate_WhenPeriodStartIsTooOld_ReturnsUnsuccessfulValidation()
     {
         // Arrange
+        var now = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset();
+
         var request = new WholesaleServicesRequestBuilder()
-            .WithPeriodStart(SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset().AddYears(-5).ToInstant().ToString())
+            .WithPeriodStart(
+                new LocalDate(now.Year - 5, now.Month, now.Day)
+                    .AtMidnight()
+                    .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+                    .ToInstant()
+                    .ToString())
             .Build();
 
         // Act
@@ -69,5 +76,32 @@ public sealed class WholesaleServicesRequestValidatorTests
         // Assert
         validationErrors.Should().ContainSingle()
             .Which.ErrorCode.Should().Be("E17");
+    }
+
+    [Fact]
+    public async Task Validate_WhenPeriodStartAndPeriodEndAreInvalidFormat_ReturnsUnsuccessfulValidation()
+    {
+        // Arrange
+        var now = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset();
+
+        var request = new WholesaleServicesRequestBuilder()
+            .WithPeriodStart(
+                new LocalDateTime(now.Year - 2, now.Month, now.Day, 17, 45, 12)
+                    .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+                    .ToInstant()
+                    .ToString())
+            .WithPeriodEnd(
+                new LocalDateTime(now.Year - 2, now.Month, now.Day + 3, 8, 13, 56)
+                    .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+                    .ToInstant()
+                    .ToString())
+            .Build();
+
+        // Act
+        var validationErrors = await _sut.ValidateAsync(request);
+
+        // Assert
+        validationErrors.Should().HaveCount(2);
+        validationErrors.Select(e => e.ErrorCode).Should().BeEquivalentTo(["D66", "D66"]);
     }
 }
