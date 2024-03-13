@@ -15,12 +15,8 @@
 
 import package.calculation.output.wholesale_storage_model_factory as factory
 import package.calculation.wholesale.subscription_calculators as subscription_calculator
-
-from ..calculation_results import WholesaleResultsContainer
 import package.calculation.wholesale.tariff_calculators as tariff_calculator
 import package.calculation.wholesale.tariff_calculators as tariffs
-from ..CalculationResults import WholesaleResultsContainer
-from ..calculator_args import CalculatorArgs
 from package.calculation.preparation.data_structures.prepared_charges import (
     PreparedChargesContainer,
 )
@@ -30,6 +26,8 @@ from package.calculation.preparation.data_structures.prepared_subscriptions impo
 from package.calculation.preparation.data_structures.prepared_tariffs import (
     PreparedTariffs,
 )
+from ..calculation_results import WholesaleResultsContainer
+from ..calculator_args import CalculatorArgs
 from ...codelists import AmountType
 from ...infrastructure import logging_configuration
 
