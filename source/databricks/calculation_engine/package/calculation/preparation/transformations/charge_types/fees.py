@@ -20,6 +20,7 @@ from package.calculation.preparation.charge_link_metering_point_periods import (
 )
 from package.calculation.preparation.charge_master_data import ChargeMasterData
 from package.calculation.preparation.charge_prices import ChargePrices
+from package.calculation.preparation.prepared_fees import PreparedFees
 from package.calculation.preparation.transformations.charge_types.helper import (
     join_charge_master_data_and_charge_price,
 )
@@ -79,7 +80,7 @@ def get_fee_charges(
 
     subscriptions = _join_with_links(subscription_master_data_and_prices, fee_links.df)
 
-    subscriptions = subscriptions.withColumn(
+    fees = subscriptions.withColumn(
         Colname.resolution, f.lit(WholesaleResultResolution.DAY.value)
     )
 
