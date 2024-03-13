@@ -1,5 +1,5 @@
 name: Include Databricks assets in release
-description: Include Databricks dashboards assets in release package together with wheel distribution
+description: Include Databricks assets in release package together with wheel distribution
 
 inputs:
   wheel_working_directory:
