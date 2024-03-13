@@ -54,7 +54,7 @@ def metering_point_time_series_factory(spark, timestamp_factory):
             )
             time = (
                 time + timedelta(minutes=60)
-                if resolution == MeteringPointResolution.HOUR.value
+                if resolution == MeteringPointResolution.HOUR
                 else time + timedelta(minutes=15)
             )
         return factories.create(spark, rows)
@@ -266,7 +266,7 @@ def test__multiple_dates_are_split_into_rows_for_hourly_meteringpoints(
         number_of_points=number_of_points,
     )
 
-    (_, hour_df) = get_metering_point_time_series_basis_data_dfs(
+    _, hour_df = get_metering_point_time_series_basis_data_dfs(
         metering_point_time_series, "Europe/Copenhagen"
     )
 
