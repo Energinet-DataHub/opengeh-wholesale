@@ -16,7 +16,7 @@ from datetime import datetime
 
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
-from pyspark.sql.types import StringType, DecimalType
+from pyspark.sql.types import StringType, DecimalType, ArrayType
 
 from package.codelists import WholesaleResultResolution, ChargeType
 from package.constants import Colname
@@ -30,7 +30,9 @@ def sum_within_month(
             Colname.qualities
         )
     else:
-        qualities_expr = f.lit(None).alias(Colname.qualities)
+        qualities_expr = (
+            f.lit(None).cast(ArrayType(StringType())).alias(Colname.qualities)
+        )
 
     agg_df = (
         df.groupBy(
@@ -44,7 +46,6 @@ def sum_within_month(
         .agg(
             f.sum(Colname.total_amount).alias(Colname.total_amount),
             f.sum(Colname.total_quantity).alias(Colname.total_quantity),
-            f.sum(Colname.charge_price).alias(Colname.charge_price),
             # charge_tax is the same for all tariffs in a given month
             f.first(Colname.charge_tax).alias(Colname.charge_tax),
             # tariff unit is the same for all tariffs in a given month (kWh)
