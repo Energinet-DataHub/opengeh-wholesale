@@ -24,13 +24,8 @@ from package.codelists import (
 from package.constants import Colname
 
 
-<<<<<<< HEAD:source/databricks/calculation_engine/package/calculation/wholesale/get_wholesale_metering_point_time_series.py
-def get_wholesale_metering_point_times_series(
-    metering_point_time_series: DataFrame,
-=======
 def add_calculated_grid_loss_to_metering_point_times_series(
     metering_point_time_series: PreparedMeteringPointTimeSeries,
->>>>>>> b08498fe (Add calculated grid loss to basis data as well):source/databricks/calculation_engine/package/calculation/energy/calculated_grid_loss.py
     positive_grid_loss: EnergyResults,
     negative_grid_loss: EnergyResults,
 ) -> DataFrame:
