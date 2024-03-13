@@ -135,8 +135,8 @@ class TestWhenNoPricesForPeriod:
         spark: SparkSession,
     ) -> None:
         # Arrange
-        from_date = factory.DefaultValues.DEFAULT_FROM_DATE
-        to_date = factory.DefaultValues.DEFAULT_TO_DATE
+        from_date = factory.DefaultValues.FROM_DATE
+        to_date = factory.DefaultValues.TO_DATE
 
         charge_link_metering_point_periods = (
             factory.create_charge_link_metering_point_periods(
