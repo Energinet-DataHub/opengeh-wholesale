@@ -57,6 +57,18 @@ public class WholesaleResultQueries : IWholesaleResultQueries
         _logger.LogDebug("Fetched all wholesale calculation results for calculation {calculation_id}", calculationId);
     }
 
+    public IAsyncEnumerable<WholesaleResult> GetAsync(WholesaleResultQueryParameters queryParameters)
+    {
+        // TODO: Implement data lookup
+        return Array.Empty<WholesaleResult>().ToAsyncEnumerable();
+    }
+
+    public Task<bool> AnyAsync(WholesaleResultQueryParameters queryParameters)
+    {
+        // TODO: Implement "any" lookup, reusing logic from GetAsync(WholesaleResultQueryParameters queryParameters)
+        return Task.FromResult(false);
+    }
+
     public static bool BelongsToDifferentResults(DatabricksSqlRow row, DatabricksSqlRow otherSqlRow)
     {
         return !row[WholesaleResultColumnNames.CalculationResultId]!.Equals(otherSqlRow[WholesaleResultColumnNames.CalculationResultId]);
