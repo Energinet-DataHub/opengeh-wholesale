@@ -30,7 +30,7 @@ from package.calculation.preparation.data_structures.prepared_subscriptions impo
 from package.calculation.preparation.data_structures.prepared_tariffs import (
     PreparedTariffs,
 )
-from ...codelists import AmountType
+from ...codelists import AmountType, ChargeType
 from ...infrastructure import logging_configuration
 
 
