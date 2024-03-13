@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from calculation_logic.features.energy_calculations.grid_loss.when_has_production_consumption_and_exchange.states.scenario_state import (
+from calculation_logic.features.energy_calculations.grid_loss.when_has_no_production.states.scenario_state import (
     get_expected,
 )
 from helpers.data_frame_utils import (
