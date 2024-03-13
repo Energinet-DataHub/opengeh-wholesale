@@ -17,6 +17,7 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks.ServiceBus;
 using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.Edi.Client;
+using Energinet.DataHub.Wholesale.Edi.Factories;
 using Energinet.DataHub.Wholesale.Edi.Validation;
 using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest;
 using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
@@ -37,6 +38,7 @@ public static class EdiExtensions
         services.AddScoped<IWholesaleInboxRequestHandler, WholesaleServicesRequestHandler>();
         services.AddScoped<LatestCalculationsForPeriod>();
         services.AddScoped<CompletedCalculationRetriever>();
+        services.AddTransient<WholesaleServicesRequestMapper>();
 
         services.AddSingleton<IEdiClient, EdiClient>();
 

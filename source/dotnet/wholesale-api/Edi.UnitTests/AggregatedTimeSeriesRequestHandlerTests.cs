@@ -67,10 +67,6 @@ public class AggregatedTimeSeriesRequestHandlerTests
             .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
             .Returns(() => aggregatedTimeSeries.ToAsyncEnumerable());
 
-        validator.Setup(vali => vali.ValidateAsync(
-                It.IsAny<AggregatedTimeSeriesRequest>()))
-            .ReturnsAsync(() => new List<ValidationError>());
-
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
             validator.Object,
@@ -121,10 +117,6 @@ public class AggregatedTimeSeriesRequestHandlerTests
             .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
             .Returns(() => aggregatedTimeSeries.ToAsyncEnumerable());
 
-        validator.Setup(vali => vali.ValidateAsync(
-                It.IsAny<AggregatedTimeSeriesRequest>()))
-            .ReturnsAsync(() => new List<ValidationError>());
-
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
             validator.Object,
@@ -168,14 +160,6 @@ public class AggregatedTimeSeriesRequestHandlerTests
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(request.ToByteArray()));
-
-        validator.Setup(vali => vali.ValidateAsync(
-                It.IsAny<AggregatedTimeSeriesRequest>()))
-            .ReturnsAsync(() => new List<ValidationError>());
-
-        aggregatedTimeSeriesQueries
-            .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
-            .Returns(() => new List<AggregatedTimeSeries>().ToAsyncEnumerable());
 
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
@@ -222,16 +206,6 @@ public class AggregatedTimeSeriesRequestHandlerTests
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(request.ToByteArray()));
-
-        validator.Setup(vali => vali.ValidateAsync(
-                It.IsAny<AggregatedTimeSeriesRequest>()))
-            .ReturnsAsync(() => new List<ValidationError>());
-
-        aggregatedTimeSeriesQueries
-            .Setup(parameters =>
-                parameters.GetAsync(
-                    It.IsAny<AggregatedTimeSeriesQueryParameters>()))
-            .Returns(() => new List<AggregatedTimeSeries>().ToAsyncEnumerable());
 
         var aggregatedTimeSeries = CreateAggregatedTimeSeries();
         aggregatedTimeSeriesQueries
@@ -285,22 +259,6 @@ public class AggregatedTimeSeriesRequestHandlerTests
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(request.ToByteArray()));
-
-        validator.Setup(vali => vali.ValidateAsync(
-                It.IsAny<AggregatedTimeSeriesRequest>()))
-            .ReturnsAsync(() => new List<ValidationError>());
-
-        aggregatedTimeSeriesQueries
-            .Setup(parameters =>
-                parameters.GetAsync(
-                    It.IsAny<AggregatedTimeSeriesQueryParameters>()))
-            .Returns(() => new List<AggregatedTimeSeries>().ToAsyncEnumerable());
-
-        aggregatedTimeSeriesQueries
-            .Setup(parameters =>
-                parameters.GetAsync(
-                    It.Is<AggregatedTimeSeriesQueryParameters>(x => x.GridArea == null)))
-            .Returns(() => new List<AggregatedTimeSeries>().ToAsyncEnumerable());
 
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
