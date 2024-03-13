@@ -72,6 +72,8 @@ def calculate_grid_loss(
         .orderBy(Colname.grid_area, Colname.time_window)
     )
 
+    # By having default values we ensure that the calculation below doesn't fail.
+    # This can, however, hide errors that should have been handled earlier in the flow.
     result = (
         result.na.fill({net_exchange_result: 0})
         .na.fill({prod_result: 0})

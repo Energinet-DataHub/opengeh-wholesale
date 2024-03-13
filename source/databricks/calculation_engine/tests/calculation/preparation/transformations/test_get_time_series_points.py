@@ -11,21 +11,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import uuid
 from datetime import datetime
 from decimal import Decimal
 from unittest.mock import patch, Mock
 
-
+import pytest
 from pyspark.sql import SparkSession
+from pyspark.sql.functions import lit
 
 from package.calculation import input
-from package.calculation.preparation.transformations import get_time_series_points
 from package.calculation.input import TableReader
 from package.calculation.input.schemas import (
     time_series_point_schema,
-    grid_loss_metering_points_schema,
 )
+from package.calculation.preparation.transformations import get_time_series_points
 from package.constants import Colname
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 
@@ -36,12 +36,13 @@ DEFAULT_TO_DATE = datetime(2022, 6, 9, 22, 0, 0)
 
 def _create_time_series_point_row(
     metering_point_id: str = "some-metering-point-id",
+    observation_time: datetime = DEFAULT_OBSERVATION_TIME,
 ) -> dict:
     return {
         Colname.metering_point_id: metering_point_id,
         Colname.quantity: Decimal("1.123456"),
         Colname.quality: "foo",
-        Colname.observation_time: DEFAULT_OBSERVATION_TIME,
+        Colname.observation_time: observation_time,
     }
 
 
@@ -61,21 +62,11 @@ class TestWhenValidInput:
         spark: SparkSession,
     ) -> None:
         # Arrange
-        row = _create_time_series_point_row()
-        time_series_points_df = spark.createDataFrame(
-            data=[row], schema=time_series_point_schema
+        time_series_row = _create_time_series_point_row()
+        expected = spark.createDataFrame(
+            data=[time_series_row], schema=time_series_point_schema
         )
-        mock_calculation_input_reader.read_time_series_points.return_value = (
-            time_series_points_df
-        )
-        expected = time_series_points_df
-
-        grid_loss_metering_points = spark.createDataFrame(
-            data=[], schema=grid_loss_metering_points_schema
-        )
-        mock_calculation_input_reader.read_grid_loss_metering_points.return_value = (
-            grid_loss_metering_points
-        )
+        mock_calculation_input_reader.read_time_series_points.return_value = expected
 
         # Act
         actual = get_time_series_points(
@@ -86,34 +77,33 @@ class TestWhenValidInput:
         assert_dataframes_equal(actual, expected)
 
     @patch.object(input, TableReader.__name__)
-    def test_returns_df_without_time_series_of_grid_loss_metering_points(
+    @pytest.mark.parametrize(
+        "observation_time, expected",
+        [
+            (datetime(2022, 6, 8, 22, 0, 0), 1),
+            (datetime(2022, 6, 8, 21, 0, 0), 0),
+            (datetime(2022, 6, 9, 22, 0, 0), 0),
+            (datetime(2022, 6, 9, 21, 0, 0), 1),
+        ],
+    )
+    def test_returns_time_series_df_with_observation_time_within_period_start_and_period_end(
         self,
         mock_calculation_input_reader: Mock,
         spark: SparkSession,
+        observation_time: datetime,
+        expected: int,
     ) -> None:
         # Arrange
-        non_grid_loss_time_series_row = _create_time_series_point_row(
-            metering_point_id="non-grid-loss-metering-point-id"
+        time_series_row = _create_time_series_point_row(
+            observation_time=observation_time
         )
-        grid_loss_time_series_row = _create_time_series_point_row(
-            metering_point_id="grid-loss-metering-point-id"
-        )
+
         time_series_points_df = spark.createDataFrame(
-            data=[grid_loss_time_series_row, non_grid_loss_time_series_row],
+            data=[time_series_row],
             schema=time_series_point_schema,
         )
         mock_calculation_input_reader.read_time_series_points.return_value = (
             time_series_points_df
-        )
-        grid_loss_metering_point_row = _create_grid_loss_metering_point_row(
-            metering_point_id=grid_loss_time_series_row[Colname.metering_point_id]
-        )
-        grid_loss_metering_points_df = spark.createDataFrame(
-            data=[grid_loss_metering_point_row],
-            schema=grid_loss_metering_points_schema,
-        )
-        mock_calculation_input_reader.read_grid_loss_metering_points.return_value = (
-            grid_loss_metering_points_df
         )
 
         # Act
@@ -121,9 +111,36 @@ class TestWhenValidInput:
             mock_calculation_input_reader, DEFAULT_FROM_DATE, DEFAULT_TO_DATE
         )
 
-        # Assert: That only the non-grid-loss time series is returned
-        assert actual.count() == 1
-        assert (
-            actual.collect()[0][Colname.metering_point_id]
-            == non_grid_loss_time_series_row[Colname.metering_point_id]
+        # Assert
+        assert actual.count() == expected
+
+    @patch.object(input, TableReader.__name__)
+    @pytest.mark.parametrize(
+        "column_name, expected",
+        [("observation_year", True), ("observation_month", True), ("dummy", False)],
+    )
+    def test_returns_time_series_df_without_respective_column(
+        self,
+        mock_calculation_input_reader: Mock,
+        spark: SparkSession,
+        column_name: str,
+        expected: bool,
+    ) -> None:
+        # Arrange
+        time_series_row = _create_time_series_point_row(
+            metering_point_id=str(uuid.uuid4())
         )
+        dataframe = spark.createDataFrame(
+            data=[time_series_row],
+            schema=time_series_point_schema,
+        )
+        dataframe = dataframe.withColumn(column_name, lit(column_name))
+        mock_calculation_input_reader.read_time_series_points.return_value = dataframe
+
+        # Act
+        actual = get_time_series_points(
+            mock_calculation_input_reader, DEFAULT_FROM_DATE, DEFAULT_TO_DATE
+        )
+
+        # Assert
+        assert (column_name not in actual.columns) == expected
