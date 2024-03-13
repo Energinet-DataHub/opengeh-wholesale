@@ -70,7 +70,7 @@ def test__calculate_fee_charge_price__simple(
         charge_master_data,
         charge_prices,
         charge_link_metering_point_periods,
-    )
+    ).df
     result = calculate_fee_charge_price(spark, fee_charges)
     expected = calculate_fee_charge_price_factory(
         expected_time,
@@ -136,7 +136,7 @@ def test__calculate_fee_charge_price__two_fees(
         ChargeMasterData(charge_master_data_df),
         ChargePrices(charge_prices_df),
         charge_link_metering_point_periods,
-    )
+    ).df
     result = calculate_fee_charge_price(spark, fee_charges).orderBy(
         Colname.charge_price
     )

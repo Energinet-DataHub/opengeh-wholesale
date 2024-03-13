@@ -72,4 +72,4 @@ def test__get_fee_charges__filters_on_fee_charge_type(
     )
 
     # Assert
-    assert actual_fee.collect()[0][Colname.charge_type] == e.ChargeType.FEE.value
+    assert actual_fee.df.collect()[0][Colname.charge_type] == e.ChargeType.FEE.value

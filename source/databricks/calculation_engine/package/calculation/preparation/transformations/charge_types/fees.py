@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import pyspark.sql.functions as f
-from pyspark.sql.dataframe import DataFrame
 
 from package.calculation.preparation.data_structures.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
@@ -22,6 +21,7 @@ from package.calculation.preparation.data_structures.charge_master_data import (
     ChargeMasterData,
 )
 from package.calculation.preparation.data_structures.charge_prices import ChargePrices
+from package.calculation.preparation.data_structures.prepared_fees import PreparedFees
 from package.calculation.preparation.transformations.charge_types.helper import (
     join_charge_master_data_and_charge_price,
 )
@@ -33,7 +33,7 @@ def get_fee_charges(
     charge_master_data: ChargeMasterData,
     charge_prices: ChargePrices,
     charge_link_metering_point_periods: ChargeLinkMeteringPointPeriods,
-) -> DataFrame:
+) -> PreparedFees:
     charge_master_data = charge_master_data.df
     charge_prices = charge_prices.df
     charge_period_prices = join_charge_master_data_and_charge_price(
@@ -66,10 +66,13 @@ def get_fee_charges(
         Colname.charge_owner,
         Colname.charge_time,
         Colname.charge_price,
+        Colname.charge_tax,
+        Colname.resolution,
+        charge_link_metering_point_periods_df[Colname.metering_point_id],
         charge_link_metering_point_periods_df[Colname.metering_point_type],
         charge_link_metering_point_periods_df[Colname.settlement_method],
         charge_link_metering_point_periods_df[Colname.grid_area],
         charge_link_metering_point_periods_df[Colname.energy_supplier_id],
     )
 
-    return fees
+    return PreparedFees(fees)
