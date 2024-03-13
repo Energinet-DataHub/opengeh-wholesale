@@ -13,13 +13,13 @@
 # limitations under the License.
 
 import pyspark.sql.functions as f
-from pyspark.sql.dataframe import DataFrame
 
 from package.calculation.preparation.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
 )
 from package.calculation.preparation.charge_master_data import ChargeMasterData
 from package.calculation.preparation.charge_prices import ChargePrices
+from package.calculation.preparation.prepared_fees import PreparedFees
 from package.calculation.preparation.transformations.charge_types.helper import (
     join_charge_master_data_and_charge_price,
 )
@@ -31,7 +31,7 @@ def get_fee_charges(
     charge_master_data: ChargeMasterData,
     charge_prices: ChargePrices,
     charge_link_metering_point_periods: ChargeLinkMeteringPointPeriods,
-) -> DataFrame:
+) -> PreparedFees:
     charge_master_data = charge_master_data.df
     charge_prices = charge_prices.df
     charge_period_prices = join_charge_master_data_and_charge_price(
