@@ -23,7 +23,6 @@ from . import transformations as T
 from .input_charges import InputChargesContainer
 from .prepared_charges import PreparedChargesContainer
 from .prepared_metering_point_time_series import PreparedMeteringPointTimeSeries
-from ...constants import Colname
 from ...infrastructure import logging_configuration
 
 
@@ -104,8 +103,6 @@ class PreparedDataReader:
             input_charges.charge_links, metering_point_periods
         )
 
-        charge_link_metering_point_periods.df.show()
-
         hourly_tariffs = T.get_prepared_tariffs(
             time_series,
             input_charges.charge_master_data,
@@ -135,15 +132,4 @@ class PreparedDataReader:
             hourly_tariffs=hourly_tariffs,
             daily_tariffs=daily_tariffs,
             subscriptions=subscriptions,
-        )
-
-    def get_metering_point_periods_without_grid_loss(
-        self, metering_point_periods_df: DataFrame
-    ) -> DataFrame:
-
-        # Remove grid loss metering point periods
-        return metering_point_periods_df.join(
-            self._table_reader.read_grid_loss_metering_points(),
-            Colname.metering_point_id,
-            "left_anti",
         )

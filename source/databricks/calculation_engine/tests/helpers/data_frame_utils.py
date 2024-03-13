@@ -66,8 +66,8 @@ def assert_dataframe_and_schema(
 
     if show_dataframe:
         print("ACTUAL:")
-        actual.show(n=1000)
+        actual.show(n=3000)
         print("EXPECTED:")
-        expected.show(n=1000)
+        expected.show(n=3000)
 
     assert_dataframes_equal(actual, expected)

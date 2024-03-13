@@ -25,8 +25,6 @@ def get_charge_link_metering_point_periods(
     charge_links: DataFrame,
     metering_points: DataFrame,
 ) -> ChargeLinkMeteringPointPeriods:
-    charge_links.show()
-    metering_points.show()
     charge_link_metering_point_periods = charge_links.join(
         metering_points,
         [
