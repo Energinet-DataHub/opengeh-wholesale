@@ -22,13 +22,13 @@ from pyspark.sql.types import (
 )
 
 import prepared_metering_point_time_series_factory as factories
-from package.calculation.preparation.prepared_metering_point_time_series import (
+from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
 from package.calculation.preparation.transformations.basis_data import (
     get_metering_point_time_series_basis_data_dfs,
 )
-from package.codelists import MeteringPointResolution, MeteringPointType
+from package.codelists import MeteringPointResolution
 
 minimum_quantity = Decimal("0.001")
 

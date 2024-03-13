@@ -22,11 +22,13 @@ from package.calculation.CalculationResults import EnergyResultsContainer
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.energy.energy_results import EnergyResults
 from package.calculation.energy.hour_to_quarter import transform_hour_to_quarter
-from package.calculation.preparation.grid_loss_responsible import GridLossResponsible
-from package.calculation.preparation.prepared_metering_point_time_series import (
+from package.calculation.preparation.data_structures.grid_loss_responsible import (
+    GridLossResponsible,
+)
+from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
-from package.calculation.preparation.quarterly_metering_point_time_series import (
+from package.calculation.preparation.data_structures.quarterly_metering_point_time_series import (
     QuarterlyMeteringPointTimeSeries,
 )
 from package.codelists import (
