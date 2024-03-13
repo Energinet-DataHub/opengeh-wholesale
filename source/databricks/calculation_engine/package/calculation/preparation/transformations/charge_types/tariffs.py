@@ -17,15 +17,17 @@ import pyspark.sql.functions as f
 from pyspark.sql.types import DecimalType, StringType, ArrayType
 
 import package.calculation.energy.aggregators.transformations as t
-from package.calculation.preparation.charge_link_metering_point_periods import (
+from package.calculation.preparation.data_structures.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
 )
-from package.calculation.preparation.charge_master_data import (
+from package.calculation.preparation.data_structures.charge_master_data import (
     ChargeMasterData,
 )
-from package.calculation.preparation.charge_prices import ChargePrices
-from package.calculation.preparation.prepared_tariffs import PreparedTariffs
-from package.calculation.preparation.prepared_metering_point_time_series import (
+from package.calculation.preparation.data_structures.charge_prices import ChargePrices
+from package.calculation.preparation.data_structures.prepared_tariffs import (
+    PreparedTariffs,
+)
+from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
 from package.codelists import ChargeType, ChargeResolution
