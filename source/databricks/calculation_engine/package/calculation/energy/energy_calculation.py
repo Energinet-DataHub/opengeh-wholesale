@@ -13,8 +13,6 @@
 # limitations under the License.
 from typing import Tuple
 
-from pyspark.sql import DataFrame
-
 import package.calculation.energy.aggregators.exchange_aggregators as exchange_aggr
 import package.calculation.energy.aggregators.grid_loss_aggregators as grid_loss_aggr
 import package.calculation.energy.aggregators.grouping_aggregators as grouping_aggr
@@ -25,6 +23,9 @@ from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.energy.energy_results import EnergyResults
 from package.calculation.energy.hour_to_quarter import transform_hour_to_quarter
 from package.calculation.preparation.grid_loss_responsible import GridLossResponsible
+from package.calculation.preparation.prepared_metering_point_time_series import (
+    PreparedMeteringPointTimeSeries,
+)
 from package.calculation.preparation.quarterly_metering_point_time_series import (
     QuarterlyMeteringPointTimeSeries,
 )
@@ -40,7 +41,7 @@ from package.infrastructure import logging_configuration
 @logging_configuration.use_span("calculation.execute.energy")
 def execute(
     args: CalculatorArgs,
-    metering_point_time_series: DataFrame,
+    metering_point_time_series: PreparedMeteringPointTimeSeries,
     grid_loss_responsible_df: GridLossResponsible,
 ) -> Tuple[EnergyResultsContainer, EnergyResults, EnergyResults]:
     with logging_configuration.start_span("quarterly_metering_point_time_series"):
