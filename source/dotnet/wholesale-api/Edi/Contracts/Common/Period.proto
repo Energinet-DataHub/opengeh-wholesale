@@ -1,4 +1,4 @@
-﻿/* Copyright 2020 Energinet DataHub A/S
+/* Copyright 2020 Energinet DataHub A/S
  *
  * Licensed under the Apache License, Version 2.0 (the "License2");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,14 @@
  */
 
 syntax = "proto3";
+import "google/protobuf/timestamp.proto";
 
 option csharp_namespace = "Energinet.DataHub.Edi.Responses";
 
-message AggregatedTimeSeriesRequestRejected {
-  repeated RejectReason reject_reasons = 1;
-}
-
-// Contains all errors for the request
-message RejectReason {
-  string error_code = 1;
-  string error_message = 2;
+/*
+ * Representation of period for the time series.
+ */
+message Period {
+  google.protobuf.Timestamp start_of_period = 1;
+  google.protobuf.Timestamp end_of_period = 2;
 }
