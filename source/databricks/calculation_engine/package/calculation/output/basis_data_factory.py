@@ -15,7 +15,7 @@
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
 
-from package.calculation.CalculationResults import BasisDataContainer
+from package.calculation.calculation_results import BasisDataContainer
 from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )

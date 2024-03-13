@@ -17,7 +17,7 @@ import pyspark.sql.functions as F
 from package.codelists import MeteringPointType
 from package.constants import Colname
 import package.calculation.energy.aggregators.transformations as T
-from package.calculation.energy.energy_results import EnergyResults
+from package.calculation.energy.data_structures.energy_results import EnergyResults
 from package.calculation.preparation.data_structures.quarterly_metering_point_time_series import (
     QuarterlyMeteringPointTimeSeries,
 )

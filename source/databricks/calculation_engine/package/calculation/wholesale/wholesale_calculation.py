@@ -18,7 +18,7 @@ import package.calculation.wholesale.tariff_calculators as tariffs
 import package.calculation.wholesale.tariff_calculators as tariff_calculator
 import package.calculation.wholesale.subscription_calculators as subscription_calculator
 
-from ..CalculationResults import WholesaleResultsContainer
+from ..calculation_results import WholesaleResultsContainer
 from ..calculator_args import CalculatorArgs
 from package.calculation.preparation.data_structures.prepared_charges import (
     PreparedChargesContainer,

@@ -23,7 +23,7 @@ from package.calculation.energy.aggregators.exchange_aggregators import (
     aggregate_net_exchange_per_ga,
     aggregate_net_exchange_per_neighbour_ga,
 )
-from package.calculation.energy.energy_results import (
+from package.calculation.energy.data_structures.energy_results import (
     EnergyResults,
 )
 from package.calculation.preparation.data_structures.quarterly_metering_point_time_series import (
