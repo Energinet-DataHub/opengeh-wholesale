@@ -77,4 +77,31 @@ public sealed class WholesaleServicesRequestValidatorTests
         validationErrors.Should().ContainSingle()
             .Which.ErrorCode.Should().Be("E17");
     }
+
+    [Fact]
+    public async Task Validate_WhenPeriodStartAndPeriodEndAreInvalidFormat_ReturnsUnsuccessfulValidation()
+    {
+        // Arrange
+        var now = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset();
+
+        var request = new WholesaleServicesRequestBuilder()
+            .WithPeriodStart(
+                new LocalDateTime(now.Year - 2, now.Month, now.Day, 17, 45, 12)
+                    .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+                    .ToInstant()
+                    .ToString())
+            .WithPeriodEnd(
+                new LocalDateTime(now.Year - 2, now.Month, now.Day + 3, 8, 13, 56)
+                    .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+                    .ToInstant()
+                    .ToString())
+            .Build();
+
+        // Act
+        var validationErrors = await _sut.ValidateAsync(request);
+
+        // Assert
+        validationErrors.Should().HaveCount(2);
+        validationErrors.Select(e => e.ErrorCode).Should().BeEquivalentTo(["D66", "D66"]);
+    }
 }
