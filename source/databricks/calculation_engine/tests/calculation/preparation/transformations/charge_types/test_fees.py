@@ -35,14 +35,15 @@ JAN_5TH = datetime(2022, 1, 4, 23)
 FEB_1ST = datetime(2022, 1, 31, 23)
 
 
-class TestWhenOneLinkWithOnePrice:
+class TestWhenOneLinkAndOnePrice:
     @pytest.mark.parametrize(
-        "charge_link_from_date, charge_time",
+        "charge_time, charge_link_from_date",
         [
-            (JAN_1ST, JAN_1ST),  # both are first day of month
-            (JAN_1ST, JAN_3RD),  # link time is first day of month but price time is not
-            (JAN_3RD, JAN_3RD),  # neither are first day of month
-            (JAN_3RD, JAN_5TH),  # neither are first day of month, and not the same day
+            (JAN_1ST, JAN_1ST),  # both price and link are at first day of month
+            (JAN_1ST, JAN_3RD),  # only link is first day of month
+            (JAN_3RD, JAN_1ST),  # price comes after link
+            (JAN_3RD, JAN_3RD),  # on same day, but not at first day of month
+            (JAN_3RD, JAN_5TH),  # prices after link and neither on first day of month
         ],
     )
     def test__returns_expected_price(
