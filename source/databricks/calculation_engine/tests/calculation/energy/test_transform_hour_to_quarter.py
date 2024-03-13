@@ -22,7 +22,7 @@ from package.codelists import MeteringPointResolution, QuantityQuality
 from package.calculation.energy.hour_to_quarter import (
     transform_hour_to_quarter,
 )
-from package.calculation.preparation.prepared_metering_point_time_series import (
+from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     prepared_metering_point_time_series_schema,
     PreparedMeteringPointTimeSeries,
 )

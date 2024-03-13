@@ -18,7 +18,9 @@ import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 from pyspark.sql.types import StringType, DecimalType
 
-from package.calculation.preparation.prepared_tariffs import PreparedTariffs
+from package.calculation.preparation.data_structures.prepared_tariffs import (
+    PreparedTariffs,
+)
 from package.codelists import WholesaleResultResolution, ChargeUnit
 from package.constants import Colname
 

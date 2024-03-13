@@ -13,7 +13,7 @@
 # limitations under the License.
 from dependency_injector.wiring import Provide, inject
 
-from package.calculation.CalculationResults import BasisDataContainer
+from package.calculation.calculation_results import BasisDataContainer
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.output.basis_data_writer import BasisDataWriter
 from package.codelists import AggregationLevel

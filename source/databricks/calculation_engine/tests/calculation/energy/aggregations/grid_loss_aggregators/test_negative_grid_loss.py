@@ -22,7 +22,7 @@ from calculation.energy import grid_loss_responsible_factories
 from package.calculation.energy.aggregators.grid_loss_aggregators import (
     calculate_negative_grid_loss,
 )
-from package.calculation.energy.energy_results import (
+from package.calculation.energy.data_structures.energy_results import (
     EnergyResults,
 )
 from package.codelists import (
