@@ -17,13 +17,9 @@ import pyspark.sql.functions as f
 from package.calculation.preparation.data_structures.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
 )
-from package.calculation.preparation.data_structures.charge_master_data import (
-    ChargeMasterData,
-)
-from package.calculation.preparation.data_structures.charge_prices import ChargePrices
 from package.calculation.preparation.charge_master_data import ChargeMasterData
 from package.calculation.preparation.charge_prices import ChargePrices
-from package.calculation.preparation.prepared_fees import PreparedFees
+from package.calculation.preparation.data_structures.prepared_fees import PreparedFees
 from package.calculation.preparation.transformations.charge_types.helper import (
     join_charge_master_data_and_charge_price,
 )
