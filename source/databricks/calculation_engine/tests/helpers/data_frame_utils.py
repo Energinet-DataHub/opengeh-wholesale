@@ -43,6 +43,7 @@ def assert_dataframe_and_schema(
     ignore_decimal_precision: bool = False,
     columns_to_skip: any = None,
 ) -> None:
+    show_dataframes(actual, expected)
     if columns_to_skip is not None:
         actual = actual.drop(*columns_to_skip)
         expected = expected.drop(*columns_to_skip)
