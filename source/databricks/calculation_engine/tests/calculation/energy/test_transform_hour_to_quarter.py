@@ -11,21 +11,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-
-import pytest
-from decimal import Decimal
 from datetime import datetime
-from pyspark.sql import SparkSession, Row
-from pyspark.sql.types import (
-    TimestampType,
-)
+from decimal import Decimal
+
+from pyspark.sql import SparkSession
+from pyspark.sql.types import Row
 
 from package.constants import Colname
 from package.codelists import MeteringPointResolution, QuantityQuality
 from package.calculation.energy.hour_to_quarter import (
     transform_hour_to_quarter,
-    metering_point_time_series_schema,
+)
+from package.calculation.preparation.prepared_metering_point_time_series import (
+    prepared_metering_point_time_series_schema,
+    PreparedMeteringPointTimeSeries,
 )
 
 
@@ -36,7 +35,7 @@ def basis_data_time_series_points_row(
     metering_point_id: str = "the_metering_point_id",
     metering_point_type: str = "the_metering_point_type",
     resolution: MeteringPointResolution = MeteringPointResolution.HOUR,
-    observation_time: TimestampType() = datetime(2020, 1, 1, 0, 0),
+    observation_time: datetime = datetime(2020, 1, 1, 0, 0),
     quantity: Decimal = Decimal("4.444444"),
     quality: QuantityQuality = QuantityQuality.ESTIMATED,
     energy_supplier_id: str = "the_energy_supplier_id",
@@ -61,19 +60,6 @@ def basis_data_time_series_points_row(
     return Row(**row)
 
 
-def test__transform_hour_to_quarter__when_invalid_input_schema__raise_assertion_error(
-    spark: SparkSession,
-):
-    # Arrange
-    basis_data_time_series_points = spark.createDataFrame(
-        data=[Row(**({"Hello": "World"}))]
-    )
-
-    # Act & Assert
-    with pytest.raises(AssertionError):
-        transform_hour_to_quarter(basis_data_time_series_points)
-
-
 def test__transform_hour_to_quarter__when_valid_input__split_basis_data_time_series(
     spark: SparkSession,
 ) -> None:
@@ -83,11 +69,14 @@ def test__transform_hour_to_quarter__when_valid_input__split_basis_data_time_ser
         basis_data_time_series_points_row(resolution=MeteringPointResolution.QUARTER),
     ]
     basis_data_time_series_points = spark.createDataFrame(
-        rows, metering_point_time_series_schema
+        rows, prepared_metering_point_time_series_schema
+    )
+    metering_point_time_series = PreparedMeteringPointTimeSeries(
+        basis_data_time_series_points
     )
 
     # Act
-    actual = transform_hour_to_quarter(basis_data_time_series_points)
+    actual = transform_hour_to_quarter(metering_point_time_series)
 
     # Assert
     assert actual.df.count() == 5
