@@ -16,6 +16,9 @@ import pyspark.sql.functions as F
 from pyspark.sql import DataFrame
 from pyspark.sql.window import Window
 
+from package.calculation.preparation.prepared_metering_point_time_series import (
+    PreparedMeteringPointTimeSeries,
+)
 from package.codelists import (
     MeteringPointResolution,
 )
@@ -42,9 +45,9 @@ def get_master_basis_data_df(
 
 @logging_configuration.use_span("get_metering_point_time_series_basis_data")
 def get_metering_point_time_series_basis_data_dfs(
-    metering_point_time_series: DataFrame, time_zone: str
+    metering_point_time_series: PreparedMeteringPointTimeSeries, time_zone: str
 ) -> tuple[DataFrame, DataFrame]:
-    "Returns tuple (time_series_quarter_basis_data, time_series_hour_basis_data)"
+    """Returns tuple (time_series_quarter_basis_data, time_series_hour_basis_data)"""
 
     time_series_quarter_basis_data_df = (
         _get_metering_point_time_series_basis_data_by_resolution(
@@ -62,11 +65,11 @@ def get_metering_point_time_series_basis_data_dfs(
         )
     )
 
-    return (time_series_quarter_basis_data_df, time_series_hour_basis_data_df)
+    return time_series_quarter_basis_data_df, time_series_hour_basis_data_df
 
 
 def _get_metering_point_time_series_basis_data_by_resolution(
-    metering_point_time_series: DataFrame,
+    metering_point_time_series: PreparedMeteringPointTimeSeries,
     resolution: str,
     time_zone: str,
 ) -> DataFrame:
@@ -75,7 +78,7 @@ def _get_metering_point_time_series_basis_data_by_resolution(
     )
 
     metering_point_time_series_basis_data_df = (
-        metering_point_time_series.where(F.col(Colname.resolution) == resolution)
+        metering_point_time_series.df.where(F.col(Colname.resolution) == resolution)
         .withColumn(
             Colname.local_date,
             F.to_date(F.from_utc_timestamp(F.col(Colname.observation_time), time_zone)),
@@ -122,7 +125,7 @@ def _get_sorted_quantity_columns(
     metering_point_time_series_basis_data: DataFrame,
 ) -> list[str]:
     def num_sort(col_name: str) -> int:
-        "Extracts the nuber in the string"
+        """Extracts the nuber in the string"""
         import re
 
         return list(map(int, re.findall(r"\d+", col_name)))[0]

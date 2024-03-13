@@ -12,12 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pyspark.sql.functions as f
-from pyspark.sql import DataFrame
 
 from package.calculation.energy.energy_results import EnergyResults
+from package.calculation.preparation.prepared_metering_point_time_series import (
+    PreparedMeteringPointTimeSeries,
+)
 from package.codelists import (
-    SettlementMethod,
     MeteringPointType,
+    SettlementMethod,
     MeteringPointResolution,
     QuantityQuality,
 )
@@ -25,10 +27,10 @@ from package.constants import Colname
 
 
 def get_wholesale_metering_point_times_series(
-    metering_point_time_series: DataFrame,
+    metering_point_time_series: PreparedMeteringPointTimeSeries,
     positive_grid_loss: EnergyResults,
     negative_grid_loss: EnergyResults,
-) -> DataFrame:
+) -> PreparedMeteringPointTimeSeries:
     """
     Metering point time series for wholesale calculation includes all calculation input metering point time series,
     and positive and negative grid loss metering point time series.
@@ -44,7 +46,7 @@ def get_wholesale_metering_point_times_series(
         Colname.metering_point_type, f.lit(MeteringPointType.PRODUCTION.value)
     ).withColumn(Colname.settlement_method, f.lit(None))
 
-    return (
+    df = (
         positive.union(negative)
         .select(
             f.col(Colname.grid_area),
@@ -62,5 +64,7 @@ def get_wholesale_metering_point_times_series(
             f.col(Colname.balance_responsible_id),
             f.col(Colname.settlement_method),
         )
-        .union(metering_point_time_series)
+        .union(metering_point_time_series.df)
     )
+
+    return PreparedMeteringPointTimeSeries(df)
