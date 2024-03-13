@@ -16,6 +16,9 @@ from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
 
 from package.calculation.CalculationResults import BasisDataContainer
+from package.calculation.preparation.prepared_metering_point_time_series import (
+    PreparedMeteringPointTimeSeries,
+)
 from package.calculation.preparation.transformations import basis_data
 from package.constants import BasisDataColname, PartitionKeyName
 from package.infrastructure import logging_configuration
@@ -24,7 +27,7 @@ from package.infrastructure import logging_configuration
 @logging_configuration.use_span("calculation.basis_data.prepare")
 def create(
     metering_point_periods_df: DataFrame,
-    metering_point_time_series_df: DataFrame,
+    metering_point_time_series_df: PreparedMeteringPointTimeSeries,
     time_zone: str,
 ) -> BasisDataContainer:
     (
