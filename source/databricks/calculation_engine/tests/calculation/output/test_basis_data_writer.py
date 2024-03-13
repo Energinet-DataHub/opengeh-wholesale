@@ -41,11 +41,8 @@ from tests.helpers.assert_calculation_file_path import (
 from tests.helpers.file_utils import find_file
 
 DEFAULT_CALCULATION_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
-DEFAULT_GRID_AREA = "105"
-DEFAULT_ENERGY_SUPPLIER = "8100000000108"
 PERIOD_START = datetime(2022, 2, 1, 22, 0, 0)
 PERIOD_END = datetime(2022, 3, 1, 22, 0, 0)
-TIME_ZONE = "Europe/Copenhagen"
 
 
 @pytest.fixture(scope="module")
@@ -54,8 +51,13 @@ def metering_point_time_series_factory(
 ) -> Callable[..., PreparedMeteringPointTimeSeries]:
     def factory() -> PreparedMeteringPointTimeSeries:
         rows = [
-            factories.create_row(resolution=MeteringPointResolution.HOUR),
-            factories.create_row(resolution=MeteringPointResolution.QUARTER),
+            factories.create_row(
+                resolution=MeteringPointResolution.HOUR, observation_time=PERIOD_START
+            ),
+            factories.create_row(
+                resolution=MeteringPointResolution.QUARTER,
+                observation_time=PERIOD_START,
+            ),
         ]
         return factories.create(spark, rows)
 
@@ -79,7 +81,7 @@ def _create_metering_point_period(
 ) -> Row:
     data = {
         Colname.metering_point_id: "the-meteringpoint-id",
-        Colname.grid_area: DEFAULT_GRID_AREA,
+        Colname.grid_area: factories.DEFAULT_GRID_AREA,
         Colname.from_date: PERIOD_START,
         Colname.to_date: PERIOD_END,
         Colname.metering_point_type: "the_metering_point_type",
@@ -87,7 +89,7 @@ def _create_metering_point_period(
         Colname.from_grid_area: "",
         Colname.to_grid_area: "",
         Colname.resolution: resolution.value,
-        Colname.energy_supplier_id: DEFAULT_ENERGY_SUPPLIER,
+        Colname.energy_supplier_id: factories.DEFAULT_ENERGY_SUPPLIER_ID,
         Colname.balance_responsible_id: "someId",
     }
     return Row(**data)
@@ -96,21 +98,25 @@ def _create_metering_point_period(
 def _get_basis_data_paths(calculation_filetype: CalculationFileType) -> str:
     if calculation_filetype == CalculationFileType.MASTER_BASIS_DATA_FOR_TOTAL_GA:
         return paths.get_basis_data_path(
-            BasisDataType.MASTER_BASIS_DATA, DEFAULT_CALCULATION_ID, DEFAULT_GRID_AREA
+            BasisDataType.MASTER_BASIS_DATA,
+            DEFAULT_CALCULATION_ID,
+            factories.DEFAULT_GRID_AREA,
         )
     elif calculation_filetype == CalculationFileType.MASTER_BASIS_DATA_FOR_ES_PER_GA:
         return paths.get_basis_data_path(
             BasisDataType.MASTER_BASIS_DATA,
             DEFAULT_CALCULATION_ID,
-            DEFAULT_GRID_AREA,
-            DEFAULT_ENERGY_SUPPLIER,
+            factories.DEFAULT_GRID_AREA,
+            factories.DEFAULT_ENERGY_SUPPLIER_ID,
         )
     elif (
         calculation_filetype
         == CalculationFileType.TIME_SERIES_QUARTER_BASIS_DATA_FOR_TOTAL_GA
     ):
         return paths.get_basis_data_path(
-            BasisDataType.TIME_SERIES_QUARTER, DEFAULT_CALCULATION_ID, DEFAULT_GRID_AREA
+            BasisDataType.TIME_SERIES_QUARTER,
+            DEFAULT_CALCULATION_ID,
+            factories.DEFAULT_GRID_AREA,
         )
     elif (
         calculation_filetype
@@ -119,12 +125,14 @@ def _get_basis_data_paths(calculation_filetype: CalculationFileType) -> str:
         return paths.get_basis_data_path(
             BasisDataType.TIME_SERIES_QUARTER,
             DEFAULT_CALCULATION_ID,
-            DEFAULT_GRID_AREA,
-            DEFAULT_ENERGY_SUPPLIER,
+            factories.DEFAULT_GRID_AREA,
+            factories.DEFAULT_ENERGY_SUPPLIER_ID,
         )
     elif calculation_filetype == CalculationFileType.TIME_SERIES_HOUR_BASIS_DATA:
         return paths.get_basis_data_path(
-            BasisDataType.TIME_SERIES_HOUR, DEFAULT_CALCULATION_ID, DEFAULT_GRID_AREA
+            BasisDataType.TIME_SERIES_HOUR,
+            DEFAULT_CALCULATION_ID,
+            factories.DEFAULT_GRID_AREA,
         )
     elif (
         calculation_filetype
@@ -133,8 +141,8 @@ def _get_basis_data_paths(calculation_filetype: CalculationFileType) -> str:
         return paths.get_basis_data_path(
             BasisDataType.TIME_SERIES_HOUR,
             DEFAULT_CALCULATION_ID,
-            DEFAULT_GRID_AREA,
-            DEFAULT_ENERGY_SUPPLIER,
+            factories.DEFAULT_GRID_AREA,
+            factories.DEFAULT_ENERGY_SUPPLIER_ID,
         )
 
     raise ValueError(f"Unexpected CalculationFileType, {calculation_filetype}")
