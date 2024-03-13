@@ -11,11 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from calculation_logic.features.energy_calculations.grid_loss.when_has_no_non_profiled.states.scenario_state import (
+    get_expected,
+)
 from helpers.data_frame_utils import (
     assert_dataframe_and_schema,
 )
-from package.constants import WholesaleResultColumnNames
-from .states.scenario_state import get_expected
+from package.constants import EnergyResultColumnNames
 
 
 def test_execute__returns_expected(  # type: ignore
@@ -29,11 +31,12 @@ def test_execute__returns_expected(  # type: ignore
 
     # Assert
     assert_dataframe_and_schema(
-        results.wholesale_results.hourly_tariff_per_ga_co_es,
+        results.energy_results.grid_loss,
         scenario_fixture.expected,
         ignore_decimal_precision=True,
+        ignore_decimal_scale=True,
         ignore_nullability=True,
         columns_to_skip=[
-            WholesaleResultColumnNames.calculation_result_id,
+            EnergyResultColumnNames.calculation_result_id,
         ],
     )
