@@ -16,8 +16,10 @@ from datetime import datetime
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, concat_ws
 
-from package.calculation.preparation.charge_master_data import ChargeMasterData
-from package.calculation.preparation.charge_prices import ChargePrices
+from package.calculation.preparation.data_structures.charge_master_data import (
+    ChargeMasterData,
+)
+from package.calculation.preparation.data_structures.charge_prices import ChargePrices
 from package.calculation.preparation.transformations.clamp_period import clamp_period
 from package.calculation.input import TableReader
 from package.constants import Colname

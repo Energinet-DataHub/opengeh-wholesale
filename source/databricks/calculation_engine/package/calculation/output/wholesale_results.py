@@ -15,7 +15,7 @@ from dataclasses import fields
 
 from pyspark.sql import DataFrame
 
-from package.calculation.CalculationResults import WholesaleResultsContainer
+from package.calculation.calculation_results import WholesaleResultsContainer
 from package.infrastructure import logging_configuration
 from package.infrastructure.paths import (
     OUTPUT_DATABASE_NAME,

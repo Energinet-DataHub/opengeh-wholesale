@@ -11,22 +11,25 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import pyspark.sql.functions as f
 from pyspark.sql.dataframe import DataFrame
+
+import pyspark.sql.functions as f
 from pyspark.sql.types import DecimalType, StringType, ArrayType
 
 import package.calculation.energy.aggregators.transformations as t
-from package.calculation.preparation.charge_link_metering_point_periods import (
+from package.calculation.preparation.data_structures.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
 )
-from package.calculation.preparation.charge_master_data import (
+from package.calculation.preparation.data_structures.charge_master_data import (
     ChargeMasterData,
 )
-from package.calculation.preparation.charge_prices import ChargePrices
-from package.calculation.preparation.prepared_metering_point_time_series import (
+from package.calculation.preparation.data_structures.charge_prices import ChargePrices
+from package.calculation.preparation.data_structures.prepared_tariffs import (
+    PreparedTariffs,
+)
+from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
-from package.calculation.preparation.prepared_tariffs import PreparedTariffs
 from package.codelists import ChargeType, ChargeResolution
 from package.constants import Colname
 
@@ -79,7 +82,6 @@ def _join_master_data_and_prices_add_missing_prices(
     charge_master_data_filtered = charge_master_data.df.filter(
         f.col(Colname.resolution) == resolution.value
     )
-
     charges_with_no_prices = charge_master_data_filtered.withColumn(
         Colname.charge_time,
         f.explode(
