@@ -35,13 +35,27 @@ public class PeriodValidationRuleTests
             "Der kan ikke anmodes om data for mere end 3 år og 2 måneder tilbage i tid / It is not possible to request data longer than 3 years and 2 months back in time",
             "E17");
 
-    private static readonly Instant _now = Instant.FromUtc(2024, 6, 1, 23, 0, 0);
+    private static readonly ValidationError _invalidWinterMidnightFormat =
+        new(
+            "Forkert dato format for {PropertyName}, skal være YYYY-MM-DDT23:00:00Z / Wrong date format for {PropertyName}, must be YYYY-MM-DDT23:00:00Z",
+            "D66");
 
-    private static readonly MockClock _mockClock = new(_now);
+    private static readonly ValidationError _invalidSummerMidnightFormat =
+        new(
+            "Forkert dato format for {PropertyName}, skal være YYYY-MM-DDT22:00:00Z / Wrong date format for {PropertyName}, must be YYYY-MM-DDT22:00:00Z",
+            "D66");
 
-    private readonly PeriodValidationRule _sut = new(
-        DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
-        _mockClock);
+    private readonly PeriodValidationRule _sut;
+
+    private Instant _now;
+
+    public PeriodValidationRuleTests()
+    {
+        _now = Instant.FromUtc(2024, 5, 31, 22, 0, 0);
+        _sut = new PeriodValidationRule(
+            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
+            new MockClock(() => _now));
+    }
 
     [Fact]
     public async Task Validate_WhenPeriodStartIsNonsense_ReturnsExpectedValidationErrors()
@@ -123,6 +137,58 @@ public class PeriodValidationRuleTests
     }
 
     [Fact]
+    public async Task Validate_WhenPeriodStartIsExactly3Years2MonthsAnd1HourOldDueToDaylightSavingTime_ReturnsNoValidationError()
+    {
+        // Arrange
+        var periodStartDate = new LocalDateTime(2021, 10, 1, 0, 0, 0)
+            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .ToInstant();
+
+        _now = new LocalDateTime(2024, 12, 1, 0, 0, 0)
+            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .ToInstant();
+
+        var message = new WholesaleServicesRequestBuilder()
+            .WithPeriodStart(periodStartDate.ToString())
+            .Build();
+
+        // Act
+        var errors = await _sut.ValidateAsync(message);
+
+        // Assert
+        errors.Should().BeEmpty();
+        var duration = _now - periodStartDate;
+        duration.Days.Should().Be(1157);
+        duration.Hours.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task Validate_WhenPeriodStartIsExactly3Years2MonthsMinus1HourOldDueToDaylightSavingTime_ReturnsNoValidationError()
+    {
+        // Arrange
+        var periodStartDate = new LocalDateTime(2021, 3, 1, 0, 0, 0)
+            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .ToInstant();
+
+        _now = new LocalDateTime(2024, 5, 1, 0, 0, 0)
+            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .ToInstant();
+
+        var message = new WholesaleServicesRequestBuilder()
+            .WithPeriodStart(periodStartDate.ToString())
+            .Build();
+
+        // Act
+        var errors = await _sut.ValidateAsync(message);
+
+        // Assert
+        errors.Should().BeEmpty();
+        var duration = _now - periodStartDate;
+        duration.Days.Should().Be(1156);
+        duration.Hours.Should().Be(23);
+    }
+
+    [Fact]
     public async Task Validate_WhenPeriodStartIs1DayTooOld_ReturnsExpectedValidationError()
     {
         // Arrange
@@ -146,8 +212,8 @@ public class PeriodValidationRuleTests
     public async Task Validate_WhenPeriodOverlapSummerDaylightSavingTime_ReturnsNoValidationErrors()
     {
         // Arrange
-        var winterTime = Instant.FromUtc(_now.ToDateTimeOffset().Year, 2, 26, 23, 0, 0).ToString();
-        var summerTime = Instant.FromUtc(_now.ToDateTimeOffset().Year, 3, 26, 22, 0, 0).ToString();
+        var winterTime = Instant.FromUtc(_now.ToDateTimeOffset().Year, 3, 25, 23, 0, 0).ToString();
+        var summerTime = Instant.FromUtc(_now.ToDateTimeOffset().Year, 4, 25, 22, 0, 0).ToString();
 
         var message = new WholesaleServicesRequestBuilder()
             .WithPeriodStart(winterTime)
@@ -180,8 +246,49 @@ public class PeriodValidationRuleTests
         errors.Should().BeEmpty();
     }
 
-    private sealed class MockClock(Instant instant) : IClock
+    [Fact]
+    public async Task Validate_WhenStartHourIsWrong_ReturnsExpectedValidationError()
     {
-        public Instant GetCurrentInstant() => instant;
+        // Arrange
+        var notWinterTimeMidnight = Instant.FromUtc(_now.ToDateTimeOffset().Year, 1, 1, 22, 0, 0).ToString();
+
+        var message = new WholesaleServicesRequestBuilder()
+            .WithPeriodStart(notWinterTimeMidnight)
+            .Build();
+
+        // Act
+        var errors = await _sut.ValidateAsync(message);
+
+        // Assert
+        errors.Should().ContainSingle();
+        var error = errors.First();
+        error.ErrorCode.Should().Be(_invalidWinterMidnightFormat.ErrorCode);
+        error.Message.Should().Be(_invalidWinterMidnightFormat.WithPropertyName("Period Start").Message);
+    }
+
+    [Fact]
+    public async Task Validate_WhenEndHourIsWrong_ReturnsExpectedValidationError()
+    {
+        // Arrange
+        var notSummerTimeMidnight = Instant.FromUtc(_now.ToDateTimeOffset().Year, 7, 1, 23, 0, 0).ToString();
+
+        var message = new WholesaleServicesRequestBuilder()
+            .WithPeriodEnd(notSummerTimeMidnight)
+            .WithPeriodStart(Instant.FromUtc(_now.ToDateTimeOffset().Year, 7, 2, 22, 0, 0).ToString())
+            .Build();
+
+        // Act
+        var errors = await _sut.ValidateAsync(message);
+
+        // Assert
+        errors.Should().ContainSingle();
+        var error = errors.First();
+        error.ErrorCode.Should().Be(_invalidSummerMidnightFormat.ErrorCode);
+        error.Message.Should().Be(_invalidSummerMidnightFormat.WithPropertyName("Period End").Message);
+    }
+
+    private sealed class MockClock(Func<Instant> getInstant) : IClock
+    {
+        public Instant GetCurrentInstant() => getInstant.Invoke();
     }
 }
