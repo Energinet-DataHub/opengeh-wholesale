@@ -66,10 +66,13 @@ def get_fee_charges(
         Colname.charge_owner,
         Colname.charge_time,
         Colname.charge_price,
+        Colname.charge_tax,
+        Colname.resolution,
+        charge_link_metering_point_periods_df[Colname.metering_point_id],
         charge_link_metering_point_periods_df[Colname.metering_point_type],
         charge_link_metering_point_periods_df[Colname.settlement_method],
         charge_link_metering_point_periods_df[Colname.grid_area],
         charge_link_metering_point_periods_df[Colname.energy_supplier_id],
     )
 
-    return fees
+    return PreparedFees(fees)
