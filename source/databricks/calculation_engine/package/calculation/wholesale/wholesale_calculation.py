@@ -19,13 +19,14 @@ import package.calculation.output.wholesale_storage_model_factory as factory
 import package.calculation.wholesale.tariff_calculators as tariffs
 import package.calculation.wholesale.tariff_calculators as tariff_calculator
 import package.calculation.wholesale.subscription_calculators as subscription_calculator
+from .sum_within_month import sum_within_month
 
 from ..CalculationResults import WholesaleResultsContainer
 from ..calculator_args import CalculatorArgs
 from ..preparation.prepared_charges import PreparedChargesContainer
 from ..preparation.prepared_subscriptions import PreparedSubscriptions
 from ..preparation.prepared_tariffs import PreparedTariffs
-from ...codelists import AmountType
+from ...codelists import AmountType, ChargeType
 from ...infrastructure import logging_configuration
 
 
@@ -68,8 +69,10 @@ def _calculate_subscriptions(
         args, subscription_amount_per_charge, AmountType.AMOUNT_PER_CHARGE
     )
 
-    monthly_subscription_amount_per_charge = subscription_calculator.sum_within_month(
-        subscription_amount_per_charge, args.calculation_period_start_datetime
+    monthly_subscription_amount_per_charge = sum_within_month(
+        subscription_amount_per_charge,
+        args.calculation_period_start_datetime,
+        ChargeType.SUBSCRIPTION,
     )
     results.monthly_subscription_from_daily_per_ga_co_es = factory.create(
         args,
@@ -95,8 +98,10 @@ def _calculate_tariff_charges(
         AmountType.AMOUNT_PER_CHARGE,
     )
 
-    monthly_tariff_from_hourly_per_ga_co_es = tariff_calculator.sum_within_month(
-        hourly_tariff_per_ga_co_es, args.calculation_period_start_datetime
+    monthly_tariff_from_hourly_per_ga_co_es = sum_within_month(
+        hourly_tariff_per_ga_co_es,
+        args.calculation_period_start_datetime,
+        ChargeType.TARIFF,
     )
 
     results.monthly_tariff_from_hourly_per_ga_co_es = factory.create(
@@ -115,8 +120,10 @@ def _calculate_tariff_charges(
         AmountType.AMOUNT_PER_CHARGE,
     )
 
-    monthly_tariff_from_daily_per_ga_co_es = tariff_calculator.sum_within_month(
-        daily_tariff_per_ga_co_es, args.calculation_period_start_datetime
+    monthly_tariff_from_daily_per_ga_co_es = sum_within_month(
+        daily_tariff_per_ga_co_es,
+        args.calculation_period_start_datetime,
+        ChargeType.TARIFF,
     )
 
     results.monthly_tariff_from_daily_per_ga_co_es = factory.create(

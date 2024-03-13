@@ -20,11 +20,9 @@ from typing import Any
 import pytest
 from pyspark.sql import SparkSession
 
+from package.calculation.wholesale.sum_within_month import sum_within_month
 from package.calculation.wholesale.tariff_calculators import (
     calculate_tariff_price_per_ga_co_es,
-)
-from package.calculation.wholesale.tariff_calculators import (
-    sum_within_month,
 )
 from package.codelists import (
     ChargeQuality,
@@ -298,6 +296,7 @@ def test__sum_within_month__sums_amount_per_month(
     actual = sum_within_month(
         calculate_tariff_price_per_ga_co_es(prepared_tariffs),
         factory.DefaultValues.PERIOD_START_DATETIME,
+        ChargeType.TARIFF,
     )
 
     # Assert
@@ -319,6 +318,7 @@ def test__sum_within_month__sums_across_metering_point_types(
     actual = sum_within_month(
         calculate_tariff_price_per_ga_co_es(prepared_tariffs),
         factory.DefaultValues.PERIOD_START_DATETIME,
+        ChargeType.TARIFF,
     )
 
     # Assert
@@ -340,6 +340,7 @@ def test__sum_within_month__joins_qualities(
     actual = sum_within_month(
         calculate_tariff_price_per_ga_co_es(prepared_tariffs),
         factory.DefaultValues.PERIOD_START_DATETIME,
+        ChargeType.TARIFF,
     )
 
     # Assert
@@ -362,6 +363,7 @@ def test__sum_within_month__groups_by_local_time_months(
     actual = sum_within_month(
         calculate_tariff_price_per_ga_co_es(prepared_tariffs),
         factory.DefaultValues.PERIOD_START_DATETIME,
+        ChargeType.TARIFF,
     )
 
     # Assert
@@ -383,6 +385,7 @@ def test__sum_within_month__charge_time_always_start_of_month(
     actual = sum_within_month(
         calculate_tariff_price_per_ga_co_es(prepared_tariffs),
         factory.DefaultValues.PERIOD_START_DATETIME,
+        ChargeType.TARIFF,
     )
 
     # Assert
@@ -403,6 +406,7 @@ def test__sum_within_month__sums_quantity_per_month(
     actual = sum_within_month(
         calculate_tariff_price_per_ga_co_es(prepared_tariffs),
         factory.DefaultValues.PERIOD_START_DATETIME,
+        ChargeType.TARIFF,
     )
 
     # Assert
@@ -428,6 +432,7 @@ def test__sum_within_month__sets_charge_price_to_none(
     actual = sum_within_month(
         calculate_tariff_price_per_ga_co_es(prepared_tariffs),
         factory.DefaultValues.PERIOD_START_DATETIME,
+        ChargeType.TARIFF,
     )
 
     # Assert
@@ -470,6 +475,7 @@ def test__sum_within_month__when_all_charge_prices_are_none__sums_charge_price_a
     actual = sum_within_month(
         calculate_tariff_price_per_ga_co_es(prepared_tariffs),
         factory.DefaultValues.PERIOD_START_DATETIME,
+        ChargeType.TARIFF,
     )
 
     # Assert
@@ -494,6 +500,7 @@ def test__sum_within_month__when_one_tariff_has_charge_price_none__sums_charge_p
     actual = sum_within_month(
         calculate_tariff_price_per_ga_co_es(prepared_tariffs),
         factory.DefaultValues.PERIOD_START_DATETIME,
+        ChargeType.TARIFF,
     )
 
     # Assert

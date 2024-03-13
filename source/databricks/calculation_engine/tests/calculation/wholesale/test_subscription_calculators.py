@@ -20,12 +20,13 @@ from pyspark.sql import SparkSession
 
 from package.calculation.wholesale.subscription_calculators import (
     calculate,
-    sum_within_month,
 )
+from package.calculation.wholesale.sum_within_month import sum_within_month
 from package.codelists import (
     MeteringPointType,
     SettlementMethod,
     QuantityQuality,
+    ChargeType,
 )
 from package.constants import Colname
 import pyspark.sql.functions as f
@@ -245,6 +246,7 @@ class TestWhenValidInput:
         actual = sum_within_month(
             subscription_amount_per_charge,
             DefaultValues.CALCULATION_PERIOD_START,
+            ChargeType.SUBSCRIPTION,
         )
 
         expected_total_amount = subscription_amount_per_charge.agg(
