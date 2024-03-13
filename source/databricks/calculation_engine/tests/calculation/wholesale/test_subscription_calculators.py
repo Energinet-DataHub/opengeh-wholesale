@@ -20,6 +20,7 @@ from pyspark.sql import SparkSession
 
 from package.calculation.wholesale.subscription_calculators import (
     calculate,
+    sum_within_month,
 )
 from package.codelists import (
     MeteringPointType,
@@ -27,6 +28,7 @@ from package.codelists import (
     QuantityQuality,
 )
 from package.constants import Colname
+import pyspark.sql.functions as f
 import tests.calculation.wholesale.prepared_subscriptions_factory as factory
 
 
@@ -221,6 +223,37 @@ class TestWhenValidInput:
             row[Colname.settlement_method] for row in actual.collect()
         ]
         assert set(actual_settlement_methods) == set(expected)
+
+    def test__sum_within_month__sums_amount_per_month(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        rows = [
+            factory.create_row(charge_time=datetime(2020, 1, 31, 23, 0)),
+            factory.create_row(charge_time=datetime(2020, 2, 15, 23, 0)),
+        ]
+        prepared_subscriptions = factory.create(spark, rows)
+        subscription_amount_per_charge = calculate(
+            prepared_subscriptions,
+            DefaultValues.CALCULATION_PERIOD_START,
+            DefaultValues.CALCULATION_PERIOD_END,
+            DefaultValues.TIME_ZONE,
+        )
+
+        # Act
+        actual = sum_within_month(
+            subscription_amount_per_charge,
+            DefaultValues.CALCULATION_PERIOD_START,
+        )
+
+        expected_total_amount = subscription_amount_per_charge.agg(
+            f.sum(Colname.total_amount)
+        ).collect()[0][0]
+
+        # Assert
+        assert actual.collect()[0][Colname.total_amount] == expected_total_amount
+        assert actual.count() == 1
 
 
 class TestWhenMissingSomeInputChargePrice:

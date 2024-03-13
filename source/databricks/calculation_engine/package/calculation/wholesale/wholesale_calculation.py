@@ -68,6 +68,15 @@ def _calculate_subscriptions(
         args, subscription_amount_per_charge, AmountType.AMOUNT_PER_CHARGE
     )
 
+    monthly_subscription_amount_per_charge = subscription_calculator.sum_within_month(
+        subscription_amount_per_charge, args.calculation_period_start_datetime
+    )
+    results.monthly_subscription_from_daily_per_ga_co_es = factory.create(
+        args,
+        monthly_subscription_amount_per_charge,
+        AmountType.MONTHLY_AMOUNT_PER_CHARGE,
+    )
+
 
 @logging_configuration.use_span("calculate_tariff_charges")
 def _calculate_tariff_charges(
