@@ -122,12 +122,8 @@ def create_charge_link_metering_point_periods_row(
     charge_owner: str = DefaultValues.CHARGE_OWNER,
     metering_point_id: str = DefaultValues.METERING_POINT_ID,
     charge_quantity: int = DefaultValues.CHARGE_QUANTITY,
-    metering_point_type: (
-        e.MeteringPointType
-    ) = DefaultValues.METERING_POINT_TYPE,
-    settlement_method: (
-        e.SettlementMethod | None
-    ) = DefaultValues.SETTLEMENT_METHOD,
+    metering_point_type: (e.MeteringPointType) = DefaultValues.METERING_POINT_TYPE,
+    settlement_method: (e.SettlementMethod | None) = DefaultValues.SETTLEMENT_METHOD,
     grid_area: str = DefaultValues.GRID_AREA,
     energy_supplier_id: str | None = DefaultValues.ENERGY_SUPPLIER_ID,
     from_date: datetime = DefaultValues.FROM_DATE,
