@@ -42,3 +42,22 @@ resource "azurerm_role_assignment" "app_config_settings_read_access" {
   principal_id         = var.developers_security_group_object_id
 }
 
+
+# Key vault RBAC
+resource "azurerm_role_assignment" "developers_key_vault_secrets_user" {
+  scope                = data.azurerm_subscription.this.id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = var.developers_security_group_object_id
+}
+
+resource "azurerm_role_assignment" "developers_key_vault_cert_user" {
+  scope                = data.azurerm_subscription.this.id
+  role_definition_name = "Key Vault Certificates User"
+  principal_id         = var.developers_security_group_object_id
+}
+
+resource "azurerm_role_assignment" "developers_key_vault_reader" {
+  scope                = data.azurerm_subscription.this.id
+  role_definition_name = "Key Vault Reader"
+  principal_id         = var.developers_security_group_object_id
+}

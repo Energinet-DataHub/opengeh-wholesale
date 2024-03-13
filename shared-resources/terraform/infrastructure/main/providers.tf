@@ -4,6 +4,7 @@ terraform {
     azurerm = "3.85.0"
 
     azuread = "2.39.0"
+
   }
 }
 
