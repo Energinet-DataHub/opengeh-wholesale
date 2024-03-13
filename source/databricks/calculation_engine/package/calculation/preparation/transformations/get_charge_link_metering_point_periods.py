@@ -15,7 +15,7 @@
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
 
-from package.calculation.preparation.charge_link_metering_point_periods import (
+from package.calculation.preparation.data_structures.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
 )
 from package.constants import Colname

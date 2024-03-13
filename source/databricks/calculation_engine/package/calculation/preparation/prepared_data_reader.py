@@ -17,12 +17,20 @@ from datetime import datetime
 from pyspark.sql import DataFrame
 
 from package.calculation.input import TableReader
-from package.calculation.preparation.grid_loss_responsible import GridLossResponsible
+from package.calculation.preparation.data_structures.grid_loss_responsible import (
+    GridLossResponsible,
+)
 from package.codelists import ChargeResolution
 from . import transformations as T
-from .input_charges import InputChargesContainer
-from .prepared_charges import PreparedChargesContainer
-from .prepared_metering_point_time_series import PreparedMeteringPointTimeSeries
+from package.calculation.preparation.data_structures.input_charges import (
+    InputChargesContainer,
+)
+from package.calculation.preparation.data_structures.prepared_charges import (
+    PreparedChargesContainer,
+)
+from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
+    PreparedMeteringPointTimeSeries,
+)
 from ...infrastructure import logging_configuration
 
 
