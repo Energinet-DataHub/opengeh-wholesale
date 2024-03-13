@@ -16,7 +16,7 @@ from package.codelists import (
     CalculationType,
 )
 from package.infrastructure import logging_configuration
-from .CalculationResults import (
+from .calculation_results import (
     CalculationResultsContainer,
 )
 from .calculator_args import CalculatorArgs
@@ -64,8 +64,9 @@ def _execute(
                 args.calculation_period_start_datetime,
                 args.calculation_period_end_datetime,
                 metering_point_periods_df,
-            ).cache()
+            )
         )
+        metering_point_time_series.cache_internal()
 
     results.energy_results, positive_grid_loss, negative_grid_loss = (
         energy_calculation.execute(

@@ -17,20 +17,25 @@ import pyspark.sql.functions as f
 from pyspark.sql.types import DecimalType, StringType, ArrayType
 
 import package.calculation.energy.aggregators.transformations as t
-from package.calculation.preparation.charge_link_metering_point_periods import (
+from package.calculation.preparation.data_structures.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
 )
-from package.calculation.preparation.charge_master_data import (
+from package.calculation.preparation.data_structures.charge_master_data import (
     ChargeMasterData,
 )
-from package.calculation.preparation.charge_prices import ChargePrices
-from package.calculation.preparation.prepared_tariffs import PreparedTariffs
+from package.calculation.preparation.data_structures.charge_prices import ChargePrices
+from package.calculation.preparation.data_structures.prepared_tariffs import (
+    PreparedTariffs,
+)
+from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
+    PreparedMeteringPointTimeSeries,
+)
 from package.codelists import ChargeType, ChargeResolution
 from package.constants import Colname
 
 
 def get_prepared_tariffs(
-    metering_point_time_series: DataFrame,
+    metering_point_time_series: PreparedMeteringPointTimeSeries,
     charge_master_data: ChargeMasterData,
     charge_prices: ChargePrices,
     charge_link_metering_points: ChargeLinkMeteringPointPeriods,
@@ -146,13 +151,13 @@ def _join_with_charge_link_metering_points(
 
 
 def _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
-    metering_point_time_series: DataFrame,
+    metering_point_time_series: PreparedMeteringPointTimeSeries,
     charge_resolution: ChargeResolution,
 ) -> DataFrame:
     time_zone = "Europe/Copenhagen"
     grouped_time_series = (
         t.aggregate_quantity_and_quality(
-            metering_point_time_series.withColumn(
+            metering_point_time_series.df.withColumn(
                 Colname.observation_time,
                 f.from_utc_timestamp(Colname.observation_time, time_zone),
             ),

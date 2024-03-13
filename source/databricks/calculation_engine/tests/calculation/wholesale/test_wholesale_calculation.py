@@ -15,7 +15,9 @@
 from pyspark.sql import SparkSession
 
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.preparation.prepared_charges import PreparedChargesContainer
+from package.calculation.preparation.data_structures.prepared_charges import (
+    PreparedChargesContainer,
+)
 from package.calculation.wholesale import execute
 from package.codelists import ChargeResolution
 

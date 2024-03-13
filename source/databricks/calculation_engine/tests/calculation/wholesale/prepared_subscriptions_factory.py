@@ -17,7 +17,7 @@ from decimal import Decimal
 
 from pyspark.sql import Row, SparkSession
 
-from package.calculation.preparation.prepared_subscriptions import (
+from package.calculation.preparation.data_structures.prepared_subscriptions import (
     PreparedSubscriptions,
     prepared_subscriptions_schema,
 )
