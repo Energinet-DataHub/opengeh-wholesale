@@ -59,6 +59,7 @@ def get_fee_charges(
     charge_master_data: ChargeMasterData,
     charge_prices: ChargePrices,
     charge_link_metering_point_periods: ChargeLinkMeteringPointPeriods,
+    time_zone: str,
 ) -> PreparedFees:
     """
     This method does the following:

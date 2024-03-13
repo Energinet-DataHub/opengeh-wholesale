@@ -11,7 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from datetime import timedelta, datetime
+from decimal import Decimal
 
+import pytest
 from pyspark.sql import SparkSession
 
 import tests.calculation.charges_factory as factory
@@ -21,47 +24,79 @@ from package.calculation.preparation.transformations.charge_types import (
 import package.codelists as e
 from package.constants import Colname
 
+DEFAULT_TIME_ZONE = "Europe/Copenhagen"
 
-def test__get_fee_charges__(spark: SparkSession) -> None:
-    # Arrange
-    charge_link_metering_points_rows = [
-        factory.create_charge_link_metering_point_periods_row(
-            charge_type=e.ChargeType.FEE,
-            factory.DefaultValues.D
-        ),
-    ]
-    charge_master_data_rows = [
-        factory.create_charge_master_data_row(
-            charge_type=e.ChargeType.FEE, resolution=e.ChargeResolution.MONTH
-        ),
-    ]
-    charge_prices_rows = [
-        factory.create_charge_prices_row(
-            charge_type=e.ChargeType.FEE,
-        ),
-    ]
+# Variables names below refer to local time
+JAN_1ST = datetime(2021, 12, 31, 23)
+JAN_2ND = datetime(2022, 1, 1, 23)
+JAN_3RD = datetime(2022, 1, 2, 23)
+JAN_4TH = datetime(2022, 1, 3, 23)
+JAN_5TH = datetime(2022, 1, 4, 23)
+FEB_1ST = datetime(2022, 1, 31, 23)
 
-    charge_link_metering_point_periods = (
-        factory.create_charge_link_metering_point_periods(
-            spark, charge_link_metering_points_rows
+
+class TestWhenOneLinkWithOnePrice:
+    @pytest.mark.parametrize(
+        "charge_link_from_date, charge_time",
+        [
+            (JAN_1ST, JAN_1ST),  # both are first day of month
+            (JAN_1ST, JAN_3RD),  # link time is first day of month but price time is not
+            (JAN_3RD, JAN_3RD),  # neither are first day of month
+            (JAN_3RD, JAN_5TH),  # neither are first day of month, and not the same day
+        ],
+    )
+    def test__returns_expected_price(
+        self,
+        spark: SparkSession,
+        charge_link_from_date: datetime,
+        charge_time: datetime,
+    ) -> None:
+        # Arrange
+        charge_price = Decimal("1.123456")
+        charge_link_metering_points_rows = [
+            factory.create_charge_link_metering_point_periods_row(
+                charge_type=e.ChargeType.FEE,
+                from_date=charge_link_from_date,
+                to_date=charge_link_from_date + timedelta(days=1),
+            ),
+        ]
+        charge_master_data_rows = [
+            factory.create_charge_master_data_row(
+                charge_type=e.ChargeType.FEE,
+                resolution=e.ChargeResolution.MONTH,
+                from_date=JAN_1ST,
+                to_date=FEB_1ST,
+            ),
+        ]
+        charge_prices_rows = [
+            factory.create_charge_prices_row(
+                charge_type=e.ChargeType.FEE,
+                charge_time=charge_time,
+                charge_price=charge_price,
+            ),
+        ]
+
+        charge_link_metering_point_periods = (
+            factory.create_charge_link_metering_point_periods(
+                spark, charge_link_metering_points_rows
+            )
         )
-    )
-    charge_master_data = factory.create_charge_master_data(
-        spark, charge_master_data_rows
-    )
-    charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
+        charge_master_data = factory.create_charge_master_data(
+            spark, charge_master_data_rows
+        )
+        charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
-    # Act
-    actual_fee = get_fee_charges(
-        charge_master_data, charge_prices, charge_link_metering_point_periods
-    )
+        # Act
+        actual = get_fee_charges(
+            charge_master_data,
+            charge_prices,
+            charge_link_metering_point_periods,
+            DEFAULT_TIME_ZONE,
+        )
 
-    # Assert
-
-
-
-
-    assert actual_fee.collect()[0][Colname.charge_type] == e.ChargeType.FEE.value
+        # Assert
+        assert actual.df.count() == 1
+        assert actual.df.collect()[0][Colname.charge_price] == charge_price
 
 
 def test__get_fee_charges__filters_on_fee_charge_type(
