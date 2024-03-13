@@ -51,7 +51,6 @@ from package.calculation.preparation.charge_link_metering_point_periods import (
 )
 from package.calculation.preparation.charge_master_data import ChargeMasterData
 from package.calculation.preparation.charge_prices import ChargePrices
-from package.calculation.preparation.prepared_subscriptions import PreparedSubscriptions
 from package.codelists import ChargeType, WholesaleResultResolution
 from package.constants import Colname
 
@@ -101,7 +100,7 @@ def _join_with_prices(
     subscription_prices = subscription_prices.df
     subscription_master_data = subscription_master_data.df
 
-    subscription_master_data_with_charge_time = _expand_with_daily_charge_time(
+    subscription_master_data_with_charge_time = _add_charge_time(
         subscription_master_data, time_zone
     )
 
@@ -134,9 +133,7 @@ def _join_with_prices(
     return master_data_with_prices
 
 
-def _expand_with_daily_charge_time(
-    subscription_master_data: DataFrame, time_zone: str
-) -> DataFrame:
+def _add_charge_time(subscription_master_data: DataFrame, time_zone: str) -> DataFrame:
     """
     Add charge_time column to subscription_periods DataFrame.
     The charge_time column is created by exploding subscription_periods using from_date and to_date with a resolution of 1 day.
