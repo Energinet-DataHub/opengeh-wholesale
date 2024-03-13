@@ -106,12 +106,13 @@ class TestWhenTwoLinksAndOnePrice:
         spark: SparkSession,
     ) -> None:
         # Arrange
-        charge_time = JAN_1ST
-        charge_price = Decimal("1.123456")
         from_date_link_1 = JAN_1ST
         from_date_link_2 = JAN_3RD
         metering_point_id_1 = "1"
         metering_point_id_2 = "2"
+        charge_time = JAN_1ST
+        charge_price = Decimal("1.123456")
+
         charge_link_metering_points_rows = [
             factory.create_charge_link_metering_point_periods_row(
                 charge_type=e.ChargeType.FEE,
