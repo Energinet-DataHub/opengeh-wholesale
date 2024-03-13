@@ -31,8 +31,8 @@ from .wholesale import wholesale_calculation
 from .wholesale.get_metering_points_and_child_metering_points import (
     get_metering_points_and_child_metering_points,
 )
-from .wholesale.get_wholesale_metering_point_time_series import (
-    get_wholesale_metering_point_times_series,
+from package.calculation.energy.calculated_grid_loss import (
+    add_calculated_grid_loss_to_metering_point_times_series,
 )
 
 
@@ -76,6 +76,16 @@ def _execute(
         )
     )
 
+    # This extends the content of metering_point_time_series with calculated grid loss,
+    # which is used in the wholesale calculation and the basis data
+    metering_point_time_series = (
+        add_calculated_grid_loss_to_metering_point_times_series(
+            metering_point_time_series,
+            positive_grid_loss,
+            negative_grid_loss,
+        )
+    )
+
     if (
         args.calculation_type == CalculationType.WHOLESALE_FIXING
         or args.calculation_type == CalculationType.FIRST_CORRECTION_SETTLEMENT
@@ -85,13 +95,6 @@ def _execute(
         with logging_configuration.start_span("calculation.wholesale.prepare"):
             wholesale_metering_point_periods = (
                 get_metering_points_and_child_metering_points(metering_point_periods_df)
-            )
-
-            # This extends the content of metering_point_time_series with wholesale data.
-            metering_point_time_series = get_wholesale_metering_point_times_series(
-                metering_point_time_series,
-                positive_grid_loss,
-                negative_grid_loss,
             )
 
             input_charges = prepared_data_reader.get_input_charges(
