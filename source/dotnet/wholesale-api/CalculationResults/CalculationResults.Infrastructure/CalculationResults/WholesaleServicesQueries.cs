@@ -19,50 +19,55 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NodaTime;
-using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 
-public class WholesaleResultQueries : IWholesaleResultQueries
+public class WholesaleServicesQueries : IWholesaleServicesQueries
 {
     private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor;
-    private readonly ICalculationsClient _calculationsClient;
-    private readonly DeltaTableOptions _deltaTableOptions;
-    private readonly ILogger<WholesaleResultQueries> _logger;
+    private readonly IOptions<DeltaTableOptions> _deltaTableOptions;
+    private readonly ILogger<WholesaleServicesQueries> _logger;
 
-    public WholesaleResultQueries(
+    public WholesaleServicesQueries(
         DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor,
-        ICalculationsClient calculationsClient,
         IOptions<DeltaTableOptions> deltaTableOptions,
-        ILogger<WholesaleResultQueries> logger)
+        ILogger<WholesaleServicesQueries> logger)
     {
         _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
-        _calculationsClient = calculationsClient;
-        _deltaTableOptions = deltaTableOptions.Value;
+        _deltaTableOptions = deltaTableOptions;
         _logger = logger;
     }
 
-    public async IAsyncEnumerable<WholesaleResult> GetAsync(Guid calculationId)
+    public async IAsyncEnumerable<WholesaleServices> GetAsync(WholesaleServicesQueryParameters queryParameters)
     {
-        var calculation = await _calculationsClient.GetAsync(calculationId).ConfigureAwait(false);
-        var statement = new WholesaleResultQueryStatement(calculationId, _deltaTableOptions);
-        await foreach (var calculationResult in GetInternalAsync(statement, calculation.PeriodStart.ToInstant(), calculation.PeriodEnd.ToInstant(), calculation.Version).ConfigureAwait(false))
-            yield return calculationResult;
-        _logger.LogDebug("Fetched all wholesale calculation results for calculation {calculation_id}", calculationId);
+        if (!queryParameters.Calculations.Any())
+        {
+            yield break;
+        }
+
+        var sqlStatement = new WholesaleServicesQueryStatement(WholesaleServicesQueryStatement.StatementType.Select, queryParameters, _deltaTableOptions.Value);
+        await foreach (var wholesaleServices in GetInternalAsync(sqlStatement, queryParameters.Calculations).ConfigureAwait(false))
+            yield return wholesaleServices;
     }
 
-    public static bool BelongsToDifferentResults(DatabricksSqlRow row, DatabricksSqlRow otherSqlRow)
+    public Task<bool> AnyAsync(WholesaleServicesQueryParameters queryParameters)
     {
-        return !row[WholesaleResultColumnNames.CalculationResultId]!.Equals(otherSqlRow[WholesaleResultColumnNames.CalculationResultId]);
+        var sqlStatement = new WholesaleServicesQueryStatement(WholesaleServicesQueryStatement.StatementType.Exists, queryParameters, _deltaTableOptions.Value);
+
+        return _databricksSqlWarehouseQueryExecutor
+            .ExecuteStatementAsync(sqlStatement)
+            .AnyAsync()
+            .AsTask();
     }
 
-    private async IAsyncEnumerable<WholesaleResult> GetInternalAsync(DatabricksStatement statement, Instant periodStart, Instant periodEnd, long version)
+    private async IAsyncEnumerable<WholesaleServices> GetInternalAsync(DatabricksStatement statement, IReadOnlyCollection<CalculationForPeriod> calculations)
     {
         var timeSeriesPoints = new List<WholesaleTimeSeriesPoint>();
         DatabricksSqlRow? currentRow = null;
@@ -75,7 +80,7 @@ public class WholesaleResultQueries : IWholesaleResultQueries
 
             if (currentRow != null && BelongsToDifferentResults(currentRow, convertedNextRow))
             {
-                yield return WholesaleResultFactory.CreateWholesaleResult(currentRow, timeSeriesPoints, periodStart, periodEnd, version);
+                yield return WholesaleServicesFactory.Create(currentRow, timeSeriesPoints);
                 resultCount++;
                 timeSeriesPoints = [];
             }
@@ -86,10 +91,15 @@ public class WholesaleResultQueries : IWholesaleResultQueries
 
         if (currentRow != null)
         {
-            yield return WholesaleResultFactory.CreateWholesaleResult(currentRow, timeSeriesPoints, periodStart, periodEnd, version);
+            yield return WholesaleServicesFactory.Create(currentRow, timeSeriesPoints);
             resultCount++;
         }
 
-        _logger.LogDebug("Fetched {result_count} calculation results", resultCount);
+        _logger.LogDebug("Fetched {result_count} wholesale services results", resultCount);
+    }
+
+    private bool BelongsToDifferentResults(DatabricksSqlRow row, DatabricksSqlRow otherSqlRow)
+    {
+        return !row[WholesaleResultColumnNames.CalculationResultId]!.Equals(otherSqlRow[WholesaleResultColumnNames.CalculationResultId]);
     }
 }

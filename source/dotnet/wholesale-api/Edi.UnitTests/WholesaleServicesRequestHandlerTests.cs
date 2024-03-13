@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Globalization;
 using AutoFixture.Xunit2;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.Edi.Client;
 using Energinet.DataHub.Wholesale.Edi.Factories;
@@ -28,9 +28,7 @@ using FluentAssertions;
 using Google.Protobuf;
 using Microsoft.Extensions.Logging;
 using Moq;
-using NodaTime;
 using Xunit;
-using Resolution = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution;
 using WholesaleServicesRequest = Energinet.DataHub.Edi.Requests.WholesaleServicesRequest;
 
 namespace Energinet.DataHub.Wholesale.Edi.UnitTests;
@@ -41,7 +39,7 @@ public class WholesaleServicesRequestHandlerTests
     [InlineAutoMoqData]
     public async Task ProcessAsync_WithNoValidationErrors_SendsAcceptedEdiMessage(
         [Frozen] Mock<IEdiClient> ediClient,
-        [Frozen] Mock<IWholesaleResultQueries> wholesaleResultQueries,
+        [Frozen] Mock<IWholesaleServicesQueries> queries,
         [Frozen] Mock<IValidator<WholesaleServicesRequest>> validator,
         [Frozen] Mock<WholesaleServicesRequestMapper> mapper,
         [Frozen] Mock<ILogger<WholesaleServicesRequestHandler>> logger,
@@ -54,18 +52,18 @@ public class WholesaleServicesRequestHandlerTests
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(new WholesaleServicesRequestBuilder().Build().ToByteArray()));
 
-        var wholesaleResult = CreateWholesaleResult();
-        wholesaleResultQueries.Setup(q => q.GetAsync(It.IsAny<WholesaleResultQueryParameters>()))
-            .Returns(new List<WholesaleResult>
+        var wholesaleServices = CreateWholesaleServices();
+        queries.Setup(q => q.GetAsync(It.IsAny<WholesaleServicesQueryParameters>()))
+            .Returns(new List<WholesaleServices>
             {
-                wholesaleResult,
+                wholesaleServices,
             }.ToAsyncEnumerable());
 
         var sut = new WholesaleServicesRequestHandler(
             ediClient.Object,
             validator.Object,
             completedCalculationRetriever.Object,
-            wholesaleResultQueries.Object,
+            queries.Object,
             mapper.Object,
             logger.Object);
 
@@ -77,7 +75,7 @@ public class WholesaleServicesRequestHandlerTests
 
         // Assert
         // TODO: Update to "sends accepted message"
-        (await act.Should().ThrowAsync<NotImplementedException>()).WithMessage(wholesaleResult.Id.ToString());
+        (await act.Should().ThrowAsync<NotImplementedException>()).WithMessage(wholesaleServices.TimeSeriesPoints.Single().Time.ToString(CultureInfo.InvariantCulture));
         // ediClient.Verify(
         //     client => client.SendAsync(
         //         It.Is<ServiceBusMessage>(message =>
@@ -92,7 +90,7 @@ public class WholesaleServicesRequestHandlerTests
     [InlineAutoMoqData]
     public async Task ProcessAsync_WithNoWholesaleResultData_SendsRejectedEdiMessage(
         [Frozen] Mock<IEdiClient> ediClient,
-        [Frozen] Mock<IWholesaleResultQueries> wholesaleResultQueries,
+        [Frozen] Mock<IWholesaleServicesQueries> queries,
         [Frozen] Mock<IValidator<WholesaleServicesRequest>> validator,
         [Frozen] Mock<WholesaleServicesRequestMapper> mapper,
         [Frozen] Mock<ILogger<WholesaleServicesRequestHandler>> logger,
@@ -110,7 +108,7 @@ public class WholesaleServicesRequestHandlerTests
             ediClient.Object,
             validator.Object,
             completedCalculationRetriever.Object,
-            wholesaleResultQueries.Object,
+            queries.Object,
             mapper.Object,
             logger.Object);
 
@@ -138,7 +136,7 @@ public class WholesaleServicesRequestHandlerTests
     [InlineAutoMoqData]
     public async Task ProcessAsync_WithValidationErrors_SendsRejectedEdiMessage(
         [Frozen] Mock<IEdiClient> ediClient,
-        [Frozen] Mock<IWholesaleResultQueries> wholesaleResultQueries,
+        [Frozen] Mock<IWholesaleServicesQueries> queries,
         [Frozen] Mock<IValidator<WholesaleServicesRequest>> validator,
         [Frozen] Mock<WholesaleServicesRequestMapper> mapper,
         [Frozen] Mock<ILogger<WholesaleServicesRequestHandler>> logger,
@@ -163,7 +161,7 @@ public class WholesaleServicesRequestHandlerTests
             ediClient.Object,
             validator.Object,
             completedCalculationRetriever.Object,
-            wholesaleResultQueries.Object,
+            queries.Object,
             mapper.Object,
             logger.Object);
 
@@ -187,34 +185,17 @@ public class WholesaleServicesRequestHandlerTests
         //     Times.Once);
     }
 
-    private WholesaleResult CreateWholesaleResult()
+    private WholesaleServices CreateWholesaleServices()
     {
-        return new WholesaleResult(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            CalculationType.WholesaleFixing,
-            Instant.FromUtc(2024, 1, 1, 0, 0),
-            Instant.FromUtc(2024, 1, 2, 0, 0),
-            "1",
-            "1",
-            AmountType.AmountPerCharge,
-            "1",
-            ChargeType.Tariff,
-            "1",
-            false,
-            QuantityUnit.Kwh,
-            Resolution.Day,
-            null,
-            null,
+        return new WholesaleServices(
             new List<WholesaleTimeSeriesPoint>
             {
                 new(
                     new DateTimeOffset(2024, 1, 1, 0, 0, 0, TimeSpan.Zero),
                     1,
                     Array.Empty<QuantityQuality>(),
-                    1,
-                    1),
-            },
-            1);
+                    2,
+                    3),
+            });
     }
 }

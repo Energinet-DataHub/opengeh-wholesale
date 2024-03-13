@@ -12,8 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 
-public record WholesaleResultQueryParameters(string? GridArea, IReadOnlyCollection<CalculationForPeriod> Calculations);
+public static class WholesaleServicesFactory
+{
+    public static WholesaleServices Create(DatabricksSqlRow databricksSqlRow, IReadOnlyCollection<WholesaleTimeSeriesPoint> timeSeriesPoints)
+    {
+        return new WholesaleServices(timeSeriesPoints);
+    }
+}

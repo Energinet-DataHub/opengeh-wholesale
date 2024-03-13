@@ -12,17 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 
-/// <summary>
-/// Used to query wholesale data for a single calculation result
-/// </summary>
-public interface IWholesaleResultQueries
-{
-    /// <summary>
-    /// Get all wholesale results for a given calculation.
-    /// </summary>
-    IAsyncEnumerable<WholesaleResult> GetAsync(Guid calculationId);
-}
+public record WholesaleServicesQueryParameters(string? GridArea, IReadOnlyCollection<CalculationForPeriod> Calculations);
