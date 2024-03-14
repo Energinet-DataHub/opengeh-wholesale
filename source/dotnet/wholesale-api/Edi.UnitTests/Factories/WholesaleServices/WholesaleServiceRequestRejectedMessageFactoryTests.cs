@@ -29,8 +29,8 @@ public class WholesaleServiceRequestRejectedMessageFactoryTests
     public void Create_WithNoCalculationResult_SendsRejectMessage()
     {
         // Arrange
-        var expectedAcceptedSubject = nameof(WholesaleServicesRequestRejected);
-        var expectedReferenceId = "123456789";
+        const string expectedAcceptedSubject = nameof(WholesaleServicesRequestRejected);
+        const string expectedReferenceId = "123456789";
 
         // Act
         var actual = WholesaleServicesRequestRejectedMessageFactory.Create(new[] { _noDataAvailable }, expectedReferenceId);

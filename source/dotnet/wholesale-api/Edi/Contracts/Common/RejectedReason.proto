@@ -17,7 +17,6 @@ syntax = "proto3";
 
 option csharp_namespace = "Energinet.DataHub.Edi.Responses";
 
-// Contains all errors for the request
 message RejectReason {
   string error_code = 1;
   string error_message = 2;

@@ -30,9 +30,6 @@
       <CompileOutputs>True</CompileOutputs>
       <Generator>MSBuild:Compile</Generator>
     </Protobuf>
-    <Protobuf Update="Contracts\Common\QuantityQuality1.proto">
-      <OutputDir>obj\Debug\net8.0\</OutputDir>
-    </Protobuf>
   </ItemGroup>
 
   <ItemGroup>

@@ -18,9 +18,6 @@ import "google/protobuf/timestamp.proto";
 
 option csharp_namespace = "Energinet.DataHub.Edi.Responses";
 
-/*
- * Representation of period for the time series.
- */
 message Period {
   google.protobuf.Timestamp start_of_period = 1;
   google.protobuf.Timestamp end_of_period = 2;
