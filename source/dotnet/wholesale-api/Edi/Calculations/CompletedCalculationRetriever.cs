@@ -17,11 +17,19 @@ using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Edi.Mappers;
 using Energinet.DataHub.Wholesale.Edi.Models;
+using Period = Energinet.DataHub.Wholesale.Edi.Models.Period;
 
 namespace Energinet.DataHub.Wholesale.Edi.Calculations;
 
 public class CompletedCalculationRetriever
 {
+    private static readonly List<RequestedCalculationType> _correctionVersionsInOrder =
+    [
+        RequestedCalculationType.ThirdCorrection,
+        RequestedCalculationType.SecondCorrection,
+        RequestedCalculationType.FirstCorrection
+    ];
+
     private readonly LatestCalculationsForPeriod _latestCalculationsForPeriod;
     private readonly ICalculationsClient _calculationsClient;
 
@@ -33,60 +41,53 @@ public class CompletedCalculationRetriever
         _calculationsClient = calculationsClient;
     }
 
-    public async Task<IReadOnlyCollection<CalculationForPeriod>> GetLatestCompletedCalculationForRequestAsync(
-        AggregatedTimeSeriesRequest aggregatedTimeSeriesRequest)
+    public async Task<IReadOnlyCollection<CalculationForPeriod>> GetLatestCompletedCalculationsForPeriodAsync(
+        string? gridAreaCode, Period period, RequestedCalculationType requestedCalculationType)
     {
-        if (aggregatedTimeSeriesRequest.RequestedCalculationType == RequestedCalculationType.LatestCorrection)
+        IReadOnlyCollection<CalculationDto> completedCalculationsForPeriod = Array.Empty<CalculationDto>();
+
+        if (requestedCalculationType == RequestedCalculationType.LatestCorrection)
         {
-            aggregatedTimeSeriesRequest = aggregatedTimeSeriesRequest with
+            foreach (var correctionVersion in _correctionVersionsInOrder)
             {
-                RequestedCalculationType = RequestedCalculationType.ThirdCorrection,
-            };
-            var calculationForLatestCorrection = await GetCompletedCalculationAsync(aggregatedTimeSeriesRequest).ConfigureAwait(true);
-            if (!calculationForLatestCorrection.Any())
-            {
-                aggregatedTimeSeriesRequest = aggregatedTimeSeriesRequest with
-                {
-                    RequestedCalculationType = RequestedCalculationType.SecondCorrection,
-                };
-                calculationForLatestCorrection = await GetCompletedCalculationAsync(aggregatedTimeSeriesRequest).ConfigureAwait(true);
-            }
+                completedCalculationsForPeriod = await GetCompletedCalculationsForPeriodAsync(
+                        gridAreaCode,
+                        period,
+                        correctionVersion)
+                    .ConfigureAwait(true);
 
-            if (!calculationForLatestCorrection.Any())
-            {
-                aggregatedTimeSeriesRequest = aggregatedTimeSeriesRequest with
-                {
-                    RequestedCalculationType = RequestedCalculationType.FirstCorrection,
-                };
-                calculationForLatestCorrection = await GetCompletedCalculationAsync(aggregatedTimeSeriesRequest).ConfigureAwait(true);
+                // If we found any calculations for this correction version, it means the correction exists, and we should use those calculations
+                if (completedCalculationsForPeriod.Any())
+                    break;
             }
-
-            return _latestCalculationsForPeriod.FindLatestCalculationsForPeriod(
-                aggregatedTimeSeriesRequest.Period.Start,
-                aggregatedTimeSeriesRequest.Period.End,
-                calculationForLatestCorrection);
+        }
+        else
+        {
+            completedCalculationsForPeriod = await GetCompletedCalculationsForPeriodAsync(
+                    gridAreaCode,
+                    period,
+                    requestedCalculationType)
+                .ConfigureAwait(true);
         }
 
-        var calculations = await GetCompletedCalculationAsync(aggregatedTimeSeriesRequest).ConfigureAwait(true);
-
         return _latestCalculationsForPeriod.FindLatestCalculationsForPeriod(
-            aggregatedTimeSeriesRequest.Period.Start,
-            aggregatedTimeSeriesRequest.Period.End,
-            calculations);
+            period.Start,
+            period.End,
+            completedCalculationsForPeriod);
     }
 
-    private async Task<IReadOnlyCollection<CalculationDto>> GetCompletedCalculationAsync(AggregatedTimeSeriesRequest aggregatedTimeSeriesRequest)
+    private async Task<IReadOnlyCollection<CalculationDto>> GetCompletedCalculationsForPeriodAsync(string? gridAreaCode, Period period, RequestedCalculationType requestedCalculationType)
     {
         return await _calculationsClient
             .SearchAsync(
-                filterByGridAreaCodes: aggregatedTimeSeriesRequest.AggregationPerRoleAndGridArea.GridAreaCode != null
-                    ? new[] { aggregatedTimeSeriesRequest.AggregationPerRoleAndGridArea.GridAreaCode }
+                filterByGridAreaCodes: gridAreaCode != null
+                    ? new[] { gridAreaCode }
                     : new string[] { },
                 filterByExecutionState: CalculationState.Completed,
-                periodStart: aggregatedTimeSeriesRequest.Period.Start,
-                periodEnd: aggregatedTimeSeriesRequest.Period.End,
+                periodStart: period.Start,
+                periodEnd: period.End,
                 calculationType: CalculationTypeMapper.FromRequestedCalculationType(
-                    aggregatedTimeSeriesRequest.RequestedCalculationType))
+                    requestedCalculationType))
             .ConfigureAwait(false);
     }
 }

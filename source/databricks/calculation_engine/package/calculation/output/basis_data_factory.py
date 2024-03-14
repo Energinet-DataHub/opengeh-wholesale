@@ -15,7 +15,10 @@
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
 
-from package.calculation.CalculationResults import BasisDataContainer
+from package.calculation.calculation_results import BasisDataContainer
+from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
+    PreparedMeteringPointTimeSeries,
+)
 from package.calculation.preparation.transformations import basis_data
 from package.constants import BasisDataColname, PartitionKeyName
 from package.infrastructure import logging_configuration
@@ -24,7 +27,7 @@ from package.infrastructure import logging_configuration
 @logging_configuration.use_span("calculation.basis_data.prepare")
 def create(
     metering_point_periods_df: DataFrame,
-    metering_point_time_series_df: DataFrame,
+    metering_point_time_series_df: PreparedMeteringPointTimeSeries,
     time_zone: str,
 ) -> BasisDataContainer:
     (
@@ -68,7 +71,6 @@ def _get_ga_basis_data(
     timeseries_quarter_df: DataFrame,
     timeseries_hour_df: DataFrame,
 ) -> tuple[DataFrame, DataFrame, DataFrame]:
-
     timeseries_quarter_df = timeseries_quarter_df.drop(
         BasisDataColname.energy_supplier_id
     ).withColumnRenamed(BasisDataColname.grid_area, PartitionKeyName.GRID_AREA)
@@ -94,7 +96,6 @@ def _get_es_basis_data(
     timeseries_quarter_df: DataFrame,
     timeseries_hour_df: DataFrame,
 ) -> tuple[DataFrame, DataFrame, DataFrame]:
-
     timeseries_quarter_df = timeseries_quarter_df.withColumnRenamed(
         BasisDataColname.energy_supplier_id, PartitionKeyName.ENERGY_SUPPLIER_GLN
     ).withColumnRenamed(BasisDataColname.grid_area, PartitionKeyName.GRID_AREA)

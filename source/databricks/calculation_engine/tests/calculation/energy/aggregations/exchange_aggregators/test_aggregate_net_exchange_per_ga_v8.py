@@ -23,10 +23,10 @@ from package.calculation.energy.aggregators.exchange_aggregators import (
     aggregate_net_exchange_per_ga,
     aggregate_net_exchange_per_neighbour_ga,
 )
-from package.calculation.energy.energy_results import (
+from package.calculation.energy.data_structures.energy_results import (
     EnergyResults,
 )
-from package.calculation.preparation.quarterly_metering_point_time_series import (
+from package.calculation.preparation.data_structures.quarterly_metering_point_time_series import (
     QuarterlyMeteringPointTimeSeries,
     _quarterly_metering_point_time_series_schema,
 )
@@ -107,7 +107,7 @@ def test_test_data_has_correct_row_count(quarterly_metering_point_time_series):
     assert quarterly_metering_point_time_series.df.count() == (13 * numberOfQuarters)
 
 
-def test_exchange_has_correct_sign(aggregated_data_frame):
+def test_exchange_has_correct_sign(aggregated_data_frame) -> None:
     """Check that the sign of the net exchange is positive for the to-grid-area and negative for the from-grid-area"""
     check_aggregation_row(
         aggregated_data_frame,
@@ -125,7 +125,7 @@ def test_exchange_has_correct_sign(aggregated_data_frame):
 
 def test_exchange_aggregator__when_only_outgoing_quantity__returns_correct_aggregations(
     aggregated_data_frame,
-):
+) -> None:
     check_aggregation_row(
         aggregated_data_frame,
         "D",

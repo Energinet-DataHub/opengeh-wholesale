@@ -22,7 +22,7 @@ from pyspark.sql import SparkSession, DataFrame
 from calculation_logic.correlations import get_correlations
 from calculation_logic.create_calculation_args import create_calculation_args
 from package.calculation import PreparedDataReader
-from package.calculation.CalculationResults import (
+from package.calculation.calculation_results import (
     CalculationResultsContainer,
 )
 from package.calculation.calculation import _execute
