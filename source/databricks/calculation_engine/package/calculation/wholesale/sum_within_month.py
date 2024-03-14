@@ -43,7 +43,6 @@ def sum_within_month(
         wholesale_results.df.groupBy(
             Colname.energy_supplier_id,
             Colname.grid_area,
-            Colname.charge_key,
             Colname.charge_code,
             Colname.charge_type,
             Colname.charge_owner,

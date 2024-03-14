@@ -51,6 +51,7 @@ def calculate_tariff_price_per_ga_co_es(
         Colname.charge_time,
         Colname.metering_point_type,
         Colname.settlement_method,
+        Colname.charge_key,
         Colname.charge_code,
         Colname.charge_type,
         Colname.charge_owner,
