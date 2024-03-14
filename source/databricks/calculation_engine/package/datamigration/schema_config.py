@@ -18,6 +18,7 @@ from package.infrastructure.paths import (
     OUTPUT_DATABASE_NAME,
     ENERGY_RESULT_TABLE_NAME,
     INPUT_DATABASE_NAME,
+    GRID_LOSS_METERING_POINTS_TABLE_NAME,
 )
 
 # calculation_output
@@ -26,6 +27,11 @@ from package.calculation.output.schemas.wholesale_results_schema import (
 )
 from package.calculation.output.schemas.energy_results_schema import (
     energy_results_schema,
+)
+
+# calculation_input
+from package.calculation.input.schemas.grid_loss_metering_points_schema import (
+    grid_loss_metering_points_schema,
 )
 
 schema_config = [
@@ -46,6 +52,11 @@ schema_config = [
         # Tables in this schema are externals and schemas are not defined in the SQL scripts.
         # This will be changed to Views in the future.
         name=INPUT_DATABASE_NAME,
-        tables=[],
+        tables=[
+            Table(
+                name=GRID_LOSS_METERING_POINTS_TABLE_NAME,
+                schema=grid_loss_metering_points_schema,
+            )
+        ],
     ),
 ]
