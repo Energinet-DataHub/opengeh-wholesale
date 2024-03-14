@@ -21,11 +21,9 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatement
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
-using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 
@@ -53,7 +51,7 @@ public class WholesaleServicesQueries : IWholesaleServicesQueries
         }
 
         var sqlStatement = new WholesaleServicesQueryStatement(WholesaleServicesQueryStatement.StatementType.Select, queryParameters, _deltaTableOptions.Value);
-        await foreach (var wholesaleServices in GetInternalAsync(sqlStatement, queryParameters.Calculations).ConfigureAwait(false))
+        await foreach (var wholesaleServices in GetInternalAsync(sqlStatement, queryParameters).ConfigureAwait(false))
             yield return wholesaleServices;
     }
 
@@ -67,31 +65,31 @@ public class WholesaleServicesQueries : IWholesaleServicesQueries
             .AsTask();
     }
 
-    private async IAsyncEnumerable<WholesaleServices> GetInternalAsync(DatabricksStatement statement, IReadOnlyCollection<CalculationForPeriod> calculations)
+    private async IAsyncEnumerable<WholesaleServices> GetInternalAsync(DatabricksStatement statement, WholesaleServicesQueryParameters parameters)
     {
         var timeSeriesPoints = new List<WholesaleTimeSeriesPoint>();
-        DatabricksSqlRow? currentRow = null;
+        DatabricksSqlRow? previousRow = null;
         var resultCount = 0;
 
         await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {
-            var convertedNextRow = new DatabricksSqlRow(nextRow);
-            var timeSeriesPoint = WholesaleTimeSeriesPointFactory.Create(convertedNextRow);
+            var currentRow = new DatabricksSqlRow(nextRow);
 
-            if (currentRow != null && BelongsToDifferentResults(currentRow, convertedNextRow))
+            // If current row belongs to a new package, yield a package for the previous data and then start a new package
+            if (previousRow != null && BelongsToDifferentResults(previousRow, currentRow))
             {
-                yield return WholesaleServicesFactory.Create(currentRow, timeSeriesPoints);
+                yield return CreateFinishedPackage(parameters, previousRow, timeSeriesPoints);
                 resultCount++;
                 timeSeriesPoints = [];
             }
 
-            timeSeriesPoints.Add(timeSeriesPoint);
-            currentRow = convertedNextRow;
+            timeSeriesPoints.Add(WholesaleTimeSeriesPointFactory.Create(currentRow));
+            previousRow = currentRow;
         }
 
-        if (currentRow != null)
+        if (previousRow != null)
         {
-            yield return WholesaleServicesFactory.Create(currentRow, timeSeriesPoints);
+            yield return CreateFinishedPackage(parameters, previousRow, timeSeriesPoints);
             resultCount++;
         }
 
@@ -101,5 +99,16 @@ public class WholesaleServicesQueries : IWholesaleServicesQueries
     private bool BelongsToDifferentResults(DatabricksSqlRow row, DatabricksSqlRow otherSqlRow)
     {
         return !row[WholesaleResultColumnNames.CalculationResultId]!.Equals(otherSqlRow[WholesaleResultColumnNames.CalculationResultId]);
+    }
+
+    private WholesaleServices CreateFinishedPackage(WholesaleServicesQueryParameters parameters, DatabricksSqlRow row, List<WholesaleTimeSeriesPoint> timeSeriesPoints)
+    {
+        var calculationWithPeriod = GetCalculationForRow(row, parameters.Calculations);
+        return WholesaleServicesFactory.Create(row, calculationWithPeriod.Period, timeSeriesPoints, calculationWithPeriod.CalculationVersion);
+    }
+
+    private CalculationForPeriod GetCalculationForRow(DatabricksSqlRow row, IReadOnlyCollection<CalculationForPeriod> calculations)
+    {
+        return calculations.First(x => x.CalculationId == Guid.Parse(row[WholesaleResultColumnNames.CalculationId]!));
     }
 }

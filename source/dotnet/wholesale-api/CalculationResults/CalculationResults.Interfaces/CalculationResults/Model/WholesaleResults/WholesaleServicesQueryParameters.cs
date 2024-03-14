@@ -16,4 +16,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 
-public record WholesaleServicesQueryParameters(string? GridArea, IReadOnlyCollection<CalculationForPeriod> Calculations);
+public record WholesaleServicesQueryParameters(
+    string? GridArea,
+    Period Period,
+    IReadOnlyCollection<CalculationForPeriod> Calculations);

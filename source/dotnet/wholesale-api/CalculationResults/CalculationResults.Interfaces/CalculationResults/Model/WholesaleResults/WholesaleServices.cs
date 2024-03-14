@@ -12,6 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 
-public record WholesaleServices(IReadOnlyCollection<WholesaleTimeSeriesPoint> TimeSeriesPoints);
+public record WholesaleServices(
+    Period Period,
+    string GridArea,
+    string EnergySupplierId,
+    string ChargeCode,
+    ChargeType ChargeType,
+    string ChargeOwnerId,
+    Resolution Resolution,
+    QuantityUnit QuantityUnit,
+    MeteringPointType MeteringPointType,
+    SettlementMethod? SettlementMethod,
+    Currency Currency,
+    IReadOnlyCollection<WholesaleTimeSeriesPoint> TimeSeriesPoints,
+    long Version);

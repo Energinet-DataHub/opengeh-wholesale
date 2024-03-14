@@ -19,6 +19,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.Edi.Client;
 using Energinet.DataHub.Wholesale.Edi.Factories;
@@ -28,7 +29,9 @@ using FluentAssertions;
 using Google.Protobuf;
 using Microsoft.Extensions.Logging;
 using Moq;
+using NodaTime;
 using Xunit;
+using Period = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.Period;
 using WholesaleServicesRequest = Energinet.DataHub.Edi.Requests.WholesaleServicesRequest;
 
 namespace Energinet.DataHub.Wholesale.Edi.UnitTests;
@@ -187,15 +190,31 @@ public class WholesaleServicesRequestHandlerTests
 
     private WholesaleServices CreateWholesaleServices()
     {
+        var timeSeriesPoints = new List<WholesaleTimeSeriesPoint>
+        {
+            new(
+                new DateTimeOffset(2024, 1, 1, 0, 0, 0, TimeSpan.Zero),
+                1,
+                Array.Empty<QuantityQuality>(),
+                2,
+                3),
+        };
+
         return new WholesaleServices(
-            new List<WholesaleTimeSeriesPoint>
-            {
-                new(
-                    new DateTimeOffset(2024, 1, 1, 0, 0, 0, TimeSpan.Zero),
-                    1,
-                    Array.Empty<QuantityQuality>(),
-                    2,
-                    3),
-            });
+            new Period(
+                Instant.FromUtc(2024, 1, 1, 0, 0),
+                Instant.FromUtc(2024, 1, 2, 0, 0)),
+            "001",
+            "002",
+            "003",
+            ChargeType.Tariff,
+            "004",
+            Resolution.Day,
+            QuantityUnit.Kwh,
+            MeteringPointType.Consumption,
+            SettlementMethod.Flex,
+            Currency.DKK,
+            timeSeriesPoints,
+            1);
     }
 }

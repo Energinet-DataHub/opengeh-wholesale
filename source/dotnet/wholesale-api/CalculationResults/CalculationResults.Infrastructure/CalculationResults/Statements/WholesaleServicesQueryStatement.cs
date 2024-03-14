@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
@@ -25,12 +26,14 @@ public class WholesaleServicesQueryStatement : DatabricksStatement
     private readonly StatementType _statementType;
     private readonly DeltaTableOptions _deltaTableOptions;
     private readonly string? _gridArea;
+    private readonly Period _period;
     private readonly IReadOnlyCollection<CalculationForPeriod> _calculations;
 
     public WholesaleServicesQueryStatement(StatementType statementType, WholesaleServicesQueryParameters queryParameters, DeltaTableOptions deltaTableOptions)
     {
-        var (gridArea, calculationForPeriods) = queryParameters;
+        var (gridArea, period, calculationForPeriods) = queryParameters;
         _gridArea = gridArea;
+        _period = period;
         _calculations = calculationForPeriods;
         _statementType = statementType;
         _deltaTableOptions = deltaTableOptions;

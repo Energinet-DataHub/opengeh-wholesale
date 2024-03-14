@@ -103,7 +103,10 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
                 request.RequestedCalculationType)
             .ConfigureAwait(true);
 
-        return new WholesaleServicesQueryParameters(request.GridArea, latestCalculationsForRequest);
+        return new WholesaleServicesQueryParameters(
+            request.GridArea,
+            new CalculationResults.Interfaces.CalculationResults.Model.Period(request.Period.Start, request.Period.End),
+            latestCalculationsForRequest);
     }
 
     private async Task<bool> HasDataInAnotherGridAreaAsync(

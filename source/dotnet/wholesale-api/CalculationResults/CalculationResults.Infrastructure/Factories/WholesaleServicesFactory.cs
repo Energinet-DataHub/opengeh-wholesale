@@ -13,14 +13,32 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 
 public static class WholesaleServicesFactory
 {
-    public static WholesaleServices Create(DatabricksSqlRow databricksSqlRow, IReadOnlyCollection<WholesaleTimeSeriesPoint> timeSeriesPoints)
+    public static WholesaleServices Create(DatabricksSqlRow databricksSqlRow, Period period, IReadOnlyCollection<WholesaleTimeSeriesPoint> timeSeriesPoints, long version)
     {
-        return new WholesaleServices(timeSeriesPoints);
+        return new WholesaleServices(
+            period,
+            databricksSqlRow[WholesaleResultColumnNames.GridArea]!,
+            databricksSqlRow[WholesaleResultColumnNames.EnergySupplierId]!,
+            databricksSqlRow[WholesaleResultColumnNames.ChargeCode]!,
+            ChargeTypeMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.ChargeType]!),
+            databricksSqlRow[WholesaleResultColumnNames.ChargeOwnerId]!,
+            ResolutionMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.Resolution]!),
+            QuantityUnitMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.QuantityUnit]!),
+            MeteringPointTypeMapper.FromRequiredDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.MeteringPointType]!),
+            SettlementMethodMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.SettlementMethod]),
+            Currency.DKK,
+            timeSeriesPoints,
+            version);
     }
 }
