@@ -31,7 +31,7 @@ public abstract class PackageQueriesBase<TResult, TTimeSeriesPoint>(DatabricksSq
 
     protected abstract TTimeSeriesPoint CreateTimeSeriesPoint(DatabricksSqlRow row);
 
-    protected async IAsyncEnumerable<TResult> GetInternalAsync(
+    protected async IAsyncEnumerable<TResult> GetDataAsync(
         DatabricksStatement sqlStatement,
         IReadOnlyCollection<CalculationForPeriod> calculations)
     {

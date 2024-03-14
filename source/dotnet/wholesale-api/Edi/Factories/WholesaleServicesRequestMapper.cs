@@ -12,10 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Edi.Mappers;
 using Energinet.DataHub.Wholesale.Edi.Models;
+using Google.Protobuf.Collections;
 using NodaTime;
 using NodaTime.Text;
+using ChargeType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.ChargeType;
 using Period = Energinet.DataHub.Wholesale.Edi.Models.Period;
 
 namespace Energinet.DataHub.Wholesale.Edi.Factories;
@@ -31,11 +34,27 @@ public class WholesaleServicesRequestMapper(DateTimeZone dateTimeZone)
             : CalculateMaxPeriodEnd(periodStart);
 
         return new WholesaleServicesRequest(
-            request.GridAreaCode,
+            request.HasResolution ? ResolutionMapper.Map(request.Resolution) : null,
+            request.HasGridAreaCode ? request.GridAreaCode : null,
+            request.HasEnergySupplierId ? request.EnergySupplierId : null,
+            request.HasChargeOwnerId ? request.ChargeOwnerId : null,
+            MapChargeTypes(request.ChargeTypes),
             new Period(
                 periodStart,
                 periodEnd),
             RequestedCalculationTypeMapper.ToRequestedCalculationType(request.BusinessReason, request.HasSettlementSeriesVersion ? request.SettlementSeriesVersion : null));
+    }
+
+    private List<ChargeCodeAndType>? MapChargeTypes(RepeatedField<Energinet.DataHub.Edi.Requests.ChargeType>? chargeTypes)
+    {
+        if (chargeTypes == null || chargeTypes.Count == 0)
+            return null;
+
+        return chargeTypes
+            .Select(c => new ChargeCodeAndType(
+                c.HasChargeId ? c.ChargeId : null,
+                c.HasChargeType_ ? ChargeTypeMapper.Map(c.ChargeType_) : null))
+            .ToList();
     }
 
     private Instant CalculateMaxPeriodEnd(Instant start)

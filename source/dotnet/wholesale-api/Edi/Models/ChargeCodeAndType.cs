@@ -14,11 +14,4 @@
 
 namespace Energinet.DataHub.Wholesale.Edi.Models;
 
-public record WholesaleServicesRequest(
-    CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution? Resolution,
-    string? GridArea,
-    string? EnergySupplierId,
-    string? ChargeOwnerId,
-    List<ChargeCodeAndType>? ChargeTypes,
-    Period Period,
-    RequestedCalculationType RequestedCalculationType);
+public record ChargeCodeAndType(string? ChargeCode, CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.ChargeType? ChargeType);

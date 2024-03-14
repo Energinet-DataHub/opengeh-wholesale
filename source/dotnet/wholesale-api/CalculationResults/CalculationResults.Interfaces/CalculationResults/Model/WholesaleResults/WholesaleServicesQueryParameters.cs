@@ -17,6 +17,9 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 
 public record WholesaleServicesQueryParameters(
+    Resolution? Resolution,
     string? GridArea,
-    Period Period,
+    string? EnergySupplierId,
+    string? ChargeOwnerId,
+    List<(string? ChargeCode, ChargeType? ChargeType)>? ChargeTypes,
     IReadOnlyCollection<CalculationForPeriod> Calculations);

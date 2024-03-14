@@ -24,18 +24,13 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 public class WholesaleServicesQueryStatement : DatabricksStatement
 {
     private readonly StatementType _statementType;
+    private readonly WholesaleServicesQueryParameters _queryParameters;
     private readonly DeltaTableOptions _deltaTableOptions;
-    private readonly string? _gridArea;
-    private readonly Period _period;
-    private readonly IReadOnlyCollection<CalculationForPeriod> _calculations;
 
     public WholesaleServicesQueryStatement(StatementType statementType, WholesaleServicesQueryParameters queryParameters, DeltaTableOptions deltaTableOptions)
     {
-        var (gridArea, period, calculationForPeriods) = queryParameters;
-        _gridArea = gridArea;
-        _period = period;
-        _calculations = calculationForPeriods;
         _statementType = statementType;
+        _queryParameters = queryParameters;
         _deltaTableOptions = deltaTableOptions;
     }
 
@@ -54,7 +49,7 @@ public class WholesaleServicesQueryStatement : DatabricksStatement
             WHERE 
         ";
 
-        var calculationPeriodSql = _calculations
+        var calculationPeriodSql = _queryParameters.Calculations
             .Select(calculationForPeriod => $@"
                 ({WholesaleResultColumnNames.CalculationId} == '{calculationForPeriod.CalculationId}'  
                 AND {WholesaleResultColumnNames.Time} >= '{calculationForPeriod.Period.Start}'
@@ -85,7 +80,7 @@ public class WholesaleServicesQueryStatement : DatabricksStatement
         WholesaleResultColumnNames.ChargeCode,
         WholesaleResultColumnNames.ChargeOwnerId,
         WholesaleResultColumnNames.Resolution,
-        WholesaleResultColumnNames.IsTax,
+        // WholesaleResultColumnNames.IsTax,
         WholesaleResultColumnNames.QuantityUnit,
         WholesaleResultColumnNames.Time,
         WholesaleResultColumnNames.Quantity,

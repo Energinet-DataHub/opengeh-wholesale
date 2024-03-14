@@ -22,7 +22,6 @@ using Energinet.DataHub.Wholesale.Edi.Factories;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.Validation;
 using Microsoft.Extensions.Logging;
-using Period = Energinet.DataHub.Wholesale.Edi.Models.Period;
 
 namespace Energinet.DataHub.Wholesale.Edi;
 
@@ -99,13 +98,16 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
     {
         var latestCalculationsForRequest = await _completedCalculationRetriever.GetLatestCompletedCalculationsForPeriodAsync(
                 request.GridArea,
-                new Period(request.Period.Start, request.Period.End),
+                request.Period,
                 request.RequestedCalculationType)
             .ConfigureAwait(true);
 
         return new WholesaleServicesQueryParameters(
+            request.Resolution,
             request.GridArea,
-            new CalculationResults.Interfaces.CalculationResults.Model.Period(request.Period.Start, request.Period.End),
+            request.EnergySupplierId,
+            request.ChargeOwnerId,
+            request.ChargeTypes?.Select(c => (c.ChargeCode, c.ChargeType)).ToList(),
             latestCalculationsForRequest);
     }
 
