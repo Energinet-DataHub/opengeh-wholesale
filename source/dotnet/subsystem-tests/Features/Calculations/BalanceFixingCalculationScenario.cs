@@ -133,7 +133,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
     [SubsystemFact]
     public void AndThen_ReceivedEnergyResultProducedEventsCountIsEqualToExpected()
     {
-        var expected = 99;
+        var expected = 100;
 
         // Assert
         using var assertionScope = new AssertionScope();
