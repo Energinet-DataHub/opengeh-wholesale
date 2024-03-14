@@ -13,14 +13,16 @@
 # limitations under the License.
 from dataclasses import dataclass
 
-from pyspark.sql import DataFrame
-
-from package.calculation.preparation.charge_master_data import ChargeMasterData
-from package.calculation.preparation.charge_prices import ChargePrices
+from package.calculation.preparation.data_structures.prepared_subscriptions import (
+    PreparedSubscriptions,
+)
+from package.calculation.preparation.data_structures.prepared_tariffs import (
+    PreparedTariffs,
+)
 
 
 @dataclass
-class InputChargesContainer:
-    charge_master_data: ChargeMasterData
-    charge_prices: ChargePrices
-    charge_links: DataFrame
+class PreparedChargesContainer:
+    hourly_tariffs: PreparedTariffs | None = None
+    daily_tariffs: PreparedTariffs | None = None
+    subscriptions: PreparedSubscriptions | None = None

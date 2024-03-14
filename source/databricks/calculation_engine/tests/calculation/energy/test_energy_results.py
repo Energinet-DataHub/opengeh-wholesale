@@ -18,7 +18,7 @@ from pyspark.sql.functions import lit
 from pyspark.sql.types import DecimalType
 
 import tests.calculation.energy.energy_results_factories as factory
-from package.calculation.energy.energy_results import (
+from package.calculation.energy.data_structures.energy_results import (
     EnergyResults,
     energy_results_schema,
 )

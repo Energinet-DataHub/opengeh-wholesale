@@ -17,7 +17,7 @@ from decimal import Decimal
 
 from pyspark.sql import Row, SparkSession
 
-from package.calculation.preparation.quarterly_metering_point_time_series import (
+from package.calculation.preparation.data_structures.quarterly_metering_point_time_series import (
     QuarterlyMeteringPointTimeSeries,
     _quarterly_metering_point_time_series_schema,
 )
@@ -79,7 +79,7 @@ def create_exchange_row(
     to_grid_area: str | None = None,
     from_grid_area: str | None = None,
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
-    observation_time: datetime = DEFAULT_OBSERVATION_TIME,
+    observation_time: datetime.datetime = DEFAULT_OBSERVATION_TIME,
     quantity: int | Decimal = DEFAULT_QUANTITY,
     quality: QuantityQuality = DEFAULT_QUALITY,
 ) -> Row:

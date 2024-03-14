@@ -16,7 +16,7 @@ from datetime import datetime
 
 from pyspark.sql import Row, SparkSession
 
-from package.calculation.preparation.grid_loss_responsible import (
+from package.calculation.preparation.data_structures.grid_loss_responsible import (
     grid_loss_responsible_schema,
     GridLossResponsible,
 )

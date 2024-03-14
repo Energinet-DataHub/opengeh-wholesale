@@ -17,7 +17,7 @@ from decimal import Decimal
 
 from pyspark.sql import Row, SparkSession
 
-from package.calculation.energy.energy_results import (
+from package.calculation.energy.data_structures.energy_results import (
     EnergyResults,
     energy_results_schema,
 )
