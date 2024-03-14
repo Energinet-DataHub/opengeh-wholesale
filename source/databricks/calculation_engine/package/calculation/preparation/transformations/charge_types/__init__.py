@@ -13,5 +13,5 @@
 # limitations under the License.
 
 from .fees import get_fee_charges
-from .subscriptions import get_subscription_charges
+from .subscriptions_and_fees import get_subscription_charges
 from .tariffs import get_prepared_tariffs
