@@ -21,6 +21,8 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using NodaTime;
 using Xunit;
+using Period = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.Period;
+using QuantityUnit = Energinet.DataHub.Wholesale.Common.Interfaces.Models.QuantityUnit;
 using Resolution = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution;
 using WholesaleQuantity = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
 
@@ -37,12 +39,12 @@ public class WholesaleServiceRequestAcceptedMessageFactoryTests
 
     public static IEnumerable<object[]> QuantityQualitySets()
     {
-        return new[]
+        return new object[][]
         {
-            new object[] { new object[] { WholesaleQuantity.Missing } },
-            new object[] { new object[] { WholesaleQuantity.Measured } },
-            new object[] { new object[] { WholesaleQuantity.Estimated, WholesaleQuantity.Calculated } },
-            new object[] { new object[] { WholesaleQuantity.Estimated, WholesaleQuantity.Calculated, WholesaleQuantity.Missing } },
+            [new[] { WholesaleQuantity.Missing }],
+            [new[] { WholesaleQuantity.Measured }],
+            [new[] { WholesaleQuantity.Estimated, WholesaleQuantity.Calculated }],
+            [new[] { WholesaleQuantity.Estimated, WholesaleQuantity.Calculated, WholesaleQuantity.Missing }],
         };
     }
 
@@ -52,7 +54,7 @@ public class WholesaleServiceRequestAcceptedMessageFactoryTests
         // Arrange
         const string expectedAcceptedSubject = nameof(WholesaleServicesRequestAccepted);
         const string expectedReferenceId = "123456789";
-        var wholesaleService = CreateWholesaleResult(
+        var wholesaleService = CreateWholesaleServices(
             meteringPointType: null,
             settlementMethod: null,
             resolution: Resolution.Month);
@@ -84,7 +86,7 @@ public class WholesaleServiceRequestAcceptedMessageFactoryTests
         // Arrange
         const string expectedReferenceId = "123456789";
         var expectedQuantityQualities = quantityQualities.ToList();
-        var wholesaleService = CreateWholesaleResult(
+        var wholesaleService = CreateWholesaleServices(
             quantityQualities: expectedQuantityQualities);
 
         // Act
@@ -105,7 +107,7 @@ public class WholesaleServiceRequestAcceptedMessageFactoryTests
             });
     }
 
-    private IReadOnlyCollection<WholesaleResult> CreateWholesaleResult(
+    private IReadOnlyCollection<CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.WholesaleServices> CreateWholesaleServices(
         IReadOnlyCollection<WholesaleQuantity>? quantityQualities = null,
         MeteringPointType? meteringPointType = null,
         SettlementMethod? settlementMethod = null,
@@ -113,31 +115,51 @@ public class WholesaleServiceRequestAcceptedMessageFactoryTests
     {
         quantityQualities ??= new List<WholesaleQuantity> { WholesaleQuantity.Estimated };
 
-        var wholesaleServicePoints = new WholesaleResult(
-            id: Guid.NewGuid(),
-            calculationId: Guid.NewGuid(),
-            calculationType: CalculationType.WholesaleFixing,
-            periodStart: _periodStart,
-            periodEnd: _periodEnd,
-            gridArea: _gridArea,
-            energySupplierId: _energySupplier,
-            amountType: AmountType.AmountPerCharge,
-            chargeCode: "FaQ-s0-t4",
-            chargeType: ChargeType.Fee,
-            chargeOwnerId: _chargeOwner,
-            isTax: false,
-            quantityUnit: Common.Interfaces.Models.QuantityUnit.Kwh,
-            resolution: resolution,
-            meteringPointType: meteringPointType,
-            settlementMethod: settlementMethod,
-            timeSeriesPoints: new WholesaleTimeSeriesPoint[]
-            {
-                new(_defaultTime.ToDateTimeOffset(), 2, quantityQualities, 2, 4),
-                new(_defaultTime.ToDateTimeOffset(), 3, quantityQualities, 2, 6),
-                new(_defaultTime.ToDateTimeOffset(), 3, quantityQualities, 3, 9),
-            },
-            version: 123);
-
-        return new List<WholesaleResult> { wholesaleServicePoints };
+        // var wholesaleServices = new CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.WholesaleServices(
+        //     CalculationType: CalculationType.WholesaleFixing,
+        //     periodStart: _periodStart,
+        //     periodEnd: _periodEnd,
+        //     gridArea: _gridArea,
+        //     energySupplierId: _energySupplier,
+        //     amountType: AmountType.AmountPerCharge,
+        //     chargeCode: "FaQ-s0-t4",
+        //     chargeType: ChargeType.Fee,
+        //     chargeOwnerId: _chargeOwner,
+        //     isTax: false,
+        //     quantityUnit: Common.Interfaces.Models.QuantityUnit.Kwh,
+        //     resolution: resolution,
+        //     meteringPointType: meteringPointType,
+        //     settlementMethod: settlementMethod,
+        //     TimeSeriesPoints: new WholesaleTimeSeriesPoint[]
+        //     {
+        //         new(_defaultTime.ToDateTimeOffset(), 2, quantityQualities, 2, 4),
+        //         new(_defaultTime.ToDateTimeOffset(), 3, quantityQualities, 2, 6),
+        //         new(_defaultTime.ToDateTimeOffset(), 3, quantityQualities, 3, 9),
+        //     },
+        //     version: 123);
+        return new List<CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.WholesaleServices>
+        {
+            new(
+                new Period(
+                    _periodStart,
+                    _periodEnd),
+                _gridArea,
+                _energySupplier,
+                "FaQ-s0-t4",
+                ChargeType.Tariff,
+                _chargeOwner,
+                resolution,
+                QuantityUnit.Kwh,
+                meteringPointType,
+                settlementMethod,
+                Currency.DKK,
+                new WholesaleTimeSeriesPoint[]
+                {
+                    new(_defaultTime.ToDateTimeOffset(), 2, quantityQualities, 2, 4),
+                    new(_defaultTime.ToDateTimeOffset(), 3, quantityQualities, 2, 6),
+                    new(_defaultTime.ToDateTimeOffset(), 3, quantityQualities, 3, 9),
+                },
+                1),
+        };
     }
 }
