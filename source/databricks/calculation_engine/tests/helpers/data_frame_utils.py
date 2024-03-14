@@ -32,7 +32,6 @@ def set_column(
 def assert_dataframes_equal(actual: DataFrame, expected: DataFrame) -> None:
     assert actual.subtract(expected).count() == 0
     assert expected.subtract(actual).count() == 0
-    assert actual.subtract(expected).count() == 0
 
 
 def assert_dataframe_and_schema(
@@ -46,7 +45,6 @@ def assert_dataframe_and_schema(
     show_dataframe=False,
     show_schema=False,
 ) -> None:
-
     if columns_to_skip is not None:
         actual = actual.drop(*columns_to_skip)
         expected = expected.drop(*columns_to_skip)
