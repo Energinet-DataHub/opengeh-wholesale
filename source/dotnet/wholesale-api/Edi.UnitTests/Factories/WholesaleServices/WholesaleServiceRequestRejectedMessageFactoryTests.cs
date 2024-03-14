@@ -38,7 +38,7 @@ public class WholesaleServiceRequestRejectedMessageFactoryTests
         // Assert
         using var assertionScope = new AssertionScope();
         actual.Should().NotBeNull();
-        actual.ApplicationProperties.ContainsKey("ReferenceId").Should().BeTrue();
+        actual.ApplicationProperties.Should().ContainKey("ReferenceId");
         actual.ApplicationProperties["ReferenceId"].ToString().Should().Be(expectedReferenceId);
         actual.Subject.Should().Be(expectedAcceptedSubject);
 
