@@ -18,7 +18,7 @@ from pyspark.sql.types import DecimalType
 from pyspark.sql.window import Window
 
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.energy.energy_results import EnergyResults
+from package.calculation.energy.data_structures.energy_results import EnergyResults
 from package.codelists import TimeSeriesType, AggregationLevel
 from package.constants import Colname, EnergyResultColumnNames
 

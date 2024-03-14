@@ -12,8 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from package.calculation.preparation.charge_master_data import charge_master_data_schema
-from package.calculation.preparation.charge_prices import charge_prices_schema
+from package.calculation.preparation.data_structures.charge_master_data import (
+    charge_master_data_schema,
+)
+from package.calculation.preparation.data_structures.charge_prices import (
+    charge_prices_schema,
+)
 from package.constants import Colname
 
 from tests.calculation.dataframe_defaults import DataframeDefaults

@@ -16,7 +16,7 @@ from datetime import datetime
 from decimal import Decimal
 
 from pyspark.sql import Row, SparkSession
-from package.calculation.preparation.prepared_tariffs import (
+from package.calculation.preparation.data_structures.prepared_tariffs import (
     PreparedTariffs,
     prepared_tariffs_schema,
 )

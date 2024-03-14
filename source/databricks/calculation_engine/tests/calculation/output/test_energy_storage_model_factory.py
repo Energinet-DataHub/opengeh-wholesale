@@ -24,7 +24,7 @@ from pyspark.sql.functions import col
 
 import package.codelists as e
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.energy.energy_results import (
+from package.calculation.energy.data_structures.energy_results import (
     energy_results_schema,
     EnergyResults,
 )
