@@ -15,7 +15,7 @@
 using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
-using Energinet.DataHub.Wholesale.Edi.Factories;
+using Energinet.DataHub.Wholesale.Edi.Factories.AggregatedTimeSeries;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Google.Protobuf.WellKnownTypes;
@@ -25,7 +25,7 @@ using Xunit;
 using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Factories;
+namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Factories.AggregatedTimeSeries;
 
 public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
 {
@@ -110,11 +110,11 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
             });
     }
 
-    private IReadOnlyCollection<AggregatedTimeSeries> CreateAggregatedTimeSeries(IReadOnlyCollection<QuantityQuality>? quantityQualities = null)
+    private IReadOnlyCollection<CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.AggregatedTimeSeries> CreateAggregatedTimeSeries(IReadOnlyCollection<QuantityQuality>? quantityQualities = null)
     {
         quantityQualities ??= new List<QuantityQuality> { QuantityQuality.Estimated };
 
-        var aggregatedTimeSeries = new AggregatedTimeSeries(
+        var aggregatedTimeSeries = new CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.AggregatedTimeSeries(
             _gridArea,
             new EnergyTimeSeriesPoint[]
             {
@@ -128,7 +128,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
             DateTimeOffset.Parse("2022-01-01T00:45Z").ToInstant(),
             1);
 
-        return new List<AggregatedTimeSeries>()
+        return new List<CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.AggregatedTimeSeries>()
         {
             aggregatedTimeSeries,
         };
