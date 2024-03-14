@@ -17,7 +17,9 @@ from zoneinfo import ZoneInfo
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
 
-from package.calculation.preparation.prepared_subscriptions import PreparedSubscriptions
+from package.calculation.preparation.data_structures.prepared_subscriptions import (
+    PreparedSubscriptions,
+)
 from package.codelists import ChargeUnit
 from package.constants import Colname
 

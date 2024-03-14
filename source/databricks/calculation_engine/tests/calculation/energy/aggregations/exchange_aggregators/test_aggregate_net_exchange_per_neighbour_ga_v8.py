@@ -22,7 +22,7 @@ from calculation.energy import quarterly_metering_point_time_series_factories
 from package.calculation.energy.aggregators.exchange_aggregators import (
     aggregate_net_exchange_per_neighbour_ga,
 )
-from package.calculation.preparation.quarterly_metering_point_time_series import (
+from package.calculation.preparation.data_structures.quarterly_metering_point_time_series import (
     QuarterlyMeteringPointTimeSeries,
 )
 from package.codelists import (
