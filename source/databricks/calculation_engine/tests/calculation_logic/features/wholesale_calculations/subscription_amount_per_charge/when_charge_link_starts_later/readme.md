@@ -1,6 +1,6 @@
 # Charge link starts during calculation period
 
-```
+```text
 GIVEN two metering points (positive and negative grid loss)
   AND only one charge link 
   AND the charge link starts on February 27th
