@@ -23,12 +23,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="Contracts/*.proto">
+    <Protobuf Include="**/*.proto">
       <GrpcServices>None</GrpcServices>
       <Access>Public</Access>
       <ProtoCompile>True</ProtoCompile>
       <CompileOutputs>True</CompileOutputs>
-      <OutputDir>obj\contracts</OutputDir>
       <Generator>MSBuild:Compile</Generator>
     </Protobuf>
   </ItemGroup>
