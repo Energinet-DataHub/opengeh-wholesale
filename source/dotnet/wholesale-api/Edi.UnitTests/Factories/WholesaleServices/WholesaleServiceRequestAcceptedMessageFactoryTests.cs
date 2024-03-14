@@ -50,8 +50,8 @@ public class WholesaleServiceRequestAcceptedMessageFactoryTests
     public void Create_WhenSendingMonthlyWholesaleResult_CreatesCorrectAcceptedEdiMessage()
     {
         // Arrange
-        var expectedAcceptedSubject = nameof(WholesaleServicesRequestAccepted);
-        var expectedReferenceId = "123456789";
+        const string expectedAcceptedSubject = nameof(WholesaleServicesRequestAccepted);
+        const string expectedReferenceId = "123456789";
         var wholesaleService = CreateWholesaleResult(
             meteringPointType: null,
             settlementMethod: null,
