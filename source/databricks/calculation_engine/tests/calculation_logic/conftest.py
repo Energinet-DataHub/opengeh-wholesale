@@ -14,7 +14,7 @@
 import pytest
 from pyspark.sql import SparkSession
 
-from tests.calculation_logic.scenario_factory import ScenarioFixture
+from calculation_logic.scenario_factory import ScenarioFixture
 
 
 @pytest.fixture(scope="session")
