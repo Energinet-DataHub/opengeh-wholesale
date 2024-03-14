@@ -28,12 +28,10 @@ def test_execute__returns_expected(  # type: ignore
 
     # Act
     results = scenario_fixture.execute()
-    scenario_fixture.expected.show(n=1000)
-    results.energy_results.flex_consumption_per_ga_and_es.show(n=1000)
 
     # Assert
     assert_dataframe_and_schema(
-        results.energy_results.flex_consumption_per_ga_and_es,
+        results.energy_results.consumption_per_ga_and_es,
         scenario_fixture.expected,
         ignore_decimal_precision=True,
         ignore_decimal_scale=True,
@@ -41,5 +39,5 @@ def test_execute__returns_expected(  # type: ignore
         columns_to_skip=[
             EnergyResultColumnNames.calculation_execution_time_start,
             EnergyResultColumnNames.calculation_result_id,
-        ],
+        ],show_dataframe=True,
     )
