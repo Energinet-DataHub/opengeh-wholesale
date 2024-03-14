@@ -20,8 +20,6 @@ from package.calculation.input import TableReader
 from package.calculation.preparation.data_structures.grid_loss_responsible import (
     GridLossResponsible,
 )
-from package.codelists import ChargeResolution
-from . import transformations as T
 from package.calculation.preparation.data_structures.input_charges import (
     InputChargesContainer,
 )
@@ -31,6 +29,9 @@ from package.calculation.preparation.data_structures.prepared_charges import (
 from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
+from package.codelists import ChargeResolution
+from . import transformations as T
+from ...constants import Colname
 from ...infrastructure import logging_configuration
 
 
@@ -65,14 +66,14 @@ class PreparedDataReader:
         self,
         period_start_datetime: datetime,
         period_end_datetime: datetime,
-        metering_point_periods_df: DataFrame,
+        metering_point_periods_df_without_grid_loss: DataFrame,
     ) -> PreparedMeteringPointTimeSeries:
         time_series_points_df = T.get_time_series_points(
             self._table_reader, period_start_datetime, period_end_datetime
         )
         return T.get_metering_point_time_series(
             time_series_points_df,
-            metering_point_periods_df,
+            metering_point_periods_df_without_grid_loss,
         )
 
     @logging_configuration.use_span("get_input_charges")
@@ -106,6 +107,7 @@ class PreparedDataReader:
         input_charges: InputChargesContainer,
         time_zone: str,
     ) -> PreparedChargesContainer:
+
         charge_link_metering_point_periods = T.get_charge_link_metering_point_periods(
             input_charges.charge_links, metering_point_periods
         )
@@ -139,4 +141,15 @@ class PreparedDataReader:
             hourly_tariffs=hourly_tariffs,
             daily_tariffs=daily_tariffs,
             subscriptions=subscriptions,
+        )
+
+    def get_metering_point_periods_without_grid_loss(
+        self, metering_point_periods_df: DataFrame
+    ) -> DataFrame:
+
+        # Remove grid loss metering point periods
+        return metering_point_periods_df.join(
+            self._table_reader.read_grid_loss_metering_points(),
+            Colname.metering_point_id,
+            "left_anti",
         )
