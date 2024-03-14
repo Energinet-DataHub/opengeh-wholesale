@@ -136,7 +136,7 @@ def test__sum_within_month__sums_across_metering_point_types(
     assert actual.count() == 1
 
 
-def test__sum_within_month__joins_qualities(
+def test__sum_within_month__tariff__joins_qualities(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -156,6 +156,39 @@ def test__sum_within_month__joins_qualities(
     # Assert
     assert actual.collect()[0][Colname.qualities] == ["calculated", "estimated"]
     assert actual.collect()[0][Colname.total_amount] == Decimal("4.020010")
+    assert actual.count() == 1
+
+
+def test__sum_within_month__subscription__sets_qualities_to_none(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    rows = [
+        subscriptions_factory.create_row(charge_time=datetime(2020, 1, 31, 23, 0)),
+        subscriptions_factory.create_row(charge_time=datetime(2020, 2, 15, 23, 0)),
+    ]
+    prepared_subscriptions = subscriptions_factory.create(spark, rows)
+    calculate(
+        prepared_subscriptions,
+        DefaultValues.CALCULATION_PERIOD_START,
+        DefaultValues.CALCULATION_PERIOD_END,
+        DefaultValues.TIME_ZONE,
+    )
+
+    # Act
+    actual = sum_within_month(
+        calculate(
+            prepared_subscriptions,
+            DefaultValues.CALCULATION_PERIOD_START,
+            DefaultValues.CALCULATION_PERIOD_END,
+            DefaultValues.TIME_ZONE,
+        ),
+        tariffs_factory.DefaultValues.PERIOD_START_DATETIME,
+        ChargeType.SUBSCRIPTION,
+    )
+
+    # Assert
+    assert actual.collect()[0][Colname.qualities] is None
     assert actual.count() == 1
 
 
