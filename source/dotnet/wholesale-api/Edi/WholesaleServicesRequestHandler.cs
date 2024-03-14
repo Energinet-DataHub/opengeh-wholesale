@@ -18,6 +18,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.Edi.Client;
 using Energinet.DataHub.Wholesale.Edi.Factories;
+using Energinet.DataHub.Wholesale.Edi.Factories.WholesaleServices;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.Validation;
 using Microsoft.Extensions.Logging;
@@ -127,15 +128,15 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
         return false;
     }
 
-    private Task SendRejectedMessageAsync(IReadOnlyCollection<ValidationError> validationErrors, string referenceId, CancellationToken cancellationToken)
+    private async Task SendRejectedMessageAsync(IReadOnlyCollection<ValidationError> validationErrors, string referenceId, CancellationToken cancellationToken)
     {
-        // TODO: Implement rejected message
-        throw new NotImplementedException(string.Join(", ", validationErrors.Select(e => e.ErrorCode)));
+        var message = WholesaleServicesRequestRejectedMessageFactory.Create(validationErrors, referenceId);
+        await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
     }
 
-    private Task SendAcceptedMessageAsync(IReadOnlyCollection<WholesaleResult> results, string referenceId, CancellationToken cancellationToken)
+    private async Task SendAcceptedMessageAsync(IReadOnlyCollection<WholesaleResult> results, string referenceId, CancellationToken cancellationToken)
     {
-        // TODO: Implement accepted message
-        throw new NotImplementedException(string.Join(", ", results.Select(e => e.Id)));
+        var message = WholesaleServiceRequestAcceptedMessageFactory.Create(results, referenceId);
+        await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
     }
 }

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Edi.Factories;
+using Energinet.DataHub.Wholesale.Edi.Factories.AggregatedTimeSeries;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -20,7 +20,7 @@ using Xunit;
 using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 using Period = Energinet.DataHub.Edi.Requests.Period;
 
-namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Factories;
+namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Factories.AggregatedTimeSeries;
 
 public class AggregatedTimeSeriesRequestFactoryTests
 {
