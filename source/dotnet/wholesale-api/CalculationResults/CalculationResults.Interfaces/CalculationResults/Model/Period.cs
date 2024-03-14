@@ -20,6 +20,6 @@ public record Period(Instant Start, Instant End)
 {
     public bool Contains(Instant time)
     {
-        return new Period(Start, End).Contains(time);
+        return new Interval(Start, End).Contains(time);
     }
 }
