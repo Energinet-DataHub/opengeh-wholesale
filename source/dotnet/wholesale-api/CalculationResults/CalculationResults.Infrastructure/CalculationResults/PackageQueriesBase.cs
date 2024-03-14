@@ -40,9 +40,10 @@ public abstract class PackageQueriesBase<TResult, TTimeSeriesPoint>(DatabricksSq
 
         await foreach (var databricksCurrentRow in databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(sqlStatement, Format.JsonArray).ConfigureAwait(false))
         {
+            var sqlRow = new DatabricksSqlRow(databricksCurrentRow);
             RowData current = new(
-                new DatabricksSqlRow(databricksCurrentRow),
-                GetCalculationPeriod(new DatabricksSqlRow(databricksCurrentRow), calculations));
+                sqlRow,
+                GetCalculationPeriod(sqlRow, calculations));
 
             // Yield a package created from previous data, if the current row belongs to a new package
             if (previous != null && RowBelongsToNewPackage(current, previous))
@@ -60,12 +61,12 @@ public abstract class PackageQueriesBase<TResult, TTimeSeriesPoint>(DatabricksSq
             yield return CreatePackageFromRowData(previous, timeSeriesPoints);
     }
 
-    private CalculationForPeriod GetCalculationPeriod(DatabricksSqlRow row, IReadOnlyCollection<CalculationForPeriod> latestCalculationForPeriod)
+    private CalculationForPeriod GetCalculationPeriod(DatabricksSqlRow row, IReadOnlyCollection<CalculationForPeriod> calculations)
     {
         var calculationId = Guid.Parse(row[CalculationIdColumnName]!);
         var time = SqlResultValueConverters.ToInstant(row[TimeColumnName])!.Value;
 
-        return latestCalculationForPeriod
+        return calculations
             .Single(x => x.CalculationId == calculationId && x.Period.Contains(time));
     }
 
