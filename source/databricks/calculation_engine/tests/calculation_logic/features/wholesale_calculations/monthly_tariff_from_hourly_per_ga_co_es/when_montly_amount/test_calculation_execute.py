@@ -32,11 +32,12 @@ def test_execute__returns_expected(
 
     # Assert
     assert_dataframe_and_schema(
-        results.wholesale_results.hourly_tariff_per_ga_co_es,
+        results.wholesale_results.monthly_tariff_from_hourly_per_ga_co_es,
         scenario_fixture.expected,
         ignore_decimal_precision=True,
         ignore_nullability=True,
         columns_to_skip=[
             WholesaleResultColumnNames.calculation_result_id,
         ],
+        show_dataframe=True,
     )
