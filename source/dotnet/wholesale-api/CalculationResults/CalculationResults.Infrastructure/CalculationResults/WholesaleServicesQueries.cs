@@ -13,51 +13,44 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 
-public class WholesaleServicesQueries : IWholesaleServicesQueries
+public class WholesaleServicesQueries(
+    DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor,
+    IOptions<DeltaTableOptions> deltaTableOptions)
+    : PackageQueriesBase<WholesaleServices, WholesaleTimeSeriesPoint>(databricksSqlWarehouseQueryExecutor), IWholesaleServicesQueries
 {
-    private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor;
-    private readonly IOptions<DeltaTableOptions> _deltaTableOptions;
-    private readonly ILogger<WholesaleServicesQueries> _logger;
-
-    public WholesaleServicesQueries(
-        DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor,
-        IOptions<DeltaTableOptions> deltaTableOptions,
-        ILogger<WholesaleServicesQueries> logger)
-    {
-        _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
-        _deltaTableOptions = deltaTableOptions;
-        _logger = logger;
-    }
+    private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
 
     public async IAsyncEnumerable<WholesaleServices> GetAsync(WholesaleServicesQueryParameters queryParameters)
     {
-        if (!queryParameters.Calculations.Any())
-        {
+        if (queryParameters.Calculations.Count == 0)
             yield break;
-        }
 
-        var sqlStatement = new WholesaleServicesQueryStatement(WholesaleServicesQueryStatement.StatementType.Select, queryParameters, _deltaTableOptions.Value);
-        await foreach (var wholesaleServices in GetInternalAsync(sqlStatement, queryParameters).ConfigureAwait(false))
+        var sqlStatement = new WholesaleServicesQueryStatement(
+            WholesaleServicesQueryStatement.StatementType.Select,
+            queryParameters,
+            deltaTableOptions.Value);
+
+        await foreach (var wholesaleServices in GetInternalAsync(sqlStatement, queryParameters.Calculations).ConfigureAwait(false))
             yield return wholesaleServices;
     }
 
     public Task<bool> AnyAsync(WholesaleServicesQueryParameters queryParameters)
     {
-        var sqlStatement = new WholesaleServicesQueryStatement(WholesaleServicesQueryStatement.StatementType.Exists, queryParameters, _deltaTableOptions.Value);
+        var sqlStatement = new WholesaleServicesQueryStatement(
+            WholesaleServicesQueryStatement.StatementType.Exists,
+            queryParameters,
+            deltaTableOptions.Value);
 
         return _databricksSqlWarehouseQueryExecutor
             .ExecuteStatementAsync(sqlStatement)
@@ -65,50 +58,38 @@ public class WholesaleServicesQueries : IWholesaleServicesQueries
             .AsTask();
     }
 
-    private async IAsyncEnumerable<WholesaleServices> GetInternalAsync(DatabricksStatement statement, WholesaleServicesQueryParameters parameters)
+    protected override string CalculationIdColumnName => WholesaleResultColumnNames.CalculationId;
+
+    protected override string TimeColumnName => WholesaleResultColumnNames.Time;
+
+    protected override bool RowBelongsToNewPackage(RowData current, RowData previous)
     {
-        var timeSeriesPoints = new List<WholesaleTimeSeriesPoint>();
-        DatabricksSqlRow? previousRow = null;
-        var resultCount = 0;
-
-        await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
-        {
-            var currentRow = new DatabricksSqlRow(nextRow);
-
-            // If current row belongs to a new package, yield a package for the previous data and then start a new package
-            if (previousRow != null && BelongsToDifferentResults(previousRow, currentRow))
-            {
-                yield return CreateFinishedPackage(parameters, previousRow, timeSeriesPoints);
-                resultCount++;
-                timeSeriesPoints = [];
-            }
-
-            timeSeriesPoints.Add(WholesaleTimeSeriesPointFactory.Create(currentRow));
-            previousRow = currentRow;
-        }
-
-        if (previousRow != null)
-        {
-            yield return CreateFinishedPackage(parameters, previousRow, timeSeriesPoints);
-            resultCount++;
-        }
-
-        _logger.LogDebug("Fetched {result_count} wholesale services results", resultCount);
+        return BelongsToDifferentGridArea(current.Row, previous.Row)
+               || HaveDifferentCalculationId(current.Row, previous.Row)
+               || current.CalculationPeriod != previous.CalculationPeriod;
     }
 
-    private bool BelongsToDifferentResults(DatabricksSqlRow row, DatabricksSqlRow otherSqlRow)
+    protected override WholesaleServices CreatePackageFromRowData(RowData rowData, List<WholesaleTimeSeriesPoint> timeSeriesPoints)
     {
-        return !row[WholesaleResultColumnNames.CalculationResultId]!.Equals(otherSqlRow[WholesaleResultColumnNames.CalculationResultId]);
+        return WholesaleServicesFactory.Create(
+            rowData.Row,
+            rowData.CalculationPeriod.Period,
+            timeSeriesPoints,
+            rowData.CalculationPeriod.CalculationVersion);
     }
 
-    private WholesaleServices CreateFinishedPackage(WholesaleServicesQueryParameters parameters, DatabricksSqlRow row, List<WholesaleTimeSeriesPoint> timeSeriesPoints)
+    protected override WholesaleTimeSeriesPoint CreateTimeSeriesPoint(DatabricksSqlRow row)
     {
-        var calculationWithPeriod = GetCalculationForRow(row, parameters.Calculations);
-        return WholesaleServicesFactory.Create(row, calculationWithPeriod.Period, timeSeriesPoints, calculationWithPeriod.CalculationVersion);
+        return WholesaleTimeSeriesPointFactory.Create(row);
     }
 
-    private CalculationForPeriod GetCalculationForRow(DatabricksSqlRow row, IReadOnlyCollection<CalculationForPeriod> calculations)
+    private static bool HaveDifferentCalculationId(DatabricksSqlRow row, DatabricksSqlRow otherRow)
     {
-        return calculations.First(x => x.CalculationId == Guid.Parse(row[WholesaleResultColumnNames.CalculationId]!));
+        return row[WholesaleResultColumnNames.CalculationId] != otherRow[WholesaleResultColumnNames.CalculationId];
+    }
+
+    private static bool BelongsToDifferentGridArea(DatabricksSqlRow row, DatabricksSqlRow otherRow)
+    {
+        return row[WholesaleResultColumnNames.GridArea] != otherRow[WholesaleResultColumnNames.GridArea];
     }
 }

@@ -752,7 +752,7 @@ public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSe
     /// <summary>
     /// This test validates a bug where a calculation split in 2 could cause points to not be in the correct period
     /// The following calculations:
-    /// |                       calc v1                       |
+    /// |                        calc v1                       |
     ///                    |     calc v2    |
     ///
     /// Gives following latest calculation periods:

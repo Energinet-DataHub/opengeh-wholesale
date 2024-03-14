@@ -1,0 +1,73 @@
+﻿// Copyright 2020 Energinet DataHub A/S
+//
+// Licensed under the Apache License, Version 2.0 (the "License2");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
+
+public abstract class PackageQueriesBase<TResult, TTimeSeriesPoint>(DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor)
+{
+    protected abstract string CalculationIdColumnName { get; }
+
+    protected abstract string TimeColumnName { get; }
+
+    protected abstract bool RowBelongsToNewPackage(RowData current, RowData previous);
+
+    protected abstract TResult CreatePackageFromRowData(RowData rowData, List<TTimeSeriesPoint> timeSeriesPoints);
+
+    protected abstract TTimeSeriesPoint CreateTimeSeriesPoint(DatabricksSqlRow row);
+
+    protected async IAsyncEnumerable<TResult> GetInternalAsync(
+        DatabricksStatement sqlStatement,
+        IReadOnlyCollection<CalculationForPeriod> calculations)
+    {
+        var timeSeriesPoints = new List<TTimeSeriesPoint>();
+        RowData? previous = null;
+
+        await foreach (var databricksCurrentRow in databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(sqlStatement, Format.JsonArray).ConfigureAwait(false))
+        {
+            RowData current = new(
+                new DatabricksSqlRow(databricksCurrentRow),
+                GetCalculationPeriod(new DatabricksSqlRow(databricksCurrentRow), calculations));
+
+            // Yield a package created from previous data, if the current row belongs to a new package
+            if (previous != null && RowBelongsToNewPackage(current, previous))
+            {
+                yield return CreatePackageFromRowData(previous, timeSeriesPoints);
+                timeSeriesPoints = [];
+            }
+
+            timeSeriesPoints.Add(CreateTimeSeriesPoint(current.Row));
+            previous = current;
+        }
+
+        // Yield the last package
+        if (previous != null)
+            yield return CreatePackageFromRowData(previous, timeSeriesPoints);
+    }
+
+    private CalculationForPeriod GetCalculationPeriod(DatabricksSqlRow row, IReadOnlyCollection<CalculationForPeriod> latestCalculationForPeriod)
+    {
+        var calculationId = Guid.Parse(row[CalculationIdColumnName]!);
+        var time = SqlResultValueConverters.ToInstant(row[TimeColumnName])!.Value;
+
+        return latestCalculationForPeriod
+            .Single(x => x.CalculationId == calculationId && x.Period.Contains(time));
+    }
+
+    protected record RowData(DatabricksSqlRow Row, CalculationForPeriod CalculationPeriod);
+}
