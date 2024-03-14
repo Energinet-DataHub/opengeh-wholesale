@@ -13,13 +13,13 @@
 // limitations under the License.
 
 using Energinet.DataHub.Edi.Responses;
-using Energinet.DataHub.Wholesale.Edi.Factories;
+using Energinet.DataHub.Wholesale.Edi.Factories.AggregatedTimeSeries;
 using Energinet.DataHub.Wholesale.Edi.Validation;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Factories;
+namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Factories.AggregatedTimeSeries;
 
 public class AggregatedTimeSeriesRequestRejectedMessageFactoryTests
 {

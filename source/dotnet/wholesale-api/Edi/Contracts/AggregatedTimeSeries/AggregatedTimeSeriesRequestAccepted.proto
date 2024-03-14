@@ -15,6 +15,9 @@
 
 syntax = "proto3";
 import "google/protobuf/timestamp.proto";
+import "Contracts/Common/DecimalValue.proto";
+import "Contracts/Common/Period.proto";
+import "Contracts/Common/QuantityQuality.proto";
 
 option csharp_namespace = "Energinet.DataHub.Edi.Responses";
 
@@ -58,40 +61,9 @@ message TimeSeriesPoint {
  * Unspecified is unused but according to best practice.
  * Read more at https://protobuf.dev/programming-guides/style/#enums.
  */
-enum QuantityQuality{
-  // Reserves the old, now unused, QuantityQuality enum value "Incomplete".
-  reserved 4;
-  reserved "QUANTITY_QUALITY_INCOMPLETE";
-
-  QUANTITY_QUALITY_UNSPECIFIED = 0;
-  QUANTITY_QUALITY_MISSING = 1;
-  QUANTITY_QUALITY_ESTIMATED = 2;
-  QUANTITY_QUALITY_MEASURED = 3;
-  QUANTITY_QUALITY_CALCULATED = 5;
-}
-
-/*
- * Unspecified is unused but according to best practice.
- * Read more at https://protobuf.dev/programming-guides/style/#enums.
- */
 enum QuantityUnit{
   QUANTITY_UNIT_UNSPECIFIED = 0;
   QUANTITY_UNIT_KWH = 1;
-}
-
-/*
- * Representation of a decimal value.
- * See more at https://learn.microsoft.com/en-us/dotnet/architecture/grpc-for-wcf-developers/protobuf-data-types#decimals.
- * Example: 12345.6789 -> { units = 12345, nanos = 678900000 }
- */
-message DecimalValue {
-
-  // Whole units part of the amount
-  int64 units = 1;
-
-  // Nano units of the amount (10^-9)
-  // Must be same sign as units
-  sfixed32 nanos = 2;
 }
 
 /*
@@ -123,12 +95,4 @@ enum TimeSeriesType {
   TIME_SERIES_TYPE_NEGATIVE_GRID_LOSS = 7;
   TIME_SERIES_TYPE_POSITIVE_GRID_LOSS = 8;
   TIME_SERIES_TYPE_TOTAL_CONSUMPTION = 9;
-}
-
-/*
- * Representation of period for the time series.
- */
-message Period {
-  google.protobuf.Timestamp start_of_period = 1;
-  google.protobuf.Timestamp end_of_period = 2;
 }
