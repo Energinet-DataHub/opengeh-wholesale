@@ -43,18 +43,18 @@ class PreparedSubscriptions(DataFrameWrapper):
 prepared_subscriptions_schema = t.StructType(
     [
         t.StructField(Colname.charge_key, t.StringType(), False),
-        t.StructField(Colname.charge_code, t.StringType(), False),
         t.StructField(Colname.charge_type, t.StringType(), False),
         t.StructField(Colname.charge_owner, t.StringType(), False),
-        t.StructField(Colname.charge_tax, t.BooleanType(), False),
-        t.StructField(Colname.resolution, t.StringType(), False),
+        t.StructField(Colname.charge_code, t.StringType(), False),
         t.StructField(Colname.charge_time, t.TimestampType(), False),
         t.StructField(Colname.charge_price, t.DecimalType(18, 8), True),
-        t.StructField(Colname.metering_point_id, t.StringType(), False),
-        t.StructField(Colname.energy_supplier_id, t.StringType(), False),
+        t.StructField(Colname.charge_tax, t.BooleanType(), False),
+        t.StructField(Colname.charge_quantity, t.IntegerType(), True),
         t.StructField(Colname.metering_point_type, t.StringType(), False),
         t.StructField(Colname.settlement_method, t.StringType(), False),
+        t.StructField(Colname.metering_point_id, t.StringType(), False),
         t.StructField(Colname.grid_area, t.StringType(), False),
-        t.StructField(Colname.charge_quantity, t.IntegerType(), True),
+        t.StructField(Colname.energy_supplier_id, t.StringType(), False),
+        t.StructField(Colname.resolution, t.StringType(), False),
     ]
 )
