@@ -59,11 +59,17 @@ def _execute(
             args.calculation_grid_areas, metering_point_periods_df
         )
 
+        metering_point_periods_df_without_grid_loss = (
+            prepared_data_reader.get_metering_point_periods_without_grid_loss(
+                metering_point_periods_df
+            )
+        )
+
         metering_point_time_series = (
             prepared_data_reader.get_metering_point_time_series(
                 args.calculation_period_start_datetime,
                 args.calculation_period_end_datetime,
-                metering_point_periods_df,
+                metering_point_periods_df_without_grid_loss,
             )
         )
         metering_point_time_series.cache_internal()

@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
+from pyspark.sql import DataFrame
 
 from package.calculation.preparation.data_structures.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
@@ -54,4 +54,5 @@ def get_charge_link_metering_point_periods(
         metering_points[Colname.grid_area],
         metering_points[Colname.energy_supplier_id],
     )
+
     return ChargeLinkMeteringPointPeriods(charge_link_metering_point_periods)

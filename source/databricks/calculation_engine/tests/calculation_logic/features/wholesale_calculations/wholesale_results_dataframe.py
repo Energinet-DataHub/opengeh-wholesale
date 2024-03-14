@@ -22,14 +22,13 @@ from pyspark.sql.types import (
 )
 
 
-def create_wholesale_result_dataframe(*args) -> DataFrame:  # type: ignore
+def create_wholesale_result_dataframe(*args) -> DataFrame:
     spark: SparkSession = args[0]
     df: DataFrame = args[1]
-    calculator_args: any = args[2]
+    calculator_args: any = args[2]  # type: ignore
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
-    from package.constants import Colname
     from package.calculation.output.schemas import wholesale_results_schema
     from package.constants import WholesaleResultColumnNames
 
@@ -37,18 +36,22 @@ def create_wholesale_result_dataframe(*args) -> DataFrame:  # type: ignore
         WholesaleResultColumnNames.calculation_id, lit(calculator_args.calculation_id)
     )
     df = df.withColumn(
-        Colname.calculation_execution_time_start,
+        WholesaleResultColumnNames.calculation_execution_time_start,
         lit(calculator_args.calculation_execution_time_start).cast(TimestampType()),
     )
+
     df = df.withColumn(WholesaleResultColumnNames.calculation_result_id, lit(""))
+
     df = df.withColumn(
         WholesaleResultColumnNames.quantity,
         col(WholesaleResultColumnNames.quantity).cast(DecimalType(28, 3)),
     )
+
     df = df.withColumn(
         WholesaleResultColumnNames.price,
         col(WholesaleResultColumnNames.price).cast(DecimalType(18, 6)),
     )
+
     df = df.withColumn(
         WholesaleResultColumnNames.amount,
         col(WholesaleResultColumnNames.amount).cast(DecimalType(18, 6)),
