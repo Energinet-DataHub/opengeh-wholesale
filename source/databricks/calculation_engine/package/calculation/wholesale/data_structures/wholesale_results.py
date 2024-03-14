@@ -51,7 +51,7 @@ wholesale_results_schema = t.StructType(
         t.StructField(Colname.energy_supplier_id, t.StringType(), False),
         t.StructField(Colname.total_quantity, t.DecimalType(18, 3), True),
         t.StructField(Colname.unit, t.StringType(), False),
-        t.StructField(Colname.qualities, t.ArrayType(t.StringType()), True),
+        t.StructField(Colname.qualities, t.ArrayType(t.StringType(), True), True),
         t.StructField(Colname.charge_time, t.TimestampType(), False),
         t.StructField(Colname.resolution, t.StringType(), False),
         t.StructField(Colname.metering_point_type, t.StringType(), True),
