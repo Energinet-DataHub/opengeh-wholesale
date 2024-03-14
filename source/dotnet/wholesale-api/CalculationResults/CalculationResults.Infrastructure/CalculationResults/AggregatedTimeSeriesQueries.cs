@@ -55,46 +55,62 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
         IReadOnlyCollection<CalculationForPeriod> latestCalculationsForPeriod)
     {
         var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
-        DatabricksSqlRow? previousRow = null;
+        RowData? previous = null;
+
         await foreach (var databricksCurrentRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(sqlStatement, Format.JsonArray).ConfigureAwait(false))
         {
-            var currentRow = new DatabricksSqlRow(databricksCurrentRow);
-            var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(currentRow);
+            RowData current = new(
+                new DatabricksSqlRow(databricksCurrentRow),
+                GetCalculationForPeriod(new DatabricksSqlRow(databricksCurrentRow), latestCalculationsForPeriod));
 
-            if (previousRow != null && (BelongsToDifferentGridArea(currentRow, previousRow)
-                                        || HaveDifferentCalculationId(currentRow, previousRow)
-                                        || HaveDifferentTimeSeriesType(currentRow, previousRow)))
+            // Yield a package created from previous data, if the current row belongs to a new package
+            if (previous != null && RowBelongsToNewPackage(current, previous))
             {
-                var calculationForPeriod = GetCalculationForPeriod(previousRow, latestCalculationsForPeriod);
-                yield return AggregatedTimeSeriesFactory.Create(
-                    previousRow,
-                    calculationForPeriod.Period.Start,
-                    calculationForPeriod.Period.End,
-                    timeSeriesPoints,
-                    calculationForPeriod.CalculationVersion);
+                yield return CreatePackageFromPreviousData(previous, timeSeriesPoints);
                 timeSeriesPoints = [];
             }
 
-            timeSeriesPoints.Add(timeSeriesPoint);
-            previousRow = currentRow;
+            timeSeriesPoints.Add(EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(current.Row));
+            previous = current;
         }
 
-        if (previousRow != null)
+        // Yield the last package
+        if (previous != null)
         {
-            var calculationForPeriod = GetCalculationForPeriod(previousRow, latestCalculationsForPeriod);
             yield return AggregatedTimeSeriesFactory.Create(
-                previousRow,
-                calculationForPeriod.Period.Start,
-                calculationForPeriod.Period.End,
+                previous.Row,
+                previous.CalculationPeriod.Period.Start,
+                previous.CalculationPeriod.Period.End,
                 timeSeriesPoints,
-                calculationForPeriod.CalculationVersion);
+                previous.CalculationPeriod.CalculationVersion);
         }
+    }
+
+    private static bool RowBelongsToNewPackage(RowData current, RowData previous)
+    {
+        return BelongsToDifferentGridArea(current.Row, previous.Row)
+               || HaveDifferentCalculationId(current.Row, previous.Row)
+               || HaveDifferentTimeSeriesType(current.Row, previous.Row)
+               || previous.CalculationPeriod != current.CalculationPeriod;
+    }
+
+    private static AggregatedTimeSeries CreatePackageFromPreviousData(RowData previous, List<EnergyTimeSeriesPoint> timeSeriesPoints)
+    {
+        return AggregatedTimeSeriesFactory.Create(
+            previous.Row,
+            previous.CalculationPeriod.Period.Start,
+            previous.CalculationPeriod.Period.End,
+            timeSeriesPoints,
+            previous.CalculationPeriod.CalculationVersion);
     }
 
     private CalculationForPeriod GetCalculationForPeriod(DatabricksSqlRow row, IReadOnlyCollection<CalculationForPeriod> latestCalculationForPeriod)
     {
+        var calculationId = Guid.Parse(row[EnergyResultColumnNames.CalculationId]!);
+        var time = SqlResultValueConverters.ToInstant(row[EnergyResultColumnNames.Time])!.Value;
+
         return latestCalculationForPeriod
-            .First(x => x.CalculationId == Guid.Parse(row[EnergyResultColumnNames.CalculationId]!));
+            .Single(x => x.CalculationId == calculationId && x.Period.Contains(time));
     }
 
     private static bool HaveDifferentCalculationId(DatabricksSqlRow row, DatabricksSqlRow otherRow)
@@ -111,4 +127,6 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
     {
         return row[EnergyResultColumnNames.TimeSeriesType] != otherRow[EnergyResultColumnNames.TimeSeriesType];
     }
+
+    private record RowData(DatabricksSqlRow Row, CalculationForPeriod CalculationPeriod);
 }

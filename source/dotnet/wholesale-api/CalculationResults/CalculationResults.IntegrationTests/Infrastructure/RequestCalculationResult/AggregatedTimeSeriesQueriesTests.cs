@@ -15,12 +15,14 @@
 using AutoFixture;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using NodaTime;
 using Xunit;
+using Period = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.Period;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.RequestCalculationResult;
 
@@ -28,12 +30,14 @@ public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSe
     IClassFixture<DatabricksSqlStatementApiFixture>
 {
     private readonly AggregatedTimeSeriesQueriesData _aggregatedTimeSeriesQueriesData;
+    private readonly DatabricksSqlStatementApiFixture _fixture;
 
     public AggregatedTimeSeriesQueriesTests(DatabricksSqlStatementApiFixture fixture)
     {
         Fixture.Inject(fixture.DatabricksSchemaManager.DeltaTableOptions);
         Fixture.Inject(fixture.GetDatabricksExecutor());
         _aggregatedTimeSeriesQueriesData = new AggregatedTimeSeriesQueriesData(fixture);
+        _fixture = fixture;
     }
 
     /*
@@ -743,5 +747,134 @@ public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSe
 
         // Assert
         actual.Should().HaveCount(0);
+    }
+
+    /// <summary>
+    /// This test validates a bug where a calculation split in 2 could cause points to not be in the correct period
+    /// The following calculations:
+    /// |                       calc v1                       |
+    ///                    |     calc v2    |
+    ///
+    /// Gives following latest calculation periods:
+    /// | calc v1 period 1 |                | calc v1 period 2 |
+    ///                    | calc v2 period |
+    /// The bug was that points belonging to "calc v1 period 2" was added to "calc v1 period 1" instead
+    /// </summary>
+    [Fact]
+    public async Task GetAsync_WhenCalculationIsSplitInTwo_ReturnedPointsAreInCorrectPeriod()
+    {
+        // Arrange
+        await _fixture.DatabricksSchemaManager
+            .EmptyAsync(
+                _fixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME);
+
+        var totalPeriodStart = Instant.FromUtc(2022, 1, 1, 0, 0);
+        var totalPeriodEnd = Instant.FromUtc(2022, 1, 5, 0, 0);
+
+        var calc1Id = Guid.NewGuid();
+        var calc2Id = Guid.NewGuid();
+        const string gridArea = "100";
+
+        const int calc1Version = 1;
+        const int calc2Version = 2;
+
+        var calc1Period1Start = totalPeriodStart;
+        var calc1Period1End = Instant.FromUtc(2022, 1, 2, 0, 0);
+        var calc2PeriodStart = calc1Period1End;
+        var calc2PeriodEnd = Instant.FromUtc(2022, 1, 3, 0, 0);
+        var calc1Period2Start = calc2PeriodEnd;
+        var calc1Period2End = totalPeriodEnd;
+
+        var calc1Period1Rows = new List<IReadOnlyCollection<string>>
+        {
+            EnergyResultDeltaTableHelper.CreateRowValues(
+                calculationId: calc1Id.ToString(),
+                timeSeriesType: DeltaTableTimeSeriesType.Production,
+                gridArea: gridArea,
+                time: calc1Period1Start.ToString()),
+            EnergyResultDeltaTableHelper.CreateRowValues(
+                calculationId: calc1Id.ToString(),
+                timeSeriesType: DeltaTableTimeSeriesType.Production,
+                gridArea: gridArea,
+                time: calc1Period1Start.Plus(Duration.FromHours(1)).ToString()),
+            EnergyResultDeltaTableHelper.CreateRowValues(
+                calculationId: calc1Id.ToString(),
+                timeSeriesType: DeltaTableTimeSeriesType.Production,
+                gridArea: gridArea,
+                time: calc1Period1Start.Plus(Duration.FromHours(2)).ToString()),
+        };
+        var calc2Rows = new List<IReadOnlyCollection<string>>
+        {
+            EnergyResultDeltaTableHelper.CreateRowValues(
+                calculationId: calc2Id.ToString(),
+                timeSeriesType: DeltaTableTimeSeriesType.Production,
+                gridArea: gridArea,
+                time: calc2PeriodStart.ToString()),
+            EnergyResultDeltaTableHelper.CreateRowValues(
+                calculationId: calc2Id.ToString(),
+                timeSeriesType: DeltaTableTimeSeriesType.Production,
+                gridArea: gridArea,
+                time: calc2PeriodStart.Plus(Duration.FromHours(1)).ToString()),
+        };
+        var calc1Period2Rows = new List<IReadOnlyCollection<string>>
+        {
+            EnergyResultDeltaTableHelper.CreateRowValues(
+                calculationId: calc1Id.ToString(),
+                timeSeriesType: DeltaTableTimeSeriesType.Production,
+                gridArea: gridArea,
+                time: calc1Period2Start.ToString()),
+            EnergyResultDeltaTableHelper.CreateRowValues(
+                calculationId: calc1Id.ToString(),
+                timeSeriesType: DeltaTableTimeSeriesType.Production,
+                gridArea: gridArea,
+                time: calc1Period2Start.Plus(Duration.FromHours(2)).ToString()),
+            EnergyResultDeltaTableHelper.CreateRowValues(
+                calculationId: calc1Id.ToString(),
+                timeSeriesType: DeltaTableTimeSeriesType.Production,
+                gridArea: gridArea,
+                time: calc1Period2Start.Plus(Duration.FromHours(8)).ToString()),
+            EnergyResultDeltaTableHelper.CreateRowValues(
+                calculationId: calc1Id.ToString(),
+                timeSeriesType: DeltaTableTimeSeriesType.Production,
+                gridArea: gridArea,
+                time: calc1Period2Start.Plus(Duration.FromDays(1)).ToString()),
+        };
+
+        var rowsToInsert = calc1Period1Rows.Concat(calc2Rows).Concat(calc1Period2Rows)
+            .OrderBy(r => Random.Shared.NextInt64())
+            .ToList();
+
+        await _fixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(_fixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME, rowsToInsert);
+
+        var parameters = new AggregatedTimeSeriesQueryParameters(
+            [TimeSeriesType.Production],
+            gridArea,
+            null,
+            null,
+            new List<CalculationForPeriod>
+            {
+                new(
+                    new Period(calc1Period1Start, calc1Period1End),
+                    calc1Id,
+                    calc1Version),
+                new(
+                    new Period(calc2PeriodStart, calc2PeriodEnd),
+                    calc2Id,
+                    calc2Version),
+                new(
+                    new Period(calc1Period2Start, calc1Period2End),
+                    calc1Id,
+                    calc1Version),
+            });
+
+        // Act
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        actual.Should().HaveCount(3);
+        actual.Should().ContainSingle(p => p.Version == calc1Version && p.PeriodStart == calc1Period1Start && p.TimeSeriesPoints.Length == calc1Period1Rows.Count);
+        actual.Should().ContainSingle(p => p.Version == calc2Version && p.PeriodStart == calc2PeriodStart && p.TimeSeriesPoints.Length == calc2Rows.Count);
+        actual.Should().ContainSingle(p => p.Version == calc1Version && p.PeriodStart == calc1Period2Start && p.TimeSeriesPoints.Length == calc1Period2Rows.Count);
     }
 }

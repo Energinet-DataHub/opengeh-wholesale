@@ -38,6 +38,7 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
             FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} t1
             WHERE ({CreateSqlQueryFilters(_parameters)})";
 
+        // Should match the way packages are split in AggregatedTimeSeriesQueries
         sql += $"""
                 ORDER BY t1.{EnergyResultColumnNames.GridArea},
                 t1.{EnergyResultColumnNames.TimeSeriesType},
