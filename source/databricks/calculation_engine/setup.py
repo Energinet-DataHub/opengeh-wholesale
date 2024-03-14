@@ -40,7 +40,7 @@ setup(
         "delta-spark==3.1.0",
         "python-dateutil==2.8.2",
         "azure-monitor-opentelemetry==1.2.0",
-        "opengeh-spark-sql-migrations @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@v1.4.1#subdirectory=source/spark_sql_migrations",
+        "opengeh-spark-sql-migrations @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@1.4.1#subdirectory=source/spark_sql_migrations",
     ],
     entry_points={
         "console_scripts": [
