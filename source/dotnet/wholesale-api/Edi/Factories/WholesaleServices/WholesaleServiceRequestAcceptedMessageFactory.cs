@@ -21,6 +21,7 @@ using Google.Protobuf;
 using Google.Protobuf.Collections;
 using Google.Protobuf.WellKnownTypes;
 using NodaTime.Serialization.Protobuf;
+using Period = Energinet.DataHub.Edi.Responses.Period;
 using QuantityUnit = Energinet.DataHub.Wholesale.Common.Interfaces.Models.QuantityUnit;
 using Resolution = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution;
 
@@ -28,9 +29,9 @@ namespace Energinet.DataHub.Wholesale.Edi.Factories.WholesaleServices;
 
 public static class WholesaleServiceRequestAcceptedMessageFactory
 {
-    public static ServiceBusMessage Create(IReadOnlyCollection<WholesaleResult> wholesaleResults, string referenceId)
+    public static ServiceBusMessage Create(IReadOnlyCollection<CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.WholesaleServices> wholesaleServices, string referenceId)
     {
-        var body = CreateAcceptedResponse(wholesaleResults);
+        var body = CreateAcceptedResponse(wholesaleServices);
 
         var message = new ServiceBusMessage
         {
@@ -42,19 +43,19 @@ public static class WholesaleServiceRequestAcceptedMessageFactory
         return message;
     }
 
-    private static WholesaleServicesRequestAccepted CreateAcceptedResponse(IReadOnlyCollection<WholesaleResult> wholesaleResults)
+    private static WholesaleServicesRequestAccepted CreateAcceptedResponse(IReadOnlyCollection<CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.WholesaleServices> wholesaleServices)
     {
         var response = new WholesaleServicesRequestAccepted();
-        foreach (var series in wholesaleResults)
+        foreach (var series in wholesaleServices)
         {
             var points = CreateTimeSeriesPoints(series.TimeSeriesPoints);
             var wholesaleSeries = new WholesaleServicesRequestSeries
             {
                 Period =
-                    new Period()
+                    new Period
                     {
-                        StartOfPeriod = series.PeriodStart.ToTimestamp(),
-                        EndOfPeriod = series.PeriodEnd.ToTimestamp(),
+                        StartOfPeriod = series.Period.Start.ToTimestamp(),
+                        EndOfPeriod = series.Period.Start.ToTimestamp(),
                     },
                 GridArea = series.GridArea,
                 EnergySupplierId = series.EnergySupplierId,

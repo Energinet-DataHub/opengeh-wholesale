@@ -25,7 +25,7 @@ public record WholesaleServices(
     string ChargeOwnerId,
     Resolution Resolution,
     QuantityUnit QuantityUnit,
-    MeteringPointType MeteringPointType,
+    MeteringPointType? MeteringPointType,
     SettlementMethod? SettlementMethod,
     Currency Currency,
     IReadOnlyCollection<WholesaleTimeSeriesPoint> TimeSeriesPoints,
