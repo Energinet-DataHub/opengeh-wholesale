@@ -14,11 +14,11 @@ calculation_id;calculation_type;calculation_execution_time_start;calculation_res
 ;WholesaleFixing;;;804;8100000000115;360;kWh;['calculated'];2023-02-12 23:00:00.000000;P1D;consumption;flex;1.756998;632.51928;false;41000;tariff;5790001330552;amount_per_charge
 ;WholesaleFixing;;;804;8100000000115;360;kWh;['calculated'];2023-02-13 23:00:00.000000;P1D;consumption;flex;1.756998;632.51928;false;41000;tariff;5790001330552;amount_per_charge
 ;WholesaleFixing;;;804;8100000000115;360;kWh;['calculated'];2023-02-14 23:00:00.000000;P1D;consumption;flex;1.756998;632.51928;false;41000;tariff;5790001330552;amount_per_charge
-;WholesaleFixing;;;804;8100000000115;360;kWh;['calculated'];2023-02-26 23:00:00.000000;P1D;consumption;flex;1.756998;632.51928;false;41000;tariff;5790001330552;amount_per_charge
+;WholesaleFixing;;;804;8100000000115;360;kWh;['calculated'];2023-02-15 23:00:00.000000;P1D;consumption;flex;1.756998;632.51928;false;41000;tariff;5790001330552;amount_per_charge
 ;WholesaleFixing;;;804;8100000000115;360;kWh;['calculated'];2023-02-16 23:00:00.000000;P1D;consumption;flex;1.756998;632.51928;false;41000;tariff;5790001330552;amount_per_charge
 ;WholesaleFixing;;;804;8100000000115;360;kWh;['calculated'];2023-02-17 23:00:00.000000;P1D;consumption;flex;1.756998;632.51928;false;41000;tariff;5790001330552;amount_per_charge
 ;WholesaleFixing;;;804;8100000000115;360;kWh;['calculated'];2023-02-18 23:00:00.000000;P1D;consumption;flex;1.756998;632.51928;false;41000;tariff;5790001330552;amount_per_charge
-;WholesaleFixing;;;804;8100000000115;360;kWh;['calculated'];2023-02-19 23:00:00.000000;P1D;consumption;flex;1.756998;632.51928;false;41000;tariff;5790001330552;amount_per_charge
+;WholesaleFixing;;;804;8100000000115;0;kWh;['calculated'];2023-02-19 23:00:00.000000;P1D;consumption;flex;1.756998;0;false;41000;tariff;5790001330552;amount_per_charge
 ;WholesaleFixing;;;804;8100000000115;0;kWh;['calculated'];2023-02-20 23:00:00.000000;P1D;consumption;flex;1.756998;0;false;41000;tariff;5790001330552;amount_per_charge
 ;WholesaleFixing;;;804;8100000000115;0;kWh;['calculated'];2023-02-21 23:00:00.000000;P1D;consumption;flex;1.756998;0;false;41000;tariff;5790001330552;amount_per_charge
 ;WholesaleFixing;;;804;8100000000115;0;kWh;['calculated'];2023-02-22 23:00:00.000000;P1D;consumption;flex;1.756998;0;false;41000;tariff;5790001330552;amount_per_charge
@@ -42,11 +42,11 @@ calculation_id;calculation_type;calculation_execution_time_start;calculation_res
 ;WholesaleFixing;;;804;8100000000108;0;kWh;['calculated'];2023-02-12 23:00:00.000000;P1D;production;;1.756998;0;false;41000;tariff;5790001330552;amount_per_charge
 ;WholesaleFixing;;;804;8100000000108;0;kWh;['calculated'];2023-02-13 23:00:00.000000;P1D;production;;1.756998;0;false;41000;tariff;5790001330552;amount_per_charge
 ;WholesaleFixing;;;804;8100000000108;0;kWh;['calculated'];2023-02-14 23:00:00.000000;P1D;production;;1.756998;0;false;41000;tariff;5790001330552;amount_per_charge
-;WholesaleFixing;;;804;8100000000108;0;kWh;['calculated'];2023-02-26 23:00:00.000000;P1D;production;;1.756998;0;false;41000;tariff;5790001330552;amount_per_charge
+;WholesaleFixing;;;804;8100000000108;0;kWh;['calculated'];2023-02-15 23:00:00.000000;P1D;production;;1.756998;0;false;41000;tariff;5790001330552;amount_per_charge
 ;WholesaleFixing;;;804;8100000000108;0;kWh;['calculated'];2023-02-16 23:00:00.000000;P1D;production;;1.756998;0;false;41000;tariff;5790001330552;amount_per_charge
 ;WholesaleFixing;;;804;8100000000108;0;kWh;['calculated'];2023-02-17 23:00:00.000000;P1D;production;;1.756998;0;false;41000;tariff;5790001330552;amount_per_charge
 ;WholesaleFixing;;;804;8100000000108;0;kWh;['calculated'];2023-02-18 23:00:00.000000;P1D;production;;1.756998;0;false;41000;tariff;5790001330552;amount_per_charge
-;WholesaleFixing;;;804;8100000000108;0;kWh;['calculated'];2023-02-19 23:00:00.000000;P1D;production;;1.756998;0;false;41000;tariff;5790001330552;amount_per_charge
+;WholesaleFixing;;;804;8100000000108;240;kWh;['calculated'];2023-02-19 23:00:00.000000;P1D;production;;1.756998;421.67952;false;41000;tariff;5790001330552;amount_per_charge
 ;WholesaleFixing;;;804;8100000000108;240;kWh;['calculated'];2023-02-20 23:00:00.000000;P1D;production;;1.756998;421.67952;false;41000;tariff;5790001330552;amount_per_charge
 ;WholesaleFixing;;;804;8100000000108;240;kWh;['calculated'];2023-02-21 23:00:00.000000;P1D;production;;1.756998;421.67952;false;41000;tariff;5790001330552;amount_per_charge
 ;WholesaleFixing;;;804;8100000000108;240;kWh;['calculated'];2023-02-22 23:00:00.000000;P1D;production;;1.756998;421.67952;false;41000;tariff;5790001330552;amount_per_charge

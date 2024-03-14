@@ -28,11 +28,17 @@ def test_execute__returns_expected(  # type: ignore
 
     # Act
     results = scenario_fixture.execute()
+    actual = results.wholesale_results.daily_tariff_per_ga_co_es.orderBy(
+        WholesaleResultColumnNames.metering_point_type, WholesaleResultColumnNames.time
+    )
+    expected = scenario_fixture.expected.orderBy(
+        WholesaleResultColumnNames.metering_point_type, WholesaleResultColumnNames.time
+    )
 
     # Assert
     assert_dataframe_and_schema(
-        results.wholesale_results.daily_tariff_per_ga_co_es,
-        scenario_fixture.expected,
+        actual,
+        expected,
         ignore_decimal_precision=True,
         ignore_nullability=True,
         columns_to_skip=[
