@@ -17,9 +17,9 @@ using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.Edi.Validation;
 using Google.Protobuf;
 
-namespace Energinet.DataHub.Wholesale.Edi.Factories;
+namespace Energinet.DataHub.Wholesale.Edi.Factories.WholesaleServices;
 
-public static class AggregatedTimeSeriesRequestRejectedMessageFactory
+public class WholesaleServicesRequestRejectedMessageFactory
 {
     public static ServiceBusMessage Create(IReadOnlyCollection<ValidationError> errors, string referenceId)
     {
@@ -37,7 +37,7 @@ public static class AggregatedTimeSeriesRequestRejectedMessageFactory
 
     private static IMessage CreateRejectedMessage(IReadOnlyCollection<ValidationError> errors)
     {
-        var response = new AggregatedTimeSeriesRequestRejected();
+        var response = new WholesaleServicesRequestRejected();
         response.RejectReasons.AddRange(errors.Select(CreateRejectReason));
         return response;
     }
