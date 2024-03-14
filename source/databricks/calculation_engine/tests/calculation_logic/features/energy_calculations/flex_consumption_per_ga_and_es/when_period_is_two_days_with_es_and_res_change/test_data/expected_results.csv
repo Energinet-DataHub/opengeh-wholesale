@@ -300,10 +300,10 @@
 804;3000000000000;;0.0;['missing'];2023-02-03 01:15;es_ga;flex_consumption;;;;;;
 804;3000000000000;;0.0;['missing'];2023-02-03 01:30;es_ga;flex_consumption;;;;;;
 804;3000000000000;;0.0;['missing'];2023-02-03 01:45;es_ga;flex_consumption;;;;;;
-804;3000000000000;;2.5;['measured'];2023-02-03 02:00;es_ga;flex_consumption;;;;;;
-804;3000000000000;;2.5;['measured'];2023-02-03 02:15;es_ga;flex_consumption;;;;;;
-804;3000000000000;;2.5;['measured'];2023-02-03 02:30;es_ga;flex_consumption;;;;;;
-804;3000000000000;;2.5;['measured'];2023-02-03 02:45;es_ga;flex_consumption;;;;;;
+804;3000000000000;;0.0;['missing'];2023-02-03 02:00;es_ga;flex_consumption;;;;;;
+804;3000000000000;;0.0;['missing'];2023-02-03 02:15;es_ga;flex_consumption;;;;;;
+804;3000000000000;;0.0;['missing'];2023-02-03 02:30;es_ga;flex_consumption;;;;;;
+804;3000000000000;;10;['measured'];2023-02-03 02:45;es_ga;flex_consumption;;;;;;
 804;3000000000000;;0.0;['missing'];2023-02-03 03:00;es_ga;flex_consumption;;;;;;
 804;3000000000000;;0.0;['missing'];2023-02-03 03:15;es_ga;flex_consumption;;;;;;
 804;3000000000000;;0.0;['missing'];2023-02-03 03:30;es_ga;flex_consumption;;;;;;
