@@ -77,6 +77,34 @@ public class WholesaleServiceRequestAcceptedMessageFactoryTests
         series.TimeSeriesPoints.Should().HaveCount(3);
     }
 
+    [Theory]
+    [MemberData(nameof(QuantityQualitySets))]
+    public void Create_DifferentSetsOfQualities_CreatesCorrectAcceptedEdiMessage(WholesaleQuantity[] quantityQualities)
+    {
+        // Arrange
+        const string expectedReferenceId = "123456789";
+        var expectedQuantityQualities = quantityQualities.ToList();
+        var wholesaleService = CreateWholesaleResult(
+            quantityQualities: expectedQuantityQualities);
+
+        // Act
+        var actual = WholesaleServiceRequestAcceptedMessageFactory.Create(wholesaleService, expectedReferenceId);
+
+        // Assert
+        actual.Should().NotBeNull();
+        var responseBody = WholesaleServicesRequestAccepted.Parser.ParseFrom(actual.Body);
+        responseBody.Series.Should().ContainSingle();
+        responseBody.Series.Single().TimeSeriesPoints.Should().HaveCount(3);
+        responseBody.Series.Single().TimeSeriesPoints.Select(p => p.QuantityQualities).Should().AllSatisfy(
+            qqs =>
+            {
+                qqs.Should().HaveCount(expectedQuantityQualities.Count);
+                qqs.Select(qq => qq.ToString())
+                    .Should()
+                    .Contain(expectedQuantityQualities.Select(qq => qq.ToString()));
+            });
+    }
+
     private IReadOnlyCollection<WholesaleResult> CreateWholesaleResult(
         IReadOnlyCollection<WholesaleQuantity>? quantityQualities = null,
         MeteringPointType? meteringPointType = null,
