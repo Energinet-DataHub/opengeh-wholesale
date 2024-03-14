@@ -15,7 +15,7 @@ from dataclasses import fields
 
 from pyspark.sql import DataFrame
 
-from package.calculation.CalculationResults import (
+from package.calculation.calculation_results import (
     EnergyResultsContainer,
 )
 from package.infrastructure import logging_configuration

@@ -23,7 +23,7 @@ from pyspark.sql.types import Row
 import calculation.preparation.transformations.prepared_metering_point_time_series_factory as factories
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.output import basis_data_results, basis_data_factory
-from package.calculation.preparation.prepared_metering_point_time_series import (
+from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
 from package.codelists import (

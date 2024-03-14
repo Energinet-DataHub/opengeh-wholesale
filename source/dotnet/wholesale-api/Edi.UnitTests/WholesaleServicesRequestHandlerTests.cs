@@ -16,21 +16,23 @@ using System.Globalization;
 using AutoFixture.Xunit2;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.Edi.Client;
 using Energinet.DataHub.Wholesale.Edi.Factories;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
+using Energinet.DataHub.Wholesale.Edi.UnitTests.Extensions;
 using Energinet.DataHub.Wholesale.Edi.Validation;
-using FluentAssertions;
 using Google.Protobuf;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NodaTime;
 using Xunit;
+using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
+using QuantityUnit = Energinet.DataHub.Wholesale.Common.Interfaces.Models.QuantityUnit;
 using Period = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.Period;
 using WholesaleServicesRequest = Energinet.DataHub.Edi.Requests.WholesaleServicesRequest;
 
@@ -49,6 +51,7 @@ public class WholesaleServicesRequestHandlerTests
         [Frozen] Mock<CompletedCalculationRetriever> completedCalculationRetriever)
     {
         // Arrange
+        const string expectedAcceptedSubject = nameof(WholesaleServicesRequestAccepted);
         var expectedReferenceId = Guid.NewGuid().ToString();
 
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
@@ -71,22 +74,20 @@ public class WholesaleServicesRequestHandlerTests
             logger.Object);
 
         // Act
-        var act = async () => await sut.ProcessAsync(
+        await sut.ProcessAsync(
             serviceBusReceivedMessage,
             expectedReferenceId,
             CancellationToken.None);
 
         // Assert
-        // TODO: Update to "sends accepted message"
-        (await act.Should().ThrowAsync<NotImplementedException>()).WithMessage(wholesaleServices.TimeSeriesPoints.Single().Time.ToString(CultureInfo.InvariantCulture));
-        // ediClient.Verify(
-        //     client => client.SendAsync(
-        //         It.Is<ServiceBusMessage>(message =>
-        //             message.Subject.Equals(expectedAcceptedSubject)
-        //             && message.ApplicationProperties.ContainsKey("ReferenceId")
-        //             && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
-        //         It.IsAny<CancellationToken>()),
-        //     Times.Once);
+        ediClient.Verify(
+            client => client.SendAsync(
+                It.Is<ServiceBusMessage>(message =>
+                    message.Subject.Equals(expectedAcceptedSubject)
+                    && message.ApplicationProperties.ContainsKey("ReferenceId")
+                    && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 
     [Theory]
@@ -100,7 +101,8 @@ public class WholesaleServicesRequestHandlerTests
         [Frozen] Mock<CompletedCalculationRetriever> completedCalculationRetriever)
     {
         // Arrange
-        var expectedValidationErrorCode = "E0H";
+        const string expectedRejectedSubject = nameof(WholesaleServicesRequestRejected);
+        const string expectedValidationErrorCode = "E0H";
         var expectedReferenceId = Guid.NewGuid().ToString();
 
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
@@ -116,23 +118,21 @@ public class WholesaleServicesRequestHandlerTests
             logger.Object);
 
         // Act
-        var act = async () => await sut.ProcessAsync(
+        await sut.ProcessAsync(
             serviceBusReceivedMessage,
             expectedReferenceId,
             CancellationToken.None);
 
         // Assert
-        // TODO: Update to "sends rejected message"
-        (await act.Should().ThrowAsync<NotImplementedException>()).WithMessage(expectedValidationErrorCode);
-        // ediClient.Verify(
-        //     client => client.SendAsync(
-        //         It.Is<ServiceBusMessage>(message =>
-        //             message.Subject.Equals(expectedRejectedSubject)
-        //             && message.WithErrorCode(_noDataForRequestedGridArea.ErrorCode)
-        //             && message.ApplicationProperties.ContainsKey("ReferenceId")
-        //             && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
-        //         It.IsAny<CancellationToken>()),
-        //     Times.Once);
+        ediClient.Verify(
+            client => client.SendAsync(
+                It.Is<ServiceBusMessage>(message =>
+                    message.Subject.Equals(expectedRejectedSubject)
+                    && message.WithErrorCode(expectedValidationErrorCode)
+                    && message.ApplicationProperties.ContainsKey("ReferenceId")
+                    && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 
     [Theory]
@@ -146,7 +146,8 @@ public class WholesaleServicesRequestHandlerTests
         [Frozen] Mock<CompletedCalculationRetriever> completedCalculationRetriever)
     {
         // Arrange
-        var expectedValidationErrorCode = "001";
+        const string expectedRejectedSubject = nameof(WholesaleServicesRequestRejected);
+        const string expectedValidationErrorCode = "001";
         var expectedReferenceId = Guid.NewGuid().ToString();
 
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
@@ -169,23 +170,21 @@ public class WholesaleServicesRequestHandlerTests
             logger.Object);
 
         // Act
-        var act = async () => await sut.ProcessAsync(
+        await sut.ProcessAsync(
             serviceBusReceivedMessage,
             expectedReferenceId,
             CancellationToken.None);
 
         // Assert
-        // TODO: Update to "sends rejected message"
-        (await act.Should().ThrowAsync<NotImplementedException>()).WithMessage(expectedValidationErrorCode);
-        // ediClient.Verify(
-        //     client => client.SendAsync(
-        //         It.Is<ServiceBusMessage>(message =>
-        //             message.Subject.Equals(expectedRejectedSubject)
-        //             && message.WithErrorCode(_noDataForRequestedGridArea.ErrorCode)
-        //             && message.ApplicationProperties.ContainsKey("ReferenceId")
-        //             && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
-        //         It.IsAny<CancellationToken>()),
-        //     Times.Once);
+        ediClient.Verify(
+            client => client.SendAsync(
+                It.Is<ServiceBusMessage>(message =>
+                    message.Subject.Equals(expectedRejectedSubject)
+                    && message.WithErrorCode(expectedValidationErrorCode)
+                    && message.ApplicationProperties.ContainsKey("ReferenceId")
+                    && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 
     private WholesaleServices CreateWholesaleServices()

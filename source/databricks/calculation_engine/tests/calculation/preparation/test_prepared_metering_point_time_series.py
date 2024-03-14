@@ -14,7 +14,7 @@
 import pytest
 from pyspark.sql import SparkSession, Row
 
-from package.calculation.preparation.prepared_metering_point_time_series import (
+from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
 

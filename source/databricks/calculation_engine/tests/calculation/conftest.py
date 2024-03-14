@@ -18,15 +18,15 @@ from pyspark.sql import SparkSession, DataFrame
 import pytest
 from typing import Callable
 
-from package.calculation.preparation.charge_link_metering_point_periods import (
+from package.calculation.preparation.data_structures.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
     charge_link_metering_point_periods_schema,
 )
-from package.calculation.preparation.charge_master_data import (
+from package.calculation.preparation.data_structures.charge_master_data import (
     ChargeMasterData,
     charge_master_data_schema,
 )
-from package.calculation.preparation.charge_prices import (
+from package.calculation.preparation.data_structures.charge_prices import (
     ChargePrices,
     charge_prices_schema,
 )
