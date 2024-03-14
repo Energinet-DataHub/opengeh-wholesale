@@ -17,7 +17,7 @@ using Energinet.DataHub.Wholesale.Edi.Models;
 using NodaTime.Text;
 using Period = Energinet.DataHub.Wholesale.Edi.Models.Period;
 
-namespace Energinet.DataHub.Wholesale.Edi.Factories;
+namespace Energinet.DataHub.Wholesale.Edi.Factories.AggregatedTimeSeries;
 
 public static class AggregatedTimeSeriesRequestFactory
 {

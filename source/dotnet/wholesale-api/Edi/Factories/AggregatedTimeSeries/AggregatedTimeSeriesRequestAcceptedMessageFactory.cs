@@ -14,19 +14,19 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Edi.Responses;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Edi.Mappers;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using NodaTime.Serialization.Protobuf;
+using ATS = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.AggregatedTimeSeries;
 using Period = Energinet.DataHub.Edi.Responses.Period;
 using TimeSeriesPoint = Energinet.DataHub.Edi.Responses.TimeSeriesPoint;
 
-namespace Energinet.DataHub.Wholesale.Edi.Factories;
+namespace Energinet.DataHub.Wholesale.Edi.Factories.AggregatedTimeSeries;
 
-public class AggregatedTimeSeriesRequestAcceptedMessageFactory
+public static class AggregatedTimeSeriesRequestAcceptedMessageFactory
 {
-    public static ServiceBusMessage Create(IReadOnlyCollection<AggregatedTimeSeries> aggregatedTimeSeries, string referenceId)
+    public static ServiceBusMessage Create(IReadOnlyCollection<ATS> aggregatedTimeSeries, string referenceId)
     {
         var body = CreateAcceptedResponse(aggregatedTimeSeries);
 
@@ -40,7 +40,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
         return message;
     }
 
-    private static AggregatedTimeSeriesRequestAccepted CreateAcceptedResponse(IReadOnlyCollection<AggregatedTimeSeries> aggregatedTimeSeries)
+    private static AggregatedTimeSeriesRequestAccepted CreateAcceptedResponse(IReadOnlyCollection<ATS> aggregatedTimeSeries)
     {
         var response = new AggregatedTimeSeriesRequestAccepted();
         foreach (var series in aggregatedTimeSeries)
@@ -65,17 +65,14 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
         return response;
     }
 
-    private static IReadOnlyCollection<TimeSeriesPoint> CreateTimeSeriesPoints(AggregatedTimeSeries aggregatedTimeSeries)
+    private static IReadOnlyCollection<TimeSeriesPoint> CreateTimeSeriesPoints(ATS aggregatedTimeSeries)
     {
-        const decimal nanoFactor = 1_000_000_000;
         var points = new List<TimeSeriesPoint>();
         foreach (var timeSeriesPoint in aggregatedTimeSeries.TimeSeriesPoints)
         {
-            var units = decimal.ToInt64(timeSeriesPoint.Quantity);
-            var nanos = decimal.ToInt32((timeSeriesPoint.Quantity - units) * nanoFactor);
             var point = new TimeSeriesPoint
             {
-                Quantity = new DecimalValue { Units = units, Nanos = nanos },
+                Quantity = DecimalValueMapper.Map(timeSeriesPoint.Quantity),
                 Time = new Timestamp { Seconds = timeSeriesPoint.Time.ToUnixTimeSeconds(), },
             };
             point.QuantityQualities.AddRange(timeSeriesPoint.Qualities.Select(QuantityQualityMapper.MapQuantityQuality));
