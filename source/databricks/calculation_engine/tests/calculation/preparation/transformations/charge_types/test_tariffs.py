@@ -19,7 +19,9 @@ from pyspark.sql import Row, SparkSession
 from calculation.preparation.transformations import (
     prepared_metering_point_time_series_factory,
 )
-from package.calculation.preparation.prepared_tariffs import prepared_tariffs_schema
+from package.calculation.preparation.data_structures.prepared_tariffs import (
+    prepared_tariffs_schema,
+)
 from package.calculation.preparation.transformations import (
     get_prepared_tariffs,
 )

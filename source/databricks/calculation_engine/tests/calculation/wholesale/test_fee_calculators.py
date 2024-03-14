@@ -14,8 +14,10 @@
 from decimal import Decimal
 from datetime import datetime
 
-from package.calculation.preparation.charge_master_data import ChargeMasterData
-from package.calculation.preparation.charge_prices import ChargePrices
+from package.calculation.preparation.data_structures.charge_master_data import (
+    ChargeMasterData,
+)
+from package.calculation.preparation.data_structures.charge_prices import ChargePrices
 from tests.helpers.test_schemas import (
     charges_flex_consumption_schema,
 )

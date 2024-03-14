@@ -1,0 +1,3 @@
+﻿charge_code;charge_type;charge_owner_id;metering_point_id;quantity;from_date;to_date
+41000;tariff;5790001330552;571313180400100657;1;2023-01-31 23:00:00;
+41000;tariff;5790001330552;571313180480500149;1;2023-01-31 23:00:00;

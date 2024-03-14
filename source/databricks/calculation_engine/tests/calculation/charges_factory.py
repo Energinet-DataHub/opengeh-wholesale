@@ -16,18 +16,18 @@ from datetime import datetime
 from decimal import Decimal
 from pyspark.sql import Row, SparkSession
 
-from package.calculation.preparation.charge_link_metering_point_periods import (
+from package.calculation.preparation.data_structures.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
     charge_link_metering_point_periods_schema,
 )
 from calculation.preparation.transformations import (
     prepared_metering_point_time_series_factory,
 )
-from package.calculation.preparation.charge_master_data import (
+from package.calculation.preparation.data_structures.charge_master_data import (
     ChargeMasterData,
     charge_master_data_schema,
 )
-from package.calculation.preparation.charge_prices import (
+from package.calculation.preparation.data_structures.charge_prices import (
     ChargePrices,
     charge_prices_schema,
 )
