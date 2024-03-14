@@ -75,7 +75,7 @@ def test__sum_within_month__tariff__sums_amount_per_month(
         calculate_tariff_price_per_ga_co_es(prepared_tariffs),
         tariffs_factory.DefaultValues.PERIOD_START_DATETIME,
         ChargeType.TARIFF,
-    )
+    ).df
 
     # Assert
     assert actual.collect()[0][Colname.total_amount] == Decimal("4.020010")
@@ -103,7 +103,7 @@ def test__sum_within_month__subscription__sums_amount_per_month(
         subscription_amount_per_charge,
         DefaultValues.CALCULATION_PERIOD_START,
         ChargeType.SUBSCRIPTION,
-    )
+    ).df
 
     expected_total_amount = subscription_amount_per_charge.agg(
         f.sum(Colname.total_amount)
@@ -129,7 +129,7 @@ def test__sum_within_month__sums_across_metering_point_types(
         calculate_tariff_price_per_ga_co_es(prepared_tariffs),
         tariffs_factory.DefaultValues.PERIOD_START_DATETIME,
         ChargeType.TARIFF,
-    )
+    ).df
 
     # Assert
     assert actual.collect()[0][Colname.total_amount] == Decimal("4.020010")
@@ -151,7 +151,7 @@ def test__sum_within_month__tariff__joins_qualities(
         calculate_tariff_price_per_ga_co_es(prepared_tariffs),
         tariffs_factory.DefaultValues.PERIOD_START_DATETIME,
         ChargeType.TARIFF,
-    )
+    ).df
 
     # Assert
     assert actual.collect()[0][Colname.qualities] == ["calculated", "estimated"]
@@ -185,7 +185,7 @@ def test__sum_within_month__subscription__sets_qualities_to_none(
         ),
         tariffs_factory.DefaultValues.PERIOD_START_DATETIME,
         ChargeType.SUBSCRIPTION,
-    )
+    ).df
 
     # Assert
     assert actual.collect()[0][Colname.qualities] is None
@@ -207,7 +207,7 @@ def test__sum_within_month__groups_by_local_time_months(
         calculate_tariff_price_per_ga_co_es(prepared_tariffs),
         tariffs_factory.DefaultValues.PERIOD_START_DATETIME,
         ChargeType.TARIFF,
-    )
+    ).df
 
     # Assert
     assert actual.collect()[0][Colname.total_amount] == Decimal("4.020010")
@@ -229,7 +229,7 @@ def test__sum_within_month__charge_time_always_start_of_month(
         calculate_tariff_price_per_ga_co_es(prepared_tariffs),
         tariffs_factory.DefaultValues.PERIOD_START_DATETIME,
         ChargeType.TARIFF,
-    )
+    ).df
 
     # Assert
     assert actual.collect()[0][Colname.charge_time] == datetime(2019, 12, 31, 23)
@@ -250,7 +250,7 @@ def test__sum_within_month__sums_quantity_per_month(
         calculate_tariff_price_per_ga_co_es(prepared_tariffs),
         tariffs_factory.DefaultValues.PERIOD_START_DATETIME,
         ChargeType.TARIFF,
-    )
+    ).df
 
     # Assert
     assert actual.collect()[0][Colname.total_quantity] == Decimal("2.222")
@@ -276,7 +276,7 @@ def test__sum_within_month__sets_charge_price_to_none(
         calculate_tariff_price_per_ga_co_es(prepared_tariffs),
         tariffs_factory.DefaultValues.PERIOD_START_DATETIME,
         ChargeType.TARIFF,
-    )
+    ).df
 
     # Assert
     assert actual.collect()[0][Colname.charge_price] is None
@@ -298,7 +298,7 @@ def test__sum_within_month__when_all_charge_prices_are_none__sums_charge_price_a
         calculate_tariff_price_per_ga_co_es(prepared_tariffs),
         tariffs_factory.DefaultValues.PERIOD_START_DATETIME,
         ChargeType.TARIFF,
-    )
+    ).df
 
     # Assert
     assert actual.collect()[0][Colname.total_amount] is None
@@ -323,7 +323,7 @@ def test__sum_within_month__when_one_tariff_has_charge_price_none__sums_charge_p
         calculate_tariff_price_per_ga_co_es(prepared_tariffs),
         tariffs_factory.DefaultValues.PERIOD_START_DATETIME,
         ChargeType.TARIFF,
-    )
+    ).df
 
     # Assert
     assert actual.collect()[0][Colname.total_amount] == Decimal("6.000000")

@@ -42,7 +42,7 @@ def test__calculate_tariff_price_per_ga_co_es__returns_empty_df_when_input_df_is
     prepared_tariff = factory.create(spark, [])
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariff)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariff).df
 
     # Assert
     assert actual.count() == 0
@@ -55,7 +55,7 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_correct_columns(
     prepared_tariff = factory.create(spark, [])
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariff)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariff).df
 
     # Assert
     assert Colname.energy_supplier_id in actual.columns
@@ -90,7 +90,7 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_expected_values(
     prepared_tariffs = factory.create(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs).df
 
     # Assert
     assert actual.count() == 1
@@ -143,7 +143,7 @@ def test__calculate_tariff_price_per_ga_co_es__returns_all_qualities(
     prepared_tariffs = factory.create(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs).df
 
     # Assert
     actual_row = actual.collect()[0]
@@ -188,7 +188,7 @@ def test__calculate_tariff_price_per_ga_co_es__does_not_aggregate_across_group_s
     prepared_tariffs = factory.create(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs).df
 
     # Assert
     assert actual.count() == 2
@@ -212,7 +212,7 @@ def test__calculate_tariff_price_per_ga_co_es__when_settlement_method_is_null__r
     prepared_tariffs = factory.create(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs).df
 
     # Assert
     assert actual.count() == 1
@@ -234,7 +234,7 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_expected_scale(
     prepared_tariffs = factory.create(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs).df
 
     # Assert
     assert actual.schema[column_name].dataType.scale == expected_scale
@@ -248,7 +248,7 @@ def test__calculate_tariff_price_per_ga_co_es__when_production__returns_df_with_
     prepared_tariffs = factory.create(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs).df
 
     # Assert
     assert actual.schema[Colname.total_amount].dataType.precision >= 18
@@ -274,7 +274,7 @@ def test__calculate_tariff_price_per_ga_co_es__rounds_total_amount_correctly(
     prepared_tariffs = factory.create(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs).df
 
     # Assert
     actual_amount = actual.collect()[0][Colname.total_amount]
@@ -296,7 +296,7 @@ def test__calculate_tariff_price_per_ga_co_es__when_charge_price_is_null__return
     prepared_tariffs = factory.create(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs).df
 
     # Assert
     assert actual.collect()[0][Colname.total_amount] is None

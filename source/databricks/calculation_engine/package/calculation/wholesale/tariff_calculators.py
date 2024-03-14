@@ -12,20 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime
 
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
-from pyspark.sql.types import StringType, DecimalType
 
 from package.calculation.preparation.data_structures.prepared_tariffs import (
     PreparedTariffs,
 )
-from package.codelists import WholesaleResultResolution, ChargeUnit
+from package.calculation.wholesale.data_structures.wholesale_results import (
+    WholesaleResults,
+)
+from package.codelists import ChargeUnit
 from package.constants import Colname
 
 
-def calculate_tariff_price_per_ga_co_es(prepared_tariffs: PreparedTariffs) -> DataFrame:
+def calculate_tariff_price_per_ga_co_es(
+    prepared_tariffs: PreparedTariffs,
+) -> WholesaleResults:
     """
     Calculate tariff amount time series.
     A result is calculated per
@@ -42,13 +45,12 @@ def calculate_tariff_price_per_ga_co_es(prepared_tariffs: PreparedTariffs) -> Da
 
     df = _sum_quantity_and_count_charges(prepared_tariffs)
 
-    return df.select(
+    df = df.select(
         Colname.energy_supplier_id,
         Colname.grid_area,
         Colname.charge_time,
         Colname.metering_point_type,
         Colname.settlement_method,
-        Colname.charge_key,
         Colname.charge_code,
         Colname.charge_type,
         Colname.charge_owner,
@@ -62,6 +64,8 @@ def calculate_tariff_price_per_ga_co_es(prepared_tariffs: PreparedTariffs) -> Da
         f.lit(ChargeUnit.KWH.value).alias(Colname.unit),
         Colname.qualities,
     )
+
+    return WholesaleResults(df)
 
 
 def _sum_quantity_and_count_charges(prepared_tariffs: PreparedTariffs) -> DataFrame:

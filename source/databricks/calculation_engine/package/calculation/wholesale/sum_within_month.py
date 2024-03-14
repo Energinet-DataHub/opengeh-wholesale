@@ -18,13 +18,18 @@ import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 from pyspark.sql.types import StringType, DecimalType, ArrayType
 
+from package.calculation.wholesale.data_structures.wholesale_results import (
+    WholesaleResults,
+)
 from package.codelists import WholesaleResultResolution, ChargeType
 from package.constants import Colname
 
 
 def sum_within_month(
-    df: DataFrame, period_start_datetime: datetime, charge_type: ChargeType
-) -> DataFrame:
+    wholesale_results: WholesaleResults,
+    period_start_datetime: datetime,
+    charge_type: ChargeType,
+) -> WholesaleResults:
     if charge_type.value == ChargeType.TARIFF.value:
         qualities_expr = f.flatten(f.collect_set(Colname.qualities)).alias(
             Colname.qualities
@@ -35,7 +40,7 @@ def sum_within_month(
         )
 
     agg_df = (
-        df.groupBy(
+        wholesale_results.df.groupBy(
             Colname.energy_supplier_id,
             Colname.grid_area,
             Colname.charge_key,
@@ -71,4 +76,4 @@ def sum_within_month(
         )
     )
 
-    return agg_df
+    return WholesaleResults(agg_df)

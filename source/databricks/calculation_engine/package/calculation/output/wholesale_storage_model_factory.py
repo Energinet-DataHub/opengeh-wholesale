@@ -18,19 +18,24 @@ from pyspark.sql.functions import col, lit, first
 from pyspark.sql.window import Window
 
 from package.calculation.calculator_args import CalculatorArgs
+from package.calculation.wholesale.data_structures.wholesale_results import (
+    WholesaleResults,
+)
 from package.codelists import (
     AmountType,
 )
 from package.constants import Colname, WholesaleResultColumnNames
 
 
-def create(args: CalculatorArgs, df: DataFrame, amount_type: AmountType) -> DataFrame:
-    df = _add_metadata(args, df)
-    df = _add_calculation_result_id(df)
-    df = _add_amount_type(df, amount_type)
-    df = _select_output_columns(df)
+def create(
+    args: CalculatorArgs, wholesale_results: WholesaleResults, amount_type: AmountType
+) -> DataFrame:
+    wholesale_results = _add_metadata(args, wholesale_results.df)
+    wholesale_results = _add_calculation_result_id(wholesale_results)
+    wholesale_results = _add_amount_type(wholesale_results, amount_type)
+    wholesale_results = _select_output_columns(wholesale_results)
 
-    return df
+    return wholesale_results
 
 
 def _add_metadata(args: CalculatorArgs, df: DataFrame) -> DataFrame:
