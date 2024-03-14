@@ -76,6 +76,5 @@ def create_wholesale_result_dataframe(*args) -> DataFrame:  # type: ignore
             ",",
         ).cast(ArrayType(StringType())),
     )
-    df = df.withColumn(WholesaleResultColumnNames.calculation_result_id, lit(""))
 
     return spark.createDataFrame(df.rdd, wholesale_results_schema)
