@@ -49,6 +49,9 @@ public class WholesaleServicesQueries(
 
     public Task<bool> AnyAsync(WholesaleServicesQueryParameters queryParameters)
     {
+        if (queryParameters.Calculations.Count == 0)
+            return Task.FromResult(false);
+
         var sqlStatement = new WholesaleServicesQueryStatement(
             WholesaleServicesQueryStatement.StatementType.Exists,
             queryParameters,

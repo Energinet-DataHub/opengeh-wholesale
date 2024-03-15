@@ -55,7 +55,7 @@ public class WholesaleServicesQueryStatement : DatabricksStatement
                 AND {WholesaleResultColumnNames.Time} < '{calculationForPeriod.Period.End}')")
             .ToList();
 
-        sql += $" AND ({string.Join(" OR ", calculationPeriodSql)})";
+        sql += $"({string.Join(" OR ", calculationPeriodSql)})";
 
         if (!string.IsNullOrEmpty(_queryParameters.GridArea))
             sql += $" AND {WholesaleResultColumnNames.GridArea} = '{_queryParameters.GridArea}'";
@@ -78,6 +78,7 @@ public class WholesaleServicesQueryStatement : DatabricksStatement
             sql += $" AND ({string.Join(" OR ", chargeTypesSql)})";
         }
 
+        // Should match the way packages are split in WholesaleServicesQueries
         sql += $@"
                 ORDER BY 
                     {string.Join(", ", ColumnsToGroupBy)},
@@ -141,7 +142,8 @@ public class WholesaleServicesQueryStatement : DatabricksStatement
         WholesaleResultColumnNames.Quantity,
         WholesaleResultColumnNames.QuantityQualities,
         WholesaleResultColumnNames.Price,
-        WholesaleResultColumnNames.Amount
+        WholesaleResultColumnNames.Amount,
+        WholesaleResultColumnNames.CalculationId,
     ];
 
     public enum StatementType
