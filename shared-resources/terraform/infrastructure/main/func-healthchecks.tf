@@ -13,7 +13,7 @@ module "func_healthchecks" {
   application_insights_instrumentation_key = module.appi_shared.instrumentation_key
   ip_restrictions                          = var.ip_restrictions
   scm_ip_restrictions                      = var.ip_restrictions
-  dotnet_framework_version                 = "v7.0"
+  dotnet_framework_version                 = "v8.0"
   app_settings = {
     SHARED_KEYVAULT_NAME         = "${module.kv_shared.name}"
     SHARED_DATALAKE_NAME         = "@Microsoft.KeyVault(VaultName=${module.kv_shared.name};SecretName=st-data-lake-name)"
