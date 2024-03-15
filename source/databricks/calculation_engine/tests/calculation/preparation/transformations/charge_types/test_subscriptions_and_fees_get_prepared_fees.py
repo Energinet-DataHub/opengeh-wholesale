@@ -21,6 +21,7 @@ import tests.calculation.charges_factory as factory
 from package.calculation.preparation.transformations.charge_types import (
     get_prepared_fees,
 )
+import package.calculation.preparation.data_structures as d
 import package.codelists as e
 from package.constants import Colname
 
@@ -35,15 +36,65 @@ JAN_5TH = datetime(2022, 1, 4, 23)
 FEB_1ST = datetime(2022, 1, 31, 23)
 
 
-class TestWhenOneLinkAndOnePrice:
+def _create_default_charge_master_data(spark: SparkSession) -> d.ChargeMasterData:
+    return factory.create_charge_master_data(
+        spark,
+        [
+            factory.create_charge_master_data_row(
+                charge_type=e.ChargeType.FEE,
+                resolution=e.ChargeResolution.MONTH,
+                from_date=JAN_1ST,
+                to_date=FEB_1ST,
+            ),
+        ],
+    )
+
+
+def _create_charge_price(
+    spark: SparkSession, charge_time: datetime, charge_price: Decimal
+) -> d.ChargePrices:
+    return factory.create_charge_prices(
+        spark,
+        [
+            factory.create_charge_prices_row(
+                charge_type=e.ChargeType.FEE,
+                charge_time=charge_time,
+                charge_price=charge_price,
+            ),
+        ],
+    )
+
+
+def _create_charge_link_metering_point_periods(
+    spark: SparkSession, charge_link_from_date: datetime
+) -> d.ChargeLinkMeteringPointPeriods:
+    charge_link_metering_points_rows = [
+        factory.create_charge_link_metering_point_periods_row(
+            charge_type=e.ChargeType.FEE,
+            from_date=charge_link_from_date,
+            to_date=charge_link_from_date + timedelta(days=1),
+        ),
+    ]
+
+    return factory.create_charge_link_metering_point_periods(
+        spark, charge_link_metering_points_rows
+    )
+
+
+class TestWhenChargeTimeIsWithinOrBeforeLinkPeriod:
     @pytest.mark.parametrize(
         "charge_time, charge_link_from_date",
         [
-            (JAN_1ST, JAN_1ST),  # both price and link are at first day of month
-            (JAN_1ST, JAN_3RD),  # only link is first day of month
-            (JAN_3RD, JAN_1ST),  # price comes after link
-            (JAN_3RD, JAN_3RD),  # on same day, but not at first day of month
-            (JAN_3RD, JAN_5TH),  # prices after link and neither on first day of month
+            (JAN_3RD, JAN_1ST),  # charge time and link period overlap
+            (
+                JAN_3RD,
+                JAN_3RD,
+            ),  # charge time and link overlap, but not at first day of month
+            (JAN_1ST, JAN_3RD),  # link starts after charge time
+            (
+                JAN_3RD,
+                JAN_5TH,
+            ),  # link starts after charge time, but not at first day of month
         ],
     )
     def test__returns_expected_price(
@@ -54,38 +105,37 @@ class TestWhenOneLinkAndOnePrice:
     ) -> None:
         # Arrange
         charge_price = Decimal("1.123456")
-        charge_link_metering_points_rows = [
-            factory.create_charge_link_metering_point_periods_row(
-                charge_type=e.ChargeType.FEE,
-                from_date=charge_link_from_date,
-                to_date=charge_link_from_date + timedelta(days=1),
-            ),
-        ]
-        charge_master_data_rows = [
-            factory.create_charge_master_data_row(
-                charge_type=e.ChargeType.FEE,
-                resolution=e.ChargeResolution.MONTH,
-                from_date=JAN_1ST,
-                to_date=FEB_1ST,
-            ),
-        ]
-        charge_prices_rows = [
-            factory.create_charge_prices_row(
-                charge_type=e.ChargeType.FEE,
-                charge_time=charge_time,
-                charge_price=charge_price,
-            ),
-        ]
+        charge_master_data = _create_default_charge_master_data(spark)
+        charge_prices = _create_charge_price(spark, charge_time, charge_price)
+        charge_link_metering_point_periods = _create_charge_link_metering_point_periods(
+            spark, charge_link_from_date
+        )
 
-        charge_link_metering_point_periods = (
-            factory.create_charge_link_metering_point_periods(
-                spark, charge_link_metering_points_rows
-            )
+        # Act
+        actual = get_prepared_fees(
+            charge_master_data,
+            charge_prices,
+            charge_link_metering_point_periods,
+            DEFAULT_TIME_ZONE,
         )
-        charge_master_data = factory.create_charge_master_data(
-            spark, charge_master_data_rows
+
+        # Assert
+        assert actual.df.count() == 1
+        assert actual.df.collect()[0][Colname.charge_price] is None
+
+
+class TestWhenChargeTimeIsAfterLinkPeriod:
+    def test__returns_expected_price(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        charge_price = Decimal("1.123456")
+        charge_master_data = _create_default_charge_master_data(spark)
+        charge_prices = _create_charge_price(spark, JAN_3RD, charge_price)
+        charge_link_metering_point_periods = _create_charge_link_metering_point_periods(
+            spark, JAN_1ST
         )
-        charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
         # Act
         actual = get_prepared_fees(
@@ -100,7 +150,7 @@ class TestWhenOneLinkAndOnePrice:
         assert actual.df.collect()[0][Colname.charge_price] == charge_price
 
 
-class TestWhenTwoLinksAndOnePrice:
+class TestWhenHavingTwoLinksThatDoNotOverlapWithChargeTime:
     def test__returns_expected_price(
         self,
         spark: SparkSession,
@@ -113,6 +163,8 @@ class TestWhenTwoLinksAndOnePrice:
         charge_time = JAN_1ST
         charge_price = Decimal("1.123456")
 
+        charge_master_data = _create_default_charge_master_data(spark)
+        charge_prices = _create_charge_price(spark, charge_time, charge_price)
         charge_link_metering_points_rows = [
             factory.create_charge_link_metering_point_periods_row(
                 charge_type=e.ChargeType.FEE,
@@ -127,31 +179,12 @@ class TestWhenTwoLinksAndOnePrice:
                 to_date=from_date_link_2 + timedelta(days=1),
             ),
         ]
-        charge_master_data_rows = [
-            factory.create_charge_master_data_row(
-                charge_type=e.ChargeType.FEE,
-                resolution=e.ChargeResolution.MONTH,
-                from_date=JAN_1ST,
-                to_date=FEB_1ST,
-            ),
-        ]
-        charge_prices_rows = [
-            factory.create_charge_prices_row(
-                charge_type=e.ChargeType.FEE,
-                charge_time=charge_time,
-                charge_price=charge_price,
-            ),
-        ]
 
         charge_link_metering_point_periods = (
             factory.create_charge_link_metering_point_periods(
                 spark, charge_link_metering_points_rows
             )
         )
-        charge_master_data = factory.create_charge_master_data(
-            spark, charge_master_data_rows
-        )
-        charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
         # Act
         actual = get_prepared_fees(

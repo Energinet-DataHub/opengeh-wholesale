@@ -61,7 +61,7 @@ def _prepare(
     charge_link_metering_point_periods: d.ChargeLinkMeteringPointPeriods,
     time_zone: str,
     charge_type: ChargeType,
-):
+) -> DataFrame:
     """
     This method does the following:
     - Joins charge_master_data, charge_prices and charge_link_metering_point_periods
@@ -77,11 +77,11 @@ def _prepare(
     charge_master_data_and_prices = _join_with_prices(
         charge_master_data, charge_prices, time_zone
     )
-    subscriptions = _join_with_links(charge_master_data_and_prices, charge_links.df)
-    subscriptions = subscriptions.withColumn(
+    charge_with_links = _join_with_links(charge_master_data_and_prices, charge_links.df)
+    charge_with_links = charge_with_links.withColumn(
         Colname.resolution, f.lit(WholesaleResultResolution.DAY.value)
     )
-    return subscriptions
+    return charge_with_links
 
 
 def _join_with_prices(
