@@ -19,7 +19,7 @@ module "func_entrypoint_peek" {
     action_group_id = data.azurerm_key_vault_secret.primary_action_group_id.value
     enabled         = var.enable_health_check_alerts
   }
-  dotnet_framework_version    = "v7.0"
+  dotnet_framework_version    = "v8.0"
   use_dotnet_isolated_runtime = true
   role_assignments = [
     {

@@ -14,7 +14,7 @@ module "app_webapi" {
   health_check_path                        = "/monitor/ready"
   health_check_alert_action_group_id       = data.azurerm_key_vault_secret.primary_action_group_id.value
   health_check_alert_enabled               = var.enable_health_check_alerts
-  dotnet_framework_version                 = "v7.0"
+  dotnet_framework_version                 = "v8.0"
   ip_restrictions                          = var.ip_restrictions
   scm_ip_restrictions                      = var.ip_restrictions
   app_settings = {
