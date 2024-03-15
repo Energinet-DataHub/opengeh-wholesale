@@ -11,20 +11,33 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import Type
+
 import pytest
 from pyspark.sql import SparkSession, Row
 
-from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
-    PreparedMeteringPointTimeSeries,
+import package.calculation.preparation.data_structures as d
+
+
+@pytest.mark.parametrize(
+    "sut",
+    [
+        d.PreparedSubscriptions,
+        d.PreparedTariffs,
+        d.PreparedMeteringPointTimeSeries,
+        d.ChargePrices,
+        d.ChargeMasterData,
+        d.ChargeLinkMeteringPointPeriods,
+        d.GridLossResponsible,
+    ],
 )
-
-
 def test__constructor__when_invalid_input_schema__raise_assertion_error(
+    sut: Type,
     spark: SparkSession,
 ) -> None:
     # Arrange
-    invalid_time_series = spark.createDataFrame(data=[Row(**({"Hello": "World"}))])
+    df = spark.createDataFrame(data=[Row(**({"Hello": "World"}))])
 
     # Act & Assert
     with pytest.raises(Exception):
-        PreparedMeteringPointTimeSeries(invalid_time_series)
+        sut(df)
