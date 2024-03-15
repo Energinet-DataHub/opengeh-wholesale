@@ -85,7 +85,7 @@ class TestWhenChargeTimeIsWithinOrBeforeLinkPeriod:
     @pytest.mark.parametrize(
         "charge_time, charge_link_from_date",
         [
-            (JAN_3RD, JAN_1ST),  # charge time and link period overlap
+            (JAN_1ST, JAN_1ST),  # charge time and link period overlap
             (
                 JAN_3RD,
                 JAN_3RD,
@@ -100,8 +100,8 @@ class TestWhenChargeTimeIsWithinOrBeforeLinkPeriod:
     def test__returns_expected_price(
         self,
         spark: SparkSession,
-        charge_link_from_date: datetime,
         charge_time: datetime,
+        charge_link_from_date: datetime,
     ) -> None:
         # Arrange
         charge_price = Decimal("1.123456")
@@ -121,7 +121,7 @@ class TestWhenChargeTimeIsWithinOrBeforeLinkPeriod:
 
         # Assert
         assert actual.df.count() == 1
-        assert actual.df.collect()[0][Colname.charge_price] is None
+        assert actual.df.collect()[0][Colname.charge_price] == charge_price
 
 
 class TestWhenChargeTimeIsAfterLinkPeriod:
@@ -147,7 +147,7 @@ class TestWhenChargeTimeIsAfterLinkPeriod:
 
         # Assert
         assert actual.df.count() == 1
-        assert actual.df.collect()[0][Colname.charge_price] == charge_price
+        assert actual.df.collect()[0][Colname.charge_price] is None
 
 
 class TestWhenHavingTwoLinksThatDoNotOverlapWithChargeTime:

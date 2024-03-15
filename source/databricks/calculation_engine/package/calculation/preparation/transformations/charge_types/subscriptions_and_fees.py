@@ -127,7 +127,7 @@ def _join_with_prices(
             Colname.charge_price,
         )
     )
-
+    master_data_with_prices.show()
     return master_data_with_prices
 
 
