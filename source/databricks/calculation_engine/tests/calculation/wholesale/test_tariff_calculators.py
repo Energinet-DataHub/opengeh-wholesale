@@ -63,7 +63,6 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_correct_columns(
     assert Colname.charge_time in actual.columns
     assert Colname.metering_point_type in actual.columns
     assert Colname.settlement_method in actual.columns
-    assert Colname.charge_key in actual.columns
     assert Colname.charge_code in actual.columns
     assert Colname.charge_type in actual.columns
     assert Colname.charge_owner in actual.columns
@@ -110,7 +109,6 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_expected_values(
         actual_row[Colname.settlement_method]
         == factory.DefaultValues.SETTLEMENT_METHOD.value
     )
-    assert actual_row[Colname.charge_key] == CHARGE_KEY
     assert actual_row[Colname.charge_code] == factory.DefaultValues.CHARGE_CODE
     assert actual_row[Colname.charge_type] == ChargeType.TARIFF.value
     assert actual_row[Colname.charge_owner] == factory.DefaultValues.CHARGE_OWNER

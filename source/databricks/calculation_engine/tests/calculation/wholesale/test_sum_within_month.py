@@ -105,7 +105,7 @@ def test__sum_within_month__subscription__sums_amount_per_month(
         ChargeType.SUBSCRIPTION,
     ).df
 
-    expected_total_amount = subscription_amount_per_charge.agg(
+    expected_total_amount = subscription_amount_per_charge.df.agg(
         f.sum(Colname.total_amount)
     ).collect()[0][0]
 
