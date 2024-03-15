@@ -18,7 +18,7 @@ from calculation_logic.features.wholesale_calculations.wholesale_results_datafra
 )
 
 
-def get_expected(*args) -> DataFrame:
+def get_expected(*args) -> DataFrame:  # type: ignore
     """
     This function can be used to custom build the expected results (dataframe).
     It is also used a reference to locate the test scenario.
