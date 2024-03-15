@@ -6,10 +6,15 @@ resource "azurerm_storage_blob_inventory_policy" "sbip_dh2dropzone_archive" {
     storage_container_name = azurerm_storage_container.dropzonearchive.name
     format                 = "Csv"
     schedule               = "Daily"
-    scope                  = "Container"
+    scope                  = "Blob"
+    filter {
+      prefix_match = [azurerm_storage_container.dropzonearchive.name]
+      blob_types = ["blockBlob"]
+    }
     schema_fields = [
       "Name",
-      "Last-Modified"
+      "Last-Modified",
+      "Content-Length"
     ]
   }
 
@@ -18,10 +23,15 @@ resource "azurerm_storage_blob_inventory_policy" "sbip_dh2dropzone_archive" {
     storage_container_name = azurerm_storage_container.dropzonetimeseriessyncarchive.name
     format                 = "Csv"
     schedule               = "Daily"
-    scope                  = "Container"
+    scope                  = "Blob"
+    filter {
+      prefix_match = [azurerm_storage_container.dropzonetimeseriessyncarchive.name]
+      blob_types = ["blockBlob"]
+    }
     schema_fields = [
       "Name",
-      "Last-Modified"
+      "Last-Modified",
+      "Content-Length"
     ]
   }
 }
