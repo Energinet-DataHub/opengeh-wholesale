@@ -46,6 +46,7 @@ def get_grid_loss_responsible(
             col(Colname.to_date),
             col(Colname.metering_point_type),
             col(Colname.energy_supplier_id),
+            col(Colname.balance_responsible_id),
         )
     )
 
