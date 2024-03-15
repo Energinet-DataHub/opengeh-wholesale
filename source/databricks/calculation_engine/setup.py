@@ -20,12 +20,18 @@ setup(
     long_description="",
     long_description_content_type="text/markdown",
     license="MIT",
-    package_data={"package": ["datamigration/migration_scripts/*.sql"]},
+    package_data={
+        "package": [
+            "datamigration/migration_scripts/*.sql",
+            "datamigration/current_state_scripts/schemas/*.sql",
+            "datamigration/current_state_scripts/tables/*.sql",
+        ]
+    },
     packages=find_packages(exclude=["tests*"]),
     # Make sure these packages are added to the docker container and pinned to the same versions
     install_requires=[
         "ConfigArgParse==1.5.3",
-        "pyspark==3.5.*",
+        "pyspark==3.5.1",
         "azure-identity==1.12.0",
         "azure-storage-file-datalake==12.11.0",
         "databricks-cli==0.18",
@@ -34,6 +40,7 @@ setup(
         "delta-spark==3.1.0",
         "python-dateutil==2.8.2",
         "azure-monitor-opentelemetry==1.2.0",
+        "opengeh-spark-sql-migrations @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@1.4.1#subdirectory=source/spark_sql_migrations",
     ],
     entry_points={
         "console_scripts": [
@@ -41,9 +48,6 @@ setup(
             "lock_storage = package.infrastructure.storage_account_access.lock_storage:lock",
             "unlock_storage = package.infrastructure.storage_account_access.lock_storage:unlock",
             "migrate_data_lake = package.datamigration.migration:migrate_data_lake",
-            "uncommitted_migrations_count = package.datamigration.uncommitted_migrations:print_count",
-            # Entry point used for integration testing
-            "list_migrations_in_package = package.datamigration.uncommitted_migrations:print_all_migrations_in_package",
         ]
     },
 )
