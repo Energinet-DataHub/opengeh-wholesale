@@ -14,7 +14,7 @@ module "app_health_checks_ui" {
   health_check_path                        = "/monitor/ready"
   health_check_alert_action_group_id       = data.azurerm_key_vault_secret.primary_action_group_id.value
   health_check_alert_enabled               = true
-  dotnet_framework_version                 = "v7.0"
+  dotnet_framework_version                 = "v8.0"
   ip_restrictions                          = var.ip_restrictions
   scm_ip_restrictions                      = var.ip_restrictions
 
@@ -126,7 +126,7 @@ locals {
     "HealthChecksUI__HealthChecks__228__Uri"  = "https://func-orchestration-wholsal-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
 
     # Polling Interval
-    "HealthChecksUI__EvaluationTimeinSeconds" = 60
+    "HealthChecksUI__EvaluationTimeinSeconds" = 600
     # Max. health status history entries returned to UI
     "HealthChecksUI__MaximumExecutionHistoriesPerEndpoint" = 30
 
