@@ -77,7 +77,6 @@ def _calculate_subscriptions(
     monthly_subscription_amount_per_charge = sum_within_month(
         subscription_amount_per_charge,
         args.calculation_period_start_datetime,
-        ChargeType.SUBSCRIPTION,
     )
     results.monthly_subscription_from_daily_per_ga_co_es = factory.create(
         args,
@@ -106,7 +105,6 @@ def _calculate_tariff_charges(
     monthly_tariff_from_hourly_per_ga_co_es = sum_within_month(
         hourly_tariff_per_ga_co_es,
         args.calculation_period_start_datetime,
-        ChargeType.TARIFF,
     )
 
     results.monthly_tariff_from_hourly_per_ga_co_es = factory.create(
@@ -128,7 +126,6 @@ def _calculate_tariff_charges(
     monthly_tariff_from_daily_per_ga_co_es = sum_within_month(
         daily_tariff_per_ga_co_es,
         args.calculation_period_start_datetime,
-        ChargeType.TARIFF,
     )
 
     results.monthly_tariff_from_daily_per_ga_co_es = factory.create(

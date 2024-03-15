@@ -30,7 +30,7 @@ default_qualities = [ChargeQuality.CALCULATED]
 def create_row(
     grid_area: str = "543",
     energy_supplier_id: str = "1234567890123",
-    total_quantity: int | Decimal = Decimal("1.005"),
+    total_quantity: int | Decimal | None = None,
     unit: str = "kWh",
     qualities: list[ChargeQuality] | None = None,
     charge_time: datetime = datetime.datetime.now(),

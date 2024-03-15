@@ -16,135 +16,41 @@ from datetime import datetime
 from decimal import Decimal
 
 from pyspark.sql import SparkSession
-from pyspark.sql import functions as f
-
-from package.calculation.wholesale.subscription_calculators import calculate
 from package.calculation.wholesale.sum_within_month import sum_within_month
 from package.codelists import (
     ChargeQuality,
     ChargeType,
-    MeteringPointType,
-    SettlementMethod,
-    QuantityQuality,
 )
 from package.constants import Colname
 import tests.calculation.wholesale.wholesale_results_factory as wholesale_results_factory
 
 
-class DefaultValues:
-    GRID_AREA = "543"
-    CHARGE_CODE = "4000"
-    CHARGE_OWNER = "001"
-    CHARGE_TIME_HOUR_0 = datetime(2019, 12, 31, 23)
-    CHARGE_PRICE = Decimal("2.000005")
-    CHARGE_QUANTITY = 1
-    ENERGY_SUPPLIER_ID = "1234567890123"
-    METERING_POINT_ID = "123456789012345678901234567"
-    METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
-    SETTLEMENT_METHOD = SettlementMethod.FLEX
-    QUANTITY = Decimal("1.005")
-    QUALITY = QuantityQuality.CALCULATED
-    CALCULATION_PERIOD_START = datetime(2020, 1, 31, 23, 0)
-    CALCULATION_PERIOD_END = datetime(2020, 2, 29, 23, 0)
-    DAYS_IN_MONTH = 29
-    CALCULATION_MONTH = 2
-    TIME_ZONE = "Europe/Copenhagen"
+PERIOD_START_DATETIME = datetime(2019, 12, 31, 23)
 
 
-def test__sum_within_month__tariff__sums_amount_per_month(
+def test__sum_within_month__sums_amount_per_month(
     spark: SparkSession,
 ) -> None:
     # Arrange
     rows = [
         wholesale_results_factory.create_row(
             charge_time=datetime(2020, 1, 1, 1),
-            charge_price=Decimal("2.000005"),
-            total_amount=Decimal("2.010005"),
-            qualities=[ChargeQuality.CALCULATED.value],
+            total_amount=Decimal("2"),
         ),
         wholesale_results_factory.create_row(
             charge_time=datetime(2020, 1, 1, 0),
-            charge_price=Decimal("2.000005"),
-            total_amount=Decimal("2.010005"),
-            qualities=[ChargeQuality.CALCULATED.value],
+            total_amount=Decimal("2"),
         ),
     ]
     df = wholesale_results_factory.create(spark, rows)
     # Act
     actual = sum_within_month(
         df,
-        datetime(2019, 12, 31, 23),
-        ChargeType.TARIFF,
+        PERIOD_START_DATETIME,
     ).df
 
     # Assert
-    assert actual.collect()[0][Colname.total_amount] == Decimal("4.020010")
-    assert actual.count() == 1
-
-
-def test__sum_within_month__subscription__sums_amount_per_month(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    rows = [
-        wholesale_results_factory.create_row(
-            charge_time=datetime(2020, 1, 31, 23),
-            charge_price=Decimal("2.000005"),
-            total_amount=Decimal("2.010005"),
-            charge_type=ChargeType.SUBSCRIPTION.value,
-        ),
-        wholesale_results_factory.create_row(
-            charge_time=datetime(2020, 2, 15, 23),
-            charge_price=Decimal("2.000005"),
-            total_amount=Decimal("2.010005"),
-            charge_type=ChargeType.SUBSCRIPTION.value,
-        ),
-    ]
-    df = wholesale_results_factory.create(spark, rows)
-
-    # Act
-    actual = sum_within_month(
-        df,
-        DefaultValues.CALCULATION_PERIOD_START,
-        ChargeType.SUBSCRIPTION,
-    ).df
-
-    # Assert
-    assert actual.collect()[0][Colname.total_amount] == Decimal("4.020010")
-    assert actual.count() == 1
-
-
-def test__sum_within_month__sums_across_metering_point_types(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    rows = [
-        wholesale_results_factory.create_row(
-            charge_time=datetime(2020, 1, 1, 1),
-            charge_price=Decimal("2.000005"),
-            total_amount=Decimal("2.010005"),
-            qualities=[ChargeQuality.CALCULATED.value],
-            metering_point_type=MeteringPointType.PRODUCTION,
-        ),
-        wholesale_results_factory.create_row(
-            charge_time=datetime(2020, 1, 1, 0),
-            charge_price=Decimal("2.000005"),
-            total_amount=Decimal("2.010005"),
-            qualities=[ChargeQuality.CALCULATED.value],
-            metering_point_type=MeteringPointType.CONSUMPTION,
-        ),
-    ]
-    df = wholesale_results_factory.create(spark, rows)
-
-    # Act
-    actual = sum_within_month(
-        df,
-        datetime(2019, 12, 31, 23),
-        ChargeType.TARIFF,
-    ).df
-
-    # Assert
-    assert actual.collect()[0][Colname.total_amount] == Decimal("4.020010")
+    assert actual.collect()[0][Colname.total_amount] == Decimal("4.000000")
     assert actual.count() == 1
 
 
@@ -171,8 +77,7 @@ def test__sum_within_month__tariff__joins_qualities(
     # Act
     actual = sum_within_month(
         df,
-        datetime(2019, 12, 31, 23),
-        ChargeType.TARIFF,
+        PERIOD_START_DATETIME,
     ).df
 
     # Assert
@@ -204,8 +109,7 @@ def test__sum_within_month__subscription__sets_qualities_to_none(
     # Act
     actual = sum_within_month(
         df,
-        datetime(2019, 12, 31, 23),
-        ChargeType.SUBSCRIPTION,
+        PERIOD_START_DATETIME,
     ).df
 
     # Assert
@@ -236,8 +140,7 @@ def test__sum_within_month__groups_by_local_time_months(
     # Act
     actual = sum_within_month(
         df,
-        datetime(2019, 12, 31, 23),
-        ChargeType.TARIFF,
+        PERIOD_START_DATETIME,
     ).df
 
     # Assert
@@ -263,8 +166,7 @@ def test__sum_within_month__charge_time_always_start_of_month(
     # Act
     actual = sum_within_month(
         df,
-        datetime(2019, 12, 31, 23),
-        ChargeType.TARIFF,
+        PERIOD_START_DATETIME,
     ).df
 
     # Assert
@@ -296,8 +198,7 @@ def test__sum_within_month__sums_quantity_per_month(
     # Act
     actual = sum_within_month(
         df,
-        datetime(2019, 12, 31, 23),
-        ChargeType.TARIFF,
+        PERIOD_START_DATETIME,
     ).df
 
     # Assert
@@ -328,8 +229,7 @@ def test__sum_within_month__sets_charge_price_to_none(
     # Act
     actual = sum_within_month(
         df,
-        datetime(2019, 12, 31, 23),
-        ChargeType.TARIFF,
+        PERIOD_START_DATETIME,
     ).df
 
     # Assert

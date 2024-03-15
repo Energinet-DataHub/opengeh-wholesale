@@ -28,17 +28,7 @@ from package.constants import Colname
 def sum_within_month(
     wholesale_results: WholesaleResults,
     period_start_datetime: datetime,
-    charge_type: ChargeType,
 ) -> WholesaleResults:
-    if charge_type.value == ChargeType.TARIFF.value:
-        qualities_expr = f.flatten(f.collect_set(Colname.qualities)).alias(
-            Colname.qualities
-        )
-    else:
-        qualities_expr = (
-            f.lit(None).cast(ArrayType(StringType())).alias(Colname.qualities)
-        )
-
     agg_df = (
         wholesale_results.df.groupBy(
             Colname.energy_supplier_id,
@@ -49,19 +39,17 @@ def sum_within_month(
         )
         .agg(
             f.sum(Colname.total_amount).alias(Colname.total_amount),
-            f.sum(Colname.total_quantity).alias(Colname.total_quantity),
             # charge_tax is the same for all tariffs in a given month
             f.first(Colname.charge_tax).alias(Colname.charge_tax),
             # tariff unit is the same for all tariffs in a given month (kWh)
             f.first(Colname.unit).alias(Colname.unit),
-            qualities_expr,
         )
         .select(
             f.col(Colname.grid_area),
             f.col(Colname.energy_supplier_id),
-            f.col(Colname.total_quantity),
+            f.lit(None).cast(DecimalType(18, 3)).alias(Colname.total_quantity),
             f.col(Colname.unit),
-            f.col(Colname.qualities),
+            f.lit(None).cast(ArrayType(StringType())).alias(Colname.qualities),
             f.lit(period_start_datetime).alias(Colname.charge_time),
             f.lit(WholesaleResultResolution.MONTH.value).alias(Colname.resolution),
             f.lit(None).cast(StringType()).alias(Colname.metering_point_type),
