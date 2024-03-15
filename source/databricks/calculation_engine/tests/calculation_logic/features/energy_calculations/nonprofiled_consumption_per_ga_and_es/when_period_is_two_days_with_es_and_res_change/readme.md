@@ -1,6 +1,6 @@
 # Calculate flex consumption per grid area and energy supplier
 
-The purpose of this test is to verify that flex consumption is calculated correctly for
+The purpose of this test is to verify that the flex consumption is calculated correctly for
 grid area 804.
 
 Period:
