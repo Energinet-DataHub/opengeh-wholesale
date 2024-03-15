@@ -1,8 +1,8 @@
 # Calculate flex consumption per grid area and energy supplier
 
 The purpose of this test is to create the simplest possible version of a test of flex_consumption_per_ga_and_es. 
-Period is just one hour, even though we would always generate data for at least one day.  
-Test data is completely synthetic. 
+Period is just one hour, even though we would always generate data for at least one day.
+Test data is completely synthetic.
 
 Period:
 
