@@ -138,27 +138,28 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
 
     private bool PackagesAreEqual(WholesaleServices actualPackage, Package expectedPackage)
     {
-        var comparisionPackage1 = new PackageForComparision(
+        var actual = new PackageForComparision(
             actualPackage.Period,
             actualPackage.Version,
-            actualPackage.TimeSeriesPoints.Select(p => p.Time.ToInstant()).ToList(),
             actualPackage.GridArea,
             actualPackage.EnergySupplierId,
             actualPackage.ChargeOwnerId,
             actualPackage.ChargeCode,
             actualPackage.ChargeType);
 
-        var comparisionPackage2 = new PackageForComparision(
+        var expected = new PackageForComparision(
             expectedPackage.CalculationPeriod.Period,
             expectedPackage.CalculationPeriod.CalculationVersion,
-            expectedPackage.Points,
             expectedPackage.GridArea,
             expectedPackage.EnergySupplierId,
             expectedPackage.ChargeOwnerId,
             expectedPackage.ChargeCode,
             expectedPackage.ChargeType);
 
-        return comparisionPackage1 == comparisionPackage2;
+        var actualPoints = actualPackage.TimeSeriesPoints.Select(p => p.Time.ToInstant()).ToList();
+        var expectedPoints = expectedPackage.Points;
+
+        return actual == expected && actualPoints.SequenceEqual(expectedPoints);
     }
 
     private List<IReadOnlyCollection<string?>> ExtractSqlRowsFromPackageAggregations(List<Package> packages)
@@ -278,7 +279,6 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
     private record PackageForComparision(
         Period Period,
         long CalculationVersion,
-        List<Instant> Points,
         string GridArea,
         string EnergySupplierId,
         string ChargeOwnerId,
