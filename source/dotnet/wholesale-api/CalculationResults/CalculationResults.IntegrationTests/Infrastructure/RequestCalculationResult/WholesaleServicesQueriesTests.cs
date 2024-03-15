@@ -70,7 +70,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
                 ]),
         ];
 
-        var rows = ExtractSqlRowsFromPackageAggregations(packages);
+        var rows = ExtractSqlRowsFromPackagesAndTheirPoints(packages);
         await InsertData(rows);
 
         var query = CreateQueryParameters(calculationPeriods.All);
@@ -122,7 +122,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
                 GridArea: "104"),
         ];
 
-        var rows = ExtractSqlRowsFromPackageAggregations(packages);
+        var rows = ExtractSqlRowsFromPackagesAndTheirPoints(packages);
         await InsertData(rows);
 
         var query = CreateQueryParameters([calculationPeriod]);
@@ -162,7 +162,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         return actual == expected && actualPoints.SequenceEqual(expectedPoints);
     }
 
-    private List<IReadOnlyCollection<string?>> ExtractSqlRowsFromPackageAggregations(List<Package> packages)
+    private List<IReadOnlyCollection<string?>> ExtractSqlRowsFromPackagesAndTheirPoints(List<Package> packages)
     {
         return packages
             .SelectMany(p =>
