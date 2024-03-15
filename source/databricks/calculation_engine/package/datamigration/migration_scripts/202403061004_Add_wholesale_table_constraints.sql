@@ -47,8 +47,8 @@ ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
 GO
 ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
     ADD CONSTRAINT quantity_qualities_chk
-    CHECK (array_size(array_except(quantity_qualities, array('missing', 'calculated', 'measured', 'estimated'))) = 0
-           AND array_size(quantity_qualities) > 0)
+    CHECK ((quantity_qualities IS NULL) OR (array_size(array_except(quantity_qualities, array('missing', 'calculated', 'measured', 'estimated'))) = 0
+           AND array_size(quantity_qualities) > 0))
 GO
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
@@ -109,13 +109,3 @@ GO
 ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
     ADD CONSTRAINT amount_type_chk CHECK (amount_type IN ('amount_per_charge', 'monthly_amount_per_charge', 'total_monthly_amount'))
 GO
-
-ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
-    DROP CONSTRAINT IF EXISTS quantity_qualities_chk
-GO
-ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
-    ADD CONSTRAINT quantity_qualities_chk
-    CHECK ((quantity_qualities IS NULL) OR (array_size(array_except(quantity_qualities, array('missing', 'calculated', 'measured', 'estimated'))) = 0
-           AND array_size(quantity_qualities) > 0))
-GO
-
