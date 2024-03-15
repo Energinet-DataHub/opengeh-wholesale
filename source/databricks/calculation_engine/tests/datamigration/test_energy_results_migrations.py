@@ -18,7 +18,6 @@ from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import lit, col
 import pytest
 import uuid
-
 from helpers.data_frame_utils import set_column
 from package.codelists import (
     AggregationLevel,
@@ -134,7 +133,6 @@ def test__migrated_table_accepts_valid_data(
     spark: SparkSession,
     column_name: str,
     column_value: str | list,
-    migrations_executed: None,
 ) -> None:
     # Arrange
     result_df = _create_df(spark)
