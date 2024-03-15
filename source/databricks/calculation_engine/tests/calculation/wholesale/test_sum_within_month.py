@@ -12,32 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import uuid
-from datetime import datetime, timedelta
+from datetime import datetime
 from decimal import Decimal
-from typing import Any
 
-import pytest
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as f
 
 from package.calculation.wholesale.subscription_calculators import calculate
 from package.calculation.wholesale.sum_within_month import sum_within_month
-from package.calculation.wholesale.tariff_calculators import (
-    calculate_tariff_price_per_ga_co_es,
-)
 from package.codelists import (
     ChargeQuality,
     ChargeType,
-    ChargeUnit,
     MeteringPointType,
     SettlementMethod,
-    WholesaleResultResolution,
     QuantityQuality,
 )
 from package.constants import Colname
-import tests.calculation.wholesale.prepared_tariffs_factory as tariffs_factory
-import tests.calculation.wholesale.prepared_subscriptions_factory as subscriptions_factory
+import tests.calculation.wholesale.wholesale_results_factory as wholesale_results_factory
 
 
 class DefaultValues:
@@ -65,15 +56,24 @@ def test__sum_within_month__tariff__sums_amount_per_month(
 ) -> None:
     # Arrange
     rows = [
-        tariffs_factory.create_row(charge_time=datetime(2020, 1, 1, 1)),
-        tariffs_factory.create_row(charge_time=datetime(2020, 1, 1, 0)),
+        wholesale_results_factory.create_row(
+            charge_time=datetime(2020, 1, 1, 1),
+            charge_price=Decimal("2.000005"),
+            total_amount=Decimal("2.010005"),
+            qualities=[ChargeQuality.CALCULATED.value],
+        ),
+        wholesale_results_factory.create_row(
+            charge_time=datetime(2020, 1, 1, 0),
+            charge_price=Decimal("2.000005"),
+            total_amount=Decimal("2.010005"),
+            qualities=[ChargeQuality.CALCULATED.value],
+        ),
     ]
-    prepared_tariffs = tariffs_factory.create(spark, rows)
-
+    df = wholesale_results_factory.create(spark, rows)
     # Act
     actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(prepared_tariffs),
-        tariffs_factory.DefaultValues.PERIOD_START_DATETIME,
+        df,
+        datetime(2019, 12, 31, 23),
         ChargeType.TARIFF,
     ).df
 
@@ -87,30 +87,30 @@ def test__sum_within_month__subscription__sums_amount_per_month(
 ) -> None:
     # Arrange
     rows = [
-        subscriptions_factory.create_row(charge_time=datetime(2020, 1, 31, 23, 0)),
-        subscriptions_factory.create_row(charge_time=datetime(2020, 2, 15, 23, 0)),
+        wholesale_results_factory.create_row(
+            charge_time=datetime(2020, 1, 31, 23),
+            charge_price=Decimal("2.000005"),
+            total_amount=Decimal("2.010005"),
+            charge_type=ChargeType.SUBSCRIPTION.value,
+        ),
+        wholesale_results_factory.create_row(
+            charge_time=datetime(2020, 2, 15, 23),
+            charge_price=Decimal("2.000005"),
+            total_amount=Decimal("2.010005"),
+            charge_type=ChargeType.SUBSCRIPTION.value,
+        ),
     ]
-    prepared_subscriptions = subscriptions_factory.create(spark, rows)
-    subscription_amount_per_charge = calculate(
-        prepared_subscriptions,
-        DefaultValues.CALCULATION_PERIOD_START,
-        DefaultValues.CALCULATION_PERIOD_END,
-        DefaultValues.TIME_ZONE,
-    )
+    df = wholesale_results_factory.create(spark, rows)
 
     # Act
     actual = sum_within_month(
-        subscription_amount_per_charge,
+        df,
         DefaultValues.CALCULATION_PERIOD_START,
         ChargeType.SUBSCRIPTION,
     ).df
 
-    expected_total_amount = subscription_amount_per_charge.df.agg(
-        f.sum(Colname.total_amount)
-    ).collect()[0][0]
-
     # Assert
-    assert actual.collect()[0][Colname.total_amount] == expected_total_amount
+    assert actual.collect()[0][Colname.total_amount] == Decimal("4.020010")
     assert actual.count() == 1
 
 
@@ -119,15 +119,27 @@ def test__sum_within_month__sums_across_metering_point_types(
 ) -> None:
     # Arrange
     rows = [
-        tariffs_factory.create_row(metering_point_type=MeteringPointType.PRODUCTION),
-        tariffs_factory.create_row(metering_point_type=MeteringPointType.CONSUMPTION),
+        wholesale_results_factory.create_row(
+            charge_time=datetime(2020, 1, 1, 1),
+            charge_price=Decimal("2.000005"),
+            total_amount=Decimal("2.010005"),
+            qualities=[ChargeQuality.CALCULATED.value],
+            metering_point_type=MeteringPointType.PRODUCTION,
+        ),
+        wholesale_results_factory.create_row(
+            charge_time=datetime(2020, 1, 1, 0),
+            charge_price=Decimal("2.000005"),
+            total_amount=Decimal("2.010005"),
+            qualities=[ChargeQuality.CALCULATED.value],
+            metering_point_type=MeteringPointType.CONSUMPTION,
+        ),
     ]
-    prepared_tariffs = tariffs_factory.create(spark, rows)
+    df = wholesale_results_factory.create(spark, rows)
 
     # Act
     actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(prepared_tariffs),
-        tariffs_factory.DefaultValues.PERIOD_START_DATETIME,
+        df,
+        datetime(2019, 12, 31, 23),
         ChargeType.TARIFF,
     ).df
 
@@ -141,15 +153,25 @@ def test__sum_within_month__tariff__joins_qualities(
 ) -> None:
     # Arrange
     rows = [
-        tariffs_factory.create_row(quality=ChargeQuality.CALCULATED),
-        tariffs_factory.create_row(quality=ChargeQuality.ESTIMATED),
+        wholesale_results_factory.create_row(
+            charge_time=datetime(2020, 1, 1, 1),
+            charge_price=Decimal("2.000005"),
+            total_amount=Decimal("2.010005"),
+            qualities=[ChargeQuality.CALCULATED.value],
+        ),
+        wholesale_results_factory.create_row(
+            charge_time=datetime(2020, 1, 1, 0),
+            charge_price=Decimal("2.000005"),
+            total_amount=Decimal("2.010005"),
+            qualities=[ChargeQuality.ESTIMATED.value],
+        ),
     ]
-    prepared_tariffs = tariffs_factory.create(spark, rows)
+    df = wholesale_results_factory.create(spark, rows)
 
     # Act
     actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(prepared_tariffs),
-        tariffs_factory.DefaultValues.PERIOD_START_DATETIME,
+        df,
+        datetime(2019, 12, 31, 23),
         ChargeType.TARIFF,
     ).df
 
@@ -164,26 +186,25 @@ def test__sum_within_month__subscription__sets_qualities_to_none(
 ) -> None:
     # Arrange
     rows = [
-        subscriptions_factory.create_row(charge_time=datetime(2020, 1, 31, 23, 0)),
-        subscriptions_factory.create_row(charge_time=datetime(2020, 2, 15, 23, 0)),
+        wholesale_results_factory.create_row(
+            charge_time=datetime(2020, 1, 31, 23),
+            charge_price=Decimal("2.000005"),
+            total_amount=Decimal("2.010005"),
+            charge_type=ChargeType.SUBSCRIPTION.value,
+        ),
+        wholesale_results_factory.create_row(
+            charge_time=datetime(2020, 2, 15, 23),
+            charge_price=Decimal("2.000005"),
+            total_amount=Decimal("2.010005"),
+            charge_type=ChargeType.SUBSCRIPTION.value,
+        ),
     ]
-    prepared_subscriptions = subscriptions_factory.create(spark, rows)
-    calculate(
-        prepared_subscriptions,
-        DefaultValues.CALCULATION_PERIOD_START,
-        DefaultValues.CALCULATION_PERIOD_END,
-        DefaultValues.TIME_ZONE,
-    )
+    df = wholesale_results_factory.create(spark, rows)
 
     # Act
     actual = sum_within_month(
-        calculate(
-            prepared_subscriptions,
-            DefaultValues.CALCULATION_PERIOD_START,
-            DefaultValues.CALCULATION_PERIOD_END,
-            DefaultValues.TIME_ZONE,
-        ),
-        tariffs_factory.DefaultValues.PERIOD_START_DATETIME,
+        df,
+        datetime(2019, 12, 31, 23),
         ChargeType.SUBSCRIPTION,
     ).df
 
@@ -197,15 +218,25 @@ def test__sum_within_month__groups_by_local_time_months(
 ) -> None:
     # Arrange
     rows = [
-        tariffs_factory.create_row(charge_time=datetime(2020, 1, 1, 0)),
-        tariffs_factory.create_row(charge_time=datetime(2019, 12, 31, 23)),
+        wholesale_results_factory.create_row(
+            charge_time=datetime(2020, 1, 1, 1),
+            charge_price=Decimal("2.000005"),
+            total_amount=Decimal("2.010005"),
+            qualities=[ChargeQuality.CALCULATED.value],
+        ),
+        wholesale_results_factory.create_row(
+            charge_time=datetime(2019, 12, 31, 23),
+            charge_price=Decimal("2.000005"),
+            total_amount=Decimal("2.010005"),
+            qualities=[ChargeQuality.CALCULATED.value],
+        ),
     ]
-    prepared_tariffs = tariffs_factory.create(spark, rows)
+    df = wholesale_results_factory.create(spark, rows)
 
     # Act
     actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(prepared_tariffs),
-        tariffs_factory.DefaultValues.PERIOD_START_DATETIME,
+        df,
+        datetime(2019, 12, 31, 23),
         ChargeType.TARIFF,
     ).df
 
@@ -220,14 +251,19 @@ def test__sum_within_month__charge_time_always_start_of_month(
 ) -> None:
     # Arrange
     rows = [
-        tariffs_factory.create_row(charge_time=datetime(2020, 1, 3, 0)),
+        wholesale_results_factory.create_row(
+            charge_time=datetime(2020, 1, 3, 0),
+            charge_price=Decimal("2.000005"),
+            total_amount=Decimal("2.010005"),
+            qualities=[ChargeQuality.CALCULATED.value],
+        ),
     ]
-    prepared_tariffs = tariffs_factory.create(spark, rows)
+    df = wholesale_results_factory.create(spark, rows)
 
     # Act
     actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(prepared_tariffs),
-        tariffs_factory.DefaultValues.PERIOD_START_DATETIME,
+        df,
+        datetime(2019, 12, 31, 23),
         ChargeType.TARIFF,
     ).df
 
@@ -240,15 +276,27 @@ def test__sum_within_month__sums_quantity_per_month(
 ) -> None:
     # Arrange
     rows = [
-        tariffs_factory.create_row(quantity=Decimal("1.111")),
-        tariffs_factory.create_row(quantity=Decimal("1.111")),
+        wholesale_results_factory.create_row(
+            charge_time=datetime(2020, 1, 1, 1),
+            charge_price=Decimal("2.000005"),
+            total_amount=Decimal("2.010005"),
+            qualities=[ChargeQuality.CALCULATED.value],
+            total_quantity=Decimal("1.111"),
+        ),
+        wholesale_results_factory.create_row(
+            charge_time=datetime(2019, 12, 31, 23),
+            charge_price=Decimal("2.000005"),
+            total_amount=Decimal("2.010005"),
+            qualities=[ChargeQuality.CALCULATED.value],
+            total_quantity=Decimal("1.111"),
+        ),
     ]
-    prepared_tariffs = tariffs_factory.create(spark, rows)
+    df = wholesale_results_factory.create(spark, rows)
 
     # Act
     actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(prepared_tariffs),
-        tariffs_factory.DefaultValues.PERIOD_START_DATETIME,
+        df,
+        datetime(2019, 12, 31, 23),
         ChargeType.TARIFF,
     ).df
 
@@ -262,19 +310,25 @@ def test__sum_within_month__sets_charge_price_to_none(
 ) -> None:
     # Arrange
     rows = [
-        tariffs_factory.create_row(
-            charge_time=datetime(2020, 1, 1, 0), charge_price=Decimal("1.111111")
+        wholesale_results_factory.create_row(
+            charge_time=datetime(2020, 1, 1, 0),
+            charge_price=Decimal("1.111111"),
+            total_amount=Decimal("2.010005"),
+            qualities=[ChargeQuality.CALCULATED.value],
         ),
-        tariffs_factory.create_row(
-            charge_time=datetime(2020, 1, 1, 1), charge_price=Decimal("1.111111")
+        wholesale_results_factory.create_row(
+            charge_time=datetime(2020, 1, 1, 1),
+            charge_price=Decimal("1.111111"),
+            total_amount=Decimal("2.010005"),
+            qualities=[ChargeQuality.CALCULATED.value],
         ),
     ]
-    prepared_tariffs = tariffs_factory.create(spark, rows)
+    df = wholesale_results_factory.create(spark, rows)
 
     # Act
     actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(prepared_tariffs),
-        tariffs_factory.DefaultValues.PERIOD_START_DATETIME,
+        df,
+        datetime(2019, 12, 31, 23),
         ChargeType.TARIFF,
     ).df
 
@@ -288,15 +342,25 @@ def test__sum_within_month__when_all_charge_prices_are_none__sums_charge_price_a
 ) -> None:
     # Arrange
     rows = [
-        tariffs_factory.create_row(charge_price=None),
-        tariffs_factory.create_row(charge_price=None),
+        wholesale_results_factory.create_row(
+            charge_time=datetime(2020, 1, 1, 0),
+            charge_price=None,
+            total_amount=None,
+            qualities=[ChargeQuality.CALCULATED.value],
+        ),
+        wholesale_results_factory.create_row(
+            charge_time=datetime(2020, 1, 1, 1),
+            charge_price=None,
+            total_amount=None,
+            qualities=[ChargeQuality.CALCULATED.value],
+        ),
     ]
-    prepared_tariffs = tariffs_factory.create(spark, rows)
+    df = wholesale_results_factory.create(spark, rows)
 
     # Act
     actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(prepared_tariffs),
-        tariffs_factory.DefaultValues.PERIOD_START_DATETIME,
+        df,
+        datetime(2019, 12, 31, 23),
         ChargeType.TARIFF,
     ).df
 
@@ -311,17 +375,27 @@ def test__sum_within_month__when_one_tariff_has_charge_price_none__sums_charge_p
 ) -> None:
     # Arrange
     rows = [
-        tariffs_factory.create_row(charge_price=None),
-        tariffs_factory.create_row(
-            charge_price=Decimal("2.000000"), quantity=Decimal("3.000000")
+        wholesale_results_factory.create_row(
+            charge_time=datetime(2020, 1, 1, 1),
+            charge_price=None,
+            total_amount=None,
+            qualities=[ChargeQuality.CALCULATED.value],
+            total_quantity=Decimal("1.111"),
+        ),
+        wholesale_results_factory.create_row(
+            charge_time=datetime(2019, 12, 31, 23),
+            charge_price=Decimal("2.000000"),
+            total_amount=Decimal("6.000000"),
+            qualities=[ChargeQuality.CALCULATED.value],
+            total_quantity=Decimal("3.000000"),
         ),
     ]
-    prepared_tariffs = tariffs_factory.create(spark, rows)
+    df = wholesale_results_factory.create(spark, rows)
 
     # Act
     actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(prepared_tariffs),
-        tariffs_factory.DefaultValues.PERIOD_START_DATETIME,
+        df,
+        datetime(2019, 12, 31, 23),
         ChargeType.TARIFF,
     ).df
 

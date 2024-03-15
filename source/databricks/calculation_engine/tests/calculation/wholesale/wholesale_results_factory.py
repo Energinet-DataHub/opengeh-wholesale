@@ -21,22 +21,24 @@ from package.calculation.wholesale.data_structures.wholesale_results import (
     WholesaleResults,
     wholesale_results_schema,
 )
-from package.codelists import MeteringPointType, QuantityQuality, SettlementMethod
+from package.codelists import MeteringPointType, SettlementMethod, ChargeQuality
 from package.constants import Colname
+
+default_qualities = [ChargeQuality.CALCULATED]
 
 
 def create_row(
-    grid_area: str = "100",
+    grid_area: str = "543",
     energy_supplier_id: str = "1234567890123",
-    total_quantity: int | Decimal = Decimal("999.123456"),
+    total_quantity: int | Decimal = Decimal("1.005"),
     unit: str = "kWh",
-    qualities: None | QuantityQuality | list[QuantityQuality] = None,
+    qualities: list[ChargeQuality] | None = None,
     charge_time: datetime = datetime.datetime.now(),
-    resolution: str = "PT15M",
+    resolution: str = "PT1H",
     metering_point_type: MeteringPointType = MeteringPointType.CONSUMPTION,
-    settlement_method: SettlementMethod = SettlementMethod.NON_PROFILED,
-    charge_price: Decimal | None = None,
-    total_amount: Decimal | None = None,
+    settlement_method: SettlementMethod = SettlementMethod.FLEX,
+    charge_price: int | Decimal | None = None,
+    total_amount: int | Decimal | None = None,
     charge_tax: bool = True,
     charge_code: str = "4000",
     charge_type: str = "TARIFF",
@@ -44,10 +46,10 @@ def create_row(
 ) -> Row:
     if isinstance(total_quantity, int):
         total_quantity = Decimal(total_quantity)
-
-    if isinstance(qualities, QuantityQuality):
-        qualities = [qualities]
-    qualities = [q.value for q in qualities]
+    if isinstance(charge_price, int):
+        charge_price = Decimal(charge_price)
+    if isinstance(total_quantity, int):
+        total_amount = Decimal(total_amount)
 
     row = {
         Colname.grid_area: grid_area,
