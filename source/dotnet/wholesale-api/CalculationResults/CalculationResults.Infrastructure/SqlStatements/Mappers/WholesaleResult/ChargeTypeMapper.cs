@@ -30,4 +30,16 @@ public static class ChargeTypeMapper
                 actualValue: chargeType,
                 "Value does not contain a valid string representation of a charge type."),
         };
+
+    public static string ToDeltaTableValue(ChargeType chargeType) =>
+        chargeType switch
+        {
+            ChargeType.Tariff => "tariff",
+            ChargeType.Fee => "fee",
+            ChargeType.Subscription => "subscription",
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(chargeType),
+                actualValue: chargeType,
+                "Cannot map ChargeType to delta table value"),
+        };
 }

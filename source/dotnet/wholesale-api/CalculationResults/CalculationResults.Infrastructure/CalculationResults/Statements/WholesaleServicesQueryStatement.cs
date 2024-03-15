@@ -14,8 +14,7 @@
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 
@@ -58,13 +57,54 @@ public class WholesaleServicesQueryStatement : DatabricksStatement
 
         sql += $" AND ({string.Join(" OR ", calculationPeriodSql)})";
 
+        if (!string.IsNullOrEmpty(_queryParameters.GridArea))
+            sql += $" AND {WholesaleResultColumnNames.GridArea} = '{_queryParameters.GridArea}'";
+
+        if (!string.IsNullOrEmpty(_queryParameters.EnergySupplierId))
+            sql += $" AND {WholesaleResultColumnNames.EnergySupplierId} = '{_queryParameters.EnergySupplierId}'";
+
+        if (!string.IsNullOrEmpty(_queryParameters.ChargeOwnerId))
+            sql += $" AND {WholesaleResultColumnNames.ChargeOwnerId} = '{_queryParameters.ChargeOwnerId}'";
+
+        if (_queryParameters.Resolution != null)
+            sql += $" AND {WholesaleResultColumnNames.Resolution} = '{ResolutionMapper.ToDeltaTableValue(_queryParameters.Resolution.Value)}'";
+
+        if (_queryParameters.ChargeTypes != null && _queryParameters.ChargeTypes.Any())
+        {
+            var chargeTypesSql = _queryParameters.ChargeTypes
+                .Select(c => CreateChargeTypeSqlStatement(c.ChargeCode, c.ChargeType))
+                .ToList();
+
+            sql += $" AND ({string.Join(" OR ", chargeTypesSql)})";
+        }
+
         sql += $@"
                 ORDER BY 
                     {string.Join(", ", ColumnsToGroupBy)},
-                    {WholesaleResultColumnNames.Time} 
-                ";
+                    {WholesaleResultColumnNames.Time}";
 
         return sql;
+    }
+
+    private string CreateChargeTypeSqlStatement(string? chargeCode, ChargeType? chargeType)
+    {
+        if (chargeCode == null && chargeType == null)
+            throw new ArgumentException("Both chargeCode and chargeType cannot be null");
+
+        var sqlStatements = new List<string>();
+
+        if (!string.IsNullOrEmpty(chargeCode))
+            sqlStatements.Add($"{WholesaleResultColumnNames.ChargeCode} = '{chargeCode}'");
+
+        if (chargeType != null)
+            sqlStatements.Add($"{WholesaleResultColumnNames.ChargeType} = '{ChargeTypeMapper.ToDeltaTableValue(chargeType.Value)}'");
+
+        var combinedString = string.Join(" AND ", sqlStatements);
+
+        if (sqlStatements.Count > 1)
+            combinedString = $"({combinedString})";
+
+        return combinedString;
     }
 
     /// <summary>

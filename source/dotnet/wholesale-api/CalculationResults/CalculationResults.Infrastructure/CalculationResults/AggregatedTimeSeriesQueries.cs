@@ -35,7 +35,10 @@ public class AggregatedTimeSeriesQueries(
             yield break;
 
         var sqlStatement = new AggregatedTimeSeriesQueryStatement(parameters, deltaTableOptions.Value);
-        await foreach (var aggregatedTimeSeries in GetDataAsync(sqlStatement, parameters.LatestCalculationForPeriod).ConfigureAwait(false))
+
+        var resultStream = GetDataAsync(sqlStatement, parameters.LatestCalculationForPeriod);
+
+        await foreach (var aggregatedTimeSeries in resultStream.ConfigureAwait(false))
             yield return aggregatedTimeSeries;
     }
 

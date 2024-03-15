@@ -42,6 +42,7 @@ public class WholesaleServicesQueries(
             deltaTableOptions.Value);
 
         var resultStream = GetDataAsync(sqlStatement, queryParameters.Calculations);
+
         await foreach (var wholesaleServices in resultStream.ConfigureAwait(false))
             yield return wholesaleServices;
     }

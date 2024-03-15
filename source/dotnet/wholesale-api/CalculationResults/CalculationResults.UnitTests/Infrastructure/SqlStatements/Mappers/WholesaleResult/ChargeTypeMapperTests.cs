@@ -57,4 +57,31 @@ public class ChargeTypeMapperTests
         act.Should().Throw<ArgumentOutOfRangeException>()
             .And.ActualValue.Should().Be(invalidDeltaTableValue);
     }
+
+    [Theory]
+    [InlineData("fee", ChargeType.Fee)]
+    [InlineData("subscription", ChargeType.Subscription)]
+    [InlineData("tariff", ChargeType.Tariff)]
+    public void ToDeltaTableValue_WhenValidChargeTypeValue_ReturnsExpectedString(string expectedDeltaTableValue, ChargeType chargeType)
+    {
+        // Act
+        var actualDeltaTableValue = ChargeTypeMapper.ToDeltaTableValue(chargeType);
+
+        // Assert
+        actualDeltaTableValue.Should().Be(expectedDeltaTableValue);
+    }
+
+    [Fact]
+    public void ToDeltaTableValue_WhenInvalidChargeTypeValue_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        var invalidChargeTypeValue = (ChargeType)int.MinValue;
+
+        // Act
+        var act = () => ChargeTypeMapper.ToDeltaTableValue(invalidChargeTypeValue);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .And.ActualValue.Should().Be(invalidChargeTypeValue);
+    }
 }

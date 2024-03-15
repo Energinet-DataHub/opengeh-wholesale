@@ -29,4 +29,16 @@ public static class ResolutionMapper
                 actualValue: resolution,
                 "Value does not contain a valid string representation of a resolution."),
         };
+
+    public static string ToDeltaTableValue(Resolution resolution) =>
+        resolution switch
+        {
+            Resolution.Month => "P1M",
+            Resolution.Day => "P1D",
+            Resolution.Hour => "PT1H",
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(resolution),
+                actualValue: resolution,
+                "Cannot map Resolution to delta table value"),
+        };
 }
