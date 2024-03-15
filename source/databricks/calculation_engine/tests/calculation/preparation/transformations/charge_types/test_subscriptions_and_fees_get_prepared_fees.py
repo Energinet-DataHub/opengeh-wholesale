@@ -19,7 +19,7 @@ from pyspark.sql import SparkSession
 
 import tests.calculation.charges_factory as factory
 from package.calculation.preparation.transformations.charge_types import (
-    get_fee_charges,
+    get_prepared_fees,
 )
 import package.codelists as e
 from package.constants import Colname
@@ -88,7 +88,7 @@ class TestWhenOneLinkAndOnePrice:
         charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
         # Act
-        actual = get_fee_charges(
+        actual = get_prepared_fees(
             charge_master_data,
             charge_prices,
             charge_link_metering_point_periods,
@@ -154,7 +154,7 @@ class TestWhenTwoLinksAndOnePrice:
         charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
         # Act
-        actual = get_fee_charges(
+        actual = get_prepared_fees(
             charge_master_data,
             charge_prices,
             charge_link_metering_point_periods,
@@ -220,7 +220,7 @@ class TestWhenValidInput:
         charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
         # Act
-        actual = get_fee_charges(
+        actual = get_prepared_fees(
             charge_master_data,
             charge_prices,
             charge_link_metering_point_periods,

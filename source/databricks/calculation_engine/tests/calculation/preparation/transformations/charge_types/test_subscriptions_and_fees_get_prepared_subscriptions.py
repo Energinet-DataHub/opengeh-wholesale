@@ -19,7 +19,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql import functions as f
 
 from package.calculation.preparation.transformations import (
-    get_subscription_charges,
+    get_prepared_subscriptions,
 )
 
 from package.constants import Colname
@@ -118,7 +118,7 @@ class TestWhenValidInput:
         charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
         # Act
-        actual_subscription = get_subscription_charges(
+        actual_subscription = get_prepared_subscriptions(
             charge_master_data,
             charge_prices,
             charge_link_metering_point_periods,
@@ -162,7 +162,7 @@ class TestWhenNoPricesForPeriod:
         )
 
         # Act
-        actual_subscription = get_subscription_charges(
+        actual_subscription = get_prepared_subscriptions(
             charge_master_data,
             charge_prices_empty,
             charge_link_metering_point_periods,
@@ -220,7 +220,7 @@ class TestWhenInputContainsOtherChargeTypes:
         )
 
         # Act
-        actual_subscription = get_subscription_charges(
+        actual_subscription = get_prepared_subscriptions(
             charge_master_data,
             charge_prices,
             charge_link_metering_point_periods,
@@ -289,7 +289,7 @@ class TestWhenChargePriceChangesDuringPeriod:
         )
 
         # Act
-        actual_subscription = get_subscription_charges(
+        actual_subscription = get_prepared_subscriptions(
             charge_master_data,
             charge_prices,
             charge_link_metering_point_periods,
@@ -368,7 +368,7 @@ class TestWhenChargeMasterPeriodStopsAndStartsAgain:
         )
 
         # Act
-        actual_subscription = get_subscription_charges(
+        actual_subscription = get_prepared_subscriptions(
             charge_master_data,
             charge_period_prices,
             charge_link_metering_point_periods,
@@ -446,7 +446,7 @@ class TestWhenChargeLinkPeriodStopsAndStartsAgain:
         )
 
         # Act
-        actual_subscription = get_subscription_charges(
+        actual_subscription = get_prepared_subscriptions(
             charge_master_data,
             charge_prices,
             charge_link_metering_point_periods,
@@ -525,7 +525,7 @@ class TestWhenDaylightSavingTimeChanges:
         )
 
         # Act
-        actual_subscription = get_subscription_charges(
+        actual_subscription = get_prepared_subscriptions(
             charge_master_data,
             charge_prices,
             charge_link_metering_point_periods,

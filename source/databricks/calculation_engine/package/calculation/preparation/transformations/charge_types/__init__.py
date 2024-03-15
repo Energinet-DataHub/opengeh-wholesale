@@ -12,5 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .subscriptions_and_fees import get_subscription_charges, get_fee_charges
+from .subscriptions_and_fees import get_prepared_subscriptions, get_prepared_fees
 from .tariffs import get_prepared_tariffs

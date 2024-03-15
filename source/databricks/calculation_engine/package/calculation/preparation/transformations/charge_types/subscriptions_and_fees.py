@@ -21,13 +21,13 @@ from package.codelists import ChargeType, WholesaleResultResolution
 from package.constants import Colname
 
 
-def get_subscription_charges(
+def get_prepared_subscriptions(
     charge_master_data: d.ChargeMasterData,
     charge_prices: d.ChargePrices,
     charge_link_metering_point_periods: d.ChargeLinkMeteringPointPeriods,
     time_zone: str,
 ) -> d.PreparedSubscriptions:
-    subscriptions_df = _prepare_charges(
+    subscriptions_df = _prepare(
         charge_master_data,
         charge_prices,
         charge_link_metering_point_periods,
@@ -38,13 +38,13 @@ def get_subscription_charges(
     return d.PreparedSubscriptions(subscriptions_df)
 
 
-def get_fee_charges(
+def get_prepared_fees(
     charge_master_data: d.ChargeMasterData,
     charge_prices: d.ChargePrices,
     charge_link_metering_point_periods: d.ChargeLinkMeteringPointPeriods,
     time_zone: str,
 ) -> d.PreparedFees:
-    fees_df = _prepare_charges(
+    fees_df = _prepare(
         charge_master_data,
         charge_prices,
         charge_link_metering_point_periods,
@@ -55,7 +55,7 @@ def get_fee_charges(
     return d.PreparedFees(fees_df)
 
 
-def _prepare_charges(
+def _prepare(
     charge_master_data: d.ChargeMasterData,
     charge_prices: d.ChargePrices,
     charge_link_metering_point_periods: d.ChargeLinkMeteringPointPeriods,
@@ -65,8 +65,9 @@ def _prepare_charges(
     """
     This method does the following:
     - Joins charge_master_data, charge_prices and charge_link_metering_point_periods
-    - Filters the result to only include subscription charges
-    - Explodes the result from monthly to daily resolution
+    - Filters the result to only include the defined charge type
+    - Explodes the result from monthly to daily resolution (only reelevant for subscription charges, because fees have
+    one day between to and from date on charge links)
     - Add missing charge prices (None) to the result
     """
     charge_links = charge_link_metering_point_periods.filter_by_charge_type(charge_type)
@@ -97,7 +98,7 @@ def _join_with_prices(
     charge_prices = charge_prices.df
     charge_master_data = charge_master_data.df
 
-    charge_master_data_with_charge_time = _expand_with_daily_charge_time(
+    charge_master_data_with_charge_time = _explode_with_daily_charge_time(
         charge_master_data, time_zone
     )
 
@@ -130,7 +131,7 @@ def _join_with_prices(
     return master_data_with_prices
 
 
-def _expand_with_daily_charge_time(
+def _explode_with_daily_charge_time(
     charge_master_data: DataFrame, time_zone: str
 ) -> DataFrame:
     """
