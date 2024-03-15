@@ -68,19 +68,4 @@ public class AggregatedTimeSeriesQueries(
     {
         return AggregatedTimeSeriesQueryStatement.ColumnsToGroupBy.Any(column => row1[column] != row2[column]);
     }
-
-    private static bool HaveDifferentCalculationId(DatabricksSqlRow row, DatabricksSqlRow otherRow)
-    {
-        return row[EnergyResultColumnNames.CalculationId] != otherRow[EnergyResultColumnNames.CalculationId];
-    }
-
-    private static bool BelongsToDifferentGridArea(DatabricksSqlRow row, DatabricksSqlRow otherRow)
-    {
-        return row[EnergyResultColumnNames.GridArea] != otherRow[EnergyResultColumnNames.GridArea];
-    }
-
-    private static bool HaveDifferentTimeSeriesType(DatabricksSqlRow row, DatabricksSqlRow otherRow)
-    {
-        return row[EnergyResultColumnNames.TimeSeriesType] != otherRow[EnergyResultColumnNames.TimeSeriesType];
-    }
 }
