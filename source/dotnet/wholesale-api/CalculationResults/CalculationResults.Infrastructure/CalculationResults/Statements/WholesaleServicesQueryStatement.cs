@@ -59,18 +59,34 @@ public class WholesaleServicesQueryStatement : DatabricksStatement
         sql += $" AND ({string.Join(" OR ", calculationPeriodSql)})";
 
         sql += $@"
-                ORDER BY {WholesaleResultColumnNames.GridArea},
-                -- charge owner?
-                -- charge type?
-                {WholesaleResultColumnNames.CalculationId},
-                {WholesaleResultColumnNames.Time}
+                ORDER BY 
+                    {string.Join(", ", ColumnsToGroupBy)},
+                    {WholesaleResultColumnNames.Time} 
                 ";
 
         return sql;
     }
 
+    /// <summary>
+    /// Since results are streamed and packages are created on-the-fly, the data need to be ordered so that
+    ///     all rows belonging to one package are ordered directly after one another.
+    /// </summary>
+    public static string[] ColumnsToGroupBy =>
+    [
+        WholesaleResultColumnNames.GridArea,
+        WholesaleResultColumnNames.EnergySupplierId,
+        WholesaleResultColumnNames.ChargeOwnerId,
+        WholesaleResultColumnNames.ChargeType,
+        WholesaleResultColumnNames.ChargeCode,
+        WholesaleResultColumnNames.Resolution,
+        WholesaleResultColumnNames.MeteringPointType,
+        WholesaleResultColumnNames.SettlementMethod,
+        // WholesaleResultColumnNames.CalculationId,
+        // WholesaleResultColumnNames.Time,
+    ];
+
     private static string[] ColumnsToSelect { get; } =
-    {
+    [
         WholesaleResultColumnNames.GridArea,
         WholesaleResultColumnNames.EnergySupplierId,
         WholesaleResultColumnNames.AmountType,
@@ -80,14 +96,13 @@ public class WholesaleServicesQueryStatement : DatabricksStatement
         WholesaleResultColumnNames.ChargeCode,
         WholesaleResultColumnNames.ChargeOwnerId,
         WholesaleResultColumnNames.Resolution,
-        // WholesaleResultColumnNames.IsTax,
         WholesaleResultColumnNames.QuantityUnit,
         WholesaleResultColumnNames.Time,
         WholesaleResultColumnNames.Quantity,
         WholesaleResultColumnNames.QuantityQualities,
         WholesaleResultColumnNames.Price,
-        WholesaleResultColumnNames.Amount,
-    };
+        WholesaleResultColumnNames.Amount
+    ];
 
     public enum StatementType
     {

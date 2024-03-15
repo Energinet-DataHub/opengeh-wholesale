@@ -40,10 +40,9 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
 
         // Should match the way packages are split in AggregatedTimeSeriesQueries
         sql += $"""
-                ORDER BY t1.{EnergyResultColumnNames.GridArea},
-                t1.{EnergyResultColumnNames.TimeSeriesType},
-                t1.{EnergyResultColumnNames.CalculationId},
-                t1.{EnergyResultColumnNames.Time}
+                ORDER BY
+                    {string.Join(", ", ColumnsToGroupBy.Select(columnName => $"t1.{columnName}"))},
+                    t1.{EnergyResultColumnNames.Time}
                 """;
 
         return sql;
@@ -92,6 +91,17 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
 
         return whereClausesSql;
     }
+
+    /// <summary>
+    /// Since results are streamed and packages are created on-the-fly, the data need to be ordered so that
+    ///     all rows belonging to one package are ordered directly after one another.
+    /// </summary>
+    public static string[] ColumnsToGroupBy =>
+    [
+        EnergyResultColumnNames.GridArea,
+        EnergyResultColumnNames.TimeSeriesType,
+        EnergyResultColumnNames.CalculationId,
+    ];
 
     private static string[] SqlColumnNames { get; } =
     {

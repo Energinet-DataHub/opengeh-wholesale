@@ -65,9 +65,9 @@ public class WholesaleServicesQueries(
 
     protected override bool RowBelongsToNewPackage(RowData current, RowData previous)
     {
-        return BelongsToDifferentGridArea(current.Row, previous.Row)
-               || HaveDifferentCalculationId(current.Row, previous.Row)
-               || current.CalculationPeriod != previous.CalculationPeriod;
+        var isInDifferentCalculationPeriod = current.CalculationPeriod != previous.CalculationPeriod;
+
+        return HasDifferentColumnValues(current.Row, previous.Row) || isInDifferentCalculationPeriod;
     }
 
     protected override WholesaleServices CreatePackageFromRowData(RowData rowData, List<WholesaleTimeSeriesPoint> timeSeriesPoints)
@@ -84,13 +84,8 @@ public class WholesaleServicesQueries(
         return WholesaleTimeSeriesPointFactory.Create(row);
     }
 
-    private static bool HaveDifferentCalculationId(DatabricksSqlRow row, DatabricksSqlRow otherRow)
+    private static bool HasDifferentColumnValues(DatabricksSqlRow row1, DatabricksSqlRow row2)
     {
-        return row[WholesaleResultColumnNames.CalculationId] != otherRow[WholesaleResultColumnNames.CalculationId];
-    }
-
-    private static bool BelongsToDifferentGridArea(DatabricksSqlRow row, DatabricksSqlRow otherRow)
-    {
-        return row[WholesaleResultColumnNames.GridArea] != otherRow[WholesaleResultColumnNames.GridArea];
+        return WholesaleServicesQueryStatement.ColumnsToGroupBy.Any(column => row1[column] != row2[column]);
     }
 }
