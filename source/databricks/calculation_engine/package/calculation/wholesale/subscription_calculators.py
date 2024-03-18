@@ -16,7 +16,7 @@ from zoneinfo import ZoneInfo
 
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
-from pyspark.sql.types import DecimalType, ArrayType, StringType
+from pyspark.sql.types import DecimalType
 
 from package.calculation.preparation.data_structures.prepared_subscriptions import (
     PreparedSubscriptions,
@@ -24,7 +24,7 @@ from package.calculation.preparation.data_structures.prepared_subscriptions impo
 from package.calculation.wholesale.calculate_total_quantity_and_amount import (
     calculate_total_quantity_and_amount,
 )
-from package.codelists import ChargeUnit
+from package.codelists import ChargeUnit, ChargeType
 from package.constants import Colname
 
 
@@ -43,7 +43,7 @@ def calculate(
     )
 
     subscription_amount_per_charge = calculate_total_quantity_and_amount(
-        subscriptions_with_daily_price
+        subscriptions_with_daily_price, charge_type=ChargeType.SUBSCRIPTION
     )
 
     return subscription_amount_per_charge.select(

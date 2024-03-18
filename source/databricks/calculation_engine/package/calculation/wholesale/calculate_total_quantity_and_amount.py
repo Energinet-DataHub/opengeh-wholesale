@@ -55,7 +55,7 @@ def calculate_total_quantity_and_amount(
     return df
 
 
-def _get_qualities_function(charge_type: ChargeType):
+def _get_qualities_function(charge_type: ChargeType) -> f.Column:
     if charge_type == ChargeType.TARIFF:
         return f.flatten(f.collect_set(Colname.qualities)).alias(Colname.qualities)
     elif charge_type == ChargeType.FEE or charge_type == ChargeType.SUBSCRIPTION:
