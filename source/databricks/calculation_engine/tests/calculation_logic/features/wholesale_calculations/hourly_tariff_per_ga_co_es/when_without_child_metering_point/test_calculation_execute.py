@@ -14,14 +14,15 @@
 from calculation_logic.features.wholesale_calculations.hourly_tariff_per_ga_co_es.when_without_child_metering_point.states.scenario_state import (
     get_expected,
 )
+from calculation_logic.scenario_factory import ScenarioFixture
 from helpers.data_frame_utils import (
     assert_dataframe_and_schema,
 )
 from package.constants import WholesaleResultColumnNames
 
 
-def test_execute__returns_expected(  # type: ignore
-    scenario_fixture,
+def test_execute__returns_expected(
+    scenario_fixture: ScenarioFixture,
 ) -> None:
     # Arrange
     scenario_fixture.setup(get_expected)
