@@ -28,7 +28,7 @@ jobs:
       python_version: 3.11.7
       architecture: x64
       wheel_working_directory: ./source/databricks/calculation_engine
-      should_include_assets: false  # Functionality is deprecated
+      should_include_assets: true
 
   migration_scripts_verification:
     runs-on: ubuntu-latest
