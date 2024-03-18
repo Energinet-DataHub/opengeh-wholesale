@@ -115,30 +115,7 @@ public class WholesaleServiceRequestAcceptedMessageFactoryTests
     {
         quantityQualities ??= new List<WholesaleQuantity> { WholesaleQuantity.Estimated };
 
-        // var wholesaleServices = new CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.WholesaleServices(
-        //     CalculationType: CalculationType.WholesaleFixing,
-        //     periodStart: _periodStart,
-        //     periodEnd: _periodEnd,
-        //     gridArea: _gridArea,
-        //     energySupplierId: _energySupplier,
-        //     amountType: AmountType.AmountPerCharge,
-        //     chargeCode: "FaQ-s0-t4",
-        //     chargeType: ChargeType.Fee,
-        //     chargeOwnerId: _chargeOwner,
-        //     isTax: false,
-        //     quantityUnit: Common.Interfaces.Models.QuantityUnit.Kwh,
-        //     resolution: resolution,
-        //     meteringPointType: meteringPointType,
-        //     settlementMethod: settlementMethod,
-        //     TimeSeriesPoints: new WholesaleTimeSeriesPoint[]
-        //     {
-        //         new(_defaultTime.ToDateTimeOffset(), 2, quantityQualities, 2, 4),
-        //         new(_defaultTime.ToDateTimeOffset(), 3, quantityQualities, 2, 6),
-        //         new(_defaultTime.ToDateTimeOffset(), 3, quantityQualities, 3, 9),
-        //     },
-        //     version: 123);
-        return new List<CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.WholesaleServices>
-        {
+        return [
             new(
                 new Period(
                     _periodStart,
@@ -160,6 +137,6 @@ public class WholesaleServiceRequestAcceptedMessageFactoryTests
                     new(_defaultTime.ToDateTimeOffset(), 3, quantityQualities, 3, 9),
                 },
                 1),
-        };
+        ];
     }
 }
