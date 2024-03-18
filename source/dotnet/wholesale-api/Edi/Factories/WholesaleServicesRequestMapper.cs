@@ -52,7 +52,7 @@ public class WholesaleServicesRequestMapper(DateTimeZone dateTimeZone)
 
         return chargeTypes
             .Select(c => new ChargeCodeAndType(
-                c.HasChargeId ? c.ChargeId : null,
+                c.HasChargeCode ? c.ChargeCode : null,
                 c.HasChargeType_ ? ChargeTypeMapper.Map(c.ChargeType_) : null))
             .ToList();
     }
