@@ -46,30 +46,32 @@ def aggregate_net_exchange_per_neighbour_ga(
     group_by = [
         Colname.to_grid_area,
         Colname.from_grid_area,
-        Colname.time_window,
+        Colname.observation_time,
     ]
 
     exchange_to = (
         T.aggregate_quantity_and_quality(df, group_by)
-        .withColumnRenamed(Colname.sum_quantity, to_sum)
+        .withColumnRenamed(Colname.quantity, to_sum)
         .withColumnRenamed(Colname.to_grid_area, exchange_in_to_grid_area)
         .withColumnRenamed(Colname.from_grid_area, exchange_in_from_grid_area)
     )
     exchange_from = (
         T.aggregate_quantity_and_quality(df, group_by)
-        .withColumnRenamed(Colname.sum_quantity, from_sum)
+        .withColumnRenamed(Colname.quantity, from_sum)
         .withColumnRenamed(Colname.to_grid_area, exchange_out_to_grid_area)
         .withColumnRenamed(Colname.from_grid_area, exchange_out_from_grid_area)
     )
 
     from_qualities = "from_qualities"
-    to_time_window = "to_time_window"
-    from_time_window = "from_time_window"
+    to_observation_time = "to_observation_time"
+    from_observation_time = "from_observation_time"
 
     # Workaround for ambiguous "time_window" column in select after join
-    exchange_to = exchange_to.withColumnRenamed(Colname.time_window, to_time_window)
+    exchange_to = exchange_to.withColumnRenamed(
+        Colname.observation_time, to_observation_time
+    )
     exchange_from = exchange_from.withColumnRenamed(
-        Colname.time_window, from_time_window
+        Colname.observation_time, from_observation_time
     )
 
     exchange = (
@@ -77,7 +79,7 @@ def aggregate_net_exchange_per_neighbour_ga(
         # in one direction between two neighboring grid areas exist
         exchange_to.join(
             exchange_from,
-            (exchange_to[to_time_window] == exchange_from[from_time_window])
+            (exchange_to[to_observation_time] == exchange_from[from_observation_time])
             & (
                 exchange_to[exchange_in_to_grid_area]
                 == exchange_from[exchange_out_from_grid_area]
@@ -91,8 +93,8 @@ def aggregate_net_exchange_per_neighbour_ga(
         # Since both exchange_from or exchange_to can be missing we need to coalesce all columns
         .select(
             F.coalesce(
-                exchange_to[to_time_window], exchange_from[from_time_window]
-            ).alias(Colname.time_window),
+                exchange_to[to_observation_time], exchange_from[from_observation_time]
+            ).alias(Colname.observation_time),
             F.coalesce(
                 exchange_to[exchange_in_to_grid_area],
                 exchange_from[exchange_out_from_grid_area],
@@ -111,15 +113,15 @@ def aggregate_net_exchange_per_neighbour_ga(
             ),
         )
         # Calculate netto sum between neighboring grid areas
-        .withColumn(Colname.sum_quantity, F.col(to_sum) - F.col(from_sum))
+        .withColumn(Colname.quantity, F.col(to_sum) - F.col(from_sum))
         # Finally select the result columns
         .select(
             Colname.to_grid_area,
             Colname.from_grid_area,
-            Colname.time_window,
+            Colname.observation_time,
             # Include qualities from all to- and from- metering point time series
             F.array_union(Colname.qualities, from_qualities).alias(Colname.qualities),
-            Colname.sum_quantity,
+            Colname.quantity,
             F.col(Colname.to_grid_area).alias(Colname.grid_area),
         )
     )
@@ -138,7 +140,7 @@ def aggregate_net_exchange_per_ga(
     """
 
     result_df = T.aggregate_sum_quantity_and_qualities(
-        exchange_per_neighbour_ga.df, [Colname.grid_area, Colname.time_window]
+        exchange_per_neighbour_ga.df, [Colname.grid_area, Colname.observation_time]
     )
 
     return EnergyResults(result_df)

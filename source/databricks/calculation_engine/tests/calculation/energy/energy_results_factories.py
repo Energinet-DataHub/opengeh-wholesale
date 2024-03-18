@@ -26,7 +26,7 @@ from package.constants import Colname
 
 DEFAULT_GRID_AREA = "100"
 DEFAULT_OBSERVATION_TIME = datetime.datetime.now()
-DEFAULT_SUM_QUANTITY = Decimal("999.123456")
+DEFAULT_QUANTITY = Decimal("999.123456")
 DEFAULT_QUALITIES = [QuantityQuality.MEASURED]
 DEFAULT_METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
 DEFAULT_SETTLEMENT_METHOD = SettlementMethod.NON_PROFILED
@@ -38,15 +38,15 @@ def create_row(
     grid_area: str = DEFAULT_GRID_AREA,
     from_grid_area: str | None = None,
     to_grid_area: str | None = None,
-    observation_time: datetime = DEFAULT_OBSERVATION_TIME,
-    sum_quantity: int | Decimal = DEFAULT_SUM_QUANTITY,
+    observation_time: datetime.datetime = DEFAULT_OBSERVATION_TIME,
+    quantity: int | Decimal = DEFAULT_QUANTITY,
     qualities: None | QuantityQuality | list[QuantityQuality] = None,
     energy_supplier_id: str | None = DEFAULT_ENERGY_SUPPLIER_ID,
     balance_responsible_id: str | None = DEFAULT_BALANCE_RESPONSIBLE_ID,
     metering_point_id: str | None = None,
 ) -> Row:
-    if isinstance(sum_quantity, int):
-        sum_quantity = Decimal(sum_quantity)
+    if isinstance(quantity, int):
+        quantity = Decimal(quantity)
 
     if qualities is None:
         qualities = DEFAULT_QUALITIES
@@ -60,11 +60,8 @@ def create_row(
         Colname.to_grid_area: to_grid_area,
         Colname.balance_responsible_id: balance_responsible_id,
         Colname.energy_supplier_id: energy_supplier_id,
-        Colname.time_window: {
-            Colname.start: observation_time,
-            Colname.end: observation_time + datetime.timedelta(minutes=15),
-        },
-        Colname.sum_quantity: sum_quantity,
+        Colname.observation_time: observation_time,
+        Colname.quantity: quantity,
         Colname.qualities: qualities,
         Colname.metering_point_type: metering_point_id,
     }

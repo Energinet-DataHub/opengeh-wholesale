@@ -11,14 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from dataclasses import dataclass
+from pyspark.sql import DataFrame
 
-import package.calculation.preparation.data_structures as d
+from calculation_logic.features.wholesale_calculations.wholesale_results_dataframe import (
+    create_wholesale_result_dataframe,
+)
 
 
-@dataclass
-class PreparedChargesContainer:
-    hourly_tariffs: d.PreparedTariffs | None = None
-    daily_tariffs: d.PreparedTariffs | None = None
-    subscriptions: d.PreparedSubscriptions | None = None
-    fees: d.PreparedFees | None = None
+def get_expected(*args) -> DataFrame:  # type: ignore
+    """
+    This function can be used to custom build the expected results (dataframe).
+    It is also used a reference to locate the test scenario.
+    """
+    return create_wholesale_result_dataframe(*args)
