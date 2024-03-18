@@ -21,8 +21,8 @@ from .charges_reader import (
 )
 
 from .charge_types import (
-    get_fee_charges,
-    get_subscription_charges,
+    get_prepared_fees,
+    get_prepared_subscriptions,
     get_prepared_tariffs,
 )
 from .metering_point_time_series import get_metering_point_time_series
