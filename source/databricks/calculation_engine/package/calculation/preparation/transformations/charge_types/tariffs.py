@@ -185,7 +185,7 @@ def _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
     # It must be cast to a decimal type (18,3) to conform to the tariff schema.
     # The column is renamed to quantity to match the column name from subscriptions and fees.
     grouped_time_series = grouped_time_series.withColumn(
-        Colname.quantity, f.col(Colname.quantity).cast(DecimalType(18, 3))
+        Colname.quantity, f.col(Colname.sum_quantity).cast(DecimalType(18, 3))
     )
 
     grouped_time_series = grouped_time_series.withColumn(
