@@ -184,7 +184,7 @@ def _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
     # The sum operator creates by default a column as a double type (28,6).
     # It must be cast to a decimal type (18,3) to conform to the tariff schema.
     grouped_time_series = grouped_time_series.withColumn(
-        Colname.sum_quantity, f.col(Colname.sum_quantity).cast(DecimalType(18, 3))
+        Colname.quantity, f.col(Colname.sum_quantity).cast(DecimalType(18, 3))
     )
 
     grouped_time_series = grouped_time_series.withColumn(
@@ -230,7 +230,7 @@ def _join_with_grouped_time_series(
         df[Colname.metering_point_type],
         df[Colname.settlement_method],
         df[Colname.grid_area],
-        grouped_time_series[Colname.sum_quantity],
+        grouped_time_series[Colname.quantity],
         grouped_time_series[Colname.qualities],
     )
     return df

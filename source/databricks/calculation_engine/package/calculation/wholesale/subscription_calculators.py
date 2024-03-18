@@ -24,7 +24,7 @@ from package.calculation.preparation.data_structures.prepared_subscriptions impo
 from package.calculation.wholesale.calculate_total_quantity_and_amount import (
     calculate_total_quantity_and_amount,
 )
-from package.codelists import ChargeUnit, ChargeType
+from package.codelists import ChargeType
 from package.constants import Colname
 
 
@@ -61,7 +61,7 @@ def calculate(
         f.col(Colname.total_quantity).cast(DecimalType(18, 3)),
         f.round(Colname.charge_price, 6).alias(Colname.charge_price),
         f.round(Colname.total_amount, 6).alias(Colname.total_amount),
-        f.lit(ChargeUnit.PIECES.value).alias(Colname.unit),
+        Colname.unit,
         Colname.qualities,
     )
 
