@@ -5,7 +5,7 @@ resource "azurerm_storage_blob_inventory_policy" "sbip_dh2dropzone_archive" {
     name                   = "sbipr-dropzonearchive"
     storage_container_name = azurerm_storage_container.dropzonearchive.name
     format                 = "Csv"
-    schedule               = "Daily"
+    schedule               = "Weekly"
     scope                  = "Blob"
     filter {
       prefix_match = [azurerm_storage_container.dropzonearchive.name]
@@ -22,7 +22,7 @@ resource "azurerm_storage_blob_inventory_policy" "sbip_dh2dropzone_archive" {
     name                   = "sbipr-dropzonetimeseriessyncarchive"
     storage_container_name = azurerm_storage_container.dropzonetimeseriessyncarchive.name
     format                 = "Csv"
-    schedule               = "Daily"
+    schedule               = "Weekly"
     scope                  = "Blob"
     filter {
       prefix_match = [azurerm_storage_container.dropzonetimeseriessyncarchive.name]
