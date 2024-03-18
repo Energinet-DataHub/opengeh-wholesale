@@ -63,8 +63,8 @@ def aggregate_net_exchange_per_neighbour_ga(
     )
 
     from_qualities = "from_qualities"
-    to_observation_time = "to_time_window"
-    from_observation_time = "from_time_window"
+    to_observation_time = "to_observation_time"
+    from_observation_time = "from_observation_time"
 
     # Workaround for ambiguous "time_window" column in select after join
     exchange_to = exchange_to.withColumnRenamed(
