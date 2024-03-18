@@ -14,7 +14,7 @@
 from decimal import Decimal
 
 import pytest
-from datetime import datetime, timedelta
+from datetime import datetime
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as f
 
@@ -138,7 +138,7 @@ class TestWhenValidInput:
 
 
 class TestWhenNoPricesForPeriod:
-    def test__returns_rows_where_price_is_none(
+    def test__returns_rows_with_price_equal_none(
         self,
         spark: SparkSession,
     ) -> None:
