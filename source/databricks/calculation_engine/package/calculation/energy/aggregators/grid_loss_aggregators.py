@@ -125,21 +125,25 @@ def calculate_negative_grid_loss(
         )
     )
 
-    result = grid_loss.df.join(
-        only_grid_area_and_metering_point_id, Colname.grid_area, "left"
-    ).select(
-        Colname.grid_area,
-        only_grid_area_and_metering_point_id[Colname.energy_supplier_id],
-        only_grid_area_and_metering_point_id[Colname.balance_responsible_id],
-        Colname.time_window,
-        f.when(f.col(Colname.sum_quantity) < 0, -f.col(Colname.sum_quantity))
-        .otherwise(0)
-        .alias(Colname.sum_quantity),
-        f.lit(MeteringPointType.PRODUCTION.value).alias(Colname.metering_point_type),
-        Colname.qualities,
-        only_grid_area_and_metering_point_id[Colname.grid_loss_metering_point_id].alias(
-            Colname.metering_point_id
-        ),
+    result = (
+        grid_loss.df.drop(Colname.energy_supplier_id, Colname.balance_responsible_id)
+        .join(only_grid_area_and_metering_point_id, Colname.grid_area, "left")
+        .select(
+            Colname.grid_area,
+            Colname.energy_supplier_id,
+            Colname.balance_responsible_id,
+            Colname.time_window,
+            f.when(f.col(Colname.sum_quantity) < 0, -f.col(Colname.sum_quantity))
+            .otherwise(0)
+            .alias(Colname.sum_quantity),
+            f.lit(MeteringPointType.PRODUCTION.value).alias(
+                Colname.metering_point_type
+            ),
+            Colname.qualities,
+            only_grid_area_and_metering_point_id[
+                Colname.grid_loss_metering_point_id
+            ].alias(Colname.metering_point_id),
+        )
     )
 
     return EnergyResults(result)
@@ -158,19 +162,23 @@ def calculate_positive_grid_loss(
         )
     )
 
-    result = grid_loss.df.join(
-        only_grid_area_and_metering_point_id, Colname.grid_area, "left"
-    ).select(
-        Colname.grid_area,
-        only_grid_area_and_metering_point_id[Colname.energy_supplier_id],
-        only_grid_area_and_metering_point_id[Colname.balance_responsible_id],
-        Colname.time_window,
-        f.when(f.col(Colname.sum_quantity) > 0, f.col(Colname.sum_quantity))
-        .otherwise(0)
-        .alias(Colname.sum_quantity),
-        f.lit(MeteringPointType.CONSUMPTION.value).alias(Colname.metering_point_type),
-        Colname.qualities,
-        only_grid_area_and_metering_point_id[Colname.grid_loss_metering_point_id],
+    result = (
+        grid_loss.df.drop(Colname.energy_supplier_id, Colname.balance_responsible_id)
+        .join(only_grid_area_and_metering_point_id, Colname.grid_area, "left")
+        .select(
+            Colname.grid_area,
+            Colname.energy_supplier_id,
+            Colname.balance_responsible_id,
+            Colname.time_window,
+            f.when(f.col(Colname.sum_quantity) > 0, f.col(Colname.sum_quantity))
+            .otherwise(0)
+            .alias(Colname.sum_quantity),
+            f.lit(MeteringPointType.CONSUMPTION.value).alias(
+                Colname.metering_point_type
+            ),
+            Colname.qualities,
+            only_grid_area_and_metering_point_id[Colname.grid_loss_metering_point_id],
+        )
     )
 
     result = result.withColumnRenamed(

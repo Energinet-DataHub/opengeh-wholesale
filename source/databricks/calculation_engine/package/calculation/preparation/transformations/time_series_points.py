@@ -36,6 +36,7 @@ def get_time_series_points(
     grid_loss_metering_points = (
         calculation_input_reader.read_grid_loss_metering_points()
     )
+    grid_loss_metering_points.show()
     time_series_points_df = time_series_points_df.join(
         grid_loss_metering_points,
         Colname.metering_point_id,

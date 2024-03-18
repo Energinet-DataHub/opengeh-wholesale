@@ -72,6 +72,7 @@ def test__creates_hour_for_es_per_ga__with_expected_columns_names(
     ]
 
 
+# TODO BJM: Left contains 96 more items, first extra item: 'ENERGYQUANTITY97'
 def test__creates_quarter_for_total_ga__with_expected_columns_names(
     spark: SparkSession,
     data_lake_path: str,
@@ -99,6 +100,7 @@ def test__creates_quarter_for_total_ga__with_expected_columns_names(
     ]
 
 
+# TODO BJM: Left contains 96 more items, first extra item: 'ENERGYQUANTITY97'
 def test__creates_quarter_for_es_per_ga__with_expected_columns_names(
     spark: SparkSession,
     data_lake_path: str,
