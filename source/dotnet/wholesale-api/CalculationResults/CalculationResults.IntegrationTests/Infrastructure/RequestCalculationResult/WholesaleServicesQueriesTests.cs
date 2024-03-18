@@ -22,6 +22,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using JetBrains.Annotations;
 using NodaTime;
 using NodaTime.Extensions;
 using Xunit;
@@ -40,27 +41,34 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         _fixture = fixture;
     }
 
+    public static IEnumerable<object[]> GetWholesaleServicesProperties()
+    {
+        var values = Enum.GetValues<WholesaleServicesProperty>();
+
+        return values.Select(v => new object[] { v }).ToArray();
+    }
+
     [Fact]
-    public async Task GetAsync_WhenRequestWithNoFilters_Returns3CorrectPackages()
+    public async Task GetAsync_WhenRequesting3CalculationPeriods_3WholesaleServices()
     {
         // Arrange
         var calculationPeriods = CreateCalculationPeriods();
 
-        List<Package> packages = [
-            new Package(
+        List<WholesaleServicesPackage> packages = [
+            new WholesaleServicesPackage(
                 CalculationPeriod: calculationPeriods.Calculation1Period1,
                 Points: [
                     calculationPeriods.Calculation1Period1.Period.Start,
                     calculationPeriods.Calculation1Period1.Period.Start.Plus(Duration.FromHours(1)),
                     calculationPeriods.Calculation1Period1.Period.Start.Plus(Duration.FromHours(2)),
                 ]),
-            new Package(
-                CalculationPeriod: calculationPeriods.Calculation2Period,
+            new WholesaleServicesPackage(
+                CalculationPeriod: calculationPeriods.Calculation2,
                 Points: [
-                    calculationPeriods.Calculation2Period.Period.Start,
-                    calculationPeriods.Calculation2Period.Period.Start.Plus(Duration.FromHours(1))
+                    calculationPeriods.Calculation2.Period.Start,
+                    calculationPeriods.Calculation2.Period.Start.Plus(Duration.FromHours(1))
                 ]),
-            new Package(
+            new WholesaleServicesPackage(
                 CalculationPeriod: calculationPeriods.Calculation1Period2,
                 Points: [
                     calculationPeriods.Calculation1Period2.Period.Start,
@@ -70,10 +78,10 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
                 ]),
         ];
 
-        var rows = ExtractSqlRowsFromPackagesAndTheirPoints(packages);
+        var rows = ExtractSqlRowsFromPackagesAndTheirPoints(packages); // A package creates 1 sql row per point (9 rows total in this case)
         await InsertData(rows);
 
-        var query = CreateQueryParameters(calculationPeriods.All);
+        var query = CreateQueryParameters([calculationPeriods.Calculation1Period1, calculationPeriods.Calculation2, calculationPeriods.Calculation1Period2]);
 
         // Act
         var actual = await Sut.GetAsync(query).ToListAsync();
@@ -85,12 +93,13 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
     }
 
     [Fact]
-    public async Task GetAsync_WhenSameDataIn4DifferentGridAreas_Returns4CorrectPackages()
+    public async Task GetAsync_WhenSameDataIn4DifferentGridAreas_4WholesaleServices()
     {
         // Arrange
         var calculationPeriod = CreateCalculationPeriods().Calculation1Period1;
-        List<Package> packages = [
-            new Package(
+
+        List<WholesaleServicesPackage> packages = [
+            new WholesaleServicesPackage(
                 CalculationPeriod: calculationPeriod,
                 Points: [
                     calculationPeriod.Period.Start,
@@ -98,13 +107,13 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
                     calculationPeriod.Period.Start.Plus(Duration.FromHours(2)),
                 ],
                 GridArea: "101"),
-            new Package(
+            new WholesaleServicesPackage(
                 CalculationPeriod: calculationPeriod,
                 Points: [
                     calculationPeriod.Period.Start,
                 ],
                 GridArea: "102"),
-            new Package(
+            new WholesaleServicesPackage(
                 CalculationPeriod: calculationPeriod,
                 Points: [
                     calculationPeriod.Period.Start,
@@ -112,7 +121,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
                     calculationPeriod.Period.Start.Plus(Duration.FromHours(7)),
                 ],
                 GridArea: "103"),
-            new Package(
+            new WholesaleServicesPackage(
                 CalculationPeriod: calculationPeriod,
                 Points: [
                     calculationPeriod.Period.Start,
@@ -122,7 +131,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
                 GridArea: "104"),
         ];
 
-        var rows = ExtractSqlRowsFromPackagesAndTheirPoints(packages);
+        var rows = ExtractSqlRowsFromPackagesAndTheirPoints(packages); // A package creates 1 sql row per point (10 rows total in this case)
         await InsertData(rows);
 
         var query = CreateQueryParameters([calculationPeriod]);
@@ -136,7 +145,286 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
             actual.Should().ContainSingle(actualPackage => PackagesAreEqual(actualPackage, expectedPackage));
     }
 
-    private bool PackagesAreEqual(WholesaleServices actualPackage, Package expectedPackage)
+    [Theory]
+    [MemberData(nameof(GetWholesaleServicesProperties))]
+    public async Task GetAsync_WhenSameDataExceptOneProperty_WholesaleServicesGroupedCorrectlyIn3(WholesaleServicesProperty propertyToDiffer)
+    {
+        // Arrange
+        var calculationPeriods = CreateCalculationPeriods();
+
+        var calculationPeriod = calculationPeriods.Calculation2;
+        var resolution = Resolution.Day;
+        var gridArea = "999";
+        var energySupplierId = "2236552000028";
+        var chargeOwnerId = "9876543210000";
+        var chargeCode = "4000";
+        var chargeType = ChargeType.Tariff;
+
+        List<WholesaleServicesPackage> packages = [
+            new WholesaleServicesPackage(
+                Points: [
+                    calculationPeriod.Period.Start,
+                    calculationPeriod.Period.Start.Plus(Duration.FromHours(1)),
+                    calculationPeriod.Period.Start.Plus(Duration.FromHours(2)),
+                ],
+                CalculationPeriod: propertyToDiffer == WholesaleServicesProperty.CalculationPeriod ? calculationPeriods.Calculation2 : calculationPeriod,
+                Resolution: propertyToDiffer == WholesaleServicesProperty.Resolution ? Resolution.Month : resolution,
+                GridArea: propertyToDiffer == WholesaleServicesProperty.GridArea ? "101" : gridArea,
+                EnergySupplierId: propertyToDiffer == WholesaleServicesProperty.EnergySupplierId ? "9999999999991" : energySupplierId,
+                ChargeOwnerId: propertyToDiffer == WholesaleServicesProperty.ChargeOwnerId ? "8888888888881" : chargeOwnerId,
+                ChargeCode: propertyToDiffer == WholesaleServicesProperty.ChargeCode ? "9991" : chargeCode,
+                ChargeType: propertyToDiffer == WholesaleServicesProperty.ChargeType ? ChargeType.Fee : chargeType),
+            new WholesaleServicesPackage(
+                Points: [
+                    calculationPeriod.Period.Start,
+                ],
+                CalculationPeriod: propertyToDiffer == WholesaleServicesProperty.CalculationPeriod ? calculationPeriods.Calculation3 : calculationPeriod,
+                Resolution: propertyToDiffer == WholesaleServicesProperty.Resolution ? Resolution.Hour : resolution,
+                GridArea: propertyToDiffer == WholesaleServicesProperty.GridArea ? "102" : gridArea,
+                EnergySupplierId: propertyToDiffer == WholesaleServicesProperty.EnergySupplierId ? "9999999999992" : energySupplierId,
+                ChargeOwnerId: propertyToDiffer == WholesaleServicesProperty.ChargeOwnerId ? "8888888888882" : chargeOwnerId,
+                ChargeCode: propertyToDiffer == WholesaleServicesProperty.ChargeCode ? "9992" : chargeCode,
+                ChargeType: propertyToDiffer == WholesaleServicesProperty.ChargeType ? ChargeType.Tariff : chargeType),
+            new WholesaleServicesPackage(
+                Points: [
+                    calculationPeriod.Period.Start,
+                    calculationPeriod.Period.Start.Plus(Duration.FromHours(4)),
+                    calculationPeriod.Period.Start.Plus(Duration.FromHours(7)),
+                    calculationPeriod.Period.Start.Plus(Duration.FromHours(12)),
+                ],
+                CalculationPeriod: propertyToDiffer == WholesaleServicesProperty.CalculationPeriod ? calculationPeriods.Calculation4 : calculationPeriod,
+                Resolution: propertyToDiffer == WholesaleServicesProperty.Resolution ? Resolution.Day : resolution,
+                GridArea: propertyToDiffer == WholesaleServicesProperty.GridArea ? "103" : gridArea,
+                EnergySupplierId: propertyToDiffer == WholesaleServicesProperty.EnergySupplierId ? "9999999999993" : energySupplierId,
+                ChargeOwnerId: propertyToDiffer == WholesaleServicesProperty.ChargeOwnerId ? "8888888888883" : chargeOwnerId,
+                ChargeCode: propertyToDiffer == WholesaleServicesProperty.ChargeCode ? "9993" : chargeCode,
+                ChargeType: propertyToDiffer == WholesaleServicesProperty.ChargeType ? ChargeType.Subscription : chargeType),
+        ];
+
+        var rows = ExtractSqlRowsFromPackagesAndTheirPoints(packages); // A package creates 1 sql row per point (8 rows total in this case)
+        await InsertData(rows);
+
+        var query = CreateQueryParameters([calculationPeriods.Calculation2, calculationPeriods.Calculation3, calculationPeriods.Calculation4]);
+
+        // Act
+        var actual = await Sut.GetAsync(query).ToListAsync();
+
+        using var assertionScope = new AssertionScope();
+        actual.Should().HaveCount(3);
+        foreach (var expectedPackage in packages)
+            actual.Should().ContainSingle(actualPackage => PackagesAreEqual(actualPackage, expectedPackage));
+    }
+
+    [Fact]
+    public async Task GetAsync_WhenUsingAllQueryFilters_1MatchingWholesaleServices()
+    {
+        // Arrange
+        var calculationPeriods = CreateCalculationPeriods();
+        var expectedCalculationPeriod = calculationPeriods.Calculation1Period1;
+        var expectedResolution = Resolution.Hour;
+        var expectedGridArea = "911";
+        var expectedEnergySupplierId = "8886552000028";
+        var expectedChargeOwnerId = "9996543210000";
+        var expectedChargeCode = "8000";
+        var expectedChargeType = ChargeType.Subscription;
+
+        var match = CreatePackageForFilter(
+            expectedCalculationPeriod,
+            expectedResolution,
+            expectedGridArea,
+            expectedEnergySupplierId,
+            expectedChargeOwnerId,
+            expectedChargeCode,
+            expectedChargeType);
+
+        var matchExpectPeriod = CreatePackageForFilter(
+            calculationPeriods.Calculation2,
+            expectedResolution,
+            expectedGridArea,
+            expectedEnergySupplierId,
+            expectedChargeOwnerId,
+            expectedChargeCode,
+            expectedChargeType);
+
+        var matchExceptResolution = CreatePackageForFilter(
+            expectedCalculationPeriod,
+            Resolution.Day,
+            expectedGridArea,
+            expectedEnergySupplierId,
+            expectedChargeOwnerId,
+            expectedChargeCode,
+            expectedChargeType);
+
+        var matchExceptGridArea = CreatePackageForFilter(
+            expectedCalculationPeriod,
+            expectedResolution,
+            "111",
+            expectedEnergySupplierId,
+            expectedChargeOwnerId,
+            expectedChargeCode,
+            expectedChargeType);
+
+        var matchExceptEnergySupplierId = CreatePackageForFilter(
+            expectedCalculationPeriod,
+            expectedResolution,
+            expectedGridArea,
+            "2226552000028",
+            expectedChargeOwnerId,
+            expectedChargeCode,
+            expectedChargeType);
+
+        var matchExceptChargeOwnerId = CreatePackageForFilter(
+            expectedCalculationPeriod,
+            expectedResolution,
+            expectedGridArea,
+            expectedEnergySupplierId,
+            "3336543210000",
+            expectedChargeCode,
+            expectedChargeType);
+
+        var matchExceptChargeCode = CreatePackageForFilter(
+            expectedCalculationPeriod,
+            expectedResolution,
+            expectedGridArea,
+            expectedEnergySupplierId,
+            expectedChargeOwnerId,
+            "9000",
+            expectedChargeType);
+
+        var matchExceptChargeType = CreatePackageForFilter(
+            expectedCalculationPeriod,
+            expectedResolution,
+            expectedGridArea,
+            expectedEnergySupplierId,
+            expectedChargeOwnerId,
+            expectedChargeCode,
+            ChargeType.Fee);
+
+        List<WholesaleServicesPackage> packages = [
+            match,
+            matchExpectPeriod,
+            matchExceptResolution,
+            matchExceptGridArea,
+            matchExceptEnergySupplierId,
+            matchExceptChargeOwnerId,
+            matchExceptChargeCode,
+            matchExceptChargeType
+        ];
+
+        var rows = ExtractSqlRowsFromPackagesAndTheirPoints(packages);
+        await InsertData(rows);
+
+        var query = CreateQueryParameters(
+            [expectedCalculationPeriod],
+            expectedResolution,
+            expectedGridArea,
+            expectedEnergySupplierId,
+            expectedChargeOwnerId,
+            (expectedChargeCode, expectedChargeType));
+
+        // Act
+        var actual = await Sut.GetAsync(query).ToListAsync();
+
+        using var assertionScope = new AssertionScope();
+        actual.Should().HaveCount(1);
+        actual.Should().ContainSingle(actualPackage => PackagesAreEqual(actualPackage, match));
+    }
+
+    [Fact]
+    public async Task GetAsync_WhenFilteringBy2DifferentChargeTypes_2MatchingWholesaleServices()
+    {
+        // Arrange
+        var calculationPeriod = CreateCalculationPeriods().Calculation1Period1;
+        var expectedChargeCode1 = "8000";
+        var expectedChargeType1 = ChargeType.Subscription;
+        var expectedChargeCode2 = "3000";
+        var expectedChargeType2 = ChargeType.Fee;
+
+        var match1 = CreatePackageForFilter(
+            calculationPeriod,
+            chargeCode: expectedChargeCode1,
+            chargeType: expectedChargeType1);
+
+        var match2 = CreatePackageForFilter(
+            calculationPeriod,
+            chargeCode: expectedChargeCode2,
+            chargeType: expectedChargeType2);
+
+        var match1ExceptChargeCode = CreatePackageForFilter(
+            calculationPeriod,
+            chargeCode: expectedChargeCode2,
+            chargeType: expectedChargeType1);
+
+        var match1ExceptChargeType = CreatePackageForFilter(
+            calculationPeriod,
+            chargeCode: expectedChargeCode1,
+            chargeType: expectedChargeType2);
+
+        var match2ExceptChargeCode = CreatePackageForFilter(
+            calculationPeriod,
+            chargeCode: expectedChargeCode1,
+            chargeType: expectedChargeType2);
+
+        var match2ExceptChargeType = CreatePackageForFilter(
+            calculationPeriod,
+            chargeCode: expectedChargeCode2,
+            chargeType: expectedChargeType1);
+
+        var noMatch = CreatePackageForFilter(
+            calculationPeriod,
+            chargeCode: "9000",
+            chargeType: ChargeType.Tariff);
+
+        List<WholesaleServicesPackage> packages = [
+            match1,
+            match2,
+            match1ExceptChargeCode,
+            match1ExceptChargeType,
+            match2ExceptChargeCode,
+            match2ExceptChargeType,
+            noMatch,
+        ];
+
+        var rows = ExtractSqlRowsFromPackagesAndTheirPoints(packages);
+        await InsertData(rows);
+
+        var query = CreateQueryParameters(
+            [calculationPeriod],
+            chargeTypes: [
+                (expectedChargeCode1, expectedChargeType1),
+                (expectedChargeCode2, expectedChargeType2)
+            ]);
+
+        // Act
+        var actual = await Sut.GetAsync(query).ToListAsync();
+
+        using var assertionScope = new AssertionScope();
+        actual.Should().HaveCount(2);
+        actual.Should().ContainSingle(actualPackage => PackagesAreEqual(actualPackage, match1));
+        actual.Should().ContainSingle(actualPackage => PackagesAreEqual(actualPackage, match2));
+    }
+
+    private WholesaleServicesPackage CreatePackageForFilter(
+        CalculationForPeriod calculationPeriod,
+        Resolution resolution = Resolution.Day,
+        string gridArea = "100",
+        string energySupplierId = "2236552000028",
+        string chargeOwnerId = "9876543210000",
+        string chargeCode = "4000",
+        ChargeType chargeType = ChargeType.Tariff)
+    {
+        return new WholesaleServicesPackage(
+            calculationPeriod,
+            [calculationPeriod.Period.Start],
+            resolution,
+            gridArea,
+            energySupplierId,
+            chargeOwnerId,
+            chargeCode,
+            chargeType);
+    }
+
+    private bool PackagesAreEqual(WholesaleServices actualPackage, WholesaleServicesPackage expectedPackage)
     {
         var actual = new PackageForComparision(
             actualPackage.Period,
@@ -145,7 +433,8 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
             actualPackage.EnergySupplierId,
             actualPackage.ChargeOwnerId,
             actualPackage.ChargeCode,
-            actualPackage.ChargeType);
+            actualPackage.ChargeType,
+            actualPackage.Resolution);
 
         var expected = new PackageForComparision(
             expectedPackage.CalculationPeriod.Period,
@@ -154,7 +443,8 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
             expectedPackage.EnergySupplierId,
             expectedPackage.ChargeOwnerId,
             expectedPackage.ChargeCode,
-            expectedPackage.ChargeType);
+            expectedPackage.ChargeType,
+            expectedPackage.Resolution);
 
         var actualPoints = actualPackage.TimeSeriesPoints.Select(p => p.Time.ToInstant()).ToList();
         var expectedPoints = expectedPackage.Points;
@@ -162,7 +452,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         return actual == expected && actualPoints.SequenceEqual(expectedPoints);
     }
 
-    private List<IReadOnlyCollection<string?>> ExtractSqlRowsFromPackagesAndTheirPoints(List<Package> packages)
+    private List<IReadOnlyCollection<string?>> ExtractSqlRowsFromPackagesAndTheirPoints(List<WholesaleServicesPackage> packages)
     {
         return packages
             .SelectMany(p =>
@@ -170,6 +460,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
                     CreateRow(
                         p.CalculationPeriod,
                         time,
+                        p.Resolution,
                         p.GridArea,
                         p.EnergySupplierId,
                         p.ChargeOwnerId,
@@ -189,6 +480,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
     private IReadOnlyCollection<string?> CreateRow(
         CalculationForPeriod calculationPeriod,
         Instant time,
+        Resolution resolution,
         string gridArea,
         string energySupplierId,
         string chargeOwnerId,
@@ -198,6 +490,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         return WholesaleResultDeltaTableHelper.CreateRowValues(
             calculationPeriod.CalculationId.ToString(),
             time: time.ToString(),
+            resolution: ResolutionMapper.ToDeltaTableValue(resolution),
             gridArea: gridArea,
             energySupplierId: energySupplierId,
             chargeOwnerId: chargeOwnerId,
@@ -220,7 +513,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
             calculation1Id,
             calculation1Version);
 
-        var calculation2Period = new CalculationForPeriod(
+        var calculation2 = new CalculationForPeriod(
             new Period(
                 calculation1Period1.Period.End,
                 Duration.FromDays(7)),
@@ -229,12 +522,16 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
 
         var calculation1Period2 = new CalculationForPeriod(
             new Period(
-                calculation2Period.Period.End,
+                calculation2.Period.End,
                 totalPeriod.End),
             calculation1Id,
             calculation1Version);
 
-        return new CalculationPeriods(calculation1Period1, calculation2Period, calculation1Period2);
+        var calculation3 = calculation2 with { CalculationId = Guid.NewGuid() };
+        var calculation4 = calculation2 with { CalculationId = Guid.NewGuid() };
+        var calculation5 = calculation2 with { CalculationId = Guid.NewGuid() };
+
+        return new CalculationPeriods(calculation1Period1, calculation2, calculation1Period2, calculation3, calculation4, calculation5);
     }
 
     private WholesaleServicesQueryParameters CreateQueryParameters(
@@ -243,45 +540,54 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         string? gridArea = null,
         string? energySupplierId = null,
         string? chargeOwnerId = null,
-        List<(string? ChargeCode, ChargeType? ChargeType)>? chargeTypes = null)
+        params (string? ChargeCode, ChargeType? ChargeType)[] chargeTypes)
     {
         return new WholesaleServicesQueryParameters(
             resolution,
             gridArea,
             energySupplierId,
             chargeOwnerId,
-            chargeTypes,
+            chargeTypes.ToList(),
             calculations);
     }
 
     private record CalculationPeriods(
         CalculationForPeriod Calculation1Period1,
-        CalculationForPeriod Calculation2Period,
-        CalculationForPeriod Calculation1Period2)
-    {
-        public IReadOnlyCollection<CalculationForPeriod> All =>
-        [
-            Calculation1Period1,
-            Calculation2Period,
-            Calculation1Period2,
-        ];
-    }
+        CalculationForPeriod Calculation2,
+        CalculationForPeriod Calculation1Period2,
+        CalculationForPeriod Calculation3,
+        CalculationForPeriod Calculation4,
+        CalculationForPeriod Calculation5);
 
-    private record Package(
+    private record WholesaleServicesPackage(
         CalculationForPeriod CalculationPeriod,
         List<Instant> Points,
+        Resolution Resolution = Resolution.Day,
         string GridArea = "100",
         string EnergySupplierId = "2236552000028",
         string ChargeOwnerId = "9876543210000",
         string ChargeCode = "4000",
         ChargeType ChargeType = ChargeType.Tariff);
 
+    // Properties are used by implicit comparision
     private record PackageForComparision(
-        Period Period,
-        long CalculationVersion,
-        string GridArea,
-        string EnergySupplierId,
-        string ChargeOwnerId,
-        string ChargeCode,
-        ChargeType ChargeType);
+        [UsedImplicitly] Period Period,
+        [UsedImplicitly] long CalculationVersion,
+        [UsedImplicitly] string GridArea,
+        [UsedImplicitly] string EnergySupplierId,
+        [UsedImplicitly] string ChargeOwnerId,
+        [UsedImplicitly] string ChargeCode,
+        [UsedImplicitly] ChargeType ChargeType,
+        [UsedImplicitly] Resolution Resolution);
+
+    public enum WholesaleServicesProperty
+    {
+        CalculationPeriod,
+        GridArea,
+        EnergySupplierId,
+        ChargeOwnerId,
+        ChargeCode,
+        ChargeType,
+        Resolution,
+    }
 }
