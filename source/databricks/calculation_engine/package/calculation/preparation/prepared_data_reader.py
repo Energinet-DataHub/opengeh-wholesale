@@ -136,10 +136,18 @@ class PreparedDataReader:
             time_zone,
         )
 
+        fees = T.get_prepared_fees(
+            input_charges.charge_master_data,
+            input_charges.charge_prices,
+            charge_link_metering_point_periods,
+            time_zone,
+        )
+
         return PreparedChargesContainer(
             hourly_tariffs=hourly_tariffs,
             daily_tariffs=daily_tariffs,
             subscriptions=subscriptions,
+            fees=fees,
         )
 
     def get_metering_point_periods_without_grid_loss(
