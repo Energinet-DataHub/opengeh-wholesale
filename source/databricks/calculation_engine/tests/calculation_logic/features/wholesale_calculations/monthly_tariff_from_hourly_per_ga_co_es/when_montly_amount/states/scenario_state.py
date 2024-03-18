@@ -11,12 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from pyspark.sql import DataFrame
 
-from .charge_link_metering_point_periods import ChargeLinkMeteringPointPeriods
-from .charge_master_data import ChargeMasterData
-from .charge_prices import ChargePrices
-from .grid_loss_responsible import GridLossResponsible
-from .prepared_metering_point_time_series import PreparedMeteringPointTimeSeries
-from .prepared_fees import PreparedFees
-from .prepared_subscriptions import PreparedSubscriptions
-from .prepared_tariffs import PreparedTariffs
+from calculation_logic.features.wholesale_calculations.wholesale_results_dataframe import (
+    create_wholesale_result_dataframe,
+)
+
+
+def get_expected(*args) -> DataFrame:  # type: ignore
+    """
+    This function can be used to custom build the expected results (dataframe).
+    It is also used a reference to locate the test scenario.
+    """
+    return create_wholesale_result_dataframe(*args)
