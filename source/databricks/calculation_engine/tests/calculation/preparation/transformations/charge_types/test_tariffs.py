@@ -35,19 +35,19 @@ DEFAULT_TIME_ZONE = "Europe/Copenhagen"
 
 
 def _create_expected_prepared_tariffs_row(
-    charge_key: str = f"{factory.DefaultValues.DEFAULT_CHARGE_CODE}-{factory.DefaultValues.DEFAULT_CHARGE_OWNER}-{e.ChargeType.TARIFF.value}",
-    charge_code: str = factory.DefaultValues.DEFAULT_CHARGE_CODE,
-    charge_owner: str = factory.DefaultValues.DEFAULT_CHARGE_OWNER,
-    charge_tax: bool = factory.DefaultValues.DEFAULT_CHARGE_TAX,
+    charge_key: str = f"{factory.DefaultValues.CHARGE_CODE}-{factory.DefaultValues.CHARGE_OWNER}-{e.ChargeType.TARIFF.value}",
+    charge_code: str = factory.DefaultValues.CHARGE_CODE,
+    charge_owner: str = factory.DefaultValues.CHARGE_OWNER,
+    charge_tax: bool = factory.DefaultValues.CHARGE_TAX,
     resolution: e.ChargeResolution = e.ChargeResolution.HOUR,
-    charge_time: datetime = factory.DefaultValues.DEFAULT_CHARGE_TIME_HOUR_0,
-    charge_price: Decimal = factory.DefaultValues.DEFAULT_CHARGE_PRICE,
-    metering_point_id: str = factory.DefaultValues.DEFAULT_METERING_POINT_ID,
-    energy_supplier_id: str = factory.DefaultValues.DEFAULT_ENERGY_SUPPLIER_ID,
-    metering_point_type: e.MeteringPointType = factory.DefaultValues.DEFAULT_METERING_POINT_TYPE,
-    settlement_method: e.SettlementMethod = factory.DefaultValues.DEFAULT_SETTLEMENT_METHOD,
-    grid_area: str = factory.DefaultValues.DEFAULT_GRID_AREA,
-    quantity: Decimal = factory.DefaultValues.DEFAULT_QUANTITY,
+    charge_time: datetime = factory.DefaultValues.CHARGE_TIME_HOUR_0,
+    charge_price: Decimal = factory.DefaultValues.CHARGE_PRICE,
+    metering_point_id: str = factory.DefaultValues.METERING_POINT_ID,
+    energy_supplier_id: str = factory.DefaultValues.ENERGY_SUPPLIER_ID,
+    metering_point_type: e.MeteringPointType = factory.DefaultValues.METERING_POINT_TYPE,
+    settlement_method: e.SettlementMethod = factory.DefaultValues.SETTLEMENT_METHOD,
+    grid_area: str = factory.DefaultValues.GRID_AREA,
+    quantity: Decimal = factory.DefaultValues.QUANTITY,
     qualities=None,
 ) -> Row:
     if qualities is None:
@@ -321,7 +321,7 @@ def test__get_prepared_tariffs__when_same_metering_point_and_resolution__sums_qu
     # Assert
     assert (
         actual.df.collect()[0][Colname.sum_quantity]
-        == 2 * factory.DefaultValues.DEFAULT_QUANTITY
+        == 2 * factory.DefaultValues.QUANTITY
     )
 
 
@@ -444,7 +444,7 @@ def test__get_prepared_tariffs__returns_expected_tariff_values(
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
     expected_row = [
         _create_expected_prepared_tariffs_row(
-            quantity=2 * factory.DefaultValues.DEFAULT_QUANTITY
+            quantity=2 * factory.DefaultValues.QUANTITY
         )
     ]
     expected = spark.createDataFrame(expected_row, prepared_tariffs_schema)
@@ -469,12 +469,12 @@ def test__get_prepared_tariffs__returns_expected_tariff_values(
         (
             e.ChargeResolution.HOUR,
             48,
-            factory.DefaultValues.DEFAULT_QUANTITY,
+            factory.DefaultValues.QUANTITY,
         ),
         (
             e.ChargeResolution.DAY,
             2,
-            24 * factory.DefaultValues.DEFAULT_QUANTITY,
+            24 * factory.DefaultValues.QUANTITY,
         ),
     ],
 )
@@ -552,12 +552,12 @@ def test__get_prepared_tariffs__when_charges_with_specific_charge_resolution_and
         (
             e.ChargeResolution.HOUR,
             48,
-            4 * factory.DefaultValues.DEFAULT_QUANTITY,
+            4 * factory.DefaultValues.QUANTITY,
         ),
         (
             e.ChargeResolution.DAY,
             2,
-            96 * factory.DefaultValues.DEFAULT_QUANTITY,
+            96 * factory.DefaultValues.QUANTITY,
         ),
     ],
 )
@@ -786,7 +786,7 @@ def test__get_prepared_tariffs__can_handle_missing_charge_prices(
     assert actual_df.count() == 2
     assert (
         actual_df.collect()[0][Colname.charge_price]
-        == factory.DefaultValues.DEFAULT_CHARGE_PRICE
+        == factory.DefaultValues.CHARGE_PRICE
     )
     assert actual_df.collect()[1][Colname.charge_price] is None
 

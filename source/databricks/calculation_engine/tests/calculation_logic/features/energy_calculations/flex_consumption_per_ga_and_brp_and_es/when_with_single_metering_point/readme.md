@@ -1,4 +1,4 @@
-# Calculate flex consumption per ga and brp and es
+# Calculate flex consumption per ga and brp and es for a single metering point
 
 The purpose of this test is to verify that the flex consumption is calculated correctly for
 grid area 804.
