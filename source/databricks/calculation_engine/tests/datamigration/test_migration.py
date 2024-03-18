@@ -238,8 +238,6 @@ def test__schema_config__when_schema_and_table_script_files_are_executed(
     for schema in schema_config.schema_config:
         for table in schema.tables:
             actual_table = spark.table(f"{schema.name}.{table.name}")
-            actual_table.printSchema()
-            print(table.schema)
             assert actual_table.schema == table.schema
 
 

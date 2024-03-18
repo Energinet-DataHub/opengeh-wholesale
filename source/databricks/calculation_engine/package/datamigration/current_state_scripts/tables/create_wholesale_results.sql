@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.wholesale_results
     energy_supplier_id STRING NOT NULL,
     -- Energy quantity for the given observation time and duration as defined by `resolution`.
     -- Example: 1234.534
-    quantity DECIMAL(18, 3) NOT NULL,
+    quantity DECIMAL(18, 3),
     quantity_unit STRING NOT NULL,
     quantity_qualities ARRAY<STRING>,
     -- The time when the energy was consumed/produced/exchanged
@@ -152,7 +152,4 @@ ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
 GO
 ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
     ADD CONSTRAINT amount_type_chk CHECK (amount_type IN ('amount_per_charge', 'monthly_amount_per_charge', 'total_monthly_amount'))
-GO
-ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
-    ALTER COLUMN quantity DROP NOT NULL
 GO
