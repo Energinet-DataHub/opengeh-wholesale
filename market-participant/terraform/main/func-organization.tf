@@ -42,6 +42,7 @@ module "func_entrypoint_marketparticipant" {
     CVR_USERNAME                               = var.cvr_username
     CVR_PASSWORD                               = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_cvr_password.name})"
     CVR_ORG_UPDATED_NOTIFICATION_TO_EMAIL      = var.cvr_update_notification_to_email
+    BALANCE_RESPONSIBLE_CHANGED_NOTIFICATION_TO_EMAIL = var.balance_responsible_changed_notification_to_email
 
     FeatureManagement__EnabledOrganizationIdentityUpdateTrigger = var.enabled_organization_identitiy_update_trigger
   }
