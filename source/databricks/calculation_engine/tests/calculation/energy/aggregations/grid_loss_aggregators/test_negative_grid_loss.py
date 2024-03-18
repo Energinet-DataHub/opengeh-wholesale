@@ -83,6 +83,7 @@ def test_negative_grid_loss_change_positive_value_to_zero(
         "0.00000"
     )
 
+
 def test_negative_grid_loss_values_that_are_zero_stay_zero(
     actual_negative_grid_loss: EnergyResults,
 ) -> None:
