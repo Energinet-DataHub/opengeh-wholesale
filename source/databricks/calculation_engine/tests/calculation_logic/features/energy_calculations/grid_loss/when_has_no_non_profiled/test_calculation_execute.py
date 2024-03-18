@@ -14,14 +14,15 @@
 from calculation_logic.features.energy_calculations.grid_loss.when_has_no_non_profiled.states.scenario_state import (
     get_expected,
 )
+from calculation_logic.scenario_factory import ScenarioFixture
 from helpers.data_frame_utils import (
     assert_dataframe_and_schema,
 )
 from package.constants import EnergyResultColumnNames
 
 
-def test_execute__returns_expected(  # type: ignore
-    scenario_fixture,
+def test_execute__returns_expected(
+    scenario_fixture: ScenarioFixture,
 ) -> None:
     # Arrange
     scenario_fixture.setup(get_expected)
