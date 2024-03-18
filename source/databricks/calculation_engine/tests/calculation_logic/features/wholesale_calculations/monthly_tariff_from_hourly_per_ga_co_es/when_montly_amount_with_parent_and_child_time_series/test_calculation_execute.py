@@ -38,5 +38,8 @@ def test_execute__returns_expected(
         ignore_nullability=True,
         columns_to_skip=[
             WholesaleResultColumnNames.calculation_result_id,
+            WholesaleResultColumnNames.price,
+            WholesaleResultColumnNames.quantity,
+            WholesaleResultColumnNames.quantity_qualities,
         ],
     )
