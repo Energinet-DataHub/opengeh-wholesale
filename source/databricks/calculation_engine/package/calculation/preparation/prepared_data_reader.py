@@ -107,7 +107,6 @@ class PreparedDataReader:
         input_charges: InputChargesContainer,
         time_zone: str,
     ) -> PreparedChargesContainer:
-
         charge_link_metering_point_periods = T.get_charge_link_metering_point_periods(
             input_charges.charge_links, metering_point_periods
         )
@@ -130,7 +129,14 @@ class PreparedDataReader:
             time_zone,
         )
 
-        subscriptions = T.get_subscription_charges(
+        subscriptions = T.get_prepared_subscriptions(
+            input_charges.charge_master_data,
+            input_charges.charge_prices,
+            charge_link_metering_point_periods,
+            time_zone,
+        )
+
+        fees = T.get_prepared_fees(
             input_charges.charge_master_data,
             input_charges.charge_prices,
             charge_link_metering_point_periods,
@@ -141,12 +147,12 @@ class PreparedDataReader:
             hourly_tariffs=hourly_tariffs,
             daily_tariffs=daily_tariffs,
             subscriptions=subscriptions,
+            fees=fees,
         )
 
     def get_metering_point_periods_without_grid_loss(
         self, metering_point_periods_df: DataFrame
     ) -> DataFrame:
-
         # Remove grid loss metering point periods
         return metering_point_periods_df.join(
             self._table_reader.read_grid_loss_metering_points(),
