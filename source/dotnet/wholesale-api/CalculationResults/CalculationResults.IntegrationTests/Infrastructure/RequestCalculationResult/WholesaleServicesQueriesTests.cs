@@ -301,6 +301,8 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
             expectedChargeCode,
             ChargeType.Fee);
 
+        var noMatch = CreatePackageForFilter(calculationPeriods.Calculation2);
+
         List<WholesaleServicesPackage> packages = [
             match,
             matchExpectPeriod,
@@ -309,7 +311,8 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
             matchExceptEnergySupplierId,
             matchExceptChargeOwnerId,
             matchExceptChargeCode,
-            matchExceptChargeType
+            matchExceptChargeType,
+            noMatch,
         ];
 
         var rows = ExtractSqlRowsFromPackagesAndTheirPoints(packages);
@@ -403,6 +406,141 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         actual.Should().HaveCount(2);
         actual.Should().ContainSingle(actualPackage => PackagesAreEqual(actualPackage, match1));
         actual.Should().ContainSingle(actualPackage => PackagesAreEqual(actualPackage, match2));
+    }
+
+    [Theory]
+    [InlineData(true, false)]
+    [InlineData(false, false)]
+    [InlineData(true, true)]
+    [InlineData(false, true)]
+    public async Task AnyAsync_WithNoQueryFilters_MatchesCorrectly(bool shouldMatch, bool addNonMatchingDataPoints)
+    {
+        // Arrange
+        var calculationPeriods = CreateCalculationPeriods();
+
+        var package = new WholesaleServicesPackage(
+            calculationPeriods.Calculation1Period1,
+            [
+                calculationPeriods.Calculation1Period1.Period.Start
+            ]);
+
+        var packages = new List<WholesaleServicesPackage>
+        {
+            package,
+        };
+
+        if (addNonMatchingDataPoints)
+        {
+            packages.Add(new WholesaleServicesPackage(
+                calculationPeriods.Calculation2,
+                [
+                    calculationPeriods.Calculation2.Period.Start
+                ]));
+
+            packages.Add(new WholesaleServicesPackage(
+                calculationPeriods.Calculation3,
+                [
+                    calculationPeriods.Calculation3.Period.Start
+                ]));
+        }
+
+        var rows = ExtractSqlRowsFromPackagesAndTheirPoints(packages);
+        await InsertData(rows);
+
+        var query = CreateQueryParameters([shouldMatch ? package.CalculationPeriod : calculationPeriods.Calculation1Period2]);
+
+        // Act
+        var actual = await Sut.AnyAsync(query);
+
+        if (shouldMatch)
+            actual.Should().BeTrue();
+        else
+            actual.Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData(true, false)]
+    [InlineData(false, false)]
+    [InlineData(true, true)]
+    [InlineData(false, true)]
+    public async Task AnyAsync_WithQueryFilters_MatchesCorrectly(bool shouldMatch, bool addNonMatchingDataPoints)
+    {
+        // Arrange
+        var calculationPeriods = CreateCalculationPeriods();
+        var expectedCalculationPeriod = calculationPeriods.Calculation1Period1;
+        var expectedResolution = Resolution.Hour;
+        var expectedGridArea = "911";
+        var expectedEnergySupplierId = "8886552000028";
+        var expectedChargeOwnerId = "9996543210000";
+        var expectedChargeCode = "8000";
+        var expectedChargeType = ChargeType.Subscription;
+
+        var package1 = new WholesaleServicesPackage(
+            expectedCalculationPeriod,
+            [
+                calculationPeriods.Calculation1Period1.Period.Start
+            ],
+            expectedResolution,
+            expectedGridArea,
+            expectedEnergySupplierId,
+            expectedChargeOwnerId,
+            expectedChargeCode,
+            expectedChargeType);
+
+        var package2 = new WholesaleServicesPackage(
+            expectedCalculationPeriod,
+            [
+                calculationPeriods.Calculation1Period2.Period.Start
+            ],
+            expectedResolution,
+            expectedGridArea,
+            expectedEnergySupplierId,
+            expectedChargeOwnerId,
+            expectedChargeCode,
+            expectedChargeType);
+
+        var packages = new List<WholesaleServicesPackage>
+        {
+            package1,
+            package2,
+        };
+
+        if (addNonMatchingDataPoints)
+        {
+            packages.Add(new WholesaleServicesPackage(
+                calculationPeriods.Calculation2,
+                [
+                    calculationPeriods.Calculation2.Period.Start
+                ]));
+
+            packages.Add(new WholesaleServicesPackage(
+                calculationPeriods.Calculation3,
+                [
+                    calculationPeriods.Calculation3.Period.Start
+                ]));
+        }
+
+        var rows = ExtractSqlRowsFromPackagesAndTheirPoints(packages);
+        await InsertData(rows);
+
+        var query = CreateQueryParameters(
+            [
+                shouldMatch ? package1.CalculationPeriod : calculationPeriods.Calculation4,
+                shouldMatch ? package2.CalculationPeriod : calculationPeriods.Calculation4,
+            ],
+            expectedResolution,
+            expectedGridArea,
+            expectedEnergySupplierId,
+            expectedChargeOwnerId,
+            (expectedChargeCode, expectedChargeType));
+
+        // Act
+        var actual = await Sut.AnyAsync(query);
+
+        if (shouldMatch)
+            actual.Should().BeTrue();
+        else
+            actual.Should().BeFalse();
     }
 
     private WholesaleServicesPackage CreatePackageForFilter(
