@@ -52,18 +52,7 @@ energy_results_schema = t.StructType(
         t.StructField(Colname.from_grid_area, t.StringType(), True),
         t.StructField(Colname.balance_responsible_id, t.StringType(), True),
         t.StructField(Colname.energy_supplier_id, t.StringType(), True),
-        # Suggestion: Why not just a single time stamp?
-        #           That is much simpler to manage throughout the code and especially in all the tests
-        t.StructField(
-            Colname.time_window,
-            t.StructType(
-                [
-                    t.StructField(Colname.start, t.TimestampType()),
-                    t.StructField(Colname.end, t.TimestampType()),
-                ]
-            ),
-            False,
-        ),
+        t.StructField(Colname.observation_time, t.TimestampType(), False),
         t.StructField(Colname.sum_quantity, t.DecimalType(18, 6), False),
         t.StructField(Colname.qualities, t.ArrayType(t.StringType(), False), False),
         t.StructField(Colname.metering_point_id, t.StringType(), True),

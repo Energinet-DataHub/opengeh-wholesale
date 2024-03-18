@@ -59,8 +59,7 @@ class TestWhenValidInput:
             == factories.DEFAULT_BALANCE_RESPONSIBLE_ID
         )
         assert (
-            actual_row[Colname.time_window][Colname.start]
-            == factories.DEFAULT_OBSERVATION_TIME
+            actual_row[Colname.observation_time] == factories.DEFAULT_OBSERVATION_TIME
         )
 
     def test_returns_rows_for_each_ga(self, spark: SparkSession):

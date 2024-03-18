@@ -11,7 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 from decimal import Decimal
 
 import pytest
@@ -84,6 +87,21 @@ def test_negative_grid_loss_change_positive_value_to_zero(
         "0.00000"
     )
 
+<<<<<<< Updated upstream
+=======
+        expected = {
+            Colname.grid_area: "001",
+            Colname.to_grid_area: None,
+            Colname.from_grid_area: None,
+            Colname.balance_responsible_id: None,
+            Colname.energy_supplier_id: grid_loss_responsible_factories.DEFAULT_ENERGY_SUPPLIER_ID,
+            Colname.observation_time: energy_results_factories.DEFAULT_OBSERVATION_TIME,
+            Colname.sum_quantity: Decimal("12.567000"),
+            Colname.qualities: [QuantityQuality.CALCULATED.value],
+            Colname.metering_point_id: grid_loss_responsible_factories.DEFAULT_METERING_POINT_ID,
+        }
+        expected_row = Row(**expected)
+>>>>>>> Stashed changes
 
 def test_negative_grid_loss_values_that_are_zero_stay_zero(
     actual_negative_grid_loss: EnergyResults,

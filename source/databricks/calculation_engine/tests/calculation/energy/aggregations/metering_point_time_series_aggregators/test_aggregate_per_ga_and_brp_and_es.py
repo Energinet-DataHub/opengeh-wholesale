@@ -60,8 +60,7 @@ class TestWhenValidInput:
             == factories.DEFAULT_ENERGY_SUPPLIER_ID
         )
         assert (
-            actual_row[Colname.time_window][Colname.start]
-            == factories.DEFAULT_OBSERVATION_TIME
+            actual_row[Colname.observation_time] == factories.DEFAULT_OBSERVATION_TIME
         )
         assert actual_row[Colname.sum_quantity] == 2 * factories.DEFAULT_QUANTITY
         assert actual_row[Colname.qualities] == [factories.DEFAULT_QUALITY.value]
@@ -80,7 +79,7 @@ class TestWhenValidInput:
         actual_rows = actual.df.collect()
         assert len(actual_rows) == 2
 
-    def test_returns_rows_for_each_time_window(self, spark: SparkSession):
+    def test_returns_rows_for_each_observation_time(self, spark: SparkSession):
         # Arrange
         another_time = factories.DEFAULT_OBSERVATION_TIME + datetime.timedelta(
             minutes=15

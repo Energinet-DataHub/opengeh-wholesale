@@ -83,6 +83,21 @@ def test_grid_area_grid_loss_positive_values_will_not_change(
         "34.32000"
     )
 
+<<<<<<< Updated upstream
+=======
+        expected = {
+            Colname.grid_area: "002",
+            Colname.to_grid_area: None,
+            Colname.from_grid_area: None,
+            Colname.balance_responsible_id: None,
+            Colname.energy_supplier_id: grid_loss_responsible_factories.DEFAULT_ENERGY_SUPPLIER_ID,
+            Colname.observation_time: energy_results_factories.DEFAULT_OBSERVATION_TIME,
+            Colname.sum_quantity: Decimal("34.320000"),
+            Colname.qualities: [QuantityQuality.CALCULATED.value],
+            Colname.metering_point_id: grid_loss_responsible_factories.DEFAULT_METERING_POINT_ID,
+        }
+        expected_row = Row(**expected)
+>>>>>>> Stashed changes
 
 def test_grid_area_grid_loss_values_that_are_zero_stay_zero(
     actual_positive_grid_loss: EnergyResults,
