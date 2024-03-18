@@ -13,16 +13,12 @@
 # limitations under the License.
 from dataclasses import dataclass
 
-from package.calculation.preparation.data_structures.prepared_subscriptions import (
-    PreparedSubscriptions,
-)
-from package.calculation.preparation.data_structures.prepared_tariffs import (
-    PreparedTariffs,
-)
+import package.calculation.preparation.data_structures as d
 
 
 @dataclass
 class PreparedChargesContainer:
-    hourly_tariffs: PreparedTariffs | None = None
-    daily_tariffs: PreparedTariffs | None = None
-    subscriptions: PreparedSubscriptions | None = None
+    hourly_tariffs: d.PreparedTariffs | None = None
+    daily_tariffs: d.PreparedTariffs | None = None
+    subscriptions: d.PreparedSubscriptions | None = None
+    fees: d.PreparedFees | None = None
