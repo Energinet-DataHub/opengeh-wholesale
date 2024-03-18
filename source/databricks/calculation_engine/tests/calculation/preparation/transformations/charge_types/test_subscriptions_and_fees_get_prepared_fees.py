@@ -125,7 +125,7 @@ class TestWhenChargeTimeIsWithinOrBeforeLinkPeriod:
 
 
 class TestWhenChargeTimeIsAfterLinkPeriod:
-    def test__returns_expected_price(
+    def test__returns_resul_with_price_equals_none(
         self,
         spark: SparkSession,
     ) -> None:
