@@ -24,7 +24,7 @@ from package.calculation.preparation.data_structures.prepared_tariffs import (
 from package.calculation.wholesale.calculate_total_quantity_and_amount import (
     calculate_total_quantity_and_amount,
 )
-from package.codelists import WholesaleResultResolution, ChargeUnit
+from package.codelists import WholesaleResultResolution, ChargeType
 from package.constants import Colname
 
 
@@ -43,26 +43,7 @@ def calculate_tariff_price_per_ga_co_es(prepared_tariffs: PreparedTariffs) -> Da
     resolution is managed outside this module.
     """
 
-    df = calculate_total_quantity_and_amount(prepared_tariffs.df)
-
-    return df.select(
-        Colname.energy_supplier_id,
-        Colname.grid_area,
-        Colname.charge_time,
-        Colname.metering_point_type,
-        Colname.settlement_method,
-        Colname.charge_key,
-        Colname.charge_code,
-        Colname.charge_type,
-        Colname.charge_owner,
-        Colname.charge_tax,
-        Colname.resolution,
-        Colname.charge_price,
-        Colname.total_quantity,
-        Colname.total_amount,
-        f.lit(ChargeUnit.KWH.value).alias(Colname.unit),
-        Colname.qualities,
-    )
+    return calculate_total_quantity_and_amount(prepared_tariffs.df, ChargeType.TARIFF)
 
 
 def sum_within_month(df: DataFrame, period_start_datetime: datetime) -> DataFrame:

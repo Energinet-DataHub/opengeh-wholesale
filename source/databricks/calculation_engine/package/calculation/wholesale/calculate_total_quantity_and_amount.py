@@ -17,13 +17,15 @@ from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
 from pyspark.sql.types import ArrayType, StringType
 
-from package.codelists import ChargeType
+from package.codelists import ChargeType, ChargeUnit
 from package.constants import Colname
 
 
 def calculate_total_quantity_and_amount(
-    prepared_charge: DataFrame,
+    prepared_charge: DataFrame, charge_type: ChargeType
 ) -> DataFrame:
+    qualities_function = _get_qualities_function(charge_type)
+
     df = prepared_charge.groupBy(
         Colname.charge_key,
         Colname.charge_type,
@@ -45,12 +47,29 @@ def calculate_total_quantity_and_amount(
             )
         ).alias(Colname.total_amount),
         f.first(Colname.charge_price, ignorenulls=True).alias(Colname.charge_price),
-        f.when(
-            f.col(Colname.charge_type) == ChargeType.TARIFF.value,
-            f.flatten(f.collect_set(Colname.qualities)).alias(Colname.qualities),
-        ).otherwise(
-            f.lit(None).cast(ArrayType(StringType())).alias(Colname.qualities),
-        ),
+        qualities_function,
     )
 
+    df = _add_charge_unit(df, charge_type)
+
     return df
+
+
+def _get_qualities_function(charge_type: ChargeType):
+    if charge_type == ChargeType.TARIFF:
+        return f.flatten(f.collect_set(Colname.qualities)).alias(Colname.qualities)
+    elif charge_type == ChargeType.FEE or charge_type == ChargeType.SUBSCRIPTION:
+        return f.lit(None).cast(ArrayType(StringType())).alias(Colname.qualities)
+    else:
+        raise ValueError(f"Unknown charge type: {charge_type.value}")
+
+
+def _add_charge_unit(df: DataFrame, charge_type: ChargeType) -> DataFrame:
+    if charge_type == ChargeType.TARIFF:
+        charge_unit = ChargeUnit.KWH
+    elif charge_type == ChargeType.FEE or charge_type == ChargeType.SUBSCRIPTION:
+        charge_unit = ChargeUnit.PIECES
+    else:
+        raise ValueError(f"Unknown charge type: {charge_type.value}")
+
+    return df.withColumn(Colname.unit, f.lit(charge_unit.value))
