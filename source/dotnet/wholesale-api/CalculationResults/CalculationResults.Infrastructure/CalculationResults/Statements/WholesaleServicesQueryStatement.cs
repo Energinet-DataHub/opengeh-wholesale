@@ -122,7 +122,7 @@ public class WholesaleServicesQueryStatement : DatabricksStatement
         WholesaleResultColumnNames.Resolution,
         WholesaleResultColumnNames.MeteringPointType,
         WholesaleResultColumnNames.SettlementMethod,
-        // WholesaleResultColumnNames.CalculationId,
+        WholesaleResultColumnNames.CalculationId,
         // WholesaleResultColumnNames.Time,
     ];
 

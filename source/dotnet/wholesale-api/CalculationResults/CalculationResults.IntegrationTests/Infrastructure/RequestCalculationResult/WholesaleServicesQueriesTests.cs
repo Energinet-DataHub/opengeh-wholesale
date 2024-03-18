@@ -163,9 +163,9 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         List<WholesaleServicesPackage> packages = [
             new WholesaleServicesPackage(
                 Points: [
-                    calculationPeriod.Period.Start,
-                    calculationPeriod.Period.Start.Plus(Duration.FromHours(1)),
-                    calculationPeriod.Period.Start.Plus(Duration.FromHours(2)),
+                    (propertyToDiffer == WholesaleServicesProperty.CalculationPeriod ? calculationPeriods.Calculation2 : calculationPeriod).Period.Start,
+                    (propertyToDiffer == WholesaleServicesProperty.CalculationPeriod ? calculationPeriods.Calculation2 : calculationPeriod).Period.Start.Plus(Duration.FromHours(1)),
+                    (propertyToDiffer == WholesaleServicesProperty.CalculationPeriod ? calculationPeriods.Calculation2 : calculationPeriod).Period.Start.Plus(Duration.FromHours(2)),
                 ],
                 CalculationPeriod: propertyToDiffer == WholesaleServicesProperty.CalculationPeriod ? calculationPeriods.Calculation2 : calculationPeriod,
                 Resolution: propertyToDiffer == WholesaleServicesProperty.Resolution ? Resolution.Month : resolution,
@@ -176,7 +176,8 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
                 ChargeType: propertyToDiffer == WholesaleServicesProperty.ChargeType ? ChargeType.Fee : chargeType),
             new WholesaleServicesPackage(
                 Points: [
-                    calculationPeriod.Period.Start,
+                    (propertyToDiffer == WholesaleServicesProperty.CalculationPeriod ? calculationPeriods.Calculation3 : calculationPeriod).Period.Start,
+                    (propertyToDiffer == WholesaleServicesProperty.CalculationPeriod ? calculationPeriods.Calculation3 : calculationPeriod).Period.Start.Plus(Duration.FromHours(3)),
                 ],
                 CalculationPeriod: propertyToDiffer == WholesaleServicesProperty.CalculationPeriod ? calculationPeriods.Calculation3 : calculationPeriod,
                 Resolution: propertyToDiffer == WholesaleServicesProperty.Resolution ? Resolution.Hour : resolution,
@@ -187,10 +188,10 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
                 ChargeType: propertyToDiffer == WholesaleServicesProperty.ChargeType ? ChargeType.Tariff : chargeType),
             new WholesaleServicesPackage(
                 Points: [
-                    calculationPeriod.Period.Start,
-                    calculationPeriod.Period.Start.Plus(Duration.FromHours(4)),
-                    calculationPeriod.Period.Start.Plus(Duration.FromHours(7)),
-                    calculationPeriod.Period.Start.Plus(Duration.FromHours(12)),
+                    (propertyToDiffer == WholesaleServicesProperty.CalculationPeriod ? calculationPeriods.Calculation4 : calculationPeriod).Period.Start,
+                    (propertyToDiffer == WholesaleServicesProperty.CalculationPeriod ? calculationPeriods.Calculation4 : calculationPeriod).Period.Start.Plus(Duration.FromHours(4)),
+                    (propertyToDiffer == WholesaleServicesProperty.CalculationPeriod ? calculationPeriods.Calculation4 : calculationPeriod).Period.Start.Plus(Duration.FromHours(7)),
+                    (propertyToDiffer == WholesaleServicesProperty.CalculationPeriod ? calculationPeriods.Calculation4 : calculationPeriod).Period.Start.Plus(Duration.FromHours(12)),
                 ],
                 CalculationPeriod: propertyToDiffer == WholesaleServicesProperty.CalculationPeriod ? calculationPeriods.Calculation4 : calculationPeriod,
                 Resolution: propertyToDiffer == WholesaleServicesProperty.Resolution ? Resolution.Day : resolution,
@@ -527,9 +528,9 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
             calculation1Id,
             calculation1Version);
 
-        var calculation3 = calculation2 with { CalculationId = Guid.NewGuid() };
-        var calculation4 = calculation2 with { CalculationId = Guid.NewGuid() };
-        var calculation5 = calculation2 with { CalculationId = Guid.NewGuid() };
+        var calculation3 = calculation2 with { CalculationId = Guid.NewGuid(), CalculationVersion = 3 };
+        var calculation4 = calculation2 with { CalculationId = Guid.NewGuid(), CalculationVersion = 4 };
+        var calculation5 = calculation2 with { CalculationId = Guid.NewGuid(), CalculationVersion = 5 };
 
         return new CalculationPeriods(calculation1Period1, calculation2, calculation1Period2, calculation3, calculation4, calculation5);
     }
