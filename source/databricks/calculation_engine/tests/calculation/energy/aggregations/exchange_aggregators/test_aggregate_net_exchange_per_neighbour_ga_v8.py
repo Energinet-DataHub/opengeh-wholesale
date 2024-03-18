@@ -93,10 +93,10 @@ def test_aggregate_net_exchange_per_neighbour_ga_single_hour(single_quarter_test
     assert values[0][Colname.to_grid_area] == "A"
     assert values[1][Colname.from_grid_area] == "C"
     assert values[2][Colname.to_grid_area] == "B"
-    assert values[0][Colname.sum_quantity] == Decimal("10")
-    assert values[1][Colname.sum_quantity] == Decimal("5")
-    assert values[2][Colname.sum_quantity] == Decimal("-10")
-    assert values[3][Colname.sum_quantity] == Decimal("-5")
+    assert values[0][Colname.quantity] == Decimal("10")
+    assert values[1][Colname.quantity] == Decimal("5")
+    assert values[2][Colname.quantity] == Decimal("-10")
+    assert values[3][Colname.quantity] == Decimal("-5")
 
 
 def test_aggregate_net_exchange_per_neighbour_ga_multi_hour(multi_quarter_test_data):
@@ -111,11 +111,11 @@ def test_aggregate_net_exchange_per_neighbour_ga_multi_hour(multi_quarter_test_d
         values[0][Colname.observation_time].strftime(date_time_formatting_string)
         == "2020-01-01T00:00:00"
     )
-    assert values[0][Colname.sum_quantity] == Decimal("10")
+    assert values[0][Colname.quantity] == Decimal("10")
     assert values[19][Colname.to_grid_area] == "A"
     assert values[19][Colname.from_grid_area] == "B"
     assert (
         values[19][Colname.observation_time].strftime(date_time_formatting_string)
         == "2020-01-01T04:45:00"
     )
-    assert values[19][Colname.sum_quantity] == Decimal("10")
+    assert values[19][Colname.quantity] == Decimal("10")

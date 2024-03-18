@@ -172,13 +172,13 @@ def test_exchange_aggregator_returns_correct_aggregations(
 
 
 def check_aggregation_row(
-    df: EnergyResults, grid_area: str, sum_quantity: Decimal, time: datetime
+    df: EnergyResults, grid_area: str, quantity: Decimal, time: datetime
 ) -> None:
     """Helper function that checks column values for the given row"""
     gridfiltered = df.df.where(df.df[Colname.grid_area] == grid_area).select(
         col(Colname.grid_area),
-        col(Colname.sum_quantity),
+        col(Colname.quantity),
         col(Colname.observation_time),
     )
     res = gridfiltered.filter(gridfiltered[Colname.observation_time] == time).collect()
-    assert res[0][Colname.sum_quantity] == sum_quantity
+    assert res[0][Colname.quantity] == quantity

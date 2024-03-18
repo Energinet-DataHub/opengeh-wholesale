@@ -89,12 +89,12 @@ class TestWhenValidInput:
     ):
         # Arrange
         production = [
-            energy_results.create_row(sum_quantity=1),
-            energy_results.create_row(sum_quantity=2),
+            energy_results.create_row(quantity=1),
+            energy_results.create_row(quantity=2),
         ]
         net_exchange = [
-            energy_results.create_row(sum_quantity=4),
-            energy_results.create_row(sum_quantity=8, grid_area="some-other-grid-area"),
+            energy_results.create_row(quantity=4),
+            energy_results.create_row(quantity=8, grid_area="some-other-grid-area"),
         ]
         production_per_ga = energy_results.create(spark, production)
         net_exchange_per_ga = energy_results.create(spark, net_exchange)
@@ -106,19 +106,19 @@ class TestWhenValidInput:
 
         # Assert
         actual_row = actual.df.collect()[0]
-        assert actual_row[Colname.sum_quantity] == expected_sum_quantity
+        assert actual_row[Colname.quantity] == expected_sum_quantity
 
     def test__does_not_include_quantity_from_non_neighbour_ga_in_return(
         self, spark: SparkSession
     ):
         # Arrange
         production = [
-            energy_results.create_row(sum_quantity=1),
-            energy_results.create_row(sum_quantity=2),
+            energy_results.create_row(quantity=1),
+            energy_results.create_row(quantity=2),
         ]
         net_exchange_other_ga = [
-            energy_results.create_row(sum_quantity=4),
-            energy_results.create_row(sum_quantity=8, grid_area="some-other-grid-area"),
+            energy_results.create_row(quantity=4),
+            energy_results.create_row(quantity=8, grid_area="some-other-grid-area"),
         ]
         production_per_ga = energy_results.create(spark, production)
         net_exchange_per_ga = energy_results.create(spark, net_exchange_other_ga)
@@ -130,4 +130,4 @@ class TestWhenValidInput:
 
         # Assert
         actual_row = actual.df.collect()[0]
-        assert actual_row[Colname.sum_quantity] == expected_sum_quantity
+        assert actual_row[Colname.quantity] == expected_sum_quantity

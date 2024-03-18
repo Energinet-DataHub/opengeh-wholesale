@@ -36,15 +36,15 @@ def actual_negative_grid_loss(spark: SparkSession) -> EnergyResults:
     rows = [
         energy_results_factories.create_row(
             grid_area="001",
-            sum_quantity=Decimal(-12.567),
+            quantity=Decimal(-12.567),
         ),
         energy_results_factories.create_row(
             grid_area="002",
-            sum_quantity=Decimal(34.32),
+            quantity=Decimal(34.32),
         ),
         energy_results_factories.create_row(
             grid_area="003",
-            sum_quantity=Decimal(0.0),
+            quantity=Decimal(0.0),
         ),
     ]
 
@@ -63,15 +63,13 @@ def actual_negative_grid_loss(spark: SparkSession) -> EnergyResults:
 def test_negative_grid_loss_has_no_values_below_zero(
     actual_negative_grid_loss: EnergyResults,
 ) -> None:
-    assert (
-        actual_negative_grid_loss.df.where(col(Colname.sum_quantity) < 0).count() == 0
-    )
+    assert actual_negative_grid_loss.df.where(col(Colname.quantity) < 0).count() == 0
 
 
 def test_negative_grid_loss_change_negative_value_to_positive(
     actual_negative_grid_loss: EnergyResults,
 ) -> None:
-    assert actual_negative_grid_loss.df.collect()[0][Colname.sum_quantity] == Decimal(
+    assert actual_negative_grid_loss.df.collect()[0][Colname.quantity] == Decimal(
         "12.56700"
     )
 
@@ -79,7 +77,7 @@ def test_negative_grid_loss_change_negative_value_to_positive(
 def test_negative_grid_loss_change_positive_value_to_zero(
     actual_negative_grid_loss: EnergyResults,
 ) -> None:
-    assert actual_negative_grid_loss.df.collect()[1][Colname.sum_quantity] == Decimal(
+    assert actual_negative_grid_loss.df.collect()[1][Colname.quantity] == Decimal(
         "0.00000"
     )
 
@@ -87,6 +85,6 @@ def test_negative_grid_loss_change_positive_value_to_zero(
 def test_negative_grid_loss_values_that_are_zero_stay_zero(
     actual_negative_grid_loss: EnergyResults,
 ) -> None:
-    assert actual_negative_grid_loss.df.collect()[2][Colname.sum_quantity] == Decimal(
+    assert actual_negative_grid_loss.df.collect()[2][Colname.quantity] == Decimal(
         "0.00000"
     )

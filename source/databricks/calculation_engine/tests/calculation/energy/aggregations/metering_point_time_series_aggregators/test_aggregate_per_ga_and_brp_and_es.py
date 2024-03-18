@@ -62,7 +62,7 @@ class TestWhenValidInput:
         assert (
             actual_row[Colname.observation_time] == factories.DEFAULT_OBSERVATION_TIME
         )
-        assert actual_row[Colname.sum_quantity] == 2 * factories.DEFAULT_QUANTITY
+        assert actual_row[Colname.quantity] == 2 * factories.DEFAULT_QUANTITY
         assert actual_row[Colname.qualities] == [factories.DEFAULT_QUALITY.value]
 
     def test_returns_rows_for_each_ga(self, spark: SparkSession):
