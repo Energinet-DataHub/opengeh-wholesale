@@ -39,7 +39,7 @@ def calculate_total_quantity_and_amount(
         Colname.resolution,
         Colname.charge_tax,
     ).agg(
-        f.sum(Colname.charge_quantity).alias(Colname.total_quantity),
+        f.sum(Colname.quantity).alias(Colname.total_quantity),
         f.sum(
             f.when(
                 f.col(Colname.charge_price).isNotNull(),
