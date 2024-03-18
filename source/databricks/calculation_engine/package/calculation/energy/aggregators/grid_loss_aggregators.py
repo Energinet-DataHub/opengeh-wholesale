@@ -111,7 +111,6 @@ def _get_grid_loss_metering_point_ids_for_grid_areas_with_specific_metering_poin
             Colname.grid_area,
             Colname.metering_point_id,
             Colname.energy_supplier_id,
-            Colname.balance_responsible_id,
         )
         .distinct()
         .where(
@@ -143,7 +142,6 @@ def calculate_negative_grid_loss(
         .select(
             Colname.grid_area,
             Colname.energy_supplier_id,
-            Colname.balance_responsible_id,
             Colname.time_window,
             f.when(f.col(Colname.sum_quantity) < 0, -f.col(Colname.sum_quantity))
             .otherwise(0)
@@ -180,7 +178,6 @@ def calculate_positive_grid_loss(
         .select(
             Colname.grid_area,
             Colname.energy_supplier_id,
-            Colname.balance_responsible_id,
             Colname.time_window,
             f.when(f.col(Colname.sum_quantity) > 0, f.col(Colname.sum_quantity))
             .otherwise(0)
