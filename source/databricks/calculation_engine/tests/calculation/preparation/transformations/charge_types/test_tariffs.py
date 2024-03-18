@@ -481,7 +481,7 @@ def test__get_prepared_tariffs__when_charges_with_specific_charge_resolution_and
     spark: SparkSession,
     charge_resolution: e.ChargeResolution,
     expected_rows: int,
-    expected_quantity: int,
+    expected_quantity,
 ) -> None:
     """
     Only charges where charge time is greater than or equal to the metering point from

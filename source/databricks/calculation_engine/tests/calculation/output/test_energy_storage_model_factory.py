@@ -14,7 +14,7 @@
 
 import uuid
 from copy import copy
-from datetime import datetime, timedelta
+from datetime import datetime
 from decimal import Decimal
 from typing import Any, List
 
@@ -49,8 +49,7 @@ DEFAULT_QUANTITY = "1.1"
 DEFAULT_QUALITY = e.QuantityQuality.MEASURED
 DEFAULT_TIME_SERIES_TYPE = e.TimeSeriesType.PRODUCTION
 DEFAULT_AGGREGATION_LEVEL = e.AggregationLevel.TOTAL_GA
-DEFAULT_TIME_WINDOW_START = datetime(2020, 1, 1, 0, 0)
-DEFAULT_TIME_WINDOW_END = datetime(2020, 1, 1, 1, 0)
+DEFAULT_OBSERVATION_TIME = datetime(2020, 1, 1, 0, 0)
 DEFAULT_METERING_POINT_TYPE = e.MeteringPointType.PRODUCTION
 DEFAULT_SETTLEMENT_METHOD = e.SettlementMethod.FLEX
 
@@ -66,8 +65,7 @@ OTHER_QUANTITY = "1.2"
 OTHER_QUALITY = e.QuantityQuality.CALCULATED
 OTHER_TIME_SERIES_TYPE = e.TimeSeriesType.NON_PROFILED_CONSUMPTION
 OTHER_AGGREGATION_LEVEL = e.AggregationLevel.ES_PER_GA
-OTHER_TIME_WINDOW_START = datetime(2021, 1, 1, 0, 0)
-OTHER_TIME_WINDOW_END = datetime(2021, 1, 1, 1, 0)
+OTHER_OBSERVATION_TIME = datetime(2021, 1, 1, 0, 0)
 OTHER_METERING_POINT_TYPE = e.MeteringPointType.CONSUMPTION
 OTHER_SETTLEMENT_METHOD = e.SettlementMethod.NON_PROFILED
 
@@ -93,8 +91,7 @@ def _create_result_row(
     balance_responsible_id: str = DEFAULT_BALANCE_RESPONSIBLE_ID,
     quantity: str = DEFAULT_QUANTITY,
     quality: e.QuantityQuality = DEFAULT_QUALITY,
-    time_window_start: datetime = DEFAULT_TIME_WINDOW_START,
-    time_window_end: datetime = DEFAULT_TIME_WINDOW_END,
+    observation_time: datetime = DEFAULT_OBSERVATION_TIME,
     metering_point_id: str | None = None,
 ) -> dict:
     row = {
@@ -103,11 +100,8 @@ def _create_result_row(
         Colname.from_grid_area: from_grid_area,
         Colname.balance_responsible_id: balance_responsible_id,
         Colname.energy_supplier_id: energy_supplier_id,
-        Colname.time_window: {
-            Colname.start: time_window_start,
-            Colname.end: time_window_end,
-        },
-        Colname.sum_quantity: Decimal(quantity),
+        Colname.observation_time: observation_time,
+        Colname.quantity: Decimal(quantity),
         Colname.qualities: [quality.value],
         Colname.settlement_method: [],
         Colname.metering_point_id: metering_point_id,
@@ -124,8 +118,6 @@ def _create_energy_results(spark: SparkSession, row: List[dict]) -> EnergyResult
 def _create_energy_results_corresponding_to_four_calculation_results(
     spark: SparkSession,
 ) -> EnergyResults:
-    OTHER_TIME_WINDOW_START = DEFAULT_TIME_WINDOW_END
-    OTHER_TIME_WINDOW_END = OTHER_TIME_WINDOW_START + timedelta(hours=1)
     OTHER_GRID_AREA = "111"
     OTHER_FROM_GRID_AREA = "222"
     OTHER_ENERGY_SUPPLIER_ID = "1234567890123"
@@ -134,22 +126,19 @@ def _create_energy_results_corresponding_to_four_calculation_results(
         # First result
         _create_result_row(),
         _create_result_row(
-            time_window_start=OTHER_TIME_WINDOW_START,
-            time_window_end=OTHER_TIME_WINDOW_END,
+            observation_time=OTHER_OBSERVATION_TIME,
         ),
         # Second result
         _create_result_row(grid_area=OTHER_GRID_AREA),
         _create_result_row(
             grid_area=OTHER_GRID_AREA,
-            time_window_start=OTHER_TIME_WINDOW_START,
-            time_window_end=OTHER_TIME_WINDOW_END,
+            observation_time=OTHER_OBSERVATION_TIME,
         ),
         # Third result
         _create_result_row(from_grid_area=OTHER_FROM_GRID_AREA),
         _create_result_row(
             from_grid_area=OTHER_FROM_GRID_AREA,
-            time_window_start=OTHER_TIME_WINDOW_START,
-            time_window_end=OTHER_TIME_WINDOW_END,
+            observation_time=OTHER_OBSERVATION_TIME,
         ),
         # Fourth result
         _create_result_row(energy_supplier_id=OTHER_ENERGY_SUPPLIER_ID),
@@ -332,7 +321,7 @@ def test__create__when_rows_belong_to_different_results__adds_different_calculat
 @pytest.mark.parametrize(
     "column_name, value, other_value",
     [
-        (Colname.sum_quantity, Decimal(DEFAULT_QUANTITY), Decimal(OTHER_QUANTITY)),
+        (Colname.quantity, Decimal(DEFAULT_QUANTITY), Decimal(OTHER_QUANTITY)),
         (
             Colname.quality,
             DEFAULT_QUALITY.value,
@@ -349,8 +338,7 @@ def test__create__when_rows_belong_to_different_results__adds_different_calculat
             DEFAULT_SETTLEMENT_METHOD.value,
             OTHER_SETTLEMENT_METHOD.value,
         ),
-        (Colname.time_window_start, DEFAULT_TIME_WINDOW_START, OTHER_TIME_WINDOW_START),
-        (Colname.time_window_end, DEFAULT_TIME_WINDOW_END, OTHER_TIME_WINDOW_END),
+        (Colname.observation_time, DEFAULT_OBSERVATION_TIME, OTHER_OBSERVATION_TIME),
     ],
 )
 def test__write__when_rows_belong_to_same_result__adds_same_calculation_result_id(
