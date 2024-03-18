@@ -59,7 +59,7 @@ def aggregate_per_ga_and_brp_and_es(
         Colname.grid_area,
         Colname.balance_responsible_id,
         Colname.energy_supplier_id,
-        Colname.time_window,
+        Colname.observation_time,
     ]
     result = aggregate_quantity_and_quality(result, sum_group_by)
 

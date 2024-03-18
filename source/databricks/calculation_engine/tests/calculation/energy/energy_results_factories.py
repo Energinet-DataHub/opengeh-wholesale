@@ -60,10 +60,7 @@ def create_row(
         Colname.to_grid_area: to_grid_area,
         Colname.balance_responsible_id: balance_responsible_id,
         Colname.energy_supplier_id: energy_supplier_id,
-        Colname.time_window: {
-            Colname.start: observation_time,
-            Colname.end: observation_time + datetime.timedelta(minutes=15),
-        },
+        Colname.observation_time: observation_time,
         Colname.sum_quantity: sum_quantity,
         Colname.qualities: qualities,
         Colname.metering_point_type: metering_point_id,
