@@ -118,7 +118,7 @@ def _map_to_storage_dataframe(results: DataFrame) -> DataFrame:
         .alias(EnergyResultColumnNames.quantity)
         .cast(DecimalType(18, 3)),
         f.col(Colname.qualities).alias(EnergyResultColumnNames.quantity_qualities),
-        f.col(Colname.time_window_start).alias(EnergyResultColumnNames.time),
+        f.col(Colname.observation_time).alias(EnergyResultColumnNames.time),
         f.col(EnergyResultColumnNames.aggregation_level),
         f.col(EnergyResultColumnNames.time_series_type),
         f.col(EnergyResultColumnNames.calculation_id),

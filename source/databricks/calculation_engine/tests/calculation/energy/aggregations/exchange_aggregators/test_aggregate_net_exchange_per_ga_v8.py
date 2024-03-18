@@ -178,8 +178,7 @@ def check_aggregation_row(
     gridfiltered = df.df.where(df.df[Colname.grid_area] == grid_area).select(
         col(Colname.grid_area),
         col(Colname.sum_quantity),
-        col(f"{Colname.time_window_start}").alias("start"),
-        col(f"{Colname.time_window_end}").alias("end"),
+        col(Colname.observation_time),
     )
-    res = gridfiltered.filter(gridfiltered["start"] == time).collect()
+    res = gridfiltered.filter(gridfiltered[Colname.observation_time] == time).collect()
     assert res[0][Colname.sum_quantity] == sum_quantity

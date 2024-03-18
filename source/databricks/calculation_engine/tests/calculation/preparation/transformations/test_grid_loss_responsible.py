@@ -87,7 +87,7 @@ def test__get_grid_loss_responsible__given_three_metering_point_period_dataframe
 
 
 @patch.object(input, TableReader.__name__)
-def test__get_grid_loss_responsible__given_metering_point_period_with_same_id_int_different_time_window__then_return_expected_amount(
+def test__get_grid_loss_responsible__given_metering_point_period_with_same_id_int_different_observation_time__then_return_expected_amount(
     table_reader_mock: TableReader,
     spark: SparkSession,
 ) -> None:
