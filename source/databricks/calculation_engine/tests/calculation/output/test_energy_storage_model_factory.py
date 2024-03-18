@@ -101,7 +101,7 @@ def _create_result_row(
         Colname.balance_responsible_id: balance_responsible_id,
         Colname.energy_supplier_id: energy_supplier_id,
         Colname.observation_time: observation_time,
-        Colname.sum_quantity: Decimal(quantity),
+        Colname.quantity: Decimal(quantity),
         Colname.qualities: [quality.value],
         Colname.settlement_method: [],
         Colname.metering_point_id: metering_point_id,
@@ -321,7 +321,7 @@ def test__create__when_rows_belong_to_different_results__adds_different_calculat
 @pytest.mark.parametrize(
     "column_name, value, other_value",
     [
-        (Colname.sum_quantity, Decimal(DEFAULT_QUANTITY), Decimal(OTHER_QUANTITY)),
+        (Colname.quantity, Decimal(DEFAULT_QUANTITY), Decimal(OTHER_QUANTITY)),
         (
             Colname.quality,
             DEFAULT_QUALITY.value,
