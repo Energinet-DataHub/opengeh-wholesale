@@ -134,12 +134,11 @@ def calculate_negative_grid_loss(
         )
     )
 
-<<<<<<< Updated upstream
     result = grid_loss.df.join(
         only_grid_area_and_metering_point_id, Colname.grid_area, "left"
     ).select(
         Colname.grid_area,
-        Colname.time_window,
+        Colname.observation_time,
         f.when(f.col(Colname.sum_quantity) < 0, -f.col(Colname.sum_quantity))
         .otherwise(0)
         .alias(Colname.sum_quantity),
@@ -150,26 +149,6 @@ def calculate_negative_grid_loss(
 
     result = result.withColumnRenamed(
         Colname.grid_loss_metering_point_id, Colname.metering_point_id
-=======
-    result = (
-        grid_loss.df.drop(Colname.energy_supplier_id)
-        .join(only_grid_area_and_metering_point_id, Colname.grid_area, "left")
-        .select(
-            Colname.grid_area,
-            Colname.energy_supplier_id,
-            Colname.observation_time,
-            f.when(f.col(Colname.sum_quantity) < 0, -f.col(Colname.sum_quantity))
-            .otherwise(0)
-            .alias(Colname.sum_quantity),
-            f.lit(MeteringPointType.PRODUCTION.value).alias(
-                Colname.metering_point_type
-            ),
-            Colname.qualities,
-            only_grid_area_and_metering_point_id[
-                Colname.grid_loss_metering_point_id
-            ].alias(Colname.metering_point_id),
-        )
->>>>>>> Stashed changes
     )
 
     return EnergyResults(result)
@@ -188,36 +167,17 @@ def calculate_positive_grid_loss(
         )
     )
 
-<<<<<<< Updated upstream
     result = grid_loss.df.join(
         only_grid_area_and_metering_point_id, Colname.grid_area, "left"
     ).select(
         Colname.grid_area,
-        Colname.time_window,
+        Colname.observation_time,
         f.when(f.col(Colname.sum_quantity) > 0, f.col(Colname.sum_quantity))
         .otherwise(0)
         .alias(Colname.sum_quantity),
         f.lit(MeteringPointType.CONSUMPTION.value).alias(Colname.metering_point_type),
         Colname.qualities,
         only_grid_area_and_metering_point_id[Colname.grid_loss_metering_point_id],
-=======
-    result = (
-        grid_loss.df.drop(Colname.energy_supplier_id)
-        .join(only_grid_area_and_metering_point_id, Colname.grid_area, "left")
-        .select(
-            Colname.grid_area,
-            Colname.energy_supplier_id,
-            Colname.observation_time,
-            f.when(f.col(Colname.sum_quantity) > 0, f.col(Colname.sum_quantity))
-            .otherwise(0)
-            .alias(Colname.sum_quantity),
-            f.lit(MeteringPointType.CONSUMPTION.value).alias(
-                Colname.metering_point_type
-            ),
-            Colname.qualities,
-            only_grid_area_and_metering_point_id[Colname.grid_loss_metering_point_id],
-        )
->>>>>>> Stashed changes
     )
 
     result = result.withColumnRenamed(
