@@ -29,7 +29,6 @@ DEFAULT_FROM_DATE = datetime.strptime("2020-01-01T00:00:00+0000", "%Y-%m-%dT%H:%
 DEFAULT_TO_DATE = datetime.strptime("2020-01-02T00:00:00+0000", "%Y-%m-%dT%H:%M:%S%z")
 DEFAULT_METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
 DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
-DEFAULT_BALANCE_RESPONSIBLE_ID = "1234567890124"
 
 
 def create_row(
@@ -39,7 +38,6 @@ def create_row(
     to_date: datetime | None = DEFAULT_TO_DATE,
     metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE,
     energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
-    balance_responsible_id: str = DEFAULT_BALANCE_RESPONSIBLE_ID,
 ) -> Row:
     row = {
         Colname.metering_point_id: metering_point_id,
@@ -48,7 +46,6 @@ def create_row(
         Colname.to_date: to_date,
         Colname.metering_point_type: metering_point_type.value,
         Colname.energy_supplier_id: energy_supplier_id,
-        Colname.balance_responsible_id: balance_responsible_id,
     }
 
     return Row(**row)

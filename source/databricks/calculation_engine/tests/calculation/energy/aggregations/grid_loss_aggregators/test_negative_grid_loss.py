@@ -117,7 +117,6 @@ class TestWhenValidInput:
             Colname.grid_area: "001",
             Colname.to_grid_area: None,
             Colname.from_grid_area: None,
-            Colname.balance_responsible_id: grid_loss_responsible_factories.DEFAULT_BALANCE_RESPONSIBLE_ID,
             Colname.energy_supplier_id: grid_loss_responsible_factories.DEFAULT_ENERGY_SUPPLIER_ID,
             Colname.time_window: Row(
                 **{

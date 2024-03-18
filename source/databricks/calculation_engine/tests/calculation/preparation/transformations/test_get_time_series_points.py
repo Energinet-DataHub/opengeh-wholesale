@@ -38,7 +38,7 @@ def _create_time_series_point_row(
     metering_point_id: str = "some-metering-point-id",
     observation_time: datetime = DEFAULT_OBSERVATION_TIME,
 ) -> Row:
-    return {
+    row = {
         Colname.metering_point_id: metering_point_id,
         Colname.quantity: Decimal("1.123456"),
         Colname.quality: "foo",
