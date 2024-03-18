@@ -11,11 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from pyspark.sql import DataFrame
 
-COMMITTED_MIGRATIONS_FILE_NAME = "migration_state.csv"
-WHEEL_NAME = "package"
-MIGRATION_SCRIPTS_FOLDER_PATH = "package.datamigration.migration_scripts"
-CURRENT_STATE_SCHEMAS_FOLDER_PATH = (
-    "package.datamigration.current_state_scripts.schemas"
+from calculation_logic.features.wholesale_calculations.wholesale_results_dataframe import (
+    create_wholesale_result_dataframe,
 )
-CURRENT_STATE_TABLES_FOLDER_PATH = "package.datamigration.current_state_scripts.tables"
+
+
+def get_expected(*args) -> DataFrame:  # type: ignore
+    """
+    This function can be used to custom build the expected results (dataframe).
+    It is also used a reference to locate the test scenario.
+    """
+    return create_wholesale_result_dataframe(*args)
