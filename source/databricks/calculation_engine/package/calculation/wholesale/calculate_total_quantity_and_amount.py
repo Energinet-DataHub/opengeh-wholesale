@@ -15,7 +15,7 @@
 
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
-from pyspark.sql.types import ArrayType, StringType
+from pyspark.sql.types import ArrayType, StringType, DecimalType
 
 from package.codelists import ChargeType, ChargeUnit
 from package.constants import Colname
@@ -39,7 +39,7 @@ def calculate_total_quantity_and_amount(
         Colname.resolution,
         Colname.charge_tax,
     ).agg(
-        f.sum(Colname.quantity).alias(Colname.total_quantity),
+        f.sum(Colname.quantity).cast(DecimalType(18, 3)).alias(Colname.total_quantity),
         f.sum(
             f.when(
                 f.col(Colname.charge_price).isNotNull(),
