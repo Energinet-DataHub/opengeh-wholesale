@@ -11,9 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from helpers.data_frame_utils import (
-    assert_dataframe_and_schema,
-)
+from helpers.data_frame_utils import assert_dataframe_and_schema
 from package.constants import EnergyResultColumnNames
 from .states.scenario_state import get_expected
 
