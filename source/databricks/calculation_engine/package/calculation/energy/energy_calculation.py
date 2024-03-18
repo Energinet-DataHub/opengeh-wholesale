@@ -18,15 +18,17 @@ import package.calculation.energy.aggregators.grid_loss_aggregators as grid_loss
 import package.calculation.energy.aggregators.grouping_aggregators as grouping_aggr
 import package.calculation.energy.aggregators.metering_point_time_series_aggregators as mp_aggr
 import package.calculation.output.energy_storage_model_factory as factory
-from package.calculation.CalculationResults import EnergyResultsContainer
+from package.calculation.calculation_results import EnergyResultsContainer
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.energy.energy_results import EnergyResults
+from package.calculation.energy.data_structures.energy_results import EnergyResults
 from package.calculation.energy.hour_to_quarter import transform_hour_to_quarter
-from package.calculation.preparation.grid_loss_responsible import GridLossResponsible
-from package.calculation.preparation.prepared_metering_point_time_series import (
+from package.calculation.preparation.data_structures.grid_loss_responsible import (
+    GridLossResponsible,
+)
+from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
-from package.calculation.preparation.quarterly_metering_point_time_series import (
+from package.calculation.preparation.data_structures.quarterly_metering_point_time_series import (
     QuarterlyMeteringPointTimeSeries,
 )
 from package.codelists import (

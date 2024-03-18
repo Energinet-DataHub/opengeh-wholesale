@@ -47,6 +47,10 @@ def get_container_root_path(storage_account_name: str) -> str:
     return f"abfss://{WHOLESALE_CONTAINER_NAME}@{storage_account_name}.dfs.core.windows.net/"
 
 
+def get_spark_sql_migrations_path(storage_account_name: str) -> str:
+    return f"{get_container_root_path(storage_account_name)}spark_sql_migrations/"
+
+
 def get_calculation_input_path(
     storage_account_name: str, input_folder: str | None = None
 ) -> str:
