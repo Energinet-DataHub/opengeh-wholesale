@@ -123,7 +123,6 @@ public class WholesaleServicesQueryStatement : DatabricksStatement
         WholesaleResultColumnNames.MeteringPointType,
         WholesaleResultColumnNames.SettlementMethod,
         WholesaleResultColumnNames.CalculationId,
-        // WholesaleResultColumnNames.Time,
     ];
 
     private static string[] ColumnsToSelect { get; } =
