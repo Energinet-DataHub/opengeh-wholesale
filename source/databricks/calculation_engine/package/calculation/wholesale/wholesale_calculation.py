@@ -14,31 +14,21 @@
 
 
 import package.calculation.output.wholesale_storage_model_factory as factory
-import package.calculation.wholesale.tariff_calculators as tariffs
-import package.calculation.wholesale.tariff_calculators as tariff_calculator
 import package.calculation.wholesale.subscription_calculators as subscription_calculator
+import package.calculation.wholesale.tariff_calculators as tariff_calculator
+import package.calculation.preparation.data_structures as d
 from .sum_within_month import sum_within_month
 
-
-from package.calculation.preparation.data_structures.prepared_charges import (
-    PreparedChargesContainer,
-)
-from package.calculation.preparation.data_structures.prepared_subscriptions import (
-    PreparedSubscriptions,
-)
-from package.calculation.preparation.data_structures.prepared_tariffs import (
-    PreparedTariffs,
-)
-from ...codelists import AmountType, ChargeType
 from ..calculation_results import WholesaleResultsContainer
 from ..calculator_args import CalculatorArgs
+from ...codelists import AmountType
 from ...infrastructure import logging_configuration
 
 
 @logging_configuration.use_span("calculation.wholesale.execute")
 def execute(
     args: CalculatorArgs,
-    prepared_charges: PreparedChargesContainer,
+    prepared_charges: d.PreparedChargesContainer,
 ) -> WholesaleResultsContainer:
     results = WholesaleResultsContainer()
 
@@ -61,7 +51,7 @@ def execute(
 @logging_configuration.use_span("calculate_subscriptions")
 def _calculate_subscriptions(
     args: CalculatorArgs,
-    prepared_subscriptions: PreparedSubscriptions,
+    prepared_subscriptions: d.PreparedSubscriptions,
     results: WholesaleResultsContainer,
 ) -> None:
     subscription_amount_per_charge = subscription_calculator.calculate(
@@ -88,8 +78,8 @@ def _calculate_subscriptions(
 @logging_configuration.use_span("calculate_tariff_charges")
 def _calculate_tariff_charges(
     args: CalculatorArgs,
-    prepared_hourly_tariffs: PreparedTariffs,
-    prepared_daily_tariffs: PreparedTariffs,
+    prepared_hourly_tariffs: d.PreparedTariffs,
+    prepared_daily_tariffs: d.PreparedTariffs,
     results: WholesaleResultsContainer,
 ) -> None:
     hourly_tariff_per_ga_co_es = tariff_calculator.calculate_tariff_price_per_ga_co_es(
@@ -113,7 +103,7 @@ def _calculate_tariff_charges(
         AmountType.MONTHLY_AMOUNT_PER_CHARGE,
     )
 
-    daily_tariff_per_ga_co_es = tariffs.calculate_tariff_price_per_ga_co_es(
+    daily_tariff_per_ga_co_es = tariff_calculator.calculate_tariff_price_per_ga_co_es(
         prepared_daily_tariffs
     )
 
