@@ -27,14 +27,14 @@ class TestWhenValidInput:
         rows = [
             Row(
                 **{
-                    Colname.sum_quantity: 1,
+                    Colname.quantity: 1,
                     Colname.qualities: ["foo"],
                     "group": "some-group",
                 }
             ),
             Row(
                 **{
-                    Colname.sum_quantity: 2,
+                    Colname.quantity: 2,
                     Colname.qualities: ["foo"],
                     "group": "some-group",
                 }
@@ -54,14 +54,14 @@ class TestWhenValidInput:
         rows = [
             Row(
                 **{
-                    Colname.sum_quantity: 1,
+                    Colname.quantity: 1,
                     Colname.qualities: ["foo"],
                     "group": "some-group",
                 }
             ),
             Row(
                 **{
-                    Colname.sum_quantity: 2,
+                    Colname.quantity: 2,
                     Colname.qualities: ["foo"],
                     "group": "another-group",
                 }
@@ -81,14 +81,14 @@ class TestWhenValidInput:
         rows = [
             Row(
                 **{
-                    Colname.sum_quantity: Decimal("1.111"),
+                    Colname.quantity: Decimal("1.111"),
                     Colname.qualities: ["foo"],
                     "group": "some-group",
                 }
             ),
             Row(
                 **{
-                    Colname.sum_quantity: Decimal("2.222"),
+                    Colname.quantity: Decimal("2.222"),
                     Colname.qualities: ["foo"],
                     "group": "some-group",
                 }
@@ -101,35 +101,35 @@ class TestWhenValidInput:
 
         # assert
         actual_row = actual.collect()[0]
-        assert actual_row[Colname.sum_quantity] == Decimal("3.333")
+        assert actual_row[Colname.quantity] == Decimal("3.333")
 
     def test_returns_sum_of_quantity_in_each_group(self, spark: SparkSession):
         # Arrange
         rows = [
             Row(
                 **{
-                    Colname.sum_quantity: Decimal("1.1"),
+                    Colname.quantity: Decimal("1.1"),
                     Colname.qualities: ["foo"],
                     "group": "some-group",
                 }
             ),
             Row(
                 **{
-                    Colname.sum_quantity: Decimal("2.2"),
+                    Colname.quantity: Decimal("2.2"),
                     Colname.qualities: ["foo"],
                     "group": "some-group",
                 }
             ),
             Row(
                 **{
-                    Colname.sum_quantity: Decimal("3.0"),
+                    Colname.quantity: Decimal("3.0"),
                     Colname.qualities: ["foo"],
                     "group": "another-group",
                 }
             ),
             Row(
                 **{
-                    Colname.sum_quantity: Decimal("4.0"),
+                    Colname.quantity: Decimal("4.0"),
                     Colname.qualities: ["foo"],
                     "group": "another-group",
                 }
@@ -142,8 +142,8 @@ class TestWhenValidInput:
 
         # assert
         actual_rows = actual.collect()
-        assert actual_rows[0][Colname.sum_quantity] == Decimal("3.3")
-        assert actual_rows[1][Colname.sum_quantity] == Decimal("7.0")
+        assert actual_rows[0][Colname.quantity] == Decimal("3.3")
+        assert actual_rows[1][Colname.quantity] == Decimal("7.0")
 
     def test_returns_distinct_qualities_in_group(self, spark: SparkSession):
         # Arrange
@@ -151,31 +151,29 @@ class TestWhenValidInput:
         rows = [
             Row(
                 **{
-                    Colname.sum_quantity: 1,
+                    Colname.quantity: 1,
                     Colname.qualities: ["foo", "bar"],
                     group: "the-group",
                 }
             ),
             Row(
                 **{
-                    Colname.sum_quantity: 2,
+                    Colname.quantity: 2,
                     Colname.qualities: ["baz"],
                     group: "the-group",
                 }
             ),
             Row(
                 **{
-                    Colname.sum_quantity: 3,
+                    Colname.quantity: 3,
                     Colname.qualities: [],
                     group: "the-group",
                 }
             ),
-            Row(
-                **{Colname.sum_quantity: 4, Colname.qualities: None, group: "the-group"}
-            ),
+            Row(**{Colname.quantity: 4, Colname.qualities: None, group: "the-group"}),
             Row(
                 **{
-                    Colname.sum_quantity: 5,
+                    Colname.quantity: 5,
                     Colname.qualities: None,
                     group: "other-group",
                 }

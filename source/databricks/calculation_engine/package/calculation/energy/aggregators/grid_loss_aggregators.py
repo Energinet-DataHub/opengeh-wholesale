@@ -45,22 +45,20 @@ def calculate_grid_loss(
     agg_non_profiled_consumption_result = t.aggregate_sum_quantity_and_qualities(
         non_profiled_consumption.df,
         [Colname.grid_area, Colname.observation_time],
-    ).withColumnRenamed(Colname.sum_quantity, hourly_result)
+    ).withColumnRenamed(Colname.quantity, hourly_result)
 
     agg_flex_consumption_result = t.aggregate_sum_quantity_and_qualities(
         flex_consumption.df,
         [Colname.grid_area, Colname.observation_time],
-    ).withColumnRenamed(Colname.sum_quantity, flex_result)
+    ).withColumnRenamed(Colname.quantity, flex_result)
 
     agg_production_result = t.aggregate_sum_quantity_and_qualities(
         production.df,
         [Colname.grid_area, Colname.observation_time],
-    ).withColumnRenamed(Colname.sum_quantity, prod_result)
+    ).withColumnRenamed(Colname.quantity, prod_result)
 
     result = (
-        net_exchange_per_ga.df.withColumnRenamed(
-            Colname.sum_quantity, net_exchange_result
-        )
+        net_exchange_per_ga.df.withColumnRenamed(Colname.quantity, net_exchange_result)
         .join(
             agg_production_result, [Colname.grid_area, Colname.observation_time], "left"
         )
@@ -86,7 +84,7 @@ def calculate_grid_loss(
     )
 
     result = result.withColumn(
-        Colname.sum_quantity,
+        Colname.quantity,
         result[net_exchange_result]
         + result[prod_result]
         - (result[hourly_result] + result[flex_result]),
@@ -95,7 +93,7 @@ def calculate_grid_loss(
     result = result.select(
         Colname.grid_area,
         Colname.observation_time,
-        Colname.sum_quantity,  # grid loss
+        Colname.quantity,  # grid loss
         f.lit(MeteringPointType.CONSUMPTION.value).alias(Colname.metering_point_type),
         # Quality of positive and negative grid loss must always be "calculated" as they become time series
         # that'll be sent to the metering points
@@ -139,9 +137,9 @@ def calculate_negative_grid_loss(
     ).select(
         Colname.grid_area,
         Colname.observation_time,
-        f.when(f.col(Colname.sum_quantity) < 0, -f.col(Colname.sum_quantity))
+        f.when(f.col(Colname.quantity) < 0, -f.col(Colname.quantity))
         .otherwise(0)
-        .alias(Colname.sum_quantity),
+        .alias(Colname.quantity),
         f.lit(MeteringPointType.PRODUCTION.value).alias(Colname.metering_point_type),
         Colname.qualities,
         only_grid_area_and_metering_point_id[Colname.grid_loss_metering_point_id],
@@ -172,9 +170,9 @@ def calculate_positive_grid_loss(
     ).select(
         Colname.grid_area,
         Colname.observation_time,
-        f.when(f.col(Colname.sum_quantity) > 0, f.col(Colname.sum_quantity))
+        f.when(f.col(Colname.quantity) > 0, f.col(Colname.quantity))
         .otherwise(0)
-        .alias(Colname.sum_quantity),
+        .alias(Colname.quantity),
         f.lit(MeteringPointType.CONSUMPTION.value).alias(Colname.metering_point_type),
         Colname.qualities,
         only_grid_area_and_metering_point_id[Colname.grid_loss_metering_point_id],
@@ -194,7 +192,7 @@ def calculate_total_consumption(
             production_per_ga.df,
             [Colname.grid_area, Colname.observation_time],
         )
-        .withColumnRenamed(Colname.sum_quantity, production_sum_quantity)
+        .withColumnRenamed(Colname.quantity, production_sum_quantity)
         .withColumnRenamed(Colname.qualities, aggregated_production_qualities)
     )
 
@@ -203,7 +201,7 @@ def calculate_total_consumption(
             net_exchange_per_ga.df,
             [Colname.grid_area, Colname.observation_time],
         )
-        .withColumnRenamed(Colname.sum_quantity, exchange_sum_quantity)
+        .withColumnRenamed(Colname.quantity, exchange_sum_quantity)
         .withColumnRenamed(Colname.qualities, aggregated_net_exchange_qualities)
     )
 
@@ -212,7 +210,7 @@ def calculate_total_consumption(
             result_net_exchange, [Colname.grid_area, Colname.observation_time], "inner"
         )
         .withColumn(
-            Colname.sum_quantity,
+            Colname.quantity,
             f.col(production_sum_quantity) + f.col(exchange_sum_quantity),
         )
         .withColumn(
@@ -227,7 +225,7 @@ def calculate_total_consumption(
         Colname.grid_area,
         Colname.observation_time,
         Colname.qualities,
-        Colname.sum_quantity,
+        Colname.quantity,
         f.lit(MeteringPointType.CONSUMPTION.value).alias(Colname.metering_point_type),
     )
 
@@ -275,7 +273,7 @@ def apply_grid_loss_adjustment(
         Colname.grid_area,
         Colname.energy_supplier_id,
         Colname.observation_time,
-        Colname.sum_quantity,
+        Colname.quantity,
         Colname.qualities,
     )
 
@@ -288,7 +286,7 @@ def apply_grid_loss_adjustment(
         result_df[Colname.balance_responsible_id],
         Colname.energy_supplier_id,
         Colname.observation_time,
-        result_df[Colname.sum_quantity],
+        result_df[Colname.quantity],
         f.when(
             result_df[Colname.qualities].isNull(),
             joined_grid_loss_result_and_responsible[Colname.qualities],
@@ -303,15 +301,15 @@ def apply_grid_loss_adjustment(
             )
         )
         .alias(Colname.qualities),
-        joined_grid_loss_result_and_responsible[Colname.sum_quantity].alias(
+        joined_grid_loss_result_and_responsible[Colname.quantity].alias(
             "grid_loss_sum_quantity"
         ),
     )
-    df = df.na.fill(0, subset=["grid_loss_sum_quantity", Colname.sum_quantity])
+    df = df.na.fill(0, subset=["grid_loss_sum_quantity", Colname.quantity])
 
     result_df = df.withColumn(
         adjusted_sum_quantity,
-        f.col(Colname.sum_quantity) + f.col("grid_loss_sum_quantity"),
+        f.col(Colname.quantity) + f.col("grid_loss_sum_quantity"),
     )
 
     result = result_df.select(
@@ -319,7 +317,7 @@ def apply_grid_loss_adjustment(
         Colname.balance_responsible_id,
         Colname.energy_supplier_id,
         Colname.observation_time,
-        f.col(adjusted_sum_quantity).alias(Colname.sum_quantity),
+        f.col(adjusted_sum_quantity).alias(Colname.quantity),
         Colname.qualities,
     ).orderBy(
         Colname.grid_area,
