@@ -36,10 +36,6 @@ def add_calculated_grid_loss_to_metering_point_times_series(
     and positive and negative grid loss metering point time series.
     """
 
-    metering_point_time_series.df.select(Colname.metering_point_id).distinct().show(
-        200, truncate=False
-    )
-
     # Union positive and negative grid loss metering point time series and transform them to the same format as the
     # calculation input metering point time series before final union.
     positive = positive_grid_loss.df.withColumn(
@@ -49,9 +45,6 @@ def add_calculated_grid_loss_to_metering_point_times_series(
     negative = negative_grid_loss.df.withColumn(
         Colname.metering_point_type, f.lit(MeteringPointType.PRODUCTION.value)
     ).withColumn(Colname.settlement_method, f.lit(None))
-
-    positive.show(truncate=False)
-    negative.show(truncate=False)
 
     df = (
         positive.union(negative)
@@ -73,7 +66,5 @@ def add_calculated_grid_loss_to_metering_point_times_series(
         )
         .union(metering_point_time_series.df)
     )
-
-    df.show(n=1000, truncate=False)
 
     return PreparedMeteringPointTimeSeries(df)
