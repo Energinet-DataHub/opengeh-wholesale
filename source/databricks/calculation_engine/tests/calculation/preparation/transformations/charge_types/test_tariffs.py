@@ -320,8 +320,7 @@ def test__get_prepared_tariffs__when_same_metering_point_and_resolution__sums_qu
 
     # Assert
     assert (
-        actual.df.collect()[0][Colname.sum_quantity]
-        == 2 * factory.DefaultValues.QUANTITY
+        actual.df.collect()[0][Colname.quantity] == 2 * factory.DefaultValues.QUANTITY
     )
 
 
@@ -464,7 +463,7 @@ def test__get_prepared_tariffs__returns_expected_tariff_values(
 
 
 @pytest.mark.parametrize(
-    "charge_resolution, expected_rows, expected_sum_quantity",
+    "charge_resolution, expected_rows, expected_quantity",
     [
         (
             e.ChargeResolution.HOUR,
@@ -482,7 +481,7 @@ def test__get_prepared_tariffs__when_charges_with_specific_charge_resolution_and
     spark: SparkSession,
     charge_resolution: e.ChargeResolution,
     expected_rows: int,
-    expected_sum_quantity: int,
+    expected_quantity: int,
 ) -> None:
     """
     Only charges where charge time is greater than or equal to the metering point from
@@ -543,11 +542,11 @@ def test__get_prepared_tariffs__when_charges_with_specific_charge_resolution_and
 
     # Assert
     assert actual.df.count() == expected_rows
-    assert actual.df.collect()[0][Colname.sum_quantity] == expected_sum_quantity
+    assert actual.df.collect()[0][Colname.quantity] == expected_quantity
 
 
 @pytest.mark.parametrize(
-    "charge_resolution, expected_rows, expected_sum_quantity",
+    "charge_resolution, expected_rows, expected_quantity",
     [
         (
             e.ChargeResolution.HOUR,
@@ -565,7 +564,7 @@ def test__get_prepared_tariffs__when_specific_charge_resolution_and_time_series_
     spark: SparkSession,
     charge_resolution: e.ChargeResolution,
     expected_rows: int,
-    expected_sum_quantity: int,
+    expected_quantity: int,
 ) -> None:
     """
     Only charges where charge time is greater than or equal to the metering point from
@@ -627,7 +626,7 @@ def test__get_prepared_tariffs__when_specific_charge_resolution_and_time_series_
 
     # Assert
     assert actual.df.count() == expected_rows
-    assert actual.df.collect()[0][Colname.sum_quantity] == expected_sum_quantity
+    assert actual.df.collect()[0][Colname.quantity] == expected_quantity
 
 
 @pytest.mark.parametrize(
