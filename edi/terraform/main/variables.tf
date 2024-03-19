@@ -69,3 +69,9 @@ variable "feature_management_use_request_wholesale_settlement_receiver" {
   description = "Used to enable request wholesale settlement receiver."
   default     = false
 }
+
+variable "feature_management_use_message_delegation" {
+  type        = bool
+  description = "Used to enable message delegation for actors."
+  default     = false
+}

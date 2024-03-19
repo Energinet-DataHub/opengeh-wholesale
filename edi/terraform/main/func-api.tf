@@ -60,5 +60,6 @@ locals {
     FeatureManagement__UseMonthlyAmountPerChargeResultProduced  = var.feature_management_use_monthly_amount_per_charge_result_produced
     FeatureManagement__UseAmountPerChargeResultProduced         = var.feature_management_use_amount_per_charge_result_produced
     FeatureManagement__UseRequestWholesaleSettlementReceiver    = var.feature_management_use_request_wholesale_settlement_receiver
+    FeatureManagement__UseMessageDelegation                     = var.feature_management_use_message_delegation
   }
 }
