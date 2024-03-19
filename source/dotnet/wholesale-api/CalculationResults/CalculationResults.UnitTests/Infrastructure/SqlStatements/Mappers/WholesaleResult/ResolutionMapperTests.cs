@@ -95,4 +95,31 @@ public class ResolutionMapperTests
         act.Should().Throw<ArgumentOutOfRangeException>()
             .And.ActualValue.Should().Be(invalidDeltaTableValue);
     }
+
+    [Theory]
+    [InlineData("P1M", Resolution.Month)]
+    [InlineData("P1D", Resolution.Day)]
+    [InlineData("PT1H", Resolution.Hour)]
+    public void ToDeltaTableValue_WhenValidResolutionValue_ReturnsExpectedString(string expectedDeltaTableValue, Resolution resolution)
+    {
+        // Act
+        var actualDeltaTableValue = ResolutionMapper.ToDeltaTableValue(resolution);
+
+        // Assert
+        actualDeltaTableValue.Should().Be(expectedDeltaTableValue);
+    }
+
+    [Fact]
+    public void ToDeltaTableValue_WhenInvalidResolutionValue_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        var invalidResolutionValue = (Resolution)int.MinValue;
+
+        // Act
+        var act = () => ResolutionMapper.ToDeltaTableValue(invalidResolutionValue);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .And.ActualValue.Should().Be(invalidResolutionValue);
+    }
 }

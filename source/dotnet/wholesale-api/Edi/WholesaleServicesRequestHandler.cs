@@ -22,7 +22,6 @@ using Energinet.DataHub.Wholesale.Edi.Factories.WholesaleServices;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.Validation;
 using Microsoft.Extensions.Logging;
-using Period = Energinet.DataHub.Wholesale.Edi.Models.Period;
 
 namespace Energinet.DataHub.Wholesale.Edi;
 
@@ -39,21 +38,21 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
     private readonly IValidator<Energinet.DataHub.Edi.Requests.WholesaleServicesRequest> _validator;
     private readonly ILogger<WholesaleServicesRequestHandler> _logger;
     private readonly CompletedCalculationRetriever _completedCalculationRetriever;
-    private readonly IWholesaleResultQueries _wholesaleResultQueries;
+    private readonly IWholesaleServicesQueries _wholesaleServicesQueries;
     private readonly WholesaleServicesRequestMapper _wholesaleServicesRequestMapper;
 
     public WholesaleServicesRequestHandler(
         IEdiClient ediClient,
         IValidator<Energinet.DataHub.Edi.Requests.WholesaleServicesRequest> validator,
         CompletedCalculationRetriever completedCalculationRetriever,
-        IWholesaleResultQueries wholesaleResultQueries,
+        IWholesaleServicesQueries wholesaleServicesQueries,
         WholesaleServicesRequestMapper wholesaleServicesRequestMapper,
         ILogger<WholesaleServicesRequestHandler> logger)
     {
         _ediClient = ediClient;
         _validator = validator;
         _completedCalculationRetriever = completedCalculationRetriever;
-        _wholesaleResultQueries = wholesaleResultQueries;
+        _wholesaleServicesQueries = wholesaleServicesQueries;
         _wholesaleServicesRequestMapper = wholesaleServicesRequestMapper;
         _logger = logger;
     }
@@ -75,7 +74,7 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
 
         var request = _wholesaleServicesRequestMapper.Map(incomingRequest);
         var queryParameters = await GetWholesaleResultQueryParametersAsync(request).ConfigureAwait(false);
-        var data = await _wholesaleResultQueries.GetAsync(queryParameters).ToListAsync(cancellationToken).ConfigureAwait(false);
+        var data = await _wholesaleServicesQueries.GetAsync(queryParameters).ToListAsync(cancellationToken).ConfigureAwait(false);
 
         if (!data.Any())
         {
@@ -95,20 +94,26 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
         await SendAcceptedMessageAsync(data, referenceId, cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task<WholesaleResultQueryParameters> GetWholesaleResultQueryParametersAsync(WholesaleServicesRequest request)
+    private async Task<WholesaleServicesQueryParameters> GetWholesaleResultQueryParametersAsync(WholesaleServicesRequest request)
     {
         var latestCalculationsForRequest = await _completedCalculationRetriever.GetLatestCompletedCalculationsForPeriodAsync(
                 request.GridArea,
-                new Period(request.Period.Start, request.Period.End),
+                request.Period,
                 request.RequestedCalculationType)
             .ConfigureAwait(true);
 
-        return new WholesaleResultQueryParameters(request.GridArea, latestCalculationsForRequest);
+        return new WholesaleServicesQueryParameters(
+            request.Resolution,
+            request.GridArea,
+            request.EnergySupplierId,
+            request.ChargeOwnerId,
+            request.ChargeTypes.Select(c => (c.ChargeCode, c.ChargeType)).ToList(),
+            latestCalculationsForRequest);
     }
 
     private async Task<bool> HasDataInAnotherGridAreaAsync(
         string? requestedByActorRole,
-        WholesaleResultQueryParameters queryParameters)
+        WholesaleServicesQueryParameters queryParameters)
     {
         if (queryParameters.GridArea == null) // If grid area is null, we already retrieved any data across all grid areas
             return false;
@@ -120,7 +125,7 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
                 GridArea = null,
             };
 
-            var anyResultsExists = await _wholesaleResultQueries.AnyAsync(queryParametersWithoutGridArea).ConfigureAwait(false);
+            var anyResultsExists = await _wholesaleServicesQueries.AnyAsync(queryParametersWithoutGridArea).ConfigureAwait(false);
 
             return anyResultsExists;
         }
@@ -134,7 +139,7 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
         await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task SendAcceptedMessageAsync(IReadOnlyCollection<WholesaleResult> results, string referenceId, CancellationToken cancellationToken)
+    private async Task SendAcceptedMessageAsync(IReadOnlyCollection<WholesaleServices> results, string referenceId, CancellationToken cancellationToken)
     {
         var message = WholesaleServiceRequestAcceptedMessageFactory.Create(results, referenceId);
         await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
