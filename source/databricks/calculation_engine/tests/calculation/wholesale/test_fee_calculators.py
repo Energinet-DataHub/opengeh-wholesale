@@ -24,7 +24,7 @@ from tests.helpers.test_schemas import (
 from package.constants import Colname
 from package.codelists import ChargeType, MeteringPointType, SettlementMethod
 from package.calculation.wholesale.fee_calculators import (
-    calculate_fee_charge_price,
+    calculate_fee_per_ga_co_es,
     filter_on_metering_point_type_and_settlement_method,
     get_count_of_charges_and_total_daily_charge_price,
 )
@@ -74,7 +74,7 @@ def test__calculate_fee_charge_price__simple(
         charge_link_metering_point_periods,
         DEFAULT_TIME_ZONE,
     ).df
-    result = calculate_fee_charge_price(spark, fee_charges)
+    result = calculate_fee_per_ga_co_es(spark, fee_charges)
     expected = calculate_fee_charge_price_factory(
         expected_time,
         expected_charge_count,
@@ -142,7 +142,7 @@ def test__calculate_fee_charge_price__two_fees(
         charge_link_metering_point_periods,
         DEFAULT_TIME_ZONE,
     ).df
-    result = calculate_fee_charge_price(spark, fee_charges).orderBy(
+    result = calculate_fee_per_ga_co_es(spark, fee_charges).orderBy(
         Colname.charge_price
     )
     expected_fee_1 = calculate_fee_charge_price_factory(
