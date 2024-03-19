@@ -107,7 +107,7 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
             request.GridArea,
             request.EnergySupplierId,
             request.ChargeOwnerId,
-            request.ChargeTypes?.Select(c => (c.ChargeCode, c.ChargeType)).ToList(),
+            request.ChargeTypes.Select(c => (c.ChargeCode, c.ChargeType)).ToList(),
             latestCalculationsForRequest);
     }
 

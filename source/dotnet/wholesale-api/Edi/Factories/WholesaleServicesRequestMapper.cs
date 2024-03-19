@@ -45,11 +45,8 @@ public class WholesaleServicesRequestMapper(DateTimeZone dateTimeZone)
             RequestedCalculationTypeMapper.ToRequestedCalculationType(request.BusinessReason, request.HasSettlementSeriesVersion ? request.SettlementSeriesVersion : null));
     }
 
-    private List<ChargeCodeAndType>? MapChargeTypes(RepeatedField<Energinet.DataHub.Edi.Requests.ChargeType>? chargeTypes)
+    private List<ChargeCodeAndType> MapChargeTypes(RepeatedField<Energinet.DataHub.Edi.Requests.ChargeType> chargeTypes)
     {
-        if (chargeTypes == null || chargeTypes.Count == 0)
-            return null;
-
         return chargeTypes
             .Select(c => new ChargeCodeAndType(
                 c.HasChargeCode ? c.ChargeCode : null,

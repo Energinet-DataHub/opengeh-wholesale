@@ -69,7 +69,7 @@ public class WholesaleServicesQueryStatement : DatabricksStatement
         if (_queryParameters.Resolution != null)
             sql += $" AND {WholesaleResultColumnNames.Resolution} = '{ResolutionMapper.ToDeltaTableValue(_queryParameters.Resolution.Value)}'";
 
-        if (_queryParameters.ChargeTypes != null && _queryParameters.ChargeTypes.Any())
+        if (_queryParameters.ChargeTypes.Any())
         {
             var chargeTypesSql = _queryParameters.ChargeTypes
                 .Select(c => CreateChargeTypeSqlStatement(c.ChargeCode, c.ChargeType))

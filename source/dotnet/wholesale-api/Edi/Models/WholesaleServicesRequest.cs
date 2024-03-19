@@ -19,6 +19,6 @@ public record WholesaleServicesRequest(
     string? GridArea,
     string? EnergySupplierId,
     string? ChargeOwnerId,
-    List<ChargeCodeAndType>? ChargeTypes,
+    List<ChargeCodeAndType> ChargeTypes,
     Period Period,
     RequestedCalculationType RequestedCalculationType);

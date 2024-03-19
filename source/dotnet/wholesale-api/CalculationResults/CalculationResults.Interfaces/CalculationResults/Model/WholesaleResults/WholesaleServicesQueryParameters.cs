@@ -21,5 +21,5 @@ public record WholesaleServicesQueryParameters(
     string? GridArea,
     string? EnergySupplierId,
     string? ChargeOwnerId,
-    List<(string? ChargeCode, ChargeType? ChargeType)>? ChargeTypes,
+    List<(string? ChargeCode, ChargeType? ChargeType)> ChargeTypes,
     IReadOnlyCollection<CalculationForPeriod> Calculations);
