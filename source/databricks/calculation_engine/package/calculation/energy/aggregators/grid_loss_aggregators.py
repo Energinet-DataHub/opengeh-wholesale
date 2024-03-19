@@ -140,7 +140,7 @@ def calculate_negative_grid_loss(
         .select(
             Colname.grid_area,
             Colname.energy_supplier_id,
-            Colname.time_window,
+            Colname.observation_time,
             f.when(f.col(Colname.quantity) < 0, -f.col(Colname.quantity))
             .otherwise(0)
             .alias(Colname.quantity),
@@ -176,7 +176,7 @@ def calculate_positive_grid_loss(
         .select(
             Colname.grid_area,
             Colname.energy_supplier_id,
-            Colname.time_window,
+            Colname.observation_time,
             f.when(f.col(Colname.quantity) > 0, f.col(Colname.quantity))
             .otherwise(0)
             .alias(Colname.quantity),

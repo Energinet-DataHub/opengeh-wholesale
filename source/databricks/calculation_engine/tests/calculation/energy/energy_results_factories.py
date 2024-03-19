@@ -82,10 +82,10 @@ def create_grid_loss_row(
         to_grid_area=None,
         observation_time=observation_time,
         quantity=quantity,
-        qualities=[QuantityQuality.CALCULATED],
-        energy_supplier_id=None,
-        balance_responsible_id=None,
-        metering_point_id=None,
+        qualities=[QuantityQuality.CALCULATED],  # Grid loss has exactly this quality
+        energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID,
+        balance_responsible_id=None,  # Never exists for grid loss metering points
+        metering_point_id=DEFAULT_METERING_POINT_ID,
     )
 
 

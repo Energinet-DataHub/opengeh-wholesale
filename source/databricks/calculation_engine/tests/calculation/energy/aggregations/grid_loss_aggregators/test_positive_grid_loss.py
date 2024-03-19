@@ -78,33 +78,32 @@ class TestWhenValidInput:
         actual_positive_grid_loss: EnergyResults,
     ) -> None:
         assert (
-            actual_positive_grid_loss.df.where(col(Colname.quantity) < 0).count()
-            == 0
+            actual_positive_grid_loss.df.where(col(Colname.quantity) < 0).count() == 0
         )
 
     def test__changes_negative_values_to_zero(
         self,
         actual_positive_grid_loss: EnergyResults,
     ) -> None:
-        assert actual_positive_grid_loss.df.collect()[0][
-            Colname.quantity
-        ] == Decimal("0.00000")
+        assert actual_positive_grid_loss.df.collect()[0][Colname.quantity] == Decimal(
+            "0.00000"
+        )
 
     def test__positive_values_will_not_change(
         self,
         actual_positive_grid_loss: EnergyResults,
     ) -> None:
-        assert actual_positive_grid_loss.df.collect()[1][
-            Colname.quantity
-        ] == Decimal("34.32000")
+        assert actual_positive_grid_loss.df.collect()[1][Colname.quantity] == Decimal(
+            "34.32000"
+        )
 
     def test__values_that_are_zero_stay_zero(
         self,
         actual_positive_grid_loss: EnergyResults,
     ) -> None:
-        assert actual_positive_grid_loss.df.collect()[2][
-            Colname.quantity
-        ] == Decimal("0.00000")
+        assert actual_positive_grid_loss.df.collect()[2][Colname.quantity] == Decimal(
+            "0.00000"
+        )
 
     def test__has_expected_values(
         self,
@@ -119,7 +118,7 @@ class TestWhenValidInput:
             Colname.balance_responsible_id: None,
             Colname.energy_supplier_id: grid_loss_responsible_factories.DEFAULT_ENERGY_SUPPLIER_ID,
             Colname.observation_time: energy_results_factories.DEFAULT_OBSERVATION_TIME,
-            Colname._quantity: Decimal("34.320000"),
+            Colname.quantity: Decimal("34.320000"),
             Colname.qualities: [QuantityQuality.CALCULATED.value],
             Colname.metering_point_id: grid_loss_responsible_factories.DEFAULT_METERING_POINT_ID,
         }

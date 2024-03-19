@@ -77,31 +77,33 @@ class TestWhenValidInput:
         self,
         actual_negative_grid_loss: EnergyResults,
     ) -> None:
-        assert actual_negative_grid_loss.df.where(col(Colname.quantity) < 0).count() == 0
+        assert (
+            actual_negative_grid_loss.df.where(col(Colname.quantity) < 0).count() == 0
+        )
 
     def test___changes_negative_value_to_positive(
         self,
         actual_negative_grid_loss: EnergyResults,
     ) -> None:
-        assert actual_negative_grid_loss.df.collect()[0][
-            Colname.sum_quantity
-        ] == Decimal("12.56700")
+        assert actual_negative_grid_loss.df.collect()[0][Colname.quantity] == Decimal(
+            "12.56700"
+        )
 
     def test__changes_positive_value_to_zero(
         self,
         actual_negative_grid_loss: EnergyResults,
     ) -> None:
-        assert actual_negative_grid_loss.df.collect()[1][
-            Colname.quantity
-        ] == Decimal("0.00000")
+        assert actual_negative_grid_loss.df.collect()[1][Colname.quantity] == Decimal(
+            "0.00000"
+        )
 
     def test__values_that_are_zero_stay_zero(
         self,
         actual_negative_grid_loss: EnergyResults,
     ) -> None:
-        assert actual_negative_grid_loss.df.collect()[2][
-            Colname.quantity
-        ] == Decimal("0.00000")
+        assert actual_negative_grid_loss.df.collect()[2][Colname.quantity] == Decimal(
+            "0.00000"
+        )
 
     def test__has_expected_values(
         self,
