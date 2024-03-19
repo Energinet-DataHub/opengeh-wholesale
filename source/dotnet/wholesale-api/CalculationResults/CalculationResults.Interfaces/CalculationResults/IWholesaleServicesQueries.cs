@@ -17,12 +17,17 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 
 /// <summary>
-/// Used to query wholesale data for a single calculation result
+/// Used to query wholesale services which is wholesale data across multiple calculations
 /// </summary>
-public interface IWholesaleResultQueries
+public interface IWholesaleServicesQueries
 {
     /// <summary>
-    /// Get all wholesale results for a given calculation.
+    /// Get all wholesale data for the given list of calculations
     /// </summary>
-    IAsyncEnumerable<WholesaleResult> GetAsync(Guid calculationId);
+    IAsyncEnumerable<WholesaleServices> GetAsync(WholesaleServicesQueryParameters queryParameters);
+
+    /// <summary>
+    /// Get if any wholesale data exists for the given list of calculations
+    /// </summary>
+    Task<bool> AnyAsync(WholesaleServicesQueryParameters queryParameters);
 }

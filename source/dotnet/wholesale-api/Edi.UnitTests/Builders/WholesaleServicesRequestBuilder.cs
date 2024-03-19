@@ -16,6 +16,7 @@ using Energinet.DataHub.Edi.Requests;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.AggregatedTimeSeriesRequest;
 using NodaTime;
+using ChargeType = Energinet.DataHub.Edi.Requests.ChargeType;
 using WholesaleServicesRequest = Energinet.DataHub.Edi.Requests.WholesaleServicesRequest;
 
 namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
@@ -57,7 +58,7 @@ public class WholesaleServicesRequestBuilder
         if (_settlementSeriesVersion != null)
             request.SettlementSeriesVersion = _settlementSeriesVersion;
 
-        request.ChargeType.AddRange(_chargeType);
+        request.ChargeTypes.AddRange(_chargeType);
 
         return request;
     }
