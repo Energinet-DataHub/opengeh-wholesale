@@ -74,6 +74,7 @@ def create_grid_loss_row(
     grid_area: str = DEFAULT_GRID_AREA,
     observation_time: datetime.datetime = DEFAULT_OBSERVATION_TIME,
     quantity: int | Decimal = DEFAULT_QUANTITY,
+    metering_point_id: str = DEFAULT_METERING_POINT_ID,
 ) -> Row:
     """Suggestion: Consider creating a type for grid loss results."""
     return create_row(
@@ -83,9 +84,9 @@ def create_grid_loss_row(
         observation_time=observation_time,
         quantity=quantity,
         qualities=[QuantityQuality.CALCULATED],  # Grid loss has exactly this quality
-        energy_supplier_id=DEFAULT_ENERGY_SUPPLIER_ID,
+        energy_supplier_id=None,  # Energy supplier is not added until positive/negative grid loss
         balance_responsible_id=None,  # Never exists for grid loss metering points
-        metering_point_id=DEFAULT_METERING_POINT_ID,
+        metering_point_id=metering_point_id,
     )
 
 

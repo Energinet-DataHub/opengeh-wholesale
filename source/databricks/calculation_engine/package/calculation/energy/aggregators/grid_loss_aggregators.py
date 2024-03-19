@@ -11,8 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import Any
+
 import pyspark.sql.functions as f
-from pyspark.sql import DataFrame
 
 import package.calculation.energy.aggregators.transformations as t
 from package.calculation.energy.data_structures.energy_results import EnergyResults
@@ -102,88 +103,62 @@ def calculate_grid_loss(
     return EnergyResults(result)
 
 
-def _get_grid_loss_metering_point_ids_for_grid_areas_with_specific_metering_point_type(
-    grid_loss_responsible: GridLossResponsible, metering_point_type: MeteringPointType
-) -> DataFrame:
-    return (
-        grid_loss_responsible.df.select(
-            Colname.grid_area, Colname.metering_point_id, Colname.energy_supplier_id
-        )
-        .distinct()
-        .where(
-            grid_loss_responsible.df[Colname.metering_point_type]
-            == metering_point_type.value
-        )
-    )
-
-
 def calculate_negative_grid_loss(
     grid_loss: EnergyResults, grid_loss_responsible: GridLossResponsible
 ) -> EnergyResults:
-    only_grid_area_and_metering_point_id = _get_grid_loss_metering_point_ids_for_grid_areas_with_specific_metering_point_type(
-        grid_loss_responsible, MeteringPointType.PRODUCTION
+    return _calculate_negative_or_positive(
+        grid_loss,
+        grid_loss_responsible,
+        MeteringPointType.PRODUCTION,
+        f.when(f.col(Colname.quantity) < 0, -f.col(Colname.quantity)).otherwise(0),
     )
-
-    # The Databricks engine cannot join on "metering point id"
-    # because it is ambiguous (in this case). Therefore, it is
-    # renamed before and back again after.
-    only_grid_area_and_metering_point_id = (
-        only_grid_area_and_metering_point_id.withColumnRenamed(
-            Colname.metering_point_id, Colname.grid_loss_metering_point_id
-        )
-    )
-
-    result = (
-        grid_loss.df.drop(Colname.energy_supplier_id)
-        .join(only_grid_area_and_metering_point_id, Colname.grid_area, "left")
-        .select(
-            Colname.grid_area,
-            Colname.energy_supplier_id,
-            Colname.observation_time,
-            f.when(f.col(Colname.quantity) < 0, -f.col(Colname.quantity))
-            .otherwise(0)
-            .alias(Colname.quantity),
-            Colname.qualities,
-            only_grid_area_and_metering_point_id[
-                Colname.grid_loss_metering_point_id
-            ].alias(Colname.metering_point_id),
-        )
-    )
-
-    return EnergyResults(result)
 
 
 def calculate_positive_grid_loss(
     grid_loss: EnergyResults, grid_loss_responsible: GridLossResponsible
 ) -> EnergyResults:
-    only_grid_area_and_metering_point_id = _get_grid_loss_metering_point_ids_for_grid_areas_with_specific_metering_point_type(
-        grid_loss_responsible, MeteringPointType.CONSUMPTION
+    return _calculate_negative_or_positive(
+        grid_loss,
+        grid_loss_responsible,
+        MeteringPointType.CONSUMPTION,
+        f.when(f.col(Colname.quantity) > 0, f.col(Colname.quantity)).otherwise(0),
     )
 
-    only_grid_area_and_metering_point_id = (
-        only_grid_area_and_metering_point_id.withColumnRenamed(
-            Colname.metering_point_id, Colname.grid_loss_metering_point_id
-        )
-    )
+
+def _calculate_negative_or_positive(
+    grid_loss: EnergyResults,
+    grid_loss_responsible: GridLossResponsible,
+    metering_point_type: MeteringPointType,
+    value_expr: Any,
+) -> EnergyResults:
+    gl = grid_loss.df
+    glr = grid_loss_responsible.df.where(
+        f.col(Colname.metering_point_type) == metering_point_type.value
+    ).alias("glr")
 
     result = (
-        grid_loss.df.drop(Colname.energy_supplier_id)
-        .join(only_grid_area_and_metering_point_id, Colname.grid_area, "left")
-        .select(
-            Colname.grid_area,
-            Colname.energy_supplier_id,
-            Colname.observation_time,
-            f.when(f.col(Colname.quantity) > 0, f.col(Colname.quantity))
-            .otherwise(0)
-            .alias(Colname.quantity),
-            Colname.qualities,
-            only_grid_area_and_metering_point_id[Colname.grid_loss_metering_point_id],
+        glr.join(
+            gl,
+            (gl[Colname.metering_point_id] == glr[Colname.metering_point_id])
+            & (gl[Colname.observation_time] >= f.col(Colname.from_date))
+            & (gl[Colname.observation_time] < f.col(Colname.to_date)),
+            "left",
         )
+        .select(
+            glr[Colname.grid_area],
+            glr[Colname.energy_supplier_id],
+            gl[Colname.observation_time],
+            gl[Colname.quantity],
+            gl[Colname.qualities],
+            glr[Colname.metering_point_id],
+        )
+        .withColumn(Colname.quantity, value_expr)
     )
 
-    result = result.withColumnRenamed(
-        Colname.grid_loss_metering_point_id, Colname.metering_point_id
-    )
+    gl.show()
+    glr.show()
+    result.show()
+
     return EnergyResults(result)
 
 

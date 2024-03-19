@@ -37,15 +37,21 @@ def actual_negative_grid_loss(spark: SparkSession) -> EnergyResults:
     rows = [
         energy_results_factories.create_grid_loss_row(
             grid_area="001",
+            metering_point_id="a",
             quantity=Decimal(-12.567),
+            observation_time=grid_loss_responsible_factories.DEFAULT_FROM_DATE,
         ),
         energy_results_factories.create_grid_loss_row(
             grid_area="002",
+            metering_point_id="b",
             quantity=Decimal(34.32),
+            observation_time=grid_loss_responsible_factories.DEFAULT_FROM_DATE,
         ),
         energy_results_factories.create_grid_loss_row(
             grid_area="003",
+            metering_point_id="c",
             quantity=Decimal(0.0),
+            observation_time=grid_loss_responsible_factories.DEFAULT_FROM_DATE,
         ),
     ]
 
@@ -54,14 +60,17 @@ def actual_negative_grid_loss(spark: SparkSession) -> EnergyResults:
     responsible_rows = [
         grid_loss_responsible_factories.create_row(
             grid_area="001",
+            metering_point_id="a",
             metering_point_type=MeteringPointType.PRODUCTION,
         ),
         grid_loss_responsible_factories.create_row(
             grid_area="002",
+            metering_point_id="b",
             metering_point_type=MeteringPointType.PRODUCTION,
         ),
         grid_loss_responsible_factories.create_row(
             grid_area="003",
+            metering_point_id="c",
             metering_point_type=MeteringPointType.PRODUCTION,
         ),
     ]
@@ -117,10 +126,10 @@ class TestWhenValidInput:
             Colname.from_grid_area: None,
             Colname.balance_responsible_id: None,
             Colname.energy_supplier_id: grid_loss_responsible_factories.DEFAULT_ENERGY_SUPPLIER_ID,
-            Colname.observation_time: energy_results_factories.DEFAULT_OBSERVATION_TIME,
-            Colname.sum_quantity: Decimal("12.567000"),
+            Colname.observation_time: grid_loss_responsible_factories.DEFAULT_FROM_DATE,
+            Colname.quantity: Decimal("12.567000"),
             Colname.qualities: [QuantityQuality.CALCULATED.value],
-            Colname.metering_point_id: grid_loss_responsible_factories.DEFAULT_METERING_POINT_ID,
+            Colname.metering_point_id: "a",
         }
         expected_row = Row(**expected)
 

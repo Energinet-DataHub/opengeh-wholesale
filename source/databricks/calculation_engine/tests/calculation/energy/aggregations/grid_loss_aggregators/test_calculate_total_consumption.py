@@ -99,14 +99,14 @@ class TestWhenValidInput:
         production_per_ga = energy_results.create(spark, production)
         net_exchange_per_ga = energy_results.create(spark, net_exchange)
         # The sum of production and exchange, but not including exchange for the other grid area
-        expected_sum_quantity = 7
+        expected_quantity = 7
 
         # Act
         actual = calculate_total_consumption(production_per_ga, net_exchange_per_ga)
 
         # Assert
         actual_row = actual.df.collect()[0]
-        assert actual_row[Colname.quantity] == expected_sum_quantity
+        assert actual_row[Colname.quantity] == expected_quantity
 
     def test__does_not_include_quantity_from_non_neighbour_ga_in_return(
         self, spark: SparkSession
@@ -123,11 +123,11 @@ class TestWhenValidInput:
         production_per_ga = energy_results.create(spark, production)
         net_exchange_per_ga = energy_results.create(spark, net_exchange_other_ga)
         # The sum of production and exchange, but not including exchange for the other grid area
-        expected_sum_quantity = 7
+        expected_quantity = 7
 
         # Act
         actual = calculate_total_consumption(production_per_ga, net_exchange_per_ga)
 
         # Assert
         actual_row = actual.df.collect()[0]
-        assert actual_row[Colname.quantity] == expected_sum_quantity
+        assert actual_row[Colname.quantity] == expected_quantity
