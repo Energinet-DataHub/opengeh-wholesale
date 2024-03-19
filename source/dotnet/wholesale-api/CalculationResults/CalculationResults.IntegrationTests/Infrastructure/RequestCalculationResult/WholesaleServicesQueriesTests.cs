@@ -81,8 +81,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
 
         using var assertionScope = new AssertionScope();
         actual.Should().HaveCount(3);
-        foreach (var expectedPackage in packages)
-            actual.Should().ContainSingle(actualPackage => PackagesAreEqual(actualPackage, expectedPackage));
+        actual.Should().ContainSingle(actualPackage => PackagesAreEqual(actualPackage, package));
     }
 
     [Fact]
