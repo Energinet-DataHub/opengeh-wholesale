@@ -19,6 +19,10 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 
+/// <summary>
+/// Provides base logic for performing a query that retrieves sql rows based on a list of calculations
+///     and groups the rows into packages, which each contains metadata and a list of time series points.
+/// </summary>
 public abstract class PackageQueriesBase<TResult, TTimeSeriesPoint>(DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor)
 {
     protected abstract string CalculationIdColumnName { get; }

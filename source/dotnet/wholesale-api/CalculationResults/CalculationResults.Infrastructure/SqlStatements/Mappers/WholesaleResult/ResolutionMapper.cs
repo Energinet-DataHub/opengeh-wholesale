@@ -39,6 +39,6 @@ public static class ResolutionMapper
             _ => throw new ArgumentOutOfRangeException(
                 nameof(resolution),
                 actualValue: resolution,
-                "Cannot map Resolution to delta table value"),
+                $"Cannot map ${nameof(Resolution)} to delta table value"),
         };
 }

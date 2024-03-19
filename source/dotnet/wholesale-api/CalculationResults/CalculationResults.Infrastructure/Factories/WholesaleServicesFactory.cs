@@ -38,6 +38,7 @@ public static class WholesaleServicesFactory
             MeteringPointTypeMapper.FromRequiredDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.MeteringPointType]!),
             SettlementMethodMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.SettlementMethod]),
             Currency.DKK,
+            CalculationTypeMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.CalculationType]!),
             timeSeriesPoints,
             version);
     }

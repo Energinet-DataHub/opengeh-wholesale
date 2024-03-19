@@ -19,6 +19,7 @@ using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.Edi.Client;
 using Energinet.DataHub.Wholesale.Edi.Factories;
@@ -213,6 +214,7 @@ public class WholesaleServicesRequestHandlerTests
             MeteringPointType.Consumption,
             SettlementMethod.Flex,
             Currency.DKK,
+            CalculationType.WholesaleFixing,
             timeSeriesPoints,
             1);
     }

@@ -40,6 +40,6 @@ public static class ChargeTypeMapper
             _ => throw new ArgumentOutOfRangeException(
                 nameof(chargeType),
                 actualValue: chargeType,
-                "Cannot map ChargeType to delta table value"),
+                $"Cannot map ${nameof(ChargeType)} to delta table value"),
         };
 }

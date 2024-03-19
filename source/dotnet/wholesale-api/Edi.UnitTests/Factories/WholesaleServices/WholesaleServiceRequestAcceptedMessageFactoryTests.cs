@@ -111,7 +111,8 @@ public class WholesaleServiceRequestAcceptedMessageFactoryTests
         IReadOnlyCollection<WholesaleQuantity>? quantityQualities = null,
         MeteringPointType? meteringPointType = null,
         SettlementMethod? settlementMethod = null,
-        Resolution resolution = Resolution.Month)
+        Resolution resolution = Resolution.Month,
+        CalculationType calculationType = CalculationType.WholesaleFixing)
     {
         quantityQualities ??= new List<WholesaleQuantity> { WholesaleQuantity.Estimated };
 
@@ -130,6 +131,7 @@ public class WholesaleServiceRequestAcceptedMessageFactoryTests
                 meteringPointType,
                 settlementMethod,
                 Currency.DKK,
+                calculationType,
                 new WholesaleTimeSeriesPoint[]
                 {
                     new(_defaultTime.ToDateTimeOffset(), 2, quantityQualities, 2, 4),

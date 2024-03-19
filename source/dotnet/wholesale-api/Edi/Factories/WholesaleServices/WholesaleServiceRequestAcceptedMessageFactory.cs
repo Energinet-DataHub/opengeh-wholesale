@@ -16,6 +16,7 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Edi.Mappers;
 using Google.Protobuf;
 using Google.Protobuf.Collections;
@@ -67,6 +68,7 @@ public static class WholesaleServiceRequestAcceptedMessageFactory
                 Currency = WholesaleServicesRequestSeries.Types.Currency.Dkk,
                 TimeSeriesPoints = { points },
                 CalculationResultVersion = series.Version,
+                CalculationType = MapCalculationType(series.CalculationType),
             };
             if (series.MeteringPointType is not null)
                 wholesaleSeries.MeteringPointType = MapMeteringPointType(series.MeteringPointType.Value);
@@ -78,6 +80,26 @@ public static class WholesaleServiceRequestAcceptedMessageFactory
         }
 
         return response;
+    }
+
+    private static WholesaleServicesRequestSeries.Types.CalculationType MapCalculationType(CalculationType calculationType)
+    {
+        return calculationType switch
+        {
+            CalculationType.WholesaleFixing => WholesaleServicesRequestSeries.Types.CalculationType.WholesaleFixing,
+            CalculationType.FirstCorrectionSettlement => WholesaleServicesRequestSeries.Types.CalculationType.FirstCorrectionSettlement,
+            CalculationType.SecondCorrectionSettlement => WholesaleServicesRequestSeries.Types.CalculationType.SecondCorrectionSettlement,
+            CalculationType.ThirdCorrectionSettlement => WholesaleServicesRequestSeries.Types.CalculationType.ThirdCorrectionSettlement,
+            CalculationType.Aggregation or
+                CalculationType.BalanceFixing => throw new ArgumentOutOfRangeException(
+                nameof(calculationType),
+                actualValue: calculationType,
+                $"{nameof(WholesaleServicesRequestSeries.Types.CalculationType)} has a value that cannot be mapped (it shouldn't be possible)."),
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(calculationType),
+                actualValue: calculationType,
+                $"Value cannot be mapped to a {nameof(WholesaleServicesRequestSeries.Types.CalculationType)} (the value is not handled)."),
+        };
     }
 
     private static WholesaleServicesRequestSeries.Types.SettlementMethod MapSettlementMethod(SettlementMethod seriesSettlementMethod)

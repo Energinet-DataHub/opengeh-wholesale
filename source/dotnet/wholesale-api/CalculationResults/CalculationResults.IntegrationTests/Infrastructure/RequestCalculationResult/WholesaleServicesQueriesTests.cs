@@ -16,10 +16,12 @@ using AutoFixture;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using JetBrains.Annotations;
@@ -46,6 +48,41 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         var values = Enum.GetValues<WholesaleServicesProperty>();
 
         return values.Select(v => new object[] { v }).ToArray();
+    }
+
+    [Fact]
+    public async Task GetAsync_WhenRequestingCalculationPeriod_ReturnsCorrectData()
+    {
+        // Arrange
+        var calculationPeriod = CreateCalculationPeriods().Calculation1Period1;
+
+        var package = new WholesaleServicesPackage(
+            CalculationPeriod: calculationPeriod,
+            Points:
+            [
+                calculationPeriod.Period.Start,
+                calculationPeriod.Period.Start.Plus(Duration.FromHours(1)),
+            ],
+            Resolution.Month,
+            "111",
+            "1136552000028",
+            "2276543210000",
+            "3333",
+            ChargeType.Fee,
+            CalculationType.SecondCorrectionSettlement);
+
+        var rows = ExtractSqlRowsFromPackagesAndTheirPoints([package]); // A package creates 1 sql row per point (9 rows total in this case)
+        await InsertData(rows);
+
+        var query = CreateQueryParameters([calculationPeriod]);
+
+        // Act
+        var actual = await Sut.GetAsync(query).ToListAsync();
+
+        using var assertionScope = new AssertionScope();
+        actual.Should().HaveCount(3);
+        foreach (var expectedPackage in packages)
+            actual.Should().ContainSingle(actualPackage => PackagesAreEqual(actualPackage, expectedPackage));
     }
 
     [Fact]
@@ -573,7 +610,8 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
             actualPackage.ChargeOwnerId,
             actualPackage.ChargeCode,
             actualPackage.ChargeType,
-            actualPackage.Resolution);
+            actualPackage.Resolution,
+            actualPackage.CalculationType);
 
         var expected = new PackageForComparision(
             expectedPackage.CalculationPeriod.Period,
@@ -583,7 +621,8 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
             expectedPackage.ChargeOwnerId,
             expectedPackage.ChargeCode,
             expectedPackage.ChargeType,
-            expectedPackage.Resolution);
+            expectedPackage.Resolution,
+            expectedPackage.CalculationType);
 
         var actualPoints = actualPackage.TimeSeriesPoints.Select(p => p.Time.ToInstant()).ToList();
         var expectedPoints = expectedPackage.Points;
@@ -604,7 +643,8 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
                         p.EnergySupplierId,
                         p.ChargeOwnerId,
                         p.ChargeType,
-                        p.ChargeCode)))
+                        p.ChargeCode,
+                        p.CalculationType)))
             .ToList();
     }
 
@@ -624,7 +664,8 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         string energySupplierId,
         string chargeOwnerId,
         ChargeType chargeType,
-        string chargeCode)
+        string chargeCode,
+        CalculationType calculationType)
     {
         return WholesaleResultDeltaTableHelper.CreateRowValues(
             calculationPeriod.CalculationId.ToString(),
@@ -634,7 +675,8 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
             energySupplierId: energySupplierId,
             chargeOwnerId: chargeOwnerId,
             chargeType: ChargeTypeMapper.ToDeltaTableValue(chargeType),
-            chargeCode: chargeCode);
+            chargeCode: chargeCode,
+            calculationType: CalculationTypeMapper.ToDeltaTableValue(calculationType));
     }
 
     private CalculationPeriods CreateCalculationPeriods()
@@ -668,9 +710,8 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
 
         var calculation3 = calculation2 with { CalculationId = Guid.NewGuid(), CalculationVersion = 3 };
         var calculation4 = calculation2 with { CalculationId = Guid.NewGuid(), CalculationVersion = 4 };
-        var calculation5 = calculation2 with { CalculationId = Guid.NewGuid(), CalculationVersion = 5 };
 
-        return new CalculationPeriods(calculation1Period1, calculation2, calculation1Period2, calculation3, calculation4, calculation5);
+        return new CalculationPeriods(calculation1Period1, calculation2, calculation1Period2, calculation3, calculation4);
     }
 
     private WholesaleServicesQueryParameters CreateQueryParameters(
@@ -695,8 +736,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         CalculationForPeriod Calculation2,
         CalculationForPeriod Calculation1Period2,
         CalculationForPeriod Calculation3,
-        CalculationForPeriod Calculation4,
-        CalculationForPeriod Calculation5);
+        CalculationForPeriod Calculation4);
 
     private record WholesaleServicesPackage(
         CalculationForPeriod CalculationPeriod,
@@ -706,7 +746,8 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         string EnergySupplierId = "2236552000028",
         string ChargeOwnerId = "9876543210000",
         string ChargeCode = "4000",
-        ChargeType ChargeType = ChargeType.Tariff);
+        ChargeType ChargeType = ChargeType.Tariff,
+        CalculationType CalculationType = CalculationType.WholesaleFixing);
 
     // Properties are used by implicit comparision
     private record PackageForComparision(
@@ -717,7 +758,8 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         [UsedImplicitly] string ChargeOwnerId,
         [UsedImplicitly] string ChargeCode,
         [UsedImplicitly] ChargeType ChargeType,
-        [UsedImplicitly] Resolution Resolution);
+        [UsedImplicitly] Resolution Resolution,
+        [UsedImplicitly] CalculationType CalculationType);
 
     public enum WholesaleServicesProperty
     {

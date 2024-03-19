@@ -28,5 +28,6 @@ public record WholesaleServices(
     MeteringPointType? MeteringPointType,
     SettlementMethod? SettlementMethod,
     Currency Currency,
+    CalculationType CalculationType,
     IReadOnlyCollection<WholesaleTimeSeriesPoint> TimeSeriesPoints,
     long Version);

@@ -78,7 +78,8 @@ public class WholesaleServicesQueryStatement : DatabricksStatement
             sql += $" AND ({string.Join(" OR ", chargeTypesSql)})";
         }
 
-        // Should match the way packages are split in WholesaleServicesQueries
+        // The order is important for combining the rows into packages, since the sql rows are streamed and
+        //      packages are created on-the-fly each time we read a new row.
         sql += $@"
                 ORDER BY 
                     {string.Join(", ", ColumnsToGroupBy)},
@@ -143,6 +144,7 @@ public class WholesaleServicesQueryStatement : DatabricksStatement
         WholesaleResultColumnNames.Price,
         WholesaleResultColumnNames.Amount,
         WholesaleResultColumnNames.CalculationId,
+        WholesaleResultColumnNames.CalculationType,
     ];
 
     public enum StatementType
