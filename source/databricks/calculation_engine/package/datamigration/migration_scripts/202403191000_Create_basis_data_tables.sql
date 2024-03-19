@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.time_series_basis_data
     start_datetime TIMESTAMP NOT NULL,
     energy_supplier_id STRING NOT NULL,
     quantity ARRAY<DECIMAL(18, 3)>,
-    resolution STRING, NOT NULL
+    resolution STRING NOT NULL
 )
 USING DELTA
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
