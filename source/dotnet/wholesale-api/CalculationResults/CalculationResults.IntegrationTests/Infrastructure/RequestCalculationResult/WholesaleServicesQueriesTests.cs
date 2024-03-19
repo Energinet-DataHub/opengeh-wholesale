@@ -80,7 +80,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         var actual = await Sut.GetAsync(query).ToListAsync();
 
         using var assertionScope = new AssertionScope();
-        actual.Should().HaveCount(3);
+        actual.Should().HaveCount(1);
         actual.Should().ContainSingle(actualPackage => PackagesAreEqual(actualPackage, package));
     }
 
