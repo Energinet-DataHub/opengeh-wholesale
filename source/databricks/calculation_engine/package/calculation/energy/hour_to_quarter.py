@@ -47,7 +47,8 @@ def transform_hour_to_quarter(
     )
 
     result = result.withColumn(
-        Colname.time_window, f.window(f.col("quarter_time"), "15 minutes")
+        Colname.observation_time,
+        f.col("quarter_time"),
     )
 
     result = result.withColumn(

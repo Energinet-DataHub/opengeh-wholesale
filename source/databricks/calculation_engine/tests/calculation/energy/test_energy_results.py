@@ -53,14 +53,14 @@ class TestCtor:
         ) -> None:
             # Arrange
             df = factory.create(spark).df
-            df = df.withColumn(Colname.sum_quantity, lit(None).cast(DecimalType(18, 6)))
+            df = df.withColumn(Colname.quantity, lit(None).cast(DecimalType(18, 6)))
 
             # Act
             actual = EnergyResults(df)
 
             # Assert
-            assert energy_results_schema[Colname.sum_quantity].nullable is False
-            assert actual.df.schema[Colname.sum_quantity].nullable is True
+            assert energy_results_schema[Colname.quantity].nullable is False
+            assert actual.df.schema[Colname.quantity].nullable is True
 
     class TestWhenValidInput:
         def test_returns_expected_dataframe(self, spark: SparkSession) -> None:
@@ -98,7 +98,7 @@ class TestCtor:
             expected_scale = 8
             df = factory.create(spark).df
             df = df.withColumn(
-                Colname.sum_quantity,
+                Colname.quantity,
                 lit(Decimal("0.12345678")).cast(DecimalType(18, expected_scale)),
             )
 
@@ -106,6 +106,4 @@ class TestCtor:
             actual = EnergyResults(df)
 
             # Assert
-            assert (
-                actual.df.schema[Colname.sum_quantity].dataType.scale == expected_scale
-            )
+            assert actual.df.schema[Colname.quantity].dataType.scale == expected_scale

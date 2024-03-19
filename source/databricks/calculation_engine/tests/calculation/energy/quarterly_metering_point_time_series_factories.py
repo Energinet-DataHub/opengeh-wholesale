@@ -65,10 +65,7 @@ def create_row(
         Colname.energy_supplier_id: energy_supplier_id,
         Colname.balance_responsible_id: balance_responsible_id,
         Colname.settlement_method: settlement_method,
-        Colname.time_window: {
-            Colname.start: observation_time,
-            Colname.end: observation_time + datetime.timedelta(minutes=15),
-        },
+        Colname.observation_time: observation_time,
     }
 
     return Row(**row)
@@ -99,7 +96,7 @@ def create_from_row(
     grid_area: str = DEFAULT_GRID_AREA,
     to_grid_area: str = DEFAULT_NEIGHBOUR_GRID_AREA,
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
-    observation_time: datetime = DEFAULT_OBSERVATION_TIME,
+    observation_time: datetime.datetime = DEFAULT_OBSERVATION_TIME,
     quantity: int | Decimal = DEFAULT_QUANTITY,
     quality: QuantityQuality = DEFAULT_QUALITY,
 ) -> Row:

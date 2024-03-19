@@ -94,7 +94,7 @@ class TestWhenValidInput:
             period_start,
             period_end,
             DefaultValues.TIME_ZONE,
-        )
+        ).df
 
         # Assert
         assert actual.count() == 1
@@ -120,7 +120,7 @@ class TestWhenValidInput:
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
             DefaultValues.TIME_ZONE,
-        )
+        ).df
 
         # Assert
         assert actual.collect()[0][Colname.total_quantity] == expected_total_quantity
@@ -157,7 +157,7 @@ class TestWhenValidInput:
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
             DefaultValues.TIME_ZONE,
-        )
+        ).df
 
         # Assert
         assert actual.collect()[0][Colname.total_amount] == expected_amount
@@ -181,7 +181,7 @@ class TestWhenValidInput:
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
             DefaultValues.TIME_ZONE,
-        )
+        ).df
 
         # Assert
         expected = [
@@ -212,7 +212,7 @@ class TestWhenValidInput:
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
             DefaultValues.TIME_ZONE,
-        )
+        ).df
 
         # Assert
         expected = [SettlementMethod.FLEX.value, SettlementMethod.NON_PROFILED.value]
@@ -256,7 +256,7 @@ class TestWhenMissingSomeInputChargePrice:
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
             DefaultValues.TIME_ZONE,
-        )
+        ).df
 
         # Assert
         assert actual.count() == 1
@@ -295,7 +295,7 @@ class TestWhenMissingAllInputChargePrices:
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
             DefaultValues.TIME_ZONE,
-        )
+        ).df
 
         # Assert
         assert actual.count() == 1
@@ -347,7 +347,7 @@ class TestWhenMultipleMeteringPointsPerChargeTime:
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
             DefaultValues.TIME_ZONE,
-        )
+        ).df
 
         # Assert
         actual_rows = actual.orderBy(Colname.charge_time).collect()

@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import datetime
 from decimal import Decimal
 
 import pytest
@@ -38,15 +37,15 @@ def actual_positive_grid_loss(spark: SparkSession) -> EnergyResults:
     rows = [
         energy_results_factories.create_grid_loss_row(
             grid_area="001",
-            sum_quantity=Decimal(-12.567),
+            quantity=Decimal(-12.567),
         ),
         energy_results_factories.create_grid_loss_row(
             grid_area="002",
-            sum_quantity=Decimal(34.32),
+            quantity=Decimal(34.32),
         ),
         energy_results_factories.create_grid_loss_row(
             grid_area="003",
-            sum_quantity=Decimal(0.0),
+            quantity=Decimal(0.0),
         ),
     ]
 
@@ -79,7 +78,7 @@ class TestWhenValidInput:
         actual_positive_grid_loss: EnergyResults,
     ) -> None:
         assert (
-            actual_positive_grid_loss.df.where(col(Colname.sum_quantity) < 0).count()
+            actual_positive_grid_loss.df.where(col(Colname.quantity) < 0).count()
             == 0
         )
 
@@ -88,7 +87,7 @@ class TestWhenValidInput:
         actual_positive_grid_loss: EnergyResults,
     ) -> None:
         assert actual_positive_grid_loss.df.collect()[0][
-            Colname.sum_quantity
+            Colname.quantity
         ] == Decimal("0.00000")
 
     def test__positive_values_will_not_change(
@@ -96,7 +95,7 @@ class TestWhenValidInput:
         actual_positive_grid_loss: EnergyResults,
     ) -> None:
         assert actual_positive_grid_loss.df.collect()[1][
-            Colname.sum_quantity
+            Colname.quantity
         ] == Decimal("34.32000")
 
     def test__values_that_are_zero_stay_zero(
@@ -104,7 +103,7 @@ class TestWhenValidInput:
         actual_positive_grid_loss: EnergyResults,
     ) -> None:
         assert actual_positive_grid_loss.df.collect()[2][
-            Colname.sum_quantity
+            Colname.quantity
         ] == Decimal("0.00000")
 
     def test__has_expected_values(
@@ -119,14 +118,8 @@ class TestWhenValidInput:
             Colname.from_grid_area: None,
             Colname.balance_responsible_id: None,
             Colname.energy_supplier_id: grid_loss_responsible_factories.DEFAULT_ENERGY_SUPPLIER_ID,
-            Colname.time_window: Row(
-                **{
-                    Colname.start: energy_results_factories.DEFAULT_OBSERVATION_TIME,
-                    Colname.end: energy_results_factories.DEFAULT_OBSERVATION_TIME
-                    + datetime.timedelta(minutes=15),
-                }
-            ),
-            Colname.sum_quantity: Decimal("34.320000"),
+            Colname.observation_time: energy_results_factories.DEFAULT_OBSERVATION_TIME,
+            Colname._quantity: Decimal("34.320000"),
             Colname.qualities: [QuantityQuality.CALCULATED.value],
             Colname.metering_point_id: grid_loss_responsible_factories.DEFAULT_METERING_POINT_ID,
         }
