@@ -11,17 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from calculation_logic.scenario_factory import ScenarioFixture
 from helpers.data_frame_utils import (
     assert_dataframe_and_schema,
 )
 from package.constants import EnergyResultColumnNames
-from .states.scenario_state import (
-    get_expected,
-)
+from .states.scenario_state import get_expected
 
 
-def test_execute__returns_expected(  # type: ignore
-    scenario_fixture,
+def test_execute__returns_expected(
+    scenario_fixture: ScenarioFixture,
 ) -> None:
     # Arrange
     scenario_fixture.setup(get_expected)
@@ -37,7 +36,6 @@ def test_execute__returns_expected(  # type: ignore
         ignore_decimal_scale=True,
         ignore_nullability=True,
         columns_to_skip=[
-            EnergyResultColumnNames.calculation_execution_time_start,
             EnergyResultColumnNames.calculation_result_id,
         ],
         show_dataframe=True,
