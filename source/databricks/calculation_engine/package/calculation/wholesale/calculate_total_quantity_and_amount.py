@@ -44,7 +44,7 @@ def calculate_total_quantity_and_amount(
             f.when(
                 f.col(Colname.charge_price).isNotNull(),
                 f.col(Colname.charge_quantity) * f.col(Colname.charge_price),
-            )
+            ).cast(DecimalType(18, 6))
         ).alias(Colname.total_amount),
         f.first(Colname.charge_price, ignorenulls=True).alias(Colname.charge_price),
         qualities_function,
