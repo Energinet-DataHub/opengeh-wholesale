@@ -62,3 +62,8 @@ data "azurerm_key_vault_secret" "apim_principal_id" {
   name         = "apim-principal-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+data "azurerm_key_vault_secret" "sbt_domainrelay_integrationevent_received_id" {
+  name         = "sbt-shres-integrationevent-received-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
