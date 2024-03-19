@@ -63,6 +63,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
                 calculationPeriod.Period.Start,
                 calculationPeriod.Period.Start.Plus(Duration.FromHours(1)),
             ],
+            AmountType.TotalMonthlyAmount,
             Resolution.Month,
             "111",
             "1136552000028",
@@ -258,7 +259,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         // Arrange
         var calculationPeriods = CreateCalculationPeriods();
         var expectedCalculationPeriod = calculationPeriods.Calculation1Period1;
-        var expectedResolution = Resolution.Hour;
+        var expectedAmountType = AmountType.AmountPerCharge;
         var expectedGridArea = "911";
         var expectedEnergySupplierId = "8886552000028";
         var expectedChargeOwnerId = "9996543210000";
@@ -267,7 +268,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
 
         var match = CreatePackageForFilter(
             expectedCalculationPeriod,
-            expectedResolution,
+            expectedAmountType,
             expectedGridArea,
             expectedEnergySupplierId,
             expectedChargeOwnerId,
@@ -276,16 +277,16 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
 
         var matchExpectPeriod = CreatePackageForFilter(
             calculationPeriods.Calculation2,
-            expectedResolution,
+            expectedAmountType,
             expectedGridArea,
             expectedEnergySupplierId,
             expectedChargeOwnerId,
             expectedChargeCode,
             expectedChargeType);
 
-        var matchExceptResolution = CreatePackageForFilter(
+        var matchExceptAmountType = CreatePackageForFilter(
             expectedCalculationPeriod,
-            Resolution.Day,
+            AmountType.MonthlyAmountPerCharge,
             expectedGridArea,
             expectedEnergySupplierId,
             expectedChargeOwnerId,
@@ -294,7 +295,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
 
         var matchExceptGridArea = CreatePackageForFilter(
             expectedCalculationPeriod,
-            expectedResolution,
+            expectedAmountType,
             "111",
             expectedEnergySupplierId,
             expectedChargeOwnerId,
@@ -303,7 +304,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
 
         var matchExceptEnergySupplierId = CreatePackageForFilter(
             expectedCalculationPeriod,
-            expectedResolution,
+            expectedAmountType,
             expectedGridArea,
             "2226552000028",
             expectedChargeOwnerId,
@@ -312,7 +313,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
 
         var matchExceptChargeOwnerId = CreatePackageForFilter(
             expectedCalculationPeriod,
-            expectedResolution,
+            expectedAmountType,
             expectedGridArea,
             expectedEnergySupplierId,
             "3336543210000",
@@ -321,7 +322,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
 
         var matchExceptChargeCode = CreatePackageForFilter(
             expectedCalculationPeriod,
-            expectedResolution,
+            expectedAmountType,
             expectedGridArea,
             expectedEnergySupplierId,
             expectedChargeOwnerId,
@@ -330,7 +331,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
 
         var matchExceptChargeType = CreatePackageForFilter(
             expectedCalculationPeriod,
-            expectedResolution,
+            expectedAmountType,
             expectedGridArea,
             expectedEnergySupplierId,
             expectedChargeOwnerId,
@@ -342,7 +343,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         List<WholesaleServicesPackage> packages = [
             match,
             matchExpectPeriod,
-            matchExceptResolution,
+            matchExceptAmountType,
             matchExceptGridArea,
             matchExceptEnergySupplierId,
             matchExceptChargeOwnerId,
@@ -356,7 +357,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
 
         var query = CreateQueryParameters(
             [expectedCalculationPeriod],
-            expectedResolution,
+            expectedAmountType,
             expectedGridArea,
             expectedEnergySupplierId,
             expectedChargeOwnerId,
@@ -505,6 +506,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         var calculationPeriods = CreateCalculationPeriods();
         var expectedCalculationPeriod = calculationPeriods.Calculation1Period1;
         var expectedResolution = Resolution.Hour;
+        var expectedAmountType = AmountType.AmountPerCharge;
         var expectedGridArea = "911";
         var expectedEnergySupplierId = "8886552000028";
         var expectedChargeOwnerId = "9996543210000";
@@ -516,6 +518,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
             [
                 calculationPeriods.Calculation1Period1.Period.Start
             ],
+            expectedAmountType,
             expectedResolution,
             expectedGridArea,
             expectedEnergySupplierId,
@@ -528,6 +531,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
             [
                 calculationPeriods.Calculation1Period2.Period.Start
             ],
+            expectedAmountType,
             expectedResolution,
             expectedGridArea,
             expectedEnergySupplierId,
@@ -564,7 +568,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
                 shouldMatch ? package1.CalculationPeriod : calculationPeriods.Calculation4,
                 shouldMatch ? package2.CalculationPeriod : calculationPeriods.Calculation4,
             ],
-            expectedResolution,
+            expectedAmountType,
             expectedGridArea,
             expectedEnergySupplierId,
             expectedChargeOwnerId,
@@ -581,7 +585,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
 
     private WholesaleServicesPackage CreatePackageForFilter(
         CalculationForPeriod calculationPeriod,
-        Resolution resolution = Resolution.Day,
+        AmountType amountType = AmountType.AmountPerCharge,
         string gridArea = "100",
         string energySupplierId = "2236552000028",
         string chargeOwnerId = "9876543210000",
@@ -591,7 +595,8 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         return new WholesaleServicesPackage(
             calculationPeriod,
             [calculationPeriod.Period.Start],
-            resolution,
+            amountType,
+            amountType == AmountType.TotalMonthlyAmount ? Resolution.Month : Resolution.Day,
             gridArea,
             energySupplierId,
             chargeOwnerId,
@@ -609,6 +614,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
             actualPackage.ChargeOwnerId,
             actualPackage.ChargeCode,
             actualPackage.ChargeType,
+            actualPackage.AmountType,
             actualPackage.Resolution,
             actualPackage.CalculationType);
 
@@ -620,6 +626,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
             expectedPackage.ChargeOwnerId,
             expectedPackage.ChargeCode,
             expectedPackage.ChargeType,
+            expectedPackage.AmountType,
             expectedPackage.Resolution,
             expectedPackage.CalculationType);
 
@@ -715,14 +722,14 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
 
     private WholesaleServicesQueryParameters CreateQueryParameters(
         IReadOnlyCollection<CalculationForPeriod> calculations,
-        Resolution? resolution = null,
+        AmountType amountType = AmountType.AmountPerCharge,
         string? gridArea = null,
         string? energySupplierId = null,
         string? chargeOwnerId = null,
         params (string? ChargeCode, ChargeType? ChargeType)[] chargeTypes)
     {
         return new WholesaleServicesQueryParameters(
-            resolution,
+            amountType,
             gridArea,
             energySupplierId,
             chargeOwnerId,
@@ -740,6 +747,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
     private record WholesaleServicesPackage(
         CalculationForPeriod CalculationPeriod,
         List<Instant> Points,
+        AmountType AmountType = AmountType.AmountPerCharge,
         Resolution Resolution = Resolution.Day,
         string GridArea = "100",
         string EnergySupplierId = "2236552000028",
@@ -757,6 +765,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         [UsedImplicitly] string ChargeOwnerId,
         [UsedImplicitly] string ChargeCode,
         [UsedImplicitly] ChargeType ChargeType,
+        [UsedImplicitly] AmountType AmountType,
         [UsedImplicitly] Resolution Resolution,
         [UsedImplicitly] CalculationType CalculationType);
 

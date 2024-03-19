@@ -126,6 +126,7 @@ public class WholesaleServiceRequestAcceptedMessageFactoryTests
                 "FaQ-s0-t4",
                 ChargeType.Tariff,
                 _chargeOwner,
+                resolution == Resolution.Month ? AmountType.MonthlyAmountPerCharge : AmountType.AmountPerCharge,
                 resolution,
                 QuantityUnit.Kwh,
                 meteringPointType,

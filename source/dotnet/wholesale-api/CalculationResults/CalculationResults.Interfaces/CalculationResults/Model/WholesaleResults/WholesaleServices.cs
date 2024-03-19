@@ -23,6 +23,7 @@ public record WholesaleServices(
     string ChargeCode,
     ChargeType ChargeType,
     string ChargeOwnerId,
+    AmountType AmountType,
     Resolution Resolution,
     QuantityUnit QuantityUnit,
     MeteringPointType? MeteringPointType,

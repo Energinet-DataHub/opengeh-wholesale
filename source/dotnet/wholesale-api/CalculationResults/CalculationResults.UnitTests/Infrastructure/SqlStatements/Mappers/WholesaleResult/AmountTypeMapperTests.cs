@@ -57,4 +57,31 @@ public class AmountTypeMapperTests
         act.Should().Throw<ArgumentOutOfRangeException>()
             .And.ActualValue.Should().Be(invalidDeltaTableValue);
     }
+
+    [Theory]
+    [InlineData("amount_per_charge", AmountType.AmountPerCharge)]
+    [InlineData("monthly_amount_per_charge", AmountType.MonthlyAmountPerCharge)]
+    [InlineData("total_monthly_amount", AmountType.TotalMonthlyAmount)]
+    public void ToDeltaTableValue_WhenValidAmountTypeValue_ReturnsExpectedString(string expectedDeltaTableValue, AmountType amountType)
+    {
+        // Act
+        var actualDeltaTableValue = AmountTypeMapper.ToDeltaTableValue(amountType);
+
+        // Assert
+        actualDeltaTableValue.Should().Be(expectedDeltaTableValue);
+    }
+
+    [Fact]
+    public void ToDeltaTableValue_WhenInvalidAmountTypeValue_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        var invalidValue = (AmountType)int.MinValue;
+
+        // Act
+        var act = () => AmountTypeMapper.ToDeltaTableValue(invalidValue);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .And.ActualValue.Should().Be(invalidValue);
+    }
 }
