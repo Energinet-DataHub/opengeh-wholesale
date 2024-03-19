@@ -38,22 +38,25 @@ def calculate_total_quantity_and_amount(
         Colname.settlement_method,
         Colname.resolution,
         Colname.charge_tax,
+        Colname.charge_price,
     ).agg(
-        f.first(Colname.charge_price, ignorenulls=True).alias(Colname.charge_price),
         f.sum(Colname.quantity).alias(Colname.total_quantity),
         qualities_function,
     )
 
     df = df.withColumn(
         Colname.total_amount,
-        (f.col(Colname.total_quantity) * f.col(Colname.charge_price)),
+        (f.col(Colname.total_quantity) * f.col(Colname.charge_price)).cast(
+            DecimalType(18, 6)
+        ),
     )
 
     df = df.withColumn(
         Colname.total_quantity, f.col(Colname.total_quantity).cast(DecimalType(18, 3))
     )
-    df = df.withColumn(Colname.charge_price, f.round(Colname.charge_price, 6))
-    df = df.withColumn(Colname.total_amount, f.round(Colname.total_amount, 6))
+    df = df.withColumn(
+        Colname.charge_price, f.col(Colname.charge_price).cast(DecimalType(18, 6))
+    )
 
     df = _add_charge_unit(df, charge_type)
 
