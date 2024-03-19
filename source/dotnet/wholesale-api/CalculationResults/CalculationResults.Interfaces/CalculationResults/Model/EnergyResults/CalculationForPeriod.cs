@@ -14,21 +14,7 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 
-public class CalculationForPeriod
-{
-    public CalculationForPeriod(
-        Period period,
-        Guid calculationId,
-        long calculationVersion)
-    {
-        Period = period;
-        CalculationId = calculationId;
-        CalculationVersion = calculationVersion;
-    }
-
-    public Period Period { get; }
-
-    public Guid CalculationId { get; }
-
-    public long CalculationVersion { get; }
-}
+public record CalculationForPeriod(
+    Period Period,
+    Guid CalculationId,
+    long CalculationVersion);

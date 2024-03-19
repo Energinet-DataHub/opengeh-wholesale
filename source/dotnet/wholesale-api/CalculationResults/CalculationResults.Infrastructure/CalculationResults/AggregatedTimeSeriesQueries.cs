@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
@@ -25,90 +24,51 @@ using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 
-public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
+public class AggregatedTimeSeriesQueries(
+    DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor,
+    IOptions<DeltaTableOptions> deltaTableOptions)
+    : PackageQueriesBase<AggregatedTimeSeries, EnergyTimeSeriesPoint>(databricksSqlWarehouseQueryExecutor), IAggregatedTimeSeriesQueries
 {
-    private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor;
-    private readonly DeltaTableOptions _deltaTableOptions;
-
-    public AggregatedTimeSeriesQueries(
-        DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor,
-        IOptions<DeltaTableOptions> deltaTableOptions)
-    {
-        _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
-        _deltaTableOptions = deltaTableOptions.Value;
-    }
-
     public async IAsyncEnumerable<AggregatedTimeSeries> GetAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
-        if (!parameters.LatestCalculationForPeriod.Any())
-        {
+        if (parameters.LatestCalculationForPeriod.Count == 0)
             yield break;
-        }
 
-        var sqlStatement = new AggregatedTimeSeriesQueryStatement(parameters, _deltaTableOptions);
-        await foreach (var aggregatedTimeSeries in GetInternalAsync(sqlStatement, parameters.LatestCalculationForPeriod).ConfigureAwait(false))
+        var sqlStatement = new AggregatedTimeSeriesQueryStatement(parameters, deltaTableOptions.Value);
+
+        var resultStream = GetDataAsync(sqlStatement, parameters.LatestCalculationForPeriod);
+
+        await foreach (var aggregatedTimeSeries in resultStream.ConfigureAwait(false))
             yield return aggregatedTimeSeries;
     }
 
-    private async IAsyncEnumerable<AggregatedTimeSeries> GetInternalAsync(
-        AggregatedTimeSeriesQueryStatement sqlStatement,
-        IReadOnlyCollection<CalculationForPeriod> latestCalculationsForPeriod)
+    protected override string CalculationIdColumnName => EnergyResultColumnNames.CalculationId;
+
+    protected override string TimeColumnName => EnergyResultColumnNames.Time;
+
+    protected override AggregatedTimeSeries CreatePackageFromRowData(RowData rowData, List<EnergyTimeSeriesPoint> timeSeriesPoints)
     {
-        var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
-        DatabricksSqlRow? previousRow = null;
-        await foreach (var databricksCurrentRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(sqlStatement, Format.JsonArray).ConfigureAwait(false))
-        {
-            var currentRow = new DatabricksSqlRow(databricksCurrentRow);
-            var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(currentRow);
-
-            if (previousRow != null && (BelongsToDifferentGridArea(currentRow, previousRow)
-                                        || HaveDifferentCalculationId(currentRow, previousRow)
-                                        || HaveDifferentTimeSeriesType(currentRow, previousRow)))
-            {
-                var calculationForPeriod = GetCalculationForPeriod(previousRow, latestCalculationsForPeriod);
-                yield return AggregatedTimeSeriesFactory.Create(
-                    previousRow,
-                    calculationForPeriod.Period.Start,
-                    calculationForPeriod.Period.End,
-                    timeSeriesPoints,
-                    calculationForPeriod.CalculationVersion);
-                timeSeriesPoints = [];
-            }
-
-            timeSeriesPoints.Add(timeSeriesPoint);
-            previousRow = currentRow;
-        }
-
-        if (previousRow != null)
-        {
-            var calculationForPeriod = GetCalculationForPeriod(previousRow, latestCalculationsForPeriod);
-            yield return AggregatedTimeSeriesFactory.Create(
-                previousRow,
-                calculationForPeriod.Period.Start,
-                calculationForPeriod.Period.End,
-                timeSeriesPoints,
-                calculationForPeriod.CalculationVersion);
-        }
+        return AggregatedTimeSeriesFactory.Create(
+            rowData.Row,
+            rowData.CalculationPeriod.Period.Start,
+            rowData.CalculationPeriod.Period.End,
+            timeSeriesPoints,
+            rowData.CalculationPeriod.CalculationVersion);
     }
 
-    private CalculationForPeriod GetCalculationForPeriod(DatabricksSqlRow row, IReadOnlyCollection<CalculationForPeriod> latestCalculationForPeriod)
+    protected override EnergyTimeSeriesPoint CreateTimeSeriesPoint(DatabricksSqlRow row)
     {
-        return latestCalculationForPeriod
-            .First(x => x.CalculationId == Guid.Parse(row[EnergyResultColumnNames.CalculationId]!));
+        return EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(row);
     }
 
-    private static bool HaveDifferentCalculationId(DatabricksSqlRow row, DatabricksSqlRow otherRow)
+    protected override bool RowBelongsToNewPackage(RowData current, RowData previous)
     {
-        return row[EnergyResultColumnNames.CalculationId] != otherRow[EnergyResultColumnNames.CalculationId];
+        var isInDifferentCalculationPeriod = current.CalculationPeriod != previous.CalculationPeriod;
+        return HasDifferentColumnValues(current.Row, previous.Row) || isInDifferentCalculationPeriod;
     }
 
-    private static bool BelongsToDifferentGridArea(DatabricksSqlRow row, DatabricksSqlRow otherRow)
+    private bool HasDifferentColumnValues(DatabricksSqlRow row1, DatabricksSqlRow row2)
     {
-        return row[EnergyResultColumnNames.GridArea] != otherRow[EnergyResultColumnNames.GridArea];
-    }
-
-    private static bool HaveDifferentTimeSeriesType(DatabricksSqlRow row, DatabricksSqlRow otherRow)
-    {
-        return row[EnergyResultColumnNames.TimeSeriesType] != otherRow[EnergyResultColumnNames.TimeSeriesType];
+        return AggregatedTimeSeriesQueryStatement.ColumnsToGroupBy.Any(column => row1[column] != row2[column]);
     }
 }
