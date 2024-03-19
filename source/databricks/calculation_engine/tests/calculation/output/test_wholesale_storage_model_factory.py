@@ -22,6 +22,9 @@ from pyspark.sql import SparkSession, DataFrame
 
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.output import wholesale_storage_model_factory as sut
+from package.calculation.wholesale.data_structures.wholesale_results import (
+    WholesaleResults,
+)
 from package.codelists import (
     ChargeQuality,
     WholesaleResultResolution,
@@ -175,7 +178,7 @@ def test__create__returns_dataframe_with_column(
 
     # Arrange
     row = [_create_result_row()]
-    result_df = _create_result_df(spark, row)
+    result_df = WholesaleResults(_create_result_df(spark, row))
 
     # Act
     actual_df = sut.create(args, result_df, DEFAULT_AMOUNT_TYPE)
@@ -190,7 +193,9 @@ def test__create__returns_dataframe_with_calculation_result_id(
     args: CalculatorArgs,
 ) -> None:
     # Arrange
-    result_df = _create_result_df_corresponding_to_multiple_calculation_results(spark)
+    result_df = WholesaleResults(
+        _create_result_df_corresponding_to_multiple_calculation_results(spark)
+    )
     expected_number_of_calculation_result_ids = 3
 
     # Act
@@ -206,7 +211,7 @@ def test__create__returns_dataframe_with_amount_type(
 ) -> None:
     # Arrange
     row = [_create_result_row()]
-    result_df = _create_result_df(spark, row)
+    result_df = WholesaleResults(_create_result_df(spark, row))
 
     # Act
     actual_df = sut.create(args, result_df, DEFAULT_AMOUNT_TYPE)

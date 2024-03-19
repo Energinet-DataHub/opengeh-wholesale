@@ -54,16 +54,6 @@ _quarterly_metering_point_time_series_schema = t.StructType(
         t.StructField(Colname.energy_supplier_id, t.StringType(), True),
         t.StructField(Colname.balance_responsible_id, t.StringType(), True),
         t.StructField(Colname.settlement_method, t.StringType(), True),
-        # Suggestion: Why not just a single time stamp (observation_time)?
-        t.StructField(
-            Colname.time_window,
-            t.StructType(
-                [
-                    t.StructField(Colname.start, t.TimestampType()),
-                    t.StructField(Colname.end, t.TimestampType()),
-                ]
-            ),
-            False,
-        ),
+        t.StructField(Colname.observation_time, t.TimestampType(), False),
     ]
 )

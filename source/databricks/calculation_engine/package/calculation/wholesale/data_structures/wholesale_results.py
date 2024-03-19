@@ -19,17 +19,21 @@ from package.common import DataFrameWrapper
 from package.constants import Colname
 
 
-class PreparedTariffs(DataFrameWrapper):
+class WholesaleResults(DataFrameWrapper):
     """
-    Represents tariffs that are prepared for calculation.
-    The 'sum_quantity' column is the sum energy quantities within the time window (represented by charge_time and resolution).
-    Missing prices are represented by a None value in the 'charge_price' column.
+    Time series of energy results.
+
+    Only exchange energy results have to- and from- grid area values.
     """
 
     def __init__(self, df: DataFrame):
+        """
+        Fit data frame in a general DataFrame. This is used for all results and missing columns will be null.
+        """
+
         super().__init__(
             df,
-            prepared_tariffs_schema,
+            wholesale_results_schema,
             # We ignore_nullability because it has turned out to be too hard and even possibly
             # introducing more errors than solving in order to stay in exact sync with the
             # logically correct schema.
@@ -41,23 +45,22 @@ class PreparedTariffs(DataFrameWrapper):
 
 # The nullability and decimal types are not precisely representative of the actual data frame schema at runtime,
 # See comments to the `assert_schema()` invocation.
-prepared_tariffs_schema = t.StructType(
+wholesale_results_schema = t.StructType(
     [
-        t.StructField(Colname.charge_key, t.StringType(), False),
+        t.StructField(Colname.grid_area, t.StringType(), False),
+        t.StructField(Colname.energy_supplier_id, t.StringType(), False),
+        t.StructField(Colname.total_quantity, t.DecimalType(18, 3), True),
+        t.StructField(Colname.unit, t.StringType(), False),
+        t.StructField(Colname.qualities, t.ArrayType(t.StringType(), True), True),
+        t.StructField(Colname.charge_time, t.TimestampType(), False),
+        t.StructField(Colname.resolution, t.StringType(), False),
+        t.StructField(Colname.metering_point_type, t.StringType(), True),
+        t.StructField(Colname.settlement_method, t.StringType(), True),
+        t.StructField(Colname.charge_price, t.DecimalType(18, 6), True),
+        t.StructField(Colname.total_amount, t.DecimalType(18, 6), True),
+        t.StructField(Colname.charge_tax, t.BooleanType(), False),
         t.StructField(Colname.charge_code, t.StringType(), False),
         t.StructField(Colname.charge_type, t.StringType(), False),
         t.StructField(Colname.charge_owner, t.StringType(), False),
-        t.StructField(Colname.charge_tax, t.BooleanType(), False),
-        t.StructField(Colname.resolution, t.StringType(), False),
-        t.StructField(Colname.charge_time, t.TimestampType(), False),
-        t.StructField(Colname.charge_price, t.DecimalType(18, 6), True),
-        t.StructField(Colname.metering_point_id, t.StringType(), False),
-        t.StructField(Colname.energy_supplier_id, t.StringType(), False),
-        t.StructField(Colname.metering_point_type, t.StringType(), False),
-        t.StructField(Colname.settlement_method, t.StringType(), True),
-        t.StructField(Colname.grid_area, t.StringType(), False),
-        # quantity is a sum of all quantities within the time window (represented by charge_time and resolution)
-        t.StructField(Colname.quantity, t.DecimalType(18, 3), True),
-        t.StructField(Colname.qualities, t.ArrayType(t.StringType()), False),
     ]
 )
