@@ -141,8 +141,11 @@ def _calculate_negative_or_positive(
             gl,
             (gl[Colname.metering_point_id] == glr[Colname.metering_point_id])
             & (gl[Colname.observation_time] >= f.col(Colname.from_date))
-            & (gl[Colname.observation_time] < f.col(Colname.to_date)),
-            "left",
+            & (
+                f.col(Colname.to_date).isNull()
+                | (gl[Colname.observation_time] < f.col(Colname.to_date))
+            ),
+            "inner",
         )
         .select(
             glr[Colname.grid_area],
