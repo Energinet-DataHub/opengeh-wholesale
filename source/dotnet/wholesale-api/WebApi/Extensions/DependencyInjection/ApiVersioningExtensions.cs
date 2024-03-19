@@ -25,7 +25,7 @@ public static class ApiVersioningExtensions
     /// <summary>
     /// Register services for enabling API versioning that defaults to the given version.
     /// </summary>
-    public static IServiceCollection AddApiVersioningForWebApplication(this IServiceCollection services, ApiVersion defaultVersion)
+    public static IServiceCollection AddApiVersioningForWebApp(this IServiceCollection services, ApiVersion defaultVersion)
     {
         services
             .AddApiVersioning(options =>

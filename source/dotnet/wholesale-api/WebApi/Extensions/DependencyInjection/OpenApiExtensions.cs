@@ -29,7 +29,7 @@ public static class OpenApiExtensions
     /// Register services necessary for enabling an ASP.NET Core app
     /// to generate Open API specifications and work with Swagger UI.
     /// </summary>
-    public static IServiceCollection AddSwaggerForWebApplication(this IServiceCollection services)
+    public static IServiceCollection AddSwaggerForWebApp(this IServiceCollection services)
     {
         // The following article is a good read and shows many of the pieces that we have used: https://medium.com/@mo.esmp/api-versioning-and-swagger-in-asp-net-core-7-0-fe45f67d8419
         // TODO: EDI does this differently but the following has some similar parts: https://learn.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-8.0&tabs=visual-studio#xml-comments

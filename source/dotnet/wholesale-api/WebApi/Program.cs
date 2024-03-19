@@ -56,10 +56,10 @@ builder.Services
     .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 
 // => Open API generation
-builder.Services.AddSwaggerForWebApplication();
+builder.Services.AddSwaggerForWebApp();
 
 // => API versioning
-builder.Services.AddApiVersioningForWebApplication(new ApiVersion(3, 0));
+builder.Services.AddApiVersioningForWebApp(new ApiVersion(3, 0));
 
 // => Authentication/authorization
 builder.Services
