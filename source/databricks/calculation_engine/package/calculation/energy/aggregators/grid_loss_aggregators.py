@@ -155,10 +155,6 @@ def _calculate_negative_or_positive(
         .withColumn(Colname.quantity, value_expr)
     )
 
-    gl.show()
-    glr.show()
-    result.show()
-
     return EnergyResults(result)
 
 

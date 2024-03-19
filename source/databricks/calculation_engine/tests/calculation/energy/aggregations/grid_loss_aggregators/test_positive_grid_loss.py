@@ -78,9 +78,6 @@ def actual_positive_grid_loss(spark: SparkSession) -> EnergyResults:
         spark, responsible_rows
     )
 
-    grid_loss.df.show()
-    grid_loss_responsible.df.show()
-
     return calculate_positive_grid_loss(grid_loss, grid_loss_responsible)
 
 
@@ -129,7 +126,9 @@ class TestWhenValidInput:
             Colname.from_grid_area: None,
             Colname.balance_responsible_id: None,
             Colname.energy_supplier_id: grid_loss_responsible_factories.DEFAULT_ENERGY_SUPPLIER_ID,
-            Colname.observation_time: grid_loss_responsible_factories.DEFAULT_FROM_DATE,
+            Colname.observation_time: grid_loss_responsible_factories.DEFAULT_FROM_DATE.replace(
+                tzinfo=None
+            ),
             Colname.quantity: Decimal("34.320000"),
             Colname.qualities: [QuantityQuality.CALCULATED.value],
             Colname.metering_point_id: "b",
