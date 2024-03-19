@@ -13,21 +13,16 @@
 # limitations under the License.
 
 
-import pyspark.sql.functions as f
-from pyspark.sql import DataFrame
-
 from package.calculation.preparation.data_structures.prepared_tariffs import (
     PreparedTariffs,
 )
 from package.calculation.wholesale.data_structures.wholesale_results import (
     WholesaleResults,
 )
-from package.codelists import ChargeUnit
 from package.calculation.wholesale.calculate_total_quantity_and_amount import (
     calculate_total_quantity_and_amount,
 )
-from package.codelists import WholesaleResultResolution, ChargeType
-from package.constants import Colname
+from package.codelists import ChargeType
 
 
 def calculate_tariff_price_per_ga_co_es(
