@@ -38,8 +38,8 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
             FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} t1
             WHERE ({CreateSqlQueryFilters(_parameters)})";
 
-        // The order is important for combining the rows into packages, since the rows are streamed and
-        //      packages are created on-the-fly, each time we read a new sql row.
+        // The order is important for combining the rows into packages, since the sql rows are streamed and
+        //      packages are created on-the-fly each time a new row is received.
         sql += $"""
                 ORDER BY
                     {string.Join(", ", ColumnsToGroupBy.Select(columnName => $"t1.{columnName}"))},

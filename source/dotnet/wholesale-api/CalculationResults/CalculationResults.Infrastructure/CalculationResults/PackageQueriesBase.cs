@@ -22,8 +22,10 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 /// <summary>
 /// Provides base logic for performing a query that retrieves sql rows based on a list of calculations
 ///     and groups the rows into packages, which each contains metadata and a list of time series points.
+/// Used to retrieve and create WholesaleServices and AggregatedTimeSeriesData packages, which are
+///     results from databricks that can span multiple calculations
 /// </summary>
-public abstract class PackageQueriesBase<TResult, TTimeSeriesPoint>(DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor)
+public abstract class PackageQueriesBase<TPackageResult, TTimeSeriesPoint>(DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor)
 {
     protected abstract string CalculationIdColumnName { get; }
 
@@ -31,11 +33,17 @@ public abstract class PackageQueriesBase<TResult, TTimeSeriesPoint>(DatabricksSq
 
     protected abstract bool RowBelongsToNewPackage(RowData current, RowData previous);
 
-    protected abstract TResult CreatePackageFromRowData(RowData rowData, List<TTimeSeriesPoint> timeSeriesPoints);
+    protected abstract TPackageResult CreatePackageFromRowData(RowData rowData, List<TTimeSeriesPoint> timeSeriesPoints);
 
     protected abstract TTimeSeriesPoint CreateTimeSeriesPoint(DatabricksSqlRow row);
 
-    protected async IAsyncEnumerable<TResult> GetDataAsync(
+    /// <summary>
+    /// Retrieves a stream of sql rows from the Databricks SQL Warehouse and groups the sql rows into packages
+    ///     which are streamed back as they are finished
+    /// Used to create WholesaleServices and AggregatedTimeSeriesData packages, which are
+    ///     results that can span multiple calculations
+    /// </summary>
+    protected async IAsyncEnumerable<TPackageResult> GetDataAsync(
         DatabricksStatement sqlStatement,
         IReadOnlyCollection<CalculationForPeriod> calculations)
     {

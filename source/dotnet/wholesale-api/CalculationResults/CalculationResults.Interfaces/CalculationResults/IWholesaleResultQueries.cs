@@ -25,14 +25,4 @@ public interface IWholesaleResultQueries
     /// Get all wholesale results for a given calculation.
     /// </summary>
     IAsyncEnumerable<WholesaleResult> GetAsync(Guid calculationId);
-
-    /// <summary>
-    /// Get all wholesale results for the given query parameters, including a list of calculations with periods
-    /// </summary>
-    IAsyncEnumerable<WholesaleResult> GetAsync(WholesaleResultQueryParameters queryParameters);
-
-    /// <summary>
-    /// Get if any wholesale results exists for the given query parameters, including a list of calculations with periods
-    /// </summary>
-    Task<bool> AnyAsync(WholesaleResultQueryParameters queryParameters);
 }

@@ -79,7 +79,7 @@ public class WholesaleServicesQueryStatement : DatabricksStatement
         }
 
         // The order is important for combining the rows into packages, since the sql rows are streamed and
-        //      packages are created on-the-fly each time we read a new row.
+        //      packages are created on-the-fly each time a new row is received.
         sql += $@"
                 ORDER BY 
                     {string.Join(", ", ColumnsToGroupBy)},
