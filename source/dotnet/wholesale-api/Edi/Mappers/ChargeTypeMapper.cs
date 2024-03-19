@@ -14,15 +14,18 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+namespace Energinet.DataHub.Wholesale.Edi.Mappers;
 
-/// <summary>
-/// Used to query wholesale data for a single calculation result
-/// </summary>
-public interface IWholesaleResultQueries
+public static class ChargeTypeMapper
 {
-    /// <summary>
-    /// Get all wholesale results for a given calculation.
-    /// </summary>
-    IAsyncEnumerable<WholesaleResult> GetAsync(Guid calculationId);
+    public static ChargeType Map(string chargeType)
+    {
+        return chargeType switch
+        {
+            Models.ChargeType.Fee => ChargeType.Fee,
+            Models.ChargeType.Tariff => ChargeType.Tariff,
+            Models.ChargeType.Subscription => ChargeType.Subscription,
+            _ => throw new ArgumentOutOfRangeException(nameof(chargeType), chargeType, "Cannot map to ChargeType"),
+        };
+    }
 }
