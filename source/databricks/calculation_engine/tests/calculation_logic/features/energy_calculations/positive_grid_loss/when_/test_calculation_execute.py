@@ -11,13 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from calculation_logic.scenario_factory import ScenarioFixture
 from helpers.data_frame_utils import (
     assert_dataframe_and_schema,
 )
 from package.constants import EnergyResultColumnNames
 from .states.scenario_state import (
-    get_expected,
+    test_setup,
 )
 
 
@@ -25,14 +26,14 @@ def test_execute__returns_expected(
     scenario_fixture: ScenarioFixture,
 ) -> None:
     # Arrange
-    scenario_fixture.setup(get_expected)
+    scenario_fixture.setup(test_setup)
 
     # Act
     results = scenario_fixture.execute()
 
     # Assert
     assert_dataframe_and_schema(
-        results.energy_results.grid_loss,
+        results.energy_results.positive_grid_loss,
         scenario_fixture.expected,
         ignore_decimal_precision=True,
         ignore_decimal_scale=True,
