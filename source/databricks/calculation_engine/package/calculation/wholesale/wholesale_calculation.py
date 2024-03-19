@@ -33,6 +33,12 @@ def execute(
 ) -> WholesaleResultsContainer:
     results = WholesaleResultsContainer()
 
+    _calculate_fees(
+        args,
+        prepared_charges.fees,
+        results,
+    )
+
     _calculate_subscriptions(
         args,
         prepared_charges.subscriptions,
