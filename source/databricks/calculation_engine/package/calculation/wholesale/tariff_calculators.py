@@ -42,4 +42,5 @@ def calculate_tariff_price_per_ga_co_es(
     resolution is managed outside this module.
     """
 
-    return calculate_total_quantity_and_amount(prepared_tariffs.df, ChargeType.TARIFF)
+    df = calculate_total_quantity_and_amount(prepared_tariffs.df, ChargeType.TARIFF)
+    return WholesaleResults(df)
