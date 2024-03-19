@@ -18,7 +18,7 @@ from helpers.data_frame_utils import (
 )
 from package.constants import EnergyResultColumnNames
 from .states.scenario_state import (
-    test_setup,
+    get_expected,
 )
 
 
@@ -26,7 +26,7 @@ def test_execute__returns_expected(
     scenario_fixture: ScenarioFixture,
 ) -> None:
     # Arrange
-    scenario_fixture.setup(test_setup)
+    scenario_fixture.setup(get_expected)
 
     # Act
     results = scenario_fixture.execute()

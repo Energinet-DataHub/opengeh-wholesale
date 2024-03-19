@@ -35,7 +35,7 @@ from package.codelists import (
 )
 
 
-def test_setup(*args) -> DataFrame:
+def get_expected(*args) -> DataFrame:
     """
     This function can be used to custom build the expected results (dataframe).
     It is also used a reference to locate the test scenario.

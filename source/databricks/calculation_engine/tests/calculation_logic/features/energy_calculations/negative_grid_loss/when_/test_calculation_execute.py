@@ -40,5 +40,4 @@ def test_execute__returns_expected(
         columns_to_skip=[
             EnergyResultColumnNames.calculation_result_id,
         ],
-        show_dataframe=True,
     )

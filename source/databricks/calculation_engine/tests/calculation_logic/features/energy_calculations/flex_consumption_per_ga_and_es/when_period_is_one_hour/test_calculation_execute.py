@@ -40,5 +40,4 @@ def test_execute__returns_expected(  # type: ignore
             EnergyResultColumnNames.calculation_execution_time_start,
             EnergyResultColumnNames.calculation_result_id,
         ],
-        show_dataframe=True,
     )
