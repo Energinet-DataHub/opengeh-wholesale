@@ -16,7 +16,6 @@ from zoneinfo import ZoneInfo
 
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
-from pyspark.sql.types import DecimalType, ArrayType, StringType
 
 from package.calculation.preparation.data_structures.prepared_subscriptions import (
     PreparedSubscriptions,
@@ -24,7 +23,11 @@ from package.calculation.preparation.data_structures.prepared_subscriptions impo
 from package.calculation.wholesale.data_structures.wholesale_results import (
     WholesaleResults,
 )
-from package.codelists import ChargeUnit
+
+from package.calculation.wholesale.calculate_total_quantity_and_amount import (
+    calculate_total_quantity_and_amount,
+)
+from package.codelists import ChargeType
 from package.constants import Colname
 
 
@@ -42,29 +45,11 @@ def calculate(
         time_zone,
     )
 
-    subscription_amount_per_charge = _calculate_charge_count_and_amount(
-        subscriptions_with_daily_price
+    subscription_amount_per_charge = calculate_total_quantity_and_amount(
+        subscriptions_with_daily_price, charge_type=ChargeType.SUBSCRIPTION
     )
 
-    df = subscription_amount_per_charge.select(
-        Colname.energy_supplier_id,
-        Colname.grid_area,
-        Colname.charge_time,
-        Colname.metering_point_type,
-        Colname.settlement_method,
-        Colname.charge_key,
-        Colname.charge_code,
-        Colname.charge_type,
-        Colname.charge_owner,
-        Colname.charge_tax,
-        Colname.resolution,
-        f.col(Colname.total_quantity).cast(DecimalType(18, 3)),
-        f.round(Colname.charge_price, 6).alias(Colname.charge_price),
-        f.round(Colname.total_amount, 6).alias(Colname.total_amount),
-        f.lit(ChargeUnit.PIECES.value).alias(Colname.unit),
-        f.lit(None).cast(ArrayType(StringType())).alias(Colname.qualities),
-    )
-    return WholesaleResults(df)
+    return WholesaleResults(subscription_amount_per_charge)
 
 
 def _calculate_price_per_day(
@@ -113,32 +98,3 @@ def _is_full_month_and_at_midnight(
         and period_end_local_time.day == 1
         and period_end_local_time.month == (period_start_local_time.month % 12) + 1
     )
-
-
-def _calculate_charge_count_and_amount(
-    subscriptions_with_daily_price: DataFrame,
-) -> DataFrame:
-    df = subscriptions_with_daily_price.groupBy(
-        Colname.charge_key,
-        Colname.charge_type,
-        Colname.charge_code,
-        Colname.charge_owner,
-        Colname.grid_area,
-        Colname.energy_supplier_id,
-        Colname.charge_time,
-        Colname.metering_point_type,
-        Colname.settlement_method,
-        Colname.resolution,
-        Colname.charge_tax,
-    ).agg(
-        f.sum(Colname.charge_quantity).alias(Colname.total_quantity),
-        f.sum(
-            f.when(
-                f.col(Colname.charge_price).isNotNull(),
-                f.col(Colname.charge_quantity) * f.col(Colname.charge_price),
-            )
-        ).alias(Colname.total_amount),
-        f.first(Colname.charge_price, ignorenulls=True).alias(Colname.charge_price),
-    )
-
-    return df

@@ -56,6 +56,7 @@ prepared_tariffs_schema = t.StructType(
         t.StructField(Colname.metering_point_type, t.StringType(), False),
         t.StructField(Colname.settlement_method, t.StringType(), True),
         t.StructField(Colname.grid_area, t.StringType(), False),
+        # quantity is a sum of all quantities within the time window (represented by charge_time and resolution)
         t.StructField(Colname.quantity, t.DecimalType(18, 3), True),
         t.StructField(Colname.qualities, t.ArrayType(t.StringType()), False),
     ]
