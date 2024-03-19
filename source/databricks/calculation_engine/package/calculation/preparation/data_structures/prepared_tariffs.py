@@ -56,7 +56,7 @@ prepared_tariffs_schema = t.StructType(
         t.StructField(Colname.metering_point_type, t.StringType(), False),
         t.StructField(Colname.settlement_method, t.StringType(), True),
         t.StructField(Colname.grid_area, t.StringType(), False),
-        t.StructField(Colname.sum_quantity, t.DecimalType(18, 3), True),
+        t.StructField(Colname.quantity, t.DecimalType(18, 3), True),
         t.StructField(Colname.qualities, t.ArrayType(t.StringType()), False),
     ]
 )

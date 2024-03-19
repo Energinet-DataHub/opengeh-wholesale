@@ -11,14 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from dataclasses import dataclass
-
-import package.calculation.preparation.data_structures as d
-
-
-@dataclass
-class PreparedChargesContainer:
-    hourly_tariffs: d.PreparedTariffs | None = None
-    daily_tariffs: d.PreparedTariffs | None = None
-    subscriptions: d.PreparedSubscriptions | None = None
-    fees: d.PreparedFees | None = None

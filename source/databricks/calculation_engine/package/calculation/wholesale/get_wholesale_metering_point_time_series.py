@@ -57,8 +57,8 @@ def get_wholesale_metering_point_times_series(
             f.lit(MeteringPointResolution.QUARTER.value).alias(
                 Colname.resolution
             ),  # This will change when we must support HOURLY for calculations before 1st of May 2023
-            f.col(Colname.time_window_start).alias(Colname.observation_time),
-            f.col(Colname.sum_quantity).alias(Colname.quantity),
+            f.col(Colname.observation_time),
+            f.col(Colname.quantity).alias(Colname.quantity),
             f.lit(QuantityQuality.CALCULATED.value).alias(Colname.quality),
             f.col(Colname.energy_supplier_id),
             f.col(Colname.balance_responsible_id),
