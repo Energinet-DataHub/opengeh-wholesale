@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import uuid
-from datetime import datetime, timedelta
+from datetime import timedelta
 from decimal import Decimal
 from typing import Any
 
@@ -22,9 +22,6 @@ from pyspark.sql import SparkSession
 
 from package.calculation.wholesale.tariff_calculators import (
     calculate_tariff_price_per_ga_co_es,
-)
-from package.calculation.wholesale.tariff_calculators import (
-    sum_within_month,
 )
 from package.codelists import (
     ChargeQuality,
@@ -45,7 +42,7 @@ def test__calculate_tariff_price_per_ga_co_es__returns_empty_df_when_input_df_is
     prepared_tariff = factory.create(spark, [])
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariff)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariff).df
 
     # Assert
     assert actual.count() == 0
@@ -58,7 +55,7 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_correct_columns(
     prepared_tariff = factory.create(spark, [])
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariff)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariff).df
 
     # Assert
     assert Colname.energy_supplier_id in actual.columns
@@ -66,7 +63,6 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_correct_columns(
     assert Colname.charge_time in actual.columns
     assert Colname.metering_point_type in actual.columns
     assert Colname.settlement_method in actual.columns
-    assert Colname.charge_key in actual.columns
     assert Colname.charge_code in actual.columns
     assert Colname.charge_type in actual.columns
     assert Colname.charge_owner in actual.columns
@@ -93,7 +89,7 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_expected_values(
     prepared_tariffs = factory.create(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs).df
 
     # Assert
     assert actual.count() == 1
@@ -113,7 +109,6 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_expected_values(
         actual_row[Colname.settlement_method]
         == factory.DefaultValues.SETTLEMENT_METHOD.value
     )
-    assert actual_row[Colname.charge_key] == CHARGE_KEY
     assert actual_row[Colname.charge_code] == factory.DefaultValues.CHARGE_CODE
     assert actual_row[Colname.charge_type] == ChargeType.TARIFF.value
     assert actual_row[Colname.charge_owner] == factory.DefaultValues.CHARGE_OWNER
@@ -146,7 +141,7 @@ def test__calculate_tariff_price_per_ga_co_es__returns_all_qualities(
     prepared_tariffs = factory.create(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs).df
 
     # Assert
     actual_row = actual.collect()[0]
@@ -191,7 +186,7 @@ def test__calculate_tariff_price_per_ga_co_es__does_not_aggregate_across_group_s
     prepared_tariffs = factory.create(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs).df
 
     # Assert
     assert actual.count() == 2
@@ -215,7 +210,7 @@ def test__calculate_tariff_price_per_ga_co_es__when_settlement_method_is_null__r
     prepared_tariffs = factory.create(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs).df
 
     # Assert
     assert actual.count() == 1
@@ -237,7 +232,7 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_expected_scale(
     prepared_tariffs = factory.create(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs).df
 
     # Assert
     assert actual.schema[column_name].dataType.scale == expected_scale
@@ -251,7 +246,7 @@ def test__calculate_tariff_price_per_ga_co_es__when_production__returns_df_with_
     prepared_tariffs = factory.create(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs).df
 
     # Assert
     assert actual.schema[Colname.total_amount].dataType.precision >= 18
@@ -277,162 +272,11 @@ def test__calculate_tariff_price_per_ga_co_es__rounds_total_amount_correctly(
     prepared_tariffs = factory.create(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs).df
 
     # Assert
     actual_amount = actual.collect()[0][Colname.total_amount]
     assert actual_amount == expected_total_amount
-
-
-def test__sum_within_month__sums_amount_per_month(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    rows = [
-        factory.create_row(charge_time=datetime(2020, 1, 1, 1)),
-        factory.create_row(charge_time=datetime(2020, 1, 1, 0)),
-    ]
-    prepared_tariffs = factory.create(spark, rows)
-
-    # Act
-    actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(prepared_tariffs),
-        factory.DefaultValues.PERIOD_START_DATETIME,
-    )
-
-    # Assert
-    assert actual.collect()[0][Colname.total_amount] == Decimal("4.020010")
-    assert actual.count() == 1
-
-
-def test__sum_within_month__sums_across_metering_point_types(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    rows = [
-        factory.create_row(metering_point_type=MeteringPointType.PRODUCTION),
-        factory.create_row(metering_point_type=MeteringPointType.CONSUMPTION),
-    ]
-    prepared_tariffs = factory.create(spark, rows)
-
-    # Act
-    actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(prepared_tariffs),
-        factory.DefaultValues.PERIOD_START_DATETIME,
-    )
-
-    # Assert
-    assert actual.collect()[0][Colname.total_amount] == Decimal("4.020010")
-    assert actual.count() == 1
-
-
-def test__sum_within_month__joins_qualities(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    rows = [
-        factory.create_row(quality=ChargeQuality.CALCULATED),
-        factory.create_row(quality=ChargeQuality.ESTIMATED),
-    ]
-    prepared_tariffs = factory.create(spark, rows)
-
-    # Act
-    actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(prepared_tariffs),
-        factory.DefaultValues.PERIOD_START_DATETIME,
-    )
-
-    # Assert
-    assert actual.collect()[0][Colname.qualities] == ["calculated", "estimated"]
-    assert actual.collect()[0][Colname.total_amount] == Decimal("4.020010")
-    assert actual.count() == 1
-
-
-def test__sum_within_month__groups_by_local_time_months(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    rows = [
-        factory.create_row(charge_time=datetime(2020, 1, 1, 0)),
-        factory.create_row(charge_time=datetime(2019, 12, 31, 23)),
-    ]
-    prepared_tariffs = factory.create(spark, rows)
-
-    # Act
-    actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(prepared_tariffs),
-        factory.DefaultValues.PERIOD_START_DATETIME,
-    )
-
-    # Assert
-    assert actual.collect()[0][Colname.total_amount] == Decimal("4.020010")
-    assert actual.collect()[0][Colname.charge_time] == datetime(2019, 12, 31, 23)
-    assert actual.count() == 1
-
-
-def test__sum_within_month__charge_time_always_start_of_month(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    rows = [
-        factory.create_row(charge_time=datetime(2020, 1, 3, 0)),
-    ]
-    prepared_tariffs = factory.create(spark, rows)
-
-    # Act
-    actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(prepared_tariffs),
-        factory.DefaultValues.PERIOD_START_DATETIME,
-    )
-
-    # Assert
-    assert actual.collect()[0][Colname.charge_time] == datetime(2019, 12, 31, 23)
-
-
-def test__sum_within_month__sums_quantity_per_month(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    rows = [
-        factory.create_row(quantity=Decimal("1.111")),
-        factory.create_row(quantity=Decimal("1.111")),
-    ]
-    prepared_tariffs = factory.create(spark, rows)
-
-    # Act
-    actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(prepared_tariffs),
-        factory.DefaultValues.PERIOD_START_DATETIME,
-    )
-
-    # Assert
-    assert actual.collect()[0][Colname.total_quantity] == Decimal("2.222")
-    assert actual.count() == 1
-
-
-def test__sum_within_month__sets_charge_price_to_none(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    rows = [
-        factory.create_row(
-            charge_time=datetime(2020, 1, 1, 0), charge_price=Decimal("1.111111")
-        ),
-        factory.create_row(
-            charge_time=datetime(2020, 1, 1, 1), charge_price=Decimal("1.111111")
-        ),
-    ]
-    prepared_tariffs = factory.create(spark, rows)
-
-    # Act
-    actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(prepared_tariffs),
-        factory.DefaultValues.PERIOD_START_DATETIME,
-    )
-
-    # Assert
-    assert actual.collect()[0][Colname.charge_price] is None
-    assert actual.count() == 1
 
 
 def test__calculate_tariff_price_per_ga_co_es__when_charge_price_is_null__returns_total_amount_as_none(
@@ -450,52 +294,7 @@ def test__calculate_tariff_price_per_ga_co_es__when_charge_price_is_null__return
     prepared_tariffs = factory.create(spark, rows)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs)
+    actual = calculate_tariff_price_per_ga_co_es(prepared_tariffs).df
 
     # Assert
     assert actual.collect()[0][Colname.total_amount] is None
-
-
-def test__sum_within_month__when_all_charge_prices_are_none__sums_charge_price_and_total_amount_per_month_to_none(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    rows = [
-        factory.create_row(charge_price=None),
-        factory.create_row(charge_price=None),
-    ]
-    prepared_tariffs = factory.create(spark, rows)
-
-    # Act
-    actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(prepared_tariffs),
-        factory.DefaultValues.PERIOD_START_DATETIME,
-    )
-
-    # Assert
-    assert actual.collect()[0][Colname.total_amount] is None
-    assert actual.collect()[0][Colname.charge_price] is None
-    assert actual.count() == 1
-
-
-def test__sum_within_month__when_one_tariff_has_charge_price_none__sums_charge_price_and_total_amount_per_month_to_expected_value(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    rows = [
-        factory.create_row(charge_price=None),
-        factory.create_row(
-            charge_price=Decimal("2.000000"), quantity=Decimal("3.000000")
-        ),
-    ]
-    prepared_tariffs = factory.create(spark, rows)
-
-    # Act
-    actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(prepared_tariffs),
-        factory.DefaultValues.PERIOD_START_DATETIME,
-    )
-
-    # Assert
-    assert actual.collect()[0][Colname.total_amount] == Decimal("6.000000")
-    assert actual.count() == 1
