@@ -21,6 +21,9 @@ from pyspark.sql.types import DecimalType, ArrayType, StringType
 from package.calculation.preparation.data_structures.prepared_subscriptions import (
     PreparedSubscriptions,
 )
+from package.calculation.wholesale.data_structures.wholesale_results import (
+    WholesaleResults,
+)
 from package.codelists import ChargeUnit
 from package.constants import Colname
 
@@ -30,7 +33,7 @@ def calculate(
     calculation_period_start: datetime,
     calculation_period_end: datetime,
     time_zone: str,
-) -> DataFrame:
+) -> WholesaleResults:
     prepared_subscriptions_df = prepared_subscriptions.df
     subscriptions_with_daily_price = _calculate_price_per_day(
         prepared_subscriptions_df,
@@ -43,7 +46,7 @@ def calculate(
         subscriptions_with_daily_price
     )
 
-    return subscription_amount_per_charge.select(
+    df = subscription_amount_per_charge.select(
         Colname.energy_supplier_id,
         Colname.grid_area,
         Colname.charge_time,
@@ -61,6 +64,7 @@ def calculate(
         f.lit(ChargeUnit.PIECES.value).alias(Colname.unit),
         f.lit(None).cast(ArrayType(StringType())).alias(Colname.qualities),
     )
+    return WholesaleResults(df)
 
 
 def _calculate_price_per_day(
