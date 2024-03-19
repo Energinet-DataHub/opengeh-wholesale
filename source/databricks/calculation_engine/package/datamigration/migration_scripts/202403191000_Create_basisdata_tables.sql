@@ -5,9 +5,6 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.master_basis_data
     -- Enum
     calculation_type STRING NOT NULL,
     calculation_execution_time_start TIMESTAMP NOT NULL,
-    
-    -- 36 characters UUID
-    calculation_result_id STRING NOT NULL,
 
     metering_point_id STRING NOT NULL,
     valid_from TIMESTAMP NOT NULL,
@@ -33,15 +30,12 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.time_series_basis_data
     calculation_type STRING NOT NULL,
     calculation_execution_time_start TIMESTAMP NOT NULL,
 
-    -- 36 characters UUID
-    calculation_result_id STRING NOT NULL,
-
     grid_area STRING NOT NULL,
     metering_point_id STRING NOT NULL,
     metering_point_type STRING NOT NULL,
     start_datetime TIMESTAMP NOT NULL,
     energy_supplier_id STRING NOT NULL,
-    quantity STRING,
+    quantity ARRAY<DECIMAL(18, 3)>,
     resolution STRING, NOT NULL
 )
 USING DELTA
