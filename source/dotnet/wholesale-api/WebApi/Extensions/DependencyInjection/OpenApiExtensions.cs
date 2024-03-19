@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Reflection;
+using Energinet.DataHub.Wholesale.WebApi.Extensibility.Swashbuckle;
 using Energinet.DataHub.Wholesale.WebApi.Extensions.Options;
 using Microsoft.OpenApi.Models;
 

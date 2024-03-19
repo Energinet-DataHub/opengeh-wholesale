@@ -15,7 +15,7 @@
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility;
 
-namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry;
+namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Extensibility.ApplicationInsights;
 
 public class SubsystemInitializer : ITelemetryInitializer
 {

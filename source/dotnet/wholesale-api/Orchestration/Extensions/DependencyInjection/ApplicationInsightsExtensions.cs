@@ -14,6 +14,7 @@
 
 using System.Reflection;
 using Energinet.DataHub.Core.App.Common.Reflection;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensibility.ApplicationInsights;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Azure.Functions.Worker;

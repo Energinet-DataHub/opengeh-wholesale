@@ -15,7 +15,7 @@
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Energinet.DataHub.Wholesale.WebApi;
+namespace Energinet.DataHub.Wholesale.WebApi.Extensibility.Swashbuckle;
 
 public class BinaryContentFilter : IOperationFilter
 {
@@ -28,9 +28,7 @@ public class BinaryContentFilter : IOperationFilter
     {
         var attribute = context.MethodInfo.GetCustomAttributes(typeof(BinaryContentAttribute), false).FirstOrDefault();
         if (attribute == null)
-        {
             return;
-        }
 
         operation.Responses = new OpenApiResponses
         {
