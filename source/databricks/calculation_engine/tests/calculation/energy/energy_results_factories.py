@@ -73,7 +73,7 @@ def create_row(
 def create_grid_loss_row(
     grid_area: str = DEFAULT_GRID_AREA,
     observation_time: datetime.datetime = DEFAULT_OBSERVATION_TIME,
-    sum_quantity: int | Decimal = DEFAULT_SUM_QUANTITY,
+    quantity: int | Decimal = DEFAULT_QUANTITY,
 ) -> Row:
     """Suggestion: Consider creating a type for grid loss results."""
     return create_row(
@@ -81,7 +81,7 @@ def create_grid_loss_row(
         from_grid_area=None,
         to_grid_area=None,
         observation_time=observation_time,
-        sum_quantity=sum_quantity,
+        quantity=quantity,
         qualities=[QuantityQuality.CALCULATED],
         energy_supplier_id=None,
         balance_responsible_id=None,
