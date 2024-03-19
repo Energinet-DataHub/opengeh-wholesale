@@ -61,7 +61,6 @@ class DataframeDefaults:
     default_quantity: Decimal = Decimal("1.123")
     default_metering_point_resolution: str = MeteringPointResolution.HOUR.value
     default_settlement_method: str = SettlementMethod.FLEX.value
-    default_sum_quantity: Decimal = Decimal("1.234")
     default_to_grid_area: str = "1"
     default_to_date: datetime = datetime(2020, 1, 2, 0, 0)
     default_unit: str = "chargea"

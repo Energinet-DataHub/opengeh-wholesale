@@ -86,7 +86,7 @@ def _sum_quantity_and_count_charges(prepared_tariffs: PreparedTariffs) -> DataFr
         Colname.resolution,
         Colname.charge_price,
     ).agg(
-        f.sum(Colname.sum_quantity).alias(Colname.total_quantity),
+        f.sum(Colname.quantity).alias(Colname.total_quantity),
         f.flatten(f.collect_set(Colname.qualities)).alias(Colname.qualities),
     )
 

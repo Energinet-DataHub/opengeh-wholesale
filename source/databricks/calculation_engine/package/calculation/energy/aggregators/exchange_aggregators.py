@@ -51,13 +51,13 @@ def aggregate_net_exchange_per_neighbour_ga(
 
     exchange_to = (
         T.aggregate_quantity_and_quality(df, group_by)
-        .withColumnRenamed(Colname.sum_quantity, to_sum)
+        .withColumnRenamed(Colname.quantity, to_sum)
         .withColumnRenamed(Colname.to_grid_area, exchange_in_to_grid_area)
         .withColumnRenamed(Colname.from_grid_area, exchange_in_from_grid_area)
     )
     exchange_from = (
         T.aggregate_quantity_and_quality(df, group_by)
-        .withColumnRenamed(Colname.sum_quantity, from_sum)
+        .withColumnRenamed(Colname.quantity, from_sum)
         .withColumnRenamed(Colname.to_grid_area, exchange_out_to_grid_area)
         .withColumnRenamed(Colname.from_grid_area, exchange_out_from_grid_area)
     )
@@ -113,7 +113,7 @@ def aggregate_net_exchange_per_neighbour_ga(
             ),
         )
         # Calculate netto sum between neighboring grid areas
-        .withColumn(Colname.sum_quantity, F.col(to_sum) - F.col(from_sum))
+        .withColumn(Colname.quantity, F.col(to_sum) - F.col(from_sum))
         # Finally select the result columns
         .select(
             Colname.to_grid_area,
@@ -121,7 +121,7 @@ def aggregate_net_exchange_per_neighbour_ga(
             Colname.observation_time,
             # Include qualities from all to- and from- metering point time series
             F.array_union(Colname.qualities, from_qualities).alias(Colname.qualities),
-            Colname.sum_quantity,
+            Colname.quantity,
             F.col(Colname.to_grid_area).alias(Colname.grid_area),
         )
     )

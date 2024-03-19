@@ -43,7 +43,7 @@ class TestWhenValidInput:
         assert len(actual_rows) == 1
         actual_row = actual_rows[0]
         assert actual_row[Colname.grid_area] == factories.DEFAULT_GRID_AREA
-        assert actual_row[Colname.sum_quantity] == 2 * factories.DEFAULT_SUM_QUANTITY
+        assert actual_row[Colname.quantity] == 2 * factories.DEFAULT_QUANTITY
         assert actual_row[Colname.qualities] == [
             q.value for q in factories.DEFAULT_QUALITIES
         ]

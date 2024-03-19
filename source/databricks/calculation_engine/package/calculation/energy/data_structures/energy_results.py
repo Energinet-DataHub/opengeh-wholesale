@@ -53,7 +53,7 @@ energy_results_schema = t.StructType(
         t.StructField(Colname.balance_responsible_id, t.StringType(), True),
         t.StructField(Colname.energy_supplier_id, t.StringType(), True),
         t.StructField(Colname.observation_time, t.TimestampType(), False),
-        t.StructField(Colname.sum_quantity, t.DecimalType(18, 6), False),
+        t.StructField(Colname.quantity, t.DecimalType(18, 6), False),
         t.StructField(Colname.qualities, t.ArrayType(t.StringType(), False), False),
         t.StructField(Colname.metering_point_id, t.StringType(), True),
     ]

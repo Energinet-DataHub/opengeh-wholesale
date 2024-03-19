@@ -83,7 +83,7 @@ class TestWhenValidInput:
 
         # assert
         actual_row = actual.collect()[0]
-        assert actual_row[Colname.sum_quantity] == Decimal("3.333")
+        assert actual_row[Colname.quantity] == Decimal("3.333")
 
     def test_returns_sum_of_quantity_in_each_group(self, spark: SparkSession):
         # Arrange
@@ -124,8 +124,8 @@ class TestWhenValidInput:
 
         # assert
         actual_rows = actual.collect()
-        assert actual_rows[0][Colname.sum_quantity] == Decimal("3.3")
-        assert actual_rows[1][Colname.sum_quantity] == Decimal("7.0")
+        assert actual_rows[0][Colname.quantity] == Decimal("3.3")
+        assert actual_rows[1][Colname.quantity] == Decimal("7.0")
 
     def test_returns_distinct_qualities_in_group(self, spark: SparkSession):
         # Arrange
