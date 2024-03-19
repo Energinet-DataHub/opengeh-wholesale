@@ -14,13 +14,16 @@
 
 using System.Text.Json.Serialization;
 using Asp.Versioning;
+using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry;
 using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.Extensions.Builder;
@@ -33,7 +36,7 @@ var builder = WebApplication.CreateBuilder(args);
 */
 
 // Common
-builder.Services.AddApplicationInsightsForWebApp();
+builder.Services.AddApplicationInsightsForWebApp(TelemetryConstants.SubsystemName);
 builder.Services.AddHealthChecksForWebApp();
 
 // Shared by modules

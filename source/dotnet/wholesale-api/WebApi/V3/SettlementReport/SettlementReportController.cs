@@ -14,8 +14,8 @@
 
 using System.ComponentModel.DataAnnotations;
 using Asp.Versioning;
+using Energinet.DataHub.Core.App.WebApp.Extensibility.Swashbuckle;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
-using Energinet.DataHub.Wholesale.WebApi.Extensibility.Swashbuckle;
 using Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
