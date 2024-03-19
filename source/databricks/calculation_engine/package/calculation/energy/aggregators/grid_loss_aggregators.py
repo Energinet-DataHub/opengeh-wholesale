@@ -94,7 +94,6 @@ def calculate_grid_loss(
         Colname.grid_area,
         Colname.observation_time,
         Colname.quantity,  # grid loss
-        f.lit(MeteringPointType.CONSUMPTION.value).alias(Colname.metering_point_type),
         # Quality of positive and negative grid loss must always be "calculated" as they become time series
         # that'll be sent to the metering points
         f.array(f.lit(QuantityQuality.CALCULATED.value)).alias(Colname.qualities),
@@ -144,9 +143,6 @@ def calculate_negative_grid_loss(
             f.when(f.col(Colname.quantity) < 0, -f.col(Colname.quantity))
             .otherwise(0)
             .alias(Colname.quantity),
-            f.lit(MeteringPointType.PRODUCTION.value).alias(
-                Colname.metering_point_type
-            ),
             Colname.qualities,
             only_grid_area_and_metering_point_id[
                 Colname.grid_loss_metering_point_id
@@ -180,9 +176,6 @@ def calculate_positive_grid_loss(
             f.when(f.col(Colname.quantity) > 0, f.col(Colname.quantity))
             .otherwise(0)
             .alias(Colname.quantity),
-            f.lit(MeteringPointType.CONSUMPTION.value).alias(
-                Colname.metering_point_type
-            ),
             Colname.qualities,
             only_grid_area_and_metering_point_id[Colname.grid_loss_metering_point_id],
         )
