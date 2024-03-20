@@ -46,8 +46,6 @@ class DefaultValues:
     CALCULATION_PERIOD_START = datetime(2020, 1, 31, 23, 0)
     CALCULATION_PERIOD_END = datetime(2020, 2, 29, 23, 0)
     DAYS_IN_MONTH = 29
-    CALCULATION_MONTH = 2
-    TIME_ZONE = "Europe/Copenhagen"
 
 
 def _get_all_wholesale_metering_point_types() -> list[MeteringPointType]:
@@ -93,7 +91,6 @@ class TestWhenValidInput:
             prepared_subscriptions_charges,
             period_start,
             period_end,
-            DefaultValues.TIME_ZONE,
         ).df
 
         # Assert
@@ -119,7 +116,6 @@ class TestWhenValidInput:
             prepared_subscriptions,
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
-            DefaultValues.TIME_ZONE,
         ).df
 
         # Assert
@@ -156,7 +152,6 @@ class TestWhenValidInput:
             prepared_subscriptions,
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
-            DefaultValues.TIME_ZONE,
         ).df
 
         # Assert
@@ -180,7 +175,6 @@ class TestWhenValidInput:
             prepared_subscriptions,
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
-            DefaultValues.TIME_ZONE,
         ).df
 
         # Assert
@@ -211,7 +205,6 @@ class TestWhenValidInput:
             prepared_subscriptions,
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
-            DefaultValues.TIME_ZONE,
         ).df
 
         # Assert
@@ -252,7 +245,6 @@ class TestWhenMissingAllInputChargePrices:
             prepared_subscriptions,
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
-            DefaultValues.TIME_ZONE,
         ).df
 
         # Assert
@@ -304,7 +296,6 @@ class TestWhenMultipleMeteringPointsPerChargeTime:
             prepared_subscriptions,
             DefaultValues.CALCULATION_PERIOD_START,
             DefaultValues.CALCULATION_PERIOD_END,
-            DefaultValues.TIME_ZONE,
         ).df
 
         # Assert
