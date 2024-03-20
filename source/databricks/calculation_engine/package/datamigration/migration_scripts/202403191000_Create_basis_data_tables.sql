@@ -4,17 +4,20 @@ CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.metering_point_periods
     calculation_id STRING NOT NULL,
     -- Enum
     calculation_type STRING NOT NULL,
-    calculation_execution_time_start TIMESTAMP NOT NULL,
 
     metering_point_id STRING NOT NULL,
-    valid_from TIMESTAMP NOT NULL,
-    valid_to TIMESTAMP NOT NULL,
-    grid_area STRING NOT NULL,
-    to_grid_area STRING,
-    from_grid_area STRING,
-    metering_point_type STRING NOT NULL,
+    type STRING NOT NULL,
+    calculation_type STRING NOT NULL,
     settlement_method STRING,
+    grid_area_code STRING NOT NULL,
+    resolution STRING NOT NULL,
+    from_grid_area STRING,
+    to_grid_area STRING,
+    parent_metering_point_id STRING,
     energy_supplier_id STRING NOT NULL
+    balance_responsible_id STRING NOT
+    from_date TIMESTAMP NOT NULL,
+    to_date TIMESTAMP NOT NULL
 )
 USING DELTA
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used. 
@@ -28,15 +31,11 @@ CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.time_series
     calculation_id STRING NOT NULL,
     -- Enum
     calculation_type STRING NOT NULL,
-    calculation_execution_time_start TIMESTAMP NOT NULL,
 
-    grid_area STRING NOT NULL,
     metering_point_id STRING NOT NULL,
-    metering_point_type STRING NOT NULL,
-    start_datetime TIMESTAMP NOT NULL,
-    energy_supplier_id STRING NOT NULL,
-    quantity ARRAY<DECIMAL(18, 3)>,
-    resolution STRING NOT NULL
+    observation_time TIMESTAMP NOT NULL,
+    quality STRING NOT NULL,
+    quantity DECIMAL(18, 3)
 )
 USING DELTA
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
