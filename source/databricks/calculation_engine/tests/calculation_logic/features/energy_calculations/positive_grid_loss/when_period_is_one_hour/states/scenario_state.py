@@ -17,6 +17,12 @@ from pyspark.sql import DataFrame, SparkSession
 
 import calculation_logic.utils as cl
 import calculation_logic.utils.factories as clf
+from package.codelists import (
+    QuantityQuality,
+    InputMeteringPointType,
+    InputSettlementMethod,
+    MeteringPointResolution,
+)
 
 
 def get_expected(*args) -> DataFrame:
@@ -39,19 +45,19 @@ def create_time_series_points(spark: SparkSession) -> DataFrame:
     row1 = factory.create_row(
         metering_point_id="571313180400010437",
         quantity=10.0,
-        quality=cl.QuantityQuality.MEASURED.value,
+        quality=QuantityQuality.MEASURED.value,
         observation_time=datetime(2023, 2, 1, 12, 0, 0),
     )
     row2 = factory.create_row(
         metering_point_id="571313180400010673",
         quantity=5.0,
-        quality=cl.QuantityQuality.MEASURED.value,
+        quality=QuantityQuality.MEASURED.value,
         observation_time=datetime(2023, 2, 1, 12, 0, 0),
     )
     row3 = factory.create_row(
         metering_point_id="571313180400140417",
         quantity=10.0,
-        quality=cl.QuantityQuality.MEASURED.value,
+        quality=QuantityQuality.MEASURED.value,
         observation_time=datetime(2023, 2, 1, 12, 0, 0),
     )
     return factory.create_dataframe([row1, row2, row3])
@@ -61,10 +67,10 @@ def create_metering_point_periods(spark: SparkSession) -> DataFrame:
     factory = clf.InputMeteringPointPeriodsTestFactory(spark)
     row1 = factory.create_row(
         metering_point_id="571313180400100657",
-        metering_point_type=cl.InputMeteringPointType.CONSUMPTION,
-        settlement_method=cl.InputSettlementMethod.FLEX,
+        metering_point_type=InputMeteringPointType.CONSUMPTION,
+        settlement_method=InputSettlementMethod.FLEX,
         grid_area="804",
-        resolution=cl.MeteringPointResolution.QUARTER,
+        resolution=MeteringPointResolution.QUARTER,
         energy_supplier="8100000000115",
         balance_responsible_id="5790001270940",
         from_date=datetime(2023, 1, 31, 23, 0, 0),
@@ -72,9 +78,9 @@ def create_metering_point_periods(spark: SparkSession) -> DataFrame:
 
     row2 = factory.create_row(
         metering_point_id="571313180480500149",
-        metering_point_type=cl.InputMeteringPointType.PRODUCTION,
+        metering_point_type=InputMeteringPointType.PRODUCTION,
         grid_area="804",
-        resolution=cl.MeteringPointResolution.QUARTER,
+        resolution=MeteringPointResolution.QUARTER,
         energy_supplier="8100000000108",
         balance_responsible_id="8100000000207",
         from_date=datetime(2023, 1, 31, 23, 0, 0),
@@ -82,7 +88,7 @@ def create_metering_point_periods(spark: SparkSession) -> DataFrame:
 
     row3 = factory.create_row(
         metering_point_id="571313180400140417",
-        metering_point_type=cl.InputMeteringPointType.EXCHANGE,
+        metering_point_type=InputMeteringPointType.EXCHANGE,
         grid_area="804",
         from_grid_area="803",
         to_grid_area="804",
@@ -92,7 +98,7 @@ def create_metering_point_periods(spark: SparkSession) -> DataFrame:
 
     row4 = factory.create_row(
         metering_point_id="571313180400010437",
-        metering_point_type=cl.InputMeteringPointType.PRODUCTION,
+        metering_point_type=InputMeteringPointType.PRODUCTION,
         grid_area="804",
         energy_supplier="5790001687137",
         balance_responsible_id="5790000701414",
@@ -101,7 +107,7 @@ def create_metering_point_periods(spark: SparkSession) -> DataFrame:
 
     row5 = factory.create_row(
         metering_point_id="571313180400010673",
-        metering_point_type=cl.InputMeteringPointType.CONSUMPTION,
+        metering_point_type=InputMeteringPointType.CONSUMPTION,
         grid_area="804",
         energy_supplier="5790001687137",
         balance_responsible_id="5790000701414",
