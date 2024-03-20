@@ -46,5 +46,5 @@ public class MeteringPointTypeValidationRule : IValidationRule<DataHub.Edi.Reque
 
     private static IList<ValidationError> NoError => new List<ValidationError>();
 
-    private static IList<ValidationError> InvalidMeteringPointType => new List<ValidationError> { _invalidMeteringPointType.WithPropertyName(string.Join(", ", _validMeteringPointTypes)) };
+    private static IList<ValidationError> InvalidMeteringPointType => new List<ValidationError> { _invalidMeteringPointType.WithPropertyName("E17, E18, E20") };
 }

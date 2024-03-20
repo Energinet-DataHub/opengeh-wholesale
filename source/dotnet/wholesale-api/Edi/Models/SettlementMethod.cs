@@ -16,6 +16,6 @@ namespace Energinet.DataHub.Wholesale.Edi.Models;
 
 public static class SettlementMethod
 {
-    public const string Flex = "D01";
-    public const string NonProfiled = "E02";
+    public const string Flex = "Flex"; // "D01"
+    public const string NonProfiled = "NonProfiled"; // "E02"
 }

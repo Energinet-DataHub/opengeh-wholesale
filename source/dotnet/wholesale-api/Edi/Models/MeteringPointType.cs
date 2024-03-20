@@ -16,7 +16,7 @@ namespace Energinet.DataHub.Wholesale.Edi.Models;
 
 public static class MeteringPointType
 {
-    public const string Consumption = "E17";
-    public const string Production = "E18";
-    public const string Exchange = "E20";
+    public const string Consumption = "Consumption"; // "E17"
+    public const string Production = "Production"; // "E18"
+    public const string Exchange = "Exchange"; // "E20"
 }

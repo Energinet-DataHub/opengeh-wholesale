@@ -105,7 +105,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         var expectedReferenceId = Guid.NewGuid().ToString();
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithBusinessReason("D32")
+            .WithBusinessReason("Correction")
             .Build();
 
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(

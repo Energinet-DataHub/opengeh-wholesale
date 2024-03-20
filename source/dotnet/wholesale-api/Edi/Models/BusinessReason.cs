@@ -16,8 +16,8 @@ namespace Energinet.DataHub.Wholesale.Edi.Models;
 
 public static class BusinessReason
 {
-    public const string BalanceFixing = "D04";
-    public const string PreliminaryAggregation = "D03";
-    public const string WholesaleFixing = "D05";
-    public const string Correction = "D32";
+    public const string BalanceFixing = "BalanceFixing"; // "D04"
+    public const string PreliminaryAggregation = "PreliminaryAggregation"; // "D03"
+    public const string WholesaleFixing = "WholesaleFixing"; // "D05"
+    public const string Correction = "Correction"; // "D32"
 }

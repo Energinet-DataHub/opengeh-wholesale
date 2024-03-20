@@ -16,7 +16,7 @@ namespace Energinet.DataHub.Wholesale.Edi.Models;
 
 public static class SettlementSeriesVersion
 {
-    public const string FirstCorrection = "D01";
-    public const string SecondCorrection = "D02";
-    public const string ThirdCorrection = "D03";
+    public const string FirstCorrection = "FirstCorrection"; // "D01"
+    public const string SecondCorrection = "SecondCorrection"; // "D02"
+    public const string ThirdCorrection = "ThirdCorrection"; // "D03"
 }
