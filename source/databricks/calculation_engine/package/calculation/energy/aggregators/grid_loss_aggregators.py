@@ -100,8 +100,6 @@ def calculate_grid_loss(
         f.array(f.lit(QuantityQuality.CALCULATED.value)).alias(Colname.qualities),
     )
 
-    print("Grid loss result")
-    result.show()
     return EnergyResults(result)
 
 

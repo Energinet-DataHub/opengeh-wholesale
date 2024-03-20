@@ -58,7 +58,7 @@ energy_results_schema = t.StructType(
         t.StructField(Colname.energy_supplier_id, t.StringType(), True),
         t.StructField(Colname.observation_time, t.TimestampType(), False),
         t.StructField(Colname.quantity, t.DecimalType(18, 6), False),
-        # Grid loss only has one quality (calculated)
+        # Grid loss has only a single quality (calculated)
         t.StructField(Colname.qualities, t.ArrayType(t.StringType(), False), False),
         # Requires for grid loss, otherwise null
         t.StructField(Colname.metering_point_id, t.StringType(), True),
