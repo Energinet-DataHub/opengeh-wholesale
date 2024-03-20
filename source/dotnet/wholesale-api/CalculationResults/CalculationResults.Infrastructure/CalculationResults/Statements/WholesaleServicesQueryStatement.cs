@@ -118,6 +118,7 @@ public class WholesaleServicesQueryStatement : DatabricksStatement
         WholesaleResultColumnNames.ChargeType,
         WholesaleResultColumnNames.ChargeCode,
         WholesaleResultColumnNames.AmountType,
+        WholesaleResultColumnNames.Resolution,
         WholesaleResultColumnNames.MeteringPointType,
         WholesaleResultColumnNames.SettlementMethod,
         WholesaleResultColumnNames.CalculationId,

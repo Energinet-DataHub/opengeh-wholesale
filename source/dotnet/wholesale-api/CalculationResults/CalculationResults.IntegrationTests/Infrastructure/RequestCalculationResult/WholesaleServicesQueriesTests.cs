@@ -190,6 +190,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         var calculationPeriods = CreateCalculationPeriods();
 
         var calculationPeriod = calculationPeriods.Calculation2;
+        var amountType = AmountType.AmountPerCharge;
         var resolution = Resolution.Day;
         var gridArea = "999";
         var energySupplierId = "2236552000028";
@@ -205,6 +206,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
                     (propertyToDiffer == WholesaleServicesProperty.CalculationPeriod ? calculationPeriods.Calculation2 : calculationPeriod).Period.Start.Plus(Duration.FromHours(2)),
                 ],
                 CalculationPeriod: propertyToDiffer == WholesaleServicesProperty.CalculationPeriod ? calculationPeriods.Calculation2 : calculationPeriod,
+                AmountType: propertyToDiffer == WholesaleServicesProperty.AmountType ? AmountType.AmountPerCharge : amountType,
                 Resolution: propertyToDiffer == WholesaleServicesProperty.Resolution ? Resolution.Month : resolution,
                 GridArea: propertyToDiffer == WholesaleServicesProperty.GridArea ? "101" : gridArea,
                 EnergySupplierId: propertyToDiffer == WholesaleServicesProperty.EnergySupplierId ? "9999999999991" : energySupplierId,
@@ -217,6 +219,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
                     (propertyToDiffer == WholesaleServicesProperty.CalculationPeriod ? calculationPeriods.Calculation3 : calculationPeriod).Period.Start.Plus(Duration.FromHours(3)),
                 ],
                 CalculationPeriod: propertyToDiffer == WholesaleServicesProperty.CalculationPeriod ? calculationPeriods.Calculation3 : calculationPeriod,
+                AmountType: propertyToDiffer == WholesaleServicesProperty.AmountType ? AmountType.MonthlyAmountPerCharge : amountType,
                 Resolution: propertyToDiffer == WholesaleServicesProperty.Resolution ? Resolution.Hour : resolution,
                 GridArea: propertyToDiffer == WholesaleServicesProperty.GridArea ? "102" : gridArea,
                 EnergySupplierId: propertyToDiffer == WholesaleServicesProperty.EnergySupplierId ? "9999999999992" : energySupplierId,
@@ -231,6 +234,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
                     (propertyToDiffer == WholesaleServicesProperty.CalculationPeriod ? calculationPeriods.Calculation4 : calculationPeriod).Period.Start.Plus(Duration.FromHours(12)),
                 ],
                 CalculationPeriod: propertyToDiffer == WholesaleServicesProperty.CalculationPeriod ? calculationPeriods.Calculation4 : calculationPeriod,
+                AmountType: propertyToDiffer == WholesaleServicesProperty.AmountType ? AmountType.TotalMonthlyAmount : amountType,
                 Resolution: propertyToDiffer == WholesaleServicesProperty.Resolution ? Resolution.Day : resolution,
                 GridArea: propertyToDiffer == WholesaleServicesProperty.GridArea ? "103" : gridArea,
                 EnergySupplierId: propertyToDiffer == WholesaleServicesProperty.EnergySupplierId ? "9999999999993" : energySupplierId,
@@ -644,6 +648,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
                     CreateRow(
                         p.CalculationPeriod,
                         time,
+                        p.AmountType,
                         p.Resolution,
                         p.GridArea,
                         p.EnergySupplierId,
@@ -665,6 +670,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
     private IReadOnlyCollection<string?> CreateRow(
         CalculationForPeriod calculationPeriod,
         Instant time,
+        AmountType amountType,
         Resolution resolution,
         string gridArea,
         string energySupplierId,
@@ -676,6 +682,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         return WholesaleResultDeltaTableHelper.CreateRowValues(
             calculationPeriod.CalculationId.ToString(),
             time: time.ToString(),
+            amountType: AmountTypeMapper.ToDeltaTableValue(amountType),
             resolution: ResolutionMapper.ToDeltaTableValue(resolution),
             gridArea: gridArea,
             energySupplierId: energySupplierId,
@@ -777,6 +784,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         ChargeOwnerId,
         ChargeCode,
         ChargeType,
+        AmountType,
         Resolution,
     }
 }
