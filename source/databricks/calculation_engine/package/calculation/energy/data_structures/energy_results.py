@@ -23,7 +23,7 @@ class EnergyResults(DataFrameWrapper):
     """
     Time series of energy results.
 
-    Only exchange energy results have to- and from- grid area values.
+    See the schema comments for details on nullable columns.
     """
 
     def __init__(self, df: DataFrame):
@@ -48,13 +48,19 @@ class EnergyResults(DataFrameWrapper):
 energy_results_schema = t.StructType(
     [
         t.StructField(Colname.grid_area, t.StringType(), False),
+        # Required for exchange, otherwise null
         t.StructField(Colname.to_grid_area, t.StringType(), True),
+        # Required for exchange, otherwise null
         t.StructField(Colname.from_grid_area, t.StringType(), True),
+        # Required for non-exchange when aggregated per es or brp, otherwise null
         t.StructField(Colname.balance_responsible_id, t.StringType(), True),
+        # Required when aggregated per es, otherwise null
         t.StructField(Colname.energy_supplier_id, t.StringType(), True),
         t.StructField(Colname.observation_time, t.TimestampType(), False),
         t.StructField(Colname.quantity, t.DecimalType(18, 6), False),
+        # Grid loss has only a single quality (calculated)
         t.StructField(Colname.qualities, t.ArrayType(t.StringType(), False), False),
+        # Requires for grid loss, otherwise null
         t.StructField(Colname.metering_point_id, t.StringType(), True),
     ]
 )
