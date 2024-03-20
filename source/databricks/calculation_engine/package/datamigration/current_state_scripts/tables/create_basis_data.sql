@@ -1,8 +1,6 @@
 CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.metering_point_periods
 (
-    -- 36 characters UUID
     calculation_id STRING NOT NULL,
-
     metering_point_id STRING NOT NULL,
     metering_point_type STRING NOT NULL,
     settlement_method STRING,
@@ -22,14 +20,12 @@ USING DELTA
 {TEST}LOCATION '{CONTAINER_PATH}/{BASIS_DATA_FOLDER}/metering_point_periods'
 GO
 
-CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.time_series
+CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.time_series_points
 (
-    -- 36 characters UUID
     calculation_id STRING NOT NULL,
-
     metering_point_id STRING NOT NULL,
-    quality STRING,
-    quantity DECIMAL(18, 3) NOT NULL,
+    quantity DECIMAL(18, 6),
+    quality STRING NOT NULL,
     observation_time TIMESTAMP NOT NULL
 )
 USING DELTA
@@ -40,9 +36,7 @@ GO
 
 CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.charge_price_points
 (
-    -- 36 characters UUID
     calculation_id STRING NOT NULL,
-
     charge_code STRING NOT NULL,
     charge_type STRING NOT NULL,
     charge_owner_id STRING NOT NULL,
@@ -57,9 +51,7 @@ GO
 
 CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.charge_masterdata_periods
 (
-    -- 36 characters UUID
     calculation_id STRING NOT NULL,
-
     charge_code STRING NOT NULL,
     charge_type STRING NOT NULL,
     charge_owner_id STRING NOT NULL,
@@ -76,9 +68,7 @@ GO
 
 CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.charge_link_periods
 (
-    -- 36 characters UUID
     calculation_id STRING NOT NULL,
-
     charge_code STRING NOT NULL,
     charge_type STRING NOT NULL,
     charge_owner_id STRING NOT NULL,
@@ -95,9 +85,7 @@ GO
 
 CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.grid_loss_metering_points
 (
-    -- 36 characters UUID
     calculation_id STRING NOT NULL,
-
     metering_point_id STRING NOT NULL
 )
 USING DELTA
@@ -108,9 +96,7 @@ GO
 
 CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.calculations
 (
-    -- 36 characters UUID
     calculation_id STRING NOT NULL,
-
     calculation_type STRING NOT NULL,
     period_start TIMESTAMP NOT NULL,
     period_end TIMESTAMP NOT NULL,
