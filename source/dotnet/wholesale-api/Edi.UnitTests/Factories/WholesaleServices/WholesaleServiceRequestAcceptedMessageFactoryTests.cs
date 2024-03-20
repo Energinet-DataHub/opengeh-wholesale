@@ -17,11 +17,14 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Edi.Factories.WholesaleServices;
+using Energinet.DataHub.Wholesale.Edi.Mappers;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using Google.Protobuf.WellKnownTypes;
 using NodaTime;
 using Xunit;
 using Period = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.Period;
+using QuantityQuality = Energinet.DataHub.Edi.Responses.QuantityQuality;
 using QuantityUnit = Energinet.DataHub.Wholesale.Common.Interfaces.Models.QuantityUnit;
 using Resolution = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution;
 using WholesaleQuantity = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
@@ -54,10 +57,36 @@ public class WholesaleServiceRequestAcceptedMessageFactoryTests
         // Arrange
         const string expectedAcceptedSubject = nameof(WholesaleServicesRequestAccepted);
         const string expectedReferenceId = "123456789";
+
+        var expectedTime1 = _defaultTime.ToDateTimeOffset();
+        var expectedQuantity1 = 1.1m;
+        var expectedPrice1 = 1.2m;
+        var expectedAmount1 = 1.3m;
+        var expectedTime2 = _defaultTime.ToDateTimeOffset().AddDays(1);
+        var expectedQuantity2 = 2.1m;
+        var expectedPrice2 = 2.2m;
+        var expectedAmount2 = 2.3m;
+        var expectedTimeSeriesPoints = new[]
+        {
+            new WholesaleTimeSeriesPoint(
+                expectedTime1,
+                expectedQuantity1,
+                null,
+                expectedPrice1,
+                expectedAmount1),
+            new WholesaleTimeSeriesPoint(
+                expectedTime2,
+                expectedQuantity2,
+                [WholesaleQuantity.Calculated, WholesaleQuantity.Estimated],
+                expectedPrice2,
+                expectedAmount2),
+        };
+
         var wholesaleService = CreateWholesaleServices(
             meteringPointType: null,
             settlementMethod: null,
-            resolution: Resolution.Month);
+            resolution: Resolution.Month,
+            timeSeriesPoints: expectedTimeSeriesPoints);
 
         // Act
         var actual = WholesaleServiceRequestAcceptedMessageFactory.Create(wholesaleService, expectedReferenceId);
@@ -76,7 +105,19 @@ public class WholesaleServiceRequestAcceptedMessageFactoryTests
         series.HasMeteringPointType.Should().Be(false);
         series.HasSettlementMethod.Should().Be(false);
         series.Resolution.Should().Be(WholesaleServicesRequestSeries.Types.Resolution.Monthly);
-        series.TimeSeriesPoints.Should().HaveCount(3);
+        series.TimeSeriesPoints.Should().HaveCount(2);
+        series.TimeSeriesPoints.Should().ContainSingle(p =>
+            p.Time == expectedTime1.ToTimestamp() &&
+            p.Quantity.Equals(DecimalValueMapper.Map(expectedQuantity1)) &&
+            p.Amount.Equals(DecimalValueMapper.Map(expectedAmount1)) &&
+            p.Price.Equals(DecimalValueMapper.Map(expectedPrice1)) &&
+            p.QuantityQualities.Count == 0);
+        series.TimeSeriesPoints.Should().ContainSingle(p =>
+            p.Time == expectedTime2.ToTimestamp() &&
+            p.Quantity.Equals(DecimalValueMapper.Map(expectedQuantity2)) &&
+            p.Amount.Equals(DecimalValueMapper.Map(expectedAmount2)) &&
+            p.Price.Equals(DecimalValueMapper.Map(expectedPrice2)) &&
+            p.QuantityQualities.Count == 2 && p.QuantityQualities.SequenceEqual(new[] { QuantityQuality.Calculated, QuantityQuality.Estimated }));
     }
 
     [Theory]
@@ -95,9 +136,9 @@ public class WholesaleServiceRequestAcceptedMessageFactoryTests
         // Assert
         actual.Should().NotBeNull();
         var responseBody = WholesaleServicesRequestAccepted.Parser.ParseFrom(actual.Body);
-        responseBody.Series.Should().ContainSingle();
-        responseBody.Series.Single().TimeSeriesPoints.Should().HaveCount(3);
-        responseBody.Series.Single().TimeSeriesPoints.Select(p => p.QuantityQualities).Should().AllSatisfy(
+        var series = responseBody.Series.Should().ContainSingle().Subject;
+        series.TimeSeriesPoints.Should().HaveCount(3);
+        series.TimeSeriesPoints.Select(p => p.QuantityQualities).Should().AllSatisfy(
             qqs =>
             {
                 qqs.Should().HaveCount(expectedQuantityQualities.Count);
@@ -112,9 +153,16 @@ public class WholesaleServiceRequestAcceptedMessageFactoryTests
         MeteringPointType? meteringPointType = null,
         SettlementMethod? settlementMethod = null,
         Resolution resolution = Resolution.Month,
-        CalculationType calculationType = CalculationType.WholesaleFixing)
+        CalculationType calculationType = CalculationType.WholesaleFixing,
+        WholesaleTimeSeriesPoint[]? timeSeriesPoints = null)
     {
         quantityQualities ??= new List<WholesaleQuantity> { WholesaleQuantity.Estimated };
+        timeSeriesPoints ??= new WholesaleTimeSeriesPoint[]
+        {
+            new(_defaultTime.ToDateTimeOffset(), 2, quantityQualities, 2, 4),
+            new(_defaultTime.ToDateTimeOffset(), 3, quantityQualities, 2, 6),
+            new(_defaultTime.ToDateTimeOffset(), 3, quantityQualities, 3, 9),
+        };
 
         return [
             new(
@@ -133,12 +181,7 @@ public class WholesaleServiceRequestAcceptedMessageFactoryTests
                 settlementMethod,
                 Currency.DKK,
                 calculationType,
-                new WholesaleTimeSeriesPoint[]
-                {
-                    new(_defaultTime.ToDateTimeOffset(), 2, quantityQualities, 2, 4),
-                    new(_defaultTime.ToDateTimeOffset(), 3, quantityQualities, 2, 6),
-                    new(_defaultTime.ToDateTimeOffset(), 3, quantityQualities, 3, 9),
-                },
+                timeSeriesPoints,
                 1),
         ];
     }
