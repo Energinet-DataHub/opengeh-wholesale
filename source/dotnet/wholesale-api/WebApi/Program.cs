@@ -78,7 +78,7 @@ var app = builder.Build();
 */
 
 app.UseRouting();
-app.UseSwaggerForWebApplication();
+app.UseSwaggerForWebApp();
 app.UseHttpsRedirection();
 
 // Authentication/authorization
