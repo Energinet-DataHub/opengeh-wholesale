@@ -88,7 +88,7 @@ class TestCtor:
     class TestWhenInputDecimalScaleIsHigherThanSix:
         def test_respects_input_scale(self, spark: SparkSession) -> None:
             """
-            In practice the sum_quantity column in EnergyResult can be represented by 5 decimals, because time
+            In practice the quantity column in EnergyResult can be represented by 5 decimals, because time
             series has 3 decimals and is divided by four (quarters). The end result should be stored with 6 decimals.
             However, other scales are respected to reduce the risk of unexpected roundings (in the future)
             in intermediate calculations.
