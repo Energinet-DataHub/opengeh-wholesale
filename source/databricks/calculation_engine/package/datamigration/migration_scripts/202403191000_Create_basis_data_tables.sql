@@ -1,3 +1,7 @@
+CREATE DATABASE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}
+COMMENT 'Contains basis data from wholesale domain.'
+GO
+
 CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.metering_point_periods
 (
     -- 36 characters UUID
