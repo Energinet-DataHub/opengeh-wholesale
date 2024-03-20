@@ -43,6 +43,61 @@ USING DELTA
 {TEST}LOCATION '{CONTAINER_PATH}/{BASIS_DATA_FOLDER}/time_series'
 GO
 
+CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.charge_price_points
+(
+    -- 36 characters UUID
+    calculation_id STRING NOT NULL,
+
+    charge_code STRING NOT NULL,
+    charge_type STRING NOT NULL,
+    charge_owner_id STRING NOT NULL,
+    charge_price DECIMAL(18, 3)
+    charge_time TIMESTAMP NOT NULL,
+)
+USING DELTA
+-- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
+-- In the production it is set to empty and the respective location is used. This means the production tables won't be deleted if the schema is.
+{TEST}LOCATION '{CONTAINER_PATH}/{BASIS_DATA_FOLDER}/charge_price_points'
+GO
+
+CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.charge_masterdata_periods
+(
+    -- 36 characters UUID
+    calculation_id STRING NOT NULL,
+
+    charge_code STRING NOT NULL,
+    charge_type STRING NOT NULL,
+    charge_owner_id STRING NOT NULL,
+    resolution STRING NOT NULL,
+    is_tax BOOLEAN NOT NULL,
+    from_date TIMESTAMP NOT NULL,
+    to_date TIMESTAMP NOT NULL,
+)
+USING DELTA
+-- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
+-- In the production it is set to empty and the respective location is used. This means the production tables won't be deleted if the schema is.
+{TEST}LOCATION '{CONTAINER_PATH}/{BASIS_DATA_FOLDER}/charge_masterdata_periods'
+GO
+
+CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.charge_link_periods
+(
+    -- 36 characters UUID
+    calculation_id STRING NOT NULL,
+
+    charge_code STRING NOT NULL,
+    charge_type STRING NOT NULL,
+    charge_owner_id STRING NOT NULL,
+    metering_point_id STRING NOT NULL,
+    quantity int
+    from_date TIMESTAMP NOT NULL,
+    to_date TIMESTAMP NOT NULL,
+)
+USING DELTA
+-- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
+-- In the production it is set to empty and the respective location is used. This means the production tables won't be deleted if the schema is.
+{TEST}LOCATION '{CONTAINER_PATH}/{BASIS_DATA_FOLDER}/charge_link_periods'
+GO
+
 CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.calculations
 (
     -- 36 characters UUID
