@@ -20,17 +20,15 @@ from unittest.mock import Mock
 
 from pyspark.sql import SparkSession, DataFrame
 
+from package.calculation.calculation_results import (
+    CalculationResultsContainer,
+)
+from package.calculation.calculator_args import CalculatorArgs
 from .correlations import get_correlations
 from .test_calculation_args import create_calculation_args
 
 
 class ScenarioFixture:
-
-    from package.calculation.calculation_results import (
-        CalculationResultsContainer,
-    )
-    from package.calculation.calculator_args import CalculatorArgs
-
     table_reader: Mock
     test_calculation_args: CalculatorArgs
     test_path: str

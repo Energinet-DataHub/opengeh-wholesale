@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from calculation_logic.utils.scenario_fixture import ScenarioFixture
 
 # noinspection PyUnresolvedReferences
 from helpers.data_frame_utils import assert_dataframe_and_schema
@@ -26,7 +25,5 @@ from package.codelists import (
 
 # noinspection PyUnresolvedReferences
 from package.constants import WholesaleResultColumnNames, EnergyResultColumnNames
-from .correlations import get_correlations
 from .dataframes.energy_results_dataframe import create_energy_result_dataframe
 from .dataframes.wholesale_results_dataframe import create_wholesale_result_dataframe
-from .test_calculation_args import create_calculation_args
