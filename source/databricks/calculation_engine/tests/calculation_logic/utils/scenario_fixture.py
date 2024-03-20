@@ -20,20 +20,20 @@ from unittest.mock import Mock
 
 from pyspark.sql import SparkSession, DataFrame
 
-from calculation_logic.utils.correlations import get_correlations
-from calculation_logic.utils.test_calculation_args import create_calculation_args
 from package.calculation import PreparedDataReader
 from package.calculation.calculation import _execute
 from package.calculation.calculation_results import (
     CalculationResultsContainer,
 )
 from package.calculation.calculator_args import CalculatorArgs
+from .correlations import get_correlations
+from .test_calculation_args import create_calculation_args
 
 
 class ScenarioFixture:
 
     table_reader: Mock
-    calculation_args: CalculatorArgs
+    test_calculation_args: CalculatorArgs
     test_path: str
     parent_dir: str
     results: DataFrame
@@ -50,7 +50,7 @@ class ScenarioFixture:
         self.test_path = self.parent_dir + "/test_data/"
 
         correlations = get_correlations(self.table_reader)
-        self.calculation_args = create_calculation_args(self.test_path)
+        self.test_calculation_args = create_calculation_args(self.test_path)
         dataframes = self._read_files_in_parallel(correlations)
 
         for i, (_, reader) in enumerate(correlations.values()):
@@ -60,11 +60,13 @@ class ScenarioFixture:
         self.expected = get_expected_result(
             self.spark,
             dataframes[-1],
-            self.calculation_args,
+            self.test_calculation_args,
         )
 
     def execute(self) -> CalculationResultsContainer:
-        return _execute(self.calculation_args, PreparedDataReader(self.table_reader))
+        return _execute(
+            self.test_calculation_args, PreparedDataReader(self.table_reader)
+        )
 
     def _read_file(
         self, spark_session: SparkSession, csv_file_name: str, schema: str
