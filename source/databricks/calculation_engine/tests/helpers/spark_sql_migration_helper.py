@@ -110,4 +110,8 @@ def updated_substitutions(
         schema_prefix + _substitutions["{OUTPUT_FOLDER}"]
     )
 
+    _substitutions["{BASIS_DATA_FOLDER}"] = (
+        schema_prefix + _substitutions["{BASIS_DATA_FOLDER}"]
+    )
+
     return _substitutions
