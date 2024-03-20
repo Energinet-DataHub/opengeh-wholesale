@@ -98,6 +98,19 @@ USING DELTA
 {TEST}LOCATION '{CONTAINER_PATH}/{BASIS_DATA_FOLDER}/charge_link_periods'
 GO
 
+CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.grid_loss_metering_points
+(
+    -- 36 characters UUID
+    calculation_id STRING NOT NULL,
+
+    metering_point_id STRING NOT NULL,
+)
+USING DELTA
+-- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
+-- In the production it is set to empty and the respective location is used. This means the production tables won't be deleted if the schema is.
+{TEST}LOCATION '{CONTAINER_PATH}/{BASIS_DATA_FOLDER}/grid_loss_metering_points'
+GO
+
 CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.calculations
 (
     -- 36 characters UUID
