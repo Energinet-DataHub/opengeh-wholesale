@@ -309,16 +309,23 @@ def test__current_state_and_migration_scripts__should_give_same_result(
             current_state_table_df = spark.table(current_state_script_tag)
             assert migration_script_table_df.schema == current_state_table_df.schema
 
-            # Assert constraints
-            migration_script_details = (
-                spark.sql(f"DESCRIBE DETAIL {migration_script_table_name}")
-                .select("properties")
-                .collect()
-            )
-            current_state_details = (
-                spark.sql(f"DESCRIBE DETAIL {current_state_script_tag}")
-                .select("properties")
-                .collect()
-            )
+            # Assert properties and location
+            migration_script_details = spark.sql(
+                f"DESCRIBE DETAIL {migration_script_table_name}"
+            ).collect()[0]
+            current_state_details = spark.sql(
+                f"DESCRIBE DETAIL {current_state_script_tag}"
+            ).collect()[0]
 
-            assert migration_script_details == current_state_details
+            migrations_script_location = migration_script_details["location"]
+            current_state_location = current_state_details["location"].replace(
+                current_state_prefix, ""
+            )
+            assert (
+                migrations_script_location == current_state_location
+            ), f"{migration_script_table_name} and {current_state_script_tag} have different locations"
+
+            assert (
+                migration_script_details["properties"]
+                == current_state_details["properties"]
+            ), f"{migration_script_table_name} and {current_state_script_tag} have different properties"
