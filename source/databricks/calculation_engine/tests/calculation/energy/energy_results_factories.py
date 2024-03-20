@@ -28,6 +28,7 @@ DEFAULT_GRID_AREA = "100"
 DEFAULT_OBSERVATION_TIME = datetime.datetime.now()
 DEFAULT_QUANTITY = Decimal("999.123456")
 DEFAULT_QUALITIES = [QuantityQuality.MEASURED]
+DEFAULT_METERING_POINT_ID = "1234567890234"
 DEFAULT_METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
 DEFAULT_SETTLEMENT_METHOD = SettlementMethod.NON_PROFILED
 DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
@@ -67,6 +68,25 @@ def create_row(
     }
 
     return Row(**row)
+
+
+def create_grid_loss_row(
+    grid_area: str = DEFAULT_GRID_AREA,
+    observation_time: datetime.datetime = DEFAULT_OBSERVATION_TIME,
+    quantity: int | Decimal = DEFAULT_QUANTITY,
+) -> Row:
+    """Suggestion: Consider creating a type for grid loss results."""
+    return create_row(
+        grid_area=grid_area,
+        from_grid_area=None,
+        to_grid_area=None,
+        observation_time=observation_time,
+        quantity=quantity,
+        qualities=[QuantityQuality.CALCULATED],  # Grid loss has exactly this quality
+        energy_supplier_id=None,  # Is not added until positive/negative grid loss
+        balance_responsible_id=None,  # Never exists for grid loss metering points
+        metering_point_id=None,  # Is not added until positive/negative grid loss
+    )
 
 
 def create(spark: SparkSession, data: None | Row | list[Row] = None) -> EnergyResults:
