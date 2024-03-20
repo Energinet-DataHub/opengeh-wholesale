@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Reflection;
 using System.Text.Json.Serialization;
 using Asp.Versioning;
 using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
@@ -59,7 +60,7 @@ builder.Services
     .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 
 // => Open API generation
-builder.Services.AddSwaggerForWebApp();
+builder.Services.AddSwaggerForWebApp(Assembly.GetExecutingAssembly());
 
 // => API versioning
 builder.Services.AddApiVersioningForWebApp(new ApiVersion(3, 0));
