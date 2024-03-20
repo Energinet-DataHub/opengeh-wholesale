@@ -81,19 +81,19 @@ schema_config = [
             ),
             Table(
                 name=CHARGE_LINK_PERIODS_TABLE_NAME,
-                schema=basis_data_schemas.charge_link_period_schema,
+                schema=basis_data_schemas.charge_link_periods_schema,
             ),
             Table(
                 name=CHARGE_MASTER_DATA_PERIODS_TABLE_NAME,
-                schema=basis_data_schemas.charge_master_data_period_schema,
+                schema=basis_data_schemas.charge_master_data_periods_schema,
             ),
             Table(
                 name=CHARGE_PRICE_POINTS_TABLE_NAME,
-                schema=basis_data_schemas.charge_price_point_schema,
+                schema=basis_data_schemas.charge_price_points_schema,
             ),
             Table(
                 name=GRID_LOSS_METERING_POINTS_TABLE_NAME,
-                schema=basis_data_schemas.grid_loss_metering_point_schema,
+                schema=basis_data_schemas.grid_loss_metering_points_schema,
             ),
         ],
     ),
