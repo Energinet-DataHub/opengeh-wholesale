@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.time_series
     metering_point_id STRING NOT NULL,
     quality STRING,
     quantity DECIMAL(18, 3) NOT NULL,
-    observation_time TIMESTAMP NOT NULL,
+    observation_time TIMESTAMP NOT NULL
 )
 USING DELTA
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
