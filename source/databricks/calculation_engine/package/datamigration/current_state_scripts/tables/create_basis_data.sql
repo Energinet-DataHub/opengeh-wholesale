@@ -16,8 +16,8 @@ CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.metering_point_periods
     from_grid_area STRING,
     to_grid_area STRING,
     parent_metering_point_id STRING,
-    energy_supplier_id STRING NOT NULL
-    balance_responsible_id STRING NOT
+    energy_supplier_id STRING NOT NULL,
+    balance_responsible_id STRING NOT NULL,
     from_date TIMESTAMP NOT NULL,
     to_date TIMESTAMP NOT NULL
 )
@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.charge_price_points
     charge_code STRING NOT NULL,
     charge_type STRING NOT NULL,
     charge_owner_id STRING NOT NULL,
-    charge_price DECIMAL(18, 3)
+    charge_price DECIMAL(18, 3),
     charge_time TIMESTAMP NOT NULL
 )
 USING DELTA
@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.charge_link_periods
     charge_type STRING NOT NULL,
     charge_owner_id STRING NOT NULL,
     metering_point_id STRING NOT NULL,
-    quantity int
+    quantity int,
     from_date TIMESTAMP NOT NULL,
     to_date TIMESTAMP NOT NULL
 )
