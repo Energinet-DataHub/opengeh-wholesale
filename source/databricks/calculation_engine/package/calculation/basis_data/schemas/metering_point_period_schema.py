@@ -45,15 +45,10 @@ metering_point_period_schema = StructType(
         # "E17" (consumption) | "E18" (production) | "E20" (exchange) | "D01", "D05"-"D12", "D14", "D15", "D19" (child)
         # Used in balance fixing and settlement. However, child metering points are only used in settlement.
         # Example: E20
-        StructField("type", StringType(), False),
+        StructField("metering_point_type", StringType(), False),
         # "system-correction" | "grid-loss"
         # For non-calculated metering points the calculation type is null.
         # Example: system-correction
-        StructField("calculation_type", StringType(), True),
-        # "E02" (non-profiled)| "D01" (flex)
-        # When metering point is not a consumption (E17) metering point the value is null. Otherwise it must have a value.
-        # Used in balance fixing and settlement.
-        # Example: D01
         StructField("settlement_method", StringType(), True),
         # 3 character grid area code uniquely identifying the grid area. All characters must be digits (0-9).
         # Used in balance fixing and settlement.
