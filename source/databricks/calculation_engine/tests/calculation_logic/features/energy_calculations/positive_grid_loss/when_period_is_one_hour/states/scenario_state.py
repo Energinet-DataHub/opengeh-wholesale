@@ -39,19 +39,19 @@ def create_time_series_points(spark: SparkSession) -> DataFrame:
     row1 = factory.create_row(
         metering_point_id="571313180400010437",
         quantity=10.0,
-        quality=cl.QuantityQuality.MEASURED,
+        quality=cl.QuantityQuality.MEASURED.value,
         observation_time=datetime(2023, 2, 1, 12, 0, 0),
     )
     row2 = factory.create_row(
         metering_point_id="571313180400010673",
         quantity=5.0,
-        quality=cl.QuantityQuality.MEASURED,
+        quality=cl.QuantityQuality.MEASURED.value,
         observation_time=datetime(2023, 2, 1, 12, 0, 0),
     )
     row3 = factory.create_row(
         metering_point_id="571313180400140417",
         quantity=10.0,
-        quality=cl.QuantityQuality.MEASURED,
+        quality=cl.QuantityQuality.MEASURED.value,
         observation_time=datetime(2023, 2, 1, 12, 0, 0),
     )
     return factory.create_dataframe([row1, row2, row3])
