@@ -17,6 +17,9 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 
+/// <summary>
+/// A WholesaleResult is a calculation result containing wholesale data
+/// </summary>
 public sealed class WholesaleResult
 {
     public WholesaleResult(

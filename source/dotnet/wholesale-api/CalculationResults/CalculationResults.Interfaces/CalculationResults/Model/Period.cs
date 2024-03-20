@@ -12,13 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Edi.Models;
+using NodaTime;
 
-public record WholesaleServicesRequest(
-    CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution? Resolution,
-    string? GridArea,
-    string? EnergySupplierId,
-    string? ChargeOwnerId,
-    List<ChargeCodeAndType> ChargeTypes,
-    Period Period,
-    RequestedCalculationType RequestedCalculationType);
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+
+public record Period(Instant Start, Instant End)
+{
+    public Period(Instant start, Duration duration)
+        : this(start, start.Plus(duration))
+    {
+    }
+
+    public bool Contains(Instant time)
+    {
+        return new Interval(Start, End).Contains(time);
+    }
+}

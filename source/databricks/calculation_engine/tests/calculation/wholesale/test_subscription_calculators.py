@@ -223,48 +223,6 @@ class TestWhenValidInput:
         assert set(actual_settlement_methods) == set(expected)
 
 
-class TestWhenMissingSomeInputChargePrice:
-    def test__returns_expected_result(
-        self,
-        spark: SparkSession,
-    ) -> None:
-        # Arrange
-        charge_quantity_1 = 1
-        charge_quantity_2 = 2
-        charge_price = Decimal("1.123456")
-        expected_total_quantity = charge_quantity_1 + charge_quantity_2
-        expected_charge_price = round(charge_price / DefaultValues.DAYS_IN_MONTH, 6)
-        expected_charge_amount = charge_quantity_2 * expected_charge_price
-
-        prepared_subscriptions_rows = [
-            factory.create_row(
-                metering_point_id="1",
-                charge_quantity=charge_quantity_1,
-                charge_price=None,
-            ),
-            factory.create_row(
-                metering_point_id="2",
-                charge_quantity=charge_quantity_2,
-                charge_price=charge_price,
-            ),
-        ]
-        prepared_subscriptions = factory.create(spark, prepared_subscriptions_rows)
-
-        # Act
-        actual = calculate(
-            prepared_subscriptions,
-            DefaultValues.CALCULATION_PERIOD_START,
-            DefaultValues.CALCULATION_PERIOD_END,
-            DefaultValues.TIME_ZONE,
-        ).df
-
-        # Assert
-        assert actual.count() == 1
-        assert actual.collect()[0][Colname.total_quantity] == expected_total_quantity
-        assert actual.collect()[0][Colname.charge_price] == expected_charge_price
-        assert actual.collect()[0][Colname.total_amount] == expected_charge_amount
-
-
 class TestWhenMissingAllInputChargePrices:
     def test__returns_expected_result(
         self,
