@@ -68,4 +68,4 @@ def assert_dataframe_and_schema(
         print("EXPECTED:")
         expected.show(n=3000)
 
-    assert actual.subtract(expected).count() == 0
+    assert_dataframes_equal(actual, expected)
