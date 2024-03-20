@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.metering_point_periods
     calculation_type STRING NOT NULL,
 
     metering_point_id STRING NOT NULL,
-    type STRING NOT NULL,
+    metering_point_type STRING NOT NULL,
     calculation_type STRING NOT NULL,
     settlement_method STRING,
     grid_area_code STRING NOT NULL,
