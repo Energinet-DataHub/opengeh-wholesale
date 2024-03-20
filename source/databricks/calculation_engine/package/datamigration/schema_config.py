@@ -14,6 +14,7 @@
 
 from spark_sql_migrations import Schema, Table
 
+
 import package.calculation.basis_data.schemas as basis_data_schemas
 
 from package.infrastructure.paths import (
