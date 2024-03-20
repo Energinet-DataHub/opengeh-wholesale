@@ -229,6 +229,37 @@ class TestWhenWholesaleCalculationPeriodIsNotOneMonth:
         )
 
 
+class TestWhenEnergyCalculationPeriodIsNotOneMonth:
+    @pytest.mark.parametrize(
+        "calculation_type",
+        [
+            CalculationType.AGGREGATION,
+            CalculationType.BALANCE_FIXING,
+        ],
+    )
+    def test_do_not_raise_exception(
+        self,
+        calculation_type: CalculationType,
+        job_environment_variables: dict,
+        sys_argv_from_contract,
+    ) -> None:
+        # Arrange
+        pattern = r"--calculation-type=(\w+)"
+
+        for i, item in enumerate(sys_argv_from_contract):
+            if re.search(pattern, item):
+                sys_argv_from_contract[i] = re.sub(
+                    pattern, f"--calculation-type={calculation_type.value}", item
+                )
+                break
+
+        with patch("sys.argv", sys_argv_from_contract):
+            with patch.dict("os.environ", job_environment_variables):
+                command_line_args = parse_command_line_arguments()
+                # Act
+                parse_job_arguments(command_line_args)
+
+
 class TestWhenMissingEnvVariables:
     def test_raise_system_exit_with_non_zero_code(
         self, job_environment_variables: dict, sys_argv_from_contract
