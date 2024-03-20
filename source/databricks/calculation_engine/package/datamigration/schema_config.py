@@ -13,12 +13,21 @@
 # limitations under the License.
 
 from spark_sql_migrations import Schema, Table
+
+import package.calculation.basis_data.schemas as basis_data_schemas
+
 from package.infrastructure.paths import (
     WHOLESALE_RESULT_TABLE_NAME,
     OUTPUT_DATABASE_NAME,
     ENERGY_RESULT_TABLE_NAME,
     INPUT_DATABASE_NAME,
     GRID_LOSS_METERING_POINTS_TABLE_NAME,
+    BASIS_DATA_DATABASE_NAME,
+    METERING_POINT_PERIODS_TABLE_NAME,
+    TIME_SERIES_POINTS_TABLE_NAME,
+    CHARGE_LINK_PERIODS_TABLE_NAME,
+    CHARGE_MASTER_DATA_PERIODS_TABLE_NAME,
+    CHARGE_PRICE_POINTS_TABLE_NAME,
 )
 
 # calculation_output
@@ -57,6 +66,35 @@ schema_config = [
                 name=GRID_LOSS_METERING_POINTS_TABLE_NAME,
                 schema=grid_loss_metering_points_schema,
             )
+        ],
+    ),
+    Schema(
+        name=BASIS_DATA_DATABASE_NAME,
+        tables=[
+            Table(
+                name=METERING_POINT_PERIODS_TABLE_NAME,
+                schema=basis_data_schemas.metering_point_period_schema,
+            ),
+            Table(
+                name=TIME_SERIES_POINTS_TABLE_NAME,
+                schema=basis_data_schemas.time_series_point_schema,
+            ),
+            Table(
+                name=CHARGE_LINK_PERIODS_TABLE_NAME,
+                schema=basis_data_schemas.charge_link_period_schema,
+            ),
+            Table(
+                name=CHARGE_MASTER_DATA_PERIODS_TABLE_NAME,
+                schema=basis_data_schemas.charge_master_data_period_schema,
+            ),
+            Table(
+                name=CHARGE_PRICE_POINTS_TABLE_NAME,
+                schema=basis_data_schemas.charge_price_point_schema,
+            ),
+            Table(
+                name=GRID_LOSS_METERING_POINTS_TABLE_NAME,
+                schema=basis_data_schemas.grid_loss_metering_point_schema,
+            ),
         ],
     ),
 ]

@@ -1,5 +1,5 @@
 CREATE DATABASE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}
-COMMENT 'Contains basis data from wholesale domain.'
+COMMENT 'Contains basis data from wholesale subsystem.'
 GO
 
 CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.metering_point_periods
