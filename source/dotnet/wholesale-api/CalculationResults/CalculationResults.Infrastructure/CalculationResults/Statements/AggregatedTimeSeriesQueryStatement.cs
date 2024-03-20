@@ -68,7 +68,7 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
 
         var calculationPeriodFilter = parameters.LatestCalculationForPeriod
             .Select(calculationForPeriod => $@"
-                (t1.{EnergyResultColumnNames.CalculationId} == '{calculationForPeriod.CalculationId}'  
+                (t1.{EnergyResultColumnNames.CalculationId} = '{calculationForPeriod.CalculationId}'  
                 AND t1.{EnergyResultColumnNames.Time} >= '{calculationForPeriod.Period.Start}'
                 AND t1.{EnergyResultColumnNames.Time} < '{calculationForPeriod.Period.End}')")
             .ToList();

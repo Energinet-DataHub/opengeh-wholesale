@@ -20,6 +20,7 @@ using NodaTime;
 using NodaTime.Text;
 using ChargeType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.ChargeType;
 using Period = Energinet.DataHub.Wholesale.Edi.Models.Period;
+using Resolution = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution;
 
 namespace Energinet.DataHub.Wholesale.Edi.Factories;
 
@@ -33,8 +34,10 @@ public class WholesaleServicesRequestMapper(DateTimeZone dateTimeZone)
             ? InstantPattern.General.Parse(request.PeriodEnd).Value
             : CalculateMaxPeriodEnd(periodStart);
 
+        var resolution = request.HasResolution ? ResolutionMapper.Map(request.Resolution) : (Resolution?)null;
+
         return new WholesaleServicesRequest(
-            request.HasResolution ? ResolutionMapper.Map(request.Resolution) : null,
+            AmountTypeMapper.Map(resolution),
             request.HasGridAreaCode ? request.GridAreaCode : null,
             request.HasEnergySupplierId ? request.EnergySupplierId : null,
             request.HasChargeOwnerId ? request.ChargeOwnerId : null,

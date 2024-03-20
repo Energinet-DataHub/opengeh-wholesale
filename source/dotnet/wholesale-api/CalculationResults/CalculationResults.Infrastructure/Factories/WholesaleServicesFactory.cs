@@ -33,6 +33,7 @@ public static class WholesaleServicesFactory
             databricksSqlRow[WholesaleResultColumnNames.ChargeCode]!,
             ChargeTypeMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.ChargeType]!),
             databricksSqlRow[WholesaleResultColumnNames.ChargeOwnerId]!,
+            AmountTypeMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.AmountType]!),
             ResolutionMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.Resolution]!),
             QuantityUnitMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.QuantityUnit]!),
             MeteringPointTypeMapper.FromRequiredDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.MeteringPointType]!),

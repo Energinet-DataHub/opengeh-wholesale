@@ -103,7 +103,7 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
             .ConfigureAwait(true);
 
         return new WholesaleServicesQueryParameters(
-            request.Resolution,
+            request.AmountType,
             request.GridArea,
             request.EnergySupplierId,
             request.ChargeOwnerId,
