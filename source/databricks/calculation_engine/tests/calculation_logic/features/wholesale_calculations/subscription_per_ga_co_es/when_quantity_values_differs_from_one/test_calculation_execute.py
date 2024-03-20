@@ -13,6 +13,8 @@
 # limitations under the License.
 import calculation_logic.utils as cl
 from calculation_logic.scenario_fixture import ScenarioFixture
+from helpers.data_frame_utils import assert_dataframe_and_schema
+from package.constants import WholesaleResultColumnNames
 from .states.scenario_state import (
     get_expected,
 )
@@ -24,8 +26,8 @@ def test_execute__returns_expected(
     # Arrange
     scenario_fixture.setup(get_expected)
     expected = scenario_fixture.expected.orderBy(
-        cl.WholesaleResultColumnNames.metering_point_type,
-        cl.WholesaleResultColumnNames.time,
+        WholesaleResultColumnNames.metering_point_type,
+        WholesaleResultColumnNames.time,
     )
 
     # Act
@@ -33,11 +35,11 @@ def test_execute__returns_expected(
 
     # Assert
     actual = results.wholesale_results.subscription_per_ga_co_es.orderBy(
-        cl.WholesaleResultColumnNames.metering_point_type,
-        cl.WholesaleResultColumnNames.time,
+        WholesaleResultColumnNames.metering_point_type,
+        WholesaleResultColumnNames.time,
     )
 
-    cl.assert_dataframe_and_schema(
+    assert_dataframe_and_schema(
         actual,
         expected,
         ignore_decimal_precision=True,

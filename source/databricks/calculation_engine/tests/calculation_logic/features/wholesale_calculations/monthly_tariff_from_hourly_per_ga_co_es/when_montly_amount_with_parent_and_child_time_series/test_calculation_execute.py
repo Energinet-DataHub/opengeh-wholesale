@@ -11,8 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import calculation_logic.utils as cl
 from calculation_logic.scenario_fixture import ScenarioFixture
+from helpers.data_frame_utils import assert_dataframe_and_schema
+from package.constants import WholesaleResultColumnNames
 from .states.scenario_state import (
     get_expected,
 )
@@ -28,12 +29,12 @@ def test_execute__returns_expected(
     results = scenario_fixture.execute()
 
     # Assert
-    cl.assert_dataframe_and_schema(
+    assert_dataframe_and_schema(
         results.wholesale_results.monthly_tariff_from_hourly_per_ga_co_es,
         scenario_fixture.expected,
         ignore_decimal_precision=True,
         ignore_nullability=True,
         columns_to_skip=[
-            cl.WholesaleResultColumnNames.calculation_result_id,
+            WholesaleResultColumnNames.calculation_result_id,
         ],
     )
