@@ -38,7 +38,7 @@ public static class AmountTypeMapper
         amountType switch
         {
             AmountType.AmountPerCharge => AmountPerCharge,
-            AmountType.MonthlyAmountPerCharge => TotalMonthlyAmount,
+            AmountType.MonthlyAmountPerCharge => MonthlyAmountPerCharge,
             AmountType.TotalMonthlyAmount => TotalMonthlyAmount,
             _ => throw new ArgumentOutOfRangeException(
                 nameof(amountType),
