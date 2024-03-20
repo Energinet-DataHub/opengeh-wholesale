@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.charge_price_points
     charge_type STRING NOT NULL,
     charge_owner_id STRING NOT NULL,
     charge_price DECIMAL(18, 3)
-    charge_time TIMESTAMP NOT NULL,
+    charge_time TIMESTAMP NOT NULL
 )
 USING DELTA
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.charge_masterdata_periods
     resolution STRING NOT NULL,
     is_tax BOOLEAN NOT NULL,
     from_date TIMESTAMP NOT NULL,
-    to_date TIMESTAMP NOT NULL,
+    to_date TIMESTAMP NOT NULL
 )
 USING DELTA
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.charge_link_periods
     metering_point_id STRING NOT NULL,
     quantity int
     from_date TIMESTAMP NOT NULL,
-    to_date TIMESTAMP NOT NULL,
+    to_date TIMESTAMP NOT NULL
 )
 USING DELTA
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
@@ -103,7 +103,7 @@ CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.grid_loss_metering_points
     -- 36 characters UUID
     calculation_id STRING NOT NULL,
 
-    metering_point_id STRING NOT NULL,
+    metering_point_id STRING NOT NULL
 )
 USING DELTA
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
@@ -122,7 +122,7 @@ CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.calculations
     execution_time_start TIMESTAMP NOT NULL,
     created_time TIMESTAMP NOT NULL,
     created_by_user_id STRING NOT NULL,
-    version LONG NOT NULL,
+    version LONG NOT NULL
 )
 USING DELTA
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
