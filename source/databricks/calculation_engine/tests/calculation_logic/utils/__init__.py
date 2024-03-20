@@ -26,9 +26,7 @@ from package.codelists import (
 
 # noinspection PyUnresolvedReferences
 from package.constants import WholesaleResultColumnNames, EnergyResultColumnNames
-from . import (
-    correlations,
-    test_calculation_args,
-)
+from .correlations import get_correlations
 from .dataframes.energy_results_dataframe import create_energy_result_dataframe
 from .dataframes.wholesale_results_dataframe import create_wholesale_result_dataframe
+from .test_calculation_args import create_calculation_args
