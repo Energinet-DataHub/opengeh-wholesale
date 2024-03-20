@@ -28,6 +28,7 @@ from package.infrastructure.paths import (
     CHARGE_LINK_PERIODS_TABLE_NAME,
     CHARGE_MASTER_DATA_PERIODS_TABLE_NAME,
     CHARGE_PRICE_POINTS_TABLE_NAME,
+    CALCULATIONS_TABLE_NAME,
 )
 
 # calculation_output
@@ -94,6 +95,10 @@ schema_config = [
             Table(
                 name=GRID_LOSS_METERING_POINTS_TABLE_NAME,
                 schema=basis_data_schemas.grid_loss_metering_points_schema,
+            ),
+            Table(
+                name=CALCULATIONS_TABLE_NAME,
+                schema=basis_data_schemas.calculations_schema,
             ),
         ],
     ),
