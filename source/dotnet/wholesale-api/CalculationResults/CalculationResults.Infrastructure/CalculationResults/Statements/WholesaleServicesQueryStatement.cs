@@ -127,7 +127,7 @@ public class WholesaleServicesQueryStatement : DatabricksStatement
     [
         WholesaleResultColumnNames.GridArea,
         WholesaleResultColumnNames.EnergySupplierId,
-        // WholesaleResultColumnNames.AmountType,
+        WholesaleResultColumnNames.AmountType,
         WholesaleResultColumnNames.MeteringPointType,
         WholesaleResultColumnNames.SettlementMethod,
         WholesaleResultColumnNames.ChargeType,
