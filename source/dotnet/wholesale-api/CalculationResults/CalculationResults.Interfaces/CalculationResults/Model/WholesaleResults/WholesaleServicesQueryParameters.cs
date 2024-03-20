@@ -12,8 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NodaTime;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 
-public record Period(Instant Start, Instant End);
+public record WholesaleServicesQueryParameters(
+    Resolution? Resolution,
+    string? GridArea,
+    string? EnergySupplierId,
+    string? ChargeOwnerId,
+    List<(string? ChargeCode, ChargeType? ChargeType)> ChargeTypes,
+    IReadOnlyCollection<CalculationForPeriod> Calculations);

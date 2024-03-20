@@ -12,13 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Edi.Models;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 
-public record WholesaleServicesRequest(
-    CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution? Resolution,
-    string? GridArea,
-    string? EnergySupplierId,
-    string? ChargeOwnerId,
-    List<ChargeCodeAndType> ChargeTypes,
-    Period Period,
-    RequestedCalculationType RequestedCalculationType);
+namespace Energinet.DataHub.Wholesale.Edi.Mappers;
+
+public static class ResolutionMapper
+{
+    public static Resolution Map(string resolution)
+    {
+        return resolution switch
+        {
+            Models.Resolution.Hourly => Resolution.Hour,
+            Models.Resolution.Daily => Resolution.Day,
+            Models.Resolution.Monthly => Resolution.Month,
+            _ => throw new ArgumentOutOfRangeException(nameof(resolution), resolution, "Unknown Resolution"),
+        };
+    }
+}

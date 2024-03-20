@@ -46,6 +46,7 @@ public static class CalculationResultsExtensions
         services.AddOptions<DeltaTableOptions>().Bind(configuration);
         services.AddScoped<IEnergyResultQueries, EnergyResultQueries>();
         services.AddScoped<IWholesaleResultQueries, WholesaleResultQueries>();
+        services.AddScoped<IWholesaleServicesQueries, WholesaleServicesQueries>();
         services.AddScoped<IAggregatedTimeSeriesQueries, AggregatedTimeSeriesQueries>();
         services.AddScoped<ISettlementReportResultQueries, SettlementReportResultQueries>();
 
