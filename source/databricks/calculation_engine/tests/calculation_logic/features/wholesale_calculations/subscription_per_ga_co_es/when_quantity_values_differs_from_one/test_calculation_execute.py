@@ -12,13 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import calculation_logic.utils as cl
+from calculation_logic.scenario_fixture import ScenarioFixture
 from .states.scenario_state import (
     get_expected,
 )
 
 
 def test_execute__returns_expected(
-    scenario_fixture: cl.ScenarioFixture,
+    scenario_fixture: ScenarioFixture,
 ) -> None:
     # Arrange
     scenario_fixture.setup(get_expected)
