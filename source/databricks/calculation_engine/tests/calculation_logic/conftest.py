@@ -12,12 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pytest
-from calculation_logic.scenario_factory import ScenarioEngine
 from pyspark.sql import SparkSession
+
+from calculation_logic.utils.scenario_fixture import ScenarioFixture
 
 
 @pytest.fixture(scope="session")
 def scenario_fixture(
     spark: SparkSession,
-) -> ScenarioEngine:
-    return ScenarioEngine(spark)
+) -> ScenarioFixture:
+    return ScenarioFixture(spark)

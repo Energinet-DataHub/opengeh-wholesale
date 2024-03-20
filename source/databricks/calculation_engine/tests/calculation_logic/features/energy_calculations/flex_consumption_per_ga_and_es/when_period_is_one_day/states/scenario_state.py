@@ -22,4 +22,4 @@ def get_expected(*args) -> DataFrame:
     This function can be used to custom build the expected results (dataframe).
     It is also used a reference to locate the test scenario.
     """
-    return cl.create_energy_result_dataframe(*args)
+    return cl.energy_results_dataframe.create_energy_result_dataframe(*args)

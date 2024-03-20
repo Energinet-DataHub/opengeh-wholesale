@@ -91,7 +91,7 @@ class ScenarioFixture:
 
     def create_test_dataframe_using_factory(
         self, file_path, spark_session, schema: str
-    ):
+    ) -> DataFrame:
         spec = spec_from_file_location(
             "module.name", self.parent_dir + "/states/scenario_state.py"
         )
