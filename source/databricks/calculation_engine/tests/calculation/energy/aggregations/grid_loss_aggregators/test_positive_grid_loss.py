@@ -37,19 +37,16 @@ def actual_positive_grid_loss(spark: SparkSession) -> EnergyResults:
     rows = [
         energy_results_factories.create_grid_loss_row(
             grid_area="001",
-            metering_point_id="a",
             quantity=Decimal(-12.567),
             observation_time=grid_loss_responsible_factories.DEFAULT_FROM_DATE,
         ),
         energy_results_factories.create_grid_loss_row(
             grid_area="002",
-            metering_point_id="b",
             quantity=Decimal(34.32),
             observation_time=grid_loss_responsible_factories.DEFAULT_FROM_DATE,
         ),
         energy_results_factories.create_grid_loss_row(
             grid_area="003",
-            metering_point_id="c",
             quantity=Decimal(0.0),
             observation_time=grid_loss_responsible_factories.DEFAULT_FROM_DATE,
         ),

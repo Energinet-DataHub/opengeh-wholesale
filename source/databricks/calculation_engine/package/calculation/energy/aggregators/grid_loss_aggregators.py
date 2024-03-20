@@ -100,6 +100,8 @@ def calculate_grid_loss(
         f.array(f.lit(QuantityQuality.CALCULATED.value)).alias(Colname.qualities),
     )
 
+    print("Grid loss result")
+    result.show()
     return EnergyResults(result)
 
 
@@ -139,7 +141,7 @@ def _calculate_negative_or_positive(
     result = (
         glr.join(
             gl,
-            (gl[Colname.metering_point_id] == glr[Colname.metering_point_id])
+            (gl[Colname.grid_area] == glr[Colname.grid_area])
             & (gl[Colname.observation_time] >= f.col(Colname.from_date))
             & (
                 f.col(Colname.to_date).isNull()
