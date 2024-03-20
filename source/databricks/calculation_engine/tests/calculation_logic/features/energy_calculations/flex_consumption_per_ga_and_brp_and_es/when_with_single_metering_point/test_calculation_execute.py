@@ -16,7 +16,7 @@ from .states.scenario_state import get_expected
 
 
 def test_execute__returns_expected(
-    scenario_fixture: ScenarioFixture,
+    scenario_fixture: cl.ScenarioFixture,
 ) -> None:
     # Arrange
     scenario_fixture.setup(get_expected)
@@ -32,6 +32,6 @@ def test_execute__returns_expected(
         ignore_decimal_scale=True,
         ignore_nullability=True,
         columns_to_skip=[
-            EnergyResultColumnNames.calculation_result_id,
+            cl.EnergyResultColumnNames.calculation_result_id,
         ],
     )

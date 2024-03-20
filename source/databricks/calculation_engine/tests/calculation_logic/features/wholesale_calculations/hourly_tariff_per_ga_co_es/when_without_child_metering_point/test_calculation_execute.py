@@ -18,7 +18,7 @@ from .states.scenario_state import (
 
 
 def test_execute__returns_expected(
-    scenario_fixture: ScenarioFixture,
+    scenario_fixture: cl.ScenarioFixture,
 ) -> None:
     # Arrange
     scenario_fixture.setup(get_expected)
@@ -27,12 +27,12 @@ def test_execute__returns_expected(
     results = scenario_fixture.execute()
 
     # Assert
-    assert_dataframe_and_schema(
+    cl.assert_dataframe_and_schema(
         results.wholesale_results.hourly_tariff_per_ga_co_es,
         scenario_fixture.expected,
         ignore_decimal_precision=True,
         ignore_nullability=True,
         columns_to_skip=[
-            WholesaleResultColumnNames.calculation_result_id,
+            cl.WholesaleResultColumnNames.calculation_result_id,
         ],
     )

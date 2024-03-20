@@ -18,7 +18,7 @@ from .states.scenario_state import (
 
 
 def test_execute__returns_expected(
-    scenario_fixture: ScenarioFixture,
+    scenario_fixture: c1.ScenarioFixture,
 ) -> None:
     # Arrange
     scenario_fixture.setup(get_expected)
@@ -33,6 +33,6 @@ def test_execute__returns_expected(
         ignore_decimal_precision=True,
         ignore_nullability=True,
         columns_to_skip=[
-            WholesaleResultColumnNames.calculation_result_id,
+            c1.WholesaleResultColumnNames.calculation_result_id,
         ],
     )
