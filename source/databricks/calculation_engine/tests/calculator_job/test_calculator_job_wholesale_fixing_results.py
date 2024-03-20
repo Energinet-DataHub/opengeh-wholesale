@@ -15,7 +15,6 @@
 from pyspark.sql import DataFrame, SparkSession
 import pyspark.sql.functions as F
 import pytest
-from typing import Any
 
 from . import configuration as C
 from package.codelists import (
@@ -173,9 +172,9 @@ def test__wholesale_result__amount_per_charge_is_created(
 
 @pytest.mark.parametrize(
     "charge_code",
-    ["some_hourly_charge", "some_daily_charge"],
-    # charge_code 'some_hourly_charge' is for hourly charge resolution
-    # charge_code 'some_daily_charge' is for daily charge resolution
+    ["40000", "41000"],
+    # charge_code 40000 is for hourly charge resolution
+    # charge_code 41000 is for daily charge resolution
     # see "test_files/ChargeMasterDataPeriods.csv"
 )
 def test__monthly_amount_for_tariffs__is_created(
