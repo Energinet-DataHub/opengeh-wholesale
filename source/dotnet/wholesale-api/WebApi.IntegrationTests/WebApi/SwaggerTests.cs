@@ -22,9 +22,9 @@ using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi;
 
-public class SwaggerUITests : WebApiTestBase
+public class SwaggerTests : WebApiTestBase
 {
-    public SwaggerUITests(
+    public SwaggerTests(
         WholesaleWebApiFixture wholesaleWebApiFixture,
         WebApiFactory factory,
         ITestOutputHelper testOutputHelper)
