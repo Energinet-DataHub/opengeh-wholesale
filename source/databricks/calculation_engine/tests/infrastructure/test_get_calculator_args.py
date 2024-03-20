@@ -188,6 +188,47 @@ class TestWhenUnknownCalculationType:
         assert error.value.code != 0
 
 
+class TestWhenWholesaleCalculationPeriodIsNotOneMonth:
+    @pytest.mark.parametrize(
+        "calculation_type",
+        [
+            CalculationType.WHOLESALE_FIXING,
+            CalculationType.FIRST_CORRECTION_SETTLEMENT,
+            CalculationType.SECOND_CORRECTION_SETTLEMENT,
+            CalculationType.THIRD_CORRECTION_SETTLEMENT,
+        ],
+    )
+    def test_raise_exception(
+        self,
+        calculation_type: CalculationType,
+        job_environment_variables: dict,
+        sys_argv_from_contract,
+    ) -> None:
+        # Arrange
+        pattern = r"--calculation-type=(\w+)"
+
+        for i, item in enumerate(sys_argv_from_contract):
+            if re.search(pattern, item):
+                sys_argv_from_contract[i] = re.sub(
+                    pattern, f"--calculation-type={calculation_type.value}", item
+                )
+                break
+
+        with patch("sys.argv", sys_argv_from_contract):
+            with patch.dict("os.environ", job_environment_variables):
+                with pytest.raises(Exception) as error:
+                    command_line_args = parse_command_line_arguments()
+                    # Act
+                    parse_job_arguments(command_line_args)
+
+        # Assert
+        actual_error_message = str(error.value)
+        assert (
+            "The calculation period for wholesale calculation types must be a full month"
+            in actual_error_message
+        )
+
+
 class TestWhenMissingEnvVariables:
     def test_raise_system_exit_with_non_zero_code(
         self, job_environment_variables: dict, sys_argv_from_contract

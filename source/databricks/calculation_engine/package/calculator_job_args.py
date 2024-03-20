@@ -54,6 +54,9 @@ def parse_job_arguments(
             time_zone=time_zone,
         )
 
+        if is_wholesale_calculation_type(calculator_args.calculation_type):
+            _validate_period_for_wholesale_calculation(calculator_args)
+
         storage_account_name = env_vars.get_storage_account_name()
         credential = env_vars.get_storage_account_credential()
         infrastructure_settings = InfrastructureSettings(
@@ -99,16 +102,17 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     if type(args.grid_areas) is not list:
         raise Exception("Grid areas must be a list")
 
-    if is_wholesale_calculation_type(args.calculation_type):
-        _validate_period_for_wholesale_calculation(args)
-
     return args
 
 
-def _validate_period_for_wholesale_calculation(args: Namespace) -> None:
+def _validate_period_for_wholesale_calculation(args: CalculatorArgs) -> None:
     time_zone_info = ZoneInfo(args.time_zone)
-    period_start_local_time = args.period_start_datetime.astimezone(time_zone_info)
-    period_end_local_time = args.period_end_datetime.astimezone(time_zone_info)
+    period_start_local_time = args.calculation_period_start_datetime.astimezone(
+        time_zone_info
+    )
+    period_end_local_time = args.calculation_period_end_datetime.astimezone(
+        time_zone_info
+    )
 
     is_valid_period = (
         period_start_local_time.time()
@@ -119,7 +123,7 @@ def _validate_period_for_wholesale_calculation(args: Namespace) -> None:
         and period_end_local_time.month == (period_start_local_time.month % 12) + 1
     )
 
-    if not is_valid_period(period_start_local_time, period_end_local_time):
+    if not is_valid_period:
         raise Exception(
-            f"The calculation period for wholesale calculation types must be a full month starting and ending at midnight local time ({args.time_zone})) ."
+            f"The calculation period for wholesale calculation types must be a full month starting and ending at midnight local time ({args.time_zone}))."
         )

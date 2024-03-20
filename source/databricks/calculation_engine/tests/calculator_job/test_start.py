@@ -15,7 +15,7 @@ import argparse
 import sys
 import time
 import uuid
-from datetime import timedelta
+from datetime import timedelta, datetime
 from typing import cast, Callable
 
 import pytest
@@ -33,6 +33,31 @@ class TestWhenInvokedWithInvalidArguments:
             start()
 
         assert system_exit.value.code == 2
+
+
+class TestWhenInvokedWithInvalidPeriodArguments:
+    def test_raises_exception(
+        self, any_calculator_args_for_wholesale, infrastructure_settings
+    ):
+        # Arrange
+        # set the start day one day too late
+
+        command_line_args = argparse.Namespace()
+        command_line_args.calculation_id = (
+            any_calculator_args_for_wholesale.calculation_id
+        )
+        command_line_args.calculation_period_start_datetime = (
+            datetime(2018, 5, 1, 22, 0, 0),
+        )
+        command_line_args.calculation_period_end_datetime = (
+            datetime(2018, 5, 31, 22, 0, 0),
+        )
+
+        start_with_deps(
+            parse_command_line_args=lambda: command_line_args,
+            calculation_executor=lambda args, reader: None,
+            is_storage_locked_checker=lambda name, cred: False,
+        )
 
 
 class TestWhenInvokedWithValidArguments:
