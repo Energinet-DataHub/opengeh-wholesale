@@ -17,6 +17,14 @@ from calculation_logic.utils.scenario_fixture import ScenarioFixture
 from helpers.data_frame_utils import assert_dataframe_and_schema
 
 # noinspection PyUnresolvedReferences
+from package.codelists import (
+    QuantityQuality,
+    MeteringPointResolution,
+    InputMeteringPointType,
+    InputSettlementMethod,
+)
+
+# noinspection PyUnresolvedReferences
 from package.constants import WholesaleResultColumnNames, EnergyResultColumnNames
 from . import (
     correlations,
