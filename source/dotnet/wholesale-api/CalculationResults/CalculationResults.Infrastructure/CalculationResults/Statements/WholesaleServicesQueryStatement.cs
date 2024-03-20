@@ -45,17 +45,17 @@ public class WholesaleServicesQueryStatement : DatabricksStatement
         var sql = $@"
             SELECT {selectTarget}
             FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.WHOLESALE_RESULTS_TABLE_NAME}
-            WHERE 
+            WHERE {WholesaleResultColumnNames.AmountType} = '{AmountTypeMapper.ToDeltaTableValue(_queryParameters.AmountType)}'
         ";
 
         var calculationPeriodSql = _queryParameters.Calculations
             .Select(calculationForPeriod => $@"
-                ({WholesaleResultColumnNames.CalculationId} == '{calculationForPeriod.CalculationId}'  
+                ({WholesaleResultColumnNames.CalculationId} = '{calculationForPeriod.CalculationId}'  
                 AND {WholesaleResultColumnNames.Time} >= '{calculationForPeriod.Period.Start}'
                 AND {WholesaleResultColumnNames.Time} < '{calculationForPeriod.Period.End}')")
             .ToList();
 
-        sql += $"({string.Join(" OR ", calculationPeriodSql)})";
+        sql += $" AND ({string.Join(" OR ", calculationPeriodSql)})";
 
         if (!string.IsNullOrEmpty(_queryParameters.GridArea))
             sql += $" AND {WholesaleResultColumnNames.GridArea} = '{_queryParameters.GridArea}'";
@@ -65,9 +65,6 @@ public class WholesaleServicesQueryStatement : DatabricksStatement
 
         if (!string.IsNullOrEmpty(_queryParameters.ChargeOwnerId))
             sql += $" AND {WholesaleResultColumnNames.ChargeOwnerId} = '{_queryParameters.ChargeOwnerId}'";
-
-        if (_queryParameters.Resolution != null)
-            sql += $" AND {WholesaleResultColumnNames.Resolution} = '{ResolutionMapper.ToDeltaTableValue(_queryParameters.Resolution.Value)}'";
 
         if (_queryParameters.ChargeTypes.Any())
         {
@@ -120,6 +117,7 @@ public class WholesaleServicesQueryStatement : DatabricksStatement
         WholesaleResultColumnNames.ChargeOwnerId,
         WholesaleResultColumnNames.ChargeType,
         WholesaleResultColumnNames.ChargeCode,
+        WholesaleResultColumnNames.AmountType,
         WholesaleResultColumnNames.Resolution,
         WholesaleResultColumnNames.MeteringPointType,
         WholesaleResultColumnNames.SettlementMethod,
