@@ -20,7 +20,7 @@ from helpers.data_frame_utils import assert_dataframe_and_schema
 from package.constants import WholesaleResultColumnNames, EnergyResultColumnNames
 from . import (
     correlations,
-    create_calculation_args,
-    energy_results_dataframe,
-    wholesale_results_dataframe,
+    calculation_args,
 )
+from .dataframes.energy_results_dataframe import create_energy_result_dataframe
+from .dataframes.wholesale_results_dataframe import create_wholesale_result_dataframe

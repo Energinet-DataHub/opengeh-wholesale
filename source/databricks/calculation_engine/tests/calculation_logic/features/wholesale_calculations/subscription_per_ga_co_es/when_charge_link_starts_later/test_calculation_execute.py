@@ -18,18 +18,18 @@ from .states.scenario_state import (
 
 
 def test_execute__returns_expected(
-    scenario_fixture: ScenarioFixture,
+    scenario_fixture: cl.ScenarioFixture,
 ) -> None:
     # Arrange
     scenario_fixture.setup(get_expected)
-    expected = scenario_fixture.expected.orderBy(WholesaleResultColumnNames.time)
+    expected = scenario_fixture.expected.orderBy(cl.WholesaleResultColumnNames.time)
 
     # Act
     results = scenario_fixture.execute()
 
     # Assert
     actual = results.wholesale_results.subscription_per_ga_co_es.orderBy(
-        WholesaleResultColumnNames.time
+        cl.WholesaleResultColumnNames.time
     )
 
     cl.assert_dataframe_and_schema(

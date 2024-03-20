@@ -27,11 +27,11 @@ def test_execute__returns_expected(
     results = scenario_fixture.execute()
     actual = results.wholesale_results.daily_tariff_per_ga_co_es.orderBy(
         cl.WholesaleResultColumnNames.metering_point_type,
-        WholesaleResultColumnNames.time,
+        cl.WholesaleResultColumnNames.time,
     )
     expected = scenario_fixture.expected.orderBy(
         cl.WholesaleResultColumnNames.metering_point_type,
-        WholesaleResultColumnNames.time,
+        cl.WholesaleResultColumnNames.time,
     )
 
     # Assert
