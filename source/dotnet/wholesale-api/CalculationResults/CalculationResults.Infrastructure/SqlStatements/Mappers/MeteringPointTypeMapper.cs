@@ -24,6 +24,11 @@ public static class MeteringPointTypeMapper
     {
         if (meteringPointType == null) return null;
 
+        return FromRequiredDeltaTableValue(meteringPointType);
+    }
+
+    public static MeteringPointType FromRequiredDeltaTableValue(string meteringPointType)
+    {
         try
         {
             var normalized = meteringPointType.Replace("_", string.Empty);

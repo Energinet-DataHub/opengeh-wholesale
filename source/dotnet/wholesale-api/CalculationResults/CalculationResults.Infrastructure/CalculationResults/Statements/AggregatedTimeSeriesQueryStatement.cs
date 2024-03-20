@@ -38,11 +38,12 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
             FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} t1
             WHERE ({CreateSqlQueryFilters(_parameters)})";
 
+        // The order is important for combining the rows into packages, since the sql rows are streamed and
+        //      packages are created on-the-fly each time a new row is received.
         sql += $"""
-                ORDER BY t1.{EnergyResultColumnNames.GridArea},
-                t1.{EnergyResultColumnNames.TimeSeriesType},
-                t1.{EnergyResultColumnNames.CalculationId},
-                t1.{EnergyResultColumnNames.Time}
+                ORDER BY
+                    {string.Join(", ", ColumnsToGroupBy.Select(columnName => $"t1.{columnName}"))},
+                    t1.{EnergyResultColumnNames.Time}
                 """;
 
         return sql;
@@ -91,6 +92,17 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
 
         return whereClausesSql;
     }
+
+    /// <summary>
+    /// Since results are streamed and packages are created on-the-fly, the data need to be ordered so that
+    ///     all rows belonging to one package are ordered directly after one another.
+    /// </summary>
+    public static string[] ColumnsToGroupBy =>
+    [
+        EnergyResultColumnNames.GridArea,
+        EnergyResultColumnNames.TimeSeriesType,
+        EnergyResultColumnNames.CalculationId,
+    ];
 
     private static string[] SqlColumnNames { get; } =
     {

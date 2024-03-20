@@ -95,7 +95,7 @@ class TestWhenValidInput:
             MeteringPointType.PRODUCTION,
         ],
     )
-    def test_returns_sum_quantity_from_result_and_grid_loss(
+    def test_returns_quantity_from_result_and_grid_loss(
         self,
         spark: SparkSession,
         metering_point_type: MeteringPointType,
@@ -144,7 +144,7 @@ class TestWhenEnergySupplierIdIsNotGridLossResponsible:
             MeteringPointType.PRODUCTION,
         ],
     )
-    def test_returns_result_sum_quantity_equal_to_correct_adjusted_grid_loss(
+    def test_returns_result_quantity_equal_to_correct_adjusted_grid_loss(
         self,
         spark: SparkSession,
         metering_point_type: MeteringPointType,

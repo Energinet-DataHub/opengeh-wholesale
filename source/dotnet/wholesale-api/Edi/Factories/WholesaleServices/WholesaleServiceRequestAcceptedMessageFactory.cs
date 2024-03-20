@@ -16,11 +16,13 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Edi.Mappers;
 using Google.Protobuf;
 using Google.Protobuf.Collections;
 using Google.Protobuf.WellKnownTypes;
 using NodaTime.Serialization.Protobuf;
+using Period = Energinet.DataHub.Edi.Responses.Period;
 using QuantityUnit = Energinet.DataHub.Wholesale.Common.Interfaces.Models.QuantityUnit;
 using Resolution = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution;
 
@@ -28,9 +30,9 @@ namespace Energinet.DataHub.Wholesale.Edi.Factories.WholesaleServices;
 
 public static class WholesaleServiceRequestAcceptedMessageFactory
 {
-    public static ServiceBusMessage Create(IReadOnlyCollection<WholesaleResult> wholesaleResults, string referenceId)
+    public static ServiceBusMessage Create(IReadOnlyCollection<CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.WholesaleServices> wholesaleServices, string referenceId)
     {
-        var body = CreateAcceptedResponse(wholesaleResults);
+        var body = CreateAcceptedResponse(wholesaleServices);
 
         var message = new ServiceBusMessage
         {
@@ -42,19 +44,19 @@ public static class WholesaleServiceRequestAcceptedMessageFactory
         return message;
     }
 
-    private static WholesaleServicesRequestAccepted CreateAcceptedResponse(IReadOnlyCollection<WholesaleResult> wholesaleResults)
+    private static WholesaleServicesRequestAccepted CreateAcceptedResponse(IReadOnlyCollection<CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.WholesaleServices> wholesaleServices)
     {
         var response = new WholesaleServicesRequestAccepted();
-        foreach (var series in wholesaleResults)
+        foreach (var series in wholesaleServices)
         {
             var points = CreateTimeSeriesPoints(series.TimeSeriesPoints);
             var wholesaleSeries = new WholesaleServicesRequestSeries
             {
                 Period =
-                    new Period()
+                    new Period
                     {
-                        StartOfPeriod = series.PeriodStart.ToTimestamp(),
-                        EndOfPeriod = series.PeriodEnd.ToTimestamp(),
+                        StartOfPeriod = series.Period.Start.ToTimestamp(),
+                        EndOfPeriod = series.Period.Start.ToTimestamp(),
                     },
                 GridArea = series.GridArea,
                 EnergySupplierId = series.EnergySupplierId,
@@ -66,6 +68,7 @@ public static class WholesaleServiceRequestAcceptedMessageFactory
                 Currency = WholesaleServicesRequestSeries.Types.Currency.Dkk,
                 TimeSeriesPoints = { points },
                 CalculationResultVersion = series.Version,
+                CalculationType = MapCalculationType(series.CalculationType),
             };
             if (series.MeteringPointType is not null)
                 wholesaleSeries.MeteringPointType = MapMeteringPointType(series.MeteringPointType.Value);
@@ -77,6 +80,26 @@ public static class WholesaleServiceRequestAcceptedMessageFactory
         }
 
         return response;
+    }
+
+    private static WholesaleServicesRequestSeries.Types.CalculationType MapCalculationType(CalculationType calculationType)
+    {
+        return calculationType switch
+        {
+            CalculationType.WholesaleFixing => WholesaleServicesRequestSeries.Types.CalculationType.WholesaleFixing,
+            CalculationType.FirstCorrectionSettlement => WholesaleServicesRequestSeries.Types.CalculationType.FirstCorrectionSettlement,
+            CalculationType.SecondCorrectionSettlement => WholesaleServicesRequestSeries.Types.CalculationType.SecondCorrectionSettlement,
+            CalculationType.ThirdCorrectionSettlement => WholesaleServicesRequestSeries.Types.CalculationType.ThirdCorrectionSettlement,
+            CalculationType.Aggregation or
+                CalculationType.BalanceFixing => throw new ArgumentOutOfRangeException(
+                nameof(calculationType),
+                actualValue: calculationType,
+                $"{nameof(WholesaleServicesRequestSeries.Types.CalculationType)} has a value that cannot be mapped (it shouldn't be possible)."),
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(calculationType),
+                actualValue: calculationType,
+                $"Value cannot be mapped to a {nameof(WholesaleServicesRequestSeries.Types.CalculationType)} (the value is not handled)."),
+        };
     }
 
     private static WholesaleServicesRequestSeries.Types.SettlementMethod MapSettlementMethod(SettlementMethod seriesSettlementMethod)

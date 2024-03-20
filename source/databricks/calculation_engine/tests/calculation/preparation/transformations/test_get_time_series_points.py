@@ -17,7 +17,7 @@ from decimal import Decimal
 from unittest.mock import patch, Mock
 
 import pytest
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession, Row
 from pyspark.sql.functions import lit
 
 from package.calculation import input
@@ -37,21 +37,23 @@ DEFAULT_TO_DATE = datetime(2022, 6, 9, 22, 0, 0)
 def _create_time_series_point_row(
     metering_point_id: str = "some-metering-point-id",
     observation_time: datetime = DEFAULT_OBSERVATION_TIME,
-) -> dict:
-    return {
+) -> Row:
+    row = {
         Colname.metering_point_id: metering_point_id,
         Colname.quantity: Decimal("1.123456"),
         Colname.quality: "foo",
         Colname.observation_time: observation_time,
     }
+    return Row(**row)
 
 
 def _create_grid_loss_metering_point_row(
     metering_point_id: str = "a-grid-loss-metering-point-id",
-) -> dict:
-    return {
+) -> Row:
+    row = {
         Colname.metering_point_id: metering_point_id,
     }
+    return Row(**row)
 
 
 class TestWhenValidInput:
