@@ -12,12 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .migration_script_args import MigrationScriptArgs
-from package.infrastructure.paths import OUTPUT_DATABASE_NAME, TEST
 from package.infrastructure.paths import (
     OUTPUT_FOLDER,
     INPUT_DATABASE_NAME,
+    OUTPUT_DATABASE_NAME,
+    TEST,
+    BASIS_DATA_FOLDER,
+    BASIS_DATA_DATABASE_NAME,
 )
+from .migration_script_args import MigrationScriptArgs
 
 
 def substitutions(migration_args: MigrationScriptArgs) -> dict[str, str]:
@@ -28,4 +31,6 @@ def substitutions(migration_args: MigrationScriptArgs) -> dict[str, str]:
         "{OUTPUT_FOLDER}": OUTPUT_FOLDER,
         "{INPUT_FOLDER}": migration_args.calculation_input_folder,
         "{TEST}": TEST,
+        "{BASIS_DATA_FOLDER}": BASIS_DATA_FOLDER,
+        "{BASIS_DATA_DATABASE_NAME}": BASIS_DATA_DATABASE_NAME,
     }
