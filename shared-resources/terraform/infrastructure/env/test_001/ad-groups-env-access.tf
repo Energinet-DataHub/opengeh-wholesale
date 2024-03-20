@@ -62,6 +62,12 @@ resource "azurerm_role_assignment" "developers_key_vault_cert_user" {
   principal_id         = var.developers_security_group_object_id
 }
 
+resource "azurerm_role_assignment" "developers_key_vault_keys_user" {
+  scope                = data.azurerm_subscription.this.id
+  role_definition_name = "Key Vault Crypto User"
+  principal_id         = var.developers_security_group_object_id
+}
+
 resource "azurerm_role_assignment" "developers_key_vault_reader" {
   scope                = data.azurerm_subscription.this.id
   role_definition_name = "Key Vault Reader"
