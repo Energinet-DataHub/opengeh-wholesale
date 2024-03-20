@@ -11,12 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from calculation_logic.utils.scenario_fixture import ScenarioFixture
-from helpers.data_frame_utils import (
-    assert_dataframe_and_schema,
+import calculation_logic.utils as cl
+from .states.scenario_state import (
+    get_expected,
 )
-from package.constants import EnergyResultColumnNames
-from .states.scenario_state import get_expected
 
 
 def test_execute__returns_expected(
@@ -29,7 +27,7 @@ def test_execute__returns_expected(
     results = scenario_fixture.execute()
 
     # Assert
-    assert_dataframe_and_schema(
+    cl.assert_dataframe_and_schema(
         results.energy_results.flex_consumption_per_ga_and_es,
         scenario_fixture.expected,
         ignore_decimal_precision=True,

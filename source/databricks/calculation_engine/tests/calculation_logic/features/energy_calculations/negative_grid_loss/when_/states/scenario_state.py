@@ -11,12 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 from pyspark.sql import DataFrame
 
-from calculation_logic.features import (
-    create_energy_result_dataframe,
-)
+import calculation_logic.utils as cl
 
 
 def get_expected(*args) -> DataFrame:
@@ -24,4 +21,4 @@ def get_expected(*args) -> DataFrame:
     This function can be used to custom build the expected results (dataframe).
     It is also used a reference to locate the test scenario.
     """
-    return create_energy_result_dataframe(*args)
+    return cl.create_energy_result_dataframe(*args)

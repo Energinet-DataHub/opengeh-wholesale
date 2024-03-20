@@ -11,11 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from calculation_logic.utils.scenario_fixture import ScenarioFixture
-from helpers.data_frame_utils import (
-    assert_dataframe_and_schema,
-)
-from package.constants import WholesaleResultColumnNames
+import calculation_logic.utils as cl
 from .states.scenario_state import (
     get_expected,
 )
@@ -37,7 +33,7 @@ def test_execute__returns_expected(
     )
 
     # Assert
-    assert_dataframe_and_schema(
+    cl.assert_dataframe_and_schema(
         actual,
         expected,
         ignore_decimal_precision=True,
