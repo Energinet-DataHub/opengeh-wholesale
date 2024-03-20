@@ -38,6 +38,6 @@ def test_execute__returns_expected(
         ignore_decimal_precision=True,
         ignore_nullability=True,
         columns_to_skip=[
-            WholesaleResultColumnNames.calculation_result_id,
+            cl.WholesaleResultColumnNames.calculation_result_id,
         ],
     )
