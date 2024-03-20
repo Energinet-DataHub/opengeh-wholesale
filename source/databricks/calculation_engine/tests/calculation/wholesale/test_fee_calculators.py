@@ -103,7 +103,7 @@ class TestWhenInputContainsMultipleMeteringPointTypes:
         prepared_fees = factory.create(spark, fees_rows)
 
         # Act
-        actual = calculate(prepared_fees)
+        actual = calculate(prepared_fees).df
 
         # Assert
         expected = [
