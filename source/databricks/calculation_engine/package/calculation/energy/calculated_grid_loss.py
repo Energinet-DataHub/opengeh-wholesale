@@ -26,7 +26,7 @@ from package.codelists import (
 from package.constants import Colname
 
 
-def get_wholesale_metering_point_times_series(
+def add_calculated_grid_loss_to_metering_point_times_series(
     metering_point_time_series: PreparedMeteringPointTimeSeries,
     positive_grid_loss: EnergyResults,
     negative_grid_loss: EnergyResults,
