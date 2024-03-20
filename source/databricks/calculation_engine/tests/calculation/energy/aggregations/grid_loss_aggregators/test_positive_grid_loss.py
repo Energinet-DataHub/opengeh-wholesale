@@ -14,7 +14,7 @@
 from decimal import Decimal
 
 import pytest
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession, Row
 from pyspark.sql.functions import col
 
 from calculation.energy import grid_loss_responsible_factories
@@ -26,6 +26,7 @@ from package.calculation.energy.data_structures.energy_results import (
 )
 from package.codelists import (
     MeteringPointType,
+    QuantityQuality,
 )
 from package.constants import Colname
 from tests.calculation.energy import energy_results_factories
@@ -34,57 +35,101 @@ from tests.calculation.energy import energy_results_factories
 @pytest.fixture(scope="module")
 def actual_positive_grid_loss(spark: SparkSession) -> EnergyResults:
     rows = [
-        energy_results_factories.create_row(
+        energy_results_factories.create_grid_loss_row(
             grid_area="001",
             quantity=Decimal(-12.567),
+            observation_time=grid_loss_responsible_factories.DEFAULT_FROM_DATE,
         ),
-        energy_results_factories.create_row(
+        energy_results_factories.create_grid_loss_row(
             grid_area="002",
             quantity=Decimal(34.32),
+            observation_time=grid_loss_responsible_factories.DEFAULT_FROM_DATE,
         ),
-        energy_results_factories.create_row(
+        energy_results_factories.create_grid_loss_row(
             grid_area="003",
             quantity=Decimal(0.0),
+            observation_time=grid_loss_responsible_factories.DEFAULT_FROM_DATE,
         ),
     ]
 
-    df = energy_results_factories.create(spark, rows)
+    grid_loss = energy_results_factories.create(spark, rows)
 
-    grid_loss_responsible_row = grid_loss_responsible_factories.create_row(
-        metering_point_type=MeteringPointType.CONSUMPTION,
-    )
+    responsible_rows = [
+        grid_loss_responsible_factories.create_row(
+            grid_area="001",
+            metering_point_id="a",
+            metering_point_type=MeteringPointType.CONSUMPTION,
+        ),
+        grid_loss_responsible_factories.create_row(
+            grid_area="002",
+            metering_point_id="b",
+            metering_point_type=MeteringPointType.CONSUMPTION,
+        ),
+        grid_loss_responsible_factories.create_row(
+            grid_area="003",
+            metering_point_id="c",
+            metering_point_type=MeteringPointType.CONSUMPTION,
+        ),
+    ]
     grid_loss_responsible = grid_loss_responsible_factories.create(
-        spark, [grid_loss_responsible_row]
+        spark, responsible_rows
     )
 
-    return calculate_positive_grid_loss(df, grid_loss_responsible)
+    return calculate_positive_grid_loss(grid_loss, grid_loss_responsible)
 
 
-def test_grid_area_grid_loss_has_no_values_below_zero(
-    actual_positive_grid_loss: EnergyResults,
-) -> None:
-    assert actual_positive_grid_loss.df.where(col(Colname.quantity) < 0).count() == 0
+class TestWhenValidInput:
+    def test__has_no_values_below_zero(
+        self,
+        actual_positive_grid_loss: EnergyResults,
+    ) -> None:
+        assert (
+            actual_positive_grid_loss.df.where(col(Colname.quantity) < 0).count() == 0
+        )
 
+    def test__changes_negative_values_to_zero(
+        self,
+        actual_positive_grid_loss: EnergyResults,
+    ) -> None:
+        assert actual_positive_grid_loss.df.collect()[0][Colname.quantity] == Decimal(
+            "0.00000"
+        )
 
-def test_grid_area_grid_loss_changes_negative_values_to_zero(
-    actual_positive_grid_loss: EnergyResults,
-) -> None:
-    assert actual_positive_grid_loss.df.collect()[0][Colname.quantity] == Decimal(
-        "0.00000"
-    )
+    def test__positive_values_will_not_change(
+        self,
+        actual_positive_grid_loss: EnergyResults,
+    ) -> None:
+        assert actual_positive_grid_loss.df.collect()[1][Colname.quantity] == Decimal(
+            "34.32000"
+        )
 
+    def test__values_that_are_zero_stay_zero(
+        self,
+        actual_positive_grid_loss: EnergyResults,
+    ) -> None:
+        assert actual_positive_grid_loss.df.collect()[2][Colname.quantity] == Decimal(
+            "0.00000"
+        )
 
-def test_grid_area_grid_loss_positive_values_will_not_change(
-    actual_positive_grid_loss: EnergyResults,
-) -> None:
-    assert actual_positive_grid_loss.df.collect()[1][Colname.quantity] == Decimal(
-        "34.32000"
-    )
+    def test__has_expected_values(
+        self,
+        actual_positive_grid_loss: EnergyResults,
+    ) -> None:
+        actual_row = actual_positive_grid_loss.df.collect()[1]
 
+        expected = {
+            Colname.grid_area: "002",
+            Colname.to_grid_area: None,
+            Colname.from_grid_area: None,
+            Colname.balance_responsible_id: None,
+            Colname.energy_supplier_id: grid_loss_responsible_factories.DEFAULT_ENERGY_SUPPLIER_ID,
+            Colname.observation_time: grid_loss_responsible_factories.DEFAULT_FROM_DATE.replace(
+                tzinfo=None
+            ),
+            Colname.quantity: Decimal("34.320000"),
+            Colname.qualities: [QuantityQuality.CALCULATED.value],
+            Colname.metering_point_id: "b",
+        }
+        expected_row = Row(**expected)
 
-def test_grid_area_grid_loss_values_that_are_zero_stay_zero(
-    actual_positive_grid_loss: EnergyResults,
-) -> None:
-    assert actual_positive_grid_loss.df.collect()[2][Colname.quantity] == Decimal(
-        "0.00000"
-    )
+        assert actual_row == expected_row
