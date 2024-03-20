@@ -209,6 +209,7 @@ public class WholesaleServicesRequestHandlerTests
             "003",
             ChargeType.Tariff,
             "004",
+            AmountType.AmountPerCharge,
             Resolution.Day,
             QuantityUnit.Kwh,
             MeteringPointType.Consumption,
