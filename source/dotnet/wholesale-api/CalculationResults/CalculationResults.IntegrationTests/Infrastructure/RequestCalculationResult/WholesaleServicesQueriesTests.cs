@@ -55,6 +55,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
     {
         // Arrange
         var calculationPeriod = CreateCalculationPeriods().Calculation1Period1;
+        var amountType = AmountType.TotalMonthlyAmount;
 
         var package = new WholesaleServicesPackage(
             CalculationPeriod: calculationPeriod,
@@ -63,7 +64,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
                 calculationPeriod.Period.Start,
                 calculationPeriod.Period.Start.Plus(Duration.FromHours(1)),
             ],
-            AmountType.TotalMonthlyAmount,
+            amountType,
             Resolution.Month,
             "111",
             "1136552000028",
@@ -75,7 +76,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         var rows = ExtractSqlRowsFromPackagesAndTheirPoints([package]); // A package creates 1 sql row per point (9 rows total in this case)
         await InsertData(rows);
 
-        var query = CreateQueryParameters([calculationPeriod]);
+        var query = CreateQueryParameters([calculationPeriod], amountType);
 
         // Act
         var actual = await Sut.GetAsync(query).ToListAsync();
@@ -190,7 +191,6 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         var calculationPeriods = CreateCalculationPeriods();
 
         var calculationPeriod = calculationPeriods.Calculation2;
-        var amountType = AmountType.AmountPerCharge;
         var resolution = Resolution.Day;
         var gridArea = "999";
         var energySupplierId = "2236552000028";
@@ -206,7 +206,6 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
                     (propertyToDiffer == WholesaleServicesProperty.CalculationPeriod ? calculationPeriods.Calculation2 : calculationPeriod).Period.Start.Plus(Duration.FromHours(2)),
                 ],
                 CalculationPeriod: propertyToDiffer == WholesaleServicesProperty.CalculationPeriod ? calculationPeriods.Calculation2 : calculationPeriod,
-                AmountType: propertyToDiffer == WholesaleServicesProperty.AmountType ? AmountType.AmountPerCharge : amountType,
                 Resolution: propertyToDiffer == WholesaleServicesProperty.Resolution ? Resolution.Month : resolution,
                 GridArea: propertyToDiffer == WholesaleServicesProperty.GridArea ? "101" : gridArea,
                 EnergySupplierId: propertyToDiffer == WholesaleServicesProperty.EnergySupplierId ? "9999999999991" : energySupplierId,
@@ -219,7 +218,6 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
                     (propertyToDiffer == WholesaleServicesProperty.CalculationPeriod ? calculationPeriods.Calculation3 : calculationPeriod).Period.Start.Plus(Duration.FromHours(3)),
                 ],
                 CalculationPeriod: propertyToDiffer == WholesaleServicesProperty.CalculationPeriod ? calculationPeriods.Calculation3 : calculationPeriod,
-                AmountType: propertyToDiffer == WholesaleServicesProperty.AmountType ? AmountType.MonthlyAmountPerCharge : amountType,
                 Resolution: propertyToDiffer == WholesaleServicesProperty.Resolution ? Resolution.Hour : resolution,
                 GridArea: propertyToDiffer == WholesaleServicesProperty.GridArea ? "102" : gridArea,
                 EnergySupplierId: propertyToDiffer == WholesaleServicesProperty.EnergySupplierId ? "9999999999992" : energySupplierId,
@@ -234,7 +232,6 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
                     (propertyToDiffer == WholesaleServicesProperty.CalculationPeriod ? calculationPeriods.Calculation4 : calculationPeriod).Period.Start.Plus(Duration.FromHours(12)),
                 ],
                 CalculationPeriod: propertyToDiffer == WholesaleServicesProperty.CalculationPeriod ? calculationPeriods.Calculation4 : calculationPeriod,
-                AmountType: propertyToDiffer == WholesaleServicesProperty.AmountType ? AmountType.TotalMonthlyAmount : amountType,
                 Resolution: propertyToDiffer == WholesaleServicesProperty.Resolution ? Resolution.Day : resolution,
                 GridArea: propertyToDiffer == WholesaleServicesProperty.GridArea ? "103" : gridArea,
                 EnergySupplierId: propertyToDiffer == WholesaleServicesProperty.EnergySupplierId ? "9999999999993" : energySupplierId,
@@ -784,7 +781,6 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         ChargeOwnerId,
         ChargeCode,
         ChargeType,
-        AmountType,
         Resolution,
     }
 }

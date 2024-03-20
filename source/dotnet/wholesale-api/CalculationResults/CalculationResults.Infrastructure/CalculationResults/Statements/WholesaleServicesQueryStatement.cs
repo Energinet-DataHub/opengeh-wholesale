@@ -50,7 +50,7 @@ public class WholesaleServicesQueryStatement : DatabricksStatement
 
         var calculationPeriodSql = _queryParameters.Calculations
             .Select(calculationForPeriod => $@"
-                ({WholesaleResultColumnNames.CalculationId} == '{calculationForPeriod.CalculationId}'  
+                ({WholesaleResultColumnNames.CalculationId} = '{calculationForPeriod.CalculationId}'  
                 AND {WholesaleResultColumnNames.Time} >= '{calculationForPeriod.Period.Start}'
                 AND {WholesaleResultColumnNames.Time} < '{calculationForPeriod.Period.End}')")
             .ToList();
