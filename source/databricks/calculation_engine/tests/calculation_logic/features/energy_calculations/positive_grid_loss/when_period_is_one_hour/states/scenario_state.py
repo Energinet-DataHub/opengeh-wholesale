@@ -13,18 +13,18 @@
 # limitations under the License.
 from datetime import datetime
 
-from pyspark.sql import DataFrame, SparkSession
-
-from calculation_logic.features.energy_calculations.energy_results_dataframe import (
-    create_energy_result_dataframe,
-)
 from calculation_logic.input_factories.input_grid_loss_test_factory import (
     InputGridLossTestFactory,
 )
 from calculation_logic.input_factories.input_metering_point_periods_test_factory import (
     InputMeteringPointPeriodsTestFactory,
 )
-from calculation_logic.input_factories.input_time_series_point_test_factory import (
+from pyspark.sql import DataFrame, SparkSession
+
+from calculation_logic.features import (
+    create_energy_result_dataframe,
+)
+from calculation_logic.utils.factories.input_time_series_point_test_factory import (
     InputTimeSeriesPointTestFactory,
 )
 from package.codelists import (

@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from calculation_logic.scenario_factory import ScenarioFixture
+from calculation_logic.utils.scenario_fixture import ScenarioFixture
 from helpers.data_frame_utils import (
     assert_dataframe_and_schema,
 )

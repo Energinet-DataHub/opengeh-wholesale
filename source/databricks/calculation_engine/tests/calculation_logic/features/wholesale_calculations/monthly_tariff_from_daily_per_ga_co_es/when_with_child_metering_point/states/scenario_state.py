@@ -13,7 +13,7 @@
 # limitations under the License.
 from pyspark.sql import DataFrame
 
-from calculation_logic.features.wholesale_calculations.wholesale_results_dataframe import (
+from calculation_logic.features import (
     create_wholesale_result_dataframe,
 )
 

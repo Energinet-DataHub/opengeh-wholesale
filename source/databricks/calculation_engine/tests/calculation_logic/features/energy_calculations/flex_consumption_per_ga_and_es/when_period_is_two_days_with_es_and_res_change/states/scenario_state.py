@@ -14,7 +14,7 @@
 
 from pyspark.sql import DataFrame
 
-from calculation_logic.features.energy_calculations.energy_results_dataframe import (
+from calculation_logic.features import (
     create_energy_result_dataframe,
 )
 
