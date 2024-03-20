@@ -87,7 +87,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
     }
 
     [Fact]
-    public async Task GetAsync_WhenRequesting3CalculationPeriods_3WholesaleServices()
+    public async Task GetAsync_WhenRequesting3CalculationPeriods_Returns3WholesaleServices()
     {
         // Arrange
         var calculationPeriods = CreateCalculationPeriods();
@@ -131,7 +131,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
     }
 
     [Fact]
-    public async Task GetAsync_WhenSameDataIn4DifferentGridAreas_4WholesaleServices()
+    public async Task GetAsync_WhenSameDataIn4DifferentGridAreas_Returns4WholesaleServices()
     {
         // Arrange
         var calculationPeriod = CreateCalculationPeriods().Calculation1Period1;
@@ -255,7 +255,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
     }
 
     [Fact]
-    public async Task GetAsync_WhenUsingAllQueryFilters_1MatchingWholesaleServices()
+    public async Task GetAsync_WhenUsingAllQueryFilters_Returns1MatchingWholesaleServices()
     {
         // Arrange
         var calculationPeriods = CreateCalculationPeriods();
@@ -373,7 +373,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
     }
 
     [Fact]
-    public async Task GetAsync_WhenFilteringBy2DifferentChargeTypes_2MatchingWholesaleServices()
+    public async Task GetAsync_WhenFilteringBy2DifferentChargeTypes_Returns2MatchingWholesaleServices()
     {
         // Arrange
         var calculationPeriod = CreateCalculationPeriods().Calculation1Period1;
