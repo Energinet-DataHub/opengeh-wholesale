@@ -214,7 +214,7 @@ def test__monthly_amount_for_subscriptions_and_fees__is_created(
         F.col(WholesaleResultColumnNames.charge_type) == charge_type.value
     ).where(
         F.col(WholesaleResultColumnNames.resolution)
-        == WholesaleResultResolution.DAY.value
+        == WholesaleResultResolution.MONTH.value
     )
 
     # Act: Calculator job is executed just once per session.
