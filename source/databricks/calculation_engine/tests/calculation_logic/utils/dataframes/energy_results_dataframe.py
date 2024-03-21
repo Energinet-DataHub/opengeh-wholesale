@@ -26,7 +26,7 @@ from pyspark.sql.types import (
 def create_energy_result_dataframe(*args) -> DataFrame:
     spark: SparkSession = args[0]
     df: DataFrame = args[1]
-    calculator_args: any = args[2]  # type: ignore
+    calculator_args = args[2]  # type: ignore
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
@@ -47,10 +47,6 @@ def create_energy_result_dataframe(*args) -> DataFrame:
     df = df.withColumn(
         EnergyResultColumnNames.quantity_qualities,
         parse_qualities_string_udf(df[EnergyResultColumnNames.quantity_qualities]),
-    )
-
-    df = df.withColumn(
-        EnergyResultColumnNames.calculation_id, lit(calculator_args.calculation_id)
     )
 
     df = df.withColumn(
