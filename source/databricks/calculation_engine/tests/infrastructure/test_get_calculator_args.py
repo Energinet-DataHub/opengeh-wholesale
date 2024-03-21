@@ -226,6 +226,14 @@ class TestWhenCalculationPeriodIsNotOneCalendarMonth:
                     datetime(2022, 6, 30, 22),
                 ),
                 (datetime(2022, 5, 31, 22), datetime(2022, 7, 31, 22)),  # Two months
+                (  # Entering daylights saving time - not ending at midnight
+                    datetime(2020, 2, 29, 23, 0),
+                    datetime(2020, 3, 31, 23, 0),
+                ),
+                (  # Exiting daylights saving time - not ending at midnight
+                    datetime(2020, 9, 30, 22, 0),
+                    datetime(2020, 10, 31, 22, 0),
+                ),
             ]
             for calc_type in [
                 CalculationType.WHOLESALE_FIXING,
