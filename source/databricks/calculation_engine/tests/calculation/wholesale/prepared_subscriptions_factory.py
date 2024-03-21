@@ -57,7 +57,7 @@ def create_row(
     metering_point_id: str = DefaultValues.METERING_POINT_ID,
     grid_area: str = DefaultValues.GRID_AREA,
 ) -> Row:
-    charge_type = ChargeType.SUBSCRIPTION.value
+    charge_type = ChargeType.FEE.value
     row = {
         Colname.charge_key: charge_key or f"{charge_code}-{charge_type}-{charge_owner}",
         Colname.charge_type: charge_type,

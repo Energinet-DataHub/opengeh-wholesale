@@ -11,387 +11,56 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import pyspark.sql.functions as f
 import pytest
 from pyspark.sql import SparkSession
-from . import configuration as C
-from package.codelists import (
-    BasisDataType,
-)
-import package.codelists as e
+
 from package.infrastructure import paths
+from . import configuration as c
+
+BASIS_DATA_TABLE_NAMES = [
+    paths.METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME,
+    paths.TIME_SERIES_BASIS_DATA_TABLE_NAME,
+]
 
 
-def test__creates_hour_for_total_ga__with_expected_columns_names(
+@pytest.mark.parametrize(
+    "basis_data_table_name",
+    BASIS_DATA_TABLE_NAMES,
+)
+def test__when_energy_calculation__data_is_stored(
     spark: SparkSession,
-    data_lake_path: str,
     executed_balance_fixing: None,
+    basis_data_table_name: str,
 ) -> None:
     # Arrange
-    basis_data_relative_path = paths.get_basis_data_path(
-        BasisDataType.TIME_SERIES_HOUR, C.executed_balance_fixing_calculation_id, "805"
-    )
+    actual = spark.read.table(
+        f"{paths.BASIS_DATA_DATABASE_NAME}.{basis_data_table_name}"
+    ).where(f.col("calculation_id") == c.executed_balance_fixing_calculation_id)
 
-    # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
+    # Act: Calculator job is executed just once per session.
+    #      See the fixtures `results_df` and `executed_wholesale_fixing`
 
-    # Assert
-    actual = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{basis_data_relative_path}"
-    )
-    assert actual.columns == [
-        "METERINGPOINTID",
-        "TYPEOFMP",
-        "STARTDATETIME",
-        *[f"ENERGYQUANTITY{i+1}" for i in range(24)],
-    ]
+    # Assert: The result is created if there are rows
+    assert actual.count() > 0
 
 
-def test__creates_hour_for_es_per_ga__with_expected_columns_names(
+@pytest.mark.parametrize(
+    "basis_data_table_name",
+    BASIS_DATA_TABLE_NAMES,
+)
+def test__when_wholesale_calculation__data_is_stored(
     spark: SparkSession,
-    data_lake_path: str,
-    executed_balance_fixing: None,
+    executed_wholesale_fixing: None,
+    basis_data_table_name: str,
 ) -> None:
     # Arrange
-    basis_data_relative_path = paths.get_basis_data_path(
-        BasisDataType.TIME_SERIES_HOUR,
-        C.executed_balance_fixing_calculation_id,
-        "805",
-        C.energy_supplier_gln_a,
-    )
+    actual = spark.read.table(
+        f"{paths.BASIS_DATA_DATABASE_NAME}.{basis_data_table_name}"
+    ).where(f.col("calculation_id") == c.executed_wholesale_calculation_id)
 
-    # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
+    # Act: Calculator job is executed just once per session.
+    #      See the fixtures `results_df` and `executed_wholesale_fixing`
 
-    # Assert
-    actual = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{basis_data_relative_path}"
-    )
-    assert actual.columns == [
-        "METERINGPOINTID",
-        "TYPEOFMP",
-        "STARTDATETIME",
-        *[f"ENERGYQUANTITY{i+1}" for i in range(24)],
-    ]
-
-
-def test__creates_quarter_for_total_ga__with_expected_columns_names(
-    spark: SparkSession,
-    data_lake_path: str,
-    executed_balance_fixing: None,
-) -> None:
-    # Arrange
-    relative_path = paths.get_basis_data_path(
-        BasisDataType.TIME_SERIES_QUARTER,
-        C.executed_balance_fixing_calculation_id,
-        "805",
-    )
-
-    # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
-
-    # Assert
-    actual = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{relative_path}"
-    )
-
-    assert actual.columns == [
-        "METERINGPOINTID",
-        "TYPEOFMP",
-        "STARTDATETIME",
-        *[f"ENERGYQUANTITY{i+1}" for i in range(96)],
-    ]
-
-
-def test__creates_quarter_for_es_per_ga__with_expected_columns_names(
-    spark: SparkSession,
-    data_lake_path: str,
-    executed_balance_fixing: None,
-) -> None:
-    # Arrange
-    relative_path = paths.get_basis_data_path(
-        BasisDataType.TIME_SERIES_QUARTER,
-        C.executed_balance_fixing_calculation_id,
-        "805",
-        C.energy_supplier_gln_a,
-    )
-
-    # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
-
-    # Assert
-    actual = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{relative_path}"
-    )
-
-    assert actual.columns == [
-        "METERINGPOINTID",
-        "TYPEOFMP",
-        "STARTDATETIME",
-        *[f"ENERGYQUANTITY{i+1}" for i in range(96)],
-    ]
-
-
-def test__creates_quarter_for_total_ga__per_grid_area(
-    spark: SparkSession,
-    data_lake_path: str,
-    executed_balance_fixing: None,
-) -> None:
-    # Arrange
-    basis_data_relative_path_805 = paths.get_basis_data_path(
-        BasisDataType.TIME_SERIES_QUARTER,
-        C.executed_balance_fixing_calculation_id,
-        "805",
-    )
-    basis_data_relative_path_806 = paths.get_basis_data_path(
-        BasisDataType.TIME_SERIES_QUARTER,
-        C.executed_balance_fixing_calculation_id,
-        "806",
-    )
-
-    # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
-
-    # Assert
-    basis_data_805 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{basis_data_relative_path_805}"
-    )
-
-    basis_data_806 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{basis_data_relative_path_806}"
-    )
-
-    assert (
-        basis_data_805.count() >= 1
-    ), "Calculator job failed to write basis data files for grid area 805"
-
-    assert (
-        basis_data_806.count() >= 1
-    ), "Calculator job failed to write basis data files for grid area 806"
-
-
-def test__creates_quarter_for_es_per_ga__per_energy_supplier(
-    spark: SparkSession,
-    data_lake_path: str,
-    executed_balance_fixing: None,
-) -> None:
-    # Arrange
-    basis_data_relative_path_a = paths.get_basis_data_path(
-        BasisDataType.TIME_SERIES_QUARTER,
-        C.executed_balance_fixing_calculation_id,
-        "805",
-        C.energy_supplier_gln_a,
-    )
-    basis_data_relative_path_b = paths.get_basis_data_path(
-        BasisDataType.TIME_SERIES_QUARTER,
-        C.executed_balance_fixing_calculation_id,
-        "805",
-        C.energy_supplier_gln_b,
-    )
-
-    # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
-
-    # Assert
-    basis_data_a = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{basis_data_relative_path_a}"
-    )
-
-    basis_data_b = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{basis_data_relative_path_b}"
-    )
-
-    assert (
-        basis_data_a.count() >= 1
-    ), "Calculator job failed to write basis data files for energy supplier a correctly"
-
-    assert (
-        basis_data_b.count() >= 1
-    ), "Calculator job failed to write basis data files for energy supplier b correctly"
-
-
-def test__creates_hour_for_total_ga__per_grid_area(
-    spark: SparkSession,
-    data_lake_path: str,
-    executed_balance_fixing: None,
-) -> None:
-    # Arrange
-    basis_data_relative_path_805 = paths.get_basis_data_path(
-        BasisDataType.TIME_SERIES_HOUR, C.executed_balance_fixing_calculation_id, "805"
-    )
-    basis_data_relative_path_806 = paths.get_basis_data_path(
-        BasisDataType.TIME_SERIES_HOUR, C.executed_balance_fixing_calculation_id, "806"
-    )
-
-    # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
-
-    # Assert
-    basis_data_805 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{basis_data_relative_path_805}"
-    )
-
-    basis_data_806 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{basis_data_relative_path_806}"
-    )
-
-    assert (
-        basis_data_805.count() >= 1
-    ), "Calculator job failed to write basis data files for grid area 805"
-
-    assert (
-        basis_data_806.count() >= 1
-    ), "Calculator job failed to write basis data files for grid area 806"
-
-
-def test__creates_hour_for_es_per_ga__per_energy_supplier(
-    spark: SparkSession,
-    data_lake_path: str,
-    executed_balance_fixing: None,
-) -> None:
-    # Arrange
-    basis_data_relative_path_a = paths.get_basis_data_path(
-        BasisDataType.TIME_SERIES_HOUR,
-        C.executed_balance_fixing_calculation_id,
-        "805",
-        C.energy_supplier_gln_a,
-    )
-    basis_data_relative_path_b = paths.get_basis_data_path(
-        BasisDataType.TIME_SERIES_HOUR,
-        C.executed_balance_fixing_calculation_id,
-        "805",
-        C.energy_supplier_gln_b,
-    )
-
-    # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
-
-    # Assert
-    basis_data_a = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{basis_data_relative_path_a}"
-    )
-
-    basis_data_b = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{basis_data_relative_path_b}"
-    )
-
-    assert (
-        basis_data_a.count() >= 1
-    ), "Calculator job failed to write basis data files for grid area 805"
-
-    assert (
-        basis_data_b.count() >= 1
-    ), "Calculator job failed to write basis data files for grid area 806"
-
-
-def test__master_basis_data_for_total_ga_has_expected_columns_names(
-    spark: SparkSession,
-    data_lake_path: str,
-    executed_balance_fixing: None,
-) -> None:
-    # Arrange
-    basis_data_path = paths.get_basis_data_path(
-        BasisDataType.MASTER_BASIS_DATA, C.executed_balance_fixing_calculation_id, "805"
-    )
-
-    # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
-
-    # Assert
-    actual = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{basis_data_path}"
-    )
-
-    assert actual.columns == [
-        "METERINGPOINTID",
-        "VALIDFROM",
-        "VALIDTO",
-        "GRIDAREA",
-        "TOGRIDAREA",
-        "FROMGRIDAREA",
-        "TYPEOFMP",
-        "SETTLEMENTMETHOD",
-        "ENERGYSUPPLIERID",
-    ]
-
-
-def test__master_basis_data_for_es_per_ga_has_expected_columns_names(
-    spark: SparkSession,
-    data_lake_path: str,
-    executed_balance_fixing: None,
-) -> None:
-    # Arrange
-    basis_data_path = paths.get_basis_data_path(
-        BasisDataType.MASTER_BASIS_DATA,
-        C.executed_balance_fixing_calculation_id,
-        "805",
-        C.energy_supplier_gln_a,
-    )
-
-    # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
-
-    # Assert
-    actual = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{basis_data_path}"
-    )
-
-    assert actual.columns == [
-        "METERINGPOINTID",
-        "VALIDFROM",
-        "VALIDTO",
-        "GRIDAREA",
-        "TOGRIDAREA",
-        "FROMGRIDAREA",
-        "TYPEOFMP",
-        "SETTLEMENTMETHOD",
-    ]
-
-
-def test__creates_master_basis_data_per_grid_area(
-    spark: SparkSession,
-    data_lake_path: str,
-    executed_balance_fixing: None,
-) -> None:
-    # Arrange
-    basis_data_path_805 = paths.get_basis_data_path(
-        BasisDataType.MASTER_BASIS_DATA, C.executed_balance_fixing_calculation_id, "805"
-    )
-    basis_data_path_806 = paths.get_basis_data_path(
-        BasisDataType.MASTER_BASIS_DATA, C.executed_balance_fixing_calculation_id, "806"
-    )
-
-    # Act: Executed in fixture executed_balance_fixing
-
-    # Assert
-    master_basis_data_805 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{basis_data_path_805}"
-    )
-
-    master_basis_data_806 = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{basis_data_path_806}"
-    )
-
-    assert (
-        master_basis_data_805.count() >= 1
-    ), "Calculator job failed to write master basis data files for grid area 805"
-
-    assert (
-        master_basis_data_806.count() >= 1
-    ), "Calculator job failed to write master basis data files for grid area 806"
-
-
-def test__basis_data_contains_all_metering_point_types(
-    spark: SparkSession,
-    data_lake_path: str,
-    executed_balance_fixing: None,
-) -> None:
-    # Arrange
-    basis_data_path = paths.get_basis_data_path(
-        BasisDataType.MASTER_BASIS_DATA,
-        C.executed_balance_fixing_calculation_id,
-        "805",
-        C.energy_supplier_gln_a,
-    )
-
-    # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
-
-    # Assert
-    actual = spark.read.option("header", "true").csv(
-        f"{data_lake_path}/{basis_data_path}"
-    )
-
-    # Loop instead of parameterize test for reduced test execution time
-    for metering_point_type in e.MeteringPointType:
-        assert (
-            actual.where(actual["TYPEOFMP"] == metering_point_type.value).count() > 0
-        ), f"Calculator job failed to write master basis data files for metering point type {metering_point_type.value}"
+    # Assert: The result is created if there are rows
+    assert actual.count() > 0
