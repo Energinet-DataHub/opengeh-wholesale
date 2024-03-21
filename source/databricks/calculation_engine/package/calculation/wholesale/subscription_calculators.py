@@ -35,12 +35,14 @@ def calculate(
     prepared_subscriptions: PreparedSubscriptions,
     calculation_period_start: datetime,
     calculation_period_end: datetime,
+    time_zone: str,
 ) -> WholesaleResults:
     prepared_subscriptions_df = prepared_subscriptions.df
     subscriptions_with_daily_price = _calculate_price_per_day(
         prepared_subscriptions_df,
         calculation_period_start,
         calculation_period_end,
+        time_zone,
     )
 
     subscription_amount_per_charge = calculate_total_quantity_and_amount(
@@ -54,8 +56,12 @@ def _calculate_price_per_day(
     prepared_subscriptions: DataFrame,
     calculation_period_start: datetime,
     calculation_period_end: datetime,
+    time_zone: str,
 ) -> DataFrame:
-    days_in_month = (calculation_period_end - calculation_period_start).days
+    time_zone_info = ZoneInfo(time_zone)
+    period_start_local_time = calculation_period_start.astimezone(time_zone_info)
+    period_end_local_time = calculation_period_end.astimezone(time_zone_info)
+    days_in_month = (period_end_local_time - period_start_local_time).days
 
     subscriptions_with_daily_price = prepared_subscriptions.withColumn(
         Colname.charge_price, (f.col(Colname.charge_price) / f.lit(days_in_month))
