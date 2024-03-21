@@ -43,13 +43,13 @@ def _substitute_period(
     for i, item in enumerate(sys_argv):
         print(item)
         if item.startswith("--period-start-datetime"):
-            sys_argv[
-                i
-            ] = f"--period-start-datetime={period_start_datetime.strftime('%Y-%m-%dT%H:%M:%SZ')}"
+            sys_argv[i] = (
+                f"--period-start-datetime={period_start_datetime.strftime('%Y-%m-%dT%H:%M:%SZ')}"
+            )
         elif item.startswith("--period-end-datetime"):
-            sys_argv[
-                i
-            ] = f"--period-end-datetime={period_end_datetime.strftime('%Y-%m-%dT%H:%M:%SZ')}"
+            sys_argv[i] = (
+                f"--period-end-datetime={period_end_datetime.strftime('%Y-%m-%dT%H:%M:%SZ')}"
+            )
 
     return sys_argv
 
