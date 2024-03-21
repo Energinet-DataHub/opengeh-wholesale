@@ -33,9 +33,6 @@ def create_wholesale_result_dataframe(*args) -> DataFrame:
     from package.constants import WholesaleResultColumnNames
 
     df = df.withColumn(
-        WholesaleResultColumnNames.calculation_id, lit(calculator_args.calculation_id)
-    )
-    df = df.withColumn(
         WholesaleResultColumnNames.calculation_execution_time_start,
         lit(calculator_args.calculation_execution_time_start).cast(TimestampType()),
     )

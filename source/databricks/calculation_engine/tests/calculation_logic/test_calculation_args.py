@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import uuid
 from datetime import datetime
 
 import yaml
@@ -22,6 +21,7 @@ from package.constants import Colname
 
 
 class ArgsName:
+    calculation_id = "calculation_id"
     period_start = "period_start"
     period_end = "period_end"
     grid_areas = "grid_areas"
@@ -35,7 +35,7 @@ def create_calculation_args(test_path: str) -> CalculatorArgs:
         calculation_args = yaml.safe_load(file)
 
     return CalculatorArgs(
-        calculation_id=str(uuid.uuid4()),
+        calculation_id=calculation_args[0][ArgsName.calculation_id],
         calculation_grid_areas=calculation_args[0][ArgsName.grid_areas],
         calculation_period_start_datetime=datetime.strptime(
             calculation_args[0][ArgsName.period_start], CSV_DATE_FORMAT
