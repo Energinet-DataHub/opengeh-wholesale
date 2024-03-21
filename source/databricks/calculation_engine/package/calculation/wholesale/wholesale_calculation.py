@@ -94,13 +94,13 @@ def _calculate_subscriptions(
         args, subscription_per_ga_co_es, AmountType.AMOUNT_PER_CHARGE
     )
 
-    monthly_subscription_from_daily_per_ga_co_es = sum_within_month(
+    monthly_subscription_per_ga_co_es = sum_within_month(
         subscription_per_ga_co_es,
         args.calculation_period_start_datetime,
     )
-    results.monthly_subscription_from_daily_per_ga_co_es = factory.create(
+    results.monthly_subscription_per_ga_co_es = factory.create(
         args,
-        monthly_subscription_from_daily_per_ga_co_es,
+        monthly_subscription_per_ga_co_es,
         AmountType.MONTHLY_AMOUNT_PER_CHARGE,
     )
 
