@@ -370,10 +370,9 @@ class TestWhenMissingEnvVariables:
                 }
 
                 with patch.dict("os.environ", env_variables_with_one_missing):
-                    with pytest.raises(SystemExit) as error:
+                    with pytest.raises(ValueError) as error:
                         command_line_args = parse_command_line_arguments()
                         # Act
                         parse_job_arguments(command_line_args)
 
-        # Assert
-        assert error.value.code != 0
+                assert str(error.value).startswith("Environment variable not found")
