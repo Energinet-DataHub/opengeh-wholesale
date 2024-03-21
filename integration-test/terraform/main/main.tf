@@ -5,6 +5,7 @@ locals {
   integration_mssqlserver_admin_name = "inttestdbadmin"
   resource_suffix_with_dash          = "${lower(var.domain_name_short)}-${lower(var.environment_short)}-we-${lower(var.environment_instance)}"
   resource_suffix_without_dash       = "${lower(var.domain_name_short)}${lower(var.environment_short)}we${lower(var.environment_instance)}"
+  databricks_runtime_version = "14.3.x-scala2.12"
 }
 
 resource "azurerm_key_vault_secret" "kvs_resource_group_name" {

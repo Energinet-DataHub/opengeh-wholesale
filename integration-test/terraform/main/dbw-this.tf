@@ -101,14 +101,6 @@ data "external" "databricks_token_integration_test" {
   ]
 }
 
-data "databricks_spark_version" "latest_lts" {
-  long_term_support = true
-
-  depends_on = [
-    azurerm_databricks_workspace.this
-  ]
-}
-
 resource "databricks_instance_pool" "migration_pool_integration_test" {
   instance_pool_name                    = "migration-integration-test-instance-pool"
   min_idle_instances                    = 0
@@ -124,7 +116,7 @@ resource "databricks_job" "migration_workflow" {
     job_cluster_key = "subsystemtest_job_cluster"
     new_cluster {
       instance_pool_id = databricks_instance_pool.migration_pool_integration_test.id
-      spark_version    = data.databricks_spark_version.latest_lts.id
+      spark_version    = local.databricks_runtime_version
       spark_conf = {
         "fs.azure.account.oauth2.client.endpoint.${azurerm_storage_account.this.name}.dfs.core.windows.net" : "https://login.microsoftonline.com/${data.azurerm_client_config.this.tenant_id}/oauth2/token"
         "fs.azure.account.auth.type.${azurerm_storage_account.this.name}.dfs.core.windows.net" : "OAuth"
@@ -182,7 +174,7 @@ resource "databricks_cluster" "shared_all_purpose_integration_test" {
   cluster_name     = "Shared all-purpose"
   num_workers      = 1
   instance_pool_id = databricks_instance_pool.migration_pool_integration_test.id
-  spark_version    = data.databricks_spark_version.latest_lts.id
+  spark_version    = local.databricks_runtime_version
   spark_conf = {
     "fs.azure.account.oauth2.client.endpoint.${azurerm_storage_account.this.name}.dfs.core.windows.net" : "https://login.microsoftonline.com/${data.azurerm_client_config.this.tenant_id}/oauth2/token"
     "fs.azure.account.auth.type.${azurerm_storage_account.this.name}.dfs.core.windows.net" : "OAuth"
