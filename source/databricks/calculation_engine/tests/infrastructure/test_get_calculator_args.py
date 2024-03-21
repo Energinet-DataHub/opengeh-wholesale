@@ -188,6 +188,81 @@ class TestWhenUnknownCalculationType:
         assert error.value.code != 0
 
 
+class TestWhenWholesaleFixingPeriodIsNotOneMonth:
+    @pytest.mark.parametrize(
+        "period_start_datetime, period_end_datetime",
+        [
+            (  # Missing one day at the end
+                "2022-05-31T22:00:00Z",
+                "2022-06-30T22:00:00Z",
+            ),
+            (  # Missing one day in the beginning
+                "2022-06-01T22:00:00Z",
+                "2022-06-30T22:00:00Z",
+            ),
+            (  # Two months
+                "2022-05-31T22:00:00Z",
+                "2022-07-31T22:00:00Z",
+            ),
+        ],
+    )
+    def test_raise_exception(
+        self,
+        period_start_datetime: str,
+        period_end_datetime: str,
+        job_environment_variables: dict,
+        sys_argv_from_contract: list[str],
+    ) -> None:
+        # Arrange
+        calculation_type = CalculationType.WHOLESALE_FIXING
+        calc_type_pattern = r"--calculation-type=(\w+)"
+        period_start_pattern = (
+            r"--calculation-period-start-datetime=(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})"
+        )
+        period_end_pattern = (
+            r"--calculation-period-end-datetime=(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})"
+        )
+
+        for i, item in enumerate(sys_argv_from_contract):
+            if re.search(calc_type_pattern, item):
+                sys_argv_from_contract[i] = re.sub(
+                    calc_type_pattern,
+                    f"--calculation-type={calculation_type.value}",
+                    item,
+                )
+                break
+
+            if re.search(period_start_pattern, item):
+                sys_argv_from_contract[i] = re.sub(
+                    period_start_pattern,
+                    f"--calculation-period-start-datetime={period_start_datetime}",
+                    item,
+                )
+                break
+
+            if re.search(period_end_pattern, item):
+                sys_argv_from_contract[i] = re.sub(
+                    period_end_pattern,
+                    f"--calculation-period-end-datetime={period_end_datetime}",
+                    item,
+                )
+                break
+
+        with patch("sys.argv", sys_argv_from_contract):
+            with patch.dict("os.environ", job_environment_variables):
+                with pytest.raises(Exception) as error:
+                    command_line_args = parse_command_line_arguments()
+                    # Act
+                    parse_job_arguments(command_line_args)
+
+        # Assert
+        actual_error_message = str(error.value)
+        assert (
+            "The calculation period for wholesale calculation types must be a full month"
+            in actual_error_message
+        )
+
+
 class TestWhenWholesaleCalculationPeriodIsNotOneMonth:
     @pytest.mark.parametrize(
         "calculation_type",
