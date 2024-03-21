@@ -36,7 +36,6 @@ def test_execute__returns_expected(
         ignore_decimal_scale=True,
         ignore_nullability=True,
         columns_to_skip=[
-            EnergyResultColumnNames.calculation_execution_time_start,
             EnergyResultColumnNames.calculation_result_id,
         ],
     )
