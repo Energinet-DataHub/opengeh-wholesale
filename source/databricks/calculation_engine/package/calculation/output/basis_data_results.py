@@ -11,74 +11,25 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from dependency_injector.wiring import Provide, inject
-
 from package.calculation.calculation_results import BasisDataContainer
-from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.output.basis_data_writer import BasisDataWriter
-from package.codelists import AggregationLevel
-from package.constants import PartitionKeyName
-from package.container import Container
 from package.infrastructure import logging_configuration
-from package.infrastructure.infrastructure_settings import InfrastructureSettings
+from package.infrastructure.paths import (
+    METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME,
+    TIME_SERIES_BASIS_DATA_TABLE_NAME,
+    BASIS_DATA_DATABASE_NAME,
+)
 
 
 @logging_configuration.use_span("calculation.write.basis_data")
-def write_basis_data(args: CalculatorArgs, basis_data: BasisDataContainer) -> None:
-    _write_basis_data(args, basis_data)
+def write_basis_data(basis_data: BasisDataContainer) -> None:
+    with logging_configuration.start_span("metering_point_periods"):
+        basis_data.metering_point_periods.write.format("delta").mode("append").option(
+            "mergeSchema", "false"
+        ).insertInto(
+            f"{BASIS_DATA_DATABASE_NAME}.{METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME}"
+        )
 
-
-@inject
-def _write_basis_data(
-    args: CalculatorArgs,
-    basis_data: BasisDataContainer,
-    infrastructure_settings: InfrastructureSettings = Provide[
-        Container.infrastructure_settings
-    ],
-) -> None:
-    basis_data_writer = BasisDataWriter(
-        infrastructure_settings.wholesale_container_path
-    )
-    _write_ga_basis_data_to_csv(args.calculation_id, basis_data, basis_data_writer)
-    _write_es_basis_data_to_csv(args.calculation_id, basis_data, basis_data_writer)
-
-
-@logging_configuration.use_span("per_grid_area")
-def _write_ga_basis_data_to_csv(
-    calculation_id: str,
-    basis_data: BasisDataContainer,
-    basis_data_writer: BasisDataWriter,
-) -> None:
-    grouping_folder_name = f"grouping={AggregationLevel.TOTAL_GA.value}"
-    partition_keys = [PartitionKeyName.GRID_AREA]
-
-    basis_data_writer.write_basis_data_to_csv(
-        calculation_id,
-        basis_data.master_basis_data_per_total_ga,
-        basis_data.time_series_quarter_basis_data_per_total_ga,
-        basis_data.time_series_hour_basis_data,
-        grouping_folder_name,
-        partition_keys,
-    )
-
-
-@logging_configuration.use_span("per_energy_supplier")
-def _write_es_basis_data_to_csv(
-    calculation_id: str,
-    basis_data: BasisDataContainer,
-    basis_data_writer: BasisDataWriter,
-) -> None:
-    grouping_folder_name = f"grouping={AggregationLevel.ES_PER_GA.value}"
-    partition_keys = [
-        PartitionKeyName.GRID_AREA,
-        PartitionKeyName.ENERGY_SUPPLIER_GLN,
-    ]
-
-    basis_data_writer.write_basis_data_to_csv(
-        calculation_id,
-        basis_data.master_basis_data_per_es_per_ga,
-        basis_data.time_series_quarter_basis_data_per_es_per_ga,
-        basis_data.time_series_hour_basis_data_per_es_per_ga,
-        grouping_folder_name,
-        partition_keys,
-    )
+    with logging_configuration.start_span("time_series"):
+        basis_data.time_series.write.format("delta").mode("append").option(
+            "mergeSchema", "false"
+        ).insertInto(f"{BASIS_DATA_DATABASE_NAME}.{TIME_SERIES_BASIS_DATA_TABLE_NAME}")
