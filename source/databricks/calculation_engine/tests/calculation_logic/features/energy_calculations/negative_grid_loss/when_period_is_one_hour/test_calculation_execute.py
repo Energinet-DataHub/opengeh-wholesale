@@ -30,7 +30,7 @@ def test_execute__returns_expected(
 
     # Assert
     assert_dataframe_and_schema(
-        results.energy_results.consumption_per_ga_and_es,
+        results.energy_results.negative_grid_loss,
         scenario_fixture.expected,
         ignore_decimal_precision=True,
         ignore_decimal_scale=True,

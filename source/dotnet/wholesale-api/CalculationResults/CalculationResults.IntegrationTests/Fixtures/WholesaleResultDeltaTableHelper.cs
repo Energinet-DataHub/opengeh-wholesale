@@ -26,7 +26,7 @@ public static class WholesaleResultDeltaTableHelper
         string gridArea = "805",
         string energySupplierId = "2236552000028",
         string amountType = "amount_per_charge",
-        string? meteringPointType = "production",
+        string? meteringPointType = null,
         string? settlementMethod = null,
         string quantityUnit = "kWh",
         string resolution = "PT1H",
@@ -41,6 +41,9 @@ public static class WholesaleResultDeltaTableHelper
         string isTax = "false")
     {
         quantityQualities ??= new List<string> { "'missing'", "'measured'" };
+
+        if (amountType == "amount_per_charge" && meteringPointType == null)
+            meteringPointType = "production";
 
         return WholesaleResultColumnNames.GetAllNames().Select(columnName => columnName switch
         {
