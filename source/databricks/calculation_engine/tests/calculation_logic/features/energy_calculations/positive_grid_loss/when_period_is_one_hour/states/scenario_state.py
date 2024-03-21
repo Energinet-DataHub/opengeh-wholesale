@@ -64,8 +64,8 @@ def create_time_series_points(spark: SparkSession) -> DataFrame:
 
 
 def create_metering_point_periods(spark: SparkSession) -> DataFrame:
-    factory = clf.InputMeteringPointPeriodsTestFactory(spark)
-    row1 = factory.create_row(
+   factory = clf.InputMeteringPointPeriodsTestFactory(spark)
+   grid_loss_period = factory.create_row(
         metering_point_id="571313180400100657",
         metering_point_type=InputMeteringPointType.CONSUMPTION,
         settlement_method=InputSettlementMethod.FLEX,
@@ -75,8 +75,8 @@ def create_metering_point_periods(spark: SparkSession) -> DataFrame:
         balance_responsible_id="5790001270940",
         from_date=datetime(2023, 1, 31, 23, 0, 0),
     )
-
-    row2 = factory.create_row(
+   
+    system_correction_period = factory.create_row(
         metering_point_id="571313180480500149",
         metering_point_type=InputMeteringPointType.PRODUCTION,
         grid_area="804",
@@ -86,7 +86,7 @@ def create_metering_point_periods(spark: SparkSession) -> DataFrame:
         from_date=datetime(2023, 1, 31, 23, 0, 0),
     )
 
-    row3 = factory.create_row(
+    exchange_period = factory.create_row(
         metering_point_id="571313180400140417",
         metering_point_type=InputMeteringPointType.EXCHANGE,
         grid_area="804",
@@ -96,7 +96,7 @@ def create_metering_point_periods(spark: SparkSession) -> DataFrame:
         from_date=datetime(2016, 12, 31, 23, 0, 0),
     )
 
-    row4 = factory.create_row(
+    production_period = factory.create_row(
         metering_point_id="571313180400010437",
         metering_point_type=InputMeteringPointType.PRODUCTION,
         grid_area="804",
@@ -105,7 +105,7 @@ def create_metering_point_periods(spark: SparkSession) -> DataFrame:
         from_date=datetime(2016, 12, 31, 23, 0, 0),
     )
 
-    row5 = factory.create_row(
+    consumption_period = factory.create_row(
         metering_point_id="571313180400010673",
         metering_point_type=InputMeteringPointType.CONSUMPTION,
         grid_area="804",
@@ -116,10 +116,10 @@ def create_metering_point_periods(spark: SparkSession) -> DataFrame:
 
     return factory.create_dataframe(
         [
-            row1,
-            row2,
-            row3,
-            row4,
-            row5,
+            grid_loss_period,
+            system_correction_period,
+            exchange_period,
+            production_period,
+            consumption_period,
         ]
     )

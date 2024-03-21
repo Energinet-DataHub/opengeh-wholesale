@@ -13,7 +13,7 @@ THEN there are 4 rows in the result
 
 ```text
 The grid loss is calculated like this:
-(Sum E18 + (Sum E20 in - Sum E20 out) - (Sum E17 non-profiled + Sum E17 flex)) / 4 = grid loss
+(Σ Exchange + (Σ Exchange in - Σ Exchange out) - (Σ Consumption non-profiled + Σ Consumption flex)) / 4 = grid loss
 (10 + (10 - 0) - (0 + 5)) / 4 = 3.750
 
 When grid loss > 0 then grid loss is positive
