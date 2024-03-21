@@ -29,7 +29,6 @@ from package.constants import Colname
 class InputMeteringPointPeriodsTestFactory:
     METERING_POINT_ID = "123456789012345678901234567"
     METERING_POINT_TYPE = InputMeteringPointType.PRODUCTION
-    CALCULATION_TYPE = None
     FROM_DATE = datetime(2019, 12, 31, 23, 0, 0)
     TO_DATE = None
     GRID_AREA = "805"
@@ -48,8 +47,8 @@ class InputMeteringPointPeriodsTestFactory:
     def create_row(
         metering_point_id: str = METERING_POINT_ID,
         metering_point_type: InputMeteringPointType = METERING_POINT_TYPE,
-        calculation_type: CalculationType | None = CALCULATION_TYPE,
-        settlement_method: InputSettlementMethod = SETTLEMENT_METHOD,
+        calculation_type: CalculationType | None = None,
+        settlement_method: InputSettlementMethod | None = SETTLEMENT_METHOD,
         grid_area: str = GRID_AREA,
         resolution: MeteringPointResolution = RESOLUTION,
         from_grid_area: str | None = FROM_GRID_AREA,
