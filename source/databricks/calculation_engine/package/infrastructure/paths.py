@@ -30,7 +30,7 @@ CALCULATIONS_TABLE_NAME = "calculations"
 # Output database and tables
 OUTPUT_DATABASE_NAME = "wholesale_output"
 METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME = "metering_point_periods"
-TIME_SERIES_BASIS_DATA_TABLE_NAME = "time_series"
+TIME_SERIES_BASIS_DATA_TABLE_NAME = "time_series_points"
 ENERGY_RESULT_TABLE_NAME = "energy_results"
 WHOLESALE_RESULT_TABLE_NAME = "wholesale_results"
 BASIS_DATA_DATABASE_NAME = "basis_data"

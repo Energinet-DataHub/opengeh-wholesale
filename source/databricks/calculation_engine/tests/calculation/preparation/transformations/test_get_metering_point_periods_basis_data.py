@@ -11,52 +11,34 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import datetime
 
 from pyspark.sql import SparkSession, Row
 
 from calculation.preparation.transformations import metering_point_periods_factory
+from package.calculation.basis_data.schemas import metering_point_period_schema
 from package.calculation.preparation.transformations.basis_data import (
     get_metering_point_periods_basis_data,
 )
 from package.codelists import (
     MeteringPointResolution,
 )
+from package.common import assert_schema
 from package.constants import Colname, MeteringPointPeriodColname
 
 
-def test__get_master_basis_data_has_expected_columns(spark: SparkSession) -> None:
+def test__when_valid_input__returns_df_with_expected_schema(
+    spark: SparkSession,
+) -> None:
     # Arrange
-    rows = [
-        metering_point_periods_factory.create_row(),
-        metering_point_periods_factory.create_row(
-            from_date=datetime.datetime(2022, 6, 10, 22),
-            to_date=datetime.datetime(2022, 6, 12, 22),
-        ),
-    ]
-
-    metering_point_period_df = metering_point_periods_factory.create(spark, rows)
+    metering_point_period_df = metering_point_periods_factory.create(spark)
 
     # Act
-    master_basis_data = get_metering_point_periods_basis_data(
+    actual = get_metering_point_periods_basis_data(
         "some-calculation-id", metering_point_period_df
     )
 
     # Assert
-    assert master_basis_data.columns == [
-        "calculation_id",
-        "resolution",
-        "metering_point_id",
-        "from_date",
-        "to_date",
-        "grid_area",
-        "to_grid_area",
-        "from_grid_area",
-        "metering_point_type",
-        "settlement_method",
-        "energy_supplier_id",
-        "balance_responsible_id",
-    ]
+    assert_schema(actual.schema, metering_point_period_schema)
 
 
 def test__each_metering_point_has_a_row(spark: SparkSession) -> None:
