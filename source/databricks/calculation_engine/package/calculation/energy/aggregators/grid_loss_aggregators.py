@@ -84,6 +84,8 @@ def calculate_grid_loss(
         .na.fill({flex_result: 0})
     )
 
+    result.show()
+
     result = result.withColumn(
         Colname.quantity,
         result[net_exchange_result]
