@@ -5,6 +5,7 @@ GIVEN grid loss and system correction metering points (positive and negative gri
   AND one consumption metering point
   AND one exchange metering point  
   AND one production metering point
+  AND one hourly time series point for each metering point
 WHEN calculating positive grid loss for 1st of February from 12pm to 1pm
 THEN the calculated positive grid loss is 3.750 kWh per quarter for the 1 hour period 
 THEN there are 4 rows in the result
