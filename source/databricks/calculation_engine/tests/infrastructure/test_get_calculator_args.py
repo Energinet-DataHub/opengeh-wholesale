@@ -37,6 +37,19 @@ def _get_contract_parameters(filename: str) -> list[str]:
         )
 
 
+def _substitute_period(
+    sys_argv: list[str], period_start_datetime: str, period_end_datetime: str
+) -> list[str]:
+    for i, item in enumerate(sys_argv):
+        print(item)
+        if item.startswith("--period-start-datetime"):
+            sys_argv[i] = f"--period-start-datetime={period_start_datetime}"
+        elif item.startswith("--period-end-datetime"):
+            sys_argv[i] = f"--period-end-datetime={period_end_datetime}"
+
+    return sys_argv
+
+
 @pytest.fixture(scope="session")
 def contract_parameters(contracts_path: str) -> list[str]:
     job_parameters = _get_contract_parameters(
@@ -214,41 +227,14 @@ class TestWhenWholesaleFixingPeriodIsNotOneMonth:
         sys_argv_from_contract: list[str],
     ) -> None:
         # Arrange
+        sys_argv = sys_argv_from_contract
         calculation_type = CalculationType.WHOLESALE_FIXING
-        calc_type_pattern = r"--calculation-type=(\w+)"
-        period_start_pattern = (
-            r"--calculation-period-start-datetime=(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})"
-        )
-        period_end_pattern = (
-            r"--calculation-period-end-datetime=(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})"
+        sys_argv = _substitute_calculation_type(sys_argv, calculation_type)
+        sys_argv = _substitute_period(
+            sys_argv, period_start_datetime, period_end_datetime
         )
 
-        for i, item in enumerate(sys_argv_from_contract):
-            if re.search(calc_type_pattern, item):
-                sys_argv_from_contract[i] = re.sub(
-                    calc_type_pattern,
-                    f"--calculation-type={calculation_type.value}",
-                    item,
-                )
-                break
-
-            if re.search(period_start_pattern, item):
-                sys_argv_from_contract[i] = re.sub(
-                    period_start_pattern,
-                    f"--calculation-period-start-datetime={period_start_datetime}",
-                    item,
-                )
-                break
-
-            if re.search(period_end_pattern, item):
-                sys_argv_from_contract[i] = re.sub(
-                    period_end_pattern,
-                    f"--calculation-period-end-datetime={period_end_datetime}",
-                    item,
-                )
-                break
-
-        with patch("sys.argv", sys_argv_from_contract):
+        with patch("sys.argv", sys_argv):
             with patch.dict("os.environ", job_environment_variables):
                 with pytest.raises(Exception) as error:
                     command_line_args = parse_command_line_arguments()
@@ -261,6 +247,21 @@ class TestWhenWholesaleFixingPeriodIsNotOneMonth:
             "The calculation period for wholesale calculation types must be a full month"
             in actual_error_message
         )
+
+
+def _substitute_calculation_type(
+    sys_argv: list[str], calculation_type: CalculationType
+) -> list[str]:
+    pattern = r"--calculation-type=(\w+)"
+    for i, item in enumerate(sys_argv):
+        if re.search(pattern, item):
+            sys_argv[i] = re.sub(
+                pattern,
+                f"--calculation-type={calculation_type.value}",
+                item,
+            )
+            break
+    return sys_argv
 
 
 class TestWhenWholesaleCalculationPeriodIsNotOneMonth:
