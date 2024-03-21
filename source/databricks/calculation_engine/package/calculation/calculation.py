@@ -40,7 +40,7 @@ from ..codelists.calculation_type import is_wholesale_calculation_type
 @logging_configuration.use_span("calculation")
 def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> None:
     results = _execute(args, prepared_data_reader)
-    _write_results(args, results)
+    _write_results(results)
 
 
 def _execute(
@@ -120,17 +120,17 @@ def _execute(
 
     # Add basis data to results
     results.basis_data = basis_data_factory.create(
-        metering_point_periods_df, metering_point_time_series, args.time_zone
+        args, metering_point_periods_df, metering_point_time_series
     )
 
     return results
 
 
 @logging_configuration.use_span("calculation.write")
-def _write_results(args: CalculatorArgs, results: CalculationResultsContainer) -> None:
+def _write_results(results: CalculationResultsContainer) -> None:
     write_energy_results(results.energy_results)
     if results.wholesale_results is not None:
         write_wholesale_results(results.wholesale_results)
 
     # We write basis data at the end of the calculation to make it easier to analyze performance of the calculation part
-    write_basis_data(args, results.basis_data)
+    write_basis_data(results.basis_data)
