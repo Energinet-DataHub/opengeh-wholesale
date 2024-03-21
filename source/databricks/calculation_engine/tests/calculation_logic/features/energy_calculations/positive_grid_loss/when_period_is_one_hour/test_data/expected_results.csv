@@ -1,5 +1,5 @@
 ﻿grid_area;energy_supplier_id;balance_responsible_id;quantity;quantity_qualities;time;aggregation_level;time_series_type;calculation_id;calculation_type;calculation_execution_time_start;from_grid_area;calculation_result_id;metering_point_id
-804;8100000000115;;3.75;['calculated'];2023-02-01 12:00:00;total_ga;positive_grid_loss;;BalanceFixing;;;;571313180400100657
-804;8100000000115;;3.75;['calculated'];2023-02-01 12:15:00;total_ga;positive_grid_loss;;BalanceFixing;;;;571313180400100657
-804;8100000000115;;3.75;['calculated'];2023-02-01 12:30:00;total_ga;positive_grid_loss;;BalanceFixing;;;;571313180400100657
-804;8100000000115;;3.75;['calculated'];2023-02-01 12:45:00;total_ga;positive_grid_loss;;BalanceFixing;;;;571313180400100657
+804;8100000000115;;3.75;['calculated'];2023-02-01 12:00:00;total_ga;positive_grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;;;;571313180400100657
+804;8100000000115;;3.75;['calculated'];2023-02-01 12:15:00;total_ga;positive_grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;;;;571313180400100657
+804;8100000000115;;3.75;['calculated'];2023-02-01 12:30:00;total_ga;positive_grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;;;;571313180400100657
+804;8100000000115;;3.75;['calculated'];2023-02-01 12:45:00;total_ga;positive_grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;;;;571313180400100657
