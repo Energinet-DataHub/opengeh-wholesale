@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Models;
 
 namespace Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
@@ -25,10 +26,10 @@ public class TimeSeriesTypeValidationRule : IValidationRule<DataHub.Edi.Requests
         if (subject.RequestedByActorRole == ActorRoleCode.MeteredDataResponsible)
             return Task.FromResult(NoError);
 
-        if (subject.MeteringPointType == MeteringPointType.Exchange)
+        if (subject.MeteringPointType == DomainNames.MeteringPointType.Exchange)
             return Task.FromResult(InvalidTimeSeriesTypeForActor(subject.RequestedByActorRole));
 
-        if (subject.MeteringPointType == MeteringPointType.Consumption && !subject.HasSettlementMethod)
+        if (subject.MeteringPointType == DomainNames.MeteringPointType.Consumption && !subject.HasSettlementMethod)
             return Task.FromResult(InvalidTimeSeriesTypeForActor(subject.RequestedByActorRole));
 
         return Task.FromResult(NoError);

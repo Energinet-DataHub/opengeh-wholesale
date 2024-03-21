@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.Validation;
@@ -35,7 +36,7 @@ public class SettlementMethodValidatorTest
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithMeteringPointType(MeteringPointType.Consumption)
+            .WithMeteringPointType(DomainNames.MeteringPointType.Consumption)
             .WithSettlementMethod(settlementMethod)
             .Build();
 
@@ -47,8 +48,8 @@ public class SettlementMethodValidatorTest
     }
 
     [Theory]
-    [InlineData(MeteringPointType.Production)]
-    [InlineData(MeteringPointType.Exchange)]
+    [InlineData(DomainNames.MeteringPointType.Production)]
+    [InlineData(DomainNames.MeteringPointType.Exchange)]
     [InlineData("not-consumption")]
     public async Task Validate_WhenMeteringPointTypeIsGivenAndSettlementMethodIsNull_ReturnsNoValidationErrorsAsync(string meteringPointType)
     {
@@ -72,7 +73,7 @@ public class SettlementMethodValidatorTest
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithMeteringPointType(MeteringPointType.Consumption)
+            .WithMeteringPointType(DomainNames.MeteringPointType.Consumption)
             .WithSettlementMethod("invalid-settlement-method")
             .Build();
 
@@ -88,12 +89,12 @@ public class SettlementMethodValidatorTest
     }
 
     [Theory]
-    [InlineData(MeteringPointType.Production, SettlementMethod.Flex)]
-    [InlineData(MeteringPointType.Production, SettlementMethod.NonProfiled)]
-    [InlineData(MeteringPointType.Production, "invalid-settlement-method")]
-    [InlineData(MeteringPointType.Exchange, SettlementMethod.Flex)]
-    [InlineData(MeteringPointType.Exchange, SettlementMethod.NonProfiled)]
-    [InlineData(MeteringPointType.Exchange, "invalid-settlement-method")]
+    [InlineData(DomainNames.MeteringPointType.Production, SettlementMethod.Flex)]
+    [InlineData(DomainNames.MeteringPointType.Production, SettlementMethod.NonProfiled)]
+    [InlineData(DomainNames.MeteringPointType.Production, "invalid-settlement-method")]
+    [InlineData(DomainNames.MeteringPointType.Exchange, SettlementMethod.Flex)]
+    [InlineData(DomainNames.MeteringPointType.Exchange, SettlementMethod.NonProfiled)]
+    [InlineData(DomainNames.MeteringPointType.Exchange, "invalid-settlement-method")]
     [InlineData("not-consumption-metering-point", SettlementMethod.Flex)]
     [InlineData("not-consumption-metering-point", SettlementMethod.NonProfiled)]
     [InlineData("not-consumption-metering-point", "invalid-settlement-method")]

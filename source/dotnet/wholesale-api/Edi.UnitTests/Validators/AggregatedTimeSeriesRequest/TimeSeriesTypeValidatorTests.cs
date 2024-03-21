@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.Validation;
@@ -28,11 +29,11 @@ public class TimeSeriesTypeValidatorTests
     private readonly TimeSeriesTypeValidationRule _sut = new();
 
     [Theory]
-    [InlineData(MeteringPointType.Production, null)]
-    [InlineData(MeteringPointType.Exchange, null)]
-    [InlineData(MeteringPointType.Consumption, null)]
-    [InlineData(MeteringPointType.Consumption, SettlementMethod.NonProfiled)]
-    [InlineData(MeteringPointType.Consumption, SettlementMethod.Flex)]
+    [InlineData(DomainNames.MeteringPointType.Production, null)]
+    [InlineData(DomainNames.MeteringPointType.Exchange, null)]
+    [InlineData(DomainNames.MeteringPointType.Consumption, null)]
+    [InlineData(DomainNames.MeteringPointType.Consumption, SettlementMethod.NonProfiled)]
+    [InlineData(DomainNames.MeteringPointType.Consumption, SettlementMethod.Flex)]
     public async Task Validate_AsMeteredDataResponsible_ReturnsNoValidationErrors(string meteringPointType, string? settlementMethod)
     {
         // Arrange
@@ -52,9 +53,9 @@ public class TimeSeriesTypeValidatorTests
     }
 
     [Theory]
-    [InlineData(MeteringPointType.Production, null)]
-    [InlineData(MeteringPointType.Consumption, SettlementMethod.NonProfiled)]
-    [InlineData(MeteringPointType.Consumption, SettlementMethod.Flex)]
+    [InlineData(DomainNames.MeteringPointType.Production, null)]
+    [InlineData(DomainNames.MeteringPointType.Consumption, SettlementMethod.NonProfiled)]
+    [InlineData(DomainNames.MeteringPointType.Consumption, SettlementMethod.Flex)]
     public async Task Validate_AsEnergySupplier_ReturnsNoValidationErrors(string meteringPointType, string? settlementMethod)
     {
         // Arrange
@@ -74,9 +75,9 @@ public class TimeSeriesTypeValidatorTests
     }
 
     [Theory]
-    [InlineData(MeteringPointType.Production, null)]
-    [InlineData(MeteringPointType.Consumption, SettlementMethod.NonProfiled)]
-    [InlineData(MeteringPointType.Consumption, SettlementMethod.Flex)]
+    [InlineData(DomainNames.MeteringPointType.Production, null)]
+    [InlineData(DomainNames.MeteringPointType.Consumption, SettlementMethod.NonProfiled)]
+    [InlineData(DomainNames.MeteringPointType.Consumption, SettlementMethod.Flex)]
     public async Task Validate_AsBalanceResponsible_ReturnsNoValidationErrors(string meteringPointType, string? settlementMethod)
     {
         // Arrange
@@ -96,8 +97,8 @@ public class TimeSeriesTypeValidatorTests
     }
 
     [Theory]
-    [InlineData(MeteringPointType.Exchange)]
-    [InlineData(MeteringPointType.Consumption)]
+    [InlineData(DomainNames.MeteringPointType.Exchange)]
+    [InlineData(DomainNames.MeteringPointType.Consumption)]
     public async Task Validate_AsEnergySupplierAndNoSettlementMethod_ReturnsExceptedValidationErrors(string meteringPointType)
     {
         // Arrange
@@ -121,8 +122,8 @@ public class TimeSeriesTypeValidatorTests
     }
 
     [Theory]
-    [InlineData(MeteringPointType.Exchange)]
-    [InlineData(MeteringPointType.Consumption)]
+    [InlineData(DomainNames.MeteringPointType.Exchange)]
+    [InlineData(DomainNames.MeteringPointType.Consumption)]
     public async Task Validate_AsBalanceResponsibleAndNoSettlementMethod_ValidationErrors(string meteringPointType)
     {
         // Arrange

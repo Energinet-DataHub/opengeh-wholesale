@@ -36,7 +36,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
             gridAreaCode: gridAreaCode,
             energySupplier: energySupplier,
             balanceResponsible: balanceResponsibleId,
-            meteringPointType: MeteringPointType.Production);
+            meteringPointType: DomainNames.MeteringPointType.Production);
 
         // Act
         var actual = AggregatedTimeSeriesRequestFactory.Parse(request);
@@ -235,7 +235,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
         string? gridAreaCode = null,
         string? energySupplier = null,
         string? balanceResponsible = null,
-        string meteringPointType = MeteringPointType.Production,
+        string meteringPointType = DomainNames.MeteringPointType.Production,
         string settlementMethod = SettlementMethod.Flex)
     {
         var request = new AggregatedTimeSeriesRequest()

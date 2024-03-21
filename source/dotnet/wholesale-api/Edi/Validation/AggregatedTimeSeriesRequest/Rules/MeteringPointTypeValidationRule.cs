@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Models;
 
 namespace Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
@@ -20,9 +21,9 @@ public class MeteringPointTypeValidationRule : IValidationRule<DataHub.Edi.Reque
 {
     private static readonly IReadOnlyList<string> _validMeteringPointTypes = new List<string>
     {
-        MeteringPointType.Consumption,
-        MeteringPointType.Production,
-        MeteringPointType.Exchange,
+        DomainNames.MeteringPointType.Consumption,
+        DomainNames.MeteringPointType.Production,
+        DomainNames.MeteringPointType.Exchange,
     };
 
     private static readonly ValidationError _invalidMeteringPointType =

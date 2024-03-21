@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Models;
 
 namespace Energinet.DataHub.Wholesale.Edi.Mappers;
@@ -22,9 +23,9 @@ public static class TimeSeriesTypeMapper
     {
         return meteringPointType switch
         {
-            MeteringPointType.Production => TimeSeriesType.Production,
-            MeteringPointType.Exchange => TimeSeriesType.NetExchangePerGa,
-            MeteringPointType.Consumption => settlementMethod switch
+            DomainNames.MeteringPointType.Production => TimeSeriesType.Production,
+            DomainNames.MeteringPointType.Exchange => TimeSeriesType.NetExchangePerGa,
+            DomainNames.MeteringPointType.Consumption => settlementMethod switch
             {
                 SettlementMethod.NonProfiled => TimeSeriesType.NonProfiledConsumption,
                 SettlementMethod.Flex => TimeSeriesType.FlexConsumption,

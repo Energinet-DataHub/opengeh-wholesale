@@ -157,7 +157,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
         // Arrange
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithMeteringPointType(MeteringPointType.Consumption)
+            .WithMeteringPointType(DomainNames.MeteringPointType.Consumption)
             .WithSettlementMethod(null)
             .WithRequestedByActorId(EnergySupplierValidatorTest.ValidGlnNumber)
             .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
