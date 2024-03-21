@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import datetime
+from datetime import datetime
 import re
 
 import pytest
@@ -38,15 +38,29 @@ def _get_contract_parameters(filename: str) -> list[str]:
 
 
 def _substitute_period(
-    sys_argv: list[str], period_start_datetime: str, period_end_datetime: str
+    sys_argv: list[str], period_start_datetime: datetime, period_end_datetime: datetime
 ) -> list[str]:
     for i, item in enumerate(sys_argv):
         print(item)
         if item.startswith("--period-start-datetime"):
-            sys_argv[i] = f"--period-start-datetime={period_start_datetime}"
+            sys_argv[
+                i
+            ] = f"--period-start-datetime={period_start_datetime.strftime('%Y-%m-%dT%H:%M:%SZ')}"
         elif item.startswith("--period-end-datetime"):
-            sys_argv[i] = f"--period-end-datetime={period_end_datetime}"
+            sys_argv[
+                i
+            ] = f"--period-end-datetime={period_end_datetime.strftime('%Y-%m-%dT%H:%M:%SZ')}"
 
+    return sys_argv
+
+
+def _substitute_calculation_type(
+    sys_argv: list[str], calculation_type: CalculationType
+) -> list[str]:
+    for i, item in enumerate(sys_argv):
+        if item.startswith("--calculation-type="):
+            sys_argv[i] = f"--calculation-type={calculation_type.value}"
+            break
     return sys_argv
 
 
@@ -114,16 +128,12 @@ class TestWhenInvokedWithValidParameters:
         # Assert - Calculation arguments
         assert actual_args.calculation_id == DEFAULT_CALCULATION_ID
         assert actual_args.calculation_grid_areas == ["805", "806", "033"]
-        assert actual_args.calculation_period_start_datetime == datetime.datetime(
+        assert actual_args.calculation_period_start_datetime == datetime(
             2022, 5, 31, 22
         )
-        assert actual_args.calculation_period_end_datetime == datetime.datetime(
-            2022, 6, 1, 22
-        )
+        assert actual_args.calculation_period_end_datetime == datetime(2022, 6, 1, 22)
         assert actual_args.calculation_type == CalculationType.BALANCE_FIXING
-        assert actual_args.calculation_execution_time_start == datetime.datetime(
-            2022, 6, 4, 22
-        )
+        assert actual_args.calculation_execution_time_start == datetime(2022, 6, 4, 22)
         assert actual_args.time_zone == "Europe/Copenhagen"
 
         # Assert - Infrastructure settings
@@ -201,34 +211,40 @@ class TestWhenUnknownCalculationType:
         assert error.value.code != 0
 
 
-class TestWhenWholesaleFixingPeriodIsNotOneMonth:
+class TestWhenCalculationPeriodIsNotOneCalendarMonth:
     @pytest.mark.parametrize(
-        "period_start_datetime, period_end_datetime",
+        "period_start_datetime, period_end_datetime, calculation_type",
         [
-            (  # Missing one day at the end
-                "2022-05-31T22:00:00Z",
-                "2022-06-30T22:00:00Z",
-            ),
-            (  # Missing one day in the beginning
-                "2022-06-01T22:00:00Z",
-                "2022-06-30T22:00:00Z",
-            ),
-            (  # Two months
-                "2022-05-31T22:00:00Z",
-                "2022-07-31T22:00:00Z",
-            ),
+            (start, end, calc_type)
+            for start, end in [
+                (  # Missing one day at the end
+                    datetime(2022, 5, 31, 22),
+                    datetime(2022, 6, 29, 22),
+                ),
+                (  # Missing one day in the beginning
+                    datetime(2022, 6, 1, 22),
+                    datetime(2022, 6, 30, 22),
+                ),
+                (datetime(2022, 5, 31, 22), datetime(2022, 7, 31, 22)),  # Two months
+            ]
+            for calc_type in [
+                CalculationType.WHOLESALE_FIXING,
+                CalculationType.FIRST_CORRECTION_SETTLEMENT,
+                CalculationType.SECOND_CORRECTION_SETTLEMENT,
+                CalculationType.THIRD_CORRECTION_SETTLEMENT,
+            ]
         ],
     )
-    def test_raise_exception(
+    def test_raise_exception_for_wholesale_calculations(
         self,
-        period_start_datetime: str,
-        period_end_datetime: str,
+        period_start_datetime: datetime,
+        period_end_datetime: datetime,
+        calculation_type: CalculationType,
         job_environment_variables: dict,
         sys_argv_from_contract: list[str],
     ) -> None:
         # Arrange
         sys_argv = sys_argv_from_contract
-        calculation_type = CalculationType.WHOLESALE_FIXING
         sys_argv = _substitute_calculation_type(sys_argv, calculation_type)
         sys_argv = _substitute_period(
             sys_argv, period_start_datetime, period_end_datetime
@@ -248,64 +264,6 @@ class TestWhenWholesaleFixingPeriodIsNotOneMonth:
             in actual_error_message
         )
 
-
-def _substitute_calculation_type(
-    sys_argv: list[str], calculation_type: CalculationType
-) -> list[str]:
-    pattern = r"--calculation-type=(\w+)"
-    for i, item in enumerate(sys_argv):
-        if re.search(pattern, item):
-            sys_argv[i] = re.sub(
-                pattern,
-                f"--calculation-type={calculation_type.value}",
-                item,
-            )
-            break
-    return sys_argv
-
-
-class TestWhenWholesaleCalculationPeriodIsNotOneMonth:
-    @pytest.mark.parametrize(
-        "calculation_type",
-        [
-            CalculationType.WHOLESALE_FIXING,
-            CalculationType.FIRST_CORRECTION_SETTLEMENT,
-            CalculationType.SECOND_CORRECTION_SETTLEMENT,
-            CalculationType.THIRD_CORRECTION_SETTLEMENT,
-        ],
-    )
-    def test_raise_exception(
-        self,
-        calculation_type: CalculationType,
-        job_environment_variables: dict,
-        sys_argv_from_contract,
-    ) -> None:
-        # Arrange
-        pattern = r"--calculation-type=(\w+)"
-
-        for i, item in enumerate(sys_argv_from_contract):
-            if re.search(pattern, item):
-                sys_argv_from_contract[i] = re.sub(
-                    pattern, f"--calculation-type={calculation_type.value}", item
-                )
-                break
-
-        with patch("sys.argv", sys_argv_from_contract):
-            with patch.dict("os.environ", job_environment_variables):
-                with pytest.raises(Exception) as error:
-                    command_line_args = parse_command_line_arguments()
-                    # Act
-                    parse_job_arguments(command_line_args)
-
-        # Assert
-        actual_error_message = str(error.value)
-        assert (
-            "The calculation period for wholesale calculation types must be a full month"
-            in actual_error_message
-        )
-
-
-class TestWhenEnergyCalculationPeriodIsNotOneMonth:
     @pytest.mark.parametrize(
         "calculation_type",
         [
@@ -313,26 +271,80 @@ class TestWhenEnergyCalculationPeriodIsNotOneMonth:
             CalculationType.BALANCE_FIXING,
         ],
     )
-    def test_do_not_raise_exception(
+    def test_parse_arguments_without_exceptions_for_energy_calculations(
         self,
         calculation_type: CalculationType,
         job_environment_variables: dict,
-        sys_argv_from_contract,
+        sys_argv_from_contract: list[str],
     ) -> None:
         # Arrange
-        pattern = r"--calculation-type=(\w+)"
+        period_start_datetime = datetime(2022, 5, 31, 22)
+        period_end_datetime = datetime(2022, 6, 30, 22)
+        sys_argv = sys_argv_from_contract
+        sys_argv = _substitute_calculation_type(sys_argv, calculation_type)
+        sys_argv = _substitute_period(
+            sys_argv, period_start_datetime, period_end_datetime
+        )
 
-        for i, item in enumerate(sys_argv_from_contract):
-            if re.search(pattern, item):
-                sys_argv_from_contract[i] = re.sub(
-                    pattern, f"--calculation-type={calculation_type.value}", item
-                )
-                break
-
-        with patch("sys.argv", sys_argv_from_contract):
+        with patch("sys.argv", sys_argv):
             with patch.dict("os.environ", job_environment_variables):
                 command_line_args = parse_command_line_arguments()
-                # Act
+                # Act & Assert
+                parse_job_arguments(command_line_args)
+
+
+class TestWhenCalculationPeriodIsOneCalendarMonth:
+    @pytest.mark.parametrize(
+        "period_start_datetime, period_end_datetime, calculation_type",
+        [
+            (start, end, calc_type)
+            for start, end in [
+                (
+                    datetime(2022, 5, 31, 22),
+                    datetime(2022, 6, 30, 22),
+                ),
+                (  # New year
+                    datetime(2021, 12, 31, 23),
+                    datetime(2022, 1, 31, 23),
+                ),
+                (  # Enter daylight saving time
+                    datetime(2022, 2, 28, 23),
+                    datetime(2022, 3, 31, 22),
+                ),
+                (  # Exit daylight saving time
+                    datetime(2022, 9, 30, 22),
+                    datetime(2022, 10, 31, 23),
+                ),
+            ]
+            for calc_type in [
+                CalculationType.AGGREGATION,
+                CalculationType.BALANCE_FIXING,
+                CalculationType.WHOLESALE_FIXING,
+                CalculationType.FIRST_CORRECTION_SETTLEMENT,
+                CalculationType.SECOND_CORRECTION_SETTLEMENT,
+                CalculationType.THIRD_CORRECTION_SETTLEMENT,
+            ]
+        ],
+    )
+    def test_parse_arguments_without_exceptions(
+        self,
+        period_start_datetime: datetime,
+        period_end_datetime: datetime,
+        calculation_type: CalculationType,
+        job_environment_variables: dict,
+        sys_argv_from_contract: list[str],
+    ) -> None:
+        # Arrange
+        sys_argv = sys_argv_from_contract
+        sys_argv = _substitute_calculation_type(sys_argv, calculation_type)
+        sys_argv = _substitute_period(
+            sys_argv, period_start_datetime, period_end_datetime
+        )
+
+        with patch("sys.argv", sys_argv):
+            with patch.dict("os.environ", job_environment_variables):
+                command_line_args = parse_command_line_arguments()
+                # Act & Assert
                 parse_job_arguments(command_line_args)
 
 
