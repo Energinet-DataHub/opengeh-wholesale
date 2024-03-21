@@ -14,7 +14,10 @@
 from pyspark.sql import SparkSession
 from unittest.mock import Mock
 from pyspark.sql.types import StructType, StructField
-
+from package.infrastructure.paths import (
+    OUTPUT_DATABASE_NAME,
+    INPUT_DATABASE_NAME,
+)
 import tests.helpers.mock_helper as mock_helper
 import tests.helpers.spark_helper as spark_helper
 import tests.helpers.spark_sql_migration_helper as spark_sql_migration_helper
@@ -276,14 +279,38 @@ def test__current_state_and_migration_scripts__should_give_same_result(
         return_value=storage_account,
     )
 
+    spark_helper.reset_spark_catalog(spark)
+
     # Act migration scripts
-    spark_sql_migration_helper.migrate(spark)
+    migration_scripts_prefix = "migration_scripts"
+    migration_scripts_substitutions = spark_sql_migration_helper.update_substitutions(
+        spark_sql_migration_helper.get_migration_script_args(spark),
+        {
+            "{OUTPUT_DATABASE_NAME}": f"{migration_scripts_prefix}{OUTPUT_DATABASE_NAME}",
+            "{INPUT_DATABASE_NAME}": f"{migration_scripts_prefix}{INPUT_DATABASE_NAME}",
+            "{OUTPUT_FOLDER}": "migration_test",
+        },
+    )
+    spark_sql_migration_helper.configure_spark_sql_migration(
+        spark,
+        substitution_variables=migration_scripts_substitutions,
+        location="migration_test",
+    )
+    schema_migration_pipeline.migrate()
 
     # Act current state scripts
     current_state_prefix = "current_state"
+
+    substitutions = spark_sql_migration_helper.update_substitutions(
+        spark_sql_migration_helper.get_migration_script_args(spark),
+        {
+            "{OUTPUT_DATABASE_NAME}": f"{current_state_prefix}{OUTPUT_DATABASE_NAME}",
+            "{INPUT_DATABASE_NAME}": f"{current_state_prefix}{INPUT_DATABASE_NAME}",
+            "{OUTPUT_FOLDER}": "migration_test",
+        },
+    )
     spark_sql_migration_helper.configure_spark_sql_migration(
-        spark,
-        schema_prefix=current_state_prefix,
+        spark, substitution_variables=substitutions, location="migration_test"
     )
     schema_migration_pipeline._migrate(0)
 
@@ -300,7 +327,9 @@ def test__current_state_and_migration_scripts__should_give_same_result(
 
     for schema in schema_config.schema_config:
         for table in schema.tables:
-            migration_script_table_name = f"{schema.name}.{table.name}"
+            migration_script_table_name = (
+                f"{migration_scripts_prefix}{schema.name}.{table.name}"
+            )
             current_state_script_tag = (
                 f"{current_state_prefix}{schema.name}.{table.name}"
             )
