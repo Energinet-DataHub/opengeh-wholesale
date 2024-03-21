@@ -42,7 +42,7 @@ public static class WholesaleResultDeltaTableHelper
     {
         quantityQualities ??= new List<string> { "'missing'", "'measured'" };
 
-        if (resolution != "P1M")
+        if (amountType == "amount_per_charge" && meteringPointType == null)
             meteringPointType = "production";
 
         return WholesaleResultColumnNames.GetAllNames().Select(columnName => columnName switch
