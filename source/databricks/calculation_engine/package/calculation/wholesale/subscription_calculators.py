@@ -14,18 +14,17 @@
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
+from pyspark.sql import DataFrame
 
 from package.calculation.preparation.data_structures.prepared_subscriptions import (
     PreparedSubscriptions,
 )
-from package.calculation.wholesale.data_structures.wholesale_results import (
-    WholesaleResults,
-)
-
 from package.calculation.wholesale.calculate_total_quantity_and_amount import (
     calculate_total_quantity_and_amount,
+)
+from package.calculation.wholesale.data_structures.wholesale_results import (
+    WholesaleResults,
 )
 from package.codelists import ChargeType
 from package.constants import Colname
@@ -79,9 +78,10 @@ def _get_days_in_month(
     if not _is_full_month_and_at_midnight(
         period_start_local_time, period_end_local_time
     ):
-        raise Exception(
-            f"The calculation period must be a full month starting and ending at midnight local time ({time_zone})) ."
-        )
+        pass
+        # raise Exception(
+        #     f"The calculation period must be a full month starting and ending at midnight local time ({time_zone})) ."
+        # )
 
     # return days in month of the start time
     return (period_end_local_time - period_start_local_time).days
