@@ -20,6 +20,8 @@ from unittest.mock import Mock
 
 from pyspark.sql import SparkSession, DataFrame
 
+from package.calculation import PreparedDataReader
+from package.calculation.calculation import _execute
 from package.calculation.calculation_results import (
     CalculationResultsContainer,
 )
@@ -61,10 +63,6 @@ class ScenarioFixture:
         )
 
     def execute(self) -> CalculationResultsContainer:
-
-        from package.calculation import PreparedDataReader
-        from package.calculation.calculation import _execute
-
         return _execute(
             self.test_calculation_args, PreparedDataReader(self.table_reader)
         )

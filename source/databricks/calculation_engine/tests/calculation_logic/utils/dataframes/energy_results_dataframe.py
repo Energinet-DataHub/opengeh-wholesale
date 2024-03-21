@@ -50,10 +50,6 @@ def create_energy_result_dataframe(*args) -> DataFrame:
     )
 
     df = df.withColumn(
-        EnergyResultColumnNames.calculation_id, lit(calculator_args.calculation_id)
-    )
-
-    df = df.withColumn(
         EnergyResultColumnNames.calculation_type,
         lit(CalculationType(calculator_args.calculation_type).value),
     )
