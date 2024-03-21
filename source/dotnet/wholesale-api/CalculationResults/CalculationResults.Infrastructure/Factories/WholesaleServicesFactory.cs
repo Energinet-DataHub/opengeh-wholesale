@@ -36,7 +36,7 @@ public static class WholesaleServicesFactory
             AmountTypeMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.AmountType]!),
             ResolutionMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.Resolution]!),
             QuantityUnitMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.QuantityUnit]!),
-            MeteringPointTypeMapper.FromRequiredDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.MeteringPointType]!),
+            MeteringPointTypeMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.MeteringPointType]),
             SettlementMethodMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.SettlementMethod]),
             Currency.DKK,
             CalculationTypeMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.CalculationType]!),
