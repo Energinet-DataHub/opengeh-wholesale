@@ -11,12 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-
-class PartitionKeyName:
-    GROUPING: str = "grouping"
-    TIME_SERIES_TYPE: str = "time_series_type"
-    ENERGY_SUPPLIER_GLN: str = "energy_supplier_gln"
-    BALANCE_RESPONSIBLE_ID: str = "balance_responsible_party_gln"
-    GRID_AREA: str = "grid_area"
-    GLN: str = "gln"

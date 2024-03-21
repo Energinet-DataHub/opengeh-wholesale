@@ -14,7 +14,9 @@
 
 import sys
 from argparse import Namespace
+from datetime import datetime
 from typing import Tuple
+from zoneinfo import ZoneInfo
 
 import configargparse
 from configargparse import argparse
@@ -23,6 +25,7 @@ import package.infrastructure.environment_variables as env_vars
 from package.calculation.calculator_args import CalculatorArgs
 from package.codelists.calculation_type import (
     CalculationType,
+    is_wholesale_calculation_type,
 )
 from package.common.logger import Logger
 from package.infrastructure import valid_date, valid_list, logging_configuration, paths
@@ -50,6 +53,9 @@ def parse_job_arguments(
             calculation_type=job_args.calculation_type,
             time_zone=time_zone,
         )
+
+        if is_wholesale_calculation_type(calculator_args.calculation_type):
+            _validate_period_for_wholesale_calculation(calculator_args)
 
         storage_account_name = env_vars.get_storage_account_name()
         credential = env_vars.get_storage_account_credential()
@@ -97,3 +103,27 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
         raise Exception("Grid areas must be a list")
 
     return args
+
+
+def _validate_period_for_wholesale_calculation(args: CalculatorArgs) -> None:
+    time_zone_info = ZoneInfo(args.time_zone)
+    period_start_local_time = args.calculation_period_start_datetime.astimezone(
+        time_zone_info
+    )
+    period_end_local_time = args.calculation_period_end_datetime.astimezone(
+        time_zone_info
+    )
+
+    is_valid_period = (
+        period_start_local_time.time()
+        == period_end_local_time.time()
+        == datetime.min.time()
+        and period_start_local_time.day == 1
+        and period_end_local_time.day == 1
+        and period_end_local_time.month == (period_start_local_time.month % 12) + 1
+    )
+
+    if not is_valid_period:
+        raise Exception(
+            f"The calculation period for wholesale calculation types must be a full month starting and ending at midnight local time ({args.time_zone}))."
+        )
