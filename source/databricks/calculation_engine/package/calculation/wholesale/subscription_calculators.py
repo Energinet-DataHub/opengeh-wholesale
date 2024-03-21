@@ -14,18 +14,17 @@
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
+from pyspark.sql import DataFrame
 
 from package.calculation.preparation.data_structures.prepared_subscriptions import (
     PreparedSubscriptions,
 )
-from package.calculation.wholesale.data_structures.wholesale_results import (
-    WholesaleResults,
-)
-
 from package.calculation.wholesale.calculate_total_quantity_and_amount import (
     calculate_total_quantity_and_amount,
+)
+from package.calculation.wholesale.data_structures.wholesale_results import (
+    WholesaleResults,
 )
 from package.codelists import ChargeType
 from package.constants import Colname
