@@ -24,7 +24,7 @@ class CalculationType(Enum):
     THIRD_CORRECTION_SETTLEMENT = "ThirdCorrectionSettlement"
 
 
-def is_wholesale_calculation_type(calculation_type: CalculationType) -> bool:
+def is_wholesale_or_correction_calculation(calculation_type: CalculationType) -> bool:
     return (
         calculation_type == CalculationType.WHOLESALE_FIXING
         or calculation_type == CalculationType.FIRST_CORRECTION_SETTLEMENT

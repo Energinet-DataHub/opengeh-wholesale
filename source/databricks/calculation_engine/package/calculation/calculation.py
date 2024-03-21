@@ -34,7 +34,7 @@ from .wholesale.get_metering_points_and_child_metering_points import (
 from package.calculation.energy.calculated_grid_loss import (
     add_calculated_grid_loss_to_metering_point_times_series,
 )
-from ..codelists.calculation_type import is_wholesale_calculation_type
+from ..codelists.calculation_type import is_wholesale_or_correction_calculation
 
 
 @logging_configuration.use_span("calculation")
@@ -95,7 +95,7 @@ def _execute(
         )
     )
 
-    if is_wholesale_calculation_type(args.calculation_type):
+    if is_wholesale_or_correction_calculation(args.calculation_type):
         with logging_configuration.start_span("calculation.wholesale.prepare"):
             wholesale_metering_point_periods = (
                 get_metering_points_and_child_metering_points(metering_point_periods_df)
