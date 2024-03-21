@@ -65,18 +65,19 @@ def test__each_metering_point_has_a_row(spark: SparkSession) -> None:
 def test__columns_have_expected_values(spark: SparkSession) -> None:
     # Arrange
     expected_dict = {
-        MeteringPointPeriodColname.calculation_id: "foo",
-        MeteringPointPeriodColname.resolution: metering_point_periods_factory.DEFAULT_RESOLUTION.value,
+        MeteringPointPeriodColname.calculation_id: "some-calculation-id",
         MeteringPointPeriodColname.metering_point_id: metering_point_periods_factory.DEFAULT_METERING_POINT_ID,
-        MeteringPointPeriodColname.from_date: metering_point_periods_factory.DEFAULT_FROM_DATE,
-        MeteringPointPeriodColname.to_date: metering_point_periods_factory.DEFAULT_TO_DATE,
-        MeteringPointPeriodColname.grid_area: metering_point_periods_factory.DEFAULT_GRID_AREA,
-        MeteringPointPeriodColname.to_grid_area: metering_point_periods_factory.DEFAULT_TO_GRID_AREA,
-        MeteringPointPeriodColname.from_grid_area: metering_point_periods_factory.DEFAULT_FROM_GRID_AREA,
         MeteringPointPeriodColname.metering_point_type: metering_point_periods_factory.DEFAULT_METERING_POINT_TYPE.value,
         MeteringPointPeriodColname.settlement_method: metering_point_periods_factory.DEFAULT_SETTLEMENT_METHOD.value,
+        MeteringPointPeriodColname.grid_area: metering_point_periods_factory.DEFAULT_GRID_AREA,
+        MeteringPointPeriodColname.resolution: metering_point_periods_factory.DEFAULT_RESOLUTION.value,
+        MeteringPointPeriodColname.from_grid_area: metering_point_periods_factory.DEFAULT_FROM_GRID_AREA,
+        MeteringPointPeriodColname.to_grid_area: metering_point_periods_factory.DEFAULT_TO_GRID_AREA,
+        MeteringPointPeriodColname.parent_metering_point_id: metering_point_periods_factory.DEFAULT_PARENT_METERING_POINT_ID,
         MeteringPointPeriodColname.energy_supplier_id: metering_point_periods_factory.DEFAULT_ENERGY_SUPPLIER_ID,
         MeteringPointPeriodColname.balance_responsible_id: metering_point_periods_factory.DEFAULT_BALANCE_RESPONSIBLE_ID,
+        MeteringPointPeriodColname.from_date: metering_point_periods_factory.DEFAULT_FROM_DATE,
+        MeteringPointPeriodColname.to_date: metering_point_periods_factory.DEFAULT_TO_DATE,
     }
     expected = Row(**expected_dict)
 
