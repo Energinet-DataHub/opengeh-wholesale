@@ -76,12 +76,12 @@ def _get_days_in_month(
     period_start_local_time = calculation_period_start.astimezone(time_zone_info)
     period_end_local_time = calculation_period_end.astimezone(time_zone_info)
 
-    if not _is_full_month_and_at_midnight(
-        period_start_local_time, period_end_local_time
-    ):
-        raise Exception(
-            f"The calculation period must be a full month starting and ending at midnight local time ({time_zone})) ."
-        )
+    # if not _is_full_month_and_at_midnight(
+    #     period_start_local_time, period_end_local_time
+    # ):
+    #     raise Exception(
+    #         f"The calculation period must be a full month starting and ending at midnight local time ({time_zone})) ."
+    #     )
 
     # return days in month of the start time
     return (period_end_local_time - period_start_local_time).days
