@@ -27,8 +27,8 @@ public static class TimeSeriesTypeMapper
             DomainNames.MeteringPointType.Exchange => TimeSeriesType.NetExchangePerGa,
             DomainNames.MeteringPointType.Consumption => settlementMethod switch
             {
-                SettlementMethod.NonProfiled => TimeSeriesType.NonProfiledConsumption,
-                SettlementMethod.Flex => TimeSeriesType.FlexConsumption,
+                DomainNames.SettlementType.NonProfiled => TimeSeriesType.NonProfiledConsumption,
+                DomainNames.SettlementType.Flex => TimeSeriesType.FlexConsumption,
                 var method when
                     string.IsNullOrWhiteSpace(method) => TimeSeriesType.TotalConsumption,
 

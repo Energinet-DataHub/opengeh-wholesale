@@ -32,8 +32,8 @@ public class TimeSeriesTypeValidatorTests
     [InlineData(DomainNames.MeteringPointType.Production, null)]
     [InlineData(DomainNames.MeteringPointType.Exchange, null)]
     [InlineData(DomainNames.MeteringPointType.Consumption, null)]
-    [InlineData(DomainNames.MeteringPointType.Consumption, SettlementMethod.NonProfiled)]
-    [InlineData(DomainNames.MeteringPointType.Consumption, SettlementMethod.Flex)]
+    [InlineData(DomainNames.MeteringPointType.Consumption, DomainNames.SettlementType.NonProfiled)]
+    [InlineData(DomainNames.MeteringPointType.Consumption, DomainNames.SettlementType.Flex)]
     public async Task Validate_AsMeteredDataResponsible_ReturnsNoValidationErrors(string meteringPointType, string? settlementMethod)
     {
         // Arrange
@@ -54,8 +54,8 @@ public class TimeSeriesTypeValidatorTests
 
     [Theory]
     [InlineData(DomainNames.MeteringPointType.Production, null)]
-    [InlineData(DomainNames.MeteringPointType.Consumption, SettlementMethod.NonProfiled)]
-    [InlineData(DomainNames.MeteringPointType.Consumption, SettlementMethod.Flex)]
+    [InlineData(DomainNames.MeteringPointType.Consumption, DomainNames.SettlementType.NonProfiled)]
+    [InlineData(DomainNames.MeteringPointType.Consumption, DomainNames.SettlementType.Flex)]
     public async Task Validate_AsEnergySupplier_ReturnsNoValidationErrors(string meteringPointType, string? settlementMethod)
     {
         // Arrange
@@ -76,8 +76,8 @@ public class TimeSeriesTypeValidatorTests
 
     [Theory]
     [InlineData(DomainNames.MeteringPointType.Production, null)]
-    [InlineData(DomainNames.MeteringPointType.Consumption, SettlementMethod.NonProfiled)]
-    [InlineData(DomainNames.MeteringPointType.Consumption, SettlementMethod.Flex)]
+    [InlineData(DomainNames.MeteringPointType.Consumption, DomainNames.SettlementType.NonProfiled)]
+    [InlineData(DomainNames.MeteringPointType.Consumption, DomainNames.SettlementType.Flex)]
     public async Task Validate_AsBalanceResponsible_ReturnsNoValidationErrors(string meteringPointType, string? settlementMethod)
     {
         // Arrange

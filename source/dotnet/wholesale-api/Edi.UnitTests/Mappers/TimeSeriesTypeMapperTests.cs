@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Mappers;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using FluentAssertions;
@@ -24,8 +25,8 @@ public class TimeSeriesTypeMapperTests
     [Theory]
     [InlineData("Consumption", "", TimeSeriesType.TotalConsumption)]
     [InlineData("Consumption", null, TimeSeriesType.TotalConsumption)]
-    [InlineData("Consumption", SettlementMethod.NonProfiled, TimeSeriesType.NonProfiledConsumption)]
-    [InlineData("Consumption", SettlementMethod.Flex, TimeSeriesType.FlexConsumption)]
+    [InlineData("Consumption", DomainNames.SettlementType.NonProfiled, TimeSeriesType.NonProfiledConsumption)]
+    [InlineData("Consumption", DomainNames.SettlementType.Flex, TimeSeriesType.FlexConsumption)]
     [InlineData("Production", null, TimeSeriesType.Production)]
     [InlineData("Exchange", null, TimeSeriesType.NetExchangePerGa)]
     public void MapTimeSeriesType_WhenValidMeteringPointTypeAndSettlementMethod_ReturnsExpectedType(

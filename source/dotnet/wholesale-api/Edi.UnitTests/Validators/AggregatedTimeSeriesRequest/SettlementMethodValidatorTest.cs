@@ -29,8 +29,8 @@ public class SettlementMethodValidatorTest
     private readonly SettlementMethodValidationRule _sut = new();
 
     [Theory]
-    [InlineData(SettlementMethod.Flex)]
-    [InlineData(SettlementMethod.NonProfiled)]
+    [InlineData(DomainNames.SettlementType.Flex)]
+    [InlineData(DomainNames.SettlementType.NonProfiled)]
     public async Task Validate_WhenConsumptionAndSettlementMethodIsValid_ReturnsNoValidationErrorsAsync(string settlementMethod)
     {
         // Arrange
@@ -89,17 +89,17 @@ public class SettlementMethodValidatorTest
     }
 
     [Theory]
-    [InlineData(DomainNames.MeteringPointType.Production, SettlementMethod.Flex)]
-    [InlineData(DomainNames.MeteringPointType.Production, SettlementMethod.NonProfiled)]
+    [InlineData(DomainNames.MeteringPointType.Production, DomainNames.SettlementType.Flex)]
+    [InlineData(DomainNames.MeteringPointType.Production, DomainNames.SettlementType.NonProfiled)]
     [InlineData(DomainNames.MeteringPointType.Production, "invalid-settlement-method")]
-    [InlineData(DomainNames.MeteringPointType.Exchange, SettlementMethod.Flex)]
-    [InlineData(DomainNames.MeteringPointType.Exchange, SettlementMethod.NonProfiled)]
+    [InlineData(DomainNames.MeteringPointType.Exchange, DomainNames.SettlementType.Flex)]
+    [InlineData(DomainNames.MeteringPointType.Exchange, DomainNames.SettlementType.NonProfiled)]
     [InlineData(DomainNames.MeteringPointType.Exchange, "invalid-settlement-method")]
-    [InlineData("not-consumption-metering-point", SettlementMethod.Flex)]
-    [InlineData("not-consumption-metering-point", SettlementMethod.NonProfiled)]
+    [InlineData("not-consumption-metering-point", DomainNames.SettlementType.Flex)]
+    [InlineData("not-consumption-metering-point", DomainNames.SettlementType.NonProfiled)]
     [InlineData("not-consumption-metering-point", "invalid-settlement-method")]
-    [InlineData("", SettlementMethod.Flex)]
-    [InlineData("", SettlementMethod.NonProfiled)]
+    [InlineData("", DomainNames.SettlementType.Flex)]
+    [InlineData("", DomainNames.SettlementType.NonProfiled)]
     [InlineData("", "invalid-settlement-method")]
     public async Task Validate_WhenNotConsumptionAndSettlementMethodIsGiven_ReturnsExpectedValidationErrorAsync(string meteringPointType, string settlementMethod)
     {
