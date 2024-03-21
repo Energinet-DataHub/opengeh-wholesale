@@ -118,6 +118,7 @@ public class DatabricksSchemaManager
         return sqlStatement
             .Replace("{OUTPUT_DATABASE_NAME}", SchemaName)
             .Replace("{INPUT_DATABASE_NAME}", SchemaName)
+            .Replace("{BASIS_DATA_DATABASE_NAME}", SchemaName)
             .Replace("{TEST}", "--");
     }
 
