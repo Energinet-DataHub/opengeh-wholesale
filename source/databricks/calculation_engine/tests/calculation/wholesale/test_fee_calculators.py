@@ -45,8 +45,8 @@ class TestWhenInputHasTwoMeteringPointsWithDifferentQuantities:
         quantity_2 = 2
         expected_total_quantity = quantity_1 + quantity_2
         prepared_fees_rows = [
-            factory.create_row(metering_point_id="1", charge_quantity=quantity_1),
-            factory.create_row(metering_point_id="2", charge_quantity=quantity_2),
+            factory.create_row(metering_point_id="1", quantity=quantity_1),
+            factory.create_row(metering_point_id="2", quantity=quantity_2),
         ]
         prepared_fees = factory.create(spark, prepared_fees_rows)
 
@@ -70,12 +70,12 @@ class TestWhenInputHasTwoMeteringPointsWithDifferentQuantities:
         prepared_fees_rows = [
             factory.create_row(
                 metering_point_id="1",
-                charge_quantity=quantity_1,
+                quantity=quantity_1,
                 charge_price=price,
             ),
             factory.create_row(
                 metering_point_id="2",
-                charge_quantity=quantity_2,
+                quantity=quantity_2,
                 charge_price=price,
             ),
         ]
@@ -175,19 +175,19 @@ class TestWhenMissingAllInputChargePrices:
         spark: SparkSession,
     ) -> None:
         # Arrange
-        charge_quantity_1 = 1
-        charge_quantity_2 = 2
-        expected_total_quantity = charge_quantity_1 + charge_quantity_2
+        quantity_1 = 1
+        quantity_2 = 2
+        expected_total_quantity = quantity_1 + quantity_2
 
         prepared_fees_rows = [
             factory.create_row(
                 metering_point_id="1",
-                charge_quantity=charge_quantity_1,
+                quantity=quantity_1,
                 charge_price=None,
             ),
             factory.create_row(
                 metering_point_id="2",
-                charge_quantity=charge_quantity_2,
+                quantity=quantity_2,
                 charge_price=None,
             ),
         ]

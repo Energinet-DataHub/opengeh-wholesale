@@ -36,7 +36,7 @@ class DefaultValues:
     CHARGE_OWNER = "001"
     CHARGE_TIME_HOUR_0 = datetime(2020, 1, 1, 0)
     CHARGE_PRICE = Decimal("2.000005")
-    CHARGE_QUANTITY = 1
+    QUANTITY = 1
     ENERGY_SUPPLIER_ID = "1234567890123"
     METERING_POINT_ID = "123456789012345678901234567"
     METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
@@ -50,7 +50,7 @@ def create_row(
     charge_owner: str = DefaultValues.CHARGE_OWNER,
     charge_time: datetime = DefaultValues.CHARGE_TIME_HOUR_0,
     charge_price: Decimal | None = DefaultValues.CHARGE_PRICE,
-    charge_quantity: int | None = DefaultValues.CHARGE_QUANTITY,
+    quantity: int | None = DefaultValues.QUANTITY,
     energy_supplier_id: str = DefaultValues.ENERGY_SUPPLIER_ID,
     metering_point_type: MeteringPointType = DefaultValues.METERING_POINT_TYPE,
     settlement_method: SettlementMethod = DefaultValues.SETTLEMENT_METHOD,
@@ -66,7 +66,7 @@ def create_row(
         Colname.charge_time: charge_time,
         Colname.charge_price: charge_price,
         Colname.charge_tax: False,
-        Colname.charge_quantity: charge_quantity,
+        Colname.quantity: quantity,
         Colname.metering_point_type: metering_point_type.value,
         Colname.settlement_method: settlement_method.value,
         Colname.metering_point_id: metering_point_id,
