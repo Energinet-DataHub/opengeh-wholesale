@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Mappers;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using FluentAssertions;
@@ -22,13 +23,13 @@ namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Mappers;
 public class RequestedCalculationTypeMapperTests
 {
     [Theory]
-    [InlineData(BusinessReason.BalanceFixing, null, RequestedCalculationType.BalanceFixing)]
-    [InlineData(BusinessReason.PreliminaryAggregation, null, RequestedCalculationType.PreliminaryAggregation)]
-    [InlineData(BusinessReason.WholesaleFixing, null, RequestedCalculationType.WholesaleFixing)]
-    [InlineData(BusinessReason.Correction, SettlementSeriesVersion.FirstCorrection, RequestedCalculationType.FirstCorrection)]
-    [InlineData(BusinessReason.Correction, SettlementSeriesVersion.SecondCorrection, RequestedCalculationType.SecondCorrection)]
-    [InlineData(BusinessReason.Correction, SettlementSeriesVersion.ThirdCorrection, RequestedCalculationType.ThirdCorrection)]
-    [InlineData(BusinessReason.Correction, null, RequestedCalculationType.LatestCorrection)]
+    [InlineData(DomainNames.BusinessReason.BalanceFixing, null, RequestedCalculationType.BalanceFixing)]
+    [InlineData(DomainNames.BusinessReason.PreliminaryAggregation, null, RequestedCalculationType.PreliminaryAggregation)]
+    [InlineData(DomainNames.BusinessReason.WholesaleFixing, null, RequestedCalculationType.WholesaleFixing)]
+    [InlineData(DomainNames.BusinessReason.Correction, SettlementSeriesVersion.FirstCorrection, RequestedCalculationType.FirstCorrection)]
+    [InlineData(DomainNames.BusinessReason.Correction, SettlementSeriesVersion.SecondCorrection, RequestedCalculationType.SecondCorrection)]
+    [InlineData(DomainNames.BusinessReason.Correction, SettlementSeriesVersion.ThirdCorrection, RequestedCalculationType.ThirdCorrection)]
+    [InlineData(DomainNames.BusinessReason.Correction, null, RequestedCalculationType.LatestCorrection)]
     public void ToRequestedCalculationType_WhenValidBusinessReasonAndSettlementSeriesVersion_ReturnsExpectedType(string businessReason, string? settlementSeriesVersion, RequestedCalculationType expectedType)
     {
         // Act
@@ -39,11 +40,11 @@ public class RequestedCalculationTypeMapperTests
     }
 
     [Theory]
-    [InlineData(BusinessReason.BalanceFixing, SettlementSeriesVersion.FirstCorrection)]
-    [InlineData(BusinessReason.PreliminaryAggregation, "random-string")]
-    [InlineData(BusinessReason.WholesaleFixing, SettlementSeriesVersion.FirstCorrection)]
-    [InlineData(BusinessReason.Correction, "")]
-    [InlineData(BusinessReason.Correction, "random-string")]
+    [InlineData(DomainNames.BusinessReason.BalanceFixing, SettlementSeriesVersion.FirstCorrection)]
+    [InlineData(DomainNames.BusinessReason.PreliminaryAggregation, "random-string")]
+    [InlineData(DomainNames.BusinessReason.WholesaleFixing, SettlementSeriesVersion.FirstCorrection)]
+    [InlineData(DomainNames.BusinessReason.Correction, "")]
+    [InlineData(DomainNames.BusinessReason.Correction, "random-string")]
     [InlineData("", "")]
     [InlineData("random-string", "")]
     [InlineData("random-string", SettlementSeriesVersion.FirstCorrection)]

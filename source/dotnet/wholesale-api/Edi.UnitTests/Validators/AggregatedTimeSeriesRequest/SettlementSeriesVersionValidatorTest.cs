@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.Validation;
@@ -36,7 +37,7 @@ public class SettlementSeriesVersionValidatorTest
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithBusinessReason(BusinessReason.Correction)
+            .WithBusinessReason(DomainNames.BusinessReason.Correction)
             .WithSettlementSeriesVersion(invalidSettlementSeriesVersion)
             .Build();
 
@@ -60,7 +61,7 @@ public class SettlementSeriesVersionValidatorTest
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithBusinessReason(BusinessReason.WholesaleFixing)
+            .WithBusinessReason(DomainNames.BusinessReason.WholesaleFixing)
             .WithSettlementSeriesVersion(settlementSeriesVersion)
             .Build();
 
@@ -81,7 +82,7 @@ public class SettlementSeriesVersionValidatorTest
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithBusinessReason(BusinessReason.Correction)
+            .WithBusinessReason(DomainNames.BusinessReason.Correction)
             .WithSettlementSeriesVersion(validSettlementSeriesVersion)
             .Build();
 
@@ -98,7 +99,7 @@ public class SettlementSeriesVersionValidatorTest
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithBusinessReason(BusinessReason.Correction)
+            .WithBusinessReason(DomainNames.BusinessReason.Correction)
             .WithSettlementSeriesVersion(null)
             .Build();
 
@@ -115,7 +116,7 @@ public class SettlementSeriesVersionValidatorTest
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithBusinessReason(BusinessReason.WholesaleFixing)
+            .WithBusinessReason(DomainNames.BusinessReason.WholesaleFixing)
             .WithSettlementSeriesVersion(null)
             .Build();
 

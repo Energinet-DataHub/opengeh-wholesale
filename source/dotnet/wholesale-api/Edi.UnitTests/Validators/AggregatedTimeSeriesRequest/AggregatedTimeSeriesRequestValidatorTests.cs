@@ -15,6 +15,7 @@
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.GridArea;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
@@ -138,7 +139,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
         // Arrange
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithBusinessReason(BusinessReason.Correction)
+            .WithBusinessReason(DomainNames.BusinessReason.Correction)
             .WithSettlementSeriesVersion("invalid-settlement-series-version")
             .Build();
 

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.AggregatedTimeSeriesRequest;
 using NodaTime;
@@ -42,7 +43,7 @@ public class AggregatedTimeSeriesRequestBuilder
         _requestedByActorRoleId = ActorRoleCode.EnergySupplier;
         _requestedByActorId = EnergySupplierValidatorTest.ValidGlnNumber;
         _energySupplierId = _requestedByActorId;
-        _businessReason = BusinessReason.BalanceFixing;
+        _businessReason = DomainNames.BusinessReason.BalanceFixing;
     }
 
     public static AggregatedTimeSeriesRequestBuilder AggregatedTimeSeriesRequest()

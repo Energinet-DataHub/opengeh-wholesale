@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Factories.AggregatedTimeSeries;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using FluentAssertions;
@@ -248,7 +249,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
             MeteringPointType = meteringPointType,
             RequestedByActorId = "1234567891234",
             RequestedByActorRole = ActorRoleCode.EnergySupplier,
-            BusinessReason = BusinessReason.BalanceFixing,
+            BusinessReason = DomainNames.BusinessReason.BalanceFixing,
 
             // Optional
             SettlementMethod = settlementMethod,

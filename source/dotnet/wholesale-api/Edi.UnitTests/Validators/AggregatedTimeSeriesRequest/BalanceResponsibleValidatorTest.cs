@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Diagnostics.CodeAnalysis;
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.Validation;
@@ -163,7 +164,7 @@ public class BalanceResponsibleValidatorTest
             .WithRequestedByActorId(ValidGlnNumber)
             .WithRequestedByActorRole(BalanceResponsibleRole)
             .WithBalanceResponsibleId(ValidGlnNumber)
-            .WithBusinessReason(BusinessReason.BalanceFixing)
+            .WithBusinessReason(DomainNames.BusinessReason.BalanceFixing)
             .Build();
 
         // Act
@@ -182,7 +183,7 @@ public class BalanceResponsibleValidatorTest
             .WithRequestedByActorId(ValidGlnNumber)
             .WithRequestedByActorRole(BalanceResponsibleRole)
             .WithBalanceResponsibleId(ValidGlnNumber)
-            .WithBusinessReason(BusinessReason.PreliminaryAggregation)
+            .WithBusinessReason(DomainNames.BusinessReason.PreliminaryAggregation)
             .Build();
 
         // Act
@@ -201,7 +202,7 @@ public class BalanceResponsibleValidatorTest
             .WithRequestedByActorId(ValidGlnNumber)
             .WithRequestedByActorRole(BalanceResponsibleRole)
             .WithBalanceResponsibleId(ValidGlnNumber)
-            .WithBusinessReason(BusinessReason.WholesaleFixing)
+            .WithBusinessReason(DomainNames.BusinessReason.WholesaleFixing)
             .Build();
 
         // Act
@@ -225,7 +226,7 @@ public class BalanceResponsibleValidatorTest
             .WithRequestedByActorId(ValidGlnNumber)
             .WithRequestedByActorRole(BalanceResponsibleRole)
             .WithBalanceResponsibleId("invalid-format")
-            .WithBusinessReason(BusinessReason.Correction)
+            .WithBusinessReason(DomainNames.BusinessReason.Correction)
             .Build();
 
         // Act

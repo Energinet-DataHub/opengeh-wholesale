@@ -14,11 +14,11 @@
 
 namespace Energinet.DataHub.Wholesale.Edi.Models;
 
-public static class BusinessReason
-{
-    // Must match the BusinessReason value types in the EDI subsystem
-    public const string BalanceFixing = "BalanceFixing"; // "D04"
-    public const string PreliminaryAggregation = "PreliminaryAggregation"; // "D03"
-    public const string WholesaleFixing = "WholesaleFixing"; // "D05"
-    public const string Correction = "Correction"; // "D32"
-}
+// public static class BusinessReason
+// {
+//     // Must match the BusinessReason value types in the EDI subsystem
+//     public const string BalanceFixing = "BalanceFixing"; // "D04"
+//     public const string PreliminaryAggregation = "PreliminaryAggregation"; // "D03"
+//     public const string WholesaleFixing = "WholesaleFixing"; // "D05"
+//     public const string Correction = "Correction"; // "D32"
+// }

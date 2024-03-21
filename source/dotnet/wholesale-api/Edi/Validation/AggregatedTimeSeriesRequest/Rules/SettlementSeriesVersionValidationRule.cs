@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Models;
 
 namespace Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
@@ -29,7 +30,7 @@ public class SettlementSeriesVersionValidationRule : IValidationRule<DataHub.Edi
 
     public Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.AggregatedTimeSeriesRequest subject)
     {
-        var isCorrection = subject.BusinessReason == BusinessReason.Correction;
+        var isCorrection = subject.BusinessReason == DomainNames.BusinessReason.Correction;
         var hasSettlementVersion = subject.HasSettlementSeriesVersion;
 
         if (!isCorrection && hasSettlementVersion)
