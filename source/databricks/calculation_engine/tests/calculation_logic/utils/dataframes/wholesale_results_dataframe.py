@@ -25,7 +25,7 @@ from pyspark.sql.types import (
 def create_wholesale_result_dataframe(*args) -> DataFrame:
     spark: SparkSession = args[0]
     df: DataFrame = args[1]
-    calculator_args: any = args[2]  # type: ignore
+    calculator_args = args[2]  # type: ignore
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.

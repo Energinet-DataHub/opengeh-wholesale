@@ -13,7 +13,7 @@
 # limitations under the License.
 from calculation_logic.scenario_fixture import ScenarioFixture
 from helpers.data_frame_utils import assert_dataframe_and_schema
-from package.constants import WholesaleResultColumnNames
+from package.constants import EnergyResultColumnNames
 from .states.scenario_state import (
     get_expected,
 )
@@ -30,11 +30,13 @@ def test_execute__returns_expected(
 
     # Assert
     assert_dataframe_and_schema(
-        results.wholesale_results.daily_tariff_per_ga_co_es,
+        results.energy_results.positive_grid_loss,
         scenario_fixture.expected,
         ignore_decimal_precision=True,
+        ignore_decimal_scale=True,
         ignore_nullability=True,
         columns_to_skip=[
-            WholesaleResultColumnNames.calculation_result_id,
+            EnergyResultColumnNames.calculation_result_id,
         ],
+        show_dataframe=True,
     )
