@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.time_series_points
 (
     calculation_id STRING NOT NULL,
     metering_point_id STRING NOT NULL,
-    quantity DECIMAL(18, 6),
+    quantity DECIMAL(18, 3) NOT NULL,
     quality STRING NOT NULL,
     observation_time TIMESTAMP NOT NULL
 )
@@ -41,6 +41,7 @@ GO
 CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.charge_price_points
 (
     calculation_id STRING NOT NULL,
+    charge_key STRING NOT NULL,
     charge_code STRING NOT NULL,
     charge_type STRING NOT NULL,
     charge_owner_id STRING NOT NULL,
@@ -56,6 +57,7 @@ GO
 CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.charge_masterdata_periods
 (
     calculation_id STRING NOT NULL,
+    charge_key STRING NOT NULL,
     charge_code STRING NOT NULL,
     charge_type STRING NOT NULL,
     charge_owner_id STRING NOT NULL,
@@ -73,6 +75,7 @@ GO
 CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.charge_link_periods
 (
     calculation_id STRING NOT NULL,
+    charge_key STRING NOT NULL,
     charge_code STRING NOT NULL,
     charge_type STRING NOT NULL,
     charge_owner_id STRING NOT NULL,
