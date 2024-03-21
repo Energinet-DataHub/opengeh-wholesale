@@ -34,6 +34,7 @@ from .wholesale.get_metering_points_and_child_metering_points import (
 from package.calculation.energy.calculated_grid_loss import (
     add_calculated_grid_loss_to_metering_point_times_series,
 )
+from ..codelists.calculation_type import is_wholesale_calculation_type
 
 
 @logging_configuration.use_span("calculation")
@@ -74,12 +75,14 @@ def _execute(
         )
         metering_point_time_series.cache_internal()
 
-    results.energy_results, positive_grid_loss, negative_grid_loss = (
-        energy_calculation.execute(
-            args,
-            metering_point_time_series,
-            grid_loss_responsible_df,
-        )
+    (
+        results.energy_results,
+        positive_grid_loss,
+        negative_grid_loss,
+    ) = energy_calculation.execute(
+        args,
+        metering_point_time_series,
+        grid_loss_responsible_df,
     )
 
     # This extends the content of metering_point_time_series with calculated grid loss,
@@ -92,12 +95,7 @@ def _execute(
         )
     )
 
-    if (
-        args.calculation_type == CalculationType.WHOLESALE_FIXING
-        or args.calculation_type == CalculationType.FIRST_CORRECTION_SETTLEMENT
-        or args.calculation_type == CalculationType.SECOND_CORRECTION_SETTLEMENT
-        or args.calculation_type == CalculationType.THIRD_CORRECTION_SETTLEMENT
-    ):
+    if is_wholesale_calculation_type(args.calculation_type):
         with logging_configuration.start_span("calculation.wholesale.prepare"):
             wholesale_metering_point_periods = (
                 get_metering_points_and_child_metering_points(metering_point_periods_df)

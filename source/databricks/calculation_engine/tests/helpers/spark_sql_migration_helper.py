@@ -105,9 +105,15 @@ def updated_substitutions(
     _substitutions["{INPUT_DATABASE_NAME}"] = (
         schema_prefix + _substitutions["{INPUT_DATABASE_NAME}"]
     )
+    _substitutions["{BASIS_DATA_DATABASE_NAME}"] = (
+        schema_prefix + _substitutions["{BASIS_DATA_DATABASE_NAME}"]
+    )
 
     _substitutions["{OUTPUT_FOLDER}"] = (
         schema_prefix + _substitutions["{OUTPUT_FOLDER}"]
+    )
+    _substitutions["{BASIS_DATA_FOLDER}"] = (
+        schema_prefix + _substitutions["{BASIS_DATA_FOLDER}"]
     )
 
     return _substitutions
