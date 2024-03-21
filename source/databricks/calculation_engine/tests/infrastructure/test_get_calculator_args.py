@@ -41,7 +41,6 @@ def _substitute_period(
     sys_argv: list[str], period_start_datetime: datetime, period_end_datetime: datetime
 ) -> list[str]:
     for i, item in enumerate(sys_argv):
-        print(item)
         if item.startswith("--period-start-datetime"):
             sys_argv[
                 i
