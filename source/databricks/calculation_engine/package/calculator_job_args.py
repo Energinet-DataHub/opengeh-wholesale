@@ -25,7 +25,7 @@ import package.infrastructure.environment_variables as env_vars
 from package.calculation.calculator_args import CalculatorArgs
 from package.codelists.calculation_type import (
     CalculationType,
-    is_wholesale_or_correction_calculation,
+    is_wholesale_calculation_type,
 )
 from package.common.logger import Logger
 from package.infrastructure import valid_date, valid_list, logging_configuration, paths
@@ -54,7 +54,7 @@ def parse_job_arguments(
             time_zone=time_zone,
         )
 
-        if is_wholesale_or_correction_calculation(calculator_args.calculation_type):
+        if is_wholesale_calculation_type(calculator_args.calculation_type):
             _validate_period_for_wholesale_calculation(calculator_args)
 
         storage_account_name = env_vars.get_storage_account_name()
