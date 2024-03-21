@@ -24,25 +24,12 @@ from package.calculation.wholesale.subscription_calculators import (
 from package.codelists import (
     MeteringPointType,
     SettlementMethod,
-    QuantityQuality,
 )
 from package.constants import Colname
 import tests.calculation.wholesale.prepared_subscriptions_factory as factory
 
 
 class DefaultValues:
-    GRID_AREA = "543"
-    CHARGE_CODE = "4000"
-    CHARGE_OWNER = "001"
-    CHARGE_TIME_HOUR_0 = datetime(2019, 12, 31, 23)
-    CHARGE_PRICE = Decimal("2.000005")
-    CHARGE_QUANTITY = 1
-    ENERGY_SUPPLIER_ID = "1234567890123"
-    METERING_POINT_ID = "123456789012345678901234567"
-    METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
-    SETTLEMENT_METHOD = SettlementMethod.FLEX
-    QUANTITY = Decimal("1.005")
-    QUALITY = QuantityQuality.CALCULATED
     CALCULATION_PERIOD_START = datetime(2020, 1, 31, 23, 0)
     CALCULATION_PERIOD_END = datetime(2020, 2, 29, 23, 0)
     DAYS_IN_MONTH = 29

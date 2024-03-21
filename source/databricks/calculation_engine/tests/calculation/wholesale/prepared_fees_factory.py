@@ -17,9 +17,9 @@ from decimal import Decimal
 
 from pyspark.sql import Row, SparkSession
 
-from package.calculation.preparation.data_structures.prepared_subscriptions import (
-    PreparedSubscriptions,
-    prepared_subscriptions_schema,
+from package.calculation.preparation.data_structures import PreparedFees
+from package.calculation.preparation.data_structures.prepared_fees import (
+    prepared_fees_schema,
 )
 from package.codelists import (
     ChargeType,
@@ -78,12 +78,10 @@ def create_row(
     return Row(**row)
 
 
-def create(
-    spark: SparkSession, data: None | Row | list[Row] = None
-) -> PreparedSubscriptions:
+def create(spark: SparkSession, data: None | Row | list[Row] = None) -> PreparedFees:
     if data is None:
         data = [create_row()]
     elif isinstance(data, Row):
         data = [data]
-    df = spark.createDataFrame(data, prepared_subscriptions_schema)
-    return PreparedSubscriptions(df)
+    df = spark.createDataFrame(data, prepared_fees_schema)
+    return PreparedFees(df)

@@ -14,6 +14,7 @@
 
 
 import package.calculation.output.wholesale_storage_model_factory as factory
+import package.calculation.wholesale.fee_calculators as fee_calculator
 import package.calculation.wholesale.subscription_calculators as subscription_calculator
 import package.calculation.wholesale.tariff_calculators as tariff_calculator
 import package.calculation.preparation.data_structures as d
@@ -32,6 +33,12 @@ def execute(
 ) -> WholesaleResultsContainer:
     results = WholesaleResultsContainer()
 
+    _calculate_fees(
+        args,
+        prepared_charges.fees,
+        results,
+    )
+
     _calculate_subscriptions(
         args,
         prepared_charges.subscriptions,
@@ -46,6 +53,20 @@ def execute(
     )
 
     return results
+
+
+@logging_configuration.use_span("calculate_fees")
+def _calculate_fees(
+    args: CalculatorArgs,
+    prepared_fees: d.PreparedFees,
+    results: WholesaleResultsContainer,
+) -> None:
+    fee_amount_per_charge = fee_calculator.calculate(
+        prepared_fees,
+    )
+    results.fee_per_ga_co_es = factory.create(
+        args, fee_amount_per_charge, AmountType.AMOUNT_PER_CHARGE
+    )
 
 
 @logging_configuration.use_span("calculate_subscriptions")

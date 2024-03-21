@@ -49,6 +49,7 @@ class WholesaleResultsContainer:
     monthly_tariff_from_daily_per_ga_co_es: DataFrame | None = None
     subscription_per_ga_co_es: DataFrame | None = None
     monthly_subscription_from_daily_per_ga_co_es: DataFrame | None = None
+    fee_per_ga_co_es: DataFrame | None = None
 
 
 @dataclass
