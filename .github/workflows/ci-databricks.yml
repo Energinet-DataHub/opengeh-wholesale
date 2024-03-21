@@ -109,7 +109,8 @@ jobs:
             fi
           done
 
-  python_tests_calculator_job:
+  python_tests_energy_calculator_job:
+    name: Python tests - Energy calculator job
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
       operating_system: dh3-ubuntu-20.04-4core
@@ -117,7 +118,24 @@ jobs:
       # documented here: https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
       ignore_errors_and_warning_flake8: E501,F401,E402,E203,W503
       test_report_path: ./source/databricks/calculation_engine/tests
-      tests_filter_expression: calculator_job
+      tests_filter_expression: calculator_job and not test_wholesale_calculation.py
+      use_integrationtest_environment: true
+      azure_integrationtest_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
+      azure_integrationtest_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
+      azure_integrationtest_spn_id: ${{ vars.integration_test_azure_spn_id_oidc }}
+      azure_keyvault_url: ${{ vars.integration_test_azure_keyvault_url }}
+      image_tag: ${{ inputs.image_tag }}
+
+  python_tests_wholesale_calculator_job:
+    name: Python tests - Wholesale calculator job
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
+    with:
+      operating_system: dh3-ubuntu-20.04-4core
+      path_static_checks: ./source/databricks/calculation_engine
+      # documented here: https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
+      ignore_errors_and_warning_flake8: E501,F401,E402,E203,W503
+      test_report_path: ./source/databricks/calculation_engine/tests
+      tests_filter_expression: calculator_job/test_wholesale_calculation.py
       use_integrationtest_environment: true
       azure_integrationtest_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
       azure_integrationtest_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
@@ -126,6 +144,7 @@ jobs:
       image_tag: ${{ inputs.image_tag }}
 
   python_tests_datamigration:
+    name: Python tests - Data migration
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
       operating_system: dh3-ubuntu-20.04-4core
@@ -137,6 +156,7 @@ jobs:
       image_tag: ${{ inputs.image_tag }}
 
   python_tests_other:
+    name: Python tests - Unit tests
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
       operating_system: dh3-ubuntu-20.04-4core
