@@ -46,7 +46,6 @@ class DefaultValues:
     CALCULATION_PERIOD_START = datetime(2020, 1, 31, 23, 0)
     CALCULATION_PERIOD_END = datetime(2020, 2, 29, 23, 0)
     DAYS_IN_MONTH = 29
-    CALCULATION_MONTH = 2
     TIME_ZONE = "Europe/Copenhagen"
 
 
@@ -223,6 +222,49 @@ class TestWhenValidInput:
         assert set(actual_settlement_methods) == set(expected)
 
 
+class TestWhenDayLightSavingTime:
+    @pytest.mark.parametrize(
+        "period_start, period_end, input_charge_price, expected_output_charge_price",
+        [
+            (  # Entering daylight saving time
+                datetime(2020, 2, 29, 23, 0),
+                datetime(2020, 3, 31, 22, 0),
+                Decimal("0.31"),
+                Decimal("0.010"),  # 0.31 / 31
+            ),
+            (  # month with 31 days
+                datetime(2020, 9, 30, 22, 0),
+                datetime(2020, 10, 31, 23, 0),
+                Decimal("0.31"),
+                Decimal("0.010"),  # 10 / 31 (days)
+            ),
+        ],
+    )
+    def test__returns_expected_charge_price(
+        self,
+        spark: SparkSession,
+        period_start: datetime,
+        period_end: datetime,
+        input_charge_price: Decimal,
+        expected_output_charge_price: Decimal,
+    ) -> None:
+        # Arrange
+        subscriptions_row = factory.create_row(charge_price=input_charge_price)
+        prepared_subscriptions_charges = factory.create(spark, [subscriptions_row])
+
+        # Act
+        actual = calculate(
+            prepared_subscriptions_charges,
+            period_start,
+            period_end,
+            DefaultValues.TIME_ZONE,
+        ).df
+
+        # Assert
+        assert actual.count() == 1
+        assert actual.collect()[0][Colname.charge_price] == expected_output_charge_price
+
+
 class TestWhenMissingAllInputChargePrices:
     def test__returns_expected_result(
         self,
@@ -312,42 +354,3 @@ class TestWhenMultipleMeteringPointsPerChargeTime:
         assert len(actual_rows) == 2
         assert actual_rows[0][Colname.total_quantity] == expected_total_quantity_1
         assert actual_rows[1][Colname.total_quantity] == expected_total_quantity_2
-
-
-class TestWhenCalculationPeriodIsNotFullMonth:
-    @pytest.mark.parametrize(
-        "period_start, period_end",
-        [
-            (  # Less than a month
-                datetime(2020, 1, 10, 23, 0),
-                datetime(2020, 2, 12, 23, 0),
-            ),
-            (  # More than a month
-                datetime(2020, 1, 10, 23, 0),
-                datetime(2020, 3, 12, 23, 0),
-            ),
-            (  # Entering daylights saving time - not ending at midnight
-                datetime(2020, 2, 29, 23, 0),
-                datetime(2020, 3, 31, 23, 0),
-            ),
-            (  # Exiting daylights saving time - not ending at midnight
-                datetime(2020, 9, 30, 22, 0),
-                datetime(2020, 10, 31, 22, 0),
-            ),
-        ],
-    )
-    def test__raises_exception(
-        self, spark: SparkSession, period_start: datetime, period_end: datetime
-    ) -> None:
-        # Arrange
-        prepared_subscriptions_rows = factory.create_row(charge_time=period_start)
-        prepared_subscriptions = factory.create(spark, prepared_subscriptions_rows)
-
-        # Act & Assert
-        with pytest.raises(Exception):
-            calculate(
-                prepared_subscriptions,
-                period_start,
-                period_end,
-                DefaultValues.TIME_ZONE,
-            )

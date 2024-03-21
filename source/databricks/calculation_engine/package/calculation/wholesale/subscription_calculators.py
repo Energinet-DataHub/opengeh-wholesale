@@ -57,43 +57,13 @@ def _calculate_price_per_day(
     calculation_period_end: datetime,
     time_zone: str,
 ) -> DataFrame:
-    days_in_month = _get_days_in_month(
-        calculation_period_start, calculation_period_end, time_zone
-    )
+    time_zone_info = ZoneInfo(time_zone)
+    period_start_local_time = calculation_period_start.astimezone(time_zone_info)
+    period_end_local_time = calculation_period_end.astimezone(time_zone_info)
+    days_in_month = (period_end_local_time - period_start_local_time).days
 
     subscriptions_with_daily_price = prepared_subscriptions.withColumn(
         Colname.charge_price, (f.col(Colname.charge_price) / f.lit(days_in_month))
     )
 
     return subscriptions_with_daily_price
-
-
-def _get_days_in_month(
-    calculation_period_start: datetime, calculation_period_end: datetime, time_zone: str
-) -> int:
-    time_zone_info = ZoneInfo(time_zone)
-    period_start_local_time = calculation_period_start.astimezone(time_zone_info)
-    period_end_local_time = calculation_period_end.astimezone(time_zone_info)
-
-    if not _is_full_month_and_at_midnight(
-        period_start_local_time, period_end_local_time
-    ):
-        raise Exception(
-            f"The calculation period must be a full month starting and ending at midnight local time ({time_zone})) ."
-        )
-
-    # return days in month of the start time
-    return (period_end_local_time - period_start_local_time).days
-
-
-def _is_full_month_and_at_midnight(
-    period_start_local_time: datetime, period_end_local_time: datetime
-) -> bool:
-    return (
-        period_start_local_time.time()
-        == period_end_local_time.time()
-        == datetime.min.time()
-        and period_start_local_time.day == 1
-        and period_end_local_time.day == 1
-        and period_end_local_time.month == (period_start_local_time.month % 12) + 1
-    )
