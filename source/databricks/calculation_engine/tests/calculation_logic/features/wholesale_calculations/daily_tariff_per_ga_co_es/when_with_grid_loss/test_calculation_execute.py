@@ -11,10 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from calculation_logic.scenario_factory import ScenarioFixture
-from helpers.data_frame_utils import (
-    assert_dataframe_and_schema,
-)
+from calculation_logic.scenario_fixture import ScenarioFixture
+from helpers.data_frame_utils import assert_dataframe_and_schema
 from package.constants import WholesaleResultColumnNames
 from .states.scenario_state import (
     get_expected,
@@ -30,10 +28,12 @@ def test_execute__returns_expected(
     # Act
     results = scenario_fixture.execute()
     actual = results.wholesale_results.daily_tariff_per_ga_co_es.orderBy(
-        WholesaleResultColumnNames.metering_point_type, WholesaleResultColumnNames.time
+        WholesaleResultColumnNames.metering_point_type,
+        WholesaleResultColumnNames.time,
     )
     expected = scenario_fixture.expected.orderBy(
-        WholesaleResultColumnNames.metering_point_type, WholesaleResultColumnNames.time
+        WholesaleResultColumnNames.metering_point_type,
+        WholesaleResultColumnNames.time,
     )
 
     # Assert
