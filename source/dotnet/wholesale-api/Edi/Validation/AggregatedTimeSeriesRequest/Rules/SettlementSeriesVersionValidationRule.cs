@@ -21,9 +21,9 @@ public class SettlementSeriesVersionValidationRule : IValidationRule<DataHub.Edi
 {
     private static readonly IReadOnlyList<string> _validSettlementSeriesVersions = new List<string>
     {
-        SettlementSeriesVersion.FirstCorrection,
-        SettlementSeriesVersion.SecondCorrection,
-        SettlementSeriesVersion.ThirdCorrection,
+        DomainNames.SettlementVersion.FirstCorrection,
+        DomainNames.SettlementVersion.SecondCorrection,
+        DomainNames.SettlementVersion.ThirdCorrection,
     };
 
     private static readonly ValidationError _invalidSettlementSeriesVersionError = new("SettlementSeriesVersion kan kun benyttes i kombination med D32 og skal være enten D01, D02 eller D03 / SettlementSeriesVersion can only be used in combination with D32 and must be either D01, D02 or D03", "E86");

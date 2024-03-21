@@ -36,9 +36,9 @@ public static class RequestedCalculationTypeMapper
             DomainNames.BusinessReason.WholesaleFixing => RequestedCalculationType.WholesaleFixing,
             DomainNames.BusinessReason.Correction => settlementSeriesVersion switch
             {
-                SettlementSeriesVersion.FirstCorrection => RequestedCalculationType.FirstCorrection,
-                SettlementSeriesVersion.SecondCorrection => RequestedCalculationType.SecondCorrection,
-                SettlementSeriesVersion.ThirdCorrection => RequestedCalculationType.ThirdCorrection,
+                DomainNames.SettlementVersion.FirstCorrection => RequestedCalculationType.FirstCorrection,
+                DomainNames.SettlementVersion.SecondCorrection => RequestedCalculationType.SecondCorrection,
+                DomainNames.SettlementVersion.ThirdCorrection => RequestedCalculationType.ThirdCorrection,
                 null => RequestedCalculationType.LatestCorrection,
                 _ => throw new ArgumentOutOfRangeException(
                     nameof(settlementSeriesVersion),

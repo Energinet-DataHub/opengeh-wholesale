@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Edi.Contracts;
-using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.Validation;
 using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
@@ -53,9 +52,9 @@ public class SettlementSeriesVersionValidatorTest
     [InlineData("invalid-settlement-series-version")]
     [InlineData("D04")]
     [InlineData("")]
-    [InlineData(SettlementSeriesVersion.FirstCorrection)]
-    [InlineData(SettlementSeriesVersion.SecondCorrection)]
-    [InlineData(SettlementSeriesVersion.ThirdCorrection)]
+    [InlineData(DomainNames.SettlementVersion.FirstCorrection)]
+    [InlineData(DomainNames.SettlementVersion.SecondCorrection)]
+    [InlineData(DomainNames.SettlementVersion.ThirdCorrection)]
     public async Task Validate_WhenNotCorrectionAndSettlementSeriesVersionExists_ReturnsValidationErrorsAsync(string settlementSeriesVersion)
     {
         // Arrange
@@ -74,9 +73,9 @@ public class SettlementSeriesVersionValidatorTest
     }
 
     [Theory]
-    [InlineData(SettlementSeriesVersion.FirstCorrection)]
-    [InlineData(SettlementSeriesVersion.SecondCorrection)]
-    [InlineData(SettlementSeriesVersion.ThirdCorrection)]
+    [InlineData(DomainNames.SettlementVersion.FirstCorrection)]
+    [InlineData(DomainNames.SettlementVersion.SecondCorrection)]
+    [InlineData(DomainNames.SettlementVersion.ThirdCorrection)]
     public async Task Validate_WhenCorrectionAndValidSettlementSeriesVersion_ReturnsNoValidationErrorsAsync(string validSettlementSeriesVersion)
     {
         // Arrange
