@@ -16,9 +16,8 @@ namespace Energinet.DataHub.Wholesale.Edi.Models;
 
 public static class ChargeType
 {
+    // Must match the ChargeType value types in the EDI subsystem
     public const string Fee = "Fee";
-
     public const string Tariff = "Tariff";
-
     public const string Subscription = "Subscription";
 }

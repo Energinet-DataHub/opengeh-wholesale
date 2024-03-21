@@ -16,6 +16,7 @@ namespace Energinet.DataHub.Wholesale.Edi.Models;
 
 public static class SettlementMethod
 {
+    // Must match the SettlementType value types in the EDI subsystem
     public const string Flex = "Flex"; // "D01"
     public const string NonProfiled = "NonProfiled"; // "E02"
 }

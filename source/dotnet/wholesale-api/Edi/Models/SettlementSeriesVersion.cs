@@ -16,6 +16,7 @@ namespace Energinet.DataHub.Wholesale.Edi.Models;
 
 public static class SettlementSeriesVersion
 {
+    // Must match the SettlementVersion value types in the EDI subsystem
     public const string FirstCorrection = "FirstCorrection"; // "D01"
     public const string SecondCorrection = "SecondCorrection"; // "D02"
     public const string ThirdCorrection = "ThirdCorrection"; // "D03"

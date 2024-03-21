@@ -16,6 +16,7 @@ namespace Energinet.DataHub.Wholesale.Edi.Models;
 
 public static class MeteringPointType
 {
+    // Must match the MeteringPointType value types in the EDI subsystem
     public const string Consumption = "Consumption"; // "E17"
     public const string Production = "Production"; // "E18"
     public const string Exchange = "Exchange"; // "E20"

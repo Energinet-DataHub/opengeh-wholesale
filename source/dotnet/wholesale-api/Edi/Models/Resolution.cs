@@ -16,6 +16,7 @@ namespace Energinet.DataHub.Wholesale.Edi.Models;
 
 public static class Resolution
 {
+    // Must match the Resolution value types in the EDI subsystem
     public const string Monthly = "Monthly";
     public const string Daily = "Daily";
     public const string Hourly = "Hourly";
