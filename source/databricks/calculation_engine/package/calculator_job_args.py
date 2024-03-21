@@ -14,9 +14,7 @@
 
 import sys
 from argparse import Namespace
-from datetime import datetime
 from typing import Tuple
-from zoneinfo import ZoneInfo
 
 import configargparse
 from configargparse import argparse
@@ -28,6 +26,7 @@ from package.codelists.calculation_type import (
     is_wholesale_calculation_type,
 )
 from package.common.logger import Logger
+from package.common.datetime_utils import is_exactly_one_calendar_month
 from package.infrastructure import valid_date, valid_list, logging_configuration, paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 
@@ -106,21 +105,10 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
 
 
 def _validate_period_for_wholesale_calculation(args: CalculatorArgs) -> None:
-    time_zone_info = ZoneInfo(args.time_zone)
-    period_start_local_time = args.calculation_period_start_datetime.astimezone(
-        time_zone_info
-    )
-    period_end_local_time = args.calculation_period_end_datetime.astimezone(
-        time_zone_info
-    )
-
-    is_valid_period = (
-        period_start_local_time.time()
-        == period_end_local_time.time()
-        == datetime.min.time()
-        and period_start_local_time.day == 1
-        and period_end_local_time.day == 1
-        and period_end_local_time.month == (period_start_local_time.month % 12) + 1
+    is_valid_period = is_exactly_one_calendar_month(
+        args.calculation_period_start_datetime,
+        args.calculation_period_end_datetime,
+        args.time_zone,
     )
 
     if not is_valid_period:

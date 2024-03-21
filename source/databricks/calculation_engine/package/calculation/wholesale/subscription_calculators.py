@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from datetime import datetime
-from zoneinfo import ZoneInfo
 
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
@@ -27,6 +26,7 @@ from package.calculation.wholesale.data_structures.wholesale_results import (
     WholesaleResults,
 )
 from package.codelists import ChargeType
+import package.common.datetime_utils as datetime_utils
 from package.constants import Colname
 
 
@@ -57,13 +57,12 @@ def _calculate_price_per_day(
     calculation_period_end: datetime,
     time_zone: str,
 ) -> DataFrame:
-    time_zone_info = ZoneInfo(time_zone)
-    period_start_local_time = calculation_period_start.astimezone(time_zone_info)
-    period_end_local_time = calculation_period_end.astimezone(time_zone_info)
-    days_in_month = (period_end_local_time - period_start_local_time).days
+    days_in_period = datetime_utils.get_number_of_days(
+        calculation_period_start, calculation_period_end, time_zone
+    )
 
     subscriptions_with_daily_price = prepared_subscriptions.withColumn(
-        Colname.charge_price, (f.col(Colname.charge_price) / f.lit(days_in_month))
+        Colname.charge_price, (f.col(Colname.charge_price) / f.lit(days_in_period))
     )
 
     return subscriptions_with_daily_price
