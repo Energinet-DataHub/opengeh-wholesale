@@ -279,8 +279,6 @@ def test__current_state_and_migration_scripts__should_give_same_result(
         return_value=storage_account,
     )
 
-    spark_helper.reset_spark_catalog(spark)
-
     # Act migration scripts
     migration_scripts_prefix = "migration_scripts"
     migration_scripts_substitutions = spark_sql_migration_helper.update_substitutions(
