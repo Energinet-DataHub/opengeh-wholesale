@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.calculations
     execution_time_start TIMESTAMP NOT NULL,
     created_time TIMESTAMP NOT NULL,
     created_by_user_id STRING NOT NULL,
-    version STRING NOT NULL
+    version BIGINT NOT NULL
 )
 USING DELTA
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
