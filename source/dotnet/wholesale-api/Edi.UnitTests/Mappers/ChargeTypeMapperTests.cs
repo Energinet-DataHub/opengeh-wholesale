@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Mappers;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using FluentAssertions;
@@ -23,9 +24,9 @@ namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Mappers;
 public class ChargeTypeMapperTests
 {
     [Theory]
-    [InlineData(ChargeType.Tariff, CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.ChargeType.Tariff)]
-    [InlineData(ChargeType.Fee, CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.ChargeType.Fee)]
-    [InlineData(ChargeType.Subscription, CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.ChargeType.Subscription)]
+    [InlineData(DomainNames.ChargeType.Tariff, CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.ChargeType.Tariff)]
+    [InlineData(DomainNames.ChargeType.Fee, CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.ChargeType.Fee)]
+    [InlineData(DomainNames.ChargeType.Subscription, CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.ChargeType.Subscription)]
     public void Map_WhenValid_ReturnsExpectedChargeType(string chargeType, Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.ChargeType expectedResult)
     {
         // Act
