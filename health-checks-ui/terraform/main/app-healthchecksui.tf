@@ -74,6 +74,8 @@ locals {
     "HealthChecksUI__HealthChecks__027__Uri"  = "https://app-b2cwebapi-edi-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/ready"
     "HealthChecksUI__HealthChecks__028__Name" = "opengeh-wholesale:::Orchestration"
     "HealthChecksUI__HealthChecks__028__Uri"  = "https://func-orchestration-wholsal-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
+    "HealthChecksUI__HealthChecks__029__Name" = "opengeh-esett-exchange:::Application Workers"
+    "HealthChecksUI__HealthChecks__029__Uri"  = "https://func-application-workers-esett-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
 
     # Live - prefix with 2xx
     "HealthChecksUI__HealthChecks__200__Name" = "health-checks-ui:::Health Check UI - live"
@@ -124,6 +126,8 @@ locals {
     "HealthChecksUI__HealthChecks__227__Uri"  = "https://app-b2cwebapi-edi-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/live"
     "HealthChecksUI__HealthChecks__228__Name" = "opengeh-wholesale:::Orchestration - live"
     "HealthChecksUI__HealthChecks__228__Uri"  = "https://func-orchestration-wholsal-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
+    "HealthChecksUI__HealthChecks__229__Name" = "opengeh-esett-exchange:::Application Workers - live"
+    "HealthChecksUI__HealthChecks__229__Uri"  = "https://func-application-workers-esett-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
 
     # Polling Interval
     "HealthChecksUI__EvaluationTimeinSeconds" = 600
