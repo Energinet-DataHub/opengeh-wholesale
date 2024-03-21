@@ -27,7 +27,7 @@ def test_execute__returns_expected(
 
     # Act
     results = scenario_fixture.execute()
-    actual = results.wholesale_results.daily_tariff_per_ga_co_es.orderBy(
+    actual = results.wholesale_results.fee_per_ga_co_es.orderBy(
         WholesaleResultColumnNames.metering_point_type,
         WholesaleResultColumnNames.time,
     )
