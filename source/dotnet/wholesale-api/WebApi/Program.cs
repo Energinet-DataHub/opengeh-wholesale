@@ -60,7 +60,7 @@ builder.Services
     .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 
 // => Open API generation
-builder.Services.AddSwaggerForWebApp(Assembly.GetExecutingAssembly());
+builder.Services.AddSwaggerForWebApp(Assembly.GetExecutingAssembly(), swaggerUITitle: "Wholesale Web API");
 
 // => API versioning
 builder.Services.AddApiVersioningForWebApp(new ApiVersion(3, 0));
