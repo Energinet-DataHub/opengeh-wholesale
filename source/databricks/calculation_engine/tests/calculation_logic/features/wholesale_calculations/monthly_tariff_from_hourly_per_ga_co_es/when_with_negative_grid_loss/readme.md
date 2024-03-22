@@ -1,5 +1,3 @@
-@ -1,28 +1,28 @@
-
 # Testing monthly tariff per grid area, charge owner and energy supplier with negative grid loss from hourly
 
 ```text
