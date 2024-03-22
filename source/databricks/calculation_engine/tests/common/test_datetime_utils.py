@@ -12,12 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 import pytest
 
 from package.common.datetime_utils import is_exactly_one_calendar_month
 
-DEFAULT_TIME_ZONE = "Europe/Copenhagen"
+COPENHAGEN_TIME_ZONE = "Europe/Copenhagen"
+LONDON_TIME_ZONE = "Europe/London"
 
 
 class TestWhenPeriodIsNotOneCalendarMonth:
@@ -25,45 +27,46 @@ class TestWhenPeriodIsNotOneCalendarMonth:
         "period_start, period_end",
         [
             (  # Missing one day in the beginning
-                    datetime(2022, 6, 1, 22),
-                    datetime(2022, 6, 30, 22),
+                datetime(2022, 6, 1, 22),
+                datetime(2022, 6, 30, 22),
             ),
             (  # Missing one day at the end
-                    datetime(2022, 5, 31, 22),
-                    datetime(2022, 6, 29, 22),
+                datetime(2022, 5, 31, 22),
+                datetime(2022, 6, 29, 22),
             ),
             (  # Missing one hour in the beginning
-                    datetime(2022, 5, 31, 23),
-                    datetime(2022, 6, 30, 22),
+                datetime(2022, 5, 31, 23),
+                datetime(2022, 6, 30, 22),
             ),
             (  # Missing one hour at the end
-                    datetime(2022, 5, 31, 22),
-                    datetime(2022, 6, 30, 21),
+                datetime(2022, 5, 31, 22),
+                datetime(2022, 6, 30, 21),
             ),
             (  # One hour too much in the beginning
-                    datetime(2022, 5, 31, 21),
-                    datetime(2022, 6, 30, 22),
+                datetime(2022, 5, 31, 21),
+                datetime(2022, 6, 30, 22),
             ),
             (  # One hour too much at the end
-                    datetime(2022, 5, 31, 22),
-                    datetime(2022, 6, 30, 23),
+                datetime(2022, 5, 31, 22),
+                datetime(2022, 6, 30, 23),
             ),
-            ( # Two months
-                    datetime(2022, 5, 31, 22),
-                    datetime(2022, 7, 31, 22),
+            (  # Two months
+                datetime(2022, 5, 31, 22),
+                datetime(2022, 7, 31, 22),
             ),
             (  # Entering daylights saving time - not ending at midnight
-                    datetime(2020, 2, 29, 23, 0),
-                    datetime(2020, 3, 31, 23, 0),
+                datetime(2022, 2, 28, 23, 0),
+                datetime(2022, 3, 31, 23, 0),
             ),
             (  # Exiting daylights saving time - not ending at midnight
-                    datetime(2020, 9, 30, 22, 0),
-                    datetime(2020, 10, 31, 22, 0),
+                datetime(2022, 9, 30, 22, 0),
+                datetime(2022, 10, 31, 22, 0),
             ),
         ],
     )
-    def test__is_exactly_one_calendar_month__returns_false(self,
-        period_start: datetime, period_end: datetime) -> None:
+    def test__is_exactly_one_calendar_month__returns_false(
+        self, period_start: datetime, period_end: datetime
+    ) -> None:
         # Arrange
         time_zone = "Europe/Copenhagen"
 
@@ -74,45 +77,96 @@ class TestWhenPeriodIsNotOneCalendarMonth:
         assert actual is False
 
 
-
-
-
-
-class TestWhenPeriodOneCalendarMonth:
+class TestWhenPeriodIsOneCalendarMonth:
     @pytest.mark.parametrize(
         "period_start, period_end",
         [
             (
-                    datetime(2022, 5, 31, 22),
-                    datetime(2022, 6, 30, 22),
-                    DEFAULT_TIME_ZONE,
+                datetime(2022, 5, 31, 22),
+                datetime(2022, 6, 30, 22),
             ),
             (
-                    datetime(2022, 5, 31, 22),
-                    datetime(2022, 6, 29, 22),
-                    DEFAULT_TIME_ZONE,
+                datetime(2022, 5, 31, 22),
+                datetime(2022, 6, 30, 22),
             ),
             (
-                    datetime(2022, 5, 31, 23),
-                    datetime(2022, 6, 30, 22),
-                    DEFAULT_TIME_ZONE,
+                datetime(2022, 5, 31, 22),
+                datetime(2022, 6, 30, 22),
             ),
             (  # Entering daylights saving time - not ending at midnight
-                    datetime(2020, 2, 29, 23, 0),
-                    datetime(2020, 3, 31, 22, 0),
-                
+                datetime(2020, 2, 29, 23),
+                datetime(2020, 3, 31, 22),
             ),
             (  # Exiting daylights saving time - not ending at midnight
-                    datetime(2020, 9, 30, 22, 0),
-                    datetime(2020, 10, 31, 23, 0),
+                datetime(2020, 9, 30, 22),
+                datetime(2020, 10, 31, 23),
             ),
         ],
     )
-    def test__is_exactly_one_calendar_month__returns_true(self,
-        period_start: datetime, period_end: datetime, time_zone: str) -> None:
+    def test__is_exactly_one_calendar_month__returns_true(
+        self, period_start: datetime, period_end: datetime
+    ) -> None:
 
         # Act
-        actual = is_exactly_one_calendar_month(period_start, period_end, time_zone)
+        actual = is_exactly_one_calendar_month(
+            period_start, period_end, COPENHAGEN_TIME_ZONE
+        )
 
         # Assert
         assert actual is True
+
+
+class TestWhenOtherTimeZoneAndPeriodIsOneCalendarMonth:
+    @pytest.mark.parametrize(
+        "period_start, period_end",
+        [
+            (
+                datetime(2022, 5, 31, 23),
+                datetime(2022, 6, 30, 23),
+            ),
+            (
+                datetime(2021, 1, 1, 0),
+                datetime(2022, 2, 1, 0),
+            ),
+        ],
+    )
+    def test__is_exactly_one_calendar_month__returns_true(
+        self, period_start: datetime, period_end: datetime
+    ) -> None:
+        # Act
+        actual = is_exactly_one_calendar_month(
+            period_start, period_end, LONDON_TIME_ZONE
+        )
+
+        # Assert
+        assert actual is True
+
+
+class TestWhenOtherTimeZoneAndPeriodIsNotOneCalendarMonth:
+    @pytest.mark.parametrize(
+        "period_start, period_end",
+        [
+            (
+                datetime(2022, 5, 31, 23),
+                datetime(2022, 6, 30, 23),
+            ),
+            (
+                datetime(2021, 1, 1, 1),
+                datetime(2022, 2, 1, 0),
+            ),
+            (
+                datetime(2021, 1, 1, 1),
+                datetime(2022, 2, 1, 1),
+            ),
+        ],
+    )
+    def test__is_exactly_one_calendar_month__returns_faæse(
+        self, period_start: datetime, period_end: datetime
+    ) -> None:
+        # Act
+        actual = is_exactly_one_calendar_month(
+            period_start, period_end, COPENHAGEN_TIME_ZONE
+        )
+
+        # Assert
+        assert actual is False
