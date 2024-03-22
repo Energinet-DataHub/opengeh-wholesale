@@ -17,6 +17,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.Edi.Client;
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Factories;
 using Energinet.DataHub.Wholesale.Edi.Factories.AggregatedTimeSeries;
 using Energinet.DataHub.Wholesale.Edi.Mappers;
@@ -111,7 +112,7 @@ public class AggregatedTimeSeriesRequestHandler : IWholesaleInboxRequestHandler
             return false;
 
         var actorRole = aggregatedTimeSeriesRequest.RequestedByActorRole;
-        if (actorRole is ActorRoleCode.EnergySupplier or ActorRoleCode.BalanceResponsibleParty)
+        if (actorRole is DataHubNames.ActorRole.EnergySupplier or DataHubNames.ActorRole.BalanceResponsibleParty)
         {
             var newAggregationLevel = aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea with { GridAreaCode = null };
             var newRequest = aggregatedTimeSeriesRequestMessage with { AggregationPerRoleAndGridArea = newAggregationLevel };
