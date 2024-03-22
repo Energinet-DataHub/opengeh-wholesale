@@ -22,6 +22,7 @@ namespace Energinet.DataHub.Wholesale.Edi.Contracts;
 /// Files to manually keep in sync:
 /// - EDI: BuildingBlocks.Domain/DataHub/DataHubNames.cs
 /// - Wholesale: Edi/Edi/Contracts/DataHubNames.cs
+/// In the future this should be shared through a NuGet package instead
 /// </summary>
 [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Keep names in a single file to easily share between EDI and Wholesale")]
 public static class DataHubNames
