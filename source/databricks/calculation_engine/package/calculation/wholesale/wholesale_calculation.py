@@ -61,11 +61,20 @@ def _calculate_fees(
     prepared_fees: d.PreparedFees,
     results: WholesaleResultsContainer,
 ) -> None:
-    fee_amount_per_charge = fee_calculator.calculate(
+    fee_per_ga_co_es = fee_calculator.calculate(
         prepared_fees,
     )
     results.fee_per_ga_co_es = factory.create(
-        args, fee_amount_per_charge, AmountType.AMOUNT_PER_CHARGE
+        args, fee_per_ga_co_es, AmountType.AMOUNT_PER_CHARGE
+    )
+    monthly_fee_per_ga_co_es = sum_within_month(
+        fee_per_ga_co_es,
+        args.calculation_period_start_datetime,
+    )
+    results.monthly_fee_per_ga_co_es = factory.create(
+        args,
+        monthly_fee_per_ga_co_es,
+        AmountType.MONTHLY_AMOUNT_PER_CHARGE,
     )
 
 
@@ -75,23 +84,23 @@ def _calculate_subscriptions(
     prepared_subscriptions: d.PreparedSubscriptions,
     results: WholesaleResultsContainer,
 ) -> None:
-    subscription_amount_per_charge = subscription_calculator.calculate(
+    subscription_per_ga_co_es = subscription_calculator.calculate(
         prepared_subscriptions,
         args.calculation_period_start_datetime,
         args.calculation_period_end_datetime,
         args.time_zone,
     )
     results.subscription_per_ga_co_es = factory.create(
-        args, subscription_amount_per_charge, AmountType.AMOUNT_PER_CHARGE
+        args, subscription_per_ga_co_es, AmountType.AMOUNT_PER_CHARGE
     )
 
-    monthly_subscription_amount_per_charge = sum_within_month(
-        subscription_amount_per_charge,
+    monthly_subscription_per_ga_co_es = sum_within_month(
+        subscription_per_ga_co_es,
         args.calculation_period_start_datetime,
     )
-    results.monthly_subscription_from_daily_per_ga_co_es = factory.create(
+    results.monthly_subscription_per_ga_co_es = factory.create(
         args,
-        monthly_subscription_amount_per_charge,
+        monthly_subscription_per_ga_co_es,
         AmountType.MONTHLY_AMOUNT_PER_CHARGE,
     )
 
