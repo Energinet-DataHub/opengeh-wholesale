@@ -182,7 +182,7 @@ def _join_with_links(
         charge_master_data_and_prices[Colname.charge_time],
         charge_master_data_and_prices[Colname.charge_price],
         charge_master_data_and_prices[Colname.charge_tax],
-        charge_links[Colname.charge_quantity],
+        charge_links[Colname.quantity],
         charge_links[Colname.metering_point_type],
         charge_links[Colname.metering_point_id],
         charge_links[Colname.settlement_method],
