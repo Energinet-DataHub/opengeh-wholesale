@@ -1,5 +1,5 @@
 module "st_source_maps" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=13.55.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=13.60.0"
 
   name                       = "sourcemaps"
   project_name               = var.domain_name_short
@@ -26,15 +26,6 @@ module "st_source_maps" {
     {
       principal_id         = data.azurerm_client_config.current.object_id
       role_definition_name = "Storage Blob Data Contributor"
-    }
-  ]
-  blob_storage_backup_policies = [
-    {
-      name: "default"
-      backup_policy_id: module.backup_vault.blob_storage_backup_policy_ids["DataHubDefault"]
-      backup_vault_id = module.backup_vault.id
-      backup_vault_location = azurerm_resource_group.this.location
-      backup_vault_principal_id = module.backup_vault.identity.0.principal_id
     }
   ]
 }
