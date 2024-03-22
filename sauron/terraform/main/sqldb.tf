@@ -28,11 +28,11 @@ module "mssql_database_application_access" {
 
   application_hosts_names = [
     module.func_githubapi.name,
-    module.func_bff.name,
+    module.func_bff.name
   ]
 
   depends_on = [
     module.func_githubapi.name,
-    module.func_bff.name,
+    module.func_bff.name
   ]
 }
