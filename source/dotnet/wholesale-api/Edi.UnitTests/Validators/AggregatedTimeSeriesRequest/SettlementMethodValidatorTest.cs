@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Edi.Models;
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.Validation;
 using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
@@ -28,14 +28,14 @@ public class SettlementMethodValidatorTest
     private readonly SettlementMethodValidationRule _sut = new();
 
     [Theory]
-    [InlineData(SettlementMethod.Flex)]
-    [InlineData(SettlementMethod.NonProfiled)]
+    [InlineData(DataHubNames.SettlementMethod.Flex)]
+    [InlineData(DataHubNames.SettlementMethod.NonProfiled)]
     public async Task Validate_WhenConsumptionAndSettlementMethodIsValid_ReturnsNoValidationErrorsAsync(string settlementMethod)
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithMeteringPointType(MeteringPointType.Consumption)
+            .WithMeteringPointType(DataHubNames.MeteringPointType.Consumption)
             .WithSettlementMethod(settlementMethod)
             .Build();
 
@@ -47,8 +47,8 @@ public class SettlementMethodValidatorTest
     }
 
     [Theory]
-    [InlineData(MeteringPointType.Production)]
-    [InlineData(MeteringPointType.Exchange)]
+    [InlineData(DataHubNames.MeteringPointType.Production)]
+    [InlineData(DataHubNames.MeteringPointType.Exchange)]
     [InlineData("not-consumption")]
     public async Task Validate_WhenMeteringPointTypeIsGivenAndSettlementMethodIsNull_ReturnsNoValidationErrorsAsync(string meteringPointType)
     {
@@ -72,7 +72,7 @@ public class SettlementMethodValidatorTest
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithMeteringPointType(MeteringPointType.Consumption)
+            .WithMeteringPointType(DataHubNames.MeteringPointType.Consumption)
             .WithSettlementMethod("invalid-settlement-method")
             .Build();
 
@@ -88,17 +88,17 @@ public class SettlementMethodValidatorTest
     }
 
     [Theory]
-    [InlineData(MeteringPointType.Production, SettlementMethod.Flex)]
-    [InlineData(MeteringPointType.Production, SettlementMethod.NonProfiled)]
-    [InlineData(MeteringPointType.Production, "invalid-settlement-method")]
-    [InlineData(MeteringPointType.Exchange, SettlementMethod.Flex)]
-    [InlineData(MeteringPointType.Exchange, SettlementMethod.NonProfiled)]
-    [InlineData(MeteringPointType.Exchange, "invalid-settlement-method")]
-    [InlineData("not-consumption-metering-point", SettlementMethod.Flex)]
-    [InlineData("not-consumption-metering-point", SettlementMethod.NonProfiled)]
+    [InlineData(DataHubNames.MeteringPointType.Production, DataHubNames.SettlementMethod.Flex)]
+    [InlineData(DataHubNames.MeteringPointType.Production, DataHubNames.SettlementMethod.NonProfiled)]
+    [InlineData(DataHubNames.MeteringPointType.Production, "invalid-settlement-method")]
+    [InlineData(DataHubNames.MeteringPointType.Exchange, DataHubNames.SettlementMethod.Flex)]
+    [InlineData(DataHubNames.MeteringPointType.Exchange, DataHubNames.SettlementMethod.NonProfiled)]
+    [InlineData(DataHubNames.MeteringPointType.Exchange, "invalid-settlement-method")]
+    [InlineData("not-consumption-metering-point", DataHubNames.SettlementMethod.Flex)]
+    [InlineData("not-consumption-metering-point", DataHubNames.SettlementMethod.NonProfiled)]
     [InlineData("not-consumption-metering-point", "invalid-settlement-method")]
-    [InlineData("", SettlementMethod.Flex)]
-    [InlineData("", SettlementMethod.NonProfiled)]
+    [InlineData("", DataHubNames.SettlementMethod.Flex)]
+    [InlineData("", DataHubNames.SettlementMethod.NonProfiled)]
     [InlineData("", "invalid-settlement-method")]
     public async Task Validate_WhenNotConsumptionAndSettlementMethodIsGiven_ReturnsExpectedValidationErrorAsync(string meteringPointType, string settlementMethod)
     {
