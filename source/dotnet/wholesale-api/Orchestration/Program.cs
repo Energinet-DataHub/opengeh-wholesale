@@ -31,7 +31,7 @@ var host = new HostBuilder()
         services.AddHealthChecksForIsolatedWorker();
 
         // Shared by modules
-        services.AddNodaTimeForApplication(context.Configuration);
+        services.AddNodaTimeForApplication();
         services.AddDatabricksJobsForApplication(context.Configuration);
 
         // Modules

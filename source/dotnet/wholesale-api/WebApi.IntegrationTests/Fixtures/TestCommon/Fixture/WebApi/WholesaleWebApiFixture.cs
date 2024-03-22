@@ -110,8 +110,6 @@ public class WholesaleWebApiFixture : WebApiFixture
             .SetEnvironmentVariableToQueueName($"{EdiInboxQueueOptions.SectionName}__{nameof(EdiInboxQueueOptions.QueueName)}")
             .CreateAsync();
 
-        Environment.SetEnvironmentVariable(nameof(DateTimeOptions.TIME_ZONE), "Europe/Copenhagen");
-
         await EnsureCalculationStorageContainerExistsAsync();
     }
 

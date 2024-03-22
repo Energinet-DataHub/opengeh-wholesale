@@ -41,7 +41,7 @@ builder.Services.AddApplicationInsightsForWebApp(TelemetryConstants.SubsystemNam
 builder.Services.AddHealthChecksForWebApp();
 
 // Shared by modules
-builder.Services.AddNodaTimeForApplication(builder.Configuration);
+builder.Services.AddNodaTimeForApplication();
 builder.Services.AddDatabricksJobsForApplication(builder.Configuration);
 builder.Services.AddServiceBusClientForApplication(builder.Configuration);
 

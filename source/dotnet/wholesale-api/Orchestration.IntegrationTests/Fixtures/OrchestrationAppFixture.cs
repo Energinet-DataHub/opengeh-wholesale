@@ -127,9 +127,6 @@ public class OrchestrationAppFixture : IAsyncLifetime
         appHostSettings.ProcessEnvironmentVariables.Add("AzureWebJobsStorage", AzuriteManager.FullConnectionString);
         appHostSettings.ProcessEnvironmentVariables.Add("APPLICATIONINSIGHTS_CONNECTION_STRING", IntegrationTestConfiguration.ApplicationInsightsConnectionString);
 
-        // Time zone
-        appHostSettings.ProcessEnvironmentVariables.Add(nameof(DateTimeOptions.TIME_ZONE), "Europe/Copenhagen");
-
         // Database
         appHostSettings.ProcessEnvironmentVariables.Add(
             $"{nameof(ConnectionStringsOptions.ConnectionStrings)}__{nameof(ConnectionStringsOptions.DB_CONNECTION_STRING)}",
