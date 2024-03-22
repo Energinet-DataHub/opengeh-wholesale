@@ -5,7 +5,7 @@ GIVEN grid loss and system correction metering points (positive and negative gri
   AND one consumption metering point
   AND one exchange metering point  
   AND one production metering point
-  AND one monthly time series point for consumption metering point~~~~ (24 hours * 28 days = 672 rows)
+  AND one monthly time series point for consumption metering point (24 hours * 28 days = 672 rows)
 WHEN calculating the monthly negative grid loss for February
 THEN the aggregated amount is 5087.02656 for negative grid loss (system correction)
 ```
