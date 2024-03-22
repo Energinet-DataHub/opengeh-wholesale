@@ -17,7 +17,6 @@ using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.GridAr
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
 using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
-using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.Validation;
 using FluentAssertions;

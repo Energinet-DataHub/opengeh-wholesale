@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Edi.Requests;
 using Energinet.DataHub.Wholesale.Edi.Contracts;
-using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.AggregatedTimeSeriesRequest;
 using NodaTime;
 using ChargeType = Energinet.DataHub.Edi.Requests.ChargeType;
