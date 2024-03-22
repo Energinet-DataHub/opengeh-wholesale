@@ -13,7 +13,7 @@
 # limitations under the License.
 from calculation_logic.scenario_fixture import ScenarioFixture
 from helpers.data_frame_utils import assert_dataframe_and_schema
-from package.constants import EnergyResultColumnNames
+from package.constants import WholesaleResultColumnNames
 from .states.scenario_state import (
     get_expected,
 )
@@ -27,15 +27,22 @@ def test_execute__returns_expected(
 
     # Act
     results = scenario_fixture.execute()
+    actual = results.wholesale_results.daily_tariff_per_ga_co_es.orderBy(
+        WholesaleResultColumnNames.metering_point_type,
+        WholesaleResultColumnNames.time,
+    )
+    expected = scenario_fixture.expected.orderBy(
+        WholesaleResultColumnNames.metering_point_type,
+        WholesaleResultColumnNames.time,
+    )
 
     # Assert
     assert_dataframe_and_schema(
-        results.energy_results.consumption_per_ga_and_es,
-        scenario_fixture.expected,
+        actual,
+        expected,
         ignore_decimal_precision=True,
-        ignore_decimal_scale=True,
         ignore_nullability=True,
         columns_to_skip=[
-            EnergyResultColumnNames.calculation_result_id,
+            WholesaleResultColumnNames.calculation_result_id,
         ],
     )
