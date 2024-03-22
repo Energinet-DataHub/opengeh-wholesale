@@ -103,7 +103,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
         // Arrange
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.EnergySupplier)
             .WithRequestedByActorId(EnergySupplierValidatorTest.ValidGlnNumber)
             .WithEnergySupplierId("invalid-id")
             .Build();
@@ -160,7 +160,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
             .WithMeteringPointType(DataHubNames.MeteringPointType.Consumption)
             .WithSettlementMethod(null)
             .WithRequestedByActorId(EnergySupplierValidatorTest.ValidGlnNumber)
-            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.EnergySupplier)
             .WithEnergySupplierId(EnergySupplierValidatorTest.ValidGlnNumber)
             .Build();
 
@@ -178,7 +178,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
         // Arrange
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithRequestedByActorRole(ActorRoleCode.BalanceResponsibleParty)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.BalanceResponsibleParty)
             .WithBusinessReason("D05")
             .WithBalanceResponsibleId(BalanceResponsibleValidatorTest.ValidGlnNumber)
             .Build();

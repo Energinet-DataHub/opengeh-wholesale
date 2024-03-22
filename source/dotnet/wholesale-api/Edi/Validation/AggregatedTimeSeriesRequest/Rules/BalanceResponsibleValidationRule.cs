@@ -28,7 +28,7 @@ public class BalanceResponsibleValidationRule : IValidationRule<DataHub.Edi.Requ
     {
         IList<ValidationError> errors = new List<ValidationError>();
 
-        if (subject.RequestedByActorRole != ActorRoleCode.BalanceResponsibleParty)
+        if (subject.RequestedByActorRole != DataHubNames.ActorRole.BalanceResponsibleParty)
             return Task.FromResult(errors);
 
         if (subject.BusinessReason is not DataHubNames.BusinessReason.BalanceFixing and not DataHubNames.BusinessReason.PreliminaryAggregation)

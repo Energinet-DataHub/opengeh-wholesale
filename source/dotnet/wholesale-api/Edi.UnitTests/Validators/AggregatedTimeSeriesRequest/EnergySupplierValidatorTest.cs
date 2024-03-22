@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Diagnostics.CodeAnalysis;
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.Validation;
@@ -41,7 +42,7 @@ public class EnergySupplierValidatorTest
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
             .WithRequestedByActorId(ValidGlnNumber)
-            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.EnergySupplier)
             .WithEnergySupplierId(ValidGlnNumber)
             .Build();
 
@@ -59,7 +60,7 @@ public class EnergySupplierValidatorTest
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
             .WithRequestedByActorId(ValidEicNumber)
-            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.EnergySupplier)
             .WithEnergySupplierId(ValidEicNumber)
             .Build();
 
@@ -77,7 +78,7 @@ public class EnergySupplierValidatorTest
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
             .WithRequestedByActorId(ValidGlnNumber)
-            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.EnergySupplier)
             .WithEnergySupplierId(null)
             .Build();
 
@@ -100,7 +101,7 @@ public class EnergySupplierValidatorTest
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
             .WithRequestedByActorId(ValidGlnNumber)
-            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.EnergySupplier)
             .WithEnergySupplierId(ValidEicNumber)
             .Build();
 
@@ -123,7 +124,7 @@ public class EnergySupplierValidatorTest
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
             .WithRequestedByActorId(ValidGlnNumber)
-            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.EnergySupplier)
             .WithEnergySupplierId("invalid-format")
             .Build();
 

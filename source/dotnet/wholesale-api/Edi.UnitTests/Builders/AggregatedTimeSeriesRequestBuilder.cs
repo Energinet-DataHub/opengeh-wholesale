@@ -40,7 +40,7 @@ public class AggregatedTimeSeriesRequestBuilder
         var now = SystemClock.Instance.GetCurrentInstant();
         _start = Instant.FromUtc(now.InUtc().Year, 1, 1, 23, 0, 0).ToString();
         _end = Instant.FromUtc(now.InUtc().Year, 1, 2, 23, 0, 0).ToString();
-        _requestedByActorRoleId = ActorRoleCode.EnergySupplier;
+        _requestedByActorRoleId = DataHubNames.ActorRole.EnergySupplier;
         _requestedByActorId = EnergySupplierValidatorTest.ValidGlnNumber;
         _energySupplierId = _requestedByActorId;
         _businessReason = DataHubNames.BusinessReason.BalanceFixing;

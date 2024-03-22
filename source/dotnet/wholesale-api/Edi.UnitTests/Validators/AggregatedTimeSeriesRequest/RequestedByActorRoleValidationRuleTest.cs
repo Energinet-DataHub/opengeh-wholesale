@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
 using FluentAssertions;
@@ -22,9 +23,9 @@ namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.AggregatedTimeSer
 public sealed class RequestedByActorRoleValidationRuleTest
 {
     [Theory]
-    [InlineData(ActorRoleCode.MeteredDataResponsible)]
-    [InlineData(ActorRoleCode.EnergySupplier)]
-    [InlineData(ActorRoleCode.BalanceResponsibleParty)]
+    [InlineData(DataHubNames.ActorRole.MeteredDataResponsible)]
+    [InlineData(DataHubNames.ActorRole.EnergySupplier)]
+    [InlineData(DataHubNames.ActorRole.BalanceResponsibleParty)]
     public async Task ValidateAsync_WhenRequestingWithValidActorRole_ReturnsEmptyErrorListAsync(string actorRole)
     {
         // Arrange
@@ -59,7 +60,7 @@ public sealed class RequestedByActorRoleValidationRuleTest
     public async Task ValidateAsync_WhenRequestingWithDdmActorRole_ReturnsDdmShouldRequestAsMdrErrorAsync()
     {
         // Arrange
-        var request = new DataHub.Edi.Requests.AggregatedTimeSeriesRequest { RequestedByActorRole = "DDM" };
+        var request = new DataHub.Edi.Requests.AggregatedTimeSeriesRequest { RequestedByActorRole = "GridOperator" };
         var rule = new RequestedByActorRoleValidationRule();
 
         // Act

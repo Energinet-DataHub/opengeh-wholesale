@@ -81,4 +81,18 @@ public static class DataHubNames
         public const string SecondCorrection = "SecondCorrection";
         public const string ThirdCorrection = "ThirdCorrection";
     }
+
+    public static class ActorRole
+    {
+        public const string MeteringPointAdministrator = "MeteringPointAdministrator";
+        public const string MeteredDataResponsible = "MeteredDataResponsible";
+        public const string EnergySupplier = "EnergySupplier";
+        public const string BalanceResponsibleParty = "BalanceResponsibleParty";
+        public const string GridOperator = "GridOperator";
+        public const string MeteredDataAdministrator = "MeteredDataAdministrator";
+        public const string ImbalanceSettlementResponsible = "ImbalanceSettlementResponsible";
+        public const string SystemOperator = "SystemOperator";
+        public const string DanishEnergyAgency = "DanishEnergyAgency";
+        public const string Delegated = "Delegated";
+    }
 }

@@ -23,7 +23,7 @@ public class TimeSeriesTypeValidationRule : IValidationRule<DataHub.Edi.Requests
 
     public Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.AggregatedTimeSeriesRequest subject)
     {
-        if (subject.RequestedByActorRole == ActorRoleCode.MeteredDataResponsible)
+        if (subject.RequestedByActorRole == DataHubNames.ActorRole.MeteredDataResponsible)
             return Task.FromResult(NoError);
 
         if (subject.MeteringPointType == DataHubNames.MeteringPointType.Exchange)
