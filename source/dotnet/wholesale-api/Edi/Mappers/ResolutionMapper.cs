@@ -23,9 +23,9 @@ public static class ResolutionMapper
     {
         return resolution switch
         {
-            DomainNames.Resolution.Hourly => Resolution.Hour,
-            DomainNames.Resolution.Daily => Resolution.Day,
-            DomainNames.Resolution.Monthly => Resolution.Month,
+            DataHubNames.Resolution.Hourly => Resolution.Hour,
+            DataHubNames.Resolution.Daily => Resolution.Day,
+            DataHubNames.Resolution.Monthly => Resolution.Month,
             _ => throw new ArgumentOutOfRangeException(nameof(resolution), resolution, "Unknown Resolution"),
         };
     }

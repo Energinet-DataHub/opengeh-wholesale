@@ -21,9 +21,9 @@ public class MeteringPointTypeValidationRule : IValidationRule<DataHub.Edi.Reque
 {
     private static readonly IReadOnlyList<string> _validMeteringPointTypes = new List<string>
     {
-        DomainNames.MeteringPointType.Consumption,
-        DomainNames.MeteringPointType.Production,
-        DomainNames.MeteringPointType.Exchange,
+        DataHubNames.MeteringPointType.Consumption,
+        DataHubNames.MeteringPointType.Production,
+        DataHubNames.MeteringPointType.Exchange,
     };
 
     private static readonly ValidationError _invalidMeteringPointType =

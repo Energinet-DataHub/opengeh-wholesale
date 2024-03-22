@@ -23,12 +23,12 @@ public static class TimeSeriesTypeMapper
     {
         return meteringPointType switch
         {
-            DomainNames.MeteringPointType.Production => TimeSeriesType.Production,
-            DomainNames.MeteringPointType.Exchange => TimeSeriesType.NetExchangePerGa,
-            DomainNames.MeteringPointType.Consumption => settlementMethod switch
+            DataHubNames.MeteringPointType.Production => TimeSeriesType.Production,
+            DataHubNames.MeteringPointType.Exchange => TimeSeriesType.NetExchangePerGa,
+            DataHubNames.MeteringPointType.Consumption => settlementMethod switch
             {
-                DomainNames.SettlementMethod.NonProfiled => TimeSeriesType.NonProfiledConsumption,
-                DomainNames.SettlementMethod.Flex => TimeSeriesType.FlexConsumption,
+                DataHubNames.SettlementMethod.NonProfiled => TimeSeriesType.NonProfiledConsumption,
+                DataHubNames.SettlementMethod.Flex => TimeSeriesType.FlexConsumption,
                 var method when
                     string.IsNullOrWhiteSpace(method) => TimeSeriesType.TotalConsumption,
 

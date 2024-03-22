@@ -20,11 +20,11 @@ namespace Energinet.DataHub.Wholesale.Edi.Contracts;
 /// These domain names are shared between the EDI and Wholesale subsystems
 /// When updating these, you need to manually update the classes in the other subsystem
 /// Files to manually keep in sync:
-/// - EDI: BuildingBlocks.Domain/DataHub/DomainNames.cs
-/// - Wholesale: Edi/Edi/Contracts/DomainNames.cs
+/// - EDI: BuildingBlocks.Domain/DataHub/DataHubNames.cs
+/// - Wholesale: Edi/Edi/Contracts/DataHubNames.cs
 /// </summary>
 [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Keep names in a single file to easily share between EDI and Wholesale")]
-public static class DomainNames
+public static class DataHubNames
 {
     public static class BusinessReason
     {

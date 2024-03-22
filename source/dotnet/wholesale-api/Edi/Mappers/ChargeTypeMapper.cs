@@ -23,9 +23,9 @@ public static class ChargeTypeMapper
     {
         return chargeType switch
         {
-            DomainNames.ChargeType.Fee => ChargeType.Fee,
-            DomainNames.ChargeType.Tariff => ChargeType.Tariff,
-            DomainNames.ChargeType.Subscription => ChargeType.Subscription,
+            DataHubNames.ChargeType.Fee => ChargeType.Fee,
+            DataHubNames.ChargeType.Tariff => ChargeType.Tariff,
+            DataHubNames.ChargeType.Subscription => ChargeType.Subscription,
             _ => throw new ArgumentOutOfRangeException(nameof(chargeType), chargeType, "Cannot map to ChargeType"),
         };
     }

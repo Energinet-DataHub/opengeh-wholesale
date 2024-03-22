@@ -36,7 +36,7 @@ public class SettlementSeriesVersionValidatorTest
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithBusinessReason(DomainNames.BusinessReason.Correction)
+            .WithBusinessReason(DataHubNames.BusinessReason.Correction)
             .WithSettlementSeriesVersion(invalidSettlementSeriesVersion)
             .Build();
 
@@ -52,15 +52,15 @@ public class SettlementSeriesVersionValidatorTest
     [InlineData("invalid-settlement-series-version")]
     [InlineData("D04")]
     [InlineData("")]
-    [InlineData(DomainNames.SettlementVersion.FirstCorrection)]
-    [InlineData(DomainNames.SettlementVersion.SecondCorrection)]
-    [InlineData(DomainNames.SettlementVersion.ThirdCorrection)]
+    [InlineData(DataHubNames.SettlementVersion.FirstCorrection)]
+    [InlineData(DataHubNames.SettlementVersion.SecondCorrection)]
+    [InlineData(DataHubNames.SettlementVersion.ThirdCorrection)]
     public async Task Validate_WhenNotCorrectionAndSettlementSeriesVersionExists_ReturnsValidationErrorsAsync(string settlementSeriesVersion)
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithBusinessReason(DomainNames.BusinessReason.WholesaleFixing)
+            .WithBusinessReason(DataHubNames.BusinessReason.WholesaleFixing)
             .WithSettlementSeriesVersion(settlementSeriesVersion)
             .Build();
 
@@ -73,15 +73,15 @@ public class SettlementSeriesVersionValidatorTest
     }
 
     [Theory]
-    [InlineData(DomainNames.SettlementVersion.FirstCorrection)]
-    [InlineData(DomainNames.SettlementVersion.SecondCorrection)]
-    [InlineData(DomainNames.SettlementVersion.ThirdCorrection)]
+    [InlineData(DataHubNames.SettlementVersion.FirstCorrection)]
+    [InlineData(DataHubNames.SettlementVersion.SecondCorrection)]
+    [InlineData(DataHubNames.SettlementVersion.ThirdCorrection)]
     public async Task Validate_WhenCorrectionAndValidSettlementSeriesVersion_ReturnsNoValidationErrorsAsync(string validSettlementSeriesVersion)
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithBusinessReason(DomainNames.BusinessReason.Correction)
+            .WithBusinessReason(DataHubNames.BusinessReason.Correction)
             .WithSettlementSeriesVersion(validSettlementSeriesVersion)
             .Build();
 
@@ -98,7 +98,7 @@ public class SettlementSeriesVersionValidatorTest
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithBusinessReason(DomainNames.BusinessReason.Correction)
+            .WithBusinessReason(DataHubNames.BusinessReason.Correction)
             .WithSettlementSeriesVersion(null)
             .Build();
 
@@ -115,7 +115,7 @@ public class SettlementSeriesVersionValidatorTest
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithBusinessReason(DomainNames.BusinessReason.WholesaleFixing)
+            .WithBusinessReason(DataHubNames.BusinessReason.WholesaleFixing)
             .WithSettlementSeriesVersion(null)
             .Build();
 

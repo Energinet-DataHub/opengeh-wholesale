@@ -139,7 +139,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
         // Arrange
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithBusinessReason(DomainNames.BusinessReason.Correction)
+            .WithBusinessReason(DataHubNames.BusinessReason.Correction)
             .WithSettlementSeriesVersion("invalid-settlement-series-version")
             .Build();
 
@@ -157,7 +157,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
         // Arrange
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithMeteringPointType(DomainNames.MeteringPointType.Consumption)
+            .WithMeteringPointType(DataHubNames.MeteringPointType.Consumption)
             .WithSettlementMethod(null)
             .WithRequestedByActorId(EnergySupplierValidatorTest.ValidGlnNumber)
             .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)

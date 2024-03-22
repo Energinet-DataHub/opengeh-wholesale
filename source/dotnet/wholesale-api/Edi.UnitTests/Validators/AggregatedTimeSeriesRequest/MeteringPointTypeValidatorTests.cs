@@ -32,9 +32,9 @@ public class MeteringPointTypeValidatorTests
     private readonly MeteringPointTypeValidationRule _sut = new();
 
     [Theory]
-    [InlineData(DomainNames.MeteringPointType.Consumption)]
-    [InlineData(DomainNames.MeteringPointType.Production)]
-    [InlineData(DomainNames.MeteringPointType.Exchange)]
+    [InlineData(DataHubNames.MeteringPointType.Consumption)]
+    [InlineData(DataHubNames.MeteringPointType.Production)]
+    [InlineData(DataHubNames.MeteringPointType.Exchange)]
     [InlineData("")]
     public async Task Validate_WhenMeteringPointIsValid_ReturnsExpectedNoValidationErrors(string meteringPointType)
     {

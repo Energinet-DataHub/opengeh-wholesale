@@ -22,7 +22,7 @@ namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 
 public class AggregatedTimeSeriesRequestBuilder
 {
-    private string _meteringPointType = DomainNames.MeteringPointType.Production;
+    private string _meteringPointType = DataHubNames.MeteringPointType.Production;
 
     private string _start;
     private string _end;
@@ -43,7 +43,7 @@ public class AggregatedTimeSeriesRequestBuilder
         _requestedByActorRoleId = ActorRoleCode.EnergySupplier;
         _requestedByActorId = EnergySupplierValidatorTest.ValidGlnNumber;
         _energySupplierId = _requestedByActorId;
-        _businessReason = DomainNames.BusinessReason.BalanceFixing;
+        _businessReason = DataHubNames.BusinessReason.BalanceFixing;
     }
 
     public static AggregatedTimeSeriesRequestBuilder AggregatedTimeSeriesRequest()

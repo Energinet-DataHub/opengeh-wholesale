@@ -26,10 +26,10 @@ public class TimeSeriesTypeValidationRule : IValidationRule<DataHub.Edi.Requests
         if (subject.RequestedByActorRole == ActorRoleCode.MeteredDataResponsible)
             return Task.FromResult(NoError);
 
-        if (subject.MeteringPointType == DomainNames.MeteringPointType.Exchange)
+        if (subject.MeteringPointType == DataHubNames.MeteringPointType.Exchange)
             return Task.FromResult(InvalidTimeSeriesTypeForActor(subject.RequestedByActorRole));
 
-        if (subject.MeteringPointType == DomainNames.MeteringPointType.Consumption && !subject.HasSettlementMethod)
+        if (subject.MeteringPointType == DataHubNames.MeteringPointType.Consumption && !subject.HasSettlementMethod)
             return Task.FromResult(InvalidTimeSeriesTypeForActor(subject.RequestedByActorRole));
 
         return Task.FromResult(NoError);

@@ -25,8 +25,8 @@ public class TimeSeriesTypeMapperTests
     [Theory]
     [InlineData("Consumption", "", TimeSeriesType.TotalConsumption)]
     [InlineData("Consumption", null, TimeSeriesType.TotalConsumption)]
-    [InlineData("Consumption", DomainNames.SettlementMethod.NonProfiled, TimeSeriesType.NonProfiledConsumption)]
-    [InlineData("Consumption", DomainNames.SettlementMethod.Flex, TimeSeriesType.FlexConsumption)]
+    [InlineData("Consumption", DataHubNames.SettlementMethod.NonProfiled, TimeSeriesType.NonProfiledConsumption)]
+    [InlineData("Consumption", DataHubNames.SettlementMethod.Flex, TimeSeriesType.FlexConsumption)]
     [InlineData("Production", null, TimeSeriesType.Production)]
     [InlineData("Exchange", null, TimeSeriesType.NetExchangePerGa)]
     public void MapTimeSeriesType_WhenValidMeteringPointTypeAndSettlementMethod_ReturnsExpectedType(

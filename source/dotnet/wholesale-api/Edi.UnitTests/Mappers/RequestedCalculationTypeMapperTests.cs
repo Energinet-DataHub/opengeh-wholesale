@@ -23,13 +23,13 @@ namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Mappers;
 public class RequestedCalculationTypeMapperTests
 {
     [Theory]
-    [InlineData(DomainNames.BusinessReason.BalanceFixing, null, RequestedCalculationType.BalanceFixing)]
-    [InlineData(DomainNames.BusinessReason.PreliminaryAggregation, null, RequestedCalculationType.PreliminaryAggregation)]
-    [InlineData(DomainNames.BusinessReason.WholesaleFixing, null, RequestedCalculationType.WholesaleFixing)]
-    [InlineData(DomainNames.BusinessReason.Correction, DomainNames.SettlementVersion.FirstCorrection, RequestedCalculationType.FirstCorrection)]
-    [InlineData(DomainNames.BusinessReason.Correction, DomainNames.SettlementVersion.SecondCorrection, RequestedCalculationType.SecondCorrection)]
-    [InlineData(DomainNames.BusinessReason.Correction, DomainNames.SettlementVersion.ThirdCorrection, RequestedCalculationType.ThirdCorrection)]
-    [InlineData(DomainNames.BusinessReason.Correction, null, RequestedCalculationType.LatestCorrection)]
+    [InlineData(DataHubNames.BusinessReason.BalanceFixing, null, RequestedCalculationType.BalanceFixing)]
+    [InlineData(DataHubNames.BusinessReason.PreliminaryAggregation, null, RequestedCalculationType.PreliminaryAggregation)]
+    [InlineData(DataHubNames.BusinessReason.WholesaleFixing, null, RequestedCalculationType.WholesaleFixing)]
+    [InlineData(DataHubNames.BusinessReason.Correction, DataHubNames.SettlementVersion.FirstCorrection, RequestedCalculationType.FirstCorrection)]
+    [InlineData(DataHubNames.BusinessReason.Correction, DataHubNames.SettlementVersion.SecondCorrection, RequestedCalculationType.SecondCorrection)]
+    [InlineData(DataHubNames.BusinessReason.Correction, DataHubNames.SettlementVersion.ThirdCorrection, RequestedCalculationType.ThirdCorrection)]
+    [InlineData(DataHubNames.BusinessReason.Correction, null, RequestedCalculationType.LatestCorrection)]
     public void ToRequestedCalculationType_WhenValidBusinessReasonAndSettlementSeriesVersion_ReturnsExpectedType(string businessReason, string? settlementSeriesVersion, RequestedCalculationType expectedType)
     {
         // Act
@@ -40,14 +40,14 @@ public class RequestedCalculationTypeMapperTests
     }
 
     [Theory]
-    [InlineData(DomainNames.BusinessReason.BalanceFixing, DomainNames.SettlementVersion.FirstCorrection)]
-    [InlineData(DomainNames.BusinessReason.PreliminaryAggregation, "random-string")]
-    [InlineData(DomainNames.BusinessReason.WholesaleFixing, DomainNames.SettlementVersion.FirstCorrection)]
-    [InlineData(DomainNames.BusinessReason.Correction, "")]
-    [InlineData(DomainNames.BusinessReason.Correction, "random-string")]
+    [InlineData(DataHubNames.BusinessReason.BalanceFixing, DataHubNames.SettlementVersion.FirstCorrection)]
+    [InlineData(DataHubNames.BusinessReason.PreliminaryAggregation, "random-string")]
+    [InlineData(DataHubNames.BusinessReason.WholesaleFixing, DataHubNames.SettlementVersion.FirstCorrection)]
+    [InlineData(DataHubNames.BusinessReason.Correction, "")]
+    [InlineData(DataHubNames.BusinessReason.Correction, "random-string")]
     [InlineData("", "")]
     [InlineData("random-string", "")]
-    [InlineData("random-string", DomainNames.SettlementVersion.FirstCorrection)]
+    [InlineData("random-string", DataHubNames.SettlementVersion.FirstCorrection)]
     public void ToRequestedCalculationType_WhenInvalidBusinessReasonAndSettlementSeriesVersionCombination_ThrowsArgumentOutOfRangeException(string businessReason, string? settlementSeriesVersion)
     {
         // Act

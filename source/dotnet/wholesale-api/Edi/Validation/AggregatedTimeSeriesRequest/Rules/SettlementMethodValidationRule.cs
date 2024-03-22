@@ -19,8 +19,8 @@ namespace Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest
 
 public class SettlementMethodValidationRule : IValidationRule<DataHub.Edi.Requests.AggregatedTimeSeriesRequest>
 {
-    private static readonly IReadOnlyList<string> _validSettlementMethods = new List<string> { DomainNames.SettlementMethod.Flex, DomainNames.SettlementMethod.NonProfiled };
-    private static readonly string _validMeteringPointType = DomainNames.MeteringPointType.Consumption;
+    private static readonly IReadOnlyList<string> _validSettlementMethods = new List<string> { DataHubNames.SettlementMethod.Flex, DataHubNames.SettlementMethod.NonProfiled };
+    private static readonly string _validMeteringPointType = DataHubNames.MeteringPointType.Consumption;
 
     private static readonly ValidationError _invalidSettlementMethod = new("SettlementMethod kan kun benyttes i kombination med E17 og skal være enten D01 og E02 / SettlementMethod can only be used in combination with E17 and must be either D01 or E02", "D15");
 

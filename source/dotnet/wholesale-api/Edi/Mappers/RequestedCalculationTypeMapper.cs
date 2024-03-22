@@ -21,24 +21,24 @@ public static class RequestedCalculationTypeMapper
 {
     public static RequestedCalculationType ToRequestedCalculationType(string businessReason, string? settlementSeriesVersion)
     {
-        if (businessReason != DomainNames.BusinessReason.Correction && settlementSeriesVersion != null)
+        if (businessReason != DataHubNames.BusinessReason.Correction && settlementSeriesVersion != null)
         {
             throw new ArgumentOutOfRangeException(
                 nameof(settlementSeriesVersion),
                 settlementSeriesVersion,
-                $"Value must be null when {nameof(businessReason)} is not {nameof(DomainNames.BusinessReason.Correction)}.");
+                $"Value must be null when {nameof(businessReason)} is not {nameof(DataHubNames.BusinessReason.Correction)}.");
         }
 
         return businessReason switch
         {
-            DomainNames.BusinessReason.BalanceFixing => RequestedCalculationType.BalanceFixing,
-            DomainNames.BusinessReason.PreliminaryAggregation => RequestedCalculationType.PreliminaryAggregation,
-            DomainNames.BusinessReason.WholesaleFixing => RequestedCalculationType.WholesaleFixing,
-            DomainNames.BusinessReason.Correction => settlementSeriesVersion switch
+            DataHubNames.BusinessReason.BalanceFixing => RequestedCalculationType.BalanceFixing,
+            DataHubNames.BusinessReason.PreliminaryAggregation => RequestedCalculationType.PreliminaryAggregation,
+            DataHubNames.BusinessReason.WholesaleFixing => RequestedCalculationType.WholesaleFixing,
+            DataHubNames.BusinessReason.Correction => settlementSeriesVersion switch
             {
-                DomainNames.SettlementVersion.FirstCorrection => RequestedCalculationType.FirstCorrection,
-                DomainNames.SettlementVersion.SecondCorrection => RequestedCalculationType.SecondCorrection,
-                DomainNames.SettlementVersion.ThirdCorrection => RequestedCalculationType.ThirdCorrection,
+                DataHubNames.SettlementVersion.FirstCorrection => RequestedCalculationType.FirstCorrection,
+                DataHubNames.SettlementVersion.SecondCorrection => RequestedCalculationType.SecondCorrection,
+                DataHubNames.SettlementVersion.ThirdCorrection => RequestedCalculationType.ThirdCorrection,
                 null => RequestedCalculationType.LatestCorrection,
                 _ => throw new ArgumentOutOfRangeException(
                     nameof(settlementSeriesVersion),

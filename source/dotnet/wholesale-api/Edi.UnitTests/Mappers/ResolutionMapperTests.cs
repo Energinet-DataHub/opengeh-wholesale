@@ -24,9 +24,9 @@ namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Mappers;
 public class ResolutionMapperTests
 {
     [Theory]
-    [InlineData(DomainNames.Resolution.Monthly, CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution.Month)]
-    [InlineData(DomainNames.Resolution.Hourly, CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution.Hour)]
-    [InlineData(DomainNames.Resolution.Daily, CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution.Day)]
+    [InlineData(DataHubNames.Resolution.Monthly, CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution.Month)]
+    [InlineData(DataHubNames.Resolution.Hourly, CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution.Hour)]
+    [InlineData(DataHubNames.Resolution.Daily, CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution.Day)]
     public void Map_WhenValid_ReturnsExpectedChargeType(string resolution, Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution expectedResult)
     {
         // Act

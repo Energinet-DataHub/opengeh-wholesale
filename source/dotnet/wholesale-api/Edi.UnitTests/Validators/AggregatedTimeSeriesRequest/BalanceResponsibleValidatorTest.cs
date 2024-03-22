@@ -164,7 +164,7 @@ public class BalanceResponsibleValidatorTest
             .WithRequestedByActorId(ValidGlnNumber)
             .WithRequestedByActorRole(BalanceResponsibleRole)
             .WithBalanceResponsibleId(ValidGlnNumber)
-            .WithBusinessReason(DomainNames.BusinessReason.BalanceFixing)
+            .WithBusinessReason(DataHubNames.BusinessReason.BalanceFixing)
             .Build();
 
         // Act
@@ -183,7 +183,7 @@ public class BalanceResponsibleValidatorTest
             .WithRequestedByActorId(ValidGlnNumber)
             .WithRequestedByActorRole(BalanceResponsibleRole)
             .WithBalanceResponsibleId(ValidGlnNumber)
-            .WithBusinessReason(DomainNames.BusinessReason.PreliminaryAggregation)
+            .WithBusinessReason(DataHubNames.BusinessReason.PreliminaryAggregation)
             .Build();
 
         // Act
@@ -202,7 +202,7 @@ public class BalanceResponsibleValidatorTest
             .WithRequestedByActorId(ValidGlnNumber)
             .WithRequestedByActorRole(BalanceResponsibleRole)
             .WithBalanceResponsibleId(ValidGlnNumber)
-            .WithBusinessReason(DomainNames.BusinessReason.WholesaleFixing)
+            .WithBusinessReason(DataHubNames.BusinessReason.WholesaleFixing)
             .Build();
 
         // Act
@@ -226,7 +226,7 @@ public class BalanceResponsibleValidatorTest
             .WithRequestedByActorId(ValidGlnNumber)
             .WithRequestedByActorRole(BalanceResponsibleRole)
             .WithBalanceResponsibleId("invalid-format")
-            .WithBusinessReason(DomainNames.BusinessReason.Correction)
+            .WithBusinessReason(DataHubNames.BusinessReason.Correction)
             .Build();
 
         // Act
