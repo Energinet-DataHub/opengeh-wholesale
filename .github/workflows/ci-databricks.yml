@@ -111,6 +111,7 @@ jobs:
 
   python_unit_tests:
     strategy:
+      fail-fast: false
       matrix:
         tests_filter_expression: [
           test_energy_calculation.py,
