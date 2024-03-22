@@ -211,9 +211,9 @@ def test__monthly_amount_for_subscriptions_and_fees__is_created(
     # Arrange
 
     result_df = wholesale_fixing_wholesale_results_df.where(
-        F.col(WholesaleResultColumnNames.charge_type) == charge_type.value
+        f.col(WholesaleResultColumnNames.charge_type) == charge_type.value
     ).where(
-        F.col(WholesaleResultColumnNames.resolution)
+        f.col(WholesaleResultColumnNames.resolution)
         == WholesaleResultResolution.MONTH.value
     )
 
