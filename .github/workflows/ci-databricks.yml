@@ -117,7 +117,7 @@ jobs:
           test_wholesale_calculation.py,
           datamigration,
           calculation_logic,
-          "not calculator_job and not datamigration and not calculation_logic"
+          not calculator_job and not datamigration and not calculation_logic
         ]
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
