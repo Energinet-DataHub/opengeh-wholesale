@@ -17,6 +17,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.Edi.Client;
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Factories;
 using Energinet.DataHub.Wholesale.Edi.Factories.WholesaleServices;
 using Energinet.DataHub.Wholesale.Edi.Models;
@@ -118,7 +119,7 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
         if (queryParameters.GridArea == null) // If grid area is null, we already retrieved any data across all grid areas
             return false;
 
-        if (requestedByActorRole is ActorRoleCode.EnergySupplier or ActorRoleCode.BalanceResponsibleParty)
+        if (requestedByActorRole is DataHubNames.ActorRole.EnergySupplier or DataHubNames.ActorRole.BalanceResponsibleParty)
         {
             var queryParametersWithoutGridArea = queryParameters with
             {

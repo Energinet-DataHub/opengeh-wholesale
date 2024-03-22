@@ -14,9 +14,6 @@
 
 
 class Colname:
-    positive_grid_loss = "positive_grid_loss"
-    negative_grid_loss = "negative_grid_loss"
-    aggregation_level = "aggregation_level"
     balance_responsible_id = "balance_responsible_id"
     calculation_execution_time_start = "calculation_execution_time_start"
     calculation_id = "calculation_id"
@@ -29,7 +26,6 @@ class Colname:
     charge_tax = "is_tax"
     charge_time = "charge_time"
     charge_type = "charge_type"
-    charge_quantity = "quantity"
     currency = "currency"
     date = "date"
     energy_supplier_id = "energy_supplier_id"
@@ -37,10 +33,6 @@ class Colname:
     from_grid_area = "from_grid_area_code"
     "The grid area sending current"
     grid_area = "grid_area_code"
-    grid_loss_metering_point_id = "grid_loss_metering_point_id"
-    is_positive_grid_loss_responsible = "is_positive_grid_loss_responsible"
-    is_negative_grid_loss_responsible = "is_negative_grid_loss_responsible"
-    local_date = "localDate"
     metering_point_id = "metering_point_id"
     metering_point_type = "type"
     observation_time = "observation_time"
@@ -53,7 +45,6 @@ class Colname:
     quantity = "quantity"
     resolution = "resolution"
     settlement_method = "settlement_method"
-    start_datetime = "start_datetime"
     time_series_type = "time_series_type"
     to_date = "to_date"
     to_grid_area = "to_grid_area_code"
