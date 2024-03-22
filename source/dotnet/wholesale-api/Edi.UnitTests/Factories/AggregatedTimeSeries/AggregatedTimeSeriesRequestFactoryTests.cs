@@ -142,7 +142,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
             energySupplier: energySupplier,
             balanceResponsible: balanceResponsibleId,
             meteringPointType: string.Empty,
-            settlementMethod: DomainNames.SettlementType.NonProfiled);
+            settlementMethod: DomainNames.SettlementMethod.NonProfiled);
 
         // Act
         var actual = AggregatedTimeSeriesRequestFactory.Parse(request);
@@ -236,7 +236,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
         string? energySupplier = null,
         string? balanceResponsible = null,
         string meteringPointType = DomainNames.MeteringPointType.Production,
-        string settlementMethod = DomainNames.SettlementType.Flex)
+        string settlementMethod = DomainNames.SettlementMethod.Flex)
     {
         var request = new AggregatedTimeSeriesRequest()
         {

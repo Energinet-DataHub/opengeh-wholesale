@@ -68,7 +68,7 @@ public static class DomainNames
         public const string Monthly = "Monthly";
     }
 
-    public static class SettlementType
+    public static class SettlementMethod
     {
         public const string NonProfiled = "NonProfiled";
         public const string Flex = "Flex";
