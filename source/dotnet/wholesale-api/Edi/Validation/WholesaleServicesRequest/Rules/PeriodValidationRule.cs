@@ -13,12 +13,12 @@
 // limitations under the License.
 
 using NodaTime;
-using NodaTime.Extensions;
 using NodaTime.Text;
 
 namespace Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules;
 
-public sealed class PeriodValidationRule : IValidationRule<DataHub.Edi.Requests.WholesaleServicesRequest>
+public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, IClock clock)
+    : IValidationRule<DataHub.Edi.Requests.WholesaleServicesRequest>
 {
     private static readonly ValidationError _invalidDateFormat =
         new(
@@ -40,45 +40,35 @@ public sealed class PeriodValidationRule : IValidationRule<DataHub.Edi.Requests.
             "Forkert dato format for {PropertyName}, skal være YYYY-MM-DDT22:00:00Z / Wrong date format for {PropertyName}, must be YYYY-MM-DDT22:00:00Z",
             "D66");
 
-    private readonly DateTimeZone _dateTimeZone;
-    private readonly IClock _clock;
-
-    public PeriodValidationRule(DateTimeZone dateTimeZone, IClock clock)
-    {
-        _dateTimeZone = dateTimeZone;
-        _clock = clock;
-    }
+    private static readonly ValidationError _invalidPeriodLength =
+        new(
+            "Det er ikke muligt at anmode om data på tværs af måneder i forbindelse med en engrosfiksering eller korrektioner / It is not possible to request data across months in relation to wholesalefixing or corrections",
+            "E17");
 
     public Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.WholesaleServicesRequest subject)
     {
         ArgumentNullException.ThrowIfNull(subject);
 
         var periodStart = subject.PeriodStart;
+        var periodEnd = subject.PeriodEnd;
 
         // This should not be possible, but we need to check for null due to the nullable type
         ArgumentNullException.ThrowIfNull(periodStart);
+        ArgumentNullException.ThrowIfNull(periodEnd);
 
         var errors = new List<ValidationError>();
 
         var startInstant = ParseToInstant(periodStart, "Period Start", errors);
+        var endInstant = ParseToInstant(periodEnd, "Period End", errors);
 
-        if (startInstant is null)
+        if (startInstant is null || endInstant is null)
             return Task.FromResult<IList<ValidationError>>(errors);
 
         MustBeMidnight(startInstant.Value, "Period Start", errors);
-        AddErrorIfPeriodStartIsTooOld(startInstant.Value, errors);
-
-        var periodEnd = subject.PeriodEnd;
-
-        if (periodEnd == string.Empty)
-            return Task.FromResult<IList<ValidationError>>(errors);
-
-        var endInstant = ParseToInstant(periodEnd, "Period End", errors);
-
-        if (endInstant is null)
-            return Task.FromResult<IList<ValidationError>>(errors);
-
         MustBeMidnight(endInstant.Value, "Period End", errors);
+
+        AddErrorIfPeriodStartIsTooOld(startInstant.Value, errors);
+        AddErrorIfPeriodStartIsNotExactlyOneMonth(startInstant.Value, endInstant.Value, errors);
 
         return Task.FromResult<IList<ValidationError>>(errors);
     }
@@ -99,8 +89,8 @@ public sealed class PeriodValidationRule : IValidationRule<DataHub.Edi.Requests.
 
     private void AddErrorIfPeriodStartIsTooOld(Instant periodStart, ICollection<ValidationError> errors)
     {
-        var zonedStartDateTime = new ZonedDateTime(periodStart, _dateTimeZone);
-        var zonedCurrentDateTime = new ZonedDateTime(_clock.GetCurrentInstant(), _dateTimeZone);
+        var zonedStartDateTime = new ZonedDateTime(periodStart, dateTimeZone);
+        var zonedCurrentDateTime = new ZonedDateTime(clock.GetCurrentInstant(), dateTimeZone);
 
         if (zonedStartDateTime.LocalDateTime.Date
             < zonedCurrentDateTime.LocalDateTime.Date.PlusYears(-3).PlusMonths(-2))
@@ -109,9 +99,25 @@ public sealed class PeriodValidationRule : IValidationRule<DataHub.Edi.Requests.
         }
     }
 
+    private void AddErrorIfPeriodStartIsNotExactlyOneMonth(
+        Instant periodStart,
+        Instant periodEnd,
+        ICollection<ValidationError> errors)
+    {
+        var zonedStartDateTime = new ZonedDateTime(periodStart, dateTimeZone);
+        var zonedEndDateTime = new ZonedDateTime(periodEnd, dateTimeZone);
+
+        if (zonedStartDateTime.LocalDateTime.Day != 1
+            || zonedEndDateTime.LocalDateTime.Day != 1
+            || zonedEndDateTime.LocalDateTime.Month != zonedStartDateTime.LocalDateTime.Month + 1)
+        {
+            errors.Add(_invalidPeriodLength);
+        }
+    }
+
     private void MustBeMidnight(Instant instant, string propertyName, ICollection<ValidationError> errors)
     {
-        var zonedDateTime = new ZonedDateTime(instant, _dateTimeZone);
+        var zonedDateTime = new ZonedDateTime(instant, dateTimeZone);
 
         if (zonedDateTime.TimeOfDay == LocalTime.Midnight)
             return;
