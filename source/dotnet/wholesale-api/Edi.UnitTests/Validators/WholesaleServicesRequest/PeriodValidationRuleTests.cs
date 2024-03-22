@@ -58,33 +58,39 @@ public class PeriodValidationRuleTests
     }
 
     [Fact]
-    public async Task Validate_WhenPeriodStartIsNonsense_ReturnsExpectedValidationErrors()
+    public async Task Validate_WhenPeriodStartAndEndIsNonsense_ReturnsExpectedValidationErrors()
     {
         // Arrange
         var message = new WholesaleServicesRequestBuilder()
             .WithPeriodStart("string.Empty")
+            .WithPeriodEnd("string.Empty")
             .Build();
 
         // Act
         var errors = await _sut.ValidateAsync(message);
 
         // Assert
-        errors.Should().ContainSingle();
-        errors.Should().Contain(error =>
-            error.Message.Contains(_invalidDateFormat.WithPropertyName("Period Start").Message)
-            && error.ErrorCode.Equals(_invalidDateFormat.ErrorCode));
+        errors.Should().Satisfy(
+            error =>
+                error.Message.Contains(_invalidDateFormat.WithPropertyName("Period Start").Message)
+                && error.ErrorCode.Equals(_invalidDateFormat.ErrorCode),
+            error =>
+                error.Message.Contains(_invalidDateFormat.WithPropertyName("Period End").Message)
+                && error.ErrorCode.Equals(_invalidDateFormat.ErrorCode));
     }
 
     [Fact]
-    public async Task Validate_WhenPeriodStartIsInAnInvalidFormat_ReturnsExpectedValidationErrors()
+    public async Task Validate_WhenPeriodStartAndEndIsInAnInvalidFormat_ReturnsExpectedValidationErrors()
     {
         // Arrange
         var message1 = new WholesaleServicesRequestBuilder()
-            .WithPeriodStart("2024-08-17")
+            .WithPeriodStart("2024-08-01")
+            .WithPeriodEnd("2024-08-31")
             .Build();
 
         var message2 = new WholesaleServicesRequestBuilder()
-            .WithPeriodStart("2024-08-17T23:00:00")
+            .WithPeriodStart("2024-08-01T23:00:00")
+            .WithPeriodEnd("2024-08-31T23:00:00")
             .Build();
 
         // Act
@@ -92,23 +98,32 @@ public class PeriodValidationRuleTests
         var errors2 = await _sut.ValidateAsync(message2);
 
         // Assert
-        errors1.Should().ContainSingle();
-        errors1.Should().Contain(error =>
-            error.Message.Contains(_invalidDateFormat.WithPropertyName("Period Start").Message)
-            && error.ErrorCode.Equals(_invalidDateFormat.ErrorCode));
+        errors1.Should().Satisfy(
+            error =>
+                error.Message.Contains(_invalidDateFormat.WithPropertyName("Period Start").Message)
+                && error.ErrorCode.Equals(_invalidDateFormat.ErrorCode),
+            error =>
+                error.Message.Contains(_invalidDateFormat.WithPropertyName("Period End").Message)
+                && error.ErrorCode.Equals(_invalidDateFormat.ErrorCode));
 
-        errors2.Should().ContainSingle();
-        errors2.Should().Contain(error =>
-            error.Message.Contains(_invalidDateFormat.WithPropertyName("Period Start").Message)
-            && error.ErrorCode.Equals(_invalidDateFormat.ErrorCode));
+        errors2.Should().Satisfy(
+            error =>
+                error.Message.Contains(_invalidDateFormat.WithPropertyName("Period Start").Message)
+                && error.ErrorCode.Equals(_invalidDateFormat.ErrorCode),
+            error =>
+                error.Message.Contains(_invalidDateFormat.WithPropertyName("Period End").Message)
+                && error.ErrorCode.Equals(_invalidDateFormat.ErrorCode));
     }
 
     [Fact]
     public async Task Validate_WhenPeriodStartIsOlderThanAllowed_ReturnsExpectedValidationError()
     {
         // Arrange
+        var dateTimeOffset = _now.ToDateTimeOffset().AddYears(-5);
+
         var message = new WholesaleServicesRequestBuilder()
-            .WithPeriodStart(_now.ToDateTimeOffset().AddYears(-5).ToInstant().ToString())
+            .WithPeriodStart(dateTimeOffset.ToInstant().ToString())
+            .WithPeriodEnd(dateTimeOffset.AddMonths(1).ToInstant().ToString())
             .Build();
 
         // Act
@@ -125,8 +140,11 @@ public class PeriodValidationRuleTests
     public async Task Validate_WhenPeriodStartIsExactly3YearsAnd2MonthsOld_ReturnsNoValidationError()
     {
         // Arrange
+        var dateTimeOffset = _now.ToDateTimeOffset().AddYears(-3).AddMonths(-2);
+
         var message = new WholesaleServicesRequestBuilder()
-            .WithPeriodStart(_now.ToDateTimeOffset().AddYears(-3).AddMonths(-2).ToInstant().ToString())
+            .WithPeriodStart(dateTimeOffset.ToInstant().ToString())
+            .WithPeriodEnd(dateTimeOffset.AddMonths(1).ToInstant().ToString())
             .Build();
 
         // Act
@@ -144,12 +162,17 @@ public class PeriodValidationRuleTests
             .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
             .ToInstant();
 
+        var periodEndDate = new LocalDateTime(2021, 10, 31, 0, 0, 0)
+            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .ToInstant();
+
         _now = new LocalDateTime(2024, 12, 1, 0, 0, 0)
             .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
             .ToInstant();
 
         var message = new WholesaleServicesRequestBuilder()
             .WithPeriodStart(periodStartDate.ToString())
+            .WithPeriodEnd(periodEndDate.ToString())
             .Build();
 
         // Act
@@ -170,12 +193,17 @@ public class PeriodValidationRuleTests
             .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
             .ToInstant();
 
+        var periodEndDate = new LocalDateTime(2021, 3, 31, 0, 0, 0)
+            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .ToInstant();
+
         _now = new LocalDateTime(2024, 5, 1, 0, 0, 0)
             .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
             .ToInstant();
 
         var message = new WholesaleServicesRequestBuilder()
             .WithPeriodStart(periodStartDate.ToString())
+            .WithPeriodEnd(periodEndDate.ToString())
             .Build();
 
         // Act
@@ -192,9 +220,11 @@ public class PeriodValidationRuleTests
     public async Task Validate_WhenPeriodStartIs1DayTooOld_ReturnsExpectedValidationError()
     {
         // Arrange
+        var dateTimeOffset = _now.ToDateTimeOffset().AddYears(-3).AddMonths(-2).AddDays(-1);
         var message = new WholesaleServicesRequestBuilder()
             // 1 day too old is the smallest possible period it can be too old
-            .WithPeriodStart(_now.ToDateTimeOffset().AddYears(-3).AddMonths(-2).AddDays(-1).ToInstant().ToString())
+            .WithPeriodStart(dateTimeOffset.ToInstant().ToString())
+            .WithPeriodEnd(dateTimeOffset.AddMonths(1).ToInstant().ToString())
             .Build();
 
         // Act
@@ -254,6 +284,7 @@ public class PeriodValidationRuleTests
 
         var message = new WholesaleServicesRequestBuilder()
             .WithPeriodStart(notWinterTimeMidnight)
+            .WithPeriodEnd(Instant.FromUtc(_now.ToDateTimeOffset().Year, 1, 31, 23, 0, 0).ToString())
             .Build();
 
         // Act
@@ -285,6 +316,27 @@ public class PeriodValidationRuleTests
         var error = errors.First();
         error.ErrorCode.Should().Be(_invalidSummerMidnightFormat.ErrorCode);
         error.Message.Should().Be(_invalidSummerMidnightFormat.WithPropertyName("Period End").Message);
+    }
+
+    [Fact]
+    public async Task Validate_WhenPeriodEndIsMissing_ReturnsExpectedValidationError()
+    {
+        // Arrange
+        var periodStart = Instant.FromUtc(_now.ToDateTimeOffset().Year, 1, 1, 23, 0, 0).ToString();
+
+        var message = new WholesaleServicesRequestBuilder()
+            .WithPeriodStart(periodStart)
+            .WithPeriodEnd(null)
+            .Build();
+
+        // Act
+        var errors = await _sut.ValidateAsync(message);
+
+        // Assert
+        errors.Should().ContainSingle();
+        errors.Should().Contain(error =>
+            error.Message.Contains(_invalidDateFormat.WithPropertyName("Period End").Message)
+            && error.ErrorCode.Equals(_invalidDateFormat.ErrorCode));
     }
 
     private sealed class MockClock(Func<Instant> getInstant) : IClock

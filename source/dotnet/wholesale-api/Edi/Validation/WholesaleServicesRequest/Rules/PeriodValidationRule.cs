@@ -45,31 +45,24 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, IClock clock
         ArgumentNullException.ThrowIfNull(subject);
 
         var periodStart = subject.PeriodStart;
+        var periodEnd = subject.PeriodEnd;
 
         // This should not be possible, but we need to check for null due to the nullable type
         ArgumentNullException.ThrowIfNull(periodStart);
+        ArgumentNullException.ThrowIfNull(periodEnd);
 
         var errors = new List<ValidationError>();
 
         var startInstant = ParseToInstant(periodStart, "Period Start", errors);
+        var endInstant = ParseToInstant(periodEnd, "Period End", errors);
 
-        if (startInstant is null)
+        if (startInstant is null || endInstant is null)
             return Task.FromResult<IList<ValidationError>>(errors);
 
         MustBeMidnight(startInstant.Value, "Period Start", errors);
-        AddErrorIfPeriodStartIsTooOld(startInstant.Value, errors);
-
-        var periodEnd = subject.PeriodEnd;
-
-        if (periodEnd == string.Empty)
-            return Task.FromResult<IList<ValidationError>>(errors);
-
-        var endInstant = ParseToInstant(periodEnd, "Period End", errors);
-
-        if (endInstant is null)
-            return Task.FromResult<IList<ValidationError>>(errors);
-
         MustBeMidnight(endInstant.Value, "Period End", errors);
+
+        AddErrorIfPeriodStartIsTooOld(startInstant.Value, errors);
 
         return Task.FromResult<IList<ValidationError>>(errors);
     }
