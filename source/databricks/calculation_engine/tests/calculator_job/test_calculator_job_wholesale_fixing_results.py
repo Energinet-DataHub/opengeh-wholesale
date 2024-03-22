@@ -15,14 +15,11 @@
 from pyspark.sql import DataFrame, SparkSession
 import pyspark.sql.functions as F
 import pytest
-from typing import Any
 
 from . import configuration as C
 from package.codelists import (
     AggregationLevel,
     ChargeType,
-    MeteringPointType,
-    SettlementMethod,
     TimeSeriesType,
     WholesaleResultResolution,
 )
@@ -140,54 +137,20 @@ def test__energy_result__has_expected_number_of_types(
 
 
 WHOLESALE_RESULT_TYPES = [
-    (
-        ChargeType.TARIFF,
-        MeteringPointType.CONSUMPTION,
-        SettlementMethod.FLEX,
-        WholesaleResultResolution.HOUR,
-    ),
-    (
-        ChargeType.TARIFF,
-        MeteringPointType.CONSUMPTION,
-        SettlementMethod.NON_PROFILED,
-        WholesaleResultResolution.HOUR,
-    ),
-    (
-        ChargeType.TARIFF,
-        MeteringPointType.PRODUCTION,
-        None,
-        WholesaleResultResolution.HOUR,
-    ),
-    (
-        ChargeType.TARIFF,
-        MeteringPointType.CONSUMPTION,
-        SettlementMethod.FLEX,
-        WholesaleResultResolution.DAY,
-    ),
-    (
-        ChargeType.TARIFF,
-        MeteringPointType.CONSUMPTION,
-        SettlementMethod.NON_PROFILED,
-        WholesaleResultResolution.DAY,
-    ),
-    (
-        ChargeType.TARIFF,
-        MeteringPointType.PRODUCTION,
-        None,
-        WholesaleResultResolution.DAY,
-    ),
+    (ChargeType.TARIFF, WholesaleResultResolution.HOUR),
+    (ChargeType.TARIFF, WholesaleResultResolution.DAY),
+    (ChargeType.SUBSCRIPTION, WholesaleResultResolution.DAY),
+    (ChargeType.FEE, WholesaleResultResolution.DAY),
 ]
 
 
 @pytest.mark.parametrize(
-    "charge_type, metering_point_type, settlement_method, resolution",
+    "charge_type, resolution",
     WHOLESALE_RESULT_TYPES,
 )
-def test__wholesale_result__is_created(
+def test__wholesale_result__amount_per_charge_is_created(
     wholesale_fixing_wholesale_results_df: DataFrame,
     charge_type: ChargeType,
-    metering_point_type: MeteringPointType,
-    settlement_method: SettlementMethod | Any,
     resolution: WholesaleResultResolution,
 ) -> None:
     # Arrange
@@ -197,21 +160,8 @@ def test__wholesale_result__is_created(
             == C.executed_wholesale_calculation_id
         )
         .where(F.col(WholesaleResultColumnNames.charge_type) == charge_type.value)
-        .where(
-            F.col(WholesaleResultColumnNames.metering_point_type)
-            == metering_point_type.value
-        )
         .where(F.col(WholesaleResultColumnNames.resolution) == resolution.value)
     )
-    if settlement_method:
-        result_df = result_df.where(
-            F.col(WholesaleResultColumnNames.settlement_method)
-            == settlement_method.value
-        )
-    else:
-        result_df = result_df.where(
-            F.col(WholesaleResultColumnNames.settlement_method).isNull()
-        )
 
     # Act: Calculator job is executed just once per session.
     #      See the fixtures `results_df` and `executed_wholesale_fixing`
@@ -227,7 +177,7 @@ def test__wholesale_result__is_created(
     # charge_code 41000 is for daily charge resolution
     # see "test_files/ChargeMasterDataPeriods.csv"
 )
-def test__monthly_amount_for_both_hourly_and_daily__is_created(
+def test__monthly_amount_for_tariffs__is_created(
     spark: SparkSession,
     wholesale_fixing_wholesale_results_df: DataFrame,
     charge_code: str,
@@ -243,6 +193,28 @@ def test__monthly_amount_for_both_hourly_and_daily__is_created(
             == WholesaleResultResolution.MONTH.value
         )
         .where(F.col(WholesaleResultColumnNames.charge_code) == charge_code)
+    )
+
+    # Act: Calculator job is executed just once per session.
+    #      See the fixtures `results_df` and `executed_wholesale_fixing`
+
+    # Assert: The result is created if there are rows
+    assert result_df.count() > 0
+
+
+@pytest.mark.parametrize("charge_type", [ChargeType.SUBSCRIPTION, ChargeType.FEE])
+def test__monthly_amount_for_subscriptions_and_fees__is_created(
+    spark: SparkSession,
+    wholesale_fixing_wholesale_results_df: DataFrame,
+    charge_type: ChargeType,
+) -> None:
+    # Arrange
+
+    result_df = wholesale_fixing_wholesale_results_df.where(
+        F.col(WholesaleResultColumnNames.charge_type) == charge_type.value
+    ).where(
+        F.col(WholesaleResultColumnNames.resolution)
+        == WholesaleResultResolution.MONTH.value
     )
 
     # Act: Calculator job is executed just once per session.
