@@ -109,7 +109,16 @@ jobs:
             fi
           done
 
-  python_tests_energy_calculator_job:
+  python_unit_tests:
+    strategy:
+      matrix:
+        tests_filter_expression: [
+          test_energy_calculation.py,
+          test_wholesale_calculation.py,
+          datamigration,
+          calculation_logic,
+          "not calculator_job and not datamigration and not calculation_logic"
+        ]
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
       operating_system: dh3-ubuntu-20.04-4core
@@ -117,50 +126,22 @@ jobs:
       # documented here: https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
       ignore_errors_and_warning_flake8: E501,F401,E402,E203,W503
       test_report_path: ./source/databricks/calculation_engine/tests
-      tests_filter_expression: calculator_job and not test_wholesale_calculation.py
+      tests_filter_expression: ${{ matrix.tests_filter_expression }}
+
+  python_integration_tests:
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
+    with:
+      operating_system: dh3-ubuntu-20.04-4core
+      path_static_checks: ./source/databricks/calculation_engine
+      # documented here: https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
+      ignore_errors_and_warning_flake8: E501,F401,E402,E203,W503
+      test_report_path: ./source/databricks/calculation_engine/tests
+      tests_filter_expression: calculator_job and test_start.py
       use_integrationtest_environment: true
       azure_integrationtest_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
       azure_integrationtest_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
       azure_integrationtest_spn_id: ${{ vars.integration_test_azure_spn_id_oidc }}
       azure_keyvault_url: ${{ vars.integration_test_azure_keyvault_url }}
-      image_tag: ${{ inputs.image_tag }}
-
-  python_tests_wholesale_calculator_job:
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
-    with:
-      operating_system: dh3-ubuntu-20.04-4core
-      path_static_checks: ./source/databricks/calculation_engine
-      # documented here: https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
-      ignore_errors_and_warning_flake8: E501,F401,E402,E203,W503
-      test_report_path: ./source/databricks/calculation_engine/tests
-      tests_filter_expression: test_wholesale_calculation.py
-      use_integrationtest_environment: true
-      azure_integrationtest_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
-      azure_integrationtest_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
-      azure_integrationtest_spn_id: ${{ vars.integration_test_azure_spn_id_oidc }}
-      azure_keyvault_url: ${{ vars.integration_test_azure_keyvault_url }}
-      image_tag: ${{ inputs.image_tag }}
-
-  python_tests_datamigration:
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
-    with:
-      operating_system: dh3-ubuntu-20.04-4core
-      path_static_checks: ./source/databricks/calculation_engine
-      # documented here: https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
-      ignore_errors_and_warning_flake8: E501,F401,E402,E203,W503
-      test_report_path: ./source/databricks/calculation_engine/tests
-      tests_filter_expression: datamigration
-      image_tag: ${{ inputs.image_tag }}
-
-  python_tests_other:
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
-    with:
-      operating_system: dh3-ubuntu-20.04-4core
-      path_static_checks: ./source/databricks/calculation_engine
-      # documented here: https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
-      ignore_errors_and_warning_flake8: E501,F401,E402,E203,W503
-      test_report_path: ./source/databricks/calculation_engine/tests
-      tests_filter_expression: not calculator_job and not datamigration
       image_tag: ${{ inputs.image_tag }}
 
   mypy_check:
