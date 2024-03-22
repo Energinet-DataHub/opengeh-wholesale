@@ -32,7 +32,7 @@ def is_exactly_one_calendar_month(
     )
 
 
-def get_number_of_days(
+def get_number_of_days_in_period(
     period_start: datetime, period_end: datetime, time_zone: str
 ) -> int:
     time_zone_info = ZoneInfo(time_zone)

@@ -57,7 +57,7 @@ def _calculate_price_per_day(
     calculation_period_end: datetime,
     time_zone: str,
 ) -> DataFrame:
-    days_in_period = datetime_utils.get_number_of_days(
+    days_in_period = datetime_utils.get_number_of_days_in_period(
         calculation_period_start, calculation_period_end, time_zone
     )
 
