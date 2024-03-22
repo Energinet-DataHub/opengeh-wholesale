@@ -36,7 +36,7 @@ def get_charge_link_metering_point_periods(
         charge_links[Colname.charge_key],
         charge_links[Colname.charge_type],
         charge_links[Colname.metering_point_id],
-        charge_links[Colname.charge_quantity],
+        charge_links[Colname.quantity],
         f.when(
             charge_links[Colname.from_date] > metering_points[Colname.from_date],
             charge_links[Colname.from_date],
