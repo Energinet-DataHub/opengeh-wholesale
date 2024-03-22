@@ -23,6 +23,7 @@ from package.codelists import ChargeResolution
 
 import tests.calculation.wholesale.prepared_tariffs_factory as tariffs_factory
 import tests.calculation.wholesale.prepared_subscriptions_factory as subscriptions_factory
+import tests.calculation.wholesale.prepared_fees_factory as fees_factory
 
 
 def test__execute__when_tariff_schema_is_valid__does_not_raise(
@@ -37,8 +38,10 @@ def test__execute__when_tariff_schema_is_valid__does_not_raise(
         data=[tariffs_factory.create_row(resolution=ChargeResolution.DAY)],
     )
     prepared_subscriptions = subscriptions_factory.create(spark)
+    prepared_fees = fees_factory.create(spark)
 
     prepared_charges = PreparedChargesContainer(
+        fees=prepared_fees,
         subscriptions=prepared_subscriptions,
         hourly_tariffs=tariffs_hourly_df,
         daily_tariffs=tariffs_daily_df,

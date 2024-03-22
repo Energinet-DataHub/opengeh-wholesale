@@ -13,103 +13,33 @@
 # limitations under the License.
 
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col
 
 from package.calculation.calculation_results import BasisDataContainer
+from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
 from package.calculation.preparation.transformations import basis_data
-from package.constants import BasisDataColname, PartitionKeyName
 from package.infrastructure import logging_configuration
 
 
 @logging_configuration.use_span("calculation.basis_data.prepare")
 def create(
+    args: CalculatorArgs,
     metering_point_periods_df: DataFrame,
     metering_point_time_series_df: PreparedMeteringPointTimeSeries,
-    time_zone: str,
 ) -> BasisDataContainer:
-    (
-        timeseries_quarter,
-        timeseries_hour,
-    ) = basis_data.get_metering_point_time_series_basis_data_dfs(
-        metering_point_time_series_df, time_zone
+    time_series_basis_data = basis_data.get_time_series_basis_data(
+        args.calculation_id, metering_point_time_series_df
     )
 
-    master_basis_data = basis_data.get_master_basis_data_df(metering_point_periods_df)
-
-    # Get basis data for energy suppliers
-    (
-        master_basis_data_per_es,
-        time_series_quarter_basis_data_per_es,
-        time_series_hour_basis_data_per_es,
-    ) = _get_es_basis_data(master_basis_data, timeseries_quarter, timeseries_hour)
-
-    # Add basis data for total grid area
-    (
-        master_basis_data,
-        time_series_quarter_basis_data,
-        time_series_hour_basis_data,
-    ) = _get_ga_basis_data(master_basis_data, timeseries_quarter, timeseries_hour)
-
-    basis_data_container = BasisDataContainer(
-        time_series_hour_basis_data_per_es_per_ga=time_series_hour_basis_data_per_es,
-        time_series_quarter_basis_data_per_es_per_ga=time_series_quarter_basis_data_per_es,
-        master_basis_data_per_es_per_ga=master_basis_data_per_es,
-        time_series_hour_basis_data=time_series_hour_basis_data,
-        time_series_quarter_basis_data_per_total_ga=time_series_quarter_basis_data,
-        master_basis_data_per_total_ga=master_basis_data,
+    metering_point_periods_basis_data = (
+        basis_data.get_metering_point_periods_basis_data(
+            args.calculation_id, metering_point_periods_df
+        )
     )
 
-    return basis_data_container
-
-
-@logging_configuration.use_span("per_grid_area")
-def _get_ga_basis_data(
-    master_basis_data_df: DataFrame,
-    timeseries_quarter_df: DataFrame,
-    timeseries_hour_df: DataFrame,
-) -> tuple[DataFrame, DataFrame, DataFrame]:
-    timeseries_quarter_df = timeseries_quarter_df.drop(
-        BasisDataColname.energy_supplier_id
-    ).withColumnRenamed(BasisDataColname.grid_area, PartitionKeyName.GRID_AREA)
-
-    timeseries_hour_df = timeseries_hour_df.drop(
-        BasisDataColname.energy_supplier_id
-    ).withColumnRenamed(BasisDataColname.grid_area, PartitionKeyName.GRID_AREA)
-
-    master_basis_data_df = master_basis_data_df.withColumn(
-        PartitionKeyName.GRID_AREA, col(BasisDataColname.grid_area)
-    )
-
-    return (
-        master_basis_data_df,
-        timeseries_quarter_df,
-        timeseries_hour_df,
-    )
-
-
-@logging_configuration.use_span("per_energy_supplier")
-def _get_es_basis_data(
-    master_basis_data_df: DataFrame,
-    timeseries_quarter_df: DataFrame,
-    timeseries_hour_df: DataFrame,
-) -> tuple[DataFrame, DataFrame, DataFrame]:
-    timeseries_quarter_df = timeseries_quarter_df.withColumnRenamed(
-        BasisDataColname.energy_supplier_id, PartitionKeyName.ENERGY_SUPPLIER_GLN
-    ).withColumnRenamed(BasisDataColname.grid_area, PartitionKeyName.GRID_AREA)
-
-    timeseries_hour_df = timeseries_hour_df.withColumnRenamed(
-        BasisDataColname.energy_supplier_id, PartitionKeyName.ENERGY_SUPPLIER_GLN
-    ).withColumnRenamed(BasisDataColname.grid_area, PartitionKeyName.GRID_AREA)
-
-    master_basis_data_df = master_basis_data_df.withColumnRenamed(
-        BasisDataColname.energy_supplier_id, PartitionKeyName.ENERGY_SUPPLIER_GLN
-    ).withColumn(PartitionKeyName.GRID_AREA, col(BasisDataColname.grid_area))
-
-    return (
-        master_basis_data_df,
-        timeseries_quarter_df,
-        timeseries_hour_df,
+    return BasisDataContainer(
+        time_series=time_series_basis_data,
+        metering_point_periods=metering_point_periods_basis_data,
     )
