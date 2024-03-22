@@ -13,9 +13,12 @@ THEN the aggregated amount is 5087.02656 for negative grid loss (system correcti
 ```text
 Negative grid loss is calculated like this:
 
-(((Σ Exchange in - Σ Exchange out) + Σ Production) - (Σ Consumption non-profiled + Σ Consumption flex))) = grid loss
+(((Σ Exchange in - Σ Exchange out) + Σ Production) - (Σ Consumption non-profiled + Σ Consumption flex))) = grid loss per hour
+grid loss per hour * hours per day * days per month = total grid loss
+
+(((0 - 0) + 100) - (0 + 90)) = 10 * 24 * 28 = 6720
 (((0 - 0) + 0) - (0 + 10)) = -10 * 24 * 28 = -6720
 
-tariff * grid loss = amount
+tariff * total negative grid loss = amount
 0.756998 * -6720 = -5087.02656
 ```
