@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 
 namespace Energinet.DataHub.Wholesale.Edi.Mappers;
 
@@ -22,9 +23,9 @@ public static class ChargeTypeMapper
     {
         return chargeType switch
         {
-            Models.ChargeType.Fee => ChargeType.Fee,
-            Models.ChargeType.Tariff => ChargeType.Tariff,
-            Models.ChargeType.Subscription => ChargeType.Subscription,
+            DataHubNames.ChargeType.Fee => ChargeType.Fee,
+            DataHubNames.ChargeType.Tariff => ChargeType.Tariff,
+            DataHubNames.ChargeType.Subscription => ChargeType.Subscription,
             _ => throw new ArgumentOutOfRangeException(nameof(chargeType), chargeType, "Cannot map to ChargeType"),
         };
     }
