@@ -164,7 +164,7 @@ def test__balance_fixing_result__has_expected_number_of_result_types(
     "basis_data_table_name",
     paths.BASIS_DATA_TABLE_NAMES,
 )
-def test__when_energy_calculation__data_is_stored(
+def test__when_energy_calculation__basis_data_is_stored(
     spark: SparkSession,
     executed_balance_fixing: None,
     basis_data_table_name: str,

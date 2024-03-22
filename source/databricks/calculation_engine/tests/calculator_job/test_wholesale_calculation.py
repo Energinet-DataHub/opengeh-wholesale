@@ -257,7 +257,7 @@ def test__monthly_amount_for_both_hourly_and_daily__is_created(
     "basis_data_table_name",
     paths.BASIS_DATA_TABLE_NAMES,
 )
-def test__when_wholesale_calculation__data_is_stored(
+def test__when_wholesale_calculation__basis_data_is_stored(
     spark: SparkSession,
     executed_wholesale_fixing: None,
     basis_data_table_name: str,
