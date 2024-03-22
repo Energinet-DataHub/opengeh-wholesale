@@ -13,9 +13,7 @@
 # limitations under the License.
 from pyspark.sql import DataFrame
 
-from tests.calculation_logic.features.wholesale_calculations.wholesale_results_dataframe import (
-    create_wholesale_result_dataframe,
-)
+import calculation_logic.utils as cl
 
 
 def get_expected(*args) -> DataFrame:
@@ -23,4 +21,4 @@ def get_expected(*args) -> DataFrame:
     This function can be used to custom build the expected results (dataframe).
     It is also used a reference to locate the test scenario.
     """
-    return create_wholesale_result_dataframe(*args)
+    return cl.create_wholesale_result_dataframe(*args)

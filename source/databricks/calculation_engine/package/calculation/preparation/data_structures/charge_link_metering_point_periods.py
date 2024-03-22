@@ -54,7 +54,7 @@ charge_link_metering_point_periods_schema = t.StructType(
         t.StructField(Colname.charge_key, t.StringType(), False),
         t.StructField(Colname.charge_type, t.StringType(), False),
         t.StructField(Colname.metering_point_id, t.StringType(), False),
-        t.StructField(Colname.charge_quantity, t.IntegerType(), False),
+        t.StructField(Colname.quantity, t.IntegerType(), False),
         t.StructField(Colname.from_date, t.TimestampType(), True),
         t.StructField(Colname.to_date, t.TimestampType(), True),
         t.StructField(Colname.metering_point_type, t.StringType(), False),

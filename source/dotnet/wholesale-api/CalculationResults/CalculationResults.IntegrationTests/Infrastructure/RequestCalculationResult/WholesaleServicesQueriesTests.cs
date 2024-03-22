@@ -55,7 +55,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
     {
         // Arrange
         var calculationPeriod = CreateCalculationPeriods().Calculation1Period1;
-        var amountType = AmountType.TotalMonthlyAmount;
+        var amountType = AmountType.MonthlyAmountPerCharge;
 
         var package = new WholesaleServicesPackage(
             CalculationPeriod: calculationPeriod,

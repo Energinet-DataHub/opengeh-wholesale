@@ -170,7 +170,10 @@ def test__create__with_correct_aggregation_level(
     )
 
     # Assert
-    assert actual.collect()[0][Colname.aggregation_level] == aggregation_level.value
+    assert (
+        actual.collect()[0][EnergyResultColumnNames.aggregation_level]
+        == aggregation_level.value
+    )
 
 
 @pytest.mark.parametrize(
