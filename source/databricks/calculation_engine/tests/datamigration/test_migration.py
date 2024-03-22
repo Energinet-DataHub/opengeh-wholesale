@@ -31,45 +31,9 @@ def _diff(schema1: StructType, schema2: StructType) -> dict[str, set[StructField
 
 
 def test__migrate__when_schema_migration_scripts_are_executed__compare_schemas(
-    mocker: Mock, spark: SparkSession
+    spark: SparkSession,
+    migrations_executed: None,
 ) -> None:
-    # Arrange
-    storage_account = "storage_account_1"
-    mocker.patch.object(
-        sut.paths,
-        sut.paths.get_storage_account_url.__name__,
-        side_effect=mock_helper.base_path_helper,
-    )
-
-    mocker.patch.object(
-        sut.env_vars,
-        sut.env_vars.get_storage_account_name.__name__,
-        return_value=storage_account,
-    )
-
-    mocker.patch.object(
-        sut.env_vars,
-        sut.env_vars.get_calculation_input_folder_name.__name__,
-        return_value=storage_account,
-    )
-
-    mocker.patch.object(
-        sut.paths,
-        sut.paths.get_spark_sql_migrations_path.__name__,
-        return_value=storage_account,
-    )
-
-    mocker.patch.object(
-        sut.paths,
-        sut.paths.get_container_root_path.__name__,
-        return_value=storage_account,
-    )
-
-    spark_helper.reset_spark_catalog(spark)
-
-    # Act
-    sut.migrate_data_lake()
-
     # Assert
     for schema in schema_config.schema_config:
         for table in schema.tables:
@@ -79,8 +43,15 @@ def test__migrate__when_schema_migration_scripts_are_executed__compare_schemas(
                 actual_table.schema == table.schema
             ), f"Difference in schema {_diff(actual_table.schema, table.schema)}"
 
+
+def test__migrate__when_schema_migration_scripts_are_executed__compare_result_with_schema_config(
+    spark: SparkSession,
+    migrations_executed: None,
+) -> None:
+    """If this test fails, it indicates that a SQL script is creating something that the Schema Config does not know
+    about"""
+
     # Assert
-    # If this test fails, it indicates that a SQL script is creating something that the Schema Config does not know about
     schemas = schema_config.schema_config
     actual_schemas = spark.catalog.listDatabases()
     for db in actual_schemas:
