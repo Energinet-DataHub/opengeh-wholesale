@@ -37,4 +37,5 @@ def test_execute__returns_expected(
         columns_to_skip=[
             WholesaleResultColumnNames.calculation_result_id,
         ],
+        show_dataframe=True,
     )
