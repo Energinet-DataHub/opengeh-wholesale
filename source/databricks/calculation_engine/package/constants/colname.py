@@ -26,7 +26,6 @@ class Colname:
     charge_tax = "is_tax"
     charge_time = "charge_time"
     charge_type = "charge_type"
-    charge_quantity = "quantity"
     currency = "currency"
     date = "date"
     energy_supplier_id = "energy_supplier_id"

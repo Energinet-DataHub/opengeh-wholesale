@@ -95,8 +95,8 @@ class TestWhenValidInput:
         quantity_2 = 2
         expected_total_quantity = quantity_1 + quantity_2
         prepared_subscriptions_rows = [
-            factory.create_row(metering_point_id="1", charge_quantity=quantity_1),
-            factory.create_row(metering_point_id="2", charge_quantity=quantity_2),
+            factory.create_row(metering_point_id="1", quantity=quantity_1),
+            factory.create_row(metering_point_id="2", quantity=quantity_2),
         ]
         prepared_subscriptions = factory.create(spark, prepared_subscriptions_rows)
 
@@ -126,12 +126,12 @@ class TestWhenValidInput:
         prepared_subscriptions_rows = [
             factory.create_row(
                 metering_point_id="1",
-                charge_quantity=quantity_1,
+                quantity=quantity_1,
                 charge_price=price,
             ),
             factory.create_row(
                 metering_point_id="2",
-                charge_quantity=quantity_2,
+                quantity=quantity_2,
                 charge_price=price,
             ),
         ]
@@ -258,19 +258,19 @@ class TestWhenMissingAllInputChargePrices:
         spark: SparkSession,
     ) -> None:
         # Arrange
-        charge_quantity_1 = 1
-        charge_quantity_2 = 2
-        expected_total_quantity = charge_quantity_1 + charge_quantity_2
+        quantity_1 = 1
+        quantity_2 = 2
+        expected_total_quantity = quantity_1 + quantity_2
 
         prepared_subscriptions_rows = [
             factory.create_row(
                 metering_point_id="1",
-                charge_quantity=charge_quantity_1,
+                quantity=quantity_1,
                 charge_price=None,
             ),
             factory.create_row(
                 metering_point_id="2",
-                charge_quantity=charge_quantity_2,
+                quantity=quantity_2,
                 charge_price=None,
             ),
         ]
@@ -292,7 +292,7 @@ class TestWhenMissingAllInputChargePrices:
 
 
 class TestWhenMultipleMeteringPointsPerChargeTime:
-    def test__returns_sum_charge_quantity_per_charge_time(
+    def test__returns_sum_of_quantities_per_charge_time(
         self,
         spark: SparkSession,
     ) -> None:
@@ -308,22 +308,22 @@ class TestWhenMultipleMeteringPointsPerChargeTime:
             factory.create_row(
                 metering_point_id="1",
                 charge_time=time_1,
-                charge_quantity=quantity_1,
+                quantity=quantity_1,
             ),
             factory.create_row(
                 metering_point_id="2",
                 charge_time=time_1,
-                charge_quantity=quantity_1,
+                quantity=quantity_1,
             ),
             factory.create_row(
                 metering_point_id="1",
                 charge_time=time_2,
-                charge_quantity=quantity_2,
+                quantity=quantity_2,
             ),
             factory.create_row(
                 metering_point_id="2",
                 charge_time=time_2,
-                charge_quantity=quantity_2,
+                quantity=quantity_2,
             ),
         ]
         prepared_subscriptions = factory.create(spark, prepared_subscriptions_rows)
