@@ -28,6 +28,12 @@ module "st_source_maps" {
       role_definition_name = "Storage Blob Data Contributor"
     }
   ]
+  blob_storage_backup_policy = {
+    backup_policy_id: module.backup_vault.blob_storage_backup_policy_id
+    backup_vault_id = module.backup_vault.id
+    backup_vault_location = azurerm_resource_group.this.location
+    backup_vault_principal_id = module.backup_vault.identity.0.principal_id
+  }
 }
 
 module "kvs_st_source_maps_name" {
