@@ -120,10 +120,10 @@ jobs:
             path: test_wholesale_calculation.py
           - name: Migrations
             path: datamigration
-          - name: Business
-            path: business
+          - name: Logic
+            path: calculation_logic
           - name: Unit tests
-            path: not calculator_job and (not datamigration) and (not business)
+            path: not calculator_job and (not datamigration) and (not calculation_logic)
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
       job_name: ${{ matrix.tests_filter_expression.name }}
