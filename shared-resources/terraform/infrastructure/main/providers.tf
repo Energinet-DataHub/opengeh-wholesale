@@ -2,8 +2,7 @@ terraform {
   required_providers {
     # It is recommended to pin to a given version of the Azure provider
 
-    # --> DO NOT UPGRADE to >= 3.93.0 before this issue has been fixed: https://github.com/hashicorp/terraform-provider-azurerm/issues/25273
-    azurerm = "3.92.0" # See also https://github.com/Energinet-DataHub/geh-terraform-modules/pull/310 for details
+    azurerm = "3.96.0"
     azuread = "2.47.0"
   }
 }

@@ -1,5 +1,5 @@
 module "st_testdata" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=13.60.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=13.61.0"
 
   name                       = "testdata"
   project_name               = var.domain_name_short
