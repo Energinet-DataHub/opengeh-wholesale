@@ -18,7 +18,7 @@ from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import lit, col
 import pytest
 import uuid
-from helpers.data_frame_utils import set_column
+from tests.helpers.data_frame_utils import set_column
 from package.codelists import (
     AggregationLevel,
     CalculationType,

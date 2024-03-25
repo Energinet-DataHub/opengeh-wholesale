@@ -26,8 +26,8 @@ from package.calculation.calculation_results import (
     CalculationResultsContainer,
 )
 from package.calculation.calculator_args import CalculatorArgs
+from .calculation_args import create_calculation_args
 from .correlations import get_correlations
-from .test_calculation_args import create_calculation_args
 
 
 class ScenarioFixture:
