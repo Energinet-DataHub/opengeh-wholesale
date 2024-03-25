@@ -114,16 +114,16 @@ jobs:
       fail-fast: false
       matrix:
         tests_filter_expression:
-          - name: Energy
+          - name: Energy (calculator_job)
             path: test_energy_calculation.py
-          - name: Wholesale
+          - name: Wholesale (calculator_job)
             path: test_wholesale_calculation.py
           - name: Migrations
             path: datamigration
           - name: Logic
             path: calculation_logic
           - name: Unit tests
-            path: not calculator_job and (not datamigration) and (not calculation_logic)
+            path: (not calculator_job) and (not datamigration) and (not calculation_logic)
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
       job_name: ${{ matrix.tests_filter_expression.name }}
