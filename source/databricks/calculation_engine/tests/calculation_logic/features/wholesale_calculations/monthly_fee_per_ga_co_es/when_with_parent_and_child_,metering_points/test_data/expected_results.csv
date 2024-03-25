@@ -1,3 +1,0 @@
-calculation_id;calculation_type;calculation_execution_time_start;calculation_result_id;grid_area;energy_supplier_id;quantity;quantity_unit;quantity_qualities;time;resolution;metering_point_type;settlement_method;price;amount;is_tax;charge_code;charge_type;charge_owner_id;amount_type
-0b15a420-9fc8-409a-a169-fbd49479d718;WholesaleFixing;2024-01-01 23:00:00;;804;8100000000108;;pcs;;2023-02-09 23:00:00.000000;P1D;;;;210;false;fee-1;fee;5790001330552;monthly_amount_per_charge
-0b15a420-9fc8-409a-a169-fbd49479d718;WholesaleFixing;2024-01-01 23:00:00;;804;8100000000100;;pcs;;2023-02-09 23:00:00.000000;P1D;;;;700;false;fee-1;fee;5790001330552;monthly_amount_per_charge
