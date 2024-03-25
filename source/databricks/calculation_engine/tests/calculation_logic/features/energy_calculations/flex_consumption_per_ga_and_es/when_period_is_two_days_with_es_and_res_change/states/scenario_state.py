@@ -14,7 +14,7 @@
 
 from pyspark.sql import DataFrame
 
-import calculation_logic.utils as cl
+import tests.calculation_logic.utils as cl
 
 
 def get_expected(*args) -> DataFrame:

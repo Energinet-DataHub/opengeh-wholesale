@@ -11,11 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import pytest
-
-from pyspark.sql import SparkSession
 from datetime import datetime, timedelta
 
+import pytest
+from pyspark.sql import SparkSession
+
+import tests.calculation.energy.energy_results_factories as energy_results_factories
+import tests.calculation.energy.grid_loss_responsible_factories as grid_loss_responsible_factories
 from package.calculation.energy.aggregators.grid_loss_aggregators import (
     apply_grid_loss_adjustment,
 )
@@ -24,8 +26,6 @@ from package.codelists import (
     QuantityQuality,
 )
 from package.constants import Colname
-import tests.calculation.energy.energy_results_factories as energy_results_factories
-import tests.calculation.energy.grid_loss_responsible_factories as grid_loss_responsible_factories
 
 # This time should be within the time window of the grid loss responsible
 DEFAULT_OBSERVATION_TIME = datetime.strptime(

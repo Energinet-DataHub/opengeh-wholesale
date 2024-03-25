@@ -11,15 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-from pyspark.sql import DataFrame
-
-import tests.calculation_logic.utils as cl
-
-
-def get_expected(*args) -> DataFrame:  # type: ignore
-    """
-    This function can be used to custom build the expected results (dataframe).
-    It is also used a reference to locate the test scenario.
-    """
-    return cl.create_energy_result_dataframe(*args)

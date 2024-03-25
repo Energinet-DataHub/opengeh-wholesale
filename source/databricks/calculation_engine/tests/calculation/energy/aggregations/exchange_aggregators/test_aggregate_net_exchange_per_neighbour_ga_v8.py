@@ -18,7 +18,6 @@ import pytest
 from pyspark.sql import SparkSession
 from pyspark.sql.types import Row
 
-from calculation.energy import quarterly_metering_point_time_series_factories
 from package.calculation.energy.aggregators.exchange_aggregators import (
     aggregate_net_exchange_per_neighbour_ga,
 )
@@ -29,6 +28,7 @@ from package.codelists import (
     MeteringPointType,
 )
 from package.constants import Colname
+from tests.calculation.energy import quarterly_metering_point_time_series_factories
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(

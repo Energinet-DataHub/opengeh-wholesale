@@ -18,7 +18,7 @@ from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import lit, col
 import pytest
 import uuid
-from helpers.data_frame_utils import set_column
+from tests.helpers.data_frame_utils import set_column
 from package.codelists import (
     AggregationLevel,
     CalculationType,
@@ -99,7 +99,7 @@ def test__migrated_table_rejects_invalid_data(
     assert column_name in actual_error_message
 
 
-# According to SME there is no upper bounds limit from a business perspective.
+# According to SME there is no upper bounds limit from a calculation_logic perspective.
 # The chosen precision of 18 should however not cause any problems as the limit on time series
 # is precision 6. Thus 1e9 time series points can be summed without any problem.
 min_decimal = Decimal(f"-{'9'*15}.999")  # Precision=18 and scale=3

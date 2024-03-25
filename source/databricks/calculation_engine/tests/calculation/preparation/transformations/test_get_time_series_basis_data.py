@@ -13,14 +13,14 @@
 # limitations under the License.
 from pyspark.sql import SparkSession
 
-from calculation.preparation.transformations import (
-    prepared_metering_point_time_series_factory,
-)
 from package.calculation.basis_data.schemas import time_series_point_schema
 from package.calculation.preparation.transformations.basis_data import (
     get_time_series_basis_data,
 )
 from package.common import assert_schema
+from tests.calculation.preparation.transformations import (
+    prepared_metering_point_time_series_factory,
+)
 
 
 def test__when_valid_input__returns_df_with_expected_schema(

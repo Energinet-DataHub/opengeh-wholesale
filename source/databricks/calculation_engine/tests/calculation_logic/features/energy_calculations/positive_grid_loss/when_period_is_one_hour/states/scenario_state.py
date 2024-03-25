@@ -15,8 +15,8 @@ from datetime import datetime
 
 from pyspark.sql import DataFrame, SparkSession
 
-import calculation_logic.utils as cl
-import calculation_logic.utils.factories as clf
+import tests.calculation_logic.utils as cl
+import tests.calculation_logic.utils.factories as clf
 from package.codelists import (
     QuantityQuality,
     InputMeteringPointType,

@@ -12,11 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame, SparkSession
-import pyspark.sql.functions as F
+import pyspark.sql.functions as f
 import pytest
+from pyspark.sql import DataFrame, SparkSession
 
-from . import configuration as C
 from package.codelists import (
     AggregationLevel,
     ChargeType,
@@ -24,7 +23,8 @@ from package.codelists import (
     WholesaleResultResolution,
 )
 from package.constants import EnergyResultColumnNames, WholesaleResultColumnNames
-
+from package.infrastructure import paths
+from . import configuration as c
 
 ENERGY_RESULT_TYPES = {
     (
@@ -94,11 +94,11 @@ def test__energy_result__is_created(
     # Arrange
     result_df = (
         wholesale_fixing_energy_results_df.where(
-            F.col(EnergyResultColumnNames.calculation_id)
-            == C.executed_wholesale_calculation_id
+            f.col(EnergyResultColumnNames.calculation_id)
+            == c.executed_wholesale_calculation_id
         )
-        .where(F.col(EnergyResultColumnNames.time_series_type) == time_series_type)
-        .where(F.col(EnergyResultColumnNames.aggregation_level) == aggregation_level)
+        .where(f.col(EnergyResultColumnNames.time_series_type) == time_series_type)
+        .where(f.col(EnergyResultColumnNames.aggregation_level) == aggregation_level)
     )
 
     # Act: Calculator job is executed just once per session.
@@ -114,12 +114,12 @@ def test__energy_result__has_expected_number_of_types(
     # Arrange
     actual_result_type_count = (
         wholesale_fixing_energy_results_df.where(
-            F.col(EnergyResultColumnNames.calculation_id)
-            == C.executed_wholesale_calculation_id
+            f.col(EnergyResultColumnNames.calculation_id)
+            == c.executed_wholesale_calculation_id
         )
         .where(
-            F.col(EnergyResultColumnNames.calculation_id)
-            == C.executed_wholesale_calculation_id
+            f.col(EnergyResultColumnNames.calculation_id)
+            == c.executed_wholesale_calculation_id
         )
         .select(
             EnergyResultColumnNames.time_series_type,
@@ -156,11 +156,11 @@ def test__wholesale_result__amount_per_charge_is_created(
     # Arrange
     result_df = (
         wholesale_fixing_wholesale_results_df.where(
-            F.col(WholesaleResultColumnNames.calculation_id)
-            == C.executed_wholesale_calculation_id
+            f.col(WholesaleResultColumnNames.calculation_id)
+            == c.executed_wholesale_calculation_id
         )
-        .where(F.col(WholesaleResultColumnNames.charge_type) == charge_type.value)
-        .where(F.col(WholesaleResultColumnNames.resolution) == resolution.value)
+        .where(f.col(WholesaleResultColumnNames.charge_type) == charge_type.value)
+        .where(f.col(WholesaleResultColumnNames.resolution) == resolution.value)
     )
 
     # Act: Calculator job is executed just once per session.
@@ -186,13 +186,13 @@ def test__monthly_amount_for_tariffs__is_created(
 
     result_df = (
         wholesale_fixing_wholesale_results_df.where(
-            F.col(WholesaleResultColumnNames.charge_type) == ChargeType.TARIFF.value
+            f.col(WholesaleResultColumnNames.charge_type) == ChargeType.TARIFF.value
         )
         .where(
-            F.col(WholesaleResultColumnNames.resolution)
+            f.col(WholesaleResultColumnNames.resolution)
             == WholesaleResultResolution.MONTH.value
         )
-        .where(F.col(WholesaleResultColumnNames.charge_code) == charge_code)
+        .where(f.col(WholesaleResultColumnNames.charge_code) == charge_code)
     )
 
     # Act: Calculator job is executed just once per session.
@@ -211,9 +211,9 @@ def test__monthly_amount_for_subscriptions_and_fees__is_created(
     # Arrange
 
     result_df = wholesale_fixing_wholesale_results_df.where(
-        F.col(WholesaleResultColumnNames.charge_type) == charge_type.value
+        f.col(WholesaleResultColumnNames.charge_type) == charge_type.value
     ).where(
-        F.col(WholesaleResultColumnNames.resolution)
+        f.col(WholesaleResultColumnNames.resolution)
         == WholesaleResultResolution.MONTH.value
     )
 
@@ -222,3 +222,24 @@ def test__monthly_amount_for_subscriptions_and_fees__is_created(
 
     # Assert: The result is created if there are rows
     assert result_df.count() > 0
+
+
+@pytest.mark.parametrize(
+    "basis_data_table_name",
+    paths.BASIS_DATA_TABLE_NAMES,
+)
+def test__when_wholesale_calculation__basis_data_is_stored(
+    spark: SparkSession,
+    executed_wholesale_fixing: None,
+    basis_data_table_name: str,
+) -> None:
+    # Arrange
+    actual = spark.read.table(
+        f"{paths.BASIS_DATA_DATABASE_NAME}.{basis_data_table_name}"
+    ).where(f.col("calculation_id") == c.executed_wholesale_calculation_id)
+
+    # Act: Calculator job is executed just once per session.
+    #      See the fixtures `results_df` and `executed_wholesale_fixing`
+
+    # Assert
+    assert actual.count() > 0
