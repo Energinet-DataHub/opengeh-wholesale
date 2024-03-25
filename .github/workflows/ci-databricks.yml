@@ -115,15 +115,21 @@ jobs:
       matrix:
         tests_filter_expression:
           - name: Energy (calculator_job)
-            path: test_energy_calculation.py
+            path: calculator_job/test_energy_calculation.py
           - name: Wholesale (calculator_job)
-            path: test_wholesale_calculation.py
+            path: calculator_job/test_wholesale_calculation.py
+          - name: Start (calculator_job)
+            path: calculator_job/test_start.py
           - name: Migrations
             path: datamigration
           - name: Logic
             path: calculation_logic
-          - name: Unit tests
-            path: (not calculator_job) and (not datamigration) and (not calculation_logic)
+          - name: Calculation unit tests
+            path: calculation
+          - name: Other unit tests
+            path: unit_tests
+          - name: Entry points
+            path: entry_points
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
       job_name: ${{ matrix.tests_filter_expression.name }}
@@ -132,6 +138,7 @@ jobs:
       # documented here: https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
       ignore_errors_and_warning_flake8: E501,F401,E402,E203,W503
       test_report_path: ./source/databricks/calculation_engine/tests
+      # See .docker/entrypoint.py on how to use the filter expression
       tests_filter_expression: ${{ matrix.tests_filter_expression.path }}
 
   python_integration_tests:
@@ -143,6 +150,7 @@ jobs:
       # documented here: https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
       ignore_errors_and_warning_flake8: E501,F401,E402,E203,W503
       test_report_path: ./source/databricks/calculation_engine/tests
+      # See .docker/entrypoint.py on how to use the filter expression
       tests_filter_expression: calculator_job and test_start.py
       use_integrationtest_environment: true
       azure_integrationtest_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
