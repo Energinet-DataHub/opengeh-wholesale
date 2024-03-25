@@ -109,6 +109,7 @@ jobs:
             fi
           done
 
+  # Tests that do not require the integration test environment
   unit_tests:
     strategy:
       fail-fast: false
@@ -118,8 +119,6 @@ jobs:
             path: calculator_job/test_energy_calculation.py
           - name: Wholesale (calculator_job)
             path: calculator_job/test_wholesale_calculation.py
-          - name: Start (calculator_job)
-            path: calculator_job/test_start.py
           - name: Migrations
             path: datamigration
           - name: Logic
@@ -141,6 +140,7 @@ jobs:
       # See .docker/entrypoint.py on how to use the filter expression
       tests_filter_expression: ${{ matrix.tests_filter_expression.path }}
 
+  # Tests that require the integration test environment
   integration_tests:
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
@@ -151,7 +151,7 @@ jobs:
       ignore_errors_and_warning_flake8: E501,F401,E402,E203,W503
       test_report_path: ./source/databricks/calculation_engine/tests
       # See .docker/entrypoint.py on how to use the filter expression
-      tests_filter_expression: calculator_job and test_start.py
+      tests_filter_expression: calculator_job/test_start.py
       use_integrationtest_environment: true
       azure_integrationtest_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
       azure_integrationtest_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
