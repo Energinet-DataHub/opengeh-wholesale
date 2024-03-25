@@ -109,7 +109,7 @@ jobs:
             fi
           done
 
-  python_unit_tests:
+  unit_tests:
     strategy:
       fail-fast: false
       matrix:
@@ -141,7 +141,7 @@ jobs:
       # See .docker/entrypoint.py on how to use the filter expression
       tests_filter_expression: ${{ matrix.tests_filter_expression.path }}
 
-  python_integration_tests:
+  integration_tests:
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
       job_name: Integration tests
