@@ -113,27 +113,31 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        tests_filter_expression: [
-          test_energy_calculation.py,
-          test_wholesale_calculation.py,
-          datamigration,
-          business,
-          not calculator_job and (not datamigration) and (not business),
-        ]
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@bjarke/configurable-python-ci-job-name
+        tests_filter_expression:
+          - name: Energy
+            path: test_energy_calculation.py
+          - name: Wholesale
+            path: test_wholesale_calculation.py
+          - name: Migrations
+            path: datamigration
+          - name: Business
+            path: business
+          - name: Unit tests
+            path: not calculator_job and (not datamigration) and (not business)
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
-      job_name: ${{ matrix.tests_filter_expression }}
+      job_name: ${{ matrix.tests_filter_expression.name }}
       operating_system: dh3-ubuntu-20.04-4core
       path_static_checks: ./source/databricks/calculation_engine
       # documented here: https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
       ignore_errors_and_warning_flake8: E501,F401,E402,E203,W503
       test_report_path: ./source/databricks/calculation_engine/tests
-      tests_filter_expression: ${{ matrix.tests_filter_expression }}
+      tests_filter_expression: ${{ matrix.tests_filter_expression.path }}
 
   python_integration_tests:
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@bjarke/configurable-python-ci-job-name
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
-      job_name: Python integration tests
+      job_name: Integration tests
       operating_system: dh3-ubuntu-20.04-4core
       path_static_checks: ./source/databricks/calculation_engine
       # documented here: https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
