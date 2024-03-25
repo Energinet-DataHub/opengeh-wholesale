@@ -50,7 +50,3 @@ def create_calculation_args(test_path: str) -> CalculatorArgs:
         ),
         time_zone="Europe/Copenhagen",
     )
-
-
-def test_foo():
-    pass
