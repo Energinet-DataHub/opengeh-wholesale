@@ -117,11 +117,12 @@ jobs:
           test_energy_calculation.py,
           test_wholesale_calculation.py,
           datamigration,
-          calculation_logic,
-          not calculator_job and not datamigration and not calculation_logic
+          business,
+          not calculator_job and (not datamigration) and (not business),
         ]
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@bjarke/configurable-python-ci-job-name
     with:
+      job_name: ${{ matrix.tests_filter_expression }}
       operating_system: dh3-ubuntu-20.04-4core
       path_static_checks: ./source/databricks/calculation_engine
       # documented here: https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
@@ -130,8 +131,9 @@ jobs:
       tests_filter_expression: ${{ matrix.tests_filter_expression }}
 
   python_integration_tests:
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@bjarke/configurable-python-ci-job-name
     with:
+      job_name: Python integration tests
       operating_system: dh3-ubuntu-20.04-4core
       path_static_checks: ./source/databricks/calculation_engine
       # documented here: https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
