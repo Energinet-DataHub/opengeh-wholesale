@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Edi.Models;
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.Validation;
 using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
@@ -28,11 +28,11 @@ public class TimeSeriesTypeValidatorTests
     private readonly TimeSeriesTypeValidationRule _sut = new();
 
     [Theory]
-    [InlineData(MeteringPointType.Production, null)]
-    [InlineData(MeteringPointType.Exchange, null)]
-    [InlineData(MeteringPointType.Consumption, null)]
-    [InlineData(MeteringPointType.Consumption, SettlementMethod.NonProfiled)]
-    [InlineData(MeteringPointType.Consumption, SettlementMethod.Flex)]
+    [InlineData(DataHubNames.MeteringPointType.Production, null)]
+    [InlineData(DataHubNames.MeteringPointType.Exchange, null)]
+    [InlineData(DataHubNames.MeteringPointType.Consumption, null)]
+    [InlineData(DataHubNames.MeteringPointType.Consumption, DataHubNames.SettlementMethod.NonProfiled)]
+    [InlineData(DataHubNames.MeteringPointType.Consumption, DataHubNames.SettlementMethod.Flex)]
     public async Task Validate_AsMeteredDataResponsible_ReturnsNoValidationErrors(string meteringPointType, string? settlementMethod)
     {
         // Arrange
@@ -41,7 +41,7 @@ public class TimeSeriesTypeValidatorTests
             .WithMeteringPointType(meteringPointType)
             .WithSettlementMethod(settlementMethod)
             .WithRequestedByActorId("1234567890123")
-            .WithRequestedByActorRole(ActorRoleCode.MeteredDataResponsible)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.MeteredDataResponsible)
             .Build();
 
         // Act
@@ -52,9 +52,9 @@ public class TimeSeriesTypeValidatorTests
     }
 
     [Theory]
-    [InlineData(MeteringPointType.Production, null)]
-    [InlineData(MeteringPointType.Consumption, SettlementMethod.NonProfiled)]
-    [InlineData(MeteringPointType.Consumption, SettlementMethod.Flex)]
+    [InlineData(DataHubNames.MeteringPointType.Production, null)]
+    [InlineData(DataHubNames.MeteringPointType.Consumption, DataHubNames.SettlementMethod.NonProfiled)]
+    [InlineData(DataHubNames.MeteringPointType.Consumption, DataHubNames.SettlementMethod.Flex)]
     public async Task Validate_AsEnergySupplier_ReturnsNoValidationErrors(string meteringPointType, string? settlementMethod)
     {
         // Arrange
@@ -63,7 +63,7 @@ public class TimeSeriesTypeValidatorTests
             .WithMeteringPointType(meteringPointType)
             .WithSettlementMethod(settlementMethod)
             .WithRequestedByActorId("1234567890123")
-            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.EnergySupplier)
             .Build();
 
         // Act
@@ -74,9 +74,9 @@ public class TimeSeriesTypeValidatorTests
     }
 
     [Theory]
-    [InlineData(MeteringPointType.Production, null)]
-    [InlineData(MeteringPointType.Consumption, SettlementMethod.NonProfiled)]
-    [InlineData(MeteringPointType.Consumption, SettlementMethod.Flex)]
+    [InlineData(DataHubNames.MeteringPointType.Production, null)]
+    [InlineData(DataHubNames.MeteringPointType.Consumption, DataHubNames.SettlementMethod.NonProfiled)]
+    [InlineData(DataHubNames.MeteringPointType.Consumption, DataHubNames.SettlementMethod.Flex)]
     public async Task Validate_AsBalanceResponsible_ReturnsNoValidationErrors(string meteringPointType, string? settlementMethod)
     {
         // Arrange
@@ -85,7 +85,7 @@ public class TimeSeriesTypeValidatorTests
             .WithMeteringPointType(meteringPointType)
             .WithSettlementMethod(settlementMethod)
             .WithRequestedByActorId("1234567890123")
-            .WithRequestedByActorRole(ActorRoleCode.BalanceResponsibleParty)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.BalanceResponsibleParty)
             .Build();
 
         // Act
@@ -96,8 +96,8 @@ public class TimeSeriesTypeValidatorTests
     }
 
     [Theory]
-    [InlineData(MeteringPointType.Exchange)]
-    [InlineData(MeteringPointType.Consumption)]
+    [InlineData(DataHubNames.MeteringPointType.Exchange)]
+    [InlineData(DataHubNames.MeteringPointType.Consumption)]
     public async Task Validate_AsEnergySupplierAndNoSettlementMethod_ReturnsExceptedValidationErrors(string meteringPointType)
     {
         // Arrange
@@ -106,7 +106,7 @@ public class TimeSeriesTypeValidatorTests
             .WithMeteringPointType(meteringPointType)
             .WithSettlementMethod(null)
             .WithRequestedByActorId("1234567890123")
-            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.EnergySupplier)
             .Build();
 
         // Act
@@ -116,13 +116,13 @@ public class TimeSeriesTypeValidatorTests
         errors.Should().ContainSingle();
 
         var error = errors.First();
-        error.Message.Should().Be(_invalidTimeSeriesTypeForActor.WithPropertyName(ActorRoleCode.EnergySupplier).Message);
+        error.Message.Should().Be(_invalidTimeSeriesTypeForActor.WithPropertyName(DataHubNames.ActorRole.EnergySupplier).Message);
         error.ErrorCode.Should().Be(_invalidTimeSeriesTypeForActor.ErrorCode);
     }
 
     [Theory]
-    [InlineData(MeteringPointType.Exchange)]
-    [InlineData(MeteringPointType.Consumption)]
+    [InlineData(DataHubNames.MeteringPointType.Exchange)]
+    [InlineData(DataHubNames.MeteringPointType.Consumption)]
     public async Task Validate_AsBalanceResponsibleAndNoSettlementMethod_ValidationErrors(string meteringPointType)
     {
         // Arrange
@@ -131,7 +131,7 @@ public class TimeSeriesTypeValidatorTests
             .WithMeteringPointType(meteringPointType)
             .WithSettlementMethod(null)
             .WithRequestedByActorId("1234567890123")
-            .WithRequestedByActorRole(ActorRoleCode.BalanceResponsibleParty)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.BalanceResponsibleParty)
             .Build();
 
         // Act
@@ -141,7 +141,7 @@ public class TimeSeriesTypeValidatorTests
         errors.Should().ContainSingle();
 
         var error = errors.First();
-        error.Message.Should().Be(_invalidTimeSeriesTypeForActor.WithPropertyName(ActorRoleCode.BalanceResponsibleParty).Message);
+        error.Message.Should().Be(_invalidTimeSeriesTypeForActor.WithPropertyName(DataHubNames.ActorRole.BalanceResponsibleParty).Message);
         error.ErrorCode.Should().Be(_invalidTimeSeriesTypeForActor.ErrorCode);
     }
 }
