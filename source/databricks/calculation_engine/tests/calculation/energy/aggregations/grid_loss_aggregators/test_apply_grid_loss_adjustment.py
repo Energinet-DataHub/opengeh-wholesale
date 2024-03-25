@@ -16,8 +16,8 @@ from datetime import datetime, timedelta
 import pytest
 from pyspark.sql import SparkSession
 
-import calculation.energy.grid_loss_responsible_factories as grid_loss_responsible_factories
 import tests.calculation.energy.energy_results_factories as energy_results_factories
+import tests.calculation.energy.grid_loss_responsible_factories as grid_loss_responsible_factories
 from package.calculation.energy.aggregators.grid_loss_aggregators import (
     apply_grid_loss_adjustment,
 )
