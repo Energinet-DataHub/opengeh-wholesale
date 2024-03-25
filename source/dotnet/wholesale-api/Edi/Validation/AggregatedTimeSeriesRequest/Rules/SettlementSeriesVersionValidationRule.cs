@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Models;
 
 namespace Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
@@ -20,16 +21,16 @@ public class SettlementSeriesVersionValidationRule : IValidationRule<DataHub.Edi
 {
     private static readonly IReadOnlyList<string> _validSettlementSeriesVersions = new List<string>
     {
-        SettlementSeriesVersion.FirstCorrection,
-        SettlementSeriesVersion.SecondCorrection,
-        SettlementSeriesVersion.ThirdCorrection,
+        DataHubNames.SettlementVersion.FirstCorrection,
+        DataHubNames.SettlementVersion.SecondCorrection,
+        DataHubNames.SettlementVersion.ThirdCorrection,
     };
 
     private static readonly ValidationError _invalidSettlementSeriesVersionError = new("SettlementSeriesVersion kan kun benyttes i kombination med D32 og skal være enten D01, D02 eller D03 / SettlementSeriesVersion can only be used in combination with D32 and must be either D01, D02 or D03", "E86");
 
     public Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.AggregatedTimeSeriesRequest subject)
     {
-        var isCorrection = subject.BusinessReason == BusinessReason.Correction;
+        var isCorrection = subject.BusinessReason == DataHubNames.BusinessReason.Correction;
         var hasSettlementVersion = subject.HasSettlementSeriesVersion;
 
         if (!isCorrection && hasSettlementVersion)

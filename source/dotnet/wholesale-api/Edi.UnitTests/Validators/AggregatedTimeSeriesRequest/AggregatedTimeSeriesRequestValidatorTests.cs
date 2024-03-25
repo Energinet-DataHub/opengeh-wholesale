@@ -15,8 +15,8 @@
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.GridArea;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
-using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.Validation;
 using FluentAssertions;
@@ -102,7 +102,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
         // Arrange
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.EnergySupplier)
             .WithRequestedByActorId(EnergySupplierValidatorTest.ValidGlnNumber)
             .WithEnergySupplierId("invalid-id")
             .Build();
@@ -138,7 +138,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
         // Arrange
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithBusinessReason(BusinessReason.Correction)
+            .WithBusinessReason(DataHubNames.BusinessReason.Correction)
             .WithSettlementSeriesVersion("invalid-settlement-series-version")
             .Build();
 
@@ -156,10 +156,10 @@ public class AggregatedTimeSeriesRequestValidatorTests
         // Arrange
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithMeteringPointType(MeteringPointType.Consumption)
+            .WithMeteringPointType(DataHubNames.MeteringPointType.Consumption)
             .WithSettlementMethod(null)
             .WithRequestedByActorId(EnergySupplierValidatorTest.ValidGlnNumber)
-            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.EnergySupplier)
             .WithEnergySupplierId(EnergySupplierValidatorTest.ValidGlnNumber)
             .Build();
 
@@ -177,7 +177,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
         // Arrange
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithRequestedByActorRole(ActorRoleCode.BalanceResponsibleParty)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.BalanceResponsibleParty)
             .WithBusinessReason("D05")
             .WithBalanceResponsibleId(BalanceResponsibleValidatorTest.ValidGlnNumber)
             .Build();

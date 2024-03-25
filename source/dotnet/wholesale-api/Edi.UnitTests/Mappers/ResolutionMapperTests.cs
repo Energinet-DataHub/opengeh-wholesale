@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Mappers;
-using Energinet.DataHub.Wholesale.Edi.Models;
 using FluentAssertions;
 using Xunit;
 
@@ -23,9 +22,9 @@ namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Mappers;
 public class ResolutionMapperTests
 {
     [Theory]
-    [InlineData(Resolution.Monthly, CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution.Month)]
-    [InlineData(Resolution.Hourly, CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution.Hour)]
-    [InlineData(Resolution.Daily, CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution.Day)]
+    [InlineData(DataHubNames.Resolution.Monthly, CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution.Month)]
+    [InlineData(DataHubNames.Resolution.Hourly, CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution.Hour)]
+    [InlineData(DataHubNames.Resolution.Daily, CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution.Day)]
     public void Map_WhenValid_ReturnsExpectedChargeType(string resolution, Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution expectedResult)
     {
         // Act
