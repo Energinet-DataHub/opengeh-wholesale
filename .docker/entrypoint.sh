@@ -29,7 +29,7 @@ export PYSPARK_DRIVER_PYTHON=/opt/conda/bin/python
 set -e
 
 cd source/databricks/calculation_engine/tests/
-coverage run --branch -m pytest -k "$1" --junitxml=pytest-results.xml .
+coverage run --branch -m pytest "$1" --junitxml=pytest-results.xml .
 
 # Create data for threshold evaluation
 coverage json
