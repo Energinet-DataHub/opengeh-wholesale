@@ -22,6 +22,7 @@ using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NodaTime;
 using Xunit;
@@ -35,6 +36,7 @@ public class CompletedCalculationRetrieverTest
     [InlineAutoMoqData]
     public async Task GetLatestCompletedCalculationForRequestAsync_WithLatestCorrectionWhenCalculationIsThirdCorrectionSettlement_ReturnsCalculationsAsync(
         [Frozen] Mock<LatestCalculationsForPeriod> latestCalculationsForPeriod,
+        [Frozen] Mock<ILogger<CompletedCalculationRetriever>> logger,
         [Frozen] Mock<ICalculationsClient> calculationsClient)
     {
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
@@ -58,7 +60,7 @@ public class CompletedCalculationRetrieverTest
 
         var request = CreateRequestParameters(startOfPeriodFilter, endOfPeriodFilter);
 
-        var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object);
+        var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object, logger.Object);
 
         // Act
         var actual = await sut.GetLatestCompletedCalculationsForPeriodAsync(request.GridArea, request.Period, request.RequestedCalculationType);
@@ -71,6 +73,7 @@ public class CompletedCalculationRetrieverTest
     [InlineAutoMoqData]
     public async Task GetLatestCorrectionAsync_WithLatestCorrectionWhenCalculationIsSecondCorrectionSettlement_ReturnsCalculationsAsync(
         [Frozen] Mock<LatestCalculationsForPeriod> latestCalculationsForPeriod,
+        [Frozen] Mock<ILogger<CompletedCalculationRetriever>> logger,
         [Frozen] Mock<ICalculationsClient> calculationsClient)
     {
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
@@ -94,7 +97,7 @@ public class CompletedCalculationRetrieverTest
 
         var request = CreateRequestParameters(startOfPeriodFilter, endOfPeriodFilter);
 
-        var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object);
+        var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object, logger.Object);
 
         // Act
         var actual = await sut.GetLatestCompletedCalculationsForPeriodAsync(request.GridArea, request.Period, request.RequestedCalculationType);
@@ -107,6 +110,7 @@ public class CompletedCalculationRetrieverTest
     [InlineAutoMoqData]
     public async Task GetLatestCorrectionAsync_WithLatestCorrectionWhenCalculationIsFirstCorrectionSettlement_ReturnsCalculationsAsync(
         [Frozen] Mock<LatestCalculationsForPeriod> latestCalculationsForPeriod,
+        [Frozen] Mock<ILogger<CompletedCalculationRetriever>> logger,
         [Frozen] Mock<ICalculationsClient> calculationsClient)
     {
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
@@ -130,7 +134,7 @@ public class CompletedCalculationRetrieverTest
 
         var request = CreateRequestParameters(startOfPeriodFilter, endOfPeriodFilter);
 
-        var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object);
+        var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object, logger.Object);
 
         // Act
         var actual = await sut.GetLatestCompletedCalculationsForPeriodAsync(request.GridArea, request.Period, request.RequestedCalculationType);
@@ -143,6 +147,7 @@ public class CompletedCalculationRetrieverTest
     [InlineAutoMoqData]
     public async Task GetLatestCompletedCalculationForRequestAsync_WhenNoCorrectionsExists_ReturnsNoResultAsync(
         [Frozen] Mock<LatestCalculationsForPeriod> latestCalculationsForPeriod,
+        [Frozen] Mock<ILogger<CompletedCalculationRetriever>> logger,
         [Frozen] Mock<ICalculationsClient> calculationsClient)
     {
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
@@ -150,7 +155,7 @@ public class CompletedCalculationRetrieverTest
 
         var request = CreateRequestParameters(startOfPeriodFilter, endOfPeriodFilter);
 
-        var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object);
+        var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object, logger.Object);
 
         // Act
         var actual = await sut.GetLatestCompletedCalculationsForPeriodAsync(request.GridArea, request.Period, request.RequestedCalculationType);
@@ -163,6 +168,7 @@ public class CompletedCalculationRetrieverTest
     [InlineAutoMoqData]
     public async Task GetLatestCorrectionAsync_WithLatestCorrectionWhenFirstCorrectionSettlementCalculationAndSecondCorrectionSettlementCalculation_ReturnsCalculationsForSecondCorrectionAsync(
         [Frozen] Mock<LatestCalculationsForPeriod> latestCalculationsForPeriod,
+        [Frozen] Mock<ILogger<CompletedCalculationRetriever>> logger,
         [Frozen] Mock<ICalculationsClient> calculationsClient)
     {
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
@@ -204,7 +210,7 @@ public class CompletedCalculationRetrieverTest
 
         var request = CreateRequestParameters(startOfPeriodFilter, endOfPeriodFilter);
 
-        var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object);
+        var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object, logger.Object);
 
         // Act
         var actual = await sut.GetLatestCompletedCalculationsForPeriodAsync(request.GridArea, request.Period, request.RequestedCalculationType);
@@ -219,6 +225,7 @@ public class CompletedCalculationRetrieverTest
     [InlineAutoMoqData]
     public async Task GetLatestCorrectionAsync_WithSecondCorrectionWhenSecondCorrectionSettlementCalculationAndThirdCorrectionSettlementCalculation_ReturnsCalculationsForSecondCorrectionAsync(
         [Frozen] Mock<LatestCalculationsForPeriod> latestCalculationsForPeriod,
+        [Frozen] Mock<ILogger<CompletedCalculationRetriever>> logger,
         [Frozen] Mock<ICalculationsClient> calculationsClient)
     {
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
@@ -260,7 +267,7 @@ public class CompletedCalculationRetrieverTest
 
         var request = CreateRequestParameters(startOfPeriodFilter, endOfPeriodFilter, RequestedCalculationType.SecondCorrection);
 
-        var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object);
+        var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object, logger.Object);
 
         // Act
         var actual = await sut.GetLatestCompletedCalculationsForPeriodAsync(request.GridArea, request.Period, request.RequestedCalculationType);

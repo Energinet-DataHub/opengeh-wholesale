@@ -114,7 +114,6 @@ public class AggregatedTimeSeriesRequestHandler : IWholesaleInboxRequestHandler
             error = [_noDataForRequestedGridArea];
         }
 
-        _logger.LogInformation("No data available for AggregatedTimeSeriesRequest message with reference id {reference_id}", referenceId);
         await SendRejectedMessageAsync(error, referenceId, cancellationToken).ConfigureAwait(false);
     }
 

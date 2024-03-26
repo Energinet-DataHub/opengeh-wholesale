@@ -70,9 +70,9 @@ public class LatestCalculationsForPeriod
     /// <summary>
     /// Ensure that all days in the period have a calculation or none have a calculation.
     /// </summary>
-    private static bool DaysInPeriodWithNoCalculations(List<Instant> remainingDaysInPeriod, List<CalculationForPeriod> latestCalculationsForPeriod)
+    private static bool DaysInPeriodWithNoCalculations(List<Instant> daysWithoutCalculation, List<CalculationForPeriod> latestCalculationsForPeriod)
     {
-        return remainingDaysInPeriod.Any() && latestCalculationsForPeriod.Any();
+        return daysWithoutCalculation.Any() && latestCalculationsForPeriod.Any();
     }
 
     private static IReadOnlyCollection<CalculationForPeriod> GetPeriodsWhereCalculationIsLatest(
