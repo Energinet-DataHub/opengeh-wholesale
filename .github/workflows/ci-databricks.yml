@@ -141,7 +141,7 @@ jobs:
       tests_filter_expression: ${{ matrix.tests_filter_expression.paths }}
 
   migration_tests:
-    if: ${{ inputs.has_delta_migration_changes == 'true' }}
+    if: ${{ inputs.has_delta_migration_changes }}
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
       job_name: Migrations
