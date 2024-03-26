@@ -25,6 +25,8 @@ on:
     outputs:
       databricks:
         value: ${{ jobs.changes.outputs.databricks }}
+      delta_migrations:
+        value: ${{ jobs.changes.outputs.delta_migrations }}
       dotnet:
         value: ${{ jobs.changes.outputs.dotnet }}
       packages:
@@ -43,6 +45,7 @@ jobs:
     # Set job outputs to values from filter step
     outputs:
       databricks: ${{ steps.filter.outputs.databricks }}
+      delta_migrations: ${{ steps.filter.outputs.delta_migrations }}
       dotnet: ${{ steps.filter.outputs.dotnet }}
       packages: ${{ steps.filter.outputs.packages }}
       render_c4model_views: ${{ steps.filter.outputs.render_c4model_views }}
@@ -66,6 +69,8 @@ jobs:
               - 'source/databricks/!(exploratory-notebooks/**)/**'
               - '.devcontainer/docker-compose.yml'
               - '.docker/requirements.txt'
+            delta_migrations:
+              - 'source/databricks/calculation_engine/package/datamigration/**'
             dotnet:
               - '.github/workflows/cd.yml'
               - '.github/workflows/ci-dotnet.yml'
