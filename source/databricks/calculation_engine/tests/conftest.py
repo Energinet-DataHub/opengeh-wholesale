@@ -19,8 +19,8 @@ defined in the geh_stream directory in our tests.
 import os
 import shutil
 import subprocess
-from shutil import rmtree
 from datetime import datetime
+from shutil import rmtree
 from typing import Generator, Callable, Optional
 
 import pytest
@@ -30,6 +30,7 @@ from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType
 
+import tests.helpers.spark_sql_migration_helper as sql_migration_helper
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.input.schemas import (
     time_series_point_schema,
@@ -50,7 +51,6 @@ from package.infrastructure.paths import (
 )
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.integration_test_configuration import IntegrationTestConfiguration
-import tests.helpers.spark_sql_migration_helper as sql_migration_helper
 
 
 @pytest.fixture(scope="session")
@@ -361,9 +361,13 @@ def dependency_injection_container(
 def energy_input_data_written_to_delta(
     spark: SparkSession, test_files_folder_path: str, calculation_input_path: str
 ) -> None:
+    start = datetime.now()
     shutil.rmtree(calculation_input_path, ignore_errors=True)
     spark.sql(f"DROP DATABASE IF EXISTS {INPUT_DATABASE_NAME} CASCADE")
+    end = datetime.now()
+    print(f"DROP DATABASE Execution time: {end - start}")
 
+    start = datetime.now()
     _write_input_test_data_to_table(
         spark,
         file_name=f"{test_files_folder_path}/MeteringPointsPeriods.csv",
@@ -412,6 +416,8 @@ def energy_input_data_written_to_delta(
         schema=charge_price_points_schema,
         table_location=f"{calculation_input_path}/{paths.CHARGE_PRICE_POINTS_TABLE_NAME}",
     )
+    end = datetime.now()
+    print(f"WRITE INPUT DATA Execution time: {end - start}")
 
 
 @pytest.fixture(scope="session")
