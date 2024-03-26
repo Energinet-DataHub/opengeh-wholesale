@@ -14,6 +14,7 @@
 
 using Azure.Identity;
 using Azure.Storage.Files.DataLake;
+using Energinet.DataHub.Core.App.Common.Extensions.Options;
 using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
@@ -108,8 +109,6 @@ public class WholesaleWebApiFixture : WebApiFixture
             .BuildQueue("sbq-edi-inbox")
             .SetEnvironmentVariableToQueueName($"{EdiInboxQueueOptions.SectionName}__{nameof(EdiInboxQueueOptions.QueueName)}")
             .CreateAsync();
-
-        Environment.SetEnvironmentVariable(nameof(DateTimeOptions.TIME_ZONE), "Europe/Copenhagen");
 
         await EnsureCalculationStorageContainerExistsAsync();
     }

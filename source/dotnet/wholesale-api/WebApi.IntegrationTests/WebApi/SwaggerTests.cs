@@ -16,14 +16,15 @@ using System.Net;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi;
 
-public class SwaggerUiTests : WebApiTestBase
+public class SwaggerTests : WebApiTestBase
 {
-    public SwaggerUiTests(
+    public SwaggerTests(
         WholesaleWebApiFixture wholesaleWebApiFixture,
         WebApiFactory factory,
         ITestOutputHelper testOutputHelper)
@@ -31,14 +32,37 @@ public class SwaggerUiTests : WebApiTestBase
     {
     }
 
-    [Fact]
-    public async Task Given_WebAPI_When_GettingSwaggerUi_Then_ReturnsHtmlPage()
+    [Theory]
+    [InlineData("v3")]
+    public async Task UrlIsApiVersionSwaggerJson_WhenGet_ResponseIsOKAndContainsJsonAndOpenAPIv3(string apiVersion)
     {
+        // Arrange
+        var url = $"swagger/{apiVersion}/swagger.json";
+
         // Act
-        var actualResponse = await Client.GetAsync("/swagger/index.html");
+        var actualResponse = await Client.GetAsync(url);
 
         // Assert
+        using var assertionScope = new AssertionScope();
         actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        actualResponse.Content.Headers.ContentType!.ToString().Should().StartWith("text/html");
+        actualResponse.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
+
+        var content = await actualResponse.Content.ReadAsStringAsync();
+        content.Should().Contain("\"openapi\": \"3.");
+    }
+
+    [Fact]
+    public async Task UrlIsSwaggerUIDefault_WhenGet_ResponseIsOKAndContainsHtml()
+    {
+        // Arrange
+        var url = "swagger";
+
+        // Act
+        var actualResponse = await Client.GetAsync(url);
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        actualResponse.Content.Headers.ContentType!.MediaType.Should().Be("text/html");
     }
 }
