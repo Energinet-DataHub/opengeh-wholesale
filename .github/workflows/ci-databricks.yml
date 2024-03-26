@@ -18,7 +18,7 @@ on:
   workflow_call:
     inputs:
       has_delta_migration_changes:
-        description: 'If there are changes in the delta migration scripts'
+        description: Whether there are changes in the delta migration scripts
         required: true
         type: boolean
       image_tag:
