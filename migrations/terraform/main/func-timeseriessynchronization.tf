@@ -32,6 +32,18 @@ module "func_timeseriessynchronization" {
       resource_id          = module.st_dh2dropzone_archive.id
       role_definition_name = "Storage Blob Data Contributor"
     },
+    {
+      resource_id          = module.kv_internal.id
+      role_definition_name = "Key Vault Secrets User"
+    },
+    {
+      resource_id          = module.kv_internal.id
+      role_definition_name = "Key Vault Crypto User"
+    },
+    {
+      resource_id          = module.kv_internal.id
+      role_definition_name = "Key Vault Secrets Officer"
+    }
   ]
 
   app_settings = {
