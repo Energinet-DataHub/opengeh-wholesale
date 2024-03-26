@@ -120,7 +120,7 @@ jobs:
       matrix:
         tests_filter_expression:
           - name: Energy (calculator_job)
-            path: calculator_job/test_energy_calculation.py
+            paths: calculator_job/test_energy_calculation.py
           - name: Wholesale (calculator_job)
             paths: calculator_job/test_wholesale_calculation.py
           - name: Logic
