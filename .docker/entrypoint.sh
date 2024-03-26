@@ -16,7 +16,7 @@
 
 # $1: (Optional) Can be set to specify a filter for running python tests by using 'keyword expressions'.
 # See use of '-k' and 'keyword expressions' here: https://docs.pytest.org/en/7.4.x/how-to/usage.html#specifying-which-tests-to-run
-echo "Filter (keyword expression): $1"
+echo "Filter (paths): '$1'"
 
 # Configure Azure CLI to use token cache which must be mapped as volume from host machine
 export AZURE_CONFIG_DIR=/home/joyvan/.azure
@@ -29,7 +29,7 @@ export PYSPARK_DRIVER_PYTHON=/opt/conda/bin/python
 set -e
 
 cd source/databricks/calculation_engine/tests/
-coverage run --branch -m pytest -k "$1" --junitxml=pytest-results.xml .
+coverage run --branch -m pytest --junitxml=pytest-results.xml $1
 
 # Create data for threshold evaluation
 coverage json
