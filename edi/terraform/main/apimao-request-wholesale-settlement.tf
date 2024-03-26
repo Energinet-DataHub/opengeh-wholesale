@@ -20,6 +20,7 @@ module "apimao_request_wholesale_settlement" {
                     <claim name="roles" match="any">
                         <value>energysupplier</value>
                         <value>delegated</value>
+                        <value>systemoperator</value>
                     </claim>
                 </required-claims>
             </validate-jwt>
