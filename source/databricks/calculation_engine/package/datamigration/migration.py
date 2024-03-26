@@ -12,17 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from package.infrastructure import paths, initialize_spark
-import package.infrastructure.environment_variables as env_vars
-from .migration_script_args import MigrationScriptArgs
-import package.datamigration.constants as c
+
 from spark_sql_migrations import (
     create_and_configure_container,
     schema_migration_pipeline,
     SparkSqlMigrationsConfiguration,
 )
-from .substitutions import substitutions
+
+import package.datamigration.constants as c
+import package.infrastructure.environment_variables as env_vars
+from package.infrastructure import paths, initialize_spark
+from .migration_script_args import MigrationScriptArgs
 from .schema_config import schema_config
+from .substitutions import substitutions
 
 
 # This method must remain parameterless because it will be called from the entry point when deployed.
