@@ -17,6 +17,10 @@ name: CI Databricks
 on:
   workflow_call:
     inputs:
+      has_delta_migration_changes:
+        description: 'If there are changes in the delta migration scripts'
+        required: true
+        type: boolean
       image_tag:
         type: string
         default: latest
@@ -118,15 +122,13 @@ jobs:
           - name: Energy (calculator_job)
             path: calculator_job/test_energy_calculation.py
           - name: Wholesale (calculator_job)
-            path: calculator_job/test_wholesale_calculation.py
-          - name: Migrations
-            path: datamigration/
+            paths: calculator_job/test_wholesale_calculation.py
           - name: Logic
-            path: calculation_logic/
+            paths: calculation_logic/
           - name: Unit tests
-            path: calculation/ codelists/ common/ infrastructure/
+            paths: calculation/ codelists/ common/ infrastructure/
           - name: Entry point tests
-            path: entry_points/
+            paths: entry_points/
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
       job_name: ${{ matrix.tests_filter_expression.name }}
@@ -136,7 +138,20 @@ jobs:
       ignore_errors_and_warning_flake8: E501,F401,E402,E203,W503
       test_report_path: ./source/databricks/calculation_engine/tests
       # See .docker/entrypoint.py on how to use the filter expression
-      tests_filter_expression: ${{ matrix.tests_filter_expression.path }}
+      tests_filter_expression: ${{ matrix.tests_filter_expression.paths }}
+
+  migration_tests:
+    if: ${{ inputs.has_delta_migration_changes == 'true' }}
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
+    with:
+      job_name: Migrations
+      operating_system: dh3-ubuntu-20.04-4core
+      path_static_checks: ./source/databricks/calculation_engine
+      # documented here: https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
+      ignore_errors_and_warning_flake8: E501,F401,E402,E203,W503
+      test_report_path: ./source/databricks/calculation_engine/tests
+      # See .docker/entrypoint.py on how to use the filter expression
+      tests_filter_expression: datamigration
 
   # Tests that require the integration test environment
   integration_tests:
@@ -149,7 +164,7 @@ jobs:
       ignore_errors_and_warning_flake8: E501,F401,E402,E203,W503
       test_report_path: ./source/databricks/calculation_engine/tests
       # See .docker/entrypoint.py on how to use the filter expression
-      tests_filter_expression: calculator_job and test_start.py
+      tests_filter_expression: calculator_job/test_start.py
       use_integrationtest_environment: true
       azure_integrationtest_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
       azure_integrationtest_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
