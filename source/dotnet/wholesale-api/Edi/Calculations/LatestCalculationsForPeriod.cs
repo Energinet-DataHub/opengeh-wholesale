@@ -58,9 +58,21 @@ public class LatestCalculationsForPeriod
                 return latestCalculationsForPeriod.OrderBy(x => x.Period.Start).ToList();
         }
 
-        return latestCalculationsForPeriod.Count == 0
-            ? (IReadOnlyCollection<CalculationForPeriod>)latestCalculationsForPeriod.OrderBy(x => x.Period.Start).ToList()
-            : throw new MissingCalculationException($"No calculation found for dates: {string.Join(", ", remainingDaysInPeriod)}");
+        if (DaysInPeriodWithNoCalculations(remainingDaysInPeriod, latestCalculationsForPeriod))
+        {
+            throw new MissingCalculationException($"No calculation found for dates: {string.Join(", ", remainingDaysInPeriod)}");
+        }
+
+        return latestCalculationsForPeriod.OrderBy(x => x.Period.Start)
+            .ToList();
+    }
+
+    /// <summary>
+    /// Ensure that all days in the period have a calculation or none have a calculation.
+    /// </summary>
+    private static bool DaysInPeriodWithNoCalculations(List<Instant> remainingDaysInPeriod, List<CalculationForPeriod> latestCalculationsForPeriod)
+    {
+        return remainingDaysInPeriod.Any() && latestCalculationsForPeriod.Any();
     }
 
     private static IReadOnlyCollection<CalculationForPeriod> GetPeriodsWhereCalculationIsLatest(

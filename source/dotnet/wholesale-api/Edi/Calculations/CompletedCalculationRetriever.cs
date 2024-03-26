@@ -41,7 +41,7 @@ public class CompletedCalculationRetriever
         _calculationsClient = calculationsClient;
     }
 
-    public async Task<IReadOnlyCollection<CalculationForPeriod>> GetLatestCompletedCalculationsForPeriodAsync(
+    public virtual async Task<IReadOnlyCollection<CalculationForPeriod>> GetLatestCompletedCalculationsForPeriodAsync(
         string? gridAreaCode, Period period, RequestedCalculationType requestedCalculationType)
     {
         IReadOnlyCollection<CalculationDto> completedCalculationsForPeriod = Array.Empty<CalculationDto>();
