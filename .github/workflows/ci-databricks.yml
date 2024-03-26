@@ -116,15 +116,17 @@ jobs:
       matrix:
         tests_filter_expression:
           - name: Energy (calculator_job)
-            path: calculator_job and test_energy_calculation.py
+            path: calculator_job/test_energy_calculation.py
           - name: Wholesale (calculator_job)
-            path: calculator_job and test_wholesale_calculation.py
+            path: calculator_job/test_wholesale_calculation.py
           - name: Migrations
-            path: datamigration
+            path: datamigration/
           - name: Logic
-            path: calculation_logic
-          - name: Calculation unit tests
-            path: not calculator_job and not datamigration and not calculation_logic
+            path: calculation_logic/
+          - name: Unit tests
+            path: calculation/ codelists/ common/ infrastructure/
+          - name: Entry point tests
+            path: entry_points/
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
       job_name: ${{ matrix.tests_filter_expression.name }}
