@@ -9,8 +9,8 @@ module "kv_shared" {
   enabled_for_template_deployment = true
   sku_name                        = "premium"
   private_endpoint_subnet_id      = data.azurerm_subnet.snet_private_endpoints.id
+  ip_rules                        = local.ip_restrictions_as_string
   allowed_subnet_ids = [
     data.azurerm_subnet.snet_vnet_integration.id,
   ]
-  ip_rules = local.ip_restrictions_as_string
 }

@@ -48,6 +48,10 @@ module "app_time_series_api" {
     {
       resource_id          = module.kv_internal.id
       role_definition_name = "Key Vault Secrets User"
+    },
+    {
+      resource_id          = data.azurerm_key_vault.kv_shared_resources.id
+      role_definition_name = "Key Vault Secrets User"
     }
   ]
 }

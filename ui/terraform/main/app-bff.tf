@@ -17,7 +17,12 @@ module "bff" {
   health_check_alert_action_group_id       = data.azurerm_key_vault_secret.primary_action_group_id.value
   health_check_alert_enabled               = var.enable_health_check_alerts
   dotnet_framework_version                 = "v6.0"
-
+  role_assignments = [
+    {
+      resource_id          = data.azurerm_key_vault.kv_shared_resources.id
+      role_definition_name = "Key Vault Secrets User"
+    }
+  ]
   app_settings = {
     ApiClientSettings__MeteringPointBaseUrl     = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-metering-point-webapi-base-url)"
     ApiClientSettings__ChargesBaseUrl           = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-charges-webapi-base-url)"
