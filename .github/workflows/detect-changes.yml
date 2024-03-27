@@ -71,6 +71,7 @@ jobs:
               - '.docker/requirements.txt'
             delta_migrations:
               - 'source/databricks/calculation_engine/package/datamigration/**'
+              - 'source/databricks/calculation_engine/tests/datamigration/**'
             dotnet:
               - '.github/workflows/cd.yml'
               - '.github/workflows/ci-dotnet.yml'
