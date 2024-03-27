@@ -131,7 +131,7 @@ jobs:
             paths: calculation/ codelists/ common/ infrastructure/
           - name: Entry point tests
             paths: entry_points/
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@bjarke/avoid-azure-login-pre-and-post
     with:
       job_name: ${{ matrix.tests_filter_expression.name }}
       operating_system: dh3-ubuntu-20.04-4core
@@ -152,7 +152,7 @@ jobs:
           - name: Current state migrations
             paths: datamigration/test_migration.py
     if: ${{ inputs.has_delta_migration_changes }}
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@bjarke/avoid-azure-login-pre-and-post
     with:
       job_name: ${{ matrix.tests_filter_expression.name }}
       operating_system: dh3-ubuntu-20.04-4core
@@ -165,7 +165,7 @@ jobs:
 
   # Tests that require the integration test environment
   integration_tests:
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@bjarke/avoid-azure-login-pre-and-post
     with:
       job_name: Integration tests
       operating_system: dh3-ubuntu-20.04-4core
