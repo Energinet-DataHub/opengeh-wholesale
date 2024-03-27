@@ -57,7 +57,7 @@ module "func_timeseriessynchronization" {
     StorageAccountSettings__Dh2TimeSeriesSynchronizationContainerName            = azurerm_storage_container.dh2_timeseries_synchronization.name
     StorageAccountSettings__Dh2TimeSeriesSynchronizationArchiveStorageAccountUri = "https://${module.st_dh2dropzone_archive.name}.blob.core.windows.net"
     StorageAccountSettings__Dh2TimeSeriesSynchronizationArchiveContainerName     = azurerm_storage_container.dropzonetimeseriessyncarchive.name
-    "ServiceBusSettings__ConnectionString"                                       = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-listen-connection-string)"
+    "ServiceBusSettings__ConnectionString"                                       = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-transceiver-connection-string)"
     "ServiceBusSettings__TimeSeriesMessagesQueueName"                            = azurerm_servicebus_queue.time_series_imported_messages_queue.name
     DataHub2ClientSettings__EndpointAddress                                      = var.datahub2_migration_url,
     FeatureManagement__DataHub2HealthCheck                                       = var.feature_flag_datahub2_healthcheck
