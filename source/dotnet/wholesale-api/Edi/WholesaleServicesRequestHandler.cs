@@ -75,24 +75,40 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
 
         var request = _wholesaleServicesRequestMapper.Map(incomingRequest);
         var queryParameters = await GetWholesaleResultQueryParametersAsync(request).ConfigureAwait(false);
-        var data = await _wholesaleServicesQueries.GetAsync(queryParameters).ToListAsync(cancellationToken).ConfigureAwait(false);
-
-        if (!data.Any())
+        if (!queryParameters.Calculations.Any())
         {
-          var errors = new List<ValidationError>
-          {
-              await HasDataInAnotherGridAreaAsync(incomingRequest.RequestedByActorRole, queryParameters).ConfigureAwait(false)
-                  ? _noDataForRequestedGridArea
-                  : _noDataAvailable,
-          };
+            await SendNoDateRejectMessageAsync(referenceId, cancellationToken, incomingRequest, queryParameters)
+                .ConfigureAwait(false);
+            return;
+        }
 
-          _logger.LogInformation("No data available for WholesaleServicesRequest message with reference id {reference_id}", referenceId);
-          await SendRejectedMessageAsync(errors, referenceId, cancellationToken).ConfigureAwait(false);
-          return;
+        var calculationResults = await _wholesaleServicesQueries.GetAsync(queryParameters).ToListAsync(cancellationToken).ConfigureAwait(false);
+        if (!calculationResults.Any())
+        {
+            await SendNoDateRejectMessageAsync(referenceId, cancellationToken, incomingRequest, queryParameters)
+                .ConfigureAwait(false);
+            return;
         }
 
         _logger.LogInformation("Sending WholesaleServicesRequest accepted message with reference id {reference_id}", referenceId);
-        await SendAcceptedMessageAsync(data, referenceId, cancellationToken).ConfigureAwait(false);
+        await SendAcceptedMessageAsync(calculationResults, referenceId, cancellationToken).ConfigureAwait(false);
+    }
+
+    private async Task SendNoDateRejectMessageAsync(
+        string referenceId,
+        CancellationToken cancellationToken,
+        DataHub.Edi.Requests.WholesaleServicesRequest incomingRequest,
+        WholesaleServicesQueryParameters queryParameters)
+    {
+        var errors = new List<ValidationError>
+        {
+            await HasDataInAnotherGridAreaAsync(incomingRequest.RequestedByActorRole, queryParameters).ConfigureAwait(false)
+                ? _noDataForRequestedGridArea
+                : _noDataAvailable,
+        };
+
+        _logger.LogInformation("No data available for WholesaleServicesRequest message with reference id {reference_id}", referenceId);
+        await SendRejectedMessageAsync(errors, referenceId, cancellationToken).ConfigureAwait(false);
     }
 
     private async Task<WholesaleServicesQueryParameters> GetWholesaleResultQueryParametersAsync(WholesaleServicesRequest request)
