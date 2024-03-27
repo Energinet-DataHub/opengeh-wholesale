@@ -73,35 +73,48 @@ public class AggregatedTimeSeriesRequestHandler : IWholesaleInboxRequestHandler
         }
 
         var aggregatedTimeSeriesRequestMessage = AggregatedTimeSeriesRequestFactory.Parse(aggregatedTimeSeriesRequest);
-        var results = await GetAggregatedTimeSeriesAsync(
-            aggregatedTimeSeriesRequestMessage,
-            cancellationToken).ConfigureAwait(false);
-
-        if (!results.Any())
+        var queryParameters = await CreateAggregatedTimeSeriesQueryParametersWithoutCalculationTypeAsync(aggregatedTimeSeriesRequestMessage).ConfigureAwait(false);
+        if (!queryParameters.LatestCalculationForPeriod.Any())
         {
-            var error = new List<ValidationError> { _noDataAvailable };
-            if (await EnergySupplierOrBalanceResponsibleHaveAggregatedTimeSeriesForAnotherGridAreasAsync(aggregatedTimeSeriesRequest, aggregatedTimeSeriesRequestMessage).ConfigureAwait(false))
-            {
-                error = [_noDataForRequestedGridArea];
-            }
+            await SendNoDateRejectMessageAsync(
+                    referenceId,
+                    cancellationToken,
+                    aggregatedTimeSeriesRequest,
+                    aggregatedTimeSeriesRequestMessage)
+                .ConfigureAwait(false);
+            return;
+        }
 
-            _logger.LogInformation("No data available for AggregatedTimeSeriesRequest message with reference id {reference_id}", referenceId);
-            await SendRejectedMessageAsync(error, referenceId, cancellationToken).ConfigureAwait(false);
+        var calculationResults = await _aggregatedTimeSeriesQueries.GetAsync(
+            queryParameters).ToListAsync(cancellationToken).ConfigureAwait(false);
+        if (!calculationResults.Any())
+        {
+            await SendNoDateRejectMessageAsync(
+                referenceId,
+                cancellationToken,
+                aggregatedTimeSeriesRequest,
+                aggregatedTimeSeriesRequestMessage)
+                .ConfigureAwait(false);
             return;
         }
 
         _logger.LogInformation("Sending AggregatedTimeSeriesRequest accepted message with reference id {reference_id}", referenceId);
-        await SendAcceptedMessageAsync(results, referenceId, cancellationToken).ConfigureAwait(false);
+        await SendAcceptedMessageAsync(calculationResults, referenceId, cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task<IReadOnlyCollection<AggregatedTimeSeries>> GetAggregatedTimeSeriesAsync(
-        AggregatedTimeSeriesRequest request,
-        CancellationToken cancellationToken)
+    private async Task SendNoDateRejectMessageAsync(
+        string referenceId,
+        CancellationToken cancellationToken,
+        DataHub.Edi.Requests.AggregatedTimeSeriesRequest aggregatedTimeSeriesRequest,
+        AggregatedTimeSeriesRequest aggregatedTimeSeriesRequestMessage)
     {
-        var parameters = await CreateAggregatedTimeSeriesQueryParametersWithoutCalculationTypeAsync(request).ConfigureAwait(false);
+        var error = new List<ValidationError> { _noDataAvailable };
+        if (await EnergySupplierOrBalanceResponsibleHaveAggregatedTimeSeriesForAnotherGridAreasAsync(aggregatedTimeSeriesRequest, aggregatedTimeSeriesRequestMessage).ConfigureAwait(false))
+        {
+            error = [_noDataForRequestedGridArea];
+        }
 
-        return await _aggregatedTimeSeriesQueries.GetAsync(
-            parameters).ToListAsync(cancellationToken).ConfigureAwait(false);
+        await SendRejectedMessageAsync(error, referenceId, cancellationToken).ConfigureAwait(false);
     }
 
     private async Task<bool> EnergySupplierOrBalanceResponsibleHaveAggregatedTimeSeriesForAnotherGridAreasAsync(

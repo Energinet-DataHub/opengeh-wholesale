@@ -50,6 +50,7 @@ jobs:
     if: ${{ needs.changes.outputs.databricks == 'true' }}
     uses: ./.github/workflows/ci-databricks.yml
     with:
+      has_delta_migration_changes: ${{ needs.changes.outputs.delta_migrations == 'true' }}
       image_tag: ${{ needs.ci_docker.outputs.image_tag }}
 
   ci_packages:
