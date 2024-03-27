@@ -26,6 +26,12 @@ COPY spark-defaults.conf $SPARK_HOME/conf/spark-defaults.conf
 RUN apt-get update; \
     apt-get install -y git
 
+# Install Azure CLI, see https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt
+#   Install curl to be able to download Azure CLI install script
+RUN apt-get install -y curl
+#   Download and execute install script
+RUN curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
 # Cleanup apt cache to reduce image size
 RUN rm -rf /var/lib/apt/lists/*
 
