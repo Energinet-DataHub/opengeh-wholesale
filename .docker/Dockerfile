@@ -14,7 +14,7 @@
 
 # The spark version should follow the spark version in databricks.
 # The databricks version of spark is controlled from dh3-infrastructure and uses latest LTS (ATTOW - Spark v3.5.0)
-FROM quay.io/jupyter/pyspark-notebook:spark-3.5.1
+FROM ghcr.io/energinet-datahub/pyspark-slim:3.5.0
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -22,16 +22,9 @@ USER root
 # This replaces the default spark configuration in the docker image with the ones defined in the sibling file
 COPY spark-defaults.conf $SPARK_HOME/conf/spark-defaults.conf
 
-# Install Azure CLI, see https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt
-#   Install curl to be able to download Azure CLI install script
+# Install git as it is needed by spark
 RUN apt-get update; \
-    apt-get install -y curl
-#   Download and execute install script
-RUN curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-
-# Install Azurite (support wasb-protocol storage for Delta tables in integration tests)
-RUN apt-get update; \
-    apt-get install -y npm && npm install -g n && n lts && hash -r && npm install -g azurite
+    apt-get install -y git
 
 # Cleanup apt cache to reduce image size
 RUN rm -rf /var/lib/apt/lists/*
