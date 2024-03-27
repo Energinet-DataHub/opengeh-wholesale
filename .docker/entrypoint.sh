@@ -1,4 +1,4 @@
-#!/bin/sh -l
+#!/bin/bash -l
 
 # Copyright 2020 Energinet DataHub A/S
 #
