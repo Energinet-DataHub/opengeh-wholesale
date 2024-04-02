@@ -45,9 +45,14 @@ public class PeriodValidationRuleTests
             "Forkert dato format for {PropertyName}, skal være YYYY-MM-DDT22:00:00Z / Wrong date format for {PropertyName}, must be YYYY-MM-DDT22:00:00Z",
             "D66");
 
-    private static readonly ValidationError _invalidPeriodLength =
+    private static readonly ValidationError _invalidPeriodAcrossMonths =
         new(
             "Det er ikke muligt at anmode om data på tværs af måneder i forbindelse med en engrosfiksering eller korrektioner / It is not possible to request data across months in relation to wholesalefixing or corrections",
+            "E17");
+
+    private static readonly ValidationError _invalidPeriodLength =
+        new(
+            "Det er kun muligt at anmode om data på for en hel måned i forbindelse med en engrosfiksering eller korrektioner / It is only possible to request data for a full month in relation to wholesalefixing or corrections",
             "E17");
 
     private readonly PeriodValidationRule _sut;
@@ -403,8 +408,8 @@ public class PeriodValidationRuleTests
 
         // Assert
         errors.Should().ContainSingle();
-        errors.Single().ErrorCode.Should().Be("E17");
-        errors.Single().Message.Should().Contain("ikke muligt at anmode om data på tværs af måneder");
+        errors.Single().ErrorCode.Should().Be(_invalidPeriodAcrossMonths.ErrorCode);
+        errors.Single().Message.Should().Be(_invalidPeriodAcrossMonths.WithPropertyName("Period End").Message);
     }
 
     [Fact]
@@ -433,8 +438,8 @@ public class PeriodValidationRuleTests
 
         // Assert
         errors.Should().ContainSingle();
-        errors.Single().ErrorCode.Should().Be("E17");
-        errors.Single().Message.Should().Contain("kun muligt at anmode om data på for en hel måned");
+        errors.Single().ErrorCode.Should().Be(_invalidPeriodLength.ErrorCode);
+        errors.Single().Message.Should().Be(_invalidPeriodLength.WithPropertyName("Period End").Message);
     }
 
     [Fact]
@@ -463,8 +468,8 @@ public class PeriodValidationRuleTests
 
         // Assert
         errors.Should().ContainSingle();
-        errors.Single().ErrorCode.Should().Be("E17");
-        errors.Single().Message.Should().Contain("kun muligt at anmode om data på for en hel måned");
+        errors.Single().ErrorCode.Should().Be(_invalidPeriodLength.ErrorCode);
+        errors.Single().Message.Should().Be(_invalidPeriodLength.Message);
     }
 
     [Fact]
@@ -493,8 +498,8 @@ public class PeriodValidationRuleTests
 
         // Assert
         errors.Should().ContainSingle();
-        errors.Single().ErrorCode.Should().Be("E17");
-        errors.Single().Message.Should().Contain("kun muligt at anmode om data på for en hel måned");
+        errors.Single().ErrorCode.Should().Be(_invalidPeriodLength.ErrorCode);
+        errors.Single().Message.Should().Be(_invalidPeriodLength.WithPropertyName("Period End").Message);
     }
 
     [Fact]
