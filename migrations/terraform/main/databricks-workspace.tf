@@ -1,5 +1,5 @@
 module "dbw" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-workspace?ref=v13"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-workspace?ref=13.62.0"
 
   name                                     = "dbw"
   project_name                             = var.domain_name_short
