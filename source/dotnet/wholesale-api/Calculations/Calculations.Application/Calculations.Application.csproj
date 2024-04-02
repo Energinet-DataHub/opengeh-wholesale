@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="Energinet.DataHub.Core.App.WebApp" Version="9.0.0" />
-    <PackageReference Include="Energinet.DataHub.Core.Messaging" Version="4.0.0" />
+    <PackageReference Include="Energinet.DataHub.Core.Messaging" Version="5.0.0" />
     <PackageReference Include="Google.Protobuf" Version="3.26.0" />
     <PackageReference Include="Grpc.Tools" Version="2.62.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
