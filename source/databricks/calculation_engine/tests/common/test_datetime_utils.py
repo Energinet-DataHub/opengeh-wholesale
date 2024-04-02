@@ -163,6 +163,50 @@ def test__is_exactly_one_calendar_month__when_london_time_and_not_exactly_one_mo
 
 
 @pytest.mark.parametrize(
+    "period_start, period_end, expected",
+    [
+        (  # Summer in Copenhagen
+            datetime(2022, 5, 31, 22),
+            datetime(2022, 6, 30, 22),
+            30,
+        ),
+        (  # Crossing year boundary
+            datetime(2021, 12, 31, 23),
+            datetime(2022, 1, 31, 23),
+            31,
+        ),
+        (  # February in a leap year
+            datetime(2020, 1, 31, 23),
+            datetime(2020, 2, 29, 23),
+            29,
+        ),
+        (  # Entering daylights saving time - not ending at midnight
+            datetime(2020, 2, 29, 23),
+            datetime(2020, 3, 31, 22),
+            31,
+        ),
+        (  # Exiting daylights saving time - not ending at midnight
+            datetime(2020, 9, 30, 22),
+            datetime(2020, 10, 31, 23),
+            31,
+        ),
+    ],
+)
+def test__get_number_of_days_in_period__returns_expected_days(
+    period_start: datetime, period_end: datetime, expected: int
+) -> None:
+    # Act
+    actual = get_number_of_days_in_period(
+        period_start,
+        period_end,
+        COPENHAGEN_TIME_ZONE,
+    )
+
+    # Assert
+    assert actual == expected
+
+
+@pytest.mark.parametrize(
     "period_start, period_end, time_zone",
     [
         (  # start time later than end time
