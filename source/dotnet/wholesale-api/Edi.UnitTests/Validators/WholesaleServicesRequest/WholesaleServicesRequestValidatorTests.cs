@@ -67,7 +67,7 @@ public sealed class WholesaleServicesRequestValidatorTests
                     .ToInstant()
                     .ToString())
             .WithPeriodEnd(
-                new LocalDate(2018, 5, 31)
+                new LocalDate(2018, 6, 1)
                     .AtMidnight()
                     .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
                     .ToInstant()
@@ -90,12 +90,12 @@ public sealed class WholesaleServicesRequestValidatorTests
 
         var request = new WholesaleServicesRequestBuilder()
             .WithPeriodStart(
-                new LocalDateTime(now.Year - 2, now.Month, now.Day, 17, 45, 12)
+                new LocalDateTime(now.Year - 2, now.Month, 1, 17, 45, 12)
                     .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
                     .ToInstant()
                     .ToString())
             .WithPeriodEnd(
-                new LocalDateTime(now.Year - 2, now.Month, now.Day + 3, 8, 13, 56)
+                new LocalDateTime(now.Year - 2, now.Month + 1, 1, 8, 13, 56)
                     .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
                     .ToInstant()
                     .ToString())

@@ -27,8 +27,8 @@ public class WholesaleServicesRequestBuilder
     private string _requestedByActorRole = ActorRoleCode.EnergySupplier;
     private string _businessReason = BusinessReason.WholesaleFixing;
     private string? _resolution;
-    private string _periodStart = Instant.FromUtc(2023, 1, 1, 23, 0, 0).ToString();
-    private string? _periodEnd = Instant.FromUtc(2023, 1, 31, 23, 0, 0).ToString();
+    private string _periodStart = Instant.FromUtc(2023, 1, 31, 23, 0, 0).ToString();
+    private string? _periodEnd = Instant.FromUtc(2023, 2, 28, 23, 0, 0).ToString();
     private string? _energySupplierId;
     private string? _chargeOwnerId;
     private string? _gridAreaCode;
