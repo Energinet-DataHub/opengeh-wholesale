@@ -29,7 +29,6 @@ class MeteringPointPeriodColname:
     # Exchange
     from_grid_area = "from_grid_area_code"
     to_grid_area = "to_grid_area_code"
-
     # Period
     from_date = "from_date"
     to_date = "to_date"

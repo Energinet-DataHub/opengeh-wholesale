@@ -49,7 +49,7 @@ def test__migrate__when_schema_migration_scripts_are_executed__compare_result_wi
     migrations_executed: None,
 ) -> None:
     """If this test fails, it indicates that a SQL script is creating something that the Schema Config does not know
-    about"""
+    about."""
 
     # Assert
     schemas = schema_config.schema_config
