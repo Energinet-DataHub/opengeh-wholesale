@@ -18,11 +18,13 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.Edi.Client;
 using Energinet.DataHub.Wholesale.Edi.Factories;
+using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Extensions;
 using Energinet.DataHub.Wholesale.Edi.Validation;
@@ -65,6 +67,15 @@ public class WholesaleServicesRequestHandlerTests
             {
                 wholesaleServices,
             }.ToAsyncEnumerable());
+
+        completedCalculationRetriever.Setup(c => c.GetLatestCompletedCalculationsForPeriodAsync(
+            It.IsAny<string>(),
+            It.IsAny<Energinet.DataHub.Wholesale.Edi.Models.Period>(),
+            It.IsAny<RequestedCalculationType>()))
+            .ReturnsAsync(new List<CalculationForPeriod>
+            {
+                new(new Period(wholesaleServices.Period.Start, wholesaleServices.Period.End), Guid.NewGuid(), 1),
+            }.AsReadOnly());
 
         var sut = new WholesaleServicesRequestHandler(
             ediClient.Object,
