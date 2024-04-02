@@ -19,15 +19,21 @@ FROM ghcr.io/energinet-datahub/pyspark-slim:3.5.0
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 USER root
+
+RUN apt-get update; \
+    # Install git as it is needed by spark
+    apt-get install --no-install-recommends -y git; \
+    # Curl is temporarily installed in order to download the Azure CLI (consider multi stage build instead)
+    apt-get install --no-install-recommends -y curl; \
+    # Install Azure CLI, see https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt
+    # as it is needed by integration tests
+    curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash; \
+    # Cleanup apt cache to reduce image size
+    apt-get remove -y curl; \
+    rm -rf /var/lib/apt/lists/*
+
 # This replaces the default spark configuration in the docker image with the ones defined in the sibling file
 COPY spark-defaults.conf $SPARK_HOME/conf/spark-defaults.conf
-
-# Install git as it is needed by spark
-RUN apt-get update; \
-    apt-get install -y git
-
-# Cleanup apt cache to reduce image size
-RUN rm -rf /var/lib/apt/lists/*
 
 # Install spark packages with mamba (packages has to be updated according to spark version)
 COPY mamba_requirements.txt mamba_requirements.txt
