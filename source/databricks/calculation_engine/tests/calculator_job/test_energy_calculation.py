@@ -12,16 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame
-import pyspark.sql.functions as F
+import pyspark.sql.functions as f
 import pytest
+from pyspark.sql import DataFrame, SparkSession
 
-from . import configuration as C
 from package.codelists import (
     AggregationLevel,
     TimeSeriesType,
 )
 from package.constants import EnergyResultColumnNames
+from package.infrastructure import paths
+from . import configuration as c
 
 ALL_ENERGY_RESULT_TYPES = {
     (
@@ -119,11 +120,11 @@ def test__balance_fixing_result__is_created(
     # Arrange
     result_df = (
         balance_fixing_results_df.where(
-            F.col(EnergyResultColumnNames.calculation_id)
-            == C.executed_balance_fixing_calculation_id
+            f.col(EnergyResultColumnNames.calculation_id)
+            == c.executed_balance_fixing_calculation_id
         )
-        .where(F.col(EnergyResultColumnNames.time_series_type) == time_series_type)
-        .where(F.col(EnergyResultColumnNames.aggregation_level) == aggregation_level)
+        .where(f.col(EnergyResultColumnNames.time_series_type) == time_series_type)
+        .where(f.col(EnergyResultColumnNames.aggregation_level) == aggregation_level)
     )
 
     # Act: Calculator job is executed just once per session. See the fixtures `balance_fixing_results_df` and `executed_balance_fixing`
@@ -138,12 +139,12 @@ def test__balance_fixing_result__has_expected_number_of_result_types(
     # Arrange
     actual_result_type_count = (
         balance_fixing_results_df.where(
-            F.col(EnergyResultColumnNames.calculation_id)
-            == C.executed_balance_fixing_calculation_id
+            f.col(EnergyResultColumnNames.calculation_id)
+            == c.executed_balance_fixing_calculation_id
         )
         .where(
-            F.col(EnergyResultColumnNames.calculation_id)
-            == C.executed_balance_fixing_calculation_id
+            f.col(EnergyResultColumnNames.calculation_id)
+            == c.executed_balance_fixing_calculation_id
         )
         .select(
             EnergyResultColumnNames.time_series_type,
@@ -157,3 +158,24 @@ def test__balance_fixing_result__has_expected_number_of_result_types(
 
     # Assert: The result is created if there are rows
     assert actual_result_type_count == len(ALL_ENERGY_RESULT_TYPES)
+
+
+@pytest.mark.parametrize(
+    "basis_data_table_name",
+    paths.BASIS_DATA_TABLE_NAMES,
+)
+def test__when_energy_calculation__basis_data_is_stored(
+    spark: SparkSession,
+    executed_balance_fixing: None,
+    basis_data_table_name: str,
+) -> None:
+    # Arrange
+    actual = spark.read.table(
+        f"{paths.BASIS_DATA_DATABASE_NAME}.{basis_data_table_name}"
+    ).where(f.col("calculation_id") == c.executed_balance_fixing_calculation_id)
+
+    # Act: Calculator job is executed just once per session.
+    #      See the fixtures `results_df` and `executed_wholesale_fixing`
+
+    # Assert: The result is created if there are rows
+    assert actual.count() > 0

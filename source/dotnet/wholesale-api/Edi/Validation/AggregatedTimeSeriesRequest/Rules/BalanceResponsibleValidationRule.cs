@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Models;
 
 namespace Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
@@ -21,16 +22,16 @@ public class BalanceResponsibleValidationRule : IValidationRule<DataHub.Edi.Requ
     private static readonly string _propertyName = "BalanceResponsibleParty";
     private static readonly ValidationError _invalidBalanceResponsible = new($"Feltet {_propertyName} skal være udfyldt med et valid GLN/EIC når en balanceansvarlig anmoder om data / {_propertyName} must be submitted with a valid GLN/EIC when a balance responsible requests data", "E18");
     private static readonly ValidationError _notEqualToRequestedBy = new($"Den balanceansvarlige i beskeden stemmer ikke overenes med den balanceansvarlige i headeren / {_propertyName} in the message does not correspond with balance responsible in header", "E18");
-    private static readonly ValidationError _invalidBusinessReason = new($"En balanceansvarlig kan kun benytte forretningsårsag {BusinessReason.PreliminaryAggregation} eller {BusinessReason.BalanceFixing} i forbindelse med en anmodning / A {_propertyName} can only use business reason {BusinessReason.PreliminaryAggregation} or {BusinessReason.BalanceFixing} in connection with a request", "D11");
+    private static readonly ValidationError _invalidBusinessReason = new($"En balanceansvarlig kan kun benytte forretningsårsag D03 eller D04 i forbindelse med en anmodning / A {_propertyName} can only use business reason D03 or D04 in connection with a request", "D11");
 
     public Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.AggregatedTimeSeriesRequest subject)
     {
         IList<ValidationError> errors = new List<ValidationError>();
 
-        if (subject.RequestedByActorRole != ActorRoleCode.BalanceResponsibleParty)
+        if (subject.RequestedByActorRole != DataHubNames.ActorRole.BalanceResponsibleParty)
             return Task.FromResult(errors);
 
-        if (subject.BusinessReason is not BusinessReason.BalanceFixing and not BusinessReason.PreliminaryAggregation)
+        if (subject.BusinessReason is not DataHubNames.BusinessReason.BalanceFixing and not DataHubNames.BusinessReason.PreliminaryAggregation)
             errors.Add(_invalidBusinessReason);
 
         if (string.IsNullOrWhiteSpace(subject.BalanceResponsibleId))

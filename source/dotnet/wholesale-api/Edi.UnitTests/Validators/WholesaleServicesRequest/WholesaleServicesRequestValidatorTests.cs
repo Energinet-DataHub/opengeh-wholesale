@@ -18,7 +18,6 @@ using Energinet.DataHub.Wholesale.Edi.Validation;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
-using NodaTime.Extensions;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.WholesaleServicesRequest;
