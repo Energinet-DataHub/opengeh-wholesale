@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 
 namespace Energinet.DataHub.Wholesale.Edi.Mappers;
 
@@ -22,9 +23,9 @@ public static class ResolutionMapper
     {
         return resolution switch
         {
-            Models.Resolution.Hourly => Resolution.Hour,
-            Models.Resolution.Daily => Resolution.Day,
-            Models.Resolution.Monthly => Resolution.Month,
+            DataHubNames.Resolution.Hourly => Resolution.Hour,
+            DataHubNames.Resolution.Daily => Resolution.Day,
+            DataHubNames.Resolution.Monthly => Resolution.Month,
             _ => throw new ArgumentOutOfRangeException(nameof(resolution), resolution, "Unknown Resolution"),
         };
     }

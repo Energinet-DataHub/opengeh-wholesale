@@ -41,6 +41,11 @@ WHOLESALE_CONTAINER_NAME = "wholesale"
 OUTPUT_FOLDER = "calculation-output"
 BASIS_DATA_FOLDER = "basis_data"
 
+BASIS_DATA_TABLE_NAMES = [
+    METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME,
+    TIME_SERIES_BASIS_DATA_TABLE_NAME,
+]
+
 
 def get_storage_account_url(storage_account_name: str) -> str:
     return f"https://{storage_account_name}.dfs.core.windows.net"

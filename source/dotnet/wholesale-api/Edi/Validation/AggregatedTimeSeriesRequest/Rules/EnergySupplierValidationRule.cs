@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Models;
 
 namespace Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
@@ -23,7 +24,7 @@ public class EnergySupplierValidationRule : IValidationRule<DataHub.Edi.Requests
 
     public Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.AggregatedTimeSeriesRequest subject)
     {
-        if (subject.RequestedByActorRole != ActorRoleCode.EnergySupplier)
+        if (subject.RequestedByActorRole != DataHubNames.ActorRole.EnergySupplier)
              return Task.FromResult(NoError);
 
         if (string.IsNullOrEmpty(subject.EnergySupplierId))

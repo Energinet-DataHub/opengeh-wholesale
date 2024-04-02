@@ -15,8 +15,10 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Edi.Exceptions;
 using Energinet.DataHub.Wholesale.Edi.Mappers;
 using Energinet.DataHub.Wholesale.Edi.Models;
+using Microsoft.Extensions.Logging;
 using Period = Energinet.DataHub.Wholesale.Edi.Models.Period;
 
 namespace Energinet.DataHub.Wholesale.Edi.Calculations;
@@ -32,16 +34,19 @@ public class CompletedCalculationRetriever
 
     private readonly LatestCalculationsForPeriod _latestCalculationsForPeriod;
     private readonly ICalculationsClient _calculationsClient;
+    private readonly ILogger<CompletedCalculationRetriever> _logger;
 
     public CompletedCalculationRetriever(
         LatestCalculationsForPeriod latestCalculationsForPeriod,
-        ICalculationsClient calculationsClient)
+        ICalculationsClient calculationsClient,
+        ILogger<CompletedCalculationRetriever> logger)
     {
         _latestCalculationsForPeriod = latestCalculationsForPeriod;
         _calculationsClient = calculationsClient;
+        _logger = logger;
     }
 
-    public async Task<IReadOnlyCollection<CalculationForPeriod>> GetLatestCompletedCalculationsForPeriodAsync(
+    public virtual async Task<IReadOnlyCollection<CalculationForPeriod>> GetLatestCompletedCalculationsForPeriodAsync(
         string? gridAreaCode, Period period, RequestedCalculationType requestedCalculationType)
     {
         IReadOnlyCollection<CalculationDto> completedCalculationsForPeriod = Array.Empty<CalculationDto>();
@@ -70,10 +75,24 @@ public class CompletedCalculationRetriever
                 .ConfigureAwait(true);
         }
 
-        return _latestCalculationsForPeriod.FindLatestCalculationsForPeriod(
-            period.Start,
-            period.End,
-            completedCalculationsForPeriod);
+        try
+        {
+            return _latestCalculationsForPeriod.FindLatestCalculationsForPeriod(
+                period.Start,
+                period.End,
+                completedCalculationsForPeriod);
+        }
+        catch (MissingCalculationException e)
+        {
+            _logger.LogError(
+                e,
+                "Failed to find latest calculations for calculation type {RequestedCalculationType}, grid area code: {GridAreaCode}, within period: {Start}  - {End}",
+                requestedCalculationType,
+                gridAreaCode,
+                period.Start,
+                period.End);
+            throw;
+        }
     }
 
     private async Task<IReadOnlyCollection<CalculationDto>> GetCompletedCalculationsForPeriodAsync(string? gridAreaCode, Period period, RequestedCalculationType requestedCalculationType)

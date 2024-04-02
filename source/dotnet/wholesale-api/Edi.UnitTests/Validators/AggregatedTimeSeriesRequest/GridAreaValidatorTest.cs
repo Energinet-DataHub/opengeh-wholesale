@@ -30,7 +30,7 @@ namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.AggregatedTimeSer
 [SuppressMessage("Style", "VSTHRD200:Use \"Async\" suffix for async methods", Justification = "Async suffix is not needed for test methods")]
 public class GridAreaValidatorTest
 {
-    private const string MeteredDataResponsible = "MDR";
+    private const string MeteredDataResponsible = "MeteredDataResponsible";
     private const string ValidGlnNumber = "qwertyuiopasd"; // Must be 13 characters to be a valid GLN
     private static readonly ValidationError _missingGridAreaCode = new("Netområde er obligatorisk for rollen MDR / Grid area is mandatory for the role MDR.", "D64");
     private static readonly ValidationError _invalidGridArea = new("Ugyldig netområde / Invalid gridarea", "E86");

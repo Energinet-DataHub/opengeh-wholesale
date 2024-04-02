@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Models;
 
 namespace Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
@@ -30,7 +31,7 @@ public class GridAreaValidationRule : IValidationRule<DataHub.Edi.Requests.Aggre
 
     public async Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.AggregatedTimeSeriesRequest subject)
     {
-        if (subject.RequestedByActorRole != ActorRoleCode.MeteredDataResponsible) return NoError;
+        if (subject.RequestedByActorRole != DataHubNames.ActorRole.MeteredDataResponsible) return NoError;
 
         if (!subject.HasGridAreaCode)
             return MissingGridAreaCodeError;
