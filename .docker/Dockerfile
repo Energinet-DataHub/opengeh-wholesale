@@ -20,15 +20,15 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 USER root
 
-# - Install git as it is needed by spark
-# - Install Azure CLI, see https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt
-#   as it is needed by integration tests
-#   - Curl is temporarily installed in order to download the Azure CLI (consider multi stage build instead)
-# - Cleanup apt cache to reduce image size
 RUN apt-get update; \
+    # Install git as it is needed by spark
     apt-get install --no-install-recommends -y git; \
+    # Curl is temporarily installed in order to download the Azure CLI (consider multi stage build instead)
     apt-get install --no-install-recommends -y curl; \
+    # Install Azure CLI, see https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt
+    # as it is needed by integration tests
     curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash; \
+    # Cleanup apt cache to reduce image size
     apt-get remove -y curl; \
     rm -rf /var/lib/apt/lists/*
 
