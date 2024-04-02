@@ -38,6 +38,7 @@ def test__migrate__when_schema_migration_scripts_are_executed__compare_schemas(
     for schema in schema_config.schema_config:
         for table in schema.tables:
             actual_table = spark.table(f"{schema.name}.{table.name}")
+
             assert (
                 actual_table.schema == table.schema
             ), f"Difference in schema {_diff(actual_table.schema, table.schema)}"
