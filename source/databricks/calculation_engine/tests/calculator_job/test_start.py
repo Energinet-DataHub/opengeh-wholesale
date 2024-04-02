@@ -35,7 +35,7 @@ class TestWhenInvokedWithInvalidArguments:
         assert system_exit.value.code == 2
 
 
-class TestWhenInvokedWithValidArguments:
+class WhenInvokedWithValidArguments:
     def test_does_not_raise(self, any_calculator_args, infrastructure_settings):
         command_line_args = argparse.Namespace()
         command_line_args.calculation_id = any_calculator_args.calculation_id
