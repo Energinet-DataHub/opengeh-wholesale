@@ -145,7 +145,7 @@ public class PeriodValidationRuleTests
     public async Task Validate_WhenPeriodStartIsExactly3YearsAnd2MonthsOld_ReturnsNoValidationError()
     {
         // Arrange
-        _now = new LocalDateTime(2024, 6, 22, 10, 44, 0)
+        _now = new LocalDateTime(2024, 6, 1, 0, 0, 0)
             .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
             .ToInstant();
 
@@ -177,7 +177,7 @@ public class PeriodValidationRuleTests
             .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
             .ToInstant();
 
-        var periodEndDate = new LocalDateTime(2021, 10, 31, 0, 0, 0)
+        var periodEndDate = new LocalDateTime(2021, 11, 1, 0, 0, 0)
             .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
             .ToInstant();
 
@@ -208,7 +208,7 @@ public class PeriodValidationRuleTests
             .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
             .ToInstant();
 
-        var periodEndDate = new LocalDateTime(2021, 3, 31, 0, 0, 0)
+        var periodEndDate = new LocalDateTime(2021, 4, 1, 0, 0, 0)
             .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
             .ToInstant();
 
@@ -235,15 +235,15 @@ public class PeriodValidationRuleTests
     public async Task Validate_WhenPeriodStartIs1DayTooOld_ReturnsExpectedValidationError()
     {
         // Arrange
-        _now = new LocalDateTime(2024, 6, 22, 10, 44, 0)
+        _now = new LocalDateTime(2024, 6, 2, 0, 0, 0)
             .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
             .ToInstant();
 
-        var start = new LocalDateTime(2021, 3, 31, 0, 0, 0)
+        var start = new LocalDateTime(2021, 4, 1, 0, 0, 0)
             .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
             .ToInstant();
 
-        var end = new LocalDateTime(_now.ToDateTimeOffset().Year, 4, 30, 0, 0, 0)
+        var end = new LocalDateTime(2021, 5, 1, 0, 0, 0)
             .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
             .ToInstant();
 
@@ -263,12 +263,6 @@ public class PeriodValidationRuleTests
             {
                 error.ErrorCode.Should().Be(_startDateMustBeLessThanOrEqualTo3YearsAnd2Months.ErrorCode);
                 error.Message.Should().Be(_startDateMustBeLessThanOrEqualTo3YearsAnd2Months.Message);
-            },
-            // We get this error because the start/end dates aren't the first of a month
-            error =>
-            {
-                error.ErrorCode.Should().Be(_invalidPeriodLength.ErrorCode);
-                error.Message.Should().Be(_invalidPeriodLength.Message);
             });
     }
 
@@ -349,7 +343,7 @@ public class PeriodValidationRuleTests
 
         var message = new WholesaleServicesRequestBuilder()
             .WithPeriodEnd(notSummerTimeMidnight)
-            .WithPeriodStart(Instant.FromUtc(_now.ToDateTimeOffset().Year, 7, 1, 22, 0, 0).ToString())
+            .WithPeriodStart(Instant.FromUtc(_now.ToDateTimeOffset().Year, 6, 30, 22, 0, 0).ToString())
             .Build();
 
         // Act
@@ -440,7 +434,7 @@ public class PeriodValidationRuleTests
         // Assert
         errors.Should().ContainSingle();
         errors.Single().ErrorCode.Should().Be("E17");
-        errors.Single().Message.Should().Contain("ikke muligt at anmode om data på tværs af måneder");
+        errors.Single().Message.Should().Contain("kun muligt at anmode om data på for en hel måned");
     }
 
     [Fact]
@@ -470,7 +464,7 @@ public class PeriodValidationRuleTests
         // Assert
         errors.Should().ContainSingle();
         errors.Single().ErrorCode.Should().Be("E17");
-        errors.Single().Message.Should().Contain("ikke muligt at anmode om data på tværs af måneder");
+        errors.Single().Message.Should().Contain("kun muligt at anmode om data på for en hel måned");
     }
 
     [Fact]
@@ -500,18 +494,18 @@ public class PeriodValidationRuleTests
         // Assert
         errors.Should().ContainSingle();
         errors.Single().ErrorCode.Should().Be("E17");
-        errors.Single().Message.Should().Contain("ikke muligt at anmode om data på tværs af måneder");
+        errors.Single().Message.Should().Contain("kun muligt at anmode om data på for en hel måned");
     }
 
     [Fact]
     public async Task Validate_WhenPeriodExactlyOneMonth_ReturnsNoValidationError()
     {
         // Arrange
-        var periodStartDate = new LocalDateTime(2021, 3, 13, 0, 0, 0)
+        var periodStartDate = new LocalDateTime(2021, 3, 1, 0, 0, 0)
             .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
             .ToInstant();
 
-        var periodEndDate = new LocalDateTime(2021, 3, 17, 0, 0, 0)
+        var periodEndDate = new LocalDateTime(2021, 4, 1, 0, 0, 0)
             .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
             .ToInstant();
 
@@ -528,7 +522,7 @@ public class PeriodValidationRuleTests
         var errors = await _sut.ValidateAsync(message);
 
         // Assert
-        errors.Should().NotBeEmpty();
+        errors.Should().BeEmpty();
     }
 
     private sealed class MockClock(Func<Instant> getInstant) : IClock

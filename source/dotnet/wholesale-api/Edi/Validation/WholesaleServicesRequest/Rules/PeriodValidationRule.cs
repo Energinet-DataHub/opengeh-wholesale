@@ -40,9 +40,14 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, IClock clock
             "Forkert dato format for {PropertyName}, skal være YYYY-MM-DDT22:00:00Z / Wrong date format for {PropertyName}, must be YYYY-MM-DDT22:00:00Z",
             "D66");
 
-    private static readonly ValidationError _invalidPeriodLength =
+    private static readonly ValidationError _invalidPeriodAcrossMonths =
         new(
             "Det er ikke muligt at anmode om data på tværs af måneder i forbindelse med en engrosfiksering eller korrektioner / It is not possible to request data across months in relation to wholesalefixing or corrections",
+            "E17");
+
+    private static readonly ValidationError _invalidPeriodLength =
+        new(
+            "Det er kun muligt at anmode om data på for en hel måned i forbindelse med en engrosfiksering eller korrektioner / It is only possible to request data for a full month in relation to wholesalefixing or corrections",
             "E17");
 
     public Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.WholesaleServicesRequest subject)
@@ -67,8 +72,8 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, IClock clock
         MustBeMidnight(startInstant.Value, "Period Start", errors);
         MustBeMidnight(endInstant.Value, "Period End", errors);
 
-        AddErrorIfPeriodStartIsTooOld(startInstant.Value, errors);
-        AddErrorIfPeriodStartIsNotExactlyOneMonth(startInstant.Value, endInstant.Value, errors);
+        MustBeWithin3YearsAnd2Months(startInstant.Value, errors);
+        MustBeAWholeMonth(startInstant.Value, endInstant.Value, errors);
 
         return Task.FromResult<IList<ValidationError>>(errors);
     }
@@ -87,7 +92,7 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, IClock clock
         return null;
     }
 
-    private void AddErrorIfPeriodStartIsTooOld(Instant periodStart, ICollection<ValidationError> errors)
+    private void MustBeWithin3YearsAnd2Months(Instant periodStart, ICollection<ValidationError> errors)
     {
         var zonedStartDateTime = new ZonedDateTime(periodStart, dateTimeZone);
         var zonedCurrentDateTime = new ZonedDateTime(clock.GetCurrentInstant(), dateTimeZone);
@@ -99,7 +104,7 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, IClock clock
         }
     }
 
-    private void AddErrorIfPeriodStartIsNotExactlyOneMonth(
+    private void MustBeAWholeMonth(
         Instant periodStart,
         Instant periodEnd,
         ICollection<ValidationError> errors)
@@ -107,9 +112,15 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, IClock clock
         var zonedStartDateTime = new ZonedDateTime(periodStart, dateTimeZone);
         var zonedEndDateTime = new ZonedDateTime(periodEnd, dateTimeZone);
 
+        if (zonedEndDateTime.LocalDateTime.Month > zonedStartDateTime.LocalDateTime.Month
+            && zonedEndDateTime.LocalDateTime.Day > zonedStartDateTime.LocalDateTime.Day)
+        {
+            errors.Add(_invalidPeriodAcrossMonths);
+            return;
+        }
+
         if (zonedStartDateTime.LocalDateTime.Day != 1
-            || zonedEndDateTime.LocalDateTime.Day != 1
-            || zonedEndDateTime.LocalDateTime.Month != zonedStartDateTime.LocalDateTime.Month + 1)
+            || zonedEndDateTime.LocalDateTime.Day != 1)
         {
             errors.Add(_invalidPeriodLength);
         }
