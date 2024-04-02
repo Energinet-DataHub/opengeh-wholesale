@@ -13,7 +13,6 @@ module "app_time_series_api" {
   scm_ip_restrictions                      = var.ip_restrictions
   app_service_plan_id                      = data.azurerm_key_vault_secret.plan_shared_id.value
   application_insights_instrumentation_key = data.azurerm_key_vault_secret.appi_instrumentation_key.value
-  always_on                                = true
   dotnet_framework_version                 = "v8.0"
   health_check_path                        = "/monitor/ready"
   health_check_alert_action_group_id       = data.azurerm_key_vault_secret.primary_action_group_id.value
