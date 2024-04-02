@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Mappers;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using NodaTime.Text;
@@ -37,19 +38,19 @@ public static class AggregatedTimeSeriesRequestFactory
             ? [TimeSeriesTypeMapper.MapTimeSeriesType(request.MeteringPointType, request.SettlementMethod)]
             : request.RequestedByActorRole switch
             {
-                ActorRoleCode.EnergySupplier =>
+                DataHubNames.ActorRole.EnergySupplier =>
                 [
                     TimeSeriesType.Production,
                     TimeSeriesType.FlexConsumption,
                     TimeSeriesType.NonProfiledConsumption,
                 ],
-                ActorRoleCode.BalanceResponsibleParty =>
+                DataHubNames.ActorRole.BalanceResponsibleParty =>
                 [
                     TimeSeriesType.Production,
                     TimeSeriesType.FlexConsumption,
                     TimeSeriesType.NonProfiledConsumption,
                 ],
-                ActorRoleCode.MeteredDataResponsible =>
+                DataHubNames.ActorRole.MeteredDataResponsible =>
                 [
                     TimeSeriesType.Production,
                     TimeSeriesType.FlexConsumption,

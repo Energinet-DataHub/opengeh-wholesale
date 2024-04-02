@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Models;
 
 namespace Energinet.DataHub.Wholesale.Edi.Mappers;
@@ -20,24 +21,24 @@ public static class RequestedCalculationTypeMapper
 {
     public static RequestedCalculationType ToRequestedCalculationType(string businessReason, string? settlementSeriesVersion)
     {
-        if (businessReason != BusinessReason.Correction && settlementSeriesVersion != null)
+        if (businessReason != DataHubNames.BusinessReason.Correction && settlementSeriesVersion != null)
         {
             throw new ArgumentOutOfRangeException(
                 nameof(settlementSeriesVersion),
                 settlementSeriesVersion,
-                $"Value must be null when {nameof(BusinessReason)} is not {nameof(BusinessReason.Correction)}.");
+                $"Value must be null when {nameof(businessReason)} is not {nameof(DataHubNames.BusinessReason.Correction)}.");
         }
 
         return businessReason switch
         {
-            BusinessReason.BalanceFixing => RequestedCalculationType.BalanceFixing,
-            BusinessReason.PreliminaryAggregation => RequestedCalculationType.PreliminaryAggregation,
-            BusinessReason.WholesaleFixing => RequestedCalculationType.WholesaleFixing,
-            BusinessReason.Correction => settlementSeriesVersion switch
+            DataHubNames.BusinessReason.BalanceFixing => RequestedCalculationType.BalanceFixing,
+            DataHubNames.BusinessReason.PreliminaryAggregation => RequestedCalculationType.PreliminaryAggregation,
+            DataHubNames.BusinessReason.WholesaleFixing => RequestedCalculationType.WholesaleFixing,
+            DataHubNames.BusinessReason.Correction => settlementSeriesVersion switch
             {
-                SettlementSeriesVersion.FirstCorrection => RequestedCalculationType.FirstCorrection,
-                SettlementSeriesVersion.SecondCorrection => RequestedCalculationType.SecondCorrection,
-                SettlementSeriesVersion.ThirdCorrection => RequestedCalculationType.ThirdCorrection,
+                DataHubNames.SettlementVersion.FirstCorrection => RequestedCalculationType.FirstCorrection,
+                DataHubNames.SettlementVersion.SecondCorrection => RequestedCalculationType.SecondCorrection,
+                DataHubNames.SettlementVersion.ThirdCorrection => RequestedCalculationType.ThirdCorrection,
                 null => RequestedCalculationType.LatestCorrection,
                 _ => throw new ArgumentOutOfRangeException(
                     nameof(settlementSeriesVersion),

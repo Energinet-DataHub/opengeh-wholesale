@@ -14,27 +14,26 @@
 
 # The spark version should follow the spark version in databricks.
 # The databricks version of spark is controlled from dh3-infrastructure and uses latest LTS (ATTOW - Spark v3.5.0)
-FROM quay.io/jupyter/pyspark-notebook:spark-3.5.1
+FROM ghcr.io/energinet-datahub/pyspark-slim:3.5.0
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 USER root
+
+RUN apt-get update; \
+    # Install git as it is needed by spark
+    apt-get install --no-install-recommends -y git; \
+    # Curl is temporarily installed in order to download the Azure CLI (consider multi stage build instead)
+    apt-get install --no-install-recommends -y curl; \
+    # Install Azure CLI, see https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt
+    # as it is needed by integration tests
+    curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash; \
+    # Cleanup apt cache to reduce image size
+    apt-get remove -y curl; \
+    rm -rf /var/lib/apt/lists/*
+
 # This replaces the default spark configuration in the docker image with the ones defined in the sibling file
 COPY spark-defaults.conf $SPARK_HOME/conf/spark-defaults.conf
-
-# Install Azure CLI, see https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt
-#   Install curl to be able to download Azure CLI install script
-RUN apt-get update; \
-    apt-get install -y curl
-#   Download and execute install script
-RUN curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-
-# Install Azurite (support wasb-protocol storage for Delta tables in integration tests)
-RUN apt-get update; \
-    apt-get install -y npm && npm install -g n && n lts && hash -r && npm install -g azurite
-
-# Cleanup apt cache to reduce image size
-RUN rm -rf /var/lib/apt/lists/*
 
 # Install spark packages with mamba (packages has to be updated according to spark version)
 COPY mamba_requirements.txt mamba_requirements.txt
