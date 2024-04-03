@@ -11,12 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 from spark_sql_migrations import Schema, Table
 
 import package.calculation.basis_data.schemas as basis_data_schemas
 import package.infrastructure.paths as paths
-
 # calculation_input
 from package.calculation.input.schemas.grid_loss_metering_points_schema import (
     grid_loss_metering_points_schema,
@@ -24,7 +22,6 @@ from package.calculation.input.schemas.grid_loss_metering_points_schema import (
 from package.calculation.output.schemas.energy_results_schema import (
     energy_results_schema,
 )
-
 # calculation_output
 from package.calculation.output.schemas.wholesale_results_schema import (
     wholesale_results_schema,
@@ -87,5 +84,11 @@ schema_config = [
                 schema=basis_data_schemas.calculations_schema,
             ),
         ],
+    ),
+    Schema(
+        # This schema (database) only contains views and since views don't have schemas
+        # the tables array is empty. Remove this element when the view-logic is implemented.
+        name=paths.SETTLEMENT_REPORT_DATABASE_NAME,
+        tables=[],
     ),
 ]
