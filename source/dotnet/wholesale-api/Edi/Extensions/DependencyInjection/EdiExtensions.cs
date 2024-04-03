@@ -21,6 +21,7 @@ using Energinet.DataHub.Wholesale.Edi.Factories;
 using Energinet.DataHub.Wholesale.Edi.Validation;
 using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest;
 using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
+using Energinet.DataHub.Wholesale.Edi.Validation.Helpers;
 using Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -55,6 +56,9 @@ public static class EdiExtensions
                 sp => sp.GetRequiredService<IOptions<EdiInboxQueueOptions>>().Value.QueueName,
                 name: "EdiInboxQueue");
 
+        // Validation helpers
+        services.AddTransient<PeriodValidationHelper>();
+        // Validation
         services.AddAggregatedTimeSeriesRequestValidation();
         services.AddWholesaleServicesRequestValidation();
     }
