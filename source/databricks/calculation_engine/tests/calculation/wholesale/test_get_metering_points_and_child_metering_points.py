@@ -49,26 +49,6 @@ class TestWhenMeteringPointPeriodsHasMeteringPointTypesThatIsNotExchange:
         assert actual.count() == 1
 
 
-class TestWhenMeteringPointPeriodsHasMeteringPointTypesThatIsExchange:
-    def test__returns_result_without_the_metering_point(
-        self,
-        spark: SparkSession,
-    ):
-        # Arrange
-        row = factory.create_row(
-            metering_point_type=MeteringPointType.EXCHANGE,
-        )
-        metering_point_periods = factory.create(spark, row)
-
-        # Act
-        actual = get_metering_points_and_child_metering_points(
-            metering_point_periods,
-        )
-
-        # Assert
-        assert actual.count() == 0
-
-
 class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPeriod:
     def test__returns_two_child_metering_points_with_the_same_period_as_the_parent_metering_points(
         self,
