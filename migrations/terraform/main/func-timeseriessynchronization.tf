@@ -32,6 +32,10 @@ module "func_timeseriessynchronization" {
       role_definition_name = "Storage Blob Data Contributor"
     },
     {
+      resource_id          = module.st_dh2timeseries_intermediary.id
+      role_definition_name = "Storage Blob Data Contributor"
+    },
+    {
       resource_id          = module.kv_internal.id
       role_definition_name = "Key Vault Secrets User"
     },
@@ -56,6 +60,8 @@ module "func_timeseriessynchronization" {
     StorageAccountSettings__Dh2TimeSeriesSynchronizationContainerName            = azurerm_storage_container.dh2_timeseries_synchronization.name
     StorageAccountSettings__Dh2TimeSeriesSynchronizationArchiveStorageAccountUri = "https://${module.st_dh2dropzone_archive.name}.blob.core.windows.net"
     StorageAccountSettings__Dh2TimeSeriesSynchronizationArchiveContainerName     = azurerm_storage_container.dropzonetimeseriessyncarchive.name
+    StorageAccountSettings__Dh2TimeSeriesIntermediaryStorageAccountUri           = "https://${module.st_dh2timeseries_intermediary.name}.blob.core.windows.net"
+    StorageAccountSettings__Dh2TimeSeriesIntermediaryContainerName               = azurerm_storage_container.timeseriesintermediary.name
     "ServiceBusSettings__ConnectionString"                                       = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-transceiver-connection-string)"
     "ServiceBusSettings__TimeSeriesMessagesQueueName"                            = azurerm_servicebus_queue.time_series_imported_messages_queue.name
     DataHub2ClientSettings__EndpointAddress                                      = var.datahub2_migration_url,
