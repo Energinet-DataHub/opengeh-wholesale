@@ -25,7 +25,7 @@ public class PeriodValidationHelper(DateTimeZone dateTimeZone, IClock clock)
         return zonedDateTime.TimeOfDay == LocalTime.Midnight;
     }
 
-    public bool IsStartDateOlderTheAllowed(Instant start, int maxYears, int maxMonths)
+    public bool IsStartDateOlderThanAllowed(Instant start, int maxYears, int maxMonths)
     {
         var zonedStartDateTime = new ZonedDateTime(start, dateTimeZone);
         var zonedCurrentDateTime = new ZonedDateTime(clock.GetCurrentInstant(), dateTimeZone);
