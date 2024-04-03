@@ -28,14 +28,6 @@ module "func_healthchecks" {
   }
 }
 
-// Access policy to allow checking access to Shared Resources keyvault
-module "kv_shared_access_policy_func_entrypoint_marketparticipant" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-access-policy?ref=13.61.0"
-
-  key_vault_id = module.kv_shared.id
-  app_identity = module.func_healthchecks.identity.0
-}
-
 resource "azurerm_role_assignment" "func_healthchecks_read_access_to_stdatalake" {
   scope                = module.st_data_lake.id
   role_definition_name = "Reader"
