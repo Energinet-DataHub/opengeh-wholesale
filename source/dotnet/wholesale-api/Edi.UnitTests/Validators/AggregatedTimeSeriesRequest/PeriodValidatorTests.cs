@@ -15,6 +15,7 @@
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.Validation;
 using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
+using Energinet.DataHub.Wholesale.Edi.Validation.Helpers;
 using FluentAssertions;
 using NodaTime;
 using Xunit;
@@ -30,7 +31,7 @@ public class PeriodValidatorTests
     private static readonly ValidationError _periodIsGreaterThenAllowedPeriodSize = new("Dato må kun være for 1 måned af gangen / Can maximum be for a 1 month period", "E17");
     private static readonly ValidationError _missingStartOrAndEndDate = new("Start og slut dato skal udfyldes / Start and end date must be present in request", "E50");
 
-    private readonly PeriodValidationRule _sut = new(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!, SystemClock.Instance);
+    private readonly PeriodValidationRule _sut = new(new PeriodValidationHelper(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!, SystemClock.Instance));
 
     [Fact]
     public async Task Validate_WhenRequestIsValid_ReturnsNoValidationErrors()
