@@ -89,7 +89,7 @@ class TestWhenValidInput:
 
     @staticmethod
     def _create_energy_results(spark, qualities):
-        """Create an energy results data frame with a row for each quality in qualities."""
+        """Create an energy energy_results data frame with a row for each quality in qualities."""
         return factories.create(
             spark,
             [factories.create_row(qualities=quality) for quality in qualities],
