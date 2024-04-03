@@ -11,9 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from pyspark.sql.functions import col
 
-from package.codelists import (
-    CalculationType,
+from package.calculation.energy.calculated_grid_loss import (
+    add_calculated_grid_loss_to_metering_point_times_series,
 )
 from package.infrastructure import logging_configuration
 from .calculation_results import (
@@ -26,15 +27,13 @@ from .output.basis_data_results import write_basis_data
 from .output.energy_results import write_energy_results
 from .output.wholesale_results import write_wholesale_results
 from .preparation import PreparedDataReader
-
 from .wholesale import wholesale_calculation
 from .wholesale.get_metering_points_and_child_metering_points import (
     get_metering_points_and_child_metering_points,
 )
-from package.calculation.energy.calculated_grid_loss import (
-    add_calculated_grid_loss_to_metering_point_times_series,
-)
+from ..codelists import MeteringPointType
 from ..codelists.calculation_type import is_wholesale_calculation_type
+from ..constants import Colname
 
 
 @logging_configuration.use_span("calculation")
@@ -95,15 +94,20 @@ def _execute(
         )
     )
 
+    metering_point_periods = get_metering_points_and_child_metering_points(
+        metering_point_periods_df
+    )
+
     if is_wholesale_calculation_type(args.calculation_type):
         with logging_configuration.start_span("calculation.wholesale.prepare"):
-            wholesale_metering_point_periods = (
-                get_metering_points_and_child_metering_points(metering_point_periods_df)
-            )
-
             input_charges = prepared_data_reader.get_input_charges(
                 args.calculation_period_start_datetime,
                 args.calculation_period_end_datetime,
+            )
+
+            # Removes all exchange metering points
+            wholesale_metering_point_periods = metering_point_periods.filter(
+                col(Colname.metering_point_type) != MeteringPointType.EXCHANGE.value
             )
 
             prepared_charges = prepared_data_reader.get_prepared_charges(
@@ -120,7 +124,7 @@ def _execute(
 
     # Add basis data to results
     results.basis_data = basis_data_factory.create(
-        args, metering_point_periods_df, metering_point_time_series
+        args, metering_point_periods, metering_point_time_series
     )
 
     return results
