@@ -78,6 +78,9 @@ ALTER TABLE {BASIS_DATA_DATABASE_NAME}.metering_point_periods
 GO
 
 ALTER TABLE {BASIS_DATA_DATABASE_NAME}.metering_point_periods
+ALTER COLUMN energy_supplier_id SET NOT NULL;
+
+ALTER TABLE {BASIS_DATA_DATABASE_NAME}.metering_point_periods
     DROP CONSTRAINT IF EXISTS energy_supplier_id_chk
 GO
 -- Length is 16 when EIC and 13 when GLN
