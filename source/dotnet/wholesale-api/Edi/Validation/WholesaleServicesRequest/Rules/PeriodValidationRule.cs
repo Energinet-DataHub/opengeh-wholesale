@@ -95,7 +95,7 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValida
 
     private void MustBeWithin3YearsAnd2Months(Instant periodStart, ICollection<ValidationError> errors)
     {
-        if (periodValidationHelper.IsStartDateOlderTheAllowed(periodStart, maxYears: 3, maxMonths: -2))
+        if (periodValidationHelper.IsStartDateOlderThanAllowed(periodStart, maxYears: 3, maxMonths: -2))
             errors.Add(_startDateMustBeLessThanOrEqualTo3YearsAnd2Months);
     }
 

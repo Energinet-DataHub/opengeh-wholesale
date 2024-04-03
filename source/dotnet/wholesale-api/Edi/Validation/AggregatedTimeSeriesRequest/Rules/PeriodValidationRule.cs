@@ -71,13 +71,13 @@ public class PeriodValidationRule(PeriodValidationHelper periodValidationHelper)
 
     private void IntervalMustBeWithinAllowedPeriodSize(Instant start, Instant end, IList<ValidationError> errors)
     {
-        if (periodValidationHelper.IntervalMustBeLessThenAllowedPeriodSize(start, end, _maxAllowedPeriodSizeInMonths))
+        if (periodValidationHelper.IntervalMustBeLessThanAllowedPeriodSize(start, end, _maxAllowedPeriodSizeInMonths))
             errors.Add(_periodIsGreaterThenAllowedPeriodSize);
     }
 
     private void StartDateMustBeGreaterThenAllowedYears(Instant start, IList<ValidationError> errors)
     {
-        if (periodValidationHelper.IsStartDateOlderTheAllowed(start, maxYears: _allowedTimeFrameInYearsFromNow, maxMonths: 0))
+        if (periodValidationHelper.IsStartDateOlderThanAllowed(start, maxYears: _allowedTimeFrameInYearsFromNow, maxMonths: 0))
             errors.Add(_startDateMustBeLessThen3Years);
     }
 

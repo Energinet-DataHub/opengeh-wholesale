@@ -57,6 +57,7 @@ public class PeriodValidationRuleTests
             "E17");
 
     private readonly PeriodValidationRule _sut;
+    private readonly DateTimeZone? _dateTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen");
 
     private Instant _now;
 
@@ -64,8 +65,8 @@ public class PeriodValidationRuleTests
     {
         _now = Instant.FromUtc(2024, 5, 31, 22, 0, 0);
         _sut = new PeriodValidationRule(
-            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
-            new PeriodValidationHelper(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!, new MockClock(() => _now)));
+            _dateTimeZone!,
+            new PeriodValidationHelper(_dateTimeZone!, new MockClock(() => _now)));
     }
 
     [Fact]
@@ -152,11 +153,11 @@ public class PeriodValidationRuleTests
     {
         // Arrange
         var start = new LocalDateTime(2021, 4, 1, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         var end = new LocalDateTime(2024, 5, 1, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         var message = new WholesaleServicesRequestBuilder()
@@ -176,15 +177,15 @@ public class PeriodValidationRuleTests
     {
         // Arrange
         var periodStartDate = new LocalDateTime(2021, 10, 1, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         var periodEndDate = new LocalDateTime(2021, 11, 1, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         _now = new LocalDateTime(2024, 12, 1, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         var message = new WholesaleServicesRequestBuilder()
@@ -207,15 +208,15 @@ public class PeriodValidationRuleTests
     {
         // Arrange
         var periodStartDate = new LocalDateTime(2021, 3, 1, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         var periodEndDate = new LocalDateTime(2021, 4, 1, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         _now = new LocalDateTime(2024, 5, 1, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         var message = new WholesaleServicesRequestBuilder()
@@ -238,15 +239,15 @@ public class PeriodValidationRuleTests
     {
         // Arrange
         _now = new LocalDateTime(2024, 6, 2, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         var start = new LocalDateTime(2021, 4, 1, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         var end = new LocalDateTime(2021, 5, 1, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         var message = new WholesaleServicesRequestBuilder()
@@ -271,11 +272,11 @@ public class PeriodValidationRuleTests
     {
         // Arrange
         var winterTime = new LocalDateTime(_now.ToDateTimeOffset().Year, 3, 1, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         var summerTime = new LocalDateTime(_now.ToDateTimeOffset().Year, 4, 1, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         var message = new WholesaleServicesRequestBuilder()
@@ -295,11 +296,11 @@ public class PeriodValidationRuleTests
     {
         // Arrange
         var summerTime = new LocalDateTime(_now.ToDateTimeOffset().Year, 10, 1, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         var winterTime = new LocalDateTime(_now.ToDateTimeOffset().Year, 11, 1, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         var message = new WholesaleServicesRequestBuilder()
@@ -382,15 +383,15 @@ public class PeriodValidationRuleTests
     {
         // Arrange
         var periodStartDate = new LocalDateTime(2021, 3, 1, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         var periodEndDate = new LocalDateTime(2021, 4, 30, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         _now = new LocalDateTime(2022, 5, 1, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         var message = new WholesaleServicesRequestBuilder()
@@ -412,15 +413,15 @@ public class PeriodValidationRuleTests
     {
         // Arrange
         var periodStartDate = new LocalDateTime(2021, 3, 13, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         var periodEndDate = new LocalDateTime(2021, 3, 17, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         _now = new LocalDateTime(2022, 5, 1, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         var message = new WholesaleServicesRequestBuilder()
@@ -442,15 +443,15 @@ public class PeriodValidationRuleTests
     {
         // Arrange
         var periodStartDate = new LocalDateTime(2021, 3, 13, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         var periodEndDate = new LocalDateTime(2021, 3, 31, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         _now = new LocalDateTime(2022, 5, 1, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         var message = new WholesaleServicesRequestBuilder()
@@ -472,15 +473,15 @@ public class PeriodValidationRuleTests
     {
         // Arrange
         var periodStartDate = new LocalDateTime(2021, 3, 1, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         var periodEndDate = new LocalDateTime(2021, 3, 17, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         _now = new LocalDateTime(2022, 5, 1, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         var message = new WholesaleServicesRequestBuilder()
@@ -502,15 +503,15 @@ public class PeriodValidationRuleTests
     {
         // Arrange
         var periodStartDate = new LocalDateTime(2021, 3, 1, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         var periodEndDate = new LocalDateTime(2021, 4, 1, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         _now = new LocalDateTime(2022, 5, 1, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+            .InZoneStrictly(_dateTimeZone!)
             .ToInstant();
 
         var message = new WholesaleServicesRequestBuilder()
