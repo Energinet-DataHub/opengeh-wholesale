@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.Validation;
+using Energinet.DataHub.Wholesale.Edi.Validation.Helpers;
 using Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -64,7 +65,7 @@ public class PeriodValidationRuleTests
         _now = Instant.FromUtc(2024, 5, 31, 22, 0, 0);
         _sut = new PeriodValidationRule(
             DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
-            new MockClock(() => _now));
+            new PeriodValidationHelper(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!, new MockClock(() => _now)));
     }
 
     [Fact]
@@ -150,15 +151,11 @@ public class PeriodValidationRuleTests
     public async Task Validate_WhenPeriodStartIsExactly3YearsAnd2MonthsOld_ReturnsNoValidationError()
     {
         // Arrange
-        _now = new LocalDateTime(2024, 6, 1, 0, 0, 0)
-            .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
-            .ToInstant();
-
         var start = new LocalDateTime(2021, 4, 1, 0, 0, 0)
             .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
             .ToInstant();
 
-        var end = new LocalDateTime(_now.ToDateTimeOffset().Year, 5, 1, 0, 0, 0)
+        var end = new LocalDateTime(2024, 5, 1, 0, 0, 0)
             .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
             .ToInstant();
 
@@ -263,12 +260,10 @@ public class PeriodValidationRuleTests
 
         // Assert
         using var assertionScope = new AssertionScope();
-        errors.OrderBy(e => e.Message).Should().SatisfyRespectively(
-            error =>
-            {
-                error.ErrorCode.Should().Be(_startDateMustBeLessThanOrEqualTo3YearsAnd2Months.ErrorCode);
-                error.Message.Should().Be(_startDateMustBeLessThanOrEqualTo3YearsAnd2Months.Message);
-            });
+        errors.Should().ContainSingle();
+        var error = errors.First();
+        error.ErrorCode.Should().Be(_startDateMustBeLessThanOrEqualTo3YearsAnd2Months.ErrorCode);
+        error.Message.Should().Be(_startDateMustBeLessThanOrEqualTo3YearsAnd2Months.Message);
     }
 
     [Fact]

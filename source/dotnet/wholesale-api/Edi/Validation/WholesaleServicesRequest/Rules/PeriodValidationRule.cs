@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Edi.Validation.Helpers;
 using NodaTime;
 using NodaTime.Text;
 
 namespace Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules;
 
-public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, IClock clock)
+public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValidationHelper periodValidationHelper)
     : IValidationRule<DataHub.Edi.Requests.WholesaleServicesRequest>
 {
     private static readonly ValidationError _invalidDateFormat =
@@ -94,14 +95,8 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, IClock clock
 
     private void MustBeWithin3YearsAnd2Months(Instant periodStart, ICollection<ValidationError> errors)
     {
-        var zonedStartDateTime = new ZonedDateTime(periodStart, dateTimeZone);
-        var zonedCurrentDateTime = new ZonedDateTime(clock.GetCurrentInstant(), dateTimeZone);
-
-        if (zonedStartDateTime.LocalDateTime.Date
-            < zonedCurrentDateTime.LocalDateTime.Date.PlusYears(-3).PlusMonths(-2))
-        {
+        if (periodValidationHelper.IsStartDateOlderTheAllowed(periodStart, maxYears: 3, maxMonths: -2))
             errors.Add(_startDateMustBeLessThanOrEqualTo3YearsAnd2Months);
-        }
     }
 
     private void MustBeAWholeMonth(
@@ -111,7 +106,6 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, IClock clock
     {
         var zonedStartDateTime = new ZonedDateTime(periodStart, dateTimeZone);
         var zonedEndDateTime = new ZonedDateTime(periodEnd, dateTimeZone);
-
         if (zonedEndDateTime.LocalDateTime.Month > zonedStartDateTime.LocalDateTime.Month
             && zonedEndDateTime.LocalDateTime.Day > zonedStartDateTime.LocalDateTime.Day)
         {
@@ -128,9 +122,7 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, IClock clock
 
     private void MustBeMidnight(Instant instant, string propertyName, ICollection<ValidationError> errors)
     {
-        var zonedDateTime = new ZonedDateTime(instant, dateTimeZone);
-
-        if (zonedDateTime.TimeOfDay == LocalTime.Midnight)
+        if (periodValidationHelper.IsMidnight(instant, out var zonedDateTime))
             return;
 
         errors.Add(zonedDateTime.IsDaylightSavingTime()
