@@ -1,5 +1,5 @@
 module "plan_services" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service-plan?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service-plan?ref=v13"
 
   name                           = "services"
   project_name                   = var.domain_name_short
