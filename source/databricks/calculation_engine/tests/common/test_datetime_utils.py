@@ -209,14 +209,24 @@ def test__get_number_of_days_in_period__returns_expected_days(
 @pytest.mark.parametrize(
     "period_start, period_end, time_zone",
     [
-        (  # start time later than end time
+        (  # Starts after midnight
             datetime(2022, 5, 31, 23),
             datetime(2022, 6, 30, 22),
             COPENHAGEN_TIME_ZONE,
         ),
-        (  # start time earlier than end time
+        (  # Stops after midnight
             datetime(2022, 5, 31, 22),
             datetime(2022, 6, 30, 23),
+            COPENHAGEN_TIME_ZONE,
+        ),
+        (  # Starts before midnight
+            datetime(2022, 5, 31, 21),
+            datetime(2022, 6, 30, 22),
+            COPENHAGEN_TIME_ZONE,
+        ),
+        (  # Stops before midnight
+            datetime(2022, 5, 31, 22),
+            datetime(2022, 6, 30, 21),
             COPENHAGEN_TIME_ZONE,
         ),
         (  # Daylight saving time
@@ -243,4 +253,4 @@ def test__get_number_of_days_in_period__when_time_of_day_differs__raise_exceptio
         )
 
     # Assert
-    assert str(exc_info.value) == "Period must start and end on the same time of day."
+    assert str(exc_info.value) == "Period must start and end at midnight."
