@@ -45,8 +45,6 @@ public static class AuthenticationExtensions
         where TUser : class
         where TUserProvider : class, IUserProvider<TUser>
     {
-        // TODO: The UserMiddleware depends on IHttpContextAccessor, it should be registered by AddUserAuthentication
-        services.AddHttpContextAccessor();
         services.AddUserAuthentication<TUser, TUserProvider>();
 
         return services;
