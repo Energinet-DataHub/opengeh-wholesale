@@ -19,6 +19,7 @@ using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.Validation;
+using Energinet.DataHub.Wholesale.Edi.Validation.Helpers;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
@@ -36,6 +37,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
 
         services.AddTransient<DateTimeZone>(s => DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
         services.AddTransient<IClock>(s => SystemClock.Instance);
+        services.AddTransient<PeriodValidationHelper>();
         services.AddScoped<IGridAreaOwnerRepository, GridAreaOwnerRepository>();
         services.AddScoped<IDatabaseContext, DatabaseContext>();
 

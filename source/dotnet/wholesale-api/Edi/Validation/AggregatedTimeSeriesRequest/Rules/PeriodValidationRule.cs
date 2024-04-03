@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Edi.Validation.Helpers;
 using NodaTime;
 using NodaTime.Text;
 
 namespace Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
 
-public class PeriodValidationRule : IValidationRule<DataHub.Edi.Requests.AggregatedTimeSeriesRequest>
+public class PeriodValidationRule(PeriodValidationHelper periodValidationHelper)
+    : IValidationRule<DataHub.Edi.Requests.AggregatedTimeSeriesRequest>
 {
-    private readonly DateTimeZone _dateTimeZone;
-    private readonly IClock _clock;
     private readonly int _maxAllowedPeriodSizeInMonths = 1;
     private readonly int _allowedTimeFrameInYearsFromNow = 3;
 
@@ -30,12 +30,6 @@ public class PeriodValidationRule : IValidationRule<DataHub.Edi.Requests.Aggrega
     private static readonly ValidationError _startDateMustBeLessThen3Years = new("Dato må max være 3 år tilbage i tid / Can maximum be 3 years back in time", "E17");
     private static readonly ValidationError _periodIsGreaterThenAllowedPeriodSize = new("Dato må kun være for 1 måned af gangen / Can maximum be for a 1 month period", "E17");
     private static readonly ValidationError _missingStartOrAndEndDate = new("Start og slut dato skal udfyldes / Start and end date must be present in request", "E50");
-
-    public PeriodValidationRule(DateTimeZone dateTimeZone, IClock clock)
-    {
-        _dateTimeZone = dateTimeZone;
-        _clock = clock;
-    }
 
     public Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.AggregatedTimeSeriesRequest subject)
     {
@@ -77,20 +71,13 @@ public class PeriodValidationRule : IValidationRule<DataHub.Edi.Requests.Aggrega
 
     private void IntervalMustBeWithinAllowedPeriodSize(Instant start, Instant end, IList<ValidationError> errors)
     {
-        var zonedStartDateTime = new ZonedDateTime(start, _dateTimeZone);
-        var zonedEndDateTime = new ZonedDateTime(end, _dateTimeZone);
-        var monthsFromStart = zonedStartDateTime.LocalDateTime.PlusMonths(_maxAllowedPeriodSizeInMonths);
-        if (zonedEndDateTime.LocalDateTime > monthsFromStart)
+        if (periodValidationHelper.IntervalMustBeLessThanAllowedPeriodSize(start, end, _maxAllowedPeriodSizeInMonths))
             errors.Add(_periodIsGreaterThenAllowedPeriodSize);
     }
 
     private void StartDateMustBeGreaterThenAllowedYears(Instant start, IList<ValidationError> errors)
     {
-        var zonedStartDateTime = new ZonedDateTime(start, _dateTimeZone);
-        var zonedCurrentDateTime = new ZonedDateTime(_clock.GetCurrentInstant(), _dateTimeZone);
-        var latestStartDate = zonedCurrentDateTime.LocalDateTime.PlusYears(-_allowedTimeFrameInYearsFromNow);
-
-        if (zonedStartDateTime.LocalDateTime < latestStartDate)
+        if (periodValidationHelper.IsStartDateOlderThanAllowed(start, maxYears: _allowedTimeFrameInYearsFromNow, maxMonths: 0))
             errors.Add(_startDateMustBeLessThen3Years);
     }
 
@@ -106,18 +93,11 @@ public class PeriodValidationRule : IValidationRule<DataHub.Edi.Requests.Aggrega
 
     private void MustBeMidnight(Instant instant, string propertyName, IList<ValidationError> errors)
     {
-        var zonedDateTime = new ZonedDateTime(instant, _dateTimeZone);
-
-        if (zonedDateTime.TimeOfDay == LocalTime.Midnight)
+        if (periodValidationHelper.IsMidnight(instant, out var zonedDateTime))
             return;
 
-        if (zonedDateTime.IsDaylightSavingTime())
-        {
-            errors.Add(_invalidSummerMidnightFormat.WithPropertyName(propertyName));
-        }
-        else
-        {
-            errors.Add(_invalidWinterMidnightFormat.WithPropertyName(propertyName));
-        }
+        errors.Add(zonedDateTime.IsDaylightSavingTime()
+            ? _invalidSummerMidnightFormat.WithPropertyName(propertyName)
+            : _invalidWinterMidnightFormat.WithPropertyName(propertyName));
     }
 }
