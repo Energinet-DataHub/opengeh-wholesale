@@ -75,7 +75,7 @@ def create_grid_loss_row(
     observation_time: datetime.datetime = DEFAULT_OBSERVATION_TIME,
     quantity: int | Decimal = DEFAULT_QUANTITY,
 ) -> Row:
-    """Suggestion: Consider creating a type for grid loss results."""
+    """Suggestion: Consider creating a type for grid loss energy_results."""
     return create_row(
         grid_area=grid_area,
         from_grid_area=None,

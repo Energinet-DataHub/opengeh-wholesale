@@ -36,7 +36,7 @@ def test__input_time_series_point_schema__matches_published_contract(
         f"{paths.INPUT_DATABASE_NAME}.{paths.TIME_SERIES_POINTS_TABLE_NAME}"
     )
 
-    # When asserting both that the calculator creates output, and it does it with input data that matches
+    # When asserting both that the calculator creates energy_results, and it does it with input data that matches
     # the time series points contract from the time-series subsystem (in the same test), then we can infer that the
     # calculator works with the format of the data published from the time-series subsystem.
     # NOTE:It is not evident from this test that it uses the same input as the calculator job
