@@ -1,4 +1,3 @@
--- Metering point periods table constraints
 ALTER TABLE {BASIS_DATA_DATABASE_NAME}.metering_point_periods
     DROP CONSTRAINT IF EXISTS calculation_id_chk
 GO
@@ -77,6 +76,7 @@ ALTER TABLE {BASIS_DATA_DATABASE_NAME}.metering_point_periods
     ADD CONSTRAINT parent_metering_point_id_chk CHECK (parent_metering_point_id IS NULL OR LENGTH(parent_metering_point_id) = 18)
 GO
 
+-- Need to set NOT NULL for energy_supplier_id
 ALTER TABLE {BASIS_DATA_DATABASE_NAME}.metering_point_periods
 ALTER COLUMN energy_supplier_id SET NOT NULL;
 
