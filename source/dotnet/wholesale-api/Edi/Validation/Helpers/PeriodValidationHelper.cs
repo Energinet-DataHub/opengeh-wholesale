@@ -34,7 +34,7 @@ public class PeriodValidationHelper(DateTimeZone dateTimeZone, IClock clock)
         return zonedStartDateTime.LocalDateTime < latestStartDate;
     }
 
-    public bool IntervalMustBeLessThenAllowedPeriodSize(Instant start, Instant end, int maxAllowedPeriodSizeInMonths)
+    public bool IntervalMustBeLessThanAllowedPeriodSize(Instant start, Instant end, int maxAllowedPeriodSizeInMonths)
     {
         var zonedStartDateTime = new ZonedDateTime(start, dateTimeZone);
         var zonedEndDateTime = new ZonedDateTime(end, dateTimeZone);
