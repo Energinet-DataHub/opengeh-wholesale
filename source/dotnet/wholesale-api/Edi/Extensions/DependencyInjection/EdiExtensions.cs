@@ -68,7 +68,7 @@ public static class EdiExtensions
         services.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, SettlementMethodValidationRule>();
         services.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, TimeSeriesTypeValidationRule>();
         services.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, BalanceResponsibleValidationRule>();
-        services.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, SettlementSeriesVersionValidationRule>();
+        services.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, SettlementVersionValidationRule>();
         services.AddScoped<IValidationRule<AggregatedTimeSeriesRequest>, GridAreaValidationRule>();
         services.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, RequestedByActorRoleValidationRule>();
 

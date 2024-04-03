@@ -31,7 +31,7 @@ public class WholesaleServicesRequestBuilder
     private string? _energySupplierId;
     private string? _chargeOwnerId;
     private string? _gridAreaCode;
-    private string? _settlementSeriesVersion;
+    private string? _settlementVersion;
     private ChargeType[] _chargeType = Array.Empty<ChargeType>();
 
     public WholesaleServicesRequest Build()
@@ -54,8 +54,8 @@ public class WholesaleServicesRequestBuilder
             request.ChargeOwnerId = _chargeOwnerId;
         if (_gridAreaCode != null)
             request.GridAreaCode = _gridAreaCode;
-        if (_settlementSeriesVersion != null)
-            request.SettlementSeriesVersion = _settlementSeriesVersion;
+        if (_settlementVersion != null)
+            request.SettlementVersion = _settlementVersion;
 
         request.ChargeTypes.AddRange(_chargeType);
 
@@ -116,9 +116,9 @@ public class WholesaleServicesRequestBuilder
         return this;
     }
 
-    public WholesaleServicesRequestBuilder WithSettlementSeriesVersion(string settlementSeriesVersion)
+    public WholesaleServicesRequestBuilder WithSettlementVersion(string settlementVersion)
     {
-        _settlementSeriesVersion = settlementSeriesVersion;
+        _settlementVersion = settlementVersion;
         return this;
     }
 

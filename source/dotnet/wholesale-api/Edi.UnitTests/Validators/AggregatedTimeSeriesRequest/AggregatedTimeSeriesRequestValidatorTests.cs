@@ -133,13 +133,13 @@ public class AggregatedTimeSeriesRequestValidatorTests
     }
 
     [Fact]
-    public async Task Validate_WhenSettlementSeriesVersionIsInvalid_ReturnsUnsuccessfulValidation()
+    public async Task Validate_WhenSettlementVersionIsInvalid_ReturnsUnsuccessfulValidation()
     {
         // Arrange
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
             .WithBusinessReason(DataHubNames.BusinessReason.Correction)
-            .WithSettlementSeriesVersion("invalid-settlement-series-version")
+            .WithSettlementVersion("invalid-settlement-version")
             .Build();
 
         // Act

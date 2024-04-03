@@ -28,7 +28,7 @@ public static class AggregatedTimeSeriesRequestFactory
             MapPeriod(request.Period),
             GetTimeSeriesTypes(request),
             MapAggregationPerRoleAndGridArea(request),
-            RequestedCalculationTypeMapper.ToRequestedCalculationType(request.BusinessReason, request.HasSettlementSeriesVersion ? request.SettlementSeriesVersion : null));
+            RequestedCalculationTypeMapper.ToRequestedCalculationType(request.BusinessReason, request.HasSettlementVersion ? request.SettlementVersion : null));
     }
 
     private static TimeSeriesType[] GetTimeSeriesTypes(
