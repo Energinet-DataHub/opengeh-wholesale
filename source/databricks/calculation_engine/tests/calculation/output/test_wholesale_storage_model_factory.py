@@ -129,7 +129,7 @@ def _create_result_df(spark: SparkSession, row: List[dict]) -> DataFrame:
 def _create_result_df_corresponding_to_multiple_calculation_results(
     spark: SparkSession,
 ) -> DataFrame:
-    # 3 calculation energy_results with just one row each
+    # 3 calculation results with just one row each
     rows = [
         _create_result_row(grid_area="001"),
         _create_result_row(grid_area="002"),

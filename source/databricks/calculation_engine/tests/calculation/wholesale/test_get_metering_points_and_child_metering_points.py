@@ -79,7 +79,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         parent:  |-----------------|
         parent:                    |-----------------|
         child:   |-----------------------------------|
-        energy_results metering points (only child):
+        output metering points (only child):
         child:   |-----------------|
         child:                     |-----------------|
         """
@@ -156,7 +156,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         parent:  |-----------------|
         parent:                    |-----------------|
         child:       |--------------------------|
-        energy_results metering points (only child):
+        output metering points (only child):
         child:       |-------------|
         child:                     |------------|
         """
@@ -233,7 +233,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         parent:       |------------|
         parent:                    |------------|
         child:   |-----------------------------------|
-        energy_results metering points (only child):
+        output metering points (only child):
         child:        |------------|
         child:                     |------------|
         """
@@ -312,7 +312,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         parent:  |--------|
         parent:                             |--------|
         child:            |-----------------|
-        energy_results metering points (only child):
+        output metering points (only child):
         child:            |--------|
         child:                     |--------|
         """

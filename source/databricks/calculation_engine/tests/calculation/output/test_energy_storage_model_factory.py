@@ -388,11 +388,11 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
         EnergyResultColumnNames.calculation_execution_time_start,
         EnergyResultColumnNames.time_series_type,
         EnergyResultColumnNames.aggregation_level,
-        # Data that does vary but does not define distinct energy_results
+        # Data that does vary but does not define distinct results
         EnergyResultColumnNames.time,
         EnergyResultColumnNames.quantity_qualities,
         EnergyResultColumnNames.quantity,
-        # The field that defines energy_results
+        # The field that defines results
         EnergyResultColumnNames.calculation_result_id,
         EnergyResultColumnNames.metering_point_id,
     ]
