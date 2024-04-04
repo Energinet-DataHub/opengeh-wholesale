@@ -56,4 +56,31 @@ public class CompletedCalculationRepositoryTests : IClassFixture<WholesaleDataba
 
         actual.Should().BeEquivalentTo(expectedCalculation);
     }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task AddAsync_AddsCompletedCalculationWhenDoNotPublishCalculationResultsWithExpectedData(
+        CompletedCalculation expectedCalculation,
+        Mock<IOptions<IntegrationEventsOptions>> optionsMock,
+        Mock<NodaTime.IClock> clockMock)
+    {
+        // Arrange
+        var currentInstant = NodaTime.SystemClock.Instance.GetCurrentInstant();
+        clockMock.Setup(c => c.GetCurrentInstant()).Returns(currentInstant);
+        optionsMock.SetupGet(o => o.Value)
+            .Returns(new IntegrationEventsOptions { DoNotPublishCalculationResults = true });
+        await using var writeContext = _databaseManager.CreateDbContext();
+        var sut = new CompletedCalculationRepository(writeContext, optionsMock.Object, clockMock.Object);
+        expectedCalculation.PublishedTime = currentInstant;
+
+        // Act
+        await sut.AddAsync(new[] { expectedCalculation });
+        await writeContext.SaveChangesAsync();
+
+        // Assert
+        await using var readContext = _databaseManager.CreateDbContext();
+        var actual = await readContext.CompletedCalculations.SingleAsync(b => b.Id == expectedCalculation.Id);
+
+        actual.Should().BeEquivalentTo(expectedCalculation);
+    }
 }
