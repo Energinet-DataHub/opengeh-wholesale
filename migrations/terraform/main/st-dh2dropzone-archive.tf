@@ -12,7 +12,7 @@ module "st_dh2dropzone_archive" {
   access_tier                     = "Cool"
   private_endpoint_subnet_id      = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   ip_rules                        = local.ip_restrictions_as_string
-  prevent_deletion                = false
+  prevent_deletion                = true
 }
 
 #---- Role assignments
