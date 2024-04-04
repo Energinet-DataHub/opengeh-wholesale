@@ -25,4 +25,7 @@ public class IntegrationEventsOptions
 
     [Required]
     public string SubscriptionName { get; set; } = string.Empty;
+
+    [Required]
+    public bool DoNotPublishCalculationResults { get; set; } = false;
 }

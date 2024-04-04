@@ -65,6 +65,10 @@ public static class EventsExtensions
         });
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services
+            .AddOptions<IntegrationEventsOptions>()
+            .BindConfiguration(IntegrationEventsOptions.SectionName)
+            .ValidateDataAnnotations();
         services.AddScoped<ICompletedCalculationRepository, CompletedCalculationRepository>();
 
         return services;

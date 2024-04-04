@@ -12,18 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedCalculations;
 
 public class CompletedCalculationRepository : ICompletedCalculationRepository
 {
     private readonly IEventsDatabaseContext _context;
+    private readonly IntegrationEventsOptions _options;
 
-    public CompletedCalculationRepository(IEventsDatabaseContext context)
+    public CompletedCalculationRepository(IEventsDatabaseContext context, IOptions<IntegrationEventsOptions> options)
     {
         _context = context;
+        _options = options.Value;
     }
 
     public async Task AddAsync(IEnumerable<CompletedCalculation> completedCalculations)
@@ -41,6 +45,9 @@ public class CompletedCalculationRepository : ICompletedCalculationRepository
 
     public async Task<CompletedCalculation?> GetNextUnpublishedOrNullAsync()
     {
+        if (_options.DoNotPublishCalculationResults)
+            return null;
+
         return await _context.CompletedCalculations
             .OrderBy(x => x.CompletedTime)
             .Where(x => x.PublishedTime == null)
