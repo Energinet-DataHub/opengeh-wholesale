@@ -20,7 +20,7 @@ module "monitor_action_group_edi" {
       query       = <<-QUERY
         exceptions
         | where timestamp > ago(10m)
-            or cloud_RoleName == 'func-api-${lower(var.domain_name_short)}-${lower(var.environment_short)}-we-${lower(var.environment_instance)}'
+            and (cloud_RoleName == 'func-api-${lower(var.domain_name_short)}-${lower(var.environment_short)}-we-${lower(var.environment_instance)}'
             or cloud_RoleName == 'app-b2cwebapi-${lower(var.domain_name_short)}-${lower(var.environment_short)}-we-${lower(var.environment_instance)}')
           and (type !has "Energinet.DataHub.EDI" and type !hasprefix "NotSupported")
         QUERY
