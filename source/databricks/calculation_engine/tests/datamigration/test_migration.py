@@ -44,6 +44,23 @@ def test__migrate__when_schema_migration_scripts_are_executed__compare_schemas(
             ), f"Difference in schema {_diff(actual_table.schema, table.schema)}"
 
 
+def test_migrate_should_set_deleted_file_retention_to_30_days(
+    spark: SparkSession,
+    migrations_executed: None,
+) -> None:
+    # Assert
+    for schema in schema_config.schema_config:
+        for table in schema.tables:
+            table_properties = spark.sql(
+                f"DESCRIBE DETAIL {schema.name}.{table.name}"
+            ).collect()[0]["properties"]
+
+            assert (
+                table_properties["delta.deletedFileRetentionDuration"]
+                == "interval 30 days"
+            ), f"Table {schema.name}.{table.name} does not have the correct deleted file retention duration"
+
+
 def test__migrate__when_schema_migration_scripts_are_executed__compare_result_with_schema_config(
     spark: SparkSession,
     migrations_executed: None,

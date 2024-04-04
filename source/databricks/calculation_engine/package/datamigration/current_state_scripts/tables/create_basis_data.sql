@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.metering_point_periods
     to_date TIMESTAMP
 )
 USING DELTA
+TBLPROPERTIES (delta.deletedFileRetentionDuration = 'interval 30 days')
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
 -- In the production it is set to empty and the respective location is used. This means the production tables won't be deleted if the schema is.
 {TEST}LOCATION '{CONTAINER_PATH}/{BASIS_DATA_FOLDER}/metering_point_periods'
@@ -29,6 +30,7 @@ CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.time_series_points
     observation_time TIMESTAMP NOT NULL
 )
 USING DELTA
+TBLPROPERTIES (delta.deletedFileRetentionDuration = 'interval 30 days')
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
 -- In the production it is set to empty and the respective location is used. This means the production tables won't be deleted if the schema is.
 {TEST}LOCATION '{CONTAINER_PATH}/{BASIS_DATA_FOLDER}/time_series'
@@ -45,6 +47,7 @@ CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.charge_price_points
     charge_time TIMESTAMP NOT NULL
 )
 USING DELTA
+TBLPROPERTIES (delta.deletedFileRetentionDuration = 'interval 30 days')
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
 -- In the production it is set to empty and the respective location is used. This means the production tables won't be deleted if the schema is.
 {TEST}LOCATION '{CONTAINER_PATH}/{BASIS_DATA_FOLDER}/charge_price_points'
@@ -63,6 +66,7 @@ CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.charge_masterdata_periods
     to_date TIMESTAMP
 )
 USING DELTA
+TBLPROPERTIES (delta.deletedFileRetentionDuration = 'interval 30 days')
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
 -- In the production it is set to empty and the respective location is used. This means the production tables won't be deleted if the schema is.
 {TEST}LOCATION '{CONTAINER_PATH}/{BASIS_DATA_FOLDER}/charge_masterdata_periods'
@@ -81,6 +85,7 @@ CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.charge_link_periods
     to_date TIMESTAMP
 )
 USING DELTA
+TBLPROPERTIES (delta.deletedFileRetentionDuration = 'interval 30 days')
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
 -- In the production it is set to empty and the respective location is used. This means the production tables won't be deleted if the schema is.
 {TEST}LOCATION '{CONTAINER_PATH}/{BASIS_DATA_FOLDER}/charge_link_periods'
@@ -92,6 +97,7 @@ CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.grid_loss_metering_points
     metering_point_id STRING NOT NULL
 )
 USING DELTA
+TBLPROPERTIES (delta.deletedFileRetentionDuration = 'interval 30 days')
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
 -- In the production it is set to empty and the respective location is used. This means the production tables won't be deleted if the schema is.
 {TEST}LOCATION '{CONTAINER_PATH}/{BASIS_DATA_FOLDER}/grid_loss_metering_points'
@@ -109,6 +115,7 @@ CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.calculations
     version BIGINT NOT NULL
 )
 USING DELTA
+TBLPROPERTIES (delta.deletedFileRetentionDuration = 'interval 30 days')
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
 -- In the production it is set to empty and the respective location is used. This means the production tables won't be deleted if the schema is.
 {TEST}LOCATION '{CONTAINER_PATH}/{BASIS_DATA_FOLDER}/calculations'
