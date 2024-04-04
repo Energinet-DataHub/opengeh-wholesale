@@ -44,6 +44,7 @@ def configure_spark_sql_migration(
     spark: SparkSession,
     schema_prefix: str = "",
     table_prefix: str = "",
+    view_prefix: str = "",
     location: str = schema_migration_location,
 ) -> None:
     migration_args = MigrationScriptArgs(
@@ -63,6 +64,7 @@ def configure_spark_sql_migration(
         migration_scripts_folder_path=c.MIGRATION_SCRIPTS_FOLDER_PATH,
         current_state_schemas_folder_path=c.CURRENT_STATE_SCHEMAS_FOLDER_PATH,
         current_state_tables_folder_path=c.CURRENT_STATE_TABLES_FOLDER_PATH,
+        current_state_views_folder_path=c.CURRENT_STATE_VIEWS_FOLDER_PATH,
         schema_config=schema_config,
         substitution_variables=updated_substitutions(migration_args, schema_prefix),
         table_prefix=table_prefix,
