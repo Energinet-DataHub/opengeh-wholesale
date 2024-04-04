@@ -65,7 +65,6 @@ public static class EventsExtensions
         });
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-
         services.AddScoped<ICompletedCalculationRepository, CompletedCalculationRepository>();
 
         return services;
