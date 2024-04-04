@@ -15,6 +15,7 @@ from spark_sql_migrations import Schema, Table, View
 
 import package.calculation.basis_data.schemas as basis_data_schemas
 import package.infrastructure.paths as paths
+
 # calculation_input
 from package.calculation.input.schemas.grid_loss_metering_points_schema import (
     grid_loss_metering_points_schema,
@@ -22,6 +23,7 @@ from package.calculation.input.schemas.grid_loss_metering_points_schema import (
 from package.calculation.output.schemas.energy_results_schema import (
     energy_results_schema,
 )
+
 # calculation_output
 from package.calculation.output.schemas.wholesale_results_schema import (
     wholesale_results_schema,
