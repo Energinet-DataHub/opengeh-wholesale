@@ -13,12 +13,15 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Moq;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Events.IntegrationTests.Infrastructure.Persistence.Calculations;
@@ -34,11 +37,14 @@ public class CompletedCalculationRepositoryTests : IClassFixture<WholesaleDataba
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task AddAsync_AddsCompletedCalculationWithExpectedData(CompletedCalculation expectedCalculation)
+    public async Task AddAsync_AddsCompletedCalculationWithExpectedData(
+        CompletedCalculation expectedCalculation,
+        Mock<IOptions<IntegrationEventsOptions>> optionsMock,
+        Mock<NodaTime.IClock> clockMock)
     {
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
-        var sut = new CompletedCalculationRepository(writeContext);
+        var sut = new CompletedCalculationRepository(writeContext, optionsMock.Object, clockMock.Object);
 
         // Act
         await sut.AddAsync(new[] { expectedCalculation });

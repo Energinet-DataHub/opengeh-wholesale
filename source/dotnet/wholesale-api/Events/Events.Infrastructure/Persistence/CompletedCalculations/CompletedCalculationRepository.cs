@@ -16,23 +16,38 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedCalculations;
 
 public class CompletedCalculationRepository : ICompletedCalculationRepository
 {
     private readonly IEventsDatabaseContext _context;
+    private readonly IClock _clock;
     private readonly IntegrationEventsOptions _options;
 
-    public CompletedCalculationRepository(IEventsDatabaseContext context, IOptions<IntegrationEventsOptions> options)
+    public CompletedCalculationRepository(
+        IEventsDatabaseContext context,
+        IOptions<IntegrationEventsOptions> options,
+        IClock clock)
     {
         _context = context;
+        _clock = clock;
         _options = options.Value;
     }
 
     public async Task AddAsync(IEnumerable<CompletedCalculation> completedCalculations)
     {
-        await _context.CompletedCalculations.AddRangeAsync(completedCalculations).ConfigureAwait(false);
+        var calculations = completedCalculations.ToList();
+        if (_options.DoNotPublishCalculationResults)
+        {
+            foreach (var completedCalculation in calculations)
+            {
+                completedCalculation.PublishedTime = _clock.GetCurrentInstant();
+            }
+        }
+
+        await _context.CompletedCalculations.AddRangeAsync(calculations).ConfigureAwait(false);
     }
 
     public async Task<CompletedCalculation?> GetLastCompletedOrNullAsync()
@@ -45,9 +60,6 @@ public class CompletedCalculationRepository : ICompletedCalculationRepository
 
     public async Task<CompletedCalculation?> GetNextUnpublishedOrNullAsync()
     {
-        if (_options.DoNotPublishCalculationResults)
-            return null;
-
         return await _context.CompletedCalculations
             .OrderBy(x => x.CompletedTime)
             .Where(x => x.PublishedTime == null)
