@@ -33,8 +33,7 @@ Describe "AddUserFlows" {
                 $actual = $response | ConvertFrom-Json
                 $actual.inviteUserFlowId | Should -Be "B2C_1_InvitationFlow"
                 $actual.signInUserFlowId | Should -Be "B2C_1_SignInFlow"
-                $actual.mitIdInviteUserFlowId | Should -Be "B2C_1_MitID_InvitationFlow"
-                $actual.mitIdSignInUserFlowId | Should -Be "B2C_1_MitID_SignInFlow"
+                $actual.mitIdSignInSignUpUserFlowId | Should -Be "B2C_1_MitID_SignInSignUpFlow"
             }
         }
     }
@@ -63,11 +62,7 @@ Describe "AddUserFlows" {
                 }
 
                 Should -Invoke -CommandName New-UserFlow -Times 1 -ParameterFilter {
-                    $userFlowId -eq "MitID_InvitationFlow" -and $userFlowType -eq "signUp"
-                }
-
-                Should -Invoke -CommandName New-UserFlow -Times 1 -ParameterFilter {
-                    $userFlowId -eq "MitID_SignInFlow" -and $userFlowType -eq "signIn"
+                    $userFlowId -eq "MitID_SignInSignUpFlow" -and $userFlowType -eq "signUpOrSignIn"
                 }
             }
         }

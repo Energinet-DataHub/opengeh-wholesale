@@ -48,19 +48,15 @@ New-UserFlow -AccessToken $AccessToken -UserFlowId "InvitationFlow" -UserFlowTyp
 Write-Information "Creating user flow for signing users in using TOTP"
 New-UserFlow -AccessToken $AccessToken -UserFlowId "SignInFlow" -UserFlowType "signIn"
 
-Write-Information "Creating user flow for inviting users using MitID"
-New-UserFlow -AccessToken $AccessToken -UserFlowId "MitID_InvitationFlow" -UserFlowType "signUp" -IdentityProviderId $MitIdProviderId
-New-UserFlowAttribute -AccessToken $AccessToken -UserFlowId "MitID_InvitationFlow" -AttributeId "email" -AttributeType "emailBox"
-
-Write-Information "Creating user flow for signing users in using MitID"
-New-UserFlow -AccessToken $AccessToken -UserFlowId "MitID_SignInFlow" -UserFlowType "signIn" -IdentityProviderId $MitIdProviderId
+Write-Information "Creating user flow for signup and signing users in using MitID"
+New-UserFlow -AccessToken $AccessToken -UserFlowId "MitID_SignInSignUpFlow" -UserFlowType "signUpOrSignIn" -IdentityProviderId $MitIdProviderId
+New-UserFlowAttribute -AccessToken $AccessToken -UserFlowId "MitID_SignInSignUpFlow" -AttributeId "email" -AttributeType "emailBox"
 
 $user_flows = @"
 {
   "inviteUserFlowId": "B2C_1_InvitationFlow",
   "signInUserFlowId": "B2C_1_SignInFlow",
-  "mitIdInviteUserFlowId": "B2C_1_MitID_InvitationFlow",
-  "mitIdSignInUserFlowId": "B2C_1_MitID_SignInFlow"
+  "mitIdSignInSignUpUserFlowId": "B2C_1_MitID_SignInSignUpFlow"
 }
 "@
 
