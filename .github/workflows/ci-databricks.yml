@@ -124,9 +124,9 @@ jobs:
           - name: Wholesale (calculator_job)
             paths: calculator_job/test_wholesale_calculation.py
           - name: Energy logic
-            paths: calculation_logic/features/energy_calculations
+            paths: features/given_an_energy_calculation
           - name: Wholesale logic
-            paths: calculation_logic/features/wholesale_calculations
+            paths: features/given_a_wholesale_calculation
           - name: Unit tests
             paths: calculation/ codelists/ common/ infrastructure/
           - name: Entry point tests
