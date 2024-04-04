@@ -141,7 +141,8 @@ jobs:
       test_report_path: ./source/databricks/calculation_engine/tests
       # See .docker/entrypoint.py on how to use the filter expression
       tests_filter_expression: ${{ matrix.tests_filter_expression.paths }}
-
+      image_tag: ${{ inputs.image_tag }}
+        
   migration_tests:
     strategy:
       fail-fast: false
@@ -162,6 +163,7 @@ jobs:
       test_report_path: ./source/databricks/calculation_engine/tests
       # See .docker/entrypoint.py on how to use the filter expression
       tests_filter_expression: ${{ matrix.tests_filter_expression.paths }}
+      image_tag: ${{ inputs.image_tag }}
 
   # Tests that require the integration test environment
   integration_tests:
