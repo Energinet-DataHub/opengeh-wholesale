@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.metering_point_periods
     from_grid_area_code STRING,
     to_grid_area_code STRING,
     parent_metering_point_id STRING,
-    energy_supplier_id NOT NULL STRING,
+    energy_supplier_id STRING,
     balance_responsible_id STRING,
     from_date TIMESTAMP NOT NULL,
     to_date TIMESTAMP
