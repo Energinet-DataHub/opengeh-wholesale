@@ -76,6 +76,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       [
+        changes,
         ci_base,
         ci_dotnet,
         ci_databricks,
