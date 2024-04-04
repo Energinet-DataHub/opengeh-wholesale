@@ -24,10 +24,10 @@ from package.codelists import MeteringPointType
 from package.constants import Colname
 
 
-class TestWhenMeteringPointPeriodsHasMeteringPointTypesThatIsNotExchange:
+class TestWhenMeteringPointPeriodsHasMeteringPointType:
     @pytest.mark.parametrize(
         "metering_point_type",
-        [t for t in MeteringPointType if t != MeteringPointType.EXCHANGE],
+        [t for t in MeteringPointType],
     )
     def test__returns_metering_points(
         self,
@@ -375,25 +375,3 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         assert actual_only_child_metering_points[1][Colname.to_date] == datetime(
             2020, 1, 31, 23
         )
-
-
-class TestWhenMeteringPointPeriodsHasMeteringPointTypesThatIsExchange:
-    def test__returns_result_with_exchange_the_metering_point(
-        self,
-        spark: SparkSession,
-    ):
-        # Arrange
-        row = factory.create_row(
-            metering_point_type=MeteringPointType.EXCHANGE,
-            energy_supplier_id=None,
-        )
-        metering_point_periods = factory.create(spark, row)
-
-        # Act
-        actual = get_metering_points_and_child_metering_points(
-            metering_point_periods,
-        )
-        actual.show()
-
-        # Assert
-        assert actual.count() == 1
