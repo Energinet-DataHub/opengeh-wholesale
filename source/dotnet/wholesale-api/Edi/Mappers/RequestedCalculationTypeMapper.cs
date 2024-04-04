@@ -19,13 +19,13 @@ namespace Energinet.DataHub.Wholesale.Edi.Mappers;
 
 public static class RequestedCalculationTypeMapper
 {
-    public static RequestedCalculationType ToRequestedCalculationType(string businessReason, string? settlementSeriesVersion)
+    public static RequestedCalculationType ToRequestedCalculationType(string businessReason, string? settlementVersion)
     {
-        if (businessReason != DataHubNames.BusinessReason.Correction && settlementSeriesVersion != null)
+        if (businessReason != DataHubNames.BusinessReason.Correction && settlementVersion != null)
         {
             throw new ArgumentOutOfRangeException(
-                nameof(settlementSeriesVersion),
-                settlementSeriesVersion,
+                nameof(settlementVersion),
+                settlementVersion,
                 $"Value must be null when {nameof(businessReason)} is not {nameof(DataHubNames.BusinessReason.Correction)}.");
         }
 
@@ -34,15 +34,15 @@ public static class RequestedCalculationTypeMapper
             DataHubNames.BusinessReason.BalanceFixing => RequestedCalculationType.BalanceFixing,
             DataHubNames.BusinessReason.PreliminaryAggregation => RequestedCalculationType.PreliminaryAggregation,
             DataHubNames.BusinessReason.WholesaleFixing => RequestedCalculationType.WholesaleFixing,
-            DataHubNames.BusinessReason.Correction => settlementSeriesVersion switch
+            DataHubNames.BusinessReason.Correction => settlementVersion switch
             {
                 DataHubNames.SettlementVersion.FirstCorrection => RequestedCalculationType.FirstCorrection,
                 DataHubNames.SettlementVersion.SecondCorrection => RequestedCalculationType.SecondCorrection,
                 DataHubNames.SettlementVersion.ThirdCorrection => RequestedCalculationType.ThirdCorrection,
                 null => RequestedCalculationType.LatestCorrection,
                 _ => throw new ArgumentOutOfRangeException(
-                    nameof(settlementSeriesVersion),
-                    settlementSeriesVersion,
+                    nameof(settlementVersion),
+                    settlementVersion,
                     $"Value cannot be mapped to a {nameof(RequestedCalculationType)}."),
             },
             _ => throw new ArgumentOutOfRangeException(
