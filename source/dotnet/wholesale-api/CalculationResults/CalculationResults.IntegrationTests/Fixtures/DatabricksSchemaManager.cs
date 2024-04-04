@@ -119,6 +119,7 @@ public class DatabricksSchemaManager
             .Replace("{OUTPUT_DATABASE_NAME}", SchemaName)
             .Replace("{INPUT_DATABASE_NAME}", SchemaName)
             .Replace("{BASIS_DATA_DATABASE_NAME}", SchemaName)
+            .Replace("{SETTLEMENT_REPORT_DATABASE_NAME}", SchemaName)
             .Replace("{TEST}", "--");
     }
 

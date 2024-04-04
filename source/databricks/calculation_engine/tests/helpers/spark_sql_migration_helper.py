@@ -44,7 +44,6 @@ def configure_spark_sql_migration(
     spark: SparkSession,
     schema_prefix: str = "",
     table_prefix: str = "",
-    view_prefix: str = "",
     location: str = schema_migration_location,
 ) -> None:
     migration_args = MigrationScriptArgs(
