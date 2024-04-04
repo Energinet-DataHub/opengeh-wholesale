@@ -105,7 +105,7 @@ ALTER TABLE {BASIS_DATA_DATABASE_NAME}.metering_point_periods
 GO
 -- Length is 16 when EIC and 13 when GLN
 ALTER TABLE {BASIS_DATA_DATABASE_NAME}.metering_point_periods
-    ADD CONSTRAINT energy_supplier_id_chk CHECK (LENGTH(energy_supplier_id) = 13 OR LENGTH(energy_supplier_id) = 16)
+    ADD CONSTRAINT energy_supplier_id_chk CHECK (energy_supplier_id IS NULL OR LENGTH(energy_supplier_id) = 13 OR LENGTH(energy_supplier_id) = 16)
 GO
 
 ALTER TABLE {BASIS_DATA_DATABASE_NAME}.metering_point_periods

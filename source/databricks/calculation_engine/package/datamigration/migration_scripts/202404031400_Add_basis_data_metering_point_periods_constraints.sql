@@ -76,16 +76,12 @@ ALTER TABLE {BASIS_DATA_DATABASE_NAME}.metering_point_periods
     ADD CONSTRAINT parent_metering_point_id_chk CHECK (parent_metering_point_id IS NULL OR LENGTH(parent_metering_point_id) = 18)
 GO
 
--- Need to set NOT NULL for energy_supplier_id
-ALTER TABLE {BASIS_DATA_DATABASE_NAME}.metering_point_periods
-ALTER COLUMN energy_supplier_id SET NOT NULL;
-
 ALTER TABLE {BASIS_DATA_DATABASE_NAME}.metering_point_periods
     DROP CONSTRAINT IF EXISTS energy_supplier_id_chk
 GO
 -- Length is 16 when EIC and 13 when GLN
 ALTER TABLE {BASIS_DATA_DATABASE_NAME}.metering_point_periods
-    ADD CONSTRAINT energy_supplier_id_chk CHECK (LENGTH(energy_supplier_id) = 13 OR LENGTH(energy_supplier_id) = 16)
+    ADD CONSTRAINT energy_supplier_id_chk CHECK (energy_supplier_id IS NULL OR LENGTH(energy_supplier_id) = 13 OR LENGTH(energy_supplier_id) = 16)
 GO
 
 ALTER TABLE {BASIS_DATA_DATABASE_NAME}.metering_point_periods
