@@ -27,7 +27,7 @@ message WholesaleServicesRequest {
   optional string energy_supplier_id = 9; // GLN or EIC for the energy supplier on the charge.
   optional string charge_owner_id = 10; // GLN or EIC for the party that owns the charge.
   optional string grid_area_code = 11; // The code for the grid area. eg. 870.
-  optional string settlement_series_version = 13; // The version of the requested settlement series. eg. First, Second or Third.
+  optional string settlement_version = 13; // The version of the requested settlement series. eg. First, Second or Third.
   repeated ChargeType charge_types = 14; // If no charge types are submitted, results are requested for every type. 
 }
 

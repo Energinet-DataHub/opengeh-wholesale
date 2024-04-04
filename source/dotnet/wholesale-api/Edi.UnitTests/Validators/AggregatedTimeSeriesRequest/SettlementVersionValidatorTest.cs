@@ -21,23 +21,23 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.AggregatedTimeSeriesRequest;
 
-public class SettlementSeriesVersionValidatorTest
+public class SettlementVersionValidatorTest
 {
     private static readonly ValidationError _expectedInvalidSettlementMethodError = new("SettlementSeriesVersion kan kun benyttes i kombination med D32 og skal være enten D01, D02 eller D03 / SettlementSeriesVersion can only be used in combination with D32 and must be either D01, D02 or D03", "E86");
 
-    private readonly SettlementSeriesVersionValidationRule _sut = new();
+    private readonly SettlementVersionValidationRule _sut = new();
 
     [Theory]
     [InlineData("invalid-settlement-series-version")]
     [InlineData("D04")]
     [InlineData("")]
-    public async Task Validate_WhenCorrectionAndInvalidSeriesVersion_ReturnsValidationErrorsAsync(string invalidSettlementSeriesVersion)
+    public async Task Validate_WhenCorrectionAndInvalidSeriesVersion_ReturnsValidationErrorsAsync(string invalidSettlementVersion)
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
             .WithBusinessReason(DataHubNames.BusinessReason.Correction)
-            .WithSettlementSeriesVersion(invalidSettlementSeriesVersion)
+            .WithSettlementVersion(invalidSettlementVersion)
             .Build();
 
         // Act
@@ -55,13 +55,13 @@ public class SettlementSeriesVersionValidatorTest
     [InlineData(DataHubNames.SettlementVersion.FirstCorrection)]
     [InlineData(DataHubNames.SettlementVersion.SecondCorrection)]
     [InlineData(DataHubNames.SettlementVersion.ThirdCorrection)]
-    public async Task Validate_WhenNotCorrectionAndSettlementSeriesVersionExists_ReturnsValidationErrorsAsync(string settlementSeriesVersion)
+    public async Task Validate_WhenNotCorrectionAndSettlementVersionExists_ReturnsValidationErrorsAsync(string settlementVersion)
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
             .WithBusinessReason(DataHubNames.BusinessReason.WholesaleFixing)
-            .WithSettlementSeriesVersion(settlementSeriesVersion)
+            .WithSettlementVersion(settlementVersion)
             .Build();
 
         // Act
@@ -76,13 +76,13 @@ public class SettlementSeriesVersionValidatorTest
     [InlineData(DataHubNames.SettlementVersion.FirstCorrection)]
     [InlineData(DataHubNames.SettlementVersion.SecondCorrection)]
     [InlineData(DataHubNames.SettlementVersion.ThirdCorrection)]
-    public async Task Validate_WhenCorrectionAndValidSettlementSeriesVersion_ReturnsNoValidationErrorsAsync(string validSettlementSeriesVersion)
+    public async Task Validate_WhenCorrectionAndValidSettlementVersion_ReturnsNoValidationErrorsAsync(string validSettlementVersion)
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
             .WithBusinessReason(DataHubNames.BusinessReason.Correction)
-            .WithSettlementSeriesVersion(validSettlementSeriesVersion)
+            .WithSettlementVersion(validSettlementVersion)
             .Build();
 
         // Act
@@ -93,13 +93,13 @@ public class SettlementSeriesVersionValidatorTest
     }
 
     [Fact]
-    public async Task Validate_WhenCorrectionAndNoSettlementSeriesVersion_ReturnsNoValidationErrorsAsync()
+    public async Task Validate_WhenCorrectionAndNoSettlementVersion_ReturnsNoValidationErrorsAsync()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
             .WithBusinessReason(DataHubNames.BusinessReason.Correction)
-            .WithSettlementSeriesVersion(null)
+            .WithSettlementVersion(null)
             .Build();
 
         // Act
@@ -110,13 +110,13 @@ public class SettlementSeriesVersionValidatorTest
     }
 
     [Fact]
-    public async Task Validate_WhenNotCorrectionAndNoSettlementSeriesVersion_ReturnsNoValidationErrorsAsync()
+    public async Task Validate_WhenNotCorrectionAndNoSettlementVersion_ReturnsNoValidationErrorsAsync()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
             .WithBusinessReason(DataHubNames.BusinessReason.WholesaleFixing)
-            .WithSettlementSeriesVersion(null)
+            .WithSettlementVersion(null)
             .Build();
 
         // Act
