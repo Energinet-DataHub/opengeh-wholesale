@@ -30,7 +30,7 @@ public class AggregatedTimeSeriesRequestBuilder
     private string _requestedByActorId;
     private string? _settlementMethod;
     private string? _balanceResponsibleId;
-    private string? _settlementSeriesVersion;
+    private string? _settlementVersion;
     private string _businessReason;
     private string? _gridAreaCode;
 
@@ -77,8 +77,8 @@ public class AggregatedTimeSeriesRequestBuilder
         if (_settlementMethod != null)
             request.SettlementMethod = _settlementMethod;
 
-        if (_settlementSeriesVersion != null)
-            request.SettlementSeriesVersion = _settlementSeriesVersion;
+        if (_settlementVersion != null)
+            request.SettlementVersion = _settlementVersion;
 
         return request;
     }
@@ -132,9 +132,9 @@ public class AggregatedTimeSeriesRequestBuilder
         return this;
     }
 
-    public AggregatedTimeSeriesRequestBuilder WithSettlementSeriesVersion(string? settlementSeriesVersion)
+    public AggregatedTimeSeriesRequestBuilder WithSettlementVersion(string? settlementVersion)
     {
-        _settlementSeriesVersion = settlementSeriesVersion;
+        _settlementVersion = settlementVersion;
         return this;
     }
 
