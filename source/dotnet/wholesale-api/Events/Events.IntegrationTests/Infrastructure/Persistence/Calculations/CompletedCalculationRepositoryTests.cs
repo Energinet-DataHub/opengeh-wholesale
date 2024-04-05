@@ -17,6 +17,7 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.FeatureFlag;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedCalculations;
+using Energinet.DataHub.Wholesale.Test.Core.FeatureFlag;
 using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -38,12 +39,12 @@ public class CompletedCalculationRepositoryTests : IClassFixture<WholesaleDataba
     [InlineAutoMoqData]
     public async Task AddAsync_AddsCompletedCalculationWithExpectedData(
         CompletedCalculation expectedCalculation,
-        Mock<IFeatureFlagManager> featureFlagManagerMock,
+        FeatureFlagManagerStub featureFlagManager,
         Mock<NodaTime.IClock> clockMock)
     {
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
-        var sut = new CompletedCalculationRepository(writeContext, featureFlagManagerMock.Object, clockMock.Object);
+        var sut = new CompletedCalculationRepository(writeContext, featureFlagManager, clockMock.Object);
         expectedCalculation.PublishedTime = null;
 
         // Act
