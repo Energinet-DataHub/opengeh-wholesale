@@ -173,15 +173,6 @@ resource "azurerm_dns_cname_record" "test002_ui" {
   record              = "agreeable-mud-0a0a24403.3.azurestaticapps.net"
 }
 
-# UI sandbox_002
-resource "azurerm_dns_cname_record" "sandbox002_ui" {
-  name                = "sandbox"
-  zone_name           = azurerm_dns_zone.this.name
-  resource_group_name = azurerm_resource_group.this.name
-  ttl                 = 3600
-  record              = "happy-desert-06b3ac903.4.azurestaticapps.net"
-}
-
 # UI preprod_001
 resource "azurerm_dns_cname_record" "preprod_ui" {
   name                = "preprod"
@@ -199,7 +190,6 @@ resource "azurerm_dns_cname_record" "test002_sauron" {
   ttl                 = 3600
   record              = "black-sky-0fe28c503.4.azurestaticapps.net"
 }
-
 
 # sauron prod_001
 resource "azurerm_dns_cname_record" "prod_sauron" {
