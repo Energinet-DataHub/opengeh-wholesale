@@ -40,5 +40,6 @@ limitations under the License.
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\database-migration\DatabaseMigration.csproj" />
+    <ProjectReference Include="..\Common.Infrastructure\Common.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

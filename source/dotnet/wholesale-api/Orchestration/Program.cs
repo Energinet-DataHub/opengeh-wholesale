@@ -15,10 +15,13 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.FeatureFlag;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Orchestration.Extensions.Builder;
 using Energinet.DataHub.Wholesale.Orchestration.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.FeatureManagement;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
@@ -27,6 +30,10 @@ var host = new HostBuilder()
         // Common
         services.AddApplicationInsightsForIsolatedWorker();
         services.AddHealthChecksForIsolatedWorker();
+
+        // Feature Flag
+        services.AddFeatureManagement();
+        services.AddSingleton<IFeatureFlagManager, MicrosoftFeatureFlagManager>();
 
         // Shared by modules
         services.AddNodaTimeForApplication(context.Configuration);
