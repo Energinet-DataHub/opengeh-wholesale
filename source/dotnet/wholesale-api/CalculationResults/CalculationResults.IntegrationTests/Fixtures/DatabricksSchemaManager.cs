@@ -41,8 +41,13 @@ public class DatabricksSchemaManager
 
         _httpClient = CreateHttpClient(Settings);
 
-        var schemaName = $"{schemaPrefix}_{DateTime.Now:yyyyMMddHHmmss}_{Guid.NewGuid().ToString()[..8]}";
-        DeltaTableOptions = Options.Create(new DeltaTableOptions { SCHEMA_NAME = schemaName });
+        var postfix = $"{DateTime.Now:yyyyMMddHHmmss}_{Guid.NewGuid().ToString()[..8]}";
+        DeltaTableOptions = Options.Create(new DeltaTableOptions
+        {
+            SCHEMA_NAME = $"{schemaPrefix}_output_{postfix}",
+            BasisDataSchemaName = $"{schemaPrefix}_basis_data_{postfix}",
+            SettlementReportSchemaName = $"{schemaPrefix}_settlement_report_{postfix}",
+        });
     }
 
     // TODO JMG: Consider if we can hide these settings or ensure they are readonly in DatabricksWarehouseSettings,
@@ -65,11 +70,12 @@ public class DatabricksSchemaManager
     {
         var sqlStatement = @$"DROP SCHEMA {SchemaName} CASCADE";
         await ExecuteSqlAsync(sqlStatement);
-    }
 
-    public Task InsertAsync<T>(string tableName, IReadOnlyCollection<string> row)
-    {
-        return InsertAsync<T>(tableName, new[] { row });
+        sqlStatement = @$"DROP SCHEMA {DeltaTableOptions.Value.BasisDataSchemaName} CASCADE";
+        await ExecuteSqlAsync(sqlStatement);
+
+        sqlStatement = @$"DROP SCHEMA {DeltaTableOptions.Value.SettlementReportSchemaName} CASCADE";
+        await ExecuteSqlAsync(sqlStatement);
     }
 
     /// <summary>
@@ -116,10 +122,10 @@ public class DatabricksSchemaManager
     private string Replacements(string sqlStatement)
     {
         return sqlStatement
-            .Replace("{OUTPUT_DATABASE_NAME}", SchemaName)
-            .Replace("{INPUT_DATABASE_NAME}", SchemaName)
-            .Replace("{BASIS_DATA_DATABASE_NAME}", SchemaName)
-            .Replace("{SETTLEMENT_REPORT_DATABASE_NAME}", SchemaName)
+            .Replace("{OUTPUT_DATABASE_NAME}", DeltaTableOptions.Value.SCHEMA_NAME)
+            .Replace("{INPUT_DATABASE_NAME}", DeltaTableOptions.Value.SCHEMA_NAME)
+            .Replace("{BASIS_DATA_DATABASE_NAME}", DeltaTableOptions.Value.BasisDataSchemaName)
+            .Replace("{SETTLEMENT_REPORT_DATABASE_NAME}", DeltaTableOptions.Value.SettlementReportSchemaName)
             .Replace("{TEST}", "--");
     }
 
