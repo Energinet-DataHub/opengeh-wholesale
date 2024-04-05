@@ -42,6 +42,7 @@ public class DatabricksSchemaManager
         _httpClient = CreateHttpClient(Settings);
 
         var postfix = $"{DateTime.Now:yyyyMMddHHmmss}_{Guid.NewGuid().ToString()[..8]}";
+
         DeltaTableOptions = Options.Create(new DeltaTableOptions
         {
             SCHEMA_NAME = $"{schemaPrefix}_output_{postfix}",
