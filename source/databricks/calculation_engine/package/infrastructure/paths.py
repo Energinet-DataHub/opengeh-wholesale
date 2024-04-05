@@ -34,6 +34,11 @@ ENERGY_RESULT_TABLE_NAME = "energy_results"
 WHOLESALE_RESULT_TABLE_NAME = "wholesale_results"
 BASIS_DATA_DATABASE_NAME = "basis_data"
 
+# Settlement report database and views
+SETTLEMENT_REPORT_DATABASE_NAME = "settlement_report"
+SETTLEMENT_REPORT_METERING_POINT_PERIODS_VIEW_NAME = "metering_point_periods"
+SETTLEMENT_REPORT_METERING_POINT_TIME_SERIES_VIEW_NAME = "metering_point_time_series"
+
 TEST = ""
 
 # Paths

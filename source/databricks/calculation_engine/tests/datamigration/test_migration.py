@@ -11,16 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pyspark.sql import SparkSession
 from unittest.mock import Mock
+
+import spark_sql_migrations.schema_migration_pipeline as schema_migration_pipeline
+from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField
 
+import package.datamigration.migration as sut
+import package.datamigration.schema_config as schema_config
 import tests.helpers.mock_helper as mock_helper
 import tests.helpers.spark_helper as spark_helper
 import tests.helpers.spark_sql_migration_helper as spark_sql_migration_helper
-import package.datamigration.migration as sut
-import package.datamigration.schema_config as schema_config
-import spark_sql_migrations.schema_migration_pipeline as schema_migration_pipeline
 
 
 def _diff(schema1: StructType, schema2: StructType) -> dict[str, set[StructField]]:
@@ -63,6 +64,9 @@ def test__migrate__when_schema_migration_scripts_are_executed__compare_result_wi
         tables = spark.catalog.listTables(db.name)
         for table in tables:
             if table.tableType == "EXTERNAL":
+                continue
+
+            if table.tableType == "VIEW":
                 continue
 
             table_config = next(

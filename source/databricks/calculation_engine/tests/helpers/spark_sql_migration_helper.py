@@ -14,16 +14,15 @@
 import os
 
 from pyspark.sql import SparkSession
-
-import package.datamigration.constants as c
-
 from spark_sql_migrations import (
     SparkSqlMigrationsConfiguration,
     create_and_configure_container,
     schema_migration_pipeline,
 )
-from package.datamigration.schema_config import schema_config
+
+import package.datamigration.constants as c
 from package.datamigration.migration_script_args import MigrationScriptArgs
+from package.datamigration.schema_config import schema_config
 from package.datamigration.substitutions import substitutions
 
 schema_migration_schema_name = "schema_migration"
@@ -64,6 +63,7 @@ def configure_spark_sql_migration(
         migration_scripts_folder_path=c.MIGRATION_SCRIPTS_FOLDER_PATH,
         current_state_schemas_folder_path=c.CURRENT_STATE_SCHEMAS_FOLDER_PATH,
         current_state_tables_folder_path=c.CURRENT_STATE_TABLES_FOLDER_PATH,
+        current_state_views_folder_path=c.CURRENT_STATE_VIEWS_FOLDER_PATH,
         schema_config=schema_config,
         substitution_variables=updated_substitutions(migration_args, schema_prefix),
         table_prefix=table_prefix,
@@ -108,12 +108,13 @@ def updated_substitutions(
     _substitutions["{BASIS_DATA_DATABASE_NAME}"] = (
         schema_prefix + _substitutions["{BASIS_DATA_DATABASE_NAME}"]
     )
-
     _substitutions["{OUTPUT_FOLDER}"] = (
         schema_prefix + _substitutions["{OUTPUT_FOLDER}"]
     )
     _substitutions["{BASIS_DATA_FOLDER}"] = (
         schema_prefix + _substitutions["{BASIS_DATA_FOLDER}"]
     )
-
+    _substitutions["{SETTLEMENT_REPORT_DATABASE_NAME}"] = (
+        schema_prefix + _substitutions["{SETTLEMENT_REPORT_DATABASE_NAME}"]
+    )
     return _substitutions
