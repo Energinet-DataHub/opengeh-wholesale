@@ -12,47 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.FeatureFlag;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedCalculations;
 
-public class CompletedCalculationRepository : ICompletedCalculationRepository
+public class CompletedCalculationRepository(
+    IEventsDatabaseContext context,
+    IFeatureFlagManager featureFlagManager,
+    IClock clock)
+    : ICompletedCalculationRepository
 {
-    private readonly IEventsDatabaseContext _context;
-    private readonly IClock _clock;
-    private readonly IntegrationEventsOptions _options;
-
-    public CompletedCalculationRepository(
-        IEventsDatabaseContext context,
-        IOptions<IntegrationEventsOptions> options,
-        IClock clock)
-    {
-        _context = context;
-        _clock = clock;
-        _options = options.Value;
-    }
-
     public async Task AddAsync(IEnumerable<CompletedCalculation> completedCalculations)
     {
         var calculations = completedCalculations.ToList();
-        if (_options.DoNotPublishCalculationResults)
+        if (!await featureFlagManager.UsePublishCalculationResultsAsync().ConfigureAwait(false))
         {
             foreach (var completedCalculation in calculations)
             {
-                completedCalculation.PublishedTime = _clock.GetCurrentInstant();
+                completedCalculation.PublishedTime = clock.GetCurrentInstant();
             }
         }
 
-        await _context.CompletedCalculations.AddRangeAsync(calculations).ConfigureAwait(false);
+        await context.CompletedCalculations.AddRangeAsync(calculations).ConfigureAwait(false);
     }
 
     public async Task<CompletedCalculation?> GetLastCompletedOrNullAsync()
     {
-        return await _context.CompletedCalculations
+        return await context.CompletedCalculations
             .OrderByDescending(x => x.CompletedTime)
             .FirstOrDefaultAsync()
             .ConfigureAwait(false);
@@ -60,7 +49,7 @@ public class CompletedCalculationRepository : ICompletedCalculationRepository
 
     public async Task<CompletedCalculation?> GetNextUnpublishedOrNullAsync()
     {
-        return await _context.CompletedCalculations
+        return await context.CompletedCalculations
             .OrderBy(x => x.CompletedTime)
             .Where(x => x.PublishedTime == null)
             .FirstOrDefaultAsync()

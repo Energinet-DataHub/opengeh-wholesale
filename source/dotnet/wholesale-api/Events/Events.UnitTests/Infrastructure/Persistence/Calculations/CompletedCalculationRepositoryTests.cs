@@ -14,7 +14,7 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.FeatureFlag;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedCalculations;
@@ -22,7 +22,6 @@ using Energinet.DataHub.Wholesale.Test.Core;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer.NodaTime.Extensions;
-using Microsoft.Extensions.Options;
 using Moq;
 using Moq.EntityFrameworkCore;
 using Xunit;
@@ -35,14 +34,14 @@ public class CompletedCalculationRepositoryTests
     [InlineAutoMoqData]
     public async Task GetLastCompletedOrNullAsync_WhenNone_ReturnsNull(
         Mock<EventsDatabaseContext> databaseContextMock,
-        Mock<IOptions<IntegrationEventsOptions>> optionsMock,
+        Mock<IFeatureFlagManager> featureFlagManagerMock,
         Mock<NodaTime.IClock> clockMock)
     {
         // Arrange
         databaseContextMock
             .Setup<DbSet<CompletedCalculation>>(context => context.CompletedCalculations)
             .ReturnsDbSet(new List<CompletedCalculation>());
-        var sut = new CompletedCalculationRepository(databaseContextMock.Object, optionsMock.Object, clockMock.Object);
+        var sut = new CompletedCalculationRepository(databaseContextMock.Object, featureFlagManagerMock.Object, clockMock.Object);
 
         // Act
         var actual = await sut.GetLastCompletedOrNullAsync();
@@ -57,7 +56,7 @@ public class CompletedCalculationRepositoryTests
         CompletedCalculation calculationCompletedFirst,
         CompletedCalculation calculationCompletedLast,
         [Frozen] Mock<EventsDatabaseContext> databaseContextMock,
-        [Frozen] Mock<IOptions<IntegrationEventsOptions>> optionsMock,
+        [Frozen] Mock<IFeatureFlagManager> featureFlagManagerMock,
         [Frozen] Mock<NodaTime.IClock> clockMock)
     {
         // Arrange
@@ -66,7 +65,7 @@ public class CompletedCalculationRepositoryTests
         databaseContextMock
             .Setup<DbSet<CompletedCalculation>>(context => context.CompletedCalculations)
             .ReturnsDbSet(new List<CompletedCalculation> { calculationCompletedFirst, calculationCompletedLast });
-        var sut = new CompletedCalculationRepository(databaseContextMock.Object, optionsMock.Object, clockMock.Object);
+        var sut = new CompletedCalculationRepository(databaseContextMock.Object, featureFlagManagerMock.Object, clockMock.Object);
 
         // Act
         var actual = await sut.GetLastCompletedOrNullAsync();
@@ -79,14 +78,14 @@ public class CompletedCalculationRepositoryTests
     [InlineAutoMoqData]
     public async Task GetNextUnpublishedOrNullAsync_WhenNone_ReturnsNull(
         Mock<EventsDatabaseContext> databaseContextMock,
-        Mock<IOptions<IntegrationEventsOptions>> optionsMock,
+        Mock<IFeatureFlagManager> featureFlagManagerMock,
         Mock<NodaTime.IClock> clockMock)
     {
         // Arrange
         databaseContextMock
             .Setup<DbSet<CompletedCalculation>>(context => context.CompletedCalculations)
             .ReturnsDbSet(new List<CompletedCalculation>());
-        var sut = new CompletedCalculationRepository(databaseContextMock.Object, optionsMock.Object, clockMock.Object);
+        var sut = new CompletedCalculationRepository(databaseContextMock.Object, featureFlagManagerMock.Object, clockMock.Object);
 
         // Act
         var actual = await sut.GetNextUnpublishedOrNullAsync();
@@ -101,7 +100,7 @@ public class CompletedCalculationRepositoryTests
         CompletedCalculation calculationCompletedFirst,
         CompletedCalculation calculationCompletedLast,
         [Frozen] Mock<EventsDatabaseContext> databaseContextMock,
-        [Frozen] Mock<IOptions<IntegrationEventsOptions>> optionsMock,
+        [Frozen] Mock<IFeatureFlagManager> featureFlagManagerMock,
         [Frozen] Mock<NodaTime.IClock> clockMock)
     {
         // Arrange
@@ -112,7 +111,7 @@ public class CompletedCalculationRepositoryTests
         databaseContextMock
             .Setup<DbSet<CompletedCalculation>>(context => context.CompletedCalculations)
             .ReturnsDbSet(new List<CompletedCalculation> { calculationCompletedFirst, calculationCompletedLast });
-        var sut = new CompletedCalculationRepository(databaseContextMock.Object, optionsMock.Object, clockMock.Object);
+        var sut = new CompletedCalculationRepository(databaseContextMock.Object, featureFlagManagerMock.Object, clockMock.Object);
 
         // Act
         var actual = await sut.GetNextUnpublishedOrNullAsync();
@@ -126,14 +125,14 @@ public class CompletedCalculationRepositoryTests
     public async Task GetNextUnpublishedOrNullAsync_WhenAllAlreadyPublished_ReturnsNull(
         CompletedCalculation publishedCalculation,
         [Frozen] Mock<EventsDatabaseContext> databaseContextMock,
-        [Frozen] Mock<IOptions<IntegrationEventsOptions>> optionsMock,
+        [Frozen] Mock<IFeatureFlagManager> featureFlagManagerMock,
         [Frozen] Mock<NodaTime.IClock> clockMock)
     {
         // Arrange
         databaseContextMock
             .Setup<DbSet<CompletedCalculation>>(context => context.CompletedCalculations)
             .ReturnsDbSet(new List<CompletedCalculation> { publishedCalculation });
-        var sut = new CompletedCalculationRepository(databaseContextMock.Object, optionsMock.Object, clockMock.Object);
+        var sut = new CompletedCalculationRepository(databaseContextMock.Object, featureFlagManagerMock.Object, clockMock.Object);
 
         // Act
         var actual = await sut.GetNextUnpublishedOrNullAsync();

@@ -13,14 +13,13 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.FeatureFlag;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 
@@ -39,12 +38,12 @@ public class CompletedCalculationRepositoryTests : IClassFixture<WholesaleDataba
     [InlineAutoMoqData]
     public async Task AddAsync_AddsCompletedCalculationWithExpectedData(
         CompletedCalculation expectedCalculation,
-        Mock<IOptions<IntegrationEventsOptions>> optionsMock,
+        Mock<IFeatureFlagManager> featureFlagManagerMock,
         Mock<NodaTime.IClock> clockMock)
     {
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
-        var sut = new CompletedCalculationRepository(writeContext, optionsMock.Object, clockMock.Object);
+        var sut = new CompletedCalculationRepository(writeContext, featureFlagManagerMock.Object, clockMock.Object);
         expectedCalculation.PublishedTime = null;
 
         // Act
@@ -62,16 +61,16 @@ public class CompletedCalculationRepositoryTests : IClassFixture<WholesaleDataba
     [InlineAutoMoqData]
     public async Task AddAsync_AddsCompletedCalculationAsPublished(
         CompletedCalculation expectedCalculation,
-        Mock<IOptions<IntegrationEventsOptions>> optionsMock,
+        Mock<IFeatureFlagManager> featureFlagManagerMock,
         Mock<NodaTime.IClock> clockMock)
     {
         // Arrange
         var currentInstant = NodaTime.SystemClock.Instance.GetCurrentInstant();
         clockMock.Setup(c => c.GetCurrentInstant()).Returns(currentInstant);
-        optionsMock.SetupGet(o => o.Value)
-            .Returns(new IntegrationEventsOptions { DoNotPublishCalculationResults = true });
+        featureFlagManagerMock.Setup(o => o.UsePublishCalculationResultsAsync())
+            .Returns(Task.FromResult(false));
         await using var writeContext = _databaseManager.CreateDbContext();
-        var sut = new CompletedCalculationRepository(writeContext, optionsMock.Object, clockMock.Object);
+        var sut = new CompletedCalculationRepository(writeContext, featureFlagManagerMock.Object, clockMock.Object);
         expectedCalculation.PublishedTime = null;
 
         // Act

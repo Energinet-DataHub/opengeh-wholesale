@@ -12,17 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.ComponentModel.DataAnnotations;
+namespace Energinet.DataHub.Wholesale.Common.Infrastructure.FeatureFlag;
 
-namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
-
-public class IntegrationEventsOptions
+/// <summary>
+/// List of all Feature Flags that exists in the system. A Feature Flag name must correspond to a value found in the app configuration as "FeatureManagement__NameOfFeatureFlag"
+/// </summary>
+public enum FeatureFlagName
 {
-    public const string SectionName = "IntegrationEvents";
-
-    [Required]
-    public string TopicName { get; set; } = string.Empty;
-
-    [Required]
-    public string SubscriptionName { get; set; } = string.Empty;
+    UsePublishCalculationResults,
 }

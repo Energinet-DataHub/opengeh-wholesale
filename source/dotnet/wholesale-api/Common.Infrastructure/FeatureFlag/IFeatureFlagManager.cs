@@ -12,17 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.ComponentModel.DataAnnotations;
+namespace Energinet.DataHub.Wholesale.Common.Infrastructure.FeatureFlag;
 
-namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
-
-public class IntegrationEventsOptions
+public interface IFeatureFlagManager
 {
-    public const string SectionName = "IntegrationEvents";
-
-    [Required]
-    public string TopicName { get; set; } = string.Empty;
-
-    [Required]
-    public string SubscriptionName { get; set; } = string.Empty;
+    /// <summary>
+    /// Whether to allow publishing calculation results
+    /// </summary>
+    Task<bool> UsePublishCalculationResultsAsync();
 }
