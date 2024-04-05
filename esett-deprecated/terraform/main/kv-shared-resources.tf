@@ -3,43 +3,8 @@ data "azurerm_key_vault" "kv_shared_resources" {
   resource_group_name = data.azurerm_resource_group.shared.name
 }
 
-data "azurerm_key_vault_secret" "appi_shared_instrumentation_key" {
-  name         = "appi-shared-instrumentation-key"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "appi_shared_name" {
-  name         = "appi-shared-name"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "plan_shared_id" {
-  name         = "plan-services-id"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
 data "azurerm_key_vault_secret" "ag_primary_id" {
   name         = "ag-primary-id"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "ag_primary_name" {
-  name         = "ag-primary-name"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "snet_private_endpoints_id" {
-  name         = "snet-private-endpoints-id"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "snet_vnet_integration_id" {
-  name         = "snet-vnet-integration-id"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "mssql_data_url" {
-  name         = "mssql-data-url"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
@@ -53,37 +18,7 @@ data "azurerm_key_vault_secret" "mssql_data_elastic_pool_id" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "apim_instance_resource_group_name" {
-  name         = "apim-instance-resource-group-name"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "apim_instance_name" {
-  name         = "apim-instance-name"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "apim_oauth_server_name" {
-  name         = "apim-oauth-server-name"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "apim_logger_id" {
-  name         = "apim-logger-id"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "hc_biztalk_id" {
-  name         = "hc-biztalk-id"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "hc_biztalk_name" {
-  name         = "hc-biztalk-name"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "relay_name" {
-  name         = "relay-name"
+data "azurerm_key_vault_secret" "snet_private_endpoints_id" {
+  name         = "snet-private-endpoints-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }

@@ -27,11 +27,6 @@ module "mssql_database_application_access" {
   database_name   = module.mssqldb_esett.name
 
   application_hosts_names = [
-    module.func_dh2importer.name,
-    module.func_biztalkshipper.name,
-    module.func_biztalkreceiver.name,
-    module.func_changeobserver.name,
-    module.func_converter.name,
-    azuread_application.app_powerbi.display_name,
+    azuread_application.app_powerbi.display_name
   ]
 }
