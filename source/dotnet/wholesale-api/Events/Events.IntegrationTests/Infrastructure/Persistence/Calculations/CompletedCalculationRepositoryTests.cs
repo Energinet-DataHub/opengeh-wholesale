@@ -45,6 +45,7 @@ public class CompletedCalculationRepositoryTests : IClassFixture<WholesaleDataba
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
         var sut = new CompletedCalculationRepository(writeContext, optionsMock.Object, clockMock.Object);
+        expectedCalculation.PublishedTime = null;
 
         // Act
         await sut.AddAsync(new[] { expectedCalculation });
@@ -59,7 +60,7 @@ public class CompletedCalculationRepositoryTests : IClassFixture<WholesaleDataba
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task AddAsync_AddsCompletedCalculationWhenDoNotPublishCalculationResultsWithExpectedData(
+    public async Task AddAsync_AddsCompletedCalculationAsPublished(
         CompletedCalculation expectedCalculation,
         Mock<IOptions<IntegrationEventsOptions>> optionsMock,
         Mock<NodaTime.IClock> clockMock)
@@ -71,7 +72,7 @@ public class CompletedCalculationRepositoryTests : IClassFixture<WholesaleDataba
             .Returns(new IntegrationEventsOptions { DoNotPublishCalculationResults = true });
         await using var writeContext = _databaseManager.CreateDbContext();
         var sut = new CompletedCalculationRepository(writeContext, optionsMock.Object, clockMock.Object);
-        expectedCalculation.PublishedTime = currentInstant;
+        expectedCalculation.PublishedTime = null;
 
         // Act
         await sut.AddAsync(new[] { expectedCalculation });
@@ -81,6 +82,6 @@ public class CompletedCalculationRepositoryTests : IClassFixture<WholesaleDataba
         await using var readContext = _databaseManager.CreateDbContext();
         var actual = await readContext.CompletedCalculations.SingleAsync(b => b.Id == expectedCalculation.Id);
 
-        actual.Should().BeEquivalentTo(expectedCalculation);
+        actual.PublishedTime.Should().Be(currentInstant);
     }
 }
