@@ -17,21 +17,21 @@ using Energinet.DataHub.Wholesale.Edi.Models;
 
 namespace Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
 
-public class SettlementSeriesVersionValidationRule : IValidationRule<DataHub.Edi.Requests.AggregatedTimeSeriesRequest>
+public class SettlementVersionValidationRule : IValidationRule<DataHub.Edi.Requests.AggregatedTimeSeriesRequest>
 {
-    private static readonly IReadOnlyList<string> _validSettlementSeriesVersions = new List<string>
+    private static readonly IReadOnlyList<string> _validSettlementVersions = new List<string>
     {
         DataHubNames.SettlementVersion.FirstCorrection,
         DataHubNames.SettlementVersion.SecondCorrection,
         DataHubNames.SettlementVersion.ThirdCorrection,
     };
 
-    private static readonly ValidationError _invalidSettlementSeriesVersionError = new("SettlementSeriesVersion kan kun benyttes i kombination med D32 og skal være enten D01, D02 eller D03 / SettlementSeriesVersion can only be used in combination with D32 and must be either D01, D02 or D03", "E86");
+    private static readonly ValidationError _invalidSettlementVersionError = new("SettlementSeriesVersion kan kun benyttes i kombination med D32 og skal være enten D01, D02 eller D03 / SettlementSeriesVersion can only be used in combination with D32 and must be either D01, D02 or D03", "E86");
 
     public Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.AggregatedTimeSeriesRequest subject)
     {
         var isCorrection = subject.BusinessReason == DataHubNames.BusinessReason.Correction;
-        var hasSettlementVersion = subject.HasSettlementSeriesVersion;
+        var hasSettlementVersion = subject.HasSettlementVersion;
 
         if (!isCorrection && hasSettlementVersion)
             return Task.FromResult(InvalidSettlementVersionError);
@@ -42,7 +42,7 @@ public class SettlementSeriesVersionValidationRule : IValidationRule<DataHub.Edi
         if (!hasSettlementVersion)
             return Task.FromResult(NoError);
 
-        if (!_validSettlementSeriesVersions.Contains(subject.SettlementSeriesVersion))
+        if (!_validSettlementVersions.Contains(subject.SettlementVersion))
             return Task.FromResult(InvalidSettlementVersionError);
 
         return Task.FromResult(NoError);
@@ -50,5 +50,5 @@ public class SettlementSeriesVersionValidationRule : IValidationRule<DataHub.Edi
 
     private static IList<ValidationError> NoError => new List<ValidationError>();
 
-    private static IList<ValidationError> InvalidSettlementVersionError => new List<ValidationError> { _invalidSettlementSeriesVersionError };
+    private static IList<ValidationError> InvalidSettlementVersionError => new List<ValidationError> { _invalidSettlementVersionError };
 }

@@ -45,7 +45,7 @@ public class WholesaleServicesRequestMapper(DateTimeZone dateTimeZone)
             new Period(
                 periodStart,
                 periodEnd),
-            RequestedCalculationTypeMapper.ToRequestedCalculationType(request.BusinessReason, request.HasSettlementSeriesVersion ? request.SettlementSeriesVersion : null));
+            RequestedCalculationTypeMapper.ToRequestedCalculationType(request.BusinessReason, request.HasSettlementVersion ? request.SettlementVersion : null));
     }
 
     private List<ChargeCodeAndType> MapChargeTypes(RepeatedField<Energinet.DataHub.Edi.Requests.ChargeType> chargeTypes)
