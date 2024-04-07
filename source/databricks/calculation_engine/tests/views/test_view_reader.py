@@ -13,13 +13,14 @@
 # limitations under the License.
 import pathlib
 
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession, dataframe
 
 from features.utils.factories.basis_data.basis_data_metering_point_periods_factory import (
     BasisDataMeteringPointPeriodsFactory as Factory,
 )
 from helpers.data_frame_utils import assert_dataframes_equal
 from package.calculation.basis_data.schemas import metering_point_period_schema
+from package.constants import Colname
 from package.infrastructure.paths import (
     BASIS_DATA_DATABASE_NAME,
     METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME,
@@ -28,27 +29,36 @@ from package.infrastructure.paths import (
 from views.view_reader import ViewReader
 
 
+def create_expected(df: dataframe) -> dataframe:
+    df = df.drop(Colname.resolution)
+    df = df.drop(Colname.parent_metering_point_id)
+    df = df.drop(Colname.balance_responsible_id)
+    return df
+
+
 def test_read_metering_point_periods_returns_expected_from_settlement_report_metering_point_periods_view(
     spark: SparkSession,
     migrations_executed: None,
     tmp_path: pathlib.Path,
 ) -> None:
     """
-    This test verifies that the view metering_point_periods exists in the schema/database settlement_report,
-    and that the view is updated when the basis_data.metering_point_periods table is updated.
+    The test verifies that the view "metering_point_periods" is updated when the underlying
+    basis_data.metering_point_periods table is updated (and that the view exists in the
+    wholesale schema (database) settlement_report).
     """
     # Arrange
     row = Factory.create_row()
-    expected = spark.createDataFrame(data=[row], schema=metering_point_period_schema)
-    expected.write.format("delta").mode("overwrite").saveAsTable(
+    df = spark.createDataFrame(data=[row], schema=metering_point_period_schema)
+    df.write.format("delta").mode("overwrite").saveAsTable(
         f"{BASIS_DATA_DATABASE_NAME}.{METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME}"
     )
-
-    reader = ViewReader(spark, SETTLEMENT_REPORT_DATABASE_NAME)
+    expected = create_expected(df)
+    sut = ViewReader(spark, SETTLEMENT_REPORT_DATABASE_NAME)
 
     # Act
-    actual = reader.read_metering_point_periods()
+    actual = sut.read_metering_point_periods()
 
     # Assert
     actual.show()
+    expected.show()
     assert_dataframes_equal(actual, expected)
