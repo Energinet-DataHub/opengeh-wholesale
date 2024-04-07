@@ -21,12 +21,12 @@ from package.codelists import (
     InputMeteringPointType,
     InputSettlementMethod,
     MeteringPointResolution,
-    CalculationType,
 )
 from package.constants import Colname
 
 
-class InputMeteringPointPeriodsTestFactory:
+class BasisDataMeteringPointPeriodsFactory:
+    CALCULATION_ID = "c6fe53cb-de76-4d0f-9d5c-cd73e46e4be9"
     METERING_POINT_ID = "123456789012345678901234567"
     METERING_POINT_TYPE = InputMeteringPointType.PRODUCTION
     FROM_DATE = datetime(2019, 12, 31, 23, 0, 0)
@@ -45,9 +45,9 @@ class InputMeteringPointPeriodsTestFactory:
 
     @staticmethod
     def create_row(
+        calculation_id: str = CALCULATION_ID,
         metering_point_id: str = METERING_POINT_ID,
         metering_point_type: InputMeteringPointType = METERING_POINT_TYPE,
-        calculation_type: CalculationType | None = None,
         settlement_method: InputSettlementMethod | None = SETTLEMENT_METHOD,
         grid_area: str = GRID_AREA,
         resolution: MeteringPointResolution = RESOLUTION,
@@ -60,10 +60,12 @@ class InputMeteringPointPeriodsTestFactory:
         to_date: datetime | None = TO_DATE,
     ) -> Row:
         row = {
+            Colname.calculation_id: calculation_id,
             Colname.metering_point_id: metering_point_id,
             Colname.metering_point_type: metering_point_type.value,
-            Colname.calculation_type: calculation_type,
-            Colname.settlement_method: settlement_method.value,
+            Colname.settlement_method: (
+                None if settlement_method is None else settlement_method.value
+            ),
             Colname.grid_area: grid_area,
             Colname.resolution: resolution.value,
             Colname.from_grid_area: from_grid_area,
