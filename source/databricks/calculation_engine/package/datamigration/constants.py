@@ -19,3 +19,4 @@ CURRENT_STATE_SCHEMAS_FOLDER_PATH = (
     "package.datamigration.current_state_scripts.schemas"
 )
 CURRENT_STATE_TABLES_FOLDER_PATH = "package.datamigration.current_state_scripts.tables"
+CURRENT_STATE_VIEWS_FOLDER_PATH = "package.datamigration.current_state_scripts.views"

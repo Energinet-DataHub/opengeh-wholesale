@@ -11,16 +11,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pyspark.sql import SparkSession
 from unittest.mock import Mock
-from pyspark.sql.types import StructType, StructField
 
+import spark_sql_migrations.schema_migration_pipeline as schema_migration_pipeline
+from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType, StructField
+from package.infrastructure.paths import (
+    OUTPUT_DATABASE_NAME,
+    INPUT_DATABASE_NAME,
+    BASIS_DATA_DATABASE_NAME,
+    SETTLEMENT_REPORT_DATABASE_NAME,
+)
+import package.datamigration.migration as sut
+import package.datamigration.schema_config as schema_config
 import tests.helpers.mock_helper as mock_helper
 import tests.helpers.spark_helper as spark_helper
 import tests.helpers.spark_sql_migration_helper as spark_sql_migration_helper
-import package.datamigration.migration as sut
-import package.datamigration.schema_config as schema_config
-import spark_sql_migrations.schema_migration_pipeline as schema_migration_pipeline
 
 
 def _diff(schema1: StructType, schema2: StructType) -> dict[str, set[StructField]]:
@@ -63,6 +69,9 @@ def test__migrate__when_schema_migration_scripts_are_executed__compare_result_wi
         tables = spark.catalog.listTables(db.name)
         for table in tables:
             if table.tableType == "EXTERNAL":
+                continue
+
+            if table.tableType == "VIEW":
                 continue
 
             table_config = next(
@@ -161,13 +170,43 @@ def test__current_state_and_migration_scripts__should_give_same_result(
     )
 
     # Act migration scripts
-    spark_sql_migration_helper.migrate(spark)
+    migration_scripts_prefix = "migration_scripts"
+    migration_scripts_substitutions = spark_sql_migration_helper.update_substitutions(
+        spark_sql_migration_helper.get_migration_script_args(spark),
+        {
+            "{OUTPUT_DATABASE_NAME}": f"{migration_scripts_prefix}{OUTPUT_DATABASE_NAME}",
+            "{INPUT_DATABASE_NAME}": f"{migration_scripts_prefix}{INPUT_DATABASE_NAME}",
+            "{BASIS_DATA_DATABASE_NAME}": f"{migration_scripts_prefix}{BASIS_DATA_DATABASE_NAME}",
+            "{SETTLEMENT_REPORT_DATABASE_NAME}": f"{migration_scripts_prefix}{SETTLEMENT_REPORT_DATABASE_NAME}",
+            "{OUTPUT_FOLDER}": "migration_test",
+        },
+    )
+    spark_sql_migration_helper.configure_spark_sql_migration(
+        spark,
+        substitution_variables=migration_scripts_substitutions,
+        location="migration_test",
+        table_prefix="migration_",
+    )
+    schema_migration_pipeline.migrate()
 
     # Act current state scripts
     current_state_prefix = "current_state"
+
+    substitutions = spark_sql_migration_helper.update_substitutions(
+        spark_sql_migration_helper.get_migration_script_args(spark),
+        {
+            "{OUTPUT_DATABASE_NAME}": f"{current_state_prefix}{OUTPUT_DATABASE_NAME}",
+            "{INPUT_DATABASE_NAME}": f"{current_state_prefix}{INPUT_DATABASE_NAME}",
+            "{BASIS_DATA_DATABASE_NAME}": f"{current_state_prefix}{BASIS_DATA_DATABASE_NAME}",
+            "{SETTLEMENT_REPORT_DATABASE_NAME}": f"{current_state_prefix}{SETTLEMENT_REPORT_DATABASE_NAME}",
+            "{OUTPUT_FOLDER}": "migration_test",
+        },
+    )
     spark_sql_migration_helper.configure_spark_sql_migration(
         spark,
-        schema_prefix=current_state_prefix,
+        substitution_variables=substitutions,
+        location="migration_test",
+        table_prefix="migration_",
     )
     schema_migration_pipeline._migrate(0)
 
@@ -184,7 +223,9 @@ def test__current_state_and_migration_scripts__should_give_same_result(
 
     for schema in schema_config.schema_config:
         for table in schema.tables:
-            migration_script_table_name = f"{schema.name}.{table.name}"
+            migration_script_table_name = (
+                f"{migration_scripts_prefix}{schema.name}.{table.name}"
+            )
             current_state_script_tag = (
                 f"{current_state_prefix}{schema.name}.{table.name}"
             )
@@ -193,16 +234,23 @@ def test__current_state_and_migration_scripts__should_give_same_result(
             current_state_table_df = spark.table(current_state_script_tag)
             assert migration_script_table_df.schema == current_state_table_df.schema
 
-            # Assert constraints
-            migration_script_details = (
-                spark.sql(f"DESCRIBE DETAIL {migration_script_table_name}")
-                .select("properties")
-                .collect()
-            )
-            current_state_details = (
-                spark.sql(f"DESCRIBE DETAIL {current_state_script_tag}")
-                .select("properties")
-                .collect()
-            )
+            # Assert properties and location
+            migration_script_details = spark.sql(
+                f"DESCRIBE DETAIL {migration_script_table_name}"
+            ).collect()[0]
+            current_state_details = spark.sql(
+                f"DESCRIBE DETAIL {current_state_script_tag}"
+            ).collect()[0]
 
-            assert migration_script_details == current_state_details
+            migrations_script_location = migration_script_details["location"]
+            current_state_location = current_state_details["location"].replace(
+                current_state_prefix, ""
+            )
+            assert (
+                migrations_script_location == current_state_location
+            ), f"{migration_script_table_name} and {current_state_script_tag} have different locations"
+
+            assert (
+                migration_script_details["properties"]
+                == current_state_details["properties"]
+            ), f"{migration_script_table_name} and {current_state_script_tag} have different properties"

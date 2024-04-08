@@ -24,10 +24,10 @@ from package.codelists import MeteringPointType
 from package.constants import Colname
 
 
-class TestWhenMeteringPointPeriodsHasMeteringPointTypesThatIsNotExchange:
+class TestWhenMeteringPointPeriodsHasMeteringPointType:
     @pytest.mark.parametrize(
         "metering_point_type",
-        [t for t in MeteringPointType if t != MeteringPointType.EXCHANGE],
+        [t for t in MeteringPointType],
     )
     def test__returns_metering_points(
         self,

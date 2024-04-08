@@ -14,16 +14,15 @@
 import os
 
 from pyspark.sql import SparkSession
-
-import package.datamigration.constants as c
-
 from spark_sql_migrations import (
     SparkSqlMigrationsConfiguration,
     create_and_configure_container,
     schema_migration_pipeline,
 )
-from package.datamigration.schema_config import schema_config
+
+import package.datamigration.constants as c
 from package.datamigration.migration_script_args import MigrationScriptArgs
+from package.datamigration.schema_config import schema_config
 from package.datamigration.substitutions import substitutions
 
 schema_migration_schema_name = "schema_migration"
@@ -33,28 +32,22 @@ schema_migration_table_name = "executed_migrations"
 
 def migrate(
     spark: SparkSession,
-    schema_prefix: str = "",
     table_prefix: str = "",
     location: str = schema_migration_location,
+    substitution_variables: dict[str, str] = None,
 ) -> None:
-    configure_spark_sql_migration(spark, schema_prefix, table_prefix, location)
+    configure_spark_sql_migration(spark, table_prefix, location, substitution_variables)
     schema_migration_pipeline.migrate()
 
 
 def configure_spark_sql_migration(
     spark: SparkSession,
-    schema_prefix: str = "",
     table_prefix: str = "",
     location: str = schema_migration_location,
+    substitution_variables: dict[str, str] = None,
 ) -> None:
-    migration_args = MigrationScriptArgs(
-        data_storage_account_url="url",
-        data_storage_account_name="data",
-        calculation_input_folder="calculation_input",
-        spark=spark,
-        storage_container_path="container",
-        schema_migration_storage_container_path="container",
-    )
+    if substitution_variables is None:
+        substitution_variables = update_substitutions(get_migration_script_args(spark))
 
     configuration = SparkSqlMigrationsConfiguration(
         migration_schema_name=schema_migration_schema_name,
@@ -64,12 +57,24 @@ def configure_spark_sql_migration(
         migration_scripts_folder_path=c.MIGRATION_SCRIPTS_FOLDER_PATH,
         current_state_schemas_folder_path=c.CURRENT_STATE_SCHEMAS_FOLDER_PATH,
         current_state_tables_folder_path=c.CURRENT_STATE_TABLES_FOLDER_PATH,
+        current_state_views_folder_path=c.CURRENT_STATE_VIEWS_FOLDER_PATH,
         schema_config=schema_config,
-        substitution_variables=updated_substitutions(migration_args, schema_prefix),
+        substitution_variables=substitution_variables,
         table_prefix=table_prefix,
     )
 
     create_and_configure_container(configuration)
+
+
+def get_migration_script_args(spark: SparkSession) -> MigrationScriptArgs:
+    return MigrationScriptArgs(
+        data_storage_account_url="url",
+        data_storage_account_name="data",
+        calculation_input_folder="calculation_input",
+        spark=spark,
+        storage_container_path="container",
+        schema_migration_storage_container_path="container",
+    )
 
 
 def migrate_with_current_state(spark: SparkSession) -> None:
@@ -94,26 +99,12 @@ def migrate_with_current_state(spark: SparkSession) -> None:
         )
 
 
-def updated_substitutions(
-    migration_args: MigrationScriptArgs, schema_prefix: str = ""
+def update_substitutions(
+    migration_args: MigrationScriptArgs, replacements: dict[str, str] = {}
 ) -> dict[str, str]:
     _substitutions = substitutions(migration_args)
 
-    _substitutions["{OUTPUT_DATABASE_NAME}"] = (
-        schema_prefix + _substitutions["{OUTPUT_DATABASE_NAME}"]
-    )
-    _substitutions["{INPUT_DATABASE_NAME}"] = (
-        schema_prefix + _substitutions["{INPUT_DATABASE_NAME}"]
-    )
-    _substitutions["{BASIS_DATA_DATABASE_NAME}"] = (
-        schema_prefix + _substitutions["{BASIS_DATA_DATABASE_NAME}"]
-    )
-
-    _substitutions["{OUTPUT_FOLDER}"] = (
-        schema_prefix + _substitutions["{OUTPUT_FOLDER}"]
-    )
-    _substitutions["{BASIS_DATA_FOLDER}"] = (
-        schema_prefix + _substitutions["{BASIS_DATA_FOLDER}"]
-    )
+    for key, value in replacements.items():
+        _substitutions[key] = value
 
     return _substitutions
