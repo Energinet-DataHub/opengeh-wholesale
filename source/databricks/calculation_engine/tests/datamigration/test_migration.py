@@ -19,6 +19,8 @@ from pyspark.sql.types import StructType, StructField
 from package.infrastructure.paths import (
     OUTPUT_DATABASE_NAME,
     INPUT_DATABASE_NAME,
+    BASIS_DATA_DATABASE_NAME,
+    SETTLEMENT_REPORT_DATABASE_NAME,
 )
 import package.datamigration.migration as sut
 import package.datamigration.schema_config as schema_config
@@ -174,6 +176,8 @@ def test__current_state_and_migration_scripts__should_give_same_result(
         {
             "{OUTPUT_DATABASE_NAME}": f"{migration_scripts_prefix}{OUTPUT_DATABASE_NAME}",
             "{INPUT_DATABASE_NAME}": f"{migration_scripts_prefix}{INPUT_DATABASE_NAME}",
+            "{BASIS_DATA_DATABASE_NAME}": f"{migration_scripts_prefix}{BASIS_DATA_DATABASE_NAME}",
+            "{SETTLEMENT_REPORT_DATABASE_NAME}": f"{migration_scripts_prefix}{SETTLEMENT_REPORT_DATABASE_NAME}",
             "{OUTPUT_FOLDER}": "migration_test",
         },
     )
@@ -193,6 +197,8 @@ def test__current_state_and_migration_scripts__should_give_same_result(
         {
             "{OUTPUT_DATABASE_NAME}": f"{current_state_prefix}{OUTPUT_DATABASE_NAME}",
             "{INPUT_DATABASE_NAME}": f"{current_state_prefix}{INPUT_DATABASE_NAME}",
+            "{BASIS_DATA_DATABASE_NAME}": f"{current_state_prefix}{BASIS_DATA_DATABASE_NAME}",
+            "{SETTLEMENT_REPORT_DATABASE_NAME}": f"{current_state_prefix}{SETTLEMENT_REPORT_DATABASE_NAME}",
             "{OUTPUT_FOLDER}": "migration_test",
         },
     )
