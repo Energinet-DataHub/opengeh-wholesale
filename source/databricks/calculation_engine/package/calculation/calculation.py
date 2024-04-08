@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pyspark.sql.functions import col
+import pyspark.sql.functions as f
 
 from package.calculation.energy.calculated_grid_loss import (
     add_calculated_grid_loss_to_metering_point_times_series,
@@ -29,7 +29,7 @@ from .output.wholesale_results import write_wholesale_results
 from .preparation import PreparedDataReader
 from .wholesale import wholesale_calculation
 from .wholesale.get_metering_points_and_child_metering_points import (
-    get_metering_points_and_child_metering_points,
+    get_child_metering_points_with_energy_suppliers,
 )
 from ..codelists import MeteringPointType
 from ..codelists.calculation_type import is_wholesale_calculation_type
@@ -49,19 +49,19 @@ def _execute(
 
     with logging_configuration.start_span("calculation.prepare"):
         # cache of metering_point_time_series had no effect on performance (01-12-2023)
-        metering_point_periods_df = prepared_data_reader.get_metering_point_periods_df(
+        all_metering_point_periods = prepared_data_reader.get_metering_point_periods_df(
             args.calculation_period_start_datetime,
             args.calculation_period_end_datetime,
             args.calculation_grid_areas,
         )
 
         grid_loss_responsible_df = prepared_data_reader.get_grid_loss_responsible(
-            args.calculation_grid_areas, metering_point_periods_df
+            args.calculation_grid_areas, all_metering_point_periods
         )
 
         metering_point_periods_df_without_grid_loss = (
             prepared_data_reader.get_metering_point_periods_without_grid_loss(
-                metering_point_periods_df
+                all_metering_point_periods
             )
         )
 
@@ -94,8 +94,10 @@ def _execute(
         )
     )
 
-    metering_point_periods = get_metering_points_and_child_metering_points(
-        metering_point_periods_df
+    metering_point_periods = all_metering_point_periods.filter(
+        (f.col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
+        | (f.col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
+        | (f.col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value)
     )
 
     if is_wholesale_calculation_type(args.calculation_type):
@@ -105,9 +107,18 @@ def _execute(
                 args.calculation_period_end_datetime,
             )
 
+            child_metering_points = get_child_metering_points_with_energy_suppliers(
+                all_metering_point_periods
+            )
+            metering_point_periods = (
+                metering_point_periods.union(
+                    child_metering_points
+                )
+            )
+
             # Removes all exchange metering points
             wholesale_metering_point_periods = metering_point_periods.filter(
-                col(Colname.metering_point_type) != MeteringPointType.EXCHANGE.value
+                f.col(Colname.metering_point_type) != MeteringPointType.EXCHANGE.value
             )
 
             prepared_charges = prepared_data_reader.get_prepared_charges(
