@@ -32,9 +32,6 @@ def calculate(
         monthly_amounts_per_charge
     )
 
-    total_amount_with_tax.show()
-    total_amount_without_tax.show()
-
     total_monthly_amount = total_amount_without_tax.join(
         total_amount_with_tax,
         (
@@ -60,8 +57,6 @@ def calculate(
             ).otherwise(0)
         ).alias(Colname.total_amount),
     )
-
-    total_monthly_amount.show()
 
     return TotalMonthlyAmount(total_monthly_amount)
 

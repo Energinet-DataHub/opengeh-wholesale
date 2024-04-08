@@ -25,7 +25,7 @@ from package.calculation.wholesale.total_monthly_amount_calculator import calcul
 
 
 SYSTEM_OPERATOR_ID = "system_operator_id"
-GRID_AREA_PROVIDER_ID = "system_operator_id"
+GRID_ACCESS_PROVIDER_ID = "grid_access_provider_id"
 
 
 def test__calculate__when_all_monthly_amounts_are_without_tax__sums_all_amounts(
@@ -65,7 +65,7 @@ def test__calculate__when_all_monthly_amounts_are_without_tax__sums_all_amounts(
     "charge_owner, expected",
     [
         [SYSTEM_OPERATOR_ID, Decimal("1.000000")],
-        [GRID_AREA_PROVIDER_ID, Decimal("2.000000")],
+        [GRID_ACCESS_PROVIDER_ID, Decimal("2.000000")],
     ],
 )
 def test__calculate__adds_tax_amount_if_not_system_operator(
