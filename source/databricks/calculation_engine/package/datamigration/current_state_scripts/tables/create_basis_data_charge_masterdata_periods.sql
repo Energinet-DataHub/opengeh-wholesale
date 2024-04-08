@@ -1,0 +1,48 @@
+CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.charge_masterdata_periods
+(
+    calculation_id STRING NOT NULL,
+    charge_key STRING NOT NULL,
+    charge_code STRING NOT NULL,
+    charge_type STRING NOT NULL,
+    charge_owner_id STRING NOT NULL,
+    resolution STRING NOT NULL,
+    is_tax BOOLEAN NOT NULL,
+    from_date TIMESTAMP NOT NULL,
+    to_date TIMESTAMP
+)
+USING DELTA
+-- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
+-- In the production it is set to empty and the respective location is used. This means the production tables won't be deleted if the schema is.
+{TEST}LOCATION '{CONTAINER_PATH}/{BASIS_DATA_FOLDER}/charge_masterdata_periods'
+GO
+
+-- Constraints --
+
+ALTER TABLE {BASIS_DATA_DATABASE_NAME}.charge_masterdata_periods
+    DROP CONSTRAINT IF EXISTS calculation_id_chk
+GO
+ALTER TABLE {BASIS_DATA_DATABASE_NAME}.charge_masterdata_periods
+    ADD CONSTRAINT calculation_id_chk CHECK (LENGTH(calculation_id) = 36)
+GO
+
+ALTER TABLE {BASIS_DATA_DATABASE_NAME}.charge_masterdata_periods
+    DROP CONSTRAINT IF EXISTS charge_type_chk
+GO
+ALTER TABLE {BASIS_DATA_DATABASE_NAME}.charge_masterdata_periods
+    ADD CONSTRAINT charge_type_chk CHECK (charge_type IN ('subscription', 'fee', 'tariff'))
+GO
+
+ALTER TABLE {BASIS_DATA_DATABASE_NAME}.charge_masterdata_periods
+    DROP CONSTRAINT IF EXISTS charge_owner_id_chk
+GO
+-- Length is 16 when EIC and 13 when GLN
+ALTER TABLE {BASIS_DATA_DATABASE_NAME}.charge_masterdata_periods
+    ADD CONSTRAINT charge_owner_id_chk CHECK (LENGTH(charge_owner_id) = 13 OR LENGTH(charge_owner_id) = 16)
+GO
+
+ALTER TABLE {BASIS_DATA_DATABASE_NAME}.charge_masterdata_periods
+    DROP CONSTRAINT IF EXISTS resolution_chk
+GO
+ALTER TABLE {BASIS_DATA_DATABASE_NAME}.charge_masterdata_periods
+    ADD CONSTRAINT resolution_chk CHECK (resolution IN ('PT1H', 'P1D', 'P1M'))
+GO
