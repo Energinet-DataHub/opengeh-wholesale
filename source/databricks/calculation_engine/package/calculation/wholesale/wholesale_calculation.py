@@ -17,6 +17,7 @@ import package.calculation.output.wholesale_storage_model_factory as factory
 import package.calculation.wholesale.fee_calculators as fee_calculator
 import package.calculation.wholesale.subscription_calculators as subscription_calculator
 import package.calculation.wholesale.tariff_calculators as tariff_calculator
+import package.calculation.wholesale.total_amount_calculator as total_amount_calculator
 import package.calculation.preparation.data_structures as d
 from .sum_within_month import sum_within_month
 
@@ -152,4 +153,16 @@ def _calculate_tariff_charges(
         args,
         monthly_tariff_from_daily_per_ga_co_es,
         AmountType.MONTHLY_AMOUNT_PER_CHARGE,
+    )
+
+
+@logging_configuration.use_span("calculate_total_monthly_amount")
+def _calculate_total_monthly_amount(
+    results: WholesaleResultsContainer,
+) -> None:
+    total_monthly_amount = total_amount_calculator.calculate(
+        results.monthly_subscription_per_ga_co_es,
+        results.monthly_fee_per_ga_co_es,
+        results.monthly_tariff_from_hourly_per_ga_co_es,
+        results.monthly_tariff_from_daily_per_ga_co_es,
     )
