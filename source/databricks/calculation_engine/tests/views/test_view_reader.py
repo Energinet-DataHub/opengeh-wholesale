@@ -15,10 +15,10 @@ import pathlib
 
 from pyspark.sql import SparkSession, dataframe
 
-from features.utils.factories.basis_data.basis_data_metering_point_periods_factory import (
+from features.utils import (
     BasisDataMeteringPointPeriodsFactory,
 )
-from features.utils.view_factories.settlement_report_metering_point_periods_view_test_factory import (
+from features.utils import (
     SettlementReportMeteringPointPeriodsViewTestFactory,
 )
 from helpers.data_frame_utils import assert_dataframes_equal
