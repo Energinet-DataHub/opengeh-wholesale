@@ -72,6 +72,41 @@ def create_row(
     return Row(**row)
 
 
+def create_monthly_amount_row(
+    grid_area: str = "543",
+    energy_supplier_id: str = "1234567890123",
+    unit: str = "kWh",
+    qualities: list[ChargeQuality] | None = None,
+    charge_time: datetime = datetime.datetime.now(),
+    resolution: str = "PT1H",
+    total_amount: int | Decimal | None = None,
+    charge_tax: bool = True,
+    charge_code: str = "4000",
+    charge_type: str = "TARIFF",
+    charge_owner: str = "001",
+) -> Row:
+
+    row = {
+        Colname.grid_area: grid_area,
+        Colname.energy_supplier_id: energy_supplier_id,
+        Colname.total_quantity: None,
+        Colname.unit: unit,
+        Colname.qualities: qualities,
+        Colname.charge_time: charge_time,
+        Colname.resolution: resolution,
+        Colname.metering_point_type: None,
+        Colname.settlement_method: None,
+        Colname.charge_price: None,
+        Colname.total_amount: total_amount,
+        Colname.charge_tax: charge_tax,
+        Colname.charge_code: charge_code,
+        Colname.charge_type: charge_type,
+        Colname.charge_owner: charge_owner,
+    }
+
+    return Row(**row)
+
+
 def create(
     spark: SparkSession, data: None | Row | list[Row] = None
 ) -> WholesaleResults:

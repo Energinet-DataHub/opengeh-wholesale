@@ -22,7 +22,7 @@ from package.codelists import (
 )
 from package.constants import Colname
 import tests.calculation.wholesale.wholesale_results_factory as wholesale_results_factory
-
+from package.calculation.wholesale.total_monthly_amount_calculator import calculate
 
 PERIOD_START_DATETIME = datetime(2019, 12, 31, 23)
 
@@ -41,7 +41,7 @@ def test__sum_within_month__sums_amount_per_month(
     ]
     df = wholesale_results_factory.create(spark, rows)
     # Act
-    actual = sum_within_month(
+    actual = calculate(
         df,
         PERIOD_START_DATETIME,
     ).df

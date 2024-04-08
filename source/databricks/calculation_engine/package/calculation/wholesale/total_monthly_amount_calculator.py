@@ -15,6 +15,9 @@
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 
+from package.calculation.wholesale.data_structures.total_montly_amount import (
+    TotalMonthlyAmount,
+)
 from package.constants import Colname
 
 
@@ -23,7 +26,7 @@ def calculate(
     monthly_fees: DataFrame,
     monthly_tariffs_from_hourly: DataFrame,
     monthly_tariffs_from_daily: DataFrame,
-) -> DataFrame:
+) -> TotalMonthlyAmount:
 
     total_amount_with_tax = _calculate_total_amount_with_charge_tax(
         monthly_tariffs_from_daily, monthly_tariffs_from_hourly
@@ -36,7 +39,7 @@ def calculate(
         monthly_tariffs_from_hourly,
     )
 
-    total_amount = total_amount_without_tax.join(
+    total_monthly_amount = total_amount_without_tax.join(
         total_amount_with_tax, [Colname.grid_area, Colname.charge_owner]
     ).select(
         total_amount_without_tax[Colname.grid_area],
@@ -52,7 +55,7 @@ def calculate(
         ).otherwise(0),
     )
 
-    return total_amount
+    return TotalMonthlyAmount(total_monthly_amount)
 
 
 def _calculate_total_amount_without_charge_tax(
