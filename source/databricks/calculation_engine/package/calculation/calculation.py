@@ -110,6 +110,7 @@ def _execute(
             child_metering_points = get_child_metering_points_with_energy_suppliers(
                 all_metering_point_periods
             )
+
             metering_point_periods = (
                 metering_point_periods.union(
                     child_metering_points
