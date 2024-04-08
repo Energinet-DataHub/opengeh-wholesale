@@ -22,6 +22,11 @@ from package.infrastructure.paths import (
 
 
 class ViewReader:
+    """
+    This class is responsible for fetching data from settlement report views and is only used
+    in tests of settlement report views.
+    """
+
     def __init__(
         self,
         spark: SparkSession,
