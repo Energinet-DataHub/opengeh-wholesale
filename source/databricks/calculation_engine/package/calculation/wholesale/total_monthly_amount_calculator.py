@@ -37,24 +37,31 @@ def calculate(
 
     total_monthly_amount = total_amount_without_tax.join(
         total_amount_with_tax,
-        [
-            Colname.grid_area,
-            Colname.charge_owner,
-        ],
+        (
+            total_amount_without_tax[Colname.grid_area]
+            == total_amount_with_tax[Colname.grid_area]
+        )
+        & (
+            total_amount_without_tax[Colname.charge_owner]
+            != total_amount_with_tax[Colname.charge_owner]
+        ),
         "left",
     ).select(
         total_amount_without_tax[Colname.grid_area],
         total_amount_without_tax[Colname.charge_owner],
         total_amount_without_tax[Colname.energy_supplier_id],
         total_amount_without_tax[Colname.charge_time],
-        total_amount_without_tax[Colname.total_amount],
         # Add total amount with tax to total amount without tax if it exists
-        total_amount_without_tax[Colname.total_amount]
-        + f.when(
-            total_amount_with_tax[Colname.total_amount].isNotNull(),
-            total_amount_with_tax[Colname.total_amount],
-        ).otherwise(0),
+        (
+            total_amount_without_tax[Colname.total_amount]
+            + f.when(
+                total_amount_with_tax[Colname.total_amount].isNotNull(),
+                total_amount_with_tax[Colname.total_amount],
+            ).otherwise(0)
+        ).alias(Colname.total_amount),
     )
+
+    total_monthly_amount.show()
 
     return TotalMonthlyAmount(total_monthly_amount)
 
