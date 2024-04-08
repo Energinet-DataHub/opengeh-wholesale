@@ -14,7 +14,7 @@
 
 using Azure.Identity;
 using Azure.Storage.Files.DataLake;
-using Energinet.DataHub.Core.App.Common.Extensions.Options;
+using Energinet.DataHub.Core.App.WebApp.Extensions.Options;
 using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
@@ -23,7 +23,6 @@ using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
-using Energinet.DataHub.Wholesale.WebApi.Extensions.Options;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.Components;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 using Microsoft.Extensions.Configuration;
@@ -75,9 +74,18 @@ public class WholesaleWebApiFixture : WebApiFixture
             $"{nameof(ConnectionStringsOptions.ConnectionStrings)}__{nameof(ConnectionStringsOptions.DB_CONNECTION_STRING)}",
             DatabaseManager.ConnectionString);
 
-        Environment.SetEnvironmentVariable(nameof(JwtOptions.EXTERNAL_OPEN_ID_URL), "disabled");
-        Environment.SetEnvironmentVariable(nameof(JwtOptions.INTERNAL_OPEN_ID_URL), "disabled");
-        Environment.SetEnvironmentVariable(nameof(JwtOptions.BACKEND_BFF_APP_ID), "disabled");
+        Environment.SetEnvironmentVariable(
+            $"{AuthenticationOptions.SectionName}__{nameof(AuthenticationOptions.MitIdExternalMetadataAddress)}",
+            "disabled");
+        Environment.SetEnvironmentVariable(
+            $"{AuthenticationOptions.SectionName}__{nameof(AuthenticationOptions.ExternalMetadataAddress)}",
+            "disabled");
+        Environment.SetEnvironmentVariable(
+            $"{AuthenticationOptions.SectionName}__{nameof(AuthenticationOptions.BackendBffAppId)}",
+            "disabled");
+        Environment.SetEnvironmentVariable(
+            $"{AuthenticationOptions.SectionName}__{nameof(AuthenticationOptions.InternalMetadataAddress)}",
+            "disabled");
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
 
         // New options property names

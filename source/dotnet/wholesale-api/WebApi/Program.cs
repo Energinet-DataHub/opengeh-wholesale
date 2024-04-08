@@ -16,9 +16,6 @@ using System.Reflection;
 using System.Text.Json.Serialization;
 using Asp.Versioning;
 using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
-using Energinet.DataHub.Core.App.WebApp.Authentication;
-using Energinet.DataHub.Core.App.WebApp.Authorization;
-using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.DependencyInjection;
@@ -67,9 +64,9 @@ builder.Services.AddApiVersioningForWebApp(new ApiVersion(3, 0));
 
 // => Authentication/authorization
 builder.Services
-    .AddTokenAuthenticationForWebApp(builder.Configuration)
+    .AddJwtBearerAuthenticationForWebApp(builder.Configuration)
     .AddUserAuthenticationForWebApp<FrontendUser, FrontendUserProvider>()
-    .AddPermissionAuthorization();
+    .AddPermissionAuthorizationForWebApp();
 
 var app = builder.Build();
 
@@ -86,7 +83,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 if (!app.Environment.IsEnvironment("Testing"))
 {
-    app.UseUserMiddleware<FrontendUser>();
+    app.UseUserMiddlewareForWebApp<FrontendUser>();
 }
 
 app.MapControllers().RequireAuthorization();

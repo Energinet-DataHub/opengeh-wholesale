@@ -13,10 +13,8 @@
 // limitations under the License.
 
 using System.Reflection;
-using Energinet.DataHub.Core.App.Common.Extensions.Options;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
-using Energinet.DataHub.Wholesale.WebApi.Extensions.Options;
 using FluentAssertions;
 using Xunit;
 
@@ -25,7 +23,6 @@ namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.WebApi.Configuration.Opti
 public class OptionsTests
 {
     [Theory]
-    [InlineAutoMoqData(typeof(JwtOptions), 3, "EXTERNAL_OPEN_ID_URL", "INTERNAL_OPEN_ID_URL", "BACKEND_BFF_APP_ID")]
     [InlineAutoMoqData(typeof(DataLakeOptions), 4, "STORAGE_ACCOUNT_URI", "STORAGE_CONTAINER_NAME", "DATALAKE_HEALTH_CHECK_START", "DATALAKE_HEALTH_CHECK_END")]
     [InlineAutoMoqData(typeof(ConnectionStringsOptions), 1, "DB_CONNECTION_STRING")]
     [InlineAutoMoqData(typeof(DeltaTableOptions), 5, "SCHEMA_NAME", "BasisDataSchemaName", "SettlementReportSchemaName", "ENERGY_RESULTS_TABLE_NAME", "WHOLESALE_RESULTS_TABLE_NAME")]
