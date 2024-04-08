@@ -23,42 +23,54 @@ import tests.calculation.wholesale.wholesale_results_factory as wholesale_result
 from package.calculation.wholesale.total_monthly_amount_calculator import calculate
 
 
-def test__calculate__when_no_charge_tax_in_group__sums_all_amounts(
+SYSTEM_OPERATOR_ID = "system_operator_id"
+GRID_PROVIDER_ID = "system_operator_id"
+
+
+def _create_default_monthly_subscription(
     spark: SparkSession,
-) -> None:
-    # Arrange
-    monthly_tariffs_from_hourly = wholesale_results_factory.create(
+) -> wholesale_results_factory.WholesaleResults:
+    return wholesale_results_factory.create(
+        spark,
+        wholesale_results_factory.create_monthly_amount_row(
+            charge_type=ChargeType.SUBSCRIPTION,
+            total_amount=Decimal("1"),
+        ),
+    )
+
+
+def _create_default_monthly_fee(
+    spark: SparkSession,
+) -> wholesale_results_factory.WholesaleResults:
+    return wholesale_results_factory.create(
+        spark,
+        wholesale_results_factory.create_monthly_amount_row(
+            charge_type=ChargeType.FEE,
+            total_amount=Decimal("1"),
+        ),
+    )
+
+
+def _create_default_monthly_tariff(
+    spark: SparkSession,
+) -> wholesale_results_factory.WholesaleResults:
+    return wholesale_results_factory.create(
         spark,
         wholesale_results_factory.create_monthly_amount_row(
             charge_type=ChargeType.TARIFF,
             total_amount=Decimal("1"),
-            charge_tax=False,
         ),
     )
-    monthly_tariffs_from_daily = wholesale_results_factory.create(
-        spark,
-        wholesale_results_factory.create_monthly_amount_row(
-            charge_type=ChargeType.TARIFF,
-            total_amount=Decimal("2"),
-            charge_tax=False,
-        ),
-    )
-    monthly_fees = wholesale_results_factory.create(
-        spark,
-        wholesale_results_factory.create_monthly_amount_row(
-            charge_type=ChargeType.FEE,
-            total_amount=Decimal("3"),
-            charge_tax=False,
-        ),
-    )
-    monthly_subscriptions = wholesale_results_factory.create(
-        spark,
-        wholesale_results_factory.create_monthly_amount_row(
-            charge_type=ChargeType.SUBSCRIPTION,
-            total_amount=Decimal("4"),
-            charge_tax=False,
-        ),
-    )
+
+
+def test__calculate__when_no_charge_tax_in_group__sums_all_amounts(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    monthly_tariffs_from_hourly = _create_default_monthly_tariff(spark)
+    monthly_tariffs_from_daily = _create_default_monthly_tariff(spark)
+    monthly_fees = _create_default_monthly_fee(spark)
+    monthly_subscriptions = _create_default_monthly_subscription(spark)
 
     # Act
     actual = calculate(
@@ -69,21 +81,30 @@ def test__calculate__when_no_charge_tax_in_group__sums_all_amounts(
     ).df
 
     # Assert
-    assert actual.collect()[0][Colname.total_amount] == Decimal("10.000000")
+    assert actual.collect()[0][Colname.total_amount] == Decimal("4.000000")
     assert actual.count() == 1
 
 
-def test__calculate__sets_charge_time(
+def test__calculate__tax_amount_is_added_to_other_charge_owners(
     spark: SparkSession,
 ) -> None:
     # Arrange
     monthly_tariffs_from_hourly = wholesale_results_factory.create(
         spark,
-        wholesale_results_factory.create_monthly_amount_row(
-            charge_type=ChargeType.TARIFF,
-            total_amount=Decimal("1"),
-            charge_tax=False,
-        ),
+        [
+            wholesale_results_factory.create_monthly_amount_row(
+                charge_type=ChargeType.TARIFF,
+                total_amount=Decimal("1"),
+                charge_owner=GRID_PROVIDER_ID,
+                charge_tax=False,
+            ),
+            wholesale_results_factory.create_monthly_amount_row(
+                charge_type=ChargeType.TARIFF,
+                total_amount=Decimal("5"),
+                charge_owner=SYSTEM_OPERATOR_ID,
+                charge_tax=True,
+            ),
+        ],
     )
     monthly_tariffs_from_daily = wholesale_results_factory.create(
         spark,
