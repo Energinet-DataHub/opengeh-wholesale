@@ -160,9 +160,13 @@ def _calculate_tariff_charges(
 def _calculate_total_monthly_amount(
     results: WholesaleResultsContainer,
 ) -> None:
+    monthly_amounts_per_charge = (
+        results.monthly_subscription_per_ga_co_es.union(
+            results.monthly_fee_per_ga_co_es
+        )
+        .union(results.monthly_tariff_from_hourly_per_ga_co_es)
+        .union(results.monthly_tariff_from_daily_per_ga_co_es)
+    )
     total_monthly_amount = total_amount_calculator.calculate(
-        results.monthly_subscription_per_ga_co_es,
-        results.monthly_fee_per_ga_co_es,
-        results.monthly_tariff_from_hourly_per_ga_co_es,
-        results.monthly_tariff_from_daily_per_ga_co_es,
+        monthly_amounts_per_charge,
     )

@@ -22,21 +22,15 @@ from package.constants import Colname
 
 
 def calculate(
-    monthly_subscriptions: DataFrame,
-    monthly_fees: DataFrame,
-    monthly_tariffs_from_hourly: DataFrame,
-    monthly_tariffs_from_daily: DataFrame,
+    monthly_amounts_per_charge: DataFrame,
 ) -> TotalMonthlyAmount:
 
-    total_amount_with_tax = _calculate_total_amount_with_charge_tax(
-        monthly_tariffs_from_daily, monthly_tariffs_from_hourly
+    total_amount_without_tax = _calculate_total_amount_without_charge_tax(
+        monthly_amounts_per_charge,
     )
 
-    total_amount_without_tax = _calculate_total_amount_without_charge_tax(
-        monthly_fees,
-        monthly_subscriptions,
-        monthly_tariffs_from_daily,
-        monthly_tariffs_from_hourly,
+    total_amount_with_tax = _calculate_total_amount_with_charge_tax(
+        monthly_amounts_per_charge
     )
 
     total_monthly_amount = total_amount_without_tax.join(
@@ -63,16 +57,12 @@ def calculate(
 
 
 def _calculate_total_amount_without_charge_tax(
-    monthly_fees,
-    monthly_subscriptions,
-    monthly_tariffs_from_daily,
-    monthly_tariffs_from_hourly,
+    monthly_amount_per_charge: DataFrame,
 ):
-    monthly_amounts_without_tax = (
-        monthly_fees.union(monthly_subscriptions)
-        .union(monthly_tariffs_from_daily.where(f.col(Colname.charge_tax) == False))
-        .union(monthly_tariffs_from_hourly.where(f.col(Colname.charge_tax) == False))
+    monthly_amounts_without_tax = monthly_amount_per_charge.where(
+        f.col(Colname.charge_tax) == False
     )
+
     total_amount_without_tax = monthly_amounts_without_tax.groupBy(
         Colname.grid_area,
         Colname.energy_supplier_id,
@@ -86,14 +76,12 @@ def _calculate_total_amount_without_charge_tax(
 
 
 def _calculate_total_amount_with_charge_tax(
-    monthly_tariffs_from_daily: DataFrame, monthly_tariffs_from_hourly: DataFrame
+    monthly_amount_per_charge: DataFrame,
 ) -> DataFrame:
 
-    # Only tariffs have tax
-    monthly_amounts_with_tax = monthly_tariffs_from_daily.where(
+    monthly_amounts_with_tax = monthly_amount_per_charge.where(
         f.col(Colname.charge_tax) == True
-    ).union(monthly_tariffs_from_hourly.where(f.col(Colname.charge_tax) == True))
-
+    )
     total_amount_with_tax = monthly_amounts_with_tax.groupBy(
         Colname.grid_area,
         Colname.energy_supplier_id,
