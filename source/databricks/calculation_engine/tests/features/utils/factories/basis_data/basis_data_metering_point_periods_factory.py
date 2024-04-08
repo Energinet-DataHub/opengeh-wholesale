@@ -22,7 +22,7 @@ from package.constants import Colname
 
 class BasisDataMeteringPointPeriodsFactory:
     CALCULATION_ID = "c6fe53cb-de76-4d0f-9d5c-cd73e46e4be9"
-    METERING_POINT_ID = "123456789012345678901234567"
+    METERING_POINT_ID = "123456789012345678"
     METERING_POINT_TYPE = "production"
     FROM_DATE = datetime(2019, 12, 31, 23, 0, 0)
     TO_DATE = None
