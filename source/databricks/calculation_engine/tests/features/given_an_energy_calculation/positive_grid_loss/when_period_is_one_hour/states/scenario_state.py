@@ -16,7 +16,11 @@ from datetime import datetime
 from pyspark.sql import DataFrame, SparkSession
 
 import features.utils as cl
-import features.utils as clf
+from features.utils.factories.input import (
+    InputGridLossTestFactory,
+    InputTimeSeriesPointTestFactory,
+    InputMeteringPointPeriodsTestFactory,
+)
 from package.codelists import (
     QuantityQuality,
     InputMeteringPointType,
@@ -34,14 +38,14 @@ def get_expected(*args) -> DataFrame:
 
 
 def create_grid_loss_metering_points(spark: SparkSession) -> DataFrame:
-    factory = clf.InputGridLossTestFactory(spark)
+    factory = InputGridLossTestFactory(spark)
     metering_point1 = factory.create_row(metering_point_id="571313180400100657")
     metering_point2 = factory.create_row(metering_point_id="571313180480500149")
     return factory.create_dataframe([metering_point1, metering_point2])
 
 
 def create_time_series_points(spark: SparkSession) -> DataFrame:
-    factory = clf.InputTimeSeriesPointTestFactory(spark)
+    factory = InputTimeSeriesPointTestFactory(spark)
     exchange_time_series = factory.create_row(
         metering_point_id="571313180400010437",
         quantity=10.0,
@@ -66,7 +70,7 @@ def create_time_series_points(spark: SparkSession) -> DataFrame:
 
 
 def create_metering_point_periods(spark: SparkSession) -> DataFrame:
-    factory = clf.InputMeteringPointPeriodsTestFactory(spark)
+    factory = InputMeteringPointPeriodsTestFactory(spark)
     grid_loss_period = factory.create_row(
         metering_point_id="571313180400100657",
         metering_point_type=InputMeteringPointType.CONSUMPTION,
