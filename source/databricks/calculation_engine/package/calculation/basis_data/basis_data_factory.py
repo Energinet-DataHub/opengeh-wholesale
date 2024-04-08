@@ -19,7 +19,7 @@ from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
-from package.calculation.preparation.transformations import basis_data
+from package.calculation.basis_data import basis_data
 from package.infrastructure import logging_configuration
 
 
