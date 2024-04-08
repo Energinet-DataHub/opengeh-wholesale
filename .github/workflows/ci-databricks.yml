@@ -124,9 +124,9 @@ jobs:
           - name: Wholesale (calculator_job)
             paths: calculator_job/test_wholesale_calculation.py
           - name: Energy logic
-            paths: calculation_logic/features/energy_calculations
+            paths: features/given_an_energy_calculation
           - name: Wholesale logic
-            paths: calculation_logic/features/wholesale_calculations
+            paths: features/given_a_wholesale_calculation
           - name: Unit tests
             paths: calculation/ codelists/ common/ infrastructure/
           - name: Entry point tests
@@ -141,7 +141,7 @@ jobs:
       test_report_path: ./source/databricks/calculation_engine/tests
       # See .docker/entrypoint.py on how to use the filter expression
       tests_filter_expression: ${{ matrix.tests_filter_expression.paths }}
-
+      image_tag: ${{ inputs.image_tag }}
   migration_tests:
     strategy:
       fail-fast: false
@@ -162,6 +162,7 @@ jobs:
       test_report_path: ./source/databricks/calculation_engine/tests
       # See .docker/entrypoint.py on how to use the filter expression
       tests_filter_expression: ${{ matrix.tests_filter_expression.paths }}
+      image_tag: ${{ inputs.image_tag }}
 
   # Tests that require the integration test environment
   integration_tests:
