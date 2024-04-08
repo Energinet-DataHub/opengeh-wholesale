@@ -15,10 +15,6 @@
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 
-from package.calculation.wholesale.data_structures.wholesale_results import (
-    WholesaleResults,
-)
-from package.codelists import WholesaleResultResolution
 from package.constants import Colname
 
 
@@ -40,7 +36,7 @@ def calculate(
         monthly_tariffs_from_hourly,
     )
 
-    total_amount_without_tax.join(
+    total_amount = total_amount_without_tax.join(
         total_amount_with_tax, [Colname.grid_area, Colname.charge_owner]
     ).select(
         total_amount_without_tax[Colname.grid_area],
@@ -48,7 +44,15 @@ def calculate(
         total_amount_without_tax[Colname.energy_supplier_id],
         total_amount_without_tax[Colname.charge_time],
         total_amount_without_tax[Colname.total_amount],
+        # Add total amount with tax to total amount without tax if it exists
+        total_amount_without_tax[Colname.total_amount]
+        + f.when(
+            total_amount_with_tax[Colname.total_amount].isNotNull(),
+            total_amount_with_tax[Colname.total_amount],
+        ).otherwise(0),
     )
+
+    return total_amount
 
 
 def _calculate_total_amount_without_charge_tax(
