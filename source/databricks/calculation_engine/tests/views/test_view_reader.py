@@ -16,11 +16,13 @@ import pathlib
 from pyspark.sql import SparkSession, dataframe
 
 from features.utils.factories.basis_data.basis_data_metering_point_periods_factory import (
-    BasisDataMeteringPointPeriodsFactory as Factory,
+    BasisDataMeteringPointPeriodsFactory,
+)
+from features.utils.view_factories.settlement_report_metering_point_periods_view_test_factory import (
+    SettlementReportMeteringPointPeriodsViewTestFactory,
 )
 from helpers.data_frame_utils import assert_dataframes_equal
-from package.calculation.basis_data.schemas import metering_point_period_schema
-from package.constants import Colname
+from package.constants import MeteringPointPeriodColname
 from package.infrastructure.paths import (
     BASIS_DATA_DATABASE_NAME,
     METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME,
@@ -29,11 +31,24 @@ from package.infrastructure.paths import (
 from views.view_reader import ViewReader
 
 
-def create_expected(df: dataframe) -> dataframe:
-    df = df.drop(Colname.resolution)
-    df = df.drop(Colname.parent_metering_point_id)
-    df = df.drop(Colname.balance_responsible_id)
-    return df
+def create_expected(spark: SparkSession, df: dataframe) -> dataframe:
+    view_factory = SettlementReportMeteringPointPeriodsViewTestFactory(spark)
+    first = df.first()
+
+    row = view_factory.create_row(
+        first[MeteringPointPeriodColname.calculation_id],
+        first[MeteringPointPeriodColname.metering_point_id],
+        first[MeteringPointPeriodColname.from_date],
+        first[MeteringPointPeriodColname.to_date],
+        first[MeteringPointPeriodColname.grid_area],
+        first[MeteringPointPeriodColname.from_grid_area],
+        first[MeteringPointPeriodColname.to_grid_area],
+        first[MeteringPointPeriodColname.metering_point_type],
+        first[MeteringPointPeriodColname.settlement_method],
+        first[MeteringPointPeriodColname.energy_supplier_id],
+    )
+
+    return view_factory.create_dataframe([row])
 
 
 def test_read_metering_point_periods_returns_expected_from_settlement_report_metering_point_periods_view(
@@ -47,18 +62,17 @@ def test_read_metering_point_periods_returns_expected_from_settlement_report_met
     wholesale schema (database) settlement_report).
     """
     # Arrange
-    row = Factory.create_row()
-    df = spark.createDataFrame(data=[row], schema=metering_point_period_schema)
+    factory = BasisDataMeteringPointPeriodsFactory(spark)
+    row = factory.create_row()
+    df = factory.create_dataframe([row])
     df.write.format("delta").mode("overwrite").saveAsTable(
         f"{BASIS_DATA_DATABASE_NAME}.{METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME}"
     )
-    expected = create_expected(df)
+    expected = create_expected(spark, df)
     sut = ViewReader(spark, SETTLEMENT_REPORT_DATABASE_NAME)
 
     # Act
     actual = sut.read_metering_point_periods()
 
     # Assert
-    actual.show()
-    expected.show()
     assert_dataframes_equal(actual, expected)

@@ -16,12 +16,14 @@ from datetime import datetime
 
 from pyspark.sql import Row, SparkSession, DataFrame
 
-from package.calculation.input.schemas import metering_point_period_schema
+from package.calculation.basis_data.settlement_views.schemas.metering_point_period_schema import (
+    metering_point_period_schema,
+)
 from package.codelists import (
     InputMeteringPointType,
     InputSettlementMethod,
 )
-from package.constants import Colname
+from package.constants import MeteringPointPeriodColname
 
 
 class SettlementReportMeteringPointPeriodsViewTestFactory:
@@ -53,16 +55,16 @@ class SettlementReportMeteringPointPeriodsViewTestFactory:
         energy_supplier: str = ENERGY_SUPPLIER_ID,
     ) -> Row:
         row = {
-            Colname.calculation_id: calculation_id,
-            Colname.metering_point_id: metering_point_id,
-            Colname.metering_point_type: metering_point_type.value,
-            Colname.settlement_method: settlement_method.value,
-            Colname.grid_area: grid_area,
-            Colname.from_grid_area: from_grid_area,
-            Colname.to_grid_area: to_grid_area,
-            Colname.energy_supplier_id: energy_supplier,
-            Colname.from_date: from_date,
-            Colname.to_date: to_date,
+            MeteringPointPeriodColname.calculation_id: calculation_id,
+            MeteringPointPeriodColname.metering_point_id: metering_point_id,
+            MeteringPointPeriodColname.from_date: from_date,
+            MeteringPointPeriodColname.to_date: to_date,
+            MeteringPointPeriodColname.grid_area: grid_area,
+            MeteringPointPeriodColname.from_grid_area: from_grid_area,
+            MeteringPointPeriodColname.to_grid_area: to_grid_area,
+            MeteringPointPeriodColname.metering_point_type: metering_point_type,
+            MeteringPointPeriodColname.settlement_method: settlement_method,
+            MeteringPointPeriodColname.energy_supplier_id: energy_supplier,
         }
 
         return Row(**row)
