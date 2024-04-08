@@ -26,4 +26,5 @@ def substitutions(migration_args: MigrationScriptArgs) -> dict[str, str]:
         "{TEST}": paths.TEST,
         "{BASIS_DATA_FOLDER}": paths.BASIS_DATA_FOLDER,
         "{BASIS_DATA_DATABASE_NAME}": paths.BASIS_DATA_DATABASE_NAME,
+        "{SETTLEMENT_REPORT_DATABASE_NAME}": paths.SETTLEMENT_REPORT_DATABASE_NAME,
     }
