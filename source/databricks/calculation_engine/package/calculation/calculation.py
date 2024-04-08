@@ -111,11 +111,7 @@ def _execute(
                 all_metering_point_periods
             )
 
-            metering_point_periods = (
-                metering_point_periods.union(
-                    child_metering_points
-                )
-            )
+            metering_point_periods = metering_point_periods.union(child_metering_points)
 
             # Removes all exchange metering points
             wholesale_metering_point_periods = metering_point_periods.filter(
