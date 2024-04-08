@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS {target_database}.{target_mp_table_name}
 LIKE {target_database}.{source_mp_table_name} 
 """
 print(query)
-#spark.sql(query)
+spark.sql(query)
 
 # COMMAND ----------
 
@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS {target_database}.{target_ts_table_name}
 LIKE {target_database}.{source_ts_table_name} 
 """
 print(query)
-#spark.sql(query)
+spark.sql(query)
 
 # COMMAND ----------
 
@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS {target_database}.{target_gl_table_name}
 LIKE {target_database}.{source_gl_table_name} 
 """
 print(query)
-#spark.sql(query)
+spark.sql(query)
 
 # COMMAND ----------
 
@@ -113,7 +113,7 @@ df_all_metering_point_ids = (
         )
     )
     .distinct()
-)
+).cache()
 
 count_distinct_mpids = len(str(df_all_metering_point_ids.count()))
 window_random_order = Window.orderBy(F.rand())
@@ -137,7 +137,7 @@ df_anonymised_metering_points = (
         ).otherwise(F.col("anonymised_mp_id")),
     )
     .na.drop()
-)
+).cache()
 
 # COMMAND ----------
 
@@ -162,7 +162,7 @@ df_all_supplier_and_balancers = (
         df_source_mp_table.select(balance_responsible_id_column_name)
     )
     .distinct()
-)
+).cache()
 
 count_distinct_suppliers_and_balancers = len(str(df_all_supplier_and_balancers.count()))
 window_random_order = Window.orderBy(F.rand())
@@ -185,7 +185,7 @@ df_anonymised_suppliers_and_balancers = (
         ),
     )
     .na.drop()
-)
+).cache()
 
 # COMMAND ----------
 
@@ -237,7 +237,7 @@ df_source_mp_table_anonymised = (
     .withColumn(balance_responsible_id_column_name, F.col("anonymised_balance_or_supplier_id"))
     .drop("anonymised_balance_or_supplier_id")
     .select(df_source_mp_table.columns)
-)
+).cache()
 
 # COMMAND ----------
 
@@ -273,7 +273,7 @@ df_source_ts_table_anonymised = (
     .join(df_anonymised_metering_points, metering_point_id_column_name)
     .withColumn(metering_point_id_column_name, F.col("anonymised_mp_id"))
     .select(df_source_ts_table.columns)
-)
+).cache()
 
 
 # COMMAND ----------
