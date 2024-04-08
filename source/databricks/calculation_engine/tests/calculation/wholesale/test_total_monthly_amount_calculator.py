@@ -89,38 +89,24 @@ def test__calculate__tax_amount_is_added_to_other_charge_owners(
     spark: SparkSession,
 ) -> None:
     # Arrange
-    monthly_tariffs_from_hourly = wholesale_results_factory.create(
-        spark,
-        [
-            wholesale_results_factory.create_monthly_amount_row(
-                charge_type=ChargeType.TARIFF,
-                total_amount=Decimal("1"),
-                charge_owner=GRID_PROVIDER_ID,
-                charge_tax=False,
-            ),
-            wholesale_results_factory.create_monthly_amount_row(
-                charge_type=ChargeType.TARIFF,
-                total_amount=Decimal("5"),
-                charge_owner=SYSTEM_OPERATOR_ID,
-                charge_tax=True,
-            ),
-        ],
-    )
-    monthly_tariffs_from_daily = wholesale_results_factory.create(
-        spark,
-        wholesale_results_factory.create_monthly_amount_row(
-            charge_type=ChargeType.TARIFF,
-            total_amount=Decimal("2"),
-            charge_tax=False,
-        ),
-    )
-    monthly_fees = wholesale_results_factory.create(
-        spark,
-        wholesale_results_factory.create_monthly_amount_row(
-            charge_type=ChargeType.FEE,
-            total_amount=Decimal("3"),
-            charge_tax=False,
-        ),
+    monthly_tariffs_from_hourly = _create_default_monthly_tariff(spark)
+    monthly_tariffs_from_daily = _create_default_monthly_tariff(spark)
+    monthly_fees = _create_default_monthly_fee(spark)
+    monthly_subscriptions = _create_default_monthly_subscription(spark)
+
+    monthly_tariffs_from_hourly = (
+        monthly_tariffs_from_hourlywholesale_results_factory.create(
+            spark,
+            [
+                monthly_tariffs_from_hourly,
+                wholesale_results_factory.create_monthly_amount_row(
+                    charge_type=ChargeType.TARIFF,
+                    total_amount=Decimal("5"),
+                    charge_owner=SYSTEM_OPERATOR_ID,
+                    charge_tax=True,
+                ),
+            ],
+        )
     )
     monthly_subscriptions = wholesale_results_factory.create(
         spark,

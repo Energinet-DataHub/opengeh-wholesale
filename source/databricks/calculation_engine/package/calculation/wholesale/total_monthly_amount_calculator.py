@@ -40,7 +40,11 @@ def calculate(
     )
 
     total_monthly_amount = total_amount_without_tax.join(
-        total_amount_with_tax, [Colname.grid_area, Colname.charge_owner]
+        total_amount_with_tax,
+        [
+            Colname.grid_area,
+            Colname.charge_owner,
+        ],
     ).select(
         total_amount_without_tax[Colname.grid_area],
         total_amount_without_tax[Colname.charge_owner],
@@ -70,9 +74,10 @@ def _calculate_total_amount_without_charge_tax(
         .union(monthly_tariffs_from_hourly.where(f.col(Colname.charge_tax) == False))
     )
     total_amount_without_tax = monthly_amounts_without_tax.groupBy(
-        Colname.energy_supplier_id,
         Colname.grid_area,
+        Colname.energy_supplier_id,
         Colname.charge_owner,
+        Colname.charge_time,
     ).agg(
         f.sum(Colname.total_amount).alias(Colname.total_amount),
         f.first(Colname.charge_tax).alias(Colname.charge_tax),
@@ -90,9 +95,10 @@ def _calculate_total_amount_with_charge_tax(
     ).union(monthly_tariffs_from_hourly.where(f.col(Colname.charge_tax) == True))
 
     total_amount_with_tax = monthly_amounts_with_tax.groupBy(
-        Colname.energy_supplier_id,
         Colname.grid_area,
+        Colname.energy_supplier_id,
         Colname.charge_owner,
+        Colname.charge_time,
     ).agg(
         f.sum(Colname.total_amount).alias(Colname.total_amount),
         f.first(Colname.charge_tax).alias(Colname.charge_tax),
