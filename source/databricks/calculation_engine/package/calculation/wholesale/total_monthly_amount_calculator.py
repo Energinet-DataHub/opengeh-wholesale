@@ -24,7 +24,6 @@ from package.constants import Colname
 def calculate(
     monthly_amounts_per_charge: DataFrame,
 ) -> TotalMonthlyAmount:
-
     total_amount_without_tax = _calculate_total_amount_without_charge_tax(
         monthly_amounts_per_charge,
     )
@@ -33,12 +32,16 @@ def calculate(
         monthly_amounts_per_charge
     )
 
+    total_amount_with_tax.show()
+    total_amount_without_tax.show()
+
     total_monthly_amount = total_amount_without_tax.join(
         total_amount_with_tax,
         [
             Colname.grid_area,
             Colname.charge_owner,
         ],
+        "left",
     ).select(
         total_amount_without_tax[Colname.grid_area],
         total_amount_without_tax[Colname.charge_owner],

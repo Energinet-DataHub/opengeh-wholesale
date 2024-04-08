@@ -27,61 +27,36 @@ SYSTEM_OPERATOR_ID = "system_operator_id"
 GRID_PROVIDER_ID = "system_operator_id"
 
 
-def _create_default_monthly_subscription(
-    spark: SparkSession,
-) -> wholesale_results_factory.WholesaleResults:
-    return wholesale_results_factory.create(
-        spark,
-        wholesale_results_factory.create_monthly_amount_row(
-            charge_type=ChargeType.SUBSCRIPTION,
-            total_amount=Decimal("1"),
-        ),
-    )
-
-
-def _create_default_monthly_fee(
-    spark: SparkSession,
-) -> wholesale_results_factory.WholesaleResults:
-    return wholesale_results_factory.create(
-        spark,
-        wholesale_results_factory.create_monthly_amount_row(
-            charge_type=ChargeType.FEE,
-            total_amount=Decimal("1"),
-        ),
-    )
-
-
-def _create_default_monthly_tariff(
-    spark: SparkSession,
-) -> wholesale_results_factory.WholesaleResults:
-    return wholesale_results_factory.create(
-        spark,
-        wholesale_results_factory.create_monthly_amount_row(
-            charge_type=ChargeType.TARIFF,
-            total_amount=Decimal("1"),
-        ),
-    )
-
-
 def test__calculate__when_no_charge_tax_in_group__sums_all_amounts(
     spark: SparkSession,
 ) -> None:
     # Arrange
-    monthly_tariffs_from_hourly = _create_default_monthly_tariff(spark)
-    monthly_tariffs_from_daily = _create_default_monthly_tariff(spark)
-    monthly_fees = _create_default_monthly_fee(spark)
-    monthly_subscriptions = _create_default_monthly_subscription(spark)
+    monthly_amounts_rows = [
+        wholesale_results_factory.create_monthly_amount_row(
+            charge_type=ChargeType.TARIFF,
+            total_amount=Decimal("1"),
+            charge_tax=False,
+        ),
+        wholesale_results_factory.create_monthly_amount_row(
+            charge_type=ChargeType.FEE,
+            total_amount=Decimal("1"),
+            charge_tax=False,
+        ),
+        wholesale_results_factory.create_monthly_amount_row(
+            charge_type=ChargeType.SUBSCRIPTION,
+            total_amount=Decimal("1"),
+            charge_tax=False,
+        ),
+    ]
+    monthly_amounts = wholesale_results_factory.create(spark, monthly_amounts_rows)
 
     # Act
     actual = calculate(
-        monthly_subscriptions=monthly_subscriptions.df,
-        monthly_fees=monthly_fees.df,
-        monthly_tariffs_from_hourly=monthly_tariffs_from_hourly.df,
-        monthly_tariffs_from_daily=monthly_tariffs_from_daily.df,
+        monthly_amounts.df,
     ).df
 
     # Assert
-    assert actual.collect()[0][Colname.total_amount] == Decimal("4.000000")
+    assert actual.collect()[0][Colname.total_amount] == Decimal("3.000000")
     assert actual.count() == 1
 
 
