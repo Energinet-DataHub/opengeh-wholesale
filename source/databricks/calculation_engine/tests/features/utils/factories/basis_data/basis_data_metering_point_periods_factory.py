@@ -17,23 +17,18 @@ from datetime import datetime
 from pyspark.sql import Row, SparkSession, DataFrame
 
 from package.calculation.basis_data.schemas import metering_point_period_schema
-from package.codelists import (
-    InputMeteringPointType,
-    InputSettlementMethod,
-    MeteringPointResolution,
-)
 from package.constants import Colname
 
 
 class BasisDataMeteringPointPeriodsFactory:
     CALCULATION_ID = "c6fe53cb-de76-4d0f-9d5c-cd73e46e4be9"
-    METERING_POINT_ID = "123456789012345678901234567"
-    METERING_POINT_TYPE = InputMeteringPointType.PRODUCTION
+    METERING_POINT_ID = "123456789012345678"
+    METERING_POINT_TYPE = "production"
     FROM_DATE = datetime(2019, 12, 31, 23, 0, 0)
     TO_DATE = None
     GRID_AREA = "805"
-    SETTLEMENT_METHOD = InputSettlementMethod.FLEX
-    RESOLUTION = MeteringPointResolution.HOUR
+    SETTLEMENT_METHOD = "flex"
+    RESOLUTION = "PT1H"
     FROM_GRID_AREA = None
     TO_GRID_AREA = None
     PARENT_METERING_POINT_ID = None
@@ -47,10 +42,10 @@ class BasisDataMeteringPointPeriodsFactory:
     def create_row(
         calculation_id: str = CALCULATION_ID,
         metering_point_id: str = METERING_POINT_ID,
-        metering_point_type: InputMeteringPointType = METERING_POINT_TYPE,
-        settlement_method: InputSettlementMethod | None = SETTLEMENT_METHOD,
+        metering_point_type: str = METERING_POINT_TYPE,
+        settlement_method: str | None = SETTLEMENT_METHOD,
         grid_area: str = GRID_AREA,
-        resolution: MeteringPointResolution = RESOLUTION,
+        resolution: str = RESOLUTION,
         from_grid_area: str | None = FROM_GRID_AREA,
         to_grid_area: str | None = TO_GRID_AREA,
         parent_metering_point_id: str | None = PARENT_METERING_POINT_ID,
@@ -62,12 +57,10 @@ class BasisDataMeteringPointPeriodsFactory:
         row = {
             Colname.calculation_id: calculation_id,
             Colname.metering_point_id: metering_point_id,
-            Colname.metering_point_type: metering_point_type.value,
-            Colname.settlement_method: (
-                None if settlement_method is None else settlement_method.value
-            ),
+            Colname.metering_point_type: metering_point_type,
+            Colname.settlement_method: settlement_method,
             Colname.grid_area: grid_area,
-            Colname.resolution: resolution.value,
+            Colname.resolution: resolution,
             Colname.from_grid_area: from_grid_area,
             Colname.to_grid_area: to_grid_area,
             Colname.parent_metering_point_id: parent_metering_point_id,
