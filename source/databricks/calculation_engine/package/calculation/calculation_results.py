@@ -48,17 +48,15 @@ class WholesaleResultsContainer:
     daily_tariff_per_ga_co_es: DataFrame | None = None
     monthly_tariff_from_daily_per_ga_co_es: DataFrame | None = None
     subscription_per_ga_co_es: DataFrame | None = None
-    monthly_subscription_from_daily_per_ga_co_es: DataFrame | None = None
+    monthly_subscription_per_ga_co_es: DataFrame | None = None
+    fee_per_ga_co_es: DataFrame | None = None
+    monthly_fee_per_ga_co_es: DataFrame | None = None
 
 
 @dataclass
 class BasisDataContainer:
-    master_basis_data_per_es_per_ga: DataFrame | None = None
-    master_basis_data_per_total_ga: DataFrame | None = None
-    time_series_quarter_basis_data_per_total_ga: DataFrame | None = None
-    time_series_quarter_basis_data_per_es_per_ga: DataFrame | None = None
-    time_series_hour_basis_data: DataFrame | None = None
-    time_series_hour_basis_data_per_es_per_ga: DataFrame | None = None
+    metering_point_periods: DataFrame
+    time_series: DataFrame
 
 
 @dataclass

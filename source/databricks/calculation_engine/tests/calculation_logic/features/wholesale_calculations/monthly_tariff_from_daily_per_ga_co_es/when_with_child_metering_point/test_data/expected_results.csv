@@ -1,2 +1,0 @@
-calculation_id;calculation_type;calculation_execution_time_start;calculation_result_id;grid_area;energy_supplier_id;quantity;quantity_unit;quantity_qualities;time;resolution;metering_point_type;settlement_method;price;amount;is_tax;charge_code;charge_type;charge_owner_id;amount_type
-;WholesaleFixing;2024-01-01 23:00:00;;804;8100000000108;;kWh;;2023-01-31 23:00:00.000000;P1M;;;;23614.05312;false;41000;tariff;5790001330552;monthly_amount_per_charge

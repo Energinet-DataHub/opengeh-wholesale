@@ -25,7 +25,7 @@ message AggregatedTimeSeriesRequest {
   string requested_by_actor_id = 5;
   string requested_by_actor_role = 6;
   optional string balance_responsible_id = 7;
-  optional string settlement_series_version = 8;
+  optional string settlement_version = 8;
   optional string grid_area_code = 9;
   string business_reason = 10;
 }

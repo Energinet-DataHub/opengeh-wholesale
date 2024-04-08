@@ -15,10 +15,10 @@
 using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.Validation;
+using Energinet.DataHub.Wholesale.Edi.Validation.Helpers;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
-using NodaTime.Extensions;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.WholesaleServicesRequest;
@@ -33,6 +33,7 @@ public sealed class WholesaleServicesRequestValidatorTests
 
         services.AddTransient<DateTimeZone>(s => DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
         services.AddTransient<IClock>(s => SystemClock.Instance);
+        services.AddTransient<PeriodValidationHelper>();
 
         services.AddWholesaleServicesRequestValidation();
 
@@ -59,11 +60,15 @@ public sealed class WholesaleServicesRequestValidatorTests
     public async Task Validate_WhenPeriodStartIsTooOld_ReturnsUnsuccessfulValidation()
     {
         // Arrange
-        var now = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset();
-
         var request = new WholesaleServicesRequestBuilder()
             .WithPeriodStart(
-                new LocalDate(now.Year - 5, now.Month, now.Day)
+                new LocalDate(2018, 5, 1)
+                    .AtMidnight()
+                    .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
+                    .ToInstant()
+                    .ToString())
+            .WithPeriodEnd(
+                new LocalDate(2018, 6, 1)
                     .AtMidnight()
                     .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
                     .ToInstant()
@@ -86,12 +91,12 @@ public sealed class WholesaleServicesRequestValidatorTests
 
         var request = new WholesaleServicesRequestBuilder()
             .WithPeriodStart(
-                new LocalDateTime(now.Year - 2, now.Month, now.Day, 17, 45, 12)
+                new LocalDateTime(now.Year - 2, now.Month, 1, 17, 45, 12)
                     .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
                     .ToInstant()
                     .ToString())
             .WithPeriodEnd(
-                new LocalDateTime(now.Year - 2, now.Month, now.Day + 3, 8, 13, 56)
+                new LocalDateTime(now.Year - 2, now.Month + 1, 1, 8, 13, 56)
                     .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
                     .ToInstant()
                     .ToString())

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Mappers;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using FluentAssertions;
@@ -22,47 +23,47 @@ namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Mappers;
 public class RequestedCalculationTypeMapperTests
 {
     [Theory]
-    [InlineData(BusinessReason.BalanceFixing, null, RequestedCalculationType.BalanceFixing)]
-    [InlineData(BusinessReason.PreliminaryAggregation, null, RequestedCalculationType.PreliminaryAggregation)]
-    [InlineData(BusinessReason.WholesaleFixing, null, RequestedCalculationType.WholesaleFixing)]
-    [InlineData(BusinessReason.Correction, SettlementSeriesVersion.FirstCorrection, RequestedCalculationType.FirstCorrection)]
-    [InlineData(BusinessReason.Correction, SettlementSeriesVersion.SecondCorrection, RequestedCalculationType.SecondCorrection)]
-    [InlineData(BusinessReason.Correction, SettlementSeriesVersion.ThirdCorrection, RequestedCalculationType.ThirdCorrection)]
-    [InlineData(BusinessReason.Correction, null, RequestedCalculationType.LatestCorrection)]
-    public void ToRequestedCalculationType_WhenValidBusinessReasonAndSettlementSeriesVersion_ReturnsExpectedType(string businessReason, string? settlementSeriesVersion, RequestedCalculationType expectedType)
+    [InlineData(DataHubNames.BusinessReason.BalanceFixing, null, RequestedCalculationType.BalanceFixing)]
+    [InlineData(DataHubNames.BusinessReason.PreliminaryAggregation, null, RequestedCalculationType.PreliminaryAggregation)]
+    [InlineData(DataHubNames.BusinessReason.WholesaleFixing, null, RequestedCalculationType.WholesaleFixing)]
+    [InlineData(DataHubNames.BusinessReason.Correction, DataHubNames.SettlementVersion.FirstCorrection, RequestedCalculationType.FirstCorrection)]
+    [InlineData(DataHubNames.BusinessReason.Correction, DataHubNames.SettlementVersion.SecondCorrection, RequestedCalculationType.SecondCorrection)]
+    [InlineData(DataHubNames.BusinessReason.Correction, DataHubNames.SettlementVersion.ThirdCorrection, RequestedCalculationType.ThirdCorrection)]
+    [InlineData(DataHubNames.BusinessReason.Correction, null, RequestedCalculationType.LatestCorrection)]
+    public void ToRequestedCalculationType_WhenValidBusinessReasonAndSettlementVersion_ReturnsExpectedType(string businessReason, string? settlementVersion, RequestedCalculationType expectedType)
     {
         // Act
-        var actualType = RequestedCalculationTypeMapper.ToRequestedCalculationType(businessReason, settlementSeriesVersion);
+        var actualType = RequestedCalculationTypeMapper.ToRequestedCalculationType(businessReason, settlementVersion);
 
         // Assert
         actualType.Should().Be(expectedType);
     }
 
     [Theory]
-    [InlineData(BusinessReason.BalanceFixing, SettlementSeriesVersion.FirstCorrection)]
-    [InlineData(BusinessReason.PreliminaryAggregation, "random-string")]
-    [InlineData(BusinessReason.WholesaleFixing, SettlementSeriesVersion.FirstCorrection)]
-    [InlineData(BusinessReason.Correction, "")]
-    [InlineData(BusinessReason.Correction, "random-string")]
+    [InlineData(DataHubNames.BusinessReason.BalanceFixing, DataHubNames.SettlementVersion.FirstCorrection)]
+    [InlineData(DataHubNames.BusinessReason.PreliminaryAggregation, "random-string")]
+    [InlineData(DataHubNames.BusinessReason.WholesaleFixing, DataHubNames.SettlementVersion.FirstCorrection)]
+    [InlineData(DataHubNames.BusinessReason.Correction, "")]
+    [InlineData(DataHubNames.BusinessReason.Correction, "random-string")]
     [InlineData("", "")]
     [InlineData("random-string", "")]
-    [InlineData("random-string", SettlementSeriesVersion.FirstCorrection)]
-    public void ToRequestedCalculationType_WhenInvalidBusinessReasonAndSettlementSeriesVersionCombination_ThrowsArgumentOutOfRangeException(string businessReason, string? settlementSeriesVersion)
+    [InlineData("random-string", DataHubNames.SettlementVersion.FirstCorrection)]
+    public void ToRequestedCalculationType_WhenInvalidBusinessReasonAndSettlementVersionCombination_ThrowsArgumentOutOfRangeException(string businessReason, string? settlementVersion)
     {
         // Act
-        var act = () => RequestedCalculationTypeMapper.ToRequestedCalculationType(businessReason, settlementSeriesVersion);
+        var act = () => RequestedCalculationTypeMapper.ToRequestedCalculationType(businessReason, settlementVersion);
 
         // Assert
-        act.Should().ThrowExactly<ArgumentOutOfRangeException>().And.ActualValue.Should().Be(settlementSeriesVersion);
+        act.Should().ThrowExactly<ArgumentOutOfRangeException>().And.ActualValue.Should().Be(settlementVersion);
     }
 
     [Theory]
     [InlineData("", null)]
     [InlineData("random-string", null)]
-    public void ToRequestedCalculationType_WhenInvalidBusinessReason_ThrowsArgumentOutOfRangeException(string businessReason, string? settlementSeriesVersion)
+    public void ToRequestedCalculationType_WhenInvalidBusinessReason_ThrowsArgumentOutOfRangeException(string businessReason, string? settlementVersion)
     {
         // Act
-        var act = () => RequestedCalculationTypeMapper.ToRequestedCalculationType(businessReason, settlementSeriesVersion);
+        var act = () => RequestedCalculationTypeMapper.ToRequestedCalculationType(businessReason, settlementVersion);
 
         // Assert
         act.Should().ThrowExactly<ArgumentOutOfRangeException>().And.ActualValue.Should().Be(businessReason);

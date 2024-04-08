@@ -13,16 +13,31 @@
 # limitations under the License.
 
 
-class BasisDataColname:
-    energy_supplier_id = "ENERGYSUPPLIERID"
-    from_grid_area = "FROMGRIDAREA"
-    grid_area = "GRIDAREA"
-    metering_point_id = "METERINGPOINTID"
-    metering_point_type = "TYPEOFMP"
-    quantity_prefix = "ENERGYQUANTITY"
-    "The column name prefix. The full quantity column names are suffixed with a number. E.g. 'ENERGYQUANTITY1'"
-    settlement_method = "SETTLEMENTMETHOD"
-    start_datetime = "STARTDATETIME"
-    to_grid_area = "TOGRIDAREA"
-    valid_from = "VALIDFROM"
-    valid_to = "VALIDTO"
+class MeteringPointPeriodColname:
+    calculation_id = "calculation_id"
+
+    # Master data
+    metering_point_id = "metering_point_id"
+    metering_point_type = "metering_point_type"
+    grid_area = "grid_area_code"
+    resolution = "resolution"
+    settlement_method = "settlement_method"
+    parent_metering_point_id = "parent_metering_point_id"
+    energy_supplier_id = "energy_supplier_id"
+    balance_responsible_id = "balance_responsible_id"
+
+    # Exchange
+    from_grid_area = "from_grid_area_code"
+    to_grid_area = "to_grid_area_code"
+
+    # Period
+    from_date = "from_date"
+    to_date = "to_date"
+
+
+class TimeSeriesColname:
+    calculation_id = "calculation_id"
+    metering_point_id = "metering_point_id"
+    observation_time = "observation_time"
+    quantity = "quantity"
+    quality = "quality"

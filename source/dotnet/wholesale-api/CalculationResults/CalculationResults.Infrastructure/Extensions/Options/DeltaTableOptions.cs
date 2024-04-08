@@ -17,9 +17,19 @@ namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 public class DeltaTableOptions
 {
     /// <summary>
-    /// Name of the schema/database under which the result tables are associated.
+    /// Name of the schema/database under which the output tables are associated.
     /// </summary>
     public string SCHEMA_NAME { get; set; } = "wholesale_output";
+
+    /// <summary>
+    /// Name of the schema/database under which the basis data tables are associated.
+    /// </summary>
+    public string BasisDataSchemaName { get; set; } = "basis_data";
+
+    /// <summary>
+    /// Name of the schema/database under which the settlement report views are associated.
+    /// </summary>
+    public string SettlementReportSchemaName { get; set; } = "settlement_report";
 
     /// <summary>
     /// Name of the energy results delta table.

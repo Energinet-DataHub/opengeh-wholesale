@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Edi.Requests;
-using Energinet.DataHub.Wholesale.Edi.Models;
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.AggregatedTimeSeriesRequest;
 using NodaTime;
 using ChargeType = Energinet.DataHub.Edi.Requests.ChargeType;
@@ -24,15 +23,15 @@ namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 public class WholesaleServicesRequestBuilder
 {
     private string _requestedByActorId = EnergySupplierValidatorTest.ValidGlnNumber;
-    private string _requestedByActorRole = ActorRoleCode.EnergySupplier;
-    private string _businessReason = BusinessReason.WholesaleFixing;
+    private string _requestedByActorRole = DataHubNames.ActorRole.EnergySupplier;
+    private string _businessReason = DataHubNames.BusinessReason.WholesaleFixing;
     private string? _resolution;
-    private string _periodStart = Instant.FromUtc(2023, 1, 1, 23, 0, 0).ToString();
-    private string? _periodEnd;
+    private string _periodStart = Instant.FromUtc(2023, 1, 31, 23, 0, 0).ToString();
+    private string? _periodEnd = Instant.FromUtc(2023, 2, 28, 23, 0, 0).ToString();
     private string? _energySupplierId;
     private string? _chargeOwnerId;
     private string? _gridAreaCode;
-    private string? _settlementSeriesVersion;
+    private string? _settlementVersion;
     private ChargeType[] _chargeType = Array.Empty<ChargeType>();
 
     public WholesaleServicesRequest Build()
@@ -55,8 +54,8 @@ public class WholesaleServicesRequestBuilder
             request.ChargeOwnerId = _chargeOwnerId;
         if (_gridAreaCode != null)
             request.GridAreaCode = _gridAreaCode;
-        if (_settlementSeriesVersion != null)
-            request.SettlementSeriesVersion = _settlementSeriesVersion;
+        if (_settlementVersion != null)
+            request.SettlementVersion = _settlementVersion;
 
         request.ChargeTypes.AddRange(_chargeType);
 
@@ -93,7 +92,7 @@ public class WholesaleServicesRequestBuilder
         return this;
     }
 
-    public WholesaleServicesRequestBuilder WithPeriodEnd(string periodEnd)
+    public WholesaleServicesRequestBuilder WithPeriodEnd(string? periodEnd)
     {
         _periodEnd = periodEnd;
         return this;
@@ -117,9 +116,9 @@ public class WholesaleServicesRequestBuilder
         return this;
     }
 
-    public WholesaleServicesRequestBuilder WithSettlementSeriesVersion(string settlementSeriesVersion)
+    public WholesaleServicesRequestBuilder WithSettlementVersion(string settlementVersion)
     {
-        _settlementSeriesVersion = settlementSeriesVersion;
+        _settlementVersion = settlementVersion;
         return this;
     }
 

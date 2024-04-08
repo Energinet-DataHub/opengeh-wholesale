@@ -11,52 +11,91 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from spark_sql_migrations import Schema, Table, View
 
-from spark_sql_migrations import Schema, Table
-from package.infrastructure.paths import (
-    WHOLESALE_RESULT_TABLE_NAME,
-    OUTPUT_DATABASE_NAME,
-    ENERGY_RESULT_TABLE_NAME,
-    INPUT_DATABASE_NAME,
-    GRID_LOSS_METERING_POINTS_TABLE_NAME,
+import package.calculation.basis_data.schemas as basis_data_schemas
+import package.infrastructure.paths as paths
+
+# calculation_input
+from package.calculation.input.schemas.grid_loss_metering_points_schema import (
+    grid_loss_metering_points_schema,
+)
+from package.calculation.output.schemas.energy_results_schema import (
+    energy_results_schema,
 )
 
 # calculation_output
 from package.calculation.output.schemas.wholesale_results_schema import (
     wholesale_results_schema,
 )
-from package.calculation.output.schemas.energy_results_schema import (
-    energy_results_schema,
-)
-
-# calculation_input
-from package.calculation.input.schemas.grid_loss_metering_points_schema import (
-    grid_loss_metering_points_schema,
-)
 
 schema_config = [
     Schema(
-        name=OUTPUT_DATABASE_NAME,
+        name=paths.OUTPUT_DATABASE_NAME,
         tables=[
             Table(
-                name=WHOLESALE_RESULT_TABLE_NAME,
+                name=paths.WHOLESALE_RESULT_TABLE_NAME,
                 schema=wholesale_results_schema,
             ),
             Table(
-                name=ENERGY_RESULT_TABLE_NAME,
+                name=paths.ENERGY_RESULT_TABLE_NAME,
                 schema=energy_results_schema,
             ),
         ],
+        views=[],
     ),
     Schema(
         # Tables in this schema are externals and schemas are not defined in the SQL scripts.
         # This will be changed to Views in the future.
-        name=INPUT_DATABASE_NAME,
+        name=paths.INPUT_DATABASE_NAME,
         tables=[
             Table(
-                name=GRID_LOSS_METERING_POINTS_TABLE_NAME,
+                name=paths.GRID_LOSS_METERING_POINTS_TABLE_NAME,
                 schema=grid_loss_metering_points_schema,
             )
+        ],
+        views=[],
+    ),
+    Schema(
+        name=paths.BASIS_DATA_DATABASE_NAME,
+        tables=[
+            Table(
+                name=paths.METERING_POINT_PERIODS_TABLE_NAME,
+                schema=basis_data_schemas.metering_point_period_schema,
+            ),
+            Table(
+                name=paths.TIME_SERIES_POINTS_TABLE_NAME,
+                schema=basis_data_schemas.time_series_point_schema,
+            ),
+            Table(
+                name=paths.CHARGE_LINK_PERIODS_TABLE_NAME,
+                schema=basis_data_schemas.charge_link_periods_schema,
+            ),
+            Table(
+                name=paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME,
+                schema=basis_data_schemas.charge_master_data_periods_schema,
+            ),
+            Table(
+                name=paths.CHARGE_PRICE_POINTS_TABLE_NAME,
+                schema=basis_data_schemas.charge_price_points_schema,
+            ),
+            Table(
+                name=paths.GRID_LOSS_METERING_POINTS_TABLE_NAME,
+                schema=basis_data_schemas.grid_loss_metering_points_schema,
+            ),
+            Table(
+                name=paths.CALCULATIONS_TABLE_NAME,
+                schema=basis_data_schemas.calculations_schema,
+            ),
+        ],
+        views=[],
+    ),
+    Schema(
+        name=paths.SETTLEMENT_REPORT_DATABASE_NAME,
+        tables=[],
+        views=[
+            View(name=paths.SETTLEMENT_REPORT_METERING_POINT_PERIODS_VIEW_NAME),
+            View(name=paths.SETTLEMENT_REPORT_METERING_POINT_TIME_SERIES_VIEW_NAME),
         ],
     ),
 ]

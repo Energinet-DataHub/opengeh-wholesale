@@ -15,10 +15,11 @@
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.GridArea;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
-using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.Validation;
+using Energinet.DataHub.Wholesale.Edi.Validation.Helpers;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
@@ -36,6 +37,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
 
         services.AddTransient<DateTimeZone>(s => DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
         services.AddTransient<IClock>(s => SystemClock.Instance);
+        services.AddTransient<PeriodValidationHelper>();
         services.AddScoped<IGridAreaOwnerRepository, GridAreaOwnerRepository>();
         services.AddScoped<IDatabaseContext, DatabaseContext>();
 
@@ -102,7 +104,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
         // Arrange
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.EnergySupplier)
             .WithRequestedByActorId(EnergySupplierValidatorTest.ValidGlnNumber)
             .WithEnergySupplierId("invalid-id")
             .Build();
@@ -133,13 +135,13 @@ public class AggregatedTimeSeriesRequestValidatorTests
     }
 
     [Fact]
-    public async Task Validate_WhenSettlementSeriesVersionIsInvalid_ReturnsUnsuccessfulValidation()
+    public async Task Validate_WhenSettlementVersionIsInvalid_ReturnsUnsuccessfulValidation()
     {
         // Arrange
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithBusinessReason(BusinessReason.Correction)
-            .WithSettlementSeriesVersion("invalid-settlement-series-version")
+            .WithBusinessReason(DataHubNames.BusinessReason.Correction)
+            .WithSettlementVersion("invalid-settlement-version")
             .Build();
 
         // Act
@@ -156,10 +158,10 @@ public class AggregatedTimeSeriesRequestValidatorTests
         // Arrange
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithMeteringPointType(MeteringPointType.Consumption)
+            .WithMeteringPointType(DataHubNames.MeteringPointType.Consumption)
             .WithSettlementMethod(null)
             .WithRequestedByActorId(EnergySupplierValidatorTest.ValidGlnNumber)
-            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.EnergySupplier)
             .WithEnergySupplierId(EnergySupplierValidatorTest.ValidGlnNumber)
             .Build();
 
@@ -177,7 +179,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
         // Arrange
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithRequestedByActorRole(ActorRoleCode.BalanceResponsibleParty)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.BalanceResponsibleParty)
             .WithBusinessReason("D05")
             .WithBalanceResponsibleId(BalanceResponsibleValidatorTest.ValidGlnNumber)
             .Build();

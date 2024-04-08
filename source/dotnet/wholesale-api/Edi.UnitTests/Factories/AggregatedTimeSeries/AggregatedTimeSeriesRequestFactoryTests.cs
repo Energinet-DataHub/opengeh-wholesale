@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Factories.AggregatedTimeSeries;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using FluentAssertions;
@@ -35,7 +36,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
             gridAreaCode: gridAreaCode,
             energySupplier: energySupplier,
             balanceResponsible: balanceResponsibleId,
-            meteringPointType: MeteringPointType.Production);
+            meteringPointType: DataHubNames.MeteringPointType.Production);
 
         // Act
         var actual = AggregatedTimeSeriesRequestFactory.Parse(request);
@@ -141,7 +142,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
             energySupplier: energySupplier,
             balanceResponsible: balanceResponsibleId,
             meteringPointType: string.Empty,
-            settlementMethod: SettlementMethod.NonProfiled);
+            settlementMethod: DataHubNames.SettlementMethod.NonProfiled);
 
         // Act
         var actual = AggregatedTimeSeriesRequestFactory.Parse(request);
@@ -174,7 +175,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
             meteringPointType: string.Empty,
             settlementMethod: string.Empty);
 
-        request.RequestedByActorRole = ActorRoleCode.BalanceResponsibleParty;
+        request.RequestedByActorRole = DataHubNames.ActorRole.BalanceResponsibleParty;
 
         // Act
         var actual = AggregatedTimeSeriesRequestFactory.Parse(request);
@@ -207,7 +208,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
             meteringPointType: string.Empty,
             settlementMethod: string.Empty);
 
-        request.RequestedByActorRole = ActorRoleCode.MeteredDataResponsible;
+        request.RequestedByActorRole = DataHubNames.ActorRole.MeteredDataResponsible;
 
         // Act
         var actual = AggregatedTimeSeriesRequestFactory.Parse(request);
@@ -234,8 +235,8 @@ public class AggregatedTimeSeriesRequestFactoryTests
         string? gridAreaCode = null,
         string? energySupplier = null,
         string? balanceResponsible = null,
-        string meteringPointType = MeteringPointType.Production,
-        string settlementMethod = SettlementMethod.Flex)
+        string meteringPointType = DataHubNames.MeteringPointType.Production,
+        string settlementMethod = DataHubNames.SettlementMethod.Flex)
     {
         var request = new AggregatedTimeSeriesRequest()
         {
@@ -247,8 +248,8 @@ public class AggregatedTimeSeriesRequestFactoryTests
             },
             MeteringPointType = meteringPointType,
             RequestedByActorId = "1234567891234",
-            RequestedByActorRole = ActorRoleCode.EnergySupplier,
-            BusinessReason = BusinessReason.BalanceFixing,
+            RequestedByActorRole = DataHubNames.ActorRole.EnergySupplier,
+            BusinessReason = DataHubNames.BusinessReason.BalanceFixing,
 
             // Optional
             SettlementMethod = settlementMethod,

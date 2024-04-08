@@ -14,7 +14,6 @@
 
 # Resource names and variables defined in the infrastructure repository (https://github.com/Energinet-DataHub/dh3-infrastructure)
 
-from package.codelists import BasisDataType
 import package.infrastructure.environment_variables as env_vars
 
 # Input database and tables
@@ -25,11 +24,20 @@ CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods"
 CHARGE_MASTER_DATA_PERIODS_TABLE_NAME = "charge_masterdata_periods"
 CHARGE_PRICE_POINTS_TABLE_NAME = "charge_price_points"
 GRID_LOSS_METERING_POINTS_TABLE_NAME = "grid_loss_metering_points"
+CALCULATIONS_TABLE_NAME = "calculations"
 
 # Output database and tables
 OUTPUT_DATABASE_NAME = "wholesale_output"
+METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME = "metering_point_periods"
+TIME_SERIES_BASIS_DATA_TABLE_NAME = "time_series_points"
 ENERGY_RESULT_TABLE_NAME = "energy_results"
 WHOLESALE_RESULT_TABLE_NAME = "wholesale_results"
+BASIS_DATA_DATABASE_NAME = "basis_data"
+
+# Settlement report database and views
+SETTLEMENT_REPORT_DATABASE_NAME = "settlement_report"
+SETTLEMENT_REPORT_METERING_POINT_PERIODS_VIEW_NAME = "metering_point_periods"
+SETTLEMENT_REPORT_METERING_POINT_TIME_SERIES_VIEW_NAME = "metering_point_time_series"
 
 TEST = ""
 
@@ -37,6 +45,11 @@ TEST = ""
 WHOLESALE_CONTAINER_NAME = "wholesale"
 OUTPUT_FOLDER = "calculation-output"
 BASIS_DATA_FOLDER = "basis_data"
+
+BASIS_DATA_TABLE_NAMES = [
+    METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME,
+    TIME_SERIES_BASIS_DATA_TABLE_NAME,
+]
 
 
 def get_storage_account_url(storage_account_name: str) -> str:
@@ -58,36 +71,5 @@ def get_calculation_input_path(
     return f"{get_container_root_path(storage_account_name)}{input_folder}/"
 
 
-def get_basis_data_root_path(
-    basis_data_type: BasisDataType, calculation_id: str
-) -> str:
-    calculation_path = get_calculation_relative_path(calculation_id)
-    return f"{calculation_path}/{BASIS_DATA_FOLDER}/{_get_basis_data_folder_name(basis_data_type)}"
-
-
-def get_basis_data_path(
-    basis_data_type: BasisDataType,
-    calculation_id: str,
-    grid_area: str,
-    energy_supplier_id: str | None = None,
-) -> str:
-    basis_data_root_path = get_basis_data_root_path(basis_data_type, calculation_id)
-    if energy_supplier_id is None:
-        return f"{basis_data_root_path}/grouping=total_ga/grid_area={grid_area}"
-    else:
-        return f"{basis_data_root_path}/grouping=es_ga/grid_area={grid_area}/energy_supplier_gln={energy_supplier_id}"
-
-
 def get_calculation_relative_path(calculation_id: str) -> str:
     return f"{OUTPUT_FOLDER}/batch_id={calculation_id}"
-
-
-def _get_basis_data_folder_name(basis_data_type: BasisDataType) -> str:
-    if basis_data_type == BasisDataType.MASTER_BASIS_DATA:
-        return "master_basis_data"
-    elif basis_data_type == BasisDataType.TIME_SERIES_HOUR:
-        return "time_series_hour"
-    elif basis_data_type == BasisDataType.TIME_SERIES_QUARTER:
-        return "time_series_quarter"
-    else:
-        raise ValueError(f"Unexpected BasisDataType: {basis_data_type}")
