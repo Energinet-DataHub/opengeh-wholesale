@@ -118,9 +118,9 @@ variable "balance_responsible_changed_notification_to_email" {
   description = "Email address for balance responsible changed notifications"
 }
 
-variable "enabled_organization_identitiy_update_trigger" {
+variable "enabled_organization_identity_update_trigger" {
   type        = bool
   description = "Organization identity update trigger"
-  default     = false
+  default     = true
 }
 

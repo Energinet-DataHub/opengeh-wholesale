@@ -48,7 +48,7 @@ module "func_entrypoint_marketparticipant" {
     "ConsumeServiceBusSettings:SharedIntegrationEventTopic"  = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-shres-integrationevent-received-name)"
     "ConsumeServiceBusSettings:IntegrationEventSubscription" = module.sbtsub_market_participant_event_listener.name
 
-    FeatureManagement__EnabledOrganizationIdentityUpdateTrigger = var.enabled_organization_identitiy_update_trigger
+    FeatureManagement__EnabledOrganizationIdentityUpdateTrigger = var.enabled_organization_identity_update_trigger
   }
 
   role_assignments = [
