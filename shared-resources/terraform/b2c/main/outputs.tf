@@ -1,3 +1,9 @@
+output "mitid_frontend_open_id_url" {
+  description = "MitID configuration URL used for authentication of the frontend."
+  value       = "https://${var.b2c_tenant_name}.b2clogin.com/${var.b2c_tenant_id}/${data.external.user_flows.result.mitIdSignInSignUpUserFlowId}/v2.0/.well-known/openid-configuration"
+  sensitive   = false
+}
+
 output "frontend_open_id_url" {
   description = "Open ID configuration URL used for authentication of the frontend."
   value       = "https://${var.b2c_tenant_name}.b2clogin.com/${var.b2c_tenant_id}/${data.external.user_flows.result.signInUserFlowId}/v2.0/.well-known/openid-configuration"

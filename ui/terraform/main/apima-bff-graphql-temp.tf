@@ -38,6 +38,7 @@ module "apima_bff_graphql_temp" {
                 <metadata name="CorrelationId" value="@($"{context.RequestId}")" />
             </trace>
             <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Failed policy requirements, or token is invalid or missing.">
+                <openid-config url="${data.azurerm_key_vault_secret.mitid_frontend_open_id_url.value}" />
                 <openid-config url="${data.azurerm_key_vault_secret.frontend_open_id_url.value}" />
                 <openid-config url="${data.azurerm_key_vault_secret.backend_open_id_url.value}" />
                 <required-claims>

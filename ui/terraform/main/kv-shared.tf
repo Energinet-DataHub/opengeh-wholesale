@@ -8,6 +8,11 @@ data "azurerm_key_vault_secret" "appi_shared_instrumentation_key" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
+data "azurerm_key_vault_secret" "mitid_frontend_open_id_url" {
+  name         = "mitid-frontend-open-id-url"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
 data "azurerm_key_vault_secret" "frontend_open_id_url" {
   name         = "frontend-open-id-url"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id

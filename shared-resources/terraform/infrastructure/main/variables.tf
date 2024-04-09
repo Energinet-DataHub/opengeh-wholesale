@@ -55,6 +55,11 @@ variable "apim_b2c_tenant_id" {
   description = "ID of the B2C tenant hosting the backend app registrations authorizing against."
 }
 
+variable "mitid_frontend_open_id_url" {
+  type        = string
+  description = "MitID configuration URL used for authentication of the frontend."
+}
+
 variable "frontend_open_id_url" {
   type        = string
   description = "Open ID configuration URL used for authentication of the frontend."

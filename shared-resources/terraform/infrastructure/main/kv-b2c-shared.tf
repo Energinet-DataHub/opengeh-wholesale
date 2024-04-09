@@ -70,6 +70,14 @@ module "kvs_backend_bff_app_scope" {
   key_vault_id = module.kv_shared.id
 }
 
+module "kvs_mitid_frontend_open_id_url" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.61.0"
+
+  name         = "mitid-frontend-open-id-url"
+  value        = var.mitid_frontend_open_id_url
+  key_vault_id = module.kv_shared.id
+}
+
 module "kvs_frontend_open_id_url" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.61.0"
 
