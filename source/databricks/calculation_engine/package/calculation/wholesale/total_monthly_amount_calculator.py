@@ -55,7 +55,7 @@ def calculate(
         total_amount_with_tax[Colname.total_amount].alias(amount_with_tax),
     )
 
-    # add tax amount to non-tax amount if it is not null
+    # add tax amount to non-tax amount (if it is not null)
     total_monthly_amount = total_monthly_amount.withColumn(
         Colname.total_amount,
         f.when(

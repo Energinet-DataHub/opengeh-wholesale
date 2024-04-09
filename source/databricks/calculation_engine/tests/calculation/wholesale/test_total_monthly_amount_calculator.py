@@ -99,7 +99,7 @@ def test__calculate__adds_tax_amount_if_not_system_operator(
 
 
 @pytest.mark.parametrize(
-    "non_tax_amount, tax_amount, expected",
+    "amount_without_tax, amount_with_tax, expected",
     [
         [None, Decimal("1.000000"), Decimal("1.000000")],
         [Decimal("1.000000"), None, Decimal("1.000000")],
@@ -107,19 +107,22 @@ def test__calculate__adds_tax_amount_if_not_system_operator(
     ],
 )
 def test__calculate__when_amount_is_null__ignores_null_in_sum(
-    spark: SparkSession, non_tax_amount: Decimal, tax_amount: Decimal, expected: Decimal
+    spark: SparkSession,
+    amount_without_tax: Decimal,
+    amount_with_tax: Decimal,
+    expected: Decimal,
 ) -> None:
     # Arrange
     monthly_amounts_rows = [
         wholesale_results_factory.create_monthly_amount_row(
             charge_type=ChargeType.SUBSCRIPTION,
-            total_amount=non_tax_amount,
+            total_amount=amount_without_tax,
             charge_tax=False,
             charge_owner=GRID_ACCESS_PROVIDER_ID,
         ),
         wholesale_results_factory.create_monthly_amount_row(
             charge_type=ChargeType.TARIFF,
-            total_amount=tax_amount,
+            total_amount=amount_with_tax,
             charge_tax=True,
             charge_owner=SYSTEM_OPERATOR_ID,
         ),
