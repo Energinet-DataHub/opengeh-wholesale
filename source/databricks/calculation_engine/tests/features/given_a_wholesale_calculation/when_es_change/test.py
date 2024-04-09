@@ -11,3 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from features.utils.base import Base
+
+"""
+# Testing daily tariff when energy supplier changes on grid loss and system correction metering points
+
+Given grid loss and system correction metering points
+When energy supplier changes on both
+Then the daily tariff per grid area, charge owner and energy supplier is calculated correctly
+"""
+
+
+class TestThen(Base):
+    pass

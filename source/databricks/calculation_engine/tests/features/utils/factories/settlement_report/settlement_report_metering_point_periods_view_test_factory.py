@@ -16,63 +16,55 @@ from datetime import datetime
 
 from pyspark.sql import Row, SparkSession, DataFrame
 
-from package.calculation.input.schemas import metering_point_period_schema
+from package.calculation.basis_data.settlement_views.schemas.metering_point_period_schema import (
+    metering_point_period_schema,
+)
 from package.codelists import (
     InputMeteringPointType,
     InputSettlementMethod,
-    MeteringPointResolution,
-    CalculationType,
 )
-from package.constants import Colname
+from package.constants import MeteringPointPeriodColname
 
 
-class InputMeteringPointPeriodsTestFactory:
+class SettlementReportMeteringPointPeriodsViewTestFactory:
+    CALCULATION_ID = "295b6872-cc24-483c-bf0a-a33f93207c20"
     METERING_POINT_ID = "123456789012345678901234567"
-    METERING_POINT_TYPE = InputMeteringPointType.PRODUCTION
     FROM_DATE = datetime(2019, 12, 31, 23, 0, 0)
     TO_DATE = None
     GRID_AREA = "805"
-    SETTLEMENT_METHOD = InputSettlementMethod.FLEX
-    RESOLUTION = MeteringPointResolution.HOUR
     FROM_GRID_AREA = None
     TO_GRID_AREA = None
-    PARENT_METERING_POINT_ID = None
+    METERING_POINT_TYPE = InputMeteringPointType.PRODUCTION
+    SETTLEMENT_METHOD = InputSettlementMethod.FLEX
     ENERGY_SUPPLIER_ID = "9999999999999"
-    BALANCE_RESPONSIBLE_ID = "1234567890123"
 
     def __init__(self, spark: SparkSession):
         self.spark = spark
 
     @staticmethod
     def create_row(
+        calculation_id: str = CALCULATION_ID,
         metering_point_id: str = METERING_POINT_ID,
-        metering_point_type: InputMeteringPointType = METERING_POINT_TYPE,
-        calculation_type: CalculationType | None = None,
-        settlement_method: InputSettlementMethod | None = SETTLEMENT_METHOD,
-        grid_area: str = GRID_AREA,
-        resolution: MeteringPointResolution = RESOLUTION,
-        from_grid_area: str | None = FROM_GRID_AREA,
-        to_grid_area: str | None = TO_GRID_AREA,
-        parent_metering_point_id: str | None = PARENT_METERING_POINT_ID,
-        energy_supplier: str = ENERGY_SUPPLIER_ID,
-        balance_responsible_id: str = BALANCE_RESPONSIBLE_ID,
         from_date: datetime = FROM_DATE,
         to_date: datetime | None = TO_DATE,
+        grid_area: str = GRID_AREA,
+        from_grid_area: str | None = FROM_GRID_AREA,
+        to_grid_area: str | None = TO_GRID_AREA,
+        metering_point_type: InputMeteringPointType = METERING_POINT_TYPE,
+        settlement_method: InputSettlementMethod | None = SETTLEMENT_METHOD,
+        energy_supplier: str = ENERGY_SUPPLIER_ID,
     ) -> Row:
         row = {
-            Colname.metering_point_id: metering_point_id,
-            Colname.metering_point_type: metering_point_type.value,
-            Colname.calculation_type: calculation_type,
-            Colname.settlement_method: settlement_method.value,
-            Colname.grid_area: grid_area,
-            Colname.resolution: resolution.value,
-            Colname.from_grid_area: from_grid_area,
-            Colname.to_grid_area: to_grid_area,
-            Colname.parent_metering_point_id: parent_metering_point_id,
-            Colname.energy_supplier_id: energy_supplier,
-            Colname.balance_responsible_id: balance_responsible_id,
-            Colname.from_date: from_date,
-            Colname.to_date: to_date,
+            MeteringPointPeriodColname.calculation_id: calculation_id,
+            MeteringPointPeriodColname.metering_point_id: metering_point_id,
+            MeteringPointPeriodColname.from_date: from_date,
+            MeteringPointPeriodColname.to_date: to_date,
+            MeteringPointPeriodColname.grid_area: grid_area,
+            MeteringPointPeriodColname.from_grid_area: from_grid_area,
+            MeteringPointPeriodColname.to_grid_area: to_grid_area,
+            MeteringPointPeriodColname.metering_point_type: metering_point_type,
+            MeteringPointPeriodColname.settlement_method: settlement_method,
+            MeteringPointPeriodColname.energy_supplier_id: energy_supplier,
         }
 
         return Row(**row)

@@ -11,15 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-from pyspark.sql import DataFrame
-
-import features.utils as cl
-
-
-def get_expected(*args) -> DataFrame:  # type: ignore
-    """
-    This function can be used to custom build the expected results (dataframe).
-    It is also used a reference to locate the test scenario.
-    """
-    return cl.create_energy_result_dataframe(*args)
+from .input_grid_loss_test_factory import InputGridLossTestFactory
+from .input_metering_point_periods_test_factory import (
+    InputMeteringPointPeriodsTestFactory,
+)
+from .input_time_series_point_test_factory import (
+    InputTimeSeriesPointTestFactory,
+)
