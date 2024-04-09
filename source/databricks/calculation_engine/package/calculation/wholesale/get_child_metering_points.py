@@ -25,7 +25,7 @@ def get_child_metering_points_with_energy_suppliers(
     all_metering_point_periods: DataFrame,
 ) -> DataFrame:
     """
-    Returns all metering points.
+    Returns all child metering points.
     The energy supplier of child metering points is added from its parent metering point.
     """
     production_and_consumption_metering_points = all_metering_point_periods.filter(
