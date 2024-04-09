@@ -20,7 +20,7 @@ from package.constants import Colname
 from package.infrastructure import logging_configuration
 
 
-@logging_configuration.use_span("get_metering_points_and_child_metering_points")
+@logging_configuration.use_span("get_child_metering_points")
 def get_child_metering_points_with_energy_suppliers(
     all_metering_point_periods: DataFrame,
 ) -> DataFrame:
