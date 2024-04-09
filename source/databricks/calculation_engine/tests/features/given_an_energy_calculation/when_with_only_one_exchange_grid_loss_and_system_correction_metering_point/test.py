@@ -11,15 +11,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from features.utils.base import Base
 
-from pyspark.sql import DataFrame
+"""
+# Tests Description
 
-import features.utils as cl
+```gherkin
+GIVEN one exchange metering point
+AND one grid loss metering point
+AND one system correction metering point
+AND time series on the exchange MP is 75 kWh per hour
+WHEN calculating flex_consumption_per_ga
+THEN flex consumption per grid area is 75/4 = 18.75
+THEN there are four rows
+```
+
+"""
 
 
-def get_expected(*args) -> DataFrame:  # type: ignore
-    """
-    This function can be used to custom build the expected results (dataframe).
-    It is also used a reference to locate the test scenario.
-    """
-    return cl.create_energy_result_dataframe(*args)
+class TestThen(Base):
+    pass
