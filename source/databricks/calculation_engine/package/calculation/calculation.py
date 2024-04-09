@@ -11,8 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import pyspark.sql.functions as f
-from pyspark.sql import DataFrame
 
 from package.calculation.energy.calculated_grid_loss import (
     add_calculated_grid_loss_to_metering_point_times_series,
@@ -30,13 +28,10 @@ from .output.wholesale_results import write_wholesale_results
 from .preparation import PreparedDataReader
 from .wholesale import wholesale_calculation
 from package.calculation.preparation.transformations.metering_point_periods_for_calculation_type import (
-    _get_child_metering_points_with_energy_suppliers,
-    get_metering_points_periods_with_type_consumption_production_and_exchange,
-    get_metering_points_periods_with_energy_supplier_on_child_metering_points,
+    get_metering_points_periods_for_wholesale_calculation,
+    get_metering_point_periods_for_basis_data,
 )
-from ..codelists import MeteringPointType
 from ..codelists.calculation_type import is_wholesale_calculation_type
-from ..constants import Colname
 
 
 @logging_configuration.use_span("calculation")
@@ -96,26 +91,22 @@ def _execute(
             negative_grid_loss,
         )
     )
-
-    metering_points_periods_for_energy_calculation = (
-        get_metering_points_periods_with_type_consumption_production_and_exchange(
-            all_metering_point_periods
-        )
-    )
-
-    if is_wholesale_calculation_type(args.calculation_type):
+    is_wholesale_calculation = is_wholesale_calculation_type(args.calculation_type)
+    if is_wholesale_calculation:
         with logging_configuration.start_span("calculation.wholesale.prepare"):
             input_charges = prepared_data_reader.get_input_charges(
                 args.calculation_period_start_datetime,
                 args.calculation_period_end_datetime,
             )
 
-            metering_point_periods_for_wholesale = get_metering_points_periods_with_energy_supplier_on_child_metering_points(
-                all_metering_point_periods
+            metering_point_periods_for_wholesale_calculation = (
+                get_metering_points_periods_for_wholesale_calculation(
+                    all_metering_point_periods
+                )
             )
 
             prepared_charges = prepared_data_reader.get_prepared_charges(
-                metering_point_periods_for_wholesale,
+                metering_point_periods_for_wholesale_calculation,
                 metering_point_time_series,
                 input_charges,
                 args.time_zone,
@@ -126,17 +117,16 @@ def _execute(
             prepared_charges,
         )
 
-        # Add basis data to results
-        results.basis_data = basis_data_factory.create(
-            args, metering_point_periods_for_wholesale, metering_point_time_series
-        )
-    else:
-        # Add basis data to results
-        results.basis_data = basis_data_factory.create(
-            args,
-            metering_points_periods_for_energy_calculation,
-            metering_point_time_series,
-        )
+    metering_point_periods_for_basis_data = get_metering_point_periods_for_basis_data(
+        is_wholesale_calculation, all_metering_point_periods
+    )
+
+    # Add basis data to results
+    results.basis_data = basis_data_factory.create(
+        args,
+        metering_point_periods_for_basis_data,
+        metering_point_time_series,
+    )
 
     return results
 

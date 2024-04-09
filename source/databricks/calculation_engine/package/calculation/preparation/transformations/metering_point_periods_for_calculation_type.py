@@ -20,31 +20,35 @@ from package.constants import Colname
 from package.infrastructure import logging_configuration
 
 
-def get_metering_points_periods_with_type_consumption_production_and_exchange(
+def get_metering_point_periods_for_basis_data(
+    is_wholesale_calculation: bool, all_metering_point_periods: DataFrame
+) -> DataFrame:
+    metering_points_periods_for_energy_calculation_only = (
+        all_metering_point_periods.filter(
+            (f.col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
+            | (f.col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
+            | (f.col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value)
+        )
+    )
+    if is_wholesale_calculation:
+        return _get_child_metering_points_with_energy_suppliers(
+            all_metering_point_periods
+        ).union(metering_points_periods_for_energy_calculation_only)
+    return metering_points_periods_for_energy_calculation_only
+
+
+def get_metering_points_periods_for_wholesale_calculation(
     all_metering_point_periods: DataFrame,
 ) -> DataFrame:
-    return all_metering_point_periods.filter(
+    parent_metering_points_periods = all_metering_point_periods.filter(
         (f.col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
         | (f.col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
-        | (f.col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value)
-    )
-
-
-def get_metering_points_periods_with_energy_supplier_on_child_metering_points(
-    all_metering_point_periods: DataFrame,
-) -> DataFrame:
-    metering_points_periods_with_type_consumption_production_and_exchange = (
-        get_metering_points_periods_with_type_consumption_production_and_exchange(
-            all_metering_point_periods
-        )
     )
     child_metering_points_with_energy_suppliers = (
         _get_child_metering_points_with_energy_suppliers(all_metering_point_periods)
     )
-    metering_point_periods_union = (
-        metering_points_periods_with_type_consumption_production_and_exchange.union(
-            child_metering_points_with_energy_suppliers
-        )
+    metering_point_periods_union = parent_metering_points_periods.union(
+        child_metering_points_with_energy_suppliers
     )
     return metering_point_periods_union
 
