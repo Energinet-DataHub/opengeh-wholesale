@@ -18,6 +18,18 @@ from .states.scenario_state import (
     get_expected,
 )
 
+# Testing daily tariff when energy supplier changes on grid loss and system correction metering points
+
+"""
+# Tests Description
+
+```gherkin
+Given grid loss and system correction metering points
+When energy supplier changes on both
+Then the daily tariff per grid area, charge owner and energy supplier is calculated correctly
+```
+"""
+
 
 def test_execute__returns_expected(
     scenario_fixture: ScenarioFixture,
