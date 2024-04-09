@@ -106,7 +106,7 @@ def test__calculate__adds_tax_amount_if_not_system_operator(
         [None, None, None],
     ],
 )
-def test__calculate__when_amount_is_null__ignore_null_in_sum(
+def test__calculate__when_amount_is_null__ignores_null_in_sum(
     spark: SparkSession, non_tax_amount: Decimal, tax_amount: Decimal, expected: Decimal
 ) -> None:
     # Arrange
