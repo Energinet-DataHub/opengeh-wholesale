@@ -16,7 +16,7 @@ from datetime import datetime
 from pyspark.sql import SparkSession
 import pytest
 import tests.calculation.preparation.transformations.metering_point_periods_factory as factory
-from package.calculation.wholesale.get_metering_points_and_child_metering_points import (
+from package.calculation.wholesale.get_child_metering_points import (
     get_child_metering_points_with_energy_suppliers,
 )
 

@@ -28,7 +28,7 @@ from .output.energy_results import write_energy_results
 from .output.wholesale_results import write_wholesale_results
 from .preparation import PreparedDataReader
 from .wholesale import wholesale_calculation
-from .wholesale.get_metering_points_and_child_metering_points import (
+from .wholesale.get_child_metering_points import (
     get_child_metering_points_with_energy_suppliers,
 )
 from ..codelists import MeteringPointType
