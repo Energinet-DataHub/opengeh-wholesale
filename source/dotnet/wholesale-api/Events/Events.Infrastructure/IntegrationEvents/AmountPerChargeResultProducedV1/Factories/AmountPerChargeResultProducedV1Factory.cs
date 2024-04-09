@@ -26,7 +26,7 @@ public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProd
         {
             AmountType: AmountType.AmountPerCharge,
             Resolution: Resolution.Hour or Resolution.Day,
-            ChargeType: ChargeType.Tariff
+            ChargeType: ChargeType.Tariff or ChargeType.Fee or ChargeType.Subscription,
         };
 
     public Contracts.IntegrationEvents.AmountPerChargeResultProducedV1 Create(WholesaleResult result)
