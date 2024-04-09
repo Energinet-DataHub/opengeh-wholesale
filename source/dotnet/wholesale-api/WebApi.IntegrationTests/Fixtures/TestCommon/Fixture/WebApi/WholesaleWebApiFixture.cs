@@ -76,16 +76,16 @@ public class WholesaleWebApiFixture : WebApiFixture
 
         Environment.SetEnvironmentVariable(
             $"{UserAuthenticationOptions.SectionName}__{nameof(UserAuthenticationOptions.MitIdExternalMetadataAddress)}",
-            "disabled");
+            "NotEmpty");
         Environment.SetEnvironmentVariable(
             $"{UserAuthenticationOptions.SectionName}__{nameof(UserAuthenticationOptions.ExternalMetadataAddress)}",
-            "disabled");
+            "NotEmpty");
         Environment.SetEnvironmentVariable(
             $"{UserAuthenticationOptions.SectionName}__{nameof(UserAuthenticationOptions.BackendBffAppId)}",
-            "disabled");
+            "NotEmpty");
         Environment.SetEnvironmentVariable(
             $"{UserAuthenticationOptions.SectionName}__{nameof(UserAuthenticationOptions.InternalMetadataAddress)}",
-            "disabled");
+            "NotEmpty");
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
 
         // New options property names
