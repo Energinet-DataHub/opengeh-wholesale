@@ -46,9 +46,6 @@ class Base:
                 actual_results, expected_result
             )
 
-            actual_result.show()
-            expected_result.df.show()
-
             assert_dataframe_and_schema(
                 actual_result,
                 expected_result.df,
