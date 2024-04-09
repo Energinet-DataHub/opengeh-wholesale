@@ -70,6 +70,26 @@ public class AmountPerChargeResultProducedV1FactoryTests
     }
 
     [Theory]
+    [InlineData(ChargeType.Fee)]
+    [InlineData(ChargeType.Subscription)]
+    [InlineData(ChargeType.Tariff)]
+    public void CanCreate_WhenChargeType_ReturnsExpectedValue(
+        ChargeType chargeType)
+    {
+        // Arrange
+        var wholesaleResult = new WholesaleResultBuilder()
+            .WithChargeType(chargeType)
+            .Build();
+        var sut = new AmountPerChargeResultProducedV1Factory();
+
+        // Act
+        var actual = sut.CanCreate(wholesaleResult);
+
+        // Assert
+        actual.Should().Be(true);
+    }
+
+    [Theory]
     [InlineAutoMoqData]
     public void Create_WhenAmountIsNull_ReturnsExpectedObject(
         AmountPerChargeResultProducedV1Factory sut)
