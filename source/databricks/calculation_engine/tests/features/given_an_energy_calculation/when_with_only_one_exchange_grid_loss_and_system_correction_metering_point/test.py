@@ -16,16 +16,11 @@ from features.utils.base import Base
 """
 # Tests Description
 
-TODO move to standard scenario 
+```gherkin
 GIVEN one exchange metering point
 AND one grid loss metering point
 AND one system correction metering point
 AND time series on the exchange MP is 75 kWh per hour
-
-
-
-```gherkin
-GIVEN the standard scenario 
 WHEN calculating flex_consumption_per_ga
 THEN flex consumption per grid area is 75/4 = 18.75
 THEN there are four rows
