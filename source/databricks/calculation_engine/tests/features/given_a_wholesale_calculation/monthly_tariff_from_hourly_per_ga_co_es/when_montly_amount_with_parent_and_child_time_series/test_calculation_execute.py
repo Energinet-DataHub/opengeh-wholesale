@@ -23,7 +23,7 @@ from .states.scenario_state import (
 
 ```gherkin
 GIVEN two grid loss metering points (positive and negative grid loss)
-  AND one parent metering point (consumption)  
+  AND one parent metering point (consumption)
   AND one child metering point (consumption from grid)
   AND the charge link quantity of 10 for child metering point starting on February 2nd
   AND the charge link quantity of 20 for for parent metering point starting February 2nd

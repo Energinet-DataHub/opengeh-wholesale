@@ -23,7 +23,7 @@ from .states.scenario_state import (
 
 ```gherkin
 GIVEN two metering points (positive and negative grid loss)
-  AND only one charge link 
+  AND only one charge link
   AND the charge link starts on February 27th
   AND the subscription price is 28.282828 DKK
 WHEN calculating subscription amount per charge for February

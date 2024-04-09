@@ -24,9 +24,9 @@ from .states.scenario_state import (
 # Tests Description
 
 ```gherkin
-Given grid loss and system correction metering points
-When energy supplier changes on both
-Then the daily tariff per grid area, charge owner and energy supplier is calculated correctly
+GIVEN grid loss and system correction metering points
+WHEN energy supplier changes on both
+THEN the daily tariff per grid area, charge owner and energy supplier is calculated correctly
 ```
 """
 
