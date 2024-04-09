@@ -16,10 +16,10 @@ using Azure.Identity;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks.DataLake;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.DependencyInjection;
+namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 
 /// <summary>
 /// Extension methods for <see cref="IServiceCollection"/>
@@ -30,22 +30,24 @@ public static class DataLakeExtensions
     /// <summary>
     /// Register DataLake services commonly used by DH3 applications.
     /// </summary>
-    public static IServiceCollection AddDataLakeClientForApplication(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddDataLakeClientForApplication(this IServiceCollection services)
     {
-        ArgumentNullException.ThrowIfNull(configuration);
+        services
+            .AddOptions<DataLakeOptions>()
+            .BindConfiguration(configSectionPath: string.Empty);
 
-        services.AddOptions<DataLakeOptions>().Bind(configuration);
-        var options = configuration.Get<DataLakeOptions>()!;
-        services.AddSingleton<DataLakeFileSystemClient>(_ =>
+        services.AddSingleton(sp =>
         {
-            var dataLakeServiceClient = new DataLakeServiceClient(new Uri(options.STORAGE_ACCOUNT_URI), new DefaultAzureCredential());
-            return dataLakeServiceClient.GetFileSystemClient(options.STORAGE_CONTAINER_NAME);
+            var dataLakeOptions = sp.GetRequiredService<IOptions<DataLakeOptions>>().Value;
+
+            var dataLakeServiceClient = new DataLakeServiceClient(new Uri(dataLakeOptions.STORAGE_ACCOUNT_URI), new DefaultAzureCredential());
+            return dataLakeServiceClient.GetFileSystemClient(dataLakeOptions.STORAGE_CONTAINER_NAME);
         });
 
         // Health checks
         services.AddHealthChecks()
             .AddDataLakeHealthCheck(
-                _ => configuration.Get<DataLakeOptions>()!,
+                sp => sp.GetRequiredService<IOptions<DataLakeOptions>>().Value,
                 name: "DataLake");
 
         return services;
