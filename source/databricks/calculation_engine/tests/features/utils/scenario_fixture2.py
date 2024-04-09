@@ -114,7 +114,7 @@ class ScenarioFixture2:
         )
 
         if len(expected_result_file_paths) == 0:
-            raise Exception(f"Missing expected result files in output folder.")
+            raise Exception("Missing expected result files in output folder.")
 
         for result_file in expected_result_file_paths:
             raw_df = spark.read.csv(result_file[1], header=True, sep=";")
