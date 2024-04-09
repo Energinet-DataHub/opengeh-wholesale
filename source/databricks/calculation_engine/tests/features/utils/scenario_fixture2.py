@@ -22,6 +22,7 @@ from pyspark.sql import SparkSession, DataFrame
 
 from features.correlations import get_correlations
 from features.test_calculation_args import create_calculation_args
+from features.utils import create_wholesale_result_dataframe
 from features.utils.dataframes.energy_results_dataframe import (
     create_energy_result_dataframe,
 )
@@ -42,40 +43,41 @@ class ExpectedResult:
 class ScenarioFixture2:
     table_reader: Mock
     test_calculation_args: CalculatorArgs
-    test_path: str
-    parent_dir: str
-    results: DataFrame
-    expected: list[ExpectedResult]
+    input_path: str
+    scenario_path: str
     correlations = dict[str, tuple]
 
     def __init__(self, spark: SparkSession):
         self.spark = spark
         self.table_reader = Mock()
 
-    def setup(self, scenario_folder_path: str) -> None:
-        self.parent_dir = scenario_folder_path
-        self.test_path = self.parent_dir + "/input/"
+    def execute(
+        self, scenario_folder_path: str
+    ) -> Tuple[CalculationResultsContainer, list[ExpectedResult]]:
+        self._setup(scenario_folder_path)
+        actual = _execute(
+            self.test_calculation_args, PreparedDataReader(self.table_reader)
+        )
+        expected = self._get_expected_results(self.spark)
+        return actual, expected
+
+    def _setup(self, scenario_path: str) -> None:
+        self.scenario_path = scenario_path
+        self.input_path = self.scenario_path + "/input/"
 
         correlations = get_correlations(self.table_reader)
-        self.test_calculation_args = create_calculation_args(self.test_path)
+        self.test_calculation_args = create_calculation_args(self.input_path)
         dataframes = self._read_files_in_parallel(correlations)
 
         for i, (_, reader) in enumerate(correlations.values()):
             if reader is not None:
                 reader.return_value = dataframes[i]
 
-        self.expected = self._get_expected_results(self.spark)
-
-    def execute(self) -> CalculationResultsContainer:
-        return _execute(
-            self.test_calculation_args, PreparedDataReader(self.table_reader)
-        )
-
     def _read_file(
         self, spark_session: SparkSession, csv_file_name: str, schema: str
     ) -> DataFrame:
 
-        path_to_csv = self.test_path + csv_file_name
+        path_to_csv = self.input_path + csv_file_name
 
         if not os.path.exists(path_to_csv):
             return None
@@ -110,9 +112,16 @@ class ScenarioFixture2:
         result_files = self._get_scenario_output_paths()
         for result_file in result_files:
             raw_df = spark.read.csv(result_file[1], header=True, sep=";")
-            df = create_energy_result_dataframe(
-                spark, raw_df, self.test_calculation_args
-            )
+            if "energy_results" in result_file[1]:
+                df = create_energy_result_dataframe(
+                    spark, raw_df, self.test_calculation_args
+                )
+            elif "wholesale_results" in result_file[1]:
+                df = create_wholesale_result_dataframe(
+                    spark, raw_df, self.test_calculation_args
+                )
+            else:
+                raise Exception(f"Unsupported result file '{result_file[0]}'")
             expected_results.append(ExpectedResult(name=result_file[0], df=df))
 
         return expected_results
@@ -120,6 +129,6 @@ class ScenarioFixture2:
     def _get_scenario_output_paths(self) -> list[Tuple[str, str]]:
         """Returns (file base name without extension, file full path)."""
 
-        output_folder_path = Path(f"{self.parent_dir}/output")
+        output_folder_path = Path(f"{self.scenario_path}/output")
         csv_files = list(output_folder_path.rglob("*.csv"))
         return [(Path(file).stem, str(file)) for file in csv_files]
