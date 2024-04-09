@@ -51,10 +51,10 @@ public class CompositionRootTests
                 ["IntegrationEvents:SubscriptionName"] = "NotEmpty",
                 ["WholesaleInbox:QueueName"] = "NotEmpty",
                 ["EdiInbox:QueueName"] = "NotEmpty",
-                ["Authentication:MitIdExternalMetadataAddress"] = "NotEmpty",
-                ["Authentication:ExternalMetadataAddress"] = "NotEmpty",
-                ["Authentication:BackendBffAppId"] = "NotEmpty",
-                ["Authentication:InternalMetadataAddress"] = "NotEmpty",
+                ["UserAuthentication:MitIdExternalMetadataAddress"] = "NotEmpty",
+                ["UserAuthentication:ExternalMetadataAddress"] = "NotEmpty",
+                ["UserAuthentication:BackendBffAppId"] = "NotEmpty",
+                ["UserAuthentication:InternalMetadataAddress"] = "NotEmpty",
             })
             .Build();
 
