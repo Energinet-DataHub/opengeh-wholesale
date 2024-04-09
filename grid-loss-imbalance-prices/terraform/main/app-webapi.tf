@@ -17,12 +17,8 @@ module "app_webapi" {
   dotnet_framework_version               = "v8.0"
   ip_restrictions                        = var.ip_restrictions
   scm_ip_restrictions                    = var.ip_restrictions
-  app_settings = {
-    "JwtBearerSettings:ExternalOpenIdUrl" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=frontend-open-id-url)"
-    "JwtBearerSettings:InternalOpenIdUrl" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-open-id-url)"
-    "JwtBearerSettings:BackendBffAppId"   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-bff-app-id)"
-    "DatabaseSettings:ConnectionString"   = local.MS_GRID_LOSS_IMBALANCE_PRICES_CONNECTION_STRING
-  }
+  app_settings                           = local.default_webapi_app_settings
+
   role_assignments = [
     {
       resource_id          = data.azurerm_key_vault.kv_shared_resources.id
@@ -37,4 +33,14 @@ module "kvs_app_grid_loss_imbalance_prices_webapi_base_url" {
   name         = "app-grid-loss-imbalance-prices-webapi-base-url"
   value        = "https://${module.app_webapi.default_hostname}"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+locals {
+  default_webapi_app_settings = {
+    "JwtBearerSettings:MitIdExternalOpenIdUrl" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=mitid-frontend-open-id-url)"
+    "JwtBearerSettings:ExternalOpenIdUrl"      = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=frontend-open-id-url)"
+    "JwtBearerSettings:InternalOpenIdUrl"      = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-open-id-url)"
+    "JwtBearerSettings:BackendBffAppId"        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-bff-app-id)"
+    "DatabaseSettings:ConnectionString"        = local.MS_GRID_LOSS_IMBALANCE_PRICES_CONNECTION_STRING
+  }
 }

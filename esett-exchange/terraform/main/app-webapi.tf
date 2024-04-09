@@ -17,18 +17,8 @@ module "app_webapi" {
   dotnet_framework_version               = "v8.0"
   ip_restrictions                        = var.ip_restrictions
   scm_ip_restrictions                    = var.ip_restrictions
-  app_settings = {
-    "JwtBearerSettings:ExternalOpenIdUrl" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=frontend-open-id-url)"
-    "JwtBearerSettings:InternalOpenIdUrl" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-open-id-url)"
-    "JwtBearerSettings:BackendBffAppId"   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-bff-app-id)"
-    "DatabaseSettings:ConnectionString"   = local.MS_ESETT_EXCHANGE_CONNECTION_STRING
-    "BlobStorageSettings:AccountUri"      = local.ESETT_DOCUMENT_STORAGE_ACCOUNT_URI
-    "BlobStorageSettings:ContainerName"   = local.ESETT_DOCUMENT_STORAGE_CONTAINER_NAME
-    "StatusSettings:Dh2Uri"               = module.func_entrypoint_peek.default_hostname
-    "StatusSettings:ExchangeUri"          = module.func_entrypoint_exchange_event_receiver.default_hostname
-    "StatusSettings:IncomingUri"          = module.func_entrypoint_ecp_inbox.default_hostname
-    "StatusSettings:OutgoingUri"          = module.func_entrypoint_ecp_outbox.default_hostname
-  }
+  app_settings                           = local.default_webapi_app_settings
+
   role_assignments = [
     {
       resource_id          = module.storage_esett_documents.id
@@ -47,4 +37,20 @@ module "kvs_app_esett_webapi_base_url" {
   name         = "app-esett-webapi-base-url"
   value        = "https://${module.app_webapi.default_hostname}"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+locals {
+  default_webapi_app_settings = {
+    "JwtBearerSettings:MitIdExternalOpenIdUrl" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=mitid-frontend-open-id-url)"
+    "JwtBearerSettings:ExternalOpenIdUrl"      = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=frontend-open-id-url)"
+    "JwtBearerSettings:InternalOpenIdUrl"      = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-open-id-url)"
+    "JwtBearerSettings:BackendBffAppId"        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-bff-app-id)"
+    "DatabaseSettings:ConnectionString"        = local.MS_ESETT_EXCHANGE_CONNECTION_STRING
+    "BlobStorageSettings:AccountUri"           = local.ESETT_DOCUMENT_STORAGE_ACCOUNT_URI
+    "BlobStorageSettings:ContainerName"        = local.ESETT_DOCUMENT_STORAGE_CONTAINER_NAME
+    "StatusSettings:Dh2Uri"                    = module.func_entrypoint_peek.default_hostname
+    "StatusSettings:ExchangeUri"               = module.func_entrypoint_exchange_event_receiver.default_hostname
+    "StatusSettings:IncomingUri"               = module.func_entrypoint_ecp_inbox.default_hostname
+    "StatusSettings:OutgoingUri"               = module.func_entrypoint_ecp_outbox.default_hostname
+  }
 }
