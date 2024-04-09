@@ -75,16 +75,16 @@ public class WholesaleWebApiFixture : WebApiFixture
             DatabaseManager.ConnectionString);
 
         Environment.SetEnvironmentVariable(
-            $"{AuthenticationOptions.SectionName}__{nameof(AuthenticationOptions.MitIdExternalMetadataAddress)}",
+            $"{UserAuthenticationOptions.SectionName}__{nameof(UserAuthenticationOptions.MitIdExternalMetadataAddress)}",
             "disabled");
         Environment.SetEnvironmentVariable(
-            $"{AuthenticationOptions.SectionName}__{nameof(AuthenticationOptions.ExternalMetadataAddress)}",
+            $"{UserAuthenticationOptions.SectionName}__{nameof(UserAuthenticationOptions.ExternalMetadataAddress)}",
             "disabled");
         Environment.SetEnvironmentVariable(
-            $"{AuthenticationOptions.SectionName}__{nameof(AuthenticationOptions.BackendBffAppId)}",
+            $"{UserAuthenticationOptions.SectionName} __ {nameof(UserAuthenticationOptions.BackendBffAppId)}",
             "disabled");
         Environment.SetEnvironmentVariable(
-            $"{AuthenticationOptions.SectionName}__{nameof(AuthenticationOptions.InternalMetadataAddress)}",
+            $"{UserAuthenticationOptions.SectionName} __ {nameof(UserAuthenticationOptions.InternalMetadataAddress)}",
             "disabled");
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
 
