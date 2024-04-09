@@ -16,20 +16,21 @@ from features.utils.base import Base
 """
 # Tests Description
 
-A standard scenario is a scenario that is defined as follows:
+TODO move to standard scenario 
+GIVEN one exchange metering point
+AND one grid loss metering point
+AND one system correction metering point
+AND time series on the exchange MP is 75 kWh per hour
+
+
 
 ```gherkin
-Given an energy calculation
-When there is a production metering point
-    And a consumption metering point
-    And a grid loss metering point
-    And an exchange metering point
-    And a time series of energy values of the production and consumption metering points
-Then the actual output equals the expected output
+GIVEN the standard scenario 
+WHEN calculating flex_consumption_per_ga
+THEN flex consumption per grid area is 75/4 = 18.75
+THEN there are four rows
 ```
 
-What has to be asserted in the "then-clause" is inferred from the files in the folders
-`basis_data` and `energy_results`.
 """
 
 
