@@ -196,6 +196,8 @@ def test__current_state_and_migration_scripts__should_give_same_result(
             "{BASIS_DATA_DATABASE_NAME}": f"{migration_scripts_prefix}{BASIS_DATA_DATABASE_NAME}",
             "{SETTLEMENT_REPORT_DATABASE_NAME}": f"{migration_scripts_prefix}{SETTLEMENT_REPORT_DATABASE_NAME}",
             "{OUTPUT_FOLDER}": f"{migration_scripts_prefix}migration_test",
+            "{BASIS_DATA_FOLDER}": f"{migration_scripts_prefix}basis_folder",
+            "{INPUT_FOLDER}": f"{migration_scripts_prefix}input_folder",
         },
     )
     spark_sql_migration_helper.configure_spark_sql_migration(
@@ -217,6 +219,8 @@ def test__current_state_and_migration_scripts__should_give_same_result(
             "{BASIS_DATA_DATABASE_NAME}": f"{current_state_prefix}{BASIS_DATA_DATABASE_NAME}",
             "{SETTLEMENT_REPORT_DATABASE_NAME}": f"{current_state_prefix}{SETTLEMENT_REPORT_DATABASE_NAME}",
             "{OUTPUT_FOLDER}": f"{current_state_prefix}migration_test",
+            "{BASIS_DATA_FOLDER}": f"{current_state_prefix}basis_folder",
+            "{INPUT_FOLDER}": f"{current_state_prefix}input_folder",
         },
     )
     spark_sql_migration_helper.configure_spark_sql_migration(
@@ -259,7 +263,9 @@ def test__current_state_and_migration_scripts__should_give_same_result(
                 f"DESCRIBE DETAIL {current_state_script_tag}"
             ).collect()[0]
 
-            migrations_script_location = migration_script_details["location"]
+            migrations_script_location = migration_script_details["location"].replace(
+                migration_scripts_prefix, ""
+            )
             current_state_location = current_state_details["location"].replace(
                 current_state_prefix, ""
             )
