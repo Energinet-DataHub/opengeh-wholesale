@@ -55,18 +55,17 @@ module "func_timeseriessynchronization" {
 
   app_settings = {
     WEBSITE_LOAD_CERTIFICATES                                                    = local.datahub2_certificate_thumbprint
-    StorageAccountSettings__Dh2StorageAccountUri                                 = "https://${module.st_dh2data.name}.blob.core.windows.net"
-    StorageAccountSettings__TimeSeriesContainerName                              = azurerm_storage_container.dh2_timeseries_synchronization.name # Kept for backwards compatibility
-    StorageAccountSettings__Dh2TimeSeriesSynchronizationContainerName            = azurerm_storage_container.dh2_timeseries_synchronization.name
-    StorageAccountSettings__Dh2TimeSeriesSynchronizationArchiveStorageAccountUri = "https://${module.st_dh2dropzone_archive.name}.blob.core.windows.net"
-    StorageAccountSettings__Dh2TimeSeriesSynchronizationArchiveContainerName     = azurerm_storage_container.dropzonetimeseriessyncarchive.name
-    StorageAccountSettings__Dh2TimeSeriesIntermediaryStorageAccountUri           = "https://${module.st_dh2timeseries_intermediary.name}.blob.core.windows.net"
-    StorageAccountSettings__Dh2TimeSeriesIntermediaryContainerName               = azurerm_storage_container.timeseriesintermediary.name
-    "ServiceBusSettings__ConnectionString"                                       = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-transceiver-connection-string)"
-    "ServiceBusSettings__TimeSeriesMessagesQueueName"                            = azurerm_servicebus_queue.time_series_imported_messages_queue.name
-    DataHub2ClientSettings__EndpointAddress                                      = var.datahub2_migration_url,
-    FeatureManagement__DataHub2HealthCheck                                       = var.feature_flag_datahub2_healthcheck
-
+    "StorageAccount__Dh2StorageAccountUri"                                       = "https://${module.st_dh2data.name}.blob.core.windows.net"
+    "StorageAccount__TimeSeriesContainerName"                                    = azurerm_storage_container.dh2_timeseries_synchronization.name # Kept for backwards compatibility
+    "StorageAccount__Dh2TimeSeriesSynchronizationContainerName"                  = azurerm_storage_container.dh2_timeseries_synchronization.name
+    "StorageAccount__Dh2TimeSeriesSynchronizationArchiveStorageAccountUri"       = "https://${module.st_dh2dropzone_archive.name}.blob.core.windows.net"
+    "StorageAccount__Dh2TimeSeriesSynchronizationArchiveContainerName"           = azurerm_storage_container.dropzonetimeseriessyncarchive.name
+    "StorageAccount__Dh2TimeSeriesIntermediaryStorageAccountUri"                 = "https://${module.st_dh2timeseries_intermediary.name}.blob.core.windows.net"
+    "StorageAccount__Dh2TimeSeriesIntermediaryContainerName"                     = azurerm_storage_container.timeseriesintermediary.name
+    "ServiceBus__ConnectionString"                                               = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-transceiver-connection-string)"
+    "ServiceBus__TimeSeriesMessagesQueueName"                                    = azurerm_servicebus_queue.time_series_imported_messages_queue.name
+    "DataHub2Client__EndpointAddress"                                            = var.datahub2_migration_url,
+    "FeatureManagement__DataHub2HealthCheck"                                     = var.feature_flag_datahub2_healthcheck
 
     # Logging Worker
     "Logging__LogLevel__Default"                      = local.LOGGING_LOGLEVEL_WORKER_DEFAULT
