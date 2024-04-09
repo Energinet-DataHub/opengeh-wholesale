@@ -11,12 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from features.scenario_fixture import ScenarioFixture
-from helpers.data_frame_utils import assert_dataframe_and_schema
-from package.constants import WholesaleResultColumnNames
-from .states.scenario_state import (
-    get_expected,
-)
+from features.utils.base import Base
 
 # Testing daily tariff when energy supplier changes on grid loss and system correction metering points
 
@@ -31,30 +26,5 @@ THEN the daily tariff per grid area, charge owner and energy supplier is calcula
 """
 
 
-def test_execute__returns_expected(
-    scenario_fixture: ScenarioFixture,
-) -> None:
-    # Arrange
-    scenario_fixture.setup(get_expected)
-
-    # Act
-    results = scenario_fixture.execute()
-    actual = results.wholesale_results.daily_tariff_per_ga_co_es.orderBy(
-        WholesaleResultColumnNames.metering_point_type,
-        WholesaleResultColumnNames.time,
-    )
-    expected = scenario_fixture.expected.orderBy(
-        WholesaleResultColumnNames.metering_point_type,
-        WholesaleResultColumnNames.time,
-    )
-
-    # Assert
-    assert_dataframe_and_schema(
-        actual,
-        expected,
-        ignore_decimal_precision=True,
-        ignore_nullability=True,
-        columns_to_skip=[
-            WholesaleResultColumnNames.calculation_result_id,
-        ],
-    )
+class TestThen(Base):
+    pass
