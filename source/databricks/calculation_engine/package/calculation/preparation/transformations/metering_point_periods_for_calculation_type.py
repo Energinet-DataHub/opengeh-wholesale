@@ -20,8 +20,36 @@ from package.constants import Colname
 from package.infrastructure import logging_configuration
 
 
-@logging_configuration.use_span("get_child_metering_points")
-def get_child_metering_points_with_energy_suppliers(
+def get_metering_points_periods_with_type_consumption_production_and_exchange(
+    all_metering_point_periods: DataFrame,
+) -> DataFrame:
+    return all_metering_point_periods.filter(
+        (f.col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
+        | (f.col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
+        | (f.col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value)
+    )
+
+
+def get_metering_points_periods_with_energy_supplier_on_child_metering_points(
+    all_metering_point_periods: DataFrame,
+) -> DataFrame:
+    metering_points_periods_with_type_consumption_production_and_exchange = (
+        get_metering_points_periods_with_type_consumption_production_and_exchange(
+            all_metering_point_periods
+        )
+    )
+    child_metering_points_with_energy_suppliers = (
+        _get_child_metering_points_with_energy_suppliers(all_metering_point_periods)
+    )
+    metering_point_periods_union = (
+        metering_points_periods_with_type_consumption_production_and_exchange.union(
+            child_metering_points_with_energy_suppliers
+        )
+    )
+    return metering_point_periods_union
+
+
+def _get_child_metering_points_with_energy_suppliers(
     all_metering_point_periods: DataFrame,
 ) -> DataFrame:
     """

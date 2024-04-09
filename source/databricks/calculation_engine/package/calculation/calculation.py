@@ -29,8 +29,10 @@ from .output.energy_results import write_energy_results
 from .output.wholesale_results import write_wholesale_results
 from .preparation import PreparedDataReader
 from .wholesale import wholesale_calculation
-from .wholesale.get_child_metering_points import (
-    get_child_metering_points_with_energy_suppliers,
+from package.calculation.preparation.transformations.metering_point_periods_for_calculation_type import (
+    _get_child_metering_points_with_energy_suppliers,
+    get_metering_points_periods_with_type_consumption_production_and_exchange,
+    get_metering_points_periods_with_energy_supplier_on_child_metering_points,
 )
 from ..codelists import MeteringPointType
 from ..codelists.calculation_type import is_wholesale_calculation_type
@@ -96,7 +98,9 @@ def _execute(
     )
 
     metering_points_periods_for_energy_calculation = (
-        get_metering_points_periods_for_energy_calculation(all_metering_point_periods)
+        get_metering_points_periods_with_type_consumption_production_and_exchange(
+            all_metering_point_periods
+        )
     )
 
     if is_wholesale_calculation_type(args.calculation_type):
@@ -106,22 +110,20 @@ def _execute(
                 args.calculation_period_end_datetime,
             )
 
-            child_metering_points = get_child_metering_points_with_energy_suppliers(
+            metering_point_periods_for_wholesale = get_metering_points_periods_with_energy_supplier_on_child_metering_points(
                 all_metering_point_periods
             )
 
-            # Unions the metering points for energy calculation with the child metering points
-            # and filters out exchange metering points
-            metering_point_periods_for_wholesale = (
-                metering_points_periods_for_energy_calculation.union(
-                    child_metering_points
+            # Filters out exchange metering points
+            metering_point_periods_for_wholesale_without_exchange = (
+                metering_point_periods_for_wholesale.filter(
+                    f.col(Colname.metering_point_type)
+                    != MeteringPointType.EXCHANGE.value
                 )
-            ).filter(
-                f.col(Colname.metering_point_type) != MeteringPointType.EXCHANGE.value
             )
 
             prepared_charges = prepared_data_reader.get_prepared_charges(
-                metering_point_periods_for_wholesale,
+                metering_point_periods_for_wholesale_without_exchange,
                 metering_point_time_series,
                 input_charges,
                 args.time_zone,
@@ -145,16 +147,6 @@ def _execute(
         )
 
     return results
-
-
-def get_metering_points_periods_for_energy_calculation(
-    all_metering_point_periods: DataFrame,
-) -> DataFrame:
-    return all_metering_point_periods.filter(
-        (f.col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
-        | (f.col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
-        | (f.col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value)
-    )
 
 
 @logging_configuration.use_span("calculation.write")

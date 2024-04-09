@@ -16,8 +16,8 @@ from datetime import datetime
 from pyspark.sql import SparkSession
 import pytest
 import tests.calculation.preparation.transformations.metering_point_periods_factory as factory
-from package.calculation.wholesale.get_child_metering_points import (
-    get_child_metering_points_with_energy_suppliers,
+from package.calculation.preparation.transformations.metering_point_periods_for_calculation_type import (
+    _get_child_metering_points_with_energy_suppliers,
 )
 
 from package.codelists import MeteringPointType
@@ -47,7 +47,7 @@ class TestWhenMeteringPointPeriodsHasMeteringPointType:
         metering_point_periods = factory.create(spark, row)
 
         # Act
-        actual = get_child_metering_points_with_energy_suppliers(
+        actual = _get_child_metering_points_with_energy_suppliers(
             metering_point_periods,
         )
 
@@ -97,7 +97,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         metering_point_periods = factory.create(spark, rows)
 
         # Act
-        actual = get_child_metering_points_with_energy_suppliers(
+        actual = _get_child_metering_points_with_energy_suppliers(
             metering_point_periods,
         )
 
@@ -167,7 +167,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         metering_point_periods = factory.create(spark, rows)
 
         # Act
-        actual = get_child_metering_points_with_energy_suppliers(
+        actual = _get_child_metering_points_with_energy_suppliers(
             metering_point_periods,
         )
 
@@ -237,7 +237,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         metering_point_periods = factory.create(spark, rows)
 
         # Act
-        actual = get_child_metering_points_with_energy_suppliers(
+        actual = _get_child_metering_points_with_energy_suppliers(
             metering_point_periods,
         )
 
@@ -323,7 +323,7 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         metering_point_periods = factory.create(spark, rows)
 
         # Act
-        actual = get_child_metering_points_with_energy_suppliers(
+        actual = _get_child_metering_points_with_energy_suppliers(
             metering_point_periods,
         )
 
