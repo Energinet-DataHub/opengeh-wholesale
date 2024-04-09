@@ -195,7 +195,7 @@ def test__current_state_and_migration_scripts__should_give_same_result(
             "{INPUT_DATABASE_NAME}": f"{migration_scripts_prefix}{INPUT_DATABASE_NAME}",
             "{BASIS_DATA_DATABASE_NAME}": f"{migration_scripts_prefix}{BASIS_DATA_DATABASE_NAME}",
             "{SETTLEMENT_REPORT_DATABASE_NAME}": f"{migration_scripts_prefix}{SETTLEMENT_REPORT_DATABASE_NAME}",
-            "{OUTPUT_FOLDER}": "migration_test",
+            "{OUTPUT_FOLDER}": f"{migration_scripts_prefix}migration_test",
         },
     )
     spark_sql_migration_helper.configure_spark_sql_migration(
@@ -216,7 +216,7 @@ def test__current_state_and_migration_scripts__should_give_same_result(
             "{INPUT_DATABASE_NAME}": f"{current_state_prefix}{INPUT_DATABASE_NAME}",
             "{BASIS_DATA_DATABASE_NAME}": f"{current_state_prefix}{BASIS_DATA_DATABASE_NAME}",
             "{SETTLEMENT_REPORT_DATABASE_NAME}": f"{current_state_prefix}{SETTLEMENT_REPORT_DATABASE_NAME}",
-            "{OUTPUT_FOLDER}": "migration_test",
+            "{OUTPUT_FOLDER}": f"{current_state_prefix}migration_test",
         },
     )
     spark_sql_migration_helper.configure_spark_sql_migration(
