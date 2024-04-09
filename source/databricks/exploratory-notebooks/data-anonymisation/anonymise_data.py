@@ -100,7 +100,29 @@ spark.sql(query)
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### Step 2: Find and anonymised all metering_point_id's and energy_supplier_ids + balance_supplier_ids
+# MAGIC ## Step 2: Find and anonymised all metering_point_id's and energy_supplier_ids + balance_supplier_ids
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ###Anonymisation algorithm for MP IDs:
+# MAGIC 1) Prefix anonymised ID with "5"
+# MAGIC 2) Concat random row_number over each row of unique MP IDs, and left-pad with "0" with same length as unique MP IDs
+# MAGIC 3) Concat "5"
+# MAGIC 4) Right-pad with "0" until 18 characters in total
+# MAGIC
+# MAGIC #### Example
+# MAGIC **1)**
+# MAGIC
+# MAGIC Original (fake) MP ID: 514526978536898745 (1st after random order)
+# MAGIC
+# MAGIC Anonymised MP ID: 500000015000000000
+# MAGIC
+# MAGIC **2)**
+# MAGIC
+# MAGIC Original (fake) MP ID: 525865741589334125 (532435th after random order)
+# MAGIC
+# MAGIC Anonymised MP ID: 505324355000000000
 
 # COMMAND ----------
 
@@ -153,6 +175,28 @@ assert (
     .count()
     == 0
 )
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### Anonymisation algorithm for Balance or Supplier IDs:
+# MAGIC 1) Prefix anonymised ID with "4"
+# MAGIC 2) Concat random row_number over each row of unique Balance or Supplier IDs, and left-pad with "0" with same length as unique Balance or Supplier IDs
+# MAGIC 3) Concat "4"
+# MAGIC 4) Right-pad with "0" until 13 characters in total
+# MAGIC
+# MAGIC #### Example
+# MAGIC **1)**
+# MAGIC
+# MAGIC Original (fake) Balance or Supplier ID: 5582145332287 (1st after random order)
+# MAGIC
+# MAGIC Anonymised Balance or Supplier ID: 4014000000000
+# MAGIC
+# MAGIC **2)**
+# MAGIC
+# MAGIC Original (fake) Balance or Supplier ID: 5365866475198 (78th after random order)
+# MAGIC
+# MAGIC Anonymised Balance or Supplier ID: 4784000000000
 
 # COMMAND ----------
 
