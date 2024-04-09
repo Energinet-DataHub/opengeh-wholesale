@@ -33,6 +33,8 @@ public static class CalculationResultsExtensions
 {
     public static IServiceCollection AddCalculationResultsModule(this IServiceCollection services, IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
         services.AddDatabricksSqlStatementForApplication(configuration);
         services.AddDataLakeClientForApplication(configuration);
 

@@ -45,6 +45,8 @@ public static class EventsExtensions
     /// </summary>
     public static IServiceCollection AddEventsDatabase(this IServiceCollection services, IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
         services.AddScoped<IEventsDatabaseContext, EventsDatabaseContext>();
         services.AddDbContext<EventsDatabaseContext>(
             options => options.UseSqlServer(
@@ -72,6 +74,8 @@ public static class EventsExtensions
 
     public static IServiceCollection AddIntegrationEventsPublishing(this IServiceCollection services, IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
         services
             .AddScoped<IEnergyResultProducedV2Factory, EnergyResultProducedV2Factory>()
             .AddScoped<IGridLossResultProducedV1Factory, GridLossResultProducedV1Factory>()

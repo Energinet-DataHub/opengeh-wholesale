@@ -32,6 +32,8 @@ public static class DataLakeExtensions
     /// </summary>
     public static IServiceCollection AddDataLakeClientForApplication(this IServiceCollection services, IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
         services.AddOptions<DataLakeOptions>().Bind(configuration);
         var options = configuration.Get<DataLakeOptions>()!;
         services.AddSingleton<DataLakeFileSystemClient>(_ =>
