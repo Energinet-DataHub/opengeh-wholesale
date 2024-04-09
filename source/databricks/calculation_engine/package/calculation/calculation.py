@@ -116,10 +116,7 @@ def _execute(
 
             # Filters out exchange metering points
             metering_point_periods_for_wholesale_without_exchange = (
-                metering_point_periods_for_wholesale.filter(
-                    f.col(Colname.metering_point_type)
-                    != MeteringPointType.EXCHANGE.value
-                )
+                metering_point_periods_for_wholesale
             )
 
             prepared_charges = prepared_data_reader.get_prepared_charges(
