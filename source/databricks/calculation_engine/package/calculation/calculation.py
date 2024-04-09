@@ -114,13 +114,8 @@ def _execute(
                 all_metering_point_periods
             )
 
-            # Filters out exchange metering points
-            metering_point_periods_for_wholesale_without_exchange = (
-                metering_point_periods_for_wholesale
-            )
-
             prepared_charges = prepared_data_reader.get_prepared_charges(
-                metering_point_periods_for_wholesale_without_exchange,
+                metering_point_periods_for_wholesale,
                 metering_point_time_series,
                 input_charges,
                 args.time_zone,
