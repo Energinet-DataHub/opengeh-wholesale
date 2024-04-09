@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pyspark.sql.functions as f
+from pyspark.sql import DataFrame
 
 from package.calculation.energy.calculated_grid_loss import (
     add_calculated_grid_loss_to_metering_point_times_series,
@@ -94,10 +95,8 @@ def _execute(
         )
     )
 
-    metering_point_periods = all_metering_point_periods.filter(
-        (f.col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
-        | (f.col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
-        | (f.col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value)
+    metering_point_periods = get_metering_points_periods_for_energy_calculation(
+        all_metering_point_periods
     )
 
     if is_wholesale_calculation_type(args.calculation_type):
@@ -136,6 +135,16 @@ def _execute(
     )
 
     return results
+
+
+def get_metering_points_periods_for_energy_calculation(
+    all_metering_point_periods: DataFrame,
+) -> DataFrame:
+    return all_metering_point_periods.filter(
+        (f.col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
+        | (f.col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
+        | (f.col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value)
+    )
 
 
 @logging_configuration.use_span("calculation.write")
