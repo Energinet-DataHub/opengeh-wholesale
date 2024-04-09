@@ -82,12 +82,6 @@ class ScenarioFixture2:
 
         df = spark_session.read.csv(path_to_csv, header=True, sep=";", schema=schema)
 
-        # Because the expected result csv contains unsupported types (array type) it can't be
-        # parsed with a schema. Therefore, all types are converted the string type. It also
-        # means that the dataframe need type changes before applying the schema.
-        if csv_file_name.__contains__("expected_results.csv"):
-            return df
-
         # We need to create the dataframe again because nullability and precision
         # are not applied when reading the csv file.
         return spark_session.createDataFrame(df.rdd, schema)
