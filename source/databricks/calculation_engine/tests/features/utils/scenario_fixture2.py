@@ -22,6 +22,7 @@ from pyspark.sql import SparkSession, DataFrame
 
 from features.correlations import get_correlations
 from features.test_calculation_args import create_calculation_args
+from features.utils import create_wholesale_result_dataframe
 from features.utils.dataframes.energy_results_dataframe import (
     create_energy_result_dataframe,
 )
@@ -111,9 +112,16 @@ class ScenarioFixture2:
         result_files = self._get_scenario_output_paths()
         for result_file in result_files:
             raw_df = spark.read.csv(result_file[1], header=True, sep=";")
-            df = create_energy_result_dataframe(
-                spark, raw_df, self.test_calculation_args
-            )
+            if "energy_results" in result_file[1]:
+                df = create_energy_result_dataframe(
+                    spark, raw_df, self.test_calculation_args
+                )
+            elif "wholesale_results" in result_file[1]:
+                df = create_wholesale_result_dataframe(
+                    spark, raw_df, self.test_calculation_args
+                )
+            else:
+                raise Exception(f"Unsupported result file '{result_file[0]}'")
             expected_results.append(ExpectedResult(name=result_file[0], df=df))
 
         return expected_results
