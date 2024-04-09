@@ -109,8 +109,14 @@ class ScenarioFixture2:
 
     def _get_expected_results(self, spark: SparkSession) -> list[ExpectedResult]:
         expected_results = []
-        result_files = self._get_scenario_output_paths()
-        for result_file in result_files:
+        expected_result_file_paths = (
+            self._get_paths_to_expected_result_files_in_output_folder()
+        )
+
+        if len(expected_result_file_paths) == 0:
+            raise Exception("Missing expected result files in output folder.")
+
+        for result_file in expected_result_file_paths:
             raw_df = spark.read.csv(result_file[1], header=True, sep=";")
             if "energy_results" in result_file[1]:
                 df = create_energy_result_dataframe(
@@ -126,7 +132,9 @@ class ScenarioFixture2:
 
         return expected_results
 
-    def _get_scenario_output_paths(self) -> list[Tuple[str, str]]:
+    def _get_paths_to_expected_result_files_in_output_folder(
+        self,
+    ) -> list[Tuple[str, str]]:
         """Returns (file base name without extension, file full path)."""
 
         output_folder_path = Path(f"{self.scenario_path}/output")
