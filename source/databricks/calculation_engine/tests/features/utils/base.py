@@ -14,55 +14,60 @@
 import inspect
 from pathlib import Path
 
-import pytest
 from pyspark.sql import DataFrame
 
+from features.utils.scenario_fixture2 import ScenarioFixture2, ExpectedResult
 from helpers.data_frame_utils import assert_dataframe_and_schema
+from package.calculation.calculation_results import CalculationResultsContainer
+from package.constants import EnergyResultColumnNames
 
 
-def get_test_cases() -> list[tuple]:
-    tests_base_path = str(Path(__file__).parent.parent)
-    test_cases = []
-    print("Path: " + tests_base_path)
-    scenario_abs_paths = _get_scenario_paths(tests_base_path)
-    print("Scenario paths: " + repr(scenario_abs_paths))
-    for scenario_path in scenario_abs_paths:
-        print(f"Scenario path: {scenario_path}")
-
-        scenario_fixture = ScenarioFixture(SPARK, scenario_path)
-
-        output_paths = _get_scenario_output_paths(scenario_path)
-        print("Output paths: " + repr(output_paths))
-        for output_path in output_paths:
-            test_cases.append(
-                (
-                    str(
-                        Path(f"{scenario_path}/{output_path}").relative_to(
-                            tests_base_path
-                        )
-                    ),
-                    scenario_fixture,
-                )
-            )
-    print("Test cases: " + repr(test_cases))
-    return test_cases
-
-
-# builder generates a list of tuples based on existing files in folders "basis_data", "energy_results", and "wholesale_results"
-# Example of a tuple:
-#   (<actual flex consumption per ga dataframe>, <expected flex consumption per ga dataframe>, "flex_consumption_per_ga")
-# The builder will fail if an unexpected file is found in the folders
 class Base:
     def _get_scenario_folder_path(self) -> str:
         # Retrieves the file path of the class of the current instance
         return str(Path(inspect.getfile(self.__class__)).parent)
 
-    @pytest.mark.parametrize("actual, expected, test_name", get_test_cases())
     def test_then_actual_equals_expected(
-        self, actual: DataFrame, expected: DataFrame, test_name: str
+        self,
+        scenario_fixture2: ScenarioFixture2,
     ) -> None:
-        for csv in csvs:
-            assert_dataframe_and_schema(
-                actual,
-                expected,
+        scenario_fixture = scenario_fixture2
+        # Arrange
+        scenario_folder_path = self._get_scenario_folder_path()
+        scenario_fixture.setup(scenario_folder_path)
+
+        # Act
+        actual_results = scenario_fixture.execute()
+        expected_results = scenario_fixture.expected
+
+        # Assert
+        for expected_result in expected_results:
+            actual_result = get_actual_for_expected_result(
+                actual_results, expected_result
             )
+
+            actual_result.show()
+            expected_result.df.show()
+
+            assert_dataframe_and_schema(
+                actual_result,
+                expected_result.df,
+                ignore_decimal_precision=True,
+                ignore_nullability=True,
+                columns_to_skip=[
+                    EnergyResultColumnNames.calculation_result_id,
+                ],
+            )
+
+
+def get_actual_for_expected_result(
+    calculation_results_container: CalculationResultsContainer,
+    expected_result: ExpectedResult,
+) -> DataFrame:
+    if expected_result.name == "flex_consumption_per_ga":
+        return calculation_results_container.energy_results.flex_consumption_per_ga
+    if expected_result.name == "flex_consumption_per_ga_es":
+        return (
+            calculation_results_container.energy_results.flex_consumption_per_ga_and_es
+        )
+    raise Exception(f"Unknown expected result name: {expected_result.name}")
