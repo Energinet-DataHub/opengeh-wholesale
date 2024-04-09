@@ -95,8 +95,8 @@ def _execute(
         )
     )
 
-    metering_point_periods = get_metering_points_periods_for_energy_calculation(
-        all_metering_point_periods
+    metering_points_periods_for_energy_calculation = (
+        get_metering_points_periods_for_energy_calculation(all_metering_point_periods)
     )
 
     if is_wholesale_calculation_type(args.calculation_type):
@@ -110,15 +110,18 @@ def _execute(
                 all_metering_point_periods
             )
 
-            metering_point_periods = metering_point_periods.union(child_metering_points)
-
-            # Removes all exchange metering points
-            wholesale_metering_point_periods = metering_point_periods.filter(
+            # Unions the metering points for energy calculation with the child metering points
+            # and filters out exchange metering points
+            metering_point_periods_for_wholesale = (
+                metering_points_periods_for_energy_calculation.union(
+                    child_metering_points
+                )
+            ).filter(
                 f.col(Colname.metering_point_type) != MeteringPointType.EXCHANGE.value
             )
 
             prepared_charges = prepared_data_reader.get_prepared_charges(
-                wholesale_metering_point_periods,
+                metering_point_periods_for_wholesale,
                 metering_point_time_series,
                 input_charges,
                 args.time_zone,
@@ -129,10 +132,17 @@ def _execute(
             prepared_charges,
         )
 
-    # Add basis data to results
-    results.basis_data = basis_data_factory.create(
-        args, metering_point_periods, metering_point_time_series
-    )
+        # Add basis data to results
+        results.basis_data = basis_data_factory.create(
+            args, metering_point_periods_for_wholesale, metering_point_time_series
+        )
+    else:
+        # Add basis data to results
+        results.basis_data = basis_data_factory.create(
+            args,
+            metering_points_periods_for_energy_calculation,
+            metering_point_time_series,
+        )
 
     return results
 
