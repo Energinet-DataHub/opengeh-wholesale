@@ -31,6 +31,8 @@ public static class ServiceBusExtensions
     /// </summary>
     public static IServiceCollection AddServiceBusClientForApplication(this IServiceCollection services, IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
         services
             .AddOptions<ServiceBusNamespaceOptions>()
             .BindConfiguration(ServiceBusNamespaceOptions.SectionName)
