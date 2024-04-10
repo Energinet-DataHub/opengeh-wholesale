@@ -15,9 +15,13 @@ from datetime import datetime
 
 from pyspark.sql import SparkSession
 import pytest
+from pyspark.sql.functions import col
+
 import tests.calculation.preparation.transformations.metering_point_periods_factory as factory
-from package.calculation.wholesale.get_metering_points_and_child_metering_points import (
-    get_metering_points_and_child_metering_points,
+from package.calculation.preparation.transformations.metering_point_periods_for_calculation_type import (
+    _get_child_metering_points_with_energy_suppliers,
+    get_metering_points_periods_for_wholesale_basis_data,
+    get_metering_point_periods_for_wholesale_calculation,
 )
 
 from package.codelists import MeteringPointType
@@ -27,9 +31,15 @@ from package.constants import Colname
 class TestWhenMeteringPointPeriodsHasMeteringPointType:
     @pytest.mark.parametrize(
         "metering_point_type",
-        [t for t in MeteringPointType],
+        [
+            t
+            for t in MeteringPointType
+            if t != MeteringPointType.EXCHANGE
+            and t != MeteringPointType.PRODUCTION
+            and t != MeteringPointType.CONSUMPTION
+        ],
     )
-    def test__returns_metering_points(
+    def test__returns_child_metering_points(
         self,
         metering_point_type: MeteringPointType,
         spark: SparkSession,
@@ -41,7 +51,7 @@ class TestWhenMeteringPointPeriodsHasMeteringPointType:
         metering_point_periods = factory.create(spark, row)
 
         # Act
-        actual = get_metering_points_and_child_metering_points(
+        actual = _get_child_metering_points_with_energy_suppliers(
             metering_point_periods,
         )
 
@@ -91,39 +101,32 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         metering_point_periods = factory.create(spark, rows)
 
         # Act
-        actual = get_metering_points_and_child_metering_points(
+        actual = _get_child_metering_points_with_energy_suppliers(
             metering_point_periods,
         )
 
         # Assert
-        assert actual.count() == 4
-        actual_only_child_metering_points = (
-            actual.filter(
-                actual[Colname.metering_point_type]
-                == MeteringPointType.NET_CONSUMPTION.value
-            )
-            .sort(Colname.from_date)
-            .collect()
-        )
+        assert actual.count() == 2
+        actual_metering_points_sorted = actual.sort(Colname.from_date).collect()
 
         assert (
-            actual_only_child_metering_points[0][Colname.energy_supplier_id]
+            actual_metering_points_sorted[0][Colname.energy_supplier_id]
             == "es_parent_1"
         )
         assert (
-            actual_only_child_metering_points[1][Colname.energy_supplier_id]
+            actual_metering_points_sorted[1][Colname.energy_supplier_id]
             == "es_parent_2"
         )
-        assert actual_only_child_metering_points[0][Colname.from_date] == datetime(
+        assert actual_metering_points_sorted[0][Colname.from_date] == datetime(
             2019, 12, 31, 23
         )
-        assert actual_only_child_metering_points[1][Colname.from_date] == datetime(
+        assert actual_metering_points_sorted[1][Colname.from_date] == datetime(
             2020, 1, 15, 23
         )
-        assert actual_only_child_metering_points[0][Colname.to_date] == datetime(
+        assert actual_metering_points_sorted[0][Colname.to_date] == datetime(
             2020, 1, 15, 23
         )
-        assert actual_only_child_metering_points[1][Colname.to_date] == datetime(
+        assert actual_metering_points_sorted[1][Colname.to_date] == datetime(
             2020, 1, 31, 23
         )
 
@@ -168,39 +171,32 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         metering_point_periods = factory.create(spark, rows)
 
         # Act
-        actual = get_metering_points_and_child_metering_points(
+        actual = _get_child_metering_points_with_energy_suppliers(
             metering_point_periods,
         )
 
         # Assert
-        assert actual.count() == 4
-        actual_only_child_metering_points = (
-            actual.filter(
-                actual[Colname.metering_point_type]
-                == MeteringPointType.NET_CONSUMPTION.value
-            )
-            .sort(Colname.from_date)
-            .collect()
-        )
+        assert actual.count() == 2
+        actual_metering_points_sorted = actual.sort(Colname.from_date).collect()
 
         assert (
-            actual_only_child_metering_points[0][Colname.energy_supplier_id]
+            actual_metering_points_sorted[0][Colname.energy_supplier_id]
             == "es_parent_1"
         )
         assert (
-            actual_only_child_metering_points[1][Colname.energy_supplier_id]
+            actual_metering_points_sorted[1][Colname.energy_supplier_id]
             == "es_parent_2"
         )
-        assert actual_only_child_metering_points[0][Colname.from_date] == datetime(
+        assert actual_metering_points_sorted[0][Colname.from_date] == datetime(
             2019, 12, 31, 23
         )
-        assert actual_only_child_metering_points[1][Colname.from_date] == datetime(
+        assert actual_metering_points_sorted[1][Colname.from_date] == datetime(
             2020, 1, 15, 23
         )
-        assert actual_only_child_metering_points[0][Colname.to_date] == datetime(
+        assert actual_metering_points_sorted[0][Colname.to_date] == datetime(
             2020, 1, 15, 23
         )
-        assert actual_only_child_metering_points[1][Colname.to_date] == datetime(
+        assert actual_metering_points_sorted[1][Colname.to_date] == datetime(
             2020, 1, 31, 23
         )
 
@@ -245,39 +241,32 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         metering_point_periods = factory.create(spark, rows)
 
         # Act
-        actual = get_metering_points_and_child_metering_points(
+        actual = _get_child_metering_points_with_energy_suppliers(
             metering_point_periods,
         )
 
         # Assert
-        assert actual.count() == 4
-        actual_only_child_metering_points = (
-            actual.filter(
-                actual[Colname.metering_point_type]
-                == MeteringPointType.NET_CONSUMPTION.value
-            )
-            .sort(Colname.from_date)
-            .collect()
-        )
+        assert actual.count() == 2
+        actual_metering_points_sorted = actual.sort(Colname.from_date).collect()
 
         assert (
-            actual_only_child_metering_points[0][Colname.energy_supplier_id]
+            actual_metering_points_sorted[0][Colname.energy_supplier_id]
             == "es_parent_1"
         )
         assert (
-            actual_only_child_metering_points[1][Colname.energy_supplier_id]
+            actual_metering_points_sorted[1][Colname.energy_supplier_id]
             == "es_parent_2"
         )
-        assert actual_only_child_metering_points[0][Colname.from_date] == datetime(
+        assert actual_metering_points_sorted[0][Colname.from_date] == datetime(
             2020, 1, 5, 23
         )
-        assert actual_only_child_metering_points[1][Colname.from_date] == datetime(
+        assert actual_metering_points_sorted[1][Colname.from_date] == datetime(
             2020, 1, 15, 23
         )
-        assert actual_only_child_metering_points[0][Colname.to_date] == datetime(
+        assert actual_metering_points_sorted[0][Colname.to_date] == datetime(
             2020, 1, 15, 23
         )
-        assert actual_only_child_metering_points[1][Colname.to_date] == datetime(
+        assert actual_metering_points_sorted[1][Colname.to_date] == datetime(
             2020, 1, 25, 23
         )
 
@@ -338,40 +327,90 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         metering_point_periods = factory.create(spark, rows)
 
         # Act
-        actual = get_metering_points_and_child_metering_points(
+        actual = _get_child_metering_points_with_energy_suppliers(
             metering_point_periods,
         )
 
         # Assert
-        assert actual.count() == 6
-        actual_only_child_metering_points = (
-            actual.filter(
-                actual[Colname.metering_point_type]
-                == MeteringPointType.NET_CONSUMPTION.value
-            )
-            .sort(Colname.from_date)
-            .collect()
-        )
+        assert actual.count() == 2
+        actual_metering_points_sorted = actual.sort(Colname.from_date).collect()
 
         assert (
-            actual_only_child_metering_points[0][Colname.energy_supplier_id]
+            actual_metering_points_sorted[0][Colname.energy_supplier_id]
             == "es_parent_1"
         )
         assert (
-            actual_only_child_metering_points[1][Colname.energy_supplier_id]
+            actual_metering_points_sorted[1][Colname.energy_supplier_id]
             == "es_parent_2"
         )
 
-        assert actual_only_child_metering_points[0][Colname.from_date] == datetime(
+        assert actual_metering_points_sorted[0][Colname.from_date] == datetime(
             2019, 12, 31, 23
         )
-        assert actual_only_child_metering_points[1][Colname.from_date] == datetime(
+        assert actual_metering_points_sorted[1][Colname.from_date] == datetime(
             2020, 1, 15, 23
         )
 
-        assert actual_only_child_metering_points[0][Colname.to_date] == datetime(
+        assert actual_metering_points_sorted[0][Colname.to_date] == datetime(
             2020, 1, 15, 23
         )
-        assert actual_only_child_metering_points[1][Colname.to_date] == datetime(
+        assert actual_metering_points_sorted[1][Colname.to_date] == datetime(
             2020, 1, 31, 23
+        )
+
+
+class TestGetMeteringPointPeriodsWholesaleCalculation:
+    def test__returns_metering_point_periods_without_exchange(
+        self,
+        spark: SparkSession,
+    ):
+        # Arrange
+        rows = [
+            factory.create_row(
+                metering_point_id="parent_metering_point_id",
+                metering_point_type=MeteringPointType.CONSUMPTION,
+                energy_supplier_id="es_parent_1",
+                from_date=datetime(2019, 12, 31, 23),
+                to_date=datetime(2020, 1, 15, 23),
+            ),
+            factory.create_row(
+                metering_point_id="parent_metering_point_id",
+                metering_point_type=MeteringPointType.PRODUCTION,
+                energy_supplier_id="es_parent_1",
+                from_date=datetime(2019, 12, 31, 23),
+                to_date=datetime(2020, 1, 15, 23),
+            ),
+            factory.create_row(
+                metering_point_id="parent_metering_point_id",
+                metering_point_type=MeteringPointType.EXCHANGE,
+                energy_supplier_id=None,
+                from_date=datetime(2019, 12, 31, 23),
+                to_date=datetime(2020, 1, 15, 23),
+            ),
+            factory.create_row(
+                parent_metering_point_id="parent_metering_point_id",
+                metering_point_type=MeteringPointType.NET_CONSUMPTION,
+                energy_supplier_id=None,
+                from_date=datetime(2019, 12, 31, 23),
+                to_date=datetime(2020, 1, 31, 23),
+                settlement_method=None,
+            ),
+        ]
+        metering_point_periods = factory.create(spark, rows)
+        metering_points_periods_for_wholesale_basis_data = (
+            get_metering_points_periods_for_wholesale_basis_data(metering_point_periods)
+        )
+
+        # Act
+        actual = get_metering_point_periods_for_wholesale_calculation(
+            metering_points_periods_for_wholesale_basis_data,
+        )
+
+        # Assert
+        assert actual.count() == 4
+        assert (
+            actual.filter(
+                (col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value)
+            ).count()
+            == 0
         )
