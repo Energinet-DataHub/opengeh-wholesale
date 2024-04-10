@@ -32,6 +32,8 @@ public static class DatabricksExtensions
     /// </summary>
     public static IServiceCollection AddDatabricksJobsForApplication(this IServiceCollection services, IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
         services.AddDatabricksJobs(configuration);
 
         // Health checks
@@ -46,6 +48,8 @@ public static class DatabricksExtensions
     /// </summary>
     public static IServiceCollection AddDatabricksSqlStatementForApplication(this IServiceCollection services, IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
         services.AddDatabricksSqlStatementExecution(configuration);
 
         // Health checks

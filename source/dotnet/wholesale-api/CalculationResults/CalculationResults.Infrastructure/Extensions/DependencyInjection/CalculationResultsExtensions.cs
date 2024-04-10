@@ -33,8 +33,10 @@ public static class CalculationResultsExtensions
 {
     public static IServiceCollection AddCalculationResultsModule(this IServiceCollection services, IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
         services.AddDatabricksSqlStatementForApplication(configuration);
-        services.AddDataLakeClientForApplication(configuration);
+        services.AddDataLakeClientForApplication();
 
         services.AddScoped<ISettlementReportClient, SettlementReportClient>();
         services.AddScoped<ISettlementReportResultsCsvWriter, SettlementReportResultsCsvWriter>();

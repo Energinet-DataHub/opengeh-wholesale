@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Publisher;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks.ServiceBus;
@@ -45,6 +45,8 @@ public static class EventsExtensions
     /// </summary>
     public static IServiceCollection AddEventsDatabase(this IServiceCollection services, IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
         services.AddScoped<IEventsDatabaseContext, EventsDatabaseContext>();
         services.AddDbContext<EventsDatabaseContext>(
             options => options.UseSqlServer(
@@ -72,6 +74,8 @@ public static class EventsExtensions
 
     public static IServiceCollection AddIntegrationEventsPublishing(this IServiceCollection services, IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
         services
             .AddScoped<IEnergyResultProducedV2Factory, EnergyResultProducedV2Factory>()
             .AddScoped<IGridLossResultProducedV1Factory, GridLossResultProducedV1Factory>()
