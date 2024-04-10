@@ -81,7 +81,7 @@ def calculate(
 
 def _calculate_total_amount_without_charge_tax(
     monthly_amount_per_charge: MonthlyAmountPerCharge,
-):
+) -> DataFrame:
     monthly_amounts_without_tax = monthly_amount_per_charge.df.where(
         f.col(Colname.charge_tax) == False
     )
