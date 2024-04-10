@@ -17,16 +17,8 @@ import pytest
 from _pytest.fixtures import FixtureRequest
 from pyspark.sql import SparkSession
 
-from features.scenario_fixture import ScenarioFixture
 from features.utils.scenario_fixture2 import ScenarioFixture2, ExpectedResult
 from package.calculation.calculation_results import CalculationResultsContainer
-
-
-@pytest.fixture(scope="session")
-def scenario_fixture(
-    spark: SparkSession,
-) -> ScenarioFixture:
-    return ScenarioFixture(spark)
 
 
 @pytest.fixture(scope="session")
