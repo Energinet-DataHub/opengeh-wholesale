@@ -57,6 +57,33 @@ public sealed class TelemetryScenarioFixture<TState> : LazyFixtureBase
         return calculationId;
     }
 
+    /// <summary>
+    /// Wait for the calculation to complete or fail.
+    /// </summary>
+    /// <returns>IsCompletedOrFailed: True if the calculation completed or failed; otherwise false.</returns>
+    public async Task<(bool IsCompletedOrFailed, CalculationDto? Calculation)> WaitForCalculationCompletedOrFailedAsync(
+        Guid calculationId,
+        TimeSpan waitTimeLimit)
+    {
+        var delay = TimeSpan.FromSeconds(30);
+
+        CalculationDto? calculation = null;
+        var isCompletedOrFailed = await Awaiter.TryWaitUntilConditionAsync(
+            async () =>
+            {
+                calculation = await WholesaleClient.GetCalculationAsync(calculationId);
+                return
+                    calculation?.ExecutionState is CalculationState.Completed
+                    or CalculationState.Failed;
+            },
+            waitTimeLimit,
+            delay);
+
+        DiagnosticMessageSink.WriteDiagnosticMessage($"Fixture {GetType().Name} - Wait for calculation with id '{calculationId}' completed with '{nameof(calculation.ExecutionState)}={calculation?.ExecutionState}'.");
+
+        return (isCompletedOrFailed, calculation);
+    }
+
     public async Task<bool> WaitForTelemetryEventsAsync(
         IReadOnlyCollection<TelemetryEventMatch> expectedEvents,
         string query,
