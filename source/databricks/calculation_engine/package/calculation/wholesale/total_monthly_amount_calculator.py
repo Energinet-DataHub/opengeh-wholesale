@@ -15,15 +15,21 @@
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 
-from package.calculation.wholesale.data_structures.total_montly_amount import (
+from package.calculation.wholesale.data_structures import (
+    MonthlyAmountPerCharge,
     TotalMonthlyAmount,
 )
 from package.constants import Colname
 
 
 def calculate(
-    monthly_amounts_per_charge: DataFrame,
+    monthly_amounts_per_charge: MonthlyAmountPerCharge,
 ) -> TotalMonthlyAmount:
+    """
+    Calculates the total monthly amount for each group of grid area, energy supplier, charge owner and charge time.
+    Rows that are tax amounts are added to the other rows - but only the rows where the charge owner is not the tax owner itself.
+    """
+
     total_amount_without_tax = _calculate_total_amount_without_charge_tax(
         monthly_amounts_per_charge,
     )
@@ -55,7 +61,7 @@ def calculate(
         total_amount_with_tax[Colname.total_amount].alias(amount_with_tax),
     )
 
-    # add tax amount to non-tax amount (if it is not null)
+    # Add tax amount to non-tax amount (if it is not null)
     total_monthly_amount = total_monthly_amount.withColumn(
         Colname.total_amount,
         f.when(
@@ -74,9 +80,9 @@ def calculate(
 
 
 def _calculate_total_amount_without_charge_tax(
-    monthly_amount_per_charge: DataFrame,
+    monthly_amount_per_charge: MonthlyAmountPerCharge,
 ):
-    monthly_amounts_without_tax = monthly_amount_per_charge.where(
+    monthly_amounts_without_tax = monthly_amount_per_charge.df.where(
         f.col(Colname.charge_tax) == False
     )
 
@@ -93,10 +99,10 @@ def _calculate_total_amount_without_charge_tax(
 
 
 def _calculate_total_amount_with_charge_tax(
-    monthly_amount_per_charge: DataFrame,
+    monthly_amount_per_charge: MonthlyAmountPerCharge,
 ) -> DataFrame:
 
-    monthly_amounts_with_tax = monthly_amount_per_charge.where(
+    monthly_amounts_with_tax = monthly_amount_per_charge.df.where(
         f.col(Colname.charge_tax) == True
     )
     total_amount_with_tax = monthly_amounts_with_tax.groupBy(
