@@ -15,9 +15,13 @@ from datetime import datetime
 
 from pyspark.sql import SparkSession
 import pytest
+from pyspark.sql.functions import col
+
 import tests.calculation.preparation.transformations.metering_point_periods_factory as factory
 from package.calculation.preparation.transformations.metering_point_periods_for_calculation_type import (
     _get_child_metering_points_with_energy_suppliers,
+    get_metering_points_periods_for_wholesale_basis_data,
+    get_metering_point_periods_for_wholesale_calculation,
 )
 
 from package.codelists import MeteringPointType
@@ -352,4 +356,61 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         )
         assert actual_metering_points_sorted[1][Colname.to_date] == datetime(
             2020, 1, 31, 23
+        )
+
+
+class TestGetMeteringPointPeriodsWholesaleCalculation:
+    def test__returns_metering_point_periods_without_exchange(
+        self,
+        spark: SparkSession,
+    ):
+        # Arrange
+        rows = [
+            factory.create_row(
+                metering_point_id="parent_metering_point_id",
+                metering_point_type=MeteringPointType.CONSUMPTION,
+                energy_supplier_id="es_parent_1",
+                from_date=datetime(2019, 12, 31, 23),
+                to_date=datetime(2020, 1, 15, 23),
+            ),
+            factory.create_row(
+                metering_point_id="parent_metering_point_id",
+                metering_point_type=MeteringPointType.PRODUCTION,
+                energy_supplier_id="es_parent_1",
+                from_date=datetime(2019, 12, 31, 23),
+                to_date=datetime(2020, 1, 15, 23),
+            ),
+            factory.create_row(
+                metering_point_id="parent_metering_point_id",
+                metering_point_type=MeteringPointType.EXCHANGE,
+                energy_supplier_id=None,
+                from_date=datetime(2019, 12, 31, 23),
+                to_date=datetime(2020, 1, 15, 23),
+            ),
+            factory.create_row(
+                parent_metering_point_id="parent_metering_point_id",
+                metering_point_type=MeteringPointType.NET_CONSUMPTION,
+                energy_supplier_id=None,
+                from_date=datetime(2019, 12, 31, 23),
+                to_date=datetime(2020, 1, 31, 23),
+                settlement_method=None,
+            ),
+        ]
+        metering_point_periods = factory.create(spark, rows)
+        metering_points_periods_for_wholesale_basis_data = (
+            get_metering_points_periods_for_wholesale_basis_data(metering_point_periods)
+        )
+
+        # Act
+        actual = get_metering_point_periods_for_wholesale_calculation(
+            metering_points_periods_for_wholesale_basis_data,
+        )
+
+        # Assert
+        assert actual.count() == 4
+        assert (
+            actual.filter(
+                (col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value)
+            ).count()
+            == 0
         )
