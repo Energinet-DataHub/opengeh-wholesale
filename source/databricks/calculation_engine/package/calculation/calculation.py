@@ -92,8 +92,8 @@ def _execute(
             negative_grid_loss,
         )
     )
-    is_wholesale_calculation = is_wholesale_calculation_type(args.calculation_type)
-    if is_wholesale_calculation:
+
+    if is_wholesale_calculation_type(args.calculation_type):
         with logging_configuration.start_span("calculation.wholesale.prepare"):
             input_charges = prepared_data_reader.get_input_charges(
                 args.calculation_period_start_datetime,
