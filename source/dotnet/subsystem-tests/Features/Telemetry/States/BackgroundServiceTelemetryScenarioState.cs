@@ -23,6 +23,8 @@ public class BackgroundServiceTelemetryScenarioState
 
     public Guid CalculationId { get; set; }
 
+    public CalculationDto? Calculation { get; set; }
+
     public IList<TelemetryEventMatch> ExpectedTelemetryEvents { get; }
         = new List<TelemetryEventMatch>();
 }
