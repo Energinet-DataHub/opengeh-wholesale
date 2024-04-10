@@ -11,20 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import pathlib
 
 from pyspark.sql import SparkSession, dataframe
 
 from features.utils.factories.basis_data import BasisDataMeteringPointPeriodsFactory
-from features.utils.factories.settlement_report import (
-    SettlementReportMeteringPointPeriodsViewTestFactory,
-)
 from helpers.data_frame_utils import assert_dataframes_equal
 from package.constants import MeteringPointPeriodColname
 from package.infrastructure.paths import (
     BASIS_DATA_DATABASE_NAME,
     METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME,
     SETTLEMENT_REPORT_DATABASE_NAME,
+)
+from views.factories.settlement_report_metering_point_periods_view_test_factory import (
+    SettlementReportMeteringPointPeriodsViewTestFactory,
 )
 from views.view_reader import ViewReader
 
@@ -52,7 +51,6 @@ def create_expected(spark: SparkSession, df: dataframe) -> dataframe:
 def test_read_metering_point_periods_returns_expected_from_settlement_report_metering_point_periods_view(
     spark: SparkSession,
     migrations_executed: None,
-    tmp_path: pathlib.Path,
 ) -> None:
     """
     The test verifies that the view "metering_point_periods" is updated when the underlying
