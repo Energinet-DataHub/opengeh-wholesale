@@ -18,7 +18,9 @@ using Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Xunit;
+using Xunit.Sdk;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry;
 
@@ -60,6 +62,24 @@ public class TimerTriggerTelemetryScenario : SubsystemTestsBase<TelemetryScenari
 
     [ScenarioStep(2)]
     [SubsystemFact]
+    public async Task AndGiven_CalculationIsCompletedWithinWaitTime()
+    {
+        var (isCompletedOrFailed, calculation) = await Fixture.WaitForCalculationCompletedOrFailedAsync(
+            Fixture.ScenarioState.CalculationId,
+            waitTimeLimit: TimeSpan.FromMinutes(21));
+
+        Fixture.ScenarioState.Calculation = calculation;
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        isCompletedOrFailed.Should().BeTrue();
+        calculation.Should().NotBeNull();
+
+        calculation!.ExecutionState.Should().Be(Clients.v3.CalculationState.Completed);
+    }
+
+    [ScenarioStep(3)]
+    [SubsystemFact]
     public void When_ExpectedTelemetryEvents()
     {
         // From 'StartCalculationHandler' (handled in Timer Trigger request pipeline within Orchestration host)
@@ -78,10 +98,17 @@ public class TimerTriggerTelemetryScenario : SubsystemTestsBase<TelemetryScenari
         });
     }
 
-    [ScenarioStep(3)]
+    [ScenarioStep(4)]
     [SubsystemFact]
     public async Task Then_TelemetryEventsAreLoggedWithinWaitTime()
     {
+        // Fail fast if calculation did not complete
+        if (Fixture.ScenarioState.Calculation == null
+            || Fixture.ScenarioState.Calculation.ExecutionState != Clients.v3.CalculationState.Completed)
+        {
+            throw new XunitException("Failing test as dependent calculation did not complete.");
+        }
+
         var query = $@"
                 AppTraces
                 | where AppRoleName contains ""-wholsal-""
