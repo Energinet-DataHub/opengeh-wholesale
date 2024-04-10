@@ -22,11 +22,9 @@ def get_all_monthly_amounts_per_charge(
 ) -> MonthlyAmountPerCharge:
 
     monthly_amount_per_charge_df = (
-        results.subscription_per_ga_co_es.union(
-            results.monthly_fee_per_ga_co_es.cast(DataFrame)
-        )
-        .union(results.monthly_tariff_from_daily_per_ga_co_es.cast(DataFrame))
-        .union(results.monthly_tariff_from_hourly_per_ga_co_es.cast(DataFrame))
+        results.subscription_per_ga_co_es.union(results.monthly_fee_per_ga_co_es)
+        .union(results.monthly_tariff_from_daily_per_ga_co_es)
+        .union(results.monthly_tariff_from_hourly_per_ga_co_es)
     )
 
     return MonthlyAmountPerCharge(monthly_amount_per_charge_df)
