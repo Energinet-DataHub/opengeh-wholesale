@@ -18,6 +18,7 @@ import package.calculation.wholesale.subscription_calculators as subscription_ca
 import package.calculation.wholesale.tariff_calculators as tariff_calculator
 import package.calculation.wholesale.total_monthly_amount_calculator as total_amount_calculator
 import package.calculation.preparation.data_structures as d
+from .data_structures import TotalMonthlyAmount
 from .get_all_monthly_amounts_per_charge import get_all_monthly_amounts_per_charge
 from .sum_within_month import sum_within_month
 
@@ -159,7 +160,7 @@ def _calculate_tariff_charges(
 @logging_configuration.use_span("calculate_total_monthly_amount")
 def _calculate_total_monthly_amount(
     results: WholesaleResultsContainer,
-) -> d.TotalMonthlyAmount:
+) -> TotalMonthlyAmount:
     all_monthly_amounts_per_charge = get_all_monthly_amounts_per_charge(results)
 
     total_monthly_amount = total_amount_calculator.calculate(

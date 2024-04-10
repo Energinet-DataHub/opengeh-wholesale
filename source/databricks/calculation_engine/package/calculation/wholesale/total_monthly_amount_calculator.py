@@ -83,7 +83,7 @@ def _calculate_total_amount_without_charge_tax(
     monthly_amount_per_charge: MonthlyAmountPerCharge,
 ) -> DataFrame:
     monthly_amounts_without_tax = monthly_amount_per_charge.df.where(
-        f.col(Colname.charge_tax) == False
+        f.col(Colname.charge_tax) == False  # noqa: E712
     )
 
     total_amount_without_tax = monthly_amounts_without_tax.groupBy(
@@ -103,7 +103,7 @@ def _calculate_total_amount_with_charge_tax(
 ) -> DataFrame:
 
     monthly_amounts_with_tax = monthly_amount_per_charge.df.where(
-        f.col(Colname.charge_tax) == True
+        f.col(Colname.charge_tax) == True  # noqa: E712
     )
     total_amount_with_tax = monthly_amounts_with_tax.groupBy(
         Colname.grid_area,
