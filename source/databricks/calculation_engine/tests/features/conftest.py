@@ -11,10 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import inspect
 from pathlib import Path
 
 import pytest
+from _pytest.fixtures import FixtureRequest
 from pyspark.sql import SparkSession
 
 from features.scenario_fixture import ScenarioFixture
@@ -38,7 +38,7 @@ def scenario_fixture2(
 
 @pytest.fixture(scope="module")
 def actual_and_expected(
-    request,
+    request: FixtureRequest,
     scenario_fixture2: ScenarioFixture2,
 ) -> tuple[CalculationResultsContainer, list[ExpectedResult]]:
     scenario_path = str(Path(request.module.__file__).parent)
