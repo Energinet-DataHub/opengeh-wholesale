@@ -35,6 +35,12 @@ variable "developers_security_group_object_id" {
   default     = null
 }
 
+variable "feature_flag_datahub2_time_series_import" {
+  type        = bool
+  description = "(Optional) Enables importing messages from DataHub 2 for time series synchronization"
+  default     = false
+}
+
 variable "feature_flag_datahub2_healthcheck" {
   type        = bool
   description = "(Optional) Enables datahub2 healthcheck endpoint"

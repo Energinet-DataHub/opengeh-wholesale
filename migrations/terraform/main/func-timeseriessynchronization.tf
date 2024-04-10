@@ -66,6 +66,7 @@ module "func_timeseriessynchronization" {
     "ServiceBus__TimeSeriesMessagesQueueName"                                    = azurerm_servicebus_queue.time_series_imported_messages_queue.name
     "DataHub2Client__EndpointAddress"                                            = var.datahub2_migration_url,
     "FeatureManagement__DataHub2HealthCheck"                                     = var.feature_flag_datahub2_healthcheck
+    "FeatureManagement__DataHub2TimeSeriesImport"                                = var.feature_flag_datahub2_time_series_import
 
     # Logging Worker
     "Logging__LogLevel__Default"                      = local.LOGGING_LOGLEVEL_WORKER_DEFAULT
