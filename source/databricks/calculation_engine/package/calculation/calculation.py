@@ -29,7 +29,6 @@ from .preparation import PreparedDataReader
 from .wholesale import wholesale_calculation
 from package.calculation.preparation.transformations.metering_point_periods_for_calculation_type import (
     get_metering_points_periods_for_wholesale_basis_data,
-    get_metering_point_periods_for_basis_data,
     get_metering_point_periods_for_energy_basis_data,
     get_metering_point_periods_for_wholesale_calculation,
 )
