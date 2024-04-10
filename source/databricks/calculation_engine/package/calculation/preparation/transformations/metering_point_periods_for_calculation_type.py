@@ -20,37 +20,51 @@ from package.constants import Colname
 from package.infrastructure import logging_configuration
 
 
-def get_metering_point_periods_for_basis_data(
-    is_wholesale_calculation: bool, all_metering_point_periods: DataFrame
-) -> DataFrame:
-    metering_points_periods_for_energy_calculation_only = (
-        all_metering_point_periods.filter(
-            (f.col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
-            | (f.col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
-            | (f.col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value)
-        )
-    )
-    if is_wholesale_calculation:
-        return _get_child_metering_points_with_energy_suppliers(
-            all_metering_point_periods
-        ).union(metering_points_periods_for_energy_calculation_only)
-    return metering_points_periods_for_energy_calculation_only
-
-
-def get_metering_points_periods_for_wholesale_calculation(
+def get_metering_point_periods_for_energy_basis_data(
     all_metering_point_periods: DataFrame,
 ) -> DataFrame:
-    parent_metering_points_periods = all_metering_point_periods.filter(
+    """
+    Returns all metering point periods that should be included in an energy calculations basis data.
+    """
+    return all_metering_point_periods.filter(
         (f.col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
         | (f.col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
+        | (f.col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value)
+    )
+
+
+def get_metering_points_periods_for_wholesale_basis_data(
+    all_metering_point_periods: DataFrame,
+) -> DataFrame:
+    """
+    Returns all metering point periods that should be included in an energy and wholesale calculations basis data.
+    All child metering points are updated with the energy supplier id of its parent metering point.
+    """
+    non_child_metering_points_periods = all_metering_point_periods.filter(
+        (f.col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
+        | (f.col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
+        | (f.col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value)
     )
     child_metering_points_with_energy_suppliers = (
         _get_child_metering_points_with_energy_suppliers(all_metering_point_periods)
     )
-    metering_point_periods_union = parent_metering_points_periods.union(
+    metering_point_periods_union = non_child_metering_points_periods.union(
         child_metering_points_with_energy_suppliers
     )
     return metering_point_periods_union
+
+
+def get_metering_point_periods_for_wholesale_calculation(
+    metering_points_periods_for_wholesale_basis_data: DataFrame,
+) -> DataFrame:
+    """
+    Returns all metering point periods that should be included in a wholesale calculation.
+    This is every metering point type except exchange.
+    The incoming metering point periods are with updated child metering points, that now have energy supplier id.
+    """
+    return metering_points_periods_for_wholesale_basis_data.filter(
+        (f.col(Colname.metering_point_type) != MeteringPointType.EXCHANGE.value)
+    )
 
 
 def _get_child_metering_points_with_energy_suppliers(

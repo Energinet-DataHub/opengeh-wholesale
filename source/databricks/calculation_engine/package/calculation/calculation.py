@@ -28,8 +28,10 @@ from .output.wholesale_results import write_wholesale_results
 from .preparation import PreparedDataReader
 from .wholesale import wholesale_calculation
 from package.calculation.preparation.transformations.metering_point_periods_for_calculation_type import (
-    get_metering_points_periods_for_wholesale_calculation,
+    get_metering_points_periods_for_wholesale_basis_data,
     get_metering_point_periods_for_basis_data,
+    get_metering_point_periods_for_energy_basis_data,
+    get_metering_point_periods_for_wholesale_calculation,
 )
 from ..codelists.calculation_type import is_wholesale_calculation_type
 
@@ -99,9 +101,15 @@ def _execute(
                 args.calculation_period_end_datetime,
             )
 
-            metering_point_periods_for_wholesale_calculation = (
-                get_metering_points_periods_for_wholesale_calculation(
+            metering_point_periods_for_basis_data = (
+                get_metering_points_periods_for_wholesale_basis_data(
                     all_metering_point_periods
+                )
+            )
+
+            metering_point_periods_for_wholesale_calculation = (
+                get_metering_point_periods_for_wholesale_calculation(
+                    metering_point_periods_for_basis_data
                 )
             )
 
@@ -116,10 +124,10 @@ def _execute(
             args,
             prepared_charges,
         )
-
-    metering_point_periods_for_basis_data = get_metering_point_periods_for_basis_data(
-        is_wholesale_calculation, all_metering_point_periods
-    )
+    else:
+        metering_point_periods_for_basis_data = (
+            get_metering_point_periods_for_energy_basis_data(all_metering_point_periods)
+        )
 
     # Add basis data to results
     results.basis_data = basis_data_factory.create(
