@@ -16,7 +16,7 @@ import os
 from pathlib import Path
 
 
-def _get_filenames_from_output_folder() -> list[str]:
+def get_filenames_from_output_folder() -> list[str]:
     filename = inspect.stack()[1].filename
     folder = os.path.dirname(filename)
     output_folder_path = Path(folder + "/output/")

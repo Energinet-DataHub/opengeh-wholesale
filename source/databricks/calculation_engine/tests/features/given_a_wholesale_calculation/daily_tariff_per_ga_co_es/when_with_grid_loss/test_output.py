@@ -49,11 +49,12 @@ Grid area: 804
 import pytest
 
 from features.utils.base import assert_output
+from features.utils.files import get_filenames_from_output_folder
 from features.utils.scenario_fixture2 import ExpectedResult
 from package.calculation.calculation_results import CalculationResultsContainer
 
 
-@pytest.mark.parametrize("output_name", get_tests())
+@pytest.mark.parametrize("output_name", get_filenames_from_output_folder())
 def test__equals_expected(
     actual_and_expected: tuple[CalculationResultsContainer, list[ExpectedResult]],
     output_name: str,

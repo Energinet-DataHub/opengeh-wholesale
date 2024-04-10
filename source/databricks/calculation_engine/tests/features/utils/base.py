@@ -77,6 +77,16 @@ class Base:
             )
 
 
+def get_expected_for_output(
+    expected_results: list[ExpectedResult], output_name: str
+) -> DataFrame:
+    for expected_result in expected_results:
+        if expected_result.name == output_name:
+            return expected_result.df
+
+    raise Exception(f"Unknown expected result name: {output_name}")
+
+
 def get_actual_for_output(
     calculation_results_container: CalculationResultsContainer,
     expected_result_name: str,
