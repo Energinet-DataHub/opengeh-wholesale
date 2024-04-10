@@ -11,22 +11,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import pytest
-from pyspark.sql import SparkSession
+from features.utils.base import Base
 
-from features.scenario_fixture import ScenarioFixture
-from features.utils.scenario_fixture2 import ScenarioFixture2
+"""
+# Tests Description
+
+```gherkin
+GIVEN one exchange metering point
+AND one grid loss metering point
+AND one system correction metering point
+AND time series on the exchange MP is 75 kWh per hour
+WHEN calculating flex_consumption_per_ga
+THEN flex consumption per grid area is 75/4 = 18.75
+THEN there are four rows
+```
+
+"""
 
 
-@pytest.fixture(scope="session")
-def scenario_fixture(
-    spark: SparkSession,
-) -> ScenarioFixture:
-    return ScenarioFixture(spark)
-
-
-@pytest.fixture(scope="session")
-def scenario_fixture2(
-    spark: SparkSession,
-) -> ScenarioFixture2:
-    return ScenarioFixture2(spark)
+class TestThen(Base):
+    pass

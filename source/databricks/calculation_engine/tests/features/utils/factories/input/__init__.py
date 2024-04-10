@@ -11,22 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import pytest
-from pyspark.sql import SparkSession
-
-from features.scenario_fixture import ScenarioFixture
-from features.utils.scenario_fixture2 import ScenarioFixture2
-
-
-@pytest.fixture(scope="session")
-def scenario_fixture(
-    spark: SparkSession,
-) -> ScenarioFixture:
-    return ScenarioFixture(spark)
-
-
-@pytest.fixture(scope="session")
-def scenario_fixture2(
-    spark: SparkSession,
-) -> ScenarioFixture2:
-    return ScenarioFixture2(spark)
+from .input_grid_loss_test_factory import InputGridLossTestFactory
+from .input_metering_point_periods_test_factory import (
+    InputMeteringPointPeriodsTestFactory,
+)
+from .input_time_series_point_test_factory import (
+    InputTimeSeriesPointTestFactory,
+)

@@ -11,22 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import pytest
-from pyspark.sql import SparkSession
+from features.utils.base import Base
 
-from features.scenario_fixture import ScenarioFixture
-from features.utils.scenario_fixture2 import ScenarioFixture2
+"""
+# Testing daily tariff when energy supplier changes on grid loss and system correction metering points
 
-
-@pytest.fixture(scope="session")
-def scenario_fixture(
-    spark: SparkSession,
-) -> ScenarioFixture:
-    return ScenarioFixture(spark)
+Given grid loss and system correction metering points
+When energy supplier changes on both
+Then the daily tariff per grid area, charge owner and energy supplier is calculated correctly
+"""
 
 
-@pytest.fixture(scope="session")
-def scenario_fixture2(
-    spark: SparkSession,
-) -> ScenarioFixture2:
-    return ScenarioFixture2(spark)
+class TestThen(Base):
+    pass

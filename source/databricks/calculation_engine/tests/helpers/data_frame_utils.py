@@ -41,31 +41,35 @@ def assert_dataframe_and_schema(
     ignore_column_order: bool = False,
     ignore_decimal_scale: bool = False,
     ignore_decimal_precision: bool = False,
-    columns_to_skip: any = None,
-    show_dataframe=False,
-    show_schema=False,
+    columns_to_skip: list[str] | None = None,
 ) -> None:
     if columns_to_skip is not None:
         actual = actual.drop(*columns_to_skip)
         expected = expected.drop(*columns_to_skip)
 
-    if show_schema:
+    try:
+        assert_schema(
+            actual.schema,
+            expected.schema,
+            ignore_nullability,
+            ignore_column_order,
+            ignore_decimal_scale,
+            ignore_decimal_precision,
+        )
+    except AssertionError:
+        print("SCHEMA MISMATCH:")
+        print("ACTUAL SCHEMA:")
         actual.printSchema()
+        print("EXPECTED SCHEMA:")
         expected.printSchema()
+        raise
 
-    assert_schema(
-        actual.schema,
-        expected.schema,
-        ignore_nullability,
-        ignore_column_order,
-        ignore_decimal_scale,
-        ignore_decimal_precision,
-    )
-
-    if show_dataframe:
+    try:
+        assert_dataframes_equal(actual, expected)
+    except AssertionError:
+        print("DATA MISMATCH:")
         print("ACTUAL:")
         actual.show(3000, False)
         print("EXPECTED:")
         expected.show(3000, False)
-
-    assert_dataframes_equal(actual, expected)
+        raise
