@@ -50,6 +50,23 @@ def test__migrate__when_schema_migration_scripts_are_executed__compare_schemas(
             ), f"Difference in schema {_diff(actual_table.schema, table.schema)}"
 
 
+def test_migrate_should_set_deleted_file_retention_to_30_days(
+    spark: SparkSession,
+    migrations_executed: None,
+) -> None:
+    # Assert
+    for schema in schema_config.schema_config:
+        for table in schema.tables:
+            table_properties = spark.sql(
+                f"DESCRIBE DETAIL {schema.name}.{table.name}"
+            ).collect()[0]["properties"]
+
+            assert (
+                table_properties["delta.deletedFileRetentionDuration"]
+                == "interval 30 days"
+            ), f"Table {schema.name}.{table.name} does not have the correct deleted file retention duration"
+
+
 def test__migrate__when_schema_migration_scripts_are_executed__compare_result_with_schema_config(
     spark: SparkSession,
     migrations_executed: None,
@@ -178,7 +195,9 @@ def test__current_state_and_migration_scripts__should_give_same_result(
             "{INPUT_DATABASE_NAME}": f"{migration_scripts_prefix}{INPUT_DATABASE_NAME}",
             "{BASIS_DATA_DATABASE_NAME}": f"{migration_scripts_prefix}{BASIS_DATA_DATABASE_NAME}",
             "{SETTLEMENT_REPORT_DATABASE_NAME}": f"{migration_scripts_prefix}{SETTLEMENT_REPORT_DATABASE_NAME}",
-            "{OUTPUT_FOLDER}": "migration_test",
+            "{OUTPUT_FOLDER}": f"{migration_scripts_prefix}migration_test",
+            "{BASIS_DATA_FOLDER}": f"{migration_scripts_prefix}basis_folder",
+            "{INPUT_FOLDER}": f"{migration_scripts_prefix}input_folder",
         },
     )
     spark_sql_migration_helper.configure_spark_sql_migration(
@@ -199,7 +218,9 @@ def test__current_state_and_migration_scripts__should_give_same_result(
             "{INPUT_DATABASE_NAME}": f"{current_state_prefix}{INPUT_DATABASE_NAME}",
             "{BASIS_DATA_DATABASE_NAME}": f"{current_state_prefix}{BASIS_DATA_DATABASE_NAME}",
             "{SETTLEMENT_REPORT_DATABASE_NAME}": f"{current_state_prefix}{SETTLEMENT_REPORT_DATABASE_NAME}",
-            "{OUTPUT_FOLDER}": "migration_test",
+            "{OUTPUT_FOLDER}": f"{current_state_prefix}migration_test",
+            "{BASIS_DATA_FOLDER}": f"{current_state_prefix}basis_folder",
+            "{INPUT_FOLDER}": f"{current_state_prefix}input_folder",
         },
     )
     spark_sql_migration_helper.configure_spark_sql_migration(
@@ -242,7 +263,9 @@ def test__current_state_and_migration_scripts__should_give_same_result(
                 f"DESCRIBE DETAIL {current_state_script_tag}"
             ).collect()[0]
 
-            migrations_script_location = migration_script_details["location"]
+            migrations_script_location = migration_script_details["location"].replace(
+                migration_scripts_prefix, ""
+            )
             current_state_location = current_state_details["location"].replace(
                 current_state_prefix, ""
             )
