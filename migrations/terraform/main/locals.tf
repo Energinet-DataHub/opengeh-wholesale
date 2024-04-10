@@ -8,8 +8,11 @@ locals {
   databricks_runtime_version      = "14.3.x-scala2.12"
 
   # Logging
-  LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_MIGRATIONS = "Information" # From opengeh-migrations
+  LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_MIGRATIONS = "Information" # From opengeh-migration
   LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE       = "Information" # From geh-core
+  LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT                      = "Warning"     # Everything else
+
+  # Logging - deprecated
   LOGGING_LOGLEVEL_DEFAULT                                  = "Warning"
   LOGGING_LOGLEVEL_WORKER_DEFAULT                           = "Warning"
   LOGGING_LOGLEVEL_HOST_DEFAULT                             = "Warning"

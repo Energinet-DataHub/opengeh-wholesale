@@ -69,11 +69,8 @@ module "func_timeseriessynchronization" {
     "FeatureManagement__DataHub2TimeSeriesImport"                                = var.feature_flag_datahub2_time_series_import
 
     # Logging Worker
-    "Logging__LogLevel__Default"                      = local.LOGGING_LOGLEVEL_WORKER_DEFAULT
-    "Logging__LogLevel__Energinet.DataHub.Migrations" = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_MIGRATIONS
-    "Logging__LogLevel__Energinet.DataHub.Core"       = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE
-
-    # Logging Host
-    "AzureFunctionsJobHost__Logging__LogLevel__Default" = local.LOGGING_LOGLEVEL_HOST_DEFAULT
+    "Logging__ApplicationInsights__LogLevel__Default"                            = local.LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT
+    "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Migrations"       = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_MIGRATIONS
+    "Logging__ApplicationInsights__LogLevel__Energinet.Datahub.Core"             = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE
   }
 }
