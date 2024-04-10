@@ -13,5 +13,5 @@
 # limitations under the License.
 
 from .monthly_amount_per_charge import MonthlyAmountPerCharge
-from .total_montly_amount import TotalMonthlyAmount
+from .total_monthly_amount import TotalMonthlyAmount
 from .wholesale_results import WholesaleResults
