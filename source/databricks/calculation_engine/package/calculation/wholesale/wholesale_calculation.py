@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pyspark.sql import DataFrame
 
 import package.calculation.output.wholesale_storage_model_factory as factory
 import package.calculation.wholesale.fee_calculators as fee_calculator
@@ -19,8 +18,7 @@ import package.calculation.wholesale.subscription_calculators as subscription_ca
 import package.calculation.wholesale.tariff_calculators as tariff_calculator
 import package.calculation.wholesale.total_monthly_amount_calculator as total_amount_calculator
 import package.calculation.preparation.data_structures as d
-from .data_structures import TotalMonthlyAmount
-from .data_structures.monthly_amount_per_charge import MonthlyAmountPerCharge
+from .get_all_monthly_amounts_per_charge import get_all_monthly_amounts_per_charge
 from .sum_within_month import sum_within_month
 
 from ..calculation_results import WholesaleResultsContainer
@@ -161,37 +159,11 @@ def _calculate_tariff_charges(
 @logging_configuration.use_span("calculate_total_monthly_amount")
 def _calculate_total_monthly_amount(
     results: WholesaleResultsContainer,
-) -> TotalMonthlyAmount:
-    all_monthly_amounts_per_charge = _get_all_monthly_amounts_per_charge(results)
+) -> d.TotalMonthlyAmount:
+    all_monthly_amounts_per_charge = get_all_monthly_amounts_per_charge(results)
 
     total_monthly_amount = total_amount_calculator.calculate(
         all_monthly_amounts_per_charge,
     )
 
     return total_monthly_amount
-
-
-def _get_all_monthly_amounts_per_charge(
-    results: WholesaleResultsContainer,
-) -> MonthlyAmountPerCharge:
-    def union_if_not_none(df: DataFrame | None, other_df: DataFrame | None):
-        if df is None:
-            return other_df
-
-        return df.union(other_df) if df is not None else None
-
-    monthly_amount_per_charge_df = None
-    monthly_amount_per_charge_df = union_if_not_none(
-        monthly_amount_per_charge_df, results.subscription_per_ga_co_es
-    )
-    monthly_amount_per_charge_df = union_if_not_none(
-        monthly_amount_per_charge_df, results.fee_per_ga_co_es
-    )
-    monthly_amount_per_charge_df = union_if_not_none(
-        monthly_amount_per_charge_df, results.hourly_tariff_per_ga_co_es
-    )
-    monthly_amount_per_charge_df = union_if_not_none(
-        monthly_amount_per_charge_df, results.daily_tariff_per_ga_co_es
-    )
-
-    return MonthlyAmountPerCharge(monthly_amount_per_charge_df)
