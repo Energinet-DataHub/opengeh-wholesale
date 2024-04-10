@@ -45,9 +45,6 @@ module "func_wholesale_orchestration" {
     "Logging__ApplicationInsights__LogLevel__Energinet.Datahub.Wholesale" = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_WHOLESALE
     "Logging__ApplicationInsights__LogLevel__Energinet.Datahub.Core"      = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE
 
-    # Time zone
-    TIME_ZONE = local.TIME_ZONE
-
     # Storage (DataLake)
     STORAGE_CONTAINER_NAME = local.STORAGE_CONTAINER_NAME
     STORAGE_ACCOUNT_URI    = local.STORAGE_ACCOUNT_URI
