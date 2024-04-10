@@ -20,7 +20,7 @@ from package.codelists import (
     ChargeType,
 )
 from package.constants import Colname
-import tests.calculation.wholesale.wholesale_results_factory as wholesale_results_factory
+import tests.calculation.wholesale.monthly_amount_per_charge_factory as monthly_amount_per_charge_factory
 from package.calculation.wholesale.total_monthly_amount_calculator import calculate
 
 
@@ -33,27 +33,29 @@ def test__calculate__when_all_monthly_amounts_are_without_tax__sums_all_amounts(
 ) -> None:
     # Arrange
     monthly_amounts_rows = [
-        wholesale_results_factory.create_monthly_amount_row(
+        monthly_amount_per_charge_factory.create_row(
             charge_type=ChargeType.TARIFF,
             total_amount=Decimal("1"),
             charge_tax=False,
         ),
-        wholesale_results_factory.create_monthly_amount_row(
+        monthly_amount_per_charge_factory.create_row(
             charge_type=ChargeType.FEE,
             total_amount=Decimal("1"),
             charge_tax=False,
         ),
-        wholesale_results_factory.create_monthly_amount_row(
+        monthly_amount_per_charge_factory.create_row(
             charge_type=ChargeType.SUBSCRIPTION,
             total_amount=Decimal("1"),
             charge_tax=False,
         ),
     ]
-    monthly_amounts = wholesale_results_factory.create(spark, monthly_amounts_rows)
+    monthly_amounts = monthly_amount_per_charge_factory.create(
+        spark, monthly_amounts_rows
+    )
 
     # Act
     actual = calculate(
-        monthly_amounts.df,
+        monthly_amounts,
     ).df
 
     # Assert
@@ -73,24 +75,26 @@ def test__calculate__adds_tax_amount_if_not_system_operator(
 ) -> None:
     # Arrange
     monthly_amounts_rows = [
-        wholesale_results_factory.create_monthly_amount_row(
+        monthly_amount_per_charge_factory.create_row(
             charge_type=ChargeType.SUBSCRIPTION,
             total_amount=Decimal("1"),
             charge_tax=False,
             charge_owner=charge_owner,
         ),
-        wholesale_results_factory.create_monthly_amount_row(
+        monthly_amount_per_charge_factory.create_row(
             charge_type=ChargeType.TARIFF,
             total_amount=Decimal("1"),
             charge_tax=True,
             charge_owner=SYSTEM_OPERATOR_ID,
         ),
     ]
-    monthly_amounts = wholesale_results_factory.create(spark, monthly_amounts_rows)
+    monthly_amounts = monthly_amount_per_charge_factory.create(
+        spark, monthly_amounts_rows
+    )
 
     # Act
     actual = calculate(
-        monthly_amounts.df,
+        monthly_amounts,
     ).df
 
     # Assert
@@ -114,24 +118,26 @@ def test__calculate__when_amount_is_null__ignores_null_in_sum(
 ) -> None:
     # Arrange
     monthly_amounts_rows = [
-        wholesale_results_factory.create_monthly_amount_row(
+        monthly_amount_per_charge_factory.create_row(
             charge_type=ChargeType.SUBSCRIPTION,
             total_amount=amount_without_tax,
             charge_tax=False,
             charge_owner=GRID_ACCESS_PROVIDER_ID,
         ),
-        wholesale_results_factory.create_monthly_amount_row(
+        monthly_amount_per_charge_factory.create_row(
             charge_type=ChargeType.TARIFF,
             total_amount=amount_with_tax,
             charge_tax=True,
             charge_owner=SYSTEM_OPERATOR_ID,
         ),
     ]
-    monthly_amounts = wholesale_results_factory.create(spark, monthly_amounts_rows)
+    monthly_amounts = monthly_amount_per_charge_factory.create(
+        spark, monthly_amounts_rows
+    )
 
     # Act
     actual = calculate(
-        monthly_amounts.df,
+        monthly_amounts,
     ).df
 
     # Assert
