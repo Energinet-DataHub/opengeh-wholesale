@@ -45,11 +45,7 @@ public static class ServiceBusExtensions
                 .Get<ServiceBusNamespaceOptions>();
 
             builder
-                .AddServiceBusClient(serviceBusNamespaceOptions!.ConnectionString)
-                .ConfigureOptions(options =>
-                {
-                    options.TransportType = ServiceBusTransportType.AmqpWebSockets;
-                });
+                .AddServiceBusClient(serviceBusNamespaceOptions!.ConnectionString);
         });
 
         return services;

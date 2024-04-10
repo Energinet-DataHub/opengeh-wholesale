@@ -97,7 +97,6 @@ public static class EventsExtensions
         {
             options.ServiceBusConnectionString = serviceBusNamespaceOptions!.ConnectionString;
             options.TopicName = integrationEventsOptions!.TopicName;
-            options.TransportType = Azure.Messaging.ServiceBus.ServiceBusTransportType.AmqpWebSockets;
         });
         services.AddPublisher<IntegrationEventProvider>();
 
