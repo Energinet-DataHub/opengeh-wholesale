@@ -35,9 +35,16 @@ Parent metering point: 0.756998 * 20 * 24 * 28 = 10174.05312
 ```
 """
 
+from typing import Any
 
-from features.utils.base import Base
+import pytest
+
+from features.utils import assert_output, get_output_names
 
 
-class TestThen(Base):
-    pass
+@pytest.mark.parametrize("output_name", get_output_names())
+def test__equals_expected(
+    actual_and_expected: Any,
+    output_name: str,
+) -> None:
+    assert_output(actual_and_expected, output_name)

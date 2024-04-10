@@ -28,8 +28,16 @@ THEN there are 3 rows in the result
 ```
 """
 
-from features.utils.base import Base
+from typing import Any
+
+import pytest
+
+from features.utils import assert_output, get_output_names
 
 
-class TestThen(Base):
-    pass
+@pytest.mark.parametrize("output_name", get_output_names())
+def test__equals_expected(
+    actual_and_expected: Any,
+    output_name: str,
+) -> None:
+    assert_output(actual_and_expected, output_name)

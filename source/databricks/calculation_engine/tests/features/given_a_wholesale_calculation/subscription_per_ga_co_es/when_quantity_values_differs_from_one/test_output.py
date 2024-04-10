@@ -27,8 +27,17 @@ THEN the subscription price is 1.010101 DKK
   AND the subscription amount is 3.030303 DKK per day for the production metering points
 ```
 """
-from features.utils.base import Base
+
+from typing import Any
+
+import pytest
+
+from features.utils import assert_output, get_output_names
 
 
-class TestThen(Base):
-    pass
+@pytest.mark.parametrize("output_name", get_output_names())
+def test__equals_expected(
+    actual_and_expected: Any,
+    output_name: str,
+) -> None:
+    assert_output(actual_and_expected, output_name)
