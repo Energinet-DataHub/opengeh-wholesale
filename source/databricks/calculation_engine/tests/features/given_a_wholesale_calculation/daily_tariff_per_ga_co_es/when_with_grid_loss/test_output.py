@@ -46,17 +46,16 @@ Grid area: 804
 ```gherkin
 ```
 """
+from typing import Any
+
 import pytest
 
-from features.utils.base import assert_output
-from features.utils.files import get_filenames_from_output_folder
-from features.utils.scenario_fixture2 import ExpectedResult
-from package.calculation.calculation_results import CalculationResultsContainer
+from features.utils import assert_output, get_output_names
 
 
-@pytest.mark.parametrize("output_name", get_filenames_from_output_folder())
+@pytest.mark.parametrize("output_name", get_output_names())
 def test__equals_expected(
-    actual_and_expected: tuple[CalculationResultsContainer, list[ExpectedResult]],
+    actual_and_expected: Any,
     output_name: str,
 ) -> None:
     assert_output(actual_and_expected, output_name)

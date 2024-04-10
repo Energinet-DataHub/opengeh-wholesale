@@ -33,7 +33,7 @@ def assert_output(
     expected_result = get_expected_for_output(expected_results, output_name)
     assert_dataframe_and_schema(
         actual_result,
-        expected_result.df,
+        expected_result,
         ignore_decimal_precision=True,
         ignore_nullability=True,
         ignore_decimal_scale=True,
