@@ -26,11 +26,19 @@
 import pyspark.sql.functions as F
 from pyspark.sql.window import Window
 
+# Source variables
 database = "hive_metastore.wholesale_input" # FILL IN
 source_mp_table_name = "metering_point_periods"
 source_ts_table_name = "time_series_points"
 source_gl_table_name = "grid_loss_metering_points"
 
+# Target variables
+target_database = database
+target_mp_table_name = "metering_point_periods"
+target_ts_table_name = "time_series_points"
+target_gl_table_name = "grid_loss_metering_points"
+
+# Columns variables
 metering_point_id_column_name = "metering_point_id"
 parent_metering_point_id_column_name = "parent_metering_point_id"
 balance_responsible_id_column_name = "balance_responsible_id"
@@ -40,7 +48,9 @@ energy_supplier_id_column_name = "energy_supplier_id"
 anonymisation_start_date = '2010-08-19T22:00:00Z'
 anonymisation_end_date = '2023-06-01T22:00:00Z'
 
-#
+# COMMAND ----------
+
+# Read source tables
 df_source_mp_table = (
     spark.read.table(f"{database}.{source_mp_table_name}")
     .filter(f"'{anonymisation_start_date}' <= from_date")
@@ -56,11 +66,6 @@ df_source_ts_table = (
 )
 
 df_source_gl_table = spark.read.table(f"{database}.{source_gl_table_name}")
-
-target_database = database
-target_mp_table_name = "metering_point_periods_performance_test"
-target_ts_table_name = "time_series_points_performance_test"
-target_gl_table_name = "grid_loss_metering_points_performance_test"
 
 # COMMAND ----------
 
