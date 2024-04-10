@@ -12,18 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Reflection;
 using System.Text.Json.Serialization;
 using Asp.Versioning;
-using Energinet.DataHub.Core.App.WebApp.Authentication;
-using Energinet.DataHub.Core.App.WebApp.Authorization;
-using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
+using Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
+using Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry;
 using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.WebApi;
-using Energinet.DataHub.Wholesale.WebApi.Extensions.Builder;
 using Energinet.DataHub.Wholesale.WebApi.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,11 +34,11 @@ var builder = WebApplication.CreateBuilder(args);
 */
 
 // Common
-builder.Services.AddApplicationInsightsForWebApp();
+builder.Services.AddApplicationInsightsForWebApp(TelemetryConstants.SubsystemName);
 builder.Services.AddHealthChecksForWebApp();
 
 // Shared by modules
-builder.Services.AddNodaTimeForApplication(builder.Configuration);
+builder.Services.AddNodaTimeForApplication();
 builder.Services.AddDatabricksJobsForApplication(builder.Configuration);
 builder.Services.AddServiceBusClientForApplication(builder.Configuration);
 
@@ -56,16 +57,16 @@ builder.Services
     .AddJsonOptions(options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
 
 // => Open API generation
-builder.Services.AddSwaggerForWebApplication();
+builder.Services.AddSwaggerForWebApp(Assembly.GetExecutingAssembly(), swaggerUITitle: "Wholesale Web API");
 
 // => API versioning
-builder.Services.AddApiVersioningForWebApplication(new ApiVersion(3, 0));
+builder.Services.AddApiVersioningForWebApp(new ApiVersion(3, 0));
 
 // => Authentication/authorization
 builder.Services
-    .AddTokenAuthenticationForWebApp(builder.Configuration)
+    .AddJwtBearerAuthenticationForWebApp(builder.Configuration)
     .AddUserAuthenticationForWebApp<FrontendUser, FrontendUserProvider>()
-    .AddPermissionAuthorization();
+    .AddPermissionAuthorizationForWebApp();
 
 var app = builder.Build();
 
@@ -74,7 +75,7 @@ var app = builder.Build();
 */
 
 app.UseRouting();
-app.UseSwaggerForWebApplication();
+app.UseSwaggerForWebApp();
 app.UseHttpsRedirection();
 
 // Authentication/authorization
@@ -82,7 +83,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 if (!app.Environment.IsEnvironment("Testing"))
 {
-    app.UseUserMiddleware<FrontendUser>();
+    app.UseUserMiddlewareForWebApp<FrontendUser>();
 }
 
 app.MapControllers().RequireAuthorization();

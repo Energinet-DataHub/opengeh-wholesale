@@ -94,8 +94,8 @@ schema_config = [
         name=paths.SETTLEMENT_REPORT_DATABASE_NAME,
         tables=[],
         views=[
-            View(name=paths.SETTLEMENT_REPORT_METERING_POINT_PERIODS_VIEW_NAME),
-            View(name=paths.SETTLEMENT_REPORT_METERING_POINT_TIME_SERIES_VIEW_NAME),
+            View(name=paths.METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME),
+            View(name=paths.METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME),
         ],
     ),
 ]
