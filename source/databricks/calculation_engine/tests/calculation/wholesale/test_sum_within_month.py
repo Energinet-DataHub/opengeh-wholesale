@@ -21,7 +21,7 @@ from package.codelists import (
     ChargeQuality,
 )
 from package.constants import Colname
-import tests.calculation.wholesale.wholesale_results_factory as wholesale_results_factory
+import calculation.wholesale.factories.wholesale_results_factory as wholesale_results_factory
 
 
 PERIOD_START_DATETIME = datetime(2019, 12, 31, 23)

@@ -20,7 +20,7 @@ from package.codelists import (
     ChargeType,
 )
 from package.constants import Colname
-import tests.calculation.wholesale.monthly_amount_per_charge_factory as monthly_amount_per_charge_factory
+import calculation.wholesale.factories.monthly_amount_per_charge_factory as monthly_amount_per_charge_factory
 from package.calculation.wholesale.total_monthly_amount_calculator import calculate
 
 
