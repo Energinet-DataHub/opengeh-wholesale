@@ -79,6 +79,7 @@ public class AmountPerChargeResultProducedV1FactoryTests
         // Arrange
         var wholesaleResult = new WholesaleResultBuilder()
             .WithChargeType(chargeType)
+            .WithPointWithoutQuantityQualities()
             .Build();
         var sut = new AmountPerChargeResultProducedV1Factory();
 

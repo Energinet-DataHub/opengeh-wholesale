@@ -70,6 +70,13 @@ public sealed class WholesaleResultBuilder
         return this;
     }
 
+    public WholesaleResultBuilder WithPointWithoutQuantityQualities()
+    {
+        _wholesaleTimeSeriesPoint
+            = new List<WholesaleTimeSeriesPoint> { new(new DateTime(2021, 1, 1), 1, null, 2, 3) };
+        return this;
+    }
+
     public WholesaleResult Build()
     {
         return new WholesaleResult(
