@@ -16,6 +16,12 @@ from helpers.data_frame_utils import assert_dataframe_and_schema
 from package.constants import EnergyResultColumnNames
 from .states.scenario_state import get_expected
 
+"""
+# Test Description
+```gherkin
+```
+"""
+
 
 def test_execute__returns_expected(
     scenario_fixture: ScenarioFixture,
