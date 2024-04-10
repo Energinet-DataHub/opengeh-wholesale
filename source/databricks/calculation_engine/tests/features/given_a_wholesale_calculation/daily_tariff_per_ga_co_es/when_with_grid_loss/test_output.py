@@ -34,7 +34,7 @@ Grid area: 804
     Calculated grid loss 15 Per time
     360 Per dag Pris: 1.756998 Amount: 632.51928
 
-    Negative_grid_loss 20-28 Februar
+    Negative_grid_loss 20-28 February
     MP              kWh MP id
     Production E18  80  571313180400012004
     Consumption E17 90  571313180400140417
@@ -48,34 +48,14 @@ Grid area: 804
 """
 import pytest
 
-
-def get_tests():
-    return ["consumption_per_ga", "production_per_ga"]
-
-
-def assert_it(actual_and_expected, name):
-    # actual_results, expected_results = actual_and_expected
-    # actual_result = get_actual(actual_results, name)
-    # expected_result = get_expected(expected_results, name)
-    # assert_dataframe_and_schema(
-    #     actual_result,
-    #     expected_result.df,
-    #     ignore_decimal_precision=True,
-    #     ignore_nullability=True,
-    #     ignore_decimal_scale=True,
-    #     columns_to_skip=[
-    #         EnergyResultColumnNames.calculation_result_id,
-    #     ],
-    # )
-    pass
+from features.utils.base import assert_output
+from features.utils.scenario_fixture2 import ExpectedResult
+from package.calculation.calculation_results import CalculationResultsContainer
 
 
-@pytest.mark.parametrize("name", get_tests())
-def test__equals_expected(actual_and_expected, name):
-    print(repr(actual_and_expected))
-    # assert_it(actual_and_expected, name)
-
-
-# @pytest.mark.parametrize("name, actual,expected", get_tests())
-# def test__equals_expected():
-#     pass
+@pytest.mark.parametrize("output_name", get_tests())
+def test__equals_expected(
+    actual_and_expected: tuple[CalculationResultsContainer, list[ExpectedResult]],
+    output_name: str,
+) -> None:
+    assert_output(actual_and_expected, output_name)

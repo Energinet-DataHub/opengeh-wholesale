@@ -24,6 +24,25 @@ from package.calculation.calculation_results import CalculationResultsContainer
 from package.constants import EnergyResultColumnNames
 
 
+def assert_output(
+    actual_and_expected: tuple[CalculationResultsContainer, list[ExpectedResult]],
+    output_name: str,
+) -> None:
+    actual_results, expected_results = actual_and_expected
+    actual_result = get_actual_for_output(actual_results, output_name)
+    expected_result = get_expected_for_output(expected_results, output_name)
+    assert_dataframe_and_schema(
+        actual_result,
+        expected_result.df,
+        ignore_decimal_precision=True,
+        ignore_nullability=True,
+        ignore_decimal_scale=True,
+        columns_to_skip=[
+            EnergyResultColumnNames.calculation_result_id,
+        ],
+    )
+
+
 class Base:
     def _get_scenario_folder_path(self) -> str:
         """Retrieves the file path of the (most derived) class of the current object instance"""
@@ -44,9 +63,7 @@ class Base:
 
         # Assert
         for expected_result in expected_results:
-            actual_result = get_actual_for_expected_result(
-                actual_results, expected_result
-            )
+            actual_result = get_actual_for_output(actual_results, expected_result.name)
 
             assert_dataframe_and_schema(
                 actual_result,
@@ -60,22 +77,22 @@ class Base:
             )
 
 
-def get_actual_for_expected_result(
+def get_actual_for_output(
     calculation_results_container: CalculationResultsContainer,
-    expected_result: ExpectedResult,
+    expected_result_name: str,
 ) -> DataFrame:
-    if has_field(calculation_results_container.energy_results, expected_result.name):
+    if has_field(calculation_results_container.energy_results, expected_result_name):
         return getattr(
-            calculation_results_container.energy_results, expected_result.name
+            calculation_results_container.energy_results, expected_result_name
         )
-    if has_field(calculation_results_container.wholesale_results, expected_result.name):
+    if has_field(calculation_results_container.wholesale_results, expected_result_name):
         return getattr(
-            calculation_results_container.wholesale_results, expected_result.name
+            calculation_results_container.wholesale_results, expected_result_name
         )
-    if has_field(calculation_results_container.basis_data, expected_result.name):
-        return getattr(calculation_results_container.basis_data, expected_result.name)
+    if has_field(calculation_results_container.basis_data, expected_result_name):
+        return getattr(calculation_results_container.basis_data, expected_result_name)
 
-    raise Exception(f"Unknown expected result name: {expected_result.name}")
+    raise Exception(f"Unknown expected result name: {expected_result_name}")
 
 
 def has_field(container_class: Any, field_name: str) -> bool:
