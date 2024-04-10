@@ -70,7 +70,7 @@ def test__calculate__when_all_monthly_amounts_are_without_tax__sums_all_amounts(
         [GRID_ACCESS_PROVIDER_ID, Decimal("2.000000")],
     ],
 )
-def test__calculate__adds_tax_amount_if_not_system_operator(
+def test__calculate__when_charge_owner__adds_tax_amount_only_to_grid_access_operator(
     spark: SparkSession, charge_owner: str, expected: Decimal
 ) -> None:
     # Arrange

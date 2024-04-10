@@ -54,6 +54,8 @@ def execute(
         results,
     )
 
+    _calculate_total_monthly_amount(results)
+
     return results
 
 
