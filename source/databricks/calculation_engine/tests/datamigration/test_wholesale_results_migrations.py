@@ -15,11 +15,11 @@
 from datetime import datetime
 from decimal import Decimal
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import array, col, lit
+from pyspark.sql.functions import col, lit
 import pytest
 import uuid
 
-from helpers.data_frame_utils import set_column
+from tests.helpers.data_frame_utils import set_column
 from package.codelists import (
     AmountType,
     ChargeQuality,
@@ -35,7 +35,7 @@ from package.infrastructure.paths import (
     OUTPUT_DATABASE_NAME,
     WHOLESALE_RESULT_TABLE_NAME,
 )
-from package.calculation_output.schemas import wholesale_results_schema
+from package.calculation.output.schemas import wholesale_results_schema
 
 
 def _create_df(spark: SparkSession) -> DataFrame:
@@ -86,10 +86,8 @@ def _create_df(spark: SparkSession) -> DataFrame:
             WholesaleResultColumnNames.energy_supplier_id,
             "neither-16-nor-13-digits-long",
         ),
-        (WholesaleResultColumnNames.quantity, None),
         (WholesaleResultColumnNames.quantity_unit, None),
         (WholesaleResultColumnNames.quantity_unit, "foo"),
-        (WholesaleResultColumnNames.quantity_qualities, None),
         (WholesaleResultColumnNames.quantity_qualities, []),
         (WholesaleResultColumnNames.quantity_qualities, ["foo"]),
         (WholesaleResultColumnNames.time, None),
@@ -157,6 +155,7 @@ actor_eic = "1234567890123456"
         (WholesaleResultColumnNames.quantity, min_18_3_decimal),
         (WholesaleResultColumnNames.quantity_unit, "kWh"),
         (WholesaleResultColumnNames.quantity_qualities, ["missing", "estimated"]),
+        (WholesaleResultColumnNames.quantity_qualities, None),
         (WholesaleResultColumnNames.time, datetime(2020, 1, 1, 0, 0)),
         (WholesaleResultColumnNames.resolution, "P1D"),
         (WholesaleResultColumnNames.metering_point_type, None),

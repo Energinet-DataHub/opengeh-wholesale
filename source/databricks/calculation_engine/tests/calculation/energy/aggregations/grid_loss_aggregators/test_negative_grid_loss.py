@@ -11,169 +11,125 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-from datetime import datetime
 from decimal import Decimal
-from typing import Callable
 
-import pandas as pd
 import pytest
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession, Row
 from pyspark.sql.functions import col
 
 from calculation.energy import grid_loss_responsible_factories
-from package.calculation.energy.energy_results import (
-    EnergyResults,
-    energy_results_schema,
-)
 from package.calculation.energy.aggregators.grid_loss_aggregators import (
     calculate_negative_grid_loss,
 )
+from package.calculation.energy.data_structures.energy_results import (
+    EnergyResults,
+)
 from package.codelists import (
-    QuantityQuality,
     MeteringPointType,
+    QuantityQuality,
 )
 from package.constants import Colname
+from tests.calculation.energy import energy_results_factories
 
 
 @pytest.fixture(scope="module")
-def agg_result_factory(spark: SparkSession) -> Callable[[], EnergyResults]:
-    """
-    Factory to generate a single row of time series data, with default parameters as specified above.
-    """
+def actual_negative_grid_loss(spark: SparkSession) -> EnergyResults:
+    rows = [
+        energy_results_factories.create_grid_loss_row(
+            grid_area="001",
+            quantity=Decimal(-12.567),
+            observation_time=grid_loss_responsible_factories.DEFAULT_FROM_DATE,
+        ),
+        energy_results_factories.create_grid_loss_row(
+            grid_area="002",
+            quantity=Decimal(34.32),
+            observation_time=grid_loss_responsible_factories.DEFAULT_FROM_DATE,
+        ),
+        energy_results_factories.create_grid_loss_row(
+            grid_area="003",
+            quantity=Decimal(0.0),
+            observation_time=grid_loss_responsible_factories.DEFAULT_FROM_DATE,
+        ),
+    ]
 
-    def factory() -> EnergyResults:
-        pandas_df = pd.DataFrame(
-            {
-                Colname.grid_area: [],
-                Colname.to_grid_area: [],
-                Colname.from_grid_area: [],
-                Colname.balance_responsible_id: [],
-                Colname.energy_supplier_id: [],
-                Colname.time_window: [],
-                Colname.sum_quantity: [],
-                Colname.qualities: [],
-                Colname.metering_point_id: [],
-            }
-        )
+    grid_loss = energy_results_factories.create(spark, rows)
 
-        pandas_df = pd.concat(
-            [
-                pandas_df,
-                pd.Series(
-                    {
-                        Colname.grid_area: str(1),
-                        Colname.to_grid_area: None,
-                        Colname.from_grid_area: None,
-                        Colname.balance_responsible_id: "balance_responsible_id",
-                        Colname.energy_supplier_id: "energy_supplier_id",
-                        Colname.time_window: {
-                            Colname.start: pd.to_datetime(
-                                datetime(2020, 1, 1, 1, 0)
-                            ).tz_localize(None),
-                            Colname.end: pd.to_datetime(
-                                datetime(2020, 1, 1, 1, 0)
-                            ).tz_localize(None),
-                        },
-                        Colname.sum_quantity: Decimal(-12.567),
-                        Colname.qualities: [QuantityQuality.ESTIMATED.value],
-                    }
-                )
-                .to_frame()
-                .T,
-                pd.Series(
-                    {
-                        Colname.grid_area: str(2),
-                        Colname.to_grid_area: None,
-                        Colname.from_grid_area: None,
-                        Colname.balance_responsible_id: "balance_responsible_id",
-                        Colname.energy_supplier_id: "energy_supplier_id",
-                        Colname.time_window: {
-                            Colname.start: pd.to_datetime(
-                                datetime(2020, 1, 1, 1, 0)
-                            ).tz_localize(None),
-                            Colname.end: pd.to_datetime(
-                                datetime(2020, 1, 1, 1, 0)
-                            ).tz_localize(None),
-                        },
-                        Colname.sum_quantity: Decimal(34.32),
-                        Colname.qualities: [QuantityQuality.ESTIMATED.value],
-                    }
-                )
-                .to_frame()
-                .T,
-                pd.Series(
-                    {
-                        Colname.grid_area: str(3),
-                        Colname.to_grid_area: None,
-                        Colname.from_grid_area: None,
-                        Colname.balance_responsible_id: "balance_responsible_id",
-                        Colname.energy_supplier_id: "energy_supplier_id",
-                        Colname.time_window: {
-                            Colname.start: pd.to_datetime(
-                                datetime(2020, 1, 1, 1, 0)
-                            ).tz_localize(None),
-                            Colname.end: pd.to_datetime(
-                                datetime(2020, 1, 1, 1, 0)
-                            ).tz_localize(None),
-                        },
-                        Colname.sum_quantity: Decimal(0.0),
-                        Colname.qualities: [QuantityQuality.ESTIMATED.value],
-                    }
-                )
-                .to_frame()
-                .T,
-            ],
-            ignore_index=True,
-        )
-
-        df = spark.createDataFrame(pandas_df, schema=energy_results_schema)
-        return EnergyResults(df)
-
-    return factory
-
-
-def call_calculate_negative_grid_loss(
-    agg_result_factory: Callable[[], EnergyResults]
-) -> EnergyResults:
-    spark = SparkSession.builder.getOrCreate()
-    df = agg_result_factory()
-    grid_loss_responsible_row = grid_loss_responsible_factories.create_row(
-        metering_point_type=MeteringPointType.PRODUCTION,
-    )
+    responsible_rows = [
+        grid_loss_responsible_factories.create_row(
+            grid_area="001",
+            metering_point_id="a",
+            metering_point_type=MeteringPointType.PRODUCTION,
+        ),
+        grid_loss_responsible_factories.create_row(
+            grid_area="002",
+            metering_point_id="b",
+            metering_point_type=MeteringPointType.PRODUCTION,
+        ),
+        grid_loss_responsible_factories.create_row(
+            grid_area="003",
+            metering_point_id="c",
+            metering_point_type=MeteringPointType.PRODUCTION,
+        ),
+    ]
     grid_loss_responsible = grid_loss_responsible_factories.create(
-        spark, [grid_loss_responsible_row]
+        spark, responsible_rows
     )
-    return calculate_negative_grid_loss(df, grid_loss_responsible)
+
+    return calculate_negative_grid_loss(grid_loss, grid_loss_responsible)
 
 
-def test_negative_grid_loss_has_no_values_below_zero(
-    agg_result_factory: Callable[[], EnergyResults]
-) -> None:
-    result = call_calculate_negative_grid_loss(agg_result_factory)
+class TestWhenValidInput:
+    def test__has_no_values_below_zero(
+        self,
+        actual_negative_grid_loss: EnergyResults,
+    ) -> None:
+        assert (
+            actual_negative_grid_loss.df.where(col(Colname.quantity) < 0).count() == 0
+        )
 
-    assert result.df.where(col(Colname.sum_quantity) < 0).count() == 0
+    def test___changes_negative_value_to_positive(
+        self,
+        actual_negative_grid_loss: EnergyResults,
+    ) -> None:
+        assert actual_negative_grid_loss.df.collect()[0][Colname.quantity] == Decimal(
+            "12.56700"
+        )
 
+    def test__changes_positive_value_to_zero(
+        self,
+        actual_negative_grid_loss: EnergyResults,
+    ) -> None:
+        assert actual_negative_grid_loss.df.collect()[1][Colname.quantity] == Decimal(
+            "0.00000"
+        )
 
-def test_negative_grid_loss_change_negative_value_to_positive(
-    agg_result_factory: Callable[[], EnergyResults]
-) -> None:
-    result = call_calculate_negative_grid_loss(agg_result_factory)
+    def test__values_that_are_zero_stay_zero(
+        self,
+        actual_negative_grid_loss: EnergyResults,
+    ) -> None:
+        assert actual_negative_grid_loss.df.collect()[2][Colname.quantity] == Decimal(
+            "0.00000"
+        )
 
-    assert result.df.collect()[0][Colname.sum_quantity] == Decimal("12.56700")
+    def test__has_expected_values(
+        self,
+        actual_negative_grid_loss: EnergyResults,
+    ) -> None:
+        actual_row = actual_negative_grid_loss.df.collect()[0]
 
+        expected = {
+            Colname.grid_area: "001",
+            Colname.to_grid_area: None,
+            Colname.from_grid_area: None,
+            Colname.balance_responsible_id: None,
+            Colname.energy_supplier_id: grid_loss_responsible_factories.DEFAULT_ENERGY_SUPPLIER_ID,
+            Colname.observation_time: grid_loss_responsible_factories.DEFAULT_FROM_DATE.replace(
+                tzinfo=None
+            ),
+            Colname.quantity: Decimal("12.567000"),
+            Colname.qualities: [QuantityQuality.CALCULATED.value],
+            Colname.metering_point_id: "a",
+        }
+        expected_row = Row(**expected)
 
-def test_negative_grid_loss_change_positive_value_to_zero(
-    agg_result_factory: Callable[[], EnergyResults]
-) -> None:
-    result = call_calculate_negative_grid_loss(agg_result_factory)
-
-    assert result.df.collect()[1][Colname.sum_quantity] == Decimal("0.00000")
-
-
-def test_negative_grid_loss_values_that_are_zero_stay_zero(
-    agg_result_factory: Callable[[], EnergyResults]
-) -> None:
-    result = call_calculate_negative_grid_loss(agg_result_factory)
-
-    assert result.df.collect()[2][Colname.sum_quantity] == Decimal("0.00000")
+        assert actual_row == expected_row

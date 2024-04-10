@@ -17,25 +17,31 @@ import pyspark.sql.functions as f
 from pyspark.sql.types import DecimalType, StringType, ArrayType
 
 import package.calculation.energy.aggregators.transformations as t
-from package.calculation.preparation.charge_link_metering_point_periods import (
+from package.calculation.preparation.data_structures.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
 )
-from package.calculation.preparation.charge_master_data import (
+from package.calculation.preparation.data_structures.charge_master_data import (
     ChargeMasterData,
 )
-from package.calculation.preparation.charge_prices import ChargePrices
+from package.calculation.preparation.data_structures.charge_prices import ChargePrices
+from package.calculation.preparation.data_structures.prepared_tariffs import (
+    PreparedTariffs,
+)
+from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
+    PreparedMeteringPointTimeSeries,
+)
 from package.codelists import ChargeType, ChargeResolution
 from package.constants import Colname
 
 
-def get_tariff_charges(
-    metering_point_time_series: DataFrame,
+def get_prepared_tariffs(
+    metering_point_time_series: PreparedMeteringPointTimeSeries,
     charge_master_data: ChargeMasterData,
     charge_prices: ChargePrices,
     charge_link_metering_points: ChargeLinkMeteringPointPeriods,
     resolution: ChargeResolution,
     time_zone: str,
-) -> DataFrame:
+) -> PreparedTariffs:
     """
     metering_point_time_series always hava a row for each resolution time in the given period.
     """
@@ -52,7 +58,7 @@ def get_tariff_charges(
     # group by time series on metering point id and resolution and sum quantity
     grouped_time_series = (
         _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
-            metering_point_time_series, resolution
+            metering_point_time_series, resolution, time_zone
         )
     )
 
@@ -63,7 +69,7 @@ def get_tariff_charges(
     # TODO JVM - find a solution to this
     tariffs.schema[Colname.energy_supplier_id].nullable = False
 
-    return tariffs
+    return PreparedTariffs(tariffs)
 
 
 def _join_master_data_and_prices_add_missing_prices(
@@ -145,13 +151,13 @@ def _join_with_charge_link_metering_points(
 
 
 def _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
-    metering_point_time_series: DataFrame,
+    metering_point_time_series: PreparedMeteringPointTimeSeries,
     charge_resolution: ChargeResolution,
+    time_zone: str,
 ) -> DataFrame:
-    time_zone = "Europe/Copenhagen"
     grouped_time_series = (
         t.aggregate_quantity_and_quality(
-            metering_point_time_series.withColumn(
+            metering_point_time_series.df.withColumn(
                 Colname.observation_time,
                 f.from_utc_timestamp(Colname.observation_time, time_zone),
             ),
@@ -160,14 +166,14 @@ def _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
                 f.window(
                     Colname.observation_time,
                     _get_window_duration_string_based_on_resolution(charge_resolution),
-                ).alias(Colname.time_window),
+                ).alias("time_window"),
             ],
         )
         .select(
-            Colname.sum_quantity,
+            Colname.quantity,
             Colname.qualities,
             Colname.metering_point_id,
-            f.col(Colname.time_window_start).alias(Colname.observation_time),
+            f.col("time_window.start").alias(Colname.observation_time),
         )
         .withColumn(
             Colname.observation_time,
@@ -177,8 +183,9 @@ def _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
 
     # The sum operator creates by default a column as a double type (28,6).
     # It must be cast to a decimal type (18,3) to conform to the tariff schema.
+    # The column is renamed to quantity to match the column name from subscriptions and fees.
     grouped_time_series = grouped_time_series.withColumn(
-        Colname.sum_quantity, f.col(Colname.sum_quantity).cast(DecimalType(18, 3))
+        Colname.quantity, f.col(Colname.quantity).cast(DecimalType(18, 3))
     )
 
     grouped_time_series = grouped_time_series.withColumn(
@@ -224,7 +231,7 @@ def _join_with_grouped_time_series(
         df[Colname.metering_point_type],
         df[Colname.settlement_method],
         df[Colname.grid_area],
-        grouped_time_series[Colname.sum_quantity],
+        grouped_time_series[Colname.quantity],
         grouped_time_series[Colname.qualities],
     )
     return df

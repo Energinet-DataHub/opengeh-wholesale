@@ -17,20 +17,20 @@ import pytest
 from pyspark.sql import SparkSession
 from unittest.mock import patch
 
-from package import calculation_input
+from package.calculation import input
 from package.calculation.preparation.transformations.grid_loss_responsible import (
     get_grid_loss_responsible,
 )
 import metering_point_periods_factory as factory
-from package.calculation_input import TableReader
-from package.calculation_input.schemas import (
+from package.calculation.input import TableReader
+from package.calculation.input.schemas import (
     grid_loss_metering_points_schema,
 )
 from package.codelists import MeteringPointType
 from package.constants import Colname
 
 
-@patch.object(calculation_input, TableReader.__name__)
+@patch.object(input, TableReader.__name__)
 def test__get_grid_loss_responsible__given_three_metering_point_period_dataframes_on_the_same_grid_area__then_only_return_the_once_in_the_grid_area_metering_points(
     table_reader_mock: TableReader, spark: SparkSession
 ) -> None:
@@ -86,8 +86,8 @@ def test__get_grid_loss_responsible__given_three_metering_point_period_dataframe
     )
 
 
-@patch.object(calculation_input, TableReader.__name__)
-def test__get_grid_loss_responsible__given_metering_point_period_with_same_id_int_different_time_window__then_return_expected_amount(
+@patch.object(input, TableReader.__name__)
+def test__get_grid_loss_responsible__given_metering_point_period_with_same_id_int_different_observation_time__then_return_expected_amount(
     table_reader_mock: TableReader,
     spark: SparkSession,
 ) -> None:

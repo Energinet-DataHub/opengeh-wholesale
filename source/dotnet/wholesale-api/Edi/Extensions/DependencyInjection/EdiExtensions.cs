@@ -13,12 +13,18 @@
 // limitations under the License.
 
 using Energinet.DataHub.Edi.Requests;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks.ServiceBus;
 using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.Edi.Client;
+using Energinet.DataHub.Wholesale.Edi.Factories;
 using Energinet.DataHub.Wholesale.Edi.Validation;
-using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeries;
-using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeries.Rules;
+using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest;
+using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
+using Energinet.DataHub.Wholesale.Edi.Validation.Helpers;
+using Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
 
@@ -29,12 +35,32 @@ public static class EdiExtensions
 {
     public static void AddEdiModule(this IServiceCollection services)
     {
-        services.AddScoped<IAggregatedTimeSeriesRequestHandler, AggregatedTimeSeriesRequestHandler>();
+        services.AddScoped<IWholesaleInboxRequestHandler, AggregatedTimeSeriesRequestHandler>();
+        services.AddScoped<IWholesaleInboxRequestHandler, WholesaleServicesRequestHandler>();
         services.AddScoped<LatestCalculationsForPeriod>();
         services.AddScoped<CompletedCalculationRetriever>();
+        services.AddTransient<WholesaleServicesRequestMapper>();
+
         services.AddSingleton<IEdiClient, EdiClient>();
 
+        services
+            .AddOptions<EdiInboxQueueOptions>()
+            .BindConfiguration(EdiInboxQueueOptions.SectionName)
+            .ValidateDataAnnotations();
+
+        // Health checks
+        services.AddHealthChecks()
+            // Must use a listener connection string
+            .AddAzureServiceBusQueueUsingWebSockets(
+                sp => sp.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>().Value.ConnectionString,
+                sp => sp.GetRequiredService<IOptions<EdiInboxQueueOptions>>().Value.QueueName,
+                name: "EdiInboxQueue");
+
+        // Validation helpers
+        services.AddTransient<PeriodValidationHelper>();
+        // Validation
         services.AddAggregatedTimeSeriesRequestValidation();
+        services.AddWholesaleServicesRequestValidation();
     }
 
     public static IServiceCollection AddAggregatedTimeSeriesRequestValidation(this IServiceCollection services)
@@ -46,8 +72,20 @@ public static class EdiExtensions
         services.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, SettlementMethodValidationRule>();
         services.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, TimeSeriesTypeValidationRule>();
         services.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, BalanceResponsibleValidationRule>();
-        services.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, SettlementSeriesVersionValidationRule>();
+        services.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, SettlementVersionValidationRule>();
         services.AddScoped<IValidationRule<AggregatedTimeSeriesRequest>, GridAreaValidationRule>();
+        services.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, RequestedByActorRoleValidationRule>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddWholesaleServicesRequestValidation(this IServiceCollection services)
+    {
+        services.AddScoped<IValidator<WholesaleServicesRequest>, WholesaleServicesRequestValidator>();
+        services
+            .AddScoped<
+                IValidationRule<WholesaleServicesRequest>,
+                Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules.PeriodValidationRule>();
 
         return services;
     }

@@ -14,11 +14,11 @@
 
 import pyspark.sql.functions as f
 
-from package.calculation.energy.energy_results import EnergyResults
+from package.calculation.energy.data_structures.energy_results import EnergyResults
 from package.calculation.energy.aggregators.transformations.aggregate_sum_and_quality import (
     aggregate_quantity_and_quality,
 )
-from package.calculation.preparation.quarterly_metering_point_time_series import (
+from package.calculation.preparation.data_structures.quarterly_metering_point_time_series import (
     QuarterlyMeteringPointTimeSeries,
 )
 from package.codelists import (
@@ -59,7 +59,7 @@ def aggregate_per_ga_and_brp_and_es(
         Colname.grid_area,
         Colname.balance_responsible_id,
         Colname.energy_supplier_id,
-        Colname.time_window,
+        Colname.observation_time,
     ]
     result = aggregate_quantity_and_quality(result, sum_group_by)
 

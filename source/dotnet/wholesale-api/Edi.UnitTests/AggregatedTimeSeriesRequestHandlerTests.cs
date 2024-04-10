@@ -21,6 +21,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Edi.Calculations;
 using Energinet.DataHub.Wholesale.Edi.Client;
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Extensions;
@@ -28,6 +29,7 @@ using Energinet.DataHub.Wholesale.Edi.Validation;
 using Google.Protobuf;
 using Microsoft.Extensions.Logging;
 using Moq;
+using NodaTime;
 using NodaTime.Extensions;
 using Xunit;
 using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
@@ -62,14 +64,26 @@ public class AggregatedTimeSeriesRequestHandlerTests
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(request.ToByteArray()));
 
-        var aggregatedTimeSeries = CreateAggregatedTimeSeries();
+        var start = DateTimeOffset.Parse("2022-01-01T00:00Z").ToInstant();
+        var end = DateTimeOffset.Parse("2022-01-01T00:15Z").ToInstant();
+        var aggregatedTimeSeries = CreateAggregatedTimeSeries(start, end);
         aggregatedTimeSeriesQueries
             .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
             .Returns(() => aggregatedTimeSeries.ToAsyncEnumerable());
 
-        validator.Setup(vali => vali.ValidateAsync(
-                It.IsAny<AggregatedTimeSeriesRequest>()))
-            .ReturnsAsync(() => new List<ValidationError>());
+        completedCalculationRetriever.Setup(c => c.GetLatestCompletedCalculationsForPeriodAsync(
+                It.IsAny<string>(),
+                It.IsAny<Energinet.DataHub.Wholesale.Edi.Models.Period>(),
+                It.IsAny<RequestedCalculationType>()))
+            .ReturnsAsync(new List<CalculationForPeriod>
+            {
+                new(
+                    new Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.Period(
+                        start,
+                        end),
+                    Guid.NewGuid(),
+                    1),
+            }.AsReadOnly());
 
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
@@ -109,21 +123,33 @@ public class AggregatedTimeSeriesRequestHandlerTests
         var expectedReferenceId = Guid.NewGuid().ToString();
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithBusinessReason("D32")
+            .WithBusinessReason("Correction")
             .Build();
 
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(request.ToByteArray()));
 
-        var aggregatedTimeSeries = CreateAggregatedTimeSeries();
+        var start = DateTimeOffset.Parse("2022-01-01T00:00Z").ToInstant();
+        var end = DateTimeOffset.Parse("2022-01-01T00:15Z").ToInstant();
+        var aggregatedTimeSeries = CreateAggregatedTimeSeries(start, end);
         aggregatedTimeSeriesQueries
             .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
             .Returns(() => aggregatedTimeSeries.ToAsyncEnumerable());
 
-        validator.Setup(vali => vali.ValidateAsync(
-                It.IsAny<AggregatedTimeSeriesRequest>()))
-            .ReturnsAsync(() => new List<ValidationError>());
+        completedCalculationRetriever.Setup(c => c.GetLatestCompletedCalculationsForPeriodAsync(
+                It.IsAny<string>(),
+                It.IsAny<Energinet.DataHub.Wholesale.Edi.Models.Period>(),
+                It.IsAny<RequestedCalculationType>()))
+            .ReturnsAsync(new List<CalculationForPeriod>
+            {
+                new(
+                    new Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.Period(
+                        start,
+                        end),
+                    Guid.NewGuid(),
+                    1),
+            }.AsReadOnly());
 
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
@@ -163,19 +189,11 @@ public class AggregatedTimeSeriesRequestHandlerTests
         var expectedReferenceId = Guid.NewGuid().ToString();
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.EnergySupplier)
             .Build();
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(request.ToByteArray()));
-
-        validator.Setup(vali => vali.ValidateAsync(
-                It.IsAny<AggregatedTimeSeriesRequest>()))
-            .ReturnsAsync(() => new List<ValidationError>());
-
-        aggregatedTimeSeriesQueries
-            .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
-            .Returns(() => new List<AggregatedTimeSeries>().ToAsyncEnumerable());
 
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
@@ -216,24 +234,16 @@ public class AggregatedTimeSeriesRequestHandlerTests
         var expectedReferenceId = Guid.NewGuid().ToString();
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.EnergySupplier)
             .WithGridArea("303")
             .Build();
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(request.ToByteArray()));
 
-        validator.Setup(vali => vali.ValidateAsync(
-                It.IsAny<AggregatedTimeSeriesRequest>()))
-            .ReturnsAsync(() => new List<ValidationError>());
-
-        aggregatedTimeSeriesQueries
-            .Setup(parameters =>
-                parameters.GetAsync(
-                    It.IsAny<AggregatedTimeSeriesQueryParameters>()))
-            .Returns(() => new List<AggregatedTimeSeries>().ToAsyncEnumerable());
-
-        var aggregatedTimeSeries = CreateAggregatedTimeSeries();
+        var start = DateTimeOffset.Parse("2022-01-01T00:00Z").ToInstant();
+        var end = DateTimeOffset.Parse("2022-01-01T00:15Z").ToInstant();
+        var aggregatedTimeSeries = CreateAggregatedTimeSeries(start, end);
         aggregatedTimeSeriesQueries
             .Setup(parameters =>
                 parameters.GetAsync(
@@ -279,28 +289,12 @@ public class AggregatedTimeSeriesRequestHandlerTests
         var expectedReferenceId = Guid.NewGuid().ToString();
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.EnergySupplier)
             .WithGridArea("303")
             .Build();
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(request.ToByteArray()));
-
-        validator.Setup(vali => vali.ValidateAsync(
-                It.IsAny<AggregatedTimeSeriesRequest>()))
-            .ReturnsAsync(() => new List<ValidationError>());
-
-        aggregatedTimeSeriesQueries
-            .Setup(parameters =>
-                parameters.GetAsync(
-                    It.IsAny<AggregatedTimeSeriesQueryParameters>()))
-            .Returns(() => new List<AggregatedTimeSeries>().ToAsyncEnumerable());
-
-        aggregatedTimeSeriesQueries
-            .Setup(parameters =>
-                parameters.GetAsync(
-                    It.Is<AggregatedTimeSeriesQueryParameters>(x => x.GridArea == null)))
-            .Returns(() => new List<AggregatedTimeSeries>().ToAsyncEnumerable());
 
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
@@ -341,7 +335,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         var expectedReferenceId = Guid.NewGuid().ToString();
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.EnergySupplier)
             .WithGridArea("303")
             .Build();
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
@@ -377,16 +371,20 @@ public class AggregatedTimeSeriesRequestHandlerTests
             Times.Once);
     }
 
-    private IReadOnlyCollection<AggregatedTimeSeries> CreateAggregatedTimeSeries()
+    private IReadOnlyCollection<AggregatedTimeSeries> CreateAggregatedTimeSeries(Instant start, Instant end)
     {
+        var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
+
+        for (var i = start; i < end; i += Duration.FromMinutes(15))
+        {
+            timeSeriesPoints.Add(new EnergyTimeSeriesPoint(i.ToDateTimeOffset(), 0, new List<QuantityQuality> { QuantityQuality.Measured }));
+        }
+
         return new List<AggregatedTimeSeries>
         {
             new(
                 gridArea: "543",
-                timeSeriesPoints: new EnergyTimeSeriesPoint[]
-                {
-                    new(DateTimeOffset.Parse("2022-01-01T00:00Z"), 0, new List<QuantityQuality> { QuantityQuality.Measured }),
-                },
+                timeSeriesPoints: timeSeriesPoints.ToArray(),
                 timeSeriesType: TimeSeriesType.Production,
                 calculationType: CalculationType.Aggregation,
                 DateTimeOffset.Parse("2022-01-01T00:00Z").ToInstant(),

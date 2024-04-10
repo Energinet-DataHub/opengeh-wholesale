@@ -16,7 +16,7 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Microsoft.Extensions.Options;
 using Xunit;
 
@@ -24,39 +24,32 @@ namespace Energinet.DataHub.Wholesale.Events.IntegrationTests.Fixture;
 
 public class ServiceBusSenderFixture : IAsyncLifetime, IAsyncDisposable
 {
-    public IOptions<ServiceBusOptions> ServiceBusOptions { get; }
-
-    public ServiceBusClient ServiceBusClient { get; }
-
     private readonly ServiceBusResourceProvider _serviceBusResourceProvider;
-    private readonly string _queueName = "sbq-wholesale-inbox";
     private ServiceBusSender? _sender;
 
     public ServiceBusSenderFixture()
     {
         var integrationTestConfiguration = new IntegrationTestConfiguration();
-        ServiceBusOptions = Options.Create(
-            new ServiceBusOptions
-            {
-                SERVICE_BUS_TRANCEIVER_CONNECTION_STRING = integrationTestConfiguration.ServiceBusConnectionString,
-            });
-
         _serviceBusResourceProvider = new ServiceBusResourceProvider(
-            ServiceBusOptions.Value.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING,
+            integrationTestConfiguration.ServiceBusConnectionString,
             new TestDiagnosticsLogger());
 
-        ServiceBusClient = new ServiceBusClient(ServiceBusOptions.Value.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING);
+        ServiceBusClient = new ServiceBusClient(integrationTestConfiguration.ServiceBusConnectionString);
+        WholesaleInboxQueueOptions = Options.Create(new WholesaleInboxQueueOptions());
     }
+
+    public ServiceBusClient ServiceBusClient { get; }
+
+    public IOptions<WholesaleInboxQueueOptions> WholesaleInboxQueueOptions { get; }
 
     public async Task InitializeAsync()
     {
-        var builder = _serviceBusResourceProvider
-            .BuildQueue(_queueName);
-        builder
-            .Do(queueProperties => ServiceBusOptions.Value.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME = queueProperties.Name);
-        await builder
+        await _serviceBusResourceProvider
+            .BuildQueue("sbq-wholesale-inbox")
+                .Do(queueProperties => WholesaleInboxQueueOptions.Value.QueueName = queueProperties.Name)
             .CreateAsync();
-        _sender = ServiceBusClient.CreateSender(ServiceBusOptions.Value.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME);
+
+        _sender = ServiceBusClient.CreateSender(WholesaleInboxQueueOptions.Value.QueueName);
     }
 
     public async ValueTask DisposeAsync()
@@ -79,19 +72,12 @@ public class ServiceBusSenderFixture : IAsyncLifetime, IAsyncDisposable
         if (_sender == null)
             return;
 
+        var serviceBusMessage = new ServiceBusMessage(message);
         if (referenceId != null)
         {
-            await _sender.SendMessageAsync(CreateAggregatedTimeSeriesRequestMessage(message, referenceId));
-            return;
+            serviceBusMessage.ApplicationProperties.Add("ReferenceId", referenceId);
         }
 
-        await _sender.SendMessageAsync(new ServiceBusMessage(message));
-    }
-
-    private ServiceBusMessage CreateAggregatedTimeSeriesRequestMessage(string body, string referenceId)
-    {
-        var message = new ServiceBusMessage(body);
-        message.ApplicationProperties.Add("ReferenceId", referenceId);
-        return message;
+        await _sender.SendMessageAsync(serviceBusMessage);
     }
 }

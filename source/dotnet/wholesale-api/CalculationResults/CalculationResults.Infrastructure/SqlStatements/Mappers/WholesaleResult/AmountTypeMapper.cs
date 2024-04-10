@@ -18,15 +18,31 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlState
 
 public static class AmountTypeMapper
 {
+    private const string AmountPerCharge = "amount_per_charge";
+    private const string MonthlyAmountPerCharge = "monthly_amount_per_charge";
+    private const string TotalMonthlyAmount = "total_monthly_amount";
+
     public static AmountType FromDeltaTableValue(string amountType) =>
         amountType switch
         {
-            "amount_per_charge" => AmountType.AmountPerCharge,
-            "monthly_amount_per_charge" => AmountType.MonthlyAmountPerCharge,
-            "total_monthly_amount" => AmountType.TotalMonthlyAmount,
+            AmountPerCharge => AmountType.AmountPerCharge,
+            MonthlyAmountPerCharge => AmountType.MonthlyAmountPerCharge,
+            TotalMonthlyAmount => AmountType.TotalMonthlyAmount,
             _ => throw new ArgumentOutOfRangeException(
                 nameof(amountType),
                 actualValue: amountType,
                 "Value does not contain a valid string representation of a amount type."),
+        };
+
+    public static string ToDeltaTableValue(AmountType amountType) =>
+        amountType switch
+        {
+            AmountType.AmountPerCharge => AmountPerCharge,
+            AmountType.MonthlyAmountPerCharge => MonthlyAmountPerCharge,
+            AmountType.TotalMonthlyAmount => TotalMonthlyAmount,
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(amountType),
+                actualValue: amountType,
+                $"Cannot map ${nameof(AmountType)} to delta table value"),
         };
 }

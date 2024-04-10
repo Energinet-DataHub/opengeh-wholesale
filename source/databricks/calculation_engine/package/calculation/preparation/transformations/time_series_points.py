@@ -17,10 +17,8 @@ from datetime import datetime
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
 
-from package.calculation_input import TableReader
+from package.calculation.input import TableReader
 from package.constants import Colname
-from package.common import assert_schema
-from package.calculation_input.schemas import time_series_point_schema
 
 
 def get_time_series_points(
@@ -33,17 +31,6 @@ def get_time_series_points(
         .where(col(Colname.observation_time) >= period_start_datetime)
         .where(col(Colname.observation_time) < period_end_datetime)
     )
-
-    # Remove time series of grid loss metering points
-    grid_loss_metering_points = (
-        calculation_input_reader.read_grid_loss_metering_points()
-    )
-    time_series_points_df = time_series_points_df.join(
-        grid_loss_metering_points,
-        Colname.metering_point_id,
-        "left_anti",
-    )
-
     if "observation_year" in time_series_points_df.columns:
         time_series_points_df = time_series_points_df.drop(
             "observation_year"

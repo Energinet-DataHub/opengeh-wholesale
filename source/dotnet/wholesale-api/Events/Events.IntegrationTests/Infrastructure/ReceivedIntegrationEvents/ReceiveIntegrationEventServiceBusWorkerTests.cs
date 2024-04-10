@@ -51,7 +51,7 @@ public class ReceiveIntegrationEventServiceBusWorkerTests : IClassFixture<Servic
 
         var sut = new ReceiveIntegrationEventServiceBusWorker(
             loggerMock.Object,
-            _fixture.ServiceBusOptions,
+            _fixture.IntegrationEventsOptions,
             _fixture.ServiceBusClient,
             services.BuildServiceProvider());
 

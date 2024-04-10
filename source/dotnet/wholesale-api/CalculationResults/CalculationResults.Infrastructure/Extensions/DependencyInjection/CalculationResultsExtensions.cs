@@ -33,20 +33,22 @@ public static class CalculationResultsExtensions
 {
     public static IServiceCollection AddCalculationResultsModule(this IServiceCollection services, IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
         services.AddDatabricksSqlStatementForApplication(configuration);
-        services.AddDataLakeClientForApplication(configuration);
+        services.AddDataLakeClientForApplication();
 
         services.AddScoped<ISettlementReportClient, SettlementReportClient>();
         services.AddScoped<ISettlementReportResultsCsvWriter, SettlementReportResultsCsvWriter>();
         services.AddScoped<IDataLakeClient, DataLakeClient>();
         services.AddScoped<IStreamZipper, StreamZipper>();
         services.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
-        services.AddScoped<ISettlementReportRepository, SettlementReportRepository>();
 
         // Used by sql statements (queries)
         services.AddOptions<DeltaTableOptions>().Bind(configuration);
         services.AddScoped<IEnergyResultQueries, EnergyResultQueries>();
         services.AddScoped<IWholesaleResultQueries, WholesaleResultQueries>();
+        services.AddScoped<IWholesaleServicesQueries, WholesaleServicesQueries>();
         services.AddScoped<IAggregatedTimeSeriesQueries, AggregatedTimeSeriesQueries>();
         services.AddScoped<ISettlementReportResultQueries, SettlementReportResultQueries>();
 

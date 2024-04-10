@@ -14,14 +14,15 @@
 
 using Azure.Identity;
 using Azure.Storage.Files.DataLake;
+using Energinet.DataHub.Core.App.WebApp.Extensions.Options;
 using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
-using Energinet.DataHub.Wholesale.WebApi.Extensions.Options;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.Components;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 using Microsoft.Extensions.Configuration;
@@ -73,9 +74,18 @@ public class WholesaleWebApiFixture : WebApiFixture
             $"{nameof(ConnectionStringsOptions.ConnectionStrings)}__{nameof(ConnectionStringsOptions.DB_CONNECTION_STRING)}",
             DatabaseManager.ConnectionString);
 
-        Environment.SetEnvironmentVariable(nameof(JwtOptions.EXTERNAL_OPEN_ID_URL), "disabled");
-        Environment.SetEnvironmentVariable(nameof(JwtOptions.INTERNAL_OPEN_ID_URL), "disabled");
-        Environment.SetEnvironmentVariable(nameof(JwtOptions.BACKEND_BFF_APP_ID), "disabled");
+        Environment.SetEnvironmentVariable(
+            $"{UserAuthenticationOptions.SectionName}__{nameof(UserAuthenticationOptions.MitIdExternalMetadataAddress)}",
+            "NotEmpty");
+        Environment.SetEnvironmentVariable(
+            $"{UserAuthenticationOptions.SectionName}__{nameof(UserAuthenticationOptions.ExternalMetadataAddress)}",
+            "NotEmpty");
+        Environment.SetEnvironmentVariable(
+            $"{UserAuthenticationOptions.SectionName}__{nameof(UserAuthenticationOptions.BackendBffAppId)}",
+            "NotEmpty");
+        Environment.SetEnvironmentVariable(
+            $"{UserAuthenticationOptions.SectionName}__{nameof(UserAuthenticationOptions.InternalMetadataAddress)}",
+            "NotEmpty");
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
 
         // New options property names
@@ -86,28 +96,27 @@ public class WholesaleWebApiFixture : WebApiFixture
         Environment.SetEnvironmentVariable(nameof(DataLakeOptions.STORAGE_ACCOUNT_URI), AzuriteManager.BlobStorageServiceUri.ToString());
         Environment.SetEnvironmentVariable(nameof(DataLakeOptions.STORAGE_CONTAINER_NAME), "wholesale");
 
-        Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING), ServiceBusResourceProvider.ConnectionString);
-        Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING), ServiceBusResourceProvider.ConnectionString);
+        Environment.SetEnvironmentVariable(
+            $"{ServiceBusNamespaceOptions.SectionName}__{nameof(ServiceBusNamespaceOptions.ConnectionString)}",
+            ServiceBusResourceProvider.ConnectionString);
 
         await ServiceBusResourceProvider
             .BuildTopic("integration-events")
-            .SetEnvironmentVariableToTopicName(nameof(ServiceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME))
+            .SetEnvironmentVariableToTopicName($"{IntegrationEventsOptions.SectionName}__{nameof(IntegrationEventsOptions.TopicName)}")
             .AddSubscription("subscription")
-            .SetEnvironmentVariableToSubscriptionName(nameof(ServiceBusOptions.INTEGRATIONEVENTS_SUBSCRIPTION_NAME))
+            .SetEnvironmentVariableToSubscriptionName($"{IntegrationEventsOptions.SectionName}__{nameof(IntegrationEventsOptions.SubscriptionName)}")
             .CreateAsync();
 
         // Add events configuration variables
         await ServiceBusResourceProvider
             .BuildQueue("sbq-wholesale-inbox")
-            .SetEnvironmentVariableToQueueName(nameof(ServiceBusOptions.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME))
+            .SetEnvironmentVariableToQueueName($"{WholesaleInboxQueueOptions.SectionName}__{nameof(WholesaleInboxQueueOptions.QueueName)}")
             .CreateAsync();
 
         await ServiceBusResourceProvider
             .BuildQueue("sbq-edi-inbox")
-            .SetEnvironmentVariableToQueueName(nameof(ServiceBusOptions.EDI_INBOX_MESSAGE_QUEUE_NAME))
+            .SetEnvironmentVariableToQueueName($"{EdiInboxQueueOptions.SectionName}__{nameof(EdiInboxQueueOptions.QueueName)}")
             .CreateAsync();
-
-        Environment.SetEnvironmentVariable(nameof(DateTimeOptions.TIME_ZONE), "Europe/Copenhagen");
 
         await EnsureCalculationStorageContainerExistsAsync();
     }

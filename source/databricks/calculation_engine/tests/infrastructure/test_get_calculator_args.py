@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import datetime
+from datetime import datetime
 import re
 
 import pytest
@@ -37,6 +37,32 @@ def _get_contract_parameters(filename: str) -> list[str]:
         )
 
 
+def _substitute_period(
+    sys_argv: list[str], period_start_datetime: datetime, period_end_datetime: datetime
+) -> list[str]:
+    for i, item in enumerate(sys_argv):
+        if item.startswith("--period-start-datetime"):
+            sys_argv[i] = (
+                f"--period-start-datetime={period_start_datetime.strftime('%Y-%m-%dT%H:%M:%SZ')}"
+            )
+        elif item.startswith("--period-end-datetime"):
+            sys_argv[i] = (
+                f"--period-end-datetime={period_end_datetime.strftime('%Y-%m-%dT%H:%M:%SZ')}"
+            )
+
+    return sys_argv
+
+
+def _substitute_calculation_type(
+    sys_argv: list[str], calculation_type: CalculationType
+) -> list[str]:
+    for i, item in enumerate(sys_argv):
+        if item.startswith("--calculation-type="):
+            sys_argv[i] = f"--calculation-type={calculation_type.value}"
+            break
+    return sys_argv
+
+
 @pytest.fixture(scope="session")
 def contract_parameters(contracts_path: str) -> list[str]:
     job_parameters = _get_contract_parameters(
@@ -56,7 +82,7 @@ def job_environment_variables() -> dict:
     return {
         EnvironmentVariable.TIME_ZONE.name: "Europe/Copenhagen",
         EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME.name: "some_storage_account_name",
-        EnvironmentVariable.CALCULATION_INPUT_FOLDER_NAME.name: "calculation_input",
+        EnvironmentVariable.CALCULATION_INPUT_FOLDER_NAME.name: "input",
         EnvironmentVariable.TENANT_ID.name: "550e8400-e29b-41d4-a716-446655440000",
         EnvironmentVariable.SPN_APP_ID.name: "some_spn_app_id",
         EnvironmentVariable.SPN_APP_SECRET.name: "some_spn_app_secret",
@@ -101,22 +127,18 @@ class TestWhenInvokedWithValidParameters:
         # Assert - Calculation arguments
         assert actual_args.calculation_id == DEFAULT_CALCULATION_ID
         assert actual_args.calculation_grid_areas == ["805", "806", "033"]
-        assert actual_args.calculation_period_start_datetime == datetime.datetime(
+        assert actual_args.calculation_period_start_datetime == datetime(
             2022, 5, 31, 22
         )
-        assert actual_args.calculation_period_end_datetime == datetime.datetime(
-            2022, 6, 1, 22
-        )
+        assert actual_args.calculation_period_end_datetime == datetime(2022, 6, 1, 22)
         assert actual_args.calculation_type == CalculationType.BALANCE_FIXING
-        assert actual_args.calculation_execution_time_start == datetime.datetime(
-            2022, 6, 4, 22
-        )
+        assert actual_args.calculation_execution_time_start == datetime(2022, 6, 4, 22)
         assert actual_args.time_zone == "Europe/Copenhagen"
 
         # Assert - Infrastructure settings
         assert (
             actual_settings.calculation_input_path
-            == "abfss://wholesale@some_storage_account_name.dfs.core.windows.net/calculation_input/"
+            == "abfss://wholesale@some_storage_account_name.dfs.core.windows.net/input/"
         )
         assert (
             actual_settings.wholesale_container_path
@@ -124,7 +146,7 @@ class TestWhenInvokedWithValidParameters:
         )
         assert (
             actual_settings.calculation_input_path
-            == "abfss://wholesale@some_storage_account_name.dfs.core.windows.net/calculation_input/"
+            == "abfss://wholesale@some_storage_account_name.dfs.core.windows.net/input/"
         )
 
     def test_parses_optional_time_series_points_table_name(
@@ -188,6 +210,144 @@ class TestWhenUnknownCalculationType:
         assert error.value.code != 0
 
 
+class TestWhenCalculationPeriodIsNotOneCalendarMonth:
+    @pytest.mark.parametrize(
+        "period_start_datetime, period_end_datetime, calculation_type",
+        [
+            (start, end, calc_type)
+            for start, end in [
+                (  # Missing one day at the end
+                    datetime(2022, 5, 31, 22),
+                    datetime(2022, 6, 29, 22),
+                ),
+                (  # Missing one day in the beginning
+                    datetime(2022, 6, 1, 22),
+                    datetime(2022, 6, 30, 22),
+                ),
+                (datetime(2022, 5, 31, 22), datetime(2022, 7, 31, 22)),  # Two months
+                (  # Entering daylights saving time - not ending at midnight
+                    datetime(2020, 2, 29, 23, 0),
+                    datetime(2020, 3, 31, 23, 0),
+                ),
+                (  # Exiting daylights saving time - not ending at midnight
+                    datetime(2020, 9, 30, 22, 0),
+                    datetime(2020, 10, 31, 22, 0),
+                ),
+            ]
+            for calc_type in [
+                CalculationType.WHOLESALE_FIXING,
+                CalculationType.FIRST_CORRECTION_SETTLEMENT,
+                CalculationType.SECOND_CORRECTION_SETTLEMENT,
+                CalculationType.THIRD_CORRECTION_SETTLEMENT,
+            ]
+        ],
+    )
+    def test_raise_exception_for_wholesale_calculations(
+        self,
+        period_start_datetime: datetime,
+        period_end_datetime: datetime,
+        calculation_type: CalculationType,
+        job_environment_variables: dict,
+        sys_argv_from_contract: list[str],
+    ) -> None:
+        # Arrange
+        sys_argv = sys_argv_from_contract
+        sys_argv = _substitute_calculation_type(sys_argv, calculation_type)
+        sys_argv = _substitute_period(
+            sys_argv, period_start_datetime, period_end_datetime
+        )
+
+        with patch("sys.argv", sys_argv):
+            with patch.dict("os.environ", job_environment_variables):
+                with pytest.raises(Exception) as error:
+                    command_line_args = parse_command_line_arguments()
+                    # Act
+                    parse_job_arguments(command_line_args)
+
+        # Assert
+        actual_error_message = str(error.value)
+        assert (
+            "The calculation period for wholesale calculation types must be a full month"
+            in actual_error_message
+        )
+
+    @pytest.mark.parametrize(
+        "calculation_type",
+        [
+            CalculationType.AGGREGATION,
+            CalculationType.BALANCE_FIXING,
+        ],
+    )
+    def test_parse_arguments_without_exceptions_for_energy_calculations(
+        self,
+        calculation_type: CalculationType,
+        job_environment_variables: dict,
+        sys_argv_from_contract: list[str],
+    ) -> None:
+        # Arrange
+        period_start_datetime = datetime(2022, 5, 31, 22)
+        period_end_datetime = datetime(2022, 6, 30, 22)
+        sys_argv = sys_argv_from_contract
+        sys_argv = _substitute_calculation_type(sys_argv, calculation_type)
+        sys_argv = _substitute_period(
+            sys_argv, period_start_datetime, period_end_datetime
+        )
+
+        with patch("sys.argv", sys_argv):
+            with patch.dict("os.environ", job_environment_variables):
+                command_line_args = parse_command_line_arguments()
+                # Act & Assert
+                parse_job_arguments(command_line_args)
+
+
+class TestWhenCalculationPeriodIsOneCalendarMonth:
+    @pytest.mark.parametrize(
+        "period_start_datetime, period_end_datetime, calculation_type",
+        [
+            (start, end, calc_type)
+            for start, end in [
+                (
+                    datetime(2022, 5, 31, 22),
+                    datetime(2022, 6, 30, 22),
+                ),
+                (  # New year
+                    datetime(2021, 12, 31, 23),
+                    datetime(2022, 1, 31, 23),
+                ),
+                (  # Enter daylight saving time
+                    datetime(2022, 2, 28, 23),
+                    datetime(2022, 3, 31, 22),
+                ),
+                (  # Exit daylight saving time
+                    datetime(2022, 9, 30, 22),
+                    datetime(2022, 10, 31, 23),
+                ),
+            ]
+            for calc_type in CalculationType
+        ],
+    )
+    def test_parse_arguments_without_exceptions(
+        self,
+        period_start_datetime: datetime,
+        period_end_datetime: datetime,
+        calculation_type: CalculationType,
+        job_environment_variables: dict,
+        sys_argv_from_contract: list[str],
+    ) -> None:
+        # Arrange
+        sys_argv = sys_argv_from_contract
+        sys_argv = _substitute_calculation_type(sys_argv, calculation_type)
+        sys_argv = _substitute_period(
+            sys_argv, period_start_datetime, period_end_datetime
+        )
+
+        with patch("sys.argv", sys_argv):
+            with patch.dict("os.environ", job_environment_variables):
+                command_line_args = parse_command_line_arguments()
+                # Act & Assert
+                parse_job_arguments(command_line_args)
+
+
 class TestWhenMissingEnvVariables:
     def test_raise_system_exit_with_non_zero_code(
         self, job_environment_variables: dict, sys_argv_from_contract
@@ -202,10 +362,9 @@ class TestWhenMissingEnvVariables:
                 }
 
                 with patch.dict("os.environ", env_variables_with_one_missing):
-                    with pytest.raises(SystemExit) as error:
+                    with pytest.raises(ValueError) as error:
                         command_line_args = parse_command_line_arguments()
                         # Act
                         parse_job_arguments(command_line_args)
 
-        # Assert
-        assert error.value.code != 0
+                assert str(error.value).startswith("Environment variable not found")

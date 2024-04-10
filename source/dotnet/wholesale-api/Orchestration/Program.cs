@@ -12,16 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
+using Energinet.DataHub.Core.App.FunctionApp.Extensions.Builder;
+using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks.ServiceBus;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Extensions.DependencyInjection;
-using Energinet.DataHub.Wholesale.Orchestration.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var host = new HostBuilder()
@@ -29,11 +27,11 @@ var host = new HostBuilder()
     .ConfigureServices((context, services) =>
     {
         // Common
-        services.AddApplicationInsightsForIsolatedWorker();
+        services.AddApplicationInsightsForIsolatedWorker(TelemetryConstants.SubsystemName);
         services.AddHealthChecksForIsolatedWorker();
 
         // Shared by modules
-        services.AddNodaTimeForApplication(context.Configuration);
+        services.AddNodaTimeForApplication();
         services.AddDatabricksJobsForApplication(context.Configuration);
 
         // Modules
@@ -41,16 +39,8 @@ var host = new HostBuilder()
         services.AddCalculationResultsModule(context.Configuration);
         // => Sub-modules of Events
         services.AddEventsDatabase(context.Configuration);
-        services.AddIntegrationEventPublishing(context.Configuration);
+        services.AddIntegrationEventsPublishing(context.Configuration);
         services.AddCompletedCalculationsHandling();
-
-        var serviceBusOptions = context.Configuration.Get<ServiceBusOptions>()!;
-        services.AddHealthChecks()
-            .AddAzureServiceBusSubscriptionUsingWebSockets(
-                serviceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING,
-                serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
-                serviceBusOptions.INTEGRATIONEVENTS_SUBSCRIPTION_NAME,
-                name: HealthCheckNames.IntegrationEventsTopicSubscription);
     })
     .ConfigureLogging((hostingContext, logging) =>
     {

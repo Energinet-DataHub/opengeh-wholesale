@@ -95,7 +95,7 @@ class TestWhenValidInput:
             MeteringPointType.PRODUCTION,
         ],
     )
-    def test_returns_sum_quantity_from_result_and_grid_loss(
+    def test_returns_quantity_from_result_and_grid_loss(
         self,
         spark: SparkSession,
         metering_point_type: MeteringPointType,
@@ -104,13 +104,13 @@ class TestWhenValidInput:
         result_row = energy_results_factories.create_row(
             observation_time=DEFAULT_OBSERVATION_TIME,
             energy_supplier_id="energy_supplier_id",
-            sum_quantity=20,
+            quantity=20,
         )
         result = energy_results_factories.create(spark, [result_row])
 
         grid_loss_row = energy_results_factories.create_row(
             observation_time=DEFAULT_OBSERVATION_TIME,
-            sum_quantity=10,
+            quantity=10,
         )
         grid_loss = energy_results_factories.create(spark, [grid_loss_row])
 
@@ -132,8 +132,8 @@ class TestWhenValidInput:
 
         # Assert
         actual_row = actual.df.collect()[0]
-        actual_sum_quantity = actual_row[Colname.sum_quantity]
-        assert actual_sum_quantity == 30
+        actual_quantity = actual_row[Colname.quantity]
+        assert actual_quantity == 30
 
 
 class TestWhenEnergySupplierIdIsNotGridLossResponsible:
@@ -144,7 +144,7 @@ class TestWhenEnergySupplierIdIsNotGridLossResponsible:
             MeteringPointType.PRODUCTION,
         ],
     )
-    def test_returns_result_sum_quantity_equal_to_correct_adjusted_grid_loss(
+    def test_returns_result_quantity_equal_to_correct_adjusted_grid_loss(
         self,
         spark: SparkSession,
         metering_point_type: MeteringPointType,
@@ -155,7 +155,7 @@ class TestWhenEnergySupplierIdIsNotGridLossResponsible:
                 grid_area="1",
                 energy_supplier_id="not_grid_loss_responsible",
                 observation_time=DEFAULT_OBSERVATION_TIME,
-                sum_quantity=10,
+                quantity=10,
             )
         ]
         result = energy_results_factories.create(spark, result_rows)
@@ -168,7 +168,7 @@ class TestWhenEnergySupplierIdIsNotGridLossResponsible:
                 balance_responsible_id=None,
                 energy_supplier_id=None,
                 observation_time=DEFAULT_OBSERVATION_TIME,
-                sum_quantity=20,
+                quantity=20,
                 qualities=[QuantityQuality.MEASURED],
             )
         ]
@@ -197,8 +197,8 @@ class TestWhenEnergySupplierIdIsNotGridLossResponsible:
 
         # Assert
         assert actual.df.count() == 2
-        assert actual.df.collect()[0][Colname.sum_quantity] == 20
-        assert actual.df.collect()[1][Colname.sum_quantity] == 10
+        assert actual.df.collect()[0][Colname.quantity] == 20
+        assert actual.df.collect()[1][Colname.quantity] == 10
 
 
 class TestWhenGridLossResponsibleIsChangedWithinPeriod:
@@ -225,7 +225,7 @@ class TestWhenGridLossResponsibleIsChangedWithinPeriod:
                 grid_area="1",
                 energy_supplier_id="grid_loss_responsible_2",
                 observation_time=DEFAULT_OBSERVATION_TIME,
-                sum_quantity=10,
+                quantity=10,
             )
         ]
         result = energy_results_factories.create(spark, result_rows)
@@ -238,7 +238,7 @@ class TestWhenGridLossResponsibleIsChangedWithinPeriod:
                 balance_responsible_id=None,
                 energy_supplier_id=None,
                 observation_time=DEFAULT_OBSERVATION_TIME,
-                sum_quantity=20,
+                quantity=20,
                 qualities=[QuantityQuality.MEASURED],
             ),
             energy_results_factories.create_row(
@@ -248,7 +248,7 @@ class TestWhenGridLossResponsibleIsChangedWithinPeriod:
                 balance_responsible_id=None,
                 energy_supplier_id=None,
                 observation_time=from_date_2,
-                sum_quantity=30,
+                quantity=30,
                 qualities=[QuantityQuality.MEASURED],
             ),
         ]
@@ -284,17 +284,17 @@ class TestWhenGridLossResponsibleIsChangedWithinPeriod:
 
         # Assert
         assert actual.df.count() == 3
-        assert actual.df.collect()[0][Colname.sum_quantity] == 20
+        assert actual.df.collect()[0][Colname.quantity] == 20
         assert (
             actual.df.collect()[0][Colname.energy_supplier_id]
             == "grid_loss_responsible_1"
         )
-        assert actual.df.collect()[1][Colname.sum_quantity] == 30
+        assert actual.df.collect()[1][Colname.quantity] == 30
         assert (
             actual.df.collect()[1][Colname.energy_supplier_id]
             == "grid_loss_responsible_2"
         )
-        assert actual.df.collect()[2][Colname.sum_quantity] == 10
+        assert actual.df.collect()[2][Colname.quantity] == 10
         assert (
             actual.df.collect()[2][Colname.energy_supplier_id]
             == "grid_loss_responsible_2"

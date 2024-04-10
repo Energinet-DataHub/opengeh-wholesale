@@ -16,6 +16,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Azure.Identity;
 using Azure.Storage.Files.DataLake;
+using Energinet.DataHub.Core.App.Common.Extensions.Options;
 using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
@@ -23,6 +24,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
 using Xunit.Abstractions;
@@ -80,10 +82,10 @@ public class OrchestrationAppFixture : IAsyncLifetime
         await ServiceBusResourceProvider
             .BuildTopic("integration-events")
                 .Do(topic => appHostSettings.ProcessEnvironmentVariables
-                    .Add(nameof(ServiceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME), topic.Name))
+                    .Add($"{IntegrationEventsOptions.SectionName}__{nameof(IntegrationEventsOptions.TopicName)}", topic.Name))
             .AddSubscription("subscription")
                 .Do(subscription => appHostSettings.ProcessEnvironmentVariables
-                    .Add(nameof(ServiceBusOptions.INTEGRATIONEVENTS_SUBSCRIPTION_NAME), subscription.SubscriptionName))
+                    .Add($"{IntegrationEventsOptions.SectionName}__{nameof(IntegrationEventsOptions.SubscriptionName)}", subscription.SubscriptionName))
             .CreateAsync();
 
         // DataLake
@@ -125,9 +127,6 @@ public class OrchestrationAppFixture : IAsyncLifetime
         appHostSettings.ProcessEnvironmentVariables.Add("AzureWebJobsStorage", AzuriteManager.FullConnectionString);
         appHostSettings.ProcessEnvironmentVariables.Add("APPLICATIONINSIGHTS_CONNECTION_STRING", IntegrationTestConfiguration.ApplicationInsightsConnectionString);
 
-        // Time zone
-        appHostSettings.ProcessEnvironmentVariables.Add(nameof(DateTimeOptions.TIME_ZONE), "Europe/Copenhagen");
-
         // Database
         appHostSettings.ProcessEnvironmentVariables.Add(
             $"{nameof(ConnectionStringsOptions.ConnectionStrings)}__{nameof(ConnectionStringsOptions.DB_CONNECTION_STRING)}",
@@ -154,10 +153,7 @@ public class OrchestrationAppFixture : IAsyncLifetime
 
         // ServiceBus connection strings
         appHostSettings.ProcessEnvironmentVariables.Add(
-            nameof(ServiceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING),
-            ServiceBusResourceProvider.ConnectionString);
-        appHostSettings.ProcessEnvironmentVariables.Add(
-            nameof(ServiceBusOptions.SERVICE_BUS_TRANCEIVER_CONNECTION_STRING),
+            $"{ServiceBusNamespaceOptions.SectionName}__{nameof(ServiceBusNamespaceOptions.ConnectionString)}",
             ServiceBusResourceProvider.ConnectionString);
 
         return appHostSettings;

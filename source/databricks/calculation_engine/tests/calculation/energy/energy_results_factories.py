@@ -17,7 +17,7 @@ from decimal import Decimal
 
 from pyspark.sql import Row, SparkSession
 
-from package.calculation.energy.energy_results import (
+from package.calculation.energy.data_structures.energy_results import (
     EnergyResults,
     energy_results_schema,
 )
@@ -25,11 +25,10 @@ from package.codelists import MeteringPointType, QuantityQuality, SettlementMeth
 from package.constants import Colname
 
 DEFAULT_GRID_AREA = "100"
-DEFAULT_FROM_GRID_AREA = "200"
-DEFAULT_TO_GRID_AREA = "300"
 DEFAULT_OBSERVATION_TIME = datetime.datetime.now()
-DEFAULT_SUM_QUANTITY = Decimal("999.123456")
+DEFAULT_QUANTITY = Decimal("999.123456")
 DEFAULT_QUALITIES = [QuantityQuality.MEASURED]
+DEFAULT_METERING_POINT_ID = "1234567890234"
 DEFAULT_METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
 DEFAULT_SETTLEMENT_METHOD = SettlementMethod.NON_PROFILED
 DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
@@ -38,17 +37,17 @@ DEFAULT_BALANCE_RESPONSIBLE_ID = "9999999999999"
 
 def create_row(
     grid_area: str = DEFAULT_GRID_AREA,
-    from_grid_area: str | None = DEFAULT_FROM_GRID_AREA,
-    to_grid_area: str | None = DEFAULT_TO_GRID_AREA,
-    observation_time: datetime = DEFAULT_OBSERVATION_TIME,
-    sum_quantity: int | Decimal = DEFAULT_SUM_QUANTITY,
+    from_grid_area: str | None = None,
+    to_grid_area: str | None = None,
+    observation_time: datetime.datetime = DEFAULT_OBSERVATION_TIME,
+    quantity: int | Decimal = DEFAULT_QUANTITY,
     qualities: None | QuantityQuality | list[QuantityQuality] = None,
     energy_supplier_id: str | None = DEFAULT_ENERGY_SUPPLIER_ID,
     balance_responsible_id: str | None = DEFAULT_BALANCE_RESPONSIBLE_ID,
     metering_point_id: str | None = None,
 ) -> Row:
-    if isinstance(sum_quantity, int):
-        sum_quantity = Decimal(sum_quantity)
+    if isinstance(quantity, int):
+        quantity = Decimal(quantity)
 
     if qualities is None:
         qualities = DEFAULT_QUALITIES
@@ -62,11 +61,8 @@ def create_row(
         Colname.to_grid_area: to_grid_area,
         Colname.balance_responsible_id: balance_responsible_id,
         Colname.energy_supplier_id: energy_supplier_id,
-        Colname.time_window: {
-            Colname.start: observation_time,
-            Colname.end: observation_time + datetime.timedelta(minutes=15),
-        },
-        Colname.sum_quantity: sum_quantity,
+        Colname.observation_time: observation_time,
+        Colname.quantity: quantity,
         Colname.qualities: qualities,
         Colname.metering_point_type: metering_point_id,
     }
@@ -74,7 +70,27 @@ def create_row(
     return Row(**row)
 
 
+def create_grid_loss_row(
+    grid_area: str = DEFAULT_GRID_AREA,
+    observation_time: datetime.datetime = DEFAULT_OBSERVATION_TIME,
+    quantity: int | Decimal = DEFAULT_QUANTITY,
+) -> Row:
+    """Suggestion: Consider creating a type for grid loss results."""
+    return create_row(
+        grid_area=grid_area,
+        from_grid_area=None,
+        to_grid_area=None,
+        observation_time=observation_time,
+        quantity=quantity,
+        qualities=[QuantityQuality.CALCULATED],  # Grid loss has exactly this quality
+        energy_supplier_id=None,  # Is not added until positive/negative grid loss
+        balance_responsible_id=None,  # Never exists for grid loss metering points
+        metering_point_id=None,  # Is not added until positive/negative grid loss
+    )
+
+
 def create(spark: SparkSession, data: None | Row | list[Row] = None) -> EnergyResults:
+    """If data is None, a single row with default values is created."""
     if data is None:
         data = [create_row()]
     elif isinstance(data, Row):

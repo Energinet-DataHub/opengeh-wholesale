@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Edi.Models;
-using Energinet.DataHub.Wholesale.Edi.UnitTests.Validators;
+using Energinet.DataHub.Wholesale.Edi.Contracts;
+using Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.AggregatedTimeSeriesRequest;
 using NodaTime;
 using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 
@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 
 public class AggregatedTimeSeriesRequestBuilder
 {
-    private string _meteringPointType = MeteringPointType.Production;
+    private string _meteringPointType = DataHubNames.MeteringPointType.Production;
 
     private string _start;
     private string _end;
@@ -30,7 +30,7 @@ public class AggregatedTimeSeriesRequestBuilder
     private string _requestedByActorId;
     private string? _settlementMethod;
     private string? _balanceResponsibleId;
-    private string? _settlementSeriesVersion;
+    private string? _settlementVersion;
     private string _businessReason;
     private string? _gridAreaCode;
 
@@ -39,10 +39,10 @@ public class AggregatedTimeSeriesRequestBuilder
         var now = SystemClock.Instance.GetCurrentInstant();
         _start = Instant.FromUtc(now.InUtc().Year, 1, 1, 23, 0, 0).ToString();
         _end = Instant.FromUtc(now.InUtc().Year, 1, 2, 23, 0, 0).ToString();
-        _requestedByActorRoleId = ActorRoleCode.EnergySupplier;
+        _requestedByActorRoleId = DataHubNames.ActorRole.EnergySupplier;
         _requestedByActorId = EnergySupplierValidatorTest.ValidGlnNumber;
         _energySupplierId = _requestedByActorId;
-        _businessReason = BusinessReason.BalanceFixing;
+        _businessReason = DataHubNames.BusinessReason.BalanceFixing;
     }
 
     public static AggregatedTimeSeriesRequestBuilder AggregatedTimeSeriesRequest()
@@ -77,8 +77,8 @@ public class AggregatedTimeSeriesRequestBuilder
         if (_settlementMethod != null)
             request.SettlementMethod = _settlementMethod;
 
-        if (_settlementSeriesVersion != null)
-            request.SettlementSeriesVersion = _settlementSeriesVersion;
+        if (_settlementVersion != null)
+            request.SettlementVersion = _settlementVersion;
 
         return request;
     }
@@ -132,9 +132,9 @@ public class AggregatedTimeSeriesRequestBuilder
         return this;
     }
 
-    public AggregatedTimeSeriesRequestBuilder WithSettlementSeriesVersion(string? settlementSeriesVersion)
+    public AggregatedTimeSeriesRequestBuilder WithSettlementVersion(string? settlementVersion)
     {
-        _settlementSeriesVersion = settlementSeriesVersion;
+        _settlementVersion = settlementVersion;
         return this;
     }
 

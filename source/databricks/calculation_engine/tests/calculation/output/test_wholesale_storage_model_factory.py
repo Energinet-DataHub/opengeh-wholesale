@@ -22,6 +22,9 @@ from pyspark.sql import SparkSession, DataFrame
 
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.output import wholesale_storage_model_factory as sut
+from package.calculation.wholesale.data_structures.wholesale_results import (
+    WholesaleResults,
+)
 from package.codelists import (
     ChargeQuality,
     WholesaleResultResolution,
@@ -63,7 +66,6 @@ DEFAULT_CHARGE_TAX = True
 DEFAULT_RESOLUTION = WholesaleResultResolution.HOUR
 DEFAULT_CHARGE_PRICE = Decimal("0.756998")
 DEFAULT_TOTAL_QUANTITY = Decimal("1.1")
-DEFAULT_CHARGE_COUNT = "3"
 DEFAULT_TOTAL_AMOUNT = Decimal("123.456")
 DEFAULT_UNIT = ChargeUnit.KWH
 DEFAULT_QUALITY = ChargeQuality.CALCULATED
@@ -94,7 +96,6 @@ def _create_result_row(
     resolution: WholesaleResultResolution = DEFAULT_RESOLUTION,
     charge_price: Decimal = DEFAULT_CHARGE_PRICE,
     total_quantity: Decimal = DEFAULT_TOTAL_QUANTITY,
-    charge_count: str = DEFAULT_CHARGE_COUNT,
     total_amount: Decimal = DEFAULT_TOTAL_AMOUNT,
     unit: ChargeUnit = DEFAULT_UNIT,
     quality: ChargeQuality = DEFAULT_QUALITY,
@@ -113,7 +114,6 @@ def _create_result_row(
         Colname.resolution: resolution.value,
         Colname.charge_price: charge_price,
         Colname.total_quantity: total_quantity,
-        Colname.charge_count: charge_count,
         Colname.total_amount: total_amount,
         Colname.unit: unit.value,
         Colname.qualities: [quality.value],
@@ -178,7 +178,7 @@ def test__create__returns_dataframe_with_column(
 
     # Arrange
     row = [_create_result_row()]
-    result_df = _create_result_df(spark, row)
+    result_df = WholesaleResults(_create_result_df(spark, row))
 
     # Act
     actual_df = sut.create(args, result_df, DEFAULT_AMOUNT_TYPE)
@@ -193,7 +193,9 @@ def test__create__returns_dataframe_with_calculation_result_id(
     args: CalculatorArgs,
 ) -> None:
     # Arrange
-    result_df = _create_result_df_corresponding_to_multiple_calculation_results(spark)
+    result_df = WholesaleResults(
+        _create_result_df_corresponding_to_multiple_calculation_results(spark)
+    )
     expected_number_of_calculation_result_ids = 3
 
     # Act
@@ -209,7 +211,7 @@ def test__create__returns_dataframe_with_amount_type(
 ) -> None:
     # Arrange
     row = [_create_result_row()]
-    result_df = _create_result_df(spark, row)
+    result_df = WholesaleResults(_create_result_df(spark, row))
 
     # Act
     actual_df = sut.create(args, result_df, DEFAULT_AMOUNT_TYPE)

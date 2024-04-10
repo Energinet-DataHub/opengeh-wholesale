@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from .colname import Colname
-from .basis_data_colname import BasisDataColname
-from .partition_key_name import PartitionKeyName
+from .basis_data_colname import MeteringPointPeriodColname, TimeSeriesColname
 from .energy_result_column_names import EnergyResultColumnNames
 from .wholesale_result_column_names import WholesaleResultColumnNames

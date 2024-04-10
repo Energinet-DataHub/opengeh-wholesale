@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
+from pyspark.sql import DataFrame
 
-from package.calculation.preparation.charge_link_metering_point_periods import (
+from package.calculation.preparation.data_structures.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
 )
 from package.constants import Colname
@@ -36,7 +36,7 @@ def get_charge_link_metering_point_periods(
         charge_links[Colname.charge_key],
         charge_links[Colname.charge_type],
         charge_links[Colname.metering_point_id],
-        charge_links[Colname.charge_quantity],
+        charge_links[Colname.quantity],
         f.when(
             charge_links[Colname.from_date] > metering_points[Colname.from_date],
             charge_links[Colname.from_date],
@@ -54,4 +54,5 @@ def get_charge_link_metering_point_periods(
         metering_points[Colname.grid_area],
         metering_points[Colname.energy_supplier_id],
     )
+
     return ChargeLinkMeteringPointPeriods(charge_link_metering_point_periods)

@@ -15,7 +15,6 @@
 using System.Reflection;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
-using Energinet.DataHub.Wholesale.WebApi.Extensions.Options;
 using FluentAssertions;
 using Xunit;
 
@@ -24,20 +23,9 @@ namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.WebApi.Configuration.Opti
 public class OptionsTests
 {
     [Theory]
-    [InlineAutoMoqData(typeof(JwtOptions), 3, "EXTERNAL_OPEN_ID_URL", "INTERNAL_OPEN_ID_URL", "BACKEND_BFF_APP_ID")]
     [InlineAutoMoqData(typeof(DataLakeOptions), 4, "STORAGE_ACCOUNT_URI", "STORAGE_CONTAINER_NAME", "DATALAKE_HEALTH_CHECK_START", "DATALAKE_HEALTH_CHECK_END")]
-    [InlineAutoMoqData(
-        typeof(ServiceBusOptions),
-        6,
-        "SERVICE_BUS_SEND_CONNECTION_STRING",
-        "SERVICE_BUS_TRANCEIVER_CONNECTION_STRING",
-        "INTEGRATIONEVENTS_TOPIC_NAME",
-        "INTEGRATIONEVENTS_SUBSCRIPTION_NAME",
-        "WHOLESALE_INBOX_MESSAGE_QUEUE_NAME",
-        "EDI_INBOX_MESSAGE_QUEUE_NAME")]
-    [InlineAutoMoqData(typeof(DateTimeOptions), 1, "TIME_ZONE")]
     [InlineAutoMoqData(typeof(ConnectionStringsOptions), 1, "DB_CONNECTION_STRING")]
-    [InlineAutoMoqData(typeof(DeltaTableOptions), 3, "SCHEMA_NAME", "ENERGY_RESULTS_TABLE_NAME", "WHOLESALE_RESULTS_TABLE_NAME")]
+    [InlineAutoMoqData(typeof(DeltaTableOptions), 5, "SCHEMA_NAME", "BasisDataSchemaName", "SettlementReportSchemaName", "ENERGY_RESULTS_TABLE_NAME", "WHOLESALE_RESULTS_TABLE_NAME")]
     public void Options_HaveTheCorrectSettingNamesAndNumberOfSettings(Type sut, int settingsCount, params string[] expectedNames)
     {
         // Arrange & Act

@@ -12,325 +12,192 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from decimal import Decimal
-from datetime import datetime
+from datetime import datetime, timedelta
 
-from package.calculation.preparation.charge_master_data import ChargeMasterData
-from package.calculation.preparation.charge_prices import ChargePrices
-from tests.helpers.test_schemas import (
-    charges_flex_consumption_schema,
+from pyspark.sql import SparkSession
+
+from package.calculation.wholesale.fee_calculators import (
+    calculate,
+)
+from package.codelists import (
+    MeteringPointType,
+    SettlementMethod,
 )
 from package.constants import Colname
-from package.codelists import ChargeType, MeteringPointType, SettlementMethod
-from package.calculation.wholesale.fee_calculators import (
-    calculate_fee_charge_price,
-    filter_on_metering_point_type_and_settlement_method,
-    get_count_of_charges_and_total_daily_charge_price,
-)
-from package.calculation.preparation.transformations import get_fee_charges
-
-import pytest
+import tests.calculation.wholesale.prepared_fees_factory as factory
 
 
-def test__calculate_fee_charge_price__simple(
-    spark,
-    charge_link_metering_points_factory,
-    charge_master_data_factory,
-    charge_prices_factory,
-    calculate_fee_charge_price_factory,
-):
-    # Test that calculate_fee_charge_price does as expected in with the most simple dataset
-    # Arrange
-    from_date = datetime(2020, 1, 1, 0, 0)
-    to_date = datetime(2020, 1, 2, 0, 0)
-    time = datetime(2020, 1, 1, 0, 0)
-    charge_prices = charge_prices_factory(
-        charge_time=time,
-        charge_type=ChargeType.FEE.value,
-    )
-    charge_master_data = charge_master_data_factory(
-        from_date=from_date,
-        to_date=to_date,
-        charge_type=ChargeType.FEE.value,
-    )
-    charge_link_metering_point_periods = charge_link_metering_points_factory(
-        from_date=from_date,
-        to_date=to_date,
-        charge_type=ChargeType.FEE.value,
-    )
-
-    expected_time = datetime(2020, 1, 1, 0, 0)
-    expected_charge_price = charge_prices.df.collect()[0][Colname.charge_price]
-    expected_total_daily_charge_price = expected_charge_price
-    expected_charge_count = 1
-
-    # Act
-    fee_charges = get_fee_charges(
-        charge_master_data,
-        charge_prices,
-        charge_link_metering_point_periods,
-    )
-    result = calculate_fee_charge_price(spark, fee_charges)
-    expected = calculate_fee_charge_price_factory(
-        expected_time,
-        expected_charge_count,
-        expected_total_daily_charge_price,
-        charge_price=expected_charge_price,
-    )
-
-    # Assert
-    assert result.collect() == expected.collect()
+def _get_all_wholesale_metering_point_types() -> list[MeteringPointType]:
+    return [
+        metering_point_type
+        for metering_point_type in MeteringPointType
+        if metering_point_type != MeteringPointType.EXCHANGE
+    ]
 
 
-def test__calculate_fee_charge_price__two_fees(
-    spark,
-    charge_link_metering_points_factory,
-    charge_master_data_factory,
-    charge_prices_factory,
-    calculate_fee_charge_price_factory,
-):
-    # Test that calculate_fee_charge_price does as expected with two fees on the same day
-    # Arrange
-    from_date = datetime(2020, 1, 1, 0, 0)
-    to_date = datetime(2020, 1, 2, 0, 0)
-    time = datetime(2020, 1, 1, 0, 0)
-    charge_link_metering_point_periods = charge_link_metering_points_factory(
-        from_date=from_date,
-        to_date=to_date,
-        charge_type=ChargeType.FEE.value,
-    )
+class TestWhenInputHasTwoMeteringPointsWithDifferentQuantities:
+    def test__returns_expected_total_quantity(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        quantity_1 = 1
+        quantity_2 = 2
+        expected_total_quantity = quantity_1 + quantity_2
+        prepared_fees_rows = [
+            factory.create_row(metering_point_id="1", quantity=quantity_1),
+            factory.create_row(metering_point_id="2", quantity=quantity_2),
+        ]
+        prepared_fees = factory.create(spark, prepared_fees_rows)
 
-    fee_1_charge_prices_charge_price = Decimal("3.124544")
-    fee_1_charge_prices_df = charge_prices_factory(
-        charge_type=ChargeType.FEE.value,
-        charge_time=time,
-        charge_price=fee_1_charge_prices_charge_price,
-    ).df
-    fee_1_charge_master_data_df = charge_master_data_factory(
-        charge_type=ChargeType.FEE.value,
-        from_date=from_date,
-        to_date=to_date,
-    ).df
-    fee_2_charge_prices_df = charge_prices_factory(
-        charge_type=ChargeType.FEE.value, charge_time=time
-    ).df
-    fee_2_charge_master_data_df = charge_master_data_factory(
-        charge_type=ChargeType.FEE.value,
-    ).df
-    charge_prices_df = fee_1_charge_prices_df.union(fee_2_charge_prices_df)
-    charge_master_data_df = fee_1_charge_master_data_df.union(
-        fee_2_charge_master_data_df
-    )
+        # Act
+        actual = calculate(prepared_fees)
 
-    expected_time = datetime(2020, 1, 1, 0, 0)
-    expected_charge_price_fee_1 = charge_prices_df.collect()[0][Colname.charge_price]
-    expected_charge_price_fee_2 = charge_prices_df.collect()[1][Colname.charge_price]
-    expected_total_daily_charge_price = (
-        expected_charge_price_fee_1 + expected_charge_price_fee_2
-    )
-    expected_charge_count = 2
+        # Assert
+        assert actual.df.collect()[0][Colname.total_quantity] == expected_total_quantity
 
-    # Act
-    fee_charges = get_fee_charges(
-        ChargeMasterData(charge_master_data_df),
-        ChargePrices(charge_prices_df),
-        charge_link_metering_point_periods,
-    )
-    result = calculate_fee_charge_price(spark, fee_charges).orderBy(
-        Colname.charge_price
-    )
-    expected_fee_1 = calculate_fee_charge_price_factory(
-        expected_time,
-        expected_charge_count,
-        expected_total_daily_charge_price,
-        charge_price=expected_charge_price_fee_1,
-    )
-    expected_fee_2 = calculate_fee_charge_price_factory(
-        expected_time,
-        expected_charge_count,
-        expected_total_daily_charge_price,
-        charge_price=expected_charge_price_fee_2,
-    )
-    expected = expected_fee_1.union(expected_fee_2).orderBy(Colname.charge_price)
+    def test__returns_expected_amount(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        quantity_1 = 1
+        quantity_2 = 2
+        price = Decimal("3.0")
+        expected_amount_not_rounded = (quantity_1 + quantity_2) * price
+        expected_amount = round(expected_amount_not_rounded, 6)
 
-    # Assert
-    assert result.collect() == expected.collect()
+        prepared_fees_rows = [
+            factory.create_row(
+                metering_point_id="1",
+                quantity=quantity_1,
+                charge_price=price,
+            ),
+            factory.create_row(
+                metering_point_id="2",
+                quantity=quantity_2,
+                charge_price=price,
+            ),
+        ]
+        prepared_fees = factory.create(spark, prepared_fees_rows)
+
+        # Act
+        actual = calculate(prepared_fees)
+
+        # Assert
+        assert actual.df.collect()[0][Colname.total_amount] == expected_amount
 
 
-fee_charges_dataset_1 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        Decimal("200.50"),
-        datetime(2020, 1, 1, 0, 0),
-        MeteringPointType.CONSUMPTION.value,
-        SettlementMethod.FLEX.value,
-        "001",
-        1,
-    )
-]
-fee_charges_dataset_2 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        Decimal("200.50"),
-        datetime(2020, 2, 1, 0, 0),
-        MeteringPointType.PRODUCTION.value,
-        SettlementMethod.FLEX.value,
-        "001",
-        1,
-    )
-]
-fee_charges_dataset_3 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        Decimal("200.50"),
-        datetime(2020, 2, 1, 0, 0),
-        MeteringPointType.CONSUMPTION.value,
-        SettlementMethod.NON_PROFILED.value,
-        "001",
-        1,
-    )
-]
-fee_charges_dataset_4 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        Decimal("200.50"),
-        datetime(2020, 2, 1, 0, 0),
-        MeteringPointType.PRODUCTION.value,
-        SettlementMethod.NON_PROFILED.value,
-        "001",
-        1,
-    )
-]
+class TestWhenInputContainsMultipleMeteringPointTypes:
+    def test__returns_result_per_metering_point_type(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        all_metering_point_types = _get_all_wholesale_metering_point_types()
+
+        fees_rows = [
+            factory.create_row(metering_point_type=metering_point_type)
+            for metering_point_type in all_metering_point_types
+        ]
+        prepared_fees = factory.create(spark, fees_rows)
+
+        # Act
+        actual = calculate(prepared_fees).df
+
+        # Assert
+        expected = [
+            metering_point_type.value
+            for metering_point_type in all_metering_point_types
+        ]
+        assert actual.count() == len(expected)
+        actual_metering_point_types = [
+            row[Colname.metering_point_type] for row in actual.collect()
+        ]
+        assert set(actual_metering_point_types) == set(expected)
 
 
-@pytest.mark.parametrize(
-    "fee_charges,expected",
-    [
-        (fee_charges_dataset_1, 1),
-        (fee_charges_dataset_2, 0),
-        (fee_charges_dataset_3, 0),
-        (fee_charges_dataset_4, 0),
-    ],
-)
-def test__filter_on_metering_point_type_and_settlement_method__filters_on_consumption_and_flex(
-    spark, fee_charges, expected
-):
-    # Arrange
-    fee_charges = spark.createDataFrame(
-        fee_charges, schema=charges_flex_consumption_schema
-    )  # fee_charges and charges_flex_consumption has the same schema
+class TestWhenInputContainsMultipleSettlementMethods:
+    def test__returns_result_per_settlement_method(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
 
-    # Act
-    result = filter_on_metering_point_type_and_settlement_method(fee_charges)
+        prepared_fees_rows = [
+            factory.create_row(settlement_method=SettlementMethod.FLEX),
+            factory.create_row(settlement_method=SettlementMethod.NON_PROFILED),
+        ]
+        prepared_fees = factory.create(spark, prepared_fees_rows)
 
-    # Assert
-    assert result.count() == expected
+        # Act
+        actual_df = calculate(prepared_fees).df
 
-
-charges_flex_consumption_dataset_1 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        Decimal("100.10"),
-        datetime(2020, 1, 1, 0, 0),
-        MeteringPointType.CONSUMPTION.value,
-        SettlementMethod.FLEX.value,
-        "001",
-        1,
-    )
-]
-charges_flex_consumption_dataset_2 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        Decimal("100.10"),
-        datetime(2020, 1, 1, 0, 0),
-        MeteringPointType.CONSUMPTION.value,
-        SettlementMethod.FLEX.value,
-        "001",
-        1,
-    ),
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        Decimal("100.10"),
-        datetime(2020, 1, 1, 0, 0),
-        MeteringPointType.CONSUMPTION.value,
-        SettlementMethod.FLEX.value,
-        "001",
-        1,
-    ),
-]
-charges_flex_consumption_dataset_3 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        Decimal("100.10"),
-        datetime(2020, 1, 1, 0, 0),
-        MeteringPointType.CONSUMPTION.value,
-        SettlementMethod.FLEX.value,
-        "001",
-        1,
-    ),
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        Decimal("100.10"),
-        datetime(2020, 1, 2, 0, 0),
-        MeteringPointType.CONSUMPTION.value,
-        SettlementMethod.FLEX.value,
-        "001",
-        1,
-    ),
-]
+        # Assert
+        expected = [SettlementMethod.FLEX.value, SettlementMethod.NON_PROFILED.value]
+        assert actual_df.count() == 2
+        actual_settlement_methods = [
+            row[Colname.settlement_method] for row in actual_df.collect()
+        ]
+        assert set(actual_settlement_methods) == set(expected)
 
 
-@pytest.mark.parametrize(
-    "charges_flex_consumption,expected_charge_count,expected_total_daily_charge_price",
-    [
-        (charges_flex_consumption_dataset_1, 1, Decimal("100.10")),
-        (charges_flex_consumption_dataset_2, 2, Decimal("200.20")),
-        (charges_flex_consumption_dataset_3, 1, Decimal("100.10")),
-    ],
-)
-def test__get_count_of_charges_and_total_daily_charge_price__counts_and_sums_up_amount_per_day(
-    spark,
-    charges_flex_consumption,
-    expected_charge_count,
-    expected_total_daily_charge_price,
-):
-    # Arrange
-    charges_flex_consumption = spark.createDataFrame(
-        charges_flex_consumption, schema=charges_flex_consumption_schema
-    )
+class TestWhenInputContainsMultipleChargeTimes:
+    def test__returns_result_per_charge_time(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        charge_time_1 = datetime(2019, 12, 31, 23)
+        charge_time_2 = charge_time_1 + timedelta(days=1)
 
-    # Act
-    result = get_count_of_charges_and_total_daily_charge_price(charges_flex_consumption)
+        prepared_fees_rows = [
+            factory.create_row(charge_time=charge_time_1, metering_point_id="1"),
+            factory.create_row(charge_time=charge_time_1, metering_point_id="2"),
+            factory.create_row(charge_time=charge_time_2, metering_point_id="1"),
+            factory.create_row(charge_time=charge_time_2, metering_point_id="2"),
+        ]
+        prepared_fees = factory.create(spark, prepared_fees_rows)
 
-    # Assert
-    assert result.collect()[0][Colname.charge_count] == expected_charge_count
-    assert (
-        result.collect()[0][Colname.total_daily_charge_price]
-        == expected_total_daily_charge_price
-    )
+        # Act
+        actual_df = calculate(prepared_fees).df
+
+        # Assert
+        expected = [charge_time_1, charge_time_2]
+        assert actual_df.count() == 2
+        actual_charge_times = [row[Colname.charge_time] for row in actual_df.collect()]
+        assert set(actual_charge_times) == set(expected)
+
+
+class TestWhenMissingAllInputChargePrices:
+    def test__returns_expected_result(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        quantity_1 = 1
+        quantity_2 = 2
+        expected_total_quantity = quantity_1 + quantity_2
+
+        prepared_fees_rows = [
+            factory.create_row(
+                metering_point_id="1",
+                quantity=quantity_1,
+                charge_price=None,
+            ),
+            factory.create_row(
+                metering_point_id="2",
+                quantity=quantity_2,
+                charge_price=None,
+            ),
+        ]
+        prepared_fees = factory.create(spark, prepared_fees_rows)
+
+        # Act
+        actual_df = calculate(prepared_fees).df
+
+        # Assert
+        assert actual_df.count() == 1
+        assert actual_df.collect()[0][Colname.total_quantity] == expected_total_quantity
+        assert actual_df.collect()[0][Colname.charge_price] is None
+        assert actual_df.collect()[0][Colname.total_amount] is None

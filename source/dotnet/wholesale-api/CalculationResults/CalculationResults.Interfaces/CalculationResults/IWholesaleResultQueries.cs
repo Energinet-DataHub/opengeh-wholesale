@@ -16,6 +16,9 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 
+/// <summary>
+/// Used to query wholesale data for a single calculation result
+/// </summary>
 public interface IWholesaleResultQueries
 {
     /// <summary>

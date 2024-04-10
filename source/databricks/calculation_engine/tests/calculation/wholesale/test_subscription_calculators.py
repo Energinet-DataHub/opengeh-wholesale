@@ -12,505 +12,332 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from decimal import Decimal
-from datetime import datetime
+from datetime import datetime, timedelta
 
-from package.calculation.preparation.charge_link_metering_point_periods import (
-    ChargeLinkMeteringPointPeriods,
-)
-from package.calculation.preparation.charge_master_data import ChargeMasterData
-from package.calculation.preparation.charge_prices import ChargePrices
-from tests.helpers.test_schemas import (
-    charges_flex_consumption_schema,
-    charges_per_day_schema,
-)
-
-from package.codelists import MeteringPointType, SettlementMethod, ChargeType
-from package.calculation.wholesale.subscription_calculators import (
-    calculate_daily_subscription_price,
-    calculate_price_per_day,
-    get_count_of_charges_and_total_daily_charge_price,
-)
-from package.calculation.preparation.transformations import get_subscription_charges
-from calendar import monthrange
 import pytest
+
+from pyspark.sql import SparkSession
+
+from package.calculation.wholesale.subscription_calculators import (
+    calculate,
+)
+from package.codelists import (
+    MeteringPointType,
+    SettlementMethod,
+)
 from package.constants import Colname
-
-DEFAULT_TIME_ZONE = "Europe/Copenhagen"
-
-
-def test__calculate_daily_subscription_price__simple(
-    spark,
-    calculate_daily_subscription_price_factory,
-    charge_master_data_factory,
-    charge_prices_factory,
-    charge_link_metering_points_factory,
-):
-    # Test that calculate_daily_subscription_price does as expected in with the most simple dataset
-    # Arrange
-    from_date = datetime(2020, 1, 1, 0, 0)
-    to_date = datetime(2020, 1, 2, 0, 0)
-    time = datetime(2020, 1, 1, 0, 0)
-    charge_link_metering_point_periods = charge_link_metering_points_factory(
-        charge_type=ChargeType.SUBSCRIPTION.value, from_date=from_date, to_date=to_date
-    )
-    charge_master_data = charge_master_data_factory(
-        charge_type=ChargeType.SUBSCRIPTION.value,
-        to_date=to_date,
-        from_date=from_date,
-    )
-    charge_prices = charge_prices_factory(
-        charge_type=ChargeType.SUBSCRIPTION.value,
-        charge_time=time,
-    )
-
-    expected_date = datetime(2020, 1, 1, 0, 0)
-    expected_charge_price = charge_prices.df.collect()[0][Colname.charge_price]
-    expected_price_per_day = Decimal(
-        expected_charge_price / monthrange(expected_date.year, expected_date.month)[1]
-    )
-    expected_subscription_count = 1
-
-    # Act
-    subscription_charges = get_subscription_charges(
-        charge_master_data,
-        charge_prices,
-        charge_link_metering_point_periods,
-        DEFAULT_TIME_ZONE,
-    )
-    result = calculate_daily_subscription_price(spark, subscription_charges)
-    expected = calculate_daily_subscription_price_factory(
-        expected_date,
-        expected_price_per_day,
-        expected_subscription_count,
-        expected_price_per_day,
-        charge_price=expected_charge_price,
-    )
-
-    # Assert
-    assert result.collect() == expected.collect()
+import tests.calculation.wholesale.prepared_subscriptions_factory as factory
 
 
-def test__calculate_daily_subscription_price__charge_price_change(
-    spark,
-    calculate_daily_subscription_price_factory,
-    charge_master_data_factory,
-    charge_prices_factory,
-    charge_link_metering_points_factory,
-):
-    # Test that calculate_daily_subscription_price act as expected when charge price changes in a given period
-    # Arrange
-    from_date = datetime(2020, 1, 31, 0, 0)
-    to_date = datetime(2020, 2, 2, 0, 0)
+class DefaultValues:
+    CALCULATION_PERIOD_START = datetime(2020, 1, 31, 23, 0)
+    CALCULATION_PERIOD_END = datetime(2020, 2, 29, 23, 0)
+    DAYS_IN_MONTH = 29
+    TIME_ZONE = "Europe/Copenhagen"
 
-    charge_link_metering_point_periods = charge_link_metering_points_factory(
-        charge_type=ChargeType.SUBSCRIPTION.value, from_date=from_date, to_date=to_date
-    )
-    charge_master_data_df = charge_master_data_factory(
-        charge_type=ChargeType.SUBSCRIPTION.value,
-        from_date=from_date,
-        to_date=to_date,
-    ).df
 
-    subscription_1_charge_prices_charge_price = Decimal("3.124544")
-    subscription_1_charge_prices_time = from_date
-    subscription_1_charge_prices_df = charge_prices_factory(
-        charge_time=subscription_1_charge_prices_time,
-        charge_price=subscription_1_charge_prices_charge_price,
-    ).df
-
-    subscription_2_charge_prices_time = datetime(2020, 2, 1, 0, 0)
-    subscription_2_charge_prices_df = charge_prices_factory(
-        charge_time=subscription_2_charge_prices_time,
-    ).df
-    charge_prices_df = subscription_1_charge_prices_df.union(
-        subscription_2_charge_prices_df
-    )
-
-    expected_charge_price_subscription_1 = charge_prices_df.collect()[0][
-        Colname.charge_price
+def _get_all_wholesale_metering_point_types() -> list[MeteringPointType]:
+    return [
+        metering_point_type
+        for metering_point_type in MeteringPointType
+        if metering_point_type != MeteringPointType.EXCHANGE
     ]
-    expected_price_per_day_subscription_1 = Decimal(
-        expected_charge_price_subscription_1
-        / monthrange(
-            subscription_1_charge_prices_time.year,
-            subscription_1_charge_prices_time.month,
-        )[1]
-    )
-    expected_charge_price_subscription_2 = charge_prices_df.collect()[1][
-        Colname.charge_price
-    ]
-    expected_price_per_day_subscription_2 = Decimal(
-        expected_charge_price_subscription_2
-        / monthrange(
-            subscription_2_charge_prices_time.year,
-            subscription_2_charge_prices_time.month,
-        )[1]
-    )
-    expected_subscription_count = 1
-
-    # Act
-    subscription_charges = get_subscription_charges(
-        ChargeMasterData(charge_master_data_df),
-        ChargePrices(charge_prices_df),
-        charge_link_metering_point_periods,
-        DEFAULT_TIME_ZONE,
-    )
-    result = calculate_daily_subscription_price(spark, subscription_charges).orderBy(
-        Colname.charge_time
-    )
-
-    expected_subscription_1 = calculate_daily_subscription_price_factory(
-        subscription_1_charge_prices_time,
-        expected_price_per_day_subscription_1,
-        expected_subscription_count,
-        expected_price_per_day_subscription_1,
-        charge_price=expected_charge_price_subscription_1,
-    )
-    expected_subscription_2 = calculate_daily_subscription_price_factory(
-        subscription_2_charge_prices_time,
-        expected_price_per_day_subscription_2,
-        expected_subscription_count,
-        expected_price_per_day_subscription_2,
-        charge_price=expected_charge_price_subscription_2,
-    )
-    expected = expected_subscription_1.union(expected_subscription_2)
-
-    # Assert
-    assert result.collect() == expected.collect()
 
 
-def test__calculate_daily_subscription_price__charge_price_change_with_two_different_charge_key(
-    spark,
-    charge_master_data_factory,
-    charge_prices_factory,
-    charge_link_metering_points_factory,
-    calculate_daily_subscription_price_factory,
-):
-    # Test that calculate_daily_subscription_price act as expected when charge price changes in a given period for two different charge keys
-    # Arrange
-    from_date = datetime(2020, 1, 31, 0, 0)
-    to_date = datetime(2020, 2, 2, 0, 0)
-    charge_code = "charge_code_b"
-    charge_links_metering_point_periods_df = charge_link_metering_points_factory(
-        from_date=from_date, to_date=to_date
-    ).df
-    charge_links_metering_point_periods_df = (
-        charge_links_metering_point_periods_df.union(
-            charge_link_metering_points_factory(
-                from_date=from_date, to_date=to_date, charge_code=charge_code
-            ).df
-        )
+class TestWhenValidInput:
+    @pytest.mark.parametrize(
+        "period_start, period_end, input_charge_price, expected_output_charge_price",
+        [
+            (  # month with 29 days
+                datetime(2020, 1, 31, 23, 0),
+                datetime(2020, 2, 29, 23, 0),
+                Decimal("10"),
+                Decimal("0.344828"),  # 10 / 29 (days)
+            ),
+            (  # month with 31 days
+                datetime(2020, 4, 30, 22, 0),
+                datetime(2020, 5, 31, 22, 0),
+                Decimal("10"),
+                Decimal("0.322581"),  # 10 / 31 (days)
+            ),
+        ],
     )
-    charge_links_metering_point_periods = ChargeLinkMeteringPointPeriods(
-        charge_links_metering_point_periods_df
-    )
+    def test__returns_expected_charge_price(
+        self,
+        spark: SparkSession,
+        period_start: datetime,
+        period_end: datetime,
+        input_charge_price: Decimal,
+        expected_output_charge_price: Decimal,
+    ) -> None:
+        # Arrange
+        subscriptions_row = factory.create_row(charge_price=input_charge_price)
+        prepared_subscriptions_charges = factory.create(spark, [subscriptions_row])
 
-    subscription_1_charge_prices_charge_price = Decimal("3.124544")
-    subcription_2_charge_prices_time = datetime(2020, 2, 1, 0, 0)
-    subcription_1_charge_prices_time = from_date
+        # Act
+        actual = calculate(
+            prepared_subscriptions_charges,
+            period_start,
+            period_end,
+            DefaultValues.TIME_ZONE,
+        ).df
 
-    subscription_1_charge_prices_df_with_charge_key_1 = charge_prices_factory(
-        charge_time=subcription_1_charge_prices_time,
-        charge_price=subscription_1_charge_prices_charge_price,
-    ).df
-    charge_master_data_df_with_charge_key_1 = charge_master_data_factory(
-        from_date=from_date,
-        to_date=to_date,
-    ).df
+        # Assert
+        assert actual.count() == 1
+        assert actual.collect()[0][Colname.charge_price] == expected_output_charge_price
 
-    subscription_2_charge_prices_df_with_charge_key_1 = charge_prices_factory(
-        charge_time=subcription_2_charge_prices_time,
-    ).df
-    charge_prices_df_with_charge_key_1 = (
-        subscription_1_charge_prices_df_with_charge_key_1.union(
-            subscription_2_charge_prices_df_with_charge_key_1
-        )
-    )
+    def test__returns_expected_total_quantity(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        quantity_1 = 1
+        quantity_2 = 2
+        expected_total_quantity = quantity_1 + quantity_2
+        prepared_subscriptions_rows = [
+            factory.create_row(metering_point_id="1", quantity=quantity_1),
+            factory.create_row(metering_point_id="2", quantity=quantity_2),
+        ]
+        prepared_subscriptions = factory.create(spark, prepared_subscriptions_rows)
 
-    subscription_1_charge_prices_df_with_charge_key_2 = charge_prices_factory(
-        charge_time=subcription_1_charge_prices_time,
-        charge_price=subscription_1_charge_prices_charge_price,
-        charge_code=charge_code,
-    ).df
-    charge_master_data_df_with_charge_key_2 = charge_master_data_factory(
-        charge_code=charge_code,
-        from_date=from_date,
-        to_date=to_date,
-    ).df
-    subscription_2_charge_prices_df_with_charge_key_2 = charge_prices_factory(
-        charge_time=subcription_2_charge_prices_time,
-        charge_code=charge_code,
-    ).df
-    charge_prices_df_with_charge_key_2 = (
-        subscription_1_charge_prices_df_with_charge_key_2.union(
-            subscription_2_charge_prices_df_with_charge_key_2
-        )
-    )
+        # Act
+        actual = calculate(
+            prepared_subscriptions,
+            DefaultValues.CALCULATION_PERIOD_START,
+            DefaultValues.CALCULATION_PERIOD_END,
+            DefaultValues.TIME_ZONE,
+        ).df
 
-    charge_prices_df = charge_prices_df_with_charge_key_1.union(
-        charge_prices_df_with_charge_key_2
-    )
-    charge_master_data_df = charge_master_data_df_with_charge_key_1.union(
-        charge_master_data_df_with_charge_key_2
-    )
+        # Assert
+        assert actual.collect()[0][Colname.total_quantity] == expected_total_quantity
 
-    # Act
-    subscription_charges = get_subscription_charges(
-        ChargeMasterData(charge_master_data_df),
-        ChargePrices(charge_prices_df),
-        charge_links_metering_point_periods,
-        DEFAULT_TIME_ZONE,
-    )
-    result = calculate_daily_subscription_price(spark, subscription_charges).orderBy(
-        Colname.charge_time, Colname.charge_key
-    )
+    def test__returns_expected_amount(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        quantity_1 = 1
+        quantity_2 = 2
+        price = Decimal("3.0")
+        price_per_day = price / DefaultValues.DAYS_IN_MONTH
+        expected_amount_not_rounded = (quantity_1 + quantity_2) * price_per_day
+        expected_amount = round(expected_amount_not_rounded, 6)
 
-    expected_price_per_day_subscription_1 = Decimal(
-        charge_prices_df.collect()[0][Colname.charge_price]
-        / monthrange(
-            subcription_1_charge_prices_time.year,
-            subcription_1_charge_prices_time.month,
-        )[1]
-    )
-    expected_price_per_day_subscription_2 = Decimal(
-        charge_prices_df.collect()[1][Colname.charge_price]
-        / monthrange(
-            subcription_2_charge_prices_time.year,
-            subcription_2_charge_prices_time.month,
-        )[1]
-    )
-    expected_subscription_count = 2
-    expected_subscription_1_with_charge_key_1 = (
-        calculate_daily_subscription_price_factory(
-            subcription_1_charge_prices_time,
-            expected_price_per_day_subscription_1,
-            expected_subscription_count,
-            expected_price_per_day_subscription_1 * expected_subscription_count,
-            charge_price=charge_prices_df.collect()[0][Colname.charge_price],
-        )
-    )
-    expected_subscription_2_with_charge_key_1 = (
-        calculate_daily_subscription_price_factory(
-            subcription_2_charge_prices_time,
-            expected_price_per_day_subscription_2,
-            expected_subscription_count,
-            expected_price_per_day_subscription_2 * expected_subscription_count,
-            charge_price=charge_prices_df.collect()[1][Colname.charge_price],
-        )
-    )
+        prepared_subscriptions_rows = [
+            factory.create_row(
+                metering_point_id="1",
+                quantity=quantity_1,
+                charge_price=price,
+            ),
+            factory.create_row(
+                metering_point_id="2",
+                quantity=quantity_2,
+                charge_price=price,
+            ),
+        ]
+        prepared_subscriptions = factory.create(spark, prepared_subscriptions_rows)
 
-    expected_subscription_1_with_charge_key_2 = (
-        calculate_daily_subscription_price_factory(
-            subcription_1_charge_prices_time,
-            expected_price_per_day_subscription_1,
-            expected_subscription_count,
-            expected_price_per_day_subscription_1 * expected_subscription_count,
-            charge_price=charge_prices_df.collect()[2][Colname.charge_price],
-            charge_code=charge_code,
-        )
-    )
-    expected_subscription_2_with_charge_key_2 = (
-        calculate_daily_subscription_price_factory(
-            subcription_2_charge_prices_time,
-            expected_price_per_day_subscription_2,
-            expected_subscription_count,
-            expected_price_per_day_subscription_2 * expected_subscription_count,
-            charge_price=charge_prices_df.collect()[3][Colname.charge_price],
-            charge_code=charge_code,
-        )
-    )
+        # Act
+        actual = calculate(
+            prepared_subscriptions,
+            DefaultValues.CALCULATION_PERIOD_START,
+            DefaultValues.CALCULATION_PERIOD_END,
+            DefaultValues.TIME_ZONE,
+        ).df
 
-    expected_1 = expected_subscription_1_with_charge_key_1.union(
-        expected_subscription_2_with_charge_key_1
-    )
-    expected_2 = expected_subscription_1_with_charge_key_2.union(
-        expected_subscription_2_with_charge_key_2
-    )
-    expected = expected_1.union(expected_2).orderBy(
-        Colname.charge_time, Colname.charge_key
-    )
+        # Assert
+        assert actual.collect()[0][Colname.total_amount] == expected_amount
 
-    # Assert
-    assert result.collect() == expected.collect()
+    def test__returns_result_per_metering_point_type(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        all_metering_point_types = _get_all_wholesale_metering_point_types()
 
+        subscriptions_rows = [
+            factory.create_row(metering_point_type=metering_point_type)
+            for metering_point_type in all_metering_point_types
+        ]
+        prepared_subscriptions = factory.create(spark, subscriptions_rows)
 
-charges_flex_consumption_dataset_1 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        Decimal("100.10"),
-        datetime(2020, 1, 1, 0, 0),
-        MeteringPointType.CONSUMPTION.value,
-        SettlementMethod.FLEX.value,
-        1,
-        1,
-    )
-]
-charges_flex_consumption_dataset_2 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        Decimal("200.50"),
-        datetime(2020, 2, 1, 0, 0),
-        MeteringPointType.CONSUMPTION.value,
-        SettlementMethod.FLEX.value,
-        1,
-        1,
-    )
-]
+        # Act
+        actual = calculate(
+            prepared_subscriptions,
+            DefaultValues.CALCULATION_PERIOD_START,
+            DefaultValues.CALCULATION_PERIOD_END,
+            DefaultValues.TIME_ZONE,
+        ).df
+
+        # Assert
+        expected = [
+            metering_point_type.value
+            for metering_point_type in all_metering_point_types
+        ]
+        assert actual.count() == len(expected)
+        actual_metering_point_types = [
+            row[Colname.metering_point_type] for row in actual.collect()
+        ]
+        assert set(actual_metering_point_types) == set(expected)
+
+    def test__returns_result_per_settlement_method(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+
+        prepared_subscriptions_rows = [
+            factory.create_row(settlement_method=SettlementMethod.FLEX),
+            factory.create_row(settlement_method=SettlementMethod.NON_PROFILED),
+        ]
+        prepared_subscriptions = factory.create(spark, prepared_subscriptions_rows)
+
+        # Act
+        actual = calculate(
+            prepared_subscriptions,
+            DefaultValues.CALCULATION_PERIOD_START,
+            DefaultValues.CALCULATION_PERIOD_END,
+            DefaultValues.TIME_ZONE,
+        ).df
+
+        # Assert
+        expected = [SettlementMethod.FLEX.value, SettlementMethod.NON_PROFILED.value]
+        assert actual.count() == 2
+        actual_settlement_methods = [
+            row[Colname.settlement_method] for row in actual.collect()
+        ]
+        assert set(actual_settlement_methods) == set(expected)
 
 
-@pytest.mark.parametrize(
-    "charges_flex_consumption,expected",
-    [
-        (charges_flex_consumption_dataset_1, Decimal("3.22903226")),
-        (charges_flex_consumption_dataset_2, Decimal("6.91379310")),
-    ],
-)
-def test__calculate_price_per_day__divides_charge_price_by_days_in_month(
-    spark, charges_flex_consumption, expected
-):
-    # Arrange
-    charges_flex_consumption = spark.createDataFrame(
-        charges_flex_consumption, schema=charges_flex_consumption_schema
+class TestWhenDayLightSavingTime:
+    @pytest.mark.parametrize(
+        "period_start, period_end, input_charge_price, expected_output_charge_price",
+        [
+            (  # Entering daylight saving time
+                datetime(2020, 2, 29, 23, 0),
+                datetime(2020, 3, 31, 22, 0),
+                Decimal("0.31"),
+                Decimal("0.010"),  # 0.31 / 31
+            ),
+            (  # month with 31 days
+                datetime(2020, 9, 30, 22, 0),
+                datetime(2020, 10, 31, 23, 0),
+                Decimal("0.31"),
+                Decimal("0.010"),  # 10 / 31 (days)
+            ),
+        ],
     )
+    def test__returns_expected_charge_price(
+        self,
+        spark: SparkSession,
+        period_start: datetime,
+        period_end: datetime,
+        input_charge_price: Decimal,
+        expected_output_charge_price: Decimal,
+    ) -> None:
+        # Arrange
+        subscriptions_row = factory.create_row(charge_price=input_charge_price)
+        prepared_subscriptions_charges = factory.create(spark, [subscriptions_row])
 
-    # Act
-    result = calculate_price_per_day(charges_flex_consumption)
+        # Act
+        actual = calculate(
+            prepared_subscriptions_charges,
+            period_start,
+            period_end,
+            DefaultValues.TIME_ZONE,
+        ).df
 
-    # Assert
-    assert result.collect()[0][Colname.price_per_day] == expected
-
-
-charges_per_day_dataset_1 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        Decimal("100.10"),
-        datetime(2020, 1, 1, 0, 0),
-        MeteringPointType.CONSUMPTION.value,
-        SettlementMethod.FLEX.value,
-        1,
-        1,
-        Decimal("3.22903226"),
-    )
-]
-charges_per_day_dataset_2 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        Decimal("100.10"),
-        datetime(2020, 1, 1, 0, 0),
-        MeteringPointType.CONSUMPTION.value,
-        SettlementMethod.FLEX.value,
-        1,
-        1,
-        Decimal("3.22903226"),
-    ),
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        Decimal("100.10"),
-        datetime(2020, 1, 1, 0, 0),
-        MeteringPointType.CONSUMPTION.value,
-        SettlementMethod.FLEX.value,
-        1,
-        1,
-        Decimal("3.22903226"),
-    ),
-]
-charges_per_day_dataset_3 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        Decimal("100.10"),
-        datetime(2020, 1, 1, 0, 0),
-        MeteringPointType.CONSUMPTION.value,
-        SettlementMethod.FLEX.value,
-        1,
-        1,
-        Decimal("3.22903226"),
-    ),
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        Decimal("100.10"),
-        datetime(2020, 1, 2, 0, 0),
-        MeteringPointType.CONSUMPTION.value,
-        SettlementMethod.FLEX.value,
-        1,
-        1,
-        Decimal("3.22903226"),
-    ),
-]
-charges_per_day_dataset_4 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        Decimal("100.10"),
-        datetime(2020, 1, 1, 0, 0),
-        MeteringPointType.CONSUMPTION.value,
-        SettlementMethod.FLEX.value,
-        1,
-        1,
-        Decimal("3.22903226"),
-    ),
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        Decimal("100.10"),
-        datetime(2021, 1, 1, 0, 0),
-        MeteringPointType.CONSUMPTION.value,
-        SettlementMethod.FLEX.value,
-        1,
-        1,
-        Decimal("3.22903226"),
-    ),
-]
+        # Assert
+        assert actual.count() == 1
+        assert actual.collect()[0][Colname.charge_price] == expected_output_charge_price
 
 
-@pytest.mark.parametrize(
-    "charges_per_day,expected_charge_count,expected_total_daily_charge_price",
-    [
-        (charges_per_day_dataset_1, 1, Decimal("3.22903226")),
-        (charges_per_day_dataset_2, 2, Decimal("6.45806452")),
-        (charges_per_day_dataset_3, 1, Decimal("3.22903226")),
-        (charges_per_day_dataset_4, 1, Decimal("3.22903226")),
-    ],
-)
-def test__get_count_of_charges_and_total_daily_charge_price__counts_and_sums_up_amount_per_day(
-    spark, charges_per_day, expected_charge_count, expected_total_daily_charge_price
-):
-    # Arrange
-    charges_per_day = spark.createDataFrame(
-        charges_per_day, schema=charges_per_day_schema
-    )
+class TestWhenMissingAllInputChargePrices:
+    def test__returns_expected_result(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        quantity_1 = 1
+        quantity_2 = 2
+        expected_total_quantity = quantity_1 + quantity_2
 
-    # Act
-    result = get_count_of_charges_and_total_daily_charge_price(charges_per_day)
+        prepared_subscriptions_rows = [
+            factory.create_row(
+                metering_point_id="1",
+                quantity=quantity_1,
+                charge_price=None,
+            ),
+            factory.create_row(
+                metering_point_id="2",
+                quantity=quantity_2,
+                charge_price=None,
+            ),
+        ]
+        prepared_subscriptions = factory.create(spark, prepared_subscriptions_rows)
 
-    # Assert
-    result_collect = result.collect()
-    assert result_collect[0][Colname.charge_count] == expected_charge_count
-    assert (
-        result_collect[0][Colname.total_daily_charge_price]
-        == expected_total_daily_charge_price
-    )
+        # Act
+        actual = calculate(
+            prepared_subscriptions,
+            DefaultValues.CALCULATION_PERIOD_START,
+            DefaultValues.CALCULATION_PERIOD_END,
+            DefaultValues.TIME_ZONE,
+        ).df
+
+        # Assert
+        assert actual.count() == 1
+        assert actual.collect()[0][Colname.total_quantity] == expected_total_quantity
+        assert actual.collect()[0][Colname.charge_price] is None
+        assert actual.collect()[0][Colname.total_amount] is None
+
+
+class TestWhenMultipleMeteringPointsPerChargeTime:
+    def test__returns_sum_of_quantities_per_charge_time(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        time_1 = DefaultValues.CALCULATION_PERIOD_START
+        time_2 = time_1 + timedelta(days=1)
+        quantity_1 = 3
+        quantity_2 = 4
+        expected_total_quantity_1 = 2 * quantity_1
+        expected_total_quantity_2 = 2 * quantity_2
+
+        prepared_subscriptions_rows = [
+            factory.create_row(
+                metering_point_id="1",
+                charge_time=time_1,
+                quantity=quantity_1,
+            ),
+            factory.create_row(
+                metering_point_id="2",
+                charge_time=time_1,
+                quantity=quantity_1,
+            ),
+            factory.create_row(
+                metering_point_id="1",
+                charge_time=time_2,
+                quantity=quantity_2,
+            ),
+            factory.create_row(
+                metering_point_id="2",
+                charge_time=time_2,
+                quantity=quantity_2,
+            ),
+        ]
+        prepared_subscriptions = factory.create(spark, prepared_subscriptions_rows)
+
+        # Act
+        actual = calculate(
+            prepared_subscriptions,
+            DefaultValues.CALCULATION_PERIOD_START,
+            DefaultValues.CALCULATION_PERIOD_END,
+            DefaultValues.TIME_ZONE,
+        ).df
+
+        # Assert
+        actual_rows = actual.orderBy(Colname.charge_time).collect()
+        assert len(actual_rows) == 2
+        assert actual_rows[0][Colname.total_quantity] == expected_total_quantity_1
+        assert actual_rows[1][Colname.total_quantity] == expected_total_quantity_2

@@ -15,10 +15,9 @@
 from datetime import datetime
 from decimal import Decimal
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import array, lit, col
+from pyspark.sql.functions import lit, col
 import pytest
 import uuid
-
 from helpers.data_frame_utils import set_column
 from package.codelists import (
     AggregationLevel,
@@ -28,7 +27,7 @@ from package.codelists import (
 )
 from package.constants import EnergyResultColumnNames
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
-from package.calculation_output.schemas import energy_results_schema
+from package.calculation.output.schemas import energy_results_schema
 
 
 def _create_df(spark: SparkSession) -> DataFrame:
@@ -134,7 +133,6 @@ def test__migrated_table_accepts_valid_data(
     spark: SparkSession,
     column_name: str,
     column_value: str | list,
-    migrations_executed: None,
 ) -> None:
     # Arrange
     result_df = _create_df(spark)

@@ -16,15 +16,18 @@ from datetime import datetime
 from decimal import Decimal
 from pyspark.sql import Row, SparkSession
 
-from package.calculation.preparation.charge_link_metering_point_periods import (
+from package.calculation.preparation.data_structures.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
     charge_link_metering_point_periods_schema,
 )
-from package.calculation.preparation.charge_master_data import (
+from calculation.preparation.transformations import (
+    prepared_metering_point_time_series_factory,
+)
+from package.calculation.preparation.data_structures.charge_master_data import (
     ChargeMasterData,
     charge_master_data_schema,
 )
-from package.calculation.preparation.charge_prices import (
+from package.calculation.preparation.data_structures.charge_prices import (
     ChargePrices,
     charge_prices_schema,
 )
@@ -35,53 +38,46 @@ import package.codelists as e
 
 
 class DefaultValues:
-    DEFAULT_GRID_AREA = "543"
-    DEFAULT_CHARGE_TYPE = ChargeType.TARIFF
-    DEFAULT_CHARGE_CODE = "4000"
-    DEFAULT_CHARGE_OWNER = "001"
-    DEFAULT_CHARGE_TAX = True
-    DEFAULT_CHARGE_TIME_HOUR_0 = datetime(2019, 12, 31, 23)
-    DEFAULT_CHARGE_PRICE = Decimal("2.000005")
-    DEFAULT_CHARGE_QUANTITY = 1
-    DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
-    DEFAULT_METERING_POINT_ID = "123456789012345678901234567"
-    DEFAULT_METERING_POINT_TYPE = e.MeteringPointType.CONSUMPTION
-    DEFAULT_SETTLEMENT_METHOD = e.SettlementMethod.FLEX
-    DEFAULT_QUANTITY = Decimal("1.005")
-    DEFAULT_QUALITY = e.ChargeQuality.CALCULATED
-    DEFAULT_PERIOD_START_DATETIME = datetime(2019, 12, 31, 23)
-    DEFAULT_BALANCE_RESPONSIBLE_ID = "1234567890123"
-    DEFAULT_FROM_GRID_AREA = None
-    DEFAULT_TO_GRID_AREA = None
-    DEFAULT_FROM_DATE: datetime = datetime(2019, 12, 31, 23)
-    DEFAULT_TO_DATE: datetime = datetime(2020, 1, 31, 23)
-    DEFAULT_PARENT_METERING_POINT_ID = None
-    DEFAULT_CALCULATION_TYPE = None
+    GRID_AREA = "543"
+    CHARGE_TYPE = ChargeType.TARIFF
+    CHARGE_CODE = "4000"
+    CHARGE_OWNER = "001"
+    CHARGE_TAX = True
+    CHARGE_TIME_HOUR_0 = datetime(2019, 12, 31, 23)
+    CHARGE_PRICE = Decimal("2.000005")
+    CHARGE_QUANTITY = 1
+    ENERGY_SUPPLIER_ID = "1234567890123"
+    METERING_POINT_ID = "123456789012345678901234567"
+    METERING_POINT_TYPE = e.MeteringPointType.CONSUMPTION
+    SETTLEMENT_METHOD = e.SettlementMethod.FLEX
+    QUANTITY = Decimal("1.005")
+    PERIOD_START_DATETIME = datetime(2019, 12, 31, 23)
+    FROM_DATE: datetime = datetime(2019, 12, 31, 23)
+    TO_DATE: datetime = datetime(2020, 1, 31, 23)
 
 
 def create_time_series_row(
-    metering_point_id: str = DefaultValues.DEFAULT_METERING_POINT_ID,
-    quantity: Decimal = DefaultValues.DEFAULT_QUANTITY,
+    metering_point_id: str = DefaultValues.METERING_POINT_ID,
+    quantity: Decimal = DefaultValues.QUANTITY,
     quality: e.QuantityQuality = e.QuantityQuality.CALCULATED,
     observation_time: datetime = datetime(2019, 12, 31, 23),
 ) -> Row:
-    row = {
-        Colname.metering_point_id: metering_point_id,
-        Colname.quantity: quantity,
-        Colname.quality: quality.value,
-        Colname.observation_time: observation_time,
-    }
-    return Row(**row)
+    return prepared_metering_point_time_series_factory.create_row(
+        metering_point_id=metering_point_id,
+        quantity=quantity,
+        quality=quality,
+        observation_time=observation_time,
+    )
 
 
 def create_charge_master_data_row(
-    charge_code: str = DefaultValues.DEFAULT_CHARGE_CODE,
-    charge_type: ChargeType = DefaultValues.DEFAULT_CHARGE_TYPE,
-    charge_owner: str = DefaultValues.DEFAULT_CHARGE_OWNER,
-    charge_tax: bool = DefaultValues.DEFAULT_CHARGE_TAX,
+    charge_code: str = DefaultValues.CHARGE_CODE,
+    charge_type: ChargeType = DefaultValues.CHARGE_TYPE,
+    charge_owner: str = DefaultValues.CHARGE_OWNER,
+    charge_tax: bool = DefaultValues.CHARGE_TAX,
     resolution: e.ChargeResolution = e.ChargeResolution.HOUR,
-    from_date: datetime = datetime(2019, 12, 31, 23),
-    to_date: datetime = datetime(2020, 1, 1, 0),
+    from_date: datetime = DefaultValues.FROM_DATE,
+    to_date: datetime | None = DefaultValues.TO_DATE,
 ) -> Row:
     charge_key: str = f"{charge_code}-{charge_owner}-{charge_type.value}"
 
@@ -100,11 +96,11 @@ def create_charge_master_data_row(
 
 
 def create_charge_prices_row(
-    charge_code: str = DefaultValues.DEFAULT_CHARGE_CODE,
-    charge_type: ChargeType = DefaultValues.DEFAULT_CHARGE_TYPE,
-    charge_owner: str = DefaultValues.DEFAULT_CHARGE_OWNER,
-    charge_time: datetime = DefaultValues.DEFAULT_CHARGE_TIME_HOUR_0,
-    charge_price: Decimal = DefaultValues.DEFAULT_CHARGE_PRICE,
+    charge_code: str = DefaultValues.CHARGE_CODE,
+    charge_type: ChargeType = DefaultValues.CHARGE_TYPE,
+    charge_owner: str = DefaultValues.CHARGE_OWNER,
+    charge_time: datetime = DefaultValues.CHARGE_TIME_HOUR_0,
+    charge_price: Decimal = DefaultValues.CHARGE_PRICE,
 ) -> Row:
     charge_key: str = f"{charge_code}-{charge_owner}-{charge_type.value}"
 
@@ -121,21 +117,17 @@ def create_charge_prices_row(
 
 
 def create_charge_link_metering_point_periods_row(
-    charge_type: e.ChargeType = DefaultValues.DEFAULT_CHARGE_TYPE,
-    charge_code: str = DefaultValues.DEFAULT_CHARGE_CODE,
-    charge_owner: str = DefaultValues.DEFAULT_CHARGE_OWNER,
-    metering_point_id: str = DefaultValues.DEFAULT_METERING_POINT_ID,
-    charge_quantity: int = DefaultValues.DEFAULT_CHARGE_QUANTITY,
-    metering_point_type: (
-        e.MeteringPointType
-    ) = DefaultValues.DEFAULT_METERING_POINT_TYPE,
-    settlement_method: (
-        e.SettlementMethod | None
-    ) = DefaultValues.DEFAULT_SETTLEMENT_METHOD,
-    grid_area: str = DefaultValues.DEFAULT_GRID_AREA,
-    energy_supplier_id: str | None = DefaultValues.DEFAULT_ENERGY_SUPPLIER_ID,
-    from_date: datetime = DefaultValues.DEFAULT_FROM_DATE,
-    to_date: datetime | None = DefaultValues.DEFAULT_TO_DATE,
+    charge_type: e.ChargeType = DefaultValues.CHARGE_TYPE,
+    charge_code: str = DefaultValues.CHARGE_CODE,
+    charge_owner: str = DefaultValues.CHARGE_OWNER,
+    metering_point_id: str = DefaultValues.METERING_POINT_ID,
+    quantity: int = DefaultValues.CHARGE_QUANTITY,
+    metering_point_type: e.MeteringPointType = DefaultValues.METERING_POINT_TYPE,
+    settlement_method: e.SettlementMethod | None = DefaultValues.SETTLEMENT_METHOD,
+    grid_area: str = DefaultValues.GRID_AREA,
+    energy_supplier_id: str | None = DefaultValues.ENERGY_SUPPLIER_ID,
+    from_date: datetime = DefaultValues.FROM_DATE,
+    to_date: datetime | None = DefaultValues.TO_DATE,
 ) -> Row:
     charge_key: str = f"{charge_code}-{charge_owner}-{charge_type.value}"
 
@@ -143,7 +135,7 @@ def create_charge_link_metering_point_periods_row(
         Colname.charge_key: charge_key,
         Colname.charge_type: charge_type.value,
         Colname.metering_point_id: metering_point_id,
-        Colname.charge_quantity: charge_quantity,
+        Colname.quantity: quantity,
         Colname.from_date: from_date,
         Colname.to_date: to_date,
         Colname.metering_point_type: metering_point_type.value,

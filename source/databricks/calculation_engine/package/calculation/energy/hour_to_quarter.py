@@ -13,32 +13,21 @@
 # limitations under the License.
 
 import pyspark.sql.functions as f
-from pyspark.sql import DataFrame
-from pyspark.sql.types import (
-    DecimalType,
-    StructType,
-    StructField,
-    StringType,
-    TimestampType,
-)
 
-from package.calculation.preparation.quarterly_metering_point_time_series import (
+from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
+    PreparedMeteringPointTimeSeries,
+)
+from package.calculation.preparation.data_structures.quarterly_metering_point_time_series import (
     QuarterlyMeteringPointTimeSeries,
 )
 from package.codelists import MeteringPointResolution
-from package.common import assert_schema
 from package.constants import Colname
 
 
 def transform_hour_to_quarter(
-    metering_point_time_series: DataFrame,
+    metering_point_time_series: PreparedMeteringPointTimeSeries,
 ) -> QuarterlyMeteringPointTimeSeries:
-    assert_schema(
-        metering_point_time_series.schema,
-        metering_point_time_series_schema,
-    )
-
-    result = metering_point_time_series.withColumn(
+    result = metering_point_time_series.df.withColumn(
         "quarter_times",
         f.when(
             f.col(Colname.resolution) == MeteringPointResolution.HOUR.value,
@@ -53,12 +42,13 @@ def transform_hour_to_quarter(
             f.array(f.col(Colname.observation_time)),
         ),
     ).select(
-        metering_point_time_series["*"],
+        metering_point_time_series.df["*"],
         f.explode("quarter_times").alias("quarter_time"),
     )
 
     result = result.withColumn(
-        Colname.time_window, f.window(f.col("quarter_time"), "15 minutes")
+        Colname.observation_time,
+        f.col("quarter_time"),
     )
 
     result = result.withColumn(
@@ -74,21 +64,3 @@ def transform_hour_to_quarter(
     )
 
     return QuarterlyMeteringPointTimeSeries(result)
-
-
-metering_point_time_series_schema = StructType(
-    [
-        StructField(Colname.grid_area, StringType(), False),
-        StructField(Colname.to_grid_area, StringType(), True),
-        StructField(Colname.from_grid_area, StringType(), True),
-        StructField(Colname.metering_point_id, StringType(), False),
-        StructField(Colname.metering_point_type, StringType(), False),
-        StructField(Colname.resolution, StringType(), False),
-        StructField(Colname.observation_time, TimestampType(), False),
-        StructField(Colname.quantity, DecimalType(18, 6), False),
-        StructField(Colname.quality, StringType(), False),
-        StructField(Colname.energy_supplier_id, StringType(), True),
-        StructField(Colname.balance_responsible_id, StringType(), True),
-        StructField(Colname.settlement_method, StringType(), True),
-    ]
-)

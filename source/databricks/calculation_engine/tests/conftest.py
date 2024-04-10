@@ -19,6 +19,7 @@ defined in the geh_stream directory in our tests.
 import os
 import shutil
 import subprocess
+from shutil import rmtree
 from datetime import datetime
 from typing import Generator, Callable, Optional
 
@@ -30,7 +31,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType
 
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation_input.schemas import (
+from package.calculation.input.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
     grid_loss_metering_points_schema,
@@ -40,18 +41,16 @@ from package.calculation_input.schemas import (
 )
 from package.codelists import CalculationType
 from package.container import create_and_configure_container, Container
-from package.datamigration.migration import _apply_migration
-from package.datamigration.migration_script_args import MigrationScriptArgs
-from package.datamigration.uncommitted_migrations import _get_all_migrations
 from package.infrastructure import paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
-    OUTPUT_DATABASE_NAME,
     OUTPUT_FOLDER,
     INPUT_DATABASE_NAME,
+    OUTPUT_DATABASE_NAME,
 )
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.integration_test_configuration import IntegrationTestConfiguration
+import tests.helpers.spark_sql_migration_helper as sql_migration_helper
 
 
 @pytest.fixture(scope="session")
@@ -61,7 +60,11 @@ def test_files_folder_path(tests_path: str) -> str:
 
 @pytest.fixture(scope="session")
 def spark() -> SparkSession:
-    return configure_spark_with_delta_pip(  # see https://docs.delta.io/latest/quick-start.html#python
+    warehouse_location = os.path.abspath("spark-warehouse")
+    if os.path.exists(warehouse_location):
+        rmtree(warehouse_location)
+
+    session = configure_spark_with_delta_pip(
         SparkSession.builder.config("spark.sql.streaming.schemaInference", True)
         .config("spark.ui.showConsoleProgress", "false")
         .config("spark.ui.enabled", "false")
@@ -83,6 +86,9 @@ def spark() -> SparkSession:
             "org.apache.spark.sql.delta.catalog.DeltaCatalog",
         )
     ).getOrCreate()
+
+    yield session
+    session.stop()
 
 
 @pytest.fixture(scope="session")
@@ -175,7 +181,7 @@ def data_lake_path(tests_path: str, worker_id: str) -> str:
 
 @pytest.fixture(scope="session")
 def calculation_input_folder(data_lake_path: str) -> str:
-    return "calculation_input"
+    return "input"
 
 
 @pytest.fixture(scope="session")
@@ -200,21 +206,8 @@ def migrations_executed(
     shutil.rmtree(calculation_output_path, ignore_errors=True)
     spark.sql(f"DROP DATABASE IF EXISTS {OUTPUT_DATABASE_NAME} CASCADE")
 
-    migration_args = MigrationScriptArgs(
-        data_storage_account_url="foo",
-        data_storage_account_name="foo",
-        data_storage_container_name="foo",
-        data_storage_credential=ClientSecretCredential("foo", "foo", "foo"),
-        calculation_input_folder=calculation_input_folder,
-        spark=spark,
-    )
-    # Overwrite in test
-    migration_args.storage_container_path = data_lake_path
-
     # Execute all migrations
-    migrations = _get_all_migrations()
-    for name in migrations:
-        _apply_migration(name, migration_args)
+    sql_migration_helper.migrate(spark)
 
 
 @pytest.fixture(scope="session")
@@ -321,6 +314,19 @@ def any_calculator_args() -> CalculatorArgs:
         calculation_period_start_datetime=datetime(2018, 1, 1, 23, 0, 0),
         calculation_period_end_datetime=datetime(2018, 1, 3, 23, 0, 0),
         calculation_execution_time_start=datetime(2018, 1, 5, 23, 0, 0),
+        time_zone="Europe/Copenhagen",
+    )
+
+
+@pytest.fixture(scope="session")
+def any_calculator_args_for_wholesale() -> CalculatorArgs:
+    return CalculatorArgs(
+        calculation_id="foo",
+        calculation_type=CalculationType.WHOLESALE_FIXING,
+        calculation_grid_areas=["805", "806"],
+        calculation_period_start_datetime=datetime(2022, 6, 30, 22, 0, 0),
+        calculation_period_end_datetime=datetime(2022, 7, 31, 22, 0, 0),
+        calculation_execution_time_start=datetime(2022, 8, 1, 22, 0, 0),
         time_zone="Europe/Copenhagen",
     )
 

@@ -11,90 +11,58 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import col, last_day, dayofmonth, count, sum
-from pyspark.sql.types import DecimalType
-from package.calculation.wholesale.schemas.calculate_daily_subscription_price_schema import (
-    calculate_daily_subscription_price_schema,
+from datetime import datetime
+
+import pyspark.sql.functions as f
+from pyspark.sql import DataFrame
+
+from package.calculation.preparation.data_structures.prepared_subscriptions import (
+    PreparedSubscriptions,
 )
+from package.calculation.wholesale.calculate_total_quantity_and_amount import (
+    calculate_total_quantity_and_amount,
+)
+from package.calculation.wholesale.data_structures.wholesale_results import (
+    WholesaleResults,
+)
+from package.codelists import ChargeType
+import package.common.datetime_utils as datetime_utils
 from package.constants import Colname
 
 
-def calculate_daily_subscription_price(
-    spark: SparkSession, subscription_charges: DataFrame
-) -> DataFrame:
-    # calculate price per day
-    charges_per_day = calculate_price_per_day(subscription_charges)
-
-    # get count of charges and total daily charge price
-    df = get_count_of_charges_and_total_daily_charge_price(charges_per_day)
-
-    return spark.createDataFrame(df.rdd, calculate_daily_subscription_price_schema)
-
-
-def calculate_price_per_day(
-    charges_per_day_flex_consumption: DataFrame,
-) -> DataFrame:
-    charges_per_day = charges_per_day_flex_consumption.withColumn(
-        Colname.price_per_day,
-        (
-            col(Colname.charge_price) / dayofmonth(last_day(col(Colname.charge_time)))
-        ).cast(DecimalType(14, 8)),
-    )
-    return charges_per_day
-
-
-def get_count_of_charges_and_total_daily_charge_price(
-    charges_per_day: DataFrame,
-) -> DataFrame:
-    grouped_charges_per_day = (
-        charges_per_day.groupBy(
-            Colname.charge_owner,
-            Colname.grid_area,
-            Colname.energy_supplier_id,
-            Colname.charge_time,
-        )
-        .agg(
-            count("*").alias(Colname.charge_count),
-            sum(Colname.price_per_day).alias(Colname.total_daily_charge_price),
-        )
-        .select(
-            Colname.charge_owner,
-            Colname.grid_area,
-            Colname.energy_supplier_id,
-            Colname.charge_time,
-            Colname.charge_count,
-            Colname.total_daily_charge_price,
-        )
+def calculate(
+    prepared_subscriptions: PreparedSubscriptions,
+    calculation_period_start: datetime,
+    calculation_period_end: datetime,
+    time_zone: str,
+) -> WholesaleResults:
+    prepared_subscriptions_df = prepared_subscriptions.df
+    subscriptions_with_daily_price = _calculate_price_per_day(
+        prepared_subscriptions_df,
+        calculation_period_start,
+        calculation_period_end,
+        time_zone,
     )
 
-    df = (
-        charges_per_day.select("*")
-        .distinct()
-        .join(
-            grouped_charges_per_day,
-            [
-                Colname.charge_owner,
-                Colname.grid_area,
-                Colname.energy_supplier_id,
-                Colname.charge_time,
-            ],
-            "inner",
-        )
-        .select(
-            Colname.charge_key,
-            Colname.charge_code,
-            Colname.charge_type,
-            Colname.charge_owner,
-            Colname.charge_price,
-            Colname.charge_time,
-            Colname.price_per_day,
-            Colname.charge_count,
-            Colname.total_daily_charge_price,
-            Colname.metering_point_type,
-            Colname.settlement_method,
-            Colname.grid_area,
-            Colname.energy_supplier_id,
-        )
+    subscription_amount_per_charge = calculate_total_quantity_and_amount(
+        subscriptions_with_daily_price, charge_type=ChargeType.SUBSCRIPTION
     )
-    return df
+
+    return WholesaleResults(subscription_amount_per_charge)
+
+
+def _calculate_price_per_day(
+    prepared_subscriptions: DataFrame,
+    calculation_period_start: datetime,
+    calculation_period_end: datetime,
+    time_zone: str,
+) -> DataFrame:
+    days_in_period = datetime_utils.get_number_of_days_in_period(
+        calculation_period_start, calculation_period_end, time_zone
+    )
+
+    subscriptions_with_daily_price = prepared_subscriptions.withColumn(
+        Colname.charge_price, (f.col(Colname.charge_price) / f.lit(days_in_period))
+    )
+
+    return subscriptions_with_daily_price

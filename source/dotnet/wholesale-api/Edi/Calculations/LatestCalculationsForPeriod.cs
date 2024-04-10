@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Edi.Exceptions;
 using NodaTime;
-using Period = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.Period;
+using Period = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.Period;
 
 namespace Energinet.DataHub.Wholesale.Edi.Calculations;
 
@@ -58,9 +58,21 @@ public class LatestCalculationsForPeriod
                 return latestCalculationsForPeriod.OrderBy(x => x.Period.Start).ToList();
         }
 
-        return latestCalculationsForPeriod.Count == 0
-            ? (IReadOnlyCollection<CalculationForPeriod>)latestCalculationsForPeriod.OrderBy(x => x.Period.Start).ToList()
-            : throw new MissingCalculationException($"No calculation found for dates: {string.Join(", ", remainingDaysInPeriod)}");
+        if (DaysInPeriodWithNoCalculations(remainingDaysInPeriod, latestCalculationsForPeriod))
+        {
+            throw new MissingCalculationException($"No calculation found for dates: {string.Join(", ", remainingDaysInPeriod)}");
+        }
+
+        return latestCalculationsForPeriod.OrderBy(x => x.Period.Start)
+            .ToList();
+    }
+
+    /// <summary>
+    /// Ensure that all days in the period have a calculation or none have a calculation.
+    /// </summary>
+    private static bool DaysInPeriodWithNoCalculations(List<Instant> daysWithoutCalculation, List<CalculationForPeriod> latestCalculationsForPeriod)
+    {
+        return daysWithoutCalculation.Any() && latestCalculationsForPeriod.Any();
     }
 
     private static IReadOnlyCollection<CalculationForPeriod> GetPeriodsWhereCalculationIsLatest(

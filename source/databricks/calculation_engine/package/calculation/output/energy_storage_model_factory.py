@@ -18,7 +18,7 @@ from pyspark.sql.types import DecimalType
 from pyspark.sql.window import Window
 
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.energy.energy_results import EnergyResults
+from package.calculation.energy.data_structures.energy_results import EnergyResults
 from package.codelists import TimeSeriesType, AggregationLevel
 from package.constants import Colname, EnergyResultColumnNames
 
@@ -29,8 +29,6 @@ def create(
     time_series_type: TimeSeriesType,
     aggregation_level: AggregationLevel,
 ) -> DataFrame:
-
-    energy_results.df.printSchema()
 
     df = _add_aggregation_level_and_time_series_type(
         energy_results.df, aggregation_level, time_series_type
@@ -116,11 +114,11 @@ def _map_to_storage_dataframe(results: DataFrame) -> DataFrame:
             EnergyResultColumnNames.balance_responsible_id
         ),
         # TODO JVM: This is a temporary fix for the fact that the sum_quantity column is not nullable
-        f.coalesce(f.col(Colname.sum_quantity), f.lit(0))
+        f.coalesce(f.col(Colname.quantity), f.lit(0))
         .alias(EnergyResultColumnNames.quantity)
         .cast(DecimalType(18, 3)),
         f.col(Colname.qualities).alias(EnergyResultColumnNames.quantity_qualities),
-        f.col(Colname.time_window_start).alias(EnergyResultColumnNames.time),
+        f.col(Colname.observation_time).alias(EnergyResultColumnNames.time),
         f.col(EnergyResultColumnNames.aggregation_level),
         f.col(EnergyResultColumnNames.time_series_type),
         f.col(EnergyResultColumnNames.calculation_id),

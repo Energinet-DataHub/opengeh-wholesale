@@ -11,20 +11,24 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-from pyspark.sql import DataFrame
+from typing import Tuple
 
 import package.calculation.energy.aggregators.exchange_aggregators as exchange_aggr
 import package.calculation.energy.aggregators.grid_loss_aggregators as grid_loss_aggr
 import package.calculation.energy.aggregators.grouping_aggregators as grouping_aggr
 import package.calculation.energy.aggregators.metering_point_time_series_aggregators as mp_aggr
 import package.calculation.output.energy_storage_model_factory as factory
-from package.calculation.CalculationResults import EnergyResultsContainer
+from package.calculation.calculation_results import EnergyResultsContainer
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.energy.energy_results import EnergyResults
+from package.calculation.energy.data_structures.energy_results import EnergyResults
 from package.calculation.energy.hour_to_quarter import transform_hour_to_quarter
-from package.calculation.preparation.grid_loss_responsible import GridLossResponsible
-from package.calculation.preparation.quarterly_metering_point_time_series import (
+from package.calculation.preparation.data_structures.grid_loss_responsible import (
+    GridLossResponsible,
+)
+from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
+    PreparedMeteringPointTimeSeries,
+)
+from package.calculation.preparation.data_structures.quarterly_metering_point_time_series import (
     QuarterlyMeteringPointTimeSeries,
 )
 from package.codelists import (
@@ -36,12 +40,12 @@ from package.codelists import (
 from package.infrastructure import logging_configuration
 
 
-@logging_configuration.use_span("calculation.energy")
+@logging_configuration.use_span("calculation.execute.energy")
 def execute(
     args: CalculatorArgs,
-    metering_point_time_series: DataFrame,
+    metering_point_time_series: PreparedMeteringPointTimeSeries,
     grid_loss_responsible_df: GridLossResponsible,
-) -> EnergyResultsContainer:
+) -> Tuple[EnergyResultsContainer, EnergyResults, EnergyResults]:
     with logging_configuration.start_span("quarterly_metering_point_time_series"):
         quarterly_metering_point_time_series = transform_hour_to_quarter(
             metering_point_time_series
@@ -59,7 +63,7 @@ def _calculate(
     args: CalculatorArgs,
     quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
     grid_loss_responsible_df: GridLossResponsible,
-) -> EnergyResultsContainer:
+) -> Tuple[EnergyResultsContainer, EnergyResults, EnergyResults]:
     results = EnergyResultsContainer()
 
     # cache of net exchange per grid area did not improve performance (01/12/2023)
@@ -130,9 +134,10 @@ def _calculate(
 
     _calculate_total_consumption(args, production_per_ga, net_exchange_per_ga, results)
 
-    return results
+    return results, positive_grid_loss, negative_grid_loss
 
 
+@logging_configuration.use_span("calculate_net_exchange")
 def _calculate_net_exchange(
     args: CalculatorArgs,
     quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
@@ -148,7 +153,7 @@ def _calculate_net_exchange(
             )
         )
 
-        results.exchange_per_neighbour_ga = factory.create(
+        results.net_exchange_per_neighbour_ga = factory.create(
             args,
             exchange_per_neighbour_ga,
             TimeSeriesType.NET_EXCHANGE_PER_NEIGHBORING_GA,
@@ -159,7 +164,7 @@ def _calculate_net_exchange(
         exchange_per_neighbour_ga
     )
 
-    results.exchange_per_grid_area = factory.create(
+    results.net_exchange_per_ga = factory.create(
         args,
         exchange_per_grid_area,
         TimeSeriesType.NET_EXCHANGE_PER_GA,
@@ -169,6 +174,7 @@ def _calculate_net_exchange(
     return exchange_per_grid_area
 
 
+@logging_configuration.use_span("calculate_consumption_per_ga_and_brp_and_es")
 def _calculate_consumption_per_ga_and_brp_and_es(
     quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
 ) -> EnergyResults:
@@ -182,6 +188,9 @@ def _calculate_consumption_per_ga_and_brp_and_es(
     return consumption_per_ga_and_brp_and_es
 
 
+@logging_configuration.use_span(
+    "calculate_temporary_production_per_per_ga_and_brp_and_es"
+)
 def _calculate_temporary_production_per_per_ga_and_brp_and_es(
     args: CalculatorArgs,
     quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
@@ -206,6 +215,9 @@ def _calculate_temporary_production_per_per_ga_and_brp_and_es(
     return temporary_production_per_ga_and_brp_and_es
 
 
+@logging_configuration.use_span(
+    "calculate_temporary_flex_consumption_per_per_ga_and_brp_and_es"
+)
 def _calculate_temporary_flex_consumption_per_per_ga_and_brp_and_es(
     args: CalculatorArgs,
     quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
@@ -232,6 +244,7 @@ def _calculate_temporary_flex_consumption_per_per_ga_and_brp_and_es(
     return temporary_flex_consumption_per_ga_and_brp_and_es
 
 
+@logging_configuration.use_span("calculate_grid_loss")
 def _calculate_grid_loss(
     args: CalculatorArgs,
     net_exchange_per_ga: EnergyResults,
@@ -278,6 +291,7 @@ def _calculate_grid_loss(
     return positive_grid_loss, negative_grid_loss
 
 
+@logging_configuration.use_span("calculate_adjust_production_per_ga_and_brp_and_es")
 def _calculate_adjust_production_per_ga_and_brp_and_es(
     temporary_production_per_ga_and_brp_and_es: EnergyResults,
     negative_grid_loss: EnergyResults,
@@ -293,6 +307,9 @@ def _calculate_adjust_production_per_ga_and_brp_and_es(
     return production_per_ga_and_brp_and_es
 
 
+@logging_configuration.use_span(
+    "calculate_adjust_flex_consumption_per_ga_and_brp_and_es"
+)
 def _calculate_adjust_flex_consumption_per_ga_and_brp_and_es(
     temporary_flex_consumption_per_ga_and_brp_and_es: EnergyResults,
     positive_grid_loss: EnergyResults,
@@ -308,6 +325,7 @@ def _calculate_adjust_flex_consumption_per_ga_and_brp_and_es(
     return flex_consumption_per_ga_and_brp_and_es
 
 
+@logging_configuration.use_span("calculate_production")
 def _calculate_production(
     args: CalculatorArgs,
     production_per_ga_and_brp_and_es: EnergyResults,
@@ -349,6 +367,7 @@ def _calculate_production(
     return aggregate_per_ga
 
 
+@logging_configuration.use_span("calculate_flex_consumption")
 def _calculate_flex_consumption(
     args: CalculatorArgs,
     flex_consumption_per_ga_and_brp_and_es: EnergyResults,
@@ -391,6 +410,7 @@ def _calculate_flex_consumption(
         )
 
 
+@logging_configuration.use_span("calculate_non_profiled_consumption")
 def _calculate_non_profiled_consumption(
     args: CalculatorArgs,
     consumption_per_ga_and_brp_and_es: EnergyResults,
@@ -432,6 +452,7 @@ def _calculate_non_profiled_consumption(
     )
 
 
+@logging_configuration.use_span("calculate_total_consumption")
 def _calculate_total_consumption(
     args: CalculatorArgs,
     production_per_ga: EnergyResults,

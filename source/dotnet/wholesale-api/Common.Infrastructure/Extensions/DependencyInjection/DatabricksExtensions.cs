@@ -32,11 +32,13 @@ public static class DatabricksExtensions
     /// </summary>
     public static IServiceCollection AddDatabricksJobsForApplication(this IServiceCollection services, IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
         services.AddDatabricksJobs(configuration);
 
         // Health checks
         services.AddHealthChecks()
-            .AddDatabricksJobsApiHealthCheck();
+            .AddDatabricksJobsApiHealthCheck(name: "DatabricksJobsApi");
 
         return services;
     }
@@ -46,11 +48,13 @@ public static class DatabricksExtensions
     /// </summary>
     public static IServiceCollection AddDatabricksSqlStatementForApplication(this IServiceCollection services, IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
         services.AddDatabricksSqlStatementExecution(configuration);
 
         // Health checks
         services.AddHealthChecks()
-            .AddDatabricksSqlStatementApiHealthCheck();
+            .AddDatabricksSqlStatementApiHealthCheck(name: "DatabricksSqlStatementApi");
 
         return services;
     }

@@ -13,25 +13,20 @@
 # limitations under the License.
 from datetime import datetime
 from decimal import Decimal
-
 import pytest
-from pyspark.sql.functions import lit
+from pyspark.sql import Row, SparkSession
 
-import package.codelists as e
-
-from pyspark.sql import SparkSession
-
+from calculation.preparation.transformations import (
+    prepared_metering_point_time_series_factory,
+)
+from package.calculation.preparation.data_structures.prepared_tariffs import (
+    prepared_tariffs_schema,
+)
 from package.calculation.preparation.transformations import (
-    get_tariff_charges,
+    get_prepared_tariffs,
 )
-from package.calculation.wholesale.schemas.tariffs_schema import tariff_schema
-from package.calculation_input.schemas import (
-    time_series_point_schema,
-    charge_price_points_schema,
-)
-
+import package.codelists as e
 from package.constants import Colname
-from pyspark.sql import Row
 
 import tests.calculation.charges_factory as factory
 
@@ -39,20 +34,20 @@ import tests.calculation.charges_factory as factory
 DEFAULT_TIME_ZONE = "Europe/Copenhagen"
 
 
-def _create_expected_tariff_charges_row(
-    charge_key: str = f"{factory.DefaultValues.DEFAULT_CHARGE_CODE}-{factory.DefaultValues.DEFAULT_CHARGE_OWNER}-{e.ChargeType.TARIFF.value}",
-    charge_code: str = factory.DefaultValues.DEFAULT_CHARGE_CODE,
-    charge_owner: str = factory.DefaultValues.DEFAULT_CHARGE_OWNER,
-    charge_tax: bool = factory.DefaultValues.DEFAULT_CHARGE_TAX,
+def _create_expected_prepared_tariffs_row(
+    charge_key: str = f"{factory.DefaultValues.CHARGE_CODE}-{factory.DefaultValues.CHARGE_OWNER}-{e.ChargeType.TARIFF.value}",
+    charge_code: str = factory.DefaultValues.CHARGE_CODE,
+    charge_owner: str = factory.DefaultValues.CHARGE_OWNER,
+    charge_tax: bool = factory.DefaultValues.CHARGE_TAX,
     resolution: e.ChargeResolution = e.ChargeResolution.HOUR,
-    charge_time: datetime = factory.DefaultValues.DEFAULT_CHARGE_TIME_HOUR_0,
-    charge_price: Decimal = factory.DefaultValues.DEFAULT_CHARGE_PRICE,
-    metering_point_id: str = factory.DefaultValues.DEFAULT_METERING_POINT_ID,
-    energy_supplier_id: str = factory.DefaultValues.DEFAULT_ENERGY_SUPPLIER_ID,
-    metering_point_type: e.MeteringPointType = factory.DefaultValues.DEFAULT_METERING_POINT_TYPE,
-    settlement_method: e.SettlementMethod = factory.DefaultValues.DEFAULT_SETTLEMENT_METHOD,
-    grid_area: str = factory.DefaultValues.DEFAULT_GRID_AREA,
-    quantity: Decimal = factory.DefaultValues.DEFAULT_QUANTITY,
+    charge_time: datetime = factory.DefaultValues.CHARGE_TIME_HOUR_0,
+    charge_price: Decimal = factory.DefaultValues.CHARGE_PRICE,
+    metering_point_id: str = factory.DefaultValues.METERING_POINT_ID,
+    energy_supplier_id: str = factory.DefaultValues.ENERGY_SUPPLIER_ID,
+    metering_point_type: e.MeteringPointType = factory.DefaultValues.METERING_POINT_TYPE,
+    settlement_method: e.SettlementMethod = factory.DefaultValues.SETTLEMENT_METHOD,
+    grid_area: str = factory.DefaultValues.GRID_AREA,
+    quantity: Decimal = factory.DefaultValues.QUANTITY,
     qualities=None,
 ) -> Row:
     if qualities is None:
@@ -83,7 +78,7 @@ def _create_expected_tariff_charges_row(
 @pytest.mark.parametrize(
     "charge_resolution", [e.ChargeResolution.HOUR, e.ChargeResolution.DAY]
 )
-def test__get_tariff_charges__filters_on_resolution(
+def test__get_prepared_tariffs__filters_on_resolution(
     spark: SparkSession, charge_resolution: e.ChargeResolution
 ) -> None:
     """
@@ -119,14 +114,16 @@ def test__get_tariff_charges__filters_on_resolution(
             spark, charge_link_metering_points_rows
         )
     )
-    time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
+    time_series = prepared_metering_point_time_series_factory.create(
+        spark, time_series_rows
+    )
     charge_master_data = factory.create_charge_master_data(
         spark, charge_master_data_rows
     )
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
-    actual = get_tariff_charges(
+    actual = get_prepared_tariffs(
         time_series,
         charge_master_data,
         charge_prices,
@@ -136,11 +133,11 @@ def test__get_tariff_charges__filters_on_resolution(
     )
 
     # Assert
-    assert actual.count() == 1
-    assert actual.collect()[0][Colname.resolution] == charge_resolution.value
+    assert actual.df.count() == 1
+    assert actual.df.collect()[0][Colname.resolution] == charge_resolution.value
 
 
-def test__get_tariff_charges__filters_on_tariff_charge_type(
+def test__get_prepared_tariffs__filters_on_tariff_charge_type(
     spark: SparkSession,
 ) -> None:
     """
@@ -180,14 +177,16 @@ def test__get_tariff_charges__filters_on_tariff_charge_type(
             spark, charge_link_metering_points_rows
         )
     )
-    time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
+    time_series = prepared_metering_point_time_series_factory.create(
+        spark, time_series_rows
+    )
     charge_master_data = factory.create_charge_master_data(
         spark, charge_master_data_rows
     )
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
-    actual_tariff = get_tariff_charges(
+    actual_tariff = get_prepared_tariffs(
         time_series,
         charge_master_data,
         charge_prices,
@@ -197,7 +196,9 @@ def test__get_tariff_charges__filters_on_tariff_charge_type(
     )
 
     # Assert
-    assert actual_tariff.collect()[0][Colname.charge_type] == e.ChargeType.TARIFF.value
+    assert (
+        actual_tariff.df.collect()[0][Colname.charge_type] == e.ChargeType.TARIFF.value
+    )
 
 
 @pytest.mark.parametrize(
@@ -213,7 +214,7 @@ def test__get_tariff_charges__filters_on_tariff_charge_type(
         (datetime(2020, 1, 1, 2), datetime(2020, 1, 1, 3), 0),
     ],
 )
-def test__get_tariff_charges__only_accepts_charges_in_metering_point_period(
+def test__get_prepared_tariffs__only_accepts_charges_in_metering_point_period(
     spark: SparkSession, from_date: datetime, to_date: datetime, expected_rows: int
 ) -> None:
     """
@@ -252,14 +253,16 @@ def test__get_tariff_charges__only_accepts_charges_in_metering_point_period(
             spark, charge_link_metering_points_rows
         )
     )
-    time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
+    time_series = prepared_metering_point_time_series_factory.create(
+        spark, time_series_rows
+    )
     charge_master_data = factory.create_charge_master_data(
         spark, charge_master_data_rows
     )
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
-    actual = get_tariff_charges(
+    actual = get_prepared_tariffs(
         time_series,
         charge_master_data,
         charge_prices,
@@ -269,10 +272,10 @@ def test__get_tariff_charges__only_accepts_charges_in_metering_point_period(
     )
 
     # Assert
-    assert actual.count() == expected_rows
+    assert actual.df.count() == expected_rows
 
 
-def test__get_tariff_charges__when_same_metering_point_and_resolution__sums_quantity(
+def test__get_prepared_tariffs__when_same_metering_point_and_resolution__sums_quantity(
     spark: SparkSession,
 ) -> None:
     """
@@ -297,14 +300,16 @@ def test__get_tariff_charges__when_same_metering_point_and_resolution__sums_quan
             spark, charge_link_metering_points_rows
         )
     )
-    time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
+    time_series = prepared_metering_point_time_series_factory.create(
+        spark, time_series_rows
+    )
     charge_master_data = factory.create_charge_master_data(
         spark, charge_master_data_rows
     )
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
-    actual = get_tariff_charges(
+    actual = get_prepared_tariffs(
         time_series,
         charge_master_data,
         charge_prices,
@@ -315,12 +320,11 @@ def test__get_tariff_charges__when_same_metering_point_and_resolution__sums_quan
 
     # Assert
     assert (
-        actual.collect()[0][Colname.sum_quantity]
-        == 2 * factory.DefaultValues.DEFAULT_QUANTITY
+        actual.df.collect()[0][Colname.quantity] == 2 * factory.DefaultValues.QUANTITY
     )
 
 
-def test__get_tariff_charges__when_no_matching_charge_resolution__returns_empty_tariffs(
+def test__get_prepared_tariffs__when_no_matching_charge_resolution__returns_empty_tariffs(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -335,7 +339,9 @@ def test__get_tariff_charges__when_no_matching_charge_resolution__returns_empty_
         )
     ]
 
-    time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
+    time_series = prepared_metering_point_time_series_factory.create(
+        spark, time_series_rows
+    )
     charge_link_metering_point_periods = (
         factory.create_charge_link_metering_point_periods(
             spark, charge_link_metering_points_rows
@@ -347,7 +353,7 @@ def test__get_tariff_charges__when_no_matching_charge_resolution__returns_empty_
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
-    actual = get_tariff_charges(
+    actual = get_prepared_tariffs(
         time_series,
         charge_master_data,
         charge_prices,
@@ -357,10 +363,10 @@ def test__get_tariff_charges__when_no_matching_charge_resolution__returns_empty_
     )
 
     # Assert
-    assert actual.count() == 0
+    assert actual.df.count() == 0
 
 
-def test__get_tariff_charges__when_two_tariff_overlap__returns_both_tariffs(
+def test__get_prepared_tariffs__when_two_tariff_overlap__returns_both_tariffs(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -382,7 +388,9 @@ def test__get_tariff_charges__when_two_tariff_overlap__returns_both_tariffs(
         ),
     ]
 
-    time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
+    time_series = prepared_metering_point_time_series_factory.create(
+        spark, time_series_rows
+    )
     charge_master_data = factory.create_charge_master_data(
         spark, charge_master_data_rows
     )
@@ -394,7 +402,7 @@ def test__get_tariff_charges__when_two_tariff_overlap__returns_both_tariffs(
     )
 
     # Act
-    actual = get_tariff_charges(
+    actual = get_prepared_tariffs(
         time_series,
         charge_master_data,
         charge_prices,
@@ -404,10 +412,10 @@ def test__get_tariff_charges__when_two_tariff_overlap__returns_both_tariffs(
     )
 
     # Assert
-    assert actual.count() == 2
+    assert actual.df.count() == 2
 
 
-def test__get_tariff_charges__returns_expected_tariff_values(
+def test__get_prepared_tariffs__returns_expected_tariff_values(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -421,28 +429,27 @@ def test__get_tariff_charges__returns_expected_tariff_values(
     charge_master_data_rows = [factory.create_charge_master_data_row()]
     charge_prices_rows = [factory.create_charge_prices_row()]
 
-    expected_tariff_charges_row = [
-        _create_expected_tariff_charges_row(
-            quantity=2 * factory.DefaultValues.DEFAULT_QUANTITY
-        )
-    ]
-
     charge_link_metering_point_periods = (
         factory.create_charge_link_metering_point_periods(
             spark, charge_link_metering_points_rows
         )
     )
-    time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
+    time_series = prepared_metering_point_time_series_factory.create(
+        spark, time_series_rows
+    )
     charge_master_data = factory.create_charge_master_data(
         spark, charge_master_data_rows
     )
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
-    expected_tariff_charges = spark.createDataFrame(
-        expected_tariff_charges_row, tariff_schema
-    )
+    expected_row = [
+        _create_expected_prepared_tariffs_row(
+            quantity=2 * factory.DefaultValues.QUANTITY
+        )
+    ]
+    expected = spark.createDataFrame(expected_row, prepared_tariffs_schema)
 
     # Act
-    actual = get_tariff_charges(
+    actual = get_prepared_tariffs(
         time_series,
         charge_master_data,
         charge_prices,
@@ -452,29 +459,29 @@ def test__get_tariff_charges__returns_expected_tariff_values(
     )
 
     # Assert
-    assert actual.collect() == expected_tariff_charges.collect()
+    assert actual.df.collect() == expected.collect()
 
 
 @pytest.mark.parametrize(
-    "charge_resolution, expected_rows, expected_sum_quantity",
+    "charge_resolution, expected_rows, expected_quantity",
     [
         (
             e.ChargeResolution.HOUR,
             48,
-            factory.DefaultValues.DEFAULT_QUANTITY,
+            factory.DefaultValues.QUANTITY,
         ),
         (
             e.ChargeResolution.DAY,
             2,
-            24 * factory.DefaultValues.DEFAULT_QUANTITY,
+            24 * factory.DefaultValues.QUANTITY,
         ),
     ],
 )
-def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hour__returns_expected(
+def test__get_prepared_tariffs__when_charges_with_specific_charge_resolution_and_time_series_hour__returns_expected(
     spark: SparkSession,
     charge_resolution: e.ChargeResolution,
     expected_rows: int,
-    expected_sum_quantity: int,
+    expected_quantity,
 ) -> None:
     """
     Only charges where charge time is greater than or equal to the metering point from
@@ -515,14 +522,16 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hou
             spark, charge_link_metering_points_rows
         )
     )
-    time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
+    time_series = prepared_metering_point_time_series_factory.create(
+        spark, time_series_rows
+    )
     charge_master_data = factory.create_charge_master_data(
         spark, charge_master_data_rows
     )
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
-    actual = get_tariff_charges(
+    actual = get_prepared_tariffs(
         time_series,
         charge_master_data,
         charge_prices,
@@ -532,30 +541,30 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_hou
     )
 
     # Assert
-    assert actual.count() == expected_rows
-    assert actual.collect()[0][Colname.sum_quantity] == expected_sum_quantity
+    assert actual.df.count() == expected_rows
+    assert actual.df.collect()[0][Colname.quantity] == expected_quantity
 
 
 @pytest.mark.parametrize(
-    "charge_resolution, expected_rows, expected_sum_quantity",
+    "charge_resolution, expected_rows, expected_quantity",
     [
         (
             e.ChargeResolution.HOUR,
             48,
-            4 * factory.DefaultValues.DEFAULT_QUANTITY,
+            4 * factory.DefaultValues.QUANTITY,
         ),
         (
             e.ChargeResolution.DAY,
             2,
-            96 * factory.DefaultValues.DEFAULT_QUANTITY,
+            96 * factory.DefaultValues.QUANTITY,
         ),
     ],
 )
-def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_quarter__returns_expected(
+def test__get_prepared_tariffs__when_specific_charge_resolution_and_time_series_quarter__returns_expected(
     spark: SparkSession,
     charge_resolution: e.ChargeResolution,
     expected_rows: int,
-    expected_sum_quantity: int,
+    expected_quantity: int,
 ) -> None:
     """
     Only charges where charge time is greater than or equal to the metering point from
@@ -597,14 +606,16 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_qua
             spark, charge_link_metering_points_rows
         )
     )
-    time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
+    time_series = prepared_metering_point_time_series_factory.create(
+        spark, time_series_rows
+    )
     charge_master_data = factory.create_charge_master_data(
         spark, charge_master_data_rows
     )
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
-    actual = get_tariff_charges(
+    actual = get_prepared_tariffs(
         time_series,
         charge_master_data,
         charge_prices,
@@ -614,8 +625,8 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_qua
     )
 
     # Assert
-    assert actual.count() == expected_rows
-    assert actual.collect()[0][Colname.sum_quantity] == expected_sum_quantity
+    assert actual.df.count() == expected_rows
+    assert actual.df.collect()[0][Colname.quantity] == expected_quantity
 
 
 @pytest.mark.parametrize(
@@ -643,7 +654,7 @@ def test__get_tariff_charges_with_specific_charge_resolution_and_time_series_qua
         ),
     ],
 )
-def test__get_tariff_charges__per_day_only_accepts_time_series_and_change_times_within_metering_point_period(
+def test__get_prepared_tariffs__per_day_only_accepts_time_series_and_change_times_within_metering_point_period(
     spark: SparkSession,
     date_time_1: datetime,
     date_time_2: datetime,
@@ -702,13 +713,15 @@ def test__get_tariff_charges__per_day_only_accepts_time_series_and_change_times_
             spark, charge_link_metering_points_rows
         )
     )
-    time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
+    time_series = prepared_metering_point_time_series_factory.create(
+        spark, time_series_rows
+    )
     charge_master_data = factory.create_charge_master_data(
         spark, charge_master_data_rows
     )
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
     # Act
-    actual = get_tariff_charges(
+    actual = get_prepared_tariffs(
         time_series,
         charge_master_data,
         charge_prices,
@@ -718,10 +731,10 @@ def test__get_tariff_charges__per_day_only_accepts_time_series_and_change_times_
     )
 
     # Assert
-    assert actual.count() == expected_rows
+    assert actual.df.count() == expected_rows
 
 
-def test__get_tariff_charges__can_handle_missing_charge_prices(
+def test__get_prepared_tariffs__can_handle_missing_charge_prices(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -743,7 +756,9 @@ def test__get_tariff_charges__can_handle_missing_charge_prices(
         ),
     ]
 
-    time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
+    time_series = prepared_metering_point_time_series_factory.create(
+        spark, time_series_rows
+    )
     charge_master_data = factory.create_charge_master_data(
         spark, charge_master_data_rows
     )
@@ -755,25 +770,27 @@ def test__get_tariff_charges__can_handle_missing_charge_prices(
     )
 
     # Act
-    actual = get_tariff_charges(
+    actual = get_prepared_tariffs(
         time_series,
         charge_master_data,
         charge_prices,
         charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
         DEFAULT_TIME_ZONE,
-    ).orderBy(Colname.charge_time)
+    )
+
+    actual_df = actual.df.orderBy(Colname.charge_time)
 
     # Assert
-    assert actual.count() == 2
+    assert actual_df.count() == 2
     assert (
-        actual.collect()[0][Colname.charge_price]
-        == factory.DefaultValues.DEFAULT_CHARGE_PRICE
+        actual_df.collect()[0][Colname.charge_price]
+        == factory.DefaultValues.CHARGE_PRICE
     )
-    assert actual.collect()[1][Colname.charge_price] is None
+    assert actual_df.collect()[1][Colname.charge_price] is None
 
 
-def test__get_tariff_charges__can_handle_missing_all_charges_prices(
+def test__get_prepared_tariffs__can_handle_missing_all_charges_prices(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -792,7 +809,9 @@ def test__get_tariff_charges__can_handle_missing_all_charges_prices(
         ),
     ]
 
-    time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
+    time_series = prepared_metering_point_time_series_factory.create(
+        spark, time_series_rows
+    )
     charge_master_data = factory.create_charge_master_data(
         spark, charge_master_data_rows
     )
@@ -804,7 +823,7 @@ def test__get_tariff_charges__can_handle_missing_all_charges_prices(
     )
 
     # Act
-    actual = get_tariff_charges(
+    actual = get_prepared_tariffs(
         time_series,
         charge_master_data,
         charge_prices,
@@ -814,12 +833,12 @@ def test__get_tariff_charges__can_handle_missing_all_charges_prices(
     )
 
     # Assert
-    assert actual.count() == 2
-    assert actual.collect()[0][Colname.charge_price] is None
-    assert actual.collect()[1][Colname.charge_price] is None
+    assert actual.df.count() == 2
+    assert actual.df.collect()[0][Colname.charge_price] is None
+    assert actual.df.collect()[1][Colname.charge_price] is None
 
 
-def test__get_tariff_charges__can_handle_missing_charge_links(
+def test__get_prepared_tariffs__can_handle_missing_charge_links(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -846,7 +865,9 @@ def test__get_tariff_charges__can_handle_missing_charge_links(
         ),
     ]
 
-    time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
+    time_series = prepared_metering_point_time_series_factory.create(
+        spark, time_series_rows
+    )
     charge_master_data = factory.create_charge_master_data(
         spark, charge_master_data_rows
     )
@@ -858,17 +879,17 @@ def test__get_tariff_charges__can_handle_missing_charge_links(
     )
 
     # Act
-    actual = get_tariff_charges(
+    actual = get_prepared_tariffs(
         time_series,
         charge_master_data,
         charge_prices,
         charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
         DEFAULT_TIME_ZONE,
-    ).orderBy(Colname.charge_time)
+    )
 
     # Assert
-    assert actual.count() == 2
+    assert actual.df.count() == 2
 
 
 @pytest.mark.parametrize(
@@ -884,7 +905,7 @@ def test__get_tariff_charges__can_handle_missing_charge_links(
         ),
     ],
 )
-def test__get_tariff_charges__can_handle_daylight_saving_time(
+def test__get_prepared_tariffs__can_handle_daylight_saving_time(
     date_time_1: datetime,
     date_time_2: datetime,
     spark: SparkSession,
@@ -916,7 +937,9 @@ def test__get_tariff_charges__can_handle_daylight_saving_time(
         ),
     ]
 
-    time_series = spark.createDataFrame(time_series_rows, time_series_point_schema)
+    time_series = prepared_metering_point_time_series_factory.create(
+        spark, time_series_rows
+    )
     charge_master_data = factory.create_charge_master_data(
         spark, charge_master_data_rows
     )
@@ -928,7 +951,7 @@ def test__get_tariff_charges__can_handle_daylight_saving_time(
     )
 
     # Act
-    actual = get_tariff_charges(
+    actual = get_prepared_tariffs(
         time_series,
         charge_master_data,
         charge_prices,
@@ -938,4 +961,4 @@ def test__get_tariff_charges__can_handle_daylight_saving_time(
     )
 
     # Assert
-    assert actual.count() == 2
+    assert actual.df.count() == 2
