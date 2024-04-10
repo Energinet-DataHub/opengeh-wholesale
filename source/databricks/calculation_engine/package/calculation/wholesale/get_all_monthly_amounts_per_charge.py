@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import cast
+
 from pyspark.sql import DataFrame
 
 from package.calculation.calculation_results import WholesaleResultsContainer
@@ -21,10 +23,19 @@ def get_all_monthly_amounts_per_charge(
     results: WholesaleResultsContainer,
 ) -> MonthlyAmountPerCharge:
 
+    monthly_tariff_from_daily = cast(
+        DataFrame, results.monthly_tariff_from_daily_per_ga_co_es
+    )
+    monthly_tariff_from_hourly = cast(
+        DataFrame, results.monthly_tariff_from_hourly_per_ga_co_es
+    )
+    monthly_subscription = cast(DataFrame, results.monthly_subscription_per_ga_co_es)
+    monthly_fee = cast(DataFrame, results.monthly_fee_per_ga_co_es)
+
     monthly_amount_per_charge_df = (
-        results.subscription_per_ga_co_es.union(results.monthly_fee_per_ga_co_es)
-        .union(results.monthly_tariff_from_daily_per_ga_co_es)
-        .union(results.monthly_tariff_from_hourly_per_ga_co_es)
+        monthly_tariff_from_daily.union(monthly_tariff_from_hourly)
+        .union(monthly_subscription)
+        .union(monthly_fee)
     )
 
     return MonthlyAmountPerCharge(monthly_amount_per_charge_df)
