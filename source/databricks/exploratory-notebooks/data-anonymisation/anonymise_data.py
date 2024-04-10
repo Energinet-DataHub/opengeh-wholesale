@@ -27,16 +27,18 @@ import pyspark.sql.functions as F
 from pyspark.sql.window import Window
 
 # Source variables
-database = "hive_metastore.wholesale_input" # FILL IN
+source_database = "hive_metastore.wholesale_input" # FILL IN
 source_mp_table_name = "metering_point_periods"
 source_ts_table_name = "time_series_points"
 source_gl_table_name = "grid_loss_metering_points"
 
 # Target variables
-target_database = database
+target_database = "hive_metastore.wholesale_input_anonymised" # FILL IN
 target_mp_table_name = "metering_point_periods"
 target_ts_table_name = "time_series_points"
 target_gl_table_name = "grid_loss_metering_points"
+target_storage_account_name = "stdatalakeshresdwe002"
+target_delta_table_root_path = f"abfss://wholesale@{target_storage_account_name}.dfs.core.windows.net/wholesale_input_anonymised"
 
 # Columns variables
 metering_point_id_column_name = "metering_point_id"
@@ -45,39 +47,45 @@ balance_responsible_id_column_name = "balance_responsible_id"
 energy_supplier_id_column_name = "energy_supplier_id"
 
 # Date variables
-anonymisation_start_date = '2010-08-19T22:00:00Z'
-anonymisation_end_date = '2023-06-01T22:00:00Z'
+anonymisation_start_date = '2021-01-31T22:00:00Z'
 
 # COMMAND ----------
 
 # Read source tables
 df_source_mp_table = (
-    spark.read.table(f"{database}.{source_mp_table_name}")
+    spark.read.table(f"{source_database}.{source_mp_table_name}")
     .filter(f"'{anonymisation_start_date}' <= from_date")
-    .filter(f"from_date <= '{anonymisation_end_date}'")
     .filter(f"'{anonymisation_start_date}' <= to_date")
-    .filter(f"to_date <= '{anonymisation_end_date}'")
 )
 
 df_source_ts_table = (
-    spark.read.table(f"{database}.{source_ts_table_name}")
+    spark.read.table(f"{source_database}.{source_ts_table_name}")
     .filter(f"'{anonymisation_start_date}' <= observation_time")
-    .filter(f"observation_time <= '{anonymisation_end_date}'")
 )
 
-df_source_gl_table = spark.read.table(f"{database}.{source_gl_table_name}")
+df_source_gl_table = spark.read.table(f"{source_database}.{source_gl_table_name}")
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### Step 1: Create the target tables
+# MAGIC ### Step 1: Create the target schema + tables
+
+# COMMAND ----------
+
+# Add schema
+query = f"""
+CREATE SCHEMA IF NOT EXISTS {target_database}
+"""
+print(query)
+spark.sql(query)
 
 # COMMAND ----------
 
 # Add location
 query = f"""
 CREATE TABLE IF NOT EXISTS {target_database}.{target_mp_table_name}
-LIKE {target_database}.{source_mp_table_name} 
+LIKE {source_database}.{source_mp_table_name}
+LOCATION '{target_delta_table_root_path}/{target_mp_table_name}'
 """
 print(query)
 spark.sql(query)
@@ -87,7 +95,8 @@ spark.sql(query)
 # Add location
 query = f"""
 CREATE TABLE IF NOT EXISTS {target_database}.{target_ts_table_name}
-LIKE {target_database}.{source_ts_table_name} 
+LIKE {source_database}.{source_ts_table_name}
+LOCATION '{target_delta_table_root_path}/{target_ts_table_name}'
 """
 print(query)
 spark.sql(query)
@@ -97,7 +106,8 @@ spark.sql(query)
 # Add location
 query = f"""
 CREATE TABLE IF NOT EXISTS {target_database}.{target_gl_table_name}
-LIKE {target_database}.{source_gl_table_name} 
+LIKE {source_database}.{source_gl_table_name} 
+LOCATION '{target_delta_table_root_path}/{target_gl_table_name}'
 """
 print(query)
 spark.sql(query)
@@ -309,8 +319,7 @@ assert (
 
 # COMMAND ----------
 
-# TODO
-mps_to_anonymise = ["fill in when running"]
+mps_to_anonymise = [row['metering_point_id'] for row in df_anonymised_metering_points.collect()]
 
 df_source_ts_table_anonymised = (
     df_source_ts_table.withColumn(
@@ -323,7 +332,6 @@ df_source_ts_table_anonymised = (
     .withColumn(metering_point_id_column_name, F.col("anonymised_mp_id"))
     .select(df_source_ts_table.columns)
 ).cache()
-
 
 # COMMAND ----------
 
