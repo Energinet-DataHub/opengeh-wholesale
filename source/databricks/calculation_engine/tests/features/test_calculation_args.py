@@ -30,8 +30,8 @@ class ArgsName:
 CSV_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
-def create_calculation_args(test_path: str) -> CalculatorArgs:
-    with open(test_path + "calculation_arguments.yml", "r") as file:
+def create_calculation_args(input_path: str) -> CalculatorArgs:
+    with open(input_path + "calculation_arguments.yml", "r") as file:
         calculation_args = yaml.safe_load(file)
 
     return CalculatorArgs(
