@@ -71,7 +71,8 @@ internal class CalculationActivities
     public async Task<CalculationMetadata> CreateCalculationRecordActivity(
         [ActivityTrigger] BatchRequestDto batchRequestDto)
     {
-        var userId = Guid.NewGuid();
+        // TODO: Temporary solution for user id
+        var userId = Guid.Parse("3A3A90B7-C624-4844-B990-3221DEE54F04");
         var calculationId = await _createCalculationHandler.HandleAsync(new CreateCalculationCommand(
             batchRequestDto.CalculationType,
             batchRequestDto.GridAreaCodes,
