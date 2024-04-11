@@ -25,6 +25,7 @@ from .basis_data import basis_data_factory
 from package.calculation.basis_data.basis_data_results import write_basis_data
 from .output.energy_results import write_energy_results
 from .output.wholesale_results import write_wholesale_results
+from .output.total_monthly_amounts import write_total_monthly_amounts
 from .preparation import PreparedDataReader
 from .wholesale import wholesale_calculation
 from package.calculation.preparation.transformations.metering_point_periods_for_calculation_type import (
@@ -143,6 +144,7 @@ def _write_results(results: CalculationResultsContainer) -> None:
     write_energy_results(results.energy_results)
     if results.wholesale_results is not None:
         write_wholesale_results(results.wholesale_results)
+        write_total_monthly_amounts(results.total_monthly_amounts)
 
     # We write basis data at the end of the calculation to make it easier to analyze performance of the calculation part
     write_basis_data(results.basis_data)
