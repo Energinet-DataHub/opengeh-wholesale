@@ -40,6 +40,9 @@ class MonthlyAmountPerCharge(DataFrameWrapper):
             ignore_decimal_precision=True,
         )
 
+    def union(self, other: "MonthlyAmountPerCharge") -> "MonthlyAmountPerCharge":
+        return MonthlyAmountPerCharge(super().df.union(other.df))
+
 
 # The nullability and decimal types are not precisely representative of the actual data frame schema at runtime,
 # See comments to the `assert_schema()` invocation.

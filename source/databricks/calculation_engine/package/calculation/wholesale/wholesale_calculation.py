@@ -18,8 +18,12 @@ import package.calculation.wholesale.subscription_calculators as subscription_ca
 import package.calculation.wholesale.tariff_calculators as tariff_calculator
 import package.calculation.wholesale.total_monthly_amount_calculator as total_amount_calculator
 import package.calculation.preparation.data_structures as d
-from .data_structures import TotalMonthlyAmount
-from .get_all_monthly_amounts_per_charge import get_all_monthly_amounts_per_charge
+from .data_structures import (
+    TotalMonthlyAmount,
+    MonthlyAmountsContainer,
+    MonthlyAmountPerCharge,
+)
+from .union_monthly_amounts_per_charge import get_all_monthly_amounts_per_charge
 from .sum_within_month import sum_within_month
 
 from ..calculation_results import WholesaleResultsContainer
@@ -35,26 +39,36 @@ def execute(
 ) -> WholesaleResultsContainer:
     results = WholesaleResultsContainer()
 
-    _calculate_fees(
+    monthly_fees = _calculate_fees(
         args,
         prepared_charges.fees,
         results,
     )
 
-    _calculate_subscriptions(
+    monthly_subscriptions = _calculate_subscriptions(
         args,
         prepared_charges.subscriptions,
         results,
     )
 
-    _calculate_tariff_charges(
+    monthly_hourly_tariffs = _calculate_hourly_tariffs(
         args,
         prepared_charges.hourly_tariffs,
+        results,
+    )
+
+    monthly_daily_tariffs = _calculate_daily_tariffs(
+        args,
         prepared_charges.daily_tariffs,
         results,
     )
 
-    _calculate_total_monthly_amount(results)
+    _calculate_total_monthly_amount(
+        monthly_fees,
+        monthly_subscriptions,
+        monthly_hourly_tariffs,
+        monthly_daily_tariffs,
+    )
 
     return results
 
@@ -87,7 +101,7 @@ def _calculate_subscriptions(
     args: CalculatorArgs,
     prepared_subscriptions: d.PreparedSubscriptions,
     results: WholesaleResultsContainer,
-) -> None:
+) -> MonthlyAmountPerCharge:
     subscription_per_ga_co_es = subscription_calculator.calculate(
         prepared_subscriptions,
         args.calculation_period_start_datetime,
@@ -108,14 +122,15 @@ def _calculate_subscriptions(
         AmountType.MONTHLY_AMOUNT_PER_CHARGE,
     )
 
+    return MonthlyAmountPerCharge(monthly_subscription_per_ga_co_es.df)
 
-@logging_configuration.use_span("calculate_tariff_charges")
-def _calculate_tariff_charges(
+
+@logging_configuration.use_span("calculate_hourly_tariffs")
+def _calculate_hourly_tariffs(
     args: CalculatorArgs,
     prepared_hourly_tariffs: d.PreparedTariffs,
-    prepared_daily_tariffs: d.PreparedTariffs,
     results: WholesaleResultsContainer,
-) -> None:
+) -> MonthlyAmountPerCharge:
     hourly_tariff_per_ga_co_es = tariff_calculator.calculate_tariff_price_per_ga_co_es(
         prepared_hourly_tariffs
     )
@@ -136,6 +151,16 @@ def _calculate_tariff_charges(
         monthly_tariff_from_hourly_per_ga_co_es,
         AmountType.MONTHLY_AMOUNT_PER_CHARGE,
     )
+
+    return MonthlyAmountPerCharge(monthly_tariff_from_hourly_per_ga_co_es.df)
+
+
+@logging_configuration.use_span("calculate_daily_tariffs")
+def _calculate_daily_tariffs(
+    args: CalculatorArgs,
+    prepared_daily_tariffs: d.PreparedTariffs,
+    results: WholesaleResultsContainer,
+) -> MonthlyAmountPerCharge:
 
     daily_tariff_per_ga_co_es = tariff_calculator.calculate_tariff_price_per_ga_co_es(
         prepared_daily_tariffs
@@ -158,15 +183,22 @@ def _calculate_tariff_charges(
         AmountType.MONTHLY_AMOUNT_PER_CHARGE,
     )
 
+    return MonthlyAmountPerCharge(monthly_tariff_from_daily_per_ga_co_es.df)
+
 
 @logging_configuration.use_span("calculate_total_monthly_amount")
 def _calculate_total_monthly_amount(
-    results: WholesaleResultsContainer,
-) -> TotalMonthlyAmount:
-    all_monthly_amounts_per_charge = get_all_monthly_amounts_per_charge(results)
-
-    total_monthly_amount = total_amount_calculator.calculate(
-        all_monthly_amounts_per_charge,
+    monthly_fees: MonthlyAmountPerCharge,
+    monthly_subscriptions: MonthlyAmountPerCharge,
+    monthly_hourly_tariffs: MonthlyAmountPerCharge,
+    monthly_daily_tariffs: MonthlyAmountPerCharge,
+) -> None:
+    all_monthly_amounts = (
+        monthly_fees.union(monthly_subscriptions)
+        .union(monthly_hourly_tariffs)
+        .union(monthly_daily_tariffs)
     )
 
-    return total_monthly_amount
+    total_amount_calculator.calculate(
+        all_monthly_amounts,
+    )
