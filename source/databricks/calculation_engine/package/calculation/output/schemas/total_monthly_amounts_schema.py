@@ -23,7 +23,7 @@ from pyspark.sql.types import (
 from package.constants import WholesaleResultColumnNames
 
 # Note: The order of the columns must match the order of the columns in the Delta table
-wholesale_results_schema = StructType(
+total_monthly_amounts_schema = StructType(
     [
         StructField(WholesaleResultColumnNames.calculation_id, StringType(), False),
         StructField(WholesaleResultColumnNames.calculation_type, StringType(), False),
@@ -36,7 +36,7 @@ wholesale_results_schema = StructType(
             WholesaleResultColumnNames.calculation_result_id, StringType(), False
         ),
         StructField(WholesaleResultColumnNames.grid_area, StringType(), False),
-        StructField(WholesaleResultColumnNames.energy_supplier_id, StringType(), False),
+        StructField(WholesaleResultColumnNames.energy_supplier_id, StringType(), True),
         StructField(WholesaleResultColumnNames.time, TimestampType(), False),
         StructField(WholesaleResultColumnNames.amount, DecimalType(18, 6), True),
         StructField(WholesaleResultColumnNames.charge_owner_id, StringType(), True),
