@@ -19,23 +19,17 @@ from pyspark.sql.functions import col, lit
 import pytest
 import uuid
 
-from tests.helpers.data_frame_utils import set_column
-from package.codelists import (
-    AmountType,
-    ChargeQuality,
-    ChargeType,
-    ChargeUnit,
-    MeteringPointType,
-    CalculationType,
-    SettlementMethod,
-    WholesaleResultResolution,
+from package.calculation.output.schemas.total_monthly_amounts_schema import (
+    total_monthly_amounts_schema,
 )
+from tests.helpers.data_frame_utils import set_column
+from package.codelists import CalculationType
 from package.constants import WholesaleResultColumnNames
 from package.infrastructure.paths import (
     OUTPUT_DATABASE_NAME,
+    TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
     WHOLESALE_RESULT_TABLE_NAME,
 )
-from package.calculation.output.schemas import wholesale_results_schema
 
 
 def _create_df(spark: SparkSession) -> DataFrame:
@@ -48,22 +42,11 @@ def _create_df(spark: SparkSession) -> DataFrame:
         WholesaleResultColumnNames.calculation_result_id: "6033ab5c-436b-44e9-8a79-90489d324e53",
         WholesaleResultColumnNames.grid_area: "543",
         WholesaleResultColumnNames.energy_supplier_id: "1234567890123",
-        WholesaleResultColumnNames.quantity: Decimal("1.123"),
-        WholesaleResultColumnNames.quantity_qualities: ["missing"],
         WholesaleResultColumnNames.time: datetime(2020, 1, 1, 0, 0),
-        WholesaleResultColumnNames.quantity_unit: "kWh",
-        WholesaleResultColumnNames.resolution: "P1D",
-        WholesaleResultColumnNames.metering_point_type: "production",
-        WholesaleResultColumnNames.settlement_method: "flex",
-        WholesaleResultColumnNames.price: Decimal("1.123"),
         WholesaleResultColumnNames.amount: Decimal("1.123"),
-        WholesaleResultColumnNames.is_tax: True,
-        WholesaleResultColumnNames.charge_code: "charge_code",
-        WholesaleResultColumnNames.charge_type: "fee",
         WholesaleResultColumnNames.charge_owner_id: "1234567890123",
-        WholesaleResultColumnNames.amount_type: "amount_per_charge",
     }
-    return spark.createDataFrame(data=[row], schema=wholesale_results_schema)
+    return spark.createDataFrame(data=[row], schema=total_monthly_amounts_schema)
 
 
 @pytest.mark.parametrize(
@@ -76,25 +59,14 @@ def _create_df(spark: SparkSession) -> DataFrame:
         (WholesaleResultColumnNames.calculation_execution_time_start, None),
         (WholesaleResultColumnNames.calculation_result_id, None),
         (WholesaleResultColumnNames.calculation_result_id, "not-a-uuid"),
-        (WholesaleResultColumnNames.amount_type, None),
-        (WholesaleResultColumnNames.amount_type, "foo"),
         (WholesaleResultColumnNames.grid_area, None),
         (WholesaleResultColumnNames.grid_area, "12"),
         (WholesaleResultColumnNames.grid_area, "1234"),
-        (WholesaleResultColumnNames.energy_supplier_id, None),
         (
             WholesaleResultColumnNames.energy_supplier_id,
             "neither-16-nor-13-digits-long",
         ),
-        (WholesaleResultColumnNames.quantity_unit, None),
-        (WholesaleResultColumnNames.quantity_unit, "foo"),
-        (WholesaleResultColumnNames.quantity_qualities, []),
-        (WholesaleResultColumnNames.quantity_qualities, ["foo"]),
         (WholesaleResultColumnNames.time, None),
-        (WholesaleResultColumnNames.resolution, None),
-        (WholesaleResultColumnNames.resolution, "foo"),
-        (WholesaleResultColumnNames.metering_point_type, "foo"),
-        (WholesaleResultColumnNames.settlement_method, "foo"),
         (WholesaleResultColumnNames.charge_owner_id, "neither-16-nor-13-digits-long"),
     ],
 )
@@ -146,32 +118,17 @@ actor_eic = "1234567890123456"
             WholesaleResultColumnNames.calculation_result_id,
             "9252d7a0-4363-42cc-a2d6-e04c026523f8",
         ),
-        (WholesaleResultColumnNames.amount_type, "amount_per_charge"),
         (WholesaleResultColumnNames.grid_area, "123"),
         (WholesaleResultColumnNames.grid_area, "007"),
         (WholesaleResultColumnNames.energy_supplier_id, actor_gln),
         (WholesaleResultColumnNames.energy_supplier_id, actor_eic),
-        (WholesaleResultColumnNames.quantity, max_18_3_decimal),
-        (WholesaleResultColumnNames.quantity, min_18_3_decimal),
-        (WholesaleResultColumnNames.quantity_unit, "kWh"),
-        (WholesaleResultColumnNames.quantity_qualities, ["missing", "estimated"]),
-        (WholesaleResultColumnNames.quantity_qualities, None),
+        (WholesaleResultColumnNames.energy_supplier_id, None),
         (WholesaleResultColumnNames.time, datetime(2020, 1, 1, 0, 0)),
-        (WholesaleResultColumnNames.resolution, "P1D"),
-        (WholesaleResultColumnNames.metering_point_type, None),
-        (WholesaleResultColumnNames.metering_point_type, "consumption"),
-        (WholesaleResultColumnNames.settlement_method, None),
-        (WholesaleResultColumnNames.settlement_method, "flex"),
-        (WholesaleResultColumnNames.price, None),
-        (WholesaleResultColumnNames.price, max_18_6_decimal),
-        (WholesaleResultColumnNames.price, min_18_6_decimal),
         (WholesaleResultColumnNames.amount, max_18_6_decimal),
         (WholesaleResultColumnNames.amount, min_18_6_decimal),
-        (WholesaleResultColumnNames.is_tax, None),
-        (WholesaleResultColumnNames.charge_code, "any-string"),
-        (WholesaleResultColumnNames.charge_type, "fee"),
         (WholesaleResultColumnNames.charge_owner_id, actor_gln),
         (WholesaleResultColumnNames.charge_owner_id, actor_eic),
+        (WholesaleResultColumnNames.charge_owner_id, None),
     ],
 )
 def test__migrated_table_accepts_valid_data(
@@ -202,25 +159,6 @@ def test__migrated_table_accepts_valid_data(
                 CalculationType.THIRD_CORRECTION_SETTLEMENT.value,
             ]
         ],
-        *[(WholesaleResultColumnNames.quantity_unit, x.value) for x in ChargeUnit],
-        *[
-            (WholesaleResultColumnNames.quantity_qualities, [x.value])
-            for x in ChargeQuality
-        ],
-        *[
-            (WholesaleResultColumnNames.resolution, x.value)
-            for x in WholesaleResultResolution
-        ],
-        *[
-            (WholesaleResultColumnNames.metering_point_type, x.value)
-            for x in MeteringPointType
-        ],
-        *[
-            (WholesaleResultColumnNames.settlement_method, x.value)
-            for x in SettlementMethod
-        ],
-        *[(WholesaleResultColumnNames.charge_type, x.value) for x in ChargeType],
-        *[(WholesaleResultColumnNames.amount_type, x.value) for x in AmountType],
     ],
 )
 def test__migrated_table_accepts_enum_value(
@@ -242,7 +180,7 @@ def test__migrated_table_accepts_enum_value(
 
 
 @pytest.mark.parametrize(
-    "quantity",
+    "amount",
     [
         min_18_3_decimal,
         max_18_3_decimal,
@@ -254,12 +192,12 @@ def test__migrated_table_accepts_enum_value(
 )
 def test__migrated_table_does_not_round_valid_decimal(
     spark: SparkSession,
-    quantity: Decimal,
+    amount: Decimal,
     migrations_executed: None,
 ) -> None:
     # Arrange
     result_df = _create_df(spark)
-    result_df = result_df.withColumn("quantity", lit(quantity))
+    result_df = result_df.withColumn("amount", lit(amount))
     calculation_id = str(uuid.uuid4())
     result_df = result_df.withColumn(
         WholesaleResultColumnNames.calculation_id, lit(calculation_id)
@@ -274,10 +212,10 @@ def test__migrated_table_does_not_round_valid_decimal(
     actual_df = spark.read.table(
         f"{OUTPUT_DATABASE_NAME}.{WHOLESALE_RESULT_TABLE_NAME}"
     ).where(col(WholesaleResultColumnNames.calculation_id) == calculation_id)
-    assert actual_df.collect()[0].quantity == quantity
+    assert actual_df.collect()[0].amount == amount
 
 
-def test__wholesale_results_table__is_not_managed(
+def test__total_monthly_amounts_table__is_not_managed(
     spark: SparkSession, migrations_executed: None
 ) -> None:
     """
@@ -288,7 +226,7 @@ def test__wholesale_results_table__is_not_managed(
     """
     database_details = spark.sql(f"DESCRIBE DATABASE {OUTPUT_DATABASE_NAME}")
     table_details = spark.sql(
-        f"DESCRIBE DETAIL {OUTPUT_DATABASE_NAME}.{WHOLESALE_RESULT_TABLE_NAME}"
+        f"DESCRIBE DETAIL {OUTPUT_DATABASE_NAME}.{TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
     )
 
     database_location = database_details.where(
