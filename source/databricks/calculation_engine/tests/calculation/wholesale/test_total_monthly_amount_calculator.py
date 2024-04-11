@@ -54,7 +54,7 @@ def test__calculate__when_all_monthly_amounts_are_without_tax__sums_all_amounts(
     )
 
     # Act
-    actual = calculate_per_co_es(
+    actual = calculate(
         monthly_amounts,
     ).df
 
@@ -93,7 +93,7 @@ def test__calculate__when_charge_owner__adds_tax_amount_only_to_grid_access_oper
     )
 
     # Act
-    actual = calculate_per_co_es(
+    actual = calculate(
         monthly_amounts,
     ).df
 
@@ -136,7 +136,7 @@ def test__calculate__when_amount_is_null__ignores_null_in_sum(
     )
 
     # Act
-    actual = calculate_per_co_es(
+    actual = calculate(
         monthly_amounts,
     ).df
 
