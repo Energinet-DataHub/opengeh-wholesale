@@ -36,6 +36,8 @@ def create_basis_data_result_dataframe(
 
 def create_time_series_points(df, spark):
 
+    # Don't remove. Believed needed because this function is an argument to the setup function
+    # and therefore the following packages are not automatically included.
     from package.constants import TimeSeriesColname
     from package.calculation.basis_data.schemas import time_series_point_schema
 
@@ -53,6 +55,8 @@ def create_time_series_points(df, spark):
 
 def create_metering_point_periods(df, spark):
 
+    # Don't remove. Believed needed because this function is an argument to the setup function
+    # and therefore the following packages are not automatically included.
     from package.constants import MeteringPointPeriodColname
     from package.calculation.basis_data.schemas import metering_point_period_schema
 
