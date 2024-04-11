@@ -120,9 +120,11 @@ def _execute(
                 args.time_zone,
             )
 
-        results.wholesale_results = wholesale_calculation.execute(
-            args,
-            prepared_charges,
+        results.wholesale_results, results.total_monthly_amounts = (
+            wholesale_calculation.execute(
+                args,
+                prepared_charges,
+            )
         )
     else:
         metering_point_periods_for_basis_data = (

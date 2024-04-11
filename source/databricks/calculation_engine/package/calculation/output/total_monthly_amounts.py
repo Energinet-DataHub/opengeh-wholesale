@@ -13,6 +13,7 @@
 # limitations under the License.
 from pyspark.sql import DataFrame
 
+from package.calculation.calculation_results import TotalMonthlyAmountsContainer
 from package.infrastructure import logging_configuration
 from package.infrastructure.paths import (
     OUTPUT_DATABASE_NAME,
@@ -20,8 +21,15 @@ from package.infrastructure.paths import (
 )
 
 
+@logging_configuration.use_span("calculation.write.wholesale")
+def write_wholesale_results(
+    total_monthly_amoutns: TotalMonthlyAmountsContainer,
+) -> None:
+    _write(total_monthly_amoutns.total_monthly_amounts_per_co)
+
+
 @logging_configuration.use_span("calculation.write.total_monthly_amounts")
-def write_total_monthly_amounts(
+def _write(
     total_monthly_amounts: DataFrame,
 ) -> None:
     """Write total monthly amounts to the delta table."""
