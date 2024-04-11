@@ -21,6 +21,7 @@ from package.calculation.energy.aggregators.transformations.aggregate_sum_and_qu
 from package.calculation.preparation.data_structures.quarterly_metering_point_time_series import (
     QuarterlyMeteringPointTimeSeries,
 )
+from package.calculation.preparation.transformations.rounding import get_rounded
 from package.codelists import (
     MeteringPointType,
     SettlementMethod,
@@ -62,7 +63,8 @@ def aggregate_per_ga_and_brp_and_es(
         Colname.observation_time,
     ]
     result = aggregate_quantity_and_quality(result, sum_group_by)
-
+    # todo: roundabout
+    result = get_rounded(EnergyResults(result))
     return EnergyResults(result)
 
 
