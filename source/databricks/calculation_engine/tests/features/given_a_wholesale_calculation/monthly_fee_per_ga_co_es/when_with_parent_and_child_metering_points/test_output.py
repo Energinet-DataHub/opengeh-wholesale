@@ -13,21 +13,23 @@
 # limitations under the License.
 
 """
-# Test Description
+# Tests Description
 ```gherkin
-GIVEN a flex_consumption metering point for energy supplier 8100000000108 with two fee-1 links
-  AND another flex_consumption metering points for energy supplier 8100000000100 with 10 fee-1 links
-  AND a child consumption_from_grid with one fee-1 link
-  AND the fee-1 price is 70 DDK
-WHEN calculating fee
-THEN there are 2 rows in the result
-  AND the amount for fee for energy supplier 8100000000100 is 700 DDK
-  AND the amount for fee for energy supplier 8100000000108 is 210 DDK
 ```
 """
 
-from features.utils.base import Base
+
+from typing import Any
+
+import pytest
+
+from features.utils.base import assert_output
+from features.utils.files import get_output_names
 
 
-class TestThen(Base):
-    pass
+@pytest.mark.parametrize("output_name", get_output_names())
+def test__equals_expected(
+    actual_and_expected: Any,
+    output_name: str,
+) -> None:
+    assert_output(actual_and_expected, output_name)
