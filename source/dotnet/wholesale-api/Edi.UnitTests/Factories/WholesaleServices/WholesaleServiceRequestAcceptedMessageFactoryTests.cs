@@ -22,6 +22,7 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using Google.Protobuf.WellKnownTypes;
 using NodaTime;
+using NodaTime.Serialization.Protobuf;
 using Xunit;
 using Period = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.Period;
 using QuantityQuality = Energinet.DataHub.Edi.Responses.QuantityQuality;
@@ -105,6 +106,8 @@ public class WholesaleServiceRequestAcceptedMessageFactoryTests
         series.HasMeteringPointType.Should().Be(false);
         series.HasSettlementMethod.Should().Be(false);
         series.Resolution.Should().Be(WholesaleServicesRequestSeries.Types.Resolution.Monthly);
+        series.Period.StartOfPeriod.Should().Be(_periodStart.ToTimestamp());
+        series.Period.EndOfPeriod.Should().Be(_periodEnd.ToTimestamp());
         series.TimeSeriesPoints.Should().HaveCount(2);
         series.TimeSeriesPoints.Should().ContainSingle(p =>
             p.Time == expectedTime1.ToTimestamp() &&

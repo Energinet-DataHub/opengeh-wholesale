@@ -21,7 +21,12 @@ from package.calculation.wholesale.data_structures.wholesale_results import (
     WholesaleResults,
     wholesale_results_schema,
 )
-from package.codelists import MeteringPointType, SettlementMethod, ChargeQuality
+from package.codelists import (
+    MeteringPointType,
+    SettlementMethod,
+    ChargeQuality,
+    ChargeType,
+)
 from package.constants import Colname
 
 default_qualities = [ChargeQuality.CALCULATED]
@@ -41,7 +46,7 @@ def create_row(
     total_amount: int | Decimal | None = None,
     charge_tax: bool = True,
     charge_code: str = "4000",
-    charge_type: str = "TARIFF",
+    charge_type: ChargeType = ChargeType.TARIFF,
     charge_owner: str = "001",
 ) -> Row:
     if isinstance(total_quantity, int):
@@ -65,7 +70,7 @@ def create_row(
         Colname.total_amount: total_amount,
         Colname.charge_tax: charge_tax,
         Colname.charge_code: charge_code,
-        Colname.charge_type: charge_type,
+        Colname.charge_type: charge_type.value,
         Colname.charge_owner: charge_owner,
     }
 
