@@ -16,10 +16,10 @@ from typing import Any
 
 from pyspark.sql import DataFrame
 
-from features.utils.scenario_fixture2 import ExpectedResult
 from helpers.data_frame_utils import assert_dataframe_and_schema
 from package.calculation.calculation_results import CalculationResultsContainer
 from package.constants import EnergyResultColumnNames
+from .expected_result import ExpectedResult
 
 
 def assert_output(
