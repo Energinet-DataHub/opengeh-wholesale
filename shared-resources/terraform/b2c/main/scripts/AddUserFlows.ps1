@@ -49,14 +49,14 @@ Write-Information "Creating user flow for signing users in using TOTP"
 New-UserFlow -AccessToken $AccessToken -UserFlowId "SignInFlow" -UserFlowType "signIn"
 
 Write-Information "Creating user flow for signup and signing users in using MitID"
-New-UserFlow -AccessToken $AccessToken -UserFlowId "MitID_SignInSignUpFlow" -UserFlowType "signUpOrSignIn" -IdentityProviderId $MitIdProviderId
-New-UserFlowAttribute -AccessToken $AccessToken -UserFlowId "MitID_SignInSignUpFlow" -AttributeId "email" -AttributeType "emailBox"
+New-UserFlow -AccessToken $AccessToken -UserFlowId "MitID_SignInSignUpFlow_v2" -UserFlowType "signUpOrSignIn" -IdentityProviderId $MitIdProviderId
+New-UserFlowAttribute -AccessToken $AccessToken -UserFlowId "MitID_SignInSignUpFlow_v2" -AttributeId "email" -AttributeType "emailBox"
 
 $user_flows = @"
 {
   "inviteUserFlowId": "B2C_1_InvitationFlow",
   "signInUserFlowId": "B2C_1_SignInFlow",
-  "mitIdSignInSignUpUserFlowId": "B2C_1_MitID_SignInSignUpFlow"
+  "mitIdSignInSignUpUserFlowId": "B2C_1_MitID_SignInSignUpFlow_v2"
 }
 "@
 

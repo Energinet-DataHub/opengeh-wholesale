@@ -51,7 +51,7 @@ Write-Information "Creating OpenId provider for MitID"
 # In case of change, increment the identifier version, e.g. MitIDv4 > MitIDv5.
 $providerId = New-OpenIdProvider `
     -AccessToken $AccessToken `
-    -Identifier "MitIDv1" `
+    -Identifier "MitIDv2" `
     -OpenIdConfigurationUrl "https://pp.netseidbroker.dk/op/.well-known/openid-configuration" `
     -OpenIdConfigurationClientId $MitIdClientId `
     -OpenIdConfigurationClientSecret $MitIdClientSecret `
@@ -59,7 +59,7 @@ $providerId = New-OpenIdProvider `
     -OpenIdConfigurationDisplayNameClaimName "name" `
     -OpenIdConfigurationResponseMode "form_post" `
     -OpenIdConfigurationResponseType "code" `
-    -OpenIdConfigurationScopes "openid mitid"
+    -OpenIdConfigurationScopes "openid nemlogin"
 
 $providers = @"
 {
