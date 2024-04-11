@@ -15,7 +15,7 @@ from package.calculation.calculation_results import BasisDataContainer
 from package.infrastructure import logging_configuration
 from package.infrastructure.paths import (
     METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME,
-    TIME_SERIES_BASIS_DATA_TABLE_NAME,
+    TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME,
     BASIS_DATA_DATABASE_NAME,
 )
 
@@ -30,6 +30,8 @@ def write_basis_data(basis_data: BasisDataContainer) -> None:
         )
 
     with logging_configuration.start_span("time_series"):
-        basis_data.time_series.write.format("delta").mode("append").option(
+        basis_data.time_series_points.write.format("delta").mode("append").option(
             "mergeSchema", "false"
-        ).insertInto(f"{BASIS_DATA_DATABASE_NAME}.{TIME_SERIES_BASIS_DATA_TABLE_NAME}")
+        ).insertInto(
+            f"{BASIS_DATA_DATABASE_NAME}.{TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME}"
+        )

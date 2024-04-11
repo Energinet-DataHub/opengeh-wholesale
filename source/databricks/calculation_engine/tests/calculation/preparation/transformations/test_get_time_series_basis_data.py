@@ -18,7 +18,7 @@ from calculation.preparation.transformations import (
 )
 from package.calculation.basis_data.schemas import time_series_point_schema
 from package.calculation.basis_data.basis_data import (
-    get_time_series_basis_data,
+    get_time_series_points_basis_data,
 )
 from package.common import assert_schema
 
@@ -32,7 +32,7 @@ def test__when_valid_input__returns_df_with_expected_schema(
     )
 
     # Act
-    actual = get_time_series_basis_data(
+    actual = get_time_series_points_basis_data(
         "some-calculation-id", metering_point_time_series
     )
 

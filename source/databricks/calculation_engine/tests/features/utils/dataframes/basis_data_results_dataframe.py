@@ -25,7 +25,7 @@ from package.calculation.basis_data.schemas import (
 from package.constants import TimeSeriesColname, MeteringPointPeriodColname
 
 BASIS_DATA_METERING_POINT_PERIODS_CSV = "metering_point_periods"
-BASIS_DATA_TIME_SERIES_POINTS_CSV = "time_series"
+BASIS_DATA_TIME_SERIES_POINTS_CSV = "time_series_points"
 
 
 def create_basis_data_result_dataframe(
