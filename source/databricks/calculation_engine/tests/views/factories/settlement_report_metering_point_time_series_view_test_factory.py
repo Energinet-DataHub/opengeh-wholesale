@@ -12,31 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime
-
 from pyspark.sql import Row, SparkSession, DataFrame
 
 from package.codelists import (
     InputMeteringPointType,
-    InputSettlementMethod,
 )
-from package.constants import MeteringPointPeriodColname
-from views.settlement_reports.schemas.metering_point_period_schema import (
-    metering_point_period_schema,
+from views.factories.metering_point_time_series_colname import (
+    MeteringPointTimeSeriesColname,
+)
+from views.settlement_reports.schemas.metering_point_time_series_schema import (
+    metering_point_time_series_schema,
 )
 
 
 class SettlementReportMeteringPointTimeSeriesViewTestFactory:
     CALCULATION_ID = "295b6872-cc24-483c-bf0a-a33f93207c20"
     METERING_POINT_ID = "123456789012345678901234567"
-    FROM_DATE = datetime(2019, 12, 31, 23, 0, 0)
-    TO_DATE = None
-    GRID_AREA = "805"
-    FROM_GRID_AREA = None
-    TO_GRID_AREA = None
     METERING_POINT_TYPE = InputMeteringPointType.PRODUCTION
-    SETTLEMENT_METHOD = InputSettlementMethod.FLEX
+    RESOLUTION = ""
+    GRID_AREA = "805"
     ENERGY_SUPPLIER_ID = "9999999999999"
+    OBSERVATION_DAY = ""
+    QUANTITIES = ""
 
     def __init__(self, spark: SparkSession):
         self.spark = spark
@@ -45,26 +42,22 @@ class SettlementReportMeteringPointTimeSeriesViewTestFactory:
     def create_row(
         calculation_id: str = CALCULATION_ID,
         metering_point_id: str = METERING_POINT_ID,
-        from_date: datetime = FROM_DATE,
-        to_date: datetime | None = TO_DATE,
-        grid_area: str = GRID_AREA,
-        from_grid_area: str | None = FROM_GRID_AREA,
-        to_grid_area: str | None = TO_GRID_AREA,
         metering_point_type: InputMeteringPointType = METERING_POINT_TYPE,
-        settlement_method: InputSettlementMethod | None = SETTLEMENT_METHOD,
+        resolution: str = RESOLUTION,
+        grid_area: str = GRID_AREA,
         energy_supplier: str = ENERGY_SUPPLIER_ID,
+        observation_day: str = OBSERVATION_DAY,
+        quantities: str = QUANTITIES,
     ) -> Row:
         row = {
-            MeteringPointPeriodColname.calculation_id: calculation_id,
-            MeteringPointPeriodColname.metering_point_id: metering_point_id,
-            MeteringPointPeriodColname.from_date: from_date,
-            MeteringPointPeriodColname.to_date: to_date,
-            MeteringPointPeriodColname.grid_area: grid_area,
-            MeteringPointPeriodColname.from_grid_area: from_grid_area,
-            MeteringPointPeriodColname.to_grid_area: to_grid_area,
-            MeteringPointPeriodColname.metering_point_type: metering_point_type,
-            MeteringPointPeriodColname.settlement_method: settlement_method,
-            MeteringPointPeriodColname.energy_supplier_id: energy_supplier,
+            MeteringPointTimeSeriesColname.calculation_id: calculation_id,
+            MeteringPointTimeSeriesColname.metering_point_id: metering_point_id,
+            MeteringPointTimeSeriesColname.metering_point_type: metering_point_type,
+            MeteringPointTimeSeriesColname.resolution: resolution,
+            MeteringPointTimeSeriesColname.grid_area: grid_area,
+            MeteringPointTimeSeriesColname.energy_supplier_id: energy_supplier,
+            MeteringPointTimeSeriesColname.observation_day: observation_day,
+            MeteringPointTimeSeriesColname.quantities: quantities,
         }
 
         return Row(**row)
@@ -74,4 +67,6 @@ class SettlementReportMeteringPointTimeSeriesViewTestFactory:
             data = [self.create_row()]
         elif isinstance(data, Row):
             data = [data]
-        return self.spark.createDataFrame(data, schema=metering_point_period_schema)
+        return self.spark.createDataFrame(
+            data, schema=metering_point_time_series_schema
+        )
