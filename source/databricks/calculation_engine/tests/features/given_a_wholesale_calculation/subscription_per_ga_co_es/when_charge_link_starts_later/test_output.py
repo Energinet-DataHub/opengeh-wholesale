@@ -13,24 +13,18 @@
 # limitations under the License.
 
 """
-# Test Description
-
+# Tests Description
 ```gherkin
-GIVEN two metering points (positive and negative grid loss)
-  AND only one charge link
-  AND the charge link starts on February 27th
-  AND the subscription price is 28.282828 DKK
-WHEN calculating subscription amount per charge for February
-THEN there is only result rows for 27th and 28th of february
-  AND the subscription amount is 1.010101 DKK
 ```
 """
+
 
 from typing import Any
 
 import pytest
 
-from features.utils import assert_output, get_output_names
+from features.utils.base import assert_output
+from features.utils.files import get_output_names
 
 
 @pytest.mark.parametrize("output_name", get_output_names())

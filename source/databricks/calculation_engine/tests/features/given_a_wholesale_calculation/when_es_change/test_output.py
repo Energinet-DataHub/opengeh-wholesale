@@ -13,18 +13,18 @@
 # limitations under the License.
 
 """
-# Testing daily tariff when energy supplier changes on grid loss and system correction metering points
-
-Given grid loss and system correction metering points
-When energy supplier changes on both
-Then the daily tariff per grid area, charge owner and energy supplier is calculated correctly
+# Tests Description
+```gherkin
+```
 """
+
 
 from typing import Any
 
 import pytest
 
-from features.utils import assert_output, get_output_names
+from features.utils.base import assert_output
+from features.utils.files import get_output_names
 
 
 @pytest.mark.parametrize("output_name", get_output_names())
