@@ -13,16 +13,13 @@
 # limitations under the License.
 import concurrent.futures
 import os
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Tuple
 from unittest.mock import Mock
 
 from pyspark.sql import SparkSession, DataFrame
 
-from package.calculation.calculation_results import (
-    CalculationResultsContainer,
-)
+from package.calculation.calculation_results import CalculationResultsContainer
 from package.calculation.calculator_args import CalculatorArgs
 from .correlations import get_correlations
 from .dataframes.basis_data_results_dataframe import (
@@ -32,13 +29,8 @@ from .dataframes.energy_results_dataframe import (
     create_energy_result_dataframe,
 )
 from .dataframes.wholesale_results_dataframe import create_wholesale_result_dataframe
+from .expected_result import ExpectedResult
 from .test_calculation_args import create_calculation_args
-
-
-@dataclass
-class ExpectedResult:
-    name: str
-    df: DataFrame
 
 
 class ScenarioFixture2:

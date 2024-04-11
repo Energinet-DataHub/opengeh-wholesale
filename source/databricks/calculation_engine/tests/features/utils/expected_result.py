@@ -11,17 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from dataclasses import dataclass
 
-from typing import Any
-
-import pytest
-
-from features.utils import assert_output, get_output_names
+from pyspark.sql import DataFrame
 
 
-@pytest.mark.parametrize("output_name", get_output_names())
-def test__equals_expected(
-    actual_and_expected: Any,
-    output_name: str,
-) -> None:
-    assert_output(actual_and_expected, output_name)
+@dataclass
+class ExpectedResult:
+    name: str
+    df: DataFrame
