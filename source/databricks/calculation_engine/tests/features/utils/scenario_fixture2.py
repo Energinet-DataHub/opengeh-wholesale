@@ -20,21 +20,21 @@ from unittest.mock import Mock
 
 from pyspark.sql import SparkSession, DataFrame
 
-from features.correlations import get_correlations
-from features.test_calculation_args import create_calculation_args
-from features.utils import create_wholesale_result_dataframe
-from features.utils.dataframes.basis_data_results_dataframe import (
-    create_basis_data_result_dataframe,
-)
-from features.utils.dataframes.energy_results_dataframe import (
-    create_energy_result_dataframe,
-)
 from package.calculation import PreparedDataReader
 from package.calculation.calculation import _execute
 from package.calculation.calculation_results import (
     CalculationResultsContainer,
 )
 from package.calculation.calculator_args import CalculatorArgs
+from .correlations import get_correlations
+from .dataframes.basis_data_results_dataframe import (
+    create_basis_data_result_dataframe,
+)
+from .dataframes.energy_results_dataframe import (
+    create_energy_result_dataframe,
+)
+from .dataframes.wholesale_results_dataframe import create_wholesale_result_dataframe
+from .test_calculation_args import create_calculation_args
 
 
 @dataclass
