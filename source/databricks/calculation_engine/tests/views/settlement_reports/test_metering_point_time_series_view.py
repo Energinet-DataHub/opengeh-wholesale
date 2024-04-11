@@ -14,12 +14,17 @@
 
 from pyspark.sql import SparkSession, dataframe
 
+from features.utils.factories.basis_data import BasisDataMeteringPointPeriodsFactory
+from features.utils.factories.basis_data.basis_data_time_series_points_factory import BasisDataTimeSeriesPointsFactory
 from helpers.data_frame_utils import assert_dataframes_equal
-from package.constants import MeteringPointPeriodColname
 from package.infrastructure.paths import (
     BASIS_DATA_DATABASE_NAME,
     SETTLEMENT_REPORT_DATABASE_NAME,
     TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME,
+    METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME,
+)
+from views.factories.metering_point_time_series_colname import (
+    MeteringPointTimeSeriesColname,
 )
 from views.factories.settlement_report_metering_point_time_series_view_test_factory import (
     SettlementReportMeteringPointTimeSeriesViewTestFactory,
@@ -32,16 +37,14 @@ def create_expected(spark: SparkSession, df: dataframe) -> dataframe:
     first = df.first()
 
     row = view_factory.create_row(
-        first[MeteringPointPeriodColname.calculation_id],
-        first[MeteringPointPeriodColname.metering_point_id],
-        first[MeteringPointPeriodColname.from_date],
-        first[MeteringPointPeriodColname.to_date],
-        first[MeteringPointPeriodColname.grid_area],
-        first[MeteringPointPeriodColname.from_grid_area],
-        first[MeteringPointPeriodColname.to_grid_area],
-        first[MeteringPointPeriodColname.metering_point_type],
-        first[MeteringPointPeriodColname.settlement_method],
-        first[MeteringPointPeriodColname.energy_supplier_id],
+        first[MeteringPointTimeSeriesColname.calculation_id],
+        first[MeteringPointTimeSeriesColname.metering_point_id],
+        first[MeteringPointTimeSeriesColname.metering_point_type],
+        first[MeteringPointTimeSeriesColname.resolution],
+        first[MeteringPointTimeSeriesColname.grid_area],
+        first[MeteringPointTimeSeriesColname.energy_supplier_id],
+        first[MeteringPointTimeSeriesColname.observation_day],
+        first[MeteringPointTimeSeriesColname.quantities],
     )
 
     return view_factory.create_dataframe([row])
@@ -52,18 +55,24 @@ def test_read_metering_point_time_series_returns_expected_from_settlement_report
     migrations_executed: None,
 ) -> None:
     """
-    The test verifies that the view "metering_point_periods" is updated when the underlying
-    basis_data.metering_point_periods table is updated (and that the view exists in the
-    wholesale schema (database) settlement_report).
+    The test verifies that the view "metering_point_time_series" is updated when the underlying
+    tables basis_data.metering_point_periods and basis_data.time_series_points table are updated
+    (and that the view exists in the wholesale schema (database) settlement_report).
     """
     # Arrange
-    factory = SettlementReportMeteringPointTimeSeriesViewTestFactory(spark)
+    factory1 = BasisDataMeteringPointPeriodsFactory(spark)
+    row = factory1.create_row()
+    df1 = factory1.create_dataframe([row])
+    df1.write.format("delta").mode("overwrite").saveAsTable(
+        f"{BASIS_DATA_DATABASE_NAME}.{METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME}"
+    )
+    factory = BasisDataTimeSeriesPointsFactory(spark)
     row = factory.create_row()
     df = factory.create_dataframe([row])
     df.write.format("delta").mode("overwrite").saveAsTable(
         f"{BASIS_DATA_DATABASE_NAME}.{TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME}"
     )
-    expected = create_expected(spark, df)
+    expected = create_expected(spark, df, df1)
     sut = ViewReader(spark, SETTLEMENT_REPORT_DATABASE_NAME)
 
     # Act

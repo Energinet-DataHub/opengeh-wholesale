@@ -19,21 +19,27 @@ from pyspark.sql.types import (
     StructType,
 )
 
-from package.constants import MeteringPointPeriodColname
+from views.factories.metering_point_time_series_colname import (
+    MeteringPointTimeSeriesColname,
+)
 
 metering_point_time_series_schema = StructType(
     [
-        StructField(MeteringPointPeriodColname.calculation_id, StringType(), False),
-        StructField(MeteringPointPeriodColname.metering_point_id, StringType(), False),
-        StructField(MeteringPointPeriodColname.from_date, TimestampType(), False),
-        StructField(MeteringPointPeriodColname.to_date, TimestampType(), True),
-        StructField(MeteringPointPeriodColname.grid_area, StringType(), False),
-        StructField(MeteringPointPeriodColname.from_grid_area, StringType(), True),
-        StructField(MeteringPointPeriodColname.to_grid_area, StringType(), True),
+        StructField(MeteringPointTimeSeriesColname.calculation_id, StringType(), False),
         StructField(
-            MeteringPointPeriodColname.metering_point_type, StringType(), False
+            MeteringPointTimeSeriesColname.metering_point_id, StringType(), False
         ),
-        StructField(MeteringPointPeriodColname.settlement_method, StringType(), True),
-        StructField(MeteringPointPeriodColname.energy_supplier_id, StringType(), True),
+        StructField(
+            MeteringPointTimeSeriesColname.metering_point_type, StringType(), False
+        ),
+        StructField(MeteringPointTimeSeriesColname.grid_area, StringType(), True),
+        StructField(MeteringPointTimeSeriesColname.resolution, StringType(), True),
+        StructField(
+            MeteringPointTimeSeriesColname.energy_supplier_id, StringType(), True
+        ),
+        StructField(
+            MeteringPointTimeSeriesColname.observation_day, TimestampType(), True
+        ),
+        StructField(MeteringPointTimeSeriesColname.quantities, StringType(), True),
     ]
 )
