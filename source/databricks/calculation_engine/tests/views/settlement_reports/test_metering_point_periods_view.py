@@ -65,10 +65,10 @@ def test_read_metering_point_periods_returns_expected_from_settlement_report_met
         f"{BASIS_DATA_DATABASE_NAME}.{METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME}"
     )
     expected = create_expected(spark, df)
-    sut = ViewReader(spark, SETTLEMENT_REPORT_DATABASE_NAME)
+    reader = ViewReader(spark, SETTLEMENT_REPORT_DATABASE_NAME)
 
     # Act
-    actual = sut.read_metering_point_periods()
+    actual = reader.read_metering_point_periods()
 
     # Assert
     assert_dataframes_equal(actual, expected)

@@ -18,12 +18,13 @@ from package.infrastructure import paths
 from package.infrastructure.paths import (
     METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME,
     SETTLEMENT_REPORT_DATABASE_NAME,
+    METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME,
 )
 
 
 class ViewReader:
     """
-    This class is responsible for fetching data from settlement report views and is only used
+    This class is responsible for fetching data from settlement report views and only used
     in tests of settlement report views.
     """
 
@@ -45,4 +46,11 @@ class ViewReader:
     ) -> DataFrame:
         return self._spark.read.format("delta").table(
             f"{SETTLEMENT_REPORT_DATABASE_NAME}.{METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME}"
+        )
+
+    def read_metering_point_time_series(
+        self,
+    ) -> DataFrame:
+        return self._spark.read.format("delta").table(
+            f"{SETTLEMENT_REPORT_DATABASE_NAME}.{METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME}"
         )

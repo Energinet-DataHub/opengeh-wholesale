@@ -38,36 +38,36 @@ def create_expected(
     time_series_points: dataframe,
 ) -> dataframe:
 
-    metering_point_periods = metering_point_periods.first()
-
+    metering_point_period = metering_point_periods.first()
+    time_series_point = time_series_points.first()
     expected = [
         (
             MeteringPointTimeSeriesColname.calculation_id,
-            metering_point_periods[MeteringPointTimeSeriesColname.calculation_id],
+            metering_point_period[MeteringPointTimeSeriesColname.calculation_id],
         ),
         (
             MeteringPointTimeSeriesColname.metering_point_id,
-            metering_point_periods[MeteringPointTimeSeriesColname.metering_point_id],
+            metering_point_period[MeteringPointTimeSeriesColname.metering_point_id],
         ),
         (
             MeteringPointTimeSeriesColname.metering_point_type,
-            metering_point_periods[MeteringPointTimeSeriesColname.metering_point_type],
+            metering_point_period[MeteringPointTimeSeriesColname.metering_point_type],
         ),
         (
             MeteringPointTimeSeriesColname.resolution,
-            metering_point_periods[MeteringPointTimeSeriesColname.resolution],
+            metering_point_period[MeteringPointTimeSeriesColname.resolution],
         ),
         (
             MeteringPointTimeSeriesColname.grid_area,
-            metering_point_periods[MeteringPointTimeSeriesColname.grid_area],
+            metering_point_period[MeteringPointTimeSeriesColname.grid_area],
         ),
         (
             MeteringPointTimeSeriesColname.energy_supplier_id,
-            metering_point_periods[MeteringPointTimeSeriesColname.energy_supplier_id],
+            metering_point_period[MeteringPointTimeSeriesColname.energy_supplier_id],
         ),
         (
             TimeSeriesColname.observation_time,
-            time_series_points[TimeSeriesColname.observation_time],
+            time_series_point[TimeSeriesColname.observation_time],
         ),
     ]
 
@@ -86,10 +86,10 @@ def test_read_metering_point_time_series_returns_expected_from_settlement_report
     # Arrange
     time_series_points, metering_point_periods = setup_test_data(spark)
     expected = create_expected(spark, time_series_points, metering_point_periods)
-    sut = ViewReader(spark, SETTLEMENT_REPORT_DATABASE_NAME)
+    reader = ViewReader(spark, SETTLEMENT_REPORT_DATABASE_NAME)
 
     # Act
-    actual = sut.read_metering_point_periods()
+    actual = reader.read_metering_point_time_series()
 
     # Assert
     assert_dataframes_equal(actual, expected)
