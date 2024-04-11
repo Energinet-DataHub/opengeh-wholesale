@@ -31,12 +31,12 @@ def calculate_per_charge_owner(
     Rows that are tax amounts are added to the other rows - but only the rows where the charge owner is not the tax owner itself.
     """
 
-    total_amount_without_tax = _calculate_total_amount_without_charge_tax(
-        monthly_amounts_per_charge,
+    total_amount_without_tax = _calculate_total_amount_for_tax_type(
+        monthly_amounts_per_charge, charge_tax=False
     )
 
-    total_amount_with_tax = _calculate_total_amount_with_charge_tax(
-        monthly_amounts_per_charge
+    total_amount_with_tax = _calculate_total_amount_for_tax_type(
+        monthly_amounts_per_charge, charge_tax=True
     )
 
     amount_without_tax = "amount_without_tax"
@@ -80,38 +80,21 @@ def calculate_per_charge_owner(
     return TotalMonthlyAmount(total_monthly_amount)
 
 
-def _calculate_total_amount_without_charge_tax(
-    monthly_amount_per_charge: MonthlyAmountPerCharge,
-) -> DataFrame:
-    monthly_amounts_without_tax = monthly_amount_per_charge.df.where(
-        f.col(Colname.charge_tax) == False  # noqa: E712
-    )
-
-    total_amount_without_tax = monthly_amounts_without_tax.groupBy(
-        Colname.grid_area,
-        Colname.charge_owner,
-        Colname.charge_time,
-    ).agg(
-        f.sum(Colname.total_amount).alias(Colname.total_amount),
-        f.first(Colname.charge_tax).alias(Colname.charge_tax),
-    )
-    return total_amount_without_tax
-
-
-def _calculate_total_amount_with_charge_tax(
-    monthly_amount_per_charge: MonthlyAmountPerCharge,
+def _calculate_total_amount_for_tax_type(
+    monthly_amount_per_charge: MonthlyAmountPerCharge, charge_tax: bool
 ) -> DataFrame:
 
     monthly_amounts_with_tax = monthly_amount_per_charge.df.where(
-        f.col(Colname.charge_tax) == True  # noqa: E712
+        f.col(Colname.charge_tax) == charge_tax  # noqa: E712
     )
-    total_amount_with_tax = monthly_amounts_with_tax.groupBy(
+
+    total_monthly_amount_for_charge_type = monthly_amounts_with_tax.groupBy(
         Colname.grid_area,
         Colname.charge_owner,
-        Colname.charge_time,
     ).agg(
         f.sum(Colname.total_amount).alias(Colname.total_amount),
         f.first(Colname.charge_tax).alias(Colname.charge_tax),
+        f.first(Colname.charge_time).alias(Colname.charge_time),
     )
 
-    return total_amount_with_tax
+    return total_monthly_amount_for_charge_type
