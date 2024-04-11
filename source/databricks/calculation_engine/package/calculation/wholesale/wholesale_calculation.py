@@ -18,12 +18,7 @@ import package.calculation.wholesale.subscription_calculators as subscription_ca
 import package.calculation.wholesale.tariff_calculators as tariff_calculator
 import package.calculation.wholesale.total_monthly_amount_calculator as total_amount_calculator
 import package.calculation.preparation.data_structures as d
-from .data_structures import (
-    TotalMonthlyAmount,
-    MonthlyAmountsContainer,
-    MonthlyAmountPerCharge,
-)
-from .union_monthly_amounts_per_charge import get_all_monthly_amounts_per_charge
+from .data_structures import MonthlyAmountPerCharge
 from .sum_within_month import sum_within_month
 
 from ..calculation_results import WholesaleResultsContainer
@@ -78,7 +73,7 @@ def _calculate_fees(
     args: CalculatorArgs,
     prepared_fees: d.PreparedFees,
     results: WholesaleResultsContainer,
-) -> None:
+) -> MonthlyAmountPerCharge:
     fee_per_ga_co_es = fee_calculator.calculate(
         prepared_fees,
     )
@@ -94,6 +89,7 @@ def _calculate_fees(
         monthly_fee_per_ga_co_es,
         AmountType.MONTHLY_AMOUNT_PER_CHARGE,
     )
+    return MonthlyAmountPerCharge(monthly_fee_per_ga_co_es.df)
 
 
 @logging_configuration.use_span("calculate_subscriptions")
