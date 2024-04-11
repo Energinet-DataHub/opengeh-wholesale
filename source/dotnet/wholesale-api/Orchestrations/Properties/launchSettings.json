@@ -2,7 +2,7 @@
   "profiles": {
     "Orchestrations": {
       "commandName": "Project",
-      "commandLineArgs": "--port 7126",
+      "commandLineArgs": "--port 7291",
       "launchBrowser": false
     }
   }
