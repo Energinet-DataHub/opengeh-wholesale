@@ -1,0 +1,12 @@
+﻿{
+  //
+  // See class FunctionAppHostSettings for a description of settings in this file.
+  //
+
+  // We previously used %ProgramFiles% but experienced problems as it sometimes resolved to "...\Program Files (x86)\"
+  "DotnetExecutablePath": "C:\\Program Files\\dotnet\\dotnet.exe",
+
+  // We must ensure this tool is installed at the same location on all developer machines.
+  // Be sure to use 'nvm' to manage Node.js + npm and node modules.
+  "FunctionAppHostPath": "C:\\Program Files\\nodejs\\node_modules\\azure-functions-core-tools\\bin\\func.dll"
+}
