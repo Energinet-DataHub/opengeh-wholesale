@@ -35,15 +35,15 @@ internal class CalculationTrigger
         var instanceId = await client.ScheduleNewOrchestrationInstanceAsync(nameof(CalculationOrchestration.Calculation), batchRequestDto).ConfigureAwait(false);
         logger.LogInformation("Created new orchestration with instance ID = {instanceId}", instanceId);
 
-        var orchestrationMetaData = await client.WaitForInstanceStartAsync(instanceId).ConfigureAwait(false);
-        while (ReadCalculationId(orchestrationMetaData) == Guid.Empty)
+        var orchestrationMetadata = await client.WaitForInstanceStartAsync(instanceId).ConfigureAwait(false);
+        while (ReadCalculationId(orchestrationMetadata) == Guid.Empty)
         {
             await Task.Delay(200).ConfigureAwait(false);
-            orchestrationMetaData = await client.GetInstanceAsync(instanceId, getInputsAndOutputs: true).ConfigureAwait(false);
+            orchestrationMetadata = await client.GetInstanceAsync(instanceId, getInputsAndOutputs: true).ConfigureAwait(false);
         }
 
         var response = req.CreateResponse(HttpStatusCode.OK);
-        await response.WriteAsJsonAsync(ReadCalculationId(orchestrationMetaData)).ConfigureAwait(false);
+        await response.WriteAsJsonAsync(ReadCalculationId(orchestrationMetadata)).ConfigureAwait(false);
 
         return response;
     }
@@ -64,14 +64,14 @@ internal class CalculationTrigger
         return client.CreateCheckStatusResponse(req, instanceId);
     }
 
-    private static Guid ReadCalculationId(OrchestrationMetadata? orchestrationMetaData)
+    private static Guid ReadCalculationId(OrchestrationMetadata? orchestrationMetadata)
     {
-        if (orchestrationMetaData == null || orchestrationMetaData.SerializedCustomStatus == null)
+        if (orchestrationMetadata == null || orchestrationMetadata.SerializedCustomStatus == null)
             return Guid.Empty;
 
-        var calculationMetaData = orchestrationMetaData.ReadCustomStatusAs<CalculationMetadata>();
-        return calculationMetaData == null || calculationMetaData.Id == Guid.Empty
+        var calculationMetadata = orchestrationMetadata.ReadCustomStatusAs<CalculationMetadata>();
+        return calculationMetadata == null || calculationMetadata.Id == Guid.Empty
             ? Guid.Empty
-            : calculationMetaData.Id;
+            : calculationMetadata.Id;
     }
 }

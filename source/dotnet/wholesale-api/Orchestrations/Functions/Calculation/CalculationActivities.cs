@@ -96,12 +96,12 @@ internal class CalculationActivities
     /// </summary>
     [Function(nameof(UpdateCalculationExecutionStatusActivity))]
     public async Task UpdateCalculationExecutionStatusActivity(
-        [ActivityTrigger] CalculationMetadata calculationMetaData)
+        [ActivityTrigger] CalculationMetadata calculationMetadata)
     {
-        _logger.LogInformation($"{nameof(calculationMetaData)}: {calculationMetaData}");
+        _logger.LogInformation($"{nameof(calculationMetadata)}: {calculationMetadata}");
 
-        var calculation = await _calculationRepository.GetAsync(calculationMetaData.Id);
-        var executionState = CalculationStateMapper.MapState(calculationMetaData.JobStatus);
+        var calculation = await _calculationRepository.GetAsync(calculationMetadata.Id);
+        var executionState = CalculationStateMapper.MapState(calculationMetadata.JobStatus);
 
         if (calculation.ExecutionState != executionState)
         {
