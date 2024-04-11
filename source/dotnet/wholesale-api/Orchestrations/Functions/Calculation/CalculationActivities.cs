@@ -29,7 +29,6 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation;
 #pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
 internal class CalculationActivities
 {
-    private readonly ILogger<CalculationActivities> _logger;
     private readonly IClock _clock;
     private readonly ICreateCalculationHandler _createCalculationHandler;
     private readonly IUnitOfWork _calculationUnitOfWork;
@@ -42,7 +41,6 @@ internal class CalculationActivities
     private readonly IPublisher _integrationEventsPublisher;
 
     public CalculationActivities(
-        ILogger<CalculationActivities> logger,
         IClock clock,
         ICreateCalculationHandler createCalculationHandler,
         IUnitOfWork calculationUnitOfWork,
@@ -54,7 +52,6 @@ internal class CalculationActivities
         ICompletedCalculationRepository completedCalculationRepository,
         IPublisher integrationEventsPublisher)
     {
-        _logger = logger;
         _clock = clock;
         _createCalculationHandler = createCalculationHandler;
         _calculationUnitOfWork = calculationUnitOfWork;
@@ -74,8 +71,6 @@ internal class CalculationActivities
     public async Task<CalculationMetadata> CreateCalculationRecordActivity(
         [ActivityTrigger] BatchRequestDto batchRequestDto)
     {
-        _logger.LogInformation($"{nameof(batchRequestDto)}: {batchRequestDto}");
-
         var userId = Guid.NewGuid();
         var calculationId = await _createCalculationHandler.HandleAsync(new CreateCalculationCommand(
             batchRequestDto.CalculationType,
@@ -98,8 +93,6 @@ internal class CalculationActivities
     public async Task UpdateCalculationExecutionStatusActivity(
         [ActivityTrigger] CalculationMetadata calculationMetadata)
     {
-        _logger.LogInformation($"{nameof(calculationMetadata)}: {calculationMetadata}");
-
         var calculation = await _calculationRepository.GetAsync(calculationMetadata.Id);
         var executionState = CalculationStateMapper.MapState(calculationMetadata.JobStatus);
 
@@ -139,8 +132,6 @@ internal class CalculationActivities
     public async Task CreateCompletedCalculationActivity(
         [ActivityTrigger] Guid calculationdId)
     {
-        _logger.LogInformation($"{nameof(calculationdId)}: {calculationdId}");
-
         var calculation = await _calculationRepository.GetAsync(calculationdId);
         var calculationDto = _calculationDtoMapper.Map(calculation);
 
@@ -156,8 +147,6 @@ internal class CalculationActivities
     public async Task<CalculationJobId> StartCalculationActivity(
         [ActivityTrigger] Guid calculationdId)
     {
-        _logger.LogInformation($"{nameof(calculationdId)}: {calculationdId}");
-
         var calculation = await _calculationRepository.GetAsync(calculationdId);
         var jobId = await _calculationEngineClient.StartAsync(calculation);
         calculation.MarkAsSubmitted(jobId);
@@ -173,8 +162,6 @@ internal class CalculationActivities
     public async Task<Energinet.DataHub.Wholesale.Calculations.Application.Model.CalculationState> GetJobStatusActivity(
         [ActivityTrigger] CalculationJobId jobId)
     {
-        _logger.LogInformation($"{nameof(jobId)} : {jobId}");
-
         var calculationState = await _calculationEngineClient.GetStatusAsync(jobId);
 
         return calculationState;
@@ -187,8 +174,6 @@ internal class CalculationActivities
     public async Task SendCalculationResultsActivity(
         [ActivityTrigger] Guid calculationId)
     {
-        _logger.LogInformation($"{nameof(calculationId)} : {calculationId}");
-
         await _integrationEventsPublisher.PublishAsync(CancellationToken.None);
     }
 }
