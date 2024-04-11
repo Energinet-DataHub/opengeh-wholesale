@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from datetime import datetime
 from typing import Tuple
 
 from pyspark.sql import SparkSession, dataframe
@@ -43,14 +44,20 @@ def create_expected(
     time_series_point = time_series_points.first()
 
     row = factory.create_row(
-        metering_point_period[MeteringPointPeriodColname.calculation_id],
-        metering_point_period[MeteringPointPeriodColname.metering_point_id],
-        metering_point_period[MeteringPointPeriodColname.metering_point_type],
-        metering_point_period[MeteringPointPeriodColname.resolution],
-        metering_point_period[MeteringPointPeriodColname.grid_area],
-        metering_point_period[MeteringPointPeriodColname.energy_supplier_id],
-        time_series_point[TimeSeriesColname.observation_time],
-        time_series_point[TimeSeriesColname.quantity],
+        calculation_id=metering_point_period[MeteringPointPeriodColname.calculation_id],
+        metering_point_id=metering_point_period[
+            MeteringPointPeriodColname.metering_point_id
+        ],
+        metering_point_type=metering_point_period[
+            MeteringPointPeriodColname.metering_point_type
+        ],
+        resolution=metering_point_period[MeteringPointPeriodColname.resolution],
+        grid_area=metering_point_period[MeteringPointPeriodColname.grid_area],
+        energy_supplier_id=metering_point_period[
+            MeteringPointPeriodColname.energy_supplier_id
+        ],
+        observation_day=time_series_point[TimeSeriesColname.observation_time],
+        quantities=time_series_point[TimeSeriesColname.quantity],
     )
 
     return factory.create_dataframe([row])
@@ -83,13 +90,15 @@ def setup_test_data(spark: SparkSession) -> Tuple[dataframe, dataframe]:
     factory1 = BasisDataMeteringPointPeriodsFactory(spark)
     row = factory1.create_row()
     metering_point_periods = factory1.create_dataframe([row])
+    metering_point_periods.show()
     metering_point_periods.write.format("delta").mode("overwrite").saveAsTable(
         f"{BASIS_DATA_DATABASE_NAME}.{METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME}"
     )
 
     factory = BasisDataTimeSeriesPointsFactory(spark)
-    row = factory.create_row()
+    row = factory.create_row(observation_time=datetime(2020, 1, 1, 23, 0, 0))
     time_series_points = factory.create_dataframe([row])
+    time_series_points.show()
     time_series_points.write.format("delta").mode("overwrite").saveAsTable(
         f"{BASIS_DATA_DATABASE_NAME}.{TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME}"
     )

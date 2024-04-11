@@ -28,21 +28,23 @@ from views.factories.settlement_report_metering_point_periods_view_test_factory 
 from views.view_reader import ViewReader
 
 
-def create_expected(spark: SparkSession, df: dataframe) -> dataframe:
+def create_expected(
+    spark: SparkSession, metering_point_periods: dataframe
+) -> dataframe:
     factory = SettlementReportMeteringPointPeriodsViewTestFactory(spark)
-    first = df.first()
+    first = metering_point_periods.first()
 
     row = factory.create_row(
-        first[MeteringPointPeriodColname.calculation_id],
-        first[MeteringPointPeriodColname.metering_point_id],
-        first[MeteringPointPeriodColname.from_date],
-        first[MeteringPointPeriodColname.to_date],
-        first[MeteringPointPeriodColname.grid_area],
-        first[MeteringPointPeriodColname.from_grid_area],
-        first[MeteringPointPeriodColname.to_grid_area],
-        first[MeteringPointPeriodColname.metering_point_type],
-        first[MeteringPointPeriodColname.settlement_method],
-        first[MeteringPointPeriodColname.energy_supplier_id],
+        calculation_id=first[MeteringPointPeriodColname.calculation_id],
+        metering_point_id=first[MeteringPointPeriodColname.metering_point_id],
+        from_date=first[MeteringPointPeriodColname.from_date],
+        to_date=first[MeteringPointPeriodColname.to_date],
+        grid_area=first[MeteringPointPeriodColname.grid_area],
+        from_grid_area=first[MeteringPointPeriodColname.from_grid_area],
+        to_grid_area=first[MeteringPointPeriodColname.to_grid_area],
+        metering_point_type=first[MeteringPointPeriodColname.metering_point_type],
+        settlement_method=first[MeteringPointPeriodColname.settlement_method],
+        energy_supplier_id=first[MeteringPointPeriodColname.energy_supplier_id],
     )
 
     return factory.create_dataframe([row])

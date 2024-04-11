@@ -47,7 +47,7 @@ class SettlementReportMeteringPointTimeSeriesViewTestFactory:
         metering_point_type: InputMeteringPointType = METERING_POINT_TYPE,
         resolution: MeteringPointResolution = RESOLUTION,
         grid_area: str = GRID_AREA,
-        energy_supplier: str = ENERGY_SUPPLIER_ID,
+        energy_supplier_id: str = ENERGY_SUPPLIER_ID,
         observation_day: datetime = OBSERVATION_DAY,
         quantities: str = QUANTITIES,
     ) -> Row:
@@ -57,7 +57,7 @@ class SettlementReportMeteringPointTimeSeriesViewTestFactory:
             MeteringPointTimeSeriesColname.metering_point_type: metering_point_type,
             MeteringPointTimeSeriesColname.resolution: resolution,
             MeteringPointTimeSeriesColname.grid_area: grid_area,
-            MeteringPointTimeSeriesColname.energy_supplier_id: energy_supplier,
+            MeteringPointTimeSeriesColname.energy_supplier_id: energy_supplier_id,
             MeteringPointTimeSeriesColname.observation_day: observation_day,
             MeteringPointTimeSeriesColname.quantities: quantities,
         }

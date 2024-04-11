@@ -52,7 +52,7 @@ class SettlementReportMeteringPointPeriodsViewTestFactory:
         to_grid_area: str | None = TO_GRID_AREA,
         metering_point_type: InputMeteringPointType = METERING_POINT_TYPE,
         settlement_method: InputSettlementMethod | None = SETTLEMENT_METHOD,
-        energy_supplier: str = ENERGY_SUPPLIER_ID,
+        energy_supplier_id: str = ENERGY_SUPPLIER_ID,
     ) -> Row:
         row = {
             MeteringPointPeriodColname.calculation_id: calculation_id,
@@ -64,7 +64,7 @@ class SettlementReportMeteringPointPeriodsViewTestFactory:
             MeteringPointPeriodColname.to_grid_area: to_grid_area,
             MeteringPointPeriodColname.metering_point_type: metering_point_type,
             MeteringPointPeriodColname.settlement_method: settlement_method,
-            MeteringPointPeriodColname.energy_supplier_id: energy_supplier,
+            MeteringPointPeriodColname.energy_supplier_id: energy_supplier_id,
         }
 
         return Row(**row)
