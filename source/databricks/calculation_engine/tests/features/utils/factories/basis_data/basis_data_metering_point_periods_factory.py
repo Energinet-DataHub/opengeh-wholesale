@@ -17,7 +17,7 @@ from datetime import datetime
 from pyspark.sql import Row, SparkSession, DataFrame
 
 from package.calculation.basis_data.schemas import metering_point_period_schema
-from package.constants import Colname
+from package.constants import MeteringPointPeriodColname
 
 
 class BasisDataMeteringPointPeriodsFactory:
@@ -55,19 +55,19 @@ class BasisDataMeteringPointPeriodsFactory:
         to_date: datetime | None = TO_DATE,
     ) -> Row:
         row = {
-            Colname.calculation_id: calculation_id,
-            Colname.metering_point_id: metering_point_id,
-            Colname.metering_point_type: metering_point_type,
-            Colname.settlement_method: settlement_method,
-            Colname.grid_area: grid_area,
-            Colname.resolution: resolution,
-            Colname.from_grid_area: from_grid_area,
-            Colname.to_grid_area: to_grid_area,
-            Colname.parent_metering_point_id: parent_metering_point_id,
-            Colname.energy_supplier_id: energy_supplier,
-            Colname.balance_responsible_id: balance_responsible_id,
-            Colname.from_date: from_date,
-            Colname.to_date: to_date,
+            MeteringPointPeriodColname.calculation_id: calculation_id,
+            MeteringPointPeriodColname.metering_point_id: metering_point_id,
+            MeteringPointPeriodColname.metering_point_type: metering_point_type,
+            MeteringPointPeriodColname.settlement_method: settlement_method,
+            MeteringPointPeriodColname.grid_area: grid_area,
+            MeteringPointPeriodColname.resolution: resolution,
+            MeteringPointPeriodColname.from_grid_area: from_grid_area,
+            MeteringPointPeriodColname.to_grid_area: to_grid_area,
+            MeteringPointPeriodColname.parent_metering_point_id: parent_metering_point_id,
+            MeteringPointPeriodColname.energy_supplier_id: energy_supplier,
+            MeteringPointPeriodColname.balance_responsible_id: balance_responsible_id,
+            MeteringPointPeriodColname.from_date: from_date,
+            MeteringPointPeriodColname.to_date: to_date,
         }
 
         return Row(**row)

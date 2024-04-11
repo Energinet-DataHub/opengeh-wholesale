@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from datetime import datetime
+from decimal import Decimal
 
 from pyspark.sql import Row, SparkSession, DataFrame
 
@@ -26,7 +27,7 @@ from package.constants import Colname
 class BasisDataTimeSeriesPointsFactory:
     CALCULATION_ID = "c6fe53cb-de76-4d0f-9d5c-cd73e46e4be9"
     METERING_POINT_ID = "123456789012345678"
-    QUANTITY = "1.01"
+    QUANTITY = Decimal("1.123456")
     QUALITY = QuantityQuality.CALCULATED
     OBSERVATION_TIME = datetime(2019, 12, 31, 23, 0, 0)
 
@@ -37,15 +38,15 @@ class BasisDataTimeSeriesPointsFactory:
     def create_row(
         calculation_id: str = CALCULATION_ID,
         metering_point_id: str = METERING_POINT_ID,
-        quantity: str = QUANTITY,
+        quantity: Decimal = QUANTITY,
         quality: QuantityQuality = QUALITY,
         observation_time: datetime = OBSERVATION_TIME,
     ) -> Row:
         row = {
             Colname.calculation_id: calculation_id,
             Colname.metering_point_id: metering_point_id,
-            Colname.quantity: quality,
-            Colname.quality: quantity,
+            Colname.quantity: quantity,
+            Colname.quality: quality.value,
             Colname.observation_time: observation_time,
         }
 
