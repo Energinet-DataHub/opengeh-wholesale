@@ -55,8 +55,8 @@ def get_metering_point_periods_basis_data(
     )
 
 
-@logging_configuration.use_span("get_time_series_basis_data")
-def get_time_series_basis_data(
+@logging_configuration.use_span("get_time_series_points_basis_data")
+def get_time_series_points_basis_data(
     calculation_id: str,
     metering_point_time_series: PreparedMeteringPointTimeSeries,
 ) -> DataFrame:
