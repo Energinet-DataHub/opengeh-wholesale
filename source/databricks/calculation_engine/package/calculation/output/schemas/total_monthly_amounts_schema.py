@@ -13,8 +13,6 @@
 # limitations under the License.
 
 from pyspark.sql.types import (
-    ArrayType,
-    BooleanType,
     DecimalType,
     StringType,
     StructField,
