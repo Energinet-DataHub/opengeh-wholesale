@@ -94,12 +94,6 @@ def test__migrated_table_rejects_invalid_data(
     assert column_name in actual_error_message
 
 
-# According to SME there is no upper bounds limit from a business perspective.
-# The chosen precision of 18 should however not cause any problems as the limit on time series
-# is precision 6. Thus 1e9 time series points can be summed without any problem.
-min_18_3_decimal = Decimal(f"-{'9'*15}.999")  # Precision=18 and scale=3
-max_18_3_decimal = Decimal(f"{'9'*15}.999")  # Precision=18 and scale=3
-
 min_18_6_decimal = Decimal(f"-{'9'*12}.999999")  # Precision=18 and scale=6
 max_18_6_decimal = Decimal(f"{'9'*12}.999999")  # Precision=18 and scale=6
 
@@ -183,12 +177,12 @@ def test__migrated_table_accepts_enum_value(
 @pytest.mark.parametrize(
     "amount",
     [
-        min_18_3_decimal,
-        max_18_3_decimal,
-        Decimal("0.000"),
-        Decimal("0.001"),
-        Decimal("0.005"),
-        Decimal("0.009"),
+        min_18_6_decimal,
+        max_18_6_decimal,
+        Decimal("0.000000"),
+        Decimal("0.000001"),
+        Decimal("0.000005"),
+        Decimal("0.000009"),
     ],
 )
 def test__migrated_table_does_not_round_valid_decimal(
