@@ -26,10 +26,10 @@ class EnergyResultsContainer:
     grid_loss: DataFrame | None = None
     positive_grid_loss: DataFrame | None = None
     negative_grid_loss: DataFrame | None = None
-    consumption_per_ga_and_brp: DataFrame | None = None
-    consumption_per_ga_and_brp_and_es: DataFrame | None = None
-    consumption_per_ga_and_es: DataFrame | None = None
-    consumption_per_ga: DataFrame | None = None
+    non_profiled_consumption_per_ga_and_brp: DataFrame | None = None
+    non_profiled_consumption_per_ga_and_brp_and_es: DataFrame | None = None
+    non_profiled_consumption_per_ga_and_es: DataFrame | None = None
+    non_profiled_consumption_per_ga: DataFrame | None = None
     production_per_ga_and_brp_and_es: DataFrame | None = None
     production_per_ga_and_brp: DataFrame | None = None
     production_per_ga_and_es: DataFrame | None = None
@@ -56,7 +56,7 @@ class WholesaleResultsContainer:
 @dataclass
 class BasisDataContainer:
     metering_point_periods: DataFrame
-    time_series: DataFrame
+    time_series_points: DataFrame
 
 
 @dataclass
