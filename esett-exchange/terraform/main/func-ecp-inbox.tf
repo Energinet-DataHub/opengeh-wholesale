@@ -31,7 +31,11 @@ module "func_entrypoint_ecp_inbox" {
       role_definition_name = "Key Vault Secrets User"
     }
   ]
-  app_settings = {
+  app_settings = local.default_inbox_app_settings
+}
+
+locals {
+  default_inbox_app_settings = {
     "DatabaseSettings:ConnectionString"      = local.MS_ESETT_EXCHANGE_CONNECTION_STRING
     "BlobStorageSettings:AccountUri"         = local.ESETT_DOCUMENT_STORAGE_ACCOUNT_URI
     "BlobStorageSettings:ContainerName"      = local.ESETT_DOCUMENT_STORAGE_CONTAINER_NAME

@@ -27,8 +27,11 @@ module "func_entrypoint_application_workers" {
       role_definition_name = "Key Vault Secrets User"
     }
   ]
+  app_settings = local.default_application_workers_app_settings
+}
 
-  app_settings = {
+locals {
+  default_application_workers_app_settings = {
     "DatabaseSettings:ConnectionString"                     = local.MS_ESETT_EXCHANGE_CONNECTION_STRING
     "PublishServiceBusSettings:ConnectionString"            = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-send-connection-string)"
     "PublishServiceBusSettings:HealthCheckConnectionString" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-manage-connection-string)"

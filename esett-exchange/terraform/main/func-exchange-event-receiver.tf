@@ -31,7 +31,11 @@ module "func_entrypoint_exchange_event_receiver" {
       role_definition_name = "Key Vault Secrets User"
     }
   ]
-  app_settings = {
+  app_settings = local.default_exchange_event_receiver_app_settings
+}
+
+locals {
+  default_exchange_event_receiver_app_settings = {
     "DatabaseSettings:ConnectionString"                     = local.MS_ESETT_EXCHANGE_CONNECTION_STRING
     "ConsumeServiceBusSettings:ConnectionString"            = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-listen-connection-string)"
     "ConsumeServiceBusSettings:HealthCheckConnectionString" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-manage-connection-string)"
