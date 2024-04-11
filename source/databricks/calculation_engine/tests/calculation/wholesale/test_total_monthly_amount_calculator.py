@@ -21,14 +21,16 @@ from package.codelists import (
 )
 from package.constants import Colname
 import calculation.wholesale.factories.monthly_amount_per_charge_factory as monthly_amount_per_charge_factory
-from package.calculation.wholesale.total_monthly_amount_calculator import calculate
+from package.calculation.wholesale.total_monthly_amount_calculator import (
+    calculate_per_charge_owner,
+)
 
 
 SYSTEM_OPERATOR_ID = "system_operator_id"
 GRID_ACCESS_PROVIDER_ID = "grid_access_provider_id"
 
 
-def test__calculate__when_all_monthly_amounts_are_without_tax__sums_all_amounts(
+def test__calculate_per_charge_owner__sums_across_charge_types(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -54,12 +56,46 @@ def test__calculate__when_all_monthly_amounts_are_without_tax__sums_all_amounts(
     )
 
     # Act
-    actual = calculate(
+    actual = calculate_per_charge_owner(
         monthly_amounts,
     ).df
 
     # Assert
     assert actual.collect()[0][Colname.total_amount] == Decimal("3.000000")
+    assert actual.count() == 1
+
+
+def test__calculate_per_charge_owner__sums_across_energy_suppliers(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    monthly_amounts_rows = [
+        monthly_amount_per_charge_factory.create_row(
+            charge_type=ChargeType.SUBSCRIPTION,
+            total_amount=Decimal("1"),
+            charge_tax=False,
+            charge_owner=GRID_ACCESS_PROVIDER_ID,
+            energy_supplier_id="1",
+        ),
+        monthly_amount_per_charge_factory.create_row(
+            charge_type=ChargeType.SUBSCRIPTION,
+            total_amount=Decimal("1"),
+            charge_tax=False,
+            charge_owner=GRID_ACCESS_PROVIDER_ID,
+            energy_supplier_id="2",
+        ),
+    ]
+    monthly_amounts = monthly_amount_per_charge_factory.create(
+        spark, monthly_amounts_rows
+    )
+
+    # Act
+    actual = calculate_per_charge_owner(
+        monthly_amounts,
+    ).df
+
+    # Assert
+    assert actual.collect()[0][Colname.total_amount] == Decimal("2.000000")
     assert actual.count() == 1
 
 
@@ -70,7 +106,7 @@ def test__calculate__when_all_monthly_amounts_are_without_tax__sums_all_amounts(
         [GRID_ACCESS_PROVIDER_ID, Decimal("2.000000")],
     ],
 )
-def test__calculate__when_charge_owner__adds_tax_amount_only_to_grid_access_operator(
+def test__calculate_per_charge_owner__adds_tax_amount_only_to_grid_access_operator(
     spark: SparkSession, charge_owner: str, expected: Decimal
 ) -> None:
     # Arrange
@@ -93,7 +129,7 @@ def test__calculate__when_charge_owner__adds_tax_amount_only_to_grid_access_oper
     )
 
     # Act
-    actual = calculate(
+    actual = calculate_per_charge_owner(
         monthly_amounts,
     ).df
 
@@ -110,7 +146,7 @@ def test__calculate__when_charge_owner__adds_tax_amount_only_to_grid_access_oper
         [None, None, None],
     ],
 )
-def test__calculate__when_amount_is_null__ignores_null_in_sum(
+def test__calculate_per_charge_owner__ignores_null_in_sum(
     spark: SparkSession,
     amount_without_tax: Decimal,
     amount_with_tax: Decimal,
@@ -136,7 +172,7 @@ def test__calculate__when_amount_is_null__ignores_null_in_sum(
     )
 
     # Act
-    actual = calculate(
+    actual = calculate_per_charge_owner(
         monthly_amounts,
     ).df
 

@@ -14,6 +14,7 @@
 
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
+from pyspark.sql.types import StringType
 
 from package.calculation.wholesale.data_structures import (
     MonthlyAmountPerCharge,
@@ -22,11 +23,11 @@ from package.calculation.wholesale.data_structures import (
 from package.constants import Colname
 
 
-def calculate(
+def calculate_per_charge_owner(
     monthly_amounts_per_charge: MonthlyAmountPerCharge,
 ) -> TotalMonthlyAmount:
     """
-    Calculates the total monthly amount for each group of grid area, energy supplier, charge owner and charge time.
+    Calculates the total monthly amount for each group of grid area, charge owner and charge time.
     Rows that are tax amounts are added to the other rows - but only the rows where the charge owner is not the tax owner itself.
     """
 
@@ -55,10 +56,10 @@ def calculate(
     ).select(
         total_amount_without_tax[Colname.grid_area],
         total_amount_without_tax[Colname.charge_owner],
-        total_amount_without_tax[Colname.energy_supplier_id],
         total_amount_without_tax[Colname.charge_time],
         total_amount_without_tax[Colname.total_amount].alias(amount_without_tax),
         total_amount_with_tax[Colname.total_amount].alias(amount_with_tax),
+        f.lit(None).cast(StringType()).alias(Colname.energy_supplier_id),
     )
 
     # Add tax amount to non-tax amount (if it is not null)
@@ -88,7 +89,6 @@ def _calculate_total_amount_without_charge_tax(
 
     total_amount_without_tax = monthly_amounts_without_tax.groupBy(
         Colname.grid_area,
-        Colname.energy_supplier_id,
         Colname.charge_owner,
         Colname.charge_time,
     ).agg(
@@ -107,7 +107,6 @@ def _calculate_total_amount_with_charge_tax(
     )
     total_amount_with_tax = monthly_amounts_with_tax.groupBy(
         Colname.grid_area,
-        Colname.energy_supplier_id,
         Colname.charge_owner,
         Colname.charge_time,
     ).agg(

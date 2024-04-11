@@ -195,6 +195,6 @@ def _calculate_total_monthly_amount(
         .union(monthly_daily_tariffs)
     )
 
-    total_amount_calculator.calculate(
+    total_amount_calculator.calculate_per_charge_owner(
         all_monthly_amounts,
     )
