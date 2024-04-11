@@ -29,10 +29,10 @@ from views.view_reader import ViewReader
 
 
 def create_expected(spark: SparkSession, df: dataframe) -> dataframe:
-    view_factory = SettlementReportMeteringPointPeriodsViewTestFactory(spark)
+    factory = SettlementReportMeteringPointPeriodsViewTestFactory(spark)
     first = df.first()
 
-    row = view_factory.create_row(
+    row = factory.create_row(
         first[MeteringPointPeriodColname.calculation_id],
         first[MeteringPointPeriodColname.metering_point_id],
         first[MeteringPointPeriodColname.from_date],
@@ -45,7 +45,7 @@ def create_expected(spark: SparkSession, df: dataframe) -> dataframe:
         first[MeteringPointPeriodColname.energy_supplier_id],
     )
 
-    return view_factory.create_dataframe([row])
+    return factory.create_dataframe([row])
 
 
 def test_read_metering_point_periods_returns_expected_from_settlement_report_metering_point_periods_view(

@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import Tuple
 
 from pyspark.sql import SparkSession, dataframe
 
@@ -19,15 +20,15 @@ from features.utils.factories.basis_data.basis_data_time_series_points_factory i
     BasisDataTimeSeriesPointsFactory,
 )
 from helpers.data_frame_utils import assert_dataframes_equal
-from package.constants import TimeSeriesColname
+from package.constants import TimeSeriesColname, MeteringPointPeriodColname
 from package.infrastructure.paths import (
     BASIS_DATA_DATABASE_NAME,
     SETTLEMENT_REPORT_DATABASE_NAME,
     TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME,
     METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME,
 )
-from views.factories.metering_point_time_series_colname import (
-    MeteringPointTimeSeriesColname,
+from views.factories.settlement_report_metering_point_time_series_view_test_factory import (
+    SettlementReportMeteringPointTimeSeriesViewTestFactory,
 )
 from views.view_reader import ViewReader
 
@@ -37,41 +38,22 @@ def create_expected(
     metering_point_periods: dataframe,
     time_series_points: dataframe,
 ) -> dataframe:
-
+    factory = SettlementReportMeteringPointTimeSeriesViewTestFactory(spark)
     metering_point_period = metering_point_periods.first()
     time_series_point = time_series_points.first()
-    expected = [
-        (
-            MeteringPointTimeSeriesColname.calculation_id,
-            metering_point_period[MeteringPointTimeSeriesColname.calculation_id],
-        ),
-        (
-            MeteringPointTimeSeriesColname.metering_point_id,
-            metering_point_period[MeteringPointTimeSeriesColname.metering_point_id],
-        ),
-        (
-            MeteringPointTimeSeriesColname.metering_point_type,
-            metering_point_period[MeteringPointTimeSeriesColname.metering_point_type],
-        ),
-        (
-            MeteringPointTimeSeriesColname.resolution,
-            metering_point_period[MeteringPointTimeSeriesColname.resolution],
-        ),
-        (
-            MeteringPointTimeSeriesColname.grid_area,
-            metering_point_period[MeteringPointTimeSeriesColname.grid_area],
-        ),
-        (
-            MeteringPointTimeSeriesColname.energy_supplier_id,
-            metering_point_period[MeteringPointTimeSeriesColname.energy_supplier_id],
-        ),
-        (
-            TimeSeriesColname.observation_time,
-            time_series_point[TimeSeriesColname.observation_time],
-        ),
-    ]
 
-    return spark.createDataFrame(data=expected)
+    row = factory.create_row(
+        metering_point_period[MeteringPointPeriodColname.calculation_id],
+        metering_point_period[MeteringPointPeriodColname.metering_point_id],
+        metering_point_period[MeteringPointPeriodColname.metering_point_type],
+        metering_point_period[MeteringPointPeriodColname.resolution],
+        metering_point_period[MeteringPointPeriodColname.grid_area],
+        metering_point_period[MeteringPointPeriodColname.energy_supplier_id],
+        time_series_point[TimeSeriesColname.observation_time],
+        time_series_point[TimeSeriesColname.quantity],
+    )
+
+    return factory.create_dataframe([row])
 
 
 def test_read_metering_point_time_series_returns_expected_from_settlement_report_metering_point_time_series_view(
@@ -84,18 +66,20 @@ def test_read_metering_point_time_series_returns_expected_from_settlement_report
     (and that the view exists in the wholesale schema (database) settlement_report).
     """
     # Arrange
-    time_series_points, metering_point_periods = setup_test_data(spark)
-    expected = create_expected(spark, time_series_points, metering_point_periods)
+    (time_series_points, metering_point_periods) = setup_test_data(spark)
+    expected = create_expected(spark, metering_point_periods, time_series_points)
     reader = ViewReader(spark, SETTLEMENT_REPORT_DATABASE_NAME)
 
     # Act
     actual = reader.read_metering_point_time_series()
 
     # Assert
+    expected.show()
+    actual.show()
     assert_dataframes_equal(actual, expected)
 
 
-def setup_test_data(spark):
+def setup_test_data(spark: SparkSession) -> Tuple[dataframe, dataframe]:
     factory1 = BasisDataMeteringPointPeriodsFactory(spark)
     row = factory1.create_row()
     metering_point_periods = factory1.create_dataframe([row])

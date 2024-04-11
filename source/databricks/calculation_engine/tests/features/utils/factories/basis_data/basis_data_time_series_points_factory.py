@@ -21,7 +21,7 @@ from package.calculation.basis_data.schemas import (
     time_series_point_schema,
 )
 from package.codelists import QuantityQuality
-from package.constants import Colname
+from package.constants import TimeSeriesColname
 
 
 class BasisDataTimeSeriesPointsFactory:
@@ -43,11 +43,11 @@ class BasisDataTimeSeriesPointsFactory:
         observation_time: datetime = OBSERVATION_TIME,
     ) -> Row:
         row = {
-            Colname.calculation_id: calculation_id,
-            Colname.metering_point_id: metering_point_id,
-            Colname.quantity: quantity,
-            Colname.quality: quality.value,
-            Colname.observation_time: observation_time,
+            TimeSeriesColname.calculation_id: calculation_id,
+            TimeSeriesColname.metering_point_id: metering_point_id,
+            TimeSeriesColname.quantity: quantity,
+            TimeSeriesColname.quality: quality.value,
+            TimeSeriesColname.observation_time: observation_time,
         }
 
         return Row(**row)
