@@ -56,7 +56,7 @@ public static class WholesaleServiceRequestAcceptedMessageFactory
                     new Period
                     {
                         StartOfPeriod = series.Period.Start.ToTimestamp(),
-                        EndOfPeriod = series.Period.Start.ToTimestamp(),
+                        EndOfPeriod = series.Period.End.ToTimestamp(),
                     },
                 GridArea = series.GridArea,
                 EnergySupplierId = series.EnergySupplierId,
