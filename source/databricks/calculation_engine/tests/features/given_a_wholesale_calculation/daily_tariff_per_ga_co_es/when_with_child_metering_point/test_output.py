@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from features.utils.base import Base
 
 """
 # Tests Description
@@ -20,5 +19,17 @@ from features.utils.base import Base
 """
 
 
-class TestThen(Base):
-    pass
+from typing import Any
+
+import pytest
+
+from features.utils.base import assert_output
+from features.utils.files import get_output_names
+
+
+@pytest.mark.parametrize("output_name", get_output_names())
+def test__equals_expected(
+    actual_and_expected: Any,
+    output_name: str,
+) -> None:
+    assert_output(actual_and_expected, output_name)
