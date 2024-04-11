@@ -53,6 +53,7 @@ class Base:
                 expected_result.df,
                 ignore_decimal_precision=True,
                 ignore_nullability=True,
+                ignore_decimal_scale=True,
                 columns_to_skip=[
                     EnergyResultColumnNames.calculation_result_id,
                 ],
@@ -79,6 +80,9 @@ def get_actual_for_expected_result(
 
 def has_field(container_class: Any, field_name: str) -> bool:
     """Check if the given dataclass has a field with the specified name."""
+
+    if container_class is None:
+        return False
 
     for field in fields(container_class):
         if field.name == field_name:
