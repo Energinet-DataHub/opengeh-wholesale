@@ -25,6 +25,6 @@ def write_total_monthly_amounts(
     total_monthly_amounts: DataFrame,
 ) -> None:
     """Write total monthly amounts to the delta table."""
-    total_monthly_amounts.df.write.format("delta").mode("append").option(
+    total_monthly_amounts.write.format("delta").mode("append").option(
         "mergeSchema", "false"
     ).insertInto(f"{OUTPUT_DATABASE_NAME}.{TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}")
