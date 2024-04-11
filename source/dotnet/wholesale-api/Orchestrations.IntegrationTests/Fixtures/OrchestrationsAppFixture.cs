@@ -28,14 +28,14 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.Orchestration.IntegrationTests.Fixtures;
+namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 
 /// <summary>
-/// Support testing Orchestration app.
+/// Support testing Orchestrations app.
 /// </summary>
-public class OrchestrationAppFixture : IAsyncLifetime
+public class OrchestrationsAppFixture : IAsyncLifetime
 {
-    public OrchestrationAppFixture()
+    public OrchestrationsAppFixture()
     {
         TestLogger = new TestDiagnosticsLogger();
         IntegrationTestConfiguration = new IntegrationTestConfiguration();
@@ -75,7 +75,7 @@ public class OrchestrationAppFixture : IAsyncLifetime
 
         // Prepare host settings
         var port = 8000;
-        var appHostSettings = CreateAppHostSettings("Orchestration", ref port);
+        var appHostSettings = CreateAppHostSettings("Orchestrations", ref port);
 
         // ServiceBus entities
         await ServiceBusResourceProvider
@@ -121,6 +121,9 @@ public class OrchestrationAppFixture : IAsyncLifetime
         var appHostSettings = HostConfigurationBuilder.CreateFunctionAppHostSettings();
         appHostSettings.FunctionApplicationPath = $"..\\..\\..\\..\\{csprojName}\\bin\\{buildConfiguration}\\net8.0";
         appHostSettings.Port = ++port;
+
+        // It seems the host + worker is not ready if we use the default startup log message, so we override it here
+        appHostSettings.HostStartedEvent = "Host lock lease acquired";
 
         appHostSettings.ProcessEnvironmentVariables.Add("FUNCTIONS_WORKER_RUNTIME", "dotnet-isolated");
         appHostSettings.ProcessEnvironmentVariables.Add("AzureWebJobsStorage", AzuriteManager.FullConnectionString);
