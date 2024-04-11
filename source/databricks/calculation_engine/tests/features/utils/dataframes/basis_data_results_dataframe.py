@@ -18,12 +18,6 @@ from pyspark.sql.types import (
     DecimalType,
 )
 
-from package.calculation.basis_data.schemas import (
-    time_series_point_schema,
-    metering_point_period_schema,
-)
-from package.constants import TimeSeriesColname, MeteringPointPeriodColname
-
 BASIS_DATA_METERING_POINT_PERIODS_CSV = "metering_point_periods"
 BASIS_DATA_TIME_SERIES_POINTS_CSV = "time_series_points"
 
@@ -41,6 +35,12 @@ def create_basis_data_result_dataframe(
 
 
 def create_time_series_points(df, spark):
+
+    # Don't remove. Believed needed because this function is an argument to the setup function
+    # and therefore the following packages are not automatically included.
+    from package.constants import TimeSeriesColname
+    from package.calculation.basis_data.schemas import time_series_point_schema
+
     df = df.withColumn(
         TimeSeriesColname.quantity,
         col(TimeSeriesColname.quantity).cast(DecimalType(18, 3)),
@@ -49,10 +49,16 @@ def create_time_series_points(df, spark):
         TimeSeriesColname.observation_time,
         col(TimeSeriesColname.observation_time).cast(TimestampType()),
     )
+
     return spark.createDataFrame(df.rdd, time_series_point_schema)
 
 
 def create_metering_point_periods(df, spark):
+
+    # Don't remove. Believed needed because this function is an argument to the setup function
+    # and therefore the following packages are not automatically included.
+    from package.constants import MeteringPointPeriodColname
+    from package.calculation.basis_data.schemas import metering_point_period_schema
 
     df = df.withColumn(
         MeteringPointPeriodColname.from_date,

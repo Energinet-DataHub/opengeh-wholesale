@@ -13,12 +13,23 @@
 # limitations under the License.
 
 """
-# Test Description
+# Tests Description
 ```gherkin
 ```
 """
-from features.utils.base import Base
 
 
-class TestThen(Base):
-    pass
+from typing import Any
+
+import pytest
+
+from features.utils.base import assert_output
+from features.utils.files import get_output_names
+
+
+@pytest.mark.parametrize("output_name", get_output_names())
+def test__equals_expected(
+    actual_and_expected: Any,
+    output_name: str,
+) -> None:
+    assert_output(actual_and_expected, output_name)

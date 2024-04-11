@@ -11,3 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import inspect
+import os
+from pathlib import Path
+
+
+def get_output_names() -> list[str]:
+    filename = inspect.stack()[1].filename
+    folder = os.path.dirname(filename)
+    output_folder_path = Path(folder + "/output/")
+    csv_files = list(output_folder_path.rglob("*.csv"))
+    return [Path(file).stem for file in csv_files]
