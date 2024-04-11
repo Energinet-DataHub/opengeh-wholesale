@@ -23,6 +23,9 @@ from package.calculation.input.schemas.grid_loss_metering_points_schema import (
 from package.calculation.output.schemas.energy_results_schema import (
     energy_results_schema,
 )
+from package.calculation.output.schemas.total_monthly_amounts_schema import (
+    total_monthly_amounts_schema,
+)
 
 # calculation_output
 from package.calculation.output.schemas.wholesale_results_schema import (
