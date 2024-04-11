@@ -21,15 +21,7 @@ module "func_entrypoint_certificate_synchronization" {
   }
   dotnet_framework_version    = "v8.0"
   use_dotnet_isolated_runtime = true
-
-  app_settings = {
-    CERTIFICATES_KEY_VAULT = module.kv_dh2_certificates.vault_uri
-    APIM_SERVICE_NAME      = data.azurerm_key_vault_secret.apim_instance_id.value
-
-    APIM_TENANT_ID        = data.azurerm_subscription.this.tenant_id
-    APIM_SP_CLIENT_ID     = azuread_application.app_market_participant.application_id
-    APIM_SP_CLIENT_SECRET = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_app_market_participant_password.name})"
-  }
+  app_settings = local.default_certificate_synchronization_app_settings
 
   role_assignments = [
     {
@@ -41,4 +33,15 @@ module "func_entrypoint_certificate_synchronization" {
       role_definition_name = "Key Vault Secrets Officer"
     }
   ]
+}
+
+locals {
+  default_certificate_synchronization_app_settings = {
+    CERTIFICATES_KEY_VAULT = module.kv_dh2_certificates.vault_uri
+    APIM_SERVICE_NAME      = data.azurerm_key_vault_secret.apim_instance_id.value
+
+    APIM_TENANT_ID        = data.azurerm_subscription.this.tenant_id
+    APIM_SP_CLIENT_ID     = azuread_application.app_market_participant.application_id
+    APIM_SP_CLIENT_SECRET = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_app_market_participant_password.name})"
+  }
 }

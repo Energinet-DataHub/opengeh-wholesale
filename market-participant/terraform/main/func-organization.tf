@@ -22,7 +22,22 @@ module "func_entrypoint_marketparticipant" {
   dotnet_framework_version    = "v8.0"
   use_dotnet_isolated_runtime = true
 
-  app_settings = {
+  app_settings = local.default_organization_app_settings
+
+  role_assignments = [
+    {
+      resource_id          = module.kv_internal.id
+      role_definition_name = "Key Vault Secrets User"
+    },
+    {
+      resource_id          = data.azurerm_key_vault.kv_shared_resources.id
+      role_definition_name = "Key Vault Secrets User"
+    }
+  ]
+}
+
+locals {
+  default_organization_app_settings = {
     SQL_MP_DB_CONNECTION_STRING                       = local.MS_MARKET_PARTICIPANT_CONNECTION_STRING
     SERVICE_BUS_CONNECTION_STRING                     = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-send-connection-string)",
     SERVICE_BUS_HEALTH_CHECK_CONNECTION_STRING        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-manage-connection-string)",
@@ -50,15 +65,4 @@ module "func_entrypoint_marketparticipant" {
 
     FeatureManagement__EnabledOrganizationIdentityUpdateTrigger = var.enabled_organization_identity_update_trigger
   }
-
-  role_assignments = [
-    {
-      resource_id          = module.kv_internal.id
-      role_definition_name = "Key Vault Secrets User"
-    },
-    {
-      resource_id          = data.azurerm_key_vault.kv_shared_resources.id
-      role_definition_name = "Key Vault Secrets User"
-    }
-  ]
 }
