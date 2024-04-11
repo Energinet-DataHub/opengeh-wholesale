@@ -11,16 +11,25 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from features.utils.base import Base
 
 """
-# Testing daily tariff when energy supplier changes on grid loss and system correction metering points
-
-Given grid loss and system correction metering points
-When energy supplier changes on both
-Then the daily tariff per grid area, charge owner and energy supplier is calculated correctly
+# Tests Description
+```gherkin
+```
 """
 
 
-class TestThen(Base):
-    pass
+from typing import Any
+
+import pytest
+
+from features.utils.base import assert_output
+from features.utils.files import get_output_names
+
+
+@pytest.mark.parametrize("output_name", get_output_names())
+def test__equals_expected(
+    actual_and_expected: Any,
+    output_name: str,
+) -> None:
+    assert_output(actual_and_expected, output_name)
