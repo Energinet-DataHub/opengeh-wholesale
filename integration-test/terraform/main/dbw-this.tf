@@ -105,7 +105,7 @@ resource "databricks_instance_pool" "migration_pool_integration_test" {
   instance_pool_name                    = "migration-integration-test-instance-pool"
   min_idle_instances                    = 0
   max_capacity                          = 5
-  node_type_id                          = "Standard_DS3_v2"
+  node_type_id                          = "Standard_E4d_v4"
   idle_instance_autotermination_minutes = 60
 }
 
