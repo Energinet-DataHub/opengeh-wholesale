@@ -422,13 +422,13 @@ def _calculate_non_profiled_consumption(
             consumption_per_ga_and_brp_and_es
         )
 
-        results.consumption_per_ga_and_brp = factory.create(
+        results.non_profiled_consumption_per_ga_and_brp = factory.create(
             args,
             consumption_per_ga_and_brp,
             TimeSeriesType.NON_PROFILED_CONSUMPTION,
             AggregationLevel.BRP_PER_GA,
         )
-        results.consumption_per_ga_and_brp_and_es = factory.create(
+        results.non_profiled_consumption_per_ga_and_brp_and_es = factory.create(
             args,
             consumption_per_ga_and_brp_and_es,
             TimeSeriesType.NON_PROFILED_CONSUMPTION,
@@ -436,7 +436,7 @@ def _calculate_non_profiled_consumption(
         )
 
     # Non-profiled consumption per energy supplier
-    results.consumption_per_ga_and_es = factory.create(
+    results.non_profiled_consumption_per_ga_and_es = factory.create(
         args,
         grouping_aggr.aggregate_per_ga_and_es(consumption_per_ga_and_brp_and_es),
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
@@ -444,7 +444,7 @@ def _calculate_non_profiled_consumption(
     )
 
     # Non-profiled consumption per grid area
-    results.consumption_per_ga = factory.create(
+    results.non_profiled_consumption_per_ga = factory.create(
         args,
         grouping_aggr.aggregate_per_ga(consumption_per_ga_and_brp_and_es),
         TimeSeriesType.NON_PROFILED_CONSUMPTION,

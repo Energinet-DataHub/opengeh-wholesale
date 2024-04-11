@@ -40,6 +40,6 @@ def create(
     )
 
     return BasisDataContainer(
-        time_series=time_series_basis_data,
+        time_series_points=time_series_basis_data,
         metering_point_periods=metering_point_periods_basis_data,
     )
