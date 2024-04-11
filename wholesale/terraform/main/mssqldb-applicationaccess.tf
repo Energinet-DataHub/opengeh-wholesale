@@ -6,10 +6,12 @@ module "mssql_database_application_access" {
   application_hosts_names = [
     module.app_wholesale_api.name,
     module.func_wholesale_orchestration.name,
+    module.func_wholesale_orchestrations.name,
   ]
 
   depends_on = [
     module.app_wholesale_api.name,
     module.func_wholesale_orchestration.name,
+    module.func_wholesale_orchestrations.name,
   ]
 }

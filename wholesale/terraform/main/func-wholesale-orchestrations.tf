@@ -1,7 +1,7 @@
-module "func_wholesale_orchestration" {
+module "func_wholesale_orchestrations" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v13"
 
-  name                                   = "orchestration"
+  name                                   = "orchestrations"
   project_name                           = var.domain_name_short
   environment_short                      = var.environment_short
   environment_instance                   = var.environment_instance
