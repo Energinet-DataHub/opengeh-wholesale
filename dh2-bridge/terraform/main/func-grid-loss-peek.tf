@@ -31,7 +31,11 @@ module "func_entrypoint_grid_loss_peek" {
       role_definition_name = "Key Vault Secrets User"
     }
   ]
-  app_settings = {
+  app_settings = local.default_peek_app_settings
+}
+
+locals {
+  default_peek_app_settings = {
     WEBSITE_LOAD_CERTIFICATES                               = local.DH2BRIDGE_CERTIFICATE_THUMBPRINT
     "EmailNotificationConfig:SendGridApiKey"                = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_sendgrid_api_key.name})"
     "EmailNotificationConfig:RejectedNotificationToEmail"   = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_sendgrid_to_email.name})"

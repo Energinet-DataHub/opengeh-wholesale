@@ -31,7 +31,11 @@ module "func_entrypoint_grid_loss_event_receiver" {
       role_definition_name = "Key Vault Secrets User"
     }
   ]
-  app_settings = {
+  app_settings = local.default_event_receiver_app_settings
+}
+
+locals {
+  default_event_receiver_app_settings = {
     "BlobStorageSettings:AccountUri"                        = local.DH2_BRIDGE_DOCUMENT_STORAGE_ACCOUNT_URI
     "BlobStorageSettings:ContainerName"                     = local.DH2_BRIDGE_DOCUMENT_STORAGE_CONTAINER_NAME
     "DatabaseSettings:ConnectionString"                     = local.MS_DH2_BRIDGE_CONNECTION_STRING

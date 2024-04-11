@@ -31,7 +31,11 @@ module "func_entrypoint_grid_loss_simulator" {
       role_definition_name = "Key Vault Secrets User"
     }
   ]
-  app_settings = {
+  app_settings = local.default_simulator_app_settings
+}
+
+locals {
+  default_simulator_app_settings = {
     "ConsumeServiceBusSettings:HealthCheckConnectionString" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-manage-connection-string)"
     "PublisherOptions:ServiceBusConnectionString"           = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-send-connection-string)"
     "PublisherOptions:TopicName"                            = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-shres-integrationevent-received-name)"
