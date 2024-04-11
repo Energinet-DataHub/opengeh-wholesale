@@ -24,7 +24,6 @@ CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods"
 CHARGE_MASTER_DATA_PERIODS_TABLE_NAME = "charge_masterdata_periods"
 CHARGE_PRICE_POINTS_TABLE_NAME = "charge_price_points"
 GRID_LOSS_METERING_POINTS_TABLE_NAME = "grid_loss_metering_points"
-CALCULATIONS_TABLE_NAME = "calculations"
 
 # Output database and tables
 OUTPUT_DATABASE_NAME = "wholesale_output"
@@ -32,7 +31,9 @@ METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME = "metering_point_periods"
 TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME = "time_series_points"
 ENERGY_RESULT_TABLE_NAME = "energy_results"
 WHOLESALE_RESULT_TABLE_NAME = "wholesale_results"
+TOTAL_MONTHLY_AMOUNTS_TABLE_NAME = "total_monthly_amounts"
 BASIS_DATA_DATABASE_NAME = "basis_data"
+CALCULATIONS_TABLE_NAME = "calculations"
 
 # Settlement report database and views
 SETTLEMENT_REPORT_DATABASE_NAME = "settlement_report"

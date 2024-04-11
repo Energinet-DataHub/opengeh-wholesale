@@ -41,6 +41,10 @@ schema_config = [
                 name=paths.ENERGY_RESULT_TABLE_NAME,
                 schema=energy_results_schema,
             ),
+            Table(
+                name=paths.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
+                schema=total_monthly_amounts_schema,
+            ),
         ],
         views=[],
     ),
