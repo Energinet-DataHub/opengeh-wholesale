@@ -144,6 +144,8 @@ def _write_results(results: CalculationResultsContainer) -> None:
     write_energy_results(results.energy_results)
     if results.wholesale_results is not None:
         write_wholesale_results(results.wholesale_results)
+
+    if results.total_monthly_amounts is not None:
         write_total_monthly_amounts(results.total_monthly_amounts)
 
     # We write basis data at the end of the calculation to make it easier to analyze performance of the calculation part
