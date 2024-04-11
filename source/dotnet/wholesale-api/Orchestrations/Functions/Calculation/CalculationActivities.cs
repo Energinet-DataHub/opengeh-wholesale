@@ -95,11 +95,11 @@ internal class CalculationActivities
         [ActivityTrigger] CalculationMetadata calculationMetadata)
     {
         var calculation = await _calculationRepository.GetAsync(calculationMetadata.Id);
-        var executionState = CalculationStateMapper.MapState(calculationMetadata.JobStatus);
+        var newExecutionState = CalculationStateMapper.MapState(calculationMetadata.JobStatus);
 
-        if (calculation.ExecutionState != executionState)
+        if (calculation.ExecutionState != newExecutionState)
         {
-            switch (executionState)
+            switch (newExecutionState)
             {
                 case CalculationExecutionState.Pending:
                     calculation.MarkAsPending();
@@ -119,7 +119,7 @@ internal class CalculationActivities
                     calculation.Reset();
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException($"Unexpected execution state: {executionState.ToString()}.");
+                    throw new ArgumentOutOfRangeException($"Unexpected execution state: {newExecutionState.ToString()}.");
             }
 
             await _calculationUnitOfWork.CommitAsync();
