@@ -19,10 +19,9 @@ from pyspark.sql import SparkSession
 from package.calculation.wholesale.sum_within_month import sum_within_month
 from package.codelists import (
     ChargeQuality,
-    ChargeType,
 )
 from package.constants import Colname
-import tests.calculation.wholesale.wholesale_results_factory as wholesale_results_factory
+import calculation.wholesale.factories.wholesale_results_factory as wholesale_results_factory
 
 
 PERIOD_START_DATETIME = datetime(2019, 12, 31, 23)
