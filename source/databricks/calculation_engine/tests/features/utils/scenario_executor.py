@@ -21,7 +21,7 @@ from pyspark.sql import SparkSession, DataFrame
 
 from package.calculation.calculation_results import CalculationResultsContainer
 from package.calculation.calculator_args import CalculatorArgs
-from .correlations import get_correlations
+from .output_specifications import get_output_specifications
 from .dataframes.basis_data_results_dataframe import (
     create_basis_data_result_dataframe,
 )
@@ -29,11 +29,11 @@ from .dataframes.energy_results_dataframe import (
     create_energy_result_dataframe,
 )
 from .dataframes.wholesale_results_dataframe import create_wholesale_result_dataframe
-from .expected_result import ExpectedResult
-from .test_calculation_args import create_calculation_args
+from .expected_output import ExpectedOutput
+from .calculation_args import create_calculation_args
 
 
-class ScenarioFixture2:
+class ScenarioExecutor:
     table_reader: Mock
     test_calculation_args: CalculatorArgs
     input_path: str
@@ -46,7 +46,7 @@ class ScenarioFixture2:
 
     def execute(
         self, scenario_folder_path: str
-    ) -> Tuple[CalculationResultsContainer, list[ExpectedResult]]:
+    ) -> Tuple[CalculationResultsContainer, list[ExpectedOutput]]:
         self._setup(scenario_folder_path)
 
         from package.calculation import PreparedDataReader
@@ -63,7 +63,7 @@ class ScenarioFixture2:
         self.basis_data_path = scenario_path + "/basis_data/"
         self.output_path = scenario_path + "/output/"
 
-        correlations = get_correlations(self.table_reader)
+        correlations = get_output_specifications(self.table_reader)
         self.test_calculation_args = create_calculation_args(self.input_path)
         dataframes = self._read_files_in_parallel(correlations)
 
@@ -105,7 +105,7 @@ class ScenarioFixture2:
             )
         return dataframes
 
-    def _get_expected_results(self, spark: SparkSession) -> list[ExpectedResult]:
+    def _get_expected_results(self, spark: SparkSession) -> list[ExpectedOutput]:
         expected_results = []
         expected_result_file_paths = (
             self._get_paths_to_expected_result_files_in_output_folder()
@@ -128,7 +128,7 @@ class ScenarioFixture2:
                 df = create_basis_data_result_dataframe(spark, raw_df, result_file[0])
             else:
                 raise Exception(f"Unsupported result file '{result_file[0]}'")
-            expected_results.append(ExpectedResult(name=result_file[0], df=df))
+            expected_results.append(ExpectedOutput(name=result_file[0], df=df))
 
         return expected_results
 
