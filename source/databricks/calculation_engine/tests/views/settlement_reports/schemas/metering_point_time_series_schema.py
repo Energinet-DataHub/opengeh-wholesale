@@ -19,7 +19,7 @@ from pyspark.sql.types import (
     StructType,
 )
 
-from views.factories.metering_point_time_series_colname import (
+from views.settlement_reports.factories.metering_point_time_series_colname import (
     MeteringPointTimeSeriesColname,
 )
 

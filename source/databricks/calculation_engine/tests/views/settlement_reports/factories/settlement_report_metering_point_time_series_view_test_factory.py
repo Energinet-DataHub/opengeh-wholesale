@@ -19,7 +19,7 @@ from package.codelists import (
     InputMeteringPointType,
     MeteringPointResolution,
 )
-from views.factories.metering_point_time_series_colname import (
+from views.settlement_reports.factories.metering_point_time_series_colname import (
     MeteringPointTimeSeriesColname,
 )
 from views.settlement_reports.schemas.metering_point_time_series_schema import (

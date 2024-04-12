@@ -22,7 +22,7 @@ from package.infrastructure.paths import (
     METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME,
     SETTLEMENT_REPORT_DATABASE_NAME,
 )
-from views.factories.settlement_report_metering_point_periods_view_test_factory import (
+from views.settlement_reports.factories.settlement_report_metering_point_periods_view_test_factory import (
     SettlementReportMeteringPointPeriodsViewTestFactory,
 )
 from views.view_reader import ViewReader
