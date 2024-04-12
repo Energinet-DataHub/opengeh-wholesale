@@ -22,7 +22,7 @@ from package.calculation.input.schemas import (
 )
 
 
-def get_correlations(table_reader: TableReader) -> dict[str, tuple]:
+def get_output_specifications(table_reader: TableReader) -> dict[str, tuple]:
     """
     Contains the mapping between the csv file name, the schema name and the function
     to be mocked.
@@ -52,5 +52,4 @@ def get_correlations(table_reader: TableReader) -> dict[str, tuple]:
             charge_price_points_schema,
             table_reader.read_charge_price_points,
         ),
-        "expected_results.csv": (None, None),
     }
