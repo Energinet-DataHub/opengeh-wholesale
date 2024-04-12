@@ -64,7 +64,7 @@ def aggregate_per_ga_and_brp_and_es(
     ]
     result = aggregate_quantity_and_quality(result, sum_group_by)
     # todo: roundabout
-    result = get_rounded(EnergyResults(result))
+    result = get_rounded(result)
     return EnergyResults(result)
 
 
