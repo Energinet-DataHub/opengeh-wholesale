@@ -39,7 +39,6 @@ def execute(
     prepared_charges: d.PreparedChargesContainer,
 ) -> Tuple[WholesaleResultsContainer, TotalMonthlyAmountsContainer]:
     results = WholesaleResultsContainer()
-    total_monthly_amounts = TotalMonthlyAmountsContainer()
 
     monthly_fees = _calculate_fees(
         args,
@@ -65,12 +64,12 @@ def execute(
         results,
     )
 
-    _calculate_total_monthly_amount(
+    total_monthly_amounts = _calculate_total_monthly_amount(
+        args,
         monthly_fees,
         monthly_subscriptions,
         monthly_hourly_tariffs,
         monthly_daily_tariffs,
-        total_monthly_amounts,
     )
 
     return results, total_monthly_amounts
@@ -197,8 +196,9 @@ def _calculate_total_monthly_amount(
     monthly_subscriptions: MonthlyAmountPerCharge,
     monthly_hourly_tariffs: MonthlyAmountPerCharge,
     monthly_daily_tariffs: MonthlyAmountPerCharge,
-    total_monthly_amounts: TotalMonthlyAmountsContainer,
-) -> None:
+) -> TotalMonthlyAmountsContainer:
+    total_monthly_amounts = TotalMonthlyAmountsContainer()
+
     all_monthly_amounts = (
         monthly_fees.union(monthly_subscriptions)
         .union(monthly_hourly_tariffs)
@@ -212,3 +212,5 @@ def _calculate_total_monthly_amount(
     total_monthly_amounts.total_monthly_amounts_per_co = (
         total_monthly_amounts_factory.create(args, total_monthly_amount_per_co)
     )
+
+    return total_monthly_amounts
