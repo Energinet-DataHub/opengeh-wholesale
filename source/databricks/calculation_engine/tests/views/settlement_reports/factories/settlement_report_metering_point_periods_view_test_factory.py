@@ -17,8 +17,8 @@ from datetime import datetime
 from pyspark.sql import Row, SparkSession, DataFrame
 
 from package.codelists import (
-    InputMeteringPointType,
-    InputSettlementMethod,
+    MeteringPointType,
+    SettlementMethod,
 )
 from package.constants import MeteringPointPeriodColname
 from views.settlement_reports.schemas.metering_point_period_schema import (
@@ -27,15 +27,15 @@ from views.settlement_reports.schemas.metering_point_period_schema import (
 
 
 class SettlementReportMeteringPointPeriodsViewTestFactory:
-    CALCULATION_ID = "295b6872-cc24-483c-bf0a-a33f93207c20"
-    METERING_POINT_ID = "123456789012345678901234567"
+    CALCULATION_ID = "c6fe53cb-de76-4d0f-9d5c-cd73e46e4be9"
+    METERING_POINT_ID = "123456789012345678"
     FROM_DATE = datetime(2019, 12, 31, 23, 0, 0)
     TO_DATE = None
     GRID_AREA = "805"
     FROM_GRID_AREA = None
     TO_GRID_AREA = None
-    METERING_POINT_TYPE = InputMeteringPointType.PRODUCTION
-    SETTLEMENT_METHOD = InputSettlementMethod.FLEX
+    METERING_POINT_TYPE = MeteringPointType.PRODUCTION
+    SETTLEMENT_METHOD = SettlementMethod.FLEX
     ENERGY_SUPPLIER_ID = "9999999999999"
 
     def __init__(self, spark: SparkSession):
@@ -50,8 +50,8 @@ class SettlementReportMeteringPointPeriodsViewTestFactory:
         grid_area: str = GRID_AREA,
         from_grid_area: str | None = FROM_GRID_AREA,
         to_grid_area: str | None = TO_GRID_AREA,
-        metering_point_type: InputMeteringPointType = METERING_POINT_TYPE,
-        settlement_method: InputSettlementMethod | None = SETTLEMENT_METHOD,
+        metering_point_type: MeteringPointType = METERING_POINT_TYPE,
+        settlement_method: SettlementMethod | None = SETTLEMENT_METHOD,
         energy_supplier_id: str = ENERGY_SUPPLIER_ID,
     ) -> Row:
         row = {
@@ -62,8 +62,10 @@ class SettlementReportMeteringPointPeriodsViewTestFactory:
             MeteringPointPeriodColname.grid_area: grid_area,
             MeteringPointPeriodColname.from_grid_area: from_grid_area,
             MeteringPointPeriodColname.to_grid_area: to_grid_area,
-            MeteringPointPeriodColname.metering_point_type: metering_point_type,
-            MeteringPointPeriodColname.settlement_method: settlement_method,
+            MeteringPointPeriodColname.metering_point_type: metering_point_type.value,
+            MeteringPointPeriodColname.settlement_method: (
+                None if settlement_method is None else settlement_method.value
+            ),
             MeteringPointPeriodColname.energy_supplier_id: energy_supplier_id,
         }
 

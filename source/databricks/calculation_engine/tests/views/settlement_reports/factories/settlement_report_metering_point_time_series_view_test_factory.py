@@ -16,8 +16,8 @@ from datetime import datetime
 from pyspark.sql import Row, SparkSession, DataFrame
 
 from package.codelists import (
-    InputMeteringPointType,
     MeteringPointResolution,
+    MeteringPointType,
 )
 from views.settlement_reports.factories.metering_point_time_series_colname import (
     MeteringPointTimeSeriesColname,
@@ -30,7 +30,7 @@ from views.settlement_reports.schemas.metering_point_time_series_schema import (
 class SettlementReportMeteringPointTimeSeriesViewTestFactory:
     CALCULATION_ID = "295b6872-cc24-483c-bf0a-a33f93207c20"
     METERING_POINT_ID = "123456789012345678901234567"
-    METERING_POINT_TYPE = InputMeteringPointType.PRODUCTION
+    METERING_POINT_TYPE = MeteringPointType.PRODUCTION
     RESOLUTION = MeteringPointResolution.HOUR
     GRID_AREA = "805"
     ENERGY_SUPPLIER_ID = "9999999999999"
@@ -44,7 +44,7 @@ class SettlementReportMeteringPointTimeSeriesViewTestFactory:
     def create_row(
         calculation_id: str = CALCULATION_ID,
         metering_point_id: str = METERING_POINT_ID,
-        metering_point_type: InputMeteringPointType = METERING_POINT_TYPE,
+        metering_point_type: MeteringPointType = METERING_POINT_TYPE,
         resolution: MeteringPointResolution = RESOLUTION,
         grid_area: str = GRID_AREA,
         energy_supplier_id: str = ENERGY_SUPPLIER_ID,
@@ -54,8 +54,8 @@ class SettlementReportMeteringPointTimeSeriesViewTestFactory:
         row = {
             MeteringPointTimeSeriesColname.calculation_id: calculation_id,
             MeteringPointTimeSeriesColname.metering_point_id: metering_point_id,
-            MeteringPointTimeSeriesColname.metering_point_type: metering_point_type,
-            MeteringPointTimeSeriesColname.resolution: resolution,
+            MeteringPointTimeSeriesColname.metering_point_type: metering_point_type.value,
+            MeteringPointTimeSeriesColname.resolution: resolution.value,
             MeteringPointTimeSeriesColname.grid_area: grid_area,
             MeteringPointTimeSeriesColname.energy_supplier_id: energy_supplier_id,
             MeteringPointTimeSeriesColname.observation_day: observation_day,

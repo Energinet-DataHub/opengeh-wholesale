@@ -128,9 +128,11 @@ jobs:
           - name: Wholesale logic
             paths: features/given_a_wholesale_calculation
           - name: Unit tests
-            paths: calculation/ codelists/ common/ infrastructure/ views/
+            paths: calculation/ codelists/ common/ infrastructure/
           - name: Entry point tests
             paths: entry_points/
+          - name: Unhandled
+            paths: !(calculation/ codelists/ common/ infrastructure/ entry_points/ calculator_job/ features/ datamigration/)
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
       job_name: ${{ matrix.tests_filter_expression.name }}
