@@ -23,7 +23,8 @@ from typing import Any
 
 import pytest
 
-from features.utils import assert_output, get_output_names
+from features.utils.assertion import assert_output
+from features.utils.scenario_output_files import get_output_names
 
 
 @pytest.mark.parametrize("output_name", get_output_names())
