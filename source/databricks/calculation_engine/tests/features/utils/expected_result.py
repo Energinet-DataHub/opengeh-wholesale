@@ -17,6 +17,17 @@ from pyspark.sql import DataFrame
 
 
 @dataclass
-class ExpectedResult:
+class ExpectedOutput:
+    """
+    A single expected output of a calculation.
+    This can be a specific energy og wholesale result like total_production_per_ga, and some basis data.
+    """
+
     name: str
+    """
+    The name of the output.
+    This should match the name of the corresponding property in the CalculationResults class.
+    """
+
     df: DataFrame
+    """The expected output."""
