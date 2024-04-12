@@ -43,6 +43,8 @@ def test_read_metering_point_time_series_returns_expected_from_settlement_report
     actual = reader.read_metering_point_time_series()
 
     # Assert
+    actual.printSchema()
     actual.show()
+    expected.printSchema()
     expected.show()
     assert_dataframes_equal(actual, expected)

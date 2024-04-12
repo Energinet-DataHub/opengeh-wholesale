@@ -13,6 +13,7 @@
 # limitations under the License.
 from datetime import datetime
 
+from array import array
 from pyspark.sql import Row, SparkSession, DataFrame
 
 from package.codelists import (
@@ -35,7 +36,7 @@ class SettlementReportMeteringPointTimeSeriesViewTestFactory:
     GRID_AREA = "805"
     ENERGY_SUPPLIER_ID = "9999999999999"
     OBSERVATION_DAY = datetime(2019, 12, 31, 23, 0, 0)
-    QUANTITIES = ""
+    QUANTITIES: array = ()
 
     def __init__(self, spark: SparkSession):
         self.spark = spark
@@ -49,7 +50,7 @@ class SettlementReportMeteringPointTimeSeriesViewTestFactory:
         grid_area: str = GRID_AREA,
         energy_supplier_id: str = ENERGY_SUPPLIER_ID,
         observation_day: datetime = OBSERVATION_DAY,
-        quantities: str = QUANTITIES,
+        quantities: array = QUANTITIES,
     ) -> Row:
         row = {
             MeteringPointTimeSeriesColname.calculation_id: calculation_id,

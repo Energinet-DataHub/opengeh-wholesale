@@ -11,16 +11,26 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 from pyspark.sql.types import (
     StructField,
     StringType,
     TimestampType,
     StructType,
+    ArrayType,
+    DecimalType,
 )
 
 from views.settlement_reports.factories.metering_point_time_series_colname import (
     MeteringPointTimeSeriesColname,
+)
+
+element = StructType(
+    [
+        StructField(
+            MeteringPointTimeSeriesColname.observation_time, TimestampType(), False
+        ),
+        StructField(MeteringPointTimeSeriesColname.quantity, DecimalType(18, 3), False),
+    ]
 )
 
 metering_point_time_series_schema = StructType(
@@ -40,6 +50,10 @@ metering_point_time_series_schema = StructType(
         StructField(
             MeteringPointTimeSeriesColname.observation_day, TimestampType(), True
         ),
-        StructField(MeteringPointTimeSeriesColname.quantities, StringType(), True),
+        StructField(
+            MeteringPointTimeSeriesColname.quantities,
+            ArrayType(element, False),
+            False,
+        ),
     ]
 )

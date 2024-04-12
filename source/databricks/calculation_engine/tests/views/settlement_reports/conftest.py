@@ -16,14 +16,16 @@ from datetime import datetime
 import pytest
 from pyspark.sql import SparkSession
 
-from features.utils.factories.basis_data import BasisDataMeteringPointPeriodsFactory
-from features.utils.factories.basis_data.basis_data_time_series_points_factory import (
-    BasisDataTimeSeriesPointsFactory,
-)
 from package.infrastructure.paths import (
     BASIS_DATA_DATABASE_NAME,
     METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME,
     TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME,
+)
+from views.settlement_reports.factories.basis_data_metering_point_periods_factory import (
+    BasisDataMeteringPointPeriodsFactory,
+)
+from views.settlement_reports.factories.basis_data_time_series_points_factory import (
+    BasisDataTimeSeriesPointsFactory,
 )
 
 

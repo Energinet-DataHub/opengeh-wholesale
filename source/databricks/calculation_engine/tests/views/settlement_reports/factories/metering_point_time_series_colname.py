@@ -20,3 +20,5 @@ class MeteringPointTimeSeriesColname:
     energy_supplier_id = "energy_supplier_id"
     observation_day = "observation_day"
     quantities = "quantities"
+    observation_time = "observation_time"
+    quantity = "quantity"
