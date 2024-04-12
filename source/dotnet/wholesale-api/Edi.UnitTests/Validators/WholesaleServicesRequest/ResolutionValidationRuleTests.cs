@@ -16,6 +16,7 @@ using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.Validation;
 using Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.WholesaleServicesRequest;
@@ -77,6 +78,7 @@ public class ResolutionValidationRuleTests
         var actual = await _sut.ValidateAsync(request);
 
         // Assert
+        using var assertionScope = new AssertionScope();
         actual.Should().HaveCount(1);
         actual.First().Message.Should().BeSameAs(_notMonthlyResolution.Message);
         actual.First().ErrorCode.Should().BeSameAs(_notMonthlyResolution.ErrorCode);
@@ -94,6 +96,7 @@ public class ResolutionValidationRuleTests
         var actual = await _sut.ValidateAsync(request);
 
         // Assert
+        using var assertionScope = new AssertionScope();
         actual.Should().HaveCount(1);
         actual.First().Message.Should().BeSameAs(_notMonthlyResolution.Message);
         actual.First().ErrorCode.Should().BeSameAs(_notMonthlyResolution.ErrorCode);
@@ -111,6 +114,7 @@ public class ResolutionValidationRuleTests
         var actual = await _sut.ValidateAsync(request);
 
         // Assert
+        using var assertionScope = new AssertionScope();
         actual.Should().HaveCount(1);
         actual.First().Message.Should().BeSameAs(_notMonthlyResolution.Message);
         actual.First().ErrorCode.Should().BeSameAs(_notMonthlyResolution.ErrorCode);
