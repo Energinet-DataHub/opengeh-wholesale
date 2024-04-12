@@ -23,6 +23,9 @@ from package.calculation.input.schemas.grid_loss_metering_points_schema import (
 from package.calculation.output.schemas.energy_results_schema import (
     energy_results_schema,
 )
+from package.calculation.output.schemas.total_monthly_amounts_schema import (
+    total_monthly_amounts_schema,
+)
 
 # calculation_output
 from package.calculation.output.schemas.wholesale_results_schema import (
@@ -40,6 +43,10 @@ schema_config = [
             Table(
                 name=paths.ENERGY_RESULT_TABLE_NAME,
                 schema=energy_results_schema,
+            ),
+            Table(
+                name=paths.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
+                schema=total_monthly_amounts_schema,
             ),
         ],
         views=[],

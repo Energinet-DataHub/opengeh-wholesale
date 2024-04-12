@@ -12,23 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 """
-# Test Description
-
+# Tests Description
 ```gherkin
-GIVEN two consumption metering points and one production metering point
-  AND the consumption metering points have a charge link with quantity of 2, 4 pieces
-  AND the production metering point has a link with quantity of 3 pieces
-  AND the subscription price is 28.282828 DKK
-WHEN calculating subscription amount per charge for February
-THEN the subscription price is 1.010101 DKK
-  AND the subscription amount is 6.060606 DKK per day for the consumption metering points
-  AND the subscription amount is 3.030303 DKK per day for the production metering points
 ```
 """
-from features.utils.base import Base
 
 
-class TestThen(Base):
-    pass
+from typing import Any
+
+import pytest
+
+from features.utils.assertion import assert_output
+from features.utils.scenario_output_files import get_output_names
+
+
+@pytest.mark.parametrize("output_name", get_output_names())
+def test__equals_expected(
+    actual_and_expected: Any,
+    output_name: str,
+) -> None:
+    assert_output(actual_and_expected, output_name)
