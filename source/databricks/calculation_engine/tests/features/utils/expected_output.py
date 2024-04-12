@@ -11,10 +11,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from .input_grid_loss_test_factory import InputGridLossTestFactory
-from .input_metering_point_periods_test_factory import (
-    InputMeteringPointPeriodsTestFactory,
-)
-from .input_time_series_point_test_factory import (
-    InputTimeSeriesPointTestFactory,
-)
+from dataclasses import dataclass
+
+from pyspark.sql import DataFrame
+
+
+@dataclass
+class ExpectedOutput:
+    """
+    A single expected output of a calculation.
+    This can be a specific energy og wholesale result like total_production_per_ga, and some basis data.
+    """
+
+    name: str
+    """
+    The name of the output.
+    This should match the name of the corresponding property in the CalculationResults class.
+    """
+
+    df: DataFrame
+    """The expected output."""
