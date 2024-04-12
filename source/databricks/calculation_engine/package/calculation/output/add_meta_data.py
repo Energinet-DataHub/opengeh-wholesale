@@ -18,7 +18,7 @@ from pyspark.sql.functions import col, lit, first
 from pyspark.sql.window import Window
 
 from package.calculation.calculator_args import CalculatorArgs
-from package.constants import Colname, WholesaleResultColumnNames
+from package.constants import Colname
 from package.constants.result_column_names import ResultColumnNames
 
 
@@ -42,9 +42,7 @@ def add_metadata(
 def _add_calculation_result_id(
     df: DataFrame, column_group_for_calculation_result_id: list[str]
 ) -> DataFrame:
-    df = df.withColumn(
-        WholesaleResultColumnNames.calculation_result_id, f.expr("uuid()")
-    )
+    df = df.withColumn(ResultColumnNames.calculation_result_id, f.expr("uuid()"))
     window = Window.partitionBy(column_group_for_calculation_result_id)
     return df.withColumn(
         ResultColumnNames.calculation_result_id,

@@ -24,27 +24,26 @@ from package.calculation.output.schemas.total_monthly_amounts_schema import (
 )
 from tests.helpers.data_frame_utils import set_column
 from package.codelists import CalculationType
-from package.constants import WholesaleResultColumnNames
+from package.constants import TotalMonthlyAmountsColumnNames
 from package.infrastructure.paths import (
     OUTPUT_DATABASE_NAME,
     TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
-    WHOLESALE_RESULT_TABLE_NAME,
 )
 
 
 def _create_df(spark: SparkSession) -> DataFrame:
     row = {
-        WholesaleResultColumnNames.calculation_id: "9252d7a0-4363-42cc-a2d6-e04c026523f8",
-        WholesaleResultColumnNames.calculation_type: "WholesaleFixing",
-        WholesaleResultColumnNames.calculation_execution_time_start: datetime(
+        TotalMonthlyAmountsColumnNames.calculation_id: "9252d7a0-4363-42cc-a2d6-e04c026523f8",
+        TotalMonthlyAmountsColumnNames.calculation_type: "WholesaleFixing",
+        TotalMonthlyAmountsColumnNames.calculation_execution_time_start: datetime(
             2020, 1, 1, 0, 0
         ),
-        WholesaleResultColumnNames.calculation_result_id: "6033ab5c-436b-44e9-8a79-90489d324e53",
-        WholesaleResultColumnNames.grid_area: "543",
-        WholesaleResultColumnNames.energy_supplier_id: "1234567890123",
-        WholesaleResultColumnNames.time: datetime(2020, 1, 1, 0, 0),
-        WholesaleResultColumnNames.amount: Decimal("1.123"),
-        WholesaleResultColumnNames.charge_owner_id: "1234567890123",
+        TotalMonthlyAmountsColumnNames.calculation_result_id: "6033ab5c-436b-44e9-8a79-90489d324e53",
+        TotalMonthlyAmountsColumnNames.grid_area: "543",
+        TotalMonthlyAmountsColumnNames.energy_supplier_id: "1234567890123",
+        TotalMonthlyAmountsColumnNames.time: datetime(2020, 1, 1, 0, 0),
+        TotalMonthlyAmountsColumnNames.amount: Decimal("1.123"),
+        TotalMonthlyAmountsColumnNames.charge_owner_id: "1234567890123",
     }
     return spark.createDataFrame(data=[row], schema=total_monthly_amounts_schema)
 
@@ -52,22 +51,25 @@ def _create_df(spark: SparkSession) -> DataFrame:
 @pytest.mark.parametrize(
     "column_name,invalid_column_value",
     [
-        (WholesaleResultColumnNames.calculation_id, None),
-        (WholesaleResultColumnNames.calculation_id, "not-a-uuid"),
-        (WholesaleResultColumnNames.calculation_type, None),
-        (WholesaleResultColumnNames.calculation_type, "foo"),
-        (WholesaleResultColumnNames.calculation_execution_time_start, None),
-        (WholesaleResultColumnNames.calculation_result_id, None),
-        (WholesaleResultColumnNames.calculation_result_id, "not-a-uuid"),
-        (WholesaleResultColumnNames.grid_area, None),
-        (WholesaleResultColumnNames.grid_area, "12"),
-        (WholesaleResultColumnNames.grid_area, "1234"),
+        (TotalMonthlyAmountsColumnNames.calculation_id, None),
+        (TotalMonthlyAmountsColumnNames.calculation_id, "not-a-uuid"),
+        (TotalMonthlyAmountsColumnNames.calculation_type, None),
+        (TotalMonthlyAmountsColumnNames.calculation_type, "foo"),
+        (TotalMonthlyAmountsColumnNames.calculation_execution_time_start, None),
+        (TotalMonthlyAmountsColumnNames.calculation_result_id, None),
+        (TotalMonthlyAmountsColumnNames.calculation_result_id, "not-a-uuid"),
+        (TotalMonthlyAmountsColumnNames.grid_area, None),
+        (TotalMonthlyAmountsColumnNames.grid_area, "12"),
+        (TotalMonthlyAmountsColumnNames.grid_area, "1234"),
         (
-            WholesaleResultColumnNames.energy_supplier_id,
+            TotalMonthlyAmountsColumnNames.energy_supplier_id,
             "neither-16-nor-13-digits-long",
         ),
-        (WholesaleResultColumnNames.time, None),
-        (WholesaleResultColumnNames.charge_owner_id, "neither-16-nor-13-digits-long"),
+        (TotalMonthlyAmountsColumnNames.time, None),
+        (
+            TotalMonthlyAmountsColumnNames.charge_owner_id,
+            "neither-16-nor-13-digits-long",
+        ),
     ],
 )
 def test__migrated_table_rejects_invalid_data(
@@ -105,25 +107,25 @@ actor_eic = "1234567890123456"
     "column_name,column_value",
     [
         (
-            WholesaleResultColumnNames.calculation_id,
+            TotalMonthlyAmountsColumnNames.calculation_id,
             "9252d7a0-4363-42cc-a2d6-e04c026523f8",
         ),
-        (WholesaleResultColumnNames.calculation_type, "WholesaleFixing"),
+        (TotalMonthlyAmountsColumnNames.calculation_type, "WholesaleFixing"),
         (
-            WholesaleResultColumnNames.calculation_result_id,
+            TotalMonthlyAmountsColumnNames.calculation_result_id,
             "9252d7a0-4363-42cc-a2d6-e04c026523f8",
         ),
-        (WholesaleResultColumnNames.grid_area, "123"),
-        (WholesaleResultColumnNames.grid_area, "007"),
-        (WholesaleResultColumnNames.energy_supplier_id, actor_gln),
-        (WholesaleResultColumnNames.energy_supplier_id, actor_eic),
-        (WholesaleResultColumnNames.energy_supplier_id, None),
-        (WholesaleResultColumnNames.time, datetime(2020, 1, 1, 0, 0)),
-        (WholesaleResultColumnNames.amount, max_18_6_decimal),
-        (WholesaleResultColumnNames.amount, min_18_6_decimal),
-        (WholesaleResultColumnNames.charge_owner_id, actor_gln),
-        (WholesaleResultColumnNames.charge_owner_id, actor_eic),
-        (WholesaleResultColumnNames.charge_owner_id, None),
+        (TotalMonthlyAmountsColumnNames.grid_area, "123"),
+        (TotalMonthlyAmountsColumnNames.grid_area, "007"),
+        (TotalMonthlyAmountsColumnNames.energy_supplier_id, actor_gln),
+        (TotalMonthlyAmountsColumnNames.energy_supplier_id, actor_eic),
+        (TotalMonthlyAmountsColumnNames.energy_supplier_id, None),
+        (TotalMonthlyAmountsColumnNames.time, datetime(2020, 1, 1, 0, 0)),
+        (TotalMonthlyAmountsColumnNames.amount, max_18_6_decimal),
+        (TotalMonthlyAmountsColumnNames.amount, min_18_6_decimal),
+        (TotalMonthlyAmountsColumnNames.charge_owner_id, actor_gln),
+        (TotalMonthlyAmountsColumnNames.charge_owner_id, actor_eic),
+        (TotalMonthlyAmountsColumnNames.charge_owner_id, None),
     ],
 )
 def test__migrated_table_accepts_valid_data(
@@ -146,7 +148,7 @@ def test__migrated_table_accepts_valid_data(
     "column_name,column_value",
     [
         *[
-            (WholesaleResultColumnNames.calculation_type, x)
+            (TotalMonthlyAmountsColumnNames.calculation_type, x)
             for x in [
                 CalculationType.WHOLESALE_FIXING.value,
                 CalculationType.FIRST_CORRECTION_SETTLEMENT.value,
@@ -195,7 +197,7 @@ def test__migrated_table_does_not_round_valid_decimal(
     result_df = result_df.withColumn("amount", lit(amount))
     calculation_id = str(uuid.uuid4())
     result_df = result_df.withColumn(
-        WholesaleResultColumnNames.calculation_id, lit(calculation_id)
+        TotalMonthlyAmountsColumnNames.calculation_id, lit(calculation_id)
     )
 
     # Act
@@ -206,7 +208,7 @@ def test__migrated_table_does_not_round_valid_decimal(
     # Assert
     actual_df = spark.read.table(
         f"{OUTPUT_DATABASE_NAME}.{TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
-    ).where(col(WholesaleResultColumnNames.calculation_id) == calculation_id)
+    ).where(col(TotalMonthlyAmountsColumnNames.calculation_id) == calculation_id)
     assert actual_df.collect()[0].amount == amount
 
 

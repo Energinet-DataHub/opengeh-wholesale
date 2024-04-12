@@ -18,7 +18,7 @@ from pyspark.sql.functions import col
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.output.add_meta_data import add_metadata
 from package.calculation.wholesale.data_structures import TotalMonthlyAmount
-from package.constants import Colname, WholesaleResultColumnNames
+from package.constants import Colname, TotalMonthlyAmountsColumnNames
 
 
 def create(
@@ -36,21 +36,23 @@ def _select_output_columns(df: DataFrame) -> DataFrame:
     # Map column names to the Delta table field names
     # Note: The order of the columns must match the order of the columns in the Delta table
     return df.select(
-        col(Colname.calculation_id).alias(WholesaleResultColumnNames.calculation_id),
+        col(Colname.calculation_id).alias(
+            TotalMonthlyAmountsColumnNames.calculation_id
+        ),
         col(Colname.calculation_type).alias(
-            WholesaleResultColumnNames.calculation_type
+            TotalMonthlyAmountsColumnNames.calculation_type
         ),
         col(Colname.calculation_execution_time_start).alias(
-            WholesaleResultColumnNames.calculation_execution_time_start
+            TotalMonthlyAmountsColumnNames.calculation_execution_time_start
         ),
-        col(WholesaleResultColumnNames.calculation_result_id),
-        col(Colname.grid_area).alias(WholesaleResultColumnNames.grid_area),
+        col(TotalMonthlyAmountsColumnNames.calculation_result_id),
+        col(Colname.grid_area).alias(TotalMonthlyAmountsColumnNames.grid_area),
         col(Colname.energy_supplier_id).alias(
-            WholesaleResultColumnNames.energy_supplier_id
+            TotalMonthlyAmountsColumnNames.energy_supplier_id
         ),
-        col(Colname.charge_time).alias(WholesaleResultColumnNames.time),
-        col(Colname.total_amount).alias(WholesaleResultColumnNames.amount),
-        col(Colname.charge_owner).alias(WholesaleResultColumnNames.charge_owner_id),
+        col(Colname.charge_time).alias(TotalMonthlyAmountsColumnNames.time),
+        col(Colname.total_amount).alias(TotalMonthlyAmountsColumnNames.amount),
+        col(Colname.charge_owner).alias(TotalMonthlyAmountsColumnNames.charge_owner_id),
     )
 
 
