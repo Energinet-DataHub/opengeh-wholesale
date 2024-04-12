@@ -52,5 +52,4 @@ def get_output_specifications(table_reader: TableReader) -> dict[str, tuple]:
             charge_price_points_schema,
             table_reader.read_charge_price_points,
         ),
-        "expected_results.csv": (None, None),
     }
