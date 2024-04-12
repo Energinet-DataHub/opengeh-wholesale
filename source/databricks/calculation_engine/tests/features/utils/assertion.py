@@ -19,11 +19,11 @@ from pyspark.sql import DataFrame
 from helpers.data_frame_utils import assert_dataframe_and_schema
 from package.calculation.calculation_results import CalculationResultsContainer
 from package.constants import EnergyResultColumnNames
-from .expected_result import ExpectedResult
+from .expected_output import ExpectedOutput
 
 
 def assert_output(
-    actual_and_expected: tuple[CalculationResultsContainer, list[ExpectedResult]],
+    actual_and_expected: tuple[CalculationResultsContainer, list[ExpectedOutput]],
     output_name: str,
 ) -> None:
     actual_results, expected_results = actual_and_expected
@@ -44,7 +44,7 @@ def assert_output(
 
 
 def _get_expected_for_output(
-    expected_results: list[ExpectedResult], output_name: str
+    expected_results: list[ExpectedOutput], output_name: str
 ) -> DataFrame:
     for expected_result in expected_results:
         if expected_result.name == output_name:
