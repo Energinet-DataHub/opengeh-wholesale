@@ -25,13 +25,10 @@ from package.calculation.output import (
     total_monthly_amounts_storage_model_factory as sut,
 )
 from package.calculation.wholesale.data_structures import TotalMonthlyAmount
-from package.calculation.wholesale.data_structures.wholesale_results import (
-    WholesaleResults,
-)
 from package.codelists import (
     CalculationType,
 )
-from package.constants import Colname, WholesaleResultColumnNames
+from package.constants import Colname, TotalMonthlyAmountsColumnNames
 from package.infrastructure.paths import (
     OUTPUT_DATABASE_NAME,
     TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
@@ -101,17 +98,20 @@ def _create_multiple_total_monthly_amounts(
 @pytest.mark.parametrize(
     "column_name, column_value",
     [
-        (WholesaleResultColumnNames.calculation_id, DEFAULT_CALCULATION_ID),
-        (WholesaleResultColumnNames.calculation_type, DEFAULT_CALCULATION_TYPE.value),
+        (TotalMonthlyAmountsColumnNames.calculation_id, DEFAULT_CALCULATION_ID),
         (
-            WholesaleResultColumnNames.calculation_execution_time_start,
+            TotalMonthlyAmountsColumnNames.calculation_type,
+            DEFAULT_CALCULATION_TYPE.value,
+        ),
+        (
+            TotalMonthlyAmountsColumnNames.calculation_execution_time_start,
             DEFAULT_CALCULATION_EXECUTION_START,
         ),
-        (WholesaleResultColumnNames.grid_area, DEFAULT_GRID_AREA),
-        (WholesaleResultColumnNames.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
-        (WholesaleResultColumnNames.time, DEFAULT_CHARGE_TIME),
-        (WholesaleResultColumnNames.amount, DEFAULT_TOTAL_AMOUNT),
-        (WholesaleResultColumnNames.charge_owner_id, DEFAULT_CHARGE_OWNER_ID),
+        (TotalMonthlyAmountsColumnNames.grid_area, DEFAULT_GRID_AREA),
+        (TotalMonthlyAmountsColumnNames.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
+        (TotalMonthlyAmountsColumnNames.time, DEFAULT_CHARGE_TIME),
+        (TotalMonthlyAmountsColumnNames.amount, DEFAULT_TOTAL_AMOUNT),
+        (TotalMonthlyAmountsColumnNames.charge_owner_id, DEFAULT_CHARGE_OWNER_ID),
     ],
 )
 def test__create__returns_dataframe_with_column(
@@ -175,15 +175,17 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
 
     # Arrange
     expected_excluded_columns = [
-        WholesaleResultColumnNames.calculation_type,
-        WholesaleResultColumnNames.calculation_execution_time_start,
-        WholesaleResultColumnNames.calculation_result_id,
-        WholesaleResultColumnNames.grid_area,
-        WholesaleResultColumnNames.time,
-        WholesaleResultColumnNames.amount,
+        TotalMonthlyAmountsColumnNames.calculation_type,
+        TotalMonthlyAmountsColumnNames.calculation_execution_time_start,
+        TotalMonthlyAmountsColumnNames.calculation_result_id,
+        TotalMonthlyAmountsColumnNames.grid_area,
+        TotalMonthlyAmountsColumnNames.time,
+        TotalMonthlyAmountsColumnNames.amount,
     ]
     all_columns = [
-        attr for attr in dir(WholesaleResultColumnNames) if not attr.startswith("__")
+        attr
+        for attr in dir(TotalMonthlyAmountsColumnNames)
+        if not attr.startswith("__")
     ]
 
     # Act
