@@ -12,12 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, lit, first
-from pyspark.sql.window import Window
+from pyspark.sql.functions import col
 
 from package.calculation.calculator_args import CalculatorArgs
+from package.calculation.output.add_meta_data import add_metadata
 from package.calculation.wholesale.data_structures import TotalMonthlyAmount
 from package.constants import Colname, WholesaleResultColumnNames
 
@@ -25,33 +24,12 @@ from package.constants import Colname, WholesaleResultColumnNames
 def create(
     args: CalculatorArgs, total_monthly_amounts: TotalMonthlyAmount
 ) -> DataFrame:
-    total_monthly_amounts = _add_metadata(args, total_monthly_amounts.df)
-    total_monthly_amounts = _add_calculation_result_id(total_monthly_amounts)
+    total_monthly_amounts = add_metadata(
+        args, _get_column_group_for_calculation_result_id(), total_monthly_amounts.df
+    )
     total_monthly_amounts = _select_output_columns(total_monthly_amounts)
 
     return total_monthly_amounts
-
-
-def _add_metadata(args: CalculatorArgs, df: DataFrame) -> DataFrame:
-    return (
-        df.withColumn(Colname.calculation_id, lit(args.calculation_id))
-        .withColumn(Colname.calculation_type, lit(args.calculation_type.value))
-        .withColumn(
-            Colname.calculation_execution_time_start,
-            lit(args.calculation_execution_time_start),
-        )
-    )
-
-
-def _add_calculation_result_id(df: DataFrame) -> DataFrame:
-    df = df.withColumn(
-        WholesaleResultColumnNames.calculation_result_id, f.expr("uuid()")
-    )
-    window = Window.partitionBy(_get_column_group_for_calculation_result_id())
-    return df.withColumn(
-        WholesaleResultColumnNames.calculation_result_id,
-        first(col(WholesaleResultColumnNames.calculation_result_id)).over(window),
-    )
 
 
 def _select_output_columns(df: DataFrame) -> DataFrame:
