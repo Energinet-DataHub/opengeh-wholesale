@@ -36,7 +36,7 @@ public class ResolutionValidationRuleTests
     }
 
     [Fact]
-    public async Task Validate_WhenResolutionIsMonthly_ReturnsError()
+    public async Task Validate_WhenResolutionIsMonthly_ReturnsNoErrors()
     {
         // Arrange
         var request = new WholesaleServicesRequestBuilder()
@@ -51,7 +51,7 @@ public class ResolutionValidationRuleTests
     }
 
     [Fact]
-    public async Task Validate_WhenResolutionIsMissing_ReturnsError()
+    public async Task Validate_WhenResolutionIsMissing_ReturnsNoErrors()
     {
         // Arrange
         var request = new WholesaleServicesRequestBuilder()
@@ -66,7 +66,7 @@ public class ResolutionValidationRuleTests
     }
 
     [Fact]
-    public async Task Validate_WhenResolutionIsNotMonthly_ReturnsNoError()
+    public async Task Validate_WhenResolutionIsNotMonthly_ReturnsError()
     {
         // Arrange
         var request = new WholesaleServicesRequestBuilder()
