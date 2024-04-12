@@ -24,28 +24,29 @@ def test_get_rounded(spark: SparkSession) -> None:
     rows = [
         {
             Colname.observation_time: datetime(2022, 1, 1, 1, 0),
-            Colname.quantity: Decimal("0.000750"),
+            Colname.quantity: Decimal("222.03075"),
         },
         {
             Colname.observation_time: datetime(2022, 1, 1, 1, 15),
-            Colname.quantity: Decimal("0.000750"),
+            Colname.quantity: Decimal("222.03075"),
         },
         {
             Colname.observation_time: datetime(2022, 1, 1, 1, 30),
-            Colname.quantity: Decimal("0.000750"),
+            Colname.quantity: Decimal("222.03075"),
         },
         {
             Colname.observation_time: datetime(2022, 1, 1, 1, 45),
-            Colname.quantity: Decimal("0.000750"),
+            Colname.quantity: Decimal("222.03075"),
         },
     ]
     df = spark.createDataFrame(rows)
 
     # Act
     actual = get_rounded(df)
+    actual.show()
 
     # Assert
-    assert actual.collect()[0][Colname.quantity] == Decimal("0.001")
-    assert actual.collect()[1][Colname.quantity] == Decimal("0.001")
-    assert actual.collect()[2][Colname.quantity] == Decimal("0.000")
-    assert actual.collect()[3][Colname.quantity] == Decimal("0.001")
+    assert actual.collect()[0][Colname.quantity] == Decimal("222.031")
+    assert actual.collect()[1][Colname.quantity] == Decimal("222.031")
+    assert actual.collect()[2][Colname.quantity] == Decimal("222.030")
+    assert actual.collect()[3][Colname.quantity] == Decimal("222.031")

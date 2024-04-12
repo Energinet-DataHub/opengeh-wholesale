@@ -19,6 +19,7 @@ from package.calculation.energy.data_structures.energy_results import EnergyResu
 from package.calculation.preparation.data_structures.quarterly_metering_point_time_series import (
     QuarterlyMeteringPointTimeSeries,
 )
+from package.calculation.preparation.transformations.rounding import get_rounded
 from package.codelists import MeteringPointType
 from package.constants import Colname
 
@@ -127,7 +128,8 @@ def aggregate_net_exchange_per_neighbour_ga(
     )
 
     exchange = exchange.filter(F.col(Colname.grid_area).isin(calculation_grid_areas))
-
+    # todo: roundabout
+    exchange = get_rounded(exchange)
     return EnergyResults(exchange)
 
 
