@@ -17,8 +17,8 @@ import pytest
 from _pytest.fixtures import FixtureRequest
 from pyspark.sql import SparkSession
 
-from features.utils.expected_result import ExpectedOutput
-from features.utils.scenario_fixture import ScenarioFixture
+from features.utils.expected_output import ExpectedOutput
+from features.utils.scenario_executor import ScenarioExecutor
 from package.calculation.calculation_results import CalculationResultsContainer
 
 
@@ -35,5 +35,5 @@ def actual_and_expected(
     """
 
     scenario_path = str(Path(request.module.__file__).parent)
-    scenario_executor = ScenarioFixture(spark)
+    scenario_executor = ScenarioExecutor(spark)
     return scenario_executor.execute(scenario_path)

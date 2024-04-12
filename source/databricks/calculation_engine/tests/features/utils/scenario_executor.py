@@ -29,11 +29,11 @@ from .dataframes.energy_results_dataframe import (
     create_energy_result_dataframe,
 )
 from .dataframes.wholesale_results_dataframe import create_wholesale_result_dataframe
-from .expected_result import ExpectedOutput
+from .expected_output import ExpectedOutput
 from .calculation_args import create_calculation_args
 
 
-class ScenarioFixture:
+class ScenarioExecutor:
     table_reader: Mock
     test_calculation_args: CalculatorArgs
     input_path: str

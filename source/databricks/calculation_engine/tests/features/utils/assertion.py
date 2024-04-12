@@ -19,7 +19,7 @@ from pyspark.sql import DataFrame
 from helpers.data_frame_utils import assert_dataframe_and_schema
 from package.calculation.calculation_results import CalculationResultsContainer
 from package.constants import EnergyResultColumnNames
-from .expected_result import ExpectedOutput
+from .expected_output import ExpectedOutput
 
 
 def assert_output(
