@@ -22,7 +22,7 @@ from package.infrastructure.paths import (
 
 
 @logging_configuration.use_span("calculation.write.wholesale")
-def write_wholesale_results(
+def write_total_monthly_amounts(
     total_monthly_amounts: TotalMonthlyAmountsContainer,
 ) -> None:
     _write(total_monthly_amounts.total_monthly_amounts_per_co)
