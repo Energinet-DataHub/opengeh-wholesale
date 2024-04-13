@@ -30,4 +30,3 @@ def test__equals_expected(
     output_name: str,
 ) -> None:
     assert_output(actual_and_expected, output_name)
-

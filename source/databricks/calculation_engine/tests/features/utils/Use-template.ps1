@@ -21,7 +21,7 @@ $filesToUpdate = Get-ChildItem -Path $featuresDir -Filter "test_output.py" -Recu
 # Iterate over each found 'test_output.py' file
 foreach ($file in $filesToUpdate) {
     # Overwrite the file with the content of 'template.py'
-    Set-Content -Path $file.FullName -Value $templateContent
+    Set-Content -Path $file.FullName -Value $templateContent -NoNewLine
     Write-Output "Updated: $($file.FullName)"
 }
 
