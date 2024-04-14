@@ -11,13 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from pathlib import Path
 from typing import Any
 
 import pytest
 
 from features.utils.assertion import assert_output
-from features.utils.scenario_output_files import get_output_names
+
+
+def get_output_names() -> list[str]:
+    output_folder_path = Path(__file__).parent / "output"
+    csv_files = list(output_folder_path.rglob("*.csv"))
+    return [Path(file).stem for file in csv_files]
 
 
 # IMPORTANT:
