@@ -11,13 +11,38 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from pathlib import Path
 from typing import Any
 
 import pytest
+from pyspark.sql import SparkSession
 
 from features.utils.assertion import assert_output
-from features.utils.scenario_output_files import get_output_names
+from features.utils.expected_output import ExpectedOutput
+from features.utils.scenario_executor import ScenarioExecutor
+from package.calculation.calculation_results import CalculationResultsContainer
+
+
+def get_output_names() -> list[str]:
+    output_folder_path = Path(__file__).parent / "output"
+    csv_files = list(output_folder_path.rglob("*.csv"))
+    return [Path(file).stem for file in csv_files]
+
+
+@pytest.fixture(scope="module")
+def actual_and_expected(
+    spark: SparkSession,
+) -> tuple[CalculationResultsContainer, list[ExpectedOutput]]:
+    """
+    Provides the actual and expected output for a scenario test case.
+
+    IMPORTANT: It is crucial that this fixture has scope=module, as the scenario executor
+    is specific to a single scenario, which are each located in their own module.
+    """
+
+    scenario_path = str(Path(__file__).parent)
+    scenario_executor = ScenarioExecutor(spark)
+    return scenario_executor.execute(scenario_path)
 
 
 # IMPORTANT:
