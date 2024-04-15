@@ -20,7 +20,7 @@ namespace Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Ru
 /// Validation rule for the resolution property when there is requested for wholesale services.
 /// </summary>
 /// <remarks>
-/// This is registered as a scoped service in the service collection.
+/// This is registered as a singleton service in the service collection.
 /// </remarks>
 public class ResolutionValidationRule
     : IValidationRule<DataHub.Edi.Requests.WholesaleServicesRequest>
