@@ -41,12 +41,6 @@
 	"containerEnv": {
 		"GRANT_SUDO": "yes"
 	},
-	"forwardPorts": [
-		5567
-	],
-	"appPort": [
-		"5567:5050"
-	],
 	"overrideCommand": false,
 	"containerUser": "root"
 }
