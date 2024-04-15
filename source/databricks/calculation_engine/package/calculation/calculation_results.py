@@ -54,7 +54,7 @@ class WholesaleResultsContainer:
 
 
 class TotalMonthlyAmountsContainer:
-    total_monthly_amounts_per_co: DataFrame | None = None
+    total_monthly_amounts_per_ga_co_es: DataFrame | None = None
 
 
 @dataclass
