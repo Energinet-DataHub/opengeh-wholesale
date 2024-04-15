@@ -16,13 +16,14 @@ from decimal import Decimal
 
 import pytest
 from pyspark.sql import SparkSession
+import pyspark.sql.functions as f
 from package.codelists import (
     ChargeType,
 )
 from package.constants import Colname
 import calculation.wholesale.factories.monthly_amount_per_charge_factory as monthly_amount_per_charge_factory
 from package.calculation.wholesale.total_monthly_amount_calculator import (
-    calculate_per_charge_owner,
+    calculate_per_ga_co_es,
 )
 
 
@@ -56,7 +57,7 @@ def test__calculate_per_charge_owner__sums_across_charge_types(
     )
 
     # Act
-    actual = calculate_per_charge_owner(
+    actual = calculate_per_ga_co_es(
         monthly_amounts,
     ).df
 
@@ -65,23 +66,24 @@ def test__calculate_per_charge_owner__sums_across_charge_types(
     assert actual.count() == 1
 
 
-def test__calculate_per_charge_owner__sums_across_energy_suppliers(
+def test__calculate_per_charge_owner__sums_per_energy_supplier(
     spark: SparkSession,
 ) -> None:
     # Arrange
     monthly_amounts_rows = [
         monthly_amount_per_charge_factory.create_row(
-            charge_type=ChargeType.SUBSCRIPTION,
             total_amount=Decimal("1"),
             charge_tax=False,
-            charge_owner=GRID_ACCESS_PROVIDER_ID,
             energy_supplier_id="1",
         ),
         monthly_amount_per_charge_factory.create_row(
-            charge_type=ChargeType.SUBSCRIPTION,
-            total_amount=Decimal("1"),
+            total_amount=Decimal("2"),
             charge_tax=False,
-            charge_owner=GRID_ACCESS_PROVIDER_ID,
+            energy_supplier_id="2",
+        ),
+        monthly_amount_per_charge_factory.create_row(
+            total_amount=Decimal("3"),
+            charge_tax=False,
             energy_supplier_id="2",
         ),
     ]
@@ -90,13 +92,19 @@ def test__calculate_per_charge_owner__sums_across_energy_suppliers(
     )
 
     # Act
-    actual = calculate_per_charge_owner(
+    actual = calculate_per_ga_co_es(
         monthly_amounts,
     ).df
 
     # Assert
-    assert actual.collect()[0][Colname.total_amount] == Decimal("2.000000")
-    assert actual.count() == 1
+    actual.show()
+    assert actual.count() == 2
+    assert actual.where(f.col(Colname.energy_supplier_id) == "1").collect()[0][
+        Colname.total_amount
+    ] == Decimal("1.000000")
+    assert actual.where(f.col(Colname.energy_supplier_id) == "2").collect()[0][
+        Colname.total_amount
+    ] == Decimal("5.000000")
 
 
 @pytest.mark.parametrize(
@@ -129,7 +137,7 @@ def test__calculate_per_charge_owner__adds_tax_amount_only_to_grid_access_operat
     )
 
     # Act
-    actual = calculate_per_charge_owner(
+    actual = calculate_per_ga_co_es(
         monthly_amounts,
     ).df
 
@@ -172,7 +180,7 @@ def test__calculate_per_charge_owner__ignores_null_in_sum(
     )
 
     # Act
-    actual = calculate_per_charge_owner(
+    actual = calculate_per_ga_co_es(
         monthly_amounts,
     ).df
 
