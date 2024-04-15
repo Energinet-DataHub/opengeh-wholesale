@@ -21,16 +21,16 @@ from pyspark.sql import SparkSession, DataFrame
 
 from package.calculation.calculation_results import CalculationResultsContainer
 from package.calculation.calculator_args import CalculatorArgs
-from .calculation_args import create_calculation_args
+from .input_specifications import get_data_input_specifications
 from .dataframes.basis_data_results_dataframe import (
-    create_result_dataframe,
+    create_basis_data_result_dataframe,
 )
 from .dataframes.energy_results_dataframe import (
     create_energy_result_dataframe,
 )
 from .dataframes.wholesale_results_dataframe import create_wholesale_result_dataframe
 from .expected_output import ExpectedOutput
-from .output_specifications import get_output_specifications
+from .calculation_args import create_calculation_args
 
 
 class ScenarioExecutor:
@@ -63,7 +63,7 @@ class ScenarioExecutor:
         self.basis_data_path = scenario_path + "/basis_data/"
         self.output_path = scenario_path + "/output/"
 
-        correlations = get_output_specifications(self.table_reader)
+        correlations = get_data_input_specifications(self.table_reader)
         self.test_calculation_args = create_calculation_args(self.input_path)
         dataframes = self._read_files_in_parallel(correlations)
 
@@ -117,15 +117,11 @@ class ScenarioExecutor:
         for result_file in expected_result_file_paths:
             raw_df = spark.read.csv(result_file[1], header=True, sep=";")
             if "energy_results" in result_file[1]:
-                df = create_energy_result_dataframe(
-                    spark, raw_df, self.test_calculation_args
-                )
+                df = create_energy_result_dataframe(spark, raw_df)
             elif "wholesale_results" in result_file[1]:
-                df = create_wholesale_result_dataframe(
-                    spark, raw_df, self.test_calculation_args
-                )
+                df = create_wholesale_result_dataframe(spark, raw_df)
             elif "basis_data" in result_file[1]:
-                df = create_result_dataframe(spark, raw_df, result_file[0])
+                df = create_basis_data_result_dataframe(spark, raw_df, result_file[0])
             else:
                 raise Exception(f"Unsupported result file '{result_file[0]}'")
             expected_results.append(ExpectedOutput(name=result_file[0], df=df))

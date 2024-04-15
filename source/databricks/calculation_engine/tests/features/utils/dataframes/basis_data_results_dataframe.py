@@ -34,7 +34,7 @@ def create_result_dataframe(
     raise Exception(f"Unknown expected basis data file {filename}.")
 
 
-def create_time_series_points(df, spark):
+def create_time_series_points(df: DataFrame, spark: SparkSession) -> DataFrame:
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
@@ -53,7 +53,7 @@ def create_time_series_points(df, spark):
     return spark.createDataFrame(df.rdd, time_series_point_schema)
 
 
-def create_metering_point_periods(df, spark):
+def create_metering_point_periods(df: DataFrame, spark: SparkSession) -> DataFrame:
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
