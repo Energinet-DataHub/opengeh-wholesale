@@ -52,6 +52,16 @@ runs:
           --configuration Release \
           --output '${{ inputs.output_path }}\functions\orchestration'
 
+    - name: Publish Orchestrations
+      shell: bash
+      run: |
+        dotnet publish \
+          '.\source\dotnet\wholesale-api\Orchestrations\Orchestrations.csproj' \
+          --no-build \
+          --no-restore \
+          --configuration Release \
+          --output '${{ inputs.output_path }}\functions\orchestrations'
+
     - name: Publish Database Migration
       shell: bash
       run: |

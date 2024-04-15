@@ -12,24 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""
-# Tests Description
+from typing import Any
 
-```gherkin
-GIVEN a flex_consumption metering point for energy supplier 8100000000108 with two fee-1 links
-  AND another flex_consumption metering points for energy supplier 8100000000100 with 10 fee-1 links
-  AND a child consumption_from_grid with one fee-1 link
-  AND the fee-1 price is 70 DDK
-WHEN calculating fee
-THEN there are 3 rows in the result
-  AND the amount for fee for flex consumption for energy supplier 8100000000108 is 140 DDK
-  AND the amount for fee for flex consumption for energy supplier 8100000000100 is 700 DDK
-  AND the amount for fee for consumption_from_grid for energy supplier 8100000000108 is 70 DDK
-```
-"""
+import pytest
 
-from features.utils.base import Base
+from features.utils.assertion import assert_output
+from features.utils.scenario_output_files import get_output_names
 
 
-class TestThen(Base):
-    pass
+# IMPORTANT:
+# All test files should be identical. This makes changing them cumbersome.
+# So in order to make it easier you can modify the utils/template.py file instead,
+# and then run the power-shell script "Use-Template.ps1" to update all test_output.py files.
+@pytest.mark.parametrize("output_name", get_output_names())
+def test__equals_expected(
+    actual_and_expected: Any,
+    output_name: str,
+) -> None:
+    assert_output(actual_and_expected, output_name)

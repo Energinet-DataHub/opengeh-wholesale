@@ -85,17 +85,19 @@ def _calculate(
         )
     )
 
-    consumption_per_ga_and_brp_and_es = _calculate_consumption_per_ga_and_brp_and_es(
-        quarterly_metering_point_time_series
+    non_profiled_consumption_per_ga_and_brp_and_es = (
+        _calculate_non_profiled_consumption_per_ga_and_brp_and_es(
+            quarterly_metering_point_time_series
+        )
     )
-    consumption_per_ga_and_brp_and_es.cache_internal()
+    non_profiled_consumption_per_ga_and_brp_and_es.cache_internal()
 
     positive_grid_loss, negative_grid_loss = _calculate_grid_loss(
         args,
         net_exchange_per_ga,
         temporary_production_per_ga_and_brp_and_es,
         temporary_flex_consumption_per_ga_and_brp_and_es,
-        consumption_per_ga_and_brp_and_es,
+        non_profiled_consumption_per_ga_and_brp_and_es,
         grid_loss_responsible_df,
         results,
     )
@@ -118,7 +120,7 @@ def _calculate(
 
     _calculate_non_profiled_consumption(
         args,
-        consumption_per_ga_and_brp_and_es,
+        non_profiled_consumption_per_ga_and_brp_and_es,
         results,
     )
     production_per_ga = _calculate_production(
@@ -174,18 +176,20 @@ def _calculate_net_exchange(
     return exchange_per_grid_area
 
 
-@logging_configuration.use_span("calculate_consumption_per_ga_and_brp_and_es")
-def _calculate_consumption_per_ga_and_brp_and_es(
+@logging_configuration.use_span(
+    "calculate_non_profiled_consumption_per_ga_and_brp_and_es"
+)
+def _calculate_non_profiled_consumption_per_ga_and_brp_and_es(
     quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
 ) -> EnergyResults:
     # Non-profiled consumption per balance responsible party and energy supplier
-    consumption_per_ga_and_brp_and_es = (
+    non_profiled_consumption_per_ga_and_brp_and_es = (
         mp_aggr.aggregate_non_profiled_consumption_ga_brp_es(
             quarterly_metering_point_time_series
         )
     )
 
-    return consumption_per_ga_and_brp_and_es
+    return non_profiled_consumption_per_ga_and_brp_and_es
 
 
 @logging_configuration.use_span(
@@ -250,13 +254,13 @@ def _calculate_grid_loss(
     net_exchange_per_ga: EnergyResults,
     temporary_production_per_ga_and_brp_and_es: EnergyResults,
     temporary_flex_consumption_per_ga_and_brp_and_es: EnergyResults,
-    consumption_per_ga_and_brp_and_es: EnergyResults,
+    non_profiled_consumption_per_ga_and_brp_and_es: EnergyResults,
     grid_loss_responsible_df: GridLossResponsible,
     results: EnergyResultsContainer,
 ) -> tuple[EnergyResults, EnergyResults]:
     grid_loss = grid_loss_aggr.calculate_grid_loss(
         net_exchange_per_ga,
-        consumption_per_ga_and_brp_and_es,
+        non_profiled_consumption_per_ga_and_brp_and_es,
         temporary_flex_consumption_per_ga_and_brp_and_es,
         temporary_production_per_ga_and_brp_and_es,
     )
@@ -413,40 +417,44 @@ def _calculate_flex_consumption(
 @logging_configuration.use_span("calculate_non_profiled_consumption")
 def _calculate_non_profiled_consumption(
     args: CalculatorArgs,
-    consumption_per_ga_and_brp_and_es: EnergyResults,
+    non_profiled_consumption_per_ga_and_brp_and_es: EnergyResults,
     results: EnergyResultsContainer,
 ) -> None:
     # Non-profiled consumption per balance responsible
     if _is_aggregation_or_balance_fixing(args.calculation_type):
-        consumption_per_ga_and_brp = grouping_aggr.aggregate_per_ga_and_brp(
-            consumption_per_ga_and_brp_and_es
+        non_profiled_consumption_per_ga_and_brp = (
+            grouping_aggr.aggregate_per_ga_and_brp(
+                non_profiled_consumption_per_ga_and_brp_and_es
+            )
         )
 
-        results.consumption_per_ga_and_brp = factory.create(
+        results.non_profiled_consumption_per_ga_and_brp = factory.create(
             args,
-            consumption_per_ga_and_brp,
+            non_profiled_consumption_per_ga_and_brp,
             TimeSeriesType.NON_PROFILED_CONSUMPTION,
             AggregationLevel.BRP_PER_GA,
         )
-        results.consumption_per_ga_and_brp_and_es = factory.create(
+        results.non_profiled_consumption_per_ga_and_brp_and_es = factory.create(
             args,
-            consumption_per_ga_and_brp_and_es,
+            non_profiled_consumption_per_ga_and_brp_and_es,
             TimeSeriesType.NON_PROFILED_CONSUMPTION,
             AggregationLevel.ES_PER_BRP_PER_GA,
         )
 
     # Non-profiled consumption per energy supplier
-    results.consumption_per_ga_and_es = factory.create(
+    results.non_profiled_consumption_per_ga_and_es = factory.create(
         args,
-        grouping_aggr.aggregate_per_ga_and_es(consumption_per_ga_and_brp_and_es),
+        grouping_aggr.aggregate_per_ga_and_es(
+            non_profiled_consumption_per_ga_and_brp_and_es
+        ),
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
         AggregationLevel.ES_PER_GA,
     )
 
     # Non-profiled consumption per grid area
-    results.consumption_per_ga = factory.create(
+    results.non_profiled_consumption_per_ga = factory.create(
         args,
-        grouping_aggr.aggregate_per_ga(consumption_per_ga_and_brp_and_es),
+        grouping_aggr.aggregate_per_ga(non_profiled_consumption_per_ga_and_brp_and_es),
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
         AggregationLevel.TOTAL_GA,
     )

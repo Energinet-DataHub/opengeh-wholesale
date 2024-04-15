@@ -12,31 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""
-# Test Description
+from typing import Any
 
-```gherkin
-GIVEN grid loss and system correction metering points (positive and negative grid loss)
-  AND one consumption metering point
-  AND 5 hours for consumption metering point (5 rows)
-WHEN calculating the monthly negative grid loss for February
-THEN the aggregated amount is 37.849900 for negative grid loss (system correction)
-```
+import pytest
 
-```text
-Negative grid loss is calculated like this:
-
-(((Σ Exchange in - Σ Exchange out) + Σ Production) - (Σ Consumption non-profiled + Σ Consumption flex))) = grid loss per hour
-grid loss per hour * hours per day * days per month = total grid loss
-
-(((0 - 0) + 0) - (0 + 10)) = -10 * 5 = -50
-
-tariff * total negative grid loss = amount
-0.756998 * -50 = -37.849900
-```
-"""
-from features.utils.base import Base
+from features.utils.assertion import assert_output
+from features.utils.scenario_output_files import get_output_names
 
 
-class TestThen(Base):
-    pass
+# IMPORTANT:
+# All test files should be identical. This makes changing them cumbersome.
+# So in order to make it easier you can modify the utils/template.py file instead,
+# and then run the power-shell script "Use-Template.ps1" to update all test_output.py files.
+@pytest.mark.parametrize("output_name", get_output_names())
+def test__equals_expected(
+    actual_and_expected: Any,
+    output_name: str,
+) -> None:
+    assert_output(actual_and_expected, output_name)
