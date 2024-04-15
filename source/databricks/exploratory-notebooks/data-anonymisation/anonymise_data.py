@@ -25,6 +25,7 @@
 
 import pyspark.sql.functions as F
 from pyspark.sql.window import Window
+from pyspark.sql.types import DecimalType
 
 # Source variables
 source_database = "hive_metastore.wholesale_input" # FILL IN
@@ -47,7 +48,10 @@ balance_responsible_id_column_name = "balance_responsible_id"
 energy_supplier_id_column_name = "energy_supplier_id"
 
 # Date variables
-anonymisation_start_date = '2021-01-31T22:00:00Z'
+anonymisation_start_date = '2021-01-31T23:00:00Z'
+
+# Anonymisation MP IDs
+mps_to_anonymise = [] # Fill in with MP IDs, this list will be used to anonymise the 'quantity' of the specified MPs 
 
 # COMMAND ----------
 
@@ -316,17 +320,20 @@ assert (
 # MAGIC ### Create the anonymised time_series_points table
 # MAGIC Beware, this might be a very costly operation, and as such might be better done with chunking or something.
 # MAGIC However, since the current wholesale ts source table isn't partitioned, it is hard to do.
+# MAGIC
+# MAGIC All MPs in the list mps_to_anonymise will have their 'quantity' randomised to make them harder to identity. Throws an exception if no IDs are selected, as this is most likely an error.
 
 # COMMAND ----------
 
-mps_to_anonymise = [row['metering_point_id'] for row in df_anonymised_metering_points.collect()]
+if not mps_to_anonymise:
+    raise Exception("Non MPs have been selected for having their quantity anoynmised")
 
 df_source_ts_table_anonymised = (
     df_source_ts_table.withColumn(
         "quantity",
         F.when(
             F.col(metering_point_id_column_name).isin(mps_to_anonymise), F.rand() * 100
-        ).otherwise(F.col("quantity")),
+        ).otherwise(F.col("quantity").cast(DecimalType(18,6))),
     )
     .join(df_anonymised_metering_points, metering_point_id_column_name)
     .withColumn(metering_point_id_column_name, F.col("anonymised_mp_id"))
