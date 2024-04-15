@@ -22,7 +22,7 @@ from package.calculation.input.schemas import (
 )
 
 
-def get_output_specifications(table_reader: TableReader) -> dict[str, tuple]:
+def get_data_input_specifications(table_reader: TableReader) -> dict[str, tuple]:
     """
     Contains the mapping between the csv file name, the schema name and the function
     to be mocked.
