@@ -37,8 +37,7 @@ resource "azurerm_storage_management_policy" "retention" {
     }
     actions {
       base_blob {
-        delete_after_days_since_modification_greater_than = 22
-        delete_after_days_since_creation_greater_than     = 22
+        delete_after_days_since_creation_greater_than = 22
       }
       snapshot {
         delete_after_days_since_creation_greater_than = 22
