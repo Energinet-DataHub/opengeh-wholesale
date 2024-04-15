@@ -24,3 +24,28 @@ module "st_key_vault_backup" {
     backup_vault_principal_id = module.backup_vault.identity.0.principal_id
   }
 }
+
+# Automatically delete storage account blobs and snapshots after 22 days according to the retention policy
+resource "azurerm_storage_management_policy" "retention" {
+  storage_account_id = module.st_key_vault_backup.id
+
+  rule {
+    name    = "retention"
+    enabled = true
+    filters {
+      blob_types = ["blockBlob"]
+    }
+    actions {
+      base_blob {
+        delete_after_days_since_modification_greater_than = 22
+        delete_after_days_since_creation_greater_than     = 22
+      }
+      snapshot {
+        delete_after_days_since_creation_greater_than = 22
+      }
+      version {
+        delete_after_days_since_creation = 22
+      }
+    }
+  }
+}
