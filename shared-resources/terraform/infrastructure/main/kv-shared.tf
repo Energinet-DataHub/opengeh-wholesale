@@ -1,5 +1,5 @@
 module "kv_shared" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault?ref=13.61.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault?ref=14.0.3"
 
   project_name                    = var.domain_name_short
   environment_short               = var.environment_short
@@ -10,7 +10,6 @@ module "kv_shared" {
   sku_name                        = "premium"
   private_endpoint_subnet_id      = data.azurerm_subnet.snet_private_endpoints.id
   ip_rules                        = local.ip_restrictions_as_string
-  enable_rbac_authorization       = true
   allowed_subnet_ids = [
     data.azurerm_subnet.snet_vnet_integration.id,
   ]

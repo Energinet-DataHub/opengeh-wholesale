@@ -1,5 +1,5 @@
 module "st_data_lake" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=13.61.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=14.0.3"
 
   name                       = "datalake"
   project_name               = var.domain_name_short
@@ -8,7 +8,6 @@ module "st_data_lake" {
   resource_group_name        = azurerm_resource_group.this.name
   location                   = azurerm_resource_group.this.location
   account_replication_type   = "LRS"
-  account_tier               = "Standard"
   private_endpoint_subnet_id = data.azurerm_subnet.snet_private_endpoints.id
   ip_rules                   = local.ip_restrictions_as_string
   role_assignments = [
@@ -20,7 +19,7 @@ module "st_data_lake" {
 }
 
 module "kvs_st_data_lake_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.61.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.0.3"
 
   name         = "st-data-lake-name"
   value        = module.st_data_lake.name
@@ -28,7 +27,7 @@ module "kvs_st_data_lake_name" {
 }
 
 module "kvs_st_data_lake_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.61.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.0.3"
 
   name         = "st-data-lake-id"
   value        = module.st_data_lake.id
@@ -36,7 +35,7 @@ module "kvs_st_data_lake_id" {
 }
 
 module "kvs_private_dns_zone_resource_group_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.61.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.0.3"
 
   name         = "private-dns-zone-resource-group-name"
   value        = azurerm_resource_group.this.name
@@ -44,7 +43,7 @@ module "kvs_private_dns_zone_resource_group_name" {
 }
 
 module "kvs_st_data_lake_blob_private_ip_address" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.61.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.0.3"
 
   name         = "st-data-lake-blob-private-ip-address"
   value        = module.st_data_lake.blob_private_ip_address
@@ -52,7 +51,7 @@ module "kvs_st_data_lake_blob_private_ip_address" {
 }
 
 module "kvs_st_data_lake_dfs_private_ip_address" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.61.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.0.3"
 
   name         = "st-data-lake-dfs-private-ip-address"
   value        = module.st_data_lake.dfs_private_ip_address

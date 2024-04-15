@@ -1,14 +1,13 @@
 module "sb_domain_relay" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-namespace?ref=13.61.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-namespace?ref=14.0.3"
 
-  name                          = "domain-relay"
-  project_name                  = var.domain_name_short
-  environment_short             = var.environment_short
-  environment_instance          = var.environment_instance
-  resource_group_name           = azurerm_resource_group.this.name
-  location                      = azurerm_resource_group.this.location
-  private_endpoint_subnet_id    = data.azurerm_subnet.snet_private_endpoints.id
-  ip_restriction_allow_ip_range = local.ip_restrictions_as_string
+  project_name               = var.domain_name_short
+  environment_short          = var.environment_short
+  environment_instance       = var.environment_instance
+  resource_group_name        = azurerm_resource_group.this.name
+  location                   = azurerm_resource_group.this.location
+  private_endpoint_subnet_id = data.azurerm_subnet.snet_private_endpoints.id
+  ip_restrictions            = var.ip_restrictions
   auth_rules = [
     {
       name   = "listen",
@@ -33,7 +32,7 @@ module "sb_domain_relay" {
 }
 
 module "kvs_sb_domain_relay_listen_connection_string" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.61.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.0.3"
 
   name         = "sb-domain-relay-listen-connection-string"
   value        = module.sb_domain_relay.primary_connection_strings["listen"]
@@ -41,7 +40,7 @@ module "kvs_sb_domain_relay_listen_connection_string" {
 }
 
 module "kvs_sb_domain_relay_send_connection_string" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.61.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.0.3"
 
   name         = "sb-domain-relay-send-connection-string"
   value        = module.sb_domain_relay.primary_connection_strings["send"]
@@ -49,7 +48,7 @@ module "kvs_sb_domain_relay_send_connection_string" {
 }
 
 module "kvs_sb_domain_relay_transceiver_connection_string" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.61.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.0.3"
 
   name         = "sb-domain-relay-transceiver-connection-string"
   value        = module.sb_domain_relay.primary_connection_strings["transceiver"]
@@ -57,7 +56,7 @@ module "kvs_sb_domain_relay_transceiver_connection_string" {
 }
 
 module "kvs_sb_domain_relay_manage_connection_string" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.61.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.0.3"
 
   name         = "sb-domain-relay-manage-connection-string"
   value        = module.sb_domain_relay.primary_connection_strings["manage"]
@@ -65,7 +64,7 @@ module "kvs_sb_domain_relay_manage_connection_string" {
 }
 
 module "kvs_sb_domain_relay_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.61.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.0.3"
 
   name         = "sb-domain-relay-namespace-id"
   value        = module.sb_domain_relay.id
@@ -73,7 +72,7 @@ module "kvs_sb_domain_relay_id" {
 }
 
 module "kvs_sb_domain_relay_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.61.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.0.3"
 
   name         = "sb-domain-relay-namespace-name"
   value        = module.sb_domain_relay.name

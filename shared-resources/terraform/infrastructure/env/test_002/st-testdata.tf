@@ -1,5 +1,5 @@
 module "st_testdata" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=13.61.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=14.0.3"
 
   name                       = "testdata"
   project_name               = var.domain_name_short
@@ -9,7 +9,6 @@ module "st_testdata" {
   location                   = azurerm_resource_group.this.location
   account_replication_type   = "LRS"
   access_tier                = "Hot"
-  account_tier               = "Standard"
   private_endpoint_subnet_id = data.azurerm_subnet.snet_private_endpoints.id
   ip_rules                   = local.ip_restrictions_as_string
 

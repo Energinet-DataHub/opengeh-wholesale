@@ -1,7 +1,6 @@
 module "appi_shared" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/application-insights?ref=13.61.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/application-insights?ref=14.0.3"
 
-  name                       = "shared"
   project_name               = var.domain_name_short
   environment_short          = var.environment_short
   environment_instance       = var.environment_instance
@@ -12,7 +11,7 @@ module "appi_shared" {
 }
 
 module "kvs_appi_shared_connection_string" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.61.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.0.3"
 
   name         = "appi-shared-connection-string"
   value        = module.appi_shared.connection_string
@@ -20,7 +19,7 @@ module "kvs_appi_shared_connection_string" {
 }
 
 module "kvs_appi_shared_instrumentation_key" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.61.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.0.3"
 
   name         = "appi-shared-instrumentation-key"
   value        = module.appi_shared.instrumentation_key
@@ -28,7 +27,7 @@ module "kvs_appi_shared_instrumentation_key" {
 }
 
 module "kvs_appi_shared_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.61.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.0.3"
 
   name         = "appi-shared-name"
   value        = module.appi_shared.name
@@ -36,7 +35,7 @@ module "kvs_appi_shared_name" {
 }
 
 module "kvs_appi_shared_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=13.61.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.0.3"
 
   name         = "appi-shared-id"
   value        = module.appi_shared.id
