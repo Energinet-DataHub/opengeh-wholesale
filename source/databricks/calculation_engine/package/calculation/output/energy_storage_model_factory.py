@@ -15,10 +15,10 @@
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 from pyspark.sql.types import DecimalType
-from pyspark.sql.window import Window
 
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.energy.data_structures.energy_results import EnergyResults
+from package.calculation.output.add_meta_data import add_metadata
 from package.codelists import TimeSeriesType, AggregationLevel
 from package.constants import Colname, EnergyResultColumnNames
 
@@ -33,8 +33,7 @@ def create(
     df = _add_aggregation_level_and_time_series_type(
         energy_results.df, aggregation_level, time_series_type
     )
-    df = _add_calculation_columns(args, df)
-    df = _add_calculation_result_id(df)
+    df = add_metadata(args, _get_column_group_for_calculation_result_id(), df)
     df = _map_to_storage_dataframe(df)
 
     return df
@@ -51,35 +50,6 @@ def _add_aggregation_level_and_time_series_type(
     ).withColumn(
         EnergyResultColumnNames.time_series_type, f.lit(time_series_type.value)
     )
-
-
-def _add_calculation_columns(args: CalculatorArgs, results: DataFrame) -> DataFrame:
-    """Add columns that are the same for all calculation results in calculation."""
-    return (
-        results.withColumn(
-            EnergyResultColumnNames.calculation_id, f.lit(args.calculation_id)
-        )
-        .withColumn(
-            EnergyResultColumnNames.calculation_type,
-            f.lit(args.calculation_type.value),
-        )
-        .withColumn(
-            EnergyResultColumnNames.calculation_execution_time_start,
-            f.lit(args.calculation_execution_time_start),
-        )
-    )
-
-
-def _add_calculation_result_id(results: DataFrame) -> DataFrame:
-    results = results.withColumn(
-        EnergyResultColumnNames.calculation_result_id, f.expr("uuid()")
-    )
-    window = Window.partitionBy(_get_column_group_for_calculation_result_id())
-    results = results.withColumn(
-        EnergyResultColumnNames.calculation_result_id,
-        f.first(f.col(EnergyResultColumnNames.calculation_result_id)).over(window),
-    )
-    return results
 
 
 def _get_column_group_for_calculation_result_id() -> list[str]:
