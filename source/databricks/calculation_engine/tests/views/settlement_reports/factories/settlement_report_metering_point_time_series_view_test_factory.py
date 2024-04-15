@@ -17,15 +17,15 @@ from decimal import Decimal
 from array import array
 from pyspark.sql import Row, SparkSession, DataFrame
 
+from features.utils.views.schemas.metering_point_time_series_schema import (
+    metering_point_time_series_schema,
+)
 from package.codelists import (
     MeteringPointResolution,
     MeteringPointType,
 )
 from views.settlement_reports.column_names.metering_point_time_series_colname import (
     MeteringPointTimeSeriesColname,
-)
-from views.settlement_reports.schemas.metering_point_time_series_schema import (
-    metering_point_time_series_schema,
 )
 
 

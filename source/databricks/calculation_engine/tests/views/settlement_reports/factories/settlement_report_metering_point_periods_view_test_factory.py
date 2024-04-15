@@ -16,14 +16,14 @@ from datetime import datetime
 
 from pyspark.sql import Row, SparkSession, DataFrame
 
+from features.utils.views.schemas.metering_point_period_schema import (
+    metering_point_period_schema,
+)
 from package.codelists import (
     MeteringPointType,
     SettlementMethod,
 )
 from package.constants import MeteringPointPeriodColname
-from views.settlement_reports.schemas.metering_point_period_schema import (
-    metering_point_period_schema,
-)
 
 
 class SettlementReportMeteringPointPeriodsViewTestFactory:

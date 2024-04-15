@@ -19,6 +19,7 @@ from pyspark.sql import SparkSession
 
 from features.utils.expected_output import ExpectedOutput
 from features.utils.scenario_executor import ScenarioExecutor
+from features.utils.views.view_scenario_executor import ViewScenarioExecutor
 from package.calculation.calculation_results import CalculationResultsContainer
 
 
@@ -37,3 +38,20 @@ def actual_and_expected(
     scenario_path = str(Path(request.module.__file__).parent)
     scenario_executor = ScenarioExecutor(spark)
     return scenario_executor.execute(scenario_path)
+
+
+@pytest.fixture(scope="module")
+def actual_and_expected_views(
+    request: FixtureRequest,
+    spark: SparkSession,
+) -> tuple[CalculationResultsContainer, list[ExpectedOutput]]:
+    """
+    Provides the actual and expected output for a scenario test case.
+
+    IMPORTANT: It is crucial that this fixture has scope=module, as the scenario executor
+    is specific to a single scenario, which are each located in their own module.
+    """
+
+    scenario_path = str(Path(request.module.__file__).parent)
+    executor = ViewScenarioExecutor(spark)
+    return executor.execute(scenario_path)

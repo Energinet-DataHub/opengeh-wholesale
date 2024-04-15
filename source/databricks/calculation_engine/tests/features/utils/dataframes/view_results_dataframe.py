@@ -22,43 +22,24 @@ BASIS_DATA_METERING_POINT_PERIODS_CSV = "metering_point_periods"
 BASIS_DATA_TIME_SERIES_POINTS_CSV = "time_series_points"
 
 
-def create_result_dataframe(
+def create_view_result_dataframe(
     spark: SparkSession, df: DataFrame, filename: str
 ) -> DataFrame:
 
     if filename == BASIS_DATA_TIME_SERIES_POINTS_CSV:
-        return create_time_series_points(df, spark)
+        return create_metering_point_periods_view(df, spark)
     if filename == BASIS_DATA_METERING_POINT_PERIODS_CSV:
-        return create_metering_point_periods(df, spark)
+        return create_metering_point_time_series_view(df, spark)
 
-    raise Exception(f"Unknown expected basis data file {filename}.")
-
-
-def create_time_series_points(df, spark):
-
-    # Don't remove. Believed needed because this function is an argument to the setup function
-    # and therefore the following packages are not automatically included.
-    from package.constants import TimeSeriesColname
-    from package.calculation.basis_data.schemas import time_series_point_schema
-
-    df = df.withColumn(
-        TimeSeriesColname.quantity,
-        col(TimeSeriesColname.quantity).cast(DecimalType(18, 3)),
-    )
-    df = df.withColumn(
-        TimeSeriesColname.observation_time,
-        col(TimeSeriesColname.observation_time).cast(TimestampType()),
-    )
-
-    return spark.createDataFrame(df.rdd, time_series_point_schema)
+    raise Exception(f"Unknown expected view file {filename}.")
 
 
-def create_metering_point_periods(df, spark):
+def create_metering_point_periods_view(df, spark):
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
     from package.constants import MeteringPointPeriodColname
-    from package.calculation.basis_data.schemas import metering_point_period_schema
+    from features.utils.views.schemas import metering_point_period_schema
 
     df = df.withColumn(
         MeteringPointPeriodColname.from_date,
@@ -70,3 +51,24 @@ def create_metering_point_periods(df, spark):
     )
 
     return spark.createDataFrame(df.rdd, metering_point_period_schema)
+
+
+def create_metering_point_time_series_view(df, spark):
+
+    # Don't remove. Believed needed because this function is an argument to the setup function
+    # and therefore the following packages are not automatically included.
+    from package.constants import TimeSeriesColname
+    from features.utils.views.schemas.metering_point_time_series_schema import (
+        metering_point_time_series_schema,
+    )
+
+    df = df.withColumn(
+        TimeSeriesColname.quantity,
+        col(TimeSeriesColname.quantity).cast(DecimalType(18, 3)),
+    )
+    df = df.withColumn(
+        TimeSeriesColname.observation_time,
+        col(TimeSeriesColname.observation_time).cast(TimestampType()),
+    )
+
+    return spark.createDataFrame(df.rdd, metering_point_time_series_schema)

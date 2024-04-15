@@ -21,16 +21,16 @@ from pyspark.sql import SparkSession, DataFrame
 
 from package.calculation.calculation_results import CalculationResultsContainer
 from package.calculation.calculator_args import CalculatorArgs
-from .output_specifications import get_output_specifications
+from .calculation_args import create_calculation_args
 from .dataframes.basis_data_results_dataframe import (
-    create_basis_data_result_dataframe,
+    create_result_dataframe,
 )
 from .dataframes.energy_results_dataframe import (
     create_energy_result_dataframe,
 )
 from .dataframes.wholesale_results_dataframe import create_wholesale_result_dataframe
 from .expected_output import ExpectedOutput
-from .calculation_args import create_calculation_args
+from .output_specifications import get_output_specifications
 
 
 class ScenarioExecutor:
@@ -125,7 +125,7 @@ class ScenarioExecutor:
                     spark, raw_df, self.test_calculation_args
                 )
             elif "basis_data" in result_file[1]:
-                df = create_basis_data_result_dataframe(spark, raw_df, result_file[0])
+                df = create_result_dataframe(spark, raw_df, result_file[0])
             else:
                 raise Exception(f"Unsupported result file '{result_file[0]}'")
             expected_results.append(ExpectedOutput(name=result_file[0], df=df))

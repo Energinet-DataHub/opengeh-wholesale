@@ -11,6 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from .basis_data_results_dataframe import create_result_dataframe
-from .energy_results_dataframe import create_energy_result_dataframe
-from .wholesale_results_dataframe import create_wholesale_result_dataframe
+from dataclasses import dataclass
+
+from pyspark.sql import DataFrame
+
+
+@dataclass
+class InputDataframe:
+    name: str
+    database_name: str
+    df: DataFrame

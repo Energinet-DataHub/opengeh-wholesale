@@ -24,19 +24,17 @@ from package.infrastructure.paths import (
 
 class ViewReader:
     """
-    This class is responsible for fetching data from settlement report views and only used
-    in tests of settlement report views.
+    This class is responsible for retrieving data from views and only used
+    in tests.
     """
 
     def __init__(
         self,
         spark: SparkSession,
-        schema_path: str,
         metering_point_periods_view_name: str | None = None,
         metering_point_time_series_view_name: str | None = None,
     ) -> None:
         self._spark = spark
-        self._schema_path = schema_path
         self._metering_point_periods_view_name = (
             metering_point_periods_view_name
             or paths.METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME
