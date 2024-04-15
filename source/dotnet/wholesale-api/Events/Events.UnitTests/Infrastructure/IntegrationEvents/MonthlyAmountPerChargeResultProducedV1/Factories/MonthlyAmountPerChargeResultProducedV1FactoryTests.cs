@@ -72,6 +72,28 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
     }
 
     [Theory]
+    [InlineData(ChargeType.Fee)]
+    [InlineData(ChargeType.Subscription)]
+    [InlineData(ChargeType.Tariff)]
+    public void CanCreate_WhenChargeType_ReturnsExpectedValue(
+        ChargeType chargeType)
+    {
+        // Arrange
+        var wholesaleResult = new WholesaleResultBuilder()
+            .WithResolution(Resolution.Month)
+            .WithAmountType(AmountType.MonthlyAmountPerCharge)
+            .WithChargeType(chargeType)
+            .Build();
+        var sut = new MonthlyAmountPerChargeResultProducedV1Factory();
+
+        // Act
+        var actual = sut.CanCreate(wholesaleResult);
+
+        // Assert
+        actual.Should().Be(true);
+    }
+
+    [Theory]
     [InlineData(1, true)]
     [InlineData(2, false)]
     public void CanCreate_WhenTimeSeriesLength_ReturnsExpectedValue(
