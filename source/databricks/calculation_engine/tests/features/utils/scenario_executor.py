@@ -120,6 +120,9 @@ class ScenarioExecutor:
                 df = create_energy_result_dataframe(spark, raw_df)
             elif "wholesale_results" in result_file[1]:
                 df = create_wholesale_result_dataframe(spark, raw_df)
+            elif "total_monthly_amounts" in result_file[1]:
+
+
             elif "basis_data" in result_file[1]:
                 df = create_basis_data_result_dataframe(spark, raw_df, result_file[0])
             else:

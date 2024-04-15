@@ -18,7 +18,7 @@ from pyspark.sql import DataFrame
 
 from helpers.data_frame_utils import assert_dataframe_and_schema
 from package.calculation.calculation_results import CalculationResultsContainer
-from package.constants import EnergyResultColumnNames
+from package.constants.result_column_names import ResultColumnNames
 from .expected_output import ExpectedOutput
 
 
@@ -32,8 +32,8 @@ def assert_output(
     expected_result = _get_expected_for_output(expected_results, output_name)
 
     columns_to_skip = (
-        [EnergyResultColumnNames.calculation_result_id]
-        if EnergyResultColumnNames.calculation_result_id in expected_result.columns
+        [ResultColumnNames.calculation_result_id]
+        if ResultColumnNames.calculation_result_id in expected_result.columns
         else []
     )
 
