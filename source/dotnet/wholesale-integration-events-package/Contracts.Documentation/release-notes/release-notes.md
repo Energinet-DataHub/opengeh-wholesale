@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 9.1.1
+
+No functional changes.
+
 ## Version 9.1.0
 
 Added all child metering point types to contract `AmountPerChargeResultProducedV1`.
