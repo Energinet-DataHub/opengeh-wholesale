@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from datetime import datetime
+from decimal import Decimal
 
 from array import array
 from pyspark.sql import Row, SparkSession, DataFrame
@@ -20,7 +21,7 @@ from package.codelists import (
     MeteringPointResolution,
     MeteringPointType,
 )
-from views.settlement_reports.factories.metering_point_time_series_colname import (
+from views.settlement_reports.column_names.metering_point_time_series_colname import (
     MeteringPointTimeSeriesColname,
 )
 from views.settlement_reports.schemas.metering_point_time_series_schema import (
@@ -29,14 +30,21 @@ from views.settlement_reports.schemas.metering_point_time_series_schema import (
 
 
 class SettlementReportMeteringPointTimeSeriesViewTestFactory:
-    CALCULATION_ID = "295b6872-cc24-483c-bf0a-a33f93207c20"
-    METERING_POINT_ID = "123456789012345678901234567"
+    CALCULATION_ID = "c6fe53cb-de76-4d0f-9d5c-cd73e46e4be9"
+    METERING_POINT_ID = "123456789012345678"
     METERING_POINT_TYPE = MeteringPointType.PRODUCTION
     RESOLUTION = MeteringPointResolution.HOUR
     GRID_AREA = "805"
     ENERGY_SUPPLIER_ID = "9999999999999"
-    OBSERVATION_DAY = datetime(2019, 12, 31, 23, 0, 0)
-    QUANTITIES: array = ()
+    OBSERVATION_DAY = datetime(2021, 1, 2, 0, 0, 0)
+    QUANTITY = Decimal(1.123)
+    OBSERVATION_TIME = datetime(2021, 1, 1, 23, 0, 0)
+    QUANTITIES = [
+        {
+            MeteringPointTimeSeriesColname.observation_time: OBSERVATION_TIME,
+            MeteringPointTimeSeriesColname.quantity: QUANTITY,
+        }
+    ]
 
     def __init__(self, spark: SparkSession):
         self.spark = spark

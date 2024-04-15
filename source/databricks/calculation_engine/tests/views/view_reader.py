@@ -33,12 +33,17 @@ class ViewReader:
         spark: SparkSession,
         schema_path: str,
         metering_point_periods_view_name: str | None = None,
+        metering_point_time_series_view_name: str | None = None,
     ) -> None:
         self._spark = spark
         self._schema_path = schema_path
         self._metering_point_periods_view_name = (
             metering_point_periods_view_name
             or paths.METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME
+        )
+        self._metering_point_time_series_view_name = (
+            metering_point_time_series_view_name
+            or paths.METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME
         )
 
     def read_metering_point_periods(
