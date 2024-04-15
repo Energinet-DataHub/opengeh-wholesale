@@ -57,7 +57,7 @@ energy_results_schema = t.StructType(
         # Required when aggregated per es, otherwise null
         t.StructField(Colname.energy_supplier_id, t.StringType(), True),
         t.StructField(Colname.observation_time, t.TimestampType(), False),
-        t.StructField(Colname.quantity, t.DecimalType(18, 6), False),
+        t.StructField(Colname.quantity, t.DecimalType(18, 3), False),
         # Grid loss has only a single quality (calculated)
         t.StructField(Colname.qualities, t.ArrayType(t.StringType(), False), False),
         # Requires for grid loss, otherwise null
