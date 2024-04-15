@@ -65,6 +65,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
             TotalMonthlyAmountsColumnNames.energy_supplier_id,
             "neither-16-nor-13-digits-long",
         ),
+        (TotalMonthlyAmountsColumnNames.energy_supplier_id, None),
         (TotalMonthlyAmountsColumnNames.time, None),
         (
             TotalMonthlyAmountsColumnNames.charge_owner_id,
