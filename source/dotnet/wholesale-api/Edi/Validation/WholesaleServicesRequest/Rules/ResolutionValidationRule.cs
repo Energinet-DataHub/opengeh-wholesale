@@ -16,6 +16,12 @@ using Energinet.DataHub.Wholesale.Edi.Contracts;
 
 namespace Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules;
 
+/// <summary>
+/// Validation rule for the resolution property when there is requested for wholesale services.
+/// </summary>
+/// <remarks>
+/// This is registered as a scoped service in the service collection.
+/// </remarks>
 public class ResolutionValidationRule
     : IValidationRule<DataHub.Edi.Requests.WholesaleServicesRequest>
 {

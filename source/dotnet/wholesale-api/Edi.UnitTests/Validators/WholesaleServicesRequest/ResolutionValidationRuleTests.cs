@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Reflection;
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.Validation;
 using Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules;
@@ -36,12 +38,13 @@ public class ResolutionValidationRuleTests
         _sut = new ResolutionValidationRule();
     }
 
-    [Fact]
-    public async Task Validate_WhenResolutionIsMonthly_ReturnsNoErrors()
+    [Theory]
+    [MemberData(nameof(GetMonthlyAndMissingResolution))]
+    public async Task Validate_WhenResolutionIsValid_ReturnsNoErrors(string? allowedResolution)
     {
         // Arrange
         var request = new WholesaleServicesRequestBuilder()
-            .WithResolution("Monthly")
+            .WithResolution(allowedResolution)
             .Build();
 
         // Act
@@ -51,27 +54,13 @@ public class ResolutionValidationRuleTests
         actual.Should().BeEmpty();
     }
 
-    [Fact]
-    public async Task Validate_WhenResolutionIsMissing_ReturnsNoErrors()
+    [Theory]
+    [MemberData(nameof(GetInvalidResolutions))]
+    public async Task Validate_WhenResolutionIsNotAllowed_ReturnsError(string rejectedResolution)
     {
         // Arrange
         var request = new WholesaleServicesRequestBuilder()
-            .WithResolution(null)
-            .Build();
-
-        // Act
-        var actual = await _sut.ValidateAsync(request);
-
-        // Assert
-        actual.Should().BeEmpty();
-    }
-
-    [Fact]
-    public async Task Validate_WhenResolutionIsNotMonthly_ReturnsError()
-    {
-        // Arrange
-        var request = new WholesaleServicesRequestBuilder()
-            .WithResolution("NotMonthly")
+            .WithResolution(rejectedResolution)
             .Build();
 
         // Act
@@ -84,39 +73,43 @@ public class ResolutionValidationRuleTests
         actual.First().ErrorCode.Should().BeSameAs(_notMonthlyResolution.ErrorCode);
     }
 
-    [Fact]
-    public async Task Validate_WhenResolutionIsNotHourly_ReturnsErrors()
+    public static IEnumerable<object?[]> GetMonthlyAndMissingResolution()
     {
-        // Arrange
-        var request = new WholesaleServicesRequestBuilder()
-            .WithResolution("Hourly")
-            .Build();
-
-        // Act
-        var actual = await _sut.ValidateAsync(request);
-
-        // Assert
-        using var assertionScope = new AssertionScope();
-        actual.Should().HaveCount(1);
-        actual.First().Message.Should().BeSameAs(_notMonthlyResolution.Message);
-        actual.First().ErrorCode.Should().BeSameAs(_notMonthlyResolution.ErrorCode);
+        return new[]
+        {
+            new object[] { "Monthly" },
+            new object[] { null! },
+            new object[] { DataHubNames.Resolution.Monthly },
+        };
     }
 
-    [Fact]
-    public async Task Validate_WhenResolutionIsDaily_ReturnsErrors()
+    public static IEnumerable<object?[]> GetInvalidResolutions()
     {
-        // Arrange
-        var request = new WholesaleServicesRequestBuilder()
-            .WithResolution("Daily")
-            .Build();
+        var customResolutions = new[]
+        {
+            "NotMonthly",
+            "P1M",
+            "PT1M",
+        }.ToArray();
 
-        // Act
-        var actual = await _sut.ValidateAsync(request);
+        var allResolutions = GetAllResolutionsInDatahub();
+        var invalidResolutions = allResolutions
+            .Where(res => res != DataHubNames.Resolution.Monthly);
 
-        // Assert
-        using var assertionScope = new AssertionScope();
-        actual.Should().HaveCount(1);
-        actual.First().Message.Should().BeSameAs(_notMonthlyResolution.Message);
-        actual.First().ErrorCode.Should().BeSameAs(_notMonthlyResolution.ErrorCode);
+        var invalidResolutionsWithCustomResolutions = invalidResolutions.Concat(customResolutions);
+
+        foreach (var resolution in invalidResolutionsWithCustomResolutions)
+        {
+            yield return new[] { resolution };
+        }
+    }
+
+    private static IEnumerable<string?> GetAllResolutionsInDatahub()
+    {
+        var resolutionType = typeof(DataHubNames.Resolution);
+        return resolutionType
+            .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
+            .ToList()
+            .Select(res => (string)res.GetValue(null)!);
     }
 }
