@@ -96,12 +96,10 @@ public class ResolutionValidationRuleTests
         var invalidResolutions = allResolutions
             .Where(res => res != DataHubNames.Resolution.Monthly);
 
-        var invalidResolutionsWithCustomResolutions = invalidResolutions.Concat(customResolutions);
+        var invalidResolutionsWithCustomResolutions = invalidResolutions.Concat(customResolutions)
+            .Select(res => new object[] { res! });
 
-        foreach (var resolution in invalidResolutionsWithCustomResolutions)
-        {
-            yield return new[] { resolution };
-        }
+        return invalidResolutionsWithCustomResolutions;
     }
 
     private static IEnumerable<string?> GetAllResolutionsInDatahub()
