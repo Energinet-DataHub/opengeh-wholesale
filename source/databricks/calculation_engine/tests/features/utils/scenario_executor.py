@@ -21,6 +21,9 @@ from pyspark.sql import SparkSession, DataFrame
 
 from package.calculation.calculation_results import CalculationResultsContainer
 from package.calculation.calculator_args import CalculatorArgs
+from .dataframes.total_monthly_amounts_dataframe import (
+    create_total_monthly_amounts_dataframe,
+)
 from .input_specifications import get_data_input_specifications
 from .dataframes.basis_data_results_dataframe import (
     create_basis_data_result_dataframe,
@@ -121,8 +124,7 @@ class ScenarioExecutor:
             elif "wholesale_results" in result_file[1]:
                 df = create_wholesale_result_dataframe(spark, raw_df)
             elif "total_monthly_amounts" in result_file[1]:
-
-
+                df = create_total_monthly_amounts_dataframe(spark, raw_df)
             elif "basis_data" in result_file[1]:
                 df = create_basis_data_result_dataframe(spark, raw_df, result_file[0])
             else:

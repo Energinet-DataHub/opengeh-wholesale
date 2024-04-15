@@ -21,5 +21,4 @@ def get_output_names() -> list[str]:
     folder = os.path.dirname(filename)
     output_folder_path = Path(folder + "/output/")
     csv_files = list(output_folder_path.rglob("*.csv"))
-    print(csv_files)
     return [Path(file).stem for file in csv_files]

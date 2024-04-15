@@ -11,14 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pyspark.sql import functions as f, DataFrame, SparkSession
+from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col
 from pyspark.sql.types import (
-    StringType,
     TimestampType,
-    BooleanType,
     DecimalType,
-    ArrayType,
 )
 
 
@@ -28,23 +25,25 @@ def create_total_monthly_amounts_dataframe(*args) -> DataFrame:
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
-    from package.calculation.output.schemas import total_monthly_amounts_schema
-    from package.constants import TotalMontlyAmountsColumnNames
+    from package.calculation.output.schemas.total_monthly_amounts_schema import (
+        total_monthly_amounts_schema,
+    )
+    from package.constants import TotalMonthlyAmountsColumnNames
 
     df = df.withColumn(
-        TotalMontlyAmountsColumnNames.calculation_execution_time_start,
-        col(TotalMontlyAmountsColumnNames.calculation_execution_time_start).cast(
+        TotalMonthlyAmountsColumnNames.calculation_execution_time_start,
+        col(TotalMonthlyAmountsColumnNames.calculation_execution_time_start).cast(
             TimestampType()
         ),
     )
 
     df = df.withColumn(
-        TotalMontlyAmountsColumnNames.amount,
-        col(TotalMontlyAmountsColumnNames.amount).cast(DecimalType(18, 6)),
+        TotalMonthlyAmountsColumnNames.amount,
+        col(TotalMonthlyAmountsColumnNames.amount).cast(DecimalType(18, 6)),
     )
     df = df.withColumn(
-        TotalMontlyAmountsColumnNames.time,
-        col(TotalMontlyAmountsColumnNames.time).cast(TimestampType()),
+        TotalMonthlyAmountsColumnNames.time,
+        col(TotalMonthlyAmountsColumnNames.time).cast(TimestampType()),
     )
 
     return spark.createDataFrame(df.rdd, total_monthly_amounts_schema)
