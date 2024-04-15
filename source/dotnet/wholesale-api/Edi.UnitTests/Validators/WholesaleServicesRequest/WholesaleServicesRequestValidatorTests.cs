@@ -109,20 +109,4 @@ public sealed class WholesaleServicesRequestValidatorTests
         validationErrors.Should().HaveCount(2);
         validationErrors.Select(e => e.ErrorCode).Should().BeEquivalentTo(["D66", "D66"]);
     }
-
-    [Fact]
-    public async Task Validate_WhenResolutionIsHourly_ReturnsUnsuccessfulValidation()
-    {
-        // Arrange
-        var request = new WholesaleServicesRequestBuilder()
-            .WithResolution("Hourly")
-            .Build();
-
-        // Act
-        var validationErrors = await _sut.ValidateAsync(request);
-
-        // Assert
-        validationErrors.Should().ContainSingle()
-            .Which.ErrorCode.Should().Be("D23");
-    }
 }

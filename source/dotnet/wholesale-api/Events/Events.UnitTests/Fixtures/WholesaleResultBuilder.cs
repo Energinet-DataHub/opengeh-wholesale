@@ -29,6 +29,7 @@ public sealed class WholesaleResultBuilder
     private readonly string _energySupplierId = "es_id";
     private readonly string _chargeCode = "charge_code";
     private readonly string _chargeOwnerId = "charge_owner_id";
+    private readonly ChargeType _chargeType = ChargeType.Tariff;
     private readonly bool _isTax = true;
     private readonly long _version = 1;
 
@@ -38,7 +39,6 @@ public sealed class WholesaleResultBuilder
     private CalculationType _calculationType = CalculationType.WholesaleFixing;
     private AmountType _amountType = AmountType.AmountPerCharge;
     private Resolution _resolution = Resolution.Hour;
-    private ChargeType _chargeType = ChargeType.Tariff;
 
     public WholesaleResultBuilder WithCalculationType(CalculationType calculationType)
     {
@@ -61,19 +61,6 @@ public sealed class WholesaleResultBuilder
     public WholesaleResultBuilder WithTimeSeriesPoints(IReadOnlyCollection<WholesaleTimeSeriesPoint> timeSeriesPoints)
     {
         _wholesaleTimeSeriesPoint = timeSeriesPoints;
-        return this;
-    }
-
-    public WholesaleResultBuilder WithChargeType(ChargeType chargeType)
-    {
-        _chargeType = chargeType;
-        return this;
-    }
-
-    public WholesaleResultBuilder WithPointWithoutQuantityQualities()
-    {
-        _wholesaleTimeSeriesPoint
-            = new List<WholesaleTimeSeriesPoint> { new(new DateTime(2021, 1, 1), 1, null, 2, 3) };
         return this;
     }
 
