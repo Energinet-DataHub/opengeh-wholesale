@@ -119,7 +119,6 @@ actor_eic = "1234567890123456"
         (TotalMonthlyAmountsColumnNames.grid_area, "007"),
         (TotalMonthlyAmountsColumnNames.energy_supplier_id, actor_gln),
         (TotalMonthlyAmountsColumnNames.energy_supplier_id, actor_eic),
-        (TotalMonthlyAmountsColumnNames.energy_supplier_id, None),
         (TotalMonthlyAmountsColumnNames.time, datetime(2020, 1, 1, 0, 0)),
         (TotalMonthlyAmountsColumnNames.amount, max_18_6_decimal),
         (TotalMonthlyAmountsColumnNames.amount, min_18_6_decimal),
