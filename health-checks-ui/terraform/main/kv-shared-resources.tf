@@ -38,11 +38,6 @@ data "azurerm_key_vault_secret" "snet_vnet_integration_id" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "appi_shared_instrumentation_key" {
-  name         = "appi-shared-instrumentation-key"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
 data "azurerm_key_vault_secret" "apim_instance_name" {
   name         = "apim-instance-name"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
@@ -60,5 +55,10 @@ data "azurerm_key_vault_secret" "apim_logger_id" {
 
 data "azurerm_key_vault_secret" "apim_oauth_server_name" {
   name         = "apim-oauth-server-name"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "appi_shared_connection_string" {
+  name         = "appi-shared-connection-string"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }

@@ -1,18 +1,20 @@
 module "func_healthchecks" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=14.0.3"
 
-  name                       = "healthchecks"
-  project_name               = var.domain_name_short
-  environment_short          = var.environment_short
-  environment_instance       = var.environment_instance
-  resource_group_name        = azurerm_resource_group.this.name
-  location                   = azurerm_resource_group.this.location
-  vnet_integration_subnet_id = module.kvs_snet_vnet_integration_id.value  # For reasons beyond me, 'module.snet_vnet_integration.id' fails with an "Unsupported attribute" error as the module returns a list of objects ???
-  private_endpoint_subnet_id = module.kvs_snet_private_endpoints_id.value # See above
-  app_service_plan_id        = module.plan_services.id
-  ip_restrictions            = var.ip_restrictions
-  scm_ip_restrictions        = var.ip_restrictions
-  dotnet_framework_version   = "v8.0"
+  name                                   = "healthchecks"
+  project_name                           = var.domain_name_short
+  environment_short                      = var.environment_short
+  environment_instance                   = var.environment_instance
+  resource_group_name                    = azurerm_resource_group.this.name
+  location                               = azurerm_resource_group.this.location
+  vnet_integration_subnet_id             = module.kvs_snet_vnet_integration_id.value  # For reasons beyond me, 'module.snet_vnet_integration.id' fails with an "Unsupported attribute" error as the module returns a list of objects ???
+  private_endpoint_subnet_id             = module.kvs_snet_private_endpoints_id.value # See above
+  app_service_plan_id                    = module.plan_services.id
+  ip_restrictions                        = var.ip_restrictions
+  scm_ip_restrictions                    = var.ip_restrictions
+  dotnet_framework_version               = "v8.0"
+  application_insights_connection_string = module.appi_shared.connection_string
+
   role_assignments = [
     {
       resource_id          = module.kv_shared.id
