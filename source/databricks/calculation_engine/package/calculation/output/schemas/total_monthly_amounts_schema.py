@@ -20,25 +20,29 @@ from pyspark.sql.types import (
     TimestampType,
 )
 
-from package.constants import WholesaleResultColumnNames
+from package.constants import TotalMonthlyAmountsColumnNames
 
 # Note: The order of the columns must match the order of the columns in the Delta table
 total_monthly_amounts_schema = StructType(
     [
-        StructField(WholesaleResultColumnNames.calculation_id, StringType(), False),
-        StructField(WholesaleResultColumnNames.calculation_type, StringType(), False),
+        StructField(TotalMonthlyAmountsColumnNames.calculation_id, StringType(), False),
         StructField(
-            WholesaleResultColumnNames.calculation_execution_time_start,
+            TotalMonthlyAmountsColumnNames.calculation_type, StringType(), False
+        ),
+        StructField(
+            TotalMonthlyAmountsColumnNames.calculation_execution_time_start,
             TimestampType(),
             False,
         ),
         StructField(
-            WholesaleResultColumnNames.calculation_result_id, StringType(), False
+            TotalMonthlyAmountsColumnNames.calculation_result_id, StringType(), False
         ),
-        StructField(WholesaleResultColumnNames.grid_area, StringType(), False),
-        StructField(WholesaleResultColumnNames.energy_supplier_id, StringType(), True),
-        StructField(WholesaleResultColumnNames.time, TimestampType(), False),
-        StructField(WholesaleResultColumnNames.amount, DecimalType(18, 6), True),
-        StructField(WholesaleResultColumnNames.charge_owner_id, StringType(), True),
+        StructField(TotalMonthlyAmountsColumnNames.grid_area, StringType(), False),
+        StructField(
+            TotalMonthlyAmountsColumnNames.energy_supplier_id, StringType(), False
+        ),
+        StructField(TotalMonthlyAmountsColumnNames.time, TimestampType(), False),
+        StructField(TotalMonthlyAmountsColumnNames.amount, DecimalType(18, 6), True),
+        StructField(TotalMonthlyAmountsColumnNames.charge_owner_id, StringType(), True),
     ]
 )

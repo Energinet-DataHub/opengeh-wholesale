@@ -23,7 +23,7 @@ from package.calculation.wholesale.data_structures import (
 from package.constants import Colname
 
 
-def calculate_per_charge_owner(
+def calculate_per_ga_co_es(
     monthly_amounts_per_charge: MonthlyAmountPerCharge,
 ) -> TotalMonthlyAmount:
     """
@@ -31,11 +31,11 @@ def calculate_per_charge_owner(
     Rows that are tax amounts are added to the other rows - but only the rows where the charge owner is not the tax owner itself.
     """
 
-    total_amount_without_tax = _calculate_total_amount_for_tax_type(
+    total_amount_without_tax = _calculate_total_amount_for_charge_tax_value(
         monthly_amounts_per_charge, charge_tax=False
     )
 
-    total_amount_with_tax = _calculate_total_amount_for_tax_type(
+    total_amount_with_tax = _calculate_total_amount_for_charge_tax_value(
         monthly_amounts_per_charge, charge_tax=True
     )
 
@@ -56,10 +56,10 @@ def calculate_per_charge_owner(
     ).select(
         total_amount_without_tax[Colname.grid_area],
         total_amount_without_tax[Colname.charge_owner],
+        total_amount_without_tax[Colname.energy_supplier_id],
         total_amount_without_tax[Colname.charge_time],
         total_amount_without_tax[Colname.total_amount].alias(amount_without_tax),
         total_amount_with_tax[Colname.total_amount].alias(amount_with_tax),
-        f.lit(None).cast(StringType()).alias(Colname.energy_supplier_id),
     )
 
     # Add tax amount to non-tax amount (if it is not null)
@@ -80,7 +80,7 @@ def calculate_per_charge_owner(
     return TotalMonthlyAmount(total_monthly_amount)
 
 
-def _calculate_total_amount_for_tax_type(
+def _calculate_total_amount_for_charge_tax_value(
     monthly_amount_per_charge: MonthlyAmountPerCharge, charge_tax: bool
 ) -> DataFrame:
 
@@ -91,6 +91,7 @@ def _calculate_total_amount_for_tax_type(
     total_monthly_amount_for_charge_type = monthly_amounts_with_tax.groupBy(
         Colname.grid_area,
         Colname.charge_owner,
+        Colname.energy_supplier_id,
     ).agg(
         f.sum(Colname.total_amount).alias(Colname.total_amount),
         f.first(Colname.charge_tax).alias(Colname.charge_tax),

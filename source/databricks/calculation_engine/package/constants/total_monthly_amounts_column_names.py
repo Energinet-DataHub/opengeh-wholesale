@@ -16,20 +16,6 @@
 from .result_column_names import ResultColumnNames
 
 
-class WholesaleResultColumnNames(ResultColumnNames):
-    amount_type = "amount_type"
-    quantity_unit = "quantity_unit"
-    resolution = "resolution"
-
-    metering_point_type = "metering_point_type"
-    settlement_method = "settlement_method"
-    price = "price"
+class TotalMonthlyAmountsColumnNames(ResultColumnNames):
     amount = "amount"
-    is_tax = "is_tax"
-
-    charge_code = "charge_code"
-    charge_type = "charge_type"
     charge_owner_id = "charge_owner_id"
-
-    quantity = "quantity"
-    quantity_qualities = "quantity_qualities"

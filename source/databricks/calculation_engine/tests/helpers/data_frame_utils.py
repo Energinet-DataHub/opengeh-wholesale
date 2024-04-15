@@ -43,7 +43,13 @@ def assert_dataframe_and_schema(
     ignore_decimal_precision: bool = False,
     columns_to_skip: list[str] | None = None,
 ) -> None:
-    if columns_to_skip is not None:
+    assert actual is not None, "Actual data frame is None"
+    assert expected is not None, "Expected data frame is None"
+
+    if columns_to_skip is not None and len(columns_to_skip) > 0:
+        # Assert that the expected value is "IGNORED" to ensure that the skip is explicit in the expected value
+        _assert_skipped_columns(expected, columns_to_skip)
+
         actual = actual.drop(*columns_to_skip)
         expected = expected.drop(*columns_to_skip)
 
@@ -68,8 +74,26 @@ def assert_dataframe_and_schema(
         assert_dataframes_equal(actual, expected)
     except AssertionError:
         print("DATA MISMATCH:")
-        print("ACTUAL:")
-        actual.show(3000, False)
-        print("EXPECTED:")
-        expected.show(3000, False)
+        print("IN ACTUAL BUT NOT IN EXPECTED:")
+        actual.subtract(expected).show(3000, False)
+        print("IN EXPECTED BUT NOT IN ACTUAL:")
+        expected.subtract(actual).show(3000, False)
         raise
+
+
+def _assert_skipped_columns(df: DataFrame, column_names: list[str]) -> None:
+    # Construct a filter that checks if any column is not 'IGNORED'
+    condition = " OR ".join([f"{col_name} != 'IGNORED'" for col_name in column_names])
+
+    non_ignored_df = df.filter(condition)
+    count = non_ignored_df.count()
+
+    if count != 0:
+        print(
+            "ROWS WITH SKIPPED COLUMNS, BUT BAD EXPECTED VALUE (should be 'IGNORED'):"
+        )
+        non_ignored_df.show(3000, False)
+
+    assert (
+        count == 0
+    ), f"There are {count} rows where columns are not 'IGNORED' in all the skipped columns: {column_names}."
