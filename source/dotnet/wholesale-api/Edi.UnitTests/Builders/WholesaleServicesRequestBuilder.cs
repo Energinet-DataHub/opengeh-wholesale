@@ -80,7 +80,7 @@ public class WholesaleServicesRequestBuilder
         return this;
     }
 
-    public WholesaleServicesRequestBuilder WithResolution(string resolution)
+    public WholesaleServicesRequestBuilder WithResolution(string? resolution)
     {
         _resolution = resolution;
         return this;
