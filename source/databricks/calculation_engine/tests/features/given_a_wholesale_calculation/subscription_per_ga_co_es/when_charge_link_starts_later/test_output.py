@@ -12,21 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""
-# Test Description
+from typing import Any
 
-```gherkin
-GIVEN two metering points (positive and negative grid loss)
-  AND only one charge link
-  AND the charge link starts on February 27th
-  AND the subscription price is 28.282828 DKK
-WHEN calculating subscription amount per charge for February
-THEN there is only result rows for 27th and 28th of february
-  AND the subscription amount is 1.010101 DKK
-```
-"""
-from features.utils.base import Base
+import pytest
+
+from features.utils.assertion import assert_output
+from features.utils.scenario_output_files import get_output_names
 
 
-class TestThen(Base):
-    pass
+# IMPORTANT:
+# All test files should be identical. This makes changing them cumbersome.
+# So in order to make it easier you can modify the utils/template.py file instead,
+# and then run the power-shell script "Use-Template.ps1" to update all test_output.py files.
+@pytest.mark.parametrize("output_name", get_output_names())
+def test__equals_expected(
+    actual_and_expected: Any,
+    output_name: str,
+) -> None:
+    assert_output(actual_and_expected, output_name)

@@ -11,22 +11,29 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from pathlib import Path
+
 import pytest
+from _pytest.fixtures import FixtureRequest
 from pyspark.sql import SparkSession
 
-from features.scenario_fixture import ScenarioFixture
-from features.utils.scenario_fixture2 import ScenarioFixture2
+from features.utils.expected_output import ExpectedOutput
+from features.utils.scenario_executor import ScenarioExecutor
+from package.calculation.calculation_results import CalculationResultsContainer
 
 
-@pytest.fixture(scope="session")
-def scenario_fixture(
+@pytest.fixture(scope="module")
+def actual_and_expected(
+    request: FixtureRequest,
     spark: SparkSession,
-) -> ScenarioFixture:
-    return ScenarioFixture(spark)
+) -> tuple[CalculationResultsContainer, list[ExpectedOutput]]:
+    """
+    Provides the actual and expected output for a scenario test case.
 
+    IMPORTANT: It is crucial that this fixture has scope=module, as the scenario executor
+    is specific to a single scenario, which are each located in their own module.
+    """
 
-@pytest.fixture(scope="session")
-def scenario_fixture2(
-    spark: SparkSession,
-) -> ScenarioFixture2:
-    return ScenarioFixture2(spark)
+    scenario_path = str(Path(request.module.__file__).parent)
+    scenario_executor = ScenarioExecutor(spark)
+    return scenario_executor.execute(scenario_path)

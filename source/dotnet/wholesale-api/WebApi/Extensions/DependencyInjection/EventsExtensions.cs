@@ -22,9 +22,7 @@ using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Receiv
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks.ServiceBus;
 using Energinet.DataHub.Wholesale.Events.Application.Workers;
-using Google.Protobuf.Reflection;
 using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Extensions.DependencyInjection;
@@ -49,10 +47,9 @@ public static class EventsExtensions
         // These are located within Calculations sub-area
         services
             .AddSubscriber<ReceivedIntegrationEventHandler>(
-            new List<MessageDescriptor>
-            {
+            [
                 GridAreaOwnershipAssigned.Descriptor,
-            });
+            ]);
 
         services
             .AddHostedService<ReceiveIntegrationEventServiceBusWorker>();
@@ -64,7 +61,7 @@ public static class EventsExtensions
 
         // Health checks
         services.AddHealthChecks()
-            .AddAzureServiceBusSubscriptionUsingWebSockets(
+            .AddAzureServiceBusSubscription(
                 sp => sp.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>().Value.ConnectionString,
                 sp => sp.GetRequiredService<IOptions<IntegrationEventsOptions>>().Value.TopicName,
                 sp => sp.GetRequiredService<IOptions<IntegrationEventsOptions>>().Value.SubscriptionName,
@@ -83,7 +80,7 @@ public static class EventsExtensions
         // Health checks
         services.AddHealthChecks()
             // Must use a listener connection string
-            .AddAzureServiceBusQueueUsingWebSockets(
+            .AddAzureServiceBusQueue(
                 sp => sp.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>().Value.ConnectionString,
                 sp => sp.GetRequiredService<IOptions<WholesaleInboxQueueOptions>>().Value.QueueName,
                 name: "WholesaleInboxQueue");
