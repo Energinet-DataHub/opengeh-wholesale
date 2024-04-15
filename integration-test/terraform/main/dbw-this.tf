@@ -107,6 +107,7 @@ resource "databricks_instance_pool" "migration_pool_integration_test" {
   max_capacity                          = 5
   node_type_id                          = "Standard_E4d_v4"
   idle_instance_autotermination_minutes = 60
+  preloaded_spark_versions = [local.databricks_runtime_version]
 }
 
 resource "databricks_job" "migration_workflow" {
