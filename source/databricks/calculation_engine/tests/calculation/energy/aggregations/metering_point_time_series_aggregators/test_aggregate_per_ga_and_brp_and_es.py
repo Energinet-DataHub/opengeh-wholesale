@@ -33,11 +33,13 @@ class TestWhenValidInput:
     def test_returns_values_aggregated_for_ga(self, spark: SparkSession):
         # Arrange
         row = factories.create_row()
-        df = factories.create(spark, [row, row])
+        quarterly_metering_point_time_series = factories.create(spark, [row, row])
 
         # Act
         actual = aggregate_per_ga_and_brp_and_es(
-            df, factories.DEFAULT_METERING_POINT_TYPE, None
+            quarterly_metering_point_time_series,
+            factories.DEFAULT_METERING_POINT_TYPE,
+            None,
         )
 
         # assert
@@ -62,7 +64,7 @@ class TestWhenValidInput:
         assert (
             actual_row[Colname.observation_time] == factories.DEFAULT_OBSERVATION_TIME
         )
-        assert actual_row[Colname.quantity] == 2 * factories.DEFAULT_QUANTITY
+        assert actual_row[Colname.quantity] == round(2 * factories.DEFAULT_QUANTITY, 3)
         assert actual_row[Colname.qualities] == [factories.DEFAULT_QUALITY.value]
 
     def test_returns_rows_for_each_ga(self, spark: SparkSession):
