@@ -46,6 +46,12 @@ jobs:
     environment: AzureAuth
 
     steps:
+      # See https://stackoverflow.com/a/22575737
+      - name: Enable long filenames
+        shell: pwsh
+        run: |
+          git config --system core.longpaths true
+
       - name: Checkout repository
         uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@v13
 
