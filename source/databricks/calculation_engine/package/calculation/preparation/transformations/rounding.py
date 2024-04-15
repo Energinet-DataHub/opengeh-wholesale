@@ -16,6 +16,25 @@ import pyspark.sql.functions as f
 
 
 def get_rounded(df: DataFrame) -> DataFrame:
+    """
+    The function rounds the quantity to 3 decimal places.
+    All Quantities that come in has a scale of 3.
+    The scale will be increased to 6 in different way depending on resolution.
+    Quantities with resolution of PT15M get added three zero at the end to increase the scale to 6.
+    Quantities with resolution of PT1H gets divided into 4 to act as a PT15M resolution.
+    To be able to get the same PT1H quantity result again we have to round to 3 decimal places in a specific way.
+    example: if we have a PT1H quantity of 0.003, and we divide it into 4 we get 0.00075.
+    if we just round the new value normally we get 0.001. and we add that up 4 times we get 0.004.
+    Which is not the same as the original value. To get original value we need to somthing like this:
+    Take the first quantity of 0.000750 and round it to 3 decimal places we get 0.001. Now the difference between
+    the original value and the rounded value is 0.000750 - 0.001 = -0.000250. We add that to the next quantity.
+    0.000750 + (-0.000250) = 0.000500. We round that to 3 decimal places we get 0.001. Now the difference between
+    the original value and the rounded value is 0.000500 - 0.001 = -0.000500. We add that to the next quantity.
+    0.000750 + (-0.000500) = 0.000250. We round that to 3 decimal places we get 0.000. Now the difference between
+    the original value and the rounded value is 0.000250 - 0.000 = 0.000250. We add that to the next quantity.
+    0.000750 + 0.000250 = 0.001000. We round that to 3 decimal places we get 0.001.
+    Now we can add them up and get the original value of 0.003.
+    """
     df = df.orderBy("observation_time")
     df = df.withColumn("index", (f.minute("observation_time") / 15).cast("integer") + 1)
 
