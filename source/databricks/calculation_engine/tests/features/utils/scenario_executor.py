@@ -26,6 +26,7 @@ from .dataframes import (
     create_energy_result_dataframe,
     create_wholesale_result_dataframe,
     create_basis_data_result_dataframe,
+    create_total_monthly_amounts_dataframe,
 )
 from .expected_output import ExpectedOutput
 from .input_specifications import get_data_input_specifications

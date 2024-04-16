@@ -13,5 +13,6 @@
 # limitations under the License.
 from .basis_data_results_dataframe import create_basis_data_result_dataframe
 from .energy_results_dataframe import create_energy_result_dataframe
+from .total_monthly_amounts_dataframe import create_total_monthly_amounts_dataframe
 from .view_results_dataframe import create_view_result_dataframe
 from .wholesale_results_dataframe import create_wholesale_result_dataframe
