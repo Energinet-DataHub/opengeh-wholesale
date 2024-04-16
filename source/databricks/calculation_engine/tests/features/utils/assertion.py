@@ -18,7 +18,7 @@ from pyspark.sql import DataFrame
 
 from helpers.data_frame_utils import assert_dataframe_and_schema
 from package.calculation.calculation_results import CalculationResultsContainer
-from package.constants import EnergyResultColumnNames
+from package.constants.result_column_names import ResultColumnNames
 from .expected_output import ExpectedOutput
 
 
@@ -32,8 +32,8 @@ def assert_output(
     expected_result = _get_expected_for_output(expected_results, output_name)
 
     columns_to_skip = (
-        [EnergyResultColumnNames.calculation_result_id]
-        if EnergyResultColumnNames.calculation_result_id in expected_result.columns
+        [ResultColumnNames.calculation_result_id]
+        if ResultColumnNames.calculation_result_id in expected_result.columns
         else []
     )
 
@@ -89,6 +89,13 @@ def _get_actual_for_output(
         return getattr(
             calculation_results_container.wholesale_results, expected_result_name
         )
+    if _has_field(
+        calculation_results_container.total_monthly_amounts, expected_result_name
+    ):
+        return getattr(
+            calculation_results_container.total_monthly_amounts, expected_result_name
+        )
+
     if _has_field(calculation_results_container.basis_data, expected_result_name):
         return getattr(calculation_results_container.basis_data, expected_result_name)
 
