@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using AutoFixture;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Calculation;
+namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.Calculation;
 
 [Collection(nameof(OrchestrationsAppCollectionFixture))]
 public class CalculationOrchestrationTests : IAsyncLifetime
