@@ -15,6 +15,7 @@
 # The spark version should follow the spark version in databricks.
 # The databricks version of spark is controlled from dh3-infrastructure and uses latest LTS (ATTOW - Spark v3.5.0)
 FROM ghcr.io/energinet-datahub/pyspark-slim:3.5.0
+FROM --platform=linux/amd64 ghcr.io/energinet-datahub/pyspark-slim:3.5.1-2
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
