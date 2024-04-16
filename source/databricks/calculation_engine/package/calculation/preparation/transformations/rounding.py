@@ -38,8 +38,8 @@ def special_quantity_rounding(df: DataFrame) -> DataFrame:
     Now we can add them up and get the original value of 0.003.
     Note: this is done for every row no matter which resolution it came from, but they are only affected if
     the quantity has digits other than 0 after the 3rd decimal place and that is only possible for quantities from PT1H.
-    Since quantities from PT15M always have 3 zeros after the 3rd decimal place, we can assume that anything after
-    the 3rd decimal place is always the same in all 4 rows within the same hour.
+    This function is built on the assumption that quantities from PT15M always have 3 zeros after the 3rd decimal place,
+    which means anything after the 3rd decimal place is always the same in all 4 rows within the same hour
     """
     df = df.orderBy(Colname.observation_time)
     df = df.withColumn(
