@@ -127,6 +127,8 @@ jobs:
             paths: features/given_an_energy_calculation
           - name: Wholesale logic
             paths: features/given_a_wholesale_calculation
+          - name: Public data model
+            paths: features/public_data_model
           - name: Unit tests
             paths: calculation/ codelists/ common/ infrastructure/
           - name: Entry point tests
