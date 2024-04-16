@@ -34,6 +34,8 @@ def special_quantity_rounding(df: DataFrame) -> DataFrame:
     the original value and the rounded value is 0.000250 - 0.000 = 0.000250. We add that to the next quantity.
     0.000750 + 0.000250 = 0.001000. We round that to 3 decimal places we get 0.001.
     Now we can add them up and get the original value of 0.003.
+    Note: this is done for every row no matter which resolution it came from, but they are only affected if
+    the quantity has digits other than 0 after the 3rd decimal place and that is only possible for quantities from PT1H.
     """
     df = df.orderBy("observation_time")
     df = df.withColumn("index", (f.minute("observation_time") / 15).cast("integer") + 1)
