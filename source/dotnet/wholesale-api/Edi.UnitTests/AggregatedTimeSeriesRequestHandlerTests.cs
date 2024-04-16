@@ -105,6 +105,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
                 message.Subject.Equals(expectedAcceptedSubject)
                 && message.ApplicationProperties.ContainsKey("ReferenceId")
                 && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
+            serviceBusReceivedMessage,
             It.IsAny<CancellationToken>()),
             Times.Once);
     }
@@ -171,6 +172,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
                 message.Subject.Equals(expectedAcceptedSubject)
                 && message.ApplicationProperties.ContainsKey("ReferenceId")
                 && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
+            serviceBusReceivedMessage,
             It.IsAny<CancellationToken>()),
             Times.Once);
     }
@@ -216,6 +218,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
                 && message.WithErrorCode(_noDataAvailable.ErrorCode)
                 && message.ApplicationProperties.ContainsKey("ReferenceId")
                 && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
+            serviceBusReceivedMessage,
             It.IsAny<CancellationToken>()),
             Times.Once);
     }
@@ -271,6 +274,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
                 && message.WithErrorCode(_noDataForRequestedGridArea.ErrorCode)
                 && message.ApplicationProperties.ContainsKey("ReferenceId")
                 && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
+            serviceBusReceivedMessage,
             It.IsAny<CancellationToken>()),
             Times.Once);
     }
@@ -317,6 +321,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
                 && message.WithErrorCode(_noDataAvailable.ErrorCode)
                 && message.ApplicationProperties.ContainsKey("ReferenceId")
                 && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
+            serviceBusReceivedMessage,
             It.IsAny<CancellationToken>()),
             Times.Once);
     }
@@ -367,6 +372,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
                 && message.WithErrorCode(_invalidEnergySupplierField.ErrorCode)
                 && message.ApplicationProperties.ContainsKey("ReferenceId")
                 && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
+            serviceBusReceivedMessage,
             It.IsAny<CancellationToken>()),
             Times.Once);
     }

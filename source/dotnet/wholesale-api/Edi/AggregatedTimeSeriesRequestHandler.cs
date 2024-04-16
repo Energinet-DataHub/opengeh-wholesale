@@ -68,7 +68,7 @@ public class AggregatedTimeSeriesRequestHandler : IWholesaleInboxRequestHandler
         if (validationErrors.Any())
         {
             _logger.LogWarning("Validation errors for AggregatedTimeSeriesRequest message with reference id {reference_id}", referenceId);
-            await SendRejectedMessageAsync(validationErrors.ToList(), referenceId, cancellationToken).ConfigureAwait(false);
+            await SendRejectedMessageAsync(receivedMessage, validationErrors.ToList(), referenceId, cancellationToken).ConfigureAwait(false);
             return;
         }
 
@@ -77,6 +77,7 @@ public class AggregatedTimeSeriesRequestHandler : IWholesaleInboxRequestHandler
         if (!queryParameters.LatestCalculationForPeriod.Any())
         {
             await SendNoDateRejectMessageAsync(
+                    receivedMessage,
                     referenceId,
                     cancellationToken,
                     aggregatedTimeSeriesRequest,
@@ -90,6 +91,7 @@ public class AggregatedTimeSeriesRequestHandler : IWholesaleInboxRequestHandler
         if (!calculationResults.Any())
         {
             await SendNoDateRejectMessageAsync(
+                receivedMessage,
                 referenceId,
                 cancellationToken,
                 aggregatedTimeSeriesRequest,
@@ -99,10 +101,11 @@ public class AggregatedTimeSeriesRequestHandler : IWholesaleInboxRequestHandler
         }
 
         _logger.LogInformation("Sending AggregatedTimeSeriesRequest accepted message with reference id {reference_id}", referenceId);
-        await SendAcceptedMessageAsync(calculationResults, referenceId, cancellationToken).ConfigureAwait(false);
+        await SendAcceptedMessageAsync(receivedMessage, calculationResults, referenceId, cancellationToken).ConfigureAwait(false);
     }
 
     private async Task SendNoDateRejectMessageAsync(
+        ServiceBusReceivedMessage asResponseToMessage,
         string referenceId,
         CancellationToken cancellationToken,
         DataHub.Edi.Requests.AggregatedTimeSeriesRequest aggregatedTimeSeriesRequest,
@@ -114,7 +117,7 @@ public class AggregatedTimeSeriesRequestHandler : IWholesaleInboxRequestHandler
             error = [_noDataForRequestedGridArea];
         }
 
-        await SendRejectedMessageAsync(error, referenceId, cancellationToken).ConfigureAwait(false);
+        await SendRejectedMessageAsync(asResponseToMessage, error, referenceId, cancellationToken).ConfigureAwait(false);
     }
 
     private async Task<bool> EnergySupplierOrBalanceResponsibleHaveAggregatedTimeSeriesForAnotherGridAreasAsync(
@@ -162,15 +165,15 @@ public class AggregatedTimeSeriesRequestHandler : IWholesaleInboxRequestHandler
         return parameters;
     }
 
-    private async Task SendRejectedMessageAsync(IReadOnlyCollection<ValidationError> validationErrors, string referenceId, CancellationToken cancellationToken)
+    private async Task SendRejectedMessageAsync(ServiceBusReceivedMessage asResponseToMessage, IReadOnlyCollection<ValidationError> validationErrors, string referenceId, CancellationToken cancellationToken)
     {
         var message = AggregatedTimeSeriesRequestRejectedMessageFactory.Create(validationErrors, referenceId);
-        await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
+        await _ediClient.SendAsync(message, asResponseToMessage, cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task SendAcceptedMessageAsync(IReadOnlyCollection<AggregatedTimeSeries> results, string referenceId, CancellationToken cancellationToken)
+    private async Task SendAcceptedMessageAsync(ServiceBusReceivedMessage asResponseToMessage, IReadOnlyCollection<AggregatedTimeSeries> results, string referenceId, CancellationToken cancellationToken)
     {
         var message = AggregatedTimeSeriesRequestAcceptedMessageFactory.Create(results, referenceId);
-        await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
+        await _ediClient.SendAsync(message, asResponseToMessage, cancellationToken).ConfigureAwait(false);
     }
 }
