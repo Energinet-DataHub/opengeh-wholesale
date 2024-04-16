@@ -12,8 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using AutoFixture;
+using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
+using Xunit.Abstractions;
+
 namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Calculation;
 
-public class CalculationOrchestrationTests
+[Collection(nameof(OrchestrationsAppCollectionFixture))]
+public class CalculationOrchestrationTests : IAsyncLifetime
 {
+    public CalculationOrchestrationTests(OrchestrationsAppFixture fixture, ITestOutputHelper testOutputHelper)
+    {
+        Fixture = fixture;
+        Fixture.SetTestOutputHelper(testOutputHelper);
+
+        Fixture.AppHostManager.ClearHostLog();
+    }
+
+    private OrchestrationsAppFixture Fixture { get; }
+
+    public Task InitializeAsync()
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task DisposeAsync()
+    {
+        Fixture.SetTestOutputHelper(null!);
+
+        return Task.CompletedTask;
+    }
 }
