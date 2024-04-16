@@ -53,6 +53,7 @@ class WholesaleResultsContainer:
     monthly_fee_per_ga_co_es: DataFrame | None = None
 
 
+@dataclass
 class TotalMonthlyAmountsContainer:
     total_monthly_amounts_per_ga_co_es: DataFrame | None = None
 
