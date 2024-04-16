@@ -67,6 +67,8 @@ class TableReader:
 
         df = self._spark.read.format("delta").load(path)
 
+        df = df.drop("partition_date_col")
+
         assert_schema(df.schema, time_series_point_schema)
 
         return df
