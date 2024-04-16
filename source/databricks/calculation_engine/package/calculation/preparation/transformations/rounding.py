@@ -14,6 +14,8 @@
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
 
+from package.constants import Colname
+
 
 def special_quantity_rounding(df: DataFrame) -> DataFrame:
     """
@@ -37,21 +39,29 @@ def special_quantity_rounding(df: DataFrame) -> DataFrame:
     Note: this is done for every row no matter which resolution it came from, but they are only affected if
     the quantity has digits other than 0 after the 3rd decimal place and that is only possible for quantities from PT1H.
     """
-    df = df.orderBy("observation_time")
-    df = df.withColumn("index", (f.minute("observation_time") / 15).cast("integer") + 1)
+    df = df.orderBy(Colname.observation_time)
+    df = df.withColumn(
+        "index", (f.minute(Colname.observation_time) / 15).cast("integer") + 1
+    )
 
-    df = df.withColumn("quantity_row_1", f.col("quantity"))
+    df = df.withColumn("quantity_row_1", f.col(Colname.quantity))
     df = df.withColumn(
         "quantity_row_2",
-        f.col("quantity") - f.round("quantity_row_1", 3) + f.col("quantity_row_1"),
+        f.col(Colname.quantity)
+        - f.round("quantity_row_1", 3)
+        + f.col("quantity_row_1"),
     )
     df = df.withColumn(
         "quantity_row_3",
-        f.col("quantity") - f.round("quantity_row_2", 3) + f.col("quantity_row_2"),
+        f.col(Colname.quantity)
+        - f.round("quantity_row_2", 3)
+        + f.col("quantity_row_2"),
     )
     df = df.withColumn(
         "quantity_row_4",
-        f.col("quantity") - f.round("quantity_row_3", 3) + f.col("quantity_row_3"),
+        f.col(Colname.quantity)
+        - f.round("quantity_row_3", 3)
+        + f.col("quantity_row_3"),
     )
     df = df.withColumn(
         "round_ready_quantity",
@@ -63,6 +73,6 @@ def special_quantity_rounding(df: DataFrame) -> DataFrame:
         .when(f.col("index") == 3, f.col("quantity_row_3"))
         .when(f.col("index") == 4, f.col("quantity_row_4")),
     )
-    df = df.withColumn("quantity", f.round(f.col("round_ready_quantity"), 3))
+    df = df.withColumn(Colname.quantity, f.round(f.col("round_ready_quantity"), 3))
 
     return df
