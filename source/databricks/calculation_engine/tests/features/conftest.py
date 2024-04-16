@@ -42,9 +42,10 @@ def actual_and_expected(
 
 @pytest.fixture(scope="module")
 def actual_and_expected_views(
+    migrations_executed: None,
     request: FixtureRequest,
     spark: SparkSession,
-) -> tuple[CalculationResultsContainer, list[ExpectedOutput]]:
+) -> tuple[list[ExpectedOutput], list[ExpectedOutput]]:
     """
     Provides the actual and expected output for a scenario test case.
 

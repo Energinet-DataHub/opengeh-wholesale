@@ -15,9 +15,6 @@ from package.calculation.basis_data.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
 )
-from package.infrastructure.paths import (
-    BASIS_DATA_DATABASE_NAME,
-)
 
 
 def get_input_specifications() -> dict[str, tuple]:
@@ -25,12 +22,6 @@ def get_input_specifications() -> dict[str, tuple]:
     Contains the specifications for scenario inputs.
     """
     return {
-        "metering_point_periods.csv": (
-            metering_point_period_schema,
-            BASIS_DATA_DATABASE_NAME,
-        ),
-        "time_series_points.csv": (
-            time_series_point_schema,
-            BASIS_DATA_DATABASE_NAME,
-        ),
+        "metering_point_periods.csv": (metering_point_period_schema, None),
+        "time_series_points.csv": (time_series_point_schema, None),
     }

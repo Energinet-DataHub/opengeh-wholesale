@@ -16,10 +16,6 @@ from features.utils.views.schemas import (
     metering_point_period_schema,
 )
 
-from package.infrastructure.paths import (
-    SETTLEMENT_REPORT_DATABASE_NAME,
-)
-
 
 def get_output_specifications() -> dict[str, tuple]:
     """
@@ -28,10 +24,10 @@ def get_output_specifications() -> dict[str, tuple]:
     return {
         "metering_point_periods.csv": (
             metering_point_period_schema,
-            SETTLEMENT_REPORT_DATABASE_NAME,
+            "read_metering_point_periods",
         ),
         "metering_point_time_series.csv": (
             metering_point_time_series_schema,
-            SETTLEMENT_REPORT_DATABASE_NAME,
+            "read_metering_point_time_series",
         ),
     }
