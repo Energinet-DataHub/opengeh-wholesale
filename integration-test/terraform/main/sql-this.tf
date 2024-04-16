@@ -14,7 +14,7 @@ resource "azurerm_mssql_server" "this" {
 }
 
 resource "random_password" "integration_mssql_administrator_login_password" {
-  length           = 16
+  length           = 24
   special          = true
   override_special = "_%@"
 }
