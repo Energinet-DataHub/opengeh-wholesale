@@ -47,6 +47,6 @@
 	"appPort": [
 		"5567:5050"
 	],
-	"overrideCommand": false,
+	//"overrideCommand": false,
 	"containerUser": "root"
 }
