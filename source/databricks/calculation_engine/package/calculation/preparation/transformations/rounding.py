@@ -15,7 +15,7 @@ from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
 
 
-def get_rounded(df: DataFrame) -> DataFrame:
+def special_quantity_rounding(df: DataFrame) -> DataFrame:
     """
     The function rounds the quantity to 3 decimal places.
     All Quantities that come in has a scale of 3.

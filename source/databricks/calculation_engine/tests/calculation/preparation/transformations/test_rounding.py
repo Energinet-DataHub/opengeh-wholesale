@@ -15,7 +15,9 @@ from datetime import datetime
 from decimal import Decimal
 
 from pyspark.sql import SparkSession
-from package.calculation.preparation.transformations.rounding import get_rounded
+from package.calculation.preparation.transformations.rounding import (
+    special_quantity_rounding,
+)
 from package.constants import Colname
 
 
@@ -42,7 +44,7 @@ def test_get_rounded(spark: SparkSession) -> None:
     df = spark.createDataFrame(rows)
 
     # Act
-    actual = get_rounded(df)
+    actual = special_quantity_rounding(df)
     actual.show()
 
     # Assert
