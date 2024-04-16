@@ -64,39 +64,6 @@
 
 Use the [Python Test Explorer for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=LittleFoxTeam.vscode-python-test-adapter) extension in VSCode. It is automatically installed in the container (see [`.devcontainer/devcontainer.json`](https://github.com/Energinet-DataHub/opengeh-wholesale/blob/main/.devcontainer/devcontainer.json)).
 
-### Alternative Debug Approach
-
-This is a less simple and intuitive way of debugging,
-but may serve as an alternative in case of problems with the recommended way of debugging.
-
-* To debug tests you need to execute the following command
-
-    Using debugz.sh with the following command
-
-    ````text
-    sh debugz.sh
-    ````
-
-    Or using command inside debugz.sh
-
-    ```text
-    python -m ptvsd --host 0.0.0.0 --port 3000 --wait -m pytest -v
-    ```
-
-* Create a ***launch.json*** file in the ***Run and Debug*** panel and add the following
-
-    ```json
-    {
-        "name": "Python: Attach container",
-        "type": "python",
-        "request": "attach",
-        "port": 3000,
-        "host": "localhost"
-    }
-    ```
-
-* Start debugging on the ***Python: Attach container*** in the ***Run and Debug*** panel
-
 ## Styling and Formatting
 
 We try to follow [PEP8](https://peps.python.org/pep-0008/) as much as possible, we do this by using [Flake8](https://flake8.pycqa.org/en/latest/) and [Black](https://black.readthedocs.io/en/stable/)
