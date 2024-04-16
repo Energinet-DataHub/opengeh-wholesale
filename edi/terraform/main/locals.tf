@@ -11,4 +11,9 @@ locals {
 
   # Data lake
   AZURE_STORAGE_ACCOUNT_URL = "https://${module.st_documents.name}.blob.core.windows.net"
+
+  # Logging
+  LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_EDI       = "Information" # From opengeh-edi
+  LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE      = "Information" # From geh-core
+  LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT                     = "Information" # Everything else
 }

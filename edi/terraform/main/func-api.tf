@@ -53,6 +53,11 @@ locals {
     DB_CONNECTION_STRING                                       = local.CONNECTION_STRING
     AZURE_STORAGE_ACCOUNT_URL                                  = local.AZURE_STORAGE_ACCOUNT_URL
 
+    # Logging
+    "Logging__ApplicationInsights__LogLevel__Default"                     = local.LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT
+    "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Edi"       = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_EDI
+    "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Core"      = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE
+
     # FeatureManagement
     FeatureManagement__UseMonthlyAmountPerChargeResultProduced = var.feature_management_use_monthly_amount_per_charge_result_produced
     FeatureManagement__UseAmountPerChargeResultProduced        = var.feature_management_use_amount_per_charge_result_produced

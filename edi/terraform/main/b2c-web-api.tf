@@ -35,6 +35,11 @@ module "b2c_web_api" {
 
     # Queue names
     IncomingMessages__QueueName          = azurerm_servicebus_queue.edi_incoming_messages_queue.name
+
+    # Logging
+    "Logging__ApplicationInsights__LogLevel__Default"                     = local.LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT
+    "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Edi"       = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_EDI
+    "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Core"      = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE
   }
 
   # Role assigments is needed to connect to the storage account (st_documents) using URI
