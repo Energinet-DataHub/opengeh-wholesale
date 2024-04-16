@@ -1,0 +1,2 @@
+calculation_id;metering_point_id;from_date;to_date;grid_area_code;from_grid_area_code;to_grid_area_code;metering_point_type;settlement_method;energy_supplier_id
+0b15a420-9fc8-409a-a169-fbd49479d718;571313180480500149;2023-02-01 00:00:00;2023-02-01 01:00:00;804;;;production;;8100000000108
