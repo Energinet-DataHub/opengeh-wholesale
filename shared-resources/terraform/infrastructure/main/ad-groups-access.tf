@@ -43,6 +43,13 @@ resource "azurerm_role_assignment" "platform_support_contributor_access" {
   principal_id         = var.platform_team_security_group_object_id
 }
 
+resource "azurerm_role_assignment" "shared_keyvault_platform_secrets_user" {
+  count                = 1
+  scope                = module.kv_shared.id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = var.platform_team_security_group_object_id
+}
+  
 ##################
 # New Omada controlled security groups
 ##################
@@ -58,6 +65,12 @@ resource "azurerm_role_assignment" "omada_developers_subscription_reader" {
   scope                = data.azurerm_subscription.this.id
   role_definition_name = "Reader"
   principal_id         = var.omada_developers_security_group_object_id
+}
+  
+resource "azurerm_role_assignment" "omada_platformteam_keyvault_secrets_user" {
+  scope                = module.kv_shared.id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = var.omada_platform_team_security_group_object_id
 }
 
 //Deny developers dataplane access to Terraform state on all environments
@@ -83,8 +96,7 @@ resource "azurerm_role_assignment" "omada_platform_support_contributor_access" {
   principal_id         = var.omada_platform_team_security_group_object_id
 }
 
-
-
+  
 ##################
 # Custom role definitions
 ##################

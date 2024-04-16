@@ -68,21 +68,17 @@ resource "azurerm_api_management_authorization_server" "oauth_server" {
   client_id     = var.backend_b2b_app_id
 }
 
-resource "azurerm_key_vault_access_policy" "certificate_permissions" {
-  key_vault_id = module.kv_shared.id
 
-  object_id = module.apim_shared.identity.0.principal_id
-  tenant_id = module.apim_shared.identity.0.tenant_id
+resource "azurerm_role_assignment" "apim_kv_secret_user" {
+  scope                = module.kv_shared.id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = module.apim_shared.identity.0.principal_id
+}
 
-  certificate_permissions = [
-    "Get",
-    "List",
-    "Import"
-  ]
-
-  secret_permissions = [
-    "Get"
-  ]
+resource "azurerm_role_assignment" "apim_kv_certificate_officer" {
+  scope                = module.kv_shared.id
+  role_definition_name = "Key Vault Certificates Officer"
+  principal_id         = module.apim_shared.identity.0.principal_id
 }
 
 resource "azurerm_api_management_logger" "apim_logger" {
