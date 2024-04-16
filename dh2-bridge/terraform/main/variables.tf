@@ -33,7 +33,7 @@ variable "developer_ad_group_name" {
 variable "omada_developers_security_group_name" {
   type        = string
   description = "(Optional) Name of the Omada controlled security group containing developers to have access to the SQL database."
-  default     = null
+  default     = ""
 }
 
 variable "sendgrid_api_key" {
@@ -54,13 +54,13 @@ variable "sendgrid_from_email" {
 variable "pim_sql_reader_ad_group_name" {
   type        = string
   description = "Name of the AD group with db_datareader permissions on the SQL database."
-  default     = null
+  default     = ""
 }
 
 variable "pim_sql_writer_ad_group_name" {
   type        = string
   description = "Name of the AD group with db_datawriter permissions on the SQL database."
-  default     = null
+  default     = ""
 }
 
 variable "ip_restrictions" {
