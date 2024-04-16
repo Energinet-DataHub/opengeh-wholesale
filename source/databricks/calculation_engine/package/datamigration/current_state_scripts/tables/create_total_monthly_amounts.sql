@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.total_monthly_amounts
     calculation_result_id STRING NOT NULL,
 
     grid_area STRING NOT NULL,
-    energy_supplier_id STRING,
+    energy_supplier_id STRING NOT NULL,
     time TIMESTAMP NOT NULL,
     amount DECIMAL(18, 6),
     charge_owner_id STRING
@@ -42,7 +42,7 @@ GO
 
 -- Length is 16 when EIC and 13 when GLN
 ALTER TABLE {OUTPUT_DATABASE_NAME}.total_monthly_amounts
-    ADD CONSTRAINT energy_supplier_id_chk CHECK (energy_supplier_id IS NULL OR LENGTH(energy_supplier_id) = 13 OR LENGTH(energy_supplier_id) = 16)
+    ADD CONSTRAINT energy_supplier_id_chk CHECK (LENGTH(energy_supplier_id) = 13 OR LENGTH(energy_supplier_id) = 16)
 GO
 
 -- Length is 16 when EIC and 13 when GLN

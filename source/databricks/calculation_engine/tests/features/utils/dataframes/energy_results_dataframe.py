@@ -14,7 +14,7 @@
 from ast import literal_eval
 
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import col, udf, lit
+from pyspark.sql.functions import col, udf
 from pyspark.sql.types import (
     StringType,
     DecimalType,
@@ -26,12 +26,10 @@ from pyspark.sql.types import (
 def create_energy_result_dataframe(*args) -> DataFrame:
     spark: SparkSession = args[0]
     df: DataFrame = args[1]
-    calculator_args = args[2]  # type: ignore
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
     from package.calculation.output.schemas import energy_results_schema
-    from package.codelists import CalculationType
     from package.constants import EnergyResultColumnNames
 
     df = df.withColumn(
@@ -50,18 +48,10 @@ def create_energy_result_dataframe(*args) -> DataFrame:
     )
 
     df = df.withColumn(
-        EnergyResultColumnNames.calculation_type,
-        lit(CalculationType(calculator_args.calculation_type).value),
-    )
-
-    df = df.withColumn(
         EnergyResultColumnNames.calculation_execution_time_start,
-        lit(calculator_args.calculation_execution_time_start).cast(TimestampType()),
-    )
-
-    df = df.withColumn(
-        EnergyResultColumnNames.calculation_result_id,
-        lit(""),
+        col(EnergyResultColumnNames.calculation_execution_time_start).cast(
+            TimestampType()
+        ),
     )
 
     return spark.createDataFrame(df.rdd, energy_results_schema)

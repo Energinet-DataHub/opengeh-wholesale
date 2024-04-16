@@ -12,12 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, lit, first
-from pyspark.sql.window import Window
 
 from package.calculation.calculator_args import CalculatorArgs
+from package.calculation.output.add_meta_data import add_metadata
 from package.calculation.wholesale.data_structures.wholesale_results import (
     WholesaleResults,
 )
@@ -30,34 +29,13 @@ from package.constants import Colname, WholesaleResultColumnNames
 def create(
     args: CalculatorArgs, wholesale_results: WholesaleResults, amount_type: AmountType
 ) -> DataFrame:
-    wholesale_results = _add_metadata(args, wholesale_results.df)
-    wholesale_results = _add_calculation_result_id(wholesale_results)
+    wholesale_results = add_metadata(
+        args, _get_column_group_for_calculation_result_id(), wholesale_results.df
+    )
     wholesale_results = _add_amount_type(wholesale_results, amount_type)
     wholesale_results = _select_output_columns(wholesale_results)
 
     return wholesale_results
-
-
-def _add_metadata(args: CalculatorArgs, df: DataFrame) -> DataFrame:
-    return (
-        df.withColumn(Colname.calculation_id, lit(args.calculation_id))
-        .withColumn(Colname.calculation_type, lit(args.calculation_type.value))
-        .withColumn(
-            Colname.calculation_execution_time_start,
-            lit(args.calculation_execution_time_start),
-        )
-    )
-
-
-def _add_calculation_result_id(df: DataFrame) -> DataFrame:
-    df = df.withColumn(
-        WholesaleResultColumnNames.calculation_result_id, f.expr("uuid()")
-    )
-    window = Window.partitionBy(_get_column_group_for_calculation_result_id())
-    return df.withColumn(
-        WholesaleResultColumnNames.calculation_result_id,
-        first(col(WholesaleResultColumnNames.calculation_result_id)).over(window),
-    )
 
 
 def _add_amount_type(df: DataFrame, amount_type: AmountType) -> DataFrame:
