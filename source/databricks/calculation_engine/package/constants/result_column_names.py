@@ -22,5 +22,3 @@ class ResultColumnNames:
     grid_area = "grid_area"
     energy_supplier_id = "energy_supplier_id"
     time = "time"
-    quantity = "quantity"
-    quantity_qualities = "quantity_qualities"
