@@ -18,7 +18,7 @@ import pytest
 
 from features.utils.expected_output import ExpectedOutput
 from features.utils.scenario_output_files import get_output_names
-from features.utils.views.assertion import assert_output2
+from features.utils.views.assertion import assert_view_output
 
 
 # IMPORTANT:
@@ -31,4 +31,4 @@ def test__equals_expected(
     actual_and_expected_views: Tuple[list[ExpectedOutput], list[ExpectedOutput]],
     output_name: str,
 ) -> None:
-    assert_output2(actual_and_expected_views, output_name)
+    assert_view_output(actual_and_expected_views, output_name)

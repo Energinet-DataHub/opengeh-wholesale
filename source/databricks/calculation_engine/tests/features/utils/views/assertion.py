@@ -18,7 +18,7 @@ from features.utils.expected_output import ExpectedOutput
 from helpers.data_frame_utils import assert_dataframe_and_schema
 
 
-def assert_output2(
+def assert_view_output(
     actual_and_expected: tuple[list[ExpectedOutput], list[ExpectedOutput]],
     output_name: str,
 ) -> None:

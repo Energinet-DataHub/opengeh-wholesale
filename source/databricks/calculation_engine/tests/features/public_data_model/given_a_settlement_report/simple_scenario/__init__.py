@@ -11,23 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from features.public_data_model.given_a_settlement_report.common import (
-    metering_point_period_schema,
-    metering_point_time_series_schema,
-)
-
-
-def get_output_specifications() -> dict[str, tuple]:
-    """
-    Contains the specifications for scenario outputs.
-    """
-    return {
-        "metering_point_periods.csv": (
-            metering_point_period_schema,
-            "read_metering_point_periods",
-        ),
-        "metering_point_time_series.csv": (
-            metering_point_time_series_schema,
-            "read_metering_point_time_series",
-        ),
-    }

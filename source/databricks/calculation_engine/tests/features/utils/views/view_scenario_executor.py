@@ -20,8 +20,8 @@ from features.utils.expected_output import ExpectedOutput
 from features.utils.views.csv_to_dataframe_parser import CsvToDataframeParser
 from features.utils.views.view_input_specifications import get_input_specifications
 from features.utils.views.view_output_specifications import get_output_specifications
+from features.utils.views.view_reader import ViewReader
 from package.infrastructure.paths import BASIS_DATA_DATABASE_NAME
-from views.view_reader import ViewReader
 
 
 class ViewScenarioExecutor:

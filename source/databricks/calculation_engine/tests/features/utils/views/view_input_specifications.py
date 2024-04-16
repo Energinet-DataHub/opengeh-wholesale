@@ -19,7 +19,7 @@ from package.calculation.basis_data.schemas import (
 
 def get_input_specifications() -> dict[str, tuple]:
     """
-    Contains the specifications for scenario inputs.
+    Contains the specifications for view scenario inputs.
     """
     return {
         "metering_point_periods.csv": (metering_point_period_schema, None),

@@ -58,7 +58,7 @@ def create_metering_point_time_series_view(df, spark):
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
     from package.constants import TimeSeriesColname
-    from features.utils.views.schemas.metering_point_time_series_schema import (
+    from features.public_data_model.given_a_settlement_report.common.metering_point_time_series_schema import (
         metering_point_time_series_schema,
     )
 
