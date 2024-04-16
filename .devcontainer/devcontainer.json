@@ -4,37 +4,41 @@
 		"dockerfile": "../.docker/Dockerfile",
 		"args": {}
 	},
-	"extensions": [
-		"mypy",
-		"flake8",
-		"ms-dotnettools.dotnet-interactive-vscode",
-		"ms-python.python",
-		"ms-python.black-formatter",
-		"littlefoxteam.vscode-python-test-adapter",
-		"hbenl.vscode-test-explorer",
-		"eamodio.gitlens",
-		"ms-python.vscode-pylance",
-		"HashiCorp.terraform",
-		"christian-kohler.path-intellisense",
-		"Gruntfuggly.todo-tree",
-		"DavidAnson.vscode-markdownlint",
-		"kevinglasson.cornflakes-linter",
-		"KevinRose.vsc-python-indent",
-		"sonarsource.sonarlint-vscode"
-	],
-	// Set *default* container specific settings.json values on container create.
-	"settings": {
-		"terminal.integrated.shell.linux": "/bin/bash",
-		"editor.formatOnSave": false,
-		"[python]": {
-			"editor.formatOnSave": true
-		},
-		"python.formatting.provider": "black",
-		"python.defaultInterpreterPath": "/opt/conda/bin/python",
-		"python.languageServer": "Pylance",
-		"markdownlint.config": {
-			"MD007": {
-				"indent": 4
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"matangover.mypy",
+				"ms-python.flake8",
+				"ms-dotnettools.dotnet-interactive-vscode",
+				"ms-python.python",
+				"ms-python.black-formatter",
+				"littlefoxteam.vscode-python-test-adapter",
+				"hbenl.vscode-test-explorer",
+				"eamodio.gitlens",
+				"ms-python.vscode-pylance",
+				"HashiCorp.terraform",
+				"christian-kohler.path-intellisense",
+				"Gruntfuggly.todo-tree",
+				"DavidAnson.vscode-markdownlint",
+				"kevinglasson.cornflakes-linter",
+				"KevinRose.vsc-python-indent",
+				"sonarsource.sonarlint-vscode"
+			],
+			// Set *default* container specific settings.json values on container create.
+			"settings": {
+				"terminal.integrated.shell.linux": "/bin/bash",
+				"editor.formatOnSave": false,
+				"[python]": {
+					"editor.formatOnSave": true
+				},
+				"python.formatting.provider": "black",
+				"python.defaultInterpreterPath": "/opt/conda/bin/python",
+				"python.languageServer": "Pylance",
+				"markdownlint.config": {
+					"MD007": {
+						"indent": 4
+					}
+				}
 			}
 		}
 	},
@@ -47,6 +51,5 @@
 	"appPort": [
 		"5567:5050"
 	],
-	"overrideCommand": false,
 	"containerUser": "root"
 }
