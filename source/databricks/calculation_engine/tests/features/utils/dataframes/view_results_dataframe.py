@@ -34,12 +34,14 @@ def create_view_result_dataframe(
     raise Exception(f"Unknown expected view file {filename}.")
 
 
-def create_metering_point_periods_view(df, spark):
+def create_metering_point_periods_view(df: DataFrame, spark: SparkSession) -> DataFrame:
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
     from package.constants import MeteringPointPeriodColname
-    from features.utils.views.schemas import metering_point_period_schema
+    from features.public_data_model.given_a_settlement_report.common import (
+        metering_point_period_schema,
+    )
 
     df = df.withColumn(
         MeteringPointPeriodColname.from_date,
@@ -53,7 +55,9 @@ def create_metering_point_periods_view(df, spark):
     return spark.createDataFrame(df.rdd, metering_point_period_schema)
 
 
-def create_metering_point_time_series_view(df, spark):
+def create_metering_point_time_series_view(
+    df: DataFrame, spark: SparkSession
+) -> DataFrame:
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.

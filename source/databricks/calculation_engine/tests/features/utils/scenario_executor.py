@@ -22,10 +22,11 @@ from pyspark.sql import SparkSession, DataFrame
 from package.calculation.calculation_results import CalculationResultsContainer
 from package.calculation.calculator_args import CalculatorArgs
 from .calculation_args import create_calculation_args
-from .dataframes.energy_results_dataframe import (
+from .dataframes import (
     create_energy_result_dataframe,
+    create_wholesale_result_dataframe,
+    create_basis_data_result_dataframe,
 )
-from .dataframes.wholesale_results_dataframe import create_wholesale_result_dataframe
 from .expected_output import ExpectedOutput
 from .input_specifications import get_data_input_specifications
 

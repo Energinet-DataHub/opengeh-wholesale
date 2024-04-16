@@ -16,8 +16,8 @@ from typing import Tuple
 
 from pyspark.sql import SparkSession
 
+from features.utils.csv_to_dataframe_parser import CsvToDataframeParser
 from features.utils.expected_output import ExpectedOutput
-from features.utils.views.csv_to_dataframe_parser import CsvToDataframeParser
 from features.utils.views.view_input_specifications import get_input_specifications
 from features.utils.views.view_output_specifications import get_output_specifications
 from features.utils.views.view_reader import ViewReader
@@ -63,13 +63,13 @@ class ViewScenarioExecutor:
         self, output_specifications: dict[str, tuple]
     ) -> list[ExpectedOutput]:
 
-        containers = []
+        outputs = []
         for key in output_specifications:
             value = output_specifications[key]
             read_method = getattr(self.view_reader, value[1])
             df = read_method()
             name, extension = os.path.splitext(key)
             container = ExpectedOutput(name=name, df=df)
-            containers.append(container)
+            outputs.append(container)
 
-        return containers
+        return outputs
