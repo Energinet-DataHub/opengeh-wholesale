@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from pyspark.sql import functions as f, DataFrame, SparkSession
-from pyspark.sql.functions import lit, col
+from pyspark.sql.functions import col
 from pyspark.sql.types import (
     StringType,
     TimestampType,
@@ -25,7 +25,6 @@ from pyspark.sql.types import (
 def create_wholesale_result_dataframe(*args) -> DataFrame:
     spark: SparkSession = args[0]
     df: DataFrame = args[1]
-    calculator_args = args[2]  # type: ignore
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
@@ -34,10 +33,10 @@ def create_wholesale_result_dataframe(*args) -> DataFrame:
 
     df = df.withColumn(
         WholesaleResultColumnNames.calculation_execution_time_start,
-        lit(calculator_args.calculation_execution_time_start).cast(TimestampType()),
+        col(WholesaleResultColumnNames.calculation_execution_time_start).cast(
+            TimestampType()
+        ),
     )
-
-    df = df.withColumn(WholesaleResultColumnNames.calculation_result_id, lit(""))
 
     df = df.withColumn(
         WholesaleResultColumnNames.quantity,

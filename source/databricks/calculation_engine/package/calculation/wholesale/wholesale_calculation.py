@@ -11,8 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import Tuple
 
 import package.calculation.output.wholesale_storage_model_factory as factory
+import package.calculation.output.total_monthly_amounts_storage_model_factory as total_monthly_amounts_factory
+
 import package.calculation.wholesale.fee_calculators as fee_calculator
 import package.calculation.wholesale.subscription_calculators as subscription_calculator
 import package.calculation.wholesale.tariff_calculators as tariff_calculator
@@ -21,7 +24,10 @@ import package.calculation.preparation.data_structures as d
 from .data_structures import MonthlyAmountPerCharge
 from .sum_within_month import sum_within_month
 
-from ..calculation_results import WholesaleResultsContainer
+from ..calculation_results import (
+    WholesaleResultsContainer,
+    TotalMonthlyAmountsContainer,
+)
 from ..calculator_args import CalculatorArgs
 from ...codelists import AmountType
 from ...infrastructure import logging_configuration
@@ -31,7 +37,7 @@ from ...infrastructure import logging_configuration
 def execute(
     args: CalculatorArgs,
     prepared_charges: d.PreparedChargesContainer,
-) -> WholesaleResultsContainer:
+) -> Tuple[WholesaleResultsContainer, TotalMonthlyAmountsContainer]:
     results = WholesaleResultsContainer()
 
     monthly_fees = _calculate_fees(
@@ -58,14 +64,15 @@ def execute(
         results,
     )
 
-    _calculate_total_monthly_amount(
+    total_monthly_amounts = _calculate_total_monthly_amount(
+        args,
         monthly_fees,
         monthly_subscriptions,
         monthly_hourly_tariffs,
         monthly_daily_tariffs,
     )
 
-    return results
+    return results, total_monthly_amounts
 
 
 @logging_configuration.use_span("calculate_fees")
@@ -184,17 +191,26 @@ def _calculate_daily_tariffs(
 
 @logging_configuration.use_span("calculate_total_monthly_amount")
 def _calculate_total_monthly_amount(
+    args: CalculatorArgs,
     monthly_fees: MonthlyAmountPerCharge,
     monthly_subscriptions: MonthlyAmountPerCharge,
     monthly_hourly_tariffs: MonthlyAmountPerCharge,
     monthly_daily_tariffs: MonthlyAmountPerCharge,
-) -> None:
+) -> TotalMonthlyAmountsContainer:
+    total_monthly_amounts = TotalMonthlyAmountsContainer()
+
     all_monthly_amounts = (
         monthly_fees.union(monthly_subscriptions)
         .union(monthly_hourly_tariffs)
         .union(monthly_daily_tariffs)
     )
 
-    total_amount_calculator.calculate_per_charge_owner(
+    total_monthly_amount_per_co = total_amount_calculator.calculate_per_ga_co_es(
         all_monthly_amounts,
     )
+
+    total_monthly_amounts.total_monthly_amounts_per_ga_co_es = (
+        total_monthly_amounts_factory.create(args, total_monthly_amount_per_co)
+    )
+
+    return total_monthly_amounts

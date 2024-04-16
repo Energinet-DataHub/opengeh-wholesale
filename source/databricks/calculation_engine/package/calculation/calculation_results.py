@@ -53,6 +53,10 @@ class WholesaleResultsContainer:
     monthly_fee_per_ga_co_es: DataFrame | None = None
 
 
+class TotalMonthlyAmountsContainer:
+    total_monthly_amounts_per_ga_co_es: DataFrame | None = None
+
+
 @dataclass
 class BasisDataContainer:
     metering_point_periods: DataFrame
@@ -68,4 +72,5 @@ class CalculationResultsContainer:
 
     energy_results: EnergyResultsContainer = cast(EnergyResultsContainer, None)
     wholesale_results: WholesaleResultsContainer | None = None
+    total_monthly_amounts: TotalMonthlyAmountsContainer | None = None
     basis_data: BasisDataContainer = cast(BasisDataContainer, None)

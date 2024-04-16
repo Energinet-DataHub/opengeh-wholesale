@@ -12,19 +12,4 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3;
-
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States;
-
-public class BackgroundServiceTelemetryScenarioState
-{
-    public CalculationRequestDto CalculationInput { get; set; }
-        = new();
-
-    public Guid CalculationId { get; set; }
-
-    public CalculationDto? Calculation { get; set; }
-
-    public IList<TelemetryEventMatch> ExpectedTelemetryEvents { get; }
-        = new List<TelemetryEventMatch>();
-}
+global using Xunit;
