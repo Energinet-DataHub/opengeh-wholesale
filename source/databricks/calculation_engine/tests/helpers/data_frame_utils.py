@@ -71,8 +71,6 @@ def assert_dataframe_and_schema(
         raise
 
     try:
-        actual.show()
-        expected.show()
         assert_dataframes_equal(actual, expected)
     except AssertionError:
         print("DATA MISMATCH:")
