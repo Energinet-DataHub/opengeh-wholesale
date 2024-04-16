@@ -1,0 +1,105 @@
+name: Integration test Terraform CI
+
+permissions:
+  id-token: write
+  contents: read
+
+on:
+  workflow_call: {}
+
+jobs:
+  terraform_test:
+    runs-on: ubuntu-latest
+    environment: test_002
+    env:
+      ARM_SUBSCRIPTION_ID: ${{ vars.azure_subscription_id }}
+      ARM_TENANT_ID: ${{ vars.azure_tenant_id }}
+      ARM_CLIENT_ID: ${{ vars.azure_spn_id }}
+      TF_VAR_environment_short: test
+      TF_VAR_environment_instance: "002"
+      TF_VAR_subscription_id: ${{ vars.azure_subscription_id }}
+      TF_VAR_location: West Europe
+      TF_VAR_github_personal_access_token: ${{ secrets.GITHUB_TOKEN }}
+      TF_VAR_arm_client_id: ${{ vars.azure_spn_id }}
+      TF_VAR_kv_secrets: >
+        [{
+          "name": "test-secret",
+          "value": "test-value"
+        }]
+      TF_VAR_b2c_kv_secrets: >
+        [{
+          "name": "test-secret",
+          "value": "test-value"
+        }]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+          terraform_version: 1.3.6
+
+      - name: Set Terraform env Variables
+        shell: bash
+        run: |
+          # Runner ID
+          runner_ip=$(curl -s https://api.ipify.org)
+          echo "TF_VAR_runner_ip=$(echo $runner_ip)" >> $GITHUB_ENV
+
+          # Unique project name
+          GITHUB_RUN_ID=$(uuidgen)
+          GITHUB_RUN_ID="${GITHUB_RUN_ID: -5}"
+
+          echo "TF_VAR_project_name=int$GITHUB_RUN_ID" >> $GITHUB_ENV
+          echo "TF_VAR_domain_name_short=int$GITHUB_RUN_ID" >> $GITHUB_ENV
+
+      - name: Az CLI login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ vars.azure_spn_id }}
+          tenant-id: ${{ vars.azure_tenant_id }}
+          subscription-id: ${{ vars.azure_subscription_id }}
+
+      - name: Create temp folder
+        shell: bash
+        run: |
+          # Moving the resource-group_override to add tags to the resource group
+          cp -r integration-test/terraform/main/smoketest/* integration-test/terraform/main/
+
+          # We don't want to use the backend.tf file in the smoketest folder since we dont need remote state
+          rm -rf integration-test/terraform/main/backend.tf
+
+      - name: Terraform Init
+        shell: bash
+        working-directory: integration-test/terraform/main
+        run: terraform init
+
+      - name: Terraform Plan
+        shell: bash
+        working-directory: integration-test/terraform/main
+        run: terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        shell: bash
+        working-directory: integration-test/terraform/main
+        run: terraform apply tfplan
+
+      - name: Terraform Cleanup AZ CLI
+        if: always()
+        shell: bash
+        run: |
+          # Refresh OIDC token
+          token_response=$(curl -s -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=api://AzureADTokenExchange")
+          token=$(echo $token_response | jq -r .value)
+          az login --service-principal -u $ARM_CLIENT_ID -t $ARM_TENANT_ID --federated-token $token
+
+          # Define resource groups
+          resource_group_name=rg-${TF_VAR_domain_name_short}-${TF_VAR_environment_short}-we-${TF_VAR_environment_instance}
+
+          GROUP_EXISTS=$(az group exists --name $resource_group_name)
+          if [ "$GROUP_EXISTS" = "true" ]; then
+              az group delete --name $resource_group_name --yes --no-wait
+          else
+              echo "Resource group $resource_group_name does not exist. Skipping deletion."
+          fi

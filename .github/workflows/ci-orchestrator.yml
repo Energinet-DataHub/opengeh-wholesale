@@ -116,6 +116,12 @@ jobs:
       infrastructure_path: ./integration-test/terraform
     secrets: inherit
 
+  integration_test_terraform_ci:
+    needs: changes
+    if: ${{ needs.changes.outputs.integration_test_ci == 'true' }}
+    uses: ./.github/workflows/integration-test-terraform-ci.yml
+    secrets: inherit
+
   health_checks_ui_ci:
     needs: changes
     if: ${{ needs.changes.outputs.health_checks_ui_ci == 'true' }}
@@ -192,6 +198,7 @@ jobs:
         render_c4model_deployment,
         render_c4model_ownership_views,
         esett_deprecated_ci,
+        integration_test_terraform_ci,
       ]
     if: |
       always()
