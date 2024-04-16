@@ -31,6 +31,12 @@ variable "domain_name_short" {
 
 variable "developers_security_group_object_id" {
   type        = string
+  description = "(Optional) The Object ID of the Omada controlled security group containing DataHub developers."
+  default     = null
+}
+
+variable "omada_developers_security_group_object_id" {
+  type        = string
   description = "(Optional) The Object ID of the Azure AD security group containing DataHub developers."
   default     = null
 }
@@ -45,12 +51,6 @@ variable "feature_flag_datahub2_healthcheck" {
   type        = bool
   description = "(Optional) Enables datahub2 healthcheck endpoint"
   default     = false
-}
-
-variable "datalake_readeraccess_group_name" {
-  type        = string
-  description = "(Required) The name of an AD group that should have Storage Blob Data Reader access to the Datalake storage account"
-  default     = ""
 }
 
 variable "cert_pwd_migration_dh2_authentication_key1" {

@@ -39,11 +39,6 @@ variable "b2c_tenant_name" {
   description = "The name of the B2C tenant, e.g. dev002DataHubB2C."
 }
 
-variable "azure_ad_security_group_id" {
-  type        = string
-  description = "The Id of the Azure Security group used for employees"
-}
-
 variable "enable_health_check_alerts" {
   type        = bool
   description = "Specify if health check alerts for Azure Functions and App Services should be enabled. Defaults to `true`"

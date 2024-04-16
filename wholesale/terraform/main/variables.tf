@@ -35,15 +35,15 @@ variable "developer_ad_group_name" {
   default     = ""
 }
 
+variable "omada_developers_security_group_name" {
+  type        = string
+  description = "(Optional) Name of the Omada controlled security group containing developers to have access to the SQL database."
+  default     = null
+}
+
 variable "tenant_id" {
   type        = string
   description = "Azure Tenant that the infrastructure is deployed into."
-}
-
-variable "developers_security_group_object_id" {
-  type        = string
-  description = "(Optional) The Object ID of the Azure AD security group containing DataHub developers."
-  default     = null
 }
 
 variable "databricks_vnet_address_space" {

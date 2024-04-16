@@ -29,10 +29,10 @@ variable "shared_resources_resource_group_name" {
 }
 
 variable "ip_restrictions" {
-  type        = list(object({
-    ip_address  = string
-    name        = string
-    priority    = optional(number)
+  type = list(object({
+    ip_address = string
+    name       = string
+    priority   = optional(number)
   }))
   description = "A list of IP restrictions defining allowed access to domain services. Each entry should include an 'ip_address' representing the allowed IP, a 'name' for identification, and an optional 'priority' for rule order. Defaults to `[]`."
   default     = []
@@ -54,6 +54,12 @@ variable "developer_ad_group_name" {
   type        = string
   description = "(Optional) Name of the AD group containing developers to have read access to SQL database."
   default     = ""
+}
+
+variable "omada_developers_security_group_name" {
+  type        = string
+  description = "(Optional) Name of the Omada controlled security group containing developers to have access to the SQL database."
+  default     = null
 }
 
 variable "frontend_url" {

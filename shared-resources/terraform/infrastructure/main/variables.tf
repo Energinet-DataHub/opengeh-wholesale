@@ -163,19 +163,31 @@ variable "ag_primary_email_address" {
 
 variable "developers_security_group_object_id" {
   type        = string
-  description = "(Optional) The Object ID of the Azure AD security group containing DataHub developers."
+  description = "The Object ID of the Azure AD security group containing DataHub developers."
   default     = null
 }
 
 variable "platform_team_security_group_object_id" {
   type        = string
-  description = "(Optional) The Object ID of the Azure AD security group containing Outlaws developers."
+  description = "The Object ID of the Azure AD security group containing Outlaws developers."
+  default     = null
+}
+
+variable "omada_developers_security_group_object_id" {
+  type        = string
+  description = "The Object ID of the Azure AD security group containing DataHub developers registered in Omada."
+  default     = null
+}
+
+variable "omada_platform_team_security_group_object_id" {
+  type        = string
+  description = "The Object ID of the Azure AD security group containing Outlaws developers registered in Omada."
   default     = null
 }
 
 variable "ad_group_directory_reader" {
   type        = string
-  description = "(Optional) Name of a Active Directory group with the Directory Reader permission."
+  description = "Name of a Active Directory group with the Directory Reader permission."
   default     = ""
 }
 

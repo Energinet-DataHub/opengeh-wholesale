@@ -1,3 +1,3 @@
 module "mssqldb" {
-  developer_ad_group_name = var.developer_ad_group_name
+  security_groups = local.developer_security_group_rules_002
 }

@@ -18,17 +18,11 @@ variable "domain_name_short" {
   description = "Shortest possible edition of the domain name."
 }
 
-variable "developer_ad_group_name" {
-  type        = string
-  description = "(Optional) Name of the AD group containing developers to have read access to SQL database."
-  default     = null
-}
-
 variable "ip_restrictions" {
-  type        = list(object({
-    ip_address  = string
-    name        = string
-    priority    = optional(number)
+  type = list(object({
+    ip_address = string
+    name       = string
+    priority   = optional(number)
   }))
   description = "A list of IP restrictions defining allowed access to domain services. Each entry should include an 'ip_address' representing the allowed IP, a 'name' for identification, and an optional 'priority' for rule order. Defaults to `[]`."
   default     = []

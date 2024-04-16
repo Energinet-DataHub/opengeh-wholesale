@@ -1,7 +1,6 @@
 module "dbw" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-workspace?ref=13.62.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-workspace?ref=14.0.3"
 
-  name                                     = "dbw"
   project_name                             = var.domain_name_short
   environment_short                        = var.environment_short
   environment_instance                     = var.environment_instance
@@ -15,7 +14,7 @@ module "dbw" {
   private_subnet_address_prefix            = var.databricks_private_subnet_address_prefix
   public_subnet_address_prefix             = var.databricks_public_subnet_address_prefix
   private_endpoints_subnet_address_prefix  = var.databricks_private_endpoints_subnet_address_prefix
-  user_access_security_group_object_id     = var.developers_security_group_object_id
+
   public_network_service_endpoints = [
     "Microsoft.EventHub"
   ]

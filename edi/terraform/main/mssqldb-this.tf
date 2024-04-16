@@ -4,7 +4,7 @@ data "azurerm_mssql_server" "mssqlsrv" {
 }
 
 module "mssqldb_edi" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=v13"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=v14"
 
   name                 = "edi"
   location             = azurerm_resource_group.this.location
@@ -22,9 +22,6 @@ module "mssqldb_edi" {
 
   monitor_alerts_action_group_id     = data.azurerm_key_vault_secret.primary_action_group_id.value
   monitor_alerts_resource_group_name = azurerm_resource_group.this.name
-
-  pim_reader_ad_group_name = var.pim_sql_reader_ad_group_name
-  pim_writer_ad_group_name = var.pim_sql_writer_ad_group_name
 }
 
 module "kvs_sql_ms_edi_database_name" {
@@ -33,4 +30,34 @@ module "kvs_sql_ms_edi_database_name" {
   name         = "mssql-edi-database-name"
   value        = module.mssqldb_edi.name
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+locals {
+  pim_security_group_rules_001 = [
+    {
+      name = var.pim_sql_reader_ad_group_name
+    },
+    {
+      name                 = var.pim_sql_writer_ad_group_name
+      enable_db_datawriter = true
+    }
+  ]
+  developer_security_group_rules_001_dev_test = [
+    {
+      name = var.developer_ad_group_name
+    },
+    {
+      name = var.omada_developers_security_group_name
+    }
+  ]
+  developer_security_group_rules_002 = [
+    {
+      name                 = var.developer_ad_group_name
+      enable_db_datawriter = true
+    },
+    {
+      name                 = var.omada_developers_security_group_name
+      enable_db_datawriter = true
+    }
+  ]
 }

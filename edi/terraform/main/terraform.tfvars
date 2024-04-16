@@ -7,4 +7,3 @@ ip_restrictions=[{
   ip_address = "20.120.143.248/29"
   name = "github_largerunner"
 }]
-developer_ad_group_name="SEC-A-GreenForce-DevelopmentTeamAzure"
