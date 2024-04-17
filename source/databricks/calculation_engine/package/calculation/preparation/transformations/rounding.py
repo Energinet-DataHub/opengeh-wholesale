@@ -18,7 +18,7 @@ import pyspark.sql.functions as f
 from package.constants import Colname
 
 
-def round_quantity_with_resolution_adjustment(df: DataFrame) -> DataFrame:
+def round_quantity(df: DataFrame) -> DataFrame:
     """
     The function rounds the quantity to 3 decimal places.
     All Quantities that comes in from time series has a scale of 3.
