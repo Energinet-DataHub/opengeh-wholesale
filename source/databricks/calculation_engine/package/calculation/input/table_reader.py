@@ -67,6 +67,10 @@ class TableReader:
 
         df = self._spark.read.format("delta").load(path)
 
+        # Data migration have added this extra column. But for now we prefer to ignore it rather than
+        # update the expected schema and use it.
+        df = df.drop("partition_date_col")
+
         assert_schema(df.schema, time_series_point_schema)
 
         return df
