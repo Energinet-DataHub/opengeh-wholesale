@@ -32,7 +32,7 @@ set -e
 shopt -s extglob
 
 cd source/databricks/calculation_engine/tests/
-coverage run --branch -m pytest --junitxml=pytest-results.xml $1
+coverage run --branch -m pytest -v --junitxml=pytest-results.xml $1
 
 # Create data for threshold evaluation
 coverage json
