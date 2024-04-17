@@ -8,13 +8,6 @@ resource "azurerm_api_management_product" "apim_product_datahub" {
   published             = true
 }
 
-# Built-in 'Guests' group
-data "azurerm_api_management_group" "guests" {
-  name                = "Guests"
-  api_management_name = data.azurerm_key_vault_secret.apim_instance_name.value
-  resource_group_name = data.azurerm_key_vault_secret.apim_instance_resource_group_name.value
-}
-
 ### <Datahub product> ###
 resource "azurerm_api_management_product_api" "apim_product_datahub_edi_api" {
   api_management_name = data.azurerm_key_vault_secret.apim_instance_name.value
@@ -38,13 +31,6 @@ resource "azurerm_api_management_product_group" "apim_product_datahub_group" {
   group_name          = azurerm_api_management_group.apim_group_datahub.name
 }
 
-# Add access for 'Guests'
-resource "azurerm_api_management_product_group" "apim_product_datahub_group_guests" {
-  api_management_name = data.azurerm_key_vault_secret.apim_instance_name.value
-  resource_group_name = data.azurerm_key_vault_secret.apim_instance_resource_group_name.value
-  product_id          = azurerm_api_management_product.apim_product_datahub.product_id
-  group_name          = lower(data.azurerm_api_management_group.guests.name)  # See https://github.com/hashicorp/terraform-provider-azurerm/issues/17619#issuecomment-1403127161
-}
 ### </ Datahub product> ###
 
 
@@ -79,14 +65,6 @@ resource "azurerm_api_management_product_group" "apim_product_datahub_group_ebix
   resource_group_name = data.azurerm_key_vault_secret.apim_instance_resource_group_name.value
   product_id          = azurerm_api_management_product.apim_product_datahub_ebix.product_id
   group_name          = azurerm_api_management_group.apim_group_datahub_ebix.name
-}
-
-# Add access for 'Guests'
-resource "azurerm_api_management_product_group" "apim_product_datahub_group_ebix_guests" {
-  api_management_name = data.azurerm_key_vault_secret.apim_instance_name.value
-  resource_group_name = data.azurerm_key_vault_secret.apim_instance_resource_group_name.value
-  product_id          = azurerm_api_management_product.apim_product_datahub_ebix.product_id
-  group_name          = lower(data.azurerm_api_management_group.guests.name) # See https://github.com/hashicorp/terraform-provider-azurerm/issues/17619#issuecomment-1403127161
 }
 
 ### </ Datahub EBIX product> ###
