@@ -20,11 +20,15 @@ from typing import List
 import pytest
 from pyspark.sql import SparkSession, DataFrame
 
+from contract_utils import assert_contract_matches_schema
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.output import (
     total_monthly_amounts_storage_model_factory as sut,
 )
 from package.calculation.wholesale.data_structures import TotalMonthlyAmount
+from package.calculation.wholesale.data_structures.total_monthly_amount import (
+    total_monthly_amount_schema,
+)
 from package.codelists import (
     CalculationType,
 )
@@ -78,8 +82,13 @@ def _create_result_row(
     return row
 
 
-def _create_result_df(spark: SparkSession, row: List[dict]) -> DataFrame:
-    return spark.createDataFrame(data=row)
+def _create_default_total_monthly_amounts(
+    spark: SparkSession,
+) -> TotalMonthlyAmount:
+    row = [_create_result_row()]
+    return TotalMonthlyAmount(
+        spark.createDataFrame(data=row, schema=total_monthly_amount_schema)
+    )
 
 
 def _create_multiple_total_monthly_amounts(
@@ -93,6 +102,23 @@ def _create_multiple_total_monthly_amounts(
     ]
 
     return TotalMonthlyAmount(spark.createDataFrame(data=rows))
+
+
+def test__create__columns_matching_contract(
+    spark: SparkSession,
+    contracts_path: str,
+    migrations_executed: None,
+    args: CalculatorArgs,
+) -> None:
+    # Arrange
+    contract_path = f"{contracts_path}/total-monthly-amounts-table-column-names.json"
+    total_monthly_amounts = _create_default_total_monthly_amounts(spark)
+
+    # Act
+    actual = sut.create(args, total_monthly_amounts)
+
+    # Assert
+    assert_contract_matches_schema(contract_path, actual.schema)
 
 
 @pytest.mark.parametrize(
@@ -124,7 +150,9 @@ def test__create__returns_dataframe_with_column(
 
     # Arrange
     row = [_create_result_row()]
-    total_monthly_amounts = TotalMonthlyAmount(_create_result_df(spark, row))
+    total_monthly_amounts = TotalMonthlyAmount(
+        _create_default_total_monthly_amounts(spark, row)
+    )
 
     # Act
     actual_df = sut.create(args, total_monthly_amounts)
