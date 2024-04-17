@@ -54,6 +54,7 @@ class ViewScenarioExecutor:
         expected = self.correct_dataframe_types(
             output_dataframes, output_specifications
         )
+        print(expected.count)
         actual = self._read_from_views(output_specifications)
 
         return actual, expected

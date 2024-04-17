@@ -46,21 +46,21 @@ class CsvToDataframeParser:
         return ExpectedOutput(name=name, df=df)
 
     def parse_csv_files_concurrently(
-        self, path: str, correlations: dict[str, tuple], ignore_schema: bool = False
+        self, path: str, specifications: dict[str, tuple], ignore_schema: bool = False
     ) -> list[ExpectedOutput]:
         """
         Reads csv files concurrently and converts them to dataframes.
         """
-        schemas = [t[0] for t in correlations.values()]
+        schemas = [t[0] for t in specifications.values()]
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
             dataframes = list(
                 executor.map(
                     self._read_file,
-                    [self.spark] * len(correlations.keys()),
-                    correlations.keys(),
+                    [self.spark] * len(specifications.keys()),
+                    specifications.keys(),
                     schemas,
-                    [path] * len(correlations.keys()),
+                    [path] * len(specifications.keys()),
                     [ignore_schema],
                 )
             )

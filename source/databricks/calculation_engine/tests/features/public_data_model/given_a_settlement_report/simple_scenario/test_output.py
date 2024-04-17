@@ -12,12 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Tuple
+from typing import Any
 
 import pytest
 
 from features.utils.assertion import assert_view_output
-from features.utils.expected_output import ExpectedOutput
 from features.utils.scenario_output_files import get_output_names
 
 
@@ -28,7 +27,7 @@ from features.utils.scenario_output_files import get_output_names
 @pytest.mark.parametrize("output_name", get_output_names())
 def test__equals_expected(
     migrations_executed: None,
-    actual_and_expected_views: Tuple[list[ExpectedOutput], list[ExpectedOutput]],
+    actual_and_expected_views: Any,
     output_name: str,
 ) -> None:
     assert_view_output(actual_and_expected_views, output_name)
