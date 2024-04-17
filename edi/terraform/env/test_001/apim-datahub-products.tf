@@ -43,7 +43,7 @@ resource "azurerm_api_management_product_group" "apim_product_datahub_group_gues
   api_management_name = data.azurerm_key_vault_secret.apim_instance_name.value
   resource_group_name = data.azurerm_key_vault_secret.apim_instance_resource_group_name.value
   product_id          = azurerm_api_management_product.apim_product_datahub.product_id
-  group_name          = data.azurerm_api_management_group.guests.name
+  group_name          = lower(data.azurerm_api_management_group.guests.name)  # See https://github.com/hashicorp/terraform-provider-azurerm/issues/17619#issuecomment-1403127161
 }
 ### </ Datahub product> ###
 
@@ -86,7 +86,7 @@ resource "azurerm_api_management_product_group" "apim_product_datahub_group_ebix
   api_management_name = data.azurerm_key_vault_secret.apim_instance_name.value
   resource_group_name = data.azurerm_key_vault_secret.apim_instance_resource_group_name.value
   product_id          = azurerm_api_management_product.apim_product_datahub_ebix.product_id
-  group_name          = data.azurerm_api_management_group.guests.name
+  group_name          = lower(data.azurerm_api_management_group.guests.name) # See https://github.com/hashicorp/terraform-provider-azurerm/issues/17619#issuecomment-1403127161
 }
 
 ### </ Datahub EBIX product> ###
