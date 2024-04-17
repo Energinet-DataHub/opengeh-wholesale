@@ -12,7 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Net;
+using System.Text;
+using AutoFixture;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
+using FluentAssertions;
+using FluentAssertions.Execution;
+using Newtonsoft.Json;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.Calculation;
@@ -40,5 +48,30 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         Fixture.SetTestOutputHelper(null!);
 
         return Task.CompletedTask;
+    }
+
+    [Fact]
+    public async Task FunctionApp_WhenCallingDurableFunctionEndPoint_ReturnOKAndExpectedContent()
+    {
+        // Act
+        using var actualResponse = await Fixture.AppHostManager.HttpClient.PostAsync(
+            "api/StartCalculation",
+            new StringContent(
+                JsonConvert.SerializeObject(new BatchRequestDto(
+                CalculationType.Aggregation,
+                ["256", "512" ],
+                DateTimeOffset.Now,
+                DateTimeOffset.Now.AddDays(2))),
+                Encoding.UTF8,
+                "application/json"));
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        actualResponse.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
+
+        var content = await actualResponse.Content.ReadAsStringAsync();
+        content.Should().StartWith("{\"status\":\"Healthy\"");
     }
 }
