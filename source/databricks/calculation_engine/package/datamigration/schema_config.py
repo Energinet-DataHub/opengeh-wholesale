@@ -67,11 +67,11 @@ schema_config = [
         name=paths.BASIS_DATA_DATABASE_NAME,
         tables=[
             Table(
-                name=paths.METERING_POINT_PERIODS_TABLE_NAME,
+                name=paths.METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME,
                 schema=basis_data_schemas.metering_point_period_schema,
             ),
             Table(
-                name=paths.TIME_SERIES_POINTS_TABLE_NAME,
+                name=paths.TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME,
                 schema=basis_data_schemas.time_series_point_schema,
             ),
             Table(
