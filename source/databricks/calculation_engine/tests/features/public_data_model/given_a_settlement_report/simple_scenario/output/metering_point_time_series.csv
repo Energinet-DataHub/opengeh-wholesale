@@ -1,2 +1,2 @@
 calculation_id;metering_point_id;metering_point_type;resolution;grid_area_code;energy_supplier_id;observation_day;quantities
-0b15a420-9fc8-409a-a169-fbd49479d718;571313180480500149;production;PT1H;804;8100000000108;2023-02-01 01:00:00;"'[{""observation_time"": ""2022-01-12 01:00:00"", ""quantity"": ""45.000""}]'"
+0b15a420-9fc8-409a-a169-fbd49479d718;571313180480500149;production;PT1H;804;8100000000108;2023-02-01 01:00:00;"[{""observation_time"": ""2022-01-12 01:00:00"", ""quantity"": ""45.000""}]"
