@@ -20,7 +20,7 @@ from pyspark.sql.types import (
     ArrayType,
 )
 
-from features.public_data_model.given_a_settlement_report.common.metering_point_time_series_schema import (
+from features.public_data_model.given_a_settlement_report.common.schemas.metering_point_time_series_schema import (
     element,
 )
 
@@ -54,6 +54,8 @@ def create_metering_point_time_series_view(
     # and therefore the following packages are not automatically included.
     from features.public_data_model.given_a_settlement_report.common import (
         MeteringPointTimeSeriesColname,
+    )
+    from features.public_data_model.given_a_settlement_report.common import (
         metering_point_time_series_schema,
     )
 

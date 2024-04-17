@@ -28,10 +28,12 @@ from package.infrastructure.paths import BASIS_DATA_DATABASE_NAME
 
 class ViewScenarioExecutor:
     view_reader: SettlementReportViewReader
+    parser: CsvToDataframeParser
 
     def __init__(self, spark: SparkSession):
         self.spark = spark
         self.view_reader = SettlementReportViewReader(spark)
+        self.parser = CsvToDataframeParser(spark)
 
     def execute(
         self, scenario_folder_path: str
@@ -40,14 +42,12 @@ class ViewScenarioExecutor:
         input_specifications = get_input_specifications()
         output_specifications = get_output_specifications()
 
-        parser = CsvToDataframeParser(self.spark)
-
-        input_dataframes = parser.parse_csv_files_concurrently(
+        input_dataframes = self.parser.parse_csv_files_concurrently(
             f"{scenario_folder_path}/input", input_specifications
         )
         self._write_to_tables(input_dataframes)
 
-        output_dataframes = parser.parse_csv_files_concurrently(
+        output_dataframes = self.parser.parse_csv_files_concurrently(
             f"{scenario_folder_path}/output", output_specifications, ignore_schema=True
         )
 
@@ -91,4 +91,3 @@ class ViewScenarioExecutor:
             frames.append(key)
 
         return frames
-    

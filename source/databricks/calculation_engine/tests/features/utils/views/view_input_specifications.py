@@ -11,9 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from features.utils.dataframes.input_view_dataframe import (
-    create_metering_point_period,
-    create_time_series_point,
+from features.utils.dataframes.basis_data.basis_data_results_dataframe import (
+    create_metering_point_periods,
+    create_time_series_points,
 )
 from package.calculation.basis_data.schemas import (
     time_series_point_schema,
@@ -29,11 +29,11 @@ def get_input_specifications() -> dict[str, tuple]:
         "metering_point_periods.csv": (
             metering_point_period_schema,
             "read_metering_point_periods",
-            create_metering_point_period,
+            create_metering_point_periods,
         ),
         "time_series_points.csv": (
             time_series_point_schema,
             "read_time_series_points",
-            create_time_series_point,
+            create_time_series_points,
         ),
     }

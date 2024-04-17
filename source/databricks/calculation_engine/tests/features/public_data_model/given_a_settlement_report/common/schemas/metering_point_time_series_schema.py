@@ -20,7 +20,7 @@ from pyspark.sql.types import (
     DecimalType,
 )
 
-from features.public_data_model.given_a_settlement_report.common.settlement_report_colname import (
+from features.public_data_model.given_a_settlement_report.common.column_names.settlement_report_colname import (
     MeteringPointTimeSeriesColname,
 )
 from package.constants import TimeSeriesColname, MeteringPointPeriodColname

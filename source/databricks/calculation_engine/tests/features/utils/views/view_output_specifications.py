@@ -15,7 +15,7 @@ from features.public_data_model.given_a_settlement_report.common import (
     metering_point_period_schema,
     metering_point_time_series_schema,
 )
-from features.utils.dataframes.view_results_dataframe import (
+from features.utils.dataframes.settlement_report.view_results_dataframe import (
     create_metering_point_periods_view,
     create_metering_point_time_series_view,
 )
