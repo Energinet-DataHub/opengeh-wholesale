@@ -15,10 +15,9 @@ from copy import copy
 from datetime import datetime
 from decimal import Decimal
 from typing import Any
-from typing import List
 
 import pytest
-from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql import SparkSession
 
 from contract_utils import assert_contract_matches_schema
 from package.calculation.calculator_args import CalculatorArgs
