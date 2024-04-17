@@ -33,10 +33,10 @@ class TestWhenValidInput:
     def test_returns_values_aggregated_for_ga(self, spark: SparkSession):
         # Arrange
         row = factories.create_row()
-        df = factories.create(spark, [row, row])
+        energy_results = factories.create(spark, [row, row])
 
         # Act
-        actual = aggregate_per_ga_and_es(df)
+        actual = aggregate_per_ga_and_es(energy_results)
 
         # assert
         actual_rows = actual.df.collect()
