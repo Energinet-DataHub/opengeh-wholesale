@@ -224,6 +224,19 @@ def test__monthly_amount_for_subscriptions_and_fees__is_created(
     assert result_df.count() > 0
 
 
+def test__total_monthly_amounts__are_stored(
+    spark: SparkSession,
+    wholesale_fixing_total_monthly_amounts: DataFrame,
+) -> None:
+    # Arrange
+
+    # Act: Calculator job is executed just once per session.
+    #      See the fixtures `results_df` and `executed_wholesale_fixing`
+
+    # Assert: The result is created if there are rows
+    assert wholesale_fixing_total_monthly_amounts.count() > 0
+
+
 @pytest.mark.parametrize(
     "basis_data_table_name",
     paths.BASIS_DATA_TABLE_NAMES,
