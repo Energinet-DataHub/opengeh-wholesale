@@ -64,6 +64,51 @@ public class CalculationOrchestrationTests : IAsyncLifetime
     [Fact]
     public async Task FunctionApp_WhenCallingDurableFunctionEndPoint_ReturnOKAndExpectedContent()
     {
+        // Arrange
+        var jobs = JsonConvert.SerializeObject(GenerateMockedJobs());
+
+        _serverStub.Given(WireMock.RequestBuilders.Request.Create()
+                .WithPath("/api/2.1/jobs/list")
+                .UsingGet())
+            .AtPriority(1)
+            .RespondWith(WireMock.ResponseBuilders.Response.Create()
+                .WithStatusCode(HttpStatusCode.OK)
+                .WithHeader(HeaderNames.ContentType, "application/json")
+                .WithBody(Encoding.UTF8.GetBytes(jobs)));
+
+        var job = JsonConvert.SerializeObject(GenerateMockedJob());
+
+        _serverStub.Given(WireMock.RequestBuilders.Request.Create()
+                .WithPath("/api/2.1/jobs/get")
+                .UsingGet())
+            .AtPriority(1)
+            .RespondWith(WireMock.ResponseBuilders.Response.Create()
+                .WithStatusCode(HttpStatusCode.OK)
+                .WithHeader(HeaderNames.ContentType, "application/json")
+                .WithBody(Encoding.UTF8.GetBytes(job)));
+
+        var run_now = JsonConvert.SerializeObject(GenerateMockedRunNow());
+
+        _serverStub.Given(WireMock.RequestBuilders.Request.Create()
+                .WithPath("/api/2.1/jobs/run-now")
+                .UsingPost())
+            .AtPriority(1)
+            .RespondWith(WireMock.ResponseBuilders.Response.Create()
+                .WithStatusCode(HttpStatusCode.OK)
+                .WithHeader(HeaderNames.ContentType, "application/json")
+                .WithBody(Encoding.UTF8.GetBytes(run_now)));
+
+        var run = JsonConvert.SerializeObject(GenerateMockedRun());
+
+        _serverStub.Given(WireMock.RequestBuilders.Request.Create()
+                .WithPath("/api/2.1/jobs/runs/get")
+                .UsingGet())
+            .AtPriority(1)
+            .RespondWith(WireMock.ResponseBuilders.Response.Create()
+                .WithStatusCode(HttpStatusCode.OK)
+                .WithHeader(HeaderNames.ContentType, "application/json")
+                .WithBody(Encoding.UTF8.GetBytes(run)));
+
         // Act
         var todayAtMidnight = new LocalDate(2024, 5, 17)
             .AtMidnight()
@@ -83,44 +128,14 @@ public class CalculationOrchestrationTests : IAsyncLifetime
 
         actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var jobs = JsonConvert.SerializeObject(GenerateMockedJobs());
-        var job = JsonConvert.SerializeObject(GenerateMockedJob());
-        _serverStub.Given(WireMock.RequestBuilders.Request.Create()
-                .WithPath("/api/2.1/jobs/list")
-                .UsingGet())
-            .AtPriority(1)
-            .RespondWith(WireMock.ResponseBuilders.Response.Create()
-                .WithStatusCode(HttpStatusCode.OK)
-                .WithHeader(HeaderNames.ContentType, "application/json")
-                .WithBody(Encoding.UTF8.GetBytes(jobs)));
-
-        _serverStub.Given(WireMock.RequestBuilders.Request.Create()
-                .WithPath("/api/2.1/jobs/get")
-                .UsingGet())
-            .AtPriority(1)
-            .RespondWith(WireMock.ResponseBuilders.Response.Create()
-                .WithStatusCode(HttpStatusCode.OK)
-                .WithHeader(HeaderNames.ContentType, "application/json")
-                .WithBody(Encoding.UTF8.GetBytes(job)));
-
-        var run_now = JsonConvert.SerializeObject(GenerateMockedRunNow());
-        _serverStub.Given(WireMock.RequestBuilders.Request.Create()
-                .WithPath("/api/2.1/jobs/run-now")
-                .UsingPost())
-            .AtPriority(1)
-            .RespondWith(WireMock.ResponseBuilders.Response.Create()
-                .WithStatusCode(HttpStatusCode.OK)
-                .WithHeader(HeaderNames.ContentType, "application/json")
-                .WithBody(Encoding.UTF8.GetBytes(run_now)));
-
         //Fixture.AzuriteManager.
         await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("CreateCalculationRecordActivity");
         await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("StartCalculationActivity");
         await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("GetJobStatusActivity");
 
-        // await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("UpdateCalculationExecutionStatusActivity");
-        // await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("CreateCompletedCalculationActivity");
-        // await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("SendCalculationResultsActivity");
+        await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("UpdateCalculationExecutionStatusActivity", TimeSpan.FromMinutes(3));
+        await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("CreateCompletedCalculationActivity");
+        await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("SendCalculationResultsActivity");
 
         // Assert
         using var assertionScope = new AssertionScope();
@@ -130,6 +145,11 @@ public class CalculationOrchestrationTests : IAsyncLifetime
 
         var content = await actualResponse.Content.ReadAsStringAsync();
         content.Should().StartWith("{\"status\":\"Healthy\"");
+    }
+
+    private Run GenerateMockedRun()
+    {
+        return new Run { RunId = 512, State = new RunState { LifeCycleState = RunLifeCycleState.TERMINATED, ResultState = RunResultState.SUCCESS } };
     }
 
     private RunIdentifier GenerateMockedRunNow()
