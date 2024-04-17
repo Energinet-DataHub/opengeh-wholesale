@@ -52,6 +52,8 @@ public class OrchestrationsAppFixture : IAsyncLifetime
 
     public ITestDiagnosticsLogger TestLogger { get; }
 
+    public const string LocalhostUrl = "http://localhost:1024";
+
     [NotNull]
     public FunctionAppHostManager? AppHostManager { get; private set; }
 
@@ -137,7 +139,7 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         // Databricks
         appHostSettings.ProcessEnvironmentVariables.Add(
             nameof(DatabricksJobsOptions.WorkspaceUrl),
-            IntegrationTestConfiguration.DatabricksSettings.WorkspaceUrl);
+            LocalhostUrl);
         appHostSettings.ProcessEnvironmentVariables.Add(
             nameof(DatabricksJobsOptions.WorkspaceToken),
             IntegrationTestConfiguration.DatabricksSettings.WorkspaceAccessToken);

@@ -21,7 +21,6 @@ using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Extensions.Logging;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation;

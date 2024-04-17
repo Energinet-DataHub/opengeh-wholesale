@@ -22,9 +22,9 @@ public class WiremockFixture
 {
     public WireMockServer Server { get; }
 
-    public WiremockFixture()
+    public WiremockFixture(string[] urls)
     {
-        Server = WireMockServer.Start();
+        Server = WireMockServer.Start(urls);
 
         Server.Given(WireMock.RequestBuilders.Request.Create().WithPath("/*").UsingAnyMethod())
             .AtPriority(1000)

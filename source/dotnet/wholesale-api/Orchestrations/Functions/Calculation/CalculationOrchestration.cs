@@ -53,6 +53,8 @@ internal class CalculationOrchestration
         var pollingIntervalInSeconds = 60;
         var expiryTime = context.CurrentUtcDateTime.AddMinutes(30);
 
+        logger.LogInformation($"Enter while loop: {context.CurrentUtcDateTime < expiryTime}");
+
         while (context.CurrentUtcDateTime < expiryTime)
         {
             // Monitor calculation (Databricks)
