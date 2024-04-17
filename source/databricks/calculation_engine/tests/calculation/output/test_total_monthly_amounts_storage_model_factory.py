@@ -149,10 +149,7 @@ def test__create__returns_dataframe_with_column(
     """Test all columns except calculation_result_id. It is tested separately in another test."""
 
     # Arrange
-    row = [_create_result_row()]
-    total_monthly_amounts = TotalMonthlyAmount(
-        _create_default_total_monthly_amounts(spark, row)
-    )
+    total_monthly_amounts = _create_default_total_monthly_amounts(spark)
 
     # Act
     actual_df = sut.create(args, total_monthly_amounts)
