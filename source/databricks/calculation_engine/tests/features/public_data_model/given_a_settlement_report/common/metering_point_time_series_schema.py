@@ -20,33 +20,29 @@ from pyspark.sql.types import (
     DecimalType,
 )
 
-from features.public_data_model.given_a_settlement_report.common.metering_point_time_series_colname import (
+from features.public_data_model.given_a_settlement_report.common.settlement_report_colname import (
     MeteringPointTimeSeriesColname,
 )
+from package.constants import TimeSeriesColname, MeteringPointPeriodColname
 
 element = StructType(
     [
-        StructField(
-            MeteringPointTimeSeriesColname.observation_time, TimestampType(), False
-        ),
-        StructField(MeteringPointTimeSeriesColname.quantity, DecimalType(18, 3), False),
+        StructField(TimeSeriesColname.observation_time, TimestampType(), False),
+        StructField(TimeSeriesColname.quantity, DecimalType(18, 3), False),
     ]
 )
 
+
 metering_point_time_series_schema = StructType(
     [
-        StructField(MeteringPointTimeSeriesColname.calculation_id, StringType(), False),
+        StructField(MeteringPointPeriodColname.calculation_id, StringType(), False),
+        StructField(MeteringPointPeriodColname.metering_point_id, StringType(), False),
         StructField(
-            MeteringPointTimeSeriesColname.metering_point_id, StringType(), False
+            MeteringPointPeriodColname.metering_point_type, StringType(), False
         ),
-        StructField(
-            MeteringPointTimeSeriesColname.metering_point_type, StringType(), False
-        ),
-        StructField(MeteringPointTimeSeriesColname.resolution, StringType(), True),
-        StructField(MeteringPointTimeSeriesColname.grid_area, StringType(), True),
-        StructField(
-            MeteringPointTimeSeriesColname.energy_supplier_id, StringType(), True
-        ),
+        StructField(MeteringPointPeriodColname.resolution, StringType(), True),
+        StructField(MeteringPointPeriodColname.grid_area, StringType(), True),
+        StructField(MeteringPointPeriodColname.energy_supplier_id, StringType(), True),
         StructField(
             MeteringPointTimeSeriesColname.observation_day, TimestampType(), True
         ),

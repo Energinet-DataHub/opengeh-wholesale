@@ -15,6 +15,10 @@ from features.public_data_model.given_a_settlement_report.common import (
     metering_point_period_schema,
     metering_point_time_series_schema,
 )
+from features.utils.dataframes.view_results_dataframe import (
+    create_metering_point_periods_view,
+    create_metering_point_time_series_view,
+)
 
 
 def get_output_specifications() -> dict[str, tuple]:
@@ -25,9 +29,11 @@ def get_output_specifications() -> dict[str, tuple]:
         "metering_point_periods.csv": (
             metering_point_period_schema,
             "read_metering_point_periods",
+            create_metering_point_periods_view,
         ),
         "metering_point_time_series.csv": (
             metering_point_time_series_schema,
             "read_metering_point_time_series",
+            create_metering_point_time_series_view,
         ),
     }

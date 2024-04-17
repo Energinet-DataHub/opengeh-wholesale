@@ -11,6 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from features.utils.dataframes.input_view_dataframe import (
+    create_metering_point_period,
+    create_time_series_point,
+)
 from package.calculation.basis_data.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
@@ -22,6 +26,14 @@ def get_input_specifications() -> dict[str, tuple]:
     Contains the specifications for view scenario inputs.
     """
     return {
-        "metering_point_periods.csv": (metering_point_period_schema, None),
-        "time_series_points.csv": (time_series_point_schema, None),
+        "metering_point_periods.csv": (
+            metering_point_period_schema,
+            "read_metering_point_periods",
+            create_metering_point_period,
+        ),
+        "time_series_points.csv": (
+            time_series_point_schema,
+            "read_time_series_points",
+            create_time_series_point,
+        ),
     }

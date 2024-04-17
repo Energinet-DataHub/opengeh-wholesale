@@ -16,44 +16,38 @@ from pyspark.sql import SparkSession, dataframe
 
 from package.infrastructure import paths
 from package.infrastructure.paths import (
-    METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME,
-    SETTLEMENT_REPORT_DATABASE_NAME,
-    METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME,
+    BASIS_DATA_DATABASE_NAME,
 )
 
 
-class ViewReader:
-    """
-    This class is responsible for retrieving data from views and only used
-    in tests.
-    """
+class BasisDataTableReader:
 
     def __init__(
         self,
         spark: SparkSession,
-        metering_point_periods_view_name: str | None = None,
-        metering_point_time_series_view_name: str | None = None,
+        metering_point_periods_table_name: str | None = None,
+        time_series_points_table_name: str | None = None,
     ) -> None:
         self._spark = spark
         self._metering_point_periods_view_name = (
-            metering_point_periods_view_name
-            or paths.METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME
+            metering_point_periods_table_name
+            or paths.METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME
         )
         self._metering_point_time_series_view_name = (
-            metering_point_time_series_view_name
-            or paths.METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME
+            time_series_points_table_name
+            or paths.TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME
         )
 
     def read_metering_point_periods(
         self,
     ) -> dataframe:
         return self._spark.read.format("delta").table(
-            f"{SETTLEMENT_REPORT_DATABASE_NAME}.{METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME}"
+            f"{BASIS_DATA_DATABASE_NAME}.{paths.METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME}"
         )
 
-    def read_metering_point_time_series(
+    def read_time_series_points(
         self,
     ) -> dataframe:
         return self._spark.read.format("delta").table(
-            f"{SETTLEMENT_REPORT_DATABASE_NAME}.{METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME}"
+            f"{BASIS_DATA_DATABASE_NAME}.{paths.TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME}"
         )

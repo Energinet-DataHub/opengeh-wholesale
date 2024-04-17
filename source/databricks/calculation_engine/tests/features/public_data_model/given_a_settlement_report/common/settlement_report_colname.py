@@ -12,13 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 class MeteringPointTimeSeriesColname:
-    calculation_id = "calculation_id"
-    metering_point_id = "metering_point_id"
-    metering_point_type = "metering_point_type"
-    grid_area = "grid_area_code"
-    resolution = "resolution"
-    energy_supplier_id = "energy_supplier_id"
     observation_day = "observation_day"
     quantities = "quantities"
-    observation_time = "observation_time"
-    quantity = "quantity"

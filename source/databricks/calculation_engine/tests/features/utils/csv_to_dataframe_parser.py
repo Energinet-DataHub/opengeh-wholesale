@@ -30,22 +30,23 @@ class CsvToDataframeParser:
         file_name: str,
         schema: str,
         file_folder: str,
+        ignore_schema: bool,
     ) -> ExpectedOutput | None:
 
         file_path = f"{file_folder}/{file_name}"
         if not os.path.exists(file_path):
             return None
 
-        df = spark_session.read.csv(file_path, header=True, sep=";", schema=schema)
+        if ignore_schema:
+            df = spark_session.read.csv(file_path, header=True, sep=";")
+        else:
+            df = spark_session.read.csv(file_path, header=True, sep=";", schema=schema)
 
-        # We need to create the dataframe again because nullability and precision
-        # are not applied when reading the csv file.
-        df = spark_session.createDataFrame(df.rdd, schema)
         name, extension = os.path.splitext(file_name)
         return ExpectedOutput(name=name, df=df)
 
-    def read_files_in_parallel(
-        self, path: str, correlations: dict[str, tuple]
+    def parse_csv_files_concurrently(
+        self, path: str, correlations: dict[str, tuple], ignore_schema: bool = False
     ) -> list[ExpectedOutput]:
         """
         Reads csv files concurrently and converts them to dataframes.
@@ -60,6 +61,7 @@ class CsvToDataframeParser:
                     correlations.keys(),
                     schemas,
                     [path] * len(correlations.keys()),
+                    [ignore_schema],
                 )
             )
         return dataframes

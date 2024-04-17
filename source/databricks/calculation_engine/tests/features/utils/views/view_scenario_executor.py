@@ -18,18 +18,20 @@ from pyspark.sql import SparkSession
 
 from features.utils.csv_to_dataframe_parser import CsvToDataframeParser
 from features.utils.expected_output import ExpectedOutput
+from features.utils.readers.settlement_report_view_reader import (
+    SettlementReportViewReader,
+)
 from features.utils.views.view_input_specifications import get_input_specifications
 from features.utils.views.view_output_specifications import get_output_specifications
-from features.utils.views.view_reader import ViewReader
 from package.infrastructure.paths import BASIS_DATA_DATABASE_NAME
 
 
 class ViewScenarioExecutor:
-    view_reader: ViewReader
+    view_reader: SettlementReportViewReader
 
     def __init__(self, spark: SparkSession):
         self.spark = spark
-        self.view_reader = ViewReader(spark)
+        self.view_reader = SettlementReportViewReader(spark)
 
     def execute(
         self, scenario_folder_path: str
@@ -40,14 +42,18 @@ class ViewScenarioExecutor:
 
         parser = CsvToDataframeParser(self.spark)
 
-        input_dataframes = parser.read_files_in_parallel(
+        input_dataframes = parser.parse_csv_files_concurrently(
             f"{scenario_folder_path}/input", input_specifications
         )
-        expected = parser.read_files_in_parallel(
-            f"{scenario_folder_path}/output", output_specifications
+        self._write_to_tables(input_dataframes)
+
+        output_dataframes = parser.parse_csv_files_concurrently(
+            f"{scenario_folder_path}/output", output_specifications, ignore_schema=True
         )
 
-        self._write_to_tables(input_dataframes)
+        expected = self.correct_dataframe_types(
+            output_dataframes, output_specifications
+        )
         actual = self._read_from_views(output_specifications)
 
         return actual, expected
@@ -73,3 +79,16 @@ class ViewScenarioExecutor:
             outputs.append(container)
 
         return outputs
+
+    def correct_dataframe_types(
+        self, dataframes: list[ExpectedOutput], output_specifications: dict[str, tuple]
+    ) -> list[ExpectedOutput]:
+        frames = []
+        for key in dataframes:
+            value = output_specifications[key.name + ".csv"]
+            correction_method = value[2]
+            key.df = correction_method(key.df, self.spark)
+            frames.append(key)
+
+        return frames
+    
