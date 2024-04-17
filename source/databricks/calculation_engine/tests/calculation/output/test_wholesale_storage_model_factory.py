@@ -15,13 +15,14 @@ from copy import copy
 from datetime import datetime
 from decimal import Decimal
 from typing import Any
-from typing import List
 
 import pytest
 from pyspark.sql import SparkSession, DataFrame
 
+from contract_utils import assert_contract_matches_schema
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.output import wholesale_storage_model_factory as sut
+from package.calculation.output.schemas import wholesale_results_schema
 from package.calculation.wholesale.data_structures.wholesale_results import (
     WholesaleResults,
 )
@@ -122,8 +123,13 @@ def _create_result_row(
     return row
 
 
-def _create_result_df(spark: SparkSession, row: List[dict]) -> DataFrame:
-    return spark.createDataFrame(data=row)
+def _create_default_result(
+    spark: SparkSession,
+) -> WholesaleResults:
+    row = [_create_result_row()]
+    return WholesaleResults(
+        spark.createDataFrame(data=row, schema=wholesale_results_schema)
+    )
 
 
 def _create_result_df_corresponding_to_multiple_calculation_results(
@@ -136,7 +142,24 @@ def _create_result_df_corresponding_to_multiple_calculation_results(
         _create_result_row(grid_area="003"),
     ]
 
-    return spark.createDataFrame(data=rows)
+    return spark.createDataFrame(data=rows, schema=wholesale_results_schema)
+
+
+def test__create__columns_matching_contract(
+    spark: SparkSession,
+    contracts_path: str,
+    migrations_executed: None,
+    args: CalculatorArgs,
+) -> None:
+    # Arrange
+    contract_path = f"{contracts_path}/wholesale-result-table-column-names.json"
+    result = _create_default_result(spark)
+
+    # Act
+    actual = sut.create(args, result, DEFAULT_AMOUNT_TYPE)
+
+    # Assert
+    assert_contract_matches_schema(contract_path, actual.schema)
 
 
 @pytest.mark.parametrize(
@@ -177,8 +200,7 @@ def test__create__returns_dataframe_with_column(
     """Test all columns except calculation_result_id. It is tested separately in another test."""
 
     # Arrange
-    row = [_create_result_row()]
-    result_df = WholesaleResults(_create_result_df(spark, row))
+    result_df = _create_default_result(spark)
 
     # Act
     actual_df = sut.create(args, result_df, DEFAULT_AMOUNT_TYPE)
@@ -210,8 +232,7 @@ def test__create__returns_dataframe_with_amount_type(
     args: CalculatorArgs,
 ) -> None:
     # Arrange
-    row = [_create_result_row()]
-    result_df = WholesaleResults(_create_result_df(spark, row))
+    result_df = _create_default_result(spark)
 
     # Act
     actual_df = sut.create(args, result_df, DEFAULT_AMOUNT_TYPE)
