@@ -61,7 +61,7 @@ class CsvToDataframeParser:
                     specifications.keys(),
                     schemas,
                     [path] * len(specifications.keys()),
-                    [ignore_schema],
+                    [ignore_schema] * len(specifications.keys()),
                 )
             )
         return dataframes
