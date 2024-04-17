@@ -22,9 +22,9 @@ from pyspark.sql import SparkSession, DataFrame
 from contract_utils import assert_contract_matches_schema
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.output import wholesale_storage_model_factory as sut
-from package.calculation.output.schemas import wholesale_results_schema
 from package.calculation.wholesale.data_structures.wholesale_results import (
     WholesaleResults,
+    wholesale_results_schema,
 )
 from package.codelists import (
     ChargeQuality,
@@ -142,13 +142,12 @@ def _create_result_df_corresponding_to_multiple_calculation_results(
         _create_result_row(grid_area="003"),
     ]
 
-    return spark.createDataFrame(data=rows, schema=wholesale_results_schema)
+    return spark.createDataFrame(data=rows)
 
 
 def test__create__columns_matching_contract(
     spark: SparkSession,
     contracts_path: str,
-    migrations_executed: None,
     args: CalculatorArgs,
 ) -> None:
     # Arrange

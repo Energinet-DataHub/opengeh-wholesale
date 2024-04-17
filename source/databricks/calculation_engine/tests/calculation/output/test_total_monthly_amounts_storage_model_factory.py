@@ -107,7 +107,6 @@ def _create_multiple_total_monthly_amounts(
 def test__create__columns_matching_contract(
     spark: SparkSession,
     contracts_path: str,
-    migrations_executed: None,
     args: CalculatorArgs,
 ) -> None:
     # Arrange
