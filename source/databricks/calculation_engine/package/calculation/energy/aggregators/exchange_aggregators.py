@@ -20,7 +20,7 @@ from package.calculation.preparation.data_structures.quarterly_metering_point_ti
     QuarterlyMeteringPointTimeSeries,
 )
 from package.calculation.preparation.transformations.rounding import (
-    special_quantity_rounding,
+    round_quantity_with_resolution_adjustment,
 )
 from package.codelists import MeteringPointType
 from package.constants import Colname
@@ -130,7 +130,7 @@ def aggregate_net_exchange_per_neighbour_ga(
     )
 
     exchange = exchange.filter(F.col(Colname.grid_area).isin(calculation_grid_areas))
-    exchange = special_quantity_rounding(exchange)
+    exchange = round_quantity_with_resolution_adjustment(exchange)
     return EnergyResults(exchange)
 
 

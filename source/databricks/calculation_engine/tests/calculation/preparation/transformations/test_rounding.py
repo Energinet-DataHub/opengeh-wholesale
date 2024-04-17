@@ -16,7 +16,7 @@ from decimal import Decimal
 
 from pyspark.sql import SparkSession
 from package.calculation.preparation.transformations.rounding import (
-    special_quantity_rounding,
+    round_quantity_with_resolution_adjustment,
 )
 from package.constants import Colname
 
@@ -44,7 +44,7 @@ def test_special_quantity_rounding(spark: SparkSession) -> None:
     df = spark.createDataFrame(rows)
 
     # Act
-    actual = special_quantity_rounding(df)
+    actual = round_quantity_with_resolution_adjustment(df)
 
     # Assert
     assert actual.collect()[0][Colname.quantity] == Decimal("222.031")
@@ -102,7 +102,7 @@ def test_special_quantity_rounding_when_two_energy_supplier_at_the_same_time(
     df = spark.createDataFrame(rows)
 
     # Act
-    actual = special_quantity_rounding(df)
+    actual = round_quantity_with_resolution_adjustment(df)
     actual = actual.orderBy(
         Colname.energy_supplier_id,
         Colname.observation_time,

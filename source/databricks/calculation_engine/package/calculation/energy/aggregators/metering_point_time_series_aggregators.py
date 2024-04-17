@@ -22,7 +22,7 @@ from package.calculation.preparation.data_structures.quarterly_metering_point_ti
     QuarterlyMeteringPointTimeSeries,
 )
 from package.calculation.preparation.transformations.rounding import (
-    special_quantity_rounding,
+    round_quantity_with_resolution_adjustment,
 )
 from package.codelists import (
     MeteringPointType,
@@ -65,7 +65,7 @@ def aggregate_per_ga_and_brp_and_es(
         Colname.observation_time,
     ]
     result = aggregate_quantity_and_quality(result, sum_group_by)
-    result = special_quantity_rounding(result)
+    result = round_quantity_with_resolution_adjustment(result)
     return EnergyResults(result)
 
 
