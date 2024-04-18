@@ -74,7 +74,7 @@ public class DatabricksApiMockingTests
             .Create()
             .WithStatusCode(HttpStatusCode.OK)
             .WithHeader(HeaderNames.ContentType, "application/json")
-            .WithBody(Encoding.UTF8.GetBytes(jobsJson));
+            .WithBody(jobsJson);
 
         _server
             .Given(jobsListRequest)
