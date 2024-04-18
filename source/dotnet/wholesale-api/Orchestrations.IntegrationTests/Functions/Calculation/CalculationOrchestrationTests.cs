@@ -14,6 +14,7 @@
 
 using System.Net;
 using System.Text;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions.Asserters;
@@ -65,7 +66,8 @@ public class CalculationOrchestrationTests : IAsyncLifetime
     public async Task FunctionApp_WhenCallingDurableFunctionEndPoint_ReturnOKAndExpectedContent()
     {
         // Arrange
-        var jobs = JsonConvert.SerializeObject(GenerateMockedJobs());
+        var jobId = Random.Shared.Next(0, 1000);
+        var jobs = JsonConvert.SerializeObject(GenerateMockedJobs(jobId));
 
         _serverStub.Given(WireMock.RequestBuilders.Request.Create()
                 .WithPath("/api/2.1/jobs/list")
@@ -76,7 +78,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
                 .WithHeader(HeaderNames.ContentType, "application/json")
                 .WithBody(Encoding.UTF8.GetBytes(jobs)));
 
-        var job = JsonConvert.SerializeObject(GenerateMockedJob());
+        var job = JsonConvert.SerializeObject(GenerateMockedJob(jobId));
 
         _serverStub.Given(WireMock.RequestBuilders.Request.Create()
                 .WithPath("/api/2.1/jobs/get")
@@ -98,7 +100,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
                 .WithHeader(HeaderNames.ContentType, "application/json")
                 .WithBody(Encoding.UTF8.GetBytes(run_now)));
 
-        var run = JsonConvert.SerializeObject(GenerateMockedRun());
+        var run = JsonConvert.SerializeObject(GenerateMockedRun(jobId));
 
         _serverStub.Given(WireMock.RequestBuilders.Request.Create()
                 .WithPath("/api/2.1/jobs/runs/get")
@@ -133,8 +135,8 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("StartCalculationActivity");
         await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("GetJobStatusActivity");
 
-        await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("UpdateCalculationExecutionStatusActivity", TimeSpan.FromMinutes(3));
-        await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("CreateCompletedCalculationActivity");
+        await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("UpdateCalculationExecutionStatusActivity");
+        await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("CreateCompletedCalculationActivity", TimeSpan.FromMinutes(5));
         await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("SendCalculationResultsActivity");
 
         // Assert
@@ -147,9 +149,9 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         content.Should().StartWith("{\"status\":\"Healthy\"");
     }
 
-    private Run GenerateMockedRun()
+    private Run GenerateMockedRun(long jobId)
     {
-        return new Run { RunId = 512, State = new RunState { LifeCycleState = RunLifeCycleState.TERMINATED, ResultState = RunResultState.SUCCESS } };
+        return new Run { JobId = jobId,  RunId = 512, State = new RunState { LifeCycleState = RunLifeCycleState.TERMINATED, ResultState = RunResultState.SUCCESS } };
     }
 
     private RunIdentifier GenerateMockedRunNow()
@@ -157,18 +159,18 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         return new RunIdentifier { RunId = 512 };
     }
 
-    private static object GenerateMockedJobs()
+    private static object GenerateMockedJobs(long jobId)
     {
         return new
         {
             jobs= new[]
             {
-                GenerateMockedJob(),
+                GenerateMockedJob(jobId),
             },
         };
     }
 
-    private static Job GenerateMockedJob()
+    private static Job GenerateMockedJob(long jobId)
     {
         return new Job()
         {
@@ -176,7 +178,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
             {
                 Name = "CalculatorJob",
             },
-            JobId = 42,
+            JobId = jobId,
         };
     }
 }
