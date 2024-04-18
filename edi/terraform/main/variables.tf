@@ -81,3 +81,23 @@ variable "feature_management_use_message_delegation" {
   description = "Used to enable message delegation for actors."
   default     = false
 }
+
+variable "feature_management_use_peek_messages" {
+  type        = bool
+  description = "Used to allow actors to peek messages."
+  default     = false
+}
+
+
+variable "feature_management_use_request_messages" {
+  type        = bool
+  description = "Used to allow actors to request messages."
+  default     = false
+}
+
+
+variable "feature_management_use_energy_result_produced" {
+  type        = bool
+  description = "Should use energy result produced."
+  default     = false
+}

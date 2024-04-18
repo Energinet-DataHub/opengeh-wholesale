@@ -63,6 +63,9 @@ locals {
     FeatureManagement__UseAmountPerChargeResultProduced        = var.feature_management_use_amount_per_charge_result_produced
     FeatureManagement__UseRequestWholesaleSettlementReceiver   = var.feature_management_use_request_wholesale_settlement_receiver
     FeatureManagement__UseMessageDelegation                    = var.feature_management_use_message_delegation
+    FeatureManagement__UsePeekMessages                         = var.feature_management_use_peek_messages
+    FeatureManagement__UseRequestMessages                      = var.feature_management_use_request_messages
+    FeatureManagement__UseEnergyResultProduced                 = var.feature_management_use_energy_result_produced
 
     # Service Bus
     ServiceBus__ListenConnectionString             = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-listen-connection-string)"
