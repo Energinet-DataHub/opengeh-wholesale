@@ -22,8 +22,8 @@ from calculation.energy import quarterly_metering_point_time_series_factories
 from package.calculation.energy.aggregators.exchange_aggregators import (
     aggregate_net_exchange_per_neighbour_ga,
 )
-from package.calculation.preparation.data_structures.quarterly_metering_point_time_series import (
-    QuarterlyMeteringPointTimeSeries,
+from package.calculation.preparation.data_structures.metering_point_time_series import (
+    MeteringPointTimeSeries,
 )
 from package.codelists import (
     MeteringPointType,
@@ -40,7 +40,7 @@ ALL_GRID_AREAS = ["A", "B", "C"]
 
 
 @pytest.fixture(scope="module")
-def single_quarter_test_data(spark: SparkSession) -> QuarterlyMeteringPointTimeSeries:
+def single_quarter_test_data(spark: SparkSession) -> MeteringPointTimeSeries:
     rows = [
         _create_row("A", "A", "B", default_obs_time, Decimal("10")),
         _create_row("A", "A", "B", default_obs_time, Decimal("15")),
@@ -54,7 +54,7 @@ def single_quarter_test_data(spark: SparkSession) -> QuarterlyMeteringPointTimeS
 
 
 @pytest.fixture(scope="module")
-def multi_quarter_test_data(spark: SparkSession) -> QuarterlyMeteringPointTimeSeries:
+def multi_quarter_test_data(spark: SparkSession) -> MeteringPointTimeSeries:
     rows = []
 
     for i in range(numberOfTestQuarters):

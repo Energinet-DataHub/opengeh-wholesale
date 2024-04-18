@@ -54,6 +54,7 @@ def add_calculated_grid_loss_to_metering_point_times_series(
             f.col(Colname.from_grid_area),
             f.col(Colname.metering_point_id),
             f.col(Colname.metering_point_type),
+            # TODO: fix
             f.lit(MeteringPointResolution.QUARTER.value).alias(
                 Colname.resolution
             ),  # This will change when we must support HOURLY for calculations before 1st of May 2023

@@ -48,7 +48,7 @@ def _execute(
     results = CalculationResultsContainer()
 
     with logging_configuration.start_span("calculation.prepare"):
-        # cache of metering_point_time_series had no effect on performance (01-12-2023)
+        # cache of prepared_metering_point_time_series had no effect on performance (01-12-2023)
         all_metering_point_periods = prepared_data_reader.get_metering_point_periods_df(
             args.calculation_period_start_datetime,
             args.calculation_period_end_datetime,
@@ -65,14 +65,14 @@ def _execute(
             )
         )
 
-        metering_point_time_series = (
+        prepared_metering_point_time_series = (
             prepared_data_reader.get_metering_point_time_series(
                 args.calculation_period_start_datetime,
                 args.calculation_period_end_datetime,
                 metering_point_periods_df_without_grid_loss,
             )
         )
-        metering_point_time_series.cache_internal()
+        prepared_metering_point_time_series.cache_internal()
 
     (
         results.energy_results,
@@ -80,15 +80,15 @@ def _execute(
         negative_grid_loss,
     ) = energy_calculation.execute(
         args,
-        metering_point_time_series,
+        prepared_metering_point_time_series,
         grid_loss_responsible_df,
     )
 
-    # This extends the content of metering_point_time_series with calculated grid loss,
+    # This extends the content of prepared_metering_point_time_series with calculated grid loss,
     # which is used in the wholesale calculation and the basis data
-    metering_point_time_series = (
+    prepared_metering_point_time_series = (
         add_calculated_grid_loss_to_metering_point_times_series(
-            metering_point_time_series,
+            prepared_metering_point_time_series,
             positive_grid_loss,
             negative_grid_loss,
         )
@@ -115,7 +115,7 @@ def _execute(
 
             prepared_charges = prepared_data_reader.get_prepared_charges(
                 metering_point_periods_for_wholesale_calculation,
-                metering_point_time_series,
+                prepared_metering_point_time_series,
                 input_charges,
                 args.time_zone,
             )
@@ -135,7 +135,7 @@ def _execute(
     results.basis_data = basis_data_factory.create(
         args,
         metering_point_periods_for_basis_data,
-        metering_point_time_series,
+        prepared_metering_point_time_series,
     )
 
     return results

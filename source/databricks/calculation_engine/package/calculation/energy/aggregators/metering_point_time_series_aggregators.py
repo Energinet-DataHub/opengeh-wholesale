@@ -18,8 +18,8 @@ from package.calculation.energy.data_structures.energy_results import EnergyResu
 from package.calculation.energy.aggregators.transformations.aggregate_sum_and_quality import (
     aggregate_quantity_and_quality,
 )
-from package.calculation.preparation.data_structures.quarterly_metering_point_time_series import (
-    QuarterlyMeteringPointTimeSeries,
+from package.calculation.preparation.data_structures.metering_point_time_series import (
+    MeteringPointTimeSeries,
 )
 from package.calculation.preparation.transformations.rounding import (
     round_quantity,
@@ -32,7 +32,7 @@ from package.constants import Colname
 
 
 def aggregate_per_ga_and_brp_and_es(
-    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
+    quarterly_metering_point_time_series: MeteringPointTimeSeries,
     metering_point_type: MeteringPointType,
     settlement_method: SettlementMethod | None,
 ) -> EnergyResults:
@@ -70,7 +70,7 @@ def aggregate_per_ga_and_brp_and_es(
 
 
 def aggregate_non_profiled_consumption_ga_brp_es(
-    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
+    quarterly_metering_point_time_series: MeteringPointTimeSeries,
 ) -> EnergyResults:
     return aggregate_per_ga_and_brp_and_es(
         quarterly_metering_point_time_series,
@@ -80,7 +80,7 @@ def aggregate_non_profiled_consumption_ga_brp_es(
 
 
 def aggregate_flex_consumption_ga_brp_es(
-    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
+    quarterly_metering_point_time_series: MeteringPointTimeSeries,
 ) -> EnergyResults:
     return aggregate_per_ga_and_brp_and_es(
         quarterly_metering_point_time_series,
@@ -90,7 +90,7 @@ def aggregate_flex_consumption_ga_brp_es(
 
 
 def aggregate_production_ga_brp_es(
-    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
+    quarterly_metering_point_time_series: MeteringPointTimeSeries,
 ) -> EnergyResults:
     return aggregate_per_ga_and_brp_and_es(
         quarterly_metering_point_time_series, MeteringPointType.PRODUCTION, None

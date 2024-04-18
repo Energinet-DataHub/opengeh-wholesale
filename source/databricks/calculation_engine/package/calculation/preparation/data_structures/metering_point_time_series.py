@@ -19,30 +19,31 @@ from package.common import DataFrameWrapper
 from package.constants import Colname
 
 
-class QuarterlyMeteringPointTimeSeries(DataFrameWrapper):
+class MeteringPointTimeSeries(DataFrameWrapper):
     """
-    Time series points of metering points with resolution quarterly.
+    Time series points of metering points with resolution hourly or quarterly.
 
     The points are enriched with metering point data required by calculations.
 
     When points are missing the time series are padded with
     points where quantity=0 and quality=missing.
 
-    Can be either hourly or quarterly.
+    Can be either all hourly or all quarterly.
     """
 
     def __init__(self, df: DataFrame):
         super().__init__(
             df,
-            _quarterly_metering_point_time_series_schema,
+            _metering_point_time_series_schema,
             # Setting these too False would cause errors, and there is no nice and easy fix for this.
             # Should they eventually be set to False?
+            ignore_nullability=True,
             ignore_decimal_scale=True,
             ignore_decimal_precision=True,
         )
 
 
-_quarterly_metering_point_time_series_schema = t.StructType(
+_metering_point_time_series_schema = t.StructType(
     [
         t.StructField(Colname.grid_area, t.StringType(), False),
         t.StructField(Colname.to_grid_area, t.StringType(), True),
@@ -55,5 +56,6 @@ _quarterly_metering_point_time_series_schema = t.StructType(
         t.StructField(Colname.balance_responsible_id, t.StringType(), True),
         t.StructField(Colname.settlement_method, t.StringType(), True),
         t.StructField(Colname.observation_time, t.TimestampType(), False),
+        t.StructField(Colname.resolution, t.StringType(), False),
     ]
 )

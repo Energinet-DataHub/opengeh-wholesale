@@ -19,8 +19,8 @@ from pyspark.sql.types import Row
 
 from package.constants import Colname
 from package.codelists import MeteringPointResolution, QuantityQuality
-from package.calculation.energy.hour_to_quarter import (
-    transform_hour_to_quarter,
+from package.calculation.energy.quarter_to_hour import (
+    transform_quarter_to_hour,
 )
 from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     prepared_metering_point_time_series_schema,
@@ -36,7 +36,7 @@ def basis_data_time_series_points_row(
     metering_point_type: str = "the_metering_point_type",
     resolution: MeteringPointResolution = MeteringPointResolution.HOUR,
     observation_time: datetime = datetime(2020, 1, 1, 0, 0),
-    quantity: Decimal = Decimal("4.444444"),
+    quantity: Decimal = Decimal("4.444000"),
     quality: QuantityQuality = QuantityQuality.ESTIMATED,
     energy_supplier_id: str = "the_energy_supplier_id",
     balance_responsible_id: str = "the_balance_responsible_id",
@@ -67,6 +67,34 @@ def test__transform_hour_to_quarter__when_valid_input__split_basis_data_time_ser
     rows = [
         basis_data_time_series_points_row(resolution=MeteringPointResolution.HOUR),
         basis_data_time_series_points_row(resolution=MeteringPointResolution.QUARTER),
+        basis_data_time_series_points_row(
+            resolution=MeteringPointResolution.QUARTER,
+            observation_time=datetime(2020, 1, 1, 0, 15),
+        ),
+        basis_data_time_series_points_row(
+            resolution=MeteringPointResolution.QUARTER,
+            observation_time=datetime(2020, 1, 1, 0, 30),
+        ),
+        basis_data_time_series_points_row(
+            resolution=MeteringPointResolution.QUARTER,
+            observation_time=datetime(2020, 1, 1, 0, 45),
+        ),
+        basis_data_time_series_points_row(
+            resolution=MeteringPointResolution.QUARTER,
+            observation_time=datetime(2020, 1, 1, 1, 00),
+        ),
+        basis_data_time_series_points_row(
+            resolution=MeteringPointResolution.QUARTER,
+            observation_time=datetime(2020, 1, 1, 1, 15),
+        ),
+        basis_data_time_series_points_row(
+            resolution=MeteringPointResolution.QUARTER,
+            observation_time=datetime(2020, 1, 1, 1, 30),
+        ),
+        basis_data_time_series_points_row(
+            resolution=MeteringPointResolution.QUARTER,
+            observation_time=datetime(2020, 1, 1, 1, 45),
+        ),
     ]
     basis_data_time_series_points = spark.createDataFrame(
         rows, prepared_metering_point_time_series_schema
@@ -76,16 +104,16 @@ def test__transform_hour_to_quarter__when_valid_input__split_basis_data_time_ser
     )
 
     # Act
-    actual = transform_hour_to_quarter(metering_point_time_series)
+    actual = transform_quarter_to_hour(metering_point_time_series)
 
     # Assert
-    assert actual.df.count() == 5
-    # Check that hourly quantity is divided by 4
-    assert actual.df.collect()[0][Colname.quantity] == Decimal("1.111111")
+    assert actual.df.count() == 3
+    assert actual.df.collect()[0][Colname.quantity] == Decimal("4.444000")
     # Check that quarterly quantity is not divided by 4
-    assert actual.df.collect()[4][Colname.quantity] == Decimal("4.444444")
-    # Check that houly quantity now have resolution of quarter
+    assert actual.df.collect()[1][Colname.quantity] == Decimal("17.776000")
+    # Check that quarterly quantity is not divided by 4
+    assert actual.df.collect()[2][Colname.quantity] == Decimal("17.776000")
+
     assert (
-        actual.df.collect()[0][Colname.resolution]
-        == MeteringPointResolution.QUARTER.value
+        actual.df.collect()[1][Colname.resolution] == MeteringPointResolution.HOUR.value
     )
