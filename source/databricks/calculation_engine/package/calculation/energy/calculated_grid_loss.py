@@ -27,7 +27,7 @@ from package.constants import Colname
 
 
 def add_calculated_grid_loss_to_metering_point_times_series(
-    metering_point_time_series: PreparedMeteringPointTimeSeries,
+    prepared_metering_point_time_series: PreparedMeteringPointTimeSeries,
     positive_grid_loss: EnergyResults,
     negative_grid_loss: EnergyResults,
 ) -> PreparedMeteringPointTimeSeries:
@@ -65,7 +65,7 @@ def add_calculated_grid_loss_to_metering_point_times_series(
             f.col(Colname.balance_responsible_id),
             f.col(Colname.settlement_method),
         )
-        .union(metering_point_time_series.df)
+        .union(prepared_metering_point_time_series.df)
     )
 
     return PreparedMeteringPointTimeSeries(df)

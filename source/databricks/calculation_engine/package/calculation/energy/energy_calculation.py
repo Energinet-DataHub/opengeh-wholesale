@@ -51,10 +51,7 @@ def execute(
     with logging_configuration.start_span("metering_point_time_series"):
         # TODO: add quarter to hour transformation in if statement
         intersection_time = env_vars.get_intersection_time()
-        if (
-            args.calculation_period_start_datetime < intersection_time
-            and args.calculation_period_end_datetime < intersection_time
-        ):
+        if args.calculation_period_end_datetime < intersection_time:
             metering_point_time_series = transform_quarter_to_hour(
                 prepared_metering_point_time_series
             )
