@@ -12,53 +12,72 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.Jobs.Abstractions;
-using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
-using Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using WireMock.Server;
+using Microsoft.Azure.Databricks.Client.Models;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions;
 
 /// <summary>
 /// Tests used for playing with WireMock for mocking Databricks REST API.
 /// </summary>
-public class DatabricksApiWireMockExtensionsTests
+public class DatabricksApiWireMockExtensionsTests : IClassFixture<WireMockExtensionsFixture>
 {
-    private readonly WireMockServer _server;
-    private readonly IServiceCollection _services;
+    private readonly WireMockExtensionsFixture _fixture;
 
-    public DatabricksApiWireMockExtensionsTests()
+    public DatabricksApiWireMockExtensionsTests(WireMockExtensionsFixture fixture)
     {
-        _server = new WiremockFixture([OrchestrationsAppFixture.LocalhostUrl]).Server;
+        _fixture = fixture;
 
-        _services = new ServiceCollection();
-        var configuration = CreateInMemoryConfigurations(new Dictionary<string, string?>()
-        {
-            [$"{nameof(DatabricksJobsOptions.WorkspaceUrl)}"] = OrchestrationsAppFixture.LocalhostUrl,
-            [$"{nameof(DatabricksJobsOptions.WorkspaceToken)}"] = "notEmpty",
-            [$"{nameof(DatabricksJobsOptions.WarehouseId)}"] = "notEmpty",
-        });
-        _services.AddDatabricksJobs(configuration);
-        var serviceProvider = _services.BuildServiceProvider();
-        JobApiClient = serviceProvider.GetRequiredService<IJobsApiClient>();
+        // Clear mappings etc. before each test
+        _fixture.MockServer.Reset();
     }
 
-    public IJobsApiClient JobApiClient { get; }
+    [Fact]
+    public async Task CatchAll_WhenCallingJobsList_ReturnsNotImplemented()
+    {
+        // Arrange
+        _fixture.MockServer
+            .CatchAll();
+
+        // Act
+        var act = async () => await _fixture.JobApiClient.Jobs.List();
+
+        // Assert
+        await act.Should()
+            .ThrowAsync<Microsoft.Azure.Databricks.Client.ClientApiException>()
+            .Where(ex =>
+                ex.StatusCode == System.Net.HttpStatusCode.NotImplemented
+                && ex.Message.Contains("Request not mapped"));
+    }
 
     [Fact]
-    public async Task MockJobsList_WhenCallingJobsList_CanDeserializeStubbedResponse()
+    public async Task CombinedCatchAllWithMockJobsList_WhenCallingJobsList_DoesNotFallIntoCatchAll()
     {
         // Arrange
         var jobId = Random.Shared.Next(0, 1000);
-        _server.MockJobsList(jobId);
+        _fixture.MockServer
+            .CatchAll()
+            .MockJobsList(jobId);
 
         // Act
-        var actualJobList = await JobApiClient.Jobs.List();
+        var actualJobList = await _fixture.JobApiClient.Jobs.List();
+
+        // Assert
+        actualJobList.Jobs.Should().ContainSingle();
+    }
+
+    [Fact]
+    public async Task MockJobsList_WhenCallingJobsList_CanDeserializeResponseFromMock()
+    {
+        // Arrange
+        var jobId = Random.Shared.Next(0, 1000);
+        _fixture.MockServer
+            .MockJobsList(jobId);
+
+        // Act
+        var actualJobList = await _fixture.JobApiClient.Jobs.List();
 
         // Assert
         using var assertionScope = new AssertionScope();
@@ -69,10 +88,54 @@ public class DatabricksApiWireMockExtensionsTests
         job.Settings.Name.Should().Be("CalculatorJob");
     }
 
-    private IConfiguration CreateInMemoryConfigurations(Dictionary<string, string?> configurations)
+    [Fact]
+    public async Task MockJobsGet_WhenCallingJobsGet_CanDeserializeResponseFromMock()
     {
-        return new ConfigurationBuilder()
-            .AddInMemoryCollection(configurations)
-            .Build();
+        // Arrange
+        var jobId = Random.Shared.Next(0, 1000);
+        _fixture.MockServer
+            .MockJobsGet(jobId);
+
+        // Act
+        var actualJob = await _fixture.JobApiClient.Jobs.Get(jobId);
+
+        // Assert
+        actualJob.JobId.Should().Be(jobId);
+    }
+
+    [Fact]
+    public async Task MockJobsRunNow_WhenCallingJobsRunNow_CanDeserializeResponseFromMock()
+    {
+        // Arrange
+        var anonymousJobId = 1;
+        var runId = Random.Shared.Next(0, 1000);
+        _fixture.MockServer
+            .MockJobsRunNow(runId);
+
+        // Act
+        var actualRunId = await _fixture.JobApiClient.Jobs.RunNow(anonymousJobId);
+
+        // Assert
+        actualRunId.Should().Be(runId);
+    }
+
+    [Fact]
+    public async Task MockJobsRunsGet_WhenCallingJobsRunsGet_CanDeserializeResponseFromMock()
+    {
+        // Arrange
+        var runId = Random.Shared.Next(0, 1000);
+        var lifeCycleState = "TERMINATED";
+        var resultState = "SUCCESS";
+        _fixture.MockServer
+            .MockJobsRunsGet(runId, lifeCycleState, resultState);
+
+        // Act
+        var actualRunTuple = await _fixture.JobApiClient.Jobs.RunsGet(runId);
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        actualRunTuple.Item1.RunId.Should().Be(runId);
+        actualRunTuple.Item1.State.LifeCycleState.Should().Be(RunLifeCycleState.TERMINATED);
+        actualRunTuple.Item1.State.ResultState.Should().Be(RunResultState.SUCCESS);
     }
 }

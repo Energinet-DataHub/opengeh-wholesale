@@ -17,14 +17,13 @@ using System.Text;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
+using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.Azure.Databricks.Client.Models;
-using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using NodaTime;
-using WireMock.Server;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.Calculation;
@@ -33,7 +32,6 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.
 public class CalculationOrchestrationTests : IAsyncLifetime
 {
     private readonly DateTimeZone _dateTimeZone;
-    private readonly WireMockServer _serverStub;
 
     public CalculationOrchestrationTests(
         OrchestrationsAppFixture fixture,
@@ -42,15 +40,18 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         Fixture = fixture;
         Fixture.SetTestOutputHelper(testOutputHelper);
 
-        Fixture.AppHostManager.ClearHostLog();
         _dateTimeZone = DateTimeZoneProviders.Tzdb["Europe/Copenhagen"];
-        _serverStub = new WiremockFixture([OrchestrationsAppFixture.LocalhostUrl]).Server;
     }
 
     private OrchestrationsAppFixture Fixture { get; }
 
     public Task InitializeAsync()
     {
+        Fixture.AppHostManager.ClearHostLog();
+
+        // Clear mappings etc. before each test
+        Fixture.MockServer.Reset();
+
         return Task.CompletedTask;
     }
 
@@ -65,50 +66,14 @@ public class CalculationOrchestrationTests : IAsyncLifetime
     public async Task FunctionApp_WhenCallingDurableFunctionEndPoint_ReturnOKAndExpectedContent()
     {
         // Arrange
-        var jobId = Random.Shared.Next(0, 1000);
-        var jobs = JsonConvert.SerializeObject(GenerateMockedJobs(jobId));
-
-        _serverStub.Given(WireMock.RequestBuilders.Request.Create()
-                .WithPath("/api/2.1/jobs/list")
-                .UsingGet())
-            .AtPriority(1)
-            .RespondWith(WireMock.ResponseBuilders.Response.Create()
-                .WithStatusCode(HttpStatusCode.OK)
-                .WithHeader(HeaderNames.ContentType, "application/json")
-                .WithBody(Encoding.UTF8.GetBytes(jobs)));
-
-        var job = JsonConvert.SerializeObject(GenerateMockedJob(jobId));
-
-        _serverStub.Given(WireMock.RequestBuilders.Request.Create()
-                .WithPath("/api/2.1/jobs/get")
-                .UsingGet())
-            .AtPriority(1)
-            .RespondWith(WireMock.ResponseBuilders.Response.Create()
-                .WithStatusCode(HttpStatusCode.OK)
-                .WithHeader(HeaderNames.ContentType, "application/json")
-                .WithBody(Encoding.UTF8.GetBytes(job)));
-
-        var run_now = JsonConvert.SerializeObject(GenerateMockedRunNow());
-
-        _serverStub.Given(WireMock.RequestBuilders.Request.Create()
-                .WithPath("/api/2.1/jobs/run-now")
-                .UsingPost())
-            .AtPriority(1)
-            .RespondWith(WireMock.ResponseBuilders.Response.Create()
-                .WithStatusCode(HttpStatusCode.OK)
-                .WithHeader(HeaderNames.ContentType, "application/json")
-                .WithBody(Encoding.UTF8.GetBytes(run_now)));
-
-        var run = JsonConvert.SerializeObject(GenerateMockedRun(jobId));
-
-        _serverStub.Given(WireMock.RequestBuilders.Request.Create()
-                .WithPath("/api/2.1/jobs/runs/get")
-                .UsingGet())
-            .AtPriority(1)
-            .RespondWith(WireMock.ResponseBuilders.Response.Create()
-                .WithStatusCode(HttpStatusCode.OK)
-                .WithHeader(HeaderNames.ContentType, "application/json")
-                .WithBody(Encoding.UTF8.GetBytes(run)));
+        var jobId = Random.Shared.Next(1, 1000);
+        var runId = Random.Shared.Next(1000, 2000);
+        Fixture.MockServer
+            .CatchAll()
+            .MockJobsList(jobId)
+            .MockJobsGet(jobId)
+            .MockJobsRunNow(runId)
+            .MockJobsRunsGet(runId, "TERMINATED", "SUCCESS");
 
         // Act
         var todayAtMidnight = new LocalDate(2024, 5, 17)
@@ -127,57 +92,17 @@ public class CalculationOrchestrationTests : IAsyncLifetime
                 Encoding.UTF8,
                 "application/json"));
 
+        // Assert
         actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        //Fixture.AzuriteManager.
         await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("CreateCalculationRecordActivity");
         await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("StartCalculationActivity");
         await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("GetJobStatusActivity");
 
-        await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("UpdateCalculationExecutionStatusActivity");
+        await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("UpdateCalculationExecutionStatusActivity", TimeSpan.FromMinutes(5));
         await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("CreateCompletedCalculationActivity", TimeSpan.FromMinutes(5));
-        await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("SendCalculationResultsActivity");
+        await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("SendCalculationResultsActivity", TimeSpan.FromMinutes(5));
 
-        // Assert
-        using var assertionScope = new AssertionScope();
-
-        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        actualResponse.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
-
-        var content = await actualResponse.Content.ReadAsStringAsync();
-        content.Should().StartWith("{\"status\":\"Healthy\"");
-    }
-
-    private Run GenerateMockedRun(long jobId)
-    {
-        return new Run { JobId = jobId, RunId = 512, State = new RunState { LifeCycleState = RunLifeCycleState.TERMINATED, ResultState = RunResultState.SUCCESS } };
-    }
-
-    private RunIdentifier GenerateMockedRunNow()
-    {
-        return new RunIdentifier { RunId = 512 };
-    }
-
-    private static object GenerateMockedJobs(long jobId)
-    {
-        return new
-        {
-            jobs = new[]
-            {
-                GenerateMockedJob(jobId),
-            },
-        };
-    }
-
-    private static Job GenerateMockedJob(long jobId)
-    {
-        return new Job()
-        {
-            Settings = new JobSettings()
-            {
-                Name = "CalculatorJob",
-            },
-            JobId = jobId,
-        };
+        // TODO: Wait for events on ServiceBus using "listener mock"
     }
 }

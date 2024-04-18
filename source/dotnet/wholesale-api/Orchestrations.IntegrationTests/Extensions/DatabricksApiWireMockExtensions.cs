@@ -26,22 +26,104 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions
 /// </summary>
 public static class DatabricksApiWireMockExtensions
 {
+    /// <summary>
+    /// Mapping to catch-all requests that doesn't match any more specific mapping.
+    /// </summary>
+    public static WireMockServer CatchAll(this WireMockServer server)
+    {
+        server
+            .Given(
+                Request.Create()
+                .WithPath("/*")
+                .UsingAnyMethod())
+            .AtPriority(1000)
+            .RespondWith(
+                Response.Create()
+                .WithStatusCode(HttpStatusCode.NotImplemented)
+                .WithHeader(HeaderNames.ContentType, "application/text")
+                .WithBody("Request not mapped!"));
+
+        return server;
+    }
+
     public static WireMockServer MockJobsList(this WireMockServer server, long jobId)
     {
-        var jobsListRequest = Request
+        var request = Request
             .Create()
             .WithPath("/api/2.1/jobs/list")
             .UsingGet();
 
-        var jobsListResponse = Response
+        var response = Response
             .Create()
             .WithStatusCode(HttpStatusCode.OK)
             .WithHeader(HeaderNames.ContentType, "application/json")
             .WithBody(BuildJobsListJson(jobId));
 
         server
-            .Given(jobsListRequest)
-            .RespondWith(jobsListResponse);
+            .Given(request)
+            .RespondWith(response);
+
+        return server;
+    }
+
+    public static WireMockServer MockJobsGet(this WireMockServer server, long jobId)
+    {
+        var request = Request
+            .Create()
+            .WithPath("/api/2.1/jobs/get")
+            .WithParam("job_id", jobId.ToString())
+            .UsingGet();
+
+        var response = Response
+            .Create()
+            .WithStatusCode(HttpStatusCode.OK)
+            .WithHeader(HeaderNames.ContentType, "application/json")
+            .WithBody(BuildJobsGetJson(jobId));
+
+        server
+            .Given(request)
+            .RespondWith(response);
+
+        return server;
+    }
+
+    public static WireMockServer MockJobsRunNow(this WireMockServer server, long runId)
+    {
+        var request = Request
+            .Create()
+            .WithPath("/api/2.1/jobs/run-now")
+            .UsingPost();
+
+        var response = Response
+            .Create()
+            .WithStatusCode(HttpStatusCode.OK)
+            .WithHeader(HeaderNames.ContentType, "application/json")
+            .WithBody(BuildJobsRunNowJson(runId));
+
+        server
+            .Given(request)
+            .RespondWith(response);
+
+        return server;
+    }
+
+    public static WireMockServer MockJobsRunsGet(this WireMockServer server, long runId, string lifeCycleState, string resultState)
+    {
+        var request = Request
+            .Create()
+            .WithPath("/api/2.1/jobs/runs/get")
+            .WithParam("run_id", runId.ToString())
+            .UsingGet();
+
+        var response = Response
+            .Create()
+            .WithStatusCode(HttpStatusCode.OK)
+            .WithHeader(HeaderNames.ContentType, "application/json")
+            .WithBody(BuildJobsRunsGetJson(runId, lifeCycleState, resultState));
+
+        server
+            .Given(request)
+            .RespondWith(response);
 
         return server;
     }
@@ -67,5 +149,57 @@ public static class DatabricksApiWireMockExtensions
             """;
 
         return json.Replace("{jobId}", jobId.ToString());
+    }
+
+    /// <summary>
+    /// Creates a '/jobs/get' JSON response with the given job id.
+    /// </summary>
+    private static string BuildJobsGetJson(long jobId)
+    {
+        var json = """
+            {
+              "job_id": {jobId},
+              "settings": {
+                "name": "CalculatorJob"
+              }
+            }
+            """;
+
+        return json.Replace("{jobId}", jobId.ToString());
+    }
+
+    /// <summary>
+    /// Creates a '/jobs/run-now' JSON response with the given run id.
+    /// </summary>
+    private static string BuildJobsRunNowJson(long runId)
+    {
+        var json = """
+            {
+              "run_id": {runId}
+            }
+            """;
+
+        return json.Replace("{runId}", runId.ToString());
+    }
+
+    /// <summary>
+    /// Creates a '/jobs/runs/get' JSON response with the given run id.
+    /// </summary>
+    private static string BuildJobsRunsGetJson(long runId, string lifeCycleState, string resultState)
+    {
+        var json = """
+            {
+              "run_id": {runId},
+              "state": {
+                "life_cycle_state": "{lifeCycleState}",
+                "result_state": "{resultState}"
+              }
+            }
+            """;
+
+        return json
+            .Replace("{runId}", runId.ToString())
+            .Replace("{lifeCycleState}", lifeCycleState)
+            .Replace("{resultState}", resultState);
     }
 }

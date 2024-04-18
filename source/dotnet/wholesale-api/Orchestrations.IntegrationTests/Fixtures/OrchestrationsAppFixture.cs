@@ -14,6 +14,7 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using Azure.Identity;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
@@ -26,6 +27,8 @@ using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
+using Microsoft.Net.Http.Headers;
+using WireMock.Server;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
@@ -48,11 +51,13 @@ public class OrchestrationsAppFixture : IAsyncLifetime
             TestLogger);
 
         HostConfigurationBuilder = new FunctionAppHostConfigurationBuilder();
+
+        MockServer = WireMockServer.Start(port: 1024);
     }
 
     public ITestDiagnosticsLogger TestLogger { get; }
 
-    public const string LocalhostUrl = "http://localhost:1024";
+    public WireMockServer MockServer { get; }
 
     [NotNull]
     public FunctionAppHostManager? AppHostManager { get; private set; }
@@ -139,7 +144,7 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         // Databricks
         appHostSettings.ProcessEnvironmentVariables.Add(
             nameof(DatabricksJobsOptions.WorkspaceUrl),
-            LocalhostUrl);
+            MockServer.Url!);
         appHostSettings.ProcessEnvironmentVariables.Add(
             nameof(DatabricksJobsOptions.WorkspaceToken),
             IntegrationTestConfiguration.DatabricksSettings.WorkspaceAccessToken);
