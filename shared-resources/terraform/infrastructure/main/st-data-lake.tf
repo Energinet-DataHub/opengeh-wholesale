@@ -16,6 +16,11 @@ module "st_data_lake" {
       role_definition_name = "Storage Blob Data Contributor"
     }
   ]
+  containers = [
+    {
+      name = "unityroot"
+    }
+  ]
 }
 
 module "kvs_st_data_lake_name" {

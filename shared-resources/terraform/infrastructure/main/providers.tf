@@ -4,7 +4,17 @@ terraform {
 
     azurerm = "3.96.0"
     azuread = "2.47.0"
+
+    databricks = {
+      source  = "databricks/databricks"
+      version = "1.38.0"
+    }
   }
+}
+
+provider "databricks" {
+  alias = "dbw"
+  host = "https://${azurerm_databricks_workspace.this.workspace_url}"
 }
 
 provider "azurerm" {
