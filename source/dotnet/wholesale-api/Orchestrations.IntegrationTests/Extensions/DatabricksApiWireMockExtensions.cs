@@ -26,7 +26,7 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions
 /// </summary>
 public static class DatabricksApiWireMockExtensions
 {
-    public static WireMockServer StubJobsList(this WireMockServer server, long jobId)
+    public static WireMockServer MockJobsList(this WireMockServer server, long jobId)
     {
         var jobsListRequest = Request
             .Create()

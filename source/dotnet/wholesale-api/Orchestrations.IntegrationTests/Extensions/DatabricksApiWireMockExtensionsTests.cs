@@ -51,11 +51,11 @@ public class DatabricksApiWireMockExtensionsTests
     public IJobsApiClient JobApiClient { get; }
 
     [Fact]
-    public async Task StubJobsList_WhenCallingJobsList_CanDeserializeStubbedResponse()
+    public async Task MockJobsList_WhenCallingJobsList_CanDeserializeStubbedResponse()
     {
         // Arrange
         var jobId = Random.Shared.Next(0, 1000);
-        _server.StubJobsList(jobId);
+        _server.MockJobsList(jobId);
 
         // Act
         var actualJobList = await JobApiClient.Jobs.List();
