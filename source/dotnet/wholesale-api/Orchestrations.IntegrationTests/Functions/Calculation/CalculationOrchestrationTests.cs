@@ -14,10 +14,9 @@
 
 using System.Net;
 using System.Text;
-using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
-using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions.Asserters;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -122,7 +121,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
             new StringContent(
                 JsonConvert.SerializeObject(new BatchRequestDto(
                 CalculationType.Aggregation,
-                ["256", "512" ],
+                ["256", "512"],
                 todayAtMidnight,
                 todayAtMidnight.AddDays(2))),
                 Encoding.UTF8,
@@ -151,7 +150,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
 
     private Run GenerateMockedRun(long jobId)
     {
-        return new Run { JobId = jobId,  RunId = 512, State = new RunState { LifeCycleState = RunLifeCycleState.TERMINATED, ResultState = RunResultState.SUCCESS } };
+        return new Run { JobId = jobId, RunId = 512, State = new RunState { LifeCycleState = RunLifeCycleState.TERMINATED, ResultState = RunResultState.SUCCESS } };
     }
 
     private RunIdentifier GenerateMockedRunNow()
@@ -163,7 +162,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
     {
         return new
         {
-            jobs= new[]
+            jobs = new[]
             {
                 GenerateMockedJob(jobId),
             },

@@ -63,22 +63,7 @@ public class DatabricksApiMockingTests
     {
         // Arrange
         var jobId = Random.Shared.Next(0, 1000);
-        var jobsJson = GenerateMockedJobs(jobId);
-
-        var jobsListRequest = Request
-            .Create()
-            .WithPath("/api/2.1/jobs/list")
-            .UsingGet();
-
-        var jobsListResponse = Response
-            .Create()
-            .WithStatusCode(HttpStatusCode.OK)
-            .WithHeader(HeaderNames.ContentType, "application/json")
-            .WithBody(jobsJson);
-
-        _server
-            .Given(jobsListRequest)
-            .RespondWith(jobsListResponse);
+        _server.StubJobsList(jobId);
 
         // Act
         var actualJobList = await JobApiClient.Jobs.List();
@@ -90,37 +75,6 @@ public class DatabricksApiMockingTests
         var job = actualJobList.Jobs.First();
         job.JobId.Should().Be(jobId);
         job.Settings.Name.Should().Be("CalculatorJob");
-    }
-
-    private static string GenerateMockedJobs(long jobId)
-    {
-        var json = """
-            {
-              "jobs": [
-                {
-                  "job_id": {jobId},
-                  "settings": {
-                    "name": "CalculatorJob"
-                  }
-                }
-              ],
-              "has_more": false
-            }
-            """;
-
-        return json.Replace("{jobId}", jobId.ToString());
-    }
-
-    private static Job GenerateMockedJob(long jobId)
-    {
-        return new Job()
-        {
-            Settings = new JobSettings()
-            {
-                Name = "CalculatorJob",
-            },
-            JobId = jobId,
-        };
     }
 
     private IConfiguration CreateInMemoryConfigurations(Dictionary<string, string?> configurations)
