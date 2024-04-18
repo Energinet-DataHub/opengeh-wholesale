@@ -131,6 +131,9 @@ jobs:
             paths: calculation/ codelists/ common/ infrastructure/
           - name: Entry point tests
             paths: entry_points/
+          # Try to at least catch new test folders at the test root level that have not been added to the matrix
+          - name: TODO
+            paths: "!(calculator_job|features|calculation|codelists|common|infrastructure|entry_points)"
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
       job_name: ${{ matrix.tests_filter_expression.name }}
