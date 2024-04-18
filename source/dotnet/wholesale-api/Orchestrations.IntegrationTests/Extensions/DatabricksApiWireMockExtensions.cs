@@ -18,13 +18,13 @@ using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 using WireMock.Server;
 
-namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
+namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions;
 
 /// <summary>
 /// A collection of WireMock extensions for easy mock configuration of
 /// Databricks REST API endpoints.
 /// </summary>
-public static class DatabricksApiMockExtensions
+public static class DatabricksApiWireMockExtensions
 {
     public static WireMockServer StubJobsList(this WireMockServer server, long jobId)
     {

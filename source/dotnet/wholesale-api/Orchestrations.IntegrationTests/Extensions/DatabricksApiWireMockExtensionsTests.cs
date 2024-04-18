@@ -12,35 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Net;
-using System.Text;
-using Energinet.DataHub.Core.App.WebApp.Extensions.Options;
 using Energinet.DataHub.Core.Databricks.Jobs.Abstractions;
 using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
 using Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 using FluentAssertions;
-using FluentAssertions.Common;
 using FluentAssertions.Execution;
-using Microsoft.Azure.Databricks.Client.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Net.Http.Headers;
-using WireMock.RequestBuilders;
-using WireMock.ResponseBuilders;
 using WireMock.Server;
 
-namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.Calculation;
+namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions;
 
 /// <summary>
 /// Tests used for playing with WireMock for mocking Databricks REST API.
 /// </summary>
-public class DatabricksApiMockingTests
+public class DatabricksApiWireMockExtensionsTests
 {
     private readonly WireMockServer _server;
     private readonly IServiceCollection _services;
 
-    public DatabricksApiMockingTests()
+    public DatabricksApiWireMockExtensionsTests()
     {
         _server = new WiremockFixture([OrchestrationsAppFixture.LocalhostUrl]).Server;
 
@@ -59,7 +51,7 @@ public class DatabricksApiMockingTests
     public IJobsApiClient JobApiClient { get; }
 
     [Fact]
-    public async Task JobApiClient_WhenJobsList_CanDeserializeMockedResponse()
+    public async Task StubJobsList_WhenCallingJobsList_CanDeserializeStubbedResponse()
     {
         // Arrange
         var jobId = Random.Shared.Next(0, 1000);
