@@ -99,15 +99,12 @@ public class DatabricksApiMockingTests
               "jobs": [
                 {
                   "job_id": {jobId},
-                  "creator_user_name": "user.name@databricks.com",
                   "settings": {
                     "name": "CalculatorJob"
                   }
                 }
               ],
-              "has_more": false,
-              "next_page_token": "CAEomPuciYcxMKbM9JvMlwU=",
-              "prev_page_token": "CAAos-uriYcxMN7_rt_v7B4="
+              "has_more": false
             }
             """;
 
