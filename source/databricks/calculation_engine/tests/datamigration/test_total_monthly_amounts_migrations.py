@@ -55,7 +55,7 @@ def test__migrated_table__columns_matching_contract(
     migrations_executed: None,
 ) -> None:
     # Arrange
-    contract_path = f"{contracts_path}/total-monthly-amount-table-column-names.json"
+    contract_path = f"{contracts_path}/total-monthly-amounts-table-column-names.json"
 
     # Act
     actual = spark.table(
