@@ -46,6 +46,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
 
     public Task InitializeAsync()
     {
+        Fixture.EnsureAppHostUsesMockedDatabricksJobs();
         Fixture.AppHostManager.ClearHostLog();
 
         // Clear mappings etc. before each test

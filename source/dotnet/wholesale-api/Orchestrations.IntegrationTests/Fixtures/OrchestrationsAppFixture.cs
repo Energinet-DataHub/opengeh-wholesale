@@ -116,6 +116,22 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         await DatabaseManager.DeleteDatabaseAsync();
     }
 
+    public void EnsureAppHostUsesActualDatabricksJobs()
+    {
+        AppHostManager.RestartHostIfChanges(new Dictionary<string, string>
+        {
+            { nameof(DatabricksJobsOptions.WorkspaceUrl), IntegrationTestConfiguration.DatabricksSettings.WorkspaceUrl },
+        });
+    }
+
+    public void EnsureAppHostUsesMockedDatabricksJobs()
+    {
+        AppHostManager.RestartHostIfChanges(new Dictionary<string, string>
+        {
+            { nameof(DatabricksJobsOptions.WorkspaceUrl), MockServer.Url! },
+        });
+    }
+
     /// <summary>
     /// Use this method to attach <paramref name="testOutputHelper"/> to the host logging pipeline.
     /// While attached, any entries written to host log pipeline will also be logged to xUnit test output.
