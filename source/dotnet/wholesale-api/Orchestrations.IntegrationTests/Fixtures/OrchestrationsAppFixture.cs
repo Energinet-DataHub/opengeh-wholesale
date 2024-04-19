@@ -14,7 +14,6 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Net;
 using Azure.Identity;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
@@ -27,7 +26,6 @@ using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
-using Microsoft.Net.Http.Headers;
 using WireMock.Server;
 using Xunit.Abstractions;
 
@@ -105,6 +103,7 @@ public class OrchestrationsAppFixture : IAsyncLifetime
     public async Task DisposeAsync()
     {
         AppHostManager.Dispose();
+        MockServer.Dispose();
         AzuriteManager.Dispose();
         await DatabaseManager.DeleteDatabaseAsync();
     }
