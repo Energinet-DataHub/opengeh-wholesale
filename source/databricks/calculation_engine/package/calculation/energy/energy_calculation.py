@@ -51,7 +51,9 @@ def execute(
 ) -> Tuple[EnergyResultsContainer, EnergyResults, EnergyResults]:
     with logging_configuration.start_span("metering_point_time_series"):
         # TODO: use env arg or something
-        intersection_time = datetime(2023, 1, 2, 22)
+        intersection_time = datetime(2023, 2, 1, 23)
+        print(args.calculation_period_start_datetime)
+        print(intersection_time)
         if args.calculation_period_end_datetime < intersection_time:
             metering_point_time_series = transform_quarter_to_hour(
                 prepared_metering_point_time_series
