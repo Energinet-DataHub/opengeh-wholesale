@@ -15,6 +15,7 @@
 using System.Net;
 using System.Text;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions;
@@ -50,6 +51,8 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         // Clear mappings etc. before each test
         Fixture.MockServer.Reset();
 
+        Fixture.ServiceBusListenerMock.ResetMessageHandlersAndReceivedMessages();
+
         return Task.CompletedTask;
     }
 
@@ -72,6 +75,10 @@ public class CalculationOrchestrationTests : IAsyncLifetime
             .MockJobsGet(jobId)
             .MockJobsRunNow(runId)
             .MockJobsRunsGet(runId, "TERMINATED", "SUCCESS");
+
+        var verifyServiceBusMessages = await Fixture.ServiceBusListenerMock
+            .WhenAny()
+            .VerifyCountAsync(1);
 
         // Act
         var todayAtMidnight = new LocalDate(2024, 5, 17)
@@ -102,5 +109,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("SendCalculationResultsActivity", TimeSpan.FromMinutes(5));
 
         // TODO: Wait for events on ServiceBus using "listener mock"
+        var wait = verifyServiceBusMessages.Wait(TimeSpan.FromMinutes(1));
+        wait.Should().BeFalse();
     }
 }

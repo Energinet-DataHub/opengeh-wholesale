@@ -20,6 +20,7 @@ using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
@@ -48,6 +49,9 @@ public class OrchestrationsAppFixture : IAsyncLifetime
             IntegrationTestConfiguration.ServiceBusConnectionString,
             TestLogger);
 
+        ServiceBusListenerMock =
+            new ServiceBusListenerMock(IntegrationTestConfiguration.ServiceBusConnectionString, TestLogger);
+
         HostConfigurationBuilder = new FunctionAppHostConfigurationBuilder();
 
         MockServer = WireMockServer.Start(port: 1024);
@@ -59,6 +63,8 @@ public class OrchestrationsAppFixture : IAsyncLifetime
 
     [NotNull]
     public FunctionAppHostManager? AppHostManager { get; private set; }
+
+    internal ServiceBusListenerMock ServiceBusListenerMock { get; }
 
     private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
 
@@ -83,14 +89,16 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         var appHostSettings = CreateAppHostSettings("Orchestrations", ref port);
 
         // ServiceBus entities
-        await ServiceBusResourceProvider
+        var topicResource = await ServiceBusResourceProvider
             .BuildTopic("integration-events")
-                .Do(topic => appHostSettings.ProcessEnvironmentVariables
-                    .Add($"{IntegrationEventsOptions.SectionName}__{nameof(IntegrationEventsOptions.TopicName)}", topic.Name))
+            .Do(topic => appHostSettings.ProcessEnvironmentVariables
+                .Add($"{IntegrationEventsOptions.SectionName}__{nameof(IntegrationEventsOptions.TopicName)}", topic.Name))
             .AddSubscription("subscription")
-                .Do(subscription => appHostSettings.ProcessEnvironmentVariables
-                    .Add($"{IntegrationEventsOptions.SectionName}__{nameof(IntegrationEventsOptions.SubscriptionName)}", subscription.SubscriptionName))
+            .Do(subscription => appHostSettings.ProcessEnvironmentVariables
+                .Add($"{IntegrationEventsOptions.SectionName}__{nameof(IntegrationEventsOptions.SubscriptionName)}", subscription.SubscriptionName))
             .CreateAsync();
+
+        await ServiceBusListenerMock.AddTopicSubscriptionListenerAsync(topicResource.Name, topicResource.Subscriptions.Single().SubscriptionName);
 
         // DataLake
         await EnsureCalculationStorageContainerExistsAsync();
