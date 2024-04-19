@@ -1,4 +1,4 @@
-CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_periods as
+CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_periods_v1 as
 SELECT calculation_id,
        metering_point_id,
        from_date,

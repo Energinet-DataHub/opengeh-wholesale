@@ -16,7 +16,7 @@ from pyspark.sql import DataFrame, SparkSession
 
 from package.infrastructure import paths
 from package.infrastructure.paths import (
-    METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME,
+    METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1,
     SETTLEMENT_REPORT_DATABASE_NAME,
 )
 
@@ -32,12 +32,12 @@ class ViewReader:
         self._schema_path = schema_path
         self._metering_point_periods_view_name = (
             metering_point_periods_view_name
-            or paths.METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME
+            or paths.METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1
         )
 
     def read_metering_point_periods(
         self,
     ) -> DataFrame:
         return self._spark.read.format("delta").table(
-            f"{SETTLEMENT_REPORT_DATABASE_NAME}.{METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME}"
+            f"{SETTLEMENT_REPORT_DATABASE_NAME}.{METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1}"
         )
