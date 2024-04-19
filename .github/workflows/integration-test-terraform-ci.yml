@@ -55,7 +55,7 @@ jobs:
           echo "TF_VAR_domain_name_short=int$GITHUB_RUN_ID" >> $GITHUB_ENV
 
       - name: Az CLI login
-        uses: azure/login@v1
+        uses: azure/login@v2
         with:
           client-id: ${{ vars.azure_spn_id }}
           tenant-id: ${{ vars.azure_tenant_id }}
