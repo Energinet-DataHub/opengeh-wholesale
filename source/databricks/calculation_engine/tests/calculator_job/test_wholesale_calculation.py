@@ -256,3 +256,24 @@ def test__when_wholesale_calculation__basis_data_is_stored(
 
     # Assert
     assert actual.count() > 0
+
+
+@pytest.mark.parametrize(
+    "basis_data_table_name",
+    paths.BASIS_DATA_TABLE_NAMES,
+)
+def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
+    spark: SparkSession,
+    executed_wholesale_fixing: None,
+    basis_data_table_name: str,
+) -> None:
+    # Arrange
+    actual = spark.read.table(
+        f"{paths.BASIS_DATA_DATABASE_NAME}.{basis_data_table_name}"
+    ).where(f.col("calculation_id") == c.executed_wholesale_calculation_id)
+
+    # Act: Calculator job is executed just once per session.
+    #      See the fixtures `results_df` and `executed_wholesale_fixing`
+
+    # Assert
+    assert actual.schema === None

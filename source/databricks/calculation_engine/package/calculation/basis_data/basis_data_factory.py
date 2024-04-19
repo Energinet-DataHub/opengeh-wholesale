@@ -21,13 +21,14 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
 )
 from package.calculation.basis_data import basis_data
 from package.infrastructure import logging_configuration
-
+from package.calculation.preparation.data_structures import InputChargesContainer
 
 @logging_configuration.use_span("calculation.basis_data.prepare")
 def create(
     args: CalculatorArgs,
     metering_point_periods_df: DataFrame,
     metering_point_time_series_df: PreparedMeteringPointTimeSeries,
+    input_charges_container: InputChargesContainer,
 ) -> BasisDataContainer:
     time_series_points_basis_data = basis_data.get_time_series_points_basis_data(
         args.calculation_id, metering_point_time_series_df
@@ -39,7 +40,28 @@ def create(
         )
     )
 
+    charge_master_data_basis_data = (
+        basis_data.get_charge_master_data_basis_data(
+            args.calculation_id, input_charges_container
+        )
+    )
+
+    charge_prices_basis_data = (
+        basis_data.get_charge_prices_basis_data(
+            args.calculation_id, input_charges_container
+        )
+    )
+
+    charge_links_basis_data = (
+        basis_data.get_charge_links_basis_data(
+            args.calculation_id, input_charges_container
+        )
+    )
+
     return BasisDataContainer(
         time_series_points=time_series_points_basis_data,
         metering_point_periods=metering_point_periods_basis_data,
+        charge_master_data=charge_master_data_basis_data,
+        charge_prices=charge_prices_basis_data,
+        charge_links=charge_links_basis_data,
     )
