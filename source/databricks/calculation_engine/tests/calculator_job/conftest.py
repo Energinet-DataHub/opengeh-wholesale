@@ -27,6 +27,7 @@ from package.codelists.calculation_type import (
     CalculationType,
 )
 from package.constants import EnergyResultColumnNames, WholesaleResultColumnNames
+from package.constants.result_column_names import ResultColumnNames
 from package.infrastructure import paths
 from . import configuration as C
 
@@ -141,4 +142,17 @@ def wholesale_fixing_wholesale_results_df(
     return results_df.where(
         F.col(WholesaleResultColumnNames.calculation_id)
         == C.executed_wholesale_calculation_id
+    )
+
+
+@pytest.fixture(scope="session")
+def wholesale_fixing_total_monthly_amounts(
+    spark: SparkSession,
+    executed_wholesale_fixing: None,
+) -> DataFrame:
+    results_df = spark.read.table(
+        f"{paths.OUTPUT_DATABASE_NAME}.{paths.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
+    )
+    return results_df.where(
+        F.col(ResultColumnNames.calculation_id) == C.executed_wholesale_calculation_id
     )

@@ -14,7 +14,7 @@
 
 # The spark version should follow the spark version in databricks.
 # The databricks version of spark is controlled from dh3-infrastructure and uses latest LTS (ATTOW - Spark v3.5.0)
-FROM ghcr.io/energinet-datahub/pyspark-slim:3.5.1-2
+FROM ghcr.io/energinet-datahub/pyspark-slim:3.5.1-3
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -44,9 +44,6 @@ RUN mamba install --quiet --yes --satisfied-skip-solve --file mamba_requirements
 # example (delta 2.2.x = spark 3.3.x)
 COPY requirements.txt requirements.txt
 RUN pip --no-cache-dir install -r requirements.txt
-
-# Below will make everything in the directory owned by the group ${NB_GID}
-RUN fix-permissions "${CONDA_DIR}"
 
 # Set misc environment variables required for properly run spark
 # note the amount of memory used on the driver is adjusted here

@@ -154,7 +154,6 @@ def _create_energy_results_corresponding_to_four_calculation_results(
 def test__create__with_correct_aggregation_level(
     spark: SparkSession,
     aggregation_level: e.AggregationLevel,
-    migrations_executed: None,
     args: CalculatorArgs,
 ) -> None:
     # Arrange
@@ -202,7 +201,6 @@ def test__create__with_correct_row_values(
     spark: SparkSession,
     column_name: str,
     column_value: Any,
-    migrations_executed: None,
     args: CalculatorArgs,
 ) -> None:
     # Arrange
@@ -225,7 +223,6 @@ def test__create__with_correct_row_values(
 def test__create__columns_matching_contract(
     spark: SparkSession,
     contracts_path: str,
-    migrations_executed: None,
     args: CalculatorArgs,
 ) -> None:
     # Arrange
@@ -248,7 +245,6 @@ def test__create__columns_matching_contract(
 def test__create__with_correct_number_of_calculation_result_ids(
     spark: SparkSession,
     contracts_path: str,
-    migrations_executed: None,
     args: CalculatorArgs,
 ) -> None:
     # Arrange
@@ -295,7 +291,6 @@ def test__create__when_rows_belong_to_different_results__adds_different_calculat
     column_name: str,
     value: Any,
     other_value: Any,
-    migrations_executed: None,
     args: CalculatorArgs,
 ) -> None:
     # Arrange
@@ -349,7 +344,6 @@ def test__write__when_rows_belong_to_same_result__adds_same_calculation_result_i
     column_name: str,
     value: Any,
     other_value: Any,
-    migrations_executed: None,
     args: CalculatorArgs,
 ) -> None:
     # Arrange

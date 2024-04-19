@@ -13,6 +13,7 @@
 # limitations under the License.
 from decimal import Decimal
 
+import pytest
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import lit
 from pyspark.sql.types import DecimalType
@@ -53,7 +54,7 @@ class TestCtor:
         ) -> None:
             # Arrange
             df = factory.create(spark).df
-            df = df.withColumn(Colname.quantity, lit(None).cast(DecimalType(18, 6)))
+            df = df.withColumn(Colname.quantity, lit(None).cast(DecimalType(18, 3)))
 
             # Act
             actual = EnergyResults(df)
@@ -85,25 +86,27 @@ class TestCtor:
             # Assert
             assert irrelevant_column not in actual.df.schema.fieldNames()
 
-    class TestWhenInputDecimalScaleIsHigherThanSix:
-        def test_respects_input_scale(self, spark: SparkSession) -> None:
+    class TestWhenInputDecimalScaleIsHigherThanThree:
+        def test_raise_exception_if_scale_does_no_match_schema(
+            self, spark: SparkSession
+        ) -> None:
             """
-            In practice the quantity column in EnergyResult can be represented by 5 decimals, because time
-            series has 3 decimals and is divided by four (quarters). The end result should be stored with 6 decimals.
-            However, other scales are respected to reduce the risk of unexpected roundings (in the future)
-            in intermediate calculations.
+            The quantity column in EnergyResult can be represented by 3 decimals.
+            Time series has 3 decimals and those with resolution PT1H is divided by four (quarters).
+            See rounding.py for details on how we deal with rounding.
+            The end result should be stored with 3 decimals.
             """
 
             # Arrange
-            expected_scale = 8
             df = factory.create(spark).df
             df = df.withColumn(
                 Colname.quantity,
-                lit(Decimal("0.12345678")).cast(DecimalType(18, expected_scale)),
+                lit(Decimal("0.12345678")).cast(DecimalType(18, 8)),
             )
 
-            # Act
-            actual = EnergyResults(df)
+            # Act & Assert
+            with pytest.raises(AssertionError) as exc_info:
+                EnergyResults(df)
 
             # Assert
-            assert actual.df.schema[Colname.quantity].dataType.scale == expected_scale
+            assert "Decimal scale error" in str(exc_info.value)
