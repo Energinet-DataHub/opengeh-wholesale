@@ -15,6 +15,8 @@ resource "azurerm_static_site" "this" {
 }
 
 resource "azurerm_static_site_custom_domain" "this" {
+  count           = var.frontend_url != null ? 1 : 0
+
   static_site_id  = azurerm_static_site.this.id
   domain_name     = local.frontend_url
   validation_type = "cname-delegation"
