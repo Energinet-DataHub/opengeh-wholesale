@@ -4,3 +4,4 @@
   period_end: '2023-02-11 23:00:00'
   calculation_type: 'WholesaleFixing'
   calculation_execution_time_start: '2024-01-01 23:00:00'
+  intersection_time: '2023-02-01 23:00:00'

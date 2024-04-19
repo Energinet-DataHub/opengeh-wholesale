@@ -25,6 +25,7 @@ class ArgsName:
     period_start = "period_start"
     period_end = "period_end"
     grid_areas = "grid_areas"
+    intersection_time = "intersection_time"
 
 
 CSV_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
@@ -49,4 +50,7 @@ def create_calculation_args(input_path: str) -> CalculatorArgs:
             CSV_DATE_FORMAT,
         ),
         time_zone="Europe/Copenhagen",
+        intersection_time=datetime.strptime(
+            calculation_args[0]["intersection_time"], CSV_DATE_FORMAT
+        ),
     )

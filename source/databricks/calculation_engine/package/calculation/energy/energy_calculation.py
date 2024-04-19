@@ -50,20 +50,15 @@ def execute(
     grid_loss_responsible_df: GridLossResponsible,
 ) -> Tuple[EnergyResultsContainer, EnergyResults, EnergyResults]:
     with logging_configuration.start_span("metering_point_time_series"):
-        # TODO: use env arg or something
-        intersection_time = datetime(2023, 2, 1, 23)
-        if args.calculation_period_end_datetime < intersection_time:
+        if args.calculation_period_end_datetime < args.intersection_time:
             metering_point_time_series = transform_quarter_to_hour(
                 prepared_metering_point_time_series
             )
-        elif args.calculation_period_start_datetime >= intersection_time:
+        else:
             metering_point_time_series = transform_hour_to_quarter(
                 prepared_metering_point_time_series
             )
-        else:  # else throw exception
-            raise ValueError(
-                "The calculation period must be either before or after the intersection time"
-            )
+
         metering_point_time_series.cache_internal()
 
     return _calculate(

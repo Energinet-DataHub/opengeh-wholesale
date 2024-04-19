@@ -29,3 +29,4 @@ class CalculatorArgs:
     calculation_type: CalculationType
     calculation_execution_time_start: datetime
     time_zone: str
+    intersection_time: datetime
