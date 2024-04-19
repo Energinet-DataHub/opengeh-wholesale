@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -138,4 +141,28 @@ public class DatabricksApiWireMockExtensionsTests : IClassFixture<WireMockExtens
         actualRunTuple.Item1.State.LifeCycleState.Should().Be(RunLifeCycleState.TERMINATED);
         actualRunTuple.Item1.State.ResultState.Should().Be(RunResultState.SUCCESS);
     }
+
+    // [Fact]
+    // public async Task MockedDataBrickSql_WhenQueringForData_CanDeserializeResponseFromMock()
+    // {
+    //     // Arrange
+    //     var statementId = "pony";
+    //     var chunkIndex = 0;
+    //     var path = "flamingo";
+    //     _fixture.MockServer
+    //         .CatchAll()
+    //         .MockSqlStatements(statementId, chunkIndex)
+    //         .MockSqlStatementsResultChunks(statementId, chunkIndex, path)
+    //         .MockSqlStatementsResultStream(path);
+    //
+    //     var query = new EnergyResultQueryStatement(
+    //         Guid.Empty,
+    //         new DeltaTableOptions() { SCHEMA_NAME = "empty", ENERGY_RESULTS_TABLE_NAME = "empty" });
+    //
+    //     // Act
+    //     var hej = await _fixture.DatabricksExecutor.ExecuteStatementAsync(query, Format.JsonArray).ToListAsync();
+    //
+    //     var logs = _fixture.MockServer.LogEntries;
+    //     hej.Should().NotBeNull().And.NotBeEmpty();
+    // }
 }
