@@ -23,7 +23,6 @@ from typing import Any
 
 class EnvironmentVariable(Enum):
     TIME_ZONE = "TIME_ZONE"
-    INTERSECTION_TIME = "INTERSECTION_TIME"
     DATA_STORAGE_ACCOUNT_NAME = "DATA_STORAGE_ACCOUNT_NAME"
     CALCULATION_INPUT_FOLDER_NAME = "CALCULATION_INPUT_FOLDER_NAME"
     TENANT_ID = "TENANT_ID"
@@ -55,10 +54,6 @@ def get_storage_account_name() -> str:
 
 def get_time_zone() -> str:
     return get_env_variable_or_throw(EnvironmentVariable.TIME_ZONE)
-
-
-def get_intersection_time() -> str:
-    return get_env_variable_or_throw(EnvironmentVariable.INTERSECTION_TIME)
 
 
 def get_calculation_input_folder_name() -> str:

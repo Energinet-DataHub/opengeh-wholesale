@@ -50,8 +50,7 @@ def execute(
     grid_loss_responsible_df: GridLossResponsible,
 ) -> Tuple[EnergyResultsContainer, EnergyResults, EnergyResults]:
     with logging_configuration.start_span("metering_point_time_series"):
-        # TODO: add quarter to hour transformation in if statement
-        # intersection_time = env_vars.get_intersection_time()
+        # TODO: use env arg or something
         intersection_time = datetime(2023, 1, 2, 22)
         if args.calculation_period_end_datetime < intersection_time:
             metering_point_time_series = transform_quarter_to_hour(
