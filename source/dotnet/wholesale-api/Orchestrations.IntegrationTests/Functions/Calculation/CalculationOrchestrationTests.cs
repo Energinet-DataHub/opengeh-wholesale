@@ -20,8 +20,6 @@ using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 using FluentAssertions;
-using FluentAssertions.Execution;
-using Microsoft.Azure.Databricks.Client.Models;
 using Newtonsoft.Json;
 using NodaTime;
 using Xunit.Abstractions;

@@ -15,6 +15,7 @@
 using Energinet.DataHub.Core.Databricks.Jobs.Abstractions;
 using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
 using Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,21 +34,24 @@ public sealed class WireMockExtensionsFixture : IDisposable
     {
         MockServer = WireMockServer.Start();
 
-        _services = ConfigureJobsApiClient(workspaceUrl: MockServer.Url!);
+        _services = ConfigureServices(workspaceUrl: MockServer.Url!);
         var serviceProvider = _services.BuildServiceProvider();
         JobApiClient = serviceProvider.GetRequiredService<IJobsApiClient>();
+        DatabricksExecutor = serviceProvider.GetRequiredService<DatabricksSqlWarehouseQueryExecutor>();
     }
 
     public WireMockServer MockServer { get; }
 
     public IJobsApiClient JobApiClient { get; }
 
+    public DatabricksSqlWarehouseQueryExecutor DatabricksExecutor { get; }
+
     public void Dispose()
     {
         MockServer.Dispose();
     }
 
-    private static ServiceCollection ConfigureJobsApiClient(string workspaceUrl)
+    private static ServiceCollection ConfigureServices(string workspaceUrl)
     {
         var services = new ServiceCollection();
 
@@ -56,8 +60,14 @@ public sealed class WireMockExtensionsFixture : IDisposable
             [$"{nameof(DatabricksJobsOptions.WorkspaceUrl)}"] = workspaceUrl,
             [$"{nameof(DatabricksJobsOptions.WorkspaceToken)}"] = "notEmpty",
             [$"{nameof(DatabricksJobsOptions.WarehouseId)}"] = "notEmpty",
+
+            [$"{nameof(DatabricksSqlStatementOptions.WorkspaceUrl)}"] = workspaceUrl,
+            [$"{nameof(DatabricksSqlStatementOptions.WorkspaceToken)}"] = "notEmpty",
+            [$"{nameof(DatabricksSqlStatementOptions.WarehouseId)}"] = "notEmpty",
         });
-        services.AddDatabricksJobs(configuration);
+        services
+            .AddDatabricksJobs(configuration)
+            .AddDatabricksSqlStatementExecution(configuration);
 
         return services;
     }

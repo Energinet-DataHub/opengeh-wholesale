@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using System.Net;
+using System.Text;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Microsoft.Net.Http.Headers;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
@@ -126,6 +128,162 @@ public static class DatabricksApiWireMockExtensions
             .RespondWith(response);
 
         return server;
+    }
+
+    public static WireMockServer MockSqlStatements(this WireMockServer server, string statementId, int chunkIndex)
+    {
+        var request = Request
+            .Create()
+            .WithPath("/api/2.0/sql/statements")
+            .UsingPost();
+
+        var response = Response
+            .Create()
+            .WithStatusCode(HttpStatusCode.OK)
+            .WithHeader(HeaderNames.ContentType, "application/json")
+            .WithBody(DatabricksStatementResponseMock(statementId, chunkIndex));
+
+        server
+            .Given(request)
+            .RespondWith(response);
+
+        return server;
+    }
+
+    public static WireMockServer MockSqlStatementsResultChunks(this WireMockServer server, string statementId, int chunkIndex, string path)
+    {
+        var request = Request
+            .Create()
+            .WithPath($"/api/2.0/sql/statements/{statementId}/result/chunks/{chunkIndex}")
+            .UsingGet();
+
+        var response = Response
+            .Create()
+            .WithStatusCode(HttpStatusCode.OK)
+            .WithHeader(HeaderNames.ContentType, "application/json")
+            .WithBody(DatabricksStatementExternalLinkResponseMock(chunkIndex, $"{server.Url}/{path}"));
+
+        server
+            .Given(request)
+            .RespondWith(response);
+
+        return server;
+    }
+
+    public static WireMockServer MockSqlStatementsResultStream(this WireMockServer server, string path)
+    {
+        var request = Request
+            .Create()
+            .WithPath($"/{path}")
+            .UsingGet();
+
+        var response = Response
+            .Create()
+            .WithStatusCode(HttpStatusCode.OK)
+            .WithHeader(HeaderNames.ContentType, "application/octet-stream")
+            .WithBodyAsJson(DatabricksStatementRowMock());
+
+        server
+            .Given(request)
+            .RespondWith(response);
+        return server;
+    }
+
+    public static string DatabricksStatementResponseMock(string statementId, int chunkIndex)
+    {
+        var json = """
+               {
+                 "statement_id": "{statementId}",
+                 "status": {
+                   "state": "SUCCEEDED"
+                 },
+                 "manifest": {
+                   "format": "CSV",
+                   "schema": {
+                     "column_count": 1,
+                     "columns": [
+                       {columnArray}
+                     ]
+                   },
+                   "total_chunk_count": 1,
+                   "chunks": [
+                     {
+                       "chunk_index": {chunkIndex},
+                       "row_offset": 0,
+                       "row_count": 1
+                     }
+                   ],
+                   "total_row_count": 1,
+                   "total_byte_count": 293
+                 },
+                 "result": {
+                   "external_links": [
+                     {
+                       "chunk_index": {chunkIndex},
+                       "row_offset": 0,
+                       "row_count": 100,
+                       "byte_count": 293,
+                       "external_link": "https://someplace.cloud-provider.com/very/long/path/...",
+                       "expiration": "2023-01-30T22:23:23.140Z"
+                     }
+                   ]
+                 }
+               }
+               """;
+        var columns = string.Join(
+            ",",
+            EnergyResultColumnNames
+                .GetAllNames()
+                .Select(name => $" {{name: {name} }}"));
+
+        return json.Replace("{statementId}", statementId)
+            .Replace("{chunkIndex}", chunkIndex.ToString())
+            .Replace(
+                "{columnArray}",
+                columns);
+    }
+
+    public static string DatabricksStatementExternalLinkResponseMock(int chunkIndex, string url)
+    {
+        var json = """
+                   {
+                   "external_links": [
+                     {
+                       "chunk_index": {chunkIndex},
+                       "row_offset": 0,
+                       "row_count": 1,
+                       "byte_count": 24486486,
+                       "external_link": "{url}",
+                       "expiration": "2023-01-30T22:23:23.140Z"
+                     }
+                   ]
+                   }
+                   """;
+        return json.Replace("{chunkIndex}", chunkIndex.ToString())
+            .Replace("{url}", url);
+    }
+
+    private static string DatabricksStatementRowMock()
+    {
+        var data = EnergyResultColumnNames.GetAllNames().Select(columnName => columnName switch
+        {
+            EnergyResultColumnNames.CalculationId => $@"'ed39dbc5-bdc5-41b9-922a-08d3b12d4538'",
+            EnergyResultColumnNames.CalculationExecutionTimeStart => $@"'2022-03-11T03:00:00.000Z'",
+            EnergyResultColumnNames.CalculationType => $@"'{DeltaTableCalculationType.BalanceFixing}'",
+            EnergyResultColumnNames.CalculationResultId => $@"'aaaaaaaa-1111-1111-1c1c-08d3b12d4511'",
+            EnergyResultColumnNames.TimeSeriesType => $@"'{DeltaTableTimeSeriesType.Production}'",
+            EnergyResultColumnNames.GridArea => $@"'805'",
+            EnergyResultColumnNames.FromGridArea => "NULL",
+            EnergyResultColumnNames.BalanceResponsibleId => $@"'1236552000028'",
+            EnergyResultColumnNames.EnergySupplierId => $@"'2236552000028'",
+            EnergyResultColumnNames.Time => $@"'2022-05-16T03:00:00.000Z'",
+            EnergyResultColumnNames.Quantity => $@"1.123",
+            EnergyResultColumnNames.QuantityQualities => $@"ARRAY('missing')",
+            EnergyResultColumnNames.AggregationLevel => $@"'total_ga'",
+            EnergyResultColumnNames.MeteringPointId => "NULL",
+            _ => throw new ArgumentOutOfRangeException(nameof(columnName), columnName, null),
+        }).ToArray();
+        return string.Join(",", data);
     }
 
     /// <summary>
