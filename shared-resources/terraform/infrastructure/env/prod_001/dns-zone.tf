@@ -188,7 +188,7 @@ resource "azurerm_dns_cname_record" "test002_sauron" {
   zone_name           = azurerm_dns_zone.this.name
   resource_group_name = azurerm_resource_group.this.name
   ttl                 = 3600
-  record              = "black-sky-0fe28c503.4.azurestaticapps.net"
+  record              = "victorious-ocean-05a6eaa03.5.azurestaticapps.net"
 }
 
 # sauron prod_001
