@@ -30,9 +30,7 @@ from package.calculation.preparation.data_structures.metering_point_time_series 
 from package.calculation.preparation.data_structures.prepared_tariffs import (
     PreparedTariffs,
 )
-from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
-    PreparedMeteringPointTimeSeries,
-)
+
 from package.codelists import ChargeType, ChargeResolution
 from package.constants import Colname
 
