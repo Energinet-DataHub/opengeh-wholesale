@@ -38,6 +38,7 @@ def add_calculated_grid_loss_to_metering_point_times_series(
     Metering point time series for wholesale calculation includes all calculation input metering point time series,
     and positive and negative grid loss metering point time series.
     """
+    # TODO: do something else
     prepared_metering_point_time_series = prepared_metering_point_time_series.df.drop(
         Colname.resolution
     )
