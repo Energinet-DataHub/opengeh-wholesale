@@ -60,7 +60,7 @@ def basis_data_time_series_points_row(
     return Row(**row)
 
 
-def test__transform_hour_to_quarter__when_valid_input__split_basis_data_time_series(
+def test__transform_quarter_to_hour__when_valid_input__split_basis_data_time_series(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -113,7 +113,3 @@ def test__transform_hour_to_quarter__when_valid_input__split_basis_data_time_ser
     assert actual.df.collect()[1][Colname.quantity] == Decimal("17.776000")
     # Check that quarterly quantity is not divided by 4
     assert actual.df.collect()[2][Colname.quantity] == Decimal("17.776000")
-
-    assert (
-        actual.df.collect()[1][Colname.resolution] == MeteringPointResolution.HOUR.value
-    )

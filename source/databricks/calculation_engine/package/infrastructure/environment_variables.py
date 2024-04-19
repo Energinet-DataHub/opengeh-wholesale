@@ -57,7 +57,7 @@ def get_time_zone() -> str:
     return get_env_variable_or_throw(EnvironmentVariable.TIME_ZONE)
 
 
-def get_intersection_time() -> datetime:
+def get_intersection_time() -> str:
     return get_env_variable_or_throw(EnvironmentVariable.INTERSECTION_TIME)
 
 
