@@ -84,7 +84,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         using var actualResponse = await Fixture.AppHostManager.HttpClient.PostAsync(
             "api/StartCalculation",
             new StringContent(
-                JsonConvert.SerializeObject(new BatchRequestDto(
+                JsonConvert.SerializeObject(new CalculationRequestDto(
                 CalculationType.Aggregation,
                 ["256", "512"],
                 todayAtMidnight,

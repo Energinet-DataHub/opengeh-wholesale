@@ -29,18 +29,18 @@ internal class CalculationOrchestration
         [OrchestrationTrigger] TaskOrchestrationContext context,
         FunctionContext executionContext)
     {
-        var batchRequestDto = context.GetInput<BatchRequestDto>();
-        if (batchRequestDto == null)
+        var calculationRequestDto = context.GetInput<CalculationRequestDto>();
+        if (calculationRequestDto == null)
         {
             return "Error: No input specified.";
         }
 
         // Replay safe logger, only logging when not replaying previous history
         var logger = context.CreateReplaySafeLogger<CalculationOrchestration>();
-        logger.LogInformation($"{nameof(batchRequestDto)}: {batchRequestDto}.");
+        logger.LogInformation($"{nameof(calculationRequestDto)}: {calculationRequestDto}.");
 
         // Create calculation (SQL)
-        var calculationMetadata = await context.CallActivityAsync<CalculationMetadata>(nameof(CalculationActivities.CreateCalculationRecordActivity), batchRequestDto);
+        var calculationMetadata = await context.CallActivityAsync<CalculationMetadata>(nameof(CalculationActivities.CreateCalculationRecordActivity), calculationRequestDto);
         calculationMetadata.OrchestrationProgress = "CalculationCreated";
         context.SetCustomStatus(calculationMetadata);
 

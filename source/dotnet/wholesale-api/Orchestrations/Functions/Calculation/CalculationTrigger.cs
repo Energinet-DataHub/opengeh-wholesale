@@ -26,13 +26,13 @@ internal class CalculationTrigger
     [Function(nameof(StartCalculation))]
     public async Task<HttpResponseData> StartCalculation(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req,
-        [FromBody] BatchRequestDto batchRequestDto,
+        [FromBody] CalculationRequestDto calculationRequestDto,
         [DurableClient] DurableTaskClient client,
         FunctionContext executionContext)
     {
         var logger = executionContext.GetLogger<CalculationOrchestration>();
 
-        var instanceId = await client.ScheduleNewOrchestrationInstanceAsync(nameof(CalculationOrchestration.Calculation), batchRequestDto).ConfigureAwait(false);
+        var instanceId = await client.ScheduleNewOrchestrationInstanceAsync(nameof(CalculationOrchestration.Calculation), calculationRequestDto).ConfigureAwait(false);
         logger.LogInformation("Created new orchestration with instance ID = {instanceId}", instanceId);
 
         var orchestrationMetadata = await client.WaitForInstanceStartAsync(instanceId).ConfigureAwait(false);
@@ -52,13 +52,13 @@ internal class CalculationTrigger
     [Function(nameof(StartCalculationForDemo))]
     public async Task<HttpResponseData> StartCalculationForDemo(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req,
-        [FromBody] BatchRequestDto batchRequestDto,
+        [FromBody] CalculationRequestDto calculationRequestDto,
         [DurableClient] DurableTaskClient client,
         FunctionContext executionContext)
     {
         var logger = executionContext.GetLogger<CalculationOrchestration>();
 
-        var instanceId = await client.ScheduleNewOrchestrationInstanceAsync(nameof(Calculation), batchRequestDto).ConfigureAwait(false);
+        var instanceId = await client.ScheduleNewOrchestrationInstanceAsync(nameof(Calculation), calculationRequestDto).ConfigureAwait(false);
         logger.LogInformation("Created new orchestration with instance ID = {instanceId}", instanceId);
 
         return client.CreateCheckStatusResponse(req, instanceId);
