@@ -31,6 +31,7 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
 )
 from package.codelists import ChargeResolution
 from . import transformations as T
+from .data_structures.metering_point_time_series import MeteringPointTimeSeries
 from ...constants import Colname
 from ...infrastructure import logging_configuration
 
@@ -103,7 +104,7 @@ class PreparedDataReader:
     def get_prepared_charges(
         self,
         metering_point_periods: DataFrame,
-        time_series: PreparedMeteringPointTimeSeries,
+        metering_point_time_series: MeteringPointTimeSeries,
         input_charges: InputChargesContainer,
         time_zone: str,
     ) -> PreparedChargesContainer:
@@ -112,7 +113,7 @@ class PreparedDataReader:
         )
 
         hourly_tariffs = T.get_prepared_tariffs(
-            time_series,
+            metering_point_time_series,
             input_charges.charge_master_data,
             input_charges.charge_prices,
             charge_link_metering_point_periods,
@@ -121,7 +122,7 @@ class PreparedDataReader:
         )
 
         daily_tariffs = T.get_prepared_tariffs(
-            time_series,
+            metering_point_time_series,
             input_charges.charge_master_data,
             input_charges.charge_prices,
             charge_link_metering_point_periods,

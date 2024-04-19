@@ -28,7 +28,7 @@ from package.calculation.energy.data_structures.energy_results import (
 )
 from package.calculation.preparation.data_structures.metering_point_time_series import (
     MeteringPointTimeSeries,
-    _metering_point_time_series_schema,
+    metering_point_time_series_schema,
 )
 from package.codelists import MeteringPointType
 from package.constants import Colname
@@ -72,7 +72,7 @@ def quarterly_metering_point_time_series(
         rows.append(_create_row("X", "Y", Decimal("42") * quarter_number, obs_time))
         rows.append(_create_row("Y", "X", Decimal("12") * quarter_number, obs_time))
 
-    df = spark.createDataFrame(data=rows, schema=_metering_point_time_series_schema)
+    df = spark.createDataFrame(data=rows, schema=metering_point_time_series_schema)
     return MeteringPointTimeSeries(df)
 
 

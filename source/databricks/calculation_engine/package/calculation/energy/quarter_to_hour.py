@@ -47,7 +47,6 @@ def transform_quarter_to_hour(
         )
         .sum(Colname.quantity)
         .withColumnRenamed("sum(quantity)", Colname.quantity)
-        .withColumn(Colname.resolution, f.lit(MeteringPointResolution.HOUR.value))
     )
 
     return MeteringPointTimeSeries(result)

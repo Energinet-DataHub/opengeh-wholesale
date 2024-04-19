@@ -86,7 +86,7 @@ def _execute(
 
     # This extends the content of prepared_metering_point_time_series with calculated grid loss,
     # which is used in the wholesale calculation and the basis data
-    prepared_metering_point_time_series = (
+    metering_point_time_series = (
         add_calculated_grid_loss_to_metering_point_times_series(
             prepared_metering_point_time_series,
             positive_grid_loss,
@@ -115,7 +115,7 @@ def _execute(
 
             prepared_charges = prepared_data_reader.get_prepared_charges(
                 metering_point_periods_for_wholesale_calculation,
-                prepared_metering_point_time_series,
+                metering_point_time_series,
                 input_charges,
                 args.time_zone,
             )

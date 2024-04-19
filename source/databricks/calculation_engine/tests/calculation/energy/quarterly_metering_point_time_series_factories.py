@@ -19,7 +19,7 @@ from pyspark.sql import Row, SparkSession
 
 from package.calculation.preparation.data_structures.metering_point_time_series import (
     MeteringPointTimeSeries,
-    _metering_point_time_series_schema,
+    metering_point_time_series_schema,
 )
 from package.codelists import MeteringPointType, QuantityQuality, SettlementMethod
 from package.constants import Colname
@@ -139,5 +139,5 @@ def create(
         data = [create_row()]
     elif isinstance(data, Row):
         data = [data]
-    df = spark.createDataFrame(data, schema=_metering_point_time_series_schema)
+    df = spark.createDataFrame(data, schema=metering_point_time_series_schema)
     return MeteringPointTimeSeries(df)

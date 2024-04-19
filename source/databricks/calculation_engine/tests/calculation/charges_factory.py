@@ -22,6 +22,7 @@ from package.calculation.preparation.data_structures.charge_link_metering_point_
 )
 from calculation.preparation.transformations import (
     prepared_metering_point_time_series_factory,
+    metering_point_time_series_factory,
 )
 from package.calculation.preparation.data_structures.charge_master_data import (
     ChargeMasterData,
@@ -56,13 +57,13 @@ class DefaultValues:
     TO_DATE: datetime = datetime(2020, 1, 31, 23)
 
 
-def create_time_series_row(
+def create_metering_point_time_series_row(
     metering_point_id: str = DefaultValues.METERING_POINT_ID,
     quantity: Decimal = DefaultValues.QUANTITY,
     quality: e.QuantityQuality = e.QuantityQuality.CALCULATED,
     observation_time: datetime = datetime(2019, 12, 31, 23),
 ) -> Row:
-    return prepared_metering_point_time_series_factory.create_row(
+    return metering_point_time_series_factory.create_row(
         metering_point_id=metering_point_id,
         quantity=quantity,
         quality=quality,

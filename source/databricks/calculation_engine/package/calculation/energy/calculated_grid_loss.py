@@ -14,6 +14,9 @@
 import pyspark.sql.functions as f
 
 from package.calculation.energy.data_structures.energy_results import EnergyResults
+from package.calculation.preparation.data_structures.metering_point_time_series import (
+    MeteringPointTimeSeries,
+)
 from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
@@ -30,7 +33,7 @@ def add_calculated_grid_loss_to_metering_point_times_series(
     prepared_metering_point_time_series: PreparedMeteringPointTimeSeries,
     positive_grid_loss: EnergyResults,
     negative_grid_loss: EnergyResults,
-) -> PreparedMeteringPointTimeSeries:
+) -> MeteringPointTimeSeries:
     """
     Metering point time series for wholesale calculation includes all calculation input metering point time series,
     and positive and negative grid loss metering point time series.
@@ -54,10 +57,6 @@ def add_calculated_grid_loss_to_metering_point_times_series(
             f.col(Colname.from_grid_area),
             f.col(Colname.metering_point_id),
             f.col(Colname.metering_point_type),
-            # TODO: fix
-            f.lit(MeteringPointResolution.QUARTER.value).alias(
-                Colname.resolution
-            ),  # This will change when we must support HOURLY for calculations before 1st of May 2023
             f.col(Colname.observation_time),
             f.col(Colname.quantity).alias(Colname.quantity),
             f.lit(QuantityQuality.CALCULATED.value).alias(Colname.quality),
@@ -68,4 +67,4 @@ def add_calculated_grid_loss_to_metering_point_times_series(
         .union(prepared_metering_point_time_series.df)
     )
 
-    return PreparedMeteringPointTimeSeries(df)
+    return MeteringPointTimeSeries(df)

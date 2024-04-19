@@ -34,7 +34,7 @@ class MeteringPointTimeSeries(DataFrameWrapper):
     def __init__(self, df: DataFrame):
         super().__init__(
             df,
-            _metering_point_time_series_schema,
+            metering_point_time_series_schema,
             # Setting these too False would cause errors, and there is no nice and easy fix for this.
             # Should they eventually be set to False?
             ignore_nullability=True,
@@ -43,19 +43,18 @@ class MeteringPointTimeSeries(DataFrameWrapper):
         )
 
 
-_metering_point_time_series_schema = t.StructType(
+metering_point_time_series_schema = t.StructType(
     [
         t.StructField(Colname.grid_area, t.StringType(), False),
         t.StructField(Colname.to_grid_area, t.StringType(), True),
         t.StructField(Colname.from_grid_area, t.StringType(), True),
         t.StructField(Colname.metering_point_id, t.StringType(), False),
         t.StructField(Colname.metering_point_type, t.StringType(), False),
+        t.StructField(Colname.observation_time, t.TimestampType(), False),
         t.StructField(Colname.quantity, t.DecimalType(18, 6), False),
         t.StructField(Colname.quality, t.StringType(), False),
         t.StructField(Colname.energy_supplier_id, t.StringType(), True),
         t.StructField(Colname.balance_responsible_id, t.StringType(), True),
         t.StructField(Colname.settlement_method, t.StringType(), True),
-        t.StructField(Colname.observation_time, t.TimestampType(), False),
-        t.StructField(Colname.resolution, t.StringType(), False),
     ]
 )

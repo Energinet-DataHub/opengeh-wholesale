@@ -61,6 +61,6 @@ def transform_hour_to_quarter(
             # When resolution is quarter, quantity is already correct
             f.col(Colname.quantity),
         ),
-    ).withColumn(Colname.resolution, f.lit(MeteringPointResolution.QUARTER.value))
+    )
 
     return MeteringPointTimeSeries(result)
