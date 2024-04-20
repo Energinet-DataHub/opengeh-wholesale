@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Net;
+using System.Net.Http.Json;
 using System.Text;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
@@ -21,9 +22,14 @@ using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 using FluentAssertions;
+using GraphQL;
+using Microsoft.Azure.WebJobs.Extensions.DurableTask;
+using Namotion.Reflection;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NodaTime;
 using Xunit.Abstractions;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.Calculation;
 
@@ -87,6 +93,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
             .InZoneStrictly(_dateTimeZone)
             .ToDateTimeOffset();
 
+        var beforeCreated = DateTime.UtcNow;
         using var actualResponse = await Fixture.AppHostManager.HttpClient.PostAsync(
             "api/StartCalculation",
             new StringContent(
@@ -100,7 +107,37 @@ public class CalculationOrchestrationTests : IAsyncLifetime
 
         // Assert
         actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        var calculationId = await actualResponse.Content.ReadAsAsync<Guid>();
 
+        // Verify activities was executed by searching the orchestration history
+        var filter = new OrchestrationStatusQueryCondition()
+        {
+            CreatedTimeFrom = beforeCreated,
+            RuntimeStatus =
+            [
+                OrchestrationRuntimeStatus.Running,
+                OrchestrationRuntimeStatus.Completed,
+            ],
+        };
+        // => If we only need to verify information in custom status we can do it using the instance we can get from 'ListInstancesAsync'
+        var queryResult = await Fixture.DurableClient.ListInstancesAsync(filter, CancellationToken.None);
+        var orchestration = queryResult.DurableOrchestrationState.Single();
+        var calculationMetadata = orchestration.CustomStatus.ToObject<CalculationMetadata>();
+        calculationMetadata!.Id.Should().Be(calculationId);
+        // => But if we want to verify information in history or output, we must use 'GetStatusAsync'
+        var completeOrchestrationStatus = await Fixture.DurableClient.GetStatusAsync(orchestration.InstanceId, showHistory: true, showHistoryOutput: true);
+        var orderedHistoryEntries = completeOrchestrationStatus.History
+            .OrderBy(entry => entry["Timestamp"])
+            .ToList();
+        // => Just showing how we can verify the execution by looking in history. Instead of using the function app log, which is sketchy, we could use history.
+        orderedHistoryEntries
+            .First()
+            .Value<string>("FunctionName").Should().Be("Calculation");
+
+        // Verify activities was executed by searching the function app log
+        // TODO: We should refactor the test to wait for the orchestration to be completed (or failed),
+        // and then verify everything in history. This allows us to implement more precise tests, as the history contains
+        // more and precise information compard to the function app log.
         await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("CreateCalculationRecordActivity");
         await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("StartCalculationActivity");
         await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("GetJobStatusActivity");
