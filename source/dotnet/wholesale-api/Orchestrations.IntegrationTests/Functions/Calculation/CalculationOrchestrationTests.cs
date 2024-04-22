@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Net;
-using System.Net.Http.Json;
 using System.Text;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
@@ -22,14 +21,10 @@ using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 using FluentAssertions;
-using GraphQL;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
-using Namotion.Reflection;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using NodaTime;
 using Xunit.Abstractions;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.Calculation;
 
