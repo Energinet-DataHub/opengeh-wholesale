@@ -17,8 +17,8 @@ import pytest
 from _pytest.fixtures import FixtureRequest
 from pyspark.sql import SparkSession
 
-from features.utils.expected_output import ExpectedOutput
-from features.utils.scenario_executor import ScenarioExecutor
+from .utils.expected_output import ExpectedOutput
+from .utils.scenario_executor import ScenarioExecutor
 from package.calculation.calculation_results import CalculationResultsContainer
 
 

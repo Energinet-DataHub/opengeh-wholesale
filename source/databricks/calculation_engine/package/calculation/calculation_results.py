@@ -16,7 +16,6 @@ from typing import cast
 
 from pyspark.sql import DataFrame
 
-
 @dataclass
 class EnergyResultsContainer:
     net_exchange_per_neighbour_ga: DataFrame | None = None
@@ -62,6 +61,9 @@ class TotalMonthlyAmountsContainer:
 class BasisDataContainer:
     metering_point_periods: DataFrame
     time_series_points: DataFrame
+    charge_master_data: DataFrame
+    charge_prices: DataFrame
+    charge_links: DataFrame
 
 
 @dataclass
