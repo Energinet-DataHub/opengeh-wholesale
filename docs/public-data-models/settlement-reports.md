@@ -8,16 +8,16 @@ The model is in the database `settlement_report`.
 
 Master data of metering points included in the calculation.
 
-| Column name | NOT NULL |
-|-|-|
-| calculation_id | :heavy_check_mark: |
-| metering_point_id | :heavy_check_mark: |
+| Column name | NOT NULL | Constraints |
+|-|-|-|
+| calculation_id | :heavy_check_mark: | See [here](columns.md) |
+| metering_point_id | :heavy_check_mark: | See [here](columns.md) |
 
 ## metering_point_time_series_v1
 
 The time series points for each metering point.
 
-| Column name | NOT NULL |
-|-|-|
-| calculation_id | :heavy_check_mark: |
-| metering_point_id | :heavy_check_mark: |
+| Column name | NOT NULL | Constraints |
+|-|-|-|
+| calculation_id | :heavy_check_mark: | See [here](columns.md) |
+| metering_point_id | :heavy_check_mark: | See [here](columns.md) |
