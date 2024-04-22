@@ -3,6 +3,7 @@ SELECT e.calculation_id,
        e.calculation_type,
        e.grid_area_code,
        e.metering_point_type,
+       e.settlement_method,
        e.resolution,
        e.time
        e.quantity,
