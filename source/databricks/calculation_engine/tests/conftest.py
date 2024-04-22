@@ -329,6 +329,7 @@ def any_calculator_args_for_wholesale() -> CalculatorArgs:
         calculation_period_end_datetime=datetime(2022, 7, 31, 22, 0, 0),
         calculation_execution_time_start=datetime(2022, 8, 1, 22, 0, 0),
         time_zone="Europe/Copenhagen",
+        intersection_time=datetime(2023, 2, 1, 23, 0, 0),
     )
 
 
