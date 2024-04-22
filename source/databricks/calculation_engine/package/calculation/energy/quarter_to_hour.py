@@ -40,7 +40,7 @@ def transform_quarter_to_hour(
             Colname.metering_point_type,
             Colname.resolution,
             Colname.observation_time,
-            Colname.quality,
+            Colname.quality,  # fix
             Colname.energy_supplier_id,
             Colname.balance_responsible_id,
             Colname.settlement_method,
