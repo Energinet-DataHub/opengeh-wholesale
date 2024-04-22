@@ -44,6 +44,13 @@ public static class DurableClientExtensions
         return queryResult.DurableOrchestrationState.Single();
     }
 
+    /// <summary>
+    /// Wait for orchestration instance to be completed within given <paramref name="waitTimeLimit"/>.
+    /// </summary>
+    /// <param name="client"></param>
+    /// <param name="instanceId"></param>
+    /// <param name="waitTimeLimit">Max time to wait for completion. If not specified it defaults to 30 seconds.</param>
+    /// <returns>If completed within given <paramref name="waitTimeLimit"/> it returns the orchestration status including history; otherwise it throws an exception.</returns>
     public static async Task<DurableOrchestrationStatus> WaitForInstanceCompletedAsync(
         this IDurableClient client,
         string instanceId,
