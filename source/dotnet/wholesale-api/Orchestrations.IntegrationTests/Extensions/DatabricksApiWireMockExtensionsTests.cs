@@ -14,6 +14,8 @@
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 using FluentAssertions;
@@ -160,8 +162,13 @@ public class DatabricksApiWireMockExtensionsTests : IClassFixture<WireMockExtens
             new DeltaTableOptions() { SCHEMA_NAME = "empty", ENERGY_RESULTS_TABLE_NAME = "empty" });
 
         // Act
-        var actual = await _fixture.DatabricksExecutor.ExecuteStatementAsync(query, Format.JsonArray).ToListAsync();
+        var actual = _fixture.DatabricksExecutor.ExecuteStatementAsync(query, Format.JsonArray).ConfigureAwait(false);
 
-        actual.Should().NotBeNull().And.NotBeEmpty();
+        // Assert
+        await foreach (var row in actual)
+        {
+            var databricksSqlNextRow = new DatabricksSqlRow(row);
+            var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(databricksSqlNextRow);
+        }
     }
 }

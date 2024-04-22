@@ -146,12 +146,12 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("StartCalculationActivity");
         await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("GetJobStatusActivity");
 
-        await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("UpdateCalculationExecutionStatusActivity", TimeSpan.FromMinutes(5));
-        await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("CreateCompletedCalculationActivity", TimeSpan.FromMinutes(5));
-        await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("SendCalculationResultsActivity", TimeSpan.FromMinutes(5));
+        await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("UpdateCalculationExecutionStatusActivity");
+        await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("CreateCompletedCalculationActivity");
+        await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("SendCalculationResultsActivity");
 
         // TODO: Wait for events on ServiceBus using "listener mock"
         var wait = verifyServiceBusMessages.Wait(TimeSpan.FromMinutes(1));
-        wait.Should().BeFalse();
+        wait.Should().BeTrue();
     }
 }
