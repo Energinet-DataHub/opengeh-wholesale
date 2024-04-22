@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using AutoFixture;
+using Energinet.DataHub.Core.TestCommon;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.DurableTask;
@@ -24,7 +26,9 @@ public static class DurableClientExtensions
     ///
     /// If more than one orchestration exists an exception is thrown.
     /// </summary>
-    public static async Task<DurableOrchestrationStatus> FindOrchestationStatusAsync(this IDurableClient client, DateTime createdTimeFrom)
+    public static async Task<DurableOrchestrationStatus> FindOrchestationStatusAsync(
+        this IDurableClient client,
+        DateTime createdTimeFrom)
     {
         var filter = new OrchestrationStatusQueryCondition()
         {
@@ -40,11 +44,25 @@ public static class DurableClientExtensions
         return queryResult.DurableOrchestrationState.Single();
     }
 
-    ////public static async Task<DurableOrchestrationStatus> WaitForInstanceCompletedAsync(this IDurableClient client, string instanceId)
-    ////{
-    ////    ArgumentException.ThrowIfNullOrWhiteSpace(instanceId);
+    public static async Task<DurableOrchestrationStatus> WaitForInstanceCompletedAsync(
+        this IDurableClient client,
+        string instanceId,
+        TimeSpan? waitTimeLimit = null)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(instanceId);
 
-    ////    var completeOrchestrationStatus = await client.GetStatusAsync(instanceId, showHistory: true, showHistoryOutput: true);
-    ////    completeOrchestrationStatus.Output
-    ////}
+        var isCompleted = await Awaiter.TryWaitUntilConditionAsync(
+            async () =>
+            {
+                // Do not retrieve history here as it could be expensive
+                var completeOrchestrationStatus = await client.GetStatusAsync(instanceId);
+                return completeOrchestrationStatus.RuntimeStatus == OrchestrationRuntimeStatus.Completed;
+            },
+            waitTimeLimit ?? TimeSpan.FromSeconds(30),
+            delay: TimeSpan.FromSeconds(5));
+
+        return isCompleted
+            ? await client.GetStatusAsync(instanceId, showHistory: true, showHistoryOutput: true)
+            : throw new Exception($"Orchestration instance '{instanceId}' did not complete within configured wait time limit.");
+    }
 }

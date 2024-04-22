@@ -23,6 +23,7 @@ using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.DurableTask;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Newtonsoft.Json;
 using NodaTime;
@@ -186,11 +187,6 @@ public class CalculationOrchestrationTests : IAsyncLifetime
             .MockSqlStatementsResultChunks(statementId, chunkIndex, path)
             .MockSqlStatementsResultStream(path);
 
-        // TODO: For test to be robust it must filter by some known value; otherwise a test could be receiving a message from another test and think it's successful.
-        var verifyServiceBusMessages = await Fixture.ServiceBusListenerMock
-            .WhenAny()
-            .VerifyCountAsync(1);
-
         // Act
         var dateAtMidnight = new LocalDate(2024, 5, 17)
             .AtMidnight()
@@ -210,6 +206,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
                 "application/json"));
 
         // Assert
+        // => Verify endpoint response
         actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         var calculationId = await actualResponse.Content.ReadAsAsync<Guid>();
 
@@ -220,18 +217,16 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         var calculationMetadata = orchestrationStatus.CustomStatus.ToObject<CalculationMetadata>();
         calculationMetadata!.Id.Should().Be(calculationId);
 
-        // => If we want to verify information in history or output, we must use 'GetStatusAsync'
-        var completeOrchestrationStatus = await Fixture.DurableClient.GetStatusAsync(orchestrationStatus.InstanceId, showHistory: true, showHistoryOutput: true);
-        var orderedHistoryEntries = completeOrchestrationStatus.History
-            .OrderBy(entry => entry["Timestamp"])
-            .ToList();
-        // => Just showing how we can verify the execution by looking in history. Instead of using the function app log, which is sketchy, we could use history.
-        orderedHistoryEntries
-            .First()
-            .Value<string>("FunctionName").Should().Be("Calculation");
+        // => Wait for completion
+        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(orchestrationStatus.InstanceId);
 
-        // => Verify ServiceBus
-        var wait = verifyServiceBusMessages.Wait(TimeSpan.FromMinutes(1));
-        wait.Should().BeTrue();
+        // => Expect history
+        using var assertionScope = new AssertionScope();
+        var first = completeOrchestrationStatus.History.First();
+        first.Value<string>("FunctionName").Should().Be("Calculation");
+
+        var last = completeOrchestrationStatus.History.Last();
+        last.Value<string>("EventType").Should().Be("ExecutionCompleted");
+        last.Value<string>("Result").Should().Be("Success");
     }
 }
