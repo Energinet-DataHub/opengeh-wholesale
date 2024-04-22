@@ -54,9 +54,13 @@ def execute(
             metering_point_time_series = transform_quarter_to_hour(
                 prepared_metering_point_time_series
             )
-        else:
+        elif args.calculation_period_start_datetime >= args.intersection_time:
             metering_point_time_series = transform_hour_to_quarter(
                 prepared_metering_point_time_series
+            )
+        else:  # else throw exception
+            raise ValueError(
+                "The calculation period must be either before or after the intersection time"
             )
 
         metering_point_time_series.cache_internal()
