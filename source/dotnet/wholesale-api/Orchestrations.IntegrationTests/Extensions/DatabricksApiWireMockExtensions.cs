@@ -180,8 +180,7 @@ public static class DatabricksApiWireMockExtensions
         var response = Response
             .Create()
             .WithStatusCode(HttpStatusCode.OK)
-            .WithHeader(HeaderNames.ContentType, "application/octet-stream")
-            .WithBodyAsJson(DatabricksStatementRowMock());
+            .WithBody(Encoding.UTF8.GetBytes(DatabricksStatementRowMock()));
 
         server
             .Given(request)
@@ -234,7 +233,7 @@ public static class DatabricksApiWireMockExtensions
             ",",
             EnergyResultColumnNames
                 .GetAllNames()
-                .Select(name => $" {{name: {name} }}"));
+                .Select(name => $" {{\"name\": \"{name}\" }}"));
 
         return json.Replace("{statementId}", statementId)
             .Replace("{chunkIndex}", chunkIndex.ToString())
@@ -267,23 +266,24 @@ public static class DatabricksApiWireMockExtensions
     {
         var data = EnergyResultColumnNames.GetAllNames().Select(columnName => columnName switch
         {
-            EnergyResultColumnNames.CalculationId => $@"'ed39dbc5-bdc5-41b9-922a-08d3b12d4538'",
-            EnergyResultColumnNames.CalculationExecutionTimeStart => $@"'2022-03-11T03:00:00.000Z'",
-            EnergyResultColumnNames.CalculationType => $@"'{DeltaTableCalculationType.BalanceFixing}'",
-            EnergyResultColumnNames.CalculationResultId => $@"'aaaaaaaa-1111-1111-1c1c-08d3b12d4511'",
-            EnergyResultColumnNames.TimeSeriesType => $@"'{DeltaTableTimeSeriesType.Production}'",
-            EnergyResultColumnNames.GridArea => $@"'805'",
-            EnergyResultColumnNames.FromGridArea => "NULL",
-            EnergyResultColumnNames.BalanceResponsibleId => $@"'1236552000028'",
-            EnergyResultColumnNames.EnergySupplierId => $@"'2236552000028'",
-            EnergyResultColumnNames.Time => $@"'2022-05-16T03:00:00.000Z'",
-            EnergyResultColumnNames.Quantity => $@"1.123",
-            EnergyResultColumnNames.QuantityQualities => $@"ARRAY('missing')",
-            EnergyResultColumnNames.AggregationLevel => $@"'total_ga'",
-            EnergyResultColumnNames.MeteringPointId => "NULL",
+            EnergyResultColumnNames.CalculationId => "\"ed39dbc5-bdc5-41b9-922a-08d3b12d4538\"",
+            EnergyResultColumnNames.CalculationExecutionTimeStart => "\"2022-03-11T03:00:00.000Z\"",
+            EnergyResultColumnNames.CalculationType => $"\"{DeltaTableCalculationType.BalanceFixing}\"",
+            EnergyResultColumnNames.CalculationResultId => "\"aaaaaaaa-1111-1111-1c1c-08d3b12d4511\"",
+            EnergyResultColumnNames.TimeSeriesType => $"\"{DeltaTableTimeSeriesType.Production}\"",
+            EnergyResultColumnNames.GridArea => "\"805\"",
+            EnergyResultColumnNames.FromGridArea => "\"NULL\"",
+            EnergyResultColumnNames.BalanceResponsibleId => $"\"1236552000028\"",
+            EnergyResultColumnNames.EnergySupplierId => "\"2236552000028\"",
+            EnergyResultColumnNames.Time => "\"2022-05-16T03:00:00.000Z\"",
+            EnergyResultColumnNames.Quantity => "\"1.123\"",
+            EnergyResultColumnNames.QuantityQualities => "\"missing\"",
+            EnergyResultColumnNames.AggregationLevel => "\"total_ga\"",
+            EnergyResultColumnNames.MeteringPointId => "\"NULL\"",
             _ => throw new ArgumentOutOfRangeException(nameof(columnName), columnName, null),
         }).ToArray();
-        return string.Join(",", data);
+        var temp = $"""[[{string.Join(",", data)}]]""";
+        return temp;
     }
 
     /// <summary>

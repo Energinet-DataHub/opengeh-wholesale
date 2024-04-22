@@ -142,27 +142,26 @@ public class DatabricksApiWireMockExtensionsTests : IClassFixture<WireMockExtens
         actualRunTuple.Item1.State.ResultState.Should().Be(RunResultState.SUCCESS);
     }
 
-    // [Fact]
-    // public async Task MockedDataBrickSql_WhenQueringForData_CanDeserializeResponseFromMock()
-    // {
-    //     // Arrange
-    //     var statementId = "pony";
-    //     var chunkIndex = 0;
-    //     var path = "flamingo";
-    //     _fixture.MockServer
-    //         .CatchAll()
-    //         .MockSqlStatements(statementId, chunkIndex)
-    //         .MockSqlStatementsResultChunks(statementId, chunkIndex, path)
-    //         .MockSqlStatementsResultStream(path);
-    //
-    //     var query = new EnergyResultQueryStatement(
-    //         Guid.Empty,
-    //         new DeltaTableOptions() { SCHEMA_NAME = "empty", ENERGY_RESULTS_TABLE_NAME = "empty" });
-    //
-    //     // Act
-    //     var hej = await _fixture.DatabricksExecutor.ExecuteStatementAsync(query, Format.JsonArray).ToListAsync();
-    //
-    //     var logs = _fixture.MockServer.LogEntries;
-    //     hej.Should().NotBeNull().And.NotBeEmpty();
-    // }
+    [Fact]
+    public async Task MockDataBrickSql_WhenQueryForData_CanDeserializeResponseFromMock()
+    {
+        // Arrange
+        var statementId = "SomeIdMostLikelyGuid";
+        var chunkIndex = 0;
+        var path = "GetDatabricksDataPath";
+        _fixture.MockServer
+            .CatchAll()
+            .MockSqlStatements(statementId, chunkIndex)
+            .MockSqlStatementsResultChunks(statementId, chunkIndex, path)
+            .MockSqlStatementsResultStream(path);
+
+        var query = new EnergyResultQueryStatement(
+            Guid.Empty,
+            new DeltaTableOptions() { SCHEMA_NAME = "empty", ENERGY_RESULTS_TABLE_NAME = "empty" });
+
+        // Act
+        var actual = await _fixture.DatabricksExecutor.ExecuteStatementAsync(query, Format.JsonArray).ToListAsync();
+
+        actual.Should().NotBeNull().And.NotBeEmpty();
+    }
 }
