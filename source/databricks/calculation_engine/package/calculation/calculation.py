@@ -135,7 +135,7 @@ def _execute(
     results.basis_data = basis_data_factory.create(
         args,
         metering_point_periods_for_basis_data,
-        prepared_metering_point_time_series,
+        metering_point_time_series,
     )
 
     return results
