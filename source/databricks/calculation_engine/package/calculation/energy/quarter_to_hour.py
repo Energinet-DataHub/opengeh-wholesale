@@ -14,6 +14,9 @@
 
 import pyspark.sql.functions as f
 
+from package.calculation.energy.aggregators.transformations import (
+    aggregate_quantity_and_quality,
+)
 from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
@@ -31,22 +34,21 @@ def transform_quarter_to_hour(
     result = df.withColumn(
         Colname.observation_time, f.date_trunc("hour", Colname.observation_time)
     )
-    result = (
-        result.groupby(
-            Colname.grid_area,
-            Colname.to_grid_area,
-            Colname.from_grid_area,
-            Colname.metering_point_id,
-            Colname.metering_point_type,
-            Colname.resolution,
-            Colname.observation_time,
-            Colname.quality,  # fix
-            Colname.energy_supplier_id,
-            Colname.balance_responsible_id,
-            Colname.settlement_method,
-        )
-        .sum(Colname.quantity)
-        .withColumnRenamed("sum(quantity)", Colname.quantity)
-    )
+    group_by = [
+        Colname.grid_area,
+        Colname.to_grid_area,
+        Colname.from_grid_area,
+        Colname.metering_point_id,
+        Colname.metering_point_type,
+        Colname.resolution,
+        Colname.observation_time,
+        Colname.energy_supplier_id,
+        Colname.balance_responsible_id,
+        Colname.settlement_method,
+    ]
+    result = aggregate_quantity_and_quality(result, group_by)
+
+    result.show()
+    # TODO: function that can get the correct quality for qualities
 
     return MeteringPointTimeSeries(result)
