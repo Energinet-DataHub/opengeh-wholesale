@@ -14,10 +14,12 @@
 
 using System.Net;
 using System.Text;
+using AutoFixture;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
+using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.DurableTask;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 using FluentAssertions;
@@ -211,25 +213,15 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         var calculationId = await actualResponse.Content.ReadAsAsync<Guid>();
 
-        // => Verify activities was executed by searching the orchestration history
-        var filter = new OrchestrationStatusQueryCondition()
-        {
-            CreatedTimeFrom = beforeCreated,
-            RuntimeStatus =
-            [
-                OrchestrationRuntimeStatus.Running,
-                OrchestrationRuntimeStatus.Completed,
-            ],
-        };
+        // => Verify expected behaviour by searching the orchestration history
+        var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeCreated);
 
-        // => If we only need to verify information in custom status we can do it using the instance we can get from 'ListInstancesAsync'
-        var queryResult = await Fixture.DurableClient.ListInstancesAsync(filter, CancellationToken.None);
-        var orchestration = queryResult.DurableOrchestrationState.Single();
-        var calculationMetadata = orchestration.CustomStatus.ToObject<CalculationMetadata>();
+        // => Expect calculation id
+        var calculationMetadata = orchestrationStatus.CustomStatus.ToObject<CalculationMetadata>();
         calculationMetadata!.Id.Should().Be(calculationId);
 
         // => If we want to verify information in history or output, we must use 'GetStatusAsync'
-        var completeOrchestrationStatus = await Fixture.DurableClient.GetStatusAsync(orchestration.InstanceId, showHistory: true, showHistoryOutput: true);
+        var completeOrchestrationStatus = await Fixture.DurableClient.GetStatusAsync(orchestrationStatus.InstanceId, showHistory: true, showHistoryOutput: true);
         var orderedHistoryEntries = completeOrchestrationStatus.History
             .OrderBy(entry => entry["Timestamp"])
             .ToList();
