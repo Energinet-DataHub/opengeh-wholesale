@@ -25,6 +25,9 @@ from package.infrastructure.paths import (
     BASIS_DATA_DATABASE_NAME,
     METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME,
     SETTLEMENT_REPORT_DATABASE_NAME,
+    ENERGY_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1,
+    OUTPUT_DATABASE_NAME,
+    ENERGY_RESULT_TABLE_NAME,
 )
 from views.view_reader import ViewReader
 
@@ -49,13 +52,13 @@ def create_expected(spark: SparkSession, df: dataframe) -> dataframe:
     return view_factory.create_dataframe([row])
 
 
-def test_read_metering_point_periods_returns_expected_from_settlement_report_metering_point_periods_view(
+def test__read_metering_point_periods__returns_expected_from_settlement_report_metering_point_periods_view(
     spark: SparkSession,
     migrations_executed: None,
     tmp_path: pathlib.Path,
 ) -> None:
     """
-    The test verifies that the view "metering_point_periods" is updated when the underlying
+    The test verifies that the view "metering_point_periods_v1" is updated when the underlying
     basis_data.metering_point_periods table is updated (and that the view exists in the
     wholesale schema (database) settlement_report).
     """
@@ -71,6 +74,34 @@ def test_read_metering_point_periods_returns_expected_from_settlement_report_met
 
     # Act
     actual = sut.read_metering_point_periods()
+
+    # Assert
+    assert_dataframes_equal(actual, expected)
+
+
+def test__read_metering_point_periods__returns_expected_from_settlement_report_metering_point_periods_view(
+    spark: SparkSession,
+    migrations_executed: None,
+    tmp_path: pathlib.Path,
+) -> None:
+    """
+    The test verifies that the view "energy_results_v1" is updated when the underlying
+    basis_data.metering_point_periods table is updated (and that the view exists in the
+    wholesale schema (database) settlement_report).
+    """
+    # Arrange
+    factory = EnergyResultsFactory(spark)
+    row = factory.create_row()
+    df = factory.create_dataframe([row])
+    df.write.format("delta").mode("overwrite").saveAsTable(
+        f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}"
+    )
+    expected = create_expected(spark, df)
+
+    # Act
+    actual = spark.read.format("delta").table(
+        f"{SETTLEMENT_REPORT_DATABASE_NAME}.{ENERGY_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1}"
+    )
 
     # Assert
     assert_dataframes_equal(actual, expected)
