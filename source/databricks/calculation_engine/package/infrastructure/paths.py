@@ -39,8 +39,10 @@ TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME = "time_series_points"
 
 # Settlement report database and views
 SETTLEMENT_REPORT_DATABASE_NAME = "settlement_report"
-METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME = "metering_point_periods"
-METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME = "metering_point_time_series"
+METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1 = "metering_point_periods_v1"
+METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME_V1 = (
+    "metering_point_time_series_v1"
+)
 
 TEST = ""
 
