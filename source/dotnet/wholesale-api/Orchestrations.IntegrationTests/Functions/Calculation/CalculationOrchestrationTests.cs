@@ -76,12 +76,21 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         // Arrange
         var jobId = Random.Shared.Next(1, 1000);
         var runId = Random.Shared.Next(1000, 2000);
+
+        var chunkIndex = 0;
+        var statementId = Guid.NewGuid().ToString();
+        var path = "GetDatabricksDataPath";
+
         Fixture.MockServer
             .CatchAll()
             .MockJobsList(jobId)
             .MockJobsGet(jobId)
             .MockJobsRunNow(runId)
-            .MockJobsRunsGet(runId, "TERMINATED", "SUCCESS");
+            .MockJobsRunsGet(runId, "TERMINATED", "SUCCESS")
+
+            .MockSqlStatements(statementId, chunkIndex)
+            .MockSqlStatementsResultChunks(statementId, chunkIndex, path)
+            .MockSqlStatementsResultStream(path);
 
         var verifyServiceBusMessages = await Fixture.ServiceBusListenerMock
             .WhenAny()

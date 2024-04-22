@@ -272,14 +272,14 @@ public static class DatabricksApiWireMockExtensions
             EnergyResultColumnNames.CalculationResultId => "\"aaaaaaaa-1111-1111-1c1c-08d3b12d4511\"",
             EnergyResultColumnNames.TimeSeriesType => $"\"{DeltaTableTimeSeriesType.Production}\"",
             EnergyResultColumnNames.GridArea => "\"805\"",
-            EnergyResultColumnNames.FromGridArea => "\"NULL\"",
+            EnergyResultColumnNames.FromGridArea => "\"900\"",
             EnergyResultColumnNames.BalanceResponsibleId => $"\"1236552000028\"",
             EnergyResultColumnNames.EnergySupplierId => "\"2236552000028\"",
             EnergyResultColumnNames.Time => "\"2022-05-16T03:00:00.000Z\"",
             EnergyResultColumnNames.Quantity => "\"1.123\"",
             EnergyResultColumnNames.QuantityQualities => "\"missing\"",
             EnergyResultColumnNames.AggregationLevel => "\"total_ga\"",
-            EnergyResultColumnNames.MeteringPointId => "\"NULL\"",
+            EnergyResultColumnNames.MeteringPointId => "\"1234567\"",
             _ => throw new ArgumentOutOfRangeException(nameof(columnName), columnName, null),
         }).ToArray();
         var temp = $"""[[{string.Join(",", data)}]]""";
