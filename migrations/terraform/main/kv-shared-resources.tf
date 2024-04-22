@@ -132,3 +132,8 @@ data "azurerm_key_vault_secret" "sb_domain_relay_namespace_id" {
   name         = "sb-domain-relay-namespace-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+data "azurerm_key_vault_secret" "sb_domain_relay_namespace_name" {
+  name         = "sb-domain-relay-namespace-name"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
