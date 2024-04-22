@@ -77,7 +77,7 @@ def get_charge_master_data_basis_data(
     input_charges_container: InputChargesContainer,
 ) -> DataFrame:
     if input_charges_container:
-        return input_charges_container.charge_master_data.df().select(
+        return input_charges_container.charge_master_data._df.select(
             f.lit(calculation_id).alias(ChargeMasterDataPeriodsColname.calculation_id),
             f.col(Colname.charge_key).alias(ChargeMasterDataPeriodsColname.charge_key),
             f.col(Colname.charge_code).alias(ChargeMasterDataPeriodsColname.charge_code),
@@ -98,7 +98,7 @@ def get_charge_prices_basis_data(
     input_charges_container: InputChargesContainer,
 ) -> DataFrame:
     if input_charges_container:
-        return input_charges_container.charge_prices.df().select(
+        return input_charges_container.charge_prices._df.select(
             f.lit(calculation_id).alias(ChargePricePointsColname.calculation_id),
             f.col(Colname.charge_key).alias(ChargePricePointsColname.charge_key),
             f.col(Colname.charge_code).alias(ChargePricePointsColname.charge_code),
@@ -118,15 +118,15 @@ def get_charge_links_basis_data(
 ) -> DataFrame:
     if input_charges_container:
         return input_charges_container.charge_links.select(
-            f.lit(calculation_id).alias(ChargeLinksColname.calculation_id),
-            f.col(Colname.charge_key).alias(ChargeLinksColname.charge_key),
-            f.col(Colname.charge_code).alias(ChargeLinksColname.charge_code),
-            f.col(Colname.charge_type).alias(ChargeLinksColname.charge_type),
-            f.col(Colname.charge_owner).alias(ChargeLinksColname.charge_owner_id),
-            f.col(Colname.metering_point_id).alias(ChargeLinksColname.metering_point_id),
-            f.col(Colname.quantity).alias(ChargeLinksColname.quantity),
-            f.col(Colname.from_date).alias(ChargeLinksColname.from_date),
-            f.col(Colname.to_date).alias(ChargeLinksColname.to_date),
+            f.lit(calculation_id).alias(ChargeLinkPeriodsColname.calculation_id),
+            f.col(Colname.charge_key).alias(ChargeLinkPeriodsColname.charge_key),
+            f.col(Colname.charge_code).alias(ChargeLinkPeriodsColname.charge_code),
+            f.col(Colname.charge_type).alias(ChargeLinkPeriodsColname.charge_type),
+            f.col(Colname.charge_owner).alias(ChargeLinkPeriodsColname.charge_owner_id),
+            f.col(Colname.metering_point_id).alias(ChargeLinkPeriodsColname.metering_point_id),
+            f.col(Colname.quantity).alias(ChargeLinkPeriodsColname.quantity),
+            f.col(Colname.from_date).alias(ChargeLinkPeriodsColname.from_date),
+            f.col(Colname.to_date).alias(ChargeLinkPeriodsColname.to_date),
         )
     else:
         return None
