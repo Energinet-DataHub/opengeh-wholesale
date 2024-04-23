@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.wholesale_results
     -- 36 characters UUID
     calculation_result_id STRING NOT NULL,
 
-    grid_area STRING NOT NULL,
+    grid_area_code STRING NOT NULL,
     energy_supplier_id STRING NOT NULL,
     -- Energy quantity for the given observation time and duration as defined by `resolution`.
     -- Example: 1234.534
@@ -65,10 +65,10 @@ ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
 GO
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
-    DROP CONSTRAINT IF EXISTS grid_area_chk
+    DROP CONSTRAINT IF EXISTS grid_area_code_chk
 GO
 ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
-    ADD CONSTRAINT grid_area_chk CHECK (LENGTH(grid_area) = 3)
+    ADD CONSTRAINT grid_area_code_chk CHECK (LENGTH(grid_area_code) = 3)
 GO
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results

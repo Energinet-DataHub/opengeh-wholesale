@@ -17,7 +17,7 @@
         "type": "string"
       },
       {
-        "name": "grid_area",
+        "name": "grid_area_code",
         "type": "string"
       },
       {

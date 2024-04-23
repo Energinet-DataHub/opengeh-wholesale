@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.energy_results
 (
-    grid_area STRING NOT NULL,
+    grid_area_code STRING NOT NULL,
     energy_supplier_id STRING,
     balance_responsible_id STRING,
     -- Energy quantity in kWh for the given observation time.
@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.energy_results
     calculation_id STRING NOT NULL,
     calculation_type STRING NOT NULL,
     calculation_execution_time_start TIMESTAMP NOT NULL,
-    out_grid_area STRING,
+    out_grid_area_code STRING,
     calculation_result_id STRING NOT NULL,
     metering_point_id STRING
 )
@@ -55,17 +55,17 @@ ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
 GO
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
-    DROP CONSTRAINT IF EXISTS grid_area_chk
+    DROP CONSTRAINT IF EXISTS grid_area_code_chk
 GO
 ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
-    ADD CONSTRAINT grid_area_chk CHECK (LENGTH(grid_area) = 3)
+    ADD CONSTRAINT grid_area_code_chk CHECK (LENGTH(grid_area_code) = 3)
 GO
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
-    DROP CONSTRAINT IF EXISTS out_grid_area_chk
+    DROP CONSTRAINT IF EXISTS out_grid_area_code_chk
 GO
 ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
-    ADD CONSTRAINT out_grid_area_chk CHECK (out_grid_area IS NULL OR LENGTH(out_grid_area) = 3)
+    ADD CONSTRAINT out_grid_area_code_chk CHECK (out_grid_area_code IS NULL OR LENGTH(out_grid_area_code) = 3)
 GO
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results

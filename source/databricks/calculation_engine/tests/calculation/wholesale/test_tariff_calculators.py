@@ -152,7 +152,7 @@ def test__calculate_tariff_price_per_ga_co_es__returns_all_qualities(
 @pytest.mark.parametrize(
     "column_name, value, other_value",
     [
-        ("grid_area", "1", "2"),
+        ("grid_area_code", "1", "2"),
         ("energy_supplier_id", "1", "2"),
         (
             "metering_point_type",

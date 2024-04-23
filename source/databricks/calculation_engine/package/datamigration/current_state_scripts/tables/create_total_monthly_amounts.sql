@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.total_monthly_amounts
     -- 36 characters UUID
     calculation_result_id STRING NOT NULL,
 
-    grid_area STRING NOT NULL,
+    grid_area_code STRING NOT NULL,
     energy_supplier_id STRING NOT NULL,
     time TIMESTAMP NOT NULL,
     amount DECIMAL(18, 6),
@@ -49,11 +49,11 @@ ALTER TABLE {OUTPUT_DATABASE_NAME}.total_monthly_amounts
 GO
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.total_monthly_amounts
-    DROP CONSTRAINT IF EXISTS grid_area_chk
+    DROP CONSTRAINT IF EXISTS grid_area_code_chk
 GO
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.total_monthly_amounts
-    ADD CONSTRAINT grid_area_chk CHECK (LENGTH(grid_area) = 3)
+    ADD CONSTRAINT grid_area_code_chk CHECK (LENGTH(grid_area_code) = 3)
 GO
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.total_monthly_amounts
