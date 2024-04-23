@@ -64,6 +64,10 @@ locals {
       role         = "delegated"
       display_name = "Delegated"
     }
+    delegated = {
+      role         = "itsupplier"
+      display_name = "IT Supplier"
+    }
   }
 
   timeseriesapi_app_roles = {
