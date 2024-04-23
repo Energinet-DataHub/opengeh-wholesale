@@ -21,7 +21,8 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.DurableTask;
 
 /// <summary>
-/// A manager that can be used to manage orchestrations in Durable Functions, typically from integration tests.
+/// A manager that can be used to manage orchestrations in Durable Functions,
+/// typically from integration tests.
 /// See https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-instance-management?tabs=csharp
 ///
 /// IMPORTANT: This class is purely intended to be used from tests.
