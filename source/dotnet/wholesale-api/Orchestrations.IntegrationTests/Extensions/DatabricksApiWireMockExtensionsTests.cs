@@ -40,40 +40,6 @@ public class DatabricksApiWireMockExtensionsTests : IClassFixture<WireMockExtens
     }
 
     [Fact]
-    public async Task CatchAll_WhenCallingJobsList_ReturnsNotImplemented()
-    {
-        // Arrange
-        _fixture.MockServer
-            .CatchAll();
-
-        // Act
-        var act = async () => await _fixture.JobApiClient.Jobs.List();
-
-        // Assert
-        await act.Should()
-            .ThrowAsync<Microsoft.Azure.Databricks.Client.ClientApiException>()
-            .Where(ex =>
-                ex.StatusCode == System.Net.HttpStatusCode.NotImplemented
-                && ex.Message.Contains("Request not mapped"));
-    }
-
-    [Fact]
-    public async Task CombinedCatchAllWithMockJobsList_WhenCallingJobsList_DoesNotFallIntoCatchAll()
-    {
-        // Arrange
-        var jobId = Random.Shared.Next(0, 1000);
-        _fixture.MockServer
-            .CatchAll()
-            .MockJobsList(jobId);
-
-        // Act
-        var actualJobList = await _fixture.JobApiClient.Jobs.List();
-
-        // Assert
-        actualJobList.Jobs.Should().ContainSingle();
-    }
-
-    [Fact]
     public async Task MockJobsList_WhenCallingJobsList_CanDeserializeResponseFromMock()
     {
         // Arrange
@@ -161,7 +127,6 @@ public class DatabricksApiWireMockExtensionsTests : IClassFixture<WireMockExtens
         var chunkIndex = 0;
         var path = "GetDatabricksDataPath";
         _fixture.MockServer
-            .CatchAll()
             .MockEnergySqlStatements(statementId, chunkIndex)
             .MockEnergySqlStatementsResultChunks(statementId, chunkIndex, path)
             .MockEnergySqlStatementsResultStream(path);
