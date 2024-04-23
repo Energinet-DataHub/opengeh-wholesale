@@ -14,7 +14,7 @@
 from ast import literal_eval
 
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import col, udf
+from pyspark.sql.functions import col, from_json
 from pyspark.sql.types import (
     TimestampType,
     ArrayType,
@@ -64,10 +64,9 @@ def create_metering_point_time_series_view(
         col(MeteringPointTimeSeriesColname.observation_day).cast(TimestampType()),
     )
 
-    parse_qualities_string_udf = udf(_parse_qualities, ArrayType(element, False))
     df = df.withColumn(
         MeteringPointTimeSeriesColname.quantities,
-        parse_qualities_string_udf(df[MeteringPointTimeSeriesColname.quantities]),
+        from_json(col(MeteringPointTimeSeriesColname.quantities), ArrayType(element)),
     )
 
     return spark.createDataFrame(df.rdd, metering_point_time_series_schema)

@@ -18,7 +18,7 @@ from package.infrastructure import paths
 from package.infrastructure.paths import (
     METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1,
     SETTLEMENT_REPORT_DATABASE_NAME,
-    METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME,
+    METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME_V1,
 )
 
 
@@ -41,7 +41,7 @@ class SettlementReportViewReader:
         )
         self._metering_point_time_series_view_name = (
             metering_point_time_series_view_name
-            or paths.METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME
+            or paths.METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME_V1
         )
 
     def read_metering_point_periods(
@@ -55,5 +55,5 @@ class SettlementReportViewReader:
         self,
     ) -> dataframe:
         return self._spark.read.format("delta").table(
-            f"{SETTLEMENT_REPORT_DATABASE_NAME}.{METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME}"
+            f"{SETTLEMENT_REPORT_DATABASE_NAME}.{METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME_V1}"
         )
