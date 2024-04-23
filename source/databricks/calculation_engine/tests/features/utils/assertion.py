@@ -47,24 +47,6 @@ def assert_output(
     )
 
 
-def assert_view_output(
-    actual_and_expected: tuple[list[ExpectedOutput], list[ExpectedOutput]],
-    output_name: str,
-) -> None:
-    actual_results, expected_results = actual_and_expected
-
-    actual_result = _get_expected_for_output(actual_results, output_name)
-    expected_result = _get_expected_for_output(expected_results, output_name)
-
-    assert_dataframe_and_schema(
-        actual_result,
-        expected_result,
-        ignore_decimal_precision=True,
-        ignore_nullability=True,
-        ignore_decimal_scale=True,
-    )
-
-
 def _get_expected_for_output(
     expected_results: list[ExpectedOutput], output_name: str
 ) -> DataFrame:

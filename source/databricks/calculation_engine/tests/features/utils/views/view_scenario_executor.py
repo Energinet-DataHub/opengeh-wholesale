@@ -17,10 +17,10 @@ from typing import Tuple
 from pyspark.sql import SparkSession
 
 from features.utils.csv_to_dataframe_parser import CsvToDataframeParser
-from features.utils.expected_output import ExpectedOutput
 from features.utils.readers.settlement_report_view_reader import (
     SettlementReportViewReader,
 )
+from features.utils.views.dataframe_container import DataframeContainer
 from features.utils.views.view_input_specifications import get_input_specifications
 from features.utils.views.view_output_specifications import get_output_specifications
 from package.infrastructure.paths import BASIS_DATA_DATABASE_NAME
@@ -37,7 +37,7 @@ class ViewScenarioExecutor:
 
     def execute(
         self, scenario_folder_path: str
-    ) -> Tuple[list[ExpectedOutput], list[ExpectedOutput]]:
+    ) -> Tuple[list[DataframeContainer], list[DataframeContainer]]:
 
         input_specifications = get_input_specifications()
         output_specifications = get_output_specifications()
@@ -59,7 +59,7 @@ class ViewScenarioExecutor:
         return actual, expected
 
     @staticmethod
-    def _write_to_tables(input_dataframes: list[ExpectedOutput]) -> None:
+    def _write_to_tables(input_dataframes: list[DataframeContainer]) -> None:
         for i in input_dataframes:
             i.df.write.format("delta").mode("overwrite").saveAsTable(
                 f"{BASIS_DATA_DATABASE_NAME}.{i.name}"
@@ -67,7 +67,7 @@ class ViewScenarioExecutor:
 
     def _read_from_views(
         self, output_specifications: dict[str, tuple]
-    ) -> list[ExpectedOutput]:
+    ) -> list[DataframeContainer]:
 
         outputs = []
         for key in output_specifications:
@@ -75,14 +75,16 @@ class ViewScenarioExecutor:
             read_method = getattr(self.view_reader, value[1])
             df = read_method()
             name, extension = os.path.splitext(key)
-            container = ExpectedOutput(name=name, df=df)
+            container = DataframeContainer(name=name, df=df)
             outputs.append(container)
 
         return outputs
 
     def correct_dataframe_types(
-        self, dataframes: list[ExpectedOutput], output_specifications: dict[str, tuple]
-    ) -> list[ExpectedOutput]:
+        self,
+        dataframes: list[DataframeContainer],
+        output_specifications: dict[str, tuple],
+    ) -> list[DataframeContainer]:
         frames = []
         for key in dataframes:
             value = output_specifications[key.name + ".csv"]

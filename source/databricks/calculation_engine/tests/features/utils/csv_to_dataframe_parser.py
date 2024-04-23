@@ -16,7 +16,7 @@ import os
 
 from pyspark.sql import SparkSession
 
-from features.utils.expected_output import ExpectedOutput
+from features.utils.views.dataframe_container import DataframeContainer
 
 
 class CsvToDataframeParser:
@@ -31,7 +31,7 @@ class CsvToDataframeParser:
         schema: str,
         file_folder: str,
         ignore_schema: bool,
-    ) -> ExpectedOutput | None:
+    ) -> DataframeContainer | None:
 
         file_path = f"{file_folder}/{file_name}"
         if not os.path.exists(file_path):
@@ -43,11 +43,11 @@ class CsvToDataframeParser:
             df = spark_session.read.csv(file_path, header=True, sep=";", schema=schema)
 
         name, extension = os.path.splitext(file_name)
-        return ExpectedOutput(name=name, df=df)
+        return DataframeContainer(name=name, df=df)
 
     def parse_csv_files_concurrently(
         self, path: str, specifications: dict[str, tuple], ignore_schema: bool = False
-    ) -> list[ExpectedOutput]:
+    ) -> list[DataframeContainer]:
         """
         Reads csv files concurrently and converts them to dataframes.
         """

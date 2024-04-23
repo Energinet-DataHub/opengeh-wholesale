@@ -16,8 +16,8 @@ from typing import Any
 
 import pytest
 
-from features.utils.assertion import assert_view_output
 from features.utils.scenario_output_files import get_output_names
+from features.utils.views.view_assertion import assert_output
 
 
 # IMPORTANT:
@@ -30,4 +30,4 @@ def test__equals_expected(
     actual_and_expected_views: Any,
     output_name: str,
 ) -> None:
-    assert_view_output(actual_and_expected_views, output_name)
+    assert_output(actual_and_expected_views, output_name)
