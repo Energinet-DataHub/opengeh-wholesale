@@ -20,12 +20,16 @@ using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.DurableTask;
 using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
+using Microsoft.Azure.WebJobs.Extensions.DurableTask;
+using WireMock.Server;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
@@ -43,23 +47,42 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         AzuriteManager = new AzuriteManager(useOAuth: true);
         DatabaseManager = new WholesaleDatabaseManager<DatabaseContext>();
 
+        DurableTaskManager = new DurableTaskManager(
+            "AzureWebJobsStorage",
+            AzuriteManager.FullConnectionString);
+
         ServiceBusResourceProvider = new ServiceBusResourceProvider(
             IntegrationTestConfiguration.ServiceBusConnectionString,
             TestLogger);
 
+        ServiceBusListenerMock = new ServiceBusListenerMock(
+            IntegrationTestConfiguration.ServiceBusConnectionString,
+            TestLogger);
+
         HostConfigurationBuilder = new FunctionAppHostConfigurationBuilder();
+
+        MockServer = WireMockServer.Start(port: 1024);
     }
 
     public ITestDiagnosticsLogger TestLogger { get; }
 
+    public WireMockServer MockServer { get; }
+
     [NotNull]
     public FunctionAppHostManager? AppHostManager { get; private set; }
+
+    [NotNull]
+    public IDurableClient? DurableClient { get; private set; }
+
+    public ServiceBusListenerMock ServiceBusListenerMock { get; }
 
     private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
 
     private AzuriteManager AzuriteManager { get; }
 
     private WholesaleDatabaseManager<DatabaseContext> DatabaseManager { get; }
+
+    private DurableTaskManager DurableTaskManager { get; }
 
     private ServiceBusResourceProvider ServiceBusResourceProvider { get; }
 
@@ -78,14 +101,19 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         var appHostSettings = CreateAppHostSettings("Orchestrations", ref port);
 
         // ServiceBus entities
-        await ServiceBusResourceProvider
+        var topicResource = await ServiceBusResourceProvider
             .BuildTopic("integration-events")
-                .Do(topic => appHostSettings.ProcessEnvironmentVariables
-                    .Add($"{IntegrationEventsOptions.SectionName}__{nameof(IntegrationEventsOptions.TopicName)}", topic.Name))
+            .Do(topic => appHostSettings.ProcessEnvironmentVariables
+                .Add($"{IntegrationEventsOptions.SectionName}__{nameof(IntegrationEventsOptions.TopicName)}", topic.Name))
             .AddSubscription("subscription")
-                .Do(subscription => appHostSettings.ProcessEnvironmentVariables
-                    .Add($"{IntegrationEventsOptions.SectionName}__{nameof(IntegrationEventsOptions.SubscriptionName)}", subscription.SubscriptionName))
+            .Do(subscription => appHostSettings.ProcessEnvironmentVariables
+                .Add($"{IntegrationEventsOptions.SectionName}__{nameof(IntegrationEventsOptions.SubscriptionName)}", subscription.SubscriptionName))
             .CreateAsync();
+
+        // => Receive messages on topic/subscription
+        await ServiceBusListenerMock.AddTopicSubscriptionListenerAsync(
+            topicResource.Name,
+            topicResource.Subscriptions.Single().SubscriptionName);
 
         // DataLake
         await EnsureCalculationStorageContainerExistsAsync();
@@ -93,13 +121,34 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         // Create and start host
         AppHostManager = new FunctionAppHostManager(appHostSettings, TestLogger);
         StartHost(AppHostManager);
+
+        // Create durable client when TaskHub has been created
+        DurableClient = DurableTaskManager.CreateClient(taskHubName: "Wholesale01");
     }
 
     public async Task DisposeAsync()
     {
         AppHostManager.Dispose();
+        MockServer.Dispose();
+        DurableTaskManager.Dispose();
         AzuriteManager.Dispose();
         await DatabaseManager.DeleteDatabaseAsync();
+    }
+
+    public void EnsureAppHostUsesActualDatabricksJobs()
+    {
+        AppHostManager.RestartHostIfChanges(new Dictionary<string, string>
+        {
+            { nameof(DatabricksJobsOptions.WorkspaceUrl), IntegrationTestConfiguration.DatabricksSettings.WorkspaceUrl },
+        });
+    }
+
+    public void EnsureAppHostUsesMockedDatabricksJobs()
+    {
+        AppHostManager.RestartHostIfChanges(new Dictionary<string, string>
+        {
+            { nameof(DatabricksJobsOptions.WorkspaceUrl), MockServer.Url! },
+        });
     }
 
     /// <summary>
@@ -108,7 +157,8 @@ public class OrchestrationsAppFixture : IAsyncLifetime
     /// It is important that it is only attached while a test i active. Hence, it should be attached in
     /// the test class constructor; and detached in the test class Dispose method (using 'null').
     /// </summary>
-    /// <param name="testOutputHelper">If a xUnit test is active, this should be the instance of xUnit's <see cref="ITestOutputHelper"/>; otherwise it should be 'null'.</param>
+    /// <param name="testOutputHelper">If a xUnit test is active, this should be the instance of xUnit's <see cref="ITestOutputHelper"/>;
+    /// otherwise it should be 'null'.</param>
     public void SetTestOutputHelper(ITestOutputHelper testOutputHelper)
     {
         TestLogger.TestOutputHelper = testOutputHelper;
@@ -125,9 +175,15 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         // It seems the host + worker is not ready if we use the default startup log message, so we override it here
         appHostSettings.HostStartedEvent = "Host lock lease acquired";
 
-        appHostSettings.ProcessEnvironmentVariables.Add("FUNCTIONS_WORKER_RUNTIME", "dotnet-isolated");
-        appHostSettings.ProcessEnvironmentVariables.Add("AzureWebJobsStorage", AzuriteManager.FullConnectionString);
-        appHostSettings.ProcessEnvironmentVariables.Add("APPLICATIONINSIGHTS_CONNECTION_STRING", IntegrationTestConfiguration.ApplicationInsightsConnectionString);
+        appHostSettings.ProcessEnvironmentVariables.Add(
+            "FUNCTIONS_WORKER_RUNTIME",
+            "dotnet-isolated");
+        appHostSettings.ProcessEnvironmentVariables.Add(
+            "AzureWebJobsStorage",
+            AzuriteManager.FullConnectionString);
+        appHostSettings.ProcessEnvironmentVariables.Add(
+            "APPLICATIONINSIGHTS_CONNECTION_STRING",
+            IntegrationTestConfiguration.ApplicationInsightsConnectionString);
 
         // Database
         appHostSettings.ProcessEnvironmentVariables.Add(
@@ -135,9 +191,10 @@ public class OrchestrationsAppFixture : IAsyncLifetime
             DatabaseManager.ConnectionString);
 
         // Databricks
+        // => Notice we reconfigure this setting in "EnsureAppHostUsesActualDatabricksJobs" and "EnsureAppHostUsesMockedDatabricksJobs"
         appHostSettings.ProcessEnvironmentVariables.Add(
             nameof(DatabricksJobsOptions.WorkspaceUrl),
-            IntegrationTestConfiguration.DatabricksSettings.WorkspaceUrl);
+            MockServer.Url!);
         appHostSettings.ProcessEnvironmentVariables.Add(
             nameof(DatabricksJobsOptions.WorkspaceToken),
             IntegrationTestConfiguration.DatabricksSettings.WorkspaceAccessToken);
@@ -162,7 +219,9 @@ public class OrchestrationsAppFixture : IAsyncLifetime
     }
 
     /// <summary>
-    /// Create storage container. Note: Azurite is based on the Blob Storage API, but sinceData Lake Storage Gen2 is built on top of it, we can still create the container like this
+    /// Create storage container.
+    /// Note: Azurite is based on the Blob Storage API, but sinceData Lake Storage Gen2 is built on top of it,
+    /// we can still create the container like this.
     /// </summary>
     private async Task EnsureCalculationStorageContainerExistsAsync()
     {
