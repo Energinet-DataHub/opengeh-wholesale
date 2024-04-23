@@ -47,7 +47,8 @@ resource "azurerm_cdn_frontdoor_custom_domain" "this" {
   name                     = "${local.cartesian[count.index][0]}-${local.cartesian[count.index][1]}"
   cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.this.id
   dns_zone_id              = azurerm_dns_zone.this.id
-  host_name                = "${local.cartesian[count.index][0]}.${local.cartesian[count.index][1]}.${azurerm_dns_zone.this.name}"
+  # If prod, use the root domain, otherwise use the subdomain
+  host_name = (local.cartesian[count.index][0] == "prod001" ? "${local.cartesian[count.index][1]}.${azurerm_dns_zone.this.name}" : "${local.cartesian[count.index][0]}.${local.cartesian[count.index][1]}.${azurerm_dns_zone.this.name}")
 
   tls {
     certificate_type    = "ManagedCertificate"
@@ -58,7 +59,7 @@ resource "azurerm_cdn_frontdoor_custom_domain" "this" {
 # Create the CNAME records for the Front Door in Azure DNS
 resource "azurerm_dns_cname_record" "frontdoor" {
   count               = length(local.cartesian)
-  name                = "${local.cartesian[count.index][0]}.${local.cartesian[count.index][1]}"
+  name                = (local.cartesian[count.index][0] == "prod001" ? local.cartesian[count.index][1] : "${local.cartesian[count.index][0]}.${local.cartesian[count.index][1]}")
   zone_name           = azurerm_dns_zone.this.name
   resource_group_name = azurerm_resource_group.this.name
   ttl                 = 3600
@@ -68,7 +69,7 @@ resource "azurerm_dns_cname_record" "frontdoor" {
 # Create the TXT records for the Front Door in Azure DNS - needed to validate ownership of the DNS zone
 resource "azurerm_dns_txt_record" "frontdoor" {
   count               = length(local.cartesian)
-  name                = "_dnsauth.${local.cartesian[count.index][0]}.${local.cartesian[count.index][1]}"
+  name                = (local.cartesian[count.index][0] == "prod001" ? "_dnsauth.${local.cartesian[count.index][1]}" : "_dnsauth.${local.cartesian[count.index][0]}.${local.cartesian[count.index][1]}")
   zone_name           = azurerm_dns_zone.this.name
   resource_group_name = azurerm_resource_group.this.name
   ttl                 = 3600
