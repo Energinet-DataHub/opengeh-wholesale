@@ -70,6 +70,10 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Verifies that our orchestration can complete a full run and that every activity is executed once.
+    /// If none of the activities fails.
+    /// </summary>
     [Fact]
     public async Task FunctionApp_WhenCallingDurableFunctionEndPoint_ReturnOKAndExpectedContent()
     {
@@ -95,12 +99,12 @@ public class CalculationOrchestrationTests : IAsyncLifetime
             .MockEnergySqlStatementsResultChunks(statementId, chunkIndex, path)
             .MockEnergySqlStatementsResultStream(path, calculationIdInMock);
 
-        // Act
         var todayAtMidnight = new LocalDate(2024, 5, 17)
             .AtMidnight()
             .InZoneStrictly(_dateTimeZone)
             .ToDateTimeOffset();
 
+        // Act
         var beforeCreated = DateTime.UtcNow;
         using var actualResponse = await Fixture.AppHostManager.HttpClient.PostAsync(
             "api/StartCalculation",
@@ -114,45 +118,45 @@ public class CalculationOrchestrationTests : IAsyncLifetime
                 "application/json"));
 
         // Assert
+        // => Verify endpoint response
         actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         var calculationId = await actualResponse.Content.ReadAsAsync<Guid>();
 
-        // Verify activities was executed by searching the orchestration history
-        var filter = new OrchestrationStatusQueryCondition()
-        {
-            CreatedTimeFrom = beforeCreated,
-            RuntimeStatus =
-            [
-                OrchestrationRuntimeStatus.Running,
-                OrchestrationRuntimeStatus.Completed,
-            ],
-        };
-        // => If we only need to verify information in custom status we can do it using the instance we can get from 'ListInstancesAsync'
-        var queryResult = await Fixture.DurableClient.ListInstancesAsync(filter, CancellationToken.None);
-        var orchestration = queryResult.DurableOrchestrationState.Single();
-        var calculationMetadata = orchestration.CustomStatus.ToObject<CalculationMetadata>();
+        // => Verify expected behaviour by searching the orchestration history
+        var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeCreated);
+
+        // => Expect calculation id
+        var calculationMetadata = orchestrationStatus.CustomStatus.ToObject<CalculationMetadata>();
         calculationMetadata!.Id.Should().Be(calculationId);
-        // => But if we want to verify information in history or output, we must use 'GetStatusAsync'
-        var completeOrchestrationStatus = await Fixture.DurableClient.GetStatusAsync(orchestration.InstanceId, showHistory: true, showHistoryOutput: true);
-        var orderedHistoryEntries = completeOrchestrationStatus.History
-            .OrderBy(entry => entry["Timestamp"])
-            .ToList();
-        // => Just showing how we can verify the execution by looking in history. Instead of using the function app log, which is sketchy, we could use history.
-        orderedHistoryEntries
-            .First()
-            .Value<string>("FunctionName").Should().Be("Calculation");
 
-        // Verify activities was executed by searching the function app log
-        // TODO: We should refactor the test to wait for the orchestration to be completed (or failed),
-        // and then verify everything in history. This allows us to implement more precise tests, as the history contains
-        // more and precise information compard to the function app log.
-        await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("CreateCalculationRecordActivity");
-        await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("StartCalculationActivity");
-        await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("GetJobStatusActivity");
+        // => Wait for completion, this should be fairly quick, since we have mocked databricks
+        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(
+            orchestrationStatus.InstanceId,
+            TimeSpan.FromMinutes(3));
 
-        await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("UpdateCalculationExecutionStatusActivity");
-        await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("CreateCompletedCalculationActivity");
-        await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("SendCalculationResultsActivity");
+        // => Expect history
+        using var assertionScope = new AssertionScope();
+
+        var activities = completeOrchestrationStatus.History
+            .OrderBy(item => item["Timestamp"])
+            .Select(item => item.Value<string>("FunctionName"));
+
+        activities.Should().NotBeNull().And.BeEquivalentTo(
+            [
+                "Calculation",
+                "CreateCalculationRecordActivity",
+                "StartCalculationActivity",
+                "GetJobStatusActivity",
+                "UpdateCalculationExecutionStatusActivity",
+                "CreateCompletedCalculationActivity",
+                "SendCalculationResultsActivity",
+                null
+            ]);
+
+        // Verify that the durable function completed successfully
+        var last = completeOrchestrationStatus.History.Last();
+        last.Value<string>("EventType").Should().Be("ExecutionCompleted");
+        last.Value<string>("Result").Should().Be("Success");
 
         var verifyServiceBusMessages = await Fixture.ServiceBusListenerMock
             .When(msg =>
