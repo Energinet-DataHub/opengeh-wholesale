@@ -21,7 +21,7 @@
         "type": "string"
       },
       {
-        "name": "out_grid_area",
+        "name": "out_grid_area_code",
         "type": "string"
       },
       {
