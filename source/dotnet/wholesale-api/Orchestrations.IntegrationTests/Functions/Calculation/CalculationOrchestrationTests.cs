@@ -15,6 +15,7 @@
 using System.Net;
 using System.Text;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
@@ -26,6 +27,7 @@ using FluentAssertions.Execution;
 using Newtonsoft.Json;
 using NodaTime;
 using Xunit.Abstractions;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.Calculation;
 
@@ -67,16 +69,26 @@ public class CalculationOrchestrationTests : IAsyncLifetime
     }
 
     /// <summary>
-    /// Verifies that our orchestration can complete a full run.
-    /// That every activity is executed once and in correct order.
+    /// Verifies that:
+    ///  - The orchestration can complete a full run.
+    ///  - Every activity is executed once and in correct order.
+    ///  - A service bus message is sent as expected.
     /// </summary>
     [Fact]
-    public async Task FunctionApp_WhenCallingDurableFunctionEndPoint_ReturnOKAndExpectedContent()
+    public async Task MockExternalDependencies_WhenCallingDurableFunctionEndPoint_OrchestrationCompletesWithExpectedServiceBusMessage()
     {
         // Arrange
+        // => Databricks Jobs API
         var jobId = Random.Shared.Next(1, 1000);
         var runId = Random.Shared.Next(1000, 2000);
 
+        Fixture.MockServer
+            .MockJobsList(jobId)
+            .MockJobsGet(jobId)
+            .MockJobsRunNow(runId)
+            .MockJobsRunsGet(runId, "TERMINATED", "SUCCESS");
+
+        // => Databricks SQL Statement API
         var chunkIndex = 0;
         var statementId = Guid.NewGuid().ToString();
         var path = "GetDatabricksDataPath";
@@ -87,10 +99,6 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         var calculationIdInMock = Guid.NewGuid();
 
         Fixture.MockServer
-            .MockJobsList(jobId)
-            .MockJobsGet(jobId)
-            .MockJobsRunNow(runId)
-            .MockJobsRunsGet(runId, "TERMINATED", "SUCCESS")
             .MockEnergySqlStatements(statementId, chunkIndex)
             .MockEnergySqlStatementsResultChunks(statementId, chunkIndex, path)
             .MockEnergySqlStatementsResultStream(path, calculationIdInMock);
@@ -137,19 +145,19 @@ public class CalculationOrchestrationTests : IAsyncLifetime
             .OrderBy(item => item["Timestamp"])
             .Select(item => item.Value<string>("FunctionName"));
 
-        activities.Should().NotBeNull().And.BeEquivalentTo(
-            [
-                "Calculation",
-                "CreateCalculationRecordActivity",
-                "StartCalculationActivity",
-                "GetJobStatusActivity",
-                "UpdateCalculationExecutionStatusActivity",
-                "CreateCompletedCalculationActivity",
-                "SendCalculationResultsActivity",
-                null
-            ]);
+        activities.Should().NotBeNull().And.Equal(
+        [
+            "Calculation",
+            "CreateCalculationRecordActivity",
+            "StartCalculationActivity",
+            "GetJobStatusActivity",
+            "UpdateCalculationExecutionStatusActivity",
+            "CreateCompletedCalculationActivity",
+            "SendCalculationResultsActivity",
+            null
+        ]);
 
-        // Verify that the durable function completed successfully
+        // => Verify that the durable function completed successfully
         var last = completeOrchestrationStatus.History.Last();
         last.Value<string>("EventType").Should().Be("ExecutionCompleted");
         last.Value<string>("Result").Should().Be("Success");
@@ -180,12 +188,13 @@ public class CalculationOrchestrationTests : IAsyncLifetime
     /// Verify the job status monitor (loop) is working.
     /// </summary>
     [Fact]
-    public async Task MockJobStatus_WhenCallingStartCalculationEndPoint_OrchestrationCompletesWithExpectedHistory()
+    public async Task MockJobsRunsGetLifeCycleScenario_WhenCallingStartCalculationEndPoint_OrchestrationCompletesWithExpectedGetJobStatusActivity()
     {
         // Arrange
         // => Databricks Jobs API
         var jobId = Random.Shared.Next(1, 1000);
         var runId = Random.Shared.Next(1000, 2000);
+
         Fixture.MockServer
             .MockJobsList(jobId)
             .MockJobsGet(jobId)
@@ -196,17 +205,18 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         var chunkIndex = 0;
         var statementId = Guid.NewGuid().ToString();
         var path = "GetDatabricksDataPath";
+
         Fixture.MockServer
             .MockEnergySqlStatements(statementId, chunkIndex)
             .MockEnergySqlStatementsResultChunks(statementId, chunkIndex, path)
             .MockEnergySqlStatementsResultStream(path);
 
-        // Act
         var dateAtMidnight = new LocalDate(2024, 5, 17)
             .AtMidnight()
             .InZoneStrictly(_dateTimeZone)
             .ToDateTimeOffset();
 
+        // Act
         var beforeCreated = DateTime.UtcNow;
         using var actualResponse = await Fixture.AppHostManager.HttpClient.PostAsync(
             "api/StartCalculation",
@@ -246,13 +256,17 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         last.Value<string>("Result").Should().Be("Success");
 
         // => Job status (loop)
-        var getJobStatus = completeOrchestrationStatus.History
+        var getJobStatusResults = completeOrchestrationStatus.History
             .Where(item => item.Value<string>("FunctionName") == "GetJobStatusActivity")
             .OrderBy(item => item["Timestamp"])
+            .Select(item => item.Value<string>("Result"))
             .ToList();
-        getJobStatus.Count().Should().Be(3);
-        getJobStatus.ElementAt(0).Value<string>("Result").Should().Be("0");
-        getJobStatus.ElementAt(1).Value<string>("Result").Should().Be("1");
-        getJobStatus.ElementAt(2).Value<string>("Result").Should().Be("2");
+
+        getJobStatusResults.Should().NotBeNull().And.Equal(
+        [
+            ((int)CalculationState.Pending).ToString(),
+            ((int)CalculationState.Running).ToString(),
+            ((int)CalculationState.Completed).ToString(),
+        ]);
     }
 }
