@@ -18,8 +18,8 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "this" {
       match_variable     = "RemoteAddr"
       operator           = "GeoMatch"
       negation_condition = true
-      # Max 10 is allowed
-      match_values = ["NL", "DK"]
+      # Max 10 is allowed - US is added due to our runners
+      match_values = ["NL", "DK", "US"]
     }
   }
 
