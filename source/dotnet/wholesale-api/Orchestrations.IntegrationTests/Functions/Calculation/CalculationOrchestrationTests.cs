@@ -85,9 +85,9 @@ public class CalculationOrchestrationTests : IAsyncLifetime
             .MockJobsRunNow(runId)
             .MockJobsRunsGet(runId, "TERMINATED", "SUCCESS")
 
-            .MockSqlStatements(statementId, chunkIndex)
-            .MockSqlStatementsResultChunks(statementId, chunkIndex, path)
-            .MockSqlStatementsResultStream(path);
+            .MockEnergySqlStatements(statementId, chunkIndex)
+            .MockEnergySqlStatementsResultChunks(statementId, chunkIndex, path)
+            .MockEnergySqlStatementsResultStream(path);
 
         var verifyServiceBusMessages = await Fixture.ServiceBusListenerMock
             .WhenAny()
@@ -152,9 +152,8 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("CreateCompletedCalculationActivity");
         await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("SendCalculationResultsActivity");
 
-        // TODO: Wait for events on ServiceBus using "listener mock"
         var wait = verifyServiceBusMessages.Wait(TimeSpan.FromMinutes(1));
-        wait.Should().BeTrue();
+        wait.Should().BeTrue("We did not receive the expected message on the ServiceBus");
     }
 
     /// <summary>
@@ -178,9 +177,9 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         var statementId = Guid.NewGuid().ToString();
         var path = "GetDatabricksDataPath";
         Fixture.MockServer
-            .MockSqlStatements(statementId, chunkIndex)
-            .MockSqlStatementsResultChunks(statementId, chunkIndex, path)
-            .MockSqlStatementsResultStream(path);
+            .MockEnergySqlStatements(statementId, chunkIndex)
+            .MockEnergySqlStatementsResultChunks(statementId, chunkIndex, path)
+            .MockEnergySqlStatementsResultStream(path);
 
         // Act
         var dateAtMidnight = new LocalDate(2024, 5, 17)
