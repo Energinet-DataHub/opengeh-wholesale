@@ -40,11 +40,11 @@ metering_point_time_series_schema = StructType(
         StructField(
             MeteringPointPeriodColname.metering_point_type, StringType(), False
         ),
-        StructField(MeteringPointPeriodColname.resolution, StringType(), True),
-        StructField(MeteringPointPeriodColname.grid_area, StringType(), True),
+        StructField(MeteringPointPeriodColname.resolution, StringType(), False),
+        StructField(MeteringPointPeriodColname.grid_area, StringType(), False),
         StructField(MeteringPointPeriodColname.energy_supplier_id, StringType(), True),
         StructField(
-            MeteringPointTimeSeriesColname.observation_day, TimestampType(), True
+            MeteringPointTimeSeriesColname.observation_day, TimestampType(), False
         ),
         StructField(
             MeteringPointTimeSeriesColname.quantities,
