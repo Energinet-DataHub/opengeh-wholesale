@@ -104,6 +104,14 @@ module "kvs_databricks_public_network_id" {
   depends_on   = [module.dbw]
 }
 
+module "kvs_databricks_workspace_url" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v14"
+
+  name         = "dbw-workspace-url"
+  value        = module.dbw.workspace_url
+  key_vault_id = module.kv_internal.id
+}
+
 module "kvs_databricks_private_dns_resource_group_name" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
 
