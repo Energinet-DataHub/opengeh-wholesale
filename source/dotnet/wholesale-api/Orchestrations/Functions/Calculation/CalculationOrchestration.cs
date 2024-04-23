@@ -17,7 +17,6 @@ using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.DurableTask;
-using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation;
 
@@ -55,8 +54,8 @@ internal class CalculationOrchestration
             calculationMetadata.JobStatus = await context.CallActivityAsync<CalculationState>(nameof(CalculationActivities.GetJobStatusActivity), calculationMetadata.JobId);
             context.SetCustomStatus(calculationMetadata);
 
-            if (calculationMetadata.JobStatus == CalculationState.Running
-                || calculationMetadata.JobStatus == CalculationState.Pending)
+            if (calculationMetadata.JobStatus is CalculationState.Running
+                or CalculationState.Pending)
             {
                 // Update calculation execution status (SQL)
                 await context.CallActivityAsync(nameof(CalculationActivities.UpdateCalculationExecutionStatusActivity), calculationMetadata);
