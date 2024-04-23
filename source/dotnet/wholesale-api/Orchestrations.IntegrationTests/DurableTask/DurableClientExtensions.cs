@@ -17,6 +17,9 @@ using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.DurableTask;
 
+// TODO:
+// We should move this class to TestCommon, maybe to a new project named DurableFunctionApp.TestCommon.
+// It should recide in the namespace "DurableTask" like it does here.
 public static class DurableClientExtensions
 {
     /// <summary>
