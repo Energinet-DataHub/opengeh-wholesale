@@ -35,26 +35,6 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions
 /// </summary>
 public static class DatabricksApiWireMockExtensions
 {
-    /// <summary>
-    /// Mapping to catch-all requests that doesn't match any more specific mapping.
-    /// </summary>
-    public static WireMockServer CatchAll(this WireMockServer server)
-    {
-        server
-            .Given(
-                Request.Create()
-                .WithPath("/*")
-                .UsingAnyMethod())
-            .AtPriority(1000)
-            .RespondWith(
-                Response.Create()
-                .WithStatusCode(HttpStatusCode.NotImplemented)
-                .WithHeader(HeaderNames.ContentType, "application/text")
-                .WithBody("Request not mapped!"));
-
-        return server;
-    }
-
     public static WireMockServer MockJobsList(this WireMockServer server, long jobId)
     {
         var request = Request

@@ -80,7 +80,6 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         var path = "GetDatabricksDataPath";
 
         Fixture.MockServer
-            .CatchAll()
             .MockJobsList(jobId)
             .MockJobsGet(jobId)
             .MockJobsRunNow(runId)
@@ -165,10 +164,6 @@ public class CalculationOrchestrationTests : IAsyncLifetime
     public async Task MockJobStatus_WhenCallingStartCalculationEndPoint_OrchestrationCompletesWithExpectedHistory()
     {
         // Arrange
-        // => Http catch all
-        Fixture.MockServer
-            .CatchAll();
-
         // => Databricks Jobs API
         var jobId = Random.Shared.Next(1, 1000);
         var runId = Random.Shared.Next(1000, 2000);
