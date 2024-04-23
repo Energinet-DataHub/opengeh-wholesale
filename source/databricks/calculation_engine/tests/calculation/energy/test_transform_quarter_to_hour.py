@@ -14,6 +14,7 @@
 from datetime import datetime
 from decimal import Decimal
 
+import pytest
 from pyspark.sql import SparkSession
 from pyspark.sql.types import Row
 
@@ -115,27 +116,75 @@ def test__transform_quarter_to_hour__when_valid_input__merge_basis_data_time_ser
     assert actual.df.collect()[2][Colname.quantity] == Decimal("17.776000")
 
 
+@pytest.mark.parametrize(
+    "quality_1, quality_2, quality_3, quality_4, expected_quality",
+    [
+        (
+            QuantityQuality.MISSING,
+            QuantityQuality.MISSING,
+            QuantityQuality.MISSING,
+            QuantityQuality.MISSING,
+            QuantityQuality.MISSING,
+        ),
+        (
+            QuantityQuality.MISSING,
+            QuantityQuality.MISSING,
+            QuantityQuality.MISSING,
+            QuantityQuality.ESTIMATED,
+            QuantityQuality.ESTIMATED,
+        ),
+        (
+            QuantityQuality.MISSING,
+            QuantityQuality.MISSING,
+            QuantityQuality.MISSING,
+            QuantityQuality.MEASURED,
+            QuantityQuality.MEASURED,
+        ),
+        (
+            QuantityQuality.MISSING,
+            QuantityQuality.MISSING,
+            QuantityQuality.ESTIMATED,
+            QuantityQuality.MEASURED,
+            QuantityQuality.ESTIMATED,
+        ),
+        (
+            QuantityQuality.MISSING,
+            QuantityQuality.ESTIMATED,
+            QuantityQuality.MEASURED,
+            QuantityQuality.CALCULATED,
+            QuantityQuality.CALCULATED,
+        ),
+    ],
+)
 def test__transform_quarter_to_hour__when_different_qualities__uses_correct_quality(
     spark: SparkSession,
+    quality_1: QuantityQuality,
+    quality_2: QuantityQuality,
+    quality_3: QuantityQuality,
+    quality_4: QuantityQuality,
+    expected_quality: QuantityQuality,
 ) -> None:
     # Arrange
     rows = [
         basis_data_time_series_points_row(
             resolution=MeteringPointResolution.QUARTER,
             observation_time=datetime(2020, 1, 1, 1, 00),
-            quality=QuantityQuality.MISSING,
+            quality=quality_1,
         ),
         basis_data_time_series_points_row(
             resolution=MeteringPointResolution.QUARTER,
             observation_time=datetime(2020, 1, 1, 1, 15),
+            quality=quality_2,
         ),
         basis_data_time_series_points_row(
             resolution=MeteringPointResolution.QUARTER,
             observation_time=datetime(2020, 1, 1, 1, 30),
+            quality=quality_3,
         ),
         basis_data_time_series_points_row(
             resolution=MeteringPointResolution.QUARTER,
             observation_time=datetime(2020, 1, 1, 1, 45),
+            quality=quality_4,
         ),
     ]
     basis_data_time_series_points = spark.createDataFrame(
@@ -149,4 +198,4 @@ def test__transform_quarter_to_hour__when_different_qualities__uses_correct_qual
     actual = transform_quarter_to_hour(metering_point_time_series)
 
     # Assert
-    assert actual.df.collect()[0][Colname.quality] == QuantityQuality.MISSING.value
+    assert actual.df.collect()[0][Colname.quality] == expected_quality.value

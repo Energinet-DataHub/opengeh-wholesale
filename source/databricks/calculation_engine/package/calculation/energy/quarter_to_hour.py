@@ -23,7 +23,7 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
 from package.calculation.preparation.data_structures.metering_point_time_series import (
     MeteringPointTimeSeries,
 )
-from package.codelists import MeteringPointResolution
+from package.codelists import MeteringPointResolution, QuantityQuality
 from package.constants import Colname
 
 
@@ -48,7 +48,23 @@ def transform_quarter_to_hour(
     ]
     result = aggregate_quantity_and_quality(result, group_by)
 
-    result.show()
-    # TODO: function that can get the correct quality for qualities
+    result = result.withColumn(
+        Colname.quality,
+        f.when(
+            f.array_contains(
+                f.col(Colname.qualities), QuantityQuality.CALCULATED.value
+            ),
+            QuantityQuality.CALCULATED.value,
+        )
+        .when(
+            f.array_contains(f.col(Colname.qualities), QuantityQuality.ESTIMATED.value),
+            QuantityQuality.ESTIMATED.value,
+        )
+        .when(
+            f.array_contains(f.col(Colname.qualities), QuantityQuality.MEASURED.value),
+            QuantityQuality.MEASURED.value,
+        )
+        .otherwise(QuantityQuality.MISSING.value),
+    )
 
     return MeteringPointTimeSeries(result)
