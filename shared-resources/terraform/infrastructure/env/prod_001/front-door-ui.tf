@@ -13,26 +13,26 @@ locals {
       environment = "sauron.test002"
       url         = "victorious-ocean-05a6eaa03.5.azurestaticapps.net"
     },
-    # {
-    #   environment = "dev"
-    #   url         = "nice-meadow-03a161503.3.azurestaticapps.net"
-    # },
-    # {
-    #   environment = "test"
-    #   url         = "green-beach-024d44703.3.azurestaticapps.net"
-    # },
-    # {
-    #   environment = "preprod"
-    #   url         = "red-meadow-02d1f9403.3.azurestaticapps.net"
-    # },
-    # {
-    #   environment = "prod"
-    #   url         = "calm-sky-050b30c03.3.azurestaticapps.net"
-    # },
-    # {
-    #   environment = "sauron"
-    #   url         = "jolly-field-0d52edd03.4.azurestaticapps.net"
-    # }
+    {
+      environment = "dev"
+      url         = "nice-meadow-03a161503.3.azurestaticapps.net"
+    },
+    {
+      environment = "test"
+      url         = "green-beach-024d44703.3.azurestaticapps.net"
+    },
+    {
+      environment = "preprod"
+      url         = "red-meadow-02d1f9403.3.azurestaticapps.net"
+    },
+    {
+      environment = "prod"
+      url         = "calm-sky-050b30c03.3.azurestaticapps.net"
+    },
+    {
+      environment = "sauron"
+      url         = "jolly-field-0d52edd03.4.azurestaticapps.net"
+    }
   ]
 }
 
