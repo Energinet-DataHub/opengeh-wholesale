@@ -6,6 +6,9 @@ ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results SET TBLPROPERTIES (
     'delta.columnMapping.mode' = 'name',
     'delta.minReaderVersion' = '2',
     'delta.minWriterVersion' = '5')
+GO
+
+ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
 RENAME COLUMN grid_area TO grid_area_code
 GO
 
@@ -20,10 +23,7 @@ GO
 -- Rename energy_results.out_grid_area to out_grid_area_code - including the constraint
 --
 
-ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results SET TBLPROPERTIES (
-    'delta.columnMapping.mode' = 'name',
-    'delta.minReaderVersion' = '2',
-    'delta.minWriterVersion' = '5')
+ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
 RENAME COLUMN out_grid_area TO out_grid_area_code
 GO
 
@@ -43,6 +43,9 @@ ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results SET TBLPROPERTIES (
     'delta.columnMapping.mode' = 'name',
     'delta.minReaderVersion' = '2',
     'delta.minWriterVersion' = '5')
+GO
+
+ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
 RENAME COLUMN grid_area TO grid_area_code
 GO
 
@@ -61,6 +64,9 @@ ALTER TABLE {OUTPUT_DATABASE_NAME}.total_monthly_amounts SET TBLPROPERTIES (
     'delta.columnMapping.mode' = 'name',
     'delta.minReaderVersion' = '2',
     'delta.minWriterVersion' = '5')
+GO
+
+ALTER TABLE {OUTPUT_DATABASE_NAME}.total_monthly_amounts
 RENAME COLUMN grid_area TO grid_area_code
 GO
 
