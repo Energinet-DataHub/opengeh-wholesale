@@ -18,6 +18,7 @@ using AutoFixture;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.DurableTask;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions;
@@ -34,12 +35,14 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.
 [Collection(nameof(OrchestrationsAppCollectionFixture))]
 public class CalculationOrchestrationTests : IAsyncLifetime
 {
+    private readonly ITestOutputHelper _testOutputHelper;
     private readonly DateTimeZone _dateTimeZone;
 
     public CalculationOrchestrationTests(
         OrchestrationsAppFixture fixture,
         ITestOutputHelper testOutputHelper)
     {
+        _testOutputHelper = testOutputHelper;
         Fixture = fixture;
         Fixture.SetTestOutputHelper(testOutputHelper);
 
@@ -84,14 +87,9 @@ public class CalculationOrchestrationTests : IAsyncLifetime
             .MockJobsGet(jobId)
             .MockJobsRunNow(runId)
             .MockJobsRunsGet(runId, "TERMINATED", "SUCCESS")
-
             .MockEnergySqlStatements(statementId, chunkIndex)
             .MockEnergySqlStatementsResultChunks(statementId, chunkIndex, path)
             .MockEnergySqlStatementsResultStream(path);
-
-        var verifyServiceBusMessages = await Fixture.ServiceBusListenerMock
-            .WhenAny()
-            .VerifyCountAsync(1);
 
         // Act
         var todayAtMidnight = new LocalDate(2024, 5, 17)
@@ -151,6 +149,25 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("UpdateCalculationExecutionStatusActivity");
         await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("CreateCompletedCalculationActivity");
         await Fixture.AppHostManager.AssertFunctionWasExecutedAsync("SendCalculationResultsActivity");
+
+        var verifyServiceBusMessages = await Fixture.ServiceBusListenerMock
+            .When(msg =>
+            {
+                if (msg.Subject != EnergyResultProducedV2.EventName)
+                {
+                    return false;
+                }
+
+                var erp = EnergyResultProducedV2.Parser.ParseFrom(msg.Body);
+                _testOutputHelper.WriteLine("#######################");
+                _testOutputHelper.WriteLine(erp.ToString());
+                _testOutputHelper.WriteLine("#######################");
+                _testOutputHelper.WriteLine($"CalcId: {calculationId}");
+                _testOutputHelper.WriteLine("#######################");
+
+                return erp.CalculationId == calculationId.ToString();
+            })
+            .VerifyCountAsync(1);
 
         var wait = verifyServiceBusMessages.Wait(TimeSpan.FromMinutes(1));
         wait.Should().BeTrue("We did not receive the expected message on the ServiceBus");
