@@ -1,7 +1,7 @@
 locals {
-  environment_short = ["d-002", "t-002", "d-001", "t-001", "b-001", "p-001"]              # Only append to the list due to indexes!
-  environments      = ["dev002", "test002", "dev001", "test001", "preprod001", "prod001"] # Only append to the list due to indexes!
-  type              = ["ebix", "b2b"]                                                     # Only append to the list due to indexes!
+  environment_short = ["d-002", "t-002", "d-001", "t-001", "b-001", "p-001"]     # Only append to the list due to indexes!
+  environments      = ["dev002", "test002", "dev", "test", "preprod", "prod001"] # Only append to the list due to indexes! prod001 is the only one with a number, as it is checked later on
+  type              = ["ebix", "b2b"]                                            # Only append to the list due to indexes!
   cartesian         = setproduct(local.environments, local.type)
 }
 
