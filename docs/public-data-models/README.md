@@ -31,9 +31,11 @@ The other way is by the business process. When you don't care from which calcula
 
 ## Models
 
-- [Settlement reports](settlement-reports.md)
+The wholesale public data models can be inspected in the metastore of the wholesale Databricks workspace. These are the public data models of the wholesale subsystem:
 
-The complete list of column descriptions is [here](columns.md).
+- Settlement reports
+
+For a complete list of column descriptions read [this](columns.md).
 
 ## Naming
 
