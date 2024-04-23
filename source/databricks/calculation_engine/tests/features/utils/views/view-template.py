@@ -16,8 +16,8 @@ from typing import Tuple
 
 import pytest
 
-from features.utils.assertion import assert_view_output
 from features.utils.scenario_output_files import get_output_names
+from features.utils.views.assertion import assert_output
 from features.utils.views.dataframe_container import DataframeContainer
 
 
@@ -33,4 +33,4 @@ def test__equals_expected(
     ],
     output_name: str,
 ) -> None:
-    assert_view_output(actual_and_expected_views, output_name)
+    assert_output(actual_and_expected_views, output_name)

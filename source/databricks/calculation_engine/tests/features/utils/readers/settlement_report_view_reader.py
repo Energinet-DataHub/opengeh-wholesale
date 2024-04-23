@@ -25,7 +25,6 @@ from package.infrastructure.paths import (
 class SettlementReportViewReader:
     """
     This class is responsible for retrieving data from settlement report views.
-    It is only used in tests.
     """
 
     def __init__(
