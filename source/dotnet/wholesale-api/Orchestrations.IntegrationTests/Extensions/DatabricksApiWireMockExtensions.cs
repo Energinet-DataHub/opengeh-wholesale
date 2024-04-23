@@ -195,6 +195,11 @@ public static class DatabricksApiWireMockExtensions
         return server;
     }
 
+    /// <summary>
+    /// Create a '/api/2.0/sql/statements' JSON response. With a single chunk, containing a single row.
+    /// The rest is pretty much dummy data, and can be adjusted as one pleases.
+    /// Note that the columns matches the 'EnergyResultColumnNames' enum. Which again matches the columns in the energy databricks table.
+    /// </summary>
     public static string DatabricksEnergyStatementResponseMock(string statementId, int chunkIndex)
     {
         var json = """
@@ -236,6 +241,8 @@ public static class DatabricksApiWireMockExtensions
                  }
                }
                """;
+
+        // Make sure that the order of the names matches the order of the data defined in 'DatabricksEnergyStatementRowMock'
         var columns = string.Join(
             ",",
             EnergyResultColumnNames
@@ -250,7 +257,9 @@ public static class DatabricksApiWireMockExtensions
     }
 
     /// <summary>
-    /// Creates a
+    /// Creates a '/api/2.0/sql/statements/{statementId}/result/chunks/{chunkIndex}' JSON response.
+    /// Containing a list of 'external_links', which holds information about the rows one are fetching
+    /// using the url defined in 'external_link', defined in the elements of 'external_links'.
     /// </summary>
     public static string DatabricksEnergyStatementExternalLinkResponseMock(int chunkIndex, string url)
     {
@@ -261,7 +270,7 @@ public static class DatabricksApiWireMockExtensions
                        "chunk_index": {chunkIndex},
                        "row_offset": 0,
                        "row_count": 1,
-                       "byte_count": 24486486,
+                       "byte_count": 246,
                        "external_link": "{url}",
                        "expiration": "2023-01-30T22:23:23.140Z"
                      }
@@ -272,8 +281,16 @@ public static class DatabricksApiWireMockExtensions
             .Replace("{url}", url);
     }
 
+    /// <summary>
+    /// Creates a JSON response of a single row in the energy databricks table.
+    /// This is the data that is fetched from the 'external_link' defined in the 'DatabricksEnergyStatementExternalLinkResponseMock'.
+    /// </summary>
+    /// <remarks>
+    /// Note that QuantityQualities is a string, containing a list of strings.
+    /// </remarks>>
     private static string DatabricksEnergyStatementRowMock()
     {
+        // Make sure that the order of the data matches the order of the columns defined in 'DatabricksEnergyStatementResponseMock'
         var data = EnergyResultColumnNames.GetAllNames().Select(columnName => columnName switch
         {
             EnergyResultColumnNames.CalculationId => "\"ed39dbc5-bdc5-41b9-922a-08d3b12d4538\"",
