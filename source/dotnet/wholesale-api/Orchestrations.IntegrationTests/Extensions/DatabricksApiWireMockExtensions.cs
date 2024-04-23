@@ -250,7 +250,7 @@ public static class DatabricksApiWireMockExtensions
     }
 
     /// <summary>
-    /// Creates a 
+    /// Creates a
     /// </summary>
     public static string DatabricksEnergyStatementExternalLinkResponseMock(int chunkIndex, string url)
     {
