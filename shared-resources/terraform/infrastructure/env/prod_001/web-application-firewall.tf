@@ -18,8 +18,13 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "this" {
       match_variable     = "RemoteAddr"
       operator           = "GeoMatch"
       negation_condition = true
-      # Max 10 is allowed - US is added due to our runners
-      match_values = ["NL", "DK", "US"]
+      # Max 10 is allowed
+      # US is added due to our runners
+      # Approved list is Norden Fi-SE-No-DK
+      # Germany (Modstrøm)
+      # United Kingdom and Netherlands  (Azure)
+      # Poland (development for KMD - Ørsted)
+      match_values = ["NL", "DK", "US", "FI", "SE", "NO", "DE", "GB", "PL"]
     }
   }
 
