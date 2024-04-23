@@ -69,8 +69,8 @@ public class CalculationOrchestrationTests : IAsyncLifetime
     }
 
     /// <summary>
-    /// Verifies that our orchestration can complete a full run and that every activity is executed once.
-    /// If none of the activities fails.
+    /// Verifies that our orchestration can complete a full run.
+    /// That every activity is executed once and in correct order.
     /// </summary>
     [Fact]
     public async Task FunctionApp_WhenCallingDurableFunctionEndPoint_ReturnOKAndExpectedContent()
@@ -123,7 +123,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         // => Verify expected behaviour by searching the orchestration history
         var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeCreated);
 
-        // => Expect calculation id
+        // => Function has the expected calculation id
         var calculationMetadata = orchestrationStatus.CustomStatus.ToObject<CalculationMetadata>();
         calculationMetadata!.Id.Should().Be(calculationId);
 
@@ -156,6 +156,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         last.Value<string>("EventType").Should().Be("ExecutionCompleted");
         last.Value<string>("Result").Should().Be("Success");
 
+        // => Verify that the expected message was sent on the ServiceBus
         var verifyServiceBusMessages = await Fixture.ServiceBusListenerMock
             .When(msg =>
             {
