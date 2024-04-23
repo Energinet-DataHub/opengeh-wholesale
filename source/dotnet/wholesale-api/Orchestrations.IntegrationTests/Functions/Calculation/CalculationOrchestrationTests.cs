@@ -34,14 +34,12 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.
 [Collection(nameof(OrchestrationsAppCollectionFixture))]
 public class CalculationOrchestrationTests : IAsyncLifetime
 {
-    private readonly ITestOutputHelper _testOutputHelper;
     private readonly DateTimeZone _dateTimeZone;
 
     public CalculationOrchestrationTests(
         OrchestrationsAppFixture fixture,
         ITestOutputHelper testOutputHelper)
     {
-        _testOutputHelper = testOutputHelper;
         Fixture = fixture;
         Fixture.SetTestOutputHelper(testOutputHelper);
 
