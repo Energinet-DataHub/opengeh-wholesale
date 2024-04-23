@@ -61,6 +61,12 @@ locals {
     EXTERNAL_OPEN_ID_URL            = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=frontend-open-id-url)"
     INTERNAL_OPEN_ID_URL            = "https://app-webapi-${var.domain_name_short}-${var.environment_short}-we-${var.environment_instance}.azurewebsites.net/.well-known/openid-configuration"
     BACKEND_BFF_APP_ID              = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-bff-app-id)"
+
+    "UserAuthentication:MitIdExternalMetadataAddress" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=mitid-frontend-open-id-url)"
+    "UserAuthentication:ExternalMetadataAddress"      = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=frontend-open-id-url)"
+    "UserAuthentication:InternalMetadataAddress"      = "https://app-webapi-${var.domain_name_short}-${var.environment_short}-we-${var.environment_instance}.azurewebsites.net/.well-known/openid-configuration"
+    "UserAuthentication:BackendBffAppId"              = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-bff-app-id)"
+
     SQL_MP_DB_CONNECTION_STRING     = local.MS_MARKET_PARTICIPANT_CONNECTION_STRING
     AZURE_B2C_TENANT                = var.b2c_tenant
     AZURE_B2C_SPN_ID                = var.b2c_spn_id
