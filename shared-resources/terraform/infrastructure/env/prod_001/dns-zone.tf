@@ -47,24 +47,6 @@ resource "azurerm_dns_cname_record" "dev_ebix" {
   record              = "apim-shres-d-we-001.azure-api.net"
 }
 
-# APIM B2B dev_002
-resource "azurerm_dns_cname_record" "dev002_b2b" {
-  name                = "dev002.b2b"
-  zone_name           = azurerm_dns_zone.this.name
-  resource_group_name = azurerm_resource_group.this.name
-  ttl                 = 3600
-  record              = "apim-shres-d-we-002.azure-api.net"
-}
-
-# APIM B2B dev_002
-resource "azurerm_dns_cname_record" "dev002_ebix" {
-  name                = "dev002.ebix"
-  zone_name           = azurerm_dns_zone.this.name
-  resource_group_name = azurerm_resource_group.this.name
-  ttl                 = 3600
-  record              = "apim-shres-d-we-002.azure-api.net"
-}
-
 # APIM B2B test_001
 resource "azurerm_dns_cname_record" "test_b2b" {
   name                = "test.b2b"
@@ -81,24 +63,6 @@ resource "azurerm_dns_cname_record" "test_ebix" {
   resource_group_name = azurerm_resource_group.this.name
   ttl                 = 3600
   record              = "apim-shres-t-we-001.azure-api.net"
-}
-
-# APIM B2B test_002
-resource "azurerm_dns_cname_record" "test002_b2b" {
-  name                = "test002.b2b"
-  zone_name           = azurerm_dns_zone.this.name
-  resource_group_name = azurerm_resource_group.this.name
-  ttl                 = 3600
-  record              = "apim-shres-t-we-002.azure-api.net"
-}
-
-# APIM ebix test_002
-resource "azurerm_dns_cname_record" "test002_ebix" {
-  name                = "test002.ebix"
-  zone_name           = azurerm_dns_zone.this.name
-  resource_group_name = azurerm_resource_group.this.name
-  ttl                 = 3600
-  record              = "apim-shres-t-we-002.azure-api.net"
 }
 
 # APIM B2B preprod_001
@@ -146,14 +110,6 @@ resource "azurerm_dns_cname_record" "dev001_ui" {
   record              = "nice-meadow-03a161503.3.azurestaticapps.net"
 }
 
-# UI dev_002
-resource "azurerm_dns_cname_record" "dev002_ui" {
-  name                = "dev002"
-  zone_name           = azurerm_dns_zone.this.name
-  resource_group_name = azurerm_resource_group.this.name
-  ttl                 = 3600
-  record              = "lively-pond-06cbcb903.3.azurestaticapps.net"
-}
 
 # UI test_001
 resource "azurerm_dns_cname_record" "test001_ui" {
@@ -164,15 +120,6 @@ resource "azurerm_dns_cname_record" "test001_ui" {
   record              = "green-beach-024d44703.3.azurestaticapps.net"
 }
 
-# UI test_002
-resource "azurerm_dns_cname_record" "test002_ui" {
-  name                = "test002"
-  zone_name           = azurerm_dns_zone.this.name
-  resource_group_name = azurerm_resource_group.this.name
-  ttl                 = 3600
-  record              = "agreeable-mud-0a0a24403.3.azurestaticapps.net"
-}
-
 # UI preprod_001
 resource "azurerm_dns_cname_record" "preprod_ui" {
   name                = "preprod"
@@ -180,15 +127,6 @@ resource "azurerm_dns_cname_record" "preprod_ui" {
   resource_group_name = azurerm_resource_group.this.name
   ttl                 = 3600
   record              = "red-meadow-02d1f9403.3.azurestaticapps.net"
-}
-
-# sauron test_002
-resource "azurerm_dns_cname_record" "test002_sauron" {
-  name                = "sauron.test002"
-  zone_name           = azurerm_dns_zone.this.name
-  resource_group_name = azurerm_resource_group.this.name
-  ttl                 = 3600
-  record              = "victorious-ocean-05a6eaa03.5.azurestaticapps.net"
 }
 
 # sauron prod_001
