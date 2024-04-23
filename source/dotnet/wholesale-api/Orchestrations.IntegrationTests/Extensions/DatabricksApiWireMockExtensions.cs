@@ -117,6 +117,55 @@ public static class DatabricksApiWireMockExtensions
         return server;
     }
 
+    /// <summary>
+    /// JobStatusLifeCycle goes through "Pending" -> "Running" -> "Completed".
+    /// </summary>
+    public static WireMockServer MockJobsRunsGetLifeCycleScenario(this WireMockServer server, long runId)
+    {
+        var request = Request
+            .Create()
+            .WithPath("/api/2.1/jobs/runs/get")
+            .WithParam("run_id", runId.ToString())
+            .UsingGet();
+
+        // Pending
+        server
+            .Given(request)
+            .InScenario("JobStatusLifeCycle")
+            .WillSetStateTo(Calculations.Application.Model.CalculationState.Pending.ToString())
+            .RespondWith(Response
+                .Create()
+                .WithStatusCode(HttpStatusCode.OK)
+                .WithHeader(HeaderNames.ContentType, "application/json")
+                .WithBody(BuildJobsRunsGetJson(runId, "PENDING", "EXCLUDED")));
+
+        // Running
+        server
+            .Given(request)
+            .InScenario("JobStatusLifeCycle")
+            .WhenStateIs(Calculations.Application.Model.CalculationState.Pending.ToString())
+            .WillSetStateTo(Calculations.Application.Model.CalculationState.Running.ToString())
+            .RespondWith(Response
+                .Create()
+                .WithStatusCode(HttpStatusCode.OK)
+                .WithHeader(HeaderNames.ContentType, "application/json")
+                .WithBody(BuildJobsRunsGetJson(runId, "RUNNING", "EXCLUDED")));
+
+        // Completed
+        server
+            .Given(request)
+            .InScenario("JobStatusLifeCycle")
+            .WhenStateIs(Calculations.Application.Model.CalculationState.Running.ToString())
+            .WillSetStateTo(Calculations.Application.Model.CalculationState.Completed.ToString())
+            .RespondWith(Response
+                .Create()
+                .WithStatusCode(HttpStatusCode.OK)
+                .WithHeader(HeaderNames.ContentType, "application/json")
+                .WithBody(BuildJobsRunsGetJson(runId, "TERMINATED", "SUCCESS")));
+
+        return server;
+    }
+
     public static WireMockServer MockEnergySqlStatements(this WireMockServer server, string statementId, int chunkIndex)
     {
         var request = Request

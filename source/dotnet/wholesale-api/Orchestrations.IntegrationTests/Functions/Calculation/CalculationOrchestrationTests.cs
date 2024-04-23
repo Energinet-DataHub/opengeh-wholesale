@@ -170,7 +170,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
             .MockJobsList(jobId)
             .MockJobsGet(jobId)
             .MockJobsRunNow(runId)
-            .MockJobsRunsGet(runId, "TERMINATED", "SUCCESS");
+            .MockJobsRunsGetLifeCycleScenario(runId);
 
         // => Databricks SQL Statement API
         var chunkIndex = 0;

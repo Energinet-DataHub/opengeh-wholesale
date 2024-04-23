@@ -110,6 +110,32 @@ public class DatabricksApiWireMockExtensionsTests : IClassFixture<WireMockExtens
         actualRunTuple.Item1.State.ResultState.Should().Be(RunResultState.SUCCESS);
     }
 
+    [Fact]
+    public async Task MockJobsRunsGet_WhenCallingJobsRunsGetLifeCycleScenario_CanDeserializeResponseFromMockForEachState()
+    {
+        // Arrange
+        var runId = Random.Shared.Next(0, 1000);
+        _fixture.MockServer
+            .MockJobsRunsGetLifeCycleScenario(runId);
+
+        // Act
+        var firstRunTuple = await _fixture.JobApiClient.Jobs.RunsGet(runId);
+        var secondRunTuple = await _fixture.JobApiClient.Jobs.RunsGet(runId);
+        var thirdRunTuple = await _fixture.JobApiClient.Jobs.RunsGet(runId);
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        firstRunTuple.Item1.RunId.Should().Be(runId);
+        firstRunTuple.Item1.State.LifeCycleState.Should().Be(RunLifeCycleState.PENDING);
+
+        secondRunTuple.Item1.RunId.Should().Be(runId);
+        secondRunTuple.Item1.State.LifeCycleState.Should().Be(RunLifeCycleState.RUNNING);
+
+        thirdRunTuple.Item1.RunId.Should().Be(runId);
+        thirdRunTuple.Item1.State.LifeCycleState.Should().Be(RunLifeCycleState.TERMINATED);
+        thirdRunTuple.Item1.State.ResultState.Should().Be(RunResultState.SUCCESS);
+    }
+
     /// <summary>
     /// The mocked data we're testing goes through multiple deserializations.
     /// First we transform the json data to a "ExpandoObject" which will be mapped to a dictionary
