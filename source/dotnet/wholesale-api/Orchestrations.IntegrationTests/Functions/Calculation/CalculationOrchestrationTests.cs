@@ -212,7 +212,9 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         calculationMetadata!.Id.Should().Be(calculationId);
 
         // => Wait for completion
-        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(orchestrationStatus.InstanceId);
+        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(
+            orchestrationStatus.InstanceId,
+            TimeSpan.FromMinutes(6)); // We will loop at least twice to get job status
 
         // => Expect history
         using var assertionScope = new AssertionScope();
@@ -222,5 +224,15 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         var last = completeOrchestrationStatus.History.Last();
         last.Value<string>("EventType").Should().Be("ExecutionCompleted");
         last.Value<string>("Result").Should().Be("Success");
+
+        // => Job status (loop)
+        var getJobStatus = completeOrchestrationStatus.History
+            .Where(item => item.Value<string>("FunctionName") == "GetJobStatusActivity")
+            .OrderBy(item => item["Timestamp"])
+            .ToList();
+        getJobStatus.Count().Should().Be(3);
+        getJobStatus.ElementAt(0).Value<string>("Result").Should().Be("0");
+        getJobStatus.ElementAt(1).Value<string>("Result").Should().Be("1");
+        getJobStatus.ElementAt(2).Value<string>("Result").Should().Be("2");
     }
 }
