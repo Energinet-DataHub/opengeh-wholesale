@@ -82,6 +82,11 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         var statementId = Guid.NewGuid().ToString();
         var path = "GetDatabricksDataPath";
 
+        // This is the calculationId returned in the energyResult from the mocked databricks.
+        // It should match the ID returned by the http client calling 'api/StartCalculation'
+        // But we have to set up the mocked response before we reach this step, hence we have a mismatch.
+        var calculationIdInMock = Guid.NewGuid();
+
         Fixture.MockServer
             .MockJobsList(jobId)
             .MockJobsGet(jobId)
@@ -89,7 +94,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
             .MockJobsRunsGet(runId, "TERMINATED", "SUCCESS")
             .MockEnergySqlStatements(statementId, chunkIndex)
             .MockEnergySqlStatementsResultChunks(statementId, chunkIndex, path)
-            .MockEnergySqlStatementsResultStream(path);
+            .MockEnergySqlStatementsResultStream(path, calculationIdInMock);
 
         // Act
         var todayAtMidnight = new LocalDate(2024, 5, 17)
@@ -159,13 +164,11 @@ public class CalculationOrchestrationTests : IAsyncLifetime
                 }
 
                 var erp = EnergyResultProducedV2.Parser.ParseFrom(msg.Body);
-                _testOutputHelper.WriteLine("#######################");
-                _testOutputHelper.WriteLine(erp.ToString());
-                _testOutputHelper.WriteLine("#######################");
-                _testOutputHelper.WriteLine($"CalcId: {calculationId}");
-                _testOutputHelper.WriteLine("#######################");
 
-                return erp.CalculationId == calculationId.ToString();
+                // This should be the calculationId in "actualResponse".
+                // But the current implementation takes the calculationId from the databricks row,
+                // which is mocked in this scenario. Giving us a "false" comparison here.
+                return erp.CalculationId == calculationIdInMock.ToString();
             })
             .VerifyCountAsync(1);
 
