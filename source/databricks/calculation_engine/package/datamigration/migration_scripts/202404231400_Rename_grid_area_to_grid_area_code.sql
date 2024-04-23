@@ -3,7 +3,7 @@
 --
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
-    DROP CONSTRAINT IF EXISTS grid_area_code_chk
+    DROP CONSTRAINT IF EXISTS grid_area_chk
 GO
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results SET TBLPROPERTIES (
@@ -25,7 +25,7 @@ GO
 --
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
-    DROP CONSTRAINT IF EXISTS out_grid_area_code_chk
+    DROP CONSTRAINT IF EXISTS out_grid_area_chk
 GO
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
@@ -42,7 +42,7 @@ GO
 --
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
-    DROP CONSTRAINT IF EXISTS grid_area_code_chk
+    DROP CONSTRAINT IF EXISTS grid_area_chk
 GO
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results SET TBLPROPERTIES (
@@ -64,7 +64,7 @@ GO
 --
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.total_monthly_amounts
-    DROP CONSTRAINT IF EXISTS grid_area_code_chk
+    DROP CONSTRAINT IF EXISTS grid_area_chk
 GO
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.total_monthly_amounts SET TBLPROPERTIES (
