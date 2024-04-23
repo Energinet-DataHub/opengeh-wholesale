@@ -35,10 +35,6 @@ internal class CalculationOrchestration
             return "Error: No input specified.";
         }
 
-        // Replay safe logger, only logging when not replaying previous history
-        var logger = context.CreateReplaySafeLogger<CalculationOrchestration>();
-        logger.LogInformation($"{nameof(calculationRequestDto)}: {calculationRequestDto}.");
-
         // Create calculation (SQL)
         var calculationMetadata = await context.CallActivityAsync<CalculationMetadata>(nameof(CalculationActivities.CreateCalculationRecordActivity), calculationRequestDto);
         calculationMetadata.OrchestrationProgress = "CalculationCreated";
@@ -52,8 +48,6 @@ internal class CalculationOrchestration
         // TODO: Adjust polling and expiry
         var pollingIntervalInSeconds = 60;
         var expiryTime = context.CurrentUtcDateTime.AddMinutes(30);
-
-        logger.LogInformation($"Enter while loop: {context.CurrentUtcDateTime < expiryTime}");
 
         while (context.CurrentUtcDateTime < expiryTime)
         {
