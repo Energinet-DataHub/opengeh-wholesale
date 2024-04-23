@@ -21,19 +21,15 @@ from pyspark.sql import SparkSession, DataFrame
 
 from package.calculation.calculation_results import CalculationResultsContainer
 from package.calculation.calculator_args import CalculatorArgs
-from .dataframes.total_monthly_amounts_dataframe import (
+from .calculation_args import create_calculation_args
+from .dataframes import (
+    create_energy_result_dataframe,
+    create_wholesale_result_dataframe,
+    create_basis_data_result_dataframe,
     create_total_monthly_amounts_dataframe,
 )
-from .input_specifications import get_data_input_specifications
-from .dataframes.basis_data_results_dataframe import (
-    create_basis_data_result_dataframe,
-)
-from .dataframes.energy_results_dataframe import (
-    create_energy_result_dataframe,
-)
-from .dataframes.wholesale_results_dataframe import create_wholesale_result_dataframe
 from .expected_output import ExpectedOutput
-from .calculation_args import create_calculation_args
+from .input_specifications import get_data_input_specifications
 
 
 class ScenarioExecutor:
