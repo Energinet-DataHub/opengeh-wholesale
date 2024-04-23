@@ -19,6 +19,7 @@ from package.infrastructure.paths import (
     METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1,
     SETTLEMENT_REPORT_DATABASE_NAME,
     METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME_V1,
+    ENERGY_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1,
 )
 
 
@@ -55,4 +56,11 @@ class SettlementReportViewReader:
     ) -> DataFrame:
         return self._spark.read.format("delta").table(
             f"{SETTLEMENT_REPORT_DATABASE_NAME}.{METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME_V1}"
+        )
+
+    def read_energy_results(
+        self,
+    ) -> DataFrame:
+        return self._spark.read.format("delta").table(
+            f"{SETTLEMENT_REPORT_DATABASE_NAME}.{ENERGY_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1}"
         )

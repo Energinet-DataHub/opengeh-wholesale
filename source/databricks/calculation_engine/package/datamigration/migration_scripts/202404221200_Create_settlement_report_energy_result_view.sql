@@ -5,8 +5,8 @@ SELECT e.calculation_id,
        e.metering_point_type,
        e.settlement_method,
        e.resolution,
-       e.time
+       e.time,
        e.quantity,
-       e.energy_supplier_id,
+       e.energy_supplier_id
 FROM {OUTPUT_DATABASE_NAME}.energy_results AS e
-INNER JOIN SELECT calculation_id FROM {BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = t.calculation_id
+INNER JOIN (SELECT calculation_id FROM {BASIS_DATA_DATABASE_NAME}.calculations) AS c ON c.calculation_id = e.calculation_id
