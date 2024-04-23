@@ -31,7 +31,7 @@ SYSTEM_OPERATOR_ID = "system_operator_id"
 GRID_ACCESS_PROVIDER_ID = "grid_access_provider_id"
 
 
-def test__calculate_per_charge_owner__sums_across_charge_types(
+def test__calculate_per_ga_co_es__sums_across_charge_types(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -66,7 +66,7 @@ def test__calculate_per_charge_owner__sums_across_charge_types(
     assert actual.count() == 1
 
 
-def test__calculate_per_charge_owner__sums_per_energy_supplier(
+def test__calculate_per_ga_co_es__sums_per_energy_supplier(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -114,7 +114,7 @@ def test__calculate_per_charge_owner__sums_per_energy_supplier(
         [GRID_ACCESS_PROVIDER_ID, Decimal("2.000000")],
     ],
 )
-def test__calculate_per_charge_owner__adds_tax_amount_only_to_grid_access_operator(
+def test__calculate_per_ga_co_es__adds_tax_amount_only_to_grid_access_operator(
     spark: SparkSession, charge_owner: str, expected: Decimal
 ) -> None:
     # Arrange
@@ -154,7 +154,7 @@ def test__calculate_per_charge_owner__adds_tax_amount_only_to_grid_access_operat
         [None, None, None],
     ],
 )
-def test__calculate_per_charge_owner__ignores_null_in_sum(
+def test__calculate_per_ga_co_es__ignores_null_in_sum(
     spark: SparkSession,
     amount_without_tax: Decimal,
     amount_with_tax: Decimal,
@@ -186,4 +186,95 @@ def test__calculate_per_charge_owner__ignores_null_in_sum(
 
     # Assert
     assert actual.collect()[0][Colname.total_amount] == expected
+    assert actual.count() == 1
+
+
+def test__calculate_per_ga_co_es__when_multiple_charge_owners_with_multiple_energy_suppliers__return_expected_number_of_rows(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    monthly_amounts_rows = [
+        monthly_amount_per_charge_factory.create_row(
+            charge_tax=False,
+            charge_owner="1",
+            energy_supplier_id="1",
+        ),
+        monthly_amount_per_charge_factory.create_row(
+            charge_tax=False,
+            charge_owner="1",
+            energy_supplier_id="2",
+        ),
+        monthly_amount_per_charge_factory.create_row(
+            charge_tax=False,
+            charge_owner="2",
+            energy_supplier_id="1",
+        ),
+        monthly_amount_per_charge_factory.create_row(
+            charge_tax=False,
+            charge_owner="2",
+            energy_supplier_id="2",
+        ),
+        monthly_amount_per_charge_factory.create_row(
+            charge_tax=False,
+            charge_owner=SYSTEM_OPERATOR_ID,
+            energy_supplier_id="1",
+        ),
+        monthly_amount_per_charge_factory.create_row(
+            charge_tax=False,
+            charge_owner=SYSTEM_OPERATOR_ID,
+            energy_supplier_id="2",
+        ),
+        monthly_amount_per_charge_factory.create_row(
+            charge_tax=True,
+            charge_owner=SYSTEM_OPERATOR_ID,
+            energy_supplier_id="1",
+        ),
+        monthly_amount_per_charge_factory.create_row(
+            charge_tax=True,
+            charge_owner=SYSTEM_OPERATOR_ID,
+            energy_supplier_id="2",
+        ),
+    ]
+    monthly_amounts = monthly_amount_per_charge_factory.create(
+        spark, monthly_amounts_rows
+    )
+
+    # Act
+    actual = calculate_per_ga_co_es(
+        monthly_amounts,
+    ).df
+
+    # Assert
+    assert actual.count() == 6
+
+
+def test__calculate_per_ga_co_es__when_tax_charge_has_other_energy_supplier__ignores_tax_charge_in_sum(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    monthly_amounts_rows = [
+        monthly_amount_per_charge_factory.create_row(
+            charge_tax=False,
+            charge_owner=GRID_ACCESS_PROVIDER_ID,
+            energy_supplier_id="1",
+            total_amount=Decimal("2"),
+        ),
+        monthly_amount_per_charge_factory.create_row(
+            charge_tax=True,
+            charge_owner=SYSTEM_OPERATOR_ID,
+            energy_supplier_id="2",
+            total_amount=Decimal("3"),
+        ),
+    ]
+    monthly_amounts = monthly_amount_per_charge_factory.create(
+        spark, monthly_amounts_rows
+    )
+
+    # Act
+    actual = calculate_per_ga_co_es(
+        monthly_amounts,
+    ).df
+
+    # Assert
+    assert actual.collect()[0][Colname.total_amount] == Decimal("2.000000")
     assert actual.count() == 1
