@@ -43,6 +43,7 @@ def parse_job_arguments(
 
     with logging_configuration.start_span("calculation.parse_job_arguments"):
         time_zone = env_vars.get_time_zone()
+        intersection_time = env_vars.get_intersection_time()
         calculator_args = CalculatorArgs(
             calculation_id=job_args.calculation_id,
             calculation_grid_areas=job_args.grid_areas,
@@ -51,6 +52,7 @@ def parse_job_arguments(
             calculation_execution_time_start=job_args.execution_time_start,
             calculation_type=job_args.calculation_type,
             time_zone=time_zone,
+            intersection_time=intersection_time,  # TODO validate this is correct
         )
 
         if is_wholesale_calculation_type(calculator_args.calculation_type):

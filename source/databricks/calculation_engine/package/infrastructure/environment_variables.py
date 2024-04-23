@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from datetime import datetime
 
 # Variables defined in the infrastructure repository (https://github.com/Energinet-DataHub/dh3-infrastructure)
 
@@ -27,6 +28,7 @@ class EnvironmentVariable(Enum):
     TENANT_ID = "TENANT_ID"
     SPN_APP_ID = "SPN_APP_ID"
     SPN_APP_SECRET = "SPN_APP_SECRET"
+    INTERSECTION_TIME = "INTERSECTION_TIME"
 
 
 def get_storage_account_credential() -> ClientSecretCredential:
@@ -53,6 +55,10 @@ def get_storage_account_name() -> str:
 
 def get_time_zone() -> str:
     return get_env_variable_or_throw(EnvironmentVariable.TIME_ZONE)
+
+
+def get_intersection_time() -> datetime:
+    return get_env_variable_or_throw(EnvironmentVariable.INTERSECTION_TIME)
 
 
 def get_calculation_input_folder_name() -> str:

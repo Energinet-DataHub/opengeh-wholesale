@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from datetime import datetime
 from typing import Tuple
 
 import package.calculation.energy.aggregators.exchange_aggregators as exchange_aggr
@@ -18,18 +19,20 @@ import package.calculation.energy.aggregators.grid_loss_aggregators as grid_loss
 import package.calculation.energy.aggregators.grouping_aggregators as grouping_aggr
 import package.calculation.energy.aggregators.metering_point_time_series_aggregators as mp_aggr
 import package.calculation.output.energy_storage_model_factory as factory
+import package.infrastructure.environment_variables as env_vars
 from package.calculation.calculation_results import EnergyResultsContainer
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.energy.data_structures.energy_results import EnergyResults
 from package.calculation.energy.hour_to_quarter import transform_hour_to_quarter
+from package.calculation.energy.quarter_to_hour import transform_quarter_to_hour
 from package.calculation.preparation.data_structures.grid_loss_responsible import (
     GridLossResponsible,
 )
 from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
-from package.calculation.preparation.data_structures.quarterly_metering_point_time_series import (
-    QuarterlyMeteringPointTimeSeries,
+from package.calculation.preparation.data_structures.metering_point_time_series import (
+    MeteringPointTimeSeries,
 )
 from package.codelists import (
     CalculationType,
@@ -43,25 +46,35 @@ from package.infrastructure import logging_configuration
 @logging_configuration.use_span("calculation.execute.energy")
 def execute(
     args: CalculatorArgs,
-    metering_point_time_series: PreparedMeteringPointTimeSeries,
+    prepared_metering_point_time_series: PreparedMeteringPointTimeSeries,
     grid_loss_responsible_df: GridLossResponsible,
 ) -> Tuple[EnergyResultsContainer, EnergyResults, EnergyResults]:
-    with logging_configuration.start_span("quarterly_metering_point_time_series"):
-        quarterly_metering_point_time_series = transform_hour_to_quarter(
-            metering_point_time_series
-        )
-        quarterly_metering_point_time_series.cache_internal()
+    with logging_configuration.start_span("metering_point_time_series"):
+        if args.calculation_period_end_datetime < args.intersection_time:
+            metering_point_time_series = transform_quarter_to_hour(
+                prepared_metering_point_time_series
+            )
+        elif args.calculation_period_start_datetime >= args.intersection_time:
+            metering_point_time_series = transform_hour_to_quarter(
+                prepared_metering_point_time_series
+            )
+        else:  # else throw exception
+            raise ValueError(
+                "The calculation period must be either before or after the intersection time"
+            )
+
+        metering_point_time_series.cache_internal()
 
     return _calculate(
         args,
-        quarterly_metering_point_time_series,
+        metering_point_time_series,
         grid_loss_responsible_df,
     )
 
 
 def _calculate(
     args: CalculatorArgs,
-    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
+    metering_point_time_series: MeteringPointTimeSeries,
     grid_loss_responsible_df: GridLossResponsible,
 ) -> Tuple[EnergyResultsContainer, EnergyResults, EnergyResults]:
     results = EnergyResultsContainer()
@@ -69,25 +82,25 @@ def _calculate(
     # cache of net exchange per grid area did not improve performance (01/12/2023)
     net_exchange_per_ga = _calculate_net_exchange(
         args,
-        quarterly_metering_point_time_series,
+        metering_point_time_series,
         results,
     )
 
     temporary_production_per_ga_and_brp_and_es = (
         _calculate_temporary_production_per_per_ga_and_brp_and_es(
-            args, quarterly_metering_point_time_series, results
+            args, metering_point_time_series, results
         )
     )
 
     temporary_flex_consumption_per_ga_and_brp_and_es = (
         _calculate_temporary_flex_consumption_per_per_ga_and_brp_and_es(
-            args, quarterly_metering_point_time_series, results
+            args, metering_point_time_series, results
         )
     )
 
     non_profiled_consumption_per_ga_and_brp_and_es = (
         _calculate_non_profiled_consumption_per_ga_and_brp_and_es(
-            quarterly_metering_point_time_series
+            metering_point_time_series
         )
     )
     non_profiled_consumption_per_ga_and_brp_and_es.cache_internal()
@@ -142,16 +155,16 @@ def _calculate(
 @logging_configuration.use_span("calculate_net_exchange")
 def _calculate_net_exchange(
     args: CalculatorArgs,
-    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
+    metering_point_time_series: MeteringPointTimeSeries,
     results: EnergyResultsContainer,
 ) -> EnergyResults:
     exchange_per_neighbour_ga = exchange_aggr.aggregate_net_exchange_per_neighbour_ga(
-        quarterly_metering_point_time_series, args.calculation_grid_areas
+        metering_point_time_series, args.calculation_grid_areas
     )
     if _is_aggregation_or_balance_fixing(args.calculation_type):
         exchange_per_neighbour_ga = (
             exchange_aggr.aggregate_net_exchange_per_neighbour_ga(
-                quarterly_metering_point_time_series, args.calculation_grid_areas
+                metering_point_time_series, args.calculation_grid_areas
             )
         )
 
@@ -180,7 +193,7 @@ def _calculate_net_exchange(
     "calculate_non_profiled_consumption_per_ga_and_brp_and_es"
 )
 def _calculate_non_profiled_consumption_per_ga_and_brp_and_es(
-    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
+    quarterly_metering_point_time_series: MeteringPointTimeSeries,
 ) -> EnergyResults:
     # Non-profiled consumption per balance responsible party and energy supplier
     non_profiled_consumption_per_ga_and_brp_and_es = (
@@ -197,7 +210,7 @@ def _calculate_non_profiled_consumption_per_ga_and_brp_and_es(
 )
 def _calculate_temporary_production_per_per_ga_and_brp_and_es(
     args: CalculatorArgs,
-    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
+    quarterly_metering_point_time_series: MeteringPointTimeSeries,
     results: EnergyResultsContainer,
 ) -> EnergyResults:
     temporary_production_per_ga_and_brp_and_es = mp_aggr.aggregate_production_ga_brp_es(
@@ -224,7 +237,7 @@ def _calculate_temporary_production_per_per_ga_and_brp_and_es(
 )
 def _calculate_temporary_flex_consumption_per_per_ga_and_brp_and_es(
     args: CalculatorArgs,
-    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
+    quarterly_metering_point_time_series: MeteringPointTimeSeries,
     results: EnergyResultsContainer,
 ) -> EnergyResults:
     temporary_flex_consumption_per_ga_and_brp_and_es = (

@@ -24,18 +24,19 @@ from package.calculation.preparation.data_structures.charge_master_data import (
     ChargeMasterData,
 )
 from package.calculation.preparation.data_structures.charge_prices import ChargePrices
+from package.calculation.preparation.data_structures.metering_point_time_series import (
+    MeteringPointTimeSeries,
+)
 from package.calculation.preparation.data_structures.prepared_tariffs import (
     PreparedTariffs,
 )
-from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
-    PreparedMeteringPointTimeSeries,
-)
+
 from package.codelists import ChargeType, ChargeResolution
 from package.constants import Colname
 
 
 def get_prepared_tariffs(
-    metering_point_time_series: PreparedMeteringPointTimeSeries,
+    metering_point_time_series: MeteringPointTimeSeries,
     charge_master_data: ChargeMasterData,
     charge_prices: ChargePrices,
     charge_link_metering_points: ChargeLinkMeteringPointPeriods,
@@ -151,7 +152,7 @@ def _join_with_charge_link_metering_points(
 
 
 def _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
-    metering_point_time_series: PreparedMeteringPointTimeSeries,
+    metering_point_time_series: MeteringPointTimeSeries,
     charge_resolution: ChargeResolution,
     time_zone: str,
 ) -> DataFrame:

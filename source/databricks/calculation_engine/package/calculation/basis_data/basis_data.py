@@ -14,8 +14,8 @@
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 
-from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
-    PreparedMeteringPointTimeSeries,
+from package.calculation.preparation.data_structures.metering_point_time_series import (
+    MeteringPointTimeSeries,
 )
 from package.constants import Colname, MeteringPointPeriodColname, TimeSeriesColname
 from package.infrastructure import logging_configuration
@@ -58,7 +58,7 @@ def get_metering_point_periods_basis_data(
 @logging_configuration.use_span("get_time_series_points_basis_data")
 def get_time_series_points_basis_data(
     calculation_id: str,
-    metering_point_time_series: PreparedMeteringPointTimeSeries,
+    metering_point_time_series: MeteringPointTimeSeries,
 ) -> DataFrame:
     return metering_point_time_series.df.select(
         f.lit(calculation_id).alias(TimeSeriesColname.calculation_id),

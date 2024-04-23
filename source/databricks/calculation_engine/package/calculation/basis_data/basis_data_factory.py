@@ -16,8 +16,8 @@ from pyspark.sql import DataFrame
 
 from package.calculation.calculation_results import BasisDataContainer
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
-    PreparedMeteringPointTimeSeries,
+from package.calculation.preparation.data_structures.metering_point_time_series import (
+    MeteringPointTimeSeries,
 )
 from package.calculation.basis_data import basis_data
 from package.infrastructure import logging_configuration
@@ -27,7 +27,7 @@ from package.infrastructure import logging_configuration
 def create(
     args: CalculatorArgs,
     metering_point_periods_df: DataFrame,
-    metering_point_time_series_df: PreparedMeteringPointTimeSeries,
+    metering_point_time_series_df: MeteringPointTimeSeries,
 ) -> BasisDataContainer:
     time_series_points_basis_data = basis_data.get_time_series_points_basis_data(
         args.calculation_id, metering_point_time_series_df

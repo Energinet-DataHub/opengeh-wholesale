@@ -84,3 +84,4 @@ def test__transform_hour_to_quarter__when_valid_input__split_basis_data_time_ser
     assert actual.df.collect()[0][Colname.quantity] == Decimal("1.111111")
     # Check that quarterly quantity is not divided by 4
     assert actual.df.collect()[4][Colname.quantity] == Decimal("4.444444")
+    # Check that houly quantity now have resolution of quarter
