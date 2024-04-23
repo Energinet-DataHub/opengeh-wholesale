@@ -32,6 +32,10 @@ locals {
     {
       environment = "sauron"
       url         = "jolly-field-0d52edd03.4.azurestaticapps.net"
+    },
+    {
+      environment = "www"
+      url         = "calm-sky-050b30c03.3.azurestaticapps.net"
     }
   ]
 }
@@ -134,4 +138,14 @@ resource "azurerm_cdn_frontdoor_custom_domain_association" "ui" {
   cdn_frontdoor_custom_domain_id = azurerm_cdn_frontdoor_custom_domain.ui[count.index].id
   cdn_frontdoor_route_ids        = [azurerm_cdn_frontdoor_route.ui[count.index].id]
   depends_on                     = [azurerm_cdn_frontdoor_route.ui]
+}
+
+# Add A record for prod to target the Front Door endpoint
+resource "azurerm_dns_a_record" "prod" {
+  name                = "@"
+  zone_name           = azurerm_dns_zone.this.name
+  resource_group_name = azurerm_resource_group.this.name
+  ttl                 = 3600
+  # Get the target endpoint for the prod environment by finding index where environment is prod
+  target_resource_id = azurerm_cdn_frontdoor_endpoint.ui[index(local.frontend_urls.*.environment, "prod")].id
 }
