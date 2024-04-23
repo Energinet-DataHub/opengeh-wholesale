@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import SparkSession, dataframe
+from pyspark.sql import SparkSession, DataFrame
 
 from package.infrastructure import paths
 from package.infrastructure.paths import (
@@ -45,14 +45,14 @@ class SettlementReportViewReader:
 
     def read_metering_point_periods(
         self,
-    ) -> dataframe:
+    ) -> DataFrame:
         return self._spark.read.format("delta").table(
             f"{SETTLEMENT_REPORT_DATABASE_NAME}.{METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1}"
         )
 
     def read_metering_point_time_series(
         self,
-    ) -> dataframe:
+    ) -> DataFrame:
         return self._spark.read.format("delta").table(
             f"{SETTLEMENT_REPORT_DATABASE_NAME}.{METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME_V1}"
         )

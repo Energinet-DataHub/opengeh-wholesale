@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import SparkSession, dataframe
+from pyspark.sql import SparkSession, DataFrame
 
 from package.infrastructure import paths
 from package.infrastructure.paths import (
@@ -40,14 +40,14 @@ class BasisDataTableReader:
 
     def read_metering_point_periods(
         self,
-    ) -> dataframe:
+    ) -> DataFrame:
         return self._spark.read.format("delta").table(
             f"{BASIS_DATA_DATABASE_NAME}.{paths.METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME}"
         )
 
     def read_time_series_points(
         self,
-    ) -> dataframe:
+    ) -> DataFrame:
         return self._spark.read.format("delta").table(
             f"{BASIS_DATA_DATABASE_NAME}.{paths.TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME}"
         )
