@@ -14,6 +14,7 @@
 
 import sys
 from argparse import Namespace
+from datetime import datetime
 from typing import Tuple
 
 import configargparse
@@ -115,9 +116,9 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
 
 
 def _validate_quarterly_resolution_transition_datetime(
-    quarterly_resolution_transition_datetime: str,
-    calculation_period_start_datetime: str,
-    calculation_period_end_datetime: str,
+    quarterly_resolution_transition_datetime: datetime,
+    calculation_period_start_datetime: datetime,
+    calculation_period_end_datetime: datetime,
 ) -> None:
     if (
         calculation_period_start_datetime < quarterly_resolution_transition_datetime
