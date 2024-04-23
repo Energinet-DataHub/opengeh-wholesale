@@ -72,7 +72,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
             .Returns(() => aggregatedTimeSeries.ToAsyncEnumerable());
 
         completedCalculationRetriever.Setup(c => c.GetLatestCompletedCalculationsForPeriodAsync(
-                It.IsAny<string>(),
+                It.IsAny<string[]>(),
                 It.IsAny<Energinet.DataHub.Wholesale.Edi.Models.Period>(),
                 It.IsAny<RequestedCalculationType>()))
             .ReturnsAsync(new List<CalculationForPeriod>
@@ -138,7 +138,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
             .Returns(() => aggregatedTimeSeries.ToAsyncEnumerable());
 
         completedCalculationRetriever.Setup(c => c.GetLatestCompletedCalculationsForPeriodAsync(
-                It.IsAny<string>(),
+                It.IsAny<string[]>(),
                 It.IsAny<Energinet.DataHub.Wholesale.Edi.Models.Period>(),
                 It.IsAny<RequestedCalculationType>()))
             .ReturnsAsync(new List<CalculationForPeriod>

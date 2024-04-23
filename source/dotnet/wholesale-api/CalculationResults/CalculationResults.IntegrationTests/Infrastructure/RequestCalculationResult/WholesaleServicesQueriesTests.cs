@@ -131,6 +131,60 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
     }
 
     [Fact]
+    public async Task GetAsync_WhenRequest2GridAreas_Returns2WholesaleServices()
+    {
+        // Arrange
+        string[] gridAreaCodesFilter = ["101", "103"];
+        var calculationPeriod = CreateCalculationPeriods().Calculation1Period1;
+
+        List<WholesaleServicesPackage> packages = [
+            new WholesaleServicesPackage(
+                CalculationPeriod: calculationPeriod,
+                Points: [
+                    calculationPeriod.Period.Start,
+                    calculationPeriod.Period.Start.Plus(Duration.FromHours(1)),
+                    calculationPeriod.Period.Start.Plus(Duration.FromHours(2)),
+                ],
+                GridArea: "101"),
+            new WholesaleServicesPackage(
+                CalculationPeriod: calculationPeriod,
+                Points: [
+                    calculationPeriod.Period.Start,
+                ],
+                GridArea: "102"),
+            new WholesaleServicesPackage(
+                CalculationPeriod: calculationPeriod,
+                Points: [
+                    calculationPeriod.Period.Start,
+                    calculationPeriod.Period.Start.Plus(Duration.FromHours(4)),
+                    calculationPeriod.Period.Start.Plus(Duration.FromHours(7)),
+                ],
+                GridArea: "103"),
+            new WholesaleServicesPackage(
+                CalculationPeriod: calculationPeriod,
+                Points: [
+                    calculationPeriod.Period.Start,
+                    calculationPeriod.Period.Start.Plus(Duration.FromDays(1)),
+                    calculationPeriod.Period.Start.Plus(Duration.FromDays(2)),
+                ],
+                GridArea: "104"),
+        ];
+
+        var rows = ExtractSqlRowsFromPackagesAndTheirPoints(packages); // A package creates 1 sql row per point (10 rows total in this case)
+        await InsertData(rows);
+        var query = CreateQueryParameters([calculationPeriod], gridAreaCodes: gridAreaCodesFilter);
+
+        // Act
+        string[] exceptedGridAreaCodes = ["101", "103"];
+        var actual = await Sut.GetAsync(query).ToListAsync();
+
+        using var assertionScope = new AssertionScope();
+        actual.Should().HaveCount(2);
+        actual.Should().Contain(actualPackage =>
+            exceptedGridAreaCodes.Any(exceptedGridAreaCode => exceptedGridAreaCode == actualPackage.GridArea));
+    }
+
+    [Fact]
     public async Task GetAsync_WhenSameDataIn4DifferentGridAreas_Returns4WholesaleServices()
     {
         // Arrange
@@ -261,7 +315,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         var calculationPeriods = CreateCalculationPeriods();
         var expectedCalculationPeriod = calculationPeriods.Calculation1Period1;
         var expectedAmountType = AmountType.AmountPerCharge;
-        var expectedGridArea = "911";
+        var expectedGridAreaCode = "911";
         var expectedEnergySupplierId = "8886552000028";
         var expectedChargeOwnerId = "9996543210000";
         var expectedChargeCode = "8000";
@@ -270,7 +324,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         var match = CreatePackageForFilter(
             expectedCalculationPeriod,
             expectedAmountType,
-            expectedGridArea,
+            expectedGridAreaCode,
             expectedEnergySupplierId,
             expectedChargeOwnerId,
             expectedChargeCode,
@@ -279,7 +333,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         var matchExpectPeriod = CreatePackageForFilter(
             calculationPeriods.Calculation2,
             expectedAmountType,
-            expectedGridArea,
+            expectedGridAreaCode,
             expectedEnergySupplierId,
             expectedChargeOwnerId,
             expectedChargeCode,
@@ -288,7 +342,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         var matchExceptAmountType = CreatePackageForFilter(
             expectedCalculationPeriod,
             AmountType.MonthlyAmountPerCharge,
-            expectedGridArea,
+            expectedGridAreaCode,
             expectedEnergySupplierId,
             expectedChargeOwnerId,
             expectedChargeCode,
@@ -306,7 +360,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         var matchExceptEnergySupplierId = CreatePackageForFilter(
             expectedCalculationPeriod,
             expectedAmountType,
-            expectedGridArea,
+            expectedGridAreaCode,
             "2226552000028",
             expectedChargeOwnerId,
             expectedChargeCode,
@@ -315,7 +369,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         var matchExceptChargeOwnerId = CreatePackageForFilter(
             expectedCalculationPeriod,
             expectedAmountType,
-            expectedGridArea,
+            expectedGridAreaCode,
             expectedEnergySupplierId,
             "3336543210000",
             expectedChargeCode,
@@ -324,7 +378,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         var matchExceptChargeCode = CreatePackageForFilter(
             expectedCalculationPeriod,
             expectedAmountType,
-            expectedGridArea,
+            expectedGridAreaCode,
             expectedEnergySupplierId,
             expectedChargeOwnerId,
             "9000",
@@ -333,7 +387,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         var matchExceptChargeType = CreatePackageForFilter(
             expectedCalculationPeriod,
             expectedAmountType,
-            expectedGridArea,
+            expectedGridAreaCode,
             expectedEnergySupplierId,
             expectedChargeOwnerId,
             expectedChargeCode,
@@ -359,7 +413,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         var query = CreateQueryParameters(
             [expectedCalculationPeriod],
             expectedAmountType,
-            expectedGridArea,
+            [expectedGridAreaCode],
             expectedEnergySupplierId,
             expectedChargeOwnerId,
             (expectedChargeCode, expectedChargeType));
@@ -508,7 +562,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         var expectedCalculationPeriod = calculationPeriods.Calculation1Period1;
         var expectedResolution = Resolution.Hour;
         var expectedAmountType = AmountType.AmountPerCharge;
-        var expectedGridArea = "911";
+        var expectedGridAreaCode = "911";
         var expectedEnergySupplierId = "8886552000028";
         var expectedChargeOwnerId = "9996543210000";
         var expectedChargeCode = "8000";
@@ -521,7 +575,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
             ],
             expectedAmountType,
             expectedResolution,
-            expectedGridArea,
+            expectedGridAreaCode,
             expectedEnergySupplierId,
             expectedChargeOwnerId,
             expectedChargeCode,
@@ -534,7 +588,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
             ],
             expectedAmountType,
             expectedResolution,
-            expectedGridArea,
+            expectedGridAreaCode,
             expectedEnergySupplierId,
             expectedChargeOwnerId,
             expectedChargeCode,
@@ -570,7 +624,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
                 shouldMatch ? package2.CalculationPeriod : calculationPeriods.Calculation4,
             ],
             expectedAmountType,
-            expectedGridArea,
+            [expectedGridAreaCode],
             expectedEnergySupplierId,
             expectedChargeOwnerId,
             (expectedChargeCode, expectedChargeType));
@@ -727,14 +781,14 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
     private WholesaleServicesQueryParameters CreateQueryParameters(
         IReadOnlyCollection<CalculationForPeriod> calculations,
         AmountType amountType = AmountType.AmountPerCharge,
-        string? gridArea = null,
+        string[]? gridAreaCodes = null,
         string? energySupplierId = null,
         string? chargeOwnerId = null,
         params (string? ChargeCode, ChargeType? ChargeType)[] chargeTypes)
     {
         return new WholesaleServicesQueryParameters(
             amountType,
-            gridArea,
+            gridAreaCodes ?? [],
             energySupplierId,
             chargeOwnerId,
             chargeTypes.ToList(),

@@ -38,7 +38,7 @@ public class WholesaleServicesRequestMapper(DateTimeZone dateTimeZone)
 
         return new WholesaleServicesRequest(
             AmountTypeMapper.Map(resolution),
-            request.HasGridAreaCode ? request.GridAreaCode : null,
+            request.GridAreaCodes,
             request.HasEnergySupplierId ? request.EnergySupplierId : null,
             request.HasChargeOwnerId ? request.ChargeOwnerId : null,
             MapChargeTypes(request.ChargeTypes),
