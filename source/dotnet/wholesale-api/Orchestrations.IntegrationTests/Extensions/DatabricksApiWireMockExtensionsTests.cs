@@ -152,10 +152,11 @@ public class DatabricksApiWireMockExtensionsTests : IClassFixture<WireMockExtens
         var statementId = "SomeIdMostLikelyGuid";
         var chunkIndex = 0;
         var path = "GetDatabricksDataPath";
+        var calculationIdForEnergyResults = Guid.NewGuid();
         _fixture.MockServer
             .MockEnergySqlStatements(statementId, chunkIndex)
             .MockEnergySqlStatementsResultChunks(statementId, chunkIndex, path)
-            .MockEnergySqlStatementsResultStream(path);
+            .MockEnergySqlStatementsResultStream(path, calculationIdForEnergyResults);
 
         var query = new EnergyResultQueryStatement(
             Guid.Empty,
