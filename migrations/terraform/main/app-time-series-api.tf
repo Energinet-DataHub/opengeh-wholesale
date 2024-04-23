@@ -48,7 +48,7 @@ locals {
     # Databricks
     "DatabricksOptions__WorkspaceToken"       = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-workspace-token)"
     "DatabricksOptions__WarehouseId"          = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-databricks-sql-endpoint-id)"
-    "DatabricksOptions__WorkspaceUrl"         = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-databricks-url)"
+    "DatabricksOptions__WorkspaceUrl"         = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-workspace-url)"
     "DatabricksOptions__HealthCheckStartHour" = 5
     "DatabricksOptions__HealthCheckEndHour"   = 16
 
