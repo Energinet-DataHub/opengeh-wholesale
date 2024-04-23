@@ -25,7 +25,7 @@ from features.utils.views.dataframe_container import DataframeContainer
 # All test files should be identical. This makes changing them cumbersome.
 # So in order to make it easier you can modify the utils/view_template.py file instead,
 # and then run the power-shell script "Use-view-Template.ps1" to update all test_output.py files.
-@pytest.mark.parametrize("output_name3", get_output_names())
+@pytest.mark.parametrize("mouse_output_name", get_output_names())
 def test__equals_expected(
     migrations_executed: None,
     actual_and_expected_views: Tuple[

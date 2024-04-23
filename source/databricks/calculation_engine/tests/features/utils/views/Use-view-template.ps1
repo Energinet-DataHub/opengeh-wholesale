@@ -1,4 +1,4 @@
-# PowerShell script to overwrite 'test_output.py' with 'template.py' contents
+# PowerShell script to overwrite 'test_view_output.py' with 'view-template.py' contents
 
 # Define the path to the template file
 $templateFilePath = Join-Path $PSScriptRoot "view-template.py"
@@ -16,7 +16,7 @@ $templateContent = Get-Content -Path $templateFilePath -Raw
 # Define the parent directory of the current directory
 $featuresDir = Split-Path -Path $PSScriptRoot -Parent
 
-# Search for all 'test_output.py' files in the subdirectories of the parent directory
+# Search for all 'test_view_output.py' files in the subdirectories of the parent directory
 $filesToUpdate = Get-ChildItem -Path $featuresDir -Filter "test_view_output.py" -Recurse
 
 # Iterate over each found 'test_view_output.py' file

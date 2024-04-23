@@ -20,7 +20,7 @@ from pyspark.sql.types import (
     ArrayType,
 )
 
-from features.public_data_model.given_basis_data_for_settlement_report.common.schemas.metering_point_time_series_schema import (
+from features.public_data_models.given_basis_data_for_settlement_report.common.schemas.metering_point_time_series_schema import (
     element,
 )
 
@@ -30,7 +30,7 @@ def create_metering_point_periods_view(df: DataFrame, spark: SparkSession) -> Da
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
     from package.constants import MeteringPointPeriodColname
-    from features.public_data_model.given_basis_data_for_settlement_report.common import (
+    from features.public_data_models.given_basis_data_for_settlement_report.common import (
         metering_point_period_schema,
     )
 
@@ -52,10 +52,10 @@ def create_metering_point_time_series_view(
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
-    from features.public_data_model.given_basis_data_for_settlement_report.common import (
+    from features.public_data_models.given_basis_data_for_settlement_report.common import (
         MeteringPointTimeSeriesColname,
     )
-    from features.public_data_model.given_basis_data_for_settlement_report.common import (
+    from features.public_data_models.given_basis_data_for_settlement_report.common import (
         metering_point_time_series_schema,
     )
 
