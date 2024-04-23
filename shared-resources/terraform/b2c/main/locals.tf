@@ -64,7 +64,7 @@ locals {
       role         = "delegated"
       display_name = "Delegated"
     }
-    delegated = {
+    itsupplier = {
       role         = "itsupplier"
       display_name = "IT Supplier"
     }
