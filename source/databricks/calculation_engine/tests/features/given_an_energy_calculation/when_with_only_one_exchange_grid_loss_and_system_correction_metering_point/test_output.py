@@ -29,4 +29,4 @@ def test__equals_expected(
     actual_and_expected: Any,
     output_name: str,
 ) -> None:
-    assert_output(actual_and_expected, output_name)
+    assert_output(actual_and_expected, output_name, drop_columns_when_actual_and_expected_are_equal=False)
