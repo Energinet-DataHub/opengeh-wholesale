@@ -42,6 +42,7 @@ def assert_dataframe_and_schema(
     ignore_decimal_scale: bool = False,
     ignore_decimal_precision: bool = False,
     columns_to_skip: list[str] | None = None,
+    skip_columns_when_actual_and_expected_are_equal: bool = False,
 ) -> None:
     assert actual is not None, "Actual data frame is None"
     assert expected is not None, "Expected data frame is None"
@@ -73,12 +74,29 @@ def assert_dataframe_and_schema(
     try:
         assert_dataframes_equal(actual, expected)
     except AssertionError:
+
+        if skip_columns_when_actual_and_expected_are_equal:
+            actual, expected = drop_columns_if_same(actual, expected)
+
         print("DATA MISMATCH:")
         print("IN ACTUAL BUT NOT IN EXPECTED:")
         actual.subtract(expected).show(3000, False)
         print("IN EXPECTED BUT NOT IN ACTUAL:")
         expected.subtract(actual).show(3000, False)
         raise
+
+
+def drop_columns_if_same(df1: DataFrame, df2: DataFrame) -> (DataFrame, DataFrame):
+    column_names = df1.columns
+    for column_name in column_names:
+        df1_column = df1.select(column_name).collect()
+        df2_column = df2.select(column_name).collect()
+
+        if df1_column == df2_column:
+            df1 = df1.drop(column_name)
+            df2 = df2.drop(column_name)
+
+    return df1, df2
 
 
 def _assert_skipped_columns(df: DataFrame, column_names: list[str]) -> None:
