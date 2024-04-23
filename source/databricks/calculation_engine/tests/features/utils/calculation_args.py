@@ -49,4 +49,5 @@ def create_calculation_args(input_path: str) -> CalculatorArgs:
             CSV_DATE_FORMAT,
         ),
         time_zone="Europe/Copenhagen",
+        quarterly_resolution_transition_datetime=datetime(2023, 1, 31, 23, 0, 0),
     )
