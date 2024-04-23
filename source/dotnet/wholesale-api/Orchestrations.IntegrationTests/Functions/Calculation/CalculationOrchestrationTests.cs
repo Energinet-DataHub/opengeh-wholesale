@@ -14,7 +14,6 @@
 
 using System.Net;
 using System.Text;
-using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
@@ -24,7 +23,6 @@ using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Newtonsoft.Json;
 using NodaTime;
 using Xunit.Abstractions;
