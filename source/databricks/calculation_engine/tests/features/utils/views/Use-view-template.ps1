@@ -17,12 +17,12 @@ $templateContent = Get-Content -Path $templateFilePath -Raw
 $featuresDir = Split-Path -Path $PSScriptRoot -Parent
 
 # Search for all 'test_output.py' files in the subdirectories of the parent directory
-$filesToUpdate = Get-ChildItem -Path $featuresDir -Filter "test_output.py" -Recurse
+$filesToUpdate = Get-ChildItem -Path $featuresDir -Filter "test_view_output.py" -Recurse
 
-# Iterate over each found 'test_output.py' file
+# Iterate over each found 'test_view_output.py' file
 foreach ($file in $filesToUpdate)
 {
-    # Overwrite the file with the content of 'template.py'
+    # Overwrite the file with the content of 'view-template.py'
     Set-Content -Path $file.FullName -Value $templateContent -NoNewLine
     Write-Output "Updated: $( $file.FullName )"
 }
