@@ -110,7 +110,10 @@ public class OrchestrationsAppFixture : IAsyncLifetime
                 .Add($"{IntegrationEventsOptions.SectionName}__{nameof(IntegrationEventsOptions.SubscriptionName)}", subscription.SubscriptionName))
             .CreateAsync();
 
-        await ServiceBusListenerMock.AddTopicSubscriptionListenerAsync(topicResource.Name, topicResource.Subscriptions.Single().SubscriptionName);
+        // => Receive messages on topic/subscription
+        await ServiceBusListenerMock.AddTopicSubscriptionListenerAsync(
+            topicResource.Name,
+            topicResource.Subscriptions.Single().SubscriptionName);
 
         // DataLake
         await EnsureCalculationStorageContainerExistsAsync();
@@ -120,7 +123,7 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         StartHost(AppHostManager);
 
         // Create durable client when TaskHub has been created
-        DurableClient = DurableTaskManager.CreateClient("Wholesale01");
+        DurableClient = DurableTaskManager.CreateClient(taskHubName: "Wholesale01");
     }
 
     public async Task DisposeAsync()
@@ -154,7 +157,8 @@ public class OrchestrationsAppFixture : IAsyncLifetime
     /// It is important that it is only attached while a test i active. Hence, it should be attached in
     /// the test class constructor; and detached in the test class Dispose method (using 'null').
     /// </summary>
-    /// <param name="testOutputHelper">If a xUnit test is active, this should be the instance of xUnit's <see cref="ITestOutputHelper"/>; otherwise it should be 'null'.</param>
+    /// <param name="testOutputHelper">If a xUnit test is active, this should be the instance of xUnit's <see cref="ITestOutputHelper"/>;
+    /// otherwise it should be 'null'.</param>
     public void SetTestOutputHelper(ITestOutputHelper testOutputHelper)
     {
         TestLogger.TestOutputHelper = testOutputHelper;
@@ -171,9 +175,15 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         // It seems the host + worker is not ready if we use the default startup log message, so we override it here
         appHostSettings.HostStartedEvent = "Host lock lease acquired";
 
-        appHostSettings.ProcessEnvironmentVariables.Add("FUNCTIONS_WORKER_RUNTIME", "dotnet-isolated");
-        appHostSettings.ProcessEnvironmentVariables.Add("AzureWebJobsStorage", AzuriteManager.FullConnectionString);
-        appHostSettings.ProcessEnvironmentVariables.Add("APPLICATIONINSIGHTS_CONNECTION_STRING", IntegrationTestConfiguration.ApplicationInsightsConnectionString);
+        appHostSettings.ProcessEnvironmentVariables.Add(
+            "FUNCTIONS_WORKER_RUNTIME",
+            "dotnet-isolated");
+        appHostSettings.ProcessEnvironmentVariables.Add(
+            "AzureWebJobsStorage",
+            AzuriteManager.FullConnectionString);
+        appHostSettings.ProcessEnvironmentVariables.Add(
+            "APPLICATIONINSIGHTS_CONNECTION_STRING",
+            IntegrationTestConfiguration.ApplicationInsightsConnectionString);
 
         // Database
         appHostSettings.ProcessEnvironmentVariables.Add(
@@ -181,6 +191,7 @@ public class OrchestrationsAppFixture : IAsyncLifetime
             DatabaseManager.ConnectionString);
 
         // Databricks
+        // => Notice we reconfigure this setting in "EnsureAppHostUsesActualDatabricksJobs" and "EnsureAppHostUsesMockedDatabricksJobs"
         appHostSettings.ProcessEnvironmentVariables.Add(
             nameof(DatabricksJobsOptions.WorkspaceUrl),
             MockServer.Url!);
@@ -208,7 +219,9 @@ public class OrchestrationsAppFixture : IAsyncLifetime
     }
 
     /// <summary>
-    /// Create storage container. Note: Azurite is based on the Blob Storage API, but sinceData Lake Storage Gen2 is built on top of it, we can still create the container like this
+    /// Create storage container.
+    /// Note: Azurite is based on the Blob Storage API, but sinceData Lake Storage Gen2 is built on top of it,
+    /// we can still create the container like this.
     /// </summary>
     private async Task EnsureCalculationStorageContainerExistsAsync()
     {

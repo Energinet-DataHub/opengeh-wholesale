@@ -17,7 +17,6 @@ using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.DurableTask;
-using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation;
 
@@ -35,17 +34,17 @@ internal class CalculationOrchestration
             return "Error: No input specified.";
         }
 
-        // Replay safe logger, only logging when not replaying previous history
-        var logger = context.CreateReplaySafeLogger<CalculationOrchestration>();
-        logger.LogInformation($"{nameof(calculationRequestDto)}: {calculationRequestDto}.");
-
         // Create calculation (SQL)
-        var calculationMetadata = await context.CallActivityAsync<CalculationMetadata>(nameof(CalculationActivities.CreateCalculationRecordActivity), calculationRequestDto);
+        var calculationMetadata = await context.CallActivityAsync<CalculationMetadata>(
+            nameof(CalculationActivities.CreateCalculationRecordActivity),
+            calculationRequestDto);
         calculationMetadata.OrchestrationProgress = "CalculationCreated";
         context.SetCustomStatus(calculationMetadata);
 
         // Start calculation (Databricks)
-        calculationMetadata.JobId = await context.CallActivityAsync<CalculationJobId>(nameof(CalculationActivities.StartCalculationActivity), calculationMetadata.Id);
+        calculationMetadata.JobId = await context.CallActivityAsync<CalculationJobId>(
+            nameof(CalculationActivities.StartCalculationActivity),
+            calculationMetadata.Id);
         calculationMetadata.OrchestrationProgress = "CalculationJobQueued";
         context.SetCustomStatus(calculationMetadata);
 
@@ -53,19 +52,21 @@ internal class CalculationOrchestration
         var pollingIntervalInSeconds = 60;
         var expiryTime = context.CurrentUtcDateTime.AddMinutes(30);
 
-        logger.LogInformation($"Enter while loop: {context.CurrentUtcDateTime < expiryTime}");
-
         while (context.CurrentUtcDateTime < expiryTime)
         {
             // Monitor calculation (Databricks)
-            calculationMetadata.JobStatus = await context.CallActivityAsync<CalculationState>(nameof(CalculationActivities.GetJobStatusActivity), calculationMetadata.JobId);
+            calculationMetadata.JobStatus = await context.CallActivityAsync<CalculationState>(
+                nameof(CalculationActivities.GetJobStatusActivity),
+                calculationMetadata.JobId);
             context.SetCustomStatus(calculationMetadata);
 
-            if (calculationMetadata.JobStatus == CalculationState.Running
-                || calculationMetadata.JobStatus == CalculationState.Pending)
+            if (calculationMetadata.JobStatus is CalculationState.Running
+                or CalculationState.Pending)
             {
                 // Update calculation execution status (SQL)
-                await context.CallActivityAsync(nameof(CalculationActivities.UpdateCalculationExecutionStatusActivity), calculationMetadata);
+                await context.CallActivityAsync(
+                    nameof(CalculationActivities.UpdateCalculationExecutionStatusActivity),
+                    calculationMetadata);
 
                 // Wait for the next checkpoint
                 var nextCheckpoint = context.CurrentUtcDateTime.AddSeconds(pollingIntervalInSeconds);
@@ -78,7 +79,9 @@ internal class CalculationOrchestration
         }
 
         // Update calculation execution status (SQL)
-        await context.CallActivityAsync(nameof(CalculationActivities.UpdateCalculationExecutionStatusActivity), calculationMetadata);
+        await context.CallActivityAsync(
+            nameof(CalculationActivities.UpdateCalculationExecutionStatusActivity),
+            calculationMetadata);
 
         if (calculationMetadata.JobStatus == CalculationState.Completed)
         {
@@ -86,12 +89,16 @@ internal class CalculationOrchestration
             context.SetCustomStatus(calculationMetadata);
 
             // OBSOLETE: Create calculation completed (SQL - Event database)
-            await context.CallActivityAsync(nameof(CalculationActivities.CreateCompletedCalculationActivity), calculationMetadata.Id);
+            await context.CallActivityAsync(
+                nameof(CalculationActivities.CreateCompletedCalculationActivity),
+                calculationMetadata.Id);
 
             //// TODO: Wait for warehouse to start (could use retry policy); could be done using fan-out/fan-in
 
             // Send calculation results (ServiceBus)
-            await context.CallActivityAsync(nameof(CalculationActivities.SendCalculationResultsActivity), calculationMetadata.Id);
+            await context.CallActivityAsync(
+                nameof(CalculationActivities.SendCalculationResultsActivity),
+                calculationMetadata.Id);
             calculationMetadata.OrchestrationProgress = "CalculationResultsSend";
             context.SetCustomStatus(calculationMetadata);
         }
