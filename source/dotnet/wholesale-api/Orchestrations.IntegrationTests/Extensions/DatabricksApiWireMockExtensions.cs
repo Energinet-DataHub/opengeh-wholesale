@@ -25,6 +25,13 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions
 /// <summary>
 /// A collection of WireMock extensions for easy mock configuration of
 /// Databricks REST API endpoints.
+///
+/// IMPORTANT developer tips:
+///  - It's possible to start the WireMock server in Proxy mode, this means
+///    that all requests are proxied to the real URL. And the mappings can be recorded and saved.
+///    See https://github.com/WireMock-Net/WireMock.Net/wiki/Proxying
+///  - WireMockInspector: https://github.com/WireMock-Net/WireMockInspector/blob/main/README.md
+///  - WireMock.Net examples: https://github.com/WireMock-Net/WireMock.Net-examples
 /// </summary>
 public static class DatabricksApiWireMockExtensions
 {
