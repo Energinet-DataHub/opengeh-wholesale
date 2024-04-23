@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Net;
+using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -30,14 +31,15 @@ public class HealthCheckEndpointTests : IAsyncLifetime
     {
         Fixture = fixture;
         Fixture.SetTestOutputHelper(testOutputHelper);
-
-        Fixture.AppHostManager.ClearHostLog();
     }
 
     private OrchestrationsAppFixture Fixture { get; }
 
     public Task InitializeAsync()
     {
+        Fixture.EnsureAppHostUsesActualDatabricksJobs();
+        Fixture.AppHostManager.ClearHostLog();
+
         return Task.CompletedTask;
     }
 
