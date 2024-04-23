@@ -12,30 +12,42 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql import SparkSession, DataFrame
 
 from package.infrastructure import paths
 from package.infrastructure.paths import (
-    METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1,
-    SETTLEMENT_REPORT_DATABASE_NAME,
+    BASIS_DATA_DATABASE_NAME,
 )
 
 
-class ViewReader:
+class BasisDataTableReader:
+
     def __init__(
         self,
         spark: SparkSession,
-        metering_point_periods_view_name: str | None = None,
+        metering_point_periods_table_name: str | None = None,
+        time_series_points_table_name: str | None = None,
     ) -> None:
         self._spark = spark
         self._metering_point_periods_view_name = (
-            metering_point_periods_view_name
-            or paths.METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1
+            metering_point_periods_table_name
+            or paths.METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME
+        )
+        self._metering_point_time_series_view_name = (
+            time_series_points_table_name
+            or paths.TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME
         )
 
     def read_metering_point_periods(
         self,
     ) -> DataFrame:
         return self._spark.read.format("delta").table(
-            f"{SETTLEMENT_REPORT_DATABASE_NAME}.{METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1}"
+            f"{BASIS_DATA_DATABASE_NAME}.{paths.METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME}"
+        )
+
+    def read_time_series_points(
+        self,
+    ) -> DataFrame:
+        return self._spark.read.format("delta").table(
+            f"{BASIS_DATA_DATABASE_NAME}.{paths.TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME}"
         )
