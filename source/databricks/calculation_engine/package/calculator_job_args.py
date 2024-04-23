@@ -43,6 +43,9 @@ def parse_job_arguments(
 
     with logging_configuration.start_span("calculation.parse_job_arguments"):
         time_zone = env_vars.get_time_zone()
+        quarterly_resolution_transition_datetime = (
+            env_vars.get_quarterly_resolution_transition_datetime()
+        )
         calculator_args = CalculatorArgs(
             calculation_id=job_args.calculation_id,
             calculation_grid_areas=job_args.grid_areas,
@@ -51,6 +54,13 @@ def parse_job_arguments(
             calculation_execution_time_start=job_args.execution_time_start,
             calculation_type=job_args.calculation_type,
             time_zone=time_zone,
+            quarterly_resolution_transition_datetime=quarterly_resolution_transition_datetime,
+        )
+
+        _validate_quarterly_resolution_transition_datetime(
+            calculator_args.quarterly_resolution_transition_datetime,
+            calculator_args.calculation_period_start_datetime,
+            calculator_args.calculation_period_end_datetime,
         )
 
         if is_wholesale_calculation_type(calculator_args.calculation_type):
@@ -102,6 +112,20 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
         raise Exception("Grid areas must be a list")
 
     return args
+
+
+def _validate_quarterly_resolution_transition_datetime(
+    quarterly_resolution_transition_datetime: str,
+    calculation_period_start_datetime: str,
+    calculation_period_end_datetime: str,
+) -> None:
+    if (
+        calculation_period_start_datetime < quarterly_resolution_transition_datetime
+        and calculation_period_end_datetime > quarterly_resolution_transition_datetime
+    ):
+        raise Exception(
+            "The calculation period must not cross the quarterly resolution transition datetime."
+        )
 
 
 def _validate_period_for_wholesale_calculation(args: CalculatorArgs) -> None:
