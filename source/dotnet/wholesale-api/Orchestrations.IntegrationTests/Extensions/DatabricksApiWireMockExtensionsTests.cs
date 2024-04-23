@@ -144,6 +144,15 @@ public class DatabricksApiWireMockExtensionsTests : IClassFixture<WireMockExtens
         actualRunTuple.Item1.State.ResultState.Should().Be(RunResultState.SUCCESS);
     }
 
+    /// <summary>
+    /// The mocked data we're testing goes through multiple deserializations.
+    /// First we transform the json data to a "ExpandoObject" which will be mapped to a dictionary
+    /// Which is what "actual" contains in the test below
+    /// Afterwards we map this dictionary to an "EnergyTimeSeriesPoint", where we will deserialize the
+    /// attribute "QuantityQuality".
+    /// The first deserialization is being tested by calling "ExecuteStatementAsync"
+    /// The second is tested by calling "CreateTimeSeriesPoint"
+    /// </summary>
     [Fact]
     public async Task MockDataBrickSql_WhenQueryForData_CanDeserializeResponseFromMock()
     {
@@ -153,9 +162,9 @@ public class DatabricksApiWireMockExtensionsTests : IClassFixture<WireMockExtens
         var path = "GetDatabricksDataPath";
         _fixture.MockServer
             .CatchAll()
-            .MockSqlStatements(statementId, chunkIndex)
-            .MockSqlStatementsResultChunks(statementId, chunkIndex, path)
-            .MockSqlStatementsResultStream(path);
+            .MockEnergySqlStatements(statementId, chunkIndex)
+            .MockEnergySqlStatementsResultChunks(statementId, chunkIndex, path)
+            .MockEnergySqlStatementsResultStream(path);
 
         var query = new EnergyResultQueryStatement(
             Guid.Empty,

@@ -130,7 +130,7 @@ public static class DatabricksApiWireMockExtensions
         return server;
     }
 
-    public static WireMockServer MockSqlStatements(this WireMockServer server, string statementId, int chunkIndex)
+    public static WireMockServer MockEnergySqlStatements(this WireMockServer server, string statementId, int chunkIndex)
     {
         var request = Request
             .Create()
@@ -141,7 +141,7 @@ public static class DatabricksApiWireMockExtensions
             .Create()
             .WithStatusCode(HttpStatusCode.OK)
             .WithHeader(HeaderNames.ContentType, "application/json")
-            .WithBody(DatabricksStatementResponseMock(statementId, chunkIndex));
+            .WithBody(DatabricksEnergyStatementResponseMock(statementId, chunkIndex));
 
         server
             .Given(request)
@@ -150,7 +150,7 @@ public static class DatabricksApiWireMockExtensions
         return server;
     }
 
-    public static WireMockServer MockSqlStatementsResultChunks(this WireMockServer server, string statementId, int chunkIndex, string path)
+    public static WireMockServer MockEnergySqlStatementsResultChunks(this WireMockServer server, string statementId, int chunkIndex, string path)
     {
         var request = Request
             .Create()
@@ -161,7 +161,7 @@ public static class DatabricksApiWireMockExtensions
             .Create()
             .WithStatusCode(HttpStatusCode.OK)
             .WithHeader(HeaderNames.ContentType, "application/json")
-            .WithBody(DatabricksStatementExternalLinkResponseMock(chunkIndex, $"{server.Url}/{path}"));
+            .WithBody(DatabricksEnergyStatementExternalLinkResponseMock(chunkIndex, $"{server.Url}/{path}"));
 
         server
             .Given(request)
@@ -170,7 +170,7 @@ public static class DatabricksApiWireMockExtensions
         return server;
     }
 
-    public static WireMockServer MockSqlStatementsResultStream(this WireMockServer server, string path)
+    public static WireMockServer MockEnergySqlStatementsResultStream(this WireMockServer server, string path)
     {
         var request = Request
             .Create()
@@ -180,7 +180,7 @@ public static class DatabricksApiWireMockExtensions
         var response = Response
             .Create()
             .WithStatusCode(HttpStatusCode.OK)
-            .WithBody(Encoding.UTF8.GetBytes(DatabricksStatementRowMock()));
+            .WithBody(Encoding.UTF8.GetBytes(DatabricksEnergyStatementRowMock()));
 
         server
             .Given(request)
@@ -188,7 +188,7 @@ public static class DatabricksApiWireMockExtensions
         return server;
     }
 
-    public static string DatabricksStatementResponseMock(string statementId, int chunkIndex)
+    public static string DatabricksEnergyStatementResponseMock(string statementId, int chunkIndex)
     {
         var json = """
                {
@@ -242,7 +242,10 @@ public static class DatabricksApiWireMockExtensions
                 columns);
     }
 
-    public static string DatabricksStatementExternalLinkResponseMock(int chunkIndex, string url)
+    /// <summary>
+    /// Creates a 
+    /// </summary>
+    public static string DatabricksEnergyStatementExternalLinkResponseMock(int chunkIndex, string url)
     {
         var json = """
                    {
@@ -262,7 +265,7 @@ public static class DatabricksApiWireMockExtensions
             .Replace("{url}", url);
     }
 
-    private static string DatabricksStatementRowMock()
+    private static string DatabricksEnergyStatementRowMock()
     {
         var data = EnergyResultColumnNames.GetAllNames().Select(columnName => columnName switch
         {
