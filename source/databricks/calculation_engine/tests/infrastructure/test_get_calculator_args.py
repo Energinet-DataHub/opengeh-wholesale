@@ -86,6 +86,7 @@ def job_environment_variables() -> dict:
         EnvironmentVariable.TENANT_ID.name: "550e8400-e29b-41d4-a716-446655440000",
         EnvironmentVariable.SPN_APP_ID.name: "some_spn_app_id",
         EnvironmentVariable.SPN_APP_SECRET.name: "some_spn_app_secret",
+        EnvironmentVariable.QUARTERLY_RESOLUTION_TRANSITION_DATETIME.name: "2023-01-31T23:00:00Z",
     }
 
 
