@@ -25,6 +25,7 @@ from .expected_output import ExpectedOutput
 def assert_output(
     actual_and_expected: tuple[CalculationResultsContainer, list[ExpectedOutput]],
     output_name: str,
+    drop_columns_when_actual_and_expected_are_equal: bool = False,
 ) -> None:
     actual_results, expected_results = actual_and_expected
 
@@ -44,6 +45,7 @@ def assert_output(
         ignore_nullability=True,
         ignore_decimal_scale=True,
         columns_to_skip=columns_to_skip,
+        drop_columns_when_actual_and_expected_are_equal=drop_columns_when_actual_and_expected_are_equal,
     )
 
 
