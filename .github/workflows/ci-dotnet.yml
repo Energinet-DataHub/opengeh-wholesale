@@ -56,9 +56,11 @@ jobs:
           - name: Orchestration (no s)
             paths: \source\dotnet\wholesale-api\Orchestration.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Orchestration.IntegrationTests.dll
             use_azure_functions_tools: true
+            contentroot_variable_name: empty # Means skip
           - name: Orchestrations
             paths: \source\dotnet\wholesale-api\Orchestrations.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.dll
             use_azure_functions_tools: true
+            contentroot_variable_name: empty # Means skip
           - name: Web API
             paths: \source\dotnet\wholesale-api\WebApi.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.WebApi.IntegrationTests.dll
             use_azure_functions_tools: true
@@ -67,12 +69,15 @@ jobs:
           - name: Calculations
             paths: \source\dotnet\wholesale-api\Calculations\Calculations.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Calculations.IntegrationTests.dll
             use_azure_functions_tools: false
+            contentroot_variable_name: empty # Means skip
           - name: Calculation Results
             paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
             use_azure_functions_tools: false
+            contentroot_variable_name: empty # Means skip
           - name: Events
             paths: \source\dotnet\wholesale-api\Events\Events.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Events.IntegrationTests.dll
             use_azure_functions_tools: false
+            contentroot_variable_name: empty # Means skip
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@dstenroejl/add-job-name # TODO: Revert to use v13
     with:
       download_attempt_limit: 30
