@@ -28,8 +28,8 @@ internal class CalculationOrchestration
         [OrchestrationTrigger] TaskOrchestrationContext context,
         FunctionContext executionContext)
     {
-        var calculationRequestDto = context.GetInput<CalculationRequest>();
-        if (calculationRequestDto == null)
+        var input = context.GetInput<CalculationOrchestrationInput>();
+        if (input == null)
         {
             return "Error: No input specified.";
         }
@@ -37,7 +37,7 @@ internal class CalculationOrchestration
         // Create calculation (SQL)
         var calculationMetadata = await context.CallActivityAsync<CalculationMetadata>(
             nameof(CalculationActivities.CreateCalculationRecordActivity),
-            calculationRequestDto);
+            input);
         calculationMetadata.OrchestrationProgress = "CalculationCreated";
         context.SetCustomStatus(calculationMetadata);
 

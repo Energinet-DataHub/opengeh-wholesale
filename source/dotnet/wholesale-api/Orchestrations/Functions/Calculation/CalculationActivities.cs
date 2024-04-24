@@ -68,19 +68,19 @@ internal class CalculationActivities
     /// </summary>
     [Function(nameof(CreateCalculationRecordActivity))]
     public async Task<CalculationMetadata> CreateCalculationRecordActivity(
-        [ActivityTrigger] CalculationRequest calculationRequest)
+        [ActivityTrigger] CalculationOrchestrationInput calculationOrchestrationInput)
     {
         var calculationId = await _createCalculationHandler.HandleAsync(new CreateCalculationCommand(
-            calculationRequest.CalculationType,
-            calculationRequest.GridAreaCodes,
-            calculationRequest.StartDate,
-            calculationRequest.EndDate,
-            calculationRequest.RequestedByUserId));
+            calculationOrchestrationInput.StartCalculationRequestDto.CalculationType,
+            calculationOrchestrationInput.StartCalculationRequestDto.GridAreaCodes,
+            calculationOrchestrationInput.StartCalculationRequestDto.StartDate,
+            calculationOrchestrationInput.StartCalculationRequestDto.EndDate,
+            calculationOrchestrationInput.RequestedByUserId));
 
         return new CalculationMetadata
         {
             Id = calculationId,
-            Input = calculationRequest,
+            Input = calculationOrchestrationInput,
         };
     }
 
