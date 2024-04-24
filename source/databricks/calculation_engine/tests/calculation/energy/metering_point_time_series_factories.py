@@ -17,9 +17,9 @@ from decimal import Decimal
 
 from pyspark.sql import Row, SparkSession
 
-from package.calculation.preparation.data_structures.quarterly_metering_point_time_series import (
-    QuarterlyMeteringPointTimeSeries,
-    _quarterly_metering_point_time_series_schema,
+from package.calculation.preparation.data_structures.metering_point_time_series import (
+    MeteringPointTimeSeries,
+    metering_point_time_series_schema,
 )
 from package.codelists import MeteringPointType, QuantityQuality, SettlementMethod
 from package.constants import Colname
@@ -134,12 +134,10 @@ def create_to_row(
 
 def create(
     spark: SparkSession, data: None | Row | list[Row] = None
-) -> QuarterlyMeteringPointTimeSeries:
+) -> MeteringPointTimeSeries:
     if data is None:
         data = [create_row()]
     elif isinstance(data, Row):
         data = [data]
-    df = spark.createDataFrame(
-        data, schema=_quarterly_metering_point_time_series_schema
-    )
-    return QuarterlyMeteringPointTimeSeries(df)
+    df = spark.createDataFrame(data, schema=metering_point_time_series_schema)
+    return MeteringPointTimeSeries(df)
