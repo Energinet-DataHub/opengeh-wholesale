@@ -17,7 +17,7 @@ from pyspark.sql import SparkSession
 from package.calculation.energy.aggregators.exchange_aggregators import (
     aggregate_net_exchange_per_neighbour_ga,
 )
-import tests.calculation.energy.quarterly_metering_point_time_series_factories as factories
+import tests.calculation.energy.metering_point_time_series_factories as factories
 from package.codelists import QuantityQuality
 from package.constants import Colname
 
