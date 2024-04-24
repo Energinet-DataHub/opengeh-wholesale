@@ -27,7 +27,7 @@ GO
 
 -- Column mapping is solely adding to ensure that the table is exactly identical whether it's created using
 -- current state or migration scripts.
-ALTER_TABLE {OUTPUT_DATABASE_NAME}.energy_results SET TBLPROPERTIES (
+ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results SET TBLPROPERTIES (
     'delta.columnMapping.mode' = 'name',
     'delta.minReaderVersion' = '2',
     'delta.minWriterVersion' = '5')
