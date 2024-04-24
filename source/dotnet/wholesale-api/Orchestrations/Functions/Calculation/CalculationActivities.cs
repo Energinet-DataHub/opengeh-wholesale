@@ -21,7 +21,6 @@ using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Extensions.Logging;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation;
@@ -69,21 +68,21 @@ internal class CalculationActivities
     /// </summary>
     [Function(nameof(CreateCalculationRecordActivity))]
     public async Task<CalculationMetadata> CreateCalculationRecordActivity(
-        [ActivityTrigger] BatchRequestDto batchRequestDto)
+        [ActivityTrigger] CalculationRequestDto calculationRequestDto)
     {
         // TODO: Temporary solution for user id
         var userId = Guid.Parse("3A3A90B7-C624-4844-B990-3221DEE54F04");
         var calculationId = await _createCalculationHandler.HandleAsync(new CreateCalculationCommand(
-            batchRequestDto.CalculationType,
-            batchRequestDto.GridAreaCodes,
-            batchRequestDto.StartDate,
-            batchRequestDto.EndDate,
+            calculationRequestDto.CalculationType,
+            calculationRequestDto.GridAreaCodes,
+            calculationRequestDto.StartDate,
+            calculationRequestDto.EndDate,
             userId));
 
         return new CalculationMetadata
         {
             Id = calculationId,
-            Input = batchRequestDto,
+            Input = calculationRequestDto,
         };
     }
 
@@ -115,7 +114,7 @@ internal class CalculationActivities
                     break;
                 case CalculationExecutionState.Canceled:
                     // Jobs may be cancelled in Databricks for various reasons. For example they can be cancelled due to migrations in CD
-                    // Setting batch state back to "created" ensure they will be picked up and started again
+                    // Setting calculation state back to "created" ensure they will be picked up and started again
                     calculation.Reset();
                     break;
                 default:

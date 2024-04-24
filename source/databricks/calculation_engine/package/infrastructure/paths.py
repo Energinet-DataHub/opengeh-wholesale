@@ -19,7 +19,7 @@ import package.infrastructure.environment_variables as env_vars
 # Input database and tables
 INPUT_DATABASE_NAME = "wholesale_input"
 METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods"
-TIME_SERIES_POINTS_TABLE_NAME = "time_series_points"
+TIME_SERIES_POINTS_TABLE_NAME = "time_series_points_v2"
 CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods"
 CHARGE_MASTER_DATA_PERIODS_TABLE_NAME = "charge_masterdata_periods"
 CHARGE_PRICE_POINTS_TABLE_NAME = "charge_price_points"
@@ -39,8 +39,10 @@ TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME = "time_series_points"
 
 # Settlement report database and views
 SETTLEMENT_REPORT_DATABASE_NAME = "settlement_report"
-METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME = "metering_point_periods"
-METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME = "metering_point_time_series"
+METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1 = "metering_point_periods_v1"
+METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME_V1 = (
+    "metering_point_time_series_v1"
+)
 
 TEST = ""
 
