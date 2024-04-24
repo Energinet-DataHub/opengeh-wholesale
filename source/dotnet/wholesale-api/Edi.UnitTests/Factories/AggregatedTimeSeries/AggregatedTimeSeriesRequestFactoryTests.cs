@@ -26,14 +26,13 @@ namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Factories.AggregatedTimeSeri
 public class AggregatedTimeSeriesRequestFactoryTests
 {
     [Fact]
-    public void Parse_WhenGridAreaIsNull_ExpectedParsing()
+    public void Parse_WhenGridAreaIsEmpty_ExpectedParsing()
     {
         // Arrange
         var balanceResponsibleId = "1234567891234";
         var energySupplier = "1234567891237";
-        var gridAreaCode = null as string;
         var request = CreateRequest(
-            gridAreaCode: gridAreaCode,
+            gridAreaCodes: [],
             energySupplier: energySupplier,
             balanceResponsible: balanceResponsibleId,
             meteringPointType: DataHubNames.MeteringPointType.Production);
@@ -47,7 +46,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
         var aggregationLevel = actual.AggregationPerRoleAndGridArea;
         aggregationLevel.BalanceResponsibleId.Should().Be(balanceResponsibleId);
         aggregationLevel.EnergySupplierId.Should().Be(energySupplier);
-        aggregationLevel.GridAreaCodes.Should().BeNull();
+        aggregationLevel.GridAreaCodes.Should().BeEmpty();
     }
 
     [Fact]
@@ -58,7 +57,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
         var energySupplier = null as string;
         var gridAreaCode = "303";
         var request = CreateRequest(
-            gridAreaCode: gridAreaCode,
+            gridAreaCodes: [gridAreaCode],
             energySupplier: energySupplier,
             balanceResponsible: balanceResponsibleId);
 
@@ -82,7 +81,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
         var energySupplier = "1234567891234";
         var gridAreaCode = "303";
         var request = CreateRequest(
-            gridAreaCode: gridAreaCode,
+            gridAreaCodes: [gridAreaCode],
             energySupplier: energySupplier,
             balanceResponsible: balanceResponsibleId);
 
@@ -106,7 +105,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
         var energySupplier = "1234567891234";
         var gridAreaCode = "303";
         var request = CreateRequest(
-            gridAreaCode: gridAreaCode,
+            gridAreaCodes: [gridAreaCode],
             energySupplier: energySupplier,
             balanceResponsible: balanceResponsibleId,
             meteringPointType: string.Empty,
@@ -138,7 +137,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
         var energySupplier = "1234567891234";
         var gridAreaCode = "303";
         var request = CreateRequest(
-            gridAreaCode: gridAreaCode,
+            gridAreaCodes: [gridAreaCode],
             energySupplier: energySupplier,
             balanceResponsible: balanceResponsibleId,
             meteringPointType: string.Empty,
@@ -169,7 +168,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
         var energySupplier = "1234567891234";
         var gridAreaCode = "303";
         var request = CreateRequest(
-            gridAreaCode: gridAreaCode,
+            gridAreaCodes: [gridAreaCode],
             energySupplier: energySupplier,
             balanceResponsible: balanceResponsibleId,
             meteringPointType: string.Empty,
@@ -202,7 +201,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
         var energySupplier = "1234567891234";
         var gridAreaCode = "303";
         var request = CreateRequest(
-            gridAreaCode: gridAreaCode,
+            gridAreaCodes: [gridAreaCode],
             energySupplier: energySupplier,
             balanceResponsible: balanceResponsibleId,
             meteringPointType: string.Empty,
@@ -232,9 +231,9 @@ public class AggregatedTimeSeriesRequestFactoryTests
     }
 
     private AggregatedTimeSeriesRequest CreateRequest(
-        string? gridAreaCode = null,
-        string? energySupplier = null,
-        string? balanceResponsible = null,
+        IReadOnlyCollection<string> gridAreaCodes,
+        string? energySupplier,
+        string? balanceResponsible,
         string meteringPointType = DataHubNames.MeteringPointType.Production,
         string settlementMethod = DataHubNames.SettlementMethod.Flex)
     {
@@ -255,9 +254,9 @@ public class AggregatedTimeSeriesRequestFactoryTests
             SettlementMethod = settlementMethod,
         };
 
-        if (gridAreaCode is not null)
+        if (gridAreaCodes.Count > 0)
         {
-            request.GridAreaCodes.Add(gridAreaCode);
+            request.GridAreaCodes.AddRange(gridAreaCodes);
         }
 
         if (energySupplier is not null)

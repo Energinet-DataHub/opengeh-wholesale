@@ -38,7 +38,7 @@ public class GridAreaValidationRule : IValidationRule<DataHub.Edi.Requests.Aggre
 
         foreach (var gridAreaCode in subject.GridAreaCodes)
         {
-            if (!await IsGridAreaOwnerAsync(gridAreaCode, subject.RequestedForActorRole).ConfigureAwait(false))
+            if (!await IsGridAreaOwnerAsync(gridAreaCode, subject.RequestedForActorNumber).ConfigureAwait(false))
                 return InvalidGridAreaError;
         }
 
