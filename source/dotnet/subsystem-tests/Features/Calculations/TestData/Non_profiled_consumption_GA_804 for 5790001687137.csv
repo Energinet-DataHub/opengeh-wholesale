@@ -1,4 +1,4 @@
-grid_area,energy_supplier_id,balance_responsible_id,quantity,quantity_qualities,time,aggregation_level,time_series_type,calculation_id,calculation_type,calculation_execution_time_start,out_grid_area,calculation_result_id
+grid_area_code,energy_supplier_id,balance_responsible_id,quantity,quantity_qualities,time,aggregation_level,time_series_type,calculation_id,calculation_type,calculation_execution_time_start,out_grid_area_code,calculation_result_id
 804,5790001687137,,10.988,['missing':'measured'],2023-01-31 23:00:00,es_ga,non_profiled_consumption,2e5e4a59-e937-48ab-82b6-49f998dfe1dd,WholesaleFixing,2024-01-18 15:01:14,,55d41ab8-ab66-4c95-a2c0-7e59bffbfdd5
 804,5790001687137,,10.988,['missing':'measured'],2023-01-31 23:15:00,es_ga,non_profiled_consumption,2e5e4a59-e937-48ab-82b6-49f998dfe1dd,WholesaleFixing,2024-01-18 15:01:14,,55d41ab8-ab66-4c95-a2c0-7e59bffbfdd5
 804,5790001687137,,10.987,['missing':'measured'],2023-01-31 23:30:00,es_ga,non_profiled_consumption,2e5e4a59-e937-48ab-82b6-49f998dfe1dd,WholesaleFixing,2024-01-18 15:01:14,,55d41ab8-ab66-4c95-a2c0-7e59bffbfdd5

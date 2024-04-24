@@ -11,53 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from datetime import datetime
 from decimal import Decimal
 
 from pyspark.sql import SparkSession
-from pyspark.sql.types import Row
 
 from package.constants import Colname
-from package.codelists import MeteringPointResolution, QuantityQuality
+from package.codelists import MeteringPointResolution
 from package.calculation.energy.hour_to_quarter import (
     transform_hour_to_quarter,
 )
-from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
-    prepared_metering_point_time_series_schema,
-    PreparedMeteringPointTimeSeries,
-)
+import calculation.preparation.transformations.prepared_metering_point_time_series_factory as factory
 
-
-def basis_data_time_series_points_row(
-    grid_area: str = "805",
-    to_grid_area: str = "805",
-    from_grid_area: str = "806",
-    metering_point_id: str = "the_metering_point_id",
-    metering_point_type: str = "the_metering_point_type",
-    resolution: MeteringPointResolution = MeteringPointResolution.HOUR,
-    observation_time: datetime = datetime(2020, 1, 1, 0, 0),
-    quantity: Decimal = Decimal("4.444444"),
-    quality: QuantityQuality = QuantityQuality.ESTIMATED,
-    energy_supplier_id: str = "the_energy_supplier_id",
-    balance_responsible_id: str = "the_balance_responsible_id",
-    settlement_method: str = "the_settlement_method",
-) -> Row:
-    row = {
-        Colname.grid_area: grid_area,
-        Colname.to_grid_area: to_grid_area,
-        Colname.from_grid_area: from_grid_area,
-        Colname.metering_point_id: metering_point_id,
-        Colname.metering_point_type: metering_point_type,
-        Colname.resolution: resolution.value,
-        Colname.observation_time: observation_time,
-        Colname.quantity: quantity,
-        Colname.quality: quality.value,
-        Colname.energy_supplier_id: energy_supplier_id,
-        Colname.balance_responsible_id: balance_responsible_id,
-        Colname.settlement_method: settlement_method,
-    }
-
-    return Row(**row)
+DEFAULT_QUANTITY = Decimal("4.444000")
 
 
 def test__transform_hour_to_quarter__when_valid_input__split_basis_data_time_series(
@@ -65,22 +30,22 @@ def test__transform_hour_to_quarter__when_valid_input__split_basis_data_time_ser
 ) -> None:
     # Arrange
     rows = [
-        basis_data_time_series_points_row(resolution=MeteringPointResolution.HOUR),
-        basis_data_time_series_points_row(resolution=MeteringPointResolution.QUARTER),
+        factory.create_row(
+            resolution=MeteringPointResolution.HOUR, quantity=DEFAULT_QUANTITY
+        ),
+        factory.create_row(
+            resolution=MeteringPointResolution.QUARTER, quantity=DEFAULT_QUANTITY
+        ),
     ]
-    basis_data_time_series_points = spark.createDataFrame(
-        rows, prepared_metering_point_time_series_schema
-    )
-    metering_point_time_series = PreparedMeteringPointTimeSeries(
-        basis_data_time_series_points
-    )
+
+    prepared_metering_point_time_series = factory.create(spark, rows)
 
     # Act
-    actual = transform_hour_to_quarter(metering_point_time_series)
+    actual = transform_hour_to_quarter(prepared_metering_point_time_series)
 
     # Assert
     assert actual.df.count() == 5
     # Check that hourly quantity is divided by 4
-    assert actual.df.collect()[0][Colname.quantity] == Decimal("1.111111")
+    assert actual.df.collect()[0][Colname.quantity] == DEFAULT_QUANTITY / 4
     # Check that quarterly quantity is not divided by 4
-    assert actual.df.collect()[4][Colname.quantity] == Decimal("4.444444")
+    assert actual.df.collect()[4][Colname.quantity] == DEFAULT_QUANTITY
