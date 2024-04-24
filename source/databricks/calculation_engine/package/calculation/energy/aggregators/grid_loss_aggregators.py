@@ -61,7 +61,9 @@ def calculate_grid_loss(
     result = (
         net_exchange_per_ga.df.withColumnRenamed(Colname.quantity, net_exchange_result)
         .join(
-            agg_production_result, [Colname.grid_area, Colname.observation_time], "left"
+            agg_production_result,
+            [Colname.grid_area, Colname.observation_time],
+            "left",
         )
         .join(
             agg_flex_consumption_result.join(
@@ -184,7 +186,9 @@ def calculate_total_consumption(
 
     result = (
         result_production.join(
-            result_net_exchange, [Colname.grid_area, Colname.observation_time], "inner"
+            result_net_exchange,
+            [Colname.grid_area, Colname.observation_time],
+            "inner",
         )
         .withColumn(
             Colname.quantity,

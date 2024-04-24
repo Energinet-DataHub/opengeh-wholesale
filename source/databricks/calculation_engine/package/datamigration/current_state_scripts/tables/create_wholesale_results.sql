@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.wholesale_results
     -- 36 characters UUID
     calculation_result_id STRING NOT NULL,
 
-    grid_area STRING NOT NULL,
+    grid_area_code STRING NOT NULL,
     energy_supplier_id STRING NOT NULL,
     -- Energy quantity for the given observation time and duration as defined by `resolution`.
     -- Example: 1234.534
@@ -49,28 +49,8 @@ TBLPROPERTIES (
     delta.constraints.quantity_qualities_chk = array_size(array_except(quantity_qualities, array('missing', 'calculated', 'measured', 'estimated'))) = 0 AND array_size(quantity_qualities) > 0,
     delta.constraints.resolution_chk = resolution IN ('PT1H', 'P1D', 'P1M'),
     delta.constraints.metering_point_type_chk = metering_point_type IS NULL OR metering_point_type IN (
-        'production',
-        'consumption',
-        'exchange',
-        've_production',
-        'net_production',
-        'supply_to_grid',
-        'consumption_from_grid',
-        'wholesale_services_information',
-        'own_production',
-        'net_from_grid',
-        'net_to_grid',
-        'total_consumption',
-        'electrical_heating',
-        'net_consumption',
-        'effect_settlement'),
-    delta.constraints.settlement_method_chk = settlement_method IS NULL OR settlement_method IN ('non_profiled', 'flex'),
-    delta.constraints.charge_type_chk = charge_type IN ('subscription', 'fee', 'tariff'),
-    delta.constraints.charge_owner_id_chk = LENGTH(charge_owner_id) = 13 OR LENGTH(charge_owner_id) = 16,
-    delta.constraints.amount_type_chk = amount_type IN ('amount_per_charge', 'monthly_amount_per_charge', 'total_monthly_amount')
-)
+TBLPROPERTIES (delta.deletedFileRetentionDuration = 'interval 30 days')
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
 -- In the production it is set to empty and the respective location is used. This means the production tables won't be deleted if the schema is.
 {TEST}LOCATION '{CONTAINER_PATH}/{OUTPUT_FOLDER}/wholesale_results'
-
 GO
