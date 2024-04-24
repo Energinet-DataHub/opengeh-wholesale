@@ -18,8 +18,8 @@ from package.calculation.energy.data_structures.energy_results import EnergyResu
 from package.calculation.energy.aggregators.transformations.aggregate_sum_and_quality import (
     aggregate_quantity_and_quality,
 )
-from package.calculation.preparation.data_structures.quarterly_metering_point_time_series import (
-    QuarterlyMeteringPointTimeSeries,
+from package.calculation.preparation.data_structures.metering_point_time_series import (
+    MeteringPointTimeSeries,
 )
 from package.calculation.preparation.transformations.rounding import (
     round_quantity,
@@ -32,7 +32,7 @@ from package.constants import Colname
 
 
 def aggregate_per_ga_and_brp_and_es(
-    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
+    metering_point_time_series: MeteringPointTimeSeries,
     metering_point_type: MeteringPointType,
     settlement_method: SettlementMethod | None,
 ) -> EnergyResults:
@@ -49,7 +49,7 @@ def aggregate_per_ga_and_brp_and_es(
     Each row in the output dataframe corresponds to a unique combination of: ga, brp, es, and quarter_time
     """
 
-    result = quarterly_metering_point_time_series.df.where(
+    result = metering_point_time_series.df.where(
         f.col(Colname.metering_point_type) == metering_point_type.value
     )
 
@@ -70,28 +70,28 @@ def aggregate_per_ga_and_brp_and_es(
 
 
 def aggregate_non_profiled_consumption_ga_brp_es(
-    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
+    metering_point_time_series: MeteringPointTimeSeries,
 ) -> EnergyResults:
     return aggregate_per_ga_and_brp_and_es(
-        quarterly_metering_point_time_series,
+        metering_point_time_series,
         MeteringPointType.CONSUMPTION,
         SettlementMethod.NON_PROFILED,
     )
 
 
 def aggregate_flex_consumption_ga_brp_es(
-    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
+    metering_point_time_series: MeteringPointTimeSeries,
 ) -> EnergyResults:
     return aggregate_per_ga_and_brp_and_es(
-        quarterly_metering_point_time_series,
+        metering_point_time_series,
         MeteringPointType.CONSUMPTION,
         SettlementMethod.FLEX,
     )
 
 
 def aggregate_production_ga_brp_es(
-    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
+    metering_point_time_series: MeteringPointTimeSeries,
 ) -> EnergyResults:
     return aggregate_per_ga_and_brp_and_es(
-        quarterly_metering_point_time_series, MeteringPointType.PRODUCTION, None
+        metering_point_time_series, MeteringPointType.PRODUCTION, None
     )
