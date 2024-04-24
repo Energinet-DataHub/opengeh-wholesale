@@ -17,15 +17,3 @@ from package.constants import EnergyResultColumnNames, Colname
 class MeteringPointTimeSeriesColname:
     observation_day = "observation_day"
     quantities = "quantities"
-
-
-class EnergyResultsV1Colname:
-    calculation_id = EnergyResultColumnNames.calculation_id
-    calculation_type = EnergyResultColumnNames.calculation_type
-    energy_supplier_id = EnergyResultColumnNames.energy_supplier_id
-    grid_area = EnergyResultColumnNames.grid_area
-    time = EnergyResultColumnNames.time
-    metering_point_type = Colname.metering_point_type
-    quantity = EnergyResultColumnNames.quantity
-    resolution = Colname.resolution
-    settlement_method = Colname.settlement_method

@@ -20,18 +20,23 @@ from pyspark.sql.types import (
     DecimalType,
 )
 
+from features.public_data_models.given_energy_results_for_settlement_report.common.column_names.settlement_report_colname import (
+    EnergyResultsV1ColumnNames,
+)
 from package.constants import Colname
 
 energy_results_v1_schema = StructType(
     [
-        StructField(Colname.calculation_id, StringType(), False),
-        StructField(Colname.calculation_type, StringType(), False),
-        StructField(Colname.grid_area, StringType(), False),
-        StructField(Colname.metering_point_type, StringType(), False),
-        StructField(Colname.settlement_method, StringType(), True),
-        StructField(Colname.resolution, StringType(), False),
-        StructField(Colname.observation_time, TimestampType(), False),
-        StructField(Colname.quantity, DecimalType(18, 3), False),
-        StructField(Colname.energy_supplier_id, StringType(), True),
+        StructField(EnergyResultsV1ColumnNames.calculation_id, StringType(), False),
+        StructField(EnergyResultsV1ColumnNames.calculation_type, StringType(), False),
+        StructField(EnergyResultsV1ColumnNames.grid_area, StringType(), False),
+        StructField(
+            EnergyResultsV1ColumnNames.metering_point_type, StringType(), False
+        ),
+        StructField(EnergyResultsV1ColumnNames.settlement_method, StringType(), True),
+        StructField(EnergyResultsV1ColumnNames.resolution, StringType(), False),
+        StructField(EnergyResultsV1ColumnNames.time, TimestampType(), False),
+        StructField(EnergyResultsV1ColumnNames.quantity, DecimalType(18, 3), False),
+        StructField(EnergyResultsV1ColumnNames.energy_supplier_id, StringType(), True),
     ]
 )
