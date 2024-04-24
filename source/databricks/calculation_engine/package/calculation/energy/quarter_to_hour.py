@@ -35,16 +35,7 @@ def transform_quarter_to_hour(
         Colname.observation_time, f.date_trunc("hour", Colname.observation_time)
     )
     group_by = [
-        Colname.grid_area,
-        Colname.to_grid_area,
-        Colname.from_grid_area,
-        Colname.metering_point_id,
-        Colname.metering_point_type,
-        Colname.resolution,
-        Colname.observation_time,
-        Colname.energy_supplier_id,
-        Colname.balance_responsible_id,
-        Colname.settlement_method,
+        col for col in df.columns if col != Colname.quantity and col != Colname.quality
     ]
     result = aggregate_quantity_and_quality(result, group_by)
 
