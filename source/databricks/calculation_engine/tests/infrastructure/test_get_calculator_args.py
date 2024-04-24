@@ -369,3 +369,35 @@ class TestWhenMissingEnvVariables:
                         parse_job_arguments(command_line_args)
 
                 assert str(error.value).startswith("Environment variable not found")
+
+
+class TestWhenQuarterlyResolutionTransitionDatetimeIsWithinPeriod:
+    def test_raise_exception_for_calculation(
+        self,
+        job_environment_variables: dict,
+        sys_argv_from_contract,
+    ) -> None:
+        # Arrange
+        period_start_datetime = datetime(2023, 1, 30, 23)
+        period_end_datetime = datetime(2023, 2, 2, 23)
+        sys_argv = sys_argv_from_contract
+        sys_argv = _substitute_calculation_type(
+            sys_argv, CalculationType.BALANCE_FIXING
+        )
+        sys_argv = _substitute_period(
+            sys_argv, period_start_datetime, period_end_datetime
+        )
+
+        with patch("sys.argv", sys_argv):
+            with patch.dict("os.environ", job_environment_variables):
+                with pytest.raises(Exception) as error:
+                    command_line_args = parse_command_line_arguments()
+                    # Act
+                    parse_job_arguments(command_line_args)
+
+        # Assert
+        actual_error_message = str(error.value)
+        assert (
+            "The calculation period must not cross the quarterly resolution transition datetime."
+            in actual_error_message
+        )
