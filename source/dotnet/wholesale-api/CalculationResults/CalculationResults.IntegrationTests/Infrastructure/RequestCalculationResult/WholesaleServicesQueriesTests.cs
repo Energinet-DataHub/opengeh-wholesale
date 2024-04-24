@@ -175,13 +175,13 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         var query = CreateQueryParameters([calculationPeriod], gridAreaCodes: gridAreaCodesFilter);
 
         // Act
-        string[] exceptedGridAreaCodes = ["101", "103"];
+        string[] expectedGridAreaCodes = ["101", "103"];
         var actual = await Sut.GetAsync(query).ToListAsync();
 
         using var assertionScope = new AssertionScope();
         actual.Should().HaveCount(2);
         actual.Should().Contain(actualPackage =>
-            exceptedGridAreaCodes.Any(exceptedGridAreaCode => exceptedGridAreaCode == actualPackage.GridArea));
+            expectedGridAreaCodes.Any(expectedGridAreaCode => expectedGridAreaCode == actualPackage.GridArea));
     }
 
     [Fact]
