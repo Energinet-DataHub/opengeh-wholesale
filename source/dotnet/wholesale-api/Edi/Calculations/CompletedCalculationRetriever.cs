@@ -86,7 +86,7 @@ public class CompletedCalculationRetriever
         {
             _logger.LogError(
                 e,
-                "Failed to find latest calculations for calculation type {RequestedCalculationType}, grid area code: {GridAreaCode}, within period: {Start}  - {End}",
+                "Failed to find latest calculations for calculation type {RequestedCalculationType}, grid area codes: {GridAreaCodes}, within period: {Start}  - {End}",
                 requestedCalculationType,
                 string.Join(',', gridAreaCodes),
                 period.Start,

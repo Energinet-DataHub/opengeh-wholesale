@@ -180,8 +180,10 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
 
         using var assertionScope = new AssertionScope();
         actual.Should().HaveCount(2);
-        actual.Should().Contain(actualPackage =>
-            expectedGridAreaCodes.Any(expectedGridAreaCode => expectedGridAreaCode == actualPackage.GridArea));
+        foreach (var expectedGridAreaCode in expectedGridAreaCodes)
+        {
+            actual.Should().ContainSingle(actualPackage => actualPackage.GridArea == expectedGridAreaCode);
+        }
     }
 
     [Fact]
