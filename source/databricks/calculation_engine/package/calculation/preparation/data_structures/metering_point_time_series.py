@@ -28,7 +28,7 @@ class MeteringPointTimeSeries(DataFrameWrapper):
     When points are missing the time series are padded with
     points where quantity=0 and quality=missing.
 
-    Can be either all hourly or all quarterly.
+    Either all are hourly or all are quarterly.
     """
 
     def __init__(self, df: DataFrame):
