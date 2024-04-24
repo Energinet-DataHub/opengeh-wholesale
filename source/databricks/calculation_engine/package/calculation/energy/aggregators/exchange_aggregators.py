@@ -16,8 +16,8 @@ import pyspark.sql.functions as F
 
 import package.calculation.energy.aggregators.transformations as T
 from package.calculation.energy.data_structures.energy_results import EnergyResults
-from package.calculation.preparation.data_structures.quarterly_metering_point_time_series import (
-    QuarterlyMeteringPointTimeSeries,
+from package.calculation.preparation.data_structures.metering_point_time_series import (
+    MeteringPointTimeSeries,
 )
 from package.calculation.preparation.transformations.rounding import (
     round_quantity,
@@ -34,7 +34,7 @@ exchange_out_from_grid_area = "ExOut_FromGridArea"
 
 
 def aggregate_net_exchange_per_neighbour_ga(
-    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
+    metering_point_time_series: MeteringPointTimeSeries,
     calculation_grid_areas: list[str],
 ) -> EnergyResults:
     """
@@ -42,7 +42,7 @@ def aggregate_net_exchange_per_neighbour_ga(
     The result will only include exchange to/from grid areas specified in `calculation_grid_areas`.
     """
 
-    df = quarterly_metering_point_time_series.df.where(
+    df = metering_point_time_series.df.where(
         F.col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value
     )
 

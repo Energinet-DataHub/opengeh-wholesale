@@ -26,14 +26,14 @@ from package.calculation.energy.aggregators.exchange_aggregators import (
 from package.calculation.energy.data_structures.energy_results import (
     EnergyResults,
 )
-from package.calculation.preparation.data_structures.quarterly_metering_point_time_series import (
-    QuarterlyMeteringPointTimeSeries,
-    _quarterly_metering_point_time_series_schema,
+from package.calculation.preparation.data_structures.metering_point_time_series import (
+    MeteringPointTimeSeries,
+    metering_point_time_series_schema,
 )
 from package.codelists import MeteringPointType
 from package.constants import Colname
 from tests.calculation.energy import (
-    quarterly_metering_point_time_series_factories as factories,
+    metering_point_time_series_factories as factories,
 )
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
@@ -46,9 +46,9 @@ ALL_GRID_AREAS = ["A", "B", "C", "D", "E", "F", "X", "Y"]
 
 
 @pytest.fixture(scope="module")
-def quarterly_metering_point_time_series(
+def metering_point_time_series(
     spark: SparkSession,
-) -> QuarterlyMeteringPointTimeSeries:
+) -> MeteringPointTimeSeries:
     rows = []
 
     # add 24 hours of exchange with different examples of exchange between grid areas. See readme.md for more info
@@ -72,10 +72,8 @@ def quarterly_metering_point_time_series(
         rows.append(_create_row("X", "Y", Decimal("42") * quarter_number, obs_time))
         rows.append(_create_row("Y", "X", Decimal("12") * quarter_number, obs_time))
 
-    df = spark.createDataFrame(
-        data=rows, schema=_quarterly_metering_point_time_series_schema
-    )
-    return QuarterlyMeteringPointTimeSeries(df)
+    df = spark.createDataFrame(data=rows, schema=metering_point_time_series_schema)
+    return MeteringPointTimeSeries(df)
 
 
 def _create_row(
@@ -94,17 +92,17 @@ def _create_row(
 
 
 @pytest.fixture(scope="module")
-def aggregated_data_frame(quarterly_metering_point_time_series):
+def aggregated_data_frame(metering_point_time_series):
     """Perform aggregation"""
     exchange_per_neighbour_ga = aggregate_net_exchange_per_neighbour_ga(
-        quarterly_metering_point_time_series, ALL_GRID_AREAS
+        metering_point_time_series, ALL_GRID_AREAS
     )
     return aggregate_net_exchange_per_ga(exchange_per_neighbour_ga)
 
 
-def test_test_data_has_correct_row_count(quarterly_metering_point_time_series):
+def test_test_data_has_correct_row_count(metering_point_time_series):
     """Check sample data row count"""
-    assert quarterly_metering_point_time_series.df.count() == (13 * numberOfQuarters)
+    assert metering_point_time_series.df.count() == (13 * numberOfQuarters)
 
 
 def test_exchange_has_correct_sign(aggregated_data_frame) -> None:

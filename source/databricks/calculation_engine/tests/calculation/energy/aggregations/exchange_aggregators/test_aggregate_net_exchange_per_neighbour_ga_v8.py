@@ -18,12 +18,12 @@ import pytest
 from pyspark.sql import SparkSession
 from pyspark.sql.types import Row
 
-from calculation.energy import quarterly_metering_point_time_series_factories
+from calculation.energy import metering_point_time_series_factories
 from package.calculation.energy.aggregators.exchange_aggregators import (
     aggregate_net_exchange_per_neighbour_ga,
 )
-from package.calculation.preparation.data_structures.quarterly_metering_point_time_series import (
-    QuarterlyMeteringPointTimeSeries,
+from package.calculation.preparation.data_structures.metering_point_time_series import (
+    MeteringPointTimeSeries,
 )
 from package.codelists import (
     MeteringPointType,
@@ -40,7 +40,7 @@ ALL_GRID_AREAS = ["A", "B", "C"]
 
 
 @pytest.fixture(scope="module")
-def single_quarter_test_data(spark: SparkSession) -> QuarterlyMeteringPointTimeSeries:
+def single_quarter_test_data(spark: SparkSession) -> MeteringPointTimeSeries:
     rows = [
         _create_row("A", "A", "B", default_obs_time, Decimal("10")),
         _create_row("A", "A", "B", default_obs_time, Decimal("15")),
@@ -50,11 +50,11 @@ def single_quarter_test_data(spark: SparkSession) -> QuarterlyMeteringPointTimeS
         _create_row("C", "C", "A", default_obs_time, Decimal("10")),
         _create_row("C", "C", "A", default_obs_time, Decimal("5")),
     ]
-    return quarterly_metering_point_time_series_factories.create(spark, rows)
+    return metering_point_time_series_factories.create(spark, rows)
 
 
 @pytest.fixture(scope="module")
-def multi_quarter_test_data(spark: SparkSession) -> QuarterlyMeteringPointTimeSeries:
+def multi_quarter_test_data(spark: SparkSession) -> MeteringPointTimeSeries:
     rows = []
 
     for i in range(numberOfTestQuarters):
@@ -68,13 +68,13 @@ def multi_quarter_test_data(spark: SparkSession) -> QuarterlyMeteringPointTimeSe
         rows.append(_create_row("C", "C", "A", obs_time, Decimal("10")))
         rows.append(_create_row("C", "C", "A", obs_time, Decimal("5")))
 
-    return quarterly_metering_point_time_series_factories.create(spark, rows)
+    return metering_point_time_series_factories.create(spark, rows)
 
 
 def _create_row(
     domain: str, in_domain: str, out_domain: str, timestamp: datetime, quantity: Decimal
 ) -> Row:
-    return quarterly_metering_point_time_series_factories.create_row(
+    return metering_point_time_series_factories.create_row(
         grid_area=domain,
         to_grid_area=in_domain,
         from_grid_area=out_domain,
