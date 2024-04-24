@@ -16,60 +16,17 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.total_monthly_amounts
     charge_owner_id STRING
 )
 USING DELTA
-TBLPROPERTIES (delta.deletedFileRetentionDuration = 'interval 30 days')
+TBLPROPERTIES (
+    delta.deletedFileRetentionDuration = 'interval 30 days',
+    delta.constraints.calculation_id_chk = 'LENGTH(calculation_id) = 36',
+    delta.constraints.calculation_type_chk = 'calculation_type IN ("WholesaleFixing", "FirstCorrectionSettlement", "SecondCorrectionSettlement", "ThirdCorrectionSettlement")',
+    delta.constraints.calculation_result_id_chk = 'LENGTH(calculation_result_id) = 36',
+    delta.constraints.grid_area_chk = 'LENGTH(grid_area) = 3',
+    delta.constraints.energy_supplier_id_chk = 'LENGTH(energy_supplier_id) = 13 OR LENGTH(energy_supplier_id) = 16',
+    delta.constraints.charge_owner_id_chk = 'charge_owner_id IS NULL OR LENGTH(charge_owner_id) = 13 OR LENGTH(charge_owner_id) = 16'
+)
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
 -- In the production it is set to empty and the respective location is used. This means the production tables won't be deleted if the schema is.
 {TEST}LOCATION '{CONTAINER_PATH}/{OUTPUT_FOLDER}/total_monthly_amounts'
 
-GO
-
--- Constraints --
-ALTER TABLE {OUTPUT_DATABASE_NAME}.total_monthly_amounts
-    DROP CONSTRAINT IF EXISTS calculation_id_chk
-GO
-
-ALTER TABLE {OUTPUT_DATABASE_NAME}.total_monthly_amounts
-    ADD CONSTRAINT calculation_id_chk CHECK (LENGTH(calculation_id) = 36)
-GO
-
-ALTER TABLE {OUTPUT_DATABASE_NAME}.total_monthly_amounts
-    DROP CONSTRAINT IF EXISTS calculation_type_chk
-GO
-    
-ALTER TABLE {OUTPUT_DATABASE_NAME}.total_monthly_amounts
-    ADD CONSTRAINT calculation_type_chk CHECK (calculation_type IN ('WholesaleFixing', 'FirstCorrectionSettlement', 'SecondCorrectionSettlement', 'ThirdCorrectionSettlement'))
-GO
-
-ALTER TABLE {OUTPUT_DATABASE_NAME}.total_monthly_amounts
-    DROP CONSTRAINT IF EXISTS calculation_result_id_chk
-GO
-    
-ALTER TABLE {OUTPUT_DATABASE_NAME}.total_monthly_amounts
-    ADD CONSTRAINT calculation_result_id_chk CHECK (LENGTH(calculation_result_id) = 36)
-GO
-
-ALTER TABLE {OUTPUT_DATABASE_NAME}.total_monthly_amounts
-    DROP CONSTRAINT IF EXISTS grid_area_chk
-GO
-
-ALTER TABLE {OUTPUT_DATABASE_NAME}.total_monthly_amounts
-    ADD CONSTRAINT grid_area_chk CHECK (LENGTH(grid_area) = 3)
-GO
-
-ALTER TABLE {OUTPUT_DATABASE_NAME}.total_monthly_amounts
-    DROP CONSTRAINT IF EXISTS energy_supplier_id_chk
-GO
-    
--- Length is 16 when EIC and 13 when GLN
-ALTER TABLE {OUTPUT_DATABASE_NAME}.total_monthly_amounts
-    ADD CONSTRAINT energy_supplier_id_chk CHECK (LENGTH(energy_supplier_id) = 13 OR LENGTH(energy_supplier_id) = 16)
-GO
-
-ALTER TABLE {OUTPUT_DATABASE_NAME}.total_monthly_amounts
-    DROP CONSTRAINT IF EXISTS charge_owner_id_chk
-GO
-
--- Length is 16 when EIC and 13 when GLN
-ALTER TABLE {OUTPUT_DATABASE_NAME}.total_monthly_amounts
-    ADD CONSTRAINT charge_owner_id_chk CHECK (charge_owner_id IS NULL OR LENGTH(charge_owner_id) = 13 OR LENGTH(charge_owner_id) = 16)
 GO
