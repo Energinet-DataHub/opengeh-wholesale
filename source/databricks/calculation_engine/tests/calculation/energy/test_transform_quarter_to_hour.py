@@ -67,7 +67,10 @@ def test__transform_quarter_to_hour__when_valid_input__merge_basis_data_time_ser
     # Arrange
     rows = [
         basis_data_time_series_points_row(resolution=MeteringPointResolution.HOUR),
-        basis_data_time_series_points_row(resolution=MeteringPointResolution.QUARTER),
+        basis_data_time_series_points_row(
+            resolution=MeteringPointResolution.QUARTER,
+            observation_time=datetime(2020, 1, 1, 0, 0),
+        ),
         basis_data_time_series_points_row(
             resolution=MeteringPointResolution.QUARTER,
             observation_time=datetime(2020, 1, 1, 0, 15),
