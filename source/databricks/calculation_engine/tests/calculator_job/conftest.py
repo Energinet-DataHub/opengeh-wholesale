@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import uuid
 from datetime import datetime
 
 import pyspark.sql.functions as F
@@ -43,6 +43,7 @@ def calculator_args_balance_fixing(
         calculation_period_start_datetime=datetime(2018, 1, 1, 23, 0, 0),
         calculation_period_end_datetime=datetime(2018, 1, 3, 23, 0, 0),
         calculation_execution_time_start=datetime(2018, 1, 5, 23, 0, 0),
+        created_by_user_id=str(uuid.uuid4()),
         time_zone="Europe/Copenhagen",
     )
 

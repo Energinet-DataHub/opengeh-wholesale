@@ -19,6 +19,7 @@ defined in the geh_stream directory in our tests.
 import os
 import shutil
 import subprocess
+import uuid
 from shutil import rmtree
 from datetime import datetime
 from typing import Generator, Callable, Optional
@@ -314,6 +315,7 @@ def any_calculator_args() -> CalculatorArgs:
         calculation_period_start_datetime=datetime(2018, 1, 1, 23, 0, 0),
         calculation_period_end_datetime=datetime(2018, 1, 3, 23, 0, 0),
         calculation_execution_time_start=datetime(2018, 1, 5, 23, 0, 0),
+        created_by_user_id=str(uuid.uuid4()),
         time_zone="Europe/Copenhagen",
     )
 
@@ -327,6 +329,7 @@ def any_calculator_args_for_wholesale() -> CalculatorArgs:
         calculation_period_start_datetime=datetime(2022, 6, 30, 22, 0, 0),
         calculation_period_end_datetime=datetime(2022, 7, 31, 22, 0, 0),
         calculation_execution_time_start=datetime(2022, 8, 1, 22, 0, 0),
+        created_by_user_id=str(uuid.uuid4()),
         time_zone="Europe/Copenhagen",
     )
 
