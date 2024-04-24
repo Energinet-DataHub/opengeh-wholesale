@@ -28,11 +28,11 @@ def get_data_input_specifications(table_reader: TableReader) -> dict[str, tuple]
     to be mocked.
     """
     return {
-        "metering_point_periods.csv": (
+        "calculations.csv": (
             metering_point_period_schema,
             table_reader.read_metering_point_periods,
         ),
-        "time_series_points.csv": (
+        "calculations.csv": (
             time_series_point_schema,
             table_reader.read_time_series_points,
         ),

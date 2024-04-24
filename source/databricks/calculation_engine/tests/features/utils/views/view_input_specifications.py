@@ -26,12 +26,12 @@ def get_input_specifications() -> dict[str, tuple]:
     Contains the specifications for view scenario inputs.
     """
     return {
-        "metering_point_periods.csv": (
+        "calculations.csv": (
             metering_point_period_schema,
             "read_metering_point_periods",
             create_metering_point_periods,
         ),
-        "time_series_points.csv": (
+        "energy_results_v1.csv": (
             time_series_point_schema,
             "read_time_series_points",
             create_time_series_points,
