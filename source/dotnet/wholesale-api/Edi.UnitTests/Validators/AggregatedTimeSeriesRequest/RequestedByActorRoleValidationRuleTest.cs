@@ -28,7 +28,7 @@ public sealed class RequestedByActorRoleValidationRuleTest
     public async Task ValidateAsync_WhenRequestingWithValidActorRole_ReturnsEmptyErrorListAsync(string actorRole)
     {
         // Arrange
-        var request = new DataHub.Edi.Requests.AggregatedTimeSeriesRequest { RequestedByActorRole = actorRole };
+        var request = new DataHub.Edi.Requests.AggregatedTimeSeriesRequest { RequestedForActorRole = actorRole };
         var rule = new RequestedByActorRoleValidationRule();
 
         // Act
@@ -45,7 +45,7 @@ public sealed class RequestedByActorRoleValidationRuleTest
     public async Task ValidateAsync_WhenRequestingWithUnexpectedActorRole_ReturnsEmptyErrorListAsync(string actorRole)
     {
         // Arrange
-        var request = new DataHub.Edi.Requests.AggregatedTimeSeriesRequest { RequestedByActorRole = actorRole };
+        var request = new DataHub.Edi.Requests.AggregatedTimeSeriesRequest { RequestedForActorRole = actorRole };
         var rule = new RequestedByActorRoleValidationRule();
 
         // Act
@@ -59,7 +59,7 @@ public sealed class RequestedByActorRoleValidationRuleTest
     public async Task ValidateAsync_WhenRequestingWithDdmActorRole_ReturnsDdmShouldRequestAsMdrErrorAsync()
     {
         // Arrange
-        var request = new DataHub.Edi.Requests.AggregatedTimeSeriesRequest { RequestedByActorRole = "GridOperator" };
+        var request = new DataHub.Edi.Requests.AggregatedTimeSeriesRequest { RequestedForActorRole = "GridOperator" };
         var rule = new RequestedByActorRoleValidationRule();
 
         // Act

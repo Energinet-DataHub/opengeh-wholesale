@@ -331,9 +331,9 @@ public sealed class AggregatedTimeSeriesQueriesData(DatabricksSqlStatementApiFix
         ];
 
         return new AggregatedTimeSeriesQueryParameters(
-            TimeSeriesTypes: timeSeriesType ?? new[] { TimeSeriesType.Production },
+            TimeSeriesTypes: timeSeriesType ?? [TimeSeriesType.Production],
             LatestCalculationForPeriod: calculationForPeriods,
-            GridArea: gridArea,
+            GridAreaCodes: gridArea != null ? [gridArea] : [],
             EnergySupplierId: energySupplierId,
             BalanceResponsibleId: balanceResponsibleId);
     }
