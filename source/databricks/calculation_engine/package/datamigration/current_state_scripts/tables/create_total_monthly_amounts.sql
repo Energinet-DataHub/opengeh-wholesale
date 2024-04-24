@@ -23,7 +23,7 @@ TBLPROPERTIES (delta.deletedFileRetentionDuration = 'interval 30 days')
 GO
 
 -- Column mapping is solely adding to ensure that the table is exactly identical whether it's created using
--- current state or migration scripts.
+-- current state or migration scripts
 ALTER TABLE {OUTPUT_DATABASE_NAME}.total_monthly_amounts SET TBLPROPERTIES (
     'delta.columnMapping.mode' = 'name',
     'delta.minReaderVersion' = '2',
