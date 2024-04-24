@@ -120,8 +120,8 @@ public class AggregatedTimeSeriesRequestHandler : IWholesaleInboxRequestHandler
         Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest aggregatedTimeSeriesRequest,
         AggregatedTimeSeriesRequest aggregatedTimeSeriesRequestMessage)
     {
-        if (aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea.GridAreaCodes == null)
-            return false;
+        if (!aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea.GridAreaCodes.Any())
+            return false; // If grid area codes is empty, we already retrieved any data across all grid areas
 
         var actorRole = aggregatedTimeSeriesRequest.RequestedForActorRole;
         if (actorRole is DataHubNames.ActorRole.EnergySupplier or DataHubNames.ActorRole.BalanceResponsibleParty)
