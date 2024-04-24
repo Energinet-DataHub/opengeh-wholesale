@@ -16,7 +16,7 @@ namespace Energinet.DataHub.Wholesale.Edi.Models;
 
 public record WholesaleServicesRequest(
     CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.AmountType AmountType,
-    string? GridArea,
+    IReadOnlyCollection<string> GridAreaCodes,
     string? EnergySupplierId,
     string? ChargeOwnerId,
     List<ChargeCodeAndType> ChargeTypes,
