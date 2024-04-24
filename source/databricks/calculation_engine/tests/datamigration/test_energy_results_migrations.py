@@ -26,6 +26,7 @@ from package.codelists import (
     CalculationType,
     TimeSeriesType,
     QuantityQuality,
+    MeteringPointResolution,
 )
 from package.constants import EnergyResultColumnNames
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
@@ -50,6 +51,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
         EnergyResultColumnNames.from_grid_area: "843",
         EnergyResultColumnNames.calculation_result_id: "6033ab5c-436b-44e9-8a79-90489d324e53",
         EnergyResultColumnNames.metering_point_id: None,
+        EnergyResultColumnNames.resolution: MeteringPointResolution.QUARTER.value,
     }
     return spark.createDataFrame(data=[row], schema=energy_results_schema)
 
@@ -91,6 +93,8 @@ def test__migrated_table__columns_matching_contract(
         (EnergyResultColumnNames.quantity_qualities, ["incomplete"]),
         (EnergyResultColumnNames.aggregation_level, None),
         (EnergyResultColumnNames.aggregation_level, "foo"),
+        (EnergyResultColumnNames.resolution, None),
+        (EnergyResultColumnNames.resolution, "foo"),
     ],
 )
 def test__migrated_table_rejects_invalid_data(
@@ -173,6 +177,10 @@ def test__migrated_table_accepts_valid_data(
         *[
             (EnergyResultColumnNames.aggregation_level, x.value)
             for x in AggregationLevel
+        ],
+        *[
+            (EnergyResultColumnNames.resolution, x.value)
+            for x in MeteringPointResolution
         ],
     ],
 )
