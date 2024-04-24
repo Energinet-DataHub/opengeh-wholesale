@@ -12,9 +12,9 @@ CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.calculations
 USING DELTA
 TBLPROPERTIES (
     delta.deletedFileRetentionDuration = 'interval 30 days',
-    delta.constraints.calculation_id_chk = 'LENGTH(calculation_id) = 36',
+    delta.constraints.calculation_id_chk = LENGTH(calculation_id) = 36,
     -- create calculation_type_chk constraint with quotes around the values reverse
-    delta.constraints.calculation_type_chk = "calculation_type IN ('BalanceFixing', 'Aggregation', 'WholesaleFixing', 'FirstCorrectionSettlement', 'SecondCorrectionSettlement', 'ThirdCorrectionSettlement')"
+    delta.constraints.calculation_type_chk = calculation_type IN ('BalanceFixing', 'Aggregation', 'WholesaleFixing', 'FirstCorrectionSettlement', 'SecondCorrectionSettlement', 'ThirdCorrectionSettlement')
 )
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
 -- In the production it is set to empty and the respective location is used. This means the production tables won't be deleted if the schema is.
