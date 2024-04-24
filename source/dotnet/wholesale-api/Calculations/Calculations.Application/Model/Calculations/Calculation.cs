@@ -23,7 +23,6 @@ public class Calculation
     private readonly List<GridAreaCode> _gridAreaCodes;
 
     public Calculation(
-        Instant createdTime,
         CalculationType calculationType,
         IEnumerable<GridAreaCode> gridAreaCodes,
         Instant periodStart,
@@ -43,7 +42,6 @@ public class Calculation
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
         ExecutionTimeStart = executionTimeStart;
-        CreatedTime = createdTime;
         CreatedByUserId = createdByUserId;
         ExecutionTimeEnd = null;
         AreSettlementReportsCreated = false;
@@ -126,6 +124,11 @@ public class Calculation
 
     public CalculationExecutionState ExecutionState { get; private set; }
 
+    /// <summary>
+    /// The calculation engine registers its own perception of the start time.
+    /// So the values will most likely differ and depend on from which data source
+    /// it's being read.
+    /// </summary>
     public Instant? ExecutionTimeStart { get; }
 
     public Instant CreatedTime { get; }

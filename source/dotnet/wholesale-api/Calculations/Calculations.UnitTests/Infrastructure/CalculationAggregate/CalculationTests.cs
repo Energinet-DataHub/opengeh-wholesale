@@ -48,7 +48,6 @@ public class CalculationTests
         // ReSharper disable once CollectionNeverUpdated.Local
         var emptyGridAreaCodes = new List<GridAreaCode>();
         var actual = Assert.Throws<BusinessValidationException>(() => new Calculation(
-            SystemClock.Instance.GetCurrentInstant(),
             CalculationType.BalanceFixing,
             emptyGridAreaCodes,
             Instant.FromDateTimeOffset(DateTimeOffset.Now),
@@ -129,7 +128,6 @@ public class CalculationTests
 
         // Act
         var createCalculation = () => new Calculation(
-            SystemClock.Instance.GetCurrentInstant(),
             CalculationType.WholesaleFixing,
             someGridAreas,
             Instant.FromDateTimeOffset(startDate),
@@ -248,7 +246,6 @@ public class CalculationTests
 
         // Act
         var actual = Assert.Throws<BusinessValidationException>(() => new Calculation(
-            SystemClock.Instance.GetCurrentInstant(),
             CalculationType.BalanceFixing,
             new List<GridAreaCode> { gridAreaCode },
             Instant.MinValue,
@@ -274,7 +271,6 @@ public class CalculationTests
 
         // Act
         var actual = Assert.Throws<BusinessValidationException>(() => new Calculation(
-            SystemClock.Instance.GetCurrentInstant(),
             CalculationType.BalanceFixing,
             new List<GridAreaCode> { gridAreaCode },
             startPeriod,

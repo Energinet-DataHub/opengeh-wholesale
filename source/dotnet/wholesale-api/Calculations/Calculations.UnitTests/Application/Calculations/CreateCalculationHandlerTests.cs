@@ -170,7 +170,6 @@ public class CreateCalculationHandlerTests
     {
         var period = Periods.January_EuropeCopenhagen_Instant;
         return new Calculation(
-            SystemClock.Instance.GetCurrentInstant(),
             command.CalculationType,
             command.GridAreaCodes.Select(x => new GridAreaCode(x)).ToList(),
             command.StartDate.ToInstant(),

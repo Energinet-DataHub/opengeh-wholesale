@@ -35,7 +35,6 @@ public class DatabricksCalculatorJobParametersFactoryTests
     {
         // Arrange
         var calculation = new Calculation(
-            SystemClock.Instance.GetCurrentInstant(),
             CalculationType.BalanceFixing,
             new List<GridAreaCode> { new("805"), new("806"), new("033") },
             DateTimeOffset.Parse("2022-05-31T22:00Z").ToInstant(),

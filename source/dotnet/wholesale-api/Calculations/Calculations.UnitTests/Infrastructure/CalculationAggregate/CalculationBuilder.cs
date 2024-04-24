@@ -96,7 +96,6 @@ public class CalculationBuilder
     public Calculation Build()
     {
         var calculation = new Calculation(
-            SystemClock.Instance.GetCurrentInstant(),
             _calculationType,
             _gridAreaCodes,
             _periodStart,

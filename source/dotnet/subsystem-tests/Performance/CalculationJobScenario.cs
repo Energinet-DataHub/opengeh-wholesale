@@ -41,7 +41,6 @@ public class CalculationJobScenario : SubsystemTestsBase<CalculationJobScenarioF
         var createdTime = SystemClock.Instance.GetCurrentInstant();
         var createdByUserId = Guid.Parse("DED7734B-DD56-43AD-9EE8-0D7EFDA6C783");
         Fixture.ScenarioState.CalculationJobInput = new Calculation(
-            createdTime: createdTime,
             calculationType: Common.Interfaces.Models.CalculationType.Aggregation,
             gridAreaCodes: new List<GridAreaCode> { new("791") },
             periodStart: Instant.FromDateTimeOffset(new DateTimeOffset(2022, 11, 30, 23, 0, 0, TimeSpan.Zero)),

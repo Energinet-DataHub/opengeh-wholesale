@@ -14,10 +14,12 @@
 from dependency_injector import containers, providers
 
 import package
+from package.infrastructure import initialize_spark
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 
 
 class Container(containers.DeclarativeContainer):
+    spark = initialize_spark()
     infrastructure_settings = providers.Configuration()
 
 

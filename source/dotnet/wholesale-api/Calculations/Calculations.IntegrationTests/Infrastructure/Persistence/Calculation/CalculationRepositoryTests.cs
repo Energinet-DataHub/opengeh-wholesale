@@ -203,7 +203,6 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
 
         var period = Periods.January_EuropeCopenhagen_Instant;
         var calculation = new Application.Model.Calculations.Calculation(
-            SystemClock.Instance.GetCurrentInstant(),
             CalculationType.BalanceFixing,
             new List<GridAreaCode> { new("004") },
             period.PeriodStart,
@@ -268,7 +267,6 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
     {
         var period = Periods.January_EuropeCopenhagen_Instant;
         return new Application.Model.Calculations.Calculation(
-            SystemClock.Instance.GetCurrentInstant(),
             calculationType,
             someGridAreasIds,
             period.PeriodStart,
