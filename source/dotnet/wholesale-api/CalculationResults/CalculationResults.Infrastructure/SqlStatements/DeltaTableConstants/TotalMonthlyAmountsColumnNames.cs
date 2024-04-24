@@ -22,7 +22,7 @@ public class TotalMonthlyAmountsColumnNames
     public const string CalculationExecutionTimeStart = "calculation_execution_time_start";
     public const string CalculationType = "calculation_type";
     public const string CalculationResultId = "calculation_result_id";
-    public const string GridArea = "grid_area";
+    public const string GridArea = "grid_area_code";
     public const string EnergySupplierId = "energy_supplier_id";
     public const string Time = "time";
     public const string Amount = "amount";
