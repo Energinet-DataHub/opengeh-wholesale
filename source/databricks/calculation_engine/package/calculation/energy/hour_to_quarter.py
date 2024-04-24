@@ -17,8 +17,8 @@ import pyspark.sql.functions as f
 from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
-from package.calculation.preparation.data_structures.quarterly_metering_point_time_series import (
-    QuarterlyMeteringPointTimeSeries,
+from package.calculation.preparation.data_structures.metering_point_time_series import (
+    MeteringPointTimeSeries,
 )
 from package.codelists import MeteringPointResolution
 from package.constants import Colname
@@ -26,7 +26,7 @@ from package.constants import Colname
 
 def transform_hour_to_quarter(
     metering_point_time_series: PreparedMeteringPointTimeSeries,
-) -> QuarterlyMeteringPointTimeSeries:
+) -> MeteringPointTimeSeries:
     result = metering_point_time_series.df.withColumn(
         "quarter_times",
         f.when(
@@ -63,4 +63,4 @@ def transform_hour_to_quarter(
         ),
     )
 
-    return QuarterlyMeteringPointTimeSeries(result)
+    return MeteringPointTimeSeries(result)
