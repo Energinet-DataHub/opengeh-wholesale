@@ -23,7 +23,14 @@ TBLPROPERTIES (delta.deletedFileRetentionDuration = 'interval 30 days')
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
 -- In the production it is set to empty and the respective location is used. This means the production tables won't be deleted if the schema is.
 {TEST}LOCATION '{CONTAINER_PATH}/{OUTPUT_FOLDER}/result'
+GO
 
+-- Column mapping is solely adding to ensure that the table is exactly identical whether it's created using
+-- current state or migration scripts.
+ALTER_TABLE {OUTPUT_DATABASE_NAME}.energy_results SET TBLPROPERTIES (
+    'delta.columnMapping.mode' = 'name',
+    'delta.minReaderVersion' = '2',
+    'delta.minWriterVersion' = '5')
 GO
 
 -- Constraints --
