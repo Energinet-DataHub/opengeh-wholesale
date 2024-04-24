@@ -75,9 +75,9 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
 
         whereClausesSql += $" AND ({string.Join(" OR ", calculationPeriodFilter)})";
 
-        if (!string.IsNullOrWhiteSpace(parameters.GridArea))
+        if (parameters.GridAreaCodes.Count > 0)
         {
-            whereClausesSql += $"AND t1.{EnergyResultColumnNames.GridArea} IN ({parameters.GridArea})";
+            whereClausesSql += $"AND t1.{EnergyResultColumnNames.GridArea} IN ({string.Join(",", parameters.GridAreaCodes.Select(gridAreaCode => $"'{gridAreaCode}'"))})";
         }
 
         if (!string.IsNullOrWhiteSpace(parameters.EnergySupplierId))
