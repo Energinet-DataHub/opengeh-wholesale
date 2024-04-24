@@ -28,15 +28,16 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "this" {
     }
   }
 
-  managed_rule {
-    type    = "Microsoft_DefaultRuleSet"
-    version = "2.1"
-    action  = "Block"
-  }
+  # Temp disabled until logging is in place, so we can see which rules are triggered
+  # managed_rule {
+  #   type    = "Microsoft_DefaultRuleSet"
+  #   version = "2.1"
+  #   action  = "Block"
+  # }
 
-  managed_rule {
-    type    = "Microsoft_BotManagerRuleSet"
-    version = "1.0"
-    action  = "Block"
-  }
+  # managed_rule {
+  #   type    = "Microsoft_BotManagerRuleSet"
+  #   version = "1.0"
+  #   action  = "Block"
+  # }
 }
