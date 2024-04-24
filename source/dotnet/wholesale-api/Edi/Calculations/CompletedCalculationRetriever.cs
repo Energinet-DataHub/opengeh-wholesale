@@ -47,7 +47,7 @@ public class CompletedCalculationRetriever
     }
 
     public virtual async Task<IReadOnlyCollection<CalculationForPeriod>> GetLatestCompletedCalculationsForPeriodAsync(
-        string? gridAreaCode, Period period, RequestedCalculationType requestedCalculationType)
+        IReadOnlyCollection<string> gridAreaCodes, Period period, RequestedCalculationType requestedCalculationType)
     {
         IReadOnlyCollection<CalculationDto> completedCalculationsForPeriod = Array.Empty<CalculationDto>();
 
@@ -56,7 +56,7 @@ public class CompletedCalculationRetriever
             foreach (var correctionVersion in _correctionVersionsInOrder)
             {
                 completedCalculationsForPeriod = await GetCompletedCalculationsForPeriodAsync(
-                        gridAreaCode,
+                        gridAreaCodes,
                         period,
                         correctionVersion)
                     .ConfigureAwait(true);
@@ -69,7 +69,7 @@ public class CompletedCalculationRetriever
         else
         {
             completedCalculationsForPeriod = await GetCompletedCalculationsForPeriodAsync(
-                    gridAreaCode,
+                    gridAreaCodes,
                     period,
                     requestedCalculationType)
                 .ConfigureAwait(true);
@@ -86,22 +86,20 @@ public class CompletedCalculationRetriever
         {
             _logger.LogError(
                 e,
-                "Failed to find latest calculations for calculation type {RequestedCalculationType}, grid area code: {GridAreaCode}, within period: {Start}  - {End}",
+                "Failed to find latest calculations for calculation type {RequestedCalculationType}, grid area codes: {GridAreaCodes}, within period: {Start}  - {End}",
                 requestedCalculationType,
-                gridAreaCode,
+                string.Join(',', gridAreaCodes),
                 period.Start,
                 period.End);
             throw;
         }
     }
 
-    private async Task<IReadOnlyCollection<CalculationDto>> GetCompletedCalculationsForPeriodAsync(string? gridAreaCode, Period period, RequestedCalculationType requestedCalculationType)
+    private async Task<IReadOnlyCollection<CalculationDto>> GetCompletedCalculationsForPeriodAsync(IReadOnlyCollection<string> gridAreaCodes, Period period, RequestedCalculationType requestedCalculationType)
     {
         return await _calculationsClient
             .SearchAsync(
-                filterByGridAreaCodes: gridAreaCode != null
-                    ? new[] { gridAreaCode }
-                    : new string[] { },
+                filterByGridAreaCodes: gridAreaCodes,
                 filterByExecutionState: CalculationState.Completed,
                 periodStart: period.Start,
                 periodEnd: period.End,

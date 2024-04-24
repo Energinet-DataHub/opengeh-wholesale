@@ -146,8 +146,11 @@ public class AggregatedTimeSeriesRequestHandler : IWholesaleInboxRequestHandler
     private async Task<AggregatedTimeSeriesQueryParameters> CreateAggregatedTimeSeriesQueryParametersWithoutCalculationTypeAsync(
         AggregatedTimeSeriesRequest request)
     {
-        var latestCalculationsForRequest = await _completedCalculationRetriever.GetLatestCompletedCalculationsForPeriodAsync(
-                request.AggregationPerRoleAndGridArea.GridAreaCode,
+        var latestCalculationsForRequest = await _completedCalculationRetriever
+            .GetLatestCompletedCalculationsForPeriodAsync(
+                request.AggregationPerRoleAndGridArea.GridAreaCode != null
+                    ? new List<string>() { request.AggregationPerRoleAndGridArea.GridAreaCode }
+                    : Array.Empty<string>(),
                 request.Period,
                 request.RequestedCalculationType)
             .ConfigureAwait(true);
