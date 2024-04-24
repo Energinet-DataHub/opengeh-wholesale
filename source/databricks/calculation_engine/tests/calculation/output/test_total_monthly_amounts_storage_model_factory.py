@@ -201,14 +201,13 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
         TotalMonthlyAmountsColumnNames.calculation_type,
         TotalMonthlyAmountsColumnNames.calculation_execution_time_start,
         TotalMonthlyAmountsColumnNames.calculation_result_id,
-        TotalMonthlyAmountsColumnNames.grid_area,
         TotalMonthlyAmountsColumnNames.time,
         TotalMonthlyAmountsColumnNames.amount,
     ]
     all_columns = [
-        attr
-        for attr in dir(TotalMonthlyAmountsColumnNames)
-        if not attr.startswith("__")
+        getattr(TotalMonthlyAmountsColumnNames, attribute_name)
+        for attribute_name in dir(TotalMonthlyAmountsColumnNames)
+        if not attribute_name.startswith("__")
     ]
 
     # Act
