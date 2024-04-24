@@ -16,49 +16,15 @@ from decimal import Decimal
 
 import pytest
 from pyspark.sql import SparkSession
-from pyspark.sql.types import Row
 
+import calculation.preparation.transformations.prepared_metering_point_time_series_factory as factory
 from package.constants import Colname
 from package.codelists import MeteringPointResolution, QuantityQuality
 from package.calculation.energy.quarter_to_hour import (
     transform_quarter_to_hour,
 )
-from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
-    prepared_metering_point_time_series_schema,
-    PreparedMeteringPointTimeSeries,
-)
 
-
-def basis_data_time_series_points_row(
-    grid_area: str = "805",
-    to_grid_area: str = "805",
-    from_grid_area: str = "806",
-    metering_point_id: str = "the_metering_point_id",
-    metering_point_type: str = "the_metering_point_type",
-    resolution: MeteringPointResolution = MeteringPointResolution.HOUR,
-    observation_time: datetime = datetime(2020, 1, 1, 0, 0),
-    quantity: Decimal = Decimal("4.444000"),
-    quality: QuantityQuality = QuantityQuality.ESTIMATED,
-    energy_supplier_id: str = "the_energy_supplier_id",
-    balance_responsible_id: str = "the_balance_responsible_id",
-    settlement_method: str = "the_settlement_method",
-) -> Row:
-    row = {
-        Colname.grid_area: grid_area,
-        Colname.to_grid_area: to_grid_area,
-        Colname.from_grid_area: from_grid_area,
-        Colname.metering_point_id: metering_point_id,
-        Colname.metering_point_type: metering_point_type,
-        Colname.resolution: resolution.value,
-        Colname.observation_time: observation_time,
-        Colname.quantity: quantity,
-        Colname.quality: quality.value,
-        Colname.energy_supplier_id: energy_supplier_id,
-        Colname.balance_responsible_id: balance_responsible_id,
-        Colname.settlement_method: settlement_method,
-    }
-
-    return Row(**row)
+DEFAULT_QUANTITY = Decimal("4.444000")
 
 
 def test__transform_quarter_to_hour__when_valid_input__merge_basis_data_time_series(
@@ -66,55 +32,60 @@ def test__transform_quarter_to_hour__when_valid_input__merge_basis_data_time_ser
 ) -> None:
     # Arrange
     rows = [
-        basis_data_time_series_points_row(resolution=MeteringPointResolution.HOUR),
-        basis_data_time_series_points_row(
+        factory.create_row(
+            resolution=MeteringPointResolution.HOUR, quantity=DEFAULT_QUANTITY
+        ),
+        factory.create_row(
             resolution=MeteringPointResolution.QUARTER,
             observation_time=datetime(2020, 1, 1, 0, 0),
+            quantity=DEFAULT_QUANTITY,
         ),
-        basis_data_time_series_points_row(
+        factory.create_row(
             resolution=MeteringPointResolution.QUARTER,
             observation_time=datetime(2020, 1, 1, 0, 15),
+            quantity=DEFAULT_QUANTITY,
         ),
-        basis_data_time_series_points_row(
+        factory.create_row(
             resolution=MeteringPointResolution.QUARTER,
             observation_time=datetime(2020, 1, 1, 0, 30),
+            quantity=DEFAULT_QUANTITY,
         ),
-        basis_data_time_series_points_row(
+        factory.create_row(
             resolution=MeteringPointResolution.QUARTER,
             observation_time=datetime(2020, 1, 1, 0, 45),
+            quantity=DEFAULT_QUANTITY,
         ),
-        basis_data_time_series_points_row(
+        factory.create_row(
             resolution=MeteringPointResolution.QUARTER,
             observation_time=datetime(2020, 1, 1, 1, 00),
+            quantity=DEFAULT_QUANTITY,
         ),
-        basis_data_time_series_points_row(
+        factory.create_row(
             resolution=MeteringPointResolution.QUARTER,
             observation_time=datetime(2020, 1, 1, 1, 15),
+            quantity=DEFAULT_QUANTITY,
         ),
-        basis_data_time_series_points_row(
+        factory.create_row(
             resolution=MeteringPointResolution.QUARTER,
             observation_time=datetime(2020, 1, 1, 1, 30),
+            quantity=DEFAULT_QUANTITY,
         ),
-        basis_data_time_series_points_row(
+        factory.create_row(
             resolution=MeteringPointResolution.QUARTER,
             observation_time=datetime(2020, 1, 1, 1, 45),
+            quantity=DEFAULT_QUANTITY,
         ),
     ]
-    basis_data_time_series_points = spark.createDataFrame(
-        rows, prepared_metering_point_time_series_schema
-    )
-    metering_point_time_series = PreparedMeteringPointTimeSeries(
-        basis_data_time_series_points
-    )
 
+    metering_point_time_series = factory.create(spark, rows)
     # Act
     actual = transform_quarter_to_hour(metering_point_time_series)
 
     # Assert
     assert actual.df.count() == 3
-    assert actual.df.collect()[0][Colname.quantity] == Decimal("4.444000")
-    assert actual.df.collect()[1][Colname.quantity] == Decimal("17.776000")
-    assert actual.df.collect()[2][Colname.quantity] == Decimal("17.776000")
+    assert actual.df.collect()[0][Colname.quantity] == DEFAULT_QUANTITY
+    assert actual.df.collect()[1][Colname.quantity] == 4 * DEFAULT_QUANTITY
+    assert actual.df.collect()[2][Colname.quantity] == 4 * DEFAULT_QUANTITY
 
 
 @pytest.mark.parametrize(
@@ -174,33 +145,33 @@ def test__transform_quarter_to_hour__when_different_qualities__uses_correct_qual
 ) -> None:
     # Arrange
     rows = [
-        basis_data_time_series_points_row(
+        factory.create_row(
             resolution=MeteringPointResolution.QUARTER,
             observation_time=datetime(2020, 1, 1, 1, 00),
+            quantity=DEFAULT_QUANTITY,
             quality=quality_1,
         ),
-        basis_data_time_series_points_row(
+        factory.create_row(
             resolution=MeteringPointResolution.QUARTER,
             observation_time=datetime(2020, 1, 1, 1, 15),
+            quantity=DEFAULT_QUANTITY,
             quality=quality_2,
         ),
-        basis_data_time_series_points_row(
+        factory.create_row(
             resolution=MeteringPointResolution.QUARTER,
             observation_time=datetime(2020, 1, 1, 1, 30),
+            quantity=DEFAULT_QUANTITY,
             quality=quality_3,
         ),
-        basis_data_time_series_points_row(
+        factory.create_row(
             resolution=MeteringPointResolution.QUARTER,
             observation_time=datetime(2020, 1, 1, 1, 45),
+            quantity=DEFAULT_QUANTITY,
             quality=quality_4,
         ),
     ]
-    basis_data_time_series_points = spark.createDataFrame(
-        rows, prepared_metering_point_time_series_schema
-    )
-    metering_point_time_series = PreparedMeteringPointTimeSeries(
-        basis_data_time_series_points
-    )
+
+    metering_point_time_series = factory.create(spark, rows)
 
     # Act
     actual = transform_quarter_to_hour(metering_point_time_series)
