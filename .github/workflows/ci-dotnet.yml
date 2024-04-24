@@ -40,7 +40,7 @@ jobs:
             paths: \source\dotnet\wholesale-api\Events\Events.UnitTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Events.UnitTests.dll
           - name: EDI
             paths: \source\dotnet\wholesale-api\Edi.UnitTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Edi.UnitTests.dll
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@dstenroejl/add-job-name # TODO: Revert to use v13
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v13
     with:
       download_attempt_limit: 30
       # Matrix parameters
@@ -78,7 +78,7 @@ jobs:
             paths: \source\dotnet\wholesale-api\Events\Events.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Events.IntegrationTests.dll
             use_azure_functions_tools: false
             contentroot_variable_name: empty # Means skip
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@dstenroejl/add-job-name # TODO: Revert to use v13
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v13
     with:
       download_attempt_limit: 30
       azure_integrationtest_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
