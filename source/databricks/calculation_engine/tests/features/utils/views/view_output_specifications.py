@@ -21,6 +21,7 @@ from features.public_data_models.given_energy_results_for_settlement_report.comm
 from features.utils.dataframes.settlement_report.view_results_dataframe import (
     create_metering_point_periods_view,
     create_metering_point_time_series_view,
+    create_energy_results_v1_view,
 )
 
 

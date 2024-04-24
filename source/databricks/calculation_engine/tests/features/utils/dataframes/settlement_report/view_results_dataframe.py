@@ -23,7 +23,6 @@ from pyspark.sql.types import (
 from features.public_data_models.given_basis_data_for_settlement_report.common.schemas.metering_point_time_series_schema import (
     element,
 )
-from package.constants import Colname
 
 
 def create_metering_point_periods_view(df: DataFrame, spark: SparkSession) -> DataFrame:
@@ -77,26 +76,20 @@ def create_energy_results_v1_view(df: DataFrame, spark: SparkSession) -> DataFra
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
-    from features.public_data_models.given_basis_data_for_settlement_report.common import (
-        MeteringPointTimeSeriesColname,
+    from features.public_data_models.given_energy_results_for_settlement_report.common.column_names.settlement_report_colname import (
+        EnergyResultsV1ColumnNames,
     )
-    from features.public_data_models.given_basis_data_for_settlement_report.common import (
-        metering_point_time_series_schema,
+    from features.public_data_models.given_energy_results_for_settlement_report.common.schemas.energy_results_v1_schema import (
+        energy_results_v1_schema,
     )
 
     df = df.withColumn(
-        time,
+        EnergyResultsV1ColumnNames.time,
         col(
-            Colname.observation_time,
+            EnergyResultsV1ColumnNames.time,
         ).cast(TimestampType()),
     )
-
-    df = df.withColumn(
-        MeteringPointTimeSeriesColname.quantities,
-        from_json(col(MeteringPointTimeSeriesColname.quantities), ArrayType(element)),
-    )
-
-    return spark.createDataFrame(df.rdd, metering_point_time_series_schema)
+    return spark.createDataFrame(df.rdd, energy_results_v1_schema)
 
 
 def _parse_qualities(qualities_str: str) -> list[dict]:
