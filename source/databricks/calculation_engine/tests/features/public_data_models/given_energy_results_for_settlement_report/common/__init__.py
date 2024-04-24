@@ -14,5 +14,5 @@
 from .column_names.settlement_report_colname import (
     MeteringPointTimeSeriesColname,
 )
-from .schemas.metering_point_period_schema import metering_point_period_schema
+from .schemas.energy_results_v1_schema import metering_point_period_schema
 from .schemas.metering_point_time_series_schema import metering_point_time_series_schema

@@ -26,19 +26,19 @@ def get_output_specifications() -> dict[str, tuple]:
     Contains the specifications for scenario outputs.
     """
     return {
-        "calculations.csv": (
+        "metering_point_periods.csv": (
             metering_point_period_schema,
             "read_metering_point_periods",
             create_metering_point_periods_view,
         ),
-        "energy_results_v1.csv": (
+        "metering_point_time_series.csv": (
             metering_point_time_series_schema,
             "read_metering_point_time_series",
             create_metering_point_time_series_view,
         ),
         "energy_results_v1.csv": (
-            energy_results_schema,
-            "read_metering_point_time_series",
-            create_metering_point_time_series_view,
+            energy_results_v1_schema,
+            "read_energy_results_v1",
+            create_energy_results_v1_view,
         ),
     }
