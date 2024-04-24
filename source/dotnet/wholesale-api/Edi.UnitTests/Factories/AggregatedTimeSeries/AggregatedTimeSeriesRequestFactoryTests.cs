@@ -47,7 +47,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
         var aggregationLevel = actual.AggregationPerRoleAndGridArea;
         aggregationLevel.BalanceResponsibleId.Should().Be(balanceResponsibleId);
         aggregationLevel.EnergySupplierId.Should().Be(energySupplier);
-        aggregationLevel.GridAreaCode.Should().BeNull();
+        aggregationLevel.GridAreaCodes.Should().BeNull();
     }
 
     [Fact]
@@ -71,7 +71,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
         var aggregationLevel = actual.AggregationPerRoleAndGridArea;
         aggregationLevel.BalanceResponsibleId.Should().Be(balanceResponsibleId);
         aggregationLevel.EnergySupplierId.Should().BeNull();
-        aggregationLevel.GridAreaCode.Should().Be(gridAreaCode);
+        aggregationLevel.GridAreaCodes.Should().Equal(gridAreaCode);
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
         var aggregationLevel = actual.AggregationPerRoleAndGridArea;
         aggregationLevel.BalanceResponsibleId.Should().BeNull();
         aggregationLevel.EnergySupplierId.Should().Be(energySupplier);
-        aggregationLevel.GridAreaCode.Should().Be(gridAreaCode);
+        aggregationLevel.GridAreaCodes.Should().Equal(gridAreaCode);
     }
 
     [Fact]
@@ -126,7 +126,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
         var aggregationLevel = actual.AggregationPerRoleAndGridArea;
         aggregationLevel.BalanceResponsibleId.Should().Be(balanceResponsibleId);
         aggregationLevel.EnergySupplierId.Should().Be(energySupplier);
-        aggregationLevel.GridAreaCode.Should().Be(gridAreaCode);
+        aggregationLevel.GridAreaCodes.Should().Equal(gridAreaCode);
     }
 
     [Fact]
@@ -158,7 +158,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
         var aggregationLevel = actual.AggregationPerRoleAndGridArea;
         aggregationLevel.BalanceResponsibleId.Should().Be(balanceResponsibleId);
         aggregationLevel.EnergySupplierId.Should().Be(energySupplier);
-        aggregationLevel.GridAreaCode.Should().Be(gridAreaCode);
+        aggregationLevel.GridAreaCodes.Should().Equal(gridAreaCode);
     }
 
     [Fact]
@@ -175,7 +175,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
             meteringPointType: string.Empty,
             settlementMethod: string.Empty);
 
-        request.RequestedByActorRole = DataHubNames.ActorRole.BalanceResponsibleParty;
+        request.RequestedForActorRole = DataHubNames.ActorRole.BalanceResponsibleParty;
 
         // Act
         var actual = AggregatedTimeSeriesRequestFactory.Parse(request);
@@ -191,7 +191,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
         var aggregationLevel = actual.AggregationPerRoleAndGridArea;
         aggregationLevel.BalanceResponsibleId.Should().Be(balanceResponsibleId);
         aggregationLevel.EnergySupplierId.Should().Be(energySupplier);
-        aggregationLevel.GridAreaCode.Should().Be(gridAreaCode);
+        aggregationLevel.GridAreaCodes.Should().Equal(gridAreaCode);
     }
 
     [Fact]
@@ -208,7 +208,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
             meteringPointType: string.Empty,
             settlementMethod: string.Empty);
 
-        request.RequestedByActorRole = DataHubNames.ActorRole.MeteredDataResponsible;
+        request.RequestedForActorRole = DataHubNames.ActorRole.MeteredDataResponsible;
 
         // Act
         var actual = AggregatedTimeSeriesRequestFactory.Parse(request);
@@ -228,7 +228,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
         var aggregationLevel = actual.AggregationPerRoleAndGridArea;
         aggregationLevel.BalanceResponsibleId.Should().Be(balanceResponsibleId);
         aggregationLevel.EnergySupplierId.Should().Be(energySupplier);
-        aggregationLevel.GridAreaCode.Should().Be(gridAreaCode);
+        aggregationLevel.GridAreaCodes.Should().Equal(gridAreaCode);
     }
 
     private AggregatedTimeSeriesRequest CreateRequest(
@@ -247,8 +247,8 @@ public class AggregatedTimeSeriesRequestFactoryTests
                 End = "2022-12-31T23:00:00Z",
             },
             MeteringPointType = meteringPointType,
-            RequestedByActorId = "1234567891234",
-            RequestedByActorRole = DataHubNames.ActorRole.EnergySupplier,
+            RequestedForActorNumber = "1234567891234",
+            RequestedForActorRole = DataHubNames.ActorRole.EnergySupplier,
             BusinessReason = DataHubNames.BusinessReason.BalanceFixing,
 
             // Optional
@@ -257,7 +257,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
 
         if (gridAreaCode is not null)
         {
-            request.GridAreaCode = gridAreaCode;
+            request.GridAreaCodes.Add(gridAreaCode);
         }
 
         if (energySupplier is not null)

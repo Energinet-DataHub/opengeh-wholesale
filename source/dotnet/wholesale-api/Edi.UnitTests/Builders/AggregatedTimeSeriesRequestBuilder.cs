@@ -21,27 +21,26 @@ namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 
 public class AggregatedTimeSeriesRequestBuilder
 {
+    private readonly List<string> _gridAreaCodes = [];
     private string _meteringPointType = DataHubNames.MeteringPointType.Production;
-
     private string _start;
     private string _end;
     private string? _energySupplierId;
-    private string _requestedByActorRoleId;
-    private string _requestedByActorId;
+    private string _requestedByActorRole;
+    private string _requestedByActorNumber;
     private string? _settlementMethod;
     private string? _balanceResponsibleId;
     private string? _settlementVersion;
     private string _businessReason;
-    private string? _gridAreaCode;
 
     private AggregatedTimeSeriesRequestBuilder()
     {
         var now = SystemClock.Instance.GetCurrentInstant();
         _start = Instant.FromUtc(now.InUtc().Year, 1, 1, 23, 0, 0).ToString();
         _end = Instant.FromUtc(now.InUtc().Year, 1, 2, 23, 0, 0).ToString();
-        _requestedByActorRoleId = DataHubNames.ActorRole.EnergySupplier;
-        _requestedByActorId = EnergySupplierValidatorTest.ValidGlnNumber;
-        _energySupplierId = _requestedByActorId;
+        _requestedByActorRole = DataHubNames.ActorRole.EnergySupplier;
+        _requestedByActorNumber = EnergySupplierValidatorTest.ValidGlnNumber;
+        _energySupplierId = _requestedByActorNumber;
         _businessReason = DataHubNames.BusinessReason.BalanceFixing;
     }
 
@@ -60,8 +59,8 @@ public class AggregatedTimeSeriesRequestBuilder
                 End = _end,
             },
             MeteringPointType = _meteringPointType,
-            RequestedByActorRole = _requestedByActorRoleId,
-            RequestedByActorId = _requestedByActorId,
+            RequestedForActorRole = _requestedByActorRole,
+            RequestedForActorNumber = _requestedByActorNumber,
             BusinessReason = _businessReason,
         };
 
@@ -71,8 +70,8 @@ public class AggregatedTimeSeriesRequestBuilder
         if (_balanceResponsibleId != null)
             request.BalanceResponsibleId = _balanceResponsibleId;
 
-        if (_gridAreaCode != null)
-            request.GridAreaCode = _gridAreaCode;
+        if (_gridAreaCodes.Count > 0)
+            request.GridAreaCodes.AddRange(_gridAreaCodes);
 
         if (_settlementMethod != null)
             request.SettlementMethod = _settlementMethod;
@@ -103,13 +102,13 @@ public class AggregatedTimeSeriesRequestBuilder
 
     public AggregatedTimeSeriesRequestBuilder WithRequestedByActorId(string actorId)
     {
-        _requestedByActorId = actorId;
+        _requestedByActorNumber = actorId;
         return this;
     }
 
     public AggregatedTimeSeriesRequestBuilder WithRequestedByActorRole(string actorRoleId)
     {
-        _requestedByActorRoleId = actorRoleId;
+        _requestedByActorRole = actorRoleId;
         return this;
     }
 
@@ -146,7 +145,11 @@ public class AggregatedTimeSeriesRequestBuilder
 
     public AggregatedTimeSeriesRequestBuilder WithGridArea(string? gridArea)
     {
-        _gridAreaCode = gridArea;
+        if (gridArea == null)
+            _gridAreaCodes.Clear();
+        else
+            _gridAreaCodes.Add(gridArea);
+
         return this;
     }
 }

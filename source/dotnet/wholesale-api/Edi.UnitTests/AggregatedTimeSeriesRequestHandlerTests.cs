@@ -247,7 +247,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         aggregatedTimeSeriesQueries
             .Setup(parameters =>
                 parameters.GetAsync(
-                    It.Is<AggregatedTimeSeriesQueryParameters>(x => x.GridArea == null)))
+                    It.Is<AggregatedTimeSeriesQueryParameters>(x => x.GridAreaCodes == null)))
             .Returns(() => aggregatedTimeSeries.ToAsyncEnumerable());
 
         var sut = new AggregatedTimeSeriesRequestHandler(

@@ -645,7 +645,7 @@ public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSe
                      AggregatedTimeSeriesQueriesConstants.GridAreaCodeA,
                      AggregatedTimeSeriesQueriesConstants.GridAreaCodeB,
                      AggregatedTimeSeriesQueriesConstants.GridAreaCodeC,
-                 }.Select(gridArea => parameters with { GridArea = gridArea }))
+                 }.Select(gridArea => parameters with { GridAreaCodes = [gridArea] }))
         {
             eachGridAreaIndividually.AddRange(await Sut.GetAsync(parametersForGridArea).ToListAsync());
         }
@@ -848,7 +848,7 @@ public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSe
 
         var parameters = new AggregatedTimeSeriesQueryParameters(
             [TimeSeriesType.Production],
-            gridArea,
+            [gridArea],
             null,
             null,
             new List<CalculationForPeriod>
