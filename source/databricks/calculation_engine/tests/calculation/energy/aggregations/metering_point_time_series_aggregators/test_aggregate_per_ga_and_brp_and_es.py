@@ -16,7 +16,7 @@ import datetime
 
 from pyspark.sql import SparkSession
 
-import tests.calculation.energy.quarterly_metering_point_time_series_factories as factories
+import tests.calculation.energy.metering_point_time_series_factories as factories
 from package.calculation.energy.aggregators.metering_point_time_series_aggregators import (
     aggregate_per_ga_and_brp_and_es,
 )
@@ -33,11 +33,11 @@ class TestWhenValidInput:
     def test_returns_values_aggregated_for_ga(self, spark: SparkSession):
         # Arrange
         row = factories.create_row()
-        quarterly_metering_point_time_series = factories.create(spark, [row, row])
+        metering_point_time_series = factories.create(spark, [row, row])
 
         # Act
         actual = aggregate_per_ga_and_brp_and_es(
-            quarterly_metering_point_time_series,
+            metering_point_time_series,
             factories.DEFAULT_METERING_POINT_TYPE,
             None,
         )

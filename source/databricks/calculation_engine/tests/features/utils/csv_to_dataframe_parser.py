@@ -1,0 +1,67 @@
+# Copyright 2020 Energinet DataHub A/S
+#
+# Licensed under the Apache License, Version 2.0 (the "License2");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+import concurrent.futures
+import os
+
+from pyspark.sql import SparkSession
+
+from features.utils.views.dataframe_container import DataframeContainer
+
+
+class CsvToDataframeParser:
+
+    def __init__(self, spark: SparkSession):
+        self.spark = spark
+
+    @staticmethod
+    def _read_file(
+        spark_session: SparkSession,
+        file_name: str,
+        schema: str,
+        file_folder: str,
+        ignore_schema: bool,
+    ) -> DataframeContainer | None:
+
+        file_path = f"{file_folder}/{file_name}"
+        if not os.path.exists(file_path):
+            return None
+
+        if ignore_schema:
+            df = spark_session.read.csv(file_path, header=True, sep=";")
+        else:
+            df = spark_session.read.csv(file_path, header=True, sep=";", schema=schema)
+
+        name, extension = os.path.splitext(file_name)
+        return DataframeContainer(name=name, df=df)
+
+    def parse_csv_files_concurrently(
+        self, path: str, specifications: dict[str, tuple], ignore_schema: bool = False
+    ) -> list[DataframeContainer]:
+        """
+        Reads csv files concurrently and converts them to dataframes.
+        """
+        schemas = [t[0] for t in specifications.values()]
+
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            dataframes = list(
+                executor.map(
+                    self._read_file,
+                    [self.spark] * len(specifications.keys()),
+                    specifications.keys(),
+                    schemas,
+                    [path] * len(specifications.keys()),
+                    [ignore_schema] * len(specifications.keys()),
+                )
+            )
+        return dataframes
