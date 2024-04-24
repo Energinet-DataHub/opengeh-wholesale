@@ -21,6 +21,7 @@ from helpers.data_frame_utils import assert_dataframe_and_schema
 def assert_output(
     actual_and_expected: tuple[list[DataframeContainer], list[DataframeContainer]],
     output_name: str,
+    skip_columns_when_actual_and_expected_are_equal: bool = False,
 ) -> None:
     actual_results, expected_results = actual_and_expected
 
@@ -33,6 +34,7 @@ def assert_output(
         ignore_decimal_precision=True,
         ignore_nullability=True,
         ignore_decimal_scale=True,
+        drop_columns_when_actual_and_expected_are_equal=skip_columns_when_actual_and_expected_are_equal,
     )
 
 
