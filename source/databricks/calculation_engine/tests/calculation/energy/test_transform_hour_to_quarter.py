@@ -38,10 +38,10 @@ def test__transform_hour_to_quarter__when_valid_input__split_basis_data_time_ser
         ),
     ]
 
-    metering_point_time_series = factory.create(spark, rows)
+    prepared_metering_point_time_series = factory.create(spark, rows)
 
     # Act
-    actual = transform_hour_to_quarter(metering_point_time_series)
+    actual = transform_hour_to_quarter(prepared_metering_point_time_series)
 
     # Assert
     assert actual.df.count() == 5

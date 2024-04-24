@@ -77,9 +77,9 @@ def test__transform_quarter_to_hour__when_valid_input__merge_basis_data_time_ser
         ),
     ]
 
-    metering_point_time_series = factory.create(spark, rows)
+    prepared_metering_point_time_series = factory.create(spark, rows)
     # Act
-    actual = transform_quarter_to_hour(metering_point_time_series)
+    actual = transform_quarter_to_hour(prepared_metering_point_time_series)
 
     # Assert
     assert actual.df.count() == 3
@@ -171,10 +171,10 @@ def test__transform_quarter_to_hour__when_different_qualities__uses_correct_qual
         ),
     ]
 
-    metering_point_time_series = factory.create(spark, rows)
+    prepared_metering_point_time_series = factory.create(spark, rows)
 
     # Act
-    actual = transform_quarter_to_hour(metering_point_time_series)
+    actual = transform_quarter_to_hour(prepared_metering_point_time_series)
 
     # Assert
     assert actual.df.collect()[0][Colname.quality] == expected_quality.value
