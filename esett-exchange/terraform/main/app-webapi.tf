@@ -52,5 +52,9 @@ locals {
     "StatusSettings:ExchangeUri"               = module.func_entrypoint_exchange_event_receiver.default_hostname
     "StatusSettings:IncomingUri"               = module.func_entrypoint_ecp_inbox.default_hostname
     "StatusSettings:OutgoingUri"               = module.func_entrypoint_ecp_outbox.default_hostname
+    "UserAuthentication:MitIdExternalMetadataAddress" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=mitid-frontend-open-id-url)"
+    "UserAuthentication:ExternalMetadataAddress"      = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=frontend-open-id-url)"
+    "UserAuthentication:InternalMetadataAddress"      = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-open-id-url)"
+    "UserAuthentication:BackendBffAppId"              = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-bff-app-id)"
   }
 }
