@@ -3,7 +3,7 @@
 The purpose of this test is to test every energy result calculation (along with basis data) with the smallest meaningful
 time period (one hour).
 
-### Design considerations
+## Design considerations
 
 - Input period is post May 2023 so that results are quarterly
 - Input quantities have deliberately set to produce different quarterly results due to rounding for at least one of each
@@ -18,7 +18,7 @@ time period (one hour).
     - Nonprofiled metering points end with 1xx, flex with 2xx
     - Example - flex metering point with resolution 15M: '**17**000000**15**00000**2**01'
 
-### Coverage
+## Coverage
 
 All metering point types relevant for energy calculations
 
@@ -30,4 +30,4 @@ All metering point types relevant for energy calculations
 - E18
 - E18 (skmp)
 
-Each of the metering point types both have a metering point with resolution 15M and 1H. 
+Each of the metering point types both have a metering point with resolution 15M and 1H.
