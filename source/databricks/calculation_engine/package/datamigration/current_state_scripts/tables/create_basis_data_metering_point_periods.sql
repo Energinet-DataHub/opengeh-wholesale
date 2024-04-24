@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.metering_point_periods
 USING DELTA
 TBLPROPERTIES (
     delta.deletedFileRetentionDuration = 'interval 30 days',
-    delta.constraints.calculation_id = "LENGTH ( calculation_id ) = 36",
+    delta.constraints.calculation_id_chk = "LENGTH ( calculation_id ) = 36",
     delta.constraints.metering_point_id_chk = "LENGTH ( metering_point_id ) = 18",
     delta.constraints.metering_point_type_chk = "metering_point_type IS NULL OR metering_point_type in ( 'production' , 'consumption' , 'exchange' , 've_production' , 'net_production' , 'supply_to_grid' , 'consumption_from_grid' , 'wholesale_services_information' , 'own_production' , 'net_from_grid' , 'net_to_grid' , 'total_consumption' , 'electrical_heating' , 'net_consumption' , 'effect_settlement' )",
     delta.constraints.settlement_method_chk = "settlement_method IS NULL OR settlement_method IN ( 'non_profiled' , 'flex' )",
