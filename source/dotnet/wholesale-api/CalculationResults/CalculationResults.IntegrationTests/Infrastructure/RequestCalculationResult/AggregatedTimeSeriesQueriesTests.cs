@@ -645,7 +645,7 @@ public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSe
                      AggregatedTimeSeriesQueriesConstants.GridAreaCodeA,
                      AggregatedTimeSeriesQueriesConstants.GridAreaCodeB,
                      AggregatedTimeSeriesQueriesConstants.GridAreaCodeC,
-                 }.Select(gridArea => parameters with { GridArea = gridArea }))
+                 }.Select(gridArea => parameters with { GridAreaCodes = [gridArea] }))
         {
             eachGridAreaIndividually.AddRange(await Sut.GetAsync(parametersForGridArea).ToListAsync());
         }
@@ -848,7 +848,7 @@ public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSe
 
         var parameters = new AggregatedTimeSeriesQueryParameters(
             [TimeSeriesType.Production],
-            gridArea,
+            [gridArea],
             null,
             null,
             new List<CalculationForPeriod>
@@ -876,5 +876,68 @@ public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSe
         actual.Should().ContainSingle(p => p.Version == calc1Version && p.PeriodStart == calc1Period1Start && p.TimeSeriesPoints.Length == calc1Period1Rows.Count);
         actual.Should().ContainSingle(p => p.Version == calc2Version && p.PeriodStart == calc2PeriodStart && p.TimeSeriesPoints.Length == calc2Rows.Count);
         actual.Should().ContainSingle(p => p.Version == calc1Version && p.PeriodStart == calc1Period2Start && p.TimeSeriesPoints.Length == calc1Period2Rows.Count);
+    }
+
+    [Fact]
+    public async Task GetAsync_WhenRequest2GridAreas_Returns2WholesaleServices()
+    {
+        // Arrange
+        await _fixture.DatabricksSchemaManager
+            .EmptyAsync(
+                _fixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME);
+
+        var periodStart = Instant.FromUtc(2022, 1, 1, 0, 0);
+        var periodEnd = Instant.FromUtc(2022, 1, 5, 0, 0);
+
+        var calc1Id = Guid.NewGuid();
+        List<string> expectedGridAreas = ["100", "200"];
+
+        const int calc1Version = 1;
+
+        var rows = new List<IReadOnlyCollection<string>>
+        {
+            EnergyResultDeltaTableHelper.CreateRowValues(
+                calculationId: calc1Id.ToString(),
+                timeSeriesType: DeltaTableTimeSeriesType.Production,
+                gridArea: expectedGridAreas[0],
+                time: periodStart.ToString()),
+            EnergyResultDeltaTableHelper.CreateRowValues(
+                calculationId: calc1Id.ToString(),
+                timeSeriesType: DeltaTableTimeSeriesType.Production,
+                gridArea: expectedGridAreas[1],
+                time: periodStart.Plus(Duration.FromHours(1)).ToString()),
+            EnergyResultDeltaTableHelper.CreateRowValues(
+                calculationId: calc1Id.ToString(),
+                timeSeriesType: DeltaTableTimeSeriesType.Production,
+                gridArea: "999",
+                time: periodStart.ToString()),
+        };
+
+        var rowsToInsert = rows
+            .OrderBy(r => Random.Shared.NextInt64())
+            .ToList();
+
+        await _fixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(_fixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME, rowsToInsert);
+
+        var parameters = new AggregatedTimeSeriesQueryParameters(
+            [TimeSeriesType.Production],
+            expectedGridAreas,
+            null,
+            null,
+            new List<CalculationForPeriod>
+            {
+                new(
+                    new Period(periodStart, periodEnd),
+                    calc1Id,
+                    calc1Version),
+            });
+
+        // Act
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        actual.Should().HaveCount(expectedGridAreas.Count);
+        expectedGridAreas.ForEach(gridArea => actual.Should().ContainSingle(p => p.GridArea == gridArea));
     }
 }

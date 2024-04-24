@@ -28,7 +28,7 @@ public class BalanceResponsibleValidationRule : IValidationRule<DataHub.Edi.Requ
     {
         IList<ValidationError> errors = new List<ValidationError>();
 
-        if (subject.RequestedByActorRole != DataHubNames.ActorRole.BalanceResponsibleParty)
+        if (subject.RequestedForActorRole != DataHubNames.ActorRole.BalanceResponsibleParty)
             return Task.FromResult(errors);
 
         if (subject.BusinessReason is not DataHubNames.BusinessReason.BalanceFixing and not DataHubNames.BusinessReason.PreliminaryAggregation)
@@ -46,7 +46,7 @@ public class BalanceResponsibleValidationRule : IValidationRule<DataHub.Edi.Requ
             return Task.FromResult(errors);
         }
 
-        if (!subject.RequestedByActorId.Equals(subject.BalanceResponsibleId, StringComparison.OrdinalIgnoreCase))
+        if (!subject.RequestedForActorNumber.Equals(subject.BalanceResponsibleId, StringComparison.OrdinalIgnoreCase))
             errors.Add(_notEqualToRequestedBy);
 
         return Task.FromResult(errors);

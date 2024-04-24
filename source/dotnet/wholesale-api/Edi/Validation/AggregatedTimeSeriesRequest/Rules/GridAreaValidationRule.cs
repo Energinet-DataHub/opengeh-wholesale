@@ -31,13 +31,16 @@ public class GridAreaValidationRule : IValidationRule<DataHub.Edi.Requests.Aggre
 
     public async Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.AggregatedTimeSeriesRequest subject)
     {
-        if (subject.RequestedByActorRole != DataHubNames.ActorRole.MeteredDataResponsible) return NoError;
+        if (subject.RequestedForActorRole != DataHubNames.ActorRole.MeteredDataResponsible) return NoError;
 
-        if (!subject.HasGridAreaCode)
+        if (subject.GridAreaCodes.Count == 0)
             return MissingGridAreaCodeError;
 
-        if (!await IsGridAreaOwnerAsync(subject.GridAreaCode, subject.RequestedByActorId).ConfigureAwait(false))
-            return InvalidGridAreaError;
+        foreach (var gridAreaCode in subject.GridAreaCodes)
+        {
+            if (!await IsGridAreaOwnerAsync(gridAreaCode, subject.RequestedForActorNumber).ConfigureAwait(false))
+                return InvalidGridAreaError;
+        }
 
         return NoError;
     }

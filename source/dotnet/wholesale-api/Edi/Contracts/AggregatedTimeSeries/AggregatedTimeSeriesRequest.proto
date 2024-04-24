@@ -22,11 +22,11 @@ message AggregatedTimeSeriesRequest {
   string metering_point_type = 2;
   optional string settlement_method = 3;
   optional string energy_supplier_id = 4;
-  string requested_by_actor_id = 5;
-  string requested_by_actor_role = 6;
+  string requested_for_actor_number = 5;
+  string requested_for_actor_role = 6;
   optional string balance_responsible_id = 7;
   optional string settlement_version = 8;
-  optional string grid_area_code = 9;
+  repeated string grid_area_codes = 9;
   string business_reason = 10;
 }
 
