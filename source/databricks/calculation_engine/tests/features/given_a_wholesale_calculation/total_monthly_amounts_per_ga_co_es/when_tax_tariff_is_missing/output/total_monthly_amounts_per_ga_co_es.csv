@@ -1,3 +1,3 @@
-calculation_id;calculation_type;calculation_execution_time_start;calculation_result_id;grid_area_code;energy_supplier_id;time;amount;charge_owner_id
-0b15a420-9fc8-409a-a169-fbd49479d718;WholesaleFixing;2024-01-01 23:00;IGNORED;804;8100000000108;2023-01-31 23:00;80.200000;5790001330777
-0b15a420-9fc8-409a-a169-fbd49479d718;WholesaleFixing;2024-01-01 23:00;IGNORED;804;8100000000108;2023-01-31 23:00;2.800000;5790001330555
+calculation_id;calculation_result_id;grid_area_code;energy_supplier_id;time;amount;charge_owner_id
+0b15a420-9fc8-409a-a169-fbd49479d718;IGNORED;804;8100000000108;2023-01-31 23:00;80.200000;5790001330777
+0b15a420-9fc8-409a-a169-fbd49479d718;IGNORED;804;8100000000108;2023-01-31 23:00;2.800000;5790001330555

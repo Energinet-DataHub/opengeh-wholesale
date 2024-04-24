@@ -11,12 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from package.constants.result_column_names import ResultColumnNames
 
 
-class ResultColumnNames:
-    calculation_id = "calculation_id"
-    calculation_result_id = "calculation_result_id"
-
-    grid_area = "grid_area_code"
-    energy_supplier_id = "energy_supplier_id"
-    time = "time"
+class CalculationColumnNames(ResultColumnNames):
+    execution_time_start = "execution_time_start"
+    calculation_type = "calculation_type"
+    period_start = "period_start"
+    period_end = "period_end"
+    created_by_user_id = "created_by_user_id"
+    version = "version"

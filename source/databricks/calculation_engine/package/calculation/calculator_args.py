@@ -28,4 +28,5 @@ class CalculatorArgs:
     calculation_period_end_datetime: datetime
     calculation_type: CalculationType
     calculation_execution_time_start: datetime
+    created_by_user_id: str
     time_zone: str

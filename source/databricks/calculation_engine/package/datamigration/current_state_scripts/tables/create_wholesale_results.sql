@@ -4,7 +4,6 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.wholesale_results
     calculation_id STRING NOT NULL,
     -- Enum
     calculation_type STRING NOT NULL,
-    calculation_execution_time_start TIMESTAMP NOT NULL,
 
     -- 36 characters UUID
     calculation_result_id STRING NOT NULL,

@@ -5,9 +5,8 @@ CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.calculations
     period_start TIMESTAMP NOT NULL,
     period_end TIMESTAMP NOT NULL,
     execution_time_start TIMESTAMP NOT NULL,
-    created_time TIMESTAMP NOT NULL,
-    created_by_user_id STRING NOT NULL,
-    version BIGINT NOT NULL
+    created_by_user_id STRING NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000'
+    version LONG GENERATED ALWAYS AS IDENTITY START WITH 1 INCREMENT BY 1
 )
 USING DELTA
 TBLPROPERTIES (delta.deletedFileRetentionDuration = 'interval 30 days')
@@ -30,4 +29,8 @@ ALTER TABLE {BASIS_DATA_DATABASE_NAME}.calculations
 GO
 ALTER TABLE {BASIS_DATA_DATABASE_NAME}.calculations
     ADD CONSTRAINT calculation_type_chk CHECK (calculation_type IN ('BalanceFixing', 'Aggregation', 'WholesaleFixing', 'FirstCorrectionSettlement', 'SecondCorrectionSettlement', 'ThirdCorrectionSettlement'))
+GO
+
+ALTER TABLE {BASIS_DATA_DATABASE_NAME}.calculations
+    ADD CONSTRAINT created_by_user_id_chk CHECK (LENGTH(created_by_user_id_chk) = 36)
 GO

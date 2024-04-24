@@ -32,13 +32,6 @@ def create_wholesale_result_dataframe(*args) -> DataFrame:
     from package.constants import WholesaleResultColumnNames
 
     df = df.withColumn(
-        WholesaleResultColumnNames.calculation_execution_time_start,
-        col(WholesaleResultColumnNames.calculation_execution_time_start).cast(
-            TimestampType()
-        ),
-    )
-
-    df = df.withColumn(
         WholesaleResultColumnNames.quantity,
         col(WholesaleResultColumnNames.quantity).cast(DecimalType(28, 3)),
     )

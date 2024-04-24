@@ -11,29 +11,33 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from dependency_injector.wiring import inject, Provide
+from pyspark.sql import SparkSession, Row
 
+from package.calculation.basis_data.basis_data_results import write_basis_data
 from package.calculation.energy.calculated_grid_loss import (
     add_calculated_grid_loss_to_metering_point_times_series,
 )
-from package.infrastructure import logging_configuration
-from .calculation_results import (
-    CalculationResultsContainer,
-)
-from .calculator_args import CalculatorArgs
-from .energy import energy_calculation
-from .basis_data import basis_data_factory
-from package.calculation.basis_data.basis_data_results import write_basis_data
-from .output.energy_results import write_energy_results
-from .output.wholesale_results import write_wholesale_results
-from .output.total_monthly_amounts import write_total_monthly_amounts
-from .preparation import PreparedDataReader
-from .wholesale import wholesale_calculation
 from package.calculation.preparation.transformations.metering_point_periods_for_calculation_type import (
     get_metering_points_periods_for_wholesale_basis_data,
     get_metering_point_periods_for_energy_basis_data,
     get_metering_point_periods_for_wholesale_calculation,
 )
+from package.container import Container
+from package.infrastructure import logging_configuration, paths
+from .basis_data import basis_data_factory
+from .calculation_results import (
+    CalculationResultsContainer,
+)
+from .calculator_args import CalculatorArgs
+from .energy import energy_calculation
+from .output.energy_results import write_energy_results
+from .output.total_monthly_amounts import write_total_monthly_amounts
+from .output.wholesale_results import write_wholesale_results
+from .preparation import PreparedDataReader
+from .wholesale import wholesale_calculation
 from ..codelists.calculation_type import is_wholesale_calculation_type
+from ..constants.calculation_column_names import CalculationColumnNames
 
 
 @logging_configuration.use_span("calculation")
@@ -158,5 +162,23 @@ def _write_results(results: CalculationResultsContainer) -> None:
 
 
 @logging_configuration.use_span("calculation.write-succeeded-calculation")
-def _write_succeeded_calculation(args: CalculatorArgs):
-    
+@inject
+def _write_succeeded_calculation(
+    args: CalculatorArgs,
+    spark: SparkSession = Provide[Container.spark],
+) -> None:
+    calculation = {
+        CalculationColumnNames.calculation_id: args.calculation_id,
+        CalculationColumnNames.calculation_type: args.calculation_type,
+        CalculationColumnNames.period_start: args.calculation_period_start_datetime,
+        CalculationColumnNames.period_end: args.calculation_period_end_datetime,
+        CalculationColumnNames.execution_time_start: args.calculation_execution_time_start,
+        CalculationColumnNames.created_by_user_id: args.created_by_user_id,
+    }
+
+    calculation_schema = "calculation_id STRING NOT NULL, calculation_type STRING NOT NULL, period_start TIMESTAMP NOT NULL, period_end TIMESTAMP NOT NULL, execution_time_start TIMESTAMP NOT NULL, created_by_user_id STRING NOT NULL"
+
+    df = spark.createDataFrame(data=[Row(**calculation)], schema=calculation_schema)
+    df.write.format("delta").mode("append").option("mergeSchema", "false").insertInto(
+        f"{paths.BASIS_DATA_DATABASE_NAME}.{paths.CALCULATIONS_TABLE_NAME}"
+    )

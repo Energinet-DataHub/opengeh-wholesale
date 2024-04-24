@@ -32,21 +32,22 @@ CSV_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 def create_calculation_args(input_path: str) -> CalculatorArgs:
     with open(input_path + "calculation_arguments.yml", "r") as file:
-        calculation_args = yaml.safe_load(file)
+        calculation_args = yaml.safe_load(file)[0]
 
     return CalculatorArgs(
-        calculation_id=calculation_args[0][ArgsName.calculation_id],
-        calculation_grid_areas=calculation_args[0][ArgsName.grid_areas],
+        calculation_id=calculation_args[ArgsName.calculation_id],
+        calculation_grid_areas=calculation_args[ArgsName.grid_areas],
         calculation_period_start_datetime=datetime.strptime(
-            calculation_args[0][ArgsName.period_start], CSV_DATE_FORMAT
+            calculation_args[ArgsName.period_start], CSV_DATE_FORMAT
         ),
         calculation_period_end_datetime=datetime.strptime(
-            calculation_args[0][ArgsName.period_end], CSV_DATE_FORMAT
+            calculation_args[ArgsName.period_end], CSV_DATE_FORMAT
         ),
-        calculation_type=CalculationType(calculation_args[0][Colname.calculation_type]),
+        calculation_type=CalculationType(calculation_args[Colname.calculation_type]),
         calculation_execution_time_start=datetime.strptime(
-            calculation_args[0][Colname.calculation_execution_time_start],
+            calculation_args[Colname.calculation_execution_time_start],
             CSV_DATE_FORMAT,
         ),
+        created_by_user_id="a8efc21d-3508-4d76-a712-828330e6674d",
         time_zone="Europe/Copenhagen",
     )

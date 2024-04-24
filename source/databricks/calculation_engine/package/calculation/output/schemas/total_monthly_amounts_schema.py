@@ -27,14 +27,6 @@ total_monthly_amounts_schema = StructType(
     [
         StructField(TotalMonthlyAmountsColumnNames.calculation_id, StringType(), False),
         StructField(
-            TotalMonthlyAmountsColumnNames.calculation_type, StringType(), False
-        ),
-        StructField(
-            TotalMonthlyAmountsColumnNames.calculation_execution_time_start,
-            TimestampType(),
-            False,
-        ),
-        StructField(
             TotalMonthlyAmountsColumnNames.calculation_result_id, StringType(), False
         ),
         StructField(TotalMonthlyAmountsColumnNames.grid_area, StringType(), False),
