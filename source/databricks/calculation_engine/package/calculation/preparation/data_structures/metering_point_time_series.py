@@ -19,7 +19,7 @@ from package.common import DataFrameWrapper
 from package.constants import Colname
 
 
-class QuarterlyMeteringPointTimeSeries(DataFrameWrapper):
+class MeteringPointTimeSeries(DataFrameWrapper):
     """
     Time series points of metering points with resolution quarterly.
 
@@ -34,7 +34,7 @@ class QuarterlyMeteringPointTimeSeries(DataFrameWrapper):
     def __init__(self, df: DataFrame):
         super().__init__(
             df,
-            _quarterly_metering_point_time_series_schema,
+            metering_point_time_series_schema,
             # Setting these too False would cause errors, and there is no nice and easy fix for this.
             # Should they eventually be set to False?
             ignore_decimal_scale=True,
@@ -42,7 +42,7 @@ class QuarterlyMeteringPointTimeSeries(DataFrameWrapper):
         )
 
 
-_quarterly_metering_point_time_series_schema = t.StructType(
+metering_point_time_series_schema = t.StructType(
     [
         t.StructField(Colname.grid_area, t.StringType(), False),
         t.StructField(Colname.to_grid_area, t.StringType(), True),

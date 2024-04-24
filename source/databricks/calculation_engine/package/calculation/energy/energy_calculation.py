@@ -28,8 +28,8 @@ from package.calculation.preparation.data_structures.grid_loss_responsible impor
 from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
-from package.calculation.preparation.data_structures.quarterly_metering_point_time_series import (
-    QuarterlyMeteringPointTimeSeries,
+from package.calculation.preparation.data_structures.metering_point_time_series import (
+    MeteringPointTimeSeries,
 )
 from package.codelists import (
     CalculationType,
@@ -43,25 +43,25 @@ from package.infrastructure import logging_configuration
 @logging_configuration.use_span("calculation.execute.energy")
 def execute(
     args: CalculatorArgs,
-    metering_point_time_series: PreparedMeteringPointTimeSeries,
+    prepared_metering_point_time_series: PreparedMeteringPointTimeSeries,
     grid_loss_responsible_df: GridLossResponsible,
 ) -> Tuple[EnergyResultsContainer, EnergyResults, EnergyResults]:
-    with logging_configuration.start_span("quarterly_metering_point_time_series"):
-        quarterly_metering_point_time_series = transform_hour_to_quarter(
-            metering_point_time_series
+    with logging_configuration.start_span("metering_point_time_series"):
+        metering_point_time_series = transform_hour_to_quarter(
+            prepared_metering_point_time_series
         )
-        quarterly_metering_point_time_series.cache_internal()
+        metering_point_time_series.cache_internal()
 
     return _calculate(
         args,
-        quarterly_metering_point_time_series,
+        metering_point_time_series,
         grid_loss_responsible_df,
     )
 
 
 def _calculate(
     args: CalculatorArgs,
-    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
+    metering_point_time_series: MeteringPointTimeSeries,
     grid_loss_responsible_df: GridLossResponsible,
 ) -> Tuple[EnergyResultsContainer, EnergyResults, EnergyResults]:
     results = EnergyResultsContainer()
@@ -69,25 +69,25 @@ def _calculate(
     # cache of net exchange per grid area did not improve performance (01/12/2023)
     net_exchange_per_ga = _calculate_net_exchange(
         args,
-        quarterly_metering_point_time_series,
+        metering_point_time_series,
         results,
     )
 
     temporary_production_per_ga_and_brp_and_es = (
         _calculate_temporary_production_per_per_ga_and_brp_and_es(
-            args, quarterly_metering_point_time_series, results
+            args, metering_point_time_series, results
         )
     )
 
     temporary_flex_consumption_per_ga_and_brp_and_es = (
         _calculate_temporary_flex_consumption_per_per_ga_and_brp_and_es(
-            args, quarterly_metering_point_time_series, results
+            args, metering_point_time_series, results
         )
     )
 
     non_profiled_consumption_per_ga_and_brp_and_es = (
         _calculate_non_profiled_consumption_per_ga_and_brp_and_es(
-            quarterly_metering_point_time_series
+            metering_point_time_series
         )
     )
     non_profiled_consumption_per_ga_and_brp_and_es.cache_internal()
@@ -142,16 +142,16 @@ def _calculate(
 @logging_configuration.use_span("calculate_net_exchange")
 def _calculate_net_exchange(
     args: CalculatorArgs,
-    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
+    metering_point_time_series: MeteringPointTimeSeries,
     results: EnergyResultsContainer,
 ) -> EnergyResults:
     exchange_per_neighbour_ga = exchange_aggr.aggregate_net_exchange_per_neighbour_ga(
-        quarterly_metering_point_time_series, args.calculation_grid_areas
+        metering_point_time_series, args.calculation_grid_areas
     )
     if _is_aggregation_or_balance_fixing(args.calculation_type):
         exchange_per_neighbour_ga = (
             exchange_aggr.aggregate_net_exchange_per_neighbour_ga(
-                quarterly_metering_point_time_series, args.calculation_grid_areas
+                metering_point_time_series, args.calculation_grid_areas
             )
         )
 
@@ -180,13 +180,11 @@ def _calculate_net_exchange(
     "calculate_non_profiled_consumption_per_ga_and_brp_and_es"
 )
 def _calculate_non_profiled_consumption_per_ga_and_brp_and_es(
-    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
+    metering_point_time_series: MeteringPointTimeSeries,
 ) -> EnergyResults:
     # Non-profiled consumption per balance responsible party and energy supplier
     non_profiled_consumption_per_ga_and_brp_and_es = (
-        mp_aggr.aggregate_non_profiled_consumption_ga_brp_es(
-            quarterly_metering_point_time_series
-        )
+        mp_aggr.aggregate_non_profiled_consumption_ga_brp_es(metering_point_time_series)
     )
 
     return non_profiled_consumption_per_ga_and_brp_and_es
@@ -197,11 +195,11 @@ def _calculate_non_profiled_consumption_per_ga_and_brp_and_es(
 )
 def _calculate_temporary_production_per_per_ga_and_brp_and_es(
     args: CalculatorArgs,
-    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
+    metering_point_time_series: MeteringPointTimeSeries,
     results: EnergyResultsContainer,
 ) -> EnergyResults:
     temporary_production_per_ga_and_brp_and_es = mp_aggr.aggregate_production_ga_brp_es(
-        quarterly_metering_point_time_series
+        metering_point_time_series
     )
     temporary_production_per_ga_and_brp_and_es.cache_internal()
     # temp production per grid area - used as control result for grid loss
@@ -224,13 +222,11 @@ def _calculate_temporary_production_per_per_ga_and_brp_and_es(
 )
 def _calculate_temporary_flex_consumption_per_per_ga_and_brp_and_es(
     args: CalculatorArgs,
-    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
+    metering_point_time_series: MeteringPointTimeSeries,
     results: EnergyResultsContainer,
 ) -> EnergyResults:
     temporary_flex_consumption_per_ga_and_brp_and_es = (
-        mp_aggr.aggregate_flex_consumption_ga_brp_es(
-            quarterly_metering_point_time_series
-        )
+        mp_aggr.aggregate_flex_consumption_ga_brp_es(metering_point_time_series)
     )
     temporary_flex_consumption_per_ga_and_brp_and_es.cache_internal()
     # temp flex consumption per grid area - used as control result for grid loss
