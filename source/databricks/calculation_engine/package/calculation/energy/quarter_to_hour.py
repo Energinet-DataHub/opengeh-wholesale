@@ -61,6 +61,18 @@ def transform_quarter_to_hour(
             QuantityQuality.ESTIMATED.value,
         )
         .when(
+            (
+                f.array_contains(
+                    f.col(Colname.qualities),
+                    QuantityQuality.MEASURED.value,
+                )
+                & f.array_contains(
+                    f.col(Colname.qualities), QuantityQuality.MISSING.value
+                )
+            ),
+            QuantityQuality.ESTIMATED.value,
+        )
+        .when(
             f.array_contains(f.col(Colname.qualities), QuantityQuality.MEASURED.value),
             QuantityQuality.MEASURED.value,
         )

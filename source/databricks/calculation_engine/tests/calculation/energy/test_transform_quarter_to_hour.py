@@ -127,6 +127,13 @@ def test__transform_quarter_to_hour__when_valid_input__merge_basis_data_time_ser
             QuantityQuality.MISSING,
         ),
         (
+            QuantityQuality.MEASURED,
+            QuantityQuality.MEASURED,
+            QuantityQuality.MEASURED,
+            QuantityQuality.MEASURED,
+            QuantityQuality.MEASURED,
+        ),
+        (
             QuantityQuality.MISSING,
             QuantityQuality.MISSING,
             QuantityQuality.MISSING,
@@ -138,7 +145,7 @@ def test__transform_quarter_to_hour__when_valid_input__merge_basis_data_time_ser
             QuantityQuality.MISSING,
             QuantityQuality.MISSING,
             QuantityQuality.MEASURED,
-            QuantityQuality.MEASURED,
+            QuantityQuality.ESTIMATED,
         ),
         (
             QuantityQuality.MISSING,
