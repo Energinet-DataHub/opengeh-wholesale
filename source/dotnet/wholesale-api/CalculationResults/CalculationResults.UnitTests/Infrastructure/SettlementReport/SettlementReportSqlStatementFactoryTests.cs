@@ -61,13 +61,13 @@ public class SettlementReportSqlStatementFactoryTests
     {
         // This string must match the values of the private members that defines grid area codes, period start and period end
         return $@"
-SELECT t1.grid_area, t1.{EnergyResultColumnNames.CalculationType}, t1.time, t1.time_series_type, t1.quantity
+SELECT t1.grid_area_code, t1.{EnergyResultColumnNames.CalculationType}, t1.time, t1.time_series_type, t1.quantity
 FROM {_schemaName}.{_tableName} t1
 LEFT JOIN {_schemaName}.{_tableName} t2
     ON t1.time = t2.time
         AND t1.{EnergyResultColumnNames.CalculationExecutionTimeStart} < t2.{EnergyResultColumnNames.CalculationExecutionTimeStart}
-        AND t1.grid_area = t2.grid_area
-        AND COALESCE(t1.out_grid_area, 'N/A') = COALESCE(t2.out_grid_area, 'N/A')
+        AND t1.grid_area_code = t2.grid_area_code
+        AND COALESCE(t1.out_grid_area_code, 'N/A') = COALESCE(t2.out_grid_area_code, 'N/A')
         AND t1.time_series_type = t2.time_series_type
         AND t1.{EnergyResultColumnNames.CalculationType} = t2.{EnergyResultColumnNames.CalculationType}
         AND t1.aggregation_level = t2.aggregation_level
@@ -85,13 +85,13 @@ ORDER BY t1.time
     {
         // This string must match the values of the private members that defines grid area codes, period start and period end
         return $@"
-SELECT t1.grid_area, t1.{EnergyResultColumnNames.CalculationType}, t1.time, t1.time_series_type, t1.quantity
+SELECT t1.grid_area_code, t1.{EnergyResultColumnNames.CalculationType}, t1.time, t1.time_series_type, t1.quantity
 FROM {_schemaName}.{_tableName} t1
 LEFT JOIN {_schemaName}.{_tableName} t2
     ON t1.time = t2.time
         AND t1.{EnergyResultColumnNames.CalculationExecutionTimeStart} < t2.{EnergyResultColumnNames.CalculationExecutionTimeStart}
-        AND t1.grid_area = t2.grid_area
-        AND COALESCE(t1.out_grid_area, 'N/A') = COALESCE(t2.out_grid_area, 'N/A')
+        AND t1.grid_area_code = t2.grid_area_code
+        AND COALESCE(t1.out_grid_area_code, 'N/A') = COALESCE(t2.out_grid_area_code, 'N/A')
         AND t1.time_series_type = t2.time_series_type
         AND t1.{EnergyResultColumnNames.CalculationType} = t2.{EnergyResultColumnNames.CalculationType}
         AND t1.aggregation_level = t2.aggregation_level
