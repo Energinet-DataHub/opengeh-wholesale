@@ -12,22 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import uuid
 from datetime import datetime
 from decimal import Decimal
-
-import pytest
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col, lit
+import pytest
+import uuid
 
 from contract_utils import assert_contract_matches_schema
-from package.calculation.output.schemas import wholesale_results_schema
+from tests.helpers.data_frame_utils import set_column
 from package.codelists import (
     AmountType,
     ChargeQuality,
     ChargeType,
     ChargeUnit,
     MeteringPointType,
+    CalculationType,
     SettlementMethod,
     WholesaleResultResolution,
 )
@@ -36,12 +36,16 @@ from package.infrastructure.paths import (
     OUTPUT_DATABASE_NAME,
     WHOLESALE_RESULT_TABLE_NAME,
 )
-from tests.helpers.data_frame_utils import set_column
+from package.calculation.output.schemas import wholesale_results_schema
 
 
 def _create_df(spark: SparkSession) -> DataFrame:
     row = {
         WholesaleResultColumnNames.calculation_id: "9252d7a0-4363-42cc-a2d6-e04c026523f8",
+        WholesaleResultColumnNames.calculation_type: "WholesaleFixing",
+        WholesaleResultColumnNames.calculation_execution_time_start: datetime(
+            2020, 1, 1, 0, 0
+        ),
         WholesaleResultColumnNames.calculation_result_id: "6033ab5c-436b-44e9-8a79-90489d324e53",
         WholesaleResultColumnNames.grid_area: "543",
         WholesaleResultColumnNames.energy_supplier_id: "1234567890123",
@@ -83,6 +87,9 @@ def test__migrated_table__columns_matching_contract(
     [
         (WholesaleResultColumnNames.calculation_id, None),
         (WholesaleResultColumnNames.calculation_id, "not-a-uuid"),
+        (WholesaleResultColumnNames.calculation_type, None),
+        (WholesaleResultColumnNames.calculation_type, "foo"),
+        (WholesaleResultColumnNames.calculation_execution_time_start, None),
         (WholesaleResultColumnNames.calculation_result_id, None),
         (WholesaleResultColumnNames.calculation_result_id, "not-a-uuid"),
         (WholesaleResultColumnNames.amount_type, None),
@@ -150,6 +157,7 @@ actor_eic = "1234567890123456"
             WholesaleResultColumnNames.calculation_id,
             "9252d7a0-4363-42cc-a2d6-e04c026523f8",
         ),
+        (WholesaleResultColumnNames.calculation_type, "WholesaleFixing"),
         (
             WholesaleResultColumnNames.calculation_result_id,
             "9252d7a0-4363-42cc-a2d6-e04c026523f8",
@@ -201,6 +209,15 @@ def test__migrated_table_accepts_valid_data(
 @pytest.mark.parametrize(
     "column_name,column_value",
     [
+        *[
+            (WholesaleResultColumnNames.calculation_type, x)
+            for x in [
+                CalculationType.WHOLESALE_FIXING.value,
+                CalculationType.FIRST_CORRECTION_SETTLEMENT.value,
+                CalculationType.SECOND_CORRECTION_SETTLEMENT.value,
+                CalculationType.THIRD_CORRECTION_SETTLEMENT.value,
+            ]
+        ],
         *[(WholesaleResultColumnNames.quantity_unit, x.value) for x in ChargeUnit],
         *[
             (WholesaleResultColumnNames.quantity_qualities, [x.value])
@@ -228,7 +245,7 @@ def test__migrated_table_accepts_enum_value(
     column_value: str,
     migrations_executed: None,
 ) -> None:
-    """Test that all enum values are accepted by the delta table"""
+    "Test that all enum values are accepted by the delta table"
 
     # Arrange
     result_df = _create_df(spark)
@@ -283,7 +300,7 @@ def test__wholesale_results_table__is_not_managed(
     It is desired that the table is unmanaged to provide for greater flexibility.
     According to https://learn.microsoft.com/en-us/azure/databricks/lakehouse/data-objects#--what-is-a-database:
     "To manage data life cycle independently of database, save data to a location that is not nested under any database locations."
-    Thus, we check whether the table is managed by comparing its location to the location of the database/schema.
+    Thus we check whether the table is managed by comparing its location to the location of the database/schema.
     """
     database_details = spark.sql(f"DESCRIBE DATABASE {OUTPUT_DATABASE_NAME}")
     table_details = spark.sql(

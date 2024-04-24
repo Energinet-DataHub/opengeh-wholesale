@@ -12,29 +12,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import uuid
 from datetime import datetime
 from decimal import Decimal
-
-import pytest
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col, lit
+import pytest
+import uuid
 
 from contract_utils import assert_contract_matches_schema
 from package.calculation.output.schemas.total_monthly_amounts_schema import (
     total_monthly_amounts_schema,
 )
+from tests.helpers.data_frame_utils import set_column
+from package.codelists import CalculationType
 from package.constants import TotalMonthlyAmountsColumnNames
 from package.infrastructure.paths import (
     OUTPUT_DATABASE_NAME,
     TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
 )
-from tests.helpers.data_frame_utils import set_column
 
 
 def _create_df(spark: SparkSession) -> DataFrame:
     row = {
         TotalMonthlyAmountsColumnNames.calculation_id: "9252d7a0-4363-42cc-a2d6-e04c026523f8",
+        TotalMonthlyAmountsColumnNames.calculation_type: "WholesaleFixing",
+        TotalMonthlyAmountsColumnNames.calculation_execution_time_start: datetime(
+            2020, 1, 1, 0, 0
+        ),
         TotalMonthlyAmountsColumnNames.calculation_result_id: "6033ab5c-436b-44e9-8a79-90489d324e53",
         TotalMonthlyAmountsColumnNames.grid_area: "543",
         TotalMonthlyAmountsColumnNames.energy_supplier_id: "1234567890123",
@@ -67,6 +71,9 @@ def test__migrated_table__columns_matching_contract(
     [
         (TotalMonthlyAmountsColumnNames.calculation_id, None),
         (TotalMonthlyAmountsColumnNames.calculation_id, "not-a-uuid"),
+        (TotalMonthlyAmountsColumnNames.calculation_type, None),
+        (TotalMonthlyAmountsColumnNames.calculation_type, "foo"),
+        (TotalMonthlyAmountsColumnNames.calculation_execution_time_start, None),
         (TotalMonthlyAmountsColumnNames.calculation_result_id, None),
         (TotalMonthlyAmountsColumnNames.calculation_result_id, "not-a-uuid"),
         (TotalMonthlyAmountsColumnNames.grid_area, None),
@@ -122,6 +129,7 @@ actor_eic = "1234567890123456"
             TotalMonthlyAmountsColumnNames.calculation_id,
             "9252d7a0-4363-42cc-a2d6-e04c026523f8",
         ),
+        (TotalMonthlyAmountsColumnNames.calculation_type, "WholesaleFixing"),
         (
             TotalMonthlyAmountsColumnNames.calculation_result_id,
             "9252d7a0-4363-42cc-a2d6-e04c026523f8",
@@ -144,6 +152,38 @@ def test__migrated_table_accepts_valid_data(
     column_value: str | list,
     migrations_executed: None,
 ) -> None:
+    # Arrange
+    result_df = _create_df(spark)
+    result_df = set_column(result_df, column_name, column_value)
+
+    # Act and assert: Expectation is that no exception is raised
+    result_df.write.format("delta").option("mergeSchema", "false").insertInto(
+        f"{OUTPUT_DATABASE_NAME}.{TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
+    )
+
+
+@pytest.mark.parametrize(
+    "column_name,column_value",
+    [
+        *[
+            (TotalMonthlyAmountsColumnNames.calculation_type, x)
+            for x in [
+                CalculationType.WHOLESALE_FIXING.value,
+                CalculationType.FIRST_CORRECTION_SETTLEMENT.value,
+                CalculationType.SECOND_CORRECTION_SETTLEMENT.value,
+                CalculationType.THIRD_CORRECTION_SETTLEMENT.value,
+            ]
+        ],
+    ],
+)
+def test__migrated_table_accepts_enum_value(
+    spark: SparkSession,
+    column_name: str,
+    column_value: str,
+    migrations_executed: None,
+) -> None:
+    "Test that all enum values are accepted by the delta table"
+
     # Arrange
     result_df = _create_df(spark)
     result_df = set_column(result_df, column_name, column_value)
@@ -197,7 +237,7 @@ def test__total_monthly_amounts_table__is_not_managed(
     It is desired that the table is unmanaged to provide for greater flexibility.
     According to https://learn.microsoft.com/en-us/azure/databricks/lakehouse/data-objects#--what-is-a-database:
     "To manage data life cycle independently of database, save data to a location that is not nested under any database locations."
-    Thus, we check whether the table is managed by comparing its location to the location of the database/schema.
+    Thus we check whether the table is managed by comparing its location to the location of the database/schema.
     """
     database_details = spark.sql(f"DESCRIBE DATABASE {OUTPUT_DATABASE_NAME}")
     table_details = spark.sql(

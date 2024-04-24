@@ -43,6 +43,8 @@ DEFAULT_FROM_GRID_AREA = "106"
 DEFAULT_TO_GRID_AREA = "107"
 DEFAULT_ENERGY_SUPPLIER_ID = "9876543210123"
 DEFAULT_BALANCE_RESPONSIBLE_ID = "1234567890123"
+DEFAULT_CALCULATION_TYPE = e.CalculationType.BALANCE_FIXING
+DEFAULT_CALCULATION_EXECUTION_START = datetime(2022, 6, 10, 13, 15)
 DEFAULT_QUANTITY = "1.1"
 DEFAULT_QUALITY = e.QuantityQuality.MEASURED
 DEFAULT_TIME_SERIES_TYPE = e.TimeSeriesType.PRODUCTION
@@ -74,7 +76,9 @@ TABLE_NAME = f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}"
 @pytest.fixture(scope="module")
 def args(any_calculator_args: CalculatorArgs) -> CalculatorArgs:
     args = copy(any_calculator_args)
+    args.calculation_type = DEFAULT_CALCULATION_TYPE
     args.calculation_id = str(uuid.uuid4())
+    args.calculation_execution_time_start = DEFAULT_CALCULATION_EXECUTION_START
 
     return args
 
@@ -175,6 +179,11 @@ def test__create__with_correct_aggregation_level(
     "column_name, column_value",
     [
         (EnergyResultColumnNames.calculation_id, DEFAULT_CALCULATION_ID),
+        (
+            EnergyResultColumnNames.calculation_execution_time_start,
+            DEFAULT_CALCULATION_EXECUTION_START,
+        ),
+        (EnergyResultColumnNames.calculation_type, DEFAULT_CALCULATION_TYPE.value),
         (EnergyResultColumnNames.time_series_type, DEFAULT_TIME_SERIES_TYPE.value),
         (EnergyResultColumnNames.grid_area, DEFAULT_GRID_AREA),
         (EnergyResultColumnNames.from_grid_area, DEFAULT_FROM_GRID_AREA),
@@ -369,6 +378,8 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
     expected_other_columns = [
         # Data that doesn't vary for rows in a data frame
         EnergyResultColumnNames.calculation_id,
+        EnergyResultColumnNames.calculation_type,
+        EnergyResultColumnNames.calculation_execution_time_start,
         EnergyResultColumnNames.time_series_type,
         EnergyResultColumnNames.aggregation_level,
         # Data that does vary but does not define distinct results

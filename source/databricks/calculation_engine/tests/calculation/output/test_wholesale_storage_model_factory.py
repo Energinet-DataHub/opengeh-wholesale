@@ -32,6 +32,7 @@ from package.codelists import (
     ChargeType,
     ChargeUnit,
     MeteringPointType,
+    CalculationType,
     SettlementMethod,
     AmountType,
 )
@@ -45,6 +46,8 @@ TABLE_NAME = f"{OUTPUT_DATABASE_NAME}.{WHOLESALE_RESULT_TABLE_NAME}"
 
 # Writer constructor parameters
 DEFAULT_CALCULATION_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
+DEFAULT_CALCULATION_TYPE = CalculationType.FIRST_CORRECTION_SETTLEMENT
+DEFAULT_CALCULATION_EXECUTION_START = datetime(2022, 6, 10, 13, 15)
 
 # Input dataframe parameters
 DEFAULT_AMOUNT_TYPE = AmountType.AMOUNT_PER_CHARGE
@@ -72,7 +75,11 @@ DEFAULT_QUALITY = ChargeQuality.CALCULATED
 @pytest.fixture(scope="module")
 def args(any_calculator_args: CalculatorArgs) -> CalculatorArgs:
     args = copy(any_calculator_args)
+
+    args.calculation_type = DEFAULT_CALCULATION_TYPE
     args.calculation_id = DEFAULT_CALCULATION_ID
+    args.calculation_execution_time_start = DEFAULT_CALCULATION_EXECUTION_START
+
     return args
 
 
@@ -158,6 +165,11 @@ def test__create__columns_matching_contract(
     "column_name, column_value",
     [
         (WholesaleResultColumnNames.calculation_id, DEFAULT_CALCULATION_ID),
+        (WholesaleResultColumnNames.calculation_type, DEFAULT_CALCULATION_TYPE.value),
+        (
+            WholesaleResultColumnNames.calculation_execution_time_start,
+            DEFAULT_CALCULATION_EXECUTION_START,
+        ),
         (WholesaleResultColumnNames.grid_area, DEFAULT_GRID_AREA),
         (WholesaleResultColumnNames.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
         (WholesaleResultColumnNames.quantity, DEFAULT_TOTAL_QUANTITY),
@@ -262,6 +274,8 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
 
     # Arrange
     expected_excluded_columns = [
+        WholesaleResultColumnNames.calculation_type,
+        WholesaleResultColumnNames.calculation_execution_time_start,
         WholesaleResultColumnNames.calculation_result_id,
         WholesaleResultColumnNames.amount_type,
         WholesaleResultColumnNames.quantity,

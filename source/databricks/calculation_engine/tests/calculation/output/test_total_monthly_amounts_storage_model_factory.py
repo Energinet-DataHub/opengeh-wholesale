@@ -28,6 +28,9 @@ from package.calculation.wholesale.data_structures import TotalMonthlyAmount
 from package.calculation.wholesale.data_structures.total_monthly_amount import (
     total_monthly_amount_schema,
 )
+from package.codelists import (
+    CalculationType,
+)
 from package.constants import Colname, TotalMonthlyAmountsColumnNames
 from package.infrastructure.paths import (
     OUTPUT_DATABASE_NAME,
@@ -38,6 +41,8 @@ TABLE_NAME = f"{OUTPUT_DATABASE_NAME}.{TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
 
 # Writer constructor parameters
 DEFAULT_CALCULATION_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
+DEFAULT_CALCULATION_TYPE = CalculationType.FIRST_CORRECTION_SETTLEMENT
+DEFAULT_CALCULATION_EXECUTION_START = datetime(2022, 6, 10, 13, 15)
 
 # Input dataframe parameters
 DEFAULT_ENERGY_SUPPLIER_ID = "9876543210123"
@@ -51,7 +56,9 @@ DEFAULT_TOTAL_AMOUNT = Decimal("123.456")
 def args(any_calculator_args: CalculatorArgs) -> CalculatorArgs:
     args = copy(any_calculator_args)
 
+    args.calculation_type = DEFAULT_CALCULATION_TYPE
     args.calculation_id = DEFAULT_CALCULATION_ID
+    args.calculation_execution_time_start = DEFAULT_CALCULATION_EXECUTION_START
 
     return args
 
@@ -116,6 +123,14 @@ def test__create__columns_matching_contract(
     "column_name, column_value",
     [
         (TotalMonthlyAmountsColumnNames.calculation_id, DEFAULT_CALCULATION_ID),
+        (
+            TotalMonthlyAmountsColumnNames.calculation_type,
+            DEFAULT_CALCULATION_TYPE.value,
+        ),
+        (
+            TotalMonthlyAmountsColumnNames.calculation_execution_time_start,
+            DEFAULT_CALCULATION_EXECUTION_START,
+        ),
         (TotalMonthlyAmountsColumnNames.grid_area, DEFAULT_GRID_AREA),
         (TotalMonthlyAmountsColumnNames.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
         (TotalMonthlyAmountsColumnNames.time, DEFAULT_CHARGE_TIME),
@@ -183,6 +198,8 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
 
     # Arrange
     expected_excluded_columns = [
+        TotalMonthlyAmountsColumnNames.calculation_type,
+        TotalMonthlyAmountsColumnNames.calculation_execution_time_start,
         TotalMonthlyAmountsColumnNames.calculation_result_id,
         TotalMonthlyAmountsColumnNames.time,
         TotalMonthlyAmountsColumnNames.amount,

@@ -12,24 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import uuid
 from datetime import datetime
 from decimal import Decimal
-
-import pytest
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import lit, col
+import pytest
+import uuid
 
 from contract_utils import assert_contract_matches_schema
 from helpers.data_frame_utils import set_column
-from package.calculation.output.schemas import energy_results_schema
 from package.codelists import (
     AggregationLevel,
+    CalculationType,
     TimeSeriesType,
     QuantityQuality,
 )
 from package.constants import EnergyResultColumnNames
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
+from package.calculation.output.schemas import energy_results_schema
 
 
 def _create_df(spark: SparkSession) -> DataFrame:
@@ -43,6 +43,10 @@ def _create_df(spark: SparkSession) -> DataFrame:
         EnergyResultColumnNames.aggregation_level: "total_ga",
         EnergyResultColumnNames.time_series_type: "production",
         EnergyResultColumnNames.calculation_id: "9252d7a0-4363-42cc-a2d6-e04c026523f8",
+        EnergyResultColumnNames.calculation_type: "BalanceFixing",
+        EnergyResultColumnNames.calculation_execution_time_start: datetime(
+            2020, 1, 1, 0, 0
+        ),
         EnergyResultColumnNames.from_grid_area: "843",
         EnergyResultColumnNames.calculation_result_id: "6033ab5c-436b-44e9-8a79-90489d324e53",
         EnergyResultColumnNames.metering_point_id: None,
@@ -69,6 +73,9 @@ def test__migrated_table__columns_matching_contract(
     "column_name,invalid_column_value",
     [
         (EnergyResultColumnNames.calculation_id, None),
+        (EnergyResultColumnNames.calculation_execution_time_start, None),
+        (EnergyResultColumnNames.calculation_type, None),
+        (EnergyResultColumnNames.calculation_type, "foo"),
         (EnergyResultColumnNames.time_series_type, None),
         (EnergyResultColumnNames.time_series_type, "foo"),
         (EnergyResultColumnNames.grid_area, None),
@@ -111,7 +118,7 @@ def test__migrated_table_rejects_invalid_data(
 
 # According to SME there is no upper bounds limit from a business perspective.
 # The chosen precision of 18 should however not cause any problems as the limit on time series
-# is precision 6. Thus, 1e9 time series points can be summed without any problem.
+# is precision 6. Thus 1e9 time series points can be summed without any problem.
 min_decimal = Decimal(f"-{'9'*15}.999")  # Precision=18 and scale=3
 max_decimal = Decimal(f"{'9'*15}.999")  # Precision=18 and scale=3
 
@@ -157,6 +164,7 @@ def test__migrated_table_accepts_valid_data(
 @pytest.mark.parametrize(
     "column_name,column_value",
     [
+        *[(EnergyResultColumnNames.calculation_type, x.value) for x in CalculationType],
         *[(EnergyResultColumnNames.time_series_type, x.value) for x in TimeSeriesType],
         *[
             (EnergyResultColumnNames.quantity_qualities, [x.value])
@@ -235,7 +243,7 @@ def test__result_table__is_not_managed(
     It is desired that the table is unmanaged to provide for greater flexibility.
     According to https://learn.microsoft.com/en-us/azure/databricks/lakehouse/data-objects#--what-is-a-database:
     "To manage data life cycle independently of database, save data to a location that is not nested under any database locations."
-    Thus, we check whether the table is managed by comparing its location to the location of the database/schema.
+    Thus we check whether the table is managed by comparing its location to the location of the database/schema.
     """
     database_details = spark.sql(f"DESCRIBE DATABASE {OUTPUT_DATABASE_NAME}")
     table_details = spark.sql(
