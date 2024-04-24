@@ -14,7 +14,7 @@ USING DELTA
 TBLPROPERTIES (
     delta.deletedFileRetentionDuration = 'interval 30 days',
     delta.constraints.checks.calculation_id = 'LENGTH(calculation_id) = 36',
-    delta.constraints.checks.charge_type = 'charge_type IN ("subscription", "fee", "tariff")',
+    delta.constraints.checks.charge_type = "charge_type IN ('subscription', 'fee', 'tariff')",
     delta.constraints.checks.charge_owner_id = 'LENGTH(charge_owner_id) = 13 OR LENGTH(charge_owner_id) = 16',
     delta.constraints.checks.metering_point_id = 'LENGTH(metering_point_id) = 18'
 )
