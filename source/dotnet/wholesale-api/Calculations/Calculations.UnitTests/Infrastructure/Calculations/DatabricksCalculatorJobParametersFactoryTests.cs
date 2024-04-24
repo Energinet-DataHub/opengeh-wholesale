@@ -41,7 +41,7 @@ public class DatabricksCalculatorJobParametersFactoryTests
             DateTimeOffset.Parse("2022-06-01T22:00Z").ToInstant(),
             DateTimeOffset.Parse("2022-06-04T22:00Z").ToInstant(),
             DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
-            Guid.NewGuid(),
+            Guid.ParseExact("6d271e90-d478-4dc8-b9fb-dfcff8aca7af"),
             SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks);
 
         using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.calculation-job-parameters-reference.txt");
