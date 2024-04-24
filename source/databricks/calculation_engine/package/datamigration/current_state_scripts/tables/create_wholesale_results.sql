@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.wholesale_results
     -- 36 characters UUID
     calculation_result_id STRING NOT NULL,
 
-    grid_area STRING NOT NULL,
+    grid_area_code STRING NOT NULL,
     energy_supplier_id STRING NOT NULL,
     -- Energy quantity for the given observation time and duration as defined by `resolution`.
     -- Example: 1234.534
@@ -38,7 +38,14 @@ TBLPROPERTIES (delta.deletedFileRetentionDuration = 'interval 30 days')
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
 -- In the production it is set to empty and the respective location is used. This means the production tables won't be deleted if the schema is.
 {TEST}LOCATION '{CONTAINER_PATH}/{OUTPUT_FOLDER}/wholesale_results'
+GO
 
+-- Column mapping is solely adding to ensure that the table is exactly identical whether it's created using
+-- current state or migration scripts.
+ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results SET TBLPROPERTIES (
+    'delta.columnMapping.mode' = 'name',
+    'delta.minReaderVersion' = '2',
+    'delta.minWriterVersion' = '5')
 GO
 
 -- Constraints --
@@ -65,10 +72,10 @@ ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
 GO
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
-    DROP CONSTRAINT IF EXISTS grid_area_chk
+    DROP CONSTRAINT IF EXISTS grid_area_code_chk
 GO
 ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
-    ADD CONSTRAINT grid_area_chk CHECK (LENGTH(grid_area) = 3)
+    ADD CONSTRAINT grid_area_code_chk CHECK (LENGTH(grid_area_code) = 3)
 GO
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
