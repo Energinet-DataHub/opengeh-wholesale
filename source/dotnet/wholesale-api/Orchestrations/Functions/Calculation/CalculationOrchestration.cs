@@ -28,7 +28,7 @@ internal class CalculationOrchestration
         [OrchestrationTrigger] TaskOrchestrationContext context,
         FunctionContext executionContext)
     {
-        var calculationRequestDto = context.GetInput<CalculationRequestDto>();
+        var calculationRequestDto = context.GetInput<CalculationRequest>();
         if (calculationRequestDto == null)
         {
             return "Error: No input specified.";
