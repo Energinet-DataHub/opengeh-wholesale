@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from features.utils.dataframes import create_energy_result_dataframe
 from features.utils.dataframes.basis_data.basis_data_results_dataframe import (
     create_metering_point_periods,
     create_time_series_points,
@@ -19,6 +20,7 @@ from package.calculation.basis_data.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
 )
+from package.calculation.output.schemas import energy_results_schema
 
 
 def get_input_specifications() -> dict[str, tuple]:
@@ -26,14 +28,19 @@ def get_input_specifications() -> dict[str, tuple]:
     Contains the specifications for view scenario inputs.
     """
     return {
-        "calculations.csv": (
+        "metering_point_periods.csv": (
             metering_point_period_schema,
             "read_metering_point_periods",
             create_metering_point_periods,
         ),
-        "energy_results_v1.csv": (
+        "time_series_points.csv": (
             time_series_point_schema,
             "read_time_series_points",
             create_time_series_points,
+        ),
+        "energy_results.csv": (
+            energy_results_schema,
+            "read_energy_results",
+            create_energy_result_dataframe,
         ),
     }

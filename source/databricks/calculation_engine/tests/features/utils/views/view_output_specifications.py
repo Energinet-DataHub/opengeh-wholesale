@@ -15,6 +15,9 @@ from features.public_data_models.given_basis_data_for_settlement_report.common i
     metering_point_period_schema,
     metering_point_time_series_schema,
 )
+from features.public_data_models.given_energy_results_for_settlement_report.common.schemas.energy_results_v1_schema import (
+    energy_results_v1_schema,
+)
 from features.utils.dataframes.settlement_report.view_results_dataframe import (
     create_metering_point_periods_view,
     create_metering_point_time_series_view,
