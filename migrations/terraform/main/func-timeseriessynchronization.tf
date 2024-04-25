@@ -1,3 +1,10 @@
+resource "random_string" "taskhubname_postfix" {
+  length  = 8
+  special = false
+  numeric = false
+  upper   = false
+}
+
 module "func_timeseriessynchronization" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v13"
 
@@ -55,6 +62,7 @@ module "func_timeseriessynchronization" {
 
   app_settings = {
     WEBSITE_LOAD_CERTIFICATES                                                    = local.datahub2_certificate_thumbprint
+    "TimeSeriesSynchronizationTaskHubName"                                       = "TimeSeriesSynchronization${random_string.taskhubname_postfix.result}"
     "StorageAccount__Dh2StorageAccountUri"                                       = "https://${module.st_dh2data.name}.blob.core.windows.net"
     "StorageAccount__TimeSeriesContainerName"                                    = azurerm_storage_container.dh2_timeseries_synchronization.name # Kept for backwards compatibility
     "StorageAccount__Dh2TimeSeriesSynchronizationContainerName"                  = azurerm_storage_container.dh2_timeseries_synchronization.name
