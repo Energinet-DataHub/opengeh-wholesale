@@ -14,7 +14,6 @@
 import datetime
 import sys
 from argparse import Namespace
-from datetime import datetime
 from typing import Tuple
 
 import configargparse
