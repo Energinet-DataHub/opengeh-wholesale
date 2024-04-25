@@ -22,6 +22,7 @@ from package.calculation.calculation_results import EnergyResultsContainer
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.energy.data_structures.energy_results import EnergyResults
 from package.calculation.energy.hour_to_quarter import transform_hour_to_quarter
+from package.calculation.energy.quarter_to_hour import transform_quarter_to_hour
 from package.calculation.preparation.data_structures.grid_loss_responsible import (
     GridLossResponsible,
 )
@@ -47,9 +48,17 @@ def execute(
     grid_loss_responsible_df: GridLossResponsible,
 ) -> Tuple[EnergyResultsContainer, EnergyResults, EnergyResults]:
     with logging_configuration.start_span("metering_point_time_series"):
-        metering_point_time_series = transform_hour_to_quarter(
-            prepared_metering_point_time_series
-        )
+        if (
+            args.calculation_period_end_datetime
+            < args.quarterly_resolution_transition_datetime
+        ):
+            metering_point_time_series = transform_quarter_to_hour(
+                prepared_metering_point_time_series
+            )
+        else:
+            metering_point_time_series = transform_hour_to_quarter(
+                prepared_metering_point_time_series
+            )
         metering_point_time_series.cache_internal()
 
     return _calculate(
