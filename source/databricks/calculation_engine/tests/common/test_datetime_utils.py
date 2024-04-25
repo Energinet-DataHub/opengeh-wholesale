@@ -18,6 +18,7 @@ import pytest
 from package.common.datetime_utils import (
     is_exactly_one_calendar_month,
     get_number_of_days_in_period,
+    is_midnight_in_time_zone,
 )
 
 COPENHAGEN_TIME_ZONE = "Europe/Copenhagen"
@@ -254,3 +255,22 @@ def test__get_number_of_days_in_period__when_time_of_day_differs__raise_exceptio
 
     # Assert
     assert str(exc_info.value) == "Period must start and end at midnight."
+
+
+@pytest.mark.parametrize(
+    "time, time_zone, expected",
+    [
+        (datetime(2023, 1, 31, 23), COPENHAGEN_TIME_ZONE, True),
+        (datetime(2023, 1, 31, 0), COPENHAGEN_TIME_ZONE, False),
+        (datetime(2023, 1, 31, 23), LONDON_TIME_ZONE, False),
+        (datetime(2023, 1, 31, 0), LONDON_TIME_ZONE, True),
+    ],
+)
+def test__is_midnight_in_time_zone__when_time_and_time_zone__returns_expected_bool(
+    time: datetime, time_zone: str, expected: bool
+) -> None:
+    # Arrange + Act
+    actual = is_midnight_in_time_zone(time, time_zone)
+
+    # Assert
+    assert actual is expected

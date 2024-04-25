@@ -29,3 +29,4 @@ class CalculatorArgs:
     calculation_type: CalculationType
     calculation_execution_time_start: datetime
     time_zone: str
+    quarterly_resolution_transition_datetime: datetime
