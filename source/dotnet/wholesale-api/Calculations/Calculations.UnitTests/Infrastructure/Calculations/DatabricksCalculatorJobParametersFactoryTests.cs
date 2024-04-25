@@ -35,13 +35,14 @@ public class DatabricksCalculatorJobParametersFactoryTests
     {
         // Arrange
         var calculation = new Calculation(
+            SystemClock.Instance.GetCurrentInstant(),
             CalculationType.BalanceFixing,
             new List<GridAreaCode> { new("805"), new("806"), new("033") },
             DateTimeOffset.Parse("2022-05-31T22:00Z").ToInstant(),
             DateTimeOffset.Parse("2022-06-01T22:00Z").ToInstant(),
             DateTimeOffset.Parse("2022-06-04T22:00Z").ToInstant(),
             DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
-            Guid.ParseExact("6d271e90-d478-4dc8-b9fb-dfcff8aca7af"),
+            new Guid("6d271e90-d478-4dc8-b9fb-dfcff8aca7af"),
             SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks);
 
         using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.calculation-job-parameters-reference.txt");

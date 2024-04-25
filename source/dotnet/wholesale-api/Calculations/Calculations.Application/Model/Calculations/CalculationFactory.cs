@@ -42,6 +42,6 @@ public class CalculationFactory : ICalculationFactory
         // As long as scheduling is not implemented, execution time start is the same as created time
         var executionTimeStart = createdTime;
         var version = _clock.GetCurrentInstant().ToDateTimeUtc().Ticks;
-        return new Calculation(calculationType, gridAreas, periodStart, periodEnd, executionTimeStart, _dateTimeZone, createdByUserId, version);
+        return new Calculation(createdTime, calculationType, gridAreas, periodStart, periodEnd, executionTimeStart, _dateTimeZone, createdByUserId, version);
     }
 }

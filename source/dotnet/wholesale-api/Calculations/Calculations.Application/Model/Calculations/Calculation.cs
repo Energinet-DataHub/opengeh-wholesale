@@ -23,6 +23,7 @@ public class Calculation
     private readonly List<GridAreaCode> _gridAreaCodes;
 
     public Calculation(
+        Instant createdTime,
         CalculationType calculationType,
         IEnumerable<GridAreaCode> gridAreaCodes,
         Instant periodStart,
@@ -42,6 +43,7 @@ public class Calculation
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
         ExecutionTimeStart = executionTimeStart;
+        CreatedTime = createdTime;
         CreatedByUserId = createdByUserId;
         ExecutionTimeEnd = null;
         AreSettlementReportsCreated = false;
