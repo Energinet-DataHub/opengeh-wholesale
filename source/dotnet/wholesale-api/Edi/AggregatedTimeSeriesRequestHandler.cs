@@ -120,13 +120,13 @@ public class AggregatedTimeSeriesRequestHandler : IWholesaleInboxRequestHandler
         Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest aggregatedTimeSeriesRequest,
         AggregatedTimeSeriesRequest aggregatedTimeSeriesRequestMessage)
     {
-        if (aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea.GridAreaCode == null)
-            return false;
+        if (!aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea.GridAreaCodes.Any())
+            return false; // If grid area codes is empty, we already retrieved any data across all grid areas
 
-        var actorRole = aggregatedTimeSeriesRequest.RequestedByActorRole;
+        var actorRole = aggregatedTimeSeriesRequest.RequestedForActorRole;
         if (actorRole is DataHubNames.ActorRole.EnergySupplier or DataHubNames.ActorRole.BalanceResponsibleParty)
         {
-            var newAggregationLevel = aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea with { GridAreaCode = null };
+            var newAggregationLevel = aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea with { GridAreaCodes = [] };
             var newRequest = aggregatedTimeSeriesRequestMessage with { AggregationPerRoleAndGridArea = newAggregationLevel };
             var parameters = await CreateAggregatedTimeSeriesQueryParametersWithoutCalculationTypeAsync(newRequest).ConfigureAwait(false);
 
@@ -148,16 +148,14 @@ public class AggregatedTimeSeriesRequestHandler : IWholesaleInboxRequestHandler
     {
         var latestCalculationsForRequest = await _completedCalculationRetriever
             .GetLatestCompletedCalculationsForPeriodAsync(
-                request.AggregationPerRoleAndGridArea.GridAreaCode != null
-                    ? new List<string>() { request.AggregationPerRoleAndGridArea.GridAreaCode }
-                    : Array.Empty<string>(),
+                request.AggregationPerRoleAndGridArea.GridAreaCodes,
                 request.Period,
                 request.RequestedCalculationType)
             .ConfigureAwait(true);
 
         var parameters = new AggregatedTimeSeriesQueryParameters(
             request.TimeSeriesTypes.Select(CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromEdi).ToList(),
-            request.AggregationPerRoleAndGridArea.GridAreaCode,
+            request.AggregationPerRoleAndGridArea.GridAreaCodes,
             request.AggregationPerRoleAndGridArea.EnergySupplierId,
             request.AggregationPerRoleAndGridArea.BalanceResponsibleId,
             latestCalculationsForRequest);
