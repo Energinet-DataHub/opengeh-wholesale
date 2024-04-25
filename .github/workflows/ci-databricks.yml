@@ -137,6 +137,7 @@ jobs:
             paths: datamigration/!(test_migration.py)
           - name: Current state migrations
             paths: datamigration/test_migration.py
+    if: ${{ inputs.has_delta_migration_changes }}            
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
       job_name: ${{ matrix.tests_filter_expression.name }}
@@ -171,7 +172,6 @@ jobs:
   unit_test_check:
     runs-on: ubuntu-latest
     name: Check executed unit tests
-    if: ${{ inputs.has_delta_migration_changes }}
     steps:
       - uses: actions/checkout@v4
       - name: Log in to the Container registry
