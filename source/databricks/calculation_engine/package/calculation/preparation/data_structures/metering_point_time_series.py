@@ -21,14 +21,14 @@ from package.constants import Colname
 
 class MeteringPointTimeSeries(DataFrameWrapper):
     """
-    Time series points of metering points with resolution quarterly.
+    Time series points of metering points with resolution hourly or quarterly.
 
     The points are enriched with metering point data required by calculations.
 
     When points are missing the time series are padded with
     points where quantity=0 and quality=missing.
 
-    Can be either hourly or quarterly.
+    Either all are hourly or all are quarterly.
     """
 
     def __init__(self, df: DataFrame):
@@ -37,6 +37,7 @@ class MeteringPointTimeSeries(DataFrameWrapper):
             metering_point_time_series_schema,
             # Setting these too False would cause errors, and there is no nice and easy fix for this.
             # Should they eventually be set to False?
+            ignore_nullability=True,
             ignore_decimal_scale=True,
             ignore_decimal_precision=True,
         )
