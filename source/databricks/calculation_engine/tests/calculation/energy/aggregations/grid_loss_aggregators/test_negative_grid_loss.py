@@ -29,7 +29,7 @@ from package.codelists import (
     QuantityQuality,
 )
 from package.constants import Colname
-from calculation.energy import energy_results_factories
+from tests.calculation.energy import energy_results_factories
 
 
 @pytest.fixture(scope="module")

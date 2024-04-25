@@ -23,7 +23,7 @@ from azure.monitor.query import LogsQueryClient, LogsQueryResult
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculator_job import start, start_with_deps
 
-from integration_test_configuration import IntegrationTestConfiguration
+from tests.integration_test_configuration import IntegrationTestConfiguration
 
 
 class TestWhenInvokedWithInvalidArguments:

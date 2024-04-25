@@ -20,7 +20,7 @@ from package.codelists import MeteringPointResolution
 from package.calculation.energy.hour_to_quarter import (
     transform_hour_to_quarter,
 )
-import tests.calculation.preparation.transformations.prepared_metering_point_time_series_factory as factory
+import calculation.preparation.transformations.prepared_metering_point_time_series_factory as factory
 
 DEFAULT_QUANTITY = Decimal("4.444000")
 

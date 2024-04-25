@@ -27,7 +27,7 @@ from package.calculation.input.schemas import (
 )
 from package.calculation.preparation.transformations import get_time_series_points
 from package.constants import Colname
-from helpers.data_frame_utils import assert_dataframes_equal
+from tests.helpers.data_frame_utils import assert_dataframes_equal
 
 DEFAULT_OBSERVATION_TIME = datetime(2022, 6, 8, 22, 0, 0)
 DEFAULT_FROM_DATE = datetime(2022, 6, 8, 22, 0, 0)

@@ -21,9 +21,9 @@ from package.calculation.preparation.data_structures.prepared_charges import (
 from package.calculation.wholesale import execute
 from package.codelists import ChargeResolution
 
-import tests.calculation.wholesale.factories.prepared_tariffs_factory as tariffs_factory
-import tests.calculation.wholesale.factories.prepared_subscriptions_factory as subscriptions_factory
-import tests.calculation.wholesale.factories.prepared_fees_factory as fees_factory
+import calculation.wholesale.factories.prepared_tariffs_factory as tariffs_factory
+import calculation.wholesale.factories.prepared_subscriptions_factory as subscriptions_factory
+import calculation.wholesale.factories.prepared_fees_factory as fees_factory
 
 
 def test__execute__when_tariff_schema_is_valid__does_not_raise(

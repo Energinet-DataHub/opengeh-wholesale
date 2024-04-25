@@ -17,7 +17,7 @@ import pytest
 
 import package.codelists as enums
 
-from contract_utils import assert_codelist_matches_contract
+from tests.contract_utils import assert_codelist_matches_contract
 
 
 @pytest.mark.parametrize(

@@ -32,7 +32,7 @@ from package.calculation.preparation.data_structures.metering_point_time_series 
 )
 from package.codelists import MeteringPointType
 from package.constants import Colname
-from calculation.energy import (
+from tests.calculation.energy import (
     metering_point_time_series_factories as factories,
 )
 

@@ -20,7 +20,7 @@ import pytest
 import uuid
 
 from contract_utils import assert_contract_matches_schema
-from helpers.data_frame_utils import set_column
+from tests.helpers.data_frame_utils import set_column
 from package.codelists import (
     AmountType,
     ChargeQuality,

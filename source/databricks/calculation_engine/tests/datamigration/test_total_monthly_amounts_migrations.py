@@ -23,7 +23,7 @@ from contract_utils import assert_contract_matches_schema
 from package.calculation.output.schemas.total_monthly_amounts_schema import (
     total_monthly_amounts_schema,
 )
-from helpers.data_frame_utils import set_column
+from tests.helpers.data_frame_utils import set_column
 from package.codelists import CalculationType
 from package.constants import TotalMonthlyAmountsColumnNames
 from package.infrastructure.paths import (
