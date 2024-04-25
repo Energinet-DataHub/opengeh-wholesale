@@ -113,7 +113,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         using var actualResponse = await Fixture.AppHostManager.HttpClient.PostAsync(
             "api/StartCalculation",
             new StringContent(
-                JsonConvert.SerializeObject(new CalculationRequestDto(
+                JsonConvert.SerializeObject(new StartCalculationRequestDto(
                 CalculationType.Aggregation,
                 ["256", "512"],
                 todayAtMidnight,
@@ -221,7 +221,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         using var actualResponse = await Fixture.AppHostManager.HttpClient.PostAsync(
             "api/StartCalculation",
             new StringContent(
-                JsonConvert.SerializeObject(new CalculationRequestDto(
+                JsonConvert.SerializeObject(new StartCalculationRequestDto(
                 CalculationType.Aggregation,
                 ["256", "512"],
                 dateAtMidnight,
