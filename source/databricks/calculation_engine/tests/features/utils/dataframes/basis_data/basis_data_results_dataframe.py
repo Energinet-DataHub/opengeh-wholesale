@@ -43,7 +43,7 @@ def create_time_series_points(df: DataFrame, spark: SparkSession) -> DataFrame:
 
     df = df.withColumn(
         TimeSeriesColname.quantity,
-        col(TimeSeriesColname.quantity).cast(DecimalType(18, 3)),
+        col(TimeSeriesColname.quantity).cast(DecimalType(18, 6)),
     )
     df = df.withColumn(
         TimeSeriesColname.observation_time,
