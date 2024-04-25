@@ -169,6 +169,40 @@ jobs:
       azure_keyvault_url: ${{ vars.integration_test_azure_keyvault_url }}
       image_tag: ${{ inputs.image_tag }}
 
+  unit_test_check:
+    runs-on: ubuntu-latest
+    name: Check executed unit tests
+    steps:
+      - uses: actions/checkout@v4
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Execute python tests
+        shell: bash
+        id: test_count
+        run: |
+          # Small hack to get the repository name
+          repository=${{ github.repository }}
+          repository_owner=${{ github.repository_owner }}
+          repository_name=${repository/$repository_owner\//}
+
+          # IMPORTANT: When adding a new folder here it should also be added in the `unit_tests` job!
+          filter="calculator_job/test_energy_calculation.py
+          calculator_job/test_wholesale_calculation.py
+          features/given_an_energy_calculation
+          features/given_a_wholesale_calculation
+          features/public_data_models
+          calculation/codelists/common/infrastructure/
+          entry_points/
+          datamigration/!(test_migration.py)
+          datamigration/test_migration.py"
+
+          IMAGE_TAG=${{ inputs.image_tag }} docker compose -f .devcontainer/docker-compose.yml run --rm -u root -w //workspaces/${repository_name} python-unit-test ./.devcontainer/check_test_count.sh $filter
+
   mypy_check:
     runs-on: ubuntu-latest
     name: Static type checker
