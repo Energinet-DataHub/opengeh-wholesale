@@ -37,6 +37,7 @@ TBLPROPERTIES (
     delta.minWriterVersion = "5",
     delta.constraints.grid_area_code_chk = "LENGTH ( grid_area_code ) = 3",
     delta.constraints.out_grid_area_code_chk = "out_grid_area_code IS NULL OR LENGTH ( out_grid_area_code ) = 3"
+    delta.constraints.resolution_chk = "resolution IN ( 'PT15M' , 'PT1H' )"
 )
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
 -- In the production it is set to empty and the respective location is used. This means the production tables won't be deleted if the schema is.
