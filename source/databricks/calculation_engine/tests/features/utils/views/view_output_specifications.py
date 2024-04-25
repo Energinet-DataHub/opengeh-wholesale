@@ -11,11 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from tests.features.public_data_models.given_basis_data_for_settlement_report.common import (
+from features.public_data_models.given_basis_data_for_settlement_report.common import (
     metering_point_period_schema,
     metering_point_time_series_schema,
 )
-from tests.features.utils.dataframes.settlement_report.view_results_dataframe import (
+from features.utils.dataframes.settlement_report.view_results_dataframe import (
     create_metering_point_periods_view,
     create_metering_point_time_series_view,
 )

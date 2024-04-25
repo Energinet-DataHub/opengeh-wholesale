@@ -21,8 +21,8 @@ import pyspark.sql.functions as f
 from package.calculation.input import TableReader
 from package.calculation.input.schemas import metering_point_period_schema
 import tests.calculation.input.table_reader.input_metering_point_periods_factory as factory
-from tests.helpers.delta_table_utils import write_dataframe_to_table
-from tests.helpers.data_frame_utils import assert_dataframes_equal
+from helpers.delta_table_utils import write_dataframe_to_table
+from helpers.data_frame_utils import assert_dataframes_equal
 
 
 class TestWhenValidInput:

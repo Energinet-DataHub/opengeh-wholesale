@@ -48,8 +48,8 @@ from package.infrastructure.paths import (
     INPUT_DATABASE_NAME,
     OUTPUT_DATABASE_NAME,
 )
-from tests.helpers.delta_table_utils import write_dataframe_to_table
-from tests.integration_test_configuration import IntegrationTestConfiguration
+from helpers.delta_table_utils import write_dataframe_to_table
+from integration_test_configuration import IntegrationTestConfiguration
 import tests.helpers.spark_sql_migration_helper as sql_migration_helper
 
 

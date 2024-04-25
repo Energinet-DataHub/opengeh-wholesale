@@ -34,7 +34,7 @@ from package.codelists import (
 from package.constants import Colname
 
 import tests.calculation.input.table_reader.input_metering_point_periods_factory as factory
-from tests.helpers.data_frame_utils import assert_dataframes_equal
+from helpers.data_frame_utils import assert_dataframes_equal
 
 june_1th = datetime(2022, 5, 31, 22, 0)
 june_2th = june_1th + timedelta(days=1)

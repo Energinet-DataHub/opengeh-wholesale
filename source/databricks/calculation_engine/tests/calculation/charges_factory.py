@@ -20,7 +20,7 @@ from package.calculation.preparation.data_structures.charge_link_metering_point_
     ChargeLinkMeteringPointPeriods,
     charge_link_metering_point_periods_schema,
 )
-from tests.calculation.preparation.transformations import (
+from calculation.preparation.transformations import (
     prepared_metering_point_time_series_factory,
 )
 from package.calculation.preparation.data_structures.charge_master_data import (

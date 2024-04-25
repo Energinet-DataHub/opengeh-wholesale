@@ -16,8 +16,8 @@ from typing import Any
 
 import pytest
 
-from tests.features.utils.assertion import assert_output
-from tests.features.utils.scenario_output_files import get_output_names
+from features.utils.assertion import assert_output
+from features.utils.scenario_output_files import get_output_names
 
 
 # IMPORTANT:

@@ -16,7 +16,7 @@ from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col
 import pytest
 
-from tests.helpers.data_frame_utils import set_column
+from helpers.data_frame_utils import set_column
 
 from package.calculation.input.schemas import grid_loss_metering_points_schema
 from package.infrastructure.paths import (

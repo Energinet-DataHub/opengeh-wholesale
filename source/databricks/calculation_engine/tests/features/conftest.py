@@ -17,10 +17,10 @@ import pytest
 from _pytest.fixtures import FixtureRequest
 from pyspark.sql import SparkSession
 
-from tests.features.utils.expected_output import ExpectedOutput
-from tests.features.utils.scenario_executor import ScenarioExecutor
-from tests.features.utils.views.dataframe_container import DataframeContainer
-from tests.features.utils.views.view_scenario_executor import ViewScenarioExecutor
+from features.utils.expected_output import ExpectedOutput
+from features.utils.scenario_executor import ScenarioExecutor
+from features.utils.views.dataframe_container import DataframeContainer
+from features.utils.views.view_scenario_executor import ViewScenarioExecutor
 from package.calculation.calculation_results import CalculationResultsContainer
 
 

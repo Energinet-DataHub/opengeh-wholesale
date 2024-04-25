@@ -16,7 +16,7 @@ import os
 
 from pyspark.sql import SparkSession
 
-from tests.features.utils.views.dataframe_container import DataframeContainer
+from features.utils.views.dataframe_container import DataframeContainer
 
 
 class CsvToDataframeParser:

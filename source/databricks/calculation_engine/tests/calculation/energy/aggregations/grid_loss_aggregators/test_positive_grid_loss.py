@@ -17,7 +17,7 @@ import pytest
 from pyspark.sql import SparkSession, Row
 from pyspark.sql.functions import col
 
-from tests.calculation.energy import grid_loss_responsible_factories
+from calculation.energy import grid_loss_responsible_factories
 from package.calculation.energy.aggregators.grid_loss_aggregators import (
     calculate_positive_grid_loss,
 )
@@ -29,7 +29,7 @@ from package.codelists import (
     QuantityQuality,
 )
 from package.constants import Colname
-from tests.calculation.energy import energy_results_factories
+from calculation.energy import energy_results_factories
 
 
 @pytest.fixture(scope="module")

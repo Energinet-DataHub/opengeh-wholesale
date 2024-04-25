@@ -31,7 +31,7 @@ from package.calculation.energy.data_structures.energy_results import (
 from package.calculation.output import energy_storage_model_factory as sut
 from package.constants import Colname, EnergyResultColumnNames
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
-from tests.contract_utils import (
+from contract_utils import (
     assert_contract_matches_schema,
     get_column_names_from_contract,
 )

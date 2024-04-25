@@ -23,8 +23,8 @@ from package.calculation.input import TableReader
 from package.calculation.input.schemas import time_series_point_schema
 from package.constants import Colname
 from package.infrastructure import paths
-from tests.helpers.delta_table_utils import write_dataframe_to_table
-from tests.helpers.data_frame_utils import assert_dataframes_equal
+from helpers.delta_table_utils import write_dataframe_to_table
+from helpers.data_frame_utils import assert_dataframes_equal
 
 
 def _create_time_series_point_row(
