@@ -196,7 +196,10 @@ jobs:
           features/given_an_energy_calculation
           features/given_a_wholesale_calculation
           features/public_data_models
-          calculation/codelists/common/infrastructure/
+          calculation
+          codelists
+          common
+          infrastructure/
           entry_points/
           datamigration/!(test_migration.py)
           datamigration/test_migration.py"
