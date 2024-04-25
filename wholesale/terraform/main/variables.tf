@@ -72,6 +72,12 @@ variable "calculation_input_folder" {
   default     = "calculation_input"
 }
 
+variable "quarterly_resolution_transition_datetime" {
+  type        = string
+  description = "Start date 15 minuts imbalance settlement"
+  default = "2023-04-30T22:00:00Z"
+}
+
 variable "pim_sql_reader_ad_group_name" {
   type        = string
   description = "Name of the AD group with db_datareader permissions on the SQL database."
