@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.energy_results
     time_series_type STRING NOT NULL,
     calculation_id STRING NOT NULL,
     calculation_type STRING NOT NULL,
+    calculation_execution_time_start TIMESTAMP NOT NULL,
     out_grid_area_code STRING,
     calculation_result_id STRING NOT NULL,
     metering_point_id STRING

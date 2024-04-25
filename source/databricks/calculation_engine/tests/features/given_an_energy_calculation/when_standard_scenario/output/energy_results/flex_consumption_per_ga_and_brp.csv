@@ -1,9 +1,9 @@
-﻿grid_area_code;energy_supplier_id;balance_responsible_id;quantity;quantity_qualities;time;aggregation_level;time_series_type;calculation_id;from_grid_area;calculation_result_id;metering_point_id
-800;;1100000000000;12.5;['measured', 'calculated'];2023-02-02 02:00;brp_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;;IGNORED;
-800;;1100000000000;4.288;['measured', 'missing', 'calculated'];2023-02-02 02:15;brp_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;;IGNORED;
-800;;1100000000000;4.287;['measured', 'missing', 'calculated'];2023-02-02 02:30;brp_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;;IGNORED;
-800;;1100000000000;4.288;['measured', 'missing', 'calculated'];2023-02-02 02:45;brp_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;;IGNORED;
-800;;2200000000000;0.063;['measured'];2023-02-02 02:00;brp_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;;IGNORED;
-800;;2200000000000;0.062;['measured'];2023-02-02 02:15;brp_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;;IGNORED;
-800;;2200000000000;0.063;['measured'];2023-02-02 02:30;brp_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;;IGNORED;
-800;;2200000000000;0.062;['measured'];2023-02-02 02:45;brp_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;;IGNORED;
+﻿grid_area_code;energy_supplier_id;balance_responsible_id;quantity;quantity_qualities;time;aggregation_level;time_series_type;calculation_id;calculation_type;calculation_execution_time_start;from_grid_area;calculation_result_id;metering_point_id
+800;;1100000000000;12.5;['measured', 'calculated'];2023-02-02 02:00;brp_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;
+800;;1100000000000;4.288;['measured', 'missing', 'calculated'];2023-02-02 02:15;brp_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;
+800;;1100000000000;4.287;['measured', 'missing', 'calculated'];2023-02-02 02:30;brp_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;
+800;;1100000000000;4.288;['measured', 'missing', 'calculated'];2023-02-02 02:45;brp_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;
+800;;2200000000000;0.063;['measured'];2023-02-02 02:00;brp_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;
+800;;2200000000000;0.062;['measured'];2023-02-02 02:15;brp_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;
+800;;2200000000000;0.063;['measured'];2023-02-02 02:30;brp_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;
+800;;2200000000000;0.062;['measured'];2023-02-02 02:45;brp_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;

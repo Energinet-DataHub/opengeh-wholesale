@@ -15,6 +15,8 @@
 
 class ResultColumnNames:
     calculation_id = "calculation_id"
+    calculation_execution_time_start = "calculation_execution_time_start"
+    calculation_type = "calculation_type"
     calculation_result_id = "calculation_result_id"
 
     grid_area = "grid_area_code"

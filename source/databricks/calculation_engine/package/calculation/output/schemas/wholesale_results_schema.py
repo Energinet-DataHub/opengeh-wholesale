@@ -28,6 +28,12 @@ from package.constants import WholesaleResultColumnNames
 wholesale_results_schema = StructType(
     [
         StructField(WholesaleResultColumnNames.calculation_id, StringType(), False),
+        StructField(WholesaleResultColumnNames.calculation_type, StringType(), False),
+        StructField(
+            WholesaleResultColumnNames.calculation_execution_time_start,
+            TimestampType(),
+            False,
+        ),
         StructField(
             WholesaleResultColumnNames.calculation_result_id, StringType(), False
         ),

@@ -47,6 +47,13 @@ def create_energy_result_dataframe(*args) -> DataFrame:
         parse_qualities_string_udf(df[EnergyResultColumnNames.quantity_qualities]),
     )
 
+    df = df.withColumn(
+        EnergyResultColumnNames.calculation_execution_time_start,
+        col(EnergyResultColumnNames.calculation_execution_time_start).cast(
+            TimestampType()
+        ),
+    )
+
     return spark.createDataFrame(df.rdd, energy_results_schema)
 
 

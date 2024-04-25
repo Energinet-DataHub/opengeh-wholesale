@@ -31,6 +31,13 @@ def create_total_monthly_amounts_dataframe(*args) -> DataFrame:
     from package.constants import TotalMonthlyAmountsColumnNames
 
     df = df.withColumn(
+        TotalMonthlyAmountsColumnNames.calculation_execution_time_start,
+        col(TotalMonthlyAmountsColumnNames.calculation_execution_time_start).cast(
+            TimestampType()
+        ),
+    )
+
+    df = df.withColumn(
         TotalMonthlyAmountsColumnNames.amount,
         col(TotalMonthlyAmountsColumnNames.amount).cast(DecimalType(18, 6)),
     )

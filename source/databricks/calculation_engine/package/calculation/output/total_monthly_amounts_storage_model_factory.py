@@ -39,6 +39,12 @@ def _select_output_columns(df: DataFrame) -> DataFrame:
         col(Colname.calculation_id).alias(
             TotalMonthlyAmountsColumnNames.calculation_id
         ),
+        col(Colname.calculation_type).alias(
+            TotalMonthlyAmountsColumnNames.calculation_type
+        ),
+        col(Colname.calculation_execution_time_start).alias(
+            TotalMonthlyAmountsColumnNames.calculation_execution_time_start
+        ),
         col(TotalMonthlyAmountsColumnNames.calculation_result_id),
         col(Colname.grid_area).alias(TotalMonthlyAmountsColumnNames.grid_area),
         col(Colname.energy_supplier_id).alias(
