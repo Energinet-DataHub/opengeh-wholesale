@@ -36,3 +36,21 @@ resource "azurerm_cdn_frontdoor_security_policy" "this" {
   }
   depends_on = [azurerm_cdn_frontdoor_firewall_policy.this, azurerm_cdn_frontdoor_custom_domain.this, azurerm_cdn_frontdoor_custom_domain.ui]
 }
+
+resource "azurerm_monitor_diagnostic_setting" "front_door" {
+  name               = "mds-front-door"
+  target_resource_id = azurerm_cdn_frontdoor_profile.this.id
+  storage_account_id = module.log_workspace_shared.id
+
+  enabled_log {
+    category = "FrontDoorAccessLog"
+  }
+
+  enabled_log {
+    category = "FrontDoorHealthProbeLog"
+  }
+
+  enabled_log {
+    category = "FrontDoorWebApplicationFirewallLog"
+  }
+}
