@@ -34,6 +34,7 @@ internal class CalculationTrigger
 
         var orchestrationInput = new CalculationOrchestrationInput(
             startCalculationRequestDto,
+            // TODO: Retrieve user id from token sent as part of http request
             Guid.Parse("3A3A90B7-C624-4844-B990-3221DEE54F04"));
 
         var instanceId = await client.ScheduleNewOrchestrationInstanceAsync(nameof(CalculationOrchestration.Calculation), orchestrationInput).ConfigureAwait(false);
