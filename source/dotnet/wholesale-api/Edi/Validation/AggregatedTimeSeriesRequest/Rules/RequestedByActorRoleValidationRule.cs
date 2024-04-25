@@ -21,7 +21,7 @@ public sealed class RequestedByActorRoleValidationRule : IValidationRule<DataHub
 {
     public Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.AggregatedTimeSeriesRequest subject)
     {
-        return Task.FromResult(subject.RequestedByActorRole switch
+        return Task.FromResult(subject.RequestedForActorRole switch
         {
             DataHubNames.ActorRole.MeteredDataResponsible => new List<ValidationError>(),
             DataHubNames.ActorRole.BalanceResponsibleParty => new List<ValidationError>(),
