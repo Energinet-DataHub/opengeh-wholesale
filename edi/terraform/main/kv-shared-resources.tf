@@ -102,3 +102,13 @@ data "azurerm_key_vault_secret" "backend_bff_app_id" {
   name         = "backend-bff-app-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+data "azurerm_key_vault_secret" "shared_adf_id" {
+  name         = "adf-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "shared_adf_principal_id" {
+  name         = "adf-principal-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
