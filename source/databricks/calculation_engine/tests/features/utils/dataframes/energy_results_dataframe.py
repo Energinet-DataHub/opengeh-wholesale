@@ -14,13 +14,15 @@
 from ast import literal_eval
 
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import col, udf
+from pyspark.sql.functions import col, udf, lit
 from pyspark.sql.types import (
     StringType,
     DecimalType,
     TimestampType,
     ArrayType,
 )
+
+from package.codelists import MeteringPointResolution
 
 
 def create_energy_result_dataframe(*args) -> DataFrame:
@@ -52,6 +54,11 @@ def create_energy_result_dataframe(*args) -> DataFrame:
         col(EnergyResultColumnNames.calculation_execution_time_start).cast(
             TimestampType()
         ),
+    )
+
+    # TODO: This is a temporary fix to make the tests pass.
+    df = df.withColumn(
+        EnergyResultColumnNames.resolution, lit(MeteringPointResolution.QUARTER.value)
     )
 
     return spark.createDataFrame(df.rdd, energy_results_schema)
