@@ -1,0 +1,13 @@
+﻿grid_area;energy_supplier_id;balance_responsible_id;quantity;quantity_qualities;time;aggregation_level;time_series_type;calculation_id;calculation_type;calculation_execution_time_start;from_grid_area;calculation_result_id;metering_point_id
+800;1000000000000;;10;['measured', 'calculated'];2023-07-02 02:00;es_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;
+800;1000000000000;;1.458;['missing', 'calculated'];2023-07-02 02:15;es_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;
+800;1000000000000;;1.457;['missing', 'calculated'];2023-07-02 02:30;es_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;
+800;1000000000000;;1.459;['missing', 'calculated'];2023-07-02 02:45;es_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;
+800;2000000000000;;2.5;['measured'];2023-07-02 02:00;es_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;
+800;2000000000000;;2.5;['measured'];2023-07-02 02:15;es_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;
+800;2000000000000;;2.5;['measured'];2023-07-02 02:30;es_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;
+800;2000000000000;;2.5;['measured'];2023-07-02 02:45;es_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;
+800;3000000000000;;0.063;['measured'];2023-07-02 02:00;es_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;
+800;3000000000000;;0.062;['measured'];2023-07-02 02:15;es_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;
+800;3000000000000;;0.063;['measured'];2023-07-02 02:30;es_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;
+800;3000000000000;;0.062;['measured'];2023-07-02 02:45;es_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;

@@ -315,6 +315,7 @@ def any_calculator_args() -> CalculatorArgs:
         calculation_period_end_datetime=datetime(2018, 1, 3, 23, 0, 0),
         calculation_execution_time_start=datetime(2018, 1, 5, 23, 0, 0),
         time_zone="Europe/Copenhagen",
+        quarterly_resolution_transition_datetime=datetime(2023, 1, 31, 23, 0, 0),
     )
 
 
@@ -328,6 +329,7 @@ def any_calculator_args_for_wholesale() -> CalculatorArgs:
         calculation_period_end_datetime=datetime(2022, 7, 31, 22, 0, 0),
         calculation_execution_time_start=datetime(2022, 8, 1, 22, 0, 0),
         time_zone="Europe/Copenhagen",
+        quarterly_resolution_transition_datetime=datetime(2023, 1, 31, 23, 0, 0),
     )
 
 

@@ -22,7 +22,7 @@ from features.utils.scenario_output_files import get_output_names
 
 # IMPORTANT:
 # All test files should be identical. This makes changing them cumbersome.
-# So in order to make it easier you can modify the utils/template.py file instead,
+# So in order to make it easier you can modify the utils/templates/calculation-test-template.py file instead,
 # and then run the power-shell script "Use-Template.ps1" to update all test_output.py files.
 @pytest.mark.parametrize("output_name", get_output_names())
 def test__equals_expected(

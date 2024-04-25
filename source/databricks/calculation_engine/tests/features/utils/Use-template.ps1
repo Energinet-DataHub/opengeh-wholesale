@@ -1,16 +1,35 @@
 # PowerShell script to overwrite 'test_output.py' with 'template.py' contents
 
-# Define the path to the template file
-$templateFilePath = Join-Path $PSScriptRoot "template.py"
+function CheckFileExists
+{
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$filePath
+    )
 
-# Ensure the template file exists
-if (-Not (Test-Path -Path $templateFilePath)) {
-    Write-Error "Template file does not exist: $templateFilePath"
-    exit 1
+    if (-Not (Test-Path -Path $filePath))
+    {
+        Write-Error "Template file does not exist: $filePath"
+        exit 1
+    }
 }
 
-# Get the content of the template file
-$templateContent = Get-Content -Path $templateFilePath -Raw
+$templatesPath = "templates/"
+
+# Define the path to the calculation test template file
+$calculationTestTemplateFilePath = Join-Path $PSScriptRoot $templatesPath "calculation-test-template.py"
+
+# Define the path to the public data model test template file
+$publicModelTestTemplateFilePath = Join-Path $PSScriptRoot $templatesPath "public-model-test-template.py"
+
+# Ensure the template files exists
+CheckFileExists -filePath $calculationTestTemplateFilePath
+CheckFileExists -filePath $publicModelTestTemplateFilePath
+
+
+# Get the content of the template files
+$calculationTestTemplateContent = Get-Content -Path $calculationTestTemplateFilePath -Raw
+$publicModelTestTemplateContent = Get-Content -Path $publicModelTestTemplateFilePath -Raw
 
 # Define the parent directory of the current directory
 $featuresDir = Split-Path -Path $PSScriptRoot -Parent
@@ -18,11 +37,25 @@ $featuresDir = Split-Path -Path $PSScriptRoot -Parent
 # Search for all 'test_output.py' files in the subdirectories of the parent directory
 $filesToUpdate = Get-ChildItem -Path $featuresDir -Filter "test_output.py" -Recurse
 
+
 # Iterate over each found 'test_output.py' file
-foreach ($file in $filesToUpdate) {
-    # Overwrite the file with the content of 'template.py'
-    Set-Content -Path $file.FullName -Value $templateContent -NoNewLine
-    Write-Output "Updated: $($file.FullName)"
+foreach ($file in $filesToUpdate)
+{
+    # Overwrite the file with the content of the template file
+    if ( $file.FullName.Contains("_calculation"))
+    {
+        Set-Content -Path $file.FullName -Value $calculationTestTemplateContent -NoNewLine
+    }
+    elseif ($file.FullName.Contains("public_data_models"))
+    {
+        Set-Content -Path $file.FullName -Value $publicModelTestTemplateContent -NoNewLine
+    }
+    else
+    {
+        Write-Error "Invalid file path: $filePath"
+        exit 1
+    }
+    Write-Output "Updated: $( $file.FullName )"
 }
 
 Write-Output "All files have been updated successfully."
