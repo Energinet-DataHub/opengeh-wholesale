@@ -18,12 +18,21 @@ using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.DurableTask.Client;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation;
 
 internal class CalculationTrigger
 {
+    private readonly CalculationJobStatusMonitorOptions _jobStatusMonitorOptions;
+
+    public CalculationTrigger(IOptions<CalculationJobStatusMonitorOptions> jobStatusMonitorOptions)
+    {
+        _jobStatusMonitorOptions = jobStatusMonitorOptions.Value;
+    }
+
     [Function(nameof(StartCalculation))]
     public async Task<HttpResponseData> StartCalculation(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req,
@@ -34,7 +43,7 @@ internal class CalculationTrigger
         var logger = executionContext.GetLogger<CalculationOrchestration>();
 
         var orchestrationInput = new CalculationOrchestrationInput(
-            new CalculationJobStatusMonitorOptions(),
+            _jobStatusMonitorOptions,
             startCalculationRequestDto,
             // TODO: Retrieve user id from token sent as part of http request
             Guid.Parse("3A3A90B7-C624-4844-B990-3221DEE54F04"));

@@ -27,7 +27,6 @@ using FluentAssertions.Execution;
 using Newtonsoft.Json;
 using NodaTime;
 using Xunit.Abstractions;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.Calculation;
 
@@ -244,7 +243,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         // => Wait for completion
         var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(
             orchestrationStatus.InstanceId,
-            TimeSpan.FromMinutes(6)); // We will loop at least twice to get job status
+            TimeSpan.FromMinutes(1)); // We will loop at least twice to get job status
 
         // => Expect history
         using var assertionScope = new AssertionScope();
