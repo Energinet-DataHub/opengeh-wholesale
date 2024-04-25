@@ -24,7 +24,7 @@ public class EnergySupplierValidationRule : IValidationRule<DataHub.Edi.Requests
 
     public Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.AggregatedTimeSeriesRequest subject)
     {
-        if (subject.RequestedByActorRole != DataHubNames.ActorRole.EnergySupplier)
+        if (subject.RequestedForActorRole != DataHubNames.ActorRole.EnergySupplier)
              return Task.FromResult(NoError);
 
         if (string.IsNullOrEmpty(subject.EnergySupplierId))
@@ -33,7 +33,7 @@ public class EnergySupplierValidationRule : IValidationRule<DataHub.Edi.Requests
         if (!IsValidEnergySupplierIdFormat(subject.EnergySupplierId))
             return Task.FromResult(InvalidEnergySupplierError);
 
-        if (!RequestedByIdEqualsEnergySupplier(subject.RequestedByActorId, subject.EnergySupplierId))
+        if (!RequestedByIdEqualsEnergySupplier(subject.RequestedForActorNumber, subject.EnergySupplierId))
             return Task.FromResult(NotEqualToRequestedByError);
 
         return Task.FromResult(NoError);

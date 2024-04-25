@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationR
 
 public record WholesaleServicesQueryParameters(
     AmountType AmountType,
-    string? GridArea,
+    IReadOnlyCollection<string> GridAreaCodes,
     string? EnergySupplierId,
     string? ChargeOwnerId,
     List<(string? ChargeCode, ChargeType? ChargeType)> ChargeTypes,

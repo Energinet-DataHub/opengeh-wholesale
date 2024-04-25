@@ -45,6 +45,7 @@ def calculator_args_balance_fixing(
         calculation_execution_time_start=datetime(2018, 1, 5, 23, 0, 0),
         created_by_user_id=str(uuid.uuid4()),
         time_zone="Europe/Copenhagen",
+        quarterly_resolution_transition_datetime=datetime(2023, 1, 31, 23, 0, 0),
     )
 
 

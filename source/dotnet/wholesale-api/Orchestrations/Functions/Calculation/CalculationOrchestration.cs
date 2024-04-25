@@ -28,8 +28,8 @@ internal class CalculationOrchestration
         [OrchestrationTrigger] TaskOrchestrationContext context,
         FunctionContext executionContext)
     {
-        var calculationRequestDto = context.GetInput<CalculationRequestDto>();
-        if (calculationRequestDto == null)
+        var input = context.GetInput<CalculationOrchestrationInput>();
+        if (input == null)
         {
             return "Error: No input specified.";
         }
@@ -37,7 +37,7 @@ internal class CalculationOrchestration
         // Create calculation (SQL)
         var calculationMetadata = await context.CallActivityAsync<CalculationMetadata>(
             nameof(CalculationActivities.CreateCalculationRecordActivity),
-            calculationRequestDto);
+            input);
         calculationMetadata.OrchestrationProgress = "CalculationCreated";
         context.SetCustomStatus(calculationMetadata);
 
@@ -52,6 +52,7 @@ internal class CalculationOrchestration
         var pollingIntervalInSeconds = 60;
         var expiryTime = context.CurrentUtcDateTime.AddMinutes(30);
 
+        // While may be redundant, since we start all over, when a function starts
         while (context.CurrentUtcDateTime < expiryTime)
         {
             // Monitor calculation (Databricks)
