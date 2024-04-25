@@ -27,7 +27,10 @@ from package.codelists.calculation_type import (
     is_wholesale_calculation_type,
 )
 from package.common.logger import Logger
-from package.common.datetime_utils import is_exactly_one_calendar_month
+from package.common.datetime_utils import (
+    is_exactly_one_calendar_month,
+    is_midnight_in_time_zone,
+)
 from package.infrastructure import valid_date, valid_list, logging_configuration, paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 
@@ -47,6 +50,21 @@ def parse_job_arguments(
         quarterly_resolution_transition_datetime = (
             env_vars.get_quarterly_resolution_transition_datetime()
         )
+
+        _validate_quarterly_resolution_transition_datetime(
+            quarterly_resolution_transition_datetime,
+            time_zone,
+            job_args.period_start_datetime,
+            job_args.period_end_datetime,
+        )
+
+        if is_wholesale_calculation_type(job_args.calculation_type):
+            _validate_period_for_wholesale_calculation(
+                time_zone,
+                job_args.period_start_datetime,
+                job_args.period_end_datetime,
+            )
+
         calculator_args = CalculatorArgs(
             calculation_id=job_args.calculation_id,
             calculation_grid_areas=job_args.grid_areas,
@@ -57,15 +75,6 @@ def parse_job_arguments(
             time_zone=time_zone,
             quarterly_resolution_transition_datetime=quarterly_resolution_transition_datetime,
         )
-
-        _validate_quarterly_resolution_transition_datetime(
-            calculator_args.quarterly_resolution_transition_datetime,
-            calculator_args.calculation_period_start_datetime,
-            calculator_args.calculation_period_end_datetime,
-        )
-
-        if is_wholesale_calculation_type(calculator_args.calculation_type):
-            _validate_period_for_wholesale_calculation(calculator_args)
 
         storage_account_name = env_vars.get_storage_account_name()
         credential = env_vars.get_storage_account_credential()
@@ -117,9 +126,17 @@ def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
 
 def _validate_quarterly_resolution_transition_datetime(
     quarterly_resolution_transition_datetime: datetime,
+    time_zone: str,
     calculation_period_start_datetime: datetime,
     calculation_period_end_datetime: datetime,
 ) -> None:
+    if (
+        is_midnight_in_time_zone(quarterly_resolution_transition_datetime, time_zone)
+        is False
+    ):
+        raise Exception(
+            f"The quarterly resolution transition datetime must be at midnight local time ({time_zone})."
+        )
     if (
         calculation_period_start_datetime < quarterly_resolution_transition_datetime
         and calculation_period_end_datetime > quarterly_resolution_transition_datetime
@@ -129,14 +146,18 @@ def _validate_quarterly_resolution_transition_datetime(
         )
 
 
-def _validate_period_for_wholesale_calculation(args: CalculatorArgs) -> None:
+def _validate_period_for_wholesale_calculation(
+    time_zone: str,
+    calculation_period_start_datetime: datetime,
+    calculation_period_end_datetime: datetime,
+) -> None:
     is_valid_period = is_exactly_one_calendar_month(
-        args.calculation_period_start_datetime,
-        args.calculation_period_end_datetime,
-        args.time_zone,
+        calculation_period_start_datetime,
+        calculation_period_end_datetime,
+        time_zone,
     )
 
     if not is_valid_period:
         raise Exception(
-            f"The calculation period for wholesale calculation types must be a full month starting and ending at midnight local time ({args.time_zone}))."
+            f"The calculation period for wholesale calculation types must be a full month starting and ending at midnight local time ({time_zone}))."
         )
