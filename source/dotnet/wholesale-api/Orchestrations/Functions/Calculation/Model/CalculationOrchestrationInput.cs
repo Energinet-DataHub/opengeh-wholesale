@@ -14,15 +14,9 @@
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 
-public class CalculationOrchestrationInput
-{
-    public CalculationOrchestrationInput(StartCalculationRequestDto startCalculationRequestDto, Guid requestedByUserId)
-    {
-        StartCalculationRequestDto = startCalculationRequestDto;
-        RequestedByUserId = requestedByUserId;
-    }
-
-    public StartCalculationRequestDto StartCalculationRequestDto { get; }
-
-    public Guid RequestedByUserId { get; }
-}
+/// <summary>
+/// An immutable input to start the calculation orchestration.
+/// </summary>
+public sealed record CalculationOrchestrationInput(
+    StartCalculationRequestDto StartCalculationRequestDto,
+    Guid RequestedByUserId);
