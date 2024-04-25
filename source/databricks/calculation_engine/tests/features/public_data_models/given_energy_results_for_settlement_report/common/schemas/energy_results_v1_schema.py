@@ -23,7 +23,6 @@ from pyspark.sql.types import (
 from features.public_data_models.given_energy_results_for_settlement_report.common.column_names.settlement_report_colname import (
     EnergyResultsV1ColumnNames,
 )
-from package.constants import Colname
 
 energy_results_v1_schema = StructType(
     [
