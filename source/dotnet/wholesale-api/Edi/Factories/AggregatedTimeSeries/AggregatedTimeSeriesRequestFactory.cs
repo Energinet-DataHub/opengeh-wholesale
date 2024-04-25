@@ -36,7 +36,7 @@ public static class AggregatedTimeSeriesRequestFactory
     {
         return request.MeteringPointType != string.Empty
             ? [TimeSeriesTypeMapper.MapTimeSeriesType(request.MeteringPointType, request.SettlementMethod)]
-            : request.RequestedByActorRole switch
+            : request.RequestedForActorRole switch
             {
                 DataHubNames.ActorRole.EnergySupplier =>
                 [
@@ -59,8 +59,8 @@ public static class AggregatedTimeSeriesRequestFactory
                     TimeSeriesType.NetExchangePerGa,
                 ],
                 _ => throw new ArgumentOutOfRangeException(
-                    nameof(request.RequestedByActorRole),
-                    request.RequestedByActorRole,
+                    nameof(request.RequestedForActorRole),
+                    request.RequestedForActorRole,
                     "Value does not contain a valid string representation of a requested by actor role."),
             };
     }
@@ -68,7 +68,7 @@ public static class AggregatedTimeSeriesRequestFactory
     private static AggregationPerRoleAndGridArea MapAggregationPerRoleAndGridArea(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request)
     {
         return new AggregationPerRoleAndGridArea(
-            GridAreaCode: request.HasGridAreaCode ? request.GridAreaCode : null,
+            GridAreaCodes: request.GridAreaCodes,
             EnergySupplierId: request.HasEnergySupplierId ? request.EnergySupplierId : null,
             BalanceResponsibleId: request.HasBalanceResponsibleId ? request.BalanceResponsibleId : null);
     }

@@ -69,7 +69,7 @@ public class WholesaleServicesRequestHandlerTests
             }.ToAsyncEnumerable());
 
         completedCalculationRetriever.Setup(c => c.GetLatestCompletedCalculationsForPeriodAsync(
-            It.IsAny<string>(),
+            It.IsAny<IReadOnlyCollection<string>>(),
             It.IsAny<Energinet.DataHub.Wholesale.Edi.Models.Period>(),
             It.IsAny<RequestedCalculationType>()))
             .ReturnsAsync(new List<CalculationForPeriod>
