@@ -60,10 +60,11 @@ class ViewScenarioExecutor:
 
     @staticmethod
     def _write_to_tables(input_dataframes: list[DataframeContainer]) -> None:
-        for i in input_dataframes:
-            i.df.write.format("delta").mode("overwrite").saveAsTable(
-                f"{BASIS_DATA_DATABASE_NAME}.{i.name}"
-            )
+        for input_df in input_dataframes:
+            if input_df.df is not None:
+                input_df.df.write.format("delta").mode("overwrite").saveAsTable(
+                    f"{BASIS_DATA_DATABASE_NAME}.{input_df.name}"
+                )
 
     def _read_from_views(
         self, output_specifications: dict[str, tuple]

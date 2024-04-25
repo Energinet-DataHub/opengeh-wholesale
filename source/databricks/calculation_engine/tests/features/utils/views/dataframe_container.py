@@ -24,5 +24,5 @@ class DataframeContainer:
     The name of the container.
     """
 
-    df: DataFrame
+    df: DataFrame | None
     """The dataframe."""

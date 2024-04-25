@@ -34,6 +34,7 @@ class CsvToDataframeParser:
     ) -> DataframeContainer | None:
 
         file_path = f"{file_folder}/{file_name}"
+
         if not os.path.exists(file_path):
             return None
 
@@ -64,4 +65,6 @@ class CsvToDataframeParser:
                     [ignore_schema] * len(specifications.keys()),
                 )
             )
+
+        dataframes = [x for x in dataframes if x is not None]
         return dataframes
