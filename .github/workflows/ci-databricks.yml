@@ -171,6 +171,7 @@ jobs:
   unit_test_check:
     runs-on: ubuntu-latest
     name: Check executed unit tests
+    if: ${{ inputs.has_delta_migration_changes }}    
     steps:
       - uses: actions/checkout@v4
       - name: Log in to the Container registry

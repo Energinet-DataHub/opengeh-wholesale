@@ -16,13 +16,13 @@ from typing import Tuple
 
 from pyspark.sql import SparkSession
 
-from features.utils.csv_to_dataframe_parser import CsvToDataframeParser
-from features.utils.readers.settlement_report_view_reader import (
+from tests.features.utils.csv_to_dataframe_parser import CsvToDataframeParser
+from tests.features.utils.readers.settlement_report_view_reader import (
     SettlementReportViewReader,
 )
-from features.utils.views.dataframe_container import DataframeContainer
-from features.utils.views.view_input_specifications import get_input_specifications
-from features.utils.views.view_output_specifications import get_output_specifications
+from tests.features.utils.views.dataframe_container import DataframeContainer
+from tests.features.utils.views.view_input_specifications import get_input_specifications
+from tests.features.utils.views.view_output_specifications import get_output_specifications
 from package.infrastructure.paths import BASIS_DATA_DATABASE_NAME
 
 

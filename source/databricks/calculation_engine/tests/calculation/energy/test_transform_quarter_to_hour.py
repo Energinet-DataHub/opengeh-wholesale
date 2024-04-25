@@ -17,7 +17,7 @@ from decimal import Decimal
 import pytest
 from pyspark.sql import SparkSession
 
-import calculation.preparation.transformations.prepared_metering_point_time_series_factory as factory
+import tests.calculation.preparation.transformations.prepared_metering_point_time_series_factory as factory
 from package.constants import Colname
 from package.codelists import MeteringPointResolution, QuantityQuality
 from package.calculation.energy.quarter_to_hour import (

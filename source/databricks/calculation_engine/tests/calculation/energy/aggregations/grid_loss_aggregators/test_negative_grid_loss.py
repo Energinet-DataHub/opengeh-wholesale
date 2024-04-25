@@ -17,7 +17,7 @@ import pytest
 from pyspark.sql import SparkSession, Row
 from pyspark.sql.functions import col
 
-from calculation.energy import grid_loss_responsible_factories
+from tests.calculation.energy import grid_loss_responsible_factories
 from package.calculation.energy.aggregators.grid_loss_aggregators import (
     calculate_negative_grid_loss,
 )

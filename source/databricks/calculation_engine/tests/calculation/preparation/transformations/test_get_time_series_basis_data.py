@@ -13,7 +13,7 @@
 # limitations under the License.
 from pyspark.sql import SparkSession
 
-from calculation.preparation.transformations import (
+from tests.calculation.preparation.transformations import (
     prepared_metering_point_time_series_factory,
 )
 from package.calculation.basis_data.schemas import time_series_point_schema

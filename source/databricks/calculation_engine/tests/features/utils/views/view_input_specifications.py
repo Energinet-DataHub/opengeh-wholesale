@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from features.utils.dataframes.basis_data.basis_data_results_dataframe import (
+from tests.features.utils.dataframes.basis_data.basis_data_results_dataframe import (
     create_metering_point_periods,
     create_time_series_points,
 )

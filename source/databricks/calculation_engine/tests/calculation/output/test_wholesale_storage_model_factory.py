@@ -19,7 +19,7 @@ from typing import Any
 import pytest
 from pyspark.sql import SparkSession, DataFrame
 
-from contract_utils import assert_contract_matches_schema
+from tests.contract_utils import assert_contract_matches_schema
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.output import wholesale_storage_model_factory as sut
 from package.calculation.wholesale.data_structures.wholesale_results import (

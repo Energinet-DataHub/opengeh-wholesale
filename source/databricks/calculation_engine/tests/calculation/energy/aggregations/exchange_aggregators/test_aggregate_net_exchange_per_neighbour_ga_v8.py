@@ -18,7 +18,7 @@ import pytest
 from pyspark.sql import SparkSession
 from pyspark.sql.types import Row
 
-from calculation.energy import metering_point_time_series_factories
+from tests.calculation.energy import metering_point_time_series_factories
 from package.calculation.energy.aggregators.exchange_aggregators import (
     aggregate_net_exchange_per_neighbour_ga,
 )

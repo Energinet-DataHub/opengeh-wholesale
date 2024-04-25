@@ -19,7 +19,7 @@ from pyspark.sql.functions import col, lit
 import pytest
 import uuid
 
-from contract_utils import assert_contract_matches_schema
+from tests.contract_utils import assert_contract_matches_schema
 from package.calculation.output.schemas.total_monthly_amounts_schema import (
     total_monthly_amounts_schema,
 )
