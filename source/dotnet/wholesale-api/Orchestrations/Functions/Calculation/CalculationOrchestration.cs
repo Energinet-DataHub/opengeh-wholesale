@@ -50,9 +50,8 @@ internal class CalculationOrchestration
 
         // TODO: Adjust polling and expiry
         var pollingIntervalInSeconds = 60;
-        var expiryTime = context.CurrentUtcDateTime.AddMinutes(30);
+        var expiryTime = context.CurrentUtcDateTime.AddSeconds(30 * 60);
 
-        // While may be redundant, since we start all over, when a function starts
         while (context.CurrentUtcDateTime < expiryTime)
         {
             // Monitor calculation (Databricks)
