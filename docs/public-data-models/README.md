@@ -34,7 +34,7 @@ The wholesale public data models can be inspected in the metastore of the wholes
 
 - Settlement reports
 
-For a complete list of column descriptions read [this](columns.md).
+For more details consult the metastore and sample data in the Databricks workspace or contact team Mandalorian.
 
 ## Naming
 
