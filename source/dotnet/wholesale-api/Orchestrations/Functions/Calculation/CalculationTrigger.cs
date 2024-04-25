@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Net;
+using Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
@@ -33,6 +34,7 @@ internal class CalculationTrigger
         var logger = executionContext.GetLogger<CalculationOrchestration>();
 
         var orchestrationInput = new CalculationOrchestrationInput(
+            new CalculationJobStatusMonitorOptions(),
             startCalculationRequestDto,
             // TODO: Retrieve user id from token sent as part of http request
             Guid.Parse("3A3A90B7-C624-4844-B990-3221DEE54F04"));

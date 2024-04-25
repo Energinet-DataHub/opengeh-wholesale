@@ -48,10 +48,7 @@ internal class CalculationOrchestration
         calculationMetadata.OrchestrationProgress = "CalculationJobQueued";
         context.SetCustomStatus(calculationMetadata);
 
-        // TODO: Adjust polling and expiry
-        var pollingIntervalInSeconds = 60;
-        var expiryTime = context.CurrentUtcDateTime.AddSeconds(30 * 60);
-
+        var expiryTime = context.CurrentUtcDateTime.AddSeconds(input.JobStatusMonitorOptions.ExpiryTimeInSeconds);
         while (context.CurrentUtcDateTime < expiryTime)
         {
             // Monitor calculation (Databricks)
@@ -69,7 +66,7 @@ internal class CalculationOrchestration
                     calculationMetadata);
 
                 // Wait for the next checkpoint
-                var nextCheckpoint = context.CurrentUtcDateTime.AddSeconds(pollingIntervalInSeconds);
+                var nextCheckpoint = context.CurrentUtcDateTime.AddSeconds(input.JobStatusMonitorOptions.PollingIntervalInSeconds);
                 await context.CreateTimer(nextCheckpoint, CancellationToken.None);
             }
             else
