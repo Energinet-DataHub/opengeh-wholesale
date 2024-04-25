@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.wholesale_results
     -- 36 characters UUID
     calculation_result_id STRING NOT NULL,
 
-    grid_area STRING NOT NULL,
+    grid_area_code STRING NOT NULL,
     energy_supplier_id STRING NOT NULL,
     -- Energy quantity for the given observation time and duration as defined by `resolution`.
     -- Example: 1234.534
@@ -39,7 +39,6 @@ TBLPROPERTIES (
     delta.constraints.calculation_id_chk = "LENGTH ( calculation_id ) = 36",
     delta.constraints.calculation_type_chk = "calculation_type IN ( 'WholesaleFixing' , 'FirstCorrectionSettlement' , 'SecondCorrectionSettlement' , 'ThirdCorrectionSettlement' )",
     delta.constraints.calculation_result_id_chk = "LENGTH ( calculation_result_id ) = 36",
-    delta.constraints.grid_area_chk = "LENGTH ( grid_area ) = 3",
     delta.constraints.energy_supplier_id_chk = "LENGTH ( energy_supplier_id ) = 13 OR LENGTH ( energy_supplier_id ) = 16",
     delta.constraints.quantity_unit_chk = "quantity_unit IN ( 'kWh' , 'pcs' )",
     delta.constraints.quantity_qualities_chk = "( quantity_qualities IS NULL ) OR ( array_size ( array_except ( quantity_qualities , array ( 'missing' , 'calculated' , 'measured' , 'estimated' ) ) ) = 0 AND array_size ( quantity_qualities ) > 0 )",
@@ -48,7 +47,11 @@ TBLPROPERTIES (
     delta.constraints.settlement_method_chk = "settlement_method IS NULL OR settlement_method IN ( 'non_profiled' , 'flex' )",
     delta.constraints.charge_type_chk = "charge_type IN ( 'subscription' , 'fee' , 'tariff' )",
     delta.constraints.charge_owner_id_chk = "LENGTH ( charge_owner_id ) = 13 OR LENGTH ( charge_owner_id ) = 16",
-    delta.constraints.amount_type_chk = "amount_type IN ( 'amount_per_charge' , 'monthly_amount_per_charge' , 'total_monthly_amount' )"
+    delta.constraints.amount_type_chk = "amount_type IN ( 'amount_per_charge' , 'monthly_amount_per_charge' , 'total_monthly_amount' )",
+    delta.columnMapping.mode = "name",
+    delta.minReaderVersion = "2",
+    delta.minWriterVersion = "5",
+    delta.constraints.grid_area_code_chk = "LENGTH ( grid_area_code ) = 3"
 )
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
 -- In the production it is set to empty and the respective location is used. This means the production tables won't be deleted if the schema is.
