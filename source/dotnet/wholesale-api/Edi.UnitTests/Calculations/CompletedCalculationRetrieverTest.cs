@@ -63,7 +63,7 @@ public class CompletedCalculationRetrieverTest
         var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object, logger.Object);
 
         // Act
-        var actual = await sut.GetLatestCompletedCalculationsForPeriodAsync(request.GridArea, request.Period, request.RequestedCalculationType);
+        var actual = await sut.GetLatestCompletedCalculationsForPeriodAsync(request.GridAreaCodes, request.Period, request.RequestedCalculationType);
 
         // Assert
         actual.Should().HaveCount(1);
@@ -100,7 +100,7 @@ public class CompletedCalculationRetrieverTest
         var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object, logger.Object);
 
         // Act
-        var actual = await sut.GetLatestCompletedCalculationsForPeriodAsync(request.GridArea, request.Period, request.RequestedCalculationType);
+        var actual = await sut.GetLatestCompletedCalculationsForPeriodAsync(request.GridAreaCodes, request.Period, request.RequestedCalculationType);
 
         // Assert
         actual.Should().HaveCount(1);
@@ -137,7 +137,7 @@ public class CompletedCalculationRetrieverTest
         var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object, logger.Object);
 
         // Act
-        var actual = await sut.GetLatestCompletedCalculationsForPeriodAsync(request.GridArea, request.Period, request.RequestedCalculationType);
+        var actual = await sut.GetLatestCompletedCalculationsForPeriodAsync(request.GridAreaCodes, request.Period, request.RequestedCalculationType);
 
         // Assert
         actual.Should().HaveCount(1);
@@ -158,7 +158,7 @@ public class CompletedCalculationRetrieverTest
         var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object, logger.Object);
 
         // Act
-        var actual = await sut.GetLatestCompletedCalculationsForPeriodAsync(request.GridArea, request.Period, request.RequestedCalculationType);
+        var actual = await sut.GetLatestCompletedCalculationsForPeriodAsync(request.GridAreaCodes, request.Period, request.RequestedCalculationType);
 
         // Assert
         actual.Should().HaveCount(0);
@@ -213,7 +213,7 @@ public class CompletedCalculationRetrieverTest
         var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object, logger.Object);
 
         // Act
-        var actual = await sut.GetLatestCompletedCalculationsForPeriodAsync(request.GridArea, request.Period, request.RequestedCalculationType);
+        var actual = await sut.GetLatestCompletedCalculationsForPeriodAsync(request.GridAreaCodes, request.Period, request.RequestedCalculationType);
 
         // Assert
         using var assertionScope = new AssertionScope();
@@ -270,7 +270,7 @@ public class CompletedCalculationRetrieverTest
         var sut = new CompletedCalculationRetriever(latestCalculationsForPeriod.Object, calculationsClient.Object, logger.Object);
 
         // Act
-        var actual = await sut.GetLatestCompletedCalculationsForPeriodAsync(request.GridArea, request.Period, request.RequestedCalculationType);
+        var actual = await sut.GetLatestCompletedCalculationsForPeriodAsync(request.GridAreaCodes, request.Period, request.RequestedCalculationType);
 
         // Assert
         using var assertionScope = new AssertionScope();
@@ -278,13 +278,13 @@ public class CompletedCalculationRetrieverTest
         actual.Should().ContainSingle(x => x.CalculationId == calculationWithSecondCorrection.CalculationId);
     }
 
-    private static (string? GridArea, Period Period, RequestedCalculationType RequestedCalculationType) CreateRequestParameters(
+    private static (string[] GridAreaCodes, Period Period, RequestedCalculationType RequestedCalculationType) CreateRequestParameters(
         Instant startOfPeriodFilter,
         Instant endOfPeriodFilter,
         RequestedCalculationType? requestedCalculationType = null)
     {
         return (
-            "543",
+            ["543"],
             new Period(startOfPeriodFilter, endOfPeriodFilter),
             requestedCalculationType ?? RequestedCalculationType.LatestCorrection);
     }

@@ -26,13 +26,17 @@ internal class CalculationTrigger
     [Function(nameof(StartCalculation))]
     public async Task<HttpResponseData> StartCalculation(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req,
-        [FromBody] CalculationRequestDto calculationRequestDto,
+        [FromBody] StartCalculationRequestDto startCalculationRequestDto,
         [DurableClient] DurableTaskClient client,
         FunctionContext executionContext)
     {
         var logger = executionContext.GetLogger<CalculationOrchestration>();
 
-        var instanceId = await client.ScheduleNewOrchestrationInstanceAsync(nameof(CalculationOrchestration.Calculation), calculationRequestDto).ConfigureAwait(false);
+        var orchestrationInput = new CalculationOrchestrationInput(
+            startCalculationRequestDto,
+            Guid.Parse("3A3A90B7-C624-4844-B990-3221DEE54F04"));
+
+        var instanceId = await client.ScheduleNewOrchestrationInstanceAsync(nameof(CalculationOrchestration.Calculation), orchestrationInput).ConfigureAwait(false);
         logger.LogInformation("Created new orchestration with instance ID = {instanceId}", instanceId);
 
         var orchestrationMetadata = await client.WaitForInstanceStartAsync(instanceId).ConfigureAwait(false);
@@ -46,22 +50,6 @@ internal class CalculationTrigger
         await response.WriteAsJsonAsync(ReadCalculationId(orchestrationMetadata)).ConfigureAwait(false);
 
         return response;
-    }
-
-    // TODO: For demo purposes, can be deleted later.
-    [Function(nameof(StartCalculationForDemo))]
-    public async Task<HttpResponseData> StartCalculationForDemo(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req,
-        [FromBody] CalculationRequestDto calculationRequestDto,
-        [DurableClient] DurableTaskClient client,
-        FunctionContext executionContext)
-    {
-        var logger = executionContext.GetLogger<CalculationOrchestration>();
-
-        var instanceId = await client.ScheduleNewOrchestrationInstanceAsync(nameof(Calculation), calculationRequestDto).ConfigureAwait(false);
-        logger.LogInformation("Created new orchestration with instance ID = {instanceId}", instanceId);
-
-        return client.CreateCheckStatusResponse(req, instanceId);
     }
 
     private static Guid ReadCalculationId(OrchestrationMetadata? orchestrationMetadata)
