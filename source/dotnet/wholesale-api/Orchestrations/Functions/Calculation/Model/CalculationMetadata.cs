@@ -38,7 +38,7 @@ public class CalculationMetadata
     /// <summary>
     /// Calculation input given as parameters when starting job in Databricks.
     /// </summary>
-    public CalculationRequestDto? Input { get; set; }
+    public CalculationOrchestrationInput? Input { get; set; }
 
     /// <summary>
     /// Id of started calculation job in Databricks.
