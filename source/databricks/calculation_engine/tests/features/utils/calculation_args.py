@@ -34,6 +34,17 @@ def create_calculation_args(input_path: str) -> CalculatorArgs:
     with open(input_path + "calculation_arguments.yml", "r") as file:
         calculation_args = yaml.safe_load(file)
 
+    quarterly_resolution_transition_datetime = datetime(2023, 1, 31, 23, 0, 0)
+    if "quarterly_resolution_transition_datetime" in calculation_args[0]:
+        quarterly_resolution_transition_datetime = datetime.strptime(
+            calculation_args[0]["quarterly_resolution_transition_datetime"],
+            CSV_DATE_FORMAT,
+        )
+
+    time_zone = "Europe/Copenhagen"
+    if "time_zone" in calculation_args[0]:
+        time_zone = calculation_args[0]["time_zone"]
+
     return CalculatorArgs(
         calculation_id=calculation_args[0][ArgsName.calculation_id],
         calculation_grid_areas=calculation_args[0][ArgsName.grid_areas],
@@ -48,6 +59,6 @@ def create_calculation_args(input_path: str) -> CalculatorArgs:
             calculation_args[0][Colname.calculation_execution_time_start],
             CSV_DATE_FORMAT,
         ),
-        time_zone="Europe/Copenhagen",
-        quarterly_resolution_transition_datetime=datetime(2023, 1, 31, 23, 0, 0),
+        time_zone=time_zone,
+        quarterly_resolution_transition_datetime=quarterly_resolution_transition_datetime,
     )
