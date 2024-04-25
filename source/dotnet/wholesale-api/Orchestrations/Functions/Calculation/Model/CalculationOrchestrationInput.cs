@@ -14,9 +14,15 @@
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 
-public class CalculationOrchestrationInput(StartCalculationRequestDto startCalculationRequestDto, Guid requestedByUserId)
+public class CalculationOrchestrationInput
 {
-    public StartCalculationRequestDto StartCalculationRequestDto { get; } = startCalculationRequestDto;
+    public CalculationOrchestrationInput(StartCalculationRequestDto startCalculationRequestDto, Guid requestedByUserId)
+    {
+        StartCalculationRequestDto = startCalculationRequestDto;
+        RequestedByUserId = requestedByUserId;
+    }
 
-    public Guid RequestedByUserId { get; } = requestedByUserId;
+    public StartCalculationRequestDto StartCalculationRequestDto { get; }
+
+    public Guid RequestedByUserId { get; }
 }
