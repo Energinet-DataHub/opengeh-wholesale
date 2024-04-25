@@ -32,5 +32,5 @@ public class CalculationJobStatusMonitorOptions
     /// <summary>
     /// Expiry time of the job status monitor (loop).
     /// </summary>
-    public int ExpiryTimeInSeconds { get; set; } = 1800;
+    public int ExpiryTimeInSeconds { get; set; } = 3600;
 }
