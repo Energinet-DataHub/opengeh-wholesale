@@ -23,8 +23,8 @@ from features.utils.views.dataframe_container import DataframeContainer
 
 # IMPORTANT:
 # All test files should be identical. This makes changing them cumbersome.
-# So in order to make it easier you can modify the utils/view_template.py file instead,
-# and then run the power-shell script "Use-view-Template.ps1" to update all test_output.py files.
+# So in order to make it easier you can modify the utils/templates/public_model_test_template.py file instead,
+# and then run the power-shell script "Use-Template.ps1" to update all test_output.py files.
 @pytest.mark.parametrize("output_name", get_output_names())
 def test__equals_expected(
     migrations_executed: None,
