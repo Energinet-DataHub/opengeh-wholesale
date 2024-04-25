@@ -1,3 +1,9 @@
+ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results SET TBLPROPERTIES (
+    'delta.columnMapping.mode' = 'name',
+    'delta.minReaderVersion' = '2',
+    'delta.minWriterVersion' = '5')
+GO
+
 ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
 ADD COLUMN resolution STRING
 GO
