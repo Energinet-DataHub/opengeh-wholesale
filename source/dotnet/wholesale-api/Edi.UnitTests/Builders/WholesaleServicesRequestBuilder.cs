@@ -38,8 +38,8 @@ public class WholesaleServicesRequestBuilder
     {
         var request = new WholesaleServicesRequest
         {
-            RequestedByActorId = _requestedByActorId,
-            RequestedByActorRole = _requestedByActorRole,
+            RequestedForActorNumber = _requestedByActorId,
+            RequestedForActorRole = _requestedByActorRole,
             BusinessReason = _businessReason,
             PeriodStart = _periodStart,
         };
@@ -53,7 +53,7 @@ public class WholesaleServicesRequestBuilder
         if (_chargeOwnerId != null)
             request.ChargeOwnerId = _chargeOwnerId;
         if (_gridAreaCode != null)
-            request.GridAreaCode = _gridAreaCode;
+            request.GridAreaCodes.Add(_gridAreaCode);
         if (_settlementVersion != null)
             request.SettlementVersion = _settlementVersion;
 

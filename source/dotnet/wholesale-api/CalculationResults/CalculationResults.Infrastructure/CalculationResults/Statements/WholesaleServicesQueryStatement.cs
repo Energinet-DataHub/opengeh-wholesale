@@ -57,8 +57,11 @@ public class WholesaleServicesQueryStatement : DatabricksStatement
 
         sql += $" AND ({string.Join(" OR ", calculationPeriodSql)})";
 
-        if (!string.IsNullOrEmpty(_queryParameters.GridArea))
-            sql += $" AND {WholesaleResultColumnNames.GridArea} = '{_queryParameters.GridArea}'";
+        if (_queryParameters.GridAreaCodes.Count != 0)
+        {
+            sql += @$" AND {WholesaleResultColumnNames.GridArea} in 
+                    ({string.Join(',', _queryParameters.GridAreaCodes.Select(gridAreaCode => $"'{gridAreaCode}'"))})";
+        }
 
         if (!string.IsNullOrEmpty(_queryParameters.EnergySupplierId))
             sql += $" AND {WholesaleResultColumnNames.EnergySupplierId} = '{_queryParameters.EnergySupplierId}'";

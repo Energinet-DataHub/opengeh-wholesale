@@ -86,6 +86,7 @@ def job_environment_variables() -> dict:
         EnvironmentVariable.TENANT_ID.name: "550e8400-e29b-41d4-a716-446655440000",
         EnvironmentVariable.SPN_APP_ID.name: "some_spn_app_id",
         EnvironmentVariable.SPN_APP_SECRET.name: "some_spn_app_secret",
+        EnvironmentVariable.QUARTERLY_RESOLUTION_TRANSITION_DATETIME.name: "2023-01-31T23:00:00Z",
     }
 
 
@@ -368,3 +369,114 @@ class TestWhenMissingEnvVariables:
                         parse_job_arguments(command_line_args)
 
                 assert str(error.value).startswith("Environment variable not found")
+
+
+class TestWhenQuarterlyResolutionTransitionDatetimeIsValid:
+    @pytest.mark.parametrize(
+        "period_start_datetime, period_end_datetime",
+        [
+            (
+                datetime(2023, 1, 31, 23),
+                datetime(2023, 2, 2, 23),
+            ),
+            (
+                datetime(2023, 1, 29, 23),
+                datetime(2023, 1, 31, 23),
+            ),
+            (
+                datetime(2023, 1, 31, 23),
+                datetime(2023, 1, 31, 23),
+            ),
+        ],
+    )
+    def test_does_not_raise_exception_for_calculation(
+        self,
+        job_environment_variables: dict,
+        sys_argv_from_contract,
+        period_start_datetime: datetime,
+        period_end_datetime: datetime,
+    ) -> None:
+        # Arrange
+        sys_argv = sys_argv_from_contract
+        sys_argv = _substitute_calculation_type(
+            sys_argv, CalculationType.BALANCE_FIXING
+        )
+        sys_argv = _substitute_period(
+            sys_argv, period_start_datetime, period_end_datetime
+        )
+
+        with patch("sys.argv", sys_argv):
+            with patch.dict("os.environ", job_environment_variables):
+                # Act
+                try:
+                    command_line_args = parse_command_line_arguments()
+                    parse_job_arguments(command_line_args)
+                except Exception as error:
+                    # If an exception is raised, this will fail the test
+                    pytest.fail(f"An unexpected exception was raised: {error}")
+
+
+class TestWhenQuarterlyResolutionTransitionDatetimeIsInvalid:
+    def test_when_within_period_raise_exception_for_calculation(
+        self,
+        job_environment_variables: dict,
+        sys_argv_from_contract,
+    ) -> None:
+        # Arrange
+        period_start_datetime = datetime(2023, 1, 30, 23)
+        period_end_datetime = datetime(2023, 2, 2, 23)
+        sys_argv = sys_argv_from_contract
+        sys_argv = _substitute_calculation_type(
+            sys_argv, CalculationType.BALANCE_FIXING
+        )
+        sys_argv = _substitute_period(
+            sys_argv, period_start_datetime, period_end_datetime
+        )
+
+        with patch("sys.argv", sys_argv):
+            with patch.dict("os.environ", job_environment_variables):
+                with pytest.raises(Exception) as error:
+                    command_line_args = parse_command_line_arguments()
+                    # Act
+                    parse_job_arguments(command_line_args)
+
+        # Assert
+        actual_error_message = str(error.value)
+        assert (
+            "The calculation period must not cross the quarterly resolution transition datetime."
+            in actual_error_message
+        )
+
+    def test_when_not_local_midnight_raise_exception_for_calculation(
+        self,
+        job_environment_variables: dict,
+        sys_argv_from_contract,
+    ) -> None:
+        # Arrange
+        quarter_transition_datetime = "2023-01-31T22:00:00Z"
+        period_start_datetime = datetime(2023, 1, 30, 23)
+        period_end_datetime = datetime(2023, 2, 2, 23)
+        sys_argv = sys_argv_from_contract
+        sys_argv = _substitute_calculation_type(
+            sys_argv, CalculationType.BALANCE_FIXING
+        )
+        sys_argv = _substitute_period(
+            sys_argv, period_start_datetime, period_end_datetime
+        )
+        job_environment_variables[
+            EnvironmentVariable.QUARTERLY_RESOLUTION_TRANSITION_DATETIME.name
+        ] = quarter_transition_datetime
+
+        with patch("sys.argv", sys_argv):
+            with patch.dict("os.environ", job_environment_variables):
+                with pytest.raises(Exception) as error:
+                    command_line_args = parse_command_line_arguments()
+                    # Act
+                    parse_job_arguments(command_line_args)
+
+        # Assert
+        actual_error_message = str(error.value)
+        assert (
+            "The quarterly resolution transition datetime must be at midnight local time (Europe/Copenhagen)."
+            in actual_error_message
+        )
