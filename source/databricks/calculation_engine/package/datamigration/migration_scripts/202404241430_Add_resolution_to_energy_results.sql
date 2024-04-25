@@ -2,9 +2,8 @@ ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
 ADD COLUMN resolution STRING
 GO
 
-ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
-    UPDATE resolution = 'PT15M'
-    WHERE resolution IS NULL
+UPDATE {OUTPUT_DATABASE_NAME}.energy_results
+SET resolution = 'PT15M'
 GO
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
