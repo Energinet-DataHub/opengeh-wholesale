@@ -1,4 +1,4 @@
-﻿#!/bin/bash -l
+#!/bin/bash -l
 
 # Description
 # This script checks if all the tests are included in the matrix in the test step in ci-databricks.yml.
