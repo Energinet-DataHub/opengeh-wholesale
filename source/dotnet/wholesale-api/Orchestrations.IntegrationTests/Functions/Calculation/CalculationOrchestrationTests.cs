@@ -273,7 +273,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
     /// Verify the job status monitor (loop) breaks if we reach expiry time.
     /// </summary>
     [Fact]
-    public async Task MockJobsRunsGetAsRunning_WhenCallingStartCalculationEndPoint_OrchestrationCompletesWithExpectedGetJobStatusActivity()
+    public async Task MockJobsRunsGetAsRunning_WhenCallingStartCalculationEndpointAndCalculationTimeoutIsExceeded_OrchestrationCompletesWithExpectedGetJobStatusActivity()
     {
         // Arrange
         // => Databricks Jobs API
