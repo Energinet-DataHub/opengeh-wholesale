@@ -55,6 +55,10 @@
       {
         "name": "metering_point_id",
         "type": "string"
+      },
+      {
+        "name": "resolution",
+        "type": "string"
       }
     ]
   }
