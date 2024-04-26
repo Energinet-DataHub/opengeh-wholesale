@@ -12,11 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
+
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 
 /// <summary>
 /// An immutable input to start the calculation orchestration.
 /// </summary>
 public sealed record CalculationOrchestrationInput(
+    CalculationJobStatusMonitorOptions JobStatusMonitorOptions,
     StartCalculationRequestDto StartCalculationRequestDto,
     Guid RequestedByUserId);
