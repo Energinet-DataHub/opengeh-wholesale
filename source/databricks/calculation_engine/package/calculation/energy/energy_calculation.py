@@ -21,6 +21,7 @@ import package.calculation.output.energy_storage_model_factory as factory
 from package.calculation.calculation_results import EnergyResultsContainer
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.energy.data_structures.energy_results import EnergyResults
+from package.calculation.energy.get_resolution import get_resolution
 from package.calculation.energy.hour_to_quarter import transform_hour_to_quarter
 from package.calculation.energy.quarter_to_hour import transform_quarter_to_hour
 from package.calculation.preparation.data_structures.grid_loss_responsible import (
@@ -37,6 +38,7 @@ from package.codelists import (
     MeteringPointType,
     AggregationLevel,
     TimeSeriesType,
+    MeteringPointResolution,
 )
 from package.infrastructure import logging_configuration
 
@@ -49,8 +51,11 @@ def execute(
 ) -> Tuple[EnergyResultsContainer, EnergyResults, EnergyResults]:
     with logging_configuration.start_span("metering_point_time_series"):
         if (
-            args.calculation_period_end_datetime
-            < args.quarterly_resolution_transition_datetime
+            get_resolution(
+                args.quarterly_resolution_transition_datetime,
+                args.calculation_period_end_datetime,
+            )
+            == MeteringPointResolution.HOUR
         ):
             metering_point_time_series = transform_quarter_to_hour(
                 prepared_metering_point_time_series
