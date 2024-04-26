@@ -20,9 +20,9 @@ shopt -s extglob
 # 'awk' is used to get the second column of the output which contains the number of tests.
 # 'head' is used to get the first line of the output which contains the number of tests.
 # Example output line returned by the grep filter: 'collected 10 items'
-executed_test_count=$(pytest $@ --collect-only  | grep collected | awk '{print $2}' | head -n 1)
+executed_test_count=$(coverage run --branch -m pytest $@ --collect-only  | grep collected | awk '{print $2}' | head -n 1)
 
-total_test_count=$(pytest --collect-only  | grep collected | awk '{print $2}' | head -n 1)
+total_test_count=$(coverage run --branch -m pytest --collect-only  | grep collected | awk '{print $2}' | head -n 1)
 
 echo "Number of tests being executed: $executed_test_count"
 echo "Total number of pytest tests: $total_test_count"
