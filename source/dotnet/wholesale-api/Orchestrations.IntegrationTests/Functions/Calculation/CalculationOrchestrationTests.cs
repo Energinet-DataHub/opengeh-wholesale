@@ -27,7 +27,6 @@ using FluentAssertions.Execution;
 using Newtonsoft.Json;
 using NodaTime;
 using Xunit.Abstractions;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.Calculation;
 
@@ -185,7 +184,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
     }
 
     /// <summary>
-    /// Verify the job status monitor (loop) is working.
+    /// Verify the job status monitor (loop) is working with the expected job status state changes.
     /// </summary>
     [Fact]
     public async Task MockJobsRunsGetLifeCycleScenario_WhenCallingStartCalculationEndPoint_OrchestrationCompletesWithExpectedGetJobStatusActivity()
@@ -244,7 +243,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         // => Wait for completion
         var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(
             orchestrationStatus.InstanceId,
-            TimeSpan.FromMinutes(6)); // We will loop at least twice to get job status
+            TimeSpan.FromMinutes(1)); // We will loop at least twice to get job status
 
         // => Expect history
         using var assertionScope = new AssertionScope();
@@ -268,5 +267,67 @@ public class CalculationOrchestrationTests : IAsyncLifetime
             ((int)CalculationState.Running).ToString(),
             ((int)CalculationState.Completed).ToString(),
         ]);
+    }
+
+    /// <summary>
+    /// Verify the job status monitor (loop) breaks if we reach expiry time.
+    /// </summary>
+    [Fact]
+    public async Task MockJobsRunsGetAsRunning_WhenCallingStartCalculationEndpointAndCalculationTimeoutIsExceeded_OrchestrationCompletesWithExpectedGetJobStatusActivity()
+    {
+        // Arrange
+        // => Databricks Jobs API
+        var jobId = Random.Shared.Next(1, 1000);
+        var runId = Random.Shared.Next(1000, 2000);
+
+        Fixture.MockServer
+            .MockJobsList(jobId)
+            .MockJobsGet(jobId)
+            .MockJobsRunNow(runId)
+            .MockJobsRunsGet(runId, "RUNNING", "EXCLUDED");
+
+        var dateAtMidnight = new LocalDate(2024, 5, 17)
+            .AtMidnight()
+            .InZoneStrictly(_dateTimeZone)
+            .ToDateTimeOffset();
+
+        // Act
+        var beforeCreated = DateTime.UtcNow;
+        using var actualResponse = await Fixture.AppHostManager.HttpClient.PostAsync(
+            "api/StartCalculation",
+            new StringContent(
+                JsonConvert.SerializeObject(new StartCalculationRequestDto(
+                CalculationType.Aggregation,
+                ["256", "512"],
+                dateAtMidnight,
+                dateAtMidnight.AddDays(2))),
+                Encoding.UTF8,
+                "application/json"));
+
+        // Assert
+        // => Verify endpoint response
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        var calculationId = await actualResponse.Content.ReadAsAsync<Guid>();
+
+        // => Verify expected behaviour by searching the orchestration history
+        var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeCreated);
+
+        // => Expect calculation id
+        var calculationMetadata = orchestrationStatus.CustomStatus.ToObject<CalculationMetadata>();
+        calculationMetadata!.Id.Should().Be(calculationId);
+
+        // => Wait for completion
+        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(
+            orchestrationStatus.InstanceId,
+            TimeSpan.FromMinutes(1)); // We will loop at least until expiry time has been reached
+
+        // => Expect history
+        using var assertionScope = new AssertionScope();
+        var first = completeOrchestrationStatus.History.First();
+        first.Value<string>("FunctionName").Should().Be("Calculation");
+
+        var last = completeOrchestrationStatus.History.Last();
+        last.Value<string>("EventType").Should().Be("ExecutionCompleted");
+        last.Value<string>("Result").Should().Be("Error: Job status 'Running'.");
     }
 }
