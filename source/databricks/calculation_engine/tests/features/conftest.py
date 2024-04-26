@@ -19,7 +19,7 @@ from pyspark.sql import SparkSession
 
 from features.utils.expected_output import ExpectedOutput
 from features.utils.scenario_executor import ScenarioExecutor
-from features.utils.views.dataframe_container import DataframeContainer
+from features.utils.views.dataframe_container import DataframeWrapper
 from features.utils.views.view_scenario_executor import ViewScenarioExecutor
 from package.calculation.calculation_results import CalculationResultsContainer
 
@@ -46,7 +46,7 @@ def actual_and_expected_views(
     migrations_executed: None,
     request: FixtureRequest,
     spark: SparkSession,
-) -> tuple[list[DataframeContainer], list[DataframeContainer]]:
+) -> tuple[list[DataframeWrapper], list[DataframeWrapper]]:
     """
     Provides the actual and expected output for a scenario test case.
 
