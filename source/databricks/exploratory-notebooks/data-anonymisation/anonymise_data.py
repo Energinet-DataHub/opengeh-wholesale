@@ -38,7 +38,7 @@ target_database = "hive_metastore.wholesale_input_anonymised" # FILL IN
 target_mp_table_name = "metering_point_periods"
 target_ts_table_name = "time_series_points"
 target_gl_table_name = "grid_loss_metering_points"
-target_storage_account_name = "stdatalakeshresdwe002"
+target_storage_account_name = "stdatalakeshresdwe001"
 target_delta_table_root_path = f"abfss://wholesale@{target_storage_account_name}.dfs.core.windows.net/wholesale_input_anonymised"
 
 # Source columns variables
@@ -157,6 +157,7 @@ df_all_metering_point_ids = (
             parent_metering_point_id_column_name
         )
     )
+    .union(df_source_gl_table)
     .distinct()
 ).cache()
 
@@ -187,7 +188,8 @@ df_anonymised_metering_points = (
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC Assert that there are no duplicates in the new anonymised MP IDs, meaning that we have a 1:1 relationship between original MP IDs to anonymised MP IDs.
+# MAGIC Assert that:
+# MAGIC 1) There are no duplicates in the new anonymised MP IDs, meaning that we have a 1:1 relationship between original MP IDs to anonymised MP IDs.
 
 # COMMAND ----------
 
@@ -226,9 +228,9 @@ assert (
 tmp_balance_and_supplier_id_column_name = "balance_and_supplier_id"
 
 df_all_supplier_and_balancers = (
-    df_source_mp_table.select(energy_supplier_id_column_name.alias(tmp_balance_and_supplier_id_column_name))
+    df_source_mp_table.select(F.col(energy_supplier_id_column_name).alias(tmp_balance_and_supplier_id_column_name))
     .union(
-        df_source_mp_table.select(balance_responsible_id_column_name.alias(tmp_balance_and_supplier_id_column_name))
+        df_source_mp_table.select(F.col(balance_responsible_id_column_name).alias(tmp_balance_and_supplier_id_column_name))
     )
     .distinct()
 ).cache()
@@ -253,14 +255,14 @@ df_anonymised_suppliers_and_balancers = (
             F.col(anonymised_balance_or_supplier_id_column_name)
         ),
     )
-    .na.drop()
 ).cache()
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC Assert that there are no duplicates in the new anonymised Balance or Supplier IDs, meaning that we have a 1:1 relationship between original Balance or Supplier IDs to anonymised Balance or Supplier IDs.
-# MAGIC Assert that we have the same amount of distinct IDs before and after.
+# MAGIC Assert that:
+# MAGIC 1) There are no duplicates in the new anonymised Balance or Supplier IDs, meaning that we have a 1:1 relationship between original Balance or Supplier IDs to anonymised Balance or Supplier IDs.
+# MAGIC 2) Assert that we have the same amount of distinct IDs before and after.
 
 # COMMAND ----------
 
@@ -298,12 +300,12 @@ df_source_mp_table_anonymised = (
     )
     .withColumn(parent_metering_point_id_column_name, F.col(anonymised_mp_id_column_name))
     .drop(anonymised_mp_id_column_name)
-    .join(df_anonymised_suppliers_and_balancers, [energy_supplier_id_column_name], "left")
-    .withColumn(energy_supplier_id_column_name, F.col(anonymised_balance_or_supplier_id_column_name))
+    .join(df_anonymised_suppliers_and_balancers, [(df_anonymised_suppliers_and_balancers[tmp_balance_and_supplier_id_column_name]==df_source_mp_table.energy_supplier_id) | (df_anonymised_suppliers_and_balancers[tmp_balance_and_supplier_id_column_name]==df_source_mp_table.balance_responsible_id)], "left")
+    .withColumn(tmp_balance_and_supplier_id_column_name, F.col(anonymised_balance_or_supplier_id_column_name))
     .drop(anonymised_balance_or_supplier_id_column_name)
     .join(
         df_anonymised_suppliers_and_balancers.select(
-            F.col(energy_supplier_id_column_name).alias(balance_responsible_id_column_name),
+            F.col(tmp_balance_and_supplier_id_column_name).alias(balance_responsible_id_column_name),
             anonymised_balance_or_supplier_id_column_name,
         ),
         [balance_responsible_id_column_name],
@@ -313,6 +315,13 @@ df_source_mp_table_anonymised = (
     .drop(anonymised_balance_or_supplier_id_column_name)
     .select(df_source_mp_table.columns)
 ).cache()
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC Assert that:
+# MAGIC 1) We have no duplicates of MP Ids in the anonymised table
+# MAGIC 2) We have the same amount of unique MP Ids in the anonymised and source table
 
 # COMMAND ----------
 
@@ -328,6 +337,12 @@ assert (
 
 # COMMAND ----------
 
+assert (
+    df_source_mp_table_anonymised.select(metering_point_id_column_name).distinct().count() == df_source_mp_table.select(metering_point_id_column_name).distinct().count()
+)
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC ### Create the anonymised time_series_points table
 # MAGIC Beware, this might be a very costly operation, and as such might be better done with chunking or something.
@@ -338,7 +353,7 @@ assert (
 # COMMAND ----------
 
 if not mps_to_anonymise:
-    raise Exception("Non MPs have been selected for having their quantity anoynmised")
+    print("Non MPs have been selected for having their quantity anoynmised")
 
 df_source_ts_table_anonymised = (
     df_source_ts_table.withColumn(
@@ -351,6 +366,12 @@ df_source_ts_table_anonymised = (
     .withColumn(metering_point_id_column_name, F.col(anonymised_mp_id_column_name))
     .select(df_source_ts_table.columns)
 ).cache()
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC Asser that:
+# MAGIC 1. We have the same amount of MP Ids in the anonymised and source TS table.
 
 # COMMAND ----------
 
@@ -374,6 +395,12 @@ df_source_gl_table_anonymised = (
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC Assert that:
+# MAGIC 1. We have the same amount of MP Ids in the anonymised and source GL table
+
+# COMMAND ----------
+
 assert (
     df_source_gl_table_anonymised.select(metering_point_id_column_name).distinct().count()
     == df_source_gl_table.select(metering_point_id_column_name).distinct().count()
@@ -381,18 +408,46 @@ assert (
 
 # COMMAND ----------
 
-df_source_mp_table_anonymised.write.format("delta").mode("append").saveAsTable(
-    f"{target_database}.{target_mp_table_name}"
+# MAGIC %md
+# MAGIC Assert that:
+# MAGIC 1. Overall row count for MP table is the same before and after anonymisation.
+# MAGIC 2. Overall row count for TS table is the same before and after anonymisation.
+# MAGIC 3. Overall row count for GL table is the same before and after anonymisation.
+
+# COMMAND ----------
+
+assert (
+    df_source_mp_table_anonymised.count() == df_source_mp_table.count()
 )
 
 # COMMAND ----------
 
-df_source_ts_table_anonymised.write.format("delta").mode("append").saveAsTable(
-    f"{target_database}.{target_ts_table_name}"
+assert (
+    df_source_ts_table_anonymised.count()
+    == df_source_ts_table.count()
 )
 
 # COMMAND ----------
 
-df_source_gl_table_anonymised.write.format("delta").mode("append").saveAsTable(
-    f"{target_database}.{target_gl_table_name}"
+assert (
+    df_source_gl_table_anonymised.count()
+    == df_source_gl_table.count()
 )
+
+# COMMAND ----------
+
+#df_source_mp_table_anonymised.write.format("delta").mode("append").saveAsTable(
+#    f"{target_database}.{target_mp_table_name}"
+#)
+
+# COMMAND ----------
+
+#df_source_ts_table_anonymised.write.format("delta").mode("append").saveAsTable(
+#    f"{target_database}.{target_ts_table_name}"
+#)
+
+# COMMAND ----------
+
+#df_source_gl_table_anonymised.write.format("delta").mode("append").saveAsTable(
+#    f"{target_database}.{target_gl_table_name}"
+#)
