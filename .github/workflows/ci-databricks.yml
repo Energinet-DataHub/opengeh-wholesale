@@ -123,6 +123,8 @@ jobs:
             paths: calculator_job/test_energy_calculation.py
           - name: Wholesale (calculator_job)
             paths: calculator_job/test_wholesale_calculation.py
+          - name: Calculator job start
+            paths: calculator_job/test_start.py            
           - name: Energy logic
             paths: features/given_an_energy_calculation
           - name: Wholesale logic
@@ -137,6 +139,8 @@ jobs:
             paths: datamigration/!(test_migration.py)
           - name: Current state migrations
             paths: datamigration/test_migration.py
+          - name: Contract
+            paths: contracts            
     if: ${{ inputs.has_delta_migration_changes }}
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
@@ -196,9 +200,9 @@ jobs:
           features/given_an_energy_calculation
           features/given_a_wholesale_calculation
           features/public_data_models
-          calculation
-          codelists
-          common
+          calculation/
+          codelists/
+          common/
           infrastructure/
           entry_points/
           datamigration/!(test_migration.py)
