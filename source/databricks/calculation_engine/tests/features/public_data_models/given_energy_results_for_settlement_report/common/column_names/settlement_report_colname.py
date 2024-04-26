@@ -20,7 +20,7 @@ class EnergyResultsV1ColumnNames:
     energy_supplier_id = EnergyResultColumnNames.energy_supplier_id
     grid_area = EnergyResultColumnNames.grid_area
     time = EnergyResultColumnNames.time
-    metering_point_type = Colname.metering_point_type
+    metering_point_type = "metering_point_type"
     quantity = EnergyResultColumnNames.quantity
     resolution = Colname.resolution
     settlement_method = Colname.settlement_method
