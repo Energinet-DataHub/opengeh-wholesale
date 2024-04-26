@@ -24,3 +24,4 @@ class EnergyResultsV1ColumnNames:
     quantity = EnergyResultColumnNames.quantity
     resolution = Colname.resolution
     settlement_method = Colname.settlement_method
+    aggregation_level = EnergyResultColumnNames.aggregation_level

@@ -37,5 +37,6 @@ energy_results_v1_schema = StructType(
         StructField(EnergyResultsV1ColumnNames.time, TimestampType(), False),
         StructField(EnergyResultsV1ColumnNames.quantity, DecimalType(18, 3), False),
         StructField(EnergyResultsV1ColumnNames.energy_supplier_id, StringType(), True),
+        StructField(EnergyResultsV1ColumnNames.aggregation_level, StringType(), False),
     ]
 )
