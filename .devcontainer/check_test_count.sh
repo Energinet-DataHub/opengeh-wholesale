@@ -5,7 +5,7 @@
 # It is used in the pipeline to ensure that all the tests are included in the matrix.
 # The script must be invoked with a filter matching the paths NOT included in the matrix
 
-# $1: (Optional) Can be set to specify a filter for running python tests at the specified path.
+# $@: (Optional) Can be set to specify a filter for running python tests at the specified path.
 echo "Filter (paths): '$@'"
 
 # Exit immediately with failure status if any command fails
