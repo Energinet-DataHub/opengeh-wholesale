@@ -58,7 +58,7 @@ class SettlementReportViewReader:
             f"{SETTLEMENT_REPORT_DATABASE_NAME}.{METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME_V1}"
         )
 
-    def read_energy_results(
+    def read_energy_results_v1(
         self,
     ) -> DataFrame:
         return self._spark.read.format("delta").table(

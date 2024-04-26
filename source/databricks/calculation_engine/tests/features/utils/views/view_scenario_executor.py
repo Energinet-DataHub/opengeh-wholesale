@@ -86,16 +86,16 @@ class ViewScenarioExecutor:
 
     def correct_dataframe_types(
         self,
-        dataframes: list[DataframeWrapper],
+        dataframe_wrappers: list[DataframeWrapper],
         output_specifications: dict[str, tuple],
     ) -> list[DataframeWrapper]:
-        frames = []
-        for key in dataframes:
-            if key.df is None:
+        wrappers = []
+        for wrapper in dataframe_wrappers:
+            if wrapper.df is None:
                 continue
-            value = output_specifications[key.name + ".csv"]
+            value = output_specifications[wrapper.name + ".csv"]
             correction_method = value[2]
-            key.df = correction_method(key.df, self.spark)
-            frames.append(key)
+            wrapper.df = correction_method(self.spark, wrapper.df)
+            wrappers.append(wrapper)
 
-        return frames
+        return wrappers

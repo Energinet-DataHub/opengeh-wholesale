@@ -25,7 +25,7 @@ from features.public_data_models.given_basis_data_for_settlement_report.common.s
 )
 
 
-def create_metering_point_periods_view(df: DataFrame, spark: SparkSession) -> DataFrame:
+def create_metering_point_periods_view(spark: SparkSession, df: DataFrame) -> DataFrame:
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
@@ -47,7 +47,8 @@ def create_metering_point_periods_view(df: DataFrame, spark: SparkSession) -> Da
 
 
 def create_metering_point_time_series_view(
-    df: DataFrame, spark: SparkSession
+    spark: SparkSession,
+    df: DataFrame,
 ) -> DataFrame:
 
     # Don't remove. Believed needed because this function is an argument to the setup function
@@ -72,7 +73,7 @@ def create_metering_point_time_series_view(
     return spark.createDataFrame(df.rdd, metering_point_time_series_schema)
 
 
-def create_energy_results_v1_view(df: DataFrame, spark: SparkSession) -> DataFrame:
+def create_energy_results_v1_view(spark: SparkSession, df: DataFrame) -> DataFrame:
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
