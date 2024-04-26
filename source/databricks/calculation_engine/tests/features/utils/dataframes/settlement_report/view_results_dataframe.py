@@ -18,6 +18,7 @@ from pyspark.sql.functions import col, from_json
 from pyspark.sql.types import (
     TimestampType,
     ArrayType,
+    DecimalType,
 )
 
 from features.public_data_models.given_basis_data_for_settlement_report.common.schemas.metering_point_time_series_schema import (
@@ -82,6 +83,11 @@ def create_energy_results_v1_view(spark: SparkSession, df: DataFrame) -> DataFra
     )
     from features.public_data_models.given_energy_results_for_settlement_report.common.schemas.energy_results_v1_schema import (
         energy_results_v1_schema,
+    )
+
+    df = df.withColumn(
+        EnergyResultsV1ColumnNames.quantity,
+        col(EnergyResultsV1ColumnNames.quantity).cast(DecimalType(18, 3)),
     )
 
     df = df.withColumn(
