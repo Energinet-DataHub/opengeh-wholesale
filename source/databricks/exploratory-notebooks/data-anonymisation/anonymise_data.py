@@ -251,7 +251,7 @@ df_anonymised_suppliers_and_balancers = (
     )
     .withColumn(
         anonymised_balance_or_supplier_id_column_name,
-        F.when(F.col(anonymised_balance_or_supplier_id_column_name).isNull(), F.lit(None)).otherwise(
+        F.when(F.col(tmp_balance_and_supplier_id_column_name).isNull(), F.lit(None)).otherwise(
             F.col(anonymised_balance_or_supplier_id_column_name)
         ),
     )
@@ -261,8 +261,9 @@ df_anonymised_suppliers_and_balancers = (
 
 # MAGIC %md
 # MAGIC Assert that:
-# MAGIC 1) There are no duplicates in the new anonymised Balance or Supplier IDs, meaning that we have a 1:1 relationship between original Balance or Supplier IDs to anonymised Balance or Supplier IDs.
-# MAGIC 2) Assert that we have the same amount of distinct IDs before and after.
+# MAGIC 1. There are no duplicates in the new anonymised Balance or Supplier IDs, meaning that we have a 1:1 relationship between original Balance or Supplier IDs to anonymised Balance or Supplier IDs.
+# MAGIC 2. That we have the same amount of distinct IDs before and after.
+# MAGIC 3. That we have the same amount of nulls before and after anonymisation.
 
 # COMMAND ----------
 
@@ -274,9 +275,18 @@ assert (
     == 0
 )
 
+# COMMAND ----------
+
 assert (
     df_anonymised_suppliers_and_balancers.select(anonymised_balance_or_supplier_id_column_name).distinct().count()
     == df_all_supplier_and_balancers.select(tmp_balance_and_supplier_id_column_name).distinct().count()
+)
+
+# COMMAND ----------
+
+assert (
+    df_anonymised_suppliers_and_balancers.filter(F.col(anonymised_balance_or_supplier_id_column_name).isNull()).count()
+    == df_all_supplier_and_balancers.filter(F.col(tmp_balance_and_supplier_id_column_name).isNull()).count()
 )
 
 # COMMAND ----------
@@ -353,7 +363,7 @@ assert (
 # COMMAND ----------
 
 if not mps_to_anonymise:
-    print("Non MPs have been selected for having their quantity anoynmised")
+    raise Exception("Non MPs have been selected for having their quantity anoynmised")
 
 df_source_ts_table_anonymised = (
     df_source_ts_table.withColumn(
@@ -398,12 +408,20 @@ df_source_gl_table_anonymised = (
 # MAGIC %md
 # MAGIC Assert that:
 # MAGIC 1. We have the same amount of MP Ids in the anonymised and source GL table
+# MAGIC 2. We have the same amount of null is MP Ids in the anonymised and source GL table
 
 # COMMAND ----------
 
 assert (
     df_source_gl_table_anonymised.select(metering_point_id_column_name).distinct().count()
     == df_source_gl_table.select(metering_point_id_column_name).distinct().count()
+)
+
+# COMMAND ----------
+
+assert (
+    df_source_gl_table_anonymised.filter(F.col(metering_point_id_column_name).isNull()).count()
+    == df_source_gl_table.filter(F.col(metering_point_id_column_name).isNull()).count()
 )
 
 # COMMAND ----------
