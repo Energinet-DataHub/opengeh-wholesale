@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
 from typing import Tuple
 
 from pyspark.sql import SparkSession
@@ -20,7 +19,7 @@ from features.utils.csv_to_dataframe_parser import CsvToDataframeParser
 from features.utils.readers.settlement_report_view_reader import (
     SettlementReportViewReader,
 )
-from features.utils.views.dataframe_container import DataframeContainer
+from features.utils.views.dataframe_wrapper import DataframeWrapper
 from features.utils.views.view_input_specifications import get_input_specifications
 from features.utils.views.view_output_specifications import get_output_specifications
 from package.infrastructure.paths import BASIS_DATA_DATABASE_NAME
@@ -37,56 +36,63 @@ class ViewScenarioExecutor:
 
     def execute(
         self, scenario_folder_path: str
-    ) -> Tuple[list[DataframeContainer], list[DataframeContainer]]:
+    ) -> Tuple[list[DataframeWrapper], list[DataframeWrapper]]:
 
         input_specifications = get_input_specifications()
         output_specifications = get_output_specifications()
 
-        input_dataframes = self.parser.parse_csv_files_concurrently(
+        input_dataframes_wrappers = self.parser.parse_csv_files_concurrently(
             f"{scenario_folder_path}/input", input_specifications
         )
-        self._write_to_tables(input_dataframes)
 
-        output_dataframes = self.parser.parse_csv_files_concurrently(
-            f"{scenario_folder_path}/output", output_specifications, ignore_schema=True
+        input_dataframes_wrappers = self.correct_dataframe_types(
+            input_dataframes_wrappers, input_specifications
+        )
+        self._write_to_tables(input_dataframes_wrappers)
+
+        output_dataframe_wrappers = self.parser.parse_csv_files_concurrently(
+            f"{scenario_folder_path}/output", output_specifications
         )
 
         expected = self.correct_dataframe_types(
-            output_dataframes, output_specifications
+            output_dataframe_wrappers, output_specifications
         )
 
-        actual = self._read_from_views(output_specifications)
+        actual = self._read_from_views(output_specifications, output_dataframe_wrappers)
         return actual, expected
 
     @staticmethod
-    def _write_to_tables(input_dataframes: list[DataframeContainer]) -> None:
+    def _write_to_tables(input_dataframes: list[DataframeWrapper]) -> None:
         for i in input_dataframes:
             i.df.write.format("delta").mode("overwrite").saveAsTable(
                 f"{BASIS_DATA_DATABASE_NAME}.{i.name}"
             )
 
     def _read_from_views(
-        self, output_specifications: dict[str, tuple]
-    ) -> list[DataframeContainer]:
+        self,
+        output_specifications: dict[str, tuple],
+        output_dataframe_wrappers: list[DataframeWrapper],
+    ) -> list[DataframeWrapper]:
 
-        outputs = []
-        for key in output_specifications:
-            value = output_specifications[key]
+        wrappers = []
+        for wrapper in output_dataframe_wrappers:
+            value = output_specifications[wrapper.name + ".csv"]
             read_method = getattr(self.view_reader, value[1])
             df = read_method()
-            name, extension = os.path.splitext(key)
-            container = DataframeContainer(name=name, df=df)
-            outputs.append(container)
+            dataframe_wrapper = DataframeWrapper(name=wrapper.name, df=df)
+            wrappers.append(dataframe_wrapper)
 
-        return outputs
+        return wrappers
 
     def correct_dataframe_types(
         self,
-        dataframes: list[DataframeContainer],
+        dataframes: list[DataframeWrapper],
         output_specifications: dict[str, tuple],
-    ) -> list[DataframeContainer]:
+    ) -> list[DataframeWrapper]:
         frames = []
         for key in dataframes:
+            if key.df is None:
+                continue
             value = output_specifications[key.name + ".csv"]
             correction_method = value[2]
             key.df = correction_method(key.df, self.spark)
