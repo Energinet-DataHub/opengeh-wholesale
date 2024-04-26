@@ -38,7 +38,6 @@ def _write(name: str, df: DataFrame) -> None:
         # Not all energy results have a value - it depends on the type of calculation
         if df is None:
             return None
-
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
         ).insertInto(f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}")

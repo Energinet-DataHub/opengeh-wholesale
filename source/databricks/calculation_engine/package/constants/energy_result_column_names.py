@@ -27,3 +27,4 @@ class EnergyResultColumnNames(ResultColumnNames):
     metering_point_id = "metering_point_id"
     quantity = "quantity"
     quantity_qualities = "quantity_qualities"
+    resolution = "resolution"
