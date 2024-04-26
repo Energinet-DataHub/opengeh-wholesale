@@ -13,10 +13,6 @@ SET resolution = 'PT15M'
 GO
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
-ALTER COLUMN resolution SET NOT NULL
-GO
-
-ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
     DROP CONSTRAINT IF EXISTS resolution_chk
 GO
 ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results

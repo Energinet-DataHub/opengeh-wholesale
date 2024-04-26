@@ -53,6 +53,6 @@ energy_results_schema = StructType(
         StructField(EnergyResultColumnNames.from_grid_area, StringType(), True),
         StructField(EnergyResultColumnNames.calculation_result_id, StringType(), False),
         StructField(EnergyResultColumnNames.metering_point_id, StringType(), True),
-        StructField(EnergyResultColumnNames.resolution, StringType(), False),
+        StructField(EnergyResultColumnNames.resolution, StringType(), True),
     ]
 )

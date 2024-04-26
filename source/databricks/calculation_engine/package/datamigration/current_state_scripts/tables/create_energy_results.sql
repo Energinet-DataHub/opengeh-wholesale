@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.energy_results
     out_grid_area_code STRING,
     calculation_result_id STRING NOT NULL,
     metering_point_id STRING,
-    resolution STRING NOT NULL
+    resolution STRING
 )
 USING DELTA
 TBLPROPERTIES (
