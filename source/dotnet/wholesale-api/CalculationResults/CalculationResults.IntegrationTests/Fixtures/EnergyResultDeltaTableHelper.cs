@@ -32,7 +32,8 @@ public static class EnergyResultDeltaTableHelper
         string quantity = "1.123",
         string quantityQuality = "missing",
         string aggregationLevel = "total_ga",
-        string? meteringPointId = null)
+        string? meteringPointId = null,
+        string resolution = "PT15M")
     {
         return EnergyResultColumnNames.GetAllNames().Select(columnName => columnName switch
         {
@@ -50,6 +51,7 @@ public static class EnergyResultDeltaTableHelper
             EnergyResultColumnNames.QuantityQualities => $@"ARRAY('{quantityQuality}')",
             EnergyResultColumnNames.AggregationLevel => $@"'{aggregationLevel}'",
             EnergyResultColumnNames.MeteringPointId => meteringPointId == null ? "NULL" : $@"'{meteringPointId}'",
+            EnergyResultColumnNames.Resolution => $@"'{resolution}'",
             _ => throw new ArgumentOutOfRangeException($"Unexpected column name: {columnName}."),
         }).ToArray();
     }
