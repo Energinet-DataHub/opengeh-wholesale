@@ -16,7 +16,7 @@ SELECT e.calculation_id,
            WHEN e.time_series_type = 'net_exchange_per_ga' THEN NULL
            WHEN e.time_series_type = 'total_consumption' THEN NULL
        END as settlement_method,
-       -- e.resolution,
+       e.resolution,
        e.time,
        e.quantity,
        e.energy_supplier_id
