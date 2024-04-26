@@ -296,6 +296,11 @@ assert (
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC Join the anonymised metering points with the source MP table, and replace original columns (metering_point_id, parent_metering_point_id, balance_responsible_id, and energy_supplier_id)
+
+# COMMAND ----------
+
 df_source_mp_table_anonymised = (
     df_source_mp_table.join(df_anonymised_metering_points, [metering_point_id_column_name], "left")
     .withColumn(metering_point_id_column_name, F.col(anonymised_mp_id_column_name))
@@ -324,14 +329,18 @@ df_source_mp_table_anonymised = (
     .withColumn(balance_responsible_id_column_name, F.col(anonymised_balance_or_supplier_id_column_name))
     .drop(anonymised_balance_or_supplier_id_column_name)
     .select(df_source_mp_table.columns)
+    .distinct()
 ).cache()
 
 # COMMAND ----------
 
 # MAGIC %md
 # MAGIC Assert that:
-# MAGIC 1) We have no duplicates of MP Ids in the anonymised table
-# MAGIC 2) We have the same amount of unique MP Ids in the anonymised and source table
+# MAGIC 1. We have no duplicates of MP Ids in the anonymised table
+# MAGIC 2. We have the same amount of unique MP Ids in the anonymised and source table
+# MAGIC 3. We have the same amount of unique Parent MP Ids in the anonymised and source table
+# MAGIC 4. We have the same amount of unique Balance Responsible Ids in the anonymised and source table
+# MAGIC 5. We have the same amount of unique Energy Supplier Ids in the anonymised and source table
 
 # COMMAND ----------
 
@@ -349,6 +358,24 @@ assert (
 
 assert (
     df_source_mp_table_anonymised.select(metering_point_id_column_name).distinct().count() == df_source_mp_table.select(metering_point_id_column_name).distinct().count()
+)
+
+# COMMAND ----------
+
+assert (
+    df_source_mp_table_anonymised.select(parent_metering_point_id_column_name).distinct().count() == df_source_mp_table.select(parent_metering_point_id_column_name).distinct().count()
+)
+
+# COMMAND ----------
+
+assert (
+    df_source_mp_table_anonymised.select(balance_responsible_id_column_name).distinct().count() == df_source_mp_table.select(balance_responsible_id_column_name).distinct().count()
+)
+
+# COMMAND ----------
+
+assert (
+    df_source_mp_table_anonymised.select(energy_supplier_id_column_name).distinct().count() == df_source_mp_table.select(energy_supplier_id_column_name).distinct().count()
 )
 
 # COMMAND ----------
@@ -454,18 +481,18 @@ assert (
 
 # COMMAND ----------
 
-#df_source_mp_table_anonymised.write.format("delta").mode("append").saveAsTable(
-#    f"{target_database}.{target_mp_table_name}"
-#)
+df_source_mp_table_anonymised.write.format("delta").mode("append").saveAsTable(
+    f"{target_database}.{target_mp_table_name}"
+)
 
 # COMMAND ----------
 
-#df_source_ts_table_anonymised.write.format("delta").mode("append").saveAsTable(
-#    f"{target_database}.{target_ts_table_name}"
-#)
+df_source_ts_table_anonymised.write.format("delta").mode("append").saveAsTable(
+    f"{target_database}.{target_ts_table_name}"
+)
 
 # COMMAND ----------
 
-#df_source_gl_table_anonymised.write.format("delta").mode("append").saveAsTable(
-#    f"{target_database}.{target_gl_table_name}"
-#)
+df_source_gl_table_anonymised.write.format("delta").mode("append").saveAsTable(
+    f"{target_database}.{target_gl_table_name}"
+)
