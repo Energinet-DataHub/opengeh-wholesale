@@ -26,6 +26,7 @@ using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.DurableTask;
 using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
@@ -187,7 +188,7 @@ public class OrchestrationsAppFixture : IAsyncLifetime
 
         // Database
         appHostSettings.ProcessEnvironmentVariables.Add(
-            $"{nameof(ConnectionStringsOptions.ConnectionStrings)}__{nameof(ConnectionStringsOptions.DB_CONNECTION_STRING)}",
+            $"{ConnectionStringsOptions.ConnectionStrings}__{nameof(ConnectionStringsOptions.DB_CONNECTION_STRING)}",
             DatabaseManager.ConnectionString);
 
         // Databricks
@@ -214,6 +215,14 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         appHostSettings.ProcessEnvironmentVariables.Add(
             $"{ServiceBusNamespaceOptions.SectionName}__{nameof(ServiceBusNamespaceOptions.ConnectionString)}",
             ServiceBusResourceProvider.ConnectionString);
+
+        // Override default CalculationJob status monitor configuration
+        appHostSettings.ProcessEnvironmentVariables.Add(
+            $"{CalculationJobStatusMonitorOptions.SectionName}__{nameof(CalculationJobStatusMonitorOptions.PollingIntervalInSeconds)}",
+            "3");
+        appHostSettings.ProcessEnvironmentVariables.Add(
+            $"{CalculationJobStatusMonitorOptions.SectionName}__{nameof(CalculationJobStatusMonitorOptions.ExpiryTimeInSeconds)}",
+            "20");
 
         return appHostSettings;
     }
