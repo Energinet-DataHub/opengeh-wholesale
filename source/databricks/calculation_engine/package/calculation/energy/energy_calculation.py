@@ -21,7 +21,7 @@ import package.calculation.output.energy_storage_model_factory as factory
 from package.calculation.calculation_results import EnergyResultsContainer
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.energy.data_structures.energy_results import EnergyResults
-from package.calculation.energy.quarterly_resolution_transition_factory import (
+from package.calculation.energy.resolution_transition_factory import (
     get_resolution_adjusted_metering_point_time_series,
 )
 from package.calculation.preparation.data_structures.grid_loss_responsible import (
