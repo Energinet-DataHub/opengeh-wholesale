@@ -105,4 +105,5 @@ def _map_to_storage_dataframe(results: DataFrame) -> DataFrame:
         f.col(Colname.from_grid_area).alias(EnergyResultColumnNames.from_grid_area),
         f.col(EnergyResultColumnNames.calculation_result_id),
         f.col(EnergyResultColumnNames.metering_point_id),
+        f.col(EnergyResultColumnNames.resolution),
     )

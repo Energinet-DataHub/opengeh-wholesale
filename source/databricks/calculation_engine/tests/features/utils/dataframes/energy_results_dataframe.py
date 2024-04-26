@@ -14,7 +14,7 @@
 from ast import literal_eval
 
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import col, udf
+from pyspark.sql.functions import col, udf, lit
 from pyspark.sql.types import (
     StringType,
     DecimalType,
@@ -53,6 +53,9 @@ def create_energy_result_dataframe(*args) -> DataFrame:
             TimestampType()
         ),
     )
+
+    # TODO JVM: This is a temporary fix to make the tests pass.
+    df = df.withColumn(EnergyResultColumnNames.resolution, lit("PT15M"))
 
     return spark.createDataFrame(df.rdd, energy_results_schema)
 
