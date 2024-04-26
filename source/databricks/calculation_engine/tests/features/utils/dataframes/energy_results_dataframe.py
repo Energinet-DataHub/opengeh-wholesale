@@ -54,7 +54,7 @@ def create_energy_result_dataframe(*args) -> DataFrame:
         ),
     )
 
-    # TODO: This is a temporary fix to make the tests pass.
+    # TODO JVM: This is a temporary fix to make the tests pass.
     df = df.withColumn(EnergyResultColumnNames.resolution, lit("PT15M"))
 
     return spark.createDataFrame(df.rdd, energy_results_schema)
