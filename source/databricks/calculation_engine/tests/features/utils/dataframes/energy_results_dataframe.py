@@ -22,8 +22,6 @@ from pyspark.sql.types import (
     ArrayType,
 )
 
-from package.codelists import MeteringPointResolution
-
 
 def create_energy_result_dataframe(*args) -> DataFrame:
     spark: SparkSession = args[0]
@@ -57,9 +55,7 @@ def create_energy_result_dataframe(*args) -> DataFrame:
     )
 
     # TODO: This is a temporary fix to make the tests pass.
-    df = df.withColumn(
-        EnergyResultColumnNames.resolution, lit(MeteringPointResolution.QUARTER.value)
-    )
+    df = df.withColumn(EnergyResultColumnNames.resolution, lit("PT15M"))
 
     return spark.createDataFrame(df.rdd, energy_results_schema)
 
