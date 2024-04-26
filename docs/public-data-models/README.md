@@ -20,6 +20,7 @@ A calculation can not span a period that crosses the cut-over date.
 It is important to distinquish between whether the calculation is completed or the whole business process (BRS-023/BRS-027) is complete.
 
 When the calculation is complete the RSM-014/RSM-019 messages for the market actors are created and can be peeked/dequeued. It is, however, important to be aware that the results cannot be accessed in any other way until the whole process is completed. The process is completed when all actor messages are ready. Only then can the data be accessed in other ways like requests (BRS-027) and download of settlement reports and more.
+NOTE: This is planned but not yet supported.
 
 ### Calculation Data vs Process Data
 
