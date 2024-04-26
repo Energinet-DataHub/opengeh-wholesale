@@ -14,13 +14,10 @@
 from dataclasses import fields
 
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import lit
 
 from package.calculation.calculation_results import (
     EnergyResultsContainer,
 )
-from package.codelists import MeteringPointResolution
-from package.constants import EnergyResultColumnNames
 from package.infrastructure import logging_configuration
 from package.infrastructure.paths import (
     OUTPUT_DATABASE_NAME,
@@ -41,11 +38,6 @@ def _write(name: str, df: DataFrame) -> None:
         # Not all energy results have a value - it depends on the type of calculation
         if df is None:
             return None
-        # TODO: Add resolution to the dataframes
-        df = df.withColumn(
-            EnergyResultColumnNames.resolution,
-            lit(MeteringPointResolution.QUARTER.value),
-        )
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
         ).insertInto(f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}")
