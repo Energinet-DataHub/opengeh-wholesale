@@ -20,3 +20,14 @@ def reset_spark_catalog(spark: SparkSession) -> None:
     for schema in schemas:
         if schema.name != "default":
             spark.sql(f"DROP DATABASE IF EXISTS {schema.name} CASCADE")
+
+
+def remove_all_tables(spark: SparkSession) -> None:
+    schemas = spark.catalog.listDatabases()
+    for schema in schemas:
+        tables = spark.catalog.listTables(schema.name)
+        for table in tables:
+            if table.tableType == "VIEW":
+                spark.sql(f"DROP VIEW IF EXISTS {schema.name}.{table.name}")
+            else:
+                spark.sql(f"DROP TABLE IF EXISTS {schema.name}.{table.name}")
