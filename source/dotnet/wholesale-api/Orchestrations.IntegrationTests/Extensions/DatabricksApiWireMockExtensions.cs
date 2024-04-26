@@ -336,6 +336,7 @@ public static class DatabricksApiWireMockExtensions
             EnergyResultColumnNames.QuantityQualities => "\"[\\\"missing\\\"]\"",
             EnergyResultColumnNames.AggregationLevel => "\"total_ga\"",
             EnergyResultColumnNames.MeteringPointId => "\"1234567\"",
+            EnergyResultColumnNames.Resolution => "\"PT15M\"",
             _ => throw new ArgumentOutOfRangeException(nameof(columnName), columnName, null),
         }).ToArray();
         var temp = $"""[[{string.Join(",", data)}]]""";
