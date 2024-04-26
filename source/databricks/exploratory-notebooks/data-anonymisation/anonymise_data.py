@@ -39,7 +39,7 @@ target_mp_table_name = "metering_point_periods"
 target_ts_table_name = "time_series_points"
 target_gl_table_name = "grid_loss_metering_points"
 target_storage_account_name = "stdatalakeshresdwe001"
-target_delta_table_root_path = f"abfss://wholesale@{target_storage_account_name}.dfs.core.windows.net/wholesale_input_anonymised"
+target_delta_table_root_path = f"abfss://wholesale@{target_storage_account_name}.dfs.core.windows.net/calculation_input_anonymised"
 
 # Source columns variables
 metering_point_id_column_name = "metering_point_id"
@@ -339,8 +339,11 @@ df_source_mp_table_anonymised = (
 # MAGIC 1. We have no duplicates of MP Ids in the anonymised table
 # MAGIC 2. We have the same amount of unique MP Ids in the anonymised and source table
 # MAGIC 3. We have the same amount of unique Parent MP Ids in the anonymised and source table
-# MAGIC 4. We have the same amount of unique Balance Responsible Ids in the anonymised and source table
-# MAGIC 5. We have the same amount of unique Energy Supplier Ids in the anonymised and source table
+# MAGIC 4. We have the same amount of null Parent MP Ids in the anonymised and source table
+# MAGIC 5. We have the same amount of unique Balance Responsible Ids in the anonymised and source table
+# MAGIC 6. We have the same amount of null Parent MP Ids in the anonymised and source table
+# MAGIC 7. We have the same amount of unique Energy Supplier Ids in the anonymised and source table
+# MAGIC 8. We have the same amount of null Parent MP Ids in the anonymised and source table
 
 # COMMAND ----------
 
@@ -369,13 +372,34 @@ assert (
 # COMMAND ----------
 
 assert (
+    df_source_mp_table_anonymised.filter(F.col(parent_metering_point_id_column_name).isNull()).count()
+    == df_source_mp_table.filter(F.col(parent_metering_point_id_column_name).isNull()).count()
+)
+
+# COMMAND ----------
+
+assert (
     df_source_mp_table_anonymised.select(balance_responsible_id_column_name).distinct().count() == df_source_mp_table.select(balance_responsible_id_column_name).distinct().count()
 )
 
 # COMMAND ----------
 
 assert (
+    df_source_mp_table_anonymised.filter(F.col(balance_responsible_id_column_name).isNull()).count()
+    == df_source_mp_table.filter(F.col(balance_responsible_id_column_name).isNull()).count()
+)
+
+# COMMAND ----------
+
+assert (
     df_source_mp_table_anonymised.select(energy_supplier_id_column_name).distinct().count() == df_source_mp_table.select(energy_supplier_id_column_name).distinct().count()
+)
+
+# COMMAND ----------
+
+assert (
+    df_source_mp_table_anonymised.filter(F.col(energy_supplier_id_column_name).isNull()).count()
+    == df_source_mp_table.filter(F.col(energy_supplier_id_column_name).isNull()).count()
 )
 
 # COMMAND ----------
