@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from dependency_injector import containers, providers
+from pyspark.sql import SparkSession
 
 import package
 from package.infrastructure import initialize_spark
@@ -19,13 +20,16 @@ from package.infrastructure.infrastructure_settings import InfrastructureSetting
 
 
 class Container(containers.DeclarativeContainer):
-    spark = initialize_spark()
+    spark = None
     infrastructure_settings = providers.Configuration()
 
 
 def create_and_configure_container(
     infrastructure_settings: InfrastructureSettings,
+    spark: SparkSession = initialize_spark,
 ) -> Container:
+    Container.spark = spark
+
     container = Container()
 
     container.infrastructure_settings.from_value(infrastructure_settings)

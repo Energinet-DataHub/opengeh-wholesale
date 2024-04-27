@@ -361,17 +361,7 @@ def dependency_injection_container(
     This enables the use of dependency injection in all tests.
     The container is created once for the entire test suite.
     """
-    container = create_and_configure_container(infrastructure_settings)
-
-    # Overriding is about replacing certain dependencies with test-specific ones
-    # For now it's only the SparkSession that is replaced
-    class OverridingContainer(containers.DeclarativeContainer):
-        spark = spark
-
-    overriding_container = OverridingContainer()
-    container.override(overriding_container)
-
-    return container
+    return create_and_configure_container(infrastructure_settings, spark)
 
 
 @pytest.fixture(scope="session")
