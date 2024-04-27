@@ -41,7 +41,8 @@ calculation_type STRING NOT NULL,
 period_start TIMESTAMP NOT NULL,
 period_end TIMESTAMP NOT NULL,
 execution_time_start TIMESTAMP NOT NULL,
-created_by_user_id STRING NOT NULL"""
+created_by_user_id STRING NOT NULL
+"""
 
     df = spark.createDataFrame(data=[Row(**calculation)], schema=calculation_schema)
     df.write.format("delta").mode("append").option("mergeSchema", "false").insertInto(

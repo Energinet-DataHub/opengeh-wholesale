@@ -146,7 +146,7 @@ def _execute(
     return results
 
 
-@logging_configuration.use_span("calculation.write-output")
+@logging_configuration.use_span("calculation.write")
 def _write_results(results: CalculationResultsContainer) -> None:
     write_energy_results(results.energy_results)
     if results.wholesale_results is not None:
