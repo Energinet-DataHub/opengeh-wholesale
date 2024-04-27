@@ -28,6 +28,7 @@ import pytest
 import yaml
 from azure.identity import ClientSecretCredential
 from delta import configure_spark_with_delta_pip
+from dependency_injector import containers
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType
 
@@ -353,13 +354,24 @@ def infrastructure_settings(
 
 @pytest.fixture(scope="session", autouse=True)
 def dependency_injection_container(
+    spark: SparkSession,
     infrastructure_settings: InfrastructureSettings,
 ) -> Container:
     """
     This enables the use of dependency injection in all tests.
     The container is created once for the entire test suite.
     """
-    return create_and_configure_container(infrastructure_settings)
+    container = create_and_configure_container(infrastructure_settings)
+
+    # Overriding is about replacing certain dependencies with test-specific ones
+    # For now it's only the SparkSession that is replaced
+    class OverridingContainer(containers.DeclarativeContainer):
+        spark = spark
+
+    overriding_container = OverridingContainer()
+    container.override(overriding_container)
+
+    return container
 
 
 @pytest.fixture(scope="session")
