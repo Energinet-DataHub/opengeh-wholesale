@@ -14,7 +14,6 @@
 
 from pyspark.sql import SparkSession, DataFrame
 
-from package.infrastructure import paths
 from package.infrastructure.paths import (
     METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1,
     SETTLEMENT_REPORT_DATABASE_NAME,
@@ -28,39 +27,20 @@ class SettlementReportViewReader:
     This class is responsible for retrieving data from settlement report views.
     """
 
-    def __init__(
-        self,
-        spark: SparkSession,
-        metering_point_periods_view_name: str | None = None,
-        metering_point_time_series_view_name: str | None = None,
-    ) -> None:
-        self._spark = spark
-        self._metering_point_periods_view_name = (
-            metering_point_periods_view_name
-            or paths.METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1
-        )
-        self._metering_point_time_series_view_name = (
-            metering_point_time_series_view_name
-            or paths.METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME_V1
-        )
-
-    def read_metering_point_periods(
-        self,
-    ) -> DataFrame:
-        return self._spark.read.format("delta").table(
+    @staticmethod
+    def read_metering_point_periods_v1(spark: SparkSession) -> DataFrame:
+        return spark.read.format("delta").table(
             f"{SETTLEMENT_REPORT_DATABASE_NAME}.{METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1}"
         )
 
-    def read_metering_point_time_series(
-        self,
-    ) -> DataFrame:
-        return self._spark.read.format("delta").table(
+    @staticmethod
+    def read_metering_point_time_series_v1(spark: SparkSession) -> DataFrame:
+        return spark.read.format("delta").table(
             f"{SETTLEMENT_REPORT_DATABASE_NAME}.{METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME_V1}"
         )
 
-    def read_energy_results_v1(
-        self,
-    ) -> DataFrame:
-        return self._spark.read.format("delta").table(
+    @staticmethod
+    def read_energy_results_v1(spark: SparkSession) -> DataFrame:
+        return spark.read.format("delta").table(
             f"{SETTLEMENT_REPORT_DATABASE_NAME}.{ENERGY_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1}"
         )

@@ -16,31 +16,42 @@ from features.utils.dataframes.basis_data.basis_data_results_dataframe import (
     create_metering_point_periods,
     create_time_series_points,
 )
+from features.utils.readers.basis_data_table_reader import BasisDataTableReader
 from package.calculation.basis_data.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
 )
 from package.calculation.output.schemas import energy_results_schema
+from package.infrastructure.paths import (
+    BASIS_DATA_DATABASE_NAME,
+    ENERGY_RESULT_TABLE_NAME,
+)
 
 
 def get_input_specifications() -> dict[str, tuple]:
     """
     Contains the specifications for view scenario inputs.
+    The key is the name of the file to be read.
+    The value is a tuple containing the schema, the name of the method that reads the data,
+    the method that to corrects the dataframe types, and the database name.
     """
     return {
         "metering_point_periods.csv": (
             metering_point_period_schema,
-            "read_metering_point_periods",
+            BasisDataTableReader.read_metering_point_periods,
             create_metering_point_periods,
+            BASIS_DATA_DATABASE_NAME,
         ),
         "time_series_points.csv": (
             time_series_point_schema,
-            "read_time_series_points",
+            BasisDataTableReader.read_time_series_points,
             create_time_series_points,
+            BASIS_DATA_DATABASE_NAME,
         ),
         "energy_results.csv": (
             energy_results_schema,
             "read_energy_results",
             create_energy_result_dataframe,
+            ENERGY_RESULT_TABLE_NAME,
         ),
     }

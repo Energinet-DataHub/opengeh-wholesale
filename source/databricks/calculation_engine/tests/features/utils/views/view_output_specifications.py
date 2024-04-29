@@ -23,6 +23,9 @@ from features.utils.dataframes.settlement_report.view_results_dataframe import (
     create_metering_point_time_series_view,
     create_energy_results_v1_view,
 )
+from features.utils.readers.settlement_report_view_reader import (
+    SettlementReportViewReader,
+)
 
 
 def get_output_specifications() -> dict[str, tuple]:
@@ -32,17 +35,17 @@ def get_output_specifications() -> dict[str, tuple]:
     return {
         "metering_point_periods.csv": (
             metering_point_period_schema,
-            "read_metering_point_periods",
+            SettlementReportViewReader.read_metering_point_periods_v1,
             create_metering_point_periods_view,
         ),
         "metering_point_time_series.csv": (
             metering_point_time_series_schema,
-            "read_metering_point_time_series",
+            SettlementReportViewReader.read_metering_point_time_series_v1,
             create_metering_point_time_series_view,
         ),
         "energy_results_v1.csv": (
             energy_results_v1_schema,
-            "read_energy_results_v1",
+            SettlementReportViewReader.read_energy_results_v1,
             create_energy_results_v1_view,
         ),
     }
