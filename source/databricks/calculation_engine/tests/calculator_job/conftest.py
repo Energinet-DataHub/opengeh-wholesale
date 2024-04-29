@@ -44,6 +44,7 @@ def calculator_args_balance_fixing(
         calculation_period_end_datetime=datetime(2018, 1, 3, 23, 0, 0),
         calculation_execution_time_start=datetime(2018, 1, 5, 23, 0, 0),
         time_zone="Europe/Copenhagen",
+        quarterly_resolution_transition_datetime=datetime(2023, 1, 31, 23, 0, 0),
     )
 
 

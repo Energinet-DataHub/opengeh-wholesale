@@ -103,7 +103,7 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
     {
         var errors = new List<ValidationError>
         {
-            await HasDataInAnotherGridAreaAsync(incomingRequest.RequestedByActorRole, queryParameters).ConfigureAwait(false)
+            await HasDataInAnotherGridAreaAsync(incomingRequest.RequestedForActorRole, queryParameters).ConfigureAwait(false)
                 ? _noDataForRequestedGridArea
                 : _noDataAvailable,
         };
@@ -115,14 +115,14 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
     private async Task<WholesaleServicesQueryParameters> GetWholesaleResultQueryParametersAsync(WholesaleServicesRequest request)
     {
         var latestCalculationsForRequest = await _completedCalculationRetriever.GetLatestCompletedCalculationsForPeriodAsync(
-                request.GridArea,
+                request.GridAreaCodes,
                 request.Period,
                 request.RequestedCalculationType)
             .ConfigureAwait(true);
 
         return new WholesaleServicesQueryParameters(
             request.AmountType,
-            request.GridArea,
+            request.GridAreaCodes,
             request.EnergySupplierId,
             request.ChargeOwnerId,
             request.ChargeTypes.Select(c => (c.ChargeCode, c.ChargeType)).ToList(),
@@ -133,14 +133,14 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
         string? requestedByActorRole,
         WholesaleServicesQueryParameters queryParameters)
     {
-        if (queryParameters.GridArea == null) // If grid area is null, we already retrieved any data across all grid areas
+        if (queryParameters.GridAreaCodes.Count == 0) // If grid area codes is empty, we already retrieved any data across all grid areas
             return false;
 
         if (requestedByActorRole is DataHubNames.ActorRole.EnergySupplier or DataHubNames.ActorRole.BalanceResponsibleParty)
         {
             var queryParametersWithoutGridArea = queryParameters with
             {
-                GridArea = null,
+                GridAreaCodes = Array.Empty<string>(),
             };
 
             var anyResultsExists = await _wholesaleServicesQueries.AnyAsync(queryParametersWithoutGridArea).ConfigureAwait(false);

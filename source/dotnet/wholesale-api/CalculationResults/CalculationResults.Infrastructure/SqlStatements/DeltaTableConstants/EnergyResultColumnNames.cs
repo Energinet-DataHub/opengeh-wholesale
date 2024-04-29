@@ -22,7 +22,7 @@ public class EnergyResultColumnNames
     public const string CalculationExecutionTimeStart = "calculation_execution_time_start";
     public const string CalculationType = "calculation_type";
     public const string CalculationResultId = "calculation_result_id";
-    public const string GridArea = "grid_area";
+    public const string GridArea = "grid_area_code";
     public const string EnergySupplierId = "energy_supplier_id";
     public const string Time = "time";
     public const string Quantity = "quantity";
@@ -31,8 +31,9 @@ public class EnergyResultColumnNames
     public const string QuantityQualities = "quantity_qualities";
     public const string AggregationLevel = "aggregation_level";
     public const string TimeSeriesType = "time_series_type";
-    public const string FromGridArea = "out_grid_area";
+    public const string FromGridArea = "out_grid_area_code";
     public const string MeteringPointId = "metering_point_id";
+    public const string Resolution = "resolution";
 
     public static IReadOnlyCollection<string> GetAllNames()
     {
@@ -57,6 +58,7 @@ public class EnergyResultColumnNames
              FromGridArea => "string",
              Quantity => "decimal(18,3)",
              MeteringPointId => "string",
+             Resolution => "string",
              _ => throw new ArgumentOutOfRangeException(nameof(columnName), actualValue: columnName, "Unexpected column name."),
          };
 }

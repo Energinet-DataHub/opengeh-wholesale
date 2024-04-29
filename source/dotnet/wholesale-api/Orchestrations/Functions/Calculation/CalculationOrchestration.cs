@@ -28,8 +28,8 @@ internal class CalculationOrchestration
         [OrchestrationTrigger] TaskOrchestrationContext context,
         FunctionContext executionContext)
     {
-        var calculationRequestDto = context.GetInput<CalculationRequestDto>();
-        if (calculationRequestDto == null)
+        var input = context.GetInput<CalculationOrchestrationInput>();
+        if (input == null)
         {
             return "Error: No input specified.";
         }
@@ -37,7 +37,7 @@ internal class CalculationOrchestration
         // Create calculation (SQL)
         var calculationMetadata = await context.CallActivityAsync<CalculationMetadata>(
             nameof(CalculationActivities.CreateCalculationRecordActivity),
-            calculationRequestDto);
+            input);
         calculationMetadata.OrchestrationProgress = "CalculationCreated";
         context.SetCustomStatus(calculationMetadata);
 
@@ -48,10 +48,7 @@ internal class CalculationOrchestration
         calculationMetadata.OrchestrationProgress = "CalculationJobQueued";
         context.SetCustomStatus(calculationMetadata);
 
-        // TODO: Adjust polling and expiry
-        var pollingIntervalInSeconds = 60;
-        var expiryTime = context.CurrentUtcDateTime.AddMinutes(30);
-
+        var expiryTime = context.CurrentUtcDateTime.AddSeconds(input.JobStatusMonitorOptions.ExpiryTimeInSeconds);
         while (context.CurrentUtcDateTime < expiryTime)
         {
             // Monitor calculation (Databricks)
@@ -69,7 +66,7 @@ internal class CalculationOrchestration
                     calculationMetadata);
 
                 // Wait for the next checkpoint
-                var nextCheckpoint = context.CurrentUtcDateTime.AddSeconds(pollingIntervalInSeconds);
+                var nextCheckpoint = context.CurrentUtcDateTime.AddSeconds(input.JobStatusMonitorOptions.PollingIntervalInSeconds);
                 await context.CreateTimer(nextCheckpoint, CancellationToken.None);
             }
             else

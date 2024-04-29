@@ -278,7 +278,6 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
         WholesaleResultColumnNames.calculation_execution_time_start,
         WholesaleResultColumnNames.calculation_result_id,
         WholesaleResultColumnNames.amount_type,
-        WholesaleResultColumnNames.grid_area,
         WholesaleResultColumnNames.quantity,
         WholesaleResultColumnNames.quantity_unit,
         WholesaleResultColumnNames.quantity_qualities,
@@ -288,7 +287,9 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
         WholesaleResultColumnNames.is_tax,
     ]
     all_columns = [
-        attr for attr in dir(WholesaleResultColumnNames) if not attr.startswith("__")
+        getattr(WholesaleResultColumnNames, attribute_name)
+        for attribute_name in dir(WholesaleResultColumnNames)
+        if not attribute_name.startswith("__")
     ]
 
     all_columns = _map_metering_point_type_column_name(all_columns)

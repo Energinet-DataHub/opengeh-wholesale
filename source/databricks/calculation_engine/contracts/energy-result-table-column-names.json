@@ -17,11 +17,11 @@
         "type": "string"
       },
       {
-        "name": "grid_area",
+        "name": "grid_area_code",
         "type": "string"
       },
       {
-        "name": "out_grid_area",
+        "name": "out_grid_area_code",
         "type": "string"
       },
       {
@@ -54,6 +54,10 @@
       },
       {
         "name": "metering_point_id",
+        "type": "string"
+      },
+      {
+        "name": "resolution",
         "type": "string"
       }
     ]
