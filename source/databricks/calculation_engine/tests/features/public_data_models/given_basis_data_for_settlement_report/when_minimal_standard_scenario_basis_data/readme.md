@@ -1,10 +1,23 @@
-# Simple scenario of settlement report views
+# When Minimal Standard Scenario
 
-```text
-GIVEN two production metering point for energy supplier 8100000000108
-  AND four time series points
-WHEN updating tables metering_point_periods_v1 and time_series_points_v1
-THEN the view metering_point_periods_v1 contains two rows
-  AND quantities is aggregated to respectively one and three elements
-  AND observation_day's are 2023-02-01 and 2023-03-01
-```
+The purpose of this test is to test views for settlement reports.
+
+## Design considerations
+
+- The input basis data is taken from the calculation logic test
+  features/given_an_energy_calculation/when_minimal_standard_scenario/output/basis_data
+- Details in the readme.md for that test
+
+## Coverage
+
+All metering point types relevant for energy calculations
+
+- E20 (energy in)
+- E20 (energy out)
+- E17 (flex)
+- E17 (nonprofiled)
+- E17 (glmp)
+- E18
+- E18 (skmp)
+
+Each of the metering point types both have a metering point with resolution 15M and 1H.
