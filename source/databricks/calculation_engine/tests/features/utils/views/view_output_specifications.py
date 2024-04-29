@@ -18,7 +18,7 @@ from features.utils.dataframes.settlement_report import (
 from features.utils.dataframes.settlement_report.energy_results_v1_schema import (
     energy_results_v1_schema,
 )
-from features.utils.dataframes.settlement_report.view_dataframes import (
+from features.utils.dataframes.settlement_report.settlement_report_view_dataframes import (
     create_metering_point_periods_v1_view,
     create_metering_point_time_series_v1_view,
     create_energy_results_v1_view,
