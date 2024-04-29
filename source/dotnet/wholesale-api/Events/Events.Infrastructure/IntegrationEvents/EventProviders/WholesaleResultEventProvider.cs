@@ -14,12 +14,12 @@
 
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.AmountPerChargeResultProducedV1.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1.Factories;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.TotalMonthlyAmountResultProducedV1.Factories;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
 
@@ -28,15 +28,18 @@ public class WholesaleResultEventProvider : ResultEventProvider, IWholesaleResul
     private readonly IWholesaleResultQueries _wholesaleResultQueries;
     private readonly IAmountPerChargeResultProducedV1Factory _amountPerChargeResultProducedV1Factory;
     private readonly IMonthlyAmountPerChargeResultProducedV1Factory _monthlyAmountPerChargeResultProducedV1Factory;
+    private readonly ITotalMonthlyAmountResultProducedV1Factory _totalMonthlyAmountResultProducedV1Factory;
 
     public WholesaleResultEventProvider(
         IWholesaleResultQueries wholesaleResultQueries,
         IAmountPerChargeResultProducedV1Factory amountPerChargeResultProducedV1Factory,
-        IMonthlyAmountPerChargeResultProducedV1Factory monthlyAmountPerChargeResultProducedV1Factory)
+        IMonthlyAmountPerChargeResultProducedV1Factory monthlyAmountPerChargeResultProducedV1Factory,
+        ITotalMonthlyAmountResultProducedV1Factory monthlyAmountResultProducedV1Factory)
     {
         _wholesaleResultQueries = wholesaleResultQueries;
         _amountPerChargeResultProducedV1Factory = amountPerChargeResultProducedV1Factory;
         _monthlyAmountPerChargeResultProducedV1Factory = monthlyAmountPerChargeResultProducedV1Factory;
+        _totalMonthlyAmountResultProducedV1Factory = monthlyAmountResultProducedV1Factory;
     }
 
     public bool CanContainWholesaleResults(CompletedCalculation calculation)
@@ -57,6 +60,9 @@ public class WholesaleResultEventProvider : ResultEventProvider, IWholesaleResul
 
             if (_monthlyAmountPerChargeResultProducedV1Factory.CanCreate(wholesaleResult))
                 yield return CreateIntegrationEvent(_monthlyAmountPerChargeResultProducedV1Factory.Create(wholesaleResult));
+
+            if (_totalMonthlyAmountResultProducedV1Factory.CanCreate(wholesaleResult))
+                yield return CreateIntegrationEvent(_totalMonthlyAmountResultProducedV1Factory.Create(wholesaleResult));
         }
     }
 }

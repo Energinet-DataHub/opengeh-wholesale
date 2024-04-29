@@ -40,4 +40,7 @@ public class CalculationScenarioState
 
     public IReadOnlyCollection<MonthlyAmountPerChargeResultProducedV1> ReceivedMonthlyAmountPerChargeResultProducedV1 { get; set; }
         = new List<MonthlyAmountPerChargeResultProducedV1>();
+
+    public IReadOnlyCollection<TotalMonthlyAmountResultProducedV1> ReceivedTotalMonthlyAmountResultProducedV1 { get; set; }
+        = new List<TotalMonthlyAmountResultProducedV1>();
 }

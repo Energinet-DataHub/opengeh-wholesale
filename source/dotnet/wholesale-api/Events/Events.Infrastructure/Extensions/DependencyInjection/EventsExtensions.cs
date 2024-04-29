@@ -26,6 +26,7 @@ using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Energy
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.GridLossResultProducedV1.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1.Factories;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.TotalMonthlyAmountResultProducedV1.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedCalculations;
 using Microsoft.EntityFrameworkCore;
@@ -79,7 +80,8 @@ public static class EventsExtensions
             .AddScoped<IEnergyResultProducedV2Factory, EnergyResultProducedV2Factory>()
             .AddScoped<IGridLossResultProducedV1Factory, GridLossResultProducedV1Factory>()
             .AddScoped<IAmountPerChargeResultProducedV1Factory, AmountPerChargeResultProducedV1Factory>()
-            .AddScoped<IMonthlyAmountPerChargeResultProducedV1Factory, MonthlyAmountPerChargeResultProducedV1Factory>();
+            .AddScoped<IMonthlyAmountPerChargeResultProducedV1Factory, MonthlyAmountPerChargeResultProducedV1Factory>()
+            .AddScoped<ITotalMonthlyAmountResultProducedV1Factory, TotalMonthlyAmountResultProducedV1Factory>();
 
         services
             .AddScoped<IEnergyResultEventProvider, EnergyResultEventProvider>()

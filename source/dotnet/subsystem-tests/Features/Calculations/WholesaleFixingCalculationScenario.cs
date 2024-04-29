@@ -55,6 +55,7 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
         Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(EnergyResultProducedV2.EventName);
         Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(AmountPerChargeResultProducedV1.EventName);
         Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(MonthlyAmountPerChargeResultProducedV1.EventName);
+        Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(TotalMonthlyAmountResultProducedV1.EventName);
         Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(GridLossResultProducedV1.EventName);
     }
 
@@ -115,6 +116,8 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
             .OfType<AmountPerChargeResultProducedV1>().ToList();
         Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1 = actualReceivedIntegrationEvents
             .OfType<MonthlyAmountPerChargeResultProducedV1>().ToList();
+        Fixture.ScenarioState.ReceivedTotalMonthlyAmountResultProducedV1 = actualReceivedIntegrationEvents
+            .OfType<TotalMonthlyAmountResultProducedV1>().ToList();
         Fixture.ScenarioState.ReceivedGridLossProducedV1 = actualReceivedIntegrationEvents
             .OfType<GridLossResultProducedV1>().ToList();
 
@@ -123,6 +126,7 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
         Fixture.ScenarioState.ReceivedEnergyResultProducedV2.Should().NotBeEmpty();
         Fixture.ScenarioState.ReceivedAmountPerChargeResultProducedV1.Should().NotBeEmpty();
         Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1.Should().NotBeEmpty();
+        Fixture.ScenarioState.ReceivedTotalMonthlyAmountResultProducedV1.Should().NotBeEmpty();
         Fixture.ScenarioState.ReceivedGridLossProducedV1.Should().NotBeEmpty();
     }
 
@@ -351,5 +355,15 @@ AppDependencies
         // Assert
         Assert.Single(energyResults);
         energyResults.First().Should().BeEquivalentTo(expectedTimeSeriesPoints);
+    }
+
+    [ScenarioStep(17)]
+    [SubsystemFact]
+    public void AndThen_ReceivedTotalMonthlyAmountResultProducedV1EventsCountIsEqualToExpected()
+    {
+        var expected = 0;
+
+        // Assert
+        Fixture.ScenarioState.ReceivedTotalMonthlyAmountResultProducedV1.Count.Should().Be(expected);
     }
 }
