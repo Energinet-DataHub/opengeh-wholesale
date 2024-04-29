@@ -1,4 +1,5 @@
 * @Energinet-DataHub/Mandalorian
 /.github/actions @Energinet-DataHub/TheOutlaws
 /.github/workflows @Energinet-DataHub/TheOutlaws
-/source/dotnet @Energinet-DataHub/Mandalorian @Energinet-DataHub/Team-Mosaic
+/source/dotnet @Energinet-DataHub/Mandalorian @Energinet-DataHub/Team-Mosaic @Energinet-DataHub/Team-Raccoons
+
