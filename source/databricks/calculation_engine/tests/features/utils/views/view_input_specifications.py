@@ -25,7 +25,7 @@ from package.calculation.basis_data.schemas import (
 from package.calculation.output.schemas import energy_results_schema
 from package.infrastructure.paths import (
     BASIS_DATA_DATABASE_NAME,
-    ENERGY_RESULT_TABLE_NAME,
+    OUTPUT_DATABASE_NAME,
 )
 
 
@@ -53,6 +53,6 @@ def get_input_specifications() -> dict[str, tuple]:
             energy_results_schema,
             EnergyResultTableReader.read_energy_results,
             create_energy_result_dataframe,
-            ENERGY_RESULT_TABLE_NAME,
+            OUTPUT_DATABASE_NAME,
         ),
     }

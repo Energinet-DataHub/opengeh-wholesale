@@ -16,7 +16,7 @@ from pyspark.sql import SparkSession, DataFrame
 
 from package.infrastructure import paths
 from package.infrastructure.paths import (
-    ENERGY_RESULT_TABLE_NAME,
+    OUTPUT_DATABASE_NAME,
 )
 
 
@@ -32,5 +32,5 @@ class EnergyResultTableReader:
         self,
     ) -> DataFrame:
         return self._spark.read.format("delta").table(
-            f"{ENERGY_RESULT_TABLE_NAME}.{paths.ENERGY_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1}"
+            f"{OUTPUT_DATABASE_NAME}.{paths.ENERGY_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1}"
         )
