@@ -62,7 +62,9 @@ class TotalMonthlyAmountsContainer:
 class BasisDataContainer:
     metering_point_periods: DataFrame
     time_series_points: DataFrame
-
+    charge_master_data: DataFrame
+    charge_prices: DataFrame
+    charge_links: DataFrame
 
 @dataclass
 class CalculationResultsContainer:

@@ -20,7 +20,7 @@ from package.calculation.preparation.data_structures.charge_link_metering_point_
     ChargeLinkMeteringPointPeriods,
     charge_link_metering_point_periods_schema,
 )
-from calculation.preparation.transformations import (
+from tests.calculation.preparation.transformations import (
     prepared_metering_point_time_series_factory,
 )
 from package.calculation.preparation.data_structures.charge_master_data import (
@@ -44,7 +44,7 @@ class DefaultValues:
     CHARGE_OWNER = "001"
     CHARGE_TAX = True
     CHARGE_TIME_HOUR_0 = datetime(2019, 12, 31, 23)
-    CHARGE_PRICE = Decimal("2.000005")
+    CHARGE_PRICE = Decimal("2.005000")
     CHARGE_QUANTITY = 1
     ENERGY_SUPPLIER_ID = "1234567890123"
     METERING_POINT_ID = "123456789012345678901234567"

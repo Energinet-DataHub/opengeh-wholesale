@@ -17,8 +17,10 @@ from pyspark.sql import DataFrame
 from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
-from package.constants import Colname, MeteringPointPeriodColname, TimeSeriesColname
+from package.constants import Colname, MeteringPointPeriodColname, TimeSeriesColname, ChargeMasterDataPeriodsColname, ChargePricePointsColname, ChargeLinkPeriodsColname
 from package.infrastructure import logging_configuration
+
+from package.calculation.preparation.data_structures import InputChargesContainer
 
 
 @logging_configuration.use_span("get_metering_point_periods_basis_data")
@@ -67,3 +69,64 @@ def get_time_series_points_basis_data(
         f.col(Colname.quality).alias(TimeSeriesColname.quality),
         f.col(Colname.observation_time).alias(TimeSeriesColname.observation_time),
     )
+
+
+@logging_configuration.use_span("get_charge_master_data_basis_data")
+def get_charge_master_data_basis_data(
+    calculation_id: str,
+    input_charges_container: InputChargesContainer,
+) -> DataFrame:
+    if input_charges_container:
+        return input_charges_container.charge_master_data._df.select(
+            f.lit(calculation_id).alias(ChargeMasterDataPeriodsColname.calculation_id),
+            f.col(Colname.charge_key).alias(ChargeMasterDataPeriodsColname.charge_key),
+            f.col(Colname.charge_code).alias(ChargeMasterDataPeriodsColname.charge_code),
+            f.col(Colname.charge_type).alias(ChargeMasterDataPeriodsColname.charge_type),
+            f.col(Colname.charge_owner).alias(ChargeMasterDataPeriodsColname.charge_owner_id),
+            f.col(Colname.resolution).alias(ChargeMasterDataPeriodsColname.resolution),
+            f.col(Colname.charge_tax).alias(ChargeMasterDataPeriodsColname.is_tax),
+            f.col(Colname.from_date).alias(ChargeMasterDataPeriodsColname.from_date),
+            f.col(Colname.to_date).alias(ChargeMasterDataPeriodsColname.to_date),
+        )
+    else:
+        return None
+
+
+@logging_configuration.use_span("get_charge_prices_basis_data")
+def get_charge_prices_basis_data(
+    calculation_id: str,
+    input_charges_container: InputChargesContainer,
+) -> DataFrame:
+    if input_charges_container:
+        return input_charges_container.charge_prices._df.select(
+            f.lit(calculation_id).alias(ChargePricePointsColname.calculation_id),
+            f.col(Colname.charge_key).alias(ChargePricePointsColname.charge_key),
+            f.col(Colname.charge_code).alias(ChargePricePointsColname.charge_code),
+            f.col(Colname.charge_type).alias(ChargePricePointsColname.charge_type),
+            f.col(Colname.charge_owner).alias(ChargePricePointsColname.charge_owner_id),
+            f.col(Colname.charge_price).alias(ChargePricePointsColname.charge_price),
+            f.col(Colname.charge_time).alias(ChargePricePointsColname.charge_time),
+        )
+    else:
+        return None
+
+
+@logging_configuration.use_span("get_charge_links_basis_data")
+def get_charge_links_basis_data(
+    calculation_id: str,
+    input_charges_container: InputChargesContainer,
+) -> DataFrame:
+    if input_charges_container:
+        return input_charges_container.charge_links.select(
+            f.lit(calculation_id).alias(ChargeLinkPeriodsColname.calculation_id),
+            f.col(Colname.charge_key).alias(ChargeLinkPeriodsColname.charge_key),
+            f.col(Colname.charge_code).alias(ChargeLinkPeriodsColname.charge_code),
+            f.col(Colname.charge_type).alias(ChargeLinkPeriodsColname.charge_type),
+            f.col(Colname.charge_owner).alias(ChargeLinkPeriodsColname.charge_owner_id),
+            f.col(Colname.metering_point_id).alias(ChargeLinkPeriodsColname.metering_point_id),
+            f.col(Colname.quantity).alias(ChargeLinkPeriodsColname.quantity),
+            f.col(Colname.from_date).alias(ChargeLinkPeriodsColname.from_date),
+            f.col(Colname.to_date).alias(ChargeLinkPeriodsColname.to_date),
+        )
+    else:
+        return None
