@@ -107,7 +107,7 @@ module "kvs_apim_gateway_url" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.0.3"
 
   name         = "apim-gateway-url"
-  value        = module.apim_shared.gateway_url
+  value        = var.apim_url
   key_vault_id = module.kv_shared.id
 }
 

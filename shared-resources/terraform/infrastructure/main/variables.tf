@@ -239,3 +239,8 @@ variable "cert_esett_dh2_datahub3_password" {
   type        = string
   description = "Password for the eSett DH2 certificate"
 }
+
+variable "apim_url" {
+  type        = string
+  description = "URL of the API Management instance to call on"
+}
