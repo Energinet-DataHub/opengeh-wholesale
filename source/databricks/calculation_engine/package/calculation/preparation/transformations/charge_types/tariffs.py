@@ -65,10 +65,6 @@ def get_prepared_tariffs(
     # join with grouped time series
     tariffs = _join_with_grouped_time_series(tariffs, grouped_time_series)
 
-    # energy_supplier_id is nullable when metering point is a child metering point
-    # TODO JVM - find a solution to this
-    tariffs.schema[Colname.energy_supplier_id].nullable = False
-
     return PreparedTariffs(tariffs)
 
 
