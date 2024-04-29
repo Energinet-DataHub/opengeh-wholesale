@@ -32,6 +32,26 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "this" {
     type    = "Microsoft_DefaultRuleSet"
     version = "2.1"
     action  = "Block"
+
+    override {
+      rule_group_name = "PROTOCOL-ENFORCEMENT"
+      # Missing User Agent Header, not sent from BizTalk
+      rule {
+        rule_id = "920320"
+        enabled = true
+        action  = "Log"
+      }
+    }
+
+    override {
+      rule_group_name = "General"
+      # Failed to parse request body, XML failed to parse
+      rule {
+        rule_id = "200002"
+        enabled = true
+        action  = "Log"
+      }
+    }
   }
 
   managed_rule {
