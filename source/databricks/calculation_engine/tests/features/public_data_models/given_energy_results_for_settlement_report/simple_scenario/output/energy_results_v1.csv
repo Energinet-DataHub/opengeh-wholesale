@@ -1,2 +1,0 @@
-calculation_id;calculation_type;grid_area_code;metering_point_type;settlement_method;resolution;time;quantity;energy_supplier_id;aggregation_level
-0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;804;production;;PT15M;2023-02-02 02:00;1.125;;total_ga
