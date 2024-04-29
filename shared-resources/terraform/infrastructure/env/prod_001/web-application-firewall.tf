@@ -52,6 +52,16 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "this" {
         action  = "Log"
       }
     }
+
+    override {
+      rule_group_name = "RCE"
+      # Remote Code Execution: Unix Shell Injection, blocks GraphQL
+      rule {
+        rule_id = "932100"
+        enabled = true
+        action = "Log"
+      }
+    }
   }
 
   managed_rule {
