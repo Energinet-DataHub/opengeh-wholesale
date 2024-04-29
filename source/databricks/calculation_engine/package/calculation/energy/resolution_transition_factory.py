@@ -30,8 +30,8 @@ def get_resolution(
     calculation_period_end_datetime: datetime,
 ) -> MeteringPointResolution:
     if calculation_period_end_datetime < quarterly_resolution_transition_datetime:
-        return MeteringPointResolution.QUARTER
-    return MeteringPointResolution.HOUR
+        return MeteringPointResolution.HOUR
+    return MeteringPointResolution.QUARTER
 
 
 def get_resolution_adjusted_metering_point_time_series(
