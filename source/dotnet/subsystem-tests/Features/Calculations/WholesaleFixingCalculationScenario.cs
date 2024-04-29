@@ -361,6 +361,7 @@ AppDependencies
     [SubsystemFact]
     public void AndThen_ReceivedTotalMonthlyAmountResultProducedV1EventsCountIsEqualToExpected()
     {
+        // TODO: Awaiting expected count from the business
         var expected = 0;
 
         // Assert
