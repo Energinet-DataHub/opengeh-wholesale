@@ -17,11 +17,11 @@ from pyspark.sql import DataFrame
 
 
 @dataclass
-class DataframeContainer:
+class DataframeWrapper:
 
     name: str
     """
-    The name of the container.
+    The name of the dataframe.
     """
 
     df: DataFrame | None

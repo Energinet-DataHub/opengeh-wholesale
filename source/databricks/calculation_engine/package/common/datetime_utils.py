@@ -47,3 +47,10 @@ def get_number_of_days_in_period(
         raise Exception("Period must start and end at midnight.")
 
     return (period_end_local_time - period_start_local_time).days
+
+
+def is_midnight_in_time_zone(time: datetime, time_zone: str) -> bool:
+    time_zone_info = ZoneInfo(time_zone)
+    time_local_time = time.astimezone(time_zone_info)
+
+    return time_local_time.time() == datetime.min.time()

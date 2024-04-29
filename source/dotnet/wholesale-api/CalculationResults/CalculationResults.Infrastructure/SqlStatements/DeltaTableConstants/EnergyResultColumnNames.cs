@@ -33,6 +33,7 @@ public class EnergyResultColumnNames
     public const string TimeSeriesType = "time_series_type";
     public const string FromGridArea = "out_grid_area_code";
     public const string MeteringPointId = "metering_point_id";
+    public const string Resolution = "resolution";
 
     public static IReadOnlyCollection<string> GetAllNames()
     {
@@ -57,6 +58,7 @@ public class EnergyResultColumnNames
              FromGridArea => "string",
              Quantity => "decimal(18,3)",
              MeteringPointId => "string",
+             Resolution => "string",
              _ => throw new ArgumentOutOfRangeException(nameof(columnName), actualValue: columnName, "Unexpected column name."),
          };
 }
