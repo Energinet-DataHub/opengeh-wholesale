@@ -219,9 +219,9 @@ def _create_basis_data_factory(spark: SparkSession) -> BasisDataContainer:
     )
 
     return basis_data_factory.create(
-        args=calculation_args, 
-        metering_point_periods_df=metering_point_period_df, 
-        metering_point_time_series_df=metering_point_time_series_df, 
+        args=calculation_args,
+        metering_point_periods_df=metering_point_period_df,
+        metering_point_time_series_df=metering_point_time_series_df,
         input_charges_container=input_charges_container,
     )
 
