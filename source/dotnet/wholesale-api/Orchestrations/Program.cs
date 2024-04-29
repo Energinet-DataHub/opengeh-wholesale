@@ -38,7 +38,7 @@ var host = new HostBuilder()
         services.AddHealthChecksForIsolatedWorker();
 
         // Http => Authentication
-        services.AddUserAuthenticationForIsolatedFunction<FrontendUser, FrontendUserProvider>();
+        services.AddUserAuthenticationForIsolatedWorker<FrontendUser, FrontendUserProvider>();
 
         // Shared by modules
         services.AddNodaTimeForApplication();

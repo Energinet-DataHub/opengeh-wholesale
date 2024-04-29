@@ -4,7 +4,7 @@
     <RootNamespace>Energinet.DataHub.Wholesale.Calculations.Infrastructure</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Energinet.DataHub.Core.App.Common" Version="12.1.0-alpha-421" />
+    <PackageReference Include="Energinet.DataHub.Core.App.Common" Version="12.1.0-alpha-422" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="8.0.4" />
     <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Version="8.0.1" />
     <PackageReference Include="Energinet.DataHub.Core.Databricks.Jobs" Version="10.0.2" />
