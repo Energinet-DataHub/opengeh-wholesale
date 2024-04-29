@@ -11,9 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from features.utils.dataframes.settlement_report.settlement_report_colname import (
-    MeteringPointTimeSeriesV1ColumnNames,
-)
 from pyspark.sql.types import (
     StructField,
     StringType,
@@ -23,6 +20,9 @@ from pyspark.sql.types import (
     DecimalType,
 )
 
+from features.utils.dataframes.settlement_report.settlement_report_view_column_names import (
+    MeteringPointTimeSeriesV1ColumnNames,
+)
 from package.constants import TimeSeriesColname, MeteringPointPeriodColname
 
 element = StructType(
