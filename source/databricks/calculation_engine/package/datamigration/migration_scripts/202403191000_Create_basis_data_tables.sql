@@ -100,20 +100,3 @@ USING DELTA
 -- In the production it is set to empty and the respective location is used. This means the production tables won't be deleted if the schema is.
 {TEST}LOCATION '{CONTAINER_PATH}/{BASIS_DATA_FOLDER}/grid_loss_metering_points'
 GO
-
-CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.calculations
-(
-    calculation_id STRING NOT NULL,
-    calculation_type STRING NOT NULL,
-    period_start TIMESTAMP NOT NULL,
-    period_end TIMESTAMP NOT NULL,
-    execution_time_start TIMESTAMP NOT NULL,
-    created_time TIMESTAMP NOT NULL,
-    created_by_user_id STRING NOT NULL,
-    version BIGINT NOT NULL
-)
-USING DELTA
--- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
--- In the production it is set to empty and the respective location is used. This means the production tables won't be deleted if the schema is.
-{TEST}LOCATION '{CONTAINER_PATH}/{BASIS_DATA_FOLDER}/calculations'
-GO
