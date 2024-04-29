@@ -11,6 +11,26 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-class MeteringPointTimeSeriesColname:
-    observation_day = "observation_day"
-    quantities = "quantities"
+
+from pyspark.sql import SparkSession, DataFrame
+
+from package.infrastructure import paths
+from package.infrastructure.paths import (
+    ENERGY_RESULT_TABLE_NAME,
+)
+
+
+class EnergyResultTableReader:
+
+    def __init__(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        self._spark = spark
+
+    def read_energy_results(
+        self,
+    ) -> DataFrame:
+        return self._spark.read.format("delta").table(
+            f"{ENERGY_RESULT_TABLE_NAME}.{paths.ENERGY_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1}"
+        )

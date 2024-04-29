@@ -12,11 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from features.utils.dataframes import create_energy_result_dataframe
-from features.utils.dataframes.basis_data.basis_data_results_dataframe import (
+from features.utils.dataframes.basis_data.basis_data_dataframes import (
     create_metering_point_periods,
     create_time_series_points,
 )
 from features.utils.readers.basis_data_table_reader import BasisDataTableReader
+from features.utils.readers.energy_result_table_reader import EnergyResultTableReader
 from package.calculation.basis_data.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
@@ -50,7 +51,7 @@ def get_input_specifications() -> dict[str, tuple]:
         ),
         "energy_results.csv": (
             energy_results_schema,
-            "read_energy_results",
+            EnergyResultTableReader.read_energy_results,
             create_energy_result_dataframe,
             ENERGY_RESULT_TABLE_NAME,
         ),

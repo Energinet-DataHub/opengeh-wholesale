@@ -11,29 +11,45 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from features.utils.dataframes.settlement_report.settlement_report_colname import (
+    MeteringPointTimeSeriesV1ColumnNames,
+)
 from pyspark.sql.types import (
     StructField,
     StringType,
     TimestampType,
     StructType,
+    ArrayType,
+    DecimalType,
 )
 
-from package.constants import MeteringPointPeriodColname
+from package.constants import TimeSeriesColname, MeteringPointPeriodColname
 
-metering_point_period_schema = StructType(
+element = StructType(
+    [
+        StructField(TimeSeriesColname.observation_time, TimestampType(), False),
+        StructField(TimeSeriesColname.quantity, DecimalType(18, 3), False),
+    ]
+)
+
+
+metering_point_time_series_v1_view_schema = StructType(
     [
         StructField(MeteringPointPeriodColname.calculation_id, StringType(), False),
         StructField(MeteringPointPeriodColname.metering_point_id, StringType(), False),
-        StructField(MeteringPointPeriodColname.from_date, TimestampType(), False),
-        StructField(MeteringPointPeriodColname.to_date, TimestampType(), True),
-        StructField(MeteringPointPeriodColname.grid_area, StringType(), False),
-        StructField(MeteringPointPeriodColname.from_grid_area, StringType(), True),
-        StructField(MeteringPointPeriodColname.to_grid_area, StringType(), True),
         StructField(
             MeteringPointPeriodColname.metering_point_type, StringType(), False
         ),
-        StructField(MeteringPointPeriodColname.settlement_method, StringType(), True),
+        StructField(MeteringPointPeriodColname.resolution, StringType(), False),
+        StructField(MeteringPointPeriodColname.grid_area, StringType(), False),
         StructField(MeteringPointPeriodColname.energy_supplier_id, StringType(), True),
+        StructField(
+            MeteringPointTimeSeriesV1ColumnNames.observation_day, TimestampType(), False
+        ),
+        StructField(
+            MeteringPointTimeSeriesV1ColumnNames.quantities,
+            ArrayType(element, False),
+            False,
+        ),
     ]
 )

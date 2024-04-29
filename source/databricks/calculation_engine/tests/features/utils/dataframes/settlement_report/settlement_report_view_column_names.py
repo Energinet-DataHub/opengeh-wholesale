@@ -14,6 +14,11 @@
 from package.constants import EnergyResultColumnNames, Colname
 
 
+class MeteringPointTimeSeriesV1ColumnNames:
+    observation_day = "observation_day"
+    quantities = "quantities"
+
+
 class EnergyResultsV1ColumnNames:
     calculation_id = EnergyResultColumnNames.calculation_id
     calculation_type = EnergyResultColumnNames.calculation_type

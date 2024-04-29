@@ -21,18 +21,16 @@ from pyspark.sql.types import (
     DecimalType,
 )
 
-from features.public_data_models.given_basis_data_for_settlement_report.common.schemas.metering_point_time_series_schema import (
-    element,
-)
 
-
-def create_metering_point_periods_view(spark: SparkSession, df: DataFrame) -> DataFrame:
+def create_metering_point_periods_v1_view(
+    spark: SparkSession, df: DataFrame
+) -> DataFrame:
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
     from package.constants import MeteringPointPeriodColname
-    from features.public_data_models.given_basis_data_for_settlement_report.common import (
-        metering_point_period_schema,
+    from features.utils.dataframes.settlement_report.metering_point_period_v1_view_schema import (
+        metering_point_period_v1_view_schema,
     )
 
     df = df.withColumn(
@@ -44,44 +42,47 @@ def create_metering_point_periods_view(spark: SparkSession, df: DataFrame) -> Da
         col(MeteringPointPeriodColname.to_date).cast(TimestampType()),
     )
 
-    return spark.createDataFrame(df.rdd, metering_point_period_schema)
+    return spark.createDataFrame(df.rdd, metering_point_period_v1_view_schema)
 
 
-def create_metering_point_time_series_view(
+def create_metering_point_time_series_v1_view(
     spark: SparkSession,
     df: DataFrame,
 ) -> DataFrame:
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
-    from features.public_data_models.given_basis_data_for_settlement_report.common import (
-        MeteringPointTimeSeriesColname,
+    from features.utils.dataframes.settlement_report.settlement_report_colname import (
+        MeteringPointTimeSeriesV1ColumnNames,
     )
-    from features.public_data_models.given_basis_data_for_settlement_report.common import (
-        metering_point_time_series_schema,
-    )
-
-    df = df.withColumn(
-        MeteringPointTimeSeriesColname.observation_day,
-        col(MeteringPointTimeSeriesColname.observation_day).cast(TimestampType()),
+    from features.utils.dataframes.settlement_report.metering_point_time_series_v1_view_schema import (
+        metering_point_time_series_v1_view_schema,
+        element,
     )
 
     df = df.withColumn(
-        MeteringPointTimeSeriesColname.quantities,
-        from_json(col(MeteringPointTimeSeriesColname.quantities), ArrayType(element)),
+        MeteringPointTimeSeriesV1ColumnNames.observation_day,
+        col(MeteringPointTimeSeriesV1ColumnNames.observation_day).cast(TimestampType()),
     )
 
-    return spark.createDataFrame(df.rdd, metering_point_time_series_schema)
+    df = df.withColumn(
+        MeteringPointTimeSeriesV1ColumnNames.quantities,
+        from_json(
+            col(MeteringPointTimeSeriesV1ColumnNames.quantities), ArrayType(element)
+        ),
+    )
+
+    return spark.createDataFrame(df.rdd, metering_point_time_series_v1_view_schema)
 
 
 def create_energy_results_v1_view(spark: SparkSession, df: DataFrame) -> DataFrame:
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
-    from features.public_data_models.given_energy_results_for_settlement_report.common.column_names.settlement_report_colname import (
+    from features.utils.dataframes.settlement_report.settlement_report_colname import (
         EnergyResultsV1ColumnNames,
     )
-    from features.public_data_models.given_energy_results_for_settlement_report.common.schemas.energy_results_v1_schema import (
+    from features.utils.dataframes.settlement_report.energy_results_v1_schema import (
         energy_results_v1_schema,
     )
 

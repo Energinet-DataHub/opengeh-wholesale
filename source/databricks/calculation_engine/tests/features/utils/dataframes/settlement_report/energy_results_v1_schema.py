@@ -20,7 +20,7 @@ from pyspark.sql.types import (
     DecimalType,
 )
 
-from features.public_data_models.given_energy_results_for_settlement_report.common.column_names.settlement_report_colname import (
+from features.utils.dataframes.settlement_report.settlement_report_colname import (
     EnergyResultsV1ColumnNames,
 )
 
