@@ -52,7 +52,7 @@ def create_metering_point_time_series_v1_view(
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
-    from features.utils.dataframes.settlement_report.settlement_report_colname import (
+    from features.utils.dataframes.settlement_report.settlement_report_view_column_names import (
         MeteringPointTimeSeriesV1ColumnNames,
     )
     from features.utils.dataframes.settlement_report.metering_point_time_series_v1_view_schema import (
@@ -79,7 +79,7 @@ def create_energy_results_v1_view(spark: SparkSession, df: DataFrame) -> DataFra
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
-    from features.utils.dataframes.settlement_report.settlement_report_colname import (
+    from features.utils.dataframes.settlement_report.settlement_report_view_column_names import (
         EnergyResultsV1ColumnNames,
     )
     from features.utils.dataframes.settlement_report.energy_results_v1_schema import (
