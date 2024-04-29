@@ -1,12 +1,12 @@
 grid_area_code;energy_supplier_id;balance_responsible_id;quantity;quantity_qualities;time;aggregation_level;time_series_type;calculation_id;calculation_type;calculation_execution_time_start;from_grid_area_code;calculation_result_id;metering_point_id;resolution
-804;;;1;['measured'];2023-02-02 02:00;total_ga;production;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
-804;;;2;['measured'];2023-02-02 02:00;total_ga;non_profiled_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
-804;;;3;['measured'];2023-02-02 02:00;total_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
-804;;;3;['measured'];2023-02-02 02:00;total_ga;total_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
-804;;;3;['measured'];2023-02-02 02:00;total_ga;net_exchange_per_ga;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
-804;;;3;['measured'];2023-02-02 02:00;total_ga;net_exchange_per_neighboring_ga;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
-804;;;3;['measured'];2023-02-02 02:00;total_ga;grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
-804;;;3;['measured'];2023-02-02 02:00;total_ga;negative_grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
-804;;;3;['measured'];2023-02-02 02:00;total_ga;positive_grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
-804;;;3;['measured'];2023-02-02 02:00;total_ga;temp_flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
-804;;;3;['measured'];2023-02-02 02:00;total_ga;temp_production;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
+804;;;1;['measured'];2023-02-02 02:00;total_ga;production;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;;;PT15M
+804;;;2;['measured'];2023-02-02 02:00;total_ga;non_profiled_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;;;PT15M
+804;;;3;['measured'];2023-02-02 02:00;total_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;;;PT15M
+804;;;3;['measured'];2023-02-02 02:00;total_ga;total_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;;;PT15M
+804;;;3;['measured'];2023-02-02 02:00;total_ga;net_exchange_per_ga;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;;;PT15M
+804;;;3;['measured'];2023-02-02 02:00;total_ga;net_exchange_per_neighboring_ga;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;;;PT15M
+804;;;3;['measured'];2023-02-02 02:00;total_ga;grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;;;PT15M
+804;;;3;['measured'];2023-02-02 02:00;total_ga;negative_grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;;;PT15M
+804;;;3;['measured'];2023-02-02 02:00;total_ga;positive_grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;;;PT15M
+804;;;3;['measured'];2023-02-02 02:00;total_ga;temp_flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;;;PT15M
+804;;;3;['measured'];2023-02-02 02:00;total_ga;temp_production;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;;;PT15M
