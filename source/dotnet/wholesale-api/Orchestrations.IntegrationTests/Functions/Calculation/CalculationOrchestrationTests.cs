@@ -113,10 +113,10 @@ public class CalculationOrchestrationTests : IAsyncLifetime
             "api/StartCalculation",
             new StringContent(
                 JsonConvert.SerializeObject(new StartCalculationRequestDto(
-                CalculationType.Aggregation,
-                ["256", "512"],
-                todayAtMidnight,
-                todayAtMidnight.AddDays(2))),
+                    CalculationType.Aggregation,
+                    ["256", "512"],
+                    todayAtMidnight,
+                    todayAtMidnight.AddDays(2))),
                 Encoding.UTF8,
                 "application/json"));
 
