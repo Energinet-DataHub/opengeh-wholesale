@@ -20,7 +20,7 @@ from pyspark.sql import DataFrame
 class DataframeWrapper:
 
     key: str
-    """The key of the dataframe."""
+    """The key of the wrapper."""
 
     name: str
     """
