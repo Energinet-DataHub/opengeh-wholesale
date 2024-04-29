@@ -23,6 +23,7 @@ from package.calculation.basis_data import basis_data
 from package.infrastructure import logging_configuration
 from package.calculation.preparation.data_structures import InputChargesContainer
 
+
 @logging_configuration.use_span("calculation.basis_data.prepare")
 def create(
     args: CalculatorArgs,

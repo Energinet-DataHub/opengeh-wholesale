@@ -66,6 +66,7 @@ class BasisDataContainer:
     charge_prices: DataFrame
     charge_links: DataFrame
 
+
 @dataclass
 class CalculationResultsContainer:
     """

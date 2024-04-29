@@ -141,8 +141,6 @@ def _execute(
         input_charges,
     )
 
-    # Save basis data to 
-
     return results
 
 

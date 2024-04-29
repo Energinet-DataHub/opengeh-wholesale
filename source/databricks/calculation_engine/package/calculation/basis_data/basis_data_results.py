@@ -48,7 +48,7 @@ def write_basis_data(basis_data: BasisDataContainer) -> None:
             )
 
     if basis_data.charge_prices:
-        with logging_configuration.start_span("charge_prices"):    
+        with logging_configuration.start_span("charge_prices"):
             basis_data.charge_prices.write.format("delta").mode("append").option(
                 "mergeSchema", "false"
             ).insertInto(

@@ -46,6 +46,7 @@ JAN_4TH = datetime(2022, 1, 3, 23)
 JAN_5TH = datetime(2022, 1, 4, 23)
 FEB_1ST = datetime(2022, 1, 31, 23)
 
+
 class DefaultValues:
     CALCULATION_ID = "12345"
     GRID_AREA = "543"
@@ -115,6 +116,7 @@ def _create_charge_prices_row(
 
     return Row(**row)
 
+
 def _create_charge_link_row(
     calculation_id: str = DefaultValues.CALCULATION_ID,
     charge_code: str = DefaultValues.CHARGE_CODE,
@@ -143,6 +145,7 @@ def _create_charge_link_row(
 
     return Row(**row)
 
+
 def _create_charge_master_data(
     spark: SparkSession, data: None | Row | list[Row] = None
 ) -> ChargeMasterData:
@@ -164,6 +167,7 @@ def _create_charge_prices(
     df = spark.createDataFrame(data, charge_price_points_schema)
     return ChargePrices(df)
 
+
 def _create_charge_links(
     spark: SparkSession, data: None | Row | list[Row] = None
 ) -> DataFrame:
@@ -172,6 +176,7 @@ def _create_charge_links(
     elif isinstance(data, Row):
         data = [data]
     return spark.createDataFrame(data, charge_link_periods_schema)
+
 
 def _create_calculation_args() -> CalculatorArgs:
     return CalculatorArgs(
@@ -185,6 +190,7 @@ def _create_calculation_args() -> CalculatorArgs:
         quarterly_resolution_transition_datetime=datetime(2018, 1, 5, 23, 0, 0),
     )
 
+
 def _create_prepared_metering_point_time_series(spark: SparkSession):
     time_series_rows = [
         charges_factory.create_time_series_row(),
@@ -197,6 +203,7 @@ def _create_prepared_metering_point_time_series(spark: SparkSession):
 
     return metering_point_time_series_df
 
+
 def _create_basis_data_factory(spark: SparkSession) -> BasisDataContainer:
     calculation_args = _create_calculation_args()
     metering_point_period_df = metering_point_periods_factory.create(spark)
@@ -206,12 +213,17 @@ def _create_basis_data_factory(spark: SparkSession) -> BasisDataContainer:
     charge_master_data = _create_charge_master_data(spark)
 
     input_charges_container = InputChargesContainer(
-            charge_master_data=charge_master_data,
-            charge_prices=charge_prices,
-            charge_links=charge_links,
-        )
+        charge_master_data=charge_master_data,
+        charge_prices=charge_prices,
+        charge_links=charge_links,
+    )
 
-    return basis_data_factory.create(args=calculation_args, metering_point_periods_df=metering_point_period_df, metering_point_time_series_df=metering_point_time_series_df, input_charges_container=input_charges_container)
+    return basis_data_factory.create(
+        args=calculation_args, 
+        metering_point_periods_df=metering_point_period_df, 
+        metering_point_time_series_df=metering_point_time_series_df, 
+        input_charges_container=input_charges_container,
+    )
 
 
 def test__basis_data_is_stored_with_correct_schema(spark: SparkSession):
