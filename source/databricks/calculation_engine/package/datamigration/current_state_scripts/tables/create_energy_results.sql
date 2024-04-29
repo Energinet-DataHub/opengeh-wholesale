@@ -16,7 +16,8 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.energy_results
     calculation_execution_time_start TIMESTAMP NOT NULL,
     out_grid_area_code STRING,
     calculation_result_id STRING NOT NULL,
-    metering_point_id STRING
+    metering_point_id STRING,
+    resolution STRING
 )
 USING DELTA
 TBLPROPERTIES (
@@ -33,7 +34,8 @@ TBLPROPERTIES (
     delta.constraints.metering_point_id_conditional_chk = "( time_series_type IN ( 'negative_grid_loss' , 'positive_grid_loss' ) AND metering_point_id IS NOT NULL ) OR ( time_series_type NOT IN ( 'negative_grid_loss' , 'positive_grid_loss' ) AND metering_point_id IS NULL )",
     delta.columnMapping.mode = "name",
     delta.constraints.grid_area_code_chk = "LENGTH ( grid_area_code ) = 3",
-    delta.constraints.out_grid_area_code_chk = "out_grid_area_code IS NULL OR LENGTH ( out_grid_area_code ) = 3"
+    delta.constraints.out_grid_area_code_chk = "out_grid_area_code IS NULL OR LENGTH ( out_grid_area_code ) = 3",
+    delta.constraints.resolution_chk = "resolution IN ( 'PT15M' , 'PT1H' )"
 )
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
 -- In the production it is set to empty and the respective location is used. This means the production tables won't be deleted if the schema is.

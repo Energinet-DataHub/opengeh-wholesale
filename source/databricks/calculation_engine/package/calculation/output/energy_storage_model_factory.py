@@ -19,7 +19,7 @@ from pyspark.sql.types import DecimalType
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.energy.data_structures.energy_results import EnergyResults
 from package.calculation.output.add_meta_data import add_metadata
-from package.codelists import TimeSeriesType, AggregationLevel
+from package.codelists import TimeSeriesType, AggregationLevel, MeteringPointResolution
 from package.constants import Colname, EnergyResultColumnNames
 
 
@@ -34,6 +34,10 @@ def create(
         energy_results.df, aggregation_level, time_series_type
     )
     df = add_metadata(args, _get_column_group_for_calculation_result_id(), df)
+    # TODO JVM: Create a function to get the correct resolution when quarter_to_hour is implemented
+    df = df.withColumn(
+        EnergyResultColumnNames.resolution, f.lit(MeteringPointResolution.QUARTER.value)
+    )
     df = _map_to_storage_dataframe(df)
 
     return df
@@ -97,4 +101,5 @@ def _map_to_storage_dataframe(results: DataFrame) -> DataFrame:
         f.col(Colname.from_grid_area).alias(EnergyResultColumnNames.from_grid_area),
         f.col(EnergyResultColumnNames.calculation_result_id),
         f.col(EnergyResultColumnNames.metering_point_id),
+        f.col(EnergyResultColumnNames.resolution),
     )
