@@ -54,8 +54,9 @@ def create_energy_result_dataframe(*args) -> DataFrame:
         ),
     )
 
-    # TODO JVM: This is a temporary fix to make the tests pass.
-    df = df.withColumn(EnergyResultColumnNames.resolution, lit("PT15M"))
+    # if resolution is not present in the dataframe, add it with a default value of PT15M
+    if EnergyResultColumnNames.resolution not in df.columns:
+        df = df.withColumn(EnergyResultColumnNames.resolution, lit("PT15M"))
 
     return spark.createDataFrame(df.rdd, energy_results_schema)
 
