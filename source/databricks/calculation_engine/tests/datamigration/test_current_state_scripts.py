@@ -1,4 +1,7 @@
-﻿# you may not use this file except in compliance with the License.
+﻿# Copyright 2020 Energinet DataHub A/S
+#
+# Licensed under the Apache License, Version 2.0 (the "License2");
+# you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
@@ -22,7 +25,7 @@ def test__current_state_scripts__when_migration_scripts_executed_and_deleted__th
     mocker: Mock,
 ) -> None:
     # Arrange
-    storage_account = "storage_account_5"
+    storage_account = "storage_account"
     mocker.patch.object(
         sut.paths,
         sut.paths.get_storage_account_url.__name__,
