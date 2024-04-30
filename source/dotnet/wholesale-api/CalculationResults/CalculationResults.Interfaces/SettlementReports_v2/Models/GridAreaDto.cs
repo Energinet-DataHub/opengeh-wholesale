@@ -14,9 +14,4 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
-// TODO: string? energySupplier
-public sealed record SettlementReportRequestFilterDto(
-    IReadOnlyCollection<GridAreaDto> GridAreas,
-    DateTimeOffset PeriodStart,
-    DateTimeOffset PeriodEnd,
-    string? CsvFormatLocale = "da-DK");
+public sealed record GridAreaDto(string Code);

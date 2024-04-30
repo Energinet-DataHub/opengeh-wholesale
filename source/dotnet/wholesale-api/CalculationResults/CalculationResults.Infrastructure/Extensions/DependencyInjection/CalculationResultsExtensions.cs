@@ -18,6 +18,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationR
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonSerialization;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
@@ -48,6 +49,7 @@ public static class CalculationResultsExtensions
 
         // Settlement Reports
         services.AddScoped<ISettlementReportRequestHandler, SettlementReportRequestHandler>();
+        services.AddScoped<ISettlementReportDataRepository, LegacySettlementReportDataRepository>();
 
         // Used by sql statements (queries)
         services.AddOptions<DeltaTableOptions>().Bind(configuration);
