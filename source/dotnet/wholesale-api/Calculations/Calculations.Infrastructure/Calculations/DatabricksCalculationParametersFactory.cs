@@ -30,7 +30,7 @@ public class DatabricksCalculationParametersFactory : ICalculationParametersFact
             $"--period-start-datetime={calculation.PeriodStart}",
             $"--period-end-datetime={calculation.PeriodEnd}",
             $"--calculation-type={calculation.CalculationType}",
-            $"--execution-time-start={calculation.ExecutionTimeStart}",
+            $"--created-by-user-id={calculation.CreatedByUserId}",
         };
 
         return RunParameters.CreatePythonParams(jobParameters);
