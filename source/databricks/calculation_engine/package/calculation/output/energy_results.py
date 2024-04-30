@@ -13,7 +13,7 @@
 # limitations under the License.
 from dataclasses import fields
 
-from pyspark.sql import DataFrame
+from pyspark.sql import DataFrame, SparkSession
 
 from package.calculation.calculation_results import (
     EnergyResultsContainer,
@@ -23,6 +23,7 @@ from package.infrastructure.paths import (
     OUTPUT_DATABASE_NAME_UC,
     ENERGY_RESULT_TABLE_NAME,
     CATALOGUE_NAME,
+    OUTPUT_DATABASE_NAME,
 )
 
 
@@ -41,6 +42,19 @@ def _write(name: str, df: DataFrame) -> None:
             return None
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
-        ).insertInto(
+        ).insertInto(f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}")
+
+        spark = SparkSession.builder.getOrCreate()
+        if spark.catalog.tableExists(
             f"{CATALOGUE_NAME}.{OUTPUT_DATABASE_NAME_UC}.{ENERGY_RESULT_TABLE_NAME}"
-        )
+        ):
+            print("The unity catalog exist!")
+
+            # Insert into the table
+            df.write.format("delta").mode("append").option(
+                "mergeSchema", "false"
+            ).insertInto(
+                f"{CATALOGUE_NAME}.{OUTPUT_DATABASE_NAME_UC}.{ENERGY_RESULT_TABLE_NAME}"
+            )
+        else:
+            print("The unity catalog does NOT exist.")
