@@ -64,7 +64,6 @@ class TestWhenInvokedWithValidArguments:
 
         Debug level is not tested as it is not intended to be logged by default.
         """
-        print(repr(any_calculator_args))
 
         # Arrange
         self.prepare_command_line_arguments(any_calculator_args)
