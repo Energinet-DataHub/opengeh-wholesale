@@ -5,12 +5,10 @@ module "mssql_database_application_access" {
   database_name   = module.mssqldb_grid_loss_imbalance_prices.name
 
   application_hosts_names = [
-    module.app_webapi.name,
     module.app_api.name,
   ]
 
   depends_on = [
-    module.app_webapi.name,
     module.app_api.name,
   ]
 }
