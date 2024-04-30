@@ -35,7 +35,7 @@ def create_calculation_args(input_path: str) -> CalculatorArgs:
         calculation_args = yaml.safe_load(file)[0]
 
     quarterly_resolution_transition_datetime = datetime(2023, 1, 31, 23, 0, 0)
-    if "quarterly_resolution_transition_datetime" in calculation_args[0]:
+    if "quarterly_resolution_transition_datetime" in calculation_args:
         quarterly_resolution_transition_datetime = datetime.strptime(
             calculation_args["quarterly_resolution_transition_datetime"],
             CSV_DATE_FORMAT,
