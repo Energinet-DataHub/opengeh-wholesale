@@ -96,7 +96,9 @@ def get_charge_master_data_basis_data(
             F.col(Colname.charge_type).alias(
                 ChargeMasterDataPeriodsColname.charge_type
             ),
-            F.col(Colname.charge_owner).alias(ChargeMasterDataPeriodsColname.charge_owner_id),
+            F.col(Colname.charge_owner).alias(
+                ChargeMasterDataPeriodsColname.charge_owner_id,
+            ),
             F.col(Colname.resolution).alias(ChargeMasterDataPeriodsColname.resolution),
             F.col(Colname.charge_tax).alias(ChargeMasterDataPeriodsColname.is_tax),
             F.col(Colname.from_date).alias(ChargeMasterDataPeriodsColname.from_date),

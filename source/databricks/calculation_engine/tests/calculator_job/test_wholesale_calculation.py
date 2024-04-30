@@ -277,7 +277,10 @@ def test__when_wholesale_calculation__basis_data_is_stored(
 @pytest.mark.parametrize(
     "basis_data_table_name, expected_schema",
     [
-        (paths.METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME, metering_point_period_schema),
+        (
+            paths.METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME, 
+            metering_point_period_schema,
+        ),
         (
             paths.TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME,
             time_series_point_schema,

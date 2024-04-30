@@ -165,7 +165,7 @@ def test__balance_fixing_result__has_expected_number_of_result_types(
     [
         paths.METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME,
         paths.TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME,
-    ]
+    ],
 )
 def test__when_energy_calculation__basis_data_is_stored(
     spark: SparkSession,
