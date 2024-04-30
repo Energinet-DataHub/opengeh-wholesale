@@ -69,7 +69,7 @@ def parse_job_arguments(
             calculation_grid_areas=job_args.grid_areas,
             calculation_period_start_datetime=job_args.period_start_datetime,
             calculation_period_end_datetime=job_args.period_end_datetime,
-            calculation_execution_time_start=datetime.datetime.utcnow(),
+            calculation_execution_time_start=datetime.utcnow(),
             calculation_type=job_args.calculation_type,
             created_by_user_id=job_args.created_by_user_id,
             time_zone=time_zone,
