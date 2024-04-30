@@ -36,49 +36,27 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
 
             # Include Esett Exchange model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-esett-exchange/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACGAKLTEB2DGXXZCVKYVIA6AZRHMCCA
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-esett-exchange/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACCM3YJAG5STQ3OACK6ELEGQZRQYYZQ
 
             # Include Grid Loss Imbalance Prices model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-grid-loss-imbalance-prices/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACGAKLTEPV6D54O7FGFFA5C6ZRHMBEA
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-grid-loss-imbalance-prices/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACCM3YJAUUK43ZBGMZ3FKXPMZRQYZVQ
 
             # Include Migration model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACGAKLTFANYNFHX4N34JJ5HAZRHMBZQ
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACCM3YJA7GHQQZGA2GQPW37OZRQYZCQ
 
             # Include Sauron - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/dh3-operations/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACGAKLTEO5NJKIDIEVEB5SOGZRHMBQQ
+            !include https://raw.githubusercontent.com/Energinet-DataHub/dh3-operations/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACCM3YJBWNU4CIDPO6BL4ENQZRQYZJA
 
             # Include DH2 Bridge model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/dh2-bridge/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACGAKLTE6OSAF3FRDD6FFTNKZRHMBLA
+            !include https://raw.githubusercontent.com/Energinet-DataHub/dh2-bridge/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACCM3YJACXYQEUDAJ5OZGNKWZRQYZQQ
         }
 
         # Deployment model
         deploymentEnvironment "Production (prod_001)" {
-            # Computer
-            deploymentNode "User's computer" {
-                description ""
-                technology "Microsoft Windows or Apple macOS"
-
-                deploymentNode "Web Browser for DataHub UI" {
-                    description ""
-                    technology "Chrome, Firefox, Safari, or Edge"
-                    tags "Microsoft Azure - Browser"
-
-                    frontendSinglePageApplicationInstance = containerInstance frontendSinglePageApplication
-                }
-
-                deploymentNode "Web Browser for Sauron" {
-                    description ""
-                    technology "Chrome, Firefox, Safari, or Edge"
-                    tags "Microsoft Azure - Browser"
-
-                    sauronSPAInstance = containerInstance sauronSPA
-                }
-            }
-
             # SendGrid
             deploymentNode "SendGrid" {
                 description ""
@@ -143,11 +121,28 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
                     tags "Microsoft Azure - Application Insights"
                 }
 
-                # Azure DNS
-                infrastructureNode "AzureDNS" {
+                waf = infrastructureNode "Azure Web Application Firewall" {
                     description ""
-                    technology "Microsoft Azure - DNS"
-                    tags "Microsoft Azure - DNS"
+                    technology "Azure Web Application Firewall"
+                    tags "Microsoft Azure - Web Application Firewall Policies(WAF)"
+                }
+
+                frontDoor = infrastructureNode "Azure Front Door" {
+                    description ""
+                    technology "Azure Front Door"
+                    tags "Microsoft Azure - Front Door and CDN Profiles"
+                    -> frontendStaticWebAppInstance "routes and protects traffic"
+                    -> bffApiInstance "routes and protects traffic"
+                    -> ediApiInstance "routes and protects traffic"
+                    -> waf "filters, monitors, and blocks malicious traffic"
+                }
+
+                # Azure DNS
+                azureDns = infrastructureNode "Azure DNS" {
+                    description ""
+                    technology "Azure DNS"
+                    tags "Microsoft Azure - DNS Zones"
+                    -> frontDoor "Routes traffic to front door"
                 }
 
                 deploymentNode "Key Vault" {
@@ -314,6 +309,29 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
 
                     migrationDatabricksInstance = containerInstance migrationDatabricks
                     wholesaleCalculatorInstance = containerInstance wholesaleCalculator
+                }
+            }
+            # Computer
+            deploymentNode "User's computer" {
+                description ""
+                technology "Microsoft Windows or Apple macOS"
+
+                deploymentNode "Web Browser for DataHub UI" {
+                    description ""
+                    technology "Chrome, Firefox, Safari, or Edge"
+                    tags "Microsoft Azure - Browser"
+
+                    frontendSinglePageApplicationInstance = containerInstance frontendSinglePageApplication
+                    this -> frontDoor "All calls are routes through WAF and Front Door to DataHub 3.0"
+                }
+
+                deploymentNode "Web Browser for Sauron" {
+                    description ""
+                    technology "Chrome, Firefox, Safari, or Edge"
+                    tags "Microsoft Azure - Browser"
+
+                    sauronSPAInstance = containerInstance sauronSPA
+                    this -> frontDoor "All calls are routes through WAF and Front Door to DataHub 3.0"
                 }
             }
         }
