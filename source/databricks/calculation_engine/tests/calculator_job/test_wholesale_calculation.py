@@ -278,7 +278,7 @@ def test__when_wholesale_calculation__basis_data_is_stored(
     "basis_data_table_name, expected_schema",
     [
         (
-            paths.METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME, 
+            paths.METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME,
             metering_point_period_schema,
         ),
         (
