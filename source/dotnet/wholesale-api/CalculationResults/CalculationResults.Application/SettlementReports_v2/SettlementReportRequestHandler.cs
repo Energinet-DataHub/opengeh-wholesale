@@ -14,18 +14,39 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 
 public sealed class SettlementReportRequestHandler : ISettlementReportRequestHandler
 {
-    public SettlementReportRequestHandler()
+    public Task<IEnumerable<SettlementReportFileRequestDto>> RequestReportAsync(SettlementReportRequestDto reportRequest)
     {
+        IEnumerable<SettlementReportFileRequestDto> filesToRequest;
+
+        switch (reportRequest.CalculationType)
+        {
+            case CalculationType.BalanceFixing:
+                filesToRequest = RequestFilesForAggregatedEnergyResults(reportRequest);
+                break;
+
+            // Future tasks: case CalculationType.WholesaleFixing:
+            default:
+                throw new InvalidOperationException($"Cannot generate report for calculation type {reportRequest.CalculationType}.");
+        }
+
+        return Task.FromResult(filesToRequest);
     }
 
-    public async Task<IEnumerable<SettlementReportFileRequestDto>> RequestReportAsync(SettlementReportRequestDto reportRequest)
+    private static IEnumerable<SettlementReportFileRequestDto> RequestFilesForAggregatedEnergyResults(
+        SettlementReportRequestDto reportRequest)
     {
-        await Task.Delay(1000).ConfigureAwait(false);
-        return [];
+        var resultsFile = new SettlementReportFileRequestDto(
+            SettlementReportFileContent.BalanceFixingResult,
+            "Result Energy.csv",
+            reportRequest.Id,
+            reportRequest.Filter);
+
+        return [resultsFile];
     }
 }
