@@ -39,4 +39,22 @@ public static class WholesaleClientFactory
             configuration.WebApiBaseAddress.ToString(),
             httpClient);
     }
+
+    public static async Task<HttpClient> CreateOrchestrationsApiClientAsync(WholesaleSubsystemConfiguration configuration, bool useAuthentication)
+    {
+        var httpClient = new HttpClient
+        {
+            BaseAddress = configuration.OrchestrationsApiBaseAddress,
+        };
+
+        if (useAuthentication)
+        {
+            using var userAuthenticationClient = new B2CUserTokenAuthenticationClient(configuration.UserTokenConfiguration);
+            var accessToken = await userAuthenticationClient.AcquireAccessTokenAsync();
+
+            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        }
+
+        return httpClient;
+    }
 }
