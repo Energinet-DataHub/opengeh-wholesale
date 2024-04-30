@@ -16,21 +16,21 @@ using Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Mod
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
-namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports;
+namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Activities;
 
-public class ScatterSettlementReportFiles
+public class GatherSettlementReportFiles
 {
     private readonly ILogger _logger;
 
-    public ScatterSettlementReportFiles(ILoggerFactory loggerFactory)
+    public GatherSettlementReportFiles(ILoggerFactory loggerFactory)
     {
-        _logger = loggerFactory.CreateLogger<ScatterSettlementReportFiles>();
+        _logger = loggerFactory.CreateLogger<GatherSettlementReportFiles>();
     }
 
-    [Function(nameof(ScatterSettlementReportFiles))]
-    public async Task<IEnumerable<ScatterSettlementReportResult>> Run([ActivityTrigger] ScatterSettlementReportInput input)
+    [Function(nameof(GatherSettlementReportFiles))]
+    public Task<ZippedSettlementReportResult> Run([ActivityTrigger] IEnumerable<GeneratedSettlementReportFile> input)
     {
-        await Task.CompletedTask.ConfigureAwait(false);
-        return [];
+        // zip files
+        return Task.FromResult(new ZippedSettlementReportResult(input, "blob-storage/zip-file-name.zip"));
     }
 }

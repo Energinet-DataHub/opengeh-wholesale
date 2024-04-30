@@ -16,20 +16,21 @@ using Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Mod
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
-namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports;
+namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Activities;
 
-public class GenerateSettlementReportFile
+public class ScatterSettlementReportFiles
 {
     private readonly ILogger _logger;
 
-    public GenerateSettlementReportFile(ILoggerFactory loggerFactory)
+    public ScatterSettlementReportFiles(ILoggerFactory loggerFactory)
     {
-        _logger = loggerFactory.CreateLogger<GatherSettlementReportFiles>();
+        _logger = loggerFactory.CreateLogger<ScatterSettlementReportFiles>();
     }
 
-    [Function(nameof(GenerateSettlementReportFile))]
-    public Task<GeneratedSettlementReportFile> Run([ActivityTrigger] ScatterSettlementReportResult input)
+    [Function(nameof(ScatterSettlementReportFiles))]
+    public async Task<IEnumerable<ScatterSettlementReportResult>> Run([ActivityTrigger] ScatterSettlementReportInput input)
     {
-        return Task.FromResult(new GeneratedSettlementReportFile());
+        await Task.CompletedTask.ConfigureAwait(false);
+        return [];
     }
 }
