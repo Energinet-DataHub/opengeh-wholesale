@@ -204,9 +204,10 @@ jobs:
           repository_owner=${{ github.repository_owner }}
           repository_name=${repository/$repository_owner\//}
 
-          # IMPORTANT: When adding a new folder here it should also be added in the `unit_tests` or `migrations_tests` or `integration_tests` job!
-          # This is because this filter contains the sum of all the tests folder in the three other test jobs above.
-          # This filter is used to count the number of tests in the specified folders. 
+          # IMPORTANT: When adding a new folder here it should also be added in 
+          # the `unit_tests` or `migrations_tests` or `integration_tests` job!
+          # This is because this filter contains the sum of all the tests folder 
+          " in the three other test jobs above. 
           filter="calculator_job/test_energy_calculation.py
           calculator_job/test_wholesale_calculation.py
           calculator_job/test_start.py
