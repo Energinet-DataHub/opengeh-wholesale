@@ -20,8 +20,9 @@ from package.calculation.calculation_results import (
 )
 from package.infrastructure import logging_configuration
 from package.infrastructure.paths import (
-    OUTPUT_DATABASE_NAME,
+    OUTPUT_DATABASE_NAME_UC,
     ENERGY_RESULT_TABLE_NAME,
+    CATALOGUE_NAME,
 )
 
 
@@ -40,4 +41,6 @@ def _write(name: str, df: DataFrame) -> None:
             return None
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
-        ).insertInto(f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}")
+        ).insertInto(
+            f"{CATALOGUE_NAME}.{OUTPUT_DATABASE_NAME_UC}.{ENERGY_RESULT_TABLE_NAME}"
+        )
