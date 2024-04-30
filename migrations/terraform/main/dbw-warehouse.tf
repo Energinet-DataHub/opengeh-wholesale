@@ -16,3 +16,13 @@ module "kvs_databricks_sql_endpoint_id" {
   value        = resource.databricks_sql_endpoint.migration_sql_endpoint.id
   key_vault_id = module.kv_internal.id
 }
+
+resource "databricks_permissions" "endpoint_permissions" {
+  provider        = databricks.dbw
+  sql_endpoint_id = databricks_sql_endpoint.migration_sql_endpoint.id
+
+  access_control {
+    group_name       = "SEC-A-GreenForce-DevelopmentTeamAzure"
+    permission_level = "CAN_MANAGE"
+  }
+}

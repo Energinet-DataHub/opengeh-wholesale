@@ -32,3 +32,13 @@ resource "databricks_cluster" "shared_all_purpose" {
     "DATALAKE_SHARED_STORAGE_ACCOUNT" = data.azurerm_key_vault_secret.st_data_lake_name.value
   }
 }
+
+resource "databricks_permissions" "cluster_usage" {
+  provider   = databricks.dbw
+  cluster_id = databricks_cluster.shared_all_purpose.id
+
+  access_control {
+    group_name       = "SEC-A-GreenForce-DevelopmentTeamAzure"
+    permission_level = "CAN_MANAGE"
+  }
+}
