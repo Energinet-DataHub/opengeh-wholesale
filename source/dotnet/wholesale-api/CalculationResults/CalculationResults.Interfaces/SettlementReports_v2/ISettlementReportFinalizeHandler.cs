@@ -13,23 +13,10 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
-using Microsoft.Azure.Functions.Worker;
-using Microsoft.Extensions.Logging;
 
-namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Activities;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
 
-public class GenerateSettlementReportFile
+public interface ISettlementReportFinalizeHandler
 {
-    private readonly ILogger _logger;
-
-    public GenerateSettlementReportFile(ILoggerFactory loggerFactory)
-    {
-        _logger = loggerFactory.CreateLogger<GatherSettlementReportFiles>();
-    }
-
-    [Function(nameof(GenerateSettlementReportFile))]
-    public Task<GeneratedSettlementReportFile> Run([ActivityTrigger] SettlementReportFileRequestDto fileRequest)
-    {
-        return Task.FromResult(new GeneratedSettlementReportFile(string.Empty));
-    }
+    Task FinalizeAsync(IEnumerable<GeneratedSettlementReportFile> generatedSettlements);
 }

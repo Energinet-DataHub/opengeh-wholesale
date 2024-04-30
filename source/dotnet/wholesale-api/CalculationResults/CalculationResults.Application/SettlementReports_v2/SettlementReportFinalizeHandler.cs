@@ -12,24 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
-using Microsoft.Azure.Functions.Worker;
-using Microsoft.Extensions.Logging;
 
-namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Activities;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 
-public class GenerateSettlementReportFile
+public sealed class SettlementReportFinalizeHandler(ISettlementReportStorage settlementReportStorage) : ISettlementReportFinalizeHandler
 {
-    private readonly ILogger _logger;
-
-    public GenerateSettlementReportFile(ILoggerFactory loggerFactory)
+    public async Task FinalizeAsync(IEnumerable<GeneratedSettlementReportFile> generatedSettlements)
     {
-        _logger = loggerFactory.CreateLogger<GatherSettlementReportFiles>();
-    }
+        foreach (var reportFile in generatedSettlements)
+        {
+            await settlementReportStorage.DeleteAsync(reportFile.StoragePath).ConfigureAwait(false);
+        }
 
-    [Function(nameof(GenerateSettlementReportFile))]
-    public Task<GeneratedSettlementReportFile> Run([ActivityTrigger] SettlementReportFileRequestDto fileRequest)
-    {
-        return Task.FromResult(new GeneratedSettlementReportFile(string.Empty));
+        // write to db
     }
 }

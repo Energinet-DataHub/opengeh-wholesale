@@ -12,26 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Activities;
 
-public class FinalizeSettlementReport
+public class FinalizeSettlementReport(ISettlementReportFinalizeHandler settlementReportFinalizeHandler)
 {
-    private readonly ILogger _logger;
-
-    public FinalizeSettlementReport(ILoggerFactory loggerFactory)
-    {
-        _logger = loggerFactory.CreateLogger<FinalizeSettlementReport>();
-    }
-
     [Function(nameof(FinalizeSettlementReport))]
     public Task Run([ActivityTrigger] ZippedSettlementReportResult input)
     {
-        // clean up
-        // remove temporary files
-        return Task.CompletedTask;
+        return settlementReportFinalizeHandler.FinalizeAsync(input.GeneratedSettlementReportFiles);
     }
 }

@@ -49,7 +49,9 @@ public static class CalculationResultsExtensions
 
         // Settlement Reports
         services.AddScoped<ISettlementReportRequestHandler, SettlementReportRequestHandler>();
+        services.AddScoped<ISettlementReportFinalizeHandler, SettlementReportFinalizeHandler>();
         services.AddScoped<ISettlementReportDataRepository, LegacySettlementReportDataRepository>();
+        services.AddSettlementReportStorage(configuration);
 
         // Used by sql statements (queries)
         services.AddOptions<DeltaTableOptions>().Bind(configuration);

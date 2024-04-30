@@ -12,8 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Azure.Storage.Blobs;
+using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 
-namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 
-public sealed record ZippedSettlementReportResult(IEnumerable<GeneratedSettlementReportFile> GeneratedSettlementReportFiles, string ZippedBlobFilepath);
+public class SettlementReportStorage(BlobContainerClient blobContainerClient) : ISettlementReportStorage
+{
+    public Task DeleteAsync(string filePath)
+    {
+        var blobClient = blobContainerClient.GetBlobClient(filePath);
+        return blobClient.DeleteIfExistsAsync();
+    }
+}
