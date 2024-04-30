@@ -12,15 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Generators;
 
-public interface ISettlementReportDataRepository
+public sealed class BalanceFixingResultFileGenerator : ISettlementReportFileGenerator
 {
-    /// <summary>
-    /// Stream the requested data from the data source. If the data source is not ready, an Exception is thrown.
-    /// </summary>
-    // TODO: Which exception to throw?
-    IAsyncEnumerable<SettlementReportResultRow> TryReadBalanceFixingResultsAsync(SettlementReportRequestFilterDto filter);
+    private readonly ISettlementReportDataRepository _dataSource;
+
+    public BalanceFixingResultFileGenerator(ISettlementReportDataRepository dataSource)
+    {
+        _dataSource = dataSource;
+    }
+
+    public async Task WriteToAsync(SettlementReportRequestFilterDto filter, Stream destination)
+    {
+        await foreach (var dataRow in _dataSource.TryReadBalanceFixingResultsAsync(filter))
+        {
+        }
+    }
 }

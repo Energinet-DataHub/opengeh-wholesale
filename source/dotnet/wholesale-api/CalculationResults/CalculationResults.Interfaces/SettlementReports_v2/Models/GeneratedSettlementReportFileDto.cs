@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
-namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
-
-public sealed record ZippedSettlementReportResult(IEnumerable<GeneratedSettlementReportFileDto> GeneratedSettlementReportFiles, string ZippedBlobFilepath);
+public sealed record GeneratedSettlementReportFileDto(
+    string FileName,
+    SettlementReportRequestId RequestId);

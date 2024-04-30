@@ -30,12 +30,12 @@ public sealed class LegacySettlementReportDataRepository : ISettlementReportData
         _settlementReportResultQueries = settlementReportResultQueries;
     }
 
-    public async IAsyncEnumerable<SettlementReportResultRow> TryGetDataAsync(CalculationType calculationType, SettlementReportRequestFilterDto filter)
+    public async IAsyncEnumerable<SettlementReportResultRow> TryReadBalanceFixingResultsAsync(SettlementReportRequestFilterDto filter)
     {
         var rows = await _settlementReportResultQueries
             .GetRowsAsync(
                 filter.GridAreas.Select(gridArea => gridArea.Code).ToArray(),
-                calculationType,
+                CalculationType.BalanceFixing,
                 filter.PeriodStart.ToInstant(),
                 filter.PeriodEnd.ToInstant(),
                 null)

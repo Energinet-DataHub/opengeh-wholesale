@@ -38,20 +38,16 @@ internal sealed class SettlementReportOrchestrator
             .CallActivityAsync<IEnumerable<SettlementReportFileRequestDto>>(nameof(ScatterSettlementReportFiles), settlementReportRequest)
             .ConfigureAwait(false);
 
-        var tasks = new List<Task<GeneratedSettlementReportFile>>();
+        var fileRequests = scatterResults.Select(settlementReportFileRequest =>
+            context.CallActivityAsync<GeneratedSettlementReportFileDto>(nameof(GenerateSettlementReportFile), settlementReportFileRequest));
 
-        foreach (var scatterSettlementReportResult in scatterResults)
-        {
-            tasks.Add(context.CallActivityAsync<GeneratedSettlementReportFile>(
-                nameof(GenerateSettlementReportFile),
-                scatterSettlementReportResult));
-        }
-
-        var files = await Task.WhenAll(tasks).ConfigureAwait(false);
+        var generatedFiles = await Task
+            .WhenAll(fileRequests)
+            .ConfigureAwait(false);
 
         var zippedSettlementReport = await context.CallActivityAsync<ZippedSettlementReportResult>(
             nameof(GatherSettlementReportFiles),
-            files).ConfigureAwait(false);
+            generatedFiles).ConfigureAwait(false);
 
         await context.CallActivityAsync(
             nameof(FinalizeSettlementReport),

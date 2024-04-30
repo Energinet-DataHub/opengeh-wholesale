@@ -14,6 +14,13 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
-namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 
-public sealed record ZippedSettlementReportResult(IEnumerable<GeneratedSettlementReportFileDto> GeneratedSettlementReportFiles, string ZippedBlobFilepath);
+public interface ISettlementReportFileRepository
+{
+    Task<Stream> OpenForReadingAsync(SettlementReportRequestId reportRequestId, string fileName);
+
+    Task<Stream> OpenForWritingAsync(SettlementReportRequestId reportRequestId, string fileName);
+
+    Task DeleteAsync(SettlementReportRequestId reportRequestId, string fileName);
+}
