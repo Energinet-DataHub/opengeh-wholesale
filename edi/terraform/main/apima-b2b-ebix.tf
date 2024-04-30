@@ -289,7 +289,9 @@ module "apima_b2b_ebix" {
                 }</message>
                 <metadata name="CorrelationId" value="@($"{context.RequestId}")" />
             </trace>
-            <base />
+            <!--base -->
+            <!-- base has been removed, since it removes the certificat needed to request in ebix -->
+            <!-- Temporary fix! -->
             <choose>
                 <when condition="@(context.Request.Certificate == null)">
                     <return-response>
