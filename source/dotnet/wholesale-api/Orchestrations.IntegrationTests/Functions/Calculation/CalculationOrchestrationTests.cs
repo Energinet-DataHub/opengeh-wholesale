@@ -14,6 +14,7 @@
 
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
+using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -112,7 +113,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         // Assert
         // => Verify endpoint response
         actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        var calculationId = await actualResponse.Content.ReadAsAsync<Guid>();
+        var calculationId = await actualResponse.Content.ReadFromJsonAsync<Guid>();
 
         // => Verify expected behaviour by searching the orchestration history
         var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeOrchestrationCreated);
@@ -209,7 +210,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         // Assert
         // => Verify endpoint response
         actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        var calculationId = await actualResponse.Content.ReadAsAsync<Guid>();
+        var calculationId = await actualResponse.Content.ReadFromJsonAsync<Guid>();
 
         // => Verify expected behaviour by searching the orchestration history
         var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeOrchestrationCreated);
@@ -274,7 +275,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         // Assert
         // => Verify endpoint response
         actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        var calculationId = await actualResponse.Content.ReadAsAsync<Guid>();
+        var calculationId = await actualResponse.Content.ReadFromJsonAsync<Guid>();
 
         // => Verify expected behaviour by searching the orchestration history
         var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeOrchestrationCreated);

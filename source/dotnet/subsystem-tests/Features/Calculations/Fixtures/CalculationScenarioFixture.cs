@@ -14,6 +14,9 @@
 
 using System.Diagnostics;
 using System.Globalization;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text;
 using Azure;
 using Azure.Identity;
 using Azure.Messaging.ServiceBus;
@@ -31,6 +34,7 @@ using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Extensions;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using Energinet.DataHub.Wholesale.Test.Core;
 using Google.Protobuf.WellKnownTypes;
+using Newtonsoft.Json;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtures;
@@ -59,6 +63,11 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
     /// <summary>
     /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
     /// </summary>
+    private HttpClient WholesaleOrchestrationsApiClient { get; set; } = null!;
+
+    /// <summary>
+    /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
+    /// </summary>
     private ServiceBusReceiver Receiver { get; set; } = null!;
 
     private WholesaleSubsystemConfiguration Configuration { get; }
@@ -71,7 +80,15 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
 
     public async Task<Guid> StartCalculationAsync(CalculationRequestDto calculationInput)
     {
-        var calculationId = await WholesaleWebApiClient.CreateCalculationAsync(calculationInput);
+        using var request = new HttpRequestMessage(HttpMethod.Post, "api/StartCalculation");
+        request.Content = new StringContent(
+            JsonConvert.SerializeObject(calculationInput),
+            Encoding.UTF8,
+            "application/json");
+
+        using var actualResponse = await WholesaleOrchestrationsApiClient.SendAsync(request);
+        var calculationId = await actualResponse.Content.ReadFromJsonAsync<Guid>();
+
         DiagnosticMessageSink.WriteDiagnosticMessage($"Calculation for {calculationInput.CalculationType} with id '{calculationId}' started.");
 
         return calculationId;
@@ -187,6 +204,7 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
     {
         await DatabricksClientExtensions.StartWarehouseAsync(Configuration.DatabricksWorkspace);
         WholesaleWebApiClient = await WholesaleClientFactory.CreateWebApiClientAsync(Configuration, useAuthentication: true);
+        WholesaleOrchestrationsApiClient = await WholesaleClientFactory.CreateOrchestrationsApiClientAsync(Configuration, useAuthentication: true);
         await CreateTopicSubscriptionAsync();
         Receiver = ServiceBusClient.CreateReceiver(Configuration.ServiceBus.SubsystemRelayTopicName, _subscriptionName);
     }
@@ -195,6 +213,7 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
     {
         await ServiceBusAdministrationClient.DeleteSubscriptionAsync(Configuration.ServiceBus.SubsystemRelayTopicName, _subscriptionName);
         await ServiceBusClient.DisposeAsync();
+        WholesaleOrchestrationsApiClient.Dispose();
     }
 
     /// <summary>
