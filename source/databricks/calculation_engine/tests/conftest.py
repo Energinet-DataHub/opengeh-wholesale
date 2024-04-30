@@ -353,13 +353,14 @@ def infrastructure_settings(
 
 @pytest.fixture(scope="session", autouse=True)
 def dependency_injection_container(
+    spark: SparkSession,
     infrastructure_settings: InfrastructureSettings,
 ) -> Container:
     """
     This enables the use of dependency injection in all tests.
     The container is created once for the entire test suite.
     """
-    return create_and_configure_container(infrastructure_settings)
+    return create_and_configure_container(infrastructure_settings, spark)
 
 
 @pytest.fixture(scope="session")
