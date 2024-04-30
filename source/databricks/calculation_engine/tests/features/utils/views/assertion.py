@@ -23,9 +23,6 @@ def assert_output(
     output_name: str,
     skip_columns_when_actual_and_expected_are_equal: bool = False,
 ) -> None:
-    """
-    Asserts the actual output against the expected output.
-    """
     actual_results, expected_results = actual_and_expected
 
     actual_result = _get_expected_for_output(actual_results, output_name)
