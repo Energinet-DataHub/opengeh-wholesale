@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Storage.Blobs;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
@@ -19,6 +20,13 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public sealed class SettlementReportFileBlobStorage : ISettlementReportFileRepository
 {
+    private readonly BlobContainerClient _blobContainerClient;
+
+    public SettlementReportFileBlobStorage(BlobContainerClient blobContainerClient)
+    {
+        _blobContainerClient = blobContainerClient;
+    }
+
     public Task<Stream> OpenForReadingAsync(SettlementReportRequestId reportRequestId, string fileName)
     {
         throw new NotImplementedException();
@@ -31,6 +39,13 @@ public sealed class SettlementReportFileBlobStorage : ISettlementReportFileRepos
 
     public Task DeleteAsync(SettlementReportRequestId reportRequestId, string fileName)
     {
-        throw new NotImplementedException();
+        var blobName = GetBlobName(reportRequestId, fileName);
+        var blobClient = _blobContainerClient.GetBlobClient(blobName);
+        return blobClient.DeleteIfExistsAsync();
+    }
+
+    private string GetBlobName(SettlementReportRequestId reportRequestId, string fileName)
+    {
+        return Path.Combine("settlement-reports", reportRequestId.Id.ToString(), fileName);
     }
 }
