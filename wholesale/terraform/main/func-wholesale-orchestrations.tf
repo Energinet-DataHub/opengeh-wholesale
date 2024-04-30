@@ -14,6 +14,7 @@ module "func_wholesale_orchestrations" {
   always_on                              = true
   dotnet_framework_version               = "v8.0"
   use_dotnet_isolated_runtime            = true
+  durable_function                       = true
   health_check_path                      = "/api/monitor/ready"
   ip_restrictions                        = var.ip_restrictions
   scm_ip_restrictions                    = var.ip_restrictions
