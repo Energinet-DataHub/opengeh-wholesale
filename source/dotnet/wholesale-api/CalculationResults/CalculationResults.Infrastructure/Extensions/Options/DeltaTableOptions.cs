@@ -25,7 +25,6 @@ public class DeltaTableOptions
 
     public string SchemaNameUC { get; set; } = "dbs_wholesale";
 
-
     /// <summary>
     /// Name of the schema/database under which the basis data tables are associated.
     /// </summary>
