@@ -60,10 +60,3 @@ SET TBLPROPERTIES(
 )
 
 GO
-
-ALTER TABLE {BASIS_DATA_DATABASE_NAME}.calculations
-SET TBLPROPERTIES(
-    delta.deletedFileRetentionDuration = "interval 30 days"
-)
-
-GO
