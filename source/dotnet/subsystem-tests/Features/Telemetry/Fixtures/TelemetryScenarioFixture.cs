@@ -43,7 +43,7 @@ public sealed class TelemetryScenarioFixture<TState> : LazyFixtureBase
     /// Support calling the Wholesale Web API using an authorized Wholesale client.
     /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
     /// </summary>
-    public WholesaleClient_V3 WholesaleClient { get; private set; } = null!;
+    public WholesaleClient_V3 WholesaleWebApiClient { get; private set; } = null!;
 
     private WholesaleSubsystemConfiguration Configuration { get; }
 
@@ -75,7 +75,7 @@ public sealed class TelemetryScenarioFixture<TState> : LazyFixtureBase
 
     protected override async Task OnInitializeAsync()
     {
-        WholesaleClient = await WholesaleClientFactory.CreateAsync(Configuration, useAuthentication: true);
+        WholesaleWebApiClient = await WholesaleClientFactory.CreateWebApiClientAsync(Configuration, useAuthentication: true);
     }
 
     protected override Task OnDisposeAsync()

@@ -54,7 +54,7 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
     /// <summary>
     /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
     /// </summary>
-    private WholesaleClient_V3 WholesaleClient { get; set; } = null!;
+    private WholesaleClient_V3 WholesaleWebApiClient { get; set; } = null!;
 
     /// <summary>
     /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
@@ -71,7 +71,7 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
 
     public async Task<Guid> StartCalculationAsync(CalculationRequestDto calculationInput)
     {
-        var calculationId = await WholesaleClient.CreateCalculationAsync(calculationInput);
+        var calculationId = await WholesaleWebApiClient.CreateCalculationAsync(calculationInput);
         DiagnosticMessageSink.WriteDiagnosticMessage($"Calculation for {calculationInput.CalculationType} with id '{calculationId}' started.");
 
         return calculationId;
@@ -91,7 +91,7 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
         var isCompletedOrFailed = await Awaiter.TryWaitUntilConditionAsync(
             async () =>
             {
-                calculation = await WholesaleClient.GetCalculationAsync(calculationId);
+                calculation = await WholesaleWebApiClient.GetCalculationAsync(calculationId);
                 return
                     calculation?.ExecutionState is CalculationState.Completed
                     or CalculationState.Failed;
@@ -186,7 +186,7 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
     protected override async Task OnInitializeAsync()
     {
         await DatabricksClientExtensions.StartWarehouseAsync(Configuration.DatabricksWorkspace);
-        WholesaleClient = await WholesaleClientFactory.CreateAsync(Configuration, useAuthentication: true);
+        WholesaleWebApiClient = await WholesaleClientFactory.CreateWebApiClientAsync(Configuration, useAuthentication: true);
         await CreateTopicSubscriptionAsync();
         Receiver = ServiceBusClient.CreateReceiver(Configuration.ServiceBus.SubsystemRelayTopicName, _subscriptionName);
     }
