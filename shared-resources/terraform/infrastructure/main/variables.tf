@@ -244,3 +244,8 @@ variable "apim_url" {
   type        = string
   description = "URL of the API Management instance to call on"
 }
+
+variable "front_door_id" {
+  type        = string
+  description = "ID of the Front Door to use for ensuring calls are made through the Front Door"
+}

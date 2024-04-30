@@ -17,6 +17,9 @@ module "apim_shared" {
       xml_content = <<XML
         <policies>
           <inbound>
+            <check-header name="X-Azure-FDID" failed-check-httpcode="403" failed-check-error-message="Blocked: Use Front Door." ignore-case="false">
+              <value>${var.front_door_id}</value>
+            </check-header>
             <choose>
               <when condition="@(${var.apim_maintenance_mode})">
                 <return-response>
