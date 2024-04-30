@@ -389,6 +389,7 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
         # The field that defines results
         EnergyResultColumnNames.calculation_result_id,
         EnergyResultColumnNames.metering_point_id,
+        EnergyResultColumnNames.resolution,
     ]
     contract_path = f"{contracts_path}/energy-result-table-column-names.json"
     all_columns = get_column_names_from_contract(contract_path)
