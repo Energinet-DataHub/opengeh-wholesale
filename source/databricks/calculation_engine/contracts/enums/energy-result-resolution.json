@@ -1,0 +1,12 @@
+{
+  "literals": [
+    {
+      "name": "QUARTER",
+      "value": "PT15M"
+    },
+    {
+      "name": "HOUR",
+      "value": "PT1H"
+    }
+  ]
+}
