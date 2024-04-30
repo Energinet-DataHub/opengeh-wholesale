@@ -18,7 +18,14 @@ from pyspark.sql import DataFrame
 from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
-from package.constants import Colname, MeteringPointPeriodColname, TimeSeriesColname, ChargeMasterDataPeriodsColname, ChargePricePointsColname, ChargeLinkPeriodsColname
+from package.constants import (
+    Colname, 
+    MeteringPointPeriodColname, 
+    TimeSeriesColname, 
+    ChargeMasterDataPeriodsColname, 
+    ChargePricePointsColname, 
+    ChargeLinkPeriodsColname,
+)
 from package.infrastructure import logging_configuration
 
 from package.calculation.preparation.data_structures import InputChargesContainer
@@ -66,7 +73,9 @@ def get_time_series_points_basis_data(
     return metering_point_time_series.df.select(
         F.lit(calculation_id).alias(TimeSeriesColname.calculation_id),
         F.col(Colname.metering_point_id).alias(TimeSeriesColname.metering_point_id),
-        F.col(Colname.quantity).alias(TimeSeriesColname.quantity).cast(DecimalType(18, 3)),
+        F.col(Colname.quantity)
+        .alias(TimeSeriesColname.quantity)
+        .cast(DecimalType(18, 3)),
         F.col(Colname.quality).alias(TimeSeriesColname.quality),
         F.col(Colname.observation_time).alias(TimeSeriesColname.observation_time),
     )
@@ -81,8 +90,12 @@ def get_charge_master_data_basis_data(
         return input_charges_container.charge_master_data._df.select(
             F.lit(calculation_id).alias(ChargeMasterDataPeriodsColname.calculation_id),
             F.col(Colname.charge_key).alias(ChargeMasterDataPeriodsColname.charge_key),
-            F.col(Colname.charge_code).alias(ChargeMasterDataPeriodsColname.charge_code),
-            F.col(Colname.charge_type).alias(ChargeMasterDataPeriodsColname.charge_type),
+            F.col(Colname.charge_code).alias(
+                ChargeMasterDataPeriodsColname.charge_code
+            ),
+            F.col(Colname.charge_type).alias(
+                ChargeMasterDataPeriodsColname.charge_type
+            ),
             F.col(Colname.charge_owner).alias(ChargeMasterDataPeriodsColname.charge_owner_id),
             F.col(Colname.resolution).alias(ChargeMasterDataPeriodsColname.resolution),
             F.col(Colname.charge_tax).alias(ChargeMasterDataPeriodsColname.is_tax),
@@ -124,7 +137,9 @@ def get_charge_links_basis_data(
             F.col(Colname.charge_code).alias(ChargeLinkPeriodsColname.charge_code),
             F.col(Colname.charge_type).alias(ChargeLinkPeriodsColname.charge_type),
             F.col(Colname.charge_owner).alias(ChargeLinkPeriodsColname.charge_owner_id),
-            F.col(Colname.metering_point_id).alias(ChargeLinkPeriodsColname.metering_point_id),
+            F.col(Colname.metering_point_id).alias(
+                ChargeLinkPeriodsColname.metering_point_id
+            ),
             F.col(Colname.quantity).alias(ChargeLinkPeriodsColname.quantity),
             F.col(Colname.from_date).alias(ChargeLinkPeriodsColname.from_date),
             F.col(Colname.to_date).alias(ChargeLinkPeriodsColname.to_date),

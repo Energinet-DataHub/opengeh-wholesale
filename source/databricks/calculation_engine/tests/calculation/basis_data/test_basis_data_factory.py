@@ -13,7 +13,9 @@
 # limitations under the License.
 from package.calculation.calculator_args import CalculatorArgs
 from tests.calculation.preparation.transformations import metering_point_periods_factory
-from tests.calculation.preparation.transformations import prepared_metering_point_time_series_factory
+from tests.calculation.preparation.transformations import (
+    prepared_metering_point_time_series_factory,
+)
 from package.calculation.calculation_results import BasisDataContainer
 import package.calculation.basis_data.basis_data_factory as basis_data_factory
 from package.calculation.preparation.data_structures import InputChargesContainer
@@ -22,11 +24,21 @@ from package.calculation.preparation.data_structures.charge_master_data import (
 )
 import tests.calculation.charges_factory as charges_factory
 from package.calculation.preparation.data_structures.charge_prices import ChargePrices
-from package.calculation.basis_data.schemas.charge_link_periods_schema import charge_link_periods_schema
-from package.calculation.basis_data.schemas.charge_master_data_periods_schema import charge_master_data_periods_schema
-from package.calculation.basis_data.schemas.charge_price_points_schema import charge_price_points_schema
-from package.calculation.basis_data.schemas.time_series_point_schema import time_series_point_schema
-from package.calculation.basis_data.schemas.metering_point_period_schema import metering_point_period_schema
+from package.calculation.basis_data.schemas.charge_link_periods_schema import (
+    charge_link_periods_schema,
+)
+from package.calculation.basis_data.schemas.charge_master_data_periods_schema import (
+    charge_master_data_periods_schema,
+)
+from package.calculation.basis_data.schemas.charge_price_points_schema import (
+    charge_price_points_schema,
+)
+from package.calculation.basis_data.schemas.time_series_point_schema import (
+    time_series_point_schema,
+)
+from package.calculation.basis_data.schemas.metering_point_period_schema import (
+    metering_point_period_schema,
+)
 from datetime import timedelta, datetime
 from decimal import Decimal
 import package.calculation.preparation.data_structures as d
@@ -228,8 +240,14 @@ def _create_basis_data_factory(spark: SparkSession) -> BasisDataContainer:
 
 def test__basis_data_is_stored_with_correct_schema(spark: SparkSession):
     basis_data_container = _create_basis_data_factory(spark)
-    assert basis_data_container.metering_point_periods.schema == metering_point_period_schema
+    assert (
+        basis_data_container.metering_point_periods.schema 
+        == metering_point_period_schema
+    )
     assert basis_data_container.time_series_points.schema == time_series_point_schema
-    assert basis_data_container.charge_master_data.schema == charge_master_data_periods_schema
+    assert (
+        basis_data_container.charge_master_data.schema 
+        == charge_master_data_periods_schema
+    )
     assert basis_data_container.charge_prices.schema == charge_price_points_schema
     assert basis_data_container.charge_links.schema == charge_link_periods_schema

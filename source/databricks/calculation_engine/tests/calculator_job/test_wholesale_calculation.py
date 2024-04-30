@@ -26,11 +26,21 @@ from package.codelists import (
 from package.constants import EnergyResultColumnNames, WholesaleResultColumnNames
 from package.infrastructure import paths
 from . import configuration as c
-from package.calculation.basis_data.schemas.charge_link_periods_schema import charge_link_periods_schema
-from package.calculation.basis_data.schemas.charge_master_data_periods_schema import charge_master_data_periods_schema
-from package.calculation.basis_data.schemas.charge_price_points_schema import charge_price_points_schema
-from package.calculation.basis_data.schemas.metering_point_period_schema import metering_point_period_schema
-from package.calculation.basis_data.schemas.time_series_point_schema import time_series_point_schema
+from package.calculation.basis_data.schemas.charge_link_periods_schema import (
+    charge_link_periods_schema,
+)
+from package.calculation.basis_data.schemas.charge_master_data_periods_schema import (
+    charge_master_data_periods_schema,
+)
+from package.calculation.basis_data.schemas.charge_price_points_schema import (
+    charge_price_points_schema,
+)
+from package.calculation.basis_data.schemas.metering_point_period_schema import (
+    metering_point_period_schema,
+)
+from package.calculation.basis_data.schemas.time_series_point_schema import (
+    time_series_point_schema,
+)
 
 ENERGY_RESULT_TYPES = {
     (
@@ -268,9 +278,15 @@ def test__when_wholesale_calculation__basis_data_is_stored(
     "basis_data_table_name, expected_schema",
     [
         (paths.METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME, metering_point_period_schema),
-        (paths.TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME, time_series_point_schema),
+        (
+            paths.TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME, 
+            time_series_point_schema,
+        ),
         (paths.CHARGE_LINK_PERIODS_BASIS_DATA_TABLE_NAME, charge_link_periods_schema),
-        (paths.CHARGE_MASTER_DATA_PERIODS_BASIS_DATA_TABLE_NAME, charge_master_data_periods_schema),
+        (
+            paths.CHARGE_MASTER_DATA_PERIODS_BASIS_DATA_TABLE_NAME, 
+            charge_master_data_periods_schema,
+        ),
         (paths.CHARGE_PRICE_POINTS_BASIS_DATA_TABLE_NAME, charge_price_points_schema),
     ],
 )
@@ -278,7 +294,7 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
     spark: SparkSession,
     executed_wholesale_fixing: None,
     basis_data_table_name: str,
-    expected_schema: StructType
+    expected_schema: StructType,
 ) -> None:
     # Arrange
     actual = spark.read.table(
