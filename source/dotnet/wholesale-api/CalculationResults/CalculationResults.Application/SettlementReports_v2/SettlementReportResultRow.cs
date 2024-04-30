@@ -12,10 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 
 public sealed record SettlementReportResultRow(
     Instant Time,
-    decimal Quantity);
+    decimal Quantity,
+    GridAreaCode GridAreaCode,
+    MeteringPointType? MeteringPointType,
+    SettlementMethod? SettlementMethod);

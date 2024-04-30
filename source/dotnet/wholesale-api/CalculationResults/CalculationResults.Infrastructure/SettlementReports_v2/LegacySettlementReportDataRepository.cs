@@ -43,10 +43,12 @@ public sealed class LegacySettlementReportDataRepository : ISettlementReportData
 
         foreach (var row in rows)
         {
-            // TODO: Add other values.
             yield return new SettlementReportResultRow(
                 row.Time,
-                row.Quantity);
+                row.Quantity,
+                new GridAreaCode(row.GridArea),
+                row.MeteringPointType,
+                row.SettlementMethod);
         }
     }
 }
