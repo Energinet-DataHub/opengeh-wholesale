@@ -241,12 +241,12 @@ def _create_basis_data_factory(spark: SparkSession) -> BasisDataContainer:
 def test__basis_data_is_stored_with_correct_schema(spark: SparkSession):
     basis_data_container = _create_basis_data_factory(spark)
     assert (
-        basis_data_container.metering_point_periods.schema 
+        basis_data_container.metering_point_periods.schema
         == metering_point_period_schema
     )
     assert basis_data_container.time_series_points.schema == time_series_point_schema
     assert (
-        basis_data_container.charge_master_data.schema 
+        basis_data_container.charge_master_data.schema
         == charge_master_data_periods_schema
     )
     assert basis_data_container.charge_prices.schema == charge_price_points_schema

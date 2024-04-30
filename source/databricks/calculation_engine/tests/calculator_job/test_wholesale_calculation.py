@@ -279,12 +279,12 @@ def test__when_wholesale_calculation__basis_data_is_stored(
     [
         (paths.METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME, metering_point_period_schema),
         (
-            paths.TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME, 
+            paths.TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME,
             time_series_point_schema,
         ),
         (paths.CHARGE_LINK_PERIODS_BASIS_DATA_TABLE_NAME, charge_link_periods_schema),
         (
-            paths.CHARGE_MASTER_DATA_PERIODS_BASIS_DATA_TABLE_NAME, 
+            paths.CHARGE_MASTER_DATA_PERIODS_BASIS_DATA_TABLE_NAME,
             charge_master_data_periods_schema,
         ),
         (paths.CHARGE_PRICE_POINTS_BASIS_DATA_TABLE_NAME, charge_price_points_schema),

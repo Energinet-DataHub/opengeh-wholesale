@@ -19,11 +19,11 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
     PreparedMeteringPointTimeSeries,
 )
 from package.constants import (
-    Colname, 
-    MeteringPointPeriodColname, 
-    TimeSeriesColname, 
-    ChargeMasterDataPeriodsColname, 
-    ChargePricePointsColname, 
+    Colname,
+    MeteringPointPeriodColname,
+    TimeSeriesColname,
+    ChargeMasterDataPeriodsColname,
+    ChargePricePointsColname,
     ChargeLinkPeriodsColname,
 )
 from package.infrastructure import logging_configuration

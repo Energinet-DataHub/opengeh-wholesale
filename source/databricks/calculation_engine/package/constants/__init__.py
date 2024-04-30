@@ -14,9 +14,9 @@
 
 from .colname import Colname
 from .basis_data_colname import (
-    MeteringPointPeriodColname, 
-    TimeSeriesColname, 
-    ChargeMasterDataPeriodsColname, 
+    MeteringPointPeriodColname,
+    TimeSeriesColname,
+    ChargeMasterDataPeriodsColname,
     ChargePricePointsColname,
     ChargeLinkPeriodsColname,
 )
