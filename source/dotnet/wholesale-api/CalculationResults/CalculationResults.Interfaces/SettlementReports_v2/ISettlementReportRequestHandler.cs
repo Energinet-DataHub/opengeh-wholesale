@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
-public sealed record ScatterSettlementReportResult
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
+
+public interface ISettlementReportRequestHandler
 {
-    public string ViewId { get; set; } = string.Empty;
-
-    public string ReservedBlobStorageFilename { get; set; } = string.Empty;
+    Task<IEnumerable<SettlementReportFileRequestDto>> RequestReportAsync(SettlementReportRequestDto reportRequest);
 }

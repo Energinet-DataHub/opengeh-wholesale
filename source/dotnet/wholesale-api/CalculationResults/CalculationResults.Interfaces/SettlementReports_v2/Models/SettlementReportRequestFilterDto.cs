@@ -12,6 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
-public sealed class ScatterSettlementReportInput;
+// TODO: string? energySupplier
+public sealed record SettlementReportRequestFilterDto(
+    IReadOnlyCollection<GridArea> GridAreas,
+    DateTimeOffset PeriodStart,
+    DateTimeOffset PeriodEnd,
+    string? CsvFormatLocale = "da-DK");

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Activities;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
 using Microsoft.Azure.Functions.Worker;
@@ -19,25 +20,23 @@ using Microsoft.DurableTask;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports;
 
-#pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
-internal class SettlementReportOrchestrator
+internal sealed class SettlementReportOrchestrator
 {
     [Function(nameof(OrchestrateSettlementReportAsync))]
     public async Task<string> OrchestrateSettlementReportAsync(
         [OrchestrationTrigger] TaskOrchestrationContext context,
         FunctionContext executionContext)
     {
-        var input = context.GetInput<SettlementReportInput>();
-        if (input == null)
+        var settlementReportRequest = context.GetInput<SettlementReportRequestDto>();
+        if (settlementReportRequest == null)
         {
+            // TODO: What do we return here?
             return "Error: No input specified.";
         }
 
-        var scatterSettlementReportInput = new ScatterSettlementReportInput();
-
-        var scatterResults = await context.CallActivityAsync<IEnumerable<ScatterSettlementReportResult>>(
-            nameof(ScatterSettlementReportFiles),
-            scatterSettlementReportInput).ConfigureAwait(false);
+        var scatterResults = await context
+            .CallActivityAsync<IEnumerable<SettlementReportFileRequestDto>>(nameof(ScatterSettlementReportFiles), settlementReportRequest)
+            .ConfigureAwait(false);
 
         var tasks = new List<Task<GeneratedSettlementReportFile>>();
 
