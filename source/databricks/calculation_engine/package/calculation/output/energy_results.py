@@ -36,25 +36,32 @@ def write_energy_results(energy_results: EnergyResultsContainer) -> None:
 
 def _write(name: str, df: DataFrame) -> None:
     with logging_configuration.start_span(name):
-
         # Not all energy results have a value - it depends on the type of calculation
         if df is None:
             return None
+
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
         ).insertInto(f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}")
 
-        spark = SparkSession.builder.getOrCreate()
-        if spark.catalog.tableExists(
-            f"{CATALOGUE_NAME}.{OUTPUT_DATABASE_NAME_UC}.{ENERGY_RESULT_TABLE_NAME}"
-        ):
+        if table_exists("ctl_shres_d_we_002", "dbs_wholesale", "energy_results"):
             print("The unity catalog exist!")
 
-            # Insert into the table
             df.write.format("delta").mode("append").option(
                 "mergeSchema", "false"
-            ).insertInto(
-                f"{CATALOGUE_NAME}.{OUTPUT_DATABASE_NAME_UC}.{ENERGY_RESULT_TABLE_NAME}"
-            )
+            ).insertInto("ctl_shres_d_we_002.dbs_wholesale.energy_results")
         else:
-            print("The unity catalog does NOT exist.")
+            print("The unity catalog does not exist!")
+
+
+def table_exists(catalog: str, schema: str, table_name: str):
+    spark = SparkSession.builder.getOrCreate()
+
+    query = spark.sql(
+        f"""
+            SELECT 1 
+            FROM {catalog}.information_schema.tables 
+            WHERE table_name = '{table_name}' 
+            AND table_schema='{schema}' LIMIT 1""",
+    )
+    return query.count() > 0
