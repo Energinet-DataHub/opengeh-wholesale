@@ -19,8 +19,9 @@ defined in the geh_stream directory in our tests.
 import os
 import shutil
 import subprocess
-from shutil import rmtree
+import uuid
 from datetime import datetime
+from shutil import rmtree
 from typing import Generator, Callable, Optional
 
 import pytest
@@ -30,6 +31,7 @@ from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType
 
+import tests.helpers.spark_sql_migration_helper as sql_migration_helper
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.input.schemas import (
     time_series_point_schema,
@@ -50,7 +52,6 @@ from package.infrastructure.paths import (
 )
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.integration_test_configuration import IntegrationTestConfiguration
-import tests.helpers.spark_sql_migration_helper as sql_migration_helper
 
 
 @pytest.fixture(scope="session")
@@ -314,6 +315,7 @@ def any_calculator_args() -> CalculatorArgs:
         calculation_period_start_datetime=datetime(2018, 1, 1, 23, 0, 0),
         calculation_period_end_datetime=datetime(2018, 1, 3, 23, 0, 0),
         calculation_execution_time_start=datetime(2018, 1, 5, 23, 0, 0),
+        created_by_user_id=str(uuid.uuid4()),
         time_zone="Europe/Copenhagen",
         quarterly_resolution_transition_datetime=datetime(2023, 1, 31, 23, 0, 0),
     )
@@ -328,6 +330,7 @@ def any_calculator_args_for_wholesale() -> CalculatorArgs:
         calculation_period_start_datetime=datetime(2022, 6, 30, 22, 0, 0),
         calculation_period_end_datetime=datetime(2022, 7, 31, 22, 0, 0),
         calculation_execution_time_start=datetime(2022, 8, 1, 22, 0, 0),
+        created_by_user_id=str(uuid.uuid4()),
         time_zone="Europe/Copenhagen",
         quarterly_resolution_transition_datetime=datetime(2023, 1, 31, 23, 0, 0),
     )
@@ -350,13 +353,14 @@ def infrastructure_settings(
 
 @pytest.fixture(scope="session", autouse=True)
 def dependency_injection_container(
+    spark: SparkSession,
     infrastructure_settings: InfrastructureSettings,
 ) -> Container:
     """
     This enables the use of dependency injection in all tests.
     The container is created once for the entire test suite.
     """
-    return create_and_configure_container(infrastructure_settings)
+    return create_and_configure_container(infrastructure_settings, spark)
 
 
 @pytest.fixture(scope="session")
