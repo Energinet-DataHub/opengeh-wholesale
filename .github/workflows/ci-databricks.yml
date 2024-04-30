@@ -124,8 +124,6 @@ jobs:
             paths: calculator_job/test_energy_calculation.py
           - name: Wholesale (calculator_job)
             paths: calculator_job/test_wholesale_calculation.py
-          - name: Calculator job start
-            paths: calculator_job/test_start.py
           - name: Energy logic
             paths: features/given_an_energy_calculation
           - name: Wholesale logic
@@ -133,16 +131,13 @@ jobs:
           - name: Public data models
             paths: features/public_data_models
           - name: Unit tests
-            paths: calculation/ codelists/ common/ infrastructure/
+            paths: calculation/ codelists/ common/ infrastructure/ contracts/
           - name: Entry point tests
             paths: entry_points/
           - name: Migrations
             paths: datamigration/!(test_migration.py)
           - name: Current state migrations
             paths: datamigration/test_migration.py
-          - name: Contract
-            paths: contracts
-    if: ${{ inputs.has_delta_migration_changes }}
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
       job_name: ${{ matrix.tests_filter_expression.name }}
@@ -174,6 +169,20 @@ jobs:
       azure_keyvault_url: ${{ vars.integration_test_azure_keyvault_url }}
       image_tag: ${{ inputs.image_tag }}
 
+  migrations_tests:
+    if: ${{ inputs.has_delta_migration_changes }}
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
+    with:
+      job_name: Migrations
+      operating_system: dh3-ubuntu-20.04-4core
+      path_static_checks: ./source/databricks/calculation_engine
+      # documented here: https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
+      ignore_errors_and_warning_flake8: E501,F401,E402,E203,W503
+      test_report_path: ./source/databricks/calculation_engine/tests
+      # See .docker/entrypoint.py on how to use the filter expression
+      tests_filter_expression: datamigration
+      image_tag: ${{ inputs.image_tag }}
+
   unit_test_check:
     runs-on: ubuntu-latest
     name: Check executed unit tests
@@ -195,7 +204,10 @@ jobs:
           repository_owner=${{ github.repository_owner }}
           repository_name=${repository/$repository_owner\//}
 
-          # IMPORTANT: When adding a new folder here it should also be added in the `unit_tests` job!
+          # IMPORTANT: When adding a new folder here it should also be added in
+          # the `unit_tests` or `migrations_tests` or `integration_tests` job!
+          # This is because this filter contains the sum of all the tests folder
+          # in the three other test jobs above.
           filter="calculator_job/test_energy_calculation.py
           calculator_job/test_wholesale_calculation.py
           calculator_job/test_start.py
