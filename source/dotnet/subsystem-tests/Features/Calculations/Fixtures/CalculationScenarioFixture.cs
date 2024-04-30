@@ -26,6 +26,7 @@ using Azure.Monitor.Query.Models;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents;
+using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3;
 using Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.States;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures;
@@ -78,7 +79,7 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
 
     private LogsQueryClient LogsQueryClient { get; }
 
-    public async Task<Guid> StartCalculationAsync(CalculationRequestDto calculationInput)
+    public async Task<Guid> StartCalculationAsync(StartCalculationRequestDto calculationInput)
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, "api/StartCalculation");
         request.Content = new StringContent(
