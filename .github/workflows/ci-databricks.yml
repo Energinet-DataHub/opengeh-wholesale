@@ -134,10 +134,6 @@ jobs:
             paths: calculation/ codelists/ common/ infrastructure/ contracts/
           - name: Entry point tests
             paths: entry_points/
-          - name: Migrations
-            paths: datamigration/!(test_migration.py)
-          - name: Current state migrations
-            paths: datamigration/test_migration.py
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
       job_name: ${{ matrix.tests_filter_expression.name }}
@@ -170,17 +166,26 @@ jobs:
       image_tag: ${{ inputs.image_tag }}
 
   migrations_tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        # IMPORTANT: When adding a new folder here it should also be added in the `unit_test_check` job!
+        tests_filter_expression:
+          - name: Migrations
+            paths: datamigration/!(test_migration.py)
+          - name: Current state migrations
+            paths: datamigration/test_migration.py
     if: ${{ inputs.has_delta_migration_changes }}
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
-      job_name: Migrations
+      job_name: ${{ matrix.tests_filter_expression.name }}
       operating_system: dh3-ubuntu-20.04-4core
       path_static_checks: ./source/databricks/calculation_engine
       # documented here: https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
       ignore_errors_and_warning_flake8: E501,F401,E402,E203,W503
       test_report_path: ./source/databricks/calculation_engine/tests
       # See .docker/entrypoint.py on how to use the filter expression
-      tests_filter_expression: datamigration
+      tests_filter_expression: ${{ matrix.tests_filter_expression.paths }}
       image_tag: ${{ inputs.image_tag }}
 
   unit_test_check:
