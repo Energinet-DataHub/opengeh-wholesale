@@ -249,3 +249,8 @@ variable "front_door_id" {
   type        = string
   description = "ID of the Front Door to use for ensuring calls are made through the Front Door"
 }
+
+variable "databricks_group_id" {
+  type        = string
+  description = "The ID of the Databricks group containing Databricks users."
+}

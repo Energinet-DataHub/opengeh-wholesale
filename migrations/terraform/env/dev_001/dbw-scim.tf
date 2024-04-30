@@ -19,4 +19,3 @@ resource "null_resource" "scim" {
     EOF
   }
 }
-

@@ -11,7 +11,7 @@ resource "null_resource" "scim" {
           'Authorization' = "Bearer $aadToken"
       }
 
-      Invoke-RestMethod -Method PUT -Uri "https://${module.dbw.workspace_url}/api/2.0/preview/permissionassignments/principals/${var.databricks_group_id}" -Headers $headers -Body '{
+      Invoke-RestMethod -Method PUT -Uri "https://${azurerm_databricks_workspace.this.workspace_url}/api/2.0/preview/permissionassignments/principals/${var.databricks_group_id}" -Headers $headers -Body '{
         "permissions": [
             "USER"
         ]
@@ -20,3 +20,11 @@ resource "null_resource" "scim" {
   }
 }
 
+resource "databricks_grant" "dev_access_catalog" {
+  provider   = databricks.dbw
+  catalog    = databricks_catalog.shared.id
+  principal  = "SEC-A-GreenForce-DevelopmentTeamAzure"
+  privileges = ["USE_CATALOG", "SELECT", "READ_VOLUME", "USE_SCHEMA"]
+
+  depends_on = [azurerm_databricks_workspace.this, null_resource.scim]
+}
