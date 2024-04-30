@@ -35,6 +35,7 @@ public class EnergyResultTests
         Instant anyPeriodStart,
         Instant anyPeriodEnd,
         string anyMeteringPointId,
+        Resolution anyResolution,
         long anyVersion)
     {
         // Arrange
@@ -54,6 +55,7 @@ public class EnergyResultTests
             anyPeriodEnd,
             anyFromGridArea,
             anyMeteringPointId,
+            anyResolution,
             anyVersion);
 
         // Assert
