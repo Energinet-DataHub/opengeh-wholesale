@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.calculations
     period_end TIMESTAMP NOT NULL,
     execution_time_start TIMESTAMP NOT NULL,
     created_by_user_id STRING NOT NULL,
-    version BIGINT NON NULL
+    version BIGINT NOT NULL
 )
 USING DELTA
 TBLPROPERTIES (
