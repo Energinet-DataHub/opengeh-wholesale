@@ -16,6 +16,8 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensio
 
 public class SettlementReportStorageOptions
 {
+    public const string SectionName = "SettlementReportStorage";
+
     public Uri StorageAccountUri { get; set; } = null!;
 
     public string StorageContainerName { get; set; } = string.Empty;
