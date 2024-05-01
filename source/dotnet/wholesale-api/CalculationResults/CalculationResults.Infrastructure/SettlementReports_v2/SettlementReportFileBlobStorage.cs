@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
@@ -34,7 +35,9 @@ public sealed class SettlementReportFileBlobStorage : ISettlementReportFileRepos
 
     public Task<Stream> OpenForWritingAsync(SettlementReportRequestId reportRequestId, string fileName)
     {
-        throw new NotImplementedException();
+        var blobName = GetBlobName(reportRequestId, fileName);
+        var blobClient = _blobContainerClient.GetBlobClient(blobName);
+        return blobClient.OpenWriteAsync(true);
     }
 
     public Task DeleteAsync(SettlementReportRequestId reportRequestId, string fileName)

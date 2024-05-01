@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.IO.Compression;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
@@ -40,7 +41,19 @@ public sealed class SettlementReportFromFilesHandler : ISettlementReportFromFile
 
         await using (compressedStream.ConfigureAwait(false))
         {
-            // TODO: Zip files into one.
+            using var archive = new ZipArchive(compressedStream, ZipArchiveMode.Create);
+            foreach (var reportFile in generatedFiles)
+            {
+                var entry = archive.CreateEntry(reportFile.FileName);
+                var entryStream = entry.Open();
+                await using (entryStream.ConfigureAwait(false))
+                {
+                    var readStream = await _fileRepository
+                        .OpenForReadingAsync(requestId, reportFile.FileName)
+                        .ConfigureAwait(false);
+                    await readStream.CopyToAsync(entryStream).ConfigureAwait(false);
+                }
+            }
         }
 
         return new GeneratedSettlementReportDto(
