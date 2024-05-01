@@ -101,3 +101,9 @@ variable "feature_management_use_energy_result_produced" {
   description = "Should use energy result produced."
   default     = false
 }
+
+variable "apim_maintenance_mode" {
+  type        = bool
+  description = "Determine if API Management is in maintenance mode. In maintenance mode all requests will return 503 Service Unavailable."
+  default     = false
+}

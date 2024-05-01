@@ -289,9 +289,18 @@ module "apima_b2b_ebix" {
                 }</message>
                 <metadata name="CorrelationId" value="@($"{context.RequestId}")" />
             </trace>
-            <!--base -->
+            <!-- <base /> -->
             <!-- base has been removed, since it removes the certificat needed to request in ebix -->
-            <!-- Temporary fix! -->
+            <!-- Remove stuff below, when <base /> is added -->
+            <choose>
+                <when condition="@(${var.apim_maintenance_mode})">
+                  <return-response>
+                    <set-status code="503" reason="Service Unavailable"/>
+                    <set-body>DataHub is in maintenance mode.</set-body>
+                  </return-response>
+                </when>
+            <!-- Remove stuff above, when <base /> is added -->
+            </choose>
             <choose>
                 <when condition="@(context.Request.Certificate == null)">
                     <return-response>
