@@ -15,6 +15,7 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.EnergyResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using NodaTime;
 
@@ -38,6 +39,7 @@ public class EnergyResultFactory
         var calculationType = databricksSqlRow[EnergyResultColumnNames.CalculationType];
         var fromGridArea = databricksSqlRow[EnergyResultColumnNames.FromGridArea];
         var meteringPointId = databricksSqlRow[EnergyResultColumnNames.MeteringPointId];
+        var resolution = databricksSqlRow[EnergyResultColumnNames.Resolution];
 
         return new EnergyResult(
             SqlResultValueConverters.ToGuid(id!),
@@ -52,6 +54,7 @@ public class EnergyResultFactory
             periodEnd,
             fromGridArea,
             meteringPointId,
+            ResolutionMapper.FromDeltaTableValue(resolution!),
             version);
     }
 }
