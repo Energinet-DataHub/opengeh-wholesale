@@ -53,5 +53,6 @@ ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames
         EnergyResultColumnNames.CalculationResultId,
         EnergyResultColumnNames.CalculationType,
         EnergyResultColumnNames.MeteringPointId,
+        EnergyResultColumnNames.Resolution,
     };
 }

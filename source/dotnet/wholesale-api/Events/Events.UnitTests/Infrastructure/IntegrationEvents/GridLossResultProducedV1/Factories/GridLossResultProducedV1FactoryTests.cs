@@ -34,6 +34,7 @@ public class GridLossResultProducedV1FactoryTests
     private readonly string _gridArea = "543";
     private readonly Instant _periodStart = SystemClock.Instance.GetCurrentInstant();
     private readonly Instant _periodEnd = SystemClock.Instance.GetCurrentInstant();
+    private readonly Resolution _resolution = Resolution.Quarter;
 
     [Theory]
     [InlineAutoMoqData(TimeSeriesType.NegativeGridLoss)]
@@ -75,6 +76,7 @@ public class GridLossResultProducedV1FactoryTests
             _periodEnd,
             null,
             meteringPointId,
+            _resolution,
             1);
     }
 
