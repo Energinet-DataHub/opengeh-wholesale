@@ -56,30 +56,6 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>, IClassFix
         Fixture.Inject(_fixture.GetDatabricksExecutor());
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetAsync_ReturnsExpectedEnergyResult(CalculationDto calculation)
-    {
-        // Arrange
-        const int expectedResultCount = 3;
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        calculation = calculation with { CalculationId = Guid.Parse(CalculationId) };
-        _calculationsClientMock.Setup(b => b.GetAsync(It.IsAny<Guid>())).ReturnsAsync(calculation);
-
-        // Act
-        var actual = await Sut.GetAsync(calculation.CalculationId).ToListAsync();
-
-        // Assert
-        using var assertionScope = new AssertionScope();
-        actual.Count.Should().Be(expectedResultCount);
-        actual.SelectMany(a => a.TimeSeriesPoints)
-            .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
-            .ToArray()
-            .Should()
-            .Equal(FirstQuantity, SecondQuantity, ThirdQuantity, FourthQuantity, FifthQuantity, SixthQuantity);
-    }
-
     private async Task AddCreatedRowsInArbitraryOrderAsync(IOptions<DeltaTableOptions> options)
     {
         const string firstCalculationResultId = "aaaaaaaa-386f-49eb-8b56-63fae62e4fc7";

@@ -16,6 +16,9 @@
 
 import package.infrastructure.environment_variables as env_vars
 
+# Catalogue
+CATALOGUE_NAME = "ctl_shres_d_we_002"
+
 # Input database and tables
 INPUT_DATABASE_NAME = "wholesale_input"
 METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods"
@@ -27,6 +30,7 @@ GRID_LOSS_METERING_POINTS_TABLE_NAME = "grid_loss_metering_points"
 
 # Output database and tables
 OUTPUT_DATABASE_NAME = "wholesale_output"
+OUTPUT_DATABASE_NAME_UC = "dbs_wholesale"
 ENERGY_RESULT_TABLE_NAME = "energy_results"
 WHOLESALE_RESULT_TABLE_NAME = "wholesale_results"
 TOTAL_MONTHLY_AMOUNTS_TABLE_NAME = "total_monthly_amounts"

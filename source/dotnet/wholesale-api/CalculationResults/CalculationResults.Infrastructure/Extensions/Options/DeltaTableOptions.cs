@@ -16,10 +16,14 @@ namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 
 public class DeltaTableOptions
 {
+    public string CatalogueName { get; set; } = "ctl_shres_d_we_002";
+
     /// <summary>
     /// Name of the schema/database under which the output tables are associated.
     /// </summary>
     public string SCHEMA_NAME { get; set; } = "wholesale_output";
+
+    public string SchemaNameUC { get; set; } = "dbs_wholesale";
 
     /// <summary>
     /// Name of the schema/database under which the basis data tables are associated.
