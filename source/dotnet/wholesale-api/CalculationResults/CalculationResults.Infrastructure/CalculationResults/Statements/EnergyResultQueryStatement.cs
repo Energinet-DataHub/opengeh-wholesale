@@ -33,7 +33,7 @@ public class EnergyResultQueryStatement : DatabricksStatement
     {
         return $@"
 SELECT {string.Join(", ", SqlColumnNames)}
-FROM {_deltaTableOptions.CatalogueName}{_deltaTableOptions.SchemaNameUC}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME}
+FROM {_deltaTableOptions.CatalogueName}.{_deltaTableOptions.SchemaNameUC}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME}
 WHERE {EnergyResultColumnNames.CalculationId} = '{_calculationId}'
 ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames.Time}
 ";
