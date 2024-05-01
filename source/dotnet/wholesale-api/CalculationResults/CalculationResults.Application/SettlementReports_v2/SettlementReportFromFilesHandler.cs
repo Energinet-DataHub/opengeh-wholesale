@@ -51,7 +51,10 @@ public sealed class SettlementReportFromFilesHandler : ISettlementReportFromFile
                     var readStream = await _fileRepository
                         .OpenForReadingAsync(requestId, reportFile.FileName)
                         .ConfigureAwait(false);
-                    await readStream.CopyToAsync(entryStream).ConfigureAwait(false);
+                    await using (readStream.ConfigureAwait(false))
+                    {
+                        await readStream.CopyToAsync(entryStream).ConfigureAwait(false);
+                    }
                 }
             }
         }
