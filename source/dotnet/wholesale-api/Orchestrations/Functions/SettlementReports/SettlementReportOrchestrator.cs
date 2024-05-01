@@ -14,7 +14,6 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Activities;
-using Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.DurableTask;
 
@@ -45,13 +44,13 @@ internal sealed class SettlementReportOrchestrator
             .WhenAll(fileRequests)
             .ConfigureAwait(false);
 
-        var zippedSettlementReport = await context.CallActivityAsync<ZippedSettlementReportResult>(
+        var generatedSettlementReport = await context.CallActivityAsync<GeneratedSettlementReportDto>(
             nameof(GatherSettlementReportFiles),
             generatedFiles).ConfigureAwait(false);
 
         await context.CallActivityAsync(
             nameof(FinalizeSettlementReport),
-            zippedSettlementReport).ConfigureAwait(false);
+            generatedSettlementReport).ConfigureAwait(false);
 
         // calculationMetadata.Progress = "??";
         // context.SetCustomStatus(calculationMetadata);

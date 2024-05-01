@@ -18,7 +18,7 @@ using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Activities;
 
-public class GenerateSettlementReportFile
+public sealed class GenerateSettlementReportFile
 {
     private readonly ISettlementReportFileRequestHandler _settlementReportFileRequestHandler;
 

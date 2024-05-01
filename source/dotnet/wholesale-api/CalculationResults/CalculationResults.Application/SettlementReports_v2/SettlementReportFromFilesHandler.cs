@@ -17,24 +17,35 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 
-public sealed class SettlementReportFinalizeHandler : ISettlementReportFinalizeHandler
+public sealed class SettlementReportFromFilesHandler : ISettlementReportFromFilesHandler
 {
     private readonly ISettlementReportFileRepository _fileRepository;
 
-    public SettlementReportFinalizeHandler(ISettlementReportFileRepository fileRepository)
+    public SettlementReportFromFilesHandler(ISettlementReportFileRepository fileRepository)
     {
         _fileRepository = fileRepository;
     }
 
-    public async Task FinalizeAsync(GeneratedSettlementReportDto generatedReport)
+    public async Task<GeneratedSettlementReportDto> CombineAsync(IReadOnlyCollection<GeneratedSettlementReportFileDto> generatedFiles)
     {
-        foreach (var file in generatedReport.TemporaryFiles)
+        var reportFileName = "Report.zip";
+        var requestId = generatedFiles
+            .Select(file => file.RequestId)
+            .Distinct()
+            .Single();
+
+        var compressedStream = await _fileRepository
+            .OpenForWritingAsync(requestId, reportFileName)
+            .ConfigureAwait(false);
+
+        await using (compressedStream.ConfigureAwait(false))
         {
-            await _fileRepository
-                .DeleteAsync(file.RequestId, file.FileName)
-                .ConfigureAwait(false);
+            // TODO: Zip files into one.
         }
 
-        // TODO: write to db
+        return new GeneratedSettlementReportDto(
+            requestId,
+            new GeneratedSettlementReportFileDto(requestId, reportFileName),
+            generatedFiles);
     }
 }

@@ -18,5 +18,5 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementRe
 
 public interface ISettlementReportFinalizeHandler
 {
-    Task FinalizeAsync(IEnumerable<GeneratedSettlementReportFileDto> generatedFiles);
+    Task FinalizeAsync(GeneratedSettlementReportDto generatedReport);
 }

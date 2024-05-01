@@ -48,6 +48,6 @@ public sealed class SettlementReportFileRequestHandler : ISettlementReportFileRe
             }
         }
 
-        return new GeneratedSettlementReportFileDto(fileRequest.FileName, fileRequest.RequestId);
+        return new GeneratedSettlementReportFileDto(fileRequest.RequestId, fileRequest.FileName);
     }
 }

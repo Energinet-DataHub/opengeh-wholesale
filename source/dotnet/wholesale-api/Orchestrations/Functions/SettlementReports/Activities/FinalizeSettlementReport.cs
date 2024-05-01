@@ -13,16 +13,16 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
-using Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Activities;
 
-public class FinalizeSettlementReport(ISettlementReportFinalizeHandler settlementReportFinalizeHandler)
+public sealed class FinalizeSettlementReport(ISettlementReportFinalizeHandler settlementReportFinalizeHandler)
 {
     [Function(nameof(FinalizeSettlementReport))]
-    public Task Run([ActivityTrigger] ZippedSettlementReportResult input)
+    public Task Run([ActivityTrigger] GeneratedSettlementReportDto input)
     {
-        return settlementReportFinalizeHandler.FinalizeAsync(input.GeneratedSettlementReportFiles);
+        return settlementReportFinalizeHandler.FinalizeAsync(input);
     }
 }

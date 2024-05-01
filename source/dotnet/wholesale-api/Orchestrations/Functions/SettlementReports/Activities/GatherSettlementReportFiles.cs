@@ -12,26 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
-using Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Activities;
 
-public class GatherSettlementReportFiles
+public sealed class GatherSettlementReportFiles
 {
-    private readonly ILogger _logger;
+    private readonly ISettlementReportFromFilesHandler _settlementReportFromFilesHandler;
 
-    public GatherSettlementReportFiles(ILoggerFactory loggerFactory)
+    public GatherSettlementReportFiles(ISettlementReportFromFilesHandler settlementReportFromFilesHandler)
     {
-        _logger = loggerFactory.CreateLogger<GatherSettlementReportFiles>();
+        _settlementReportFromFilesHandler = settlementReportFromFilesHandler;
     }
 
     [Function(nameof(GatherSettlementReportFiles))]
-    public Task<ZippedSettlementReportResult> Run([ActivityTrigger] IEnumerable<GeneratedSettlementReportFileDto> input)
+    public Task<GeneratedSettlementReportDto> Run([ActivityTrigger] IReadOnlyCollection<GeneratedSettlementReportFileDto> input)
     {
-        // zip files
-        return Task.FromResult(new ZippedSettlementReportResult(input, "blob-storage/zip-file-name.zip"));
+        return _settlementReportFromFilesHandler.CombineAsync(input);
     }
 }
