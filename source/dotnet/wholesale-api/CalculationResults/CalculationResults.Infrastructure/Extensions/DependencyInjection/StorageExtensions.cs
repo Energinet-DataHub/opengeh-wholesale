@@ -49,18 +49,7 @@ public static class StorageExtensions
 
             return new SettlementReportFileBlobStorage(blobContainerClient);
         });
-
-        var blobStorageSettings = configuration.GetRequiredSection(nameof(SettlementReportStorageOptions)).Get<SettlementReportStorageOptions>();
-        ArgumentNullException.ThrowIfNull(blobStorageSettings);
-
-        // Health checks
-        services
-            .AddHealthChecks()
-            .AddAzureBlobStorage(
-                blobStorageSettings.StorageAccountUri,
-                new DefaultAzureCredential(),
-                blobStorageSettings.StorageContainerName);
-
+        
         return services;
     }
 }
