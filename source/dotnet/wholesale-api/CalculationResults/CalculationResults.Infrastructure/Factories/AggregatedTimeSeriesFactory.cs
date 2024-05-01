@@ -32,6 +32,7 @@ public class AggregatedTimeSeriesFactory
         var gridArea = databricksSqlRow[EnergyResultColumnNames.GridArea];
         var timeSeriesType = databricksSqlRow[EnergyResultColumnNames.TimeSeriesType];
         var calculationType = databricksSqlRow[EnergyResultColumnNames.CalculationType];
+        var resolution = databricksSqlRow[EnergyResultColumnNames.Resolution];
 
         return new AggregatedTimeSeries(
             gridArea: gridArea!,
@@ -40,6 +41,7 @@ public class AggregatedTimeSeriesFactory
             calculationType: CalculationTypeMapper.FromDeltaTableValue(calculationType!),
             periodStart: periodStart,
             periodEnd: periodEnd,
+            ResolutionMapper.FromDeltaTableValue(resolution!),
             version: version);
     }
 }
