@@ -30,7 +30,7 @@ public static class StorageExtensions
     {
         services
             .AddOptions<SettlementReportStorageOptions>()
-            .BindConfiguration(configSectionPath: string.Empty);
+            .BindConfiguration(SettlementReportStorageOptions.SectionName);
 
         services.AddScoped<ISettlementReportFileRepository, SettlementReportFileBlobStorage>(d =>
         {
