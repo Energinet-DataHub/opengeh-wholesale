@@ -11,9 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from features.utils.dataframes.basis_data.basis_data_results_dataframe import (
-    create_basis_data_result_dataframe,
-)
+from .basis_data.basis_data_dataframes import create_basis_data_result_dataframe
 from .energy_results_dataframe import create_energy_result_dataframe
 from .total_monthly_amounts_dataframe import create_total_monthly_amounts_dataframe
 from .wholesale_results_dataframe import create_wholesale_result_dataframe
