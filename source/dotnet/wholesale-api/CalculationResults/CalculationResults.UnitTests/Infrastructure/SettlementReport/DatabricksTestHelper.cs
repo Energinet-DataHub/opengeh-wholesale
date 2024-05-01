@@ -45,7 +45,8 @@ public static class DatabricksTestHelper
         string calculationType = "BalanceFixing",
         string time = "2022-05-16T01:00:00.000Z",
         string timeSeriesType = "non_profiled_consumption",
-        string quantity = "1.234")
+        string quantity = "1.234",
+        string resolution = "PT15M")
     {
         var newRow = new Dictionary<string, object?>
         {
@@ -54,6 +55,7 @@ public static class DatabricksTestHelper
             { EnergyResultColumnNames.Time, time },
             { EnergyResultColumnNames.TimeSeriesType, timeSeriesType },
             { EnergyResultColumnNames.Quantity, $@"{quantity}" },
+            { EnergyResultColumnNames.Resolution, resolution },
         };
         return newRow;
     }

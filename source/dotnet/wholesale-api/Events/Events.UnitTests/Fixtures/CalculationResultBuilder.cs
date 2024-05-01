@@ -73,6 +73,7 @@ public sealed class CalculationResultBuilder
             Instant.FromUtc(2023, 1, 31, 23, 0),
             null,
             GetMeteringPointId(),
+            Resolution.Quarter,
             _version);
     }
 
