@@ -52,13 +52,13 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
         {
             _row0CalculationId, "100", "200", "non_profiled_consumption", string.Empty, string.Empty,
             "2022-05-16T22:00:00.000Z", "1.111", "[\"measured\"]", _calculationResultId0,
-            DeltaTableCalculationType.Aggregation, null,
+            DeltaTableCalculationType.Aggregation, null, "PT15M",
         };
         var row1 = new[]
         {
             "b78787d5-b544-44ac-87c2-7720aab86ed2", "200", "100", "non_profiled_consumption", string.Empty,
             string.Empty, "2022-05-16T22:00:00.000Z", "2.222", "[\"measured\"]", calculationResultId1,
-            DeltaTableCalculationType.BalanceFixing, null,
+            DeltaTableCalculationType.BalanceFixing, null, "PT15M",
         };
         var rows = new List<string?[]> { row0, row1, };
 
