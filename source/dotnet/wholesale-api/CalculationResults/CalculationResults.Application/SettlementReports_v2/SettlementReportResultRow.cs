@@ -22,5 +22,6 @@ public sealed record SettlementReportResultRow(
     Instant Time,
     decimal Quantity,
     GridAreaCode GridAreaCode,
+    Resolution Resolution,
     MeteringPointType? MeteringPointType,
     SettlementMethod? SettlementMethod);

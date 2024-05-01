@@ -43,10 +43,15 @@ public sealed class LegacySettlementReportDataRepository : ISettlementReportData
 
         foreach (var row in rows)
         {
+            var resolution = row.Resolution == "PT15M"
+                ? Resolution.QuarterHour
+                : throw new InvalidOperationException($"Resolution {row.Resolution} is not supported in legacy mode.");
+
             yield return new SettlementReportResultRow(
                 row.Time,
                 row.Quantity,
                 new GridAreaCode(row.GridArea),
+                resolution,
                 row.MeteringPointType,
                 row.SettlementMethod);
         }

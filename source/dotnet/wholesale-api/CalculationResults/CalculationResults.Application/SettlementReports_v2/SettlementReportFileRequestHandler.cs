@@ -38,10 +38,14 @@ public sealed class SettlementReportFileRequestHandler : ISettlementReportFileRe
 
         await using (writeStream.ConfigureAwait(false))
         {
-            await _fileGeneratorFactory
-                .Create(fileRequest.FileContent)
-                .WriteToAsync(fileRequest.RequestFilter, writeStream)
-                .ConfigureAwait(false);
+            var streamWriter = new StreamWriter(writeStream);
+            await using (streamWriter.ConfigureAwait(false))
+            {
+                await _fileGeneratorFactory
+                    .Create(fileRequest.FileContent)
+                    .WriteAsync(fileRequest.RequestFilter, streamWriter)
+                    .ConfigureAwait(false);
+            }
         }
 
         return new GeneratedSettlementReportFileDto(fileRequest.FileName, fileRequest.RequestId);
