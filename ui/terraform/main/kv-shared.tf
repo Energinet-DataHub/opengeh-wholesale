@@ -19,7 +19,7 @@ data "azurerm_key_vault_secret" "frontend_open_id_url" {
 }
 
 data "azurerm_key_vault_secret" "backend_open_id_url" {
-  name         = "backend-open-id-url"
+  name         = "api-backend-open-id-url"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 

@@ -39,7 +39,6 @@ module "app_api" {
   ]
 }
 
-# In step 2: change references in all other sub-systems pointing toapp-markpart-webapi-base-url to ref. app-markpart-api-base-url instead
 module "kvs_app_markpart_api_base_url" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
 
@@ -48,7 +47,6 @@ module "kvs_app_markpart_api_base_url" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-# In step 2: change references in all other sub-systems pointing to backend-open-id-url to ref. api-backend-open-id-url instead
 module "kvs_backend_api_open_id_url" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
 

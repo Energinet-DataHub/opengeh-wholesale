@@ -24,16 +24,14 @@ module "bff" {
     }
   ]
   app_settings = {
-    ApiClientSettings__MeteringPointBaseUrl     = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-metering-point-webapi-base-url)"
-    ApiClientSettings__ChargesBaseUrl           = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-charges-webapi-base-url)"
-    ApiClientSettings__MarketParticipantBaseUrl = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-markpart-webapi-base-url)"
+    ApiClientSettings__MarketParticipantBaseUrl = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-markpart-api-base-url)"
     ApiClientSettings__WholesaleBaseUrl         = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-wholesale-api-base-url)"
     ApiClientSettings__ESettExchangeBaseUrl     = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-esett-webapi-base-url)"
     ApiClientSettings__EdiB2CWebApiBaseUrl      = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-edi-b2cwebapi-base-url)"
     ApiClientSettings__ImbalancePricesBaseUrl   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-grid-loss-imbalance-prices-api-base-url)"
     MITID_EXTERNAL_OPEN_ID_URL                  = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=mitid-frontend-open-id-url)"
     EXTERNAL_OPEN_ID_URL                        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=frontend-open-id-url)"
-    INTERNAL_OPEN_ID_URL                        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-open-id-url)"
+    INTERNAL_OPEN_ID_URL                        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=api-backend-open-id-url)"
     BACKEND_BFF_APP_ID                          = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-bff-app-id)"
   }
 }
