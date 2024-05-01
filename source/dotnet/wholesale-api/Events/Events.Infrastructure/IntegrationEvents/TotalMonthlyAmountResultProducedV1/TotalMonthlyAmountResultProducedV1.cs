@@ -23,7 +23,7 @@ public partial class TotalMonthlyAmountResultProducedV1 : IEventMessage
     /// </summary>
     public const string EventName = "TotalMonthlyAmountResultProducedV1";
 
-    public const int EventMinorVersion = 3;
+    public const int EventMinorVersion = 1;
 
     string IEventMessage.EventName => EventName;
 

@@ -28,18 +28,18 @@ public class WholesaleResultEventProvider : ResultEventProvider, IWholesaleResul
     private readonly IWholesaleResultQueries _wholesaleResultQueries;
     private readonly IAmountPerChargeResultProducedV1Factory _amountPerChargeResultProducedV1Factory;
     private readonly IMonthlyAmountPerChargeResultProducedV1Factory _monthlyAmountPerChargeResultProducedV1Factory;
-    private readonly ITotalMonthlyAmountResultProducedV1Factory _totalMonthlyAmountResultProducedV1Factory;
+    private readonly ITotalMonthlyAmountResultProducedV1Factory _totalTotalMonthlyAmountResultProducedV1Factory;
 
     public WholesaleResultEventProvider(
         IWholesaleResultQueries wholesaleResultQueries,
         IAmountPerChargeResultProducedV1Factory amountPerChargeResultProducedV1Factory,
         IMonthlyAmountPerChargeResultProducedV1Factory monthlyAmountPerChargeResultProducedV1Factory,
-        ITotalMonthlyAmountResultProducedV1Factory monthlyAmountResultProducedV1Factory)
+        ITotalMonthlyAmountResultProducedV1Factory totalMonthlyAmountResultProducedV1Factory)
     {
         _wholesaleResultQueries = wholesaleResultQueries;
         _amountPerChargeResultProducedV1Factory = amountPerChargeResultProducedV1Factory;
         _monthlyAmountPerChargeResultProducedV1Factory = monthlyAmountPerChargeResultProducedV1Factory;
-        _totalMonthlyAmountResultProducedV1Factory = monthlyAmountResultProducedV1Factory;
+        _totalTotalMonthlyAmountResultProducedV1Factory = totalMonthlyAmountResultProducedV1Factory;
     }
 
     public bool CanContainWholesaleResults(CompletedCalculation calculation)
@@ -61,8 +61,8 @@ public class WholesaleResultEventProvider : ResultEventProvider, IWholesaleResul
             if (_monthlyAmountPerChargeResultProducedV1Factory.CanCreate(wholesaleResult))
                 yield return CreateIntegrationEvent(_monthlyAmountPerChargeResultProducedV1Factory.Create(wholesaleResult));
 
-            if (_totalMonthlyAmountResultProducedV1Factory.CanCreate(wholesaleResult))
-                yield return CreateIntegrationEvent(_totalMonthlyAmountResultProducedV1Factory.Create(wholesaleResult));
+            if (_totalTotalMonthlyAmountResultProducedV1Factory.CanCreate(wholesaleResult))
+                yield return CreateIntegrationEvent(_totalTotalMonthlyAmountResultProducedV1Factory.Create(wholesaleResult));
         }
     }
 }
