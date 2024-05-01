@@ -76,7 +76,7 @@ class ChargeLinkPeriodsColname:
     from_date = "from_date"
     to_date = "to_date"
 
-    
+
 class CalculationsColumnName:
     calculation_id = "calculation_id"
     calculation_type = "calculation_type"
