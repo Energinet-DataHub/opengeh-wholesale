@@ -27,8 +27,7 @@ from package.calculator_job_args import (
     parse_job_arguments,
     parse_command_line_arguments,
 )
-from package.container import create_and_configure_container
-from package.infrastructure import initialize_spark
+from package.container import create_and_configure_container, Container
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.storage_account_access import islocked
 
@@ -112,7 +111,7 @@ def create_prepared_data_reader(
     settings: InfrastructureSettings,
 ) -> calculation.PreparedDataReader:
     """Create calculation execution dependencies."""
-    spark = initialize_spark()
+    spark = Container.spark
     delta_table_reader = input.TableReader(
         spark,
         settings.calculation_input_path,
