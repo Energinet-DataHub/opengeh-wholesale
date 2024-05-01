@@ -24,7 +24,7 @@ public partial class EnergyResultProducedV2 : IEventMessage
     /// </summary>
     public const string EventName = "EnergyResultProducedV2";
 
-    public const int EventMinorVersion = 2;
+    public const int EventMinorVersion = 3;
 
     string IEventMessage.EventName => EventName;
 

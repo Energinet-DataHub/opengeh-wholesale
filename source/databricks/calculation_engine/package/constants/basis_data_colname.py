@@ -75,3 +75,13 @@ class ChargeLinkPeriodsColname:
     quantity = "quantity"
     from_date = "from_date"
     to_date = "to_date"
+
+    
+class CalculationsColumnName:
+    calculation_id = "calculation_id"
+    calculation_type = "calculation_type"
+    period_start = "period_start"
+    period_end = "period_end"
+    execution_time_start = "execution_time_start"
+    created_by_user_id = "created_by_user_id"
+    version = "version"

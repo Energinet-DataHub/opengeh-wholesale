@@ -30,7 +30,6 @@ OUTPUT_DATABASE_NAME = "wholesale_output"
 ENERGY_RESULT_TABLE_NAME = "energy_results"
 WHOLESALE_RESULT_TABLE_NAME = "wholesale_results"
 TOTAL_MONTHLY_AMOUNTS_TABLE_NAME = "total_monthly_amounts"
-CALCULATIONS_TABLE_NAME = "calculations"
 
 # Basis data database and tables
 BASIS_DATA_DATABASE_NAME = "basis_data"
@@ -39,6 +38,7 @@ TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME = "time_series_points"
 CHARGE_LINK_PERIODS_BASIS_DATA_TABLE_NAME = "charge_link_periods"
 CHARGE_MASTER_DATA_PERIODS_BASIS_DATA_TABLE_NAME = "charge_masterdata_periods"
 CHARGE_PRICE_POINTS_BASIS_DATA_TABLE_NAME = "charge_price_points"
+CALCULATIONS_TABLE_NAME = "calculations"
 
 # Settlement report database and views
 SETTLEMENT_REPORT_DATABASE_NAME = "settlement_report"
@@ -46,6 +46,7 @@ METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1 = "metering_point_periods_
 METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME_V1 = (
     "metering_point_time_series_v1"
 )
+ENERGY_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1 = "energy_results_v1"
 
 TEST = ""
 

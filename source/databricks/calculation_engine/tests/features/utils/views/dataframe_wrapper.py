@@ -19,6 +19,9 @@ from pyspark.sql import DataFrame
 @dataclass
 class DataframeWrapper:
 
+    key: str
+    """The key of the wrapper."""
+
     name: str
     """
     The name of the dataframe.
