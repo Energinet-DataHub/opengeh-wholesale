@@ -42,6 +42,7 @@ public class EnergyResultEventProviderTests
     private readonly Instant _periodStart = Instant.FromUtc(2021, 1, 2, 23, 0);
     private readonly Instant _periodEnd = Instant.FromUtc(2021, 1, 3, 23, 0);
     private readonly CompletedCalculation _completedCalculation;
+    private readonly Resolution _resolution = Resolution.Quarter;
 
     public EnergyResultEventProviderTests()
     {
@@ -171,6 +172,7 @@ public class EnergyResultEventProviderTests
             _periodEnd,
             _fromGridArea,
             meteringPointType,
+            _resolution,
             1);
     }
 }
