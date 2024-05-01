@@ -16,6 +16,6 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementRe
 
 public sealed record SettlementReportFileRequestDto(
     SettlementReportFileContent FileContent,
-    string FileName,
+    string SuggestedName,
     SettlementReportRequestId RequestId,
     SettlementReportRequestFilterDto RequestFilter);

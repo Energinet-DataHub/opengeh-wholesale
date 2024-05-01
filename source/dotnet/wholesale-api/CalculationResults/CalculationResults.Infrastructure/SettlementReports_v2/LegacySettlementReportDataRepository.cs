@@ -32,14 +32,23 @@ public sealed class LegacySettlementReportDataRepository : ISettlementReportData
 
     public async IAsyncEnumerable<SettlementReportResultRow> TryReadBalanceFixingResultsAsync(SettlementReportRequestFilterDto filter)
     {
-        var rows = await _settlementReportResultQueries
-            .GetRowsAsync(
-                filter.GridAreas.Select(gridArea => gridArea.Code).ToArray(),
-                CalculationType.BalanceFixing,
-                filter.PeriodStart.ToInstant(),
-                filter.PeriodEnd.ToInstant(),
-                null)
-            .ConfigureAwait(false);
+        IEnumerable<Interfaces.SettlementReports.Model.SettlementReportResultRow> rows;
+
+        try
+        {
+            rows = await _settlementReportResultQueries
+                .GetRowsAsync(
+                    filter.GridAreas.Select(gridArea => gridArea.Code).ToArray(),
+                    CalculationType.BalanceFixing,
+                    filter.PeriodStart.ToInstant(),
+                    filter.PeriodEnd.ToInstant(),
+                    null)
+                .ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            throw new TimeoutException(ISettlementReportDataRepository.DataSourceUnavailableExceptionMessage, ex);
+        }
 
         foreach (var row in rows)
         {

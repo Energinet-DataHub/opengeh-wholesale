@@ -12,10 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Activities;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.DurableTask;
+using Microsoft.Extensions.Logging;
+using RetryContext = Microsoft.DurableTask.RetryContext;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports;
 
@@ -23,8 +26,8 @@ internal sealed class SettlementReportOrchestrator
 {
     [Function(nameof(OrchestrateSettlementReportAsync))]
     public async Task<string> OrchestrateSettlementReportAsync(
-        [OrchestrationTrigger] TaskOrchestrationContext context,
-        FunctionContext executionContext)
+         [OrchestrationTrigger] TaskOrchestrationContext context,
+         FunctionContext executionContext)
     {
         var settlementReportRequest = context.GetInput<SettlementReportRequestDto>();
         if (settlementReportRequest == null)
@@ -37,8 +40,15 @@ internal sealed class SettlementReportOrchestrator
             .CallActivityAsync<IEnumerable<SettlementReportFileRequestDto>>(nameof(ScatterSettlementReportFiles), settlementReportRequest)
             .ConfigureAwait(false);
 
-        var fileRequests = scatterResults.Select(settlementReportFileRequest =>
-            context.CallActivityAsync<GeneratedSettlementReportFileDto>(nameof(GenerateSettlementReportFile), settlementReportFileRequest));
+        var coldRetryHandler = TaskOptions.FromRetryHandler(retryContext => HandleColdDataSource(
+                retryContext,
+                executionContext.GetLogger<SettlementReportOrchestrator>()));
+
+        var fileRequests = scatterResults
+            .Select(settlementReportFileRequest => context.CallActivityAsync<GeneratedSettlementReportFileDto>(
+                nameof(GenerateSettlementReportFile),
+                settlementReportFileRequest,
+                coldRetryHandler));
 
         var generatedFiles = await Task
             .WhenAll(fileRequests)
@@ -55,5 +65,16 @@ internal sealed class SettlementReportOrchestrator
         // calculationMetadata.Progress = "??";
         // context.SetCustomStatus(calculationMetadata);
         return "Success";
+    }
+
+    private static bool HandleColdDataSource(RetryContext retryContext, ILogger<SettlementReportOrchestrator> logger)
+    {
+        if (retryContext.LastFailure.ErrorMessage == ISettlementReportDataRepository.DataSourceUnavailableExceptionMessage)
+        {
+            logger.LogError("GenerateSettlementReportFile databricks failed. Inner exception message: {innerException}.", retryContext.LastFailure.InnerFailure?.ToString());
+        }
+
+        return retryContext.LastFailure.ErrorMessage == ISettlementReportDataRepository.DataSourceUnavailableExceptionMessage &&
+               retryContext.LastAttemptNumber <= 3;
     }
 }

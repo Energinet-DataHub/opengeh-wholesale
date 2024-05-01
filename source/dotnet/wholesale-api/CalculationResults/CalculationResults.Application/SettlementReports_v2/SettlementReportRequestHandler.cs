@@ -43,7 +43,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
     {
         var resultsFile = new SettlementReportFileRequestDto(
             SettlementReportFileContent.BalanceFixingResult,
-            "Result Energy.csv",
+            "Result Energy",
             reportRequest.Id,
             reportRequest.Filter);
 

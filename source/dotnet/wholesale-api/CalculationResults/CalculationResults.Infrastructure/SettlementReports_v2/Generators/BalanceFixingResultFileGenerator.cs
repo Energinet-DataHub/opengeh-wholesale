@@ -30,6 +30,8 @@ public sealed class BalanceFixingResultFileGenerator : ISettlementReportFileGene
         _dataSource = dataSource;
     }
 
+    public string FileExtension => ".csv";
+
     public async Task WriteAsync(SettlementReportRequestFilterDto filter, StreamWriter destination)
     {
         var csvHelper = new CsvWriter(destination, new CultureInfo(filter.CsvFormatLocale ?? "en-US"));

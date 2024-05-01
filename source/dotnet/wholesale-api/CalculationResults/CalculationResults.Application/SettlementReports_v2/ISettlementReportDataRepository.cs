@@ -18,9 +18,10 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementR
 
 public interface ISettlementReportDataRepository
 {
+    public const string DataSourceUnavailableExceptionMessage = "Call to Databricks SQL Warehouse failed. Is server cold?";
+
     /// <summary>
-    /// Stream the requested data from the data source. If the data source is not ready, an Exception is thrown.
+    /// Stream the requested data from the data source. If the data source is not ready, an exception is thrown.
     /// </summary>
-    // TODO: Which exception to throw?
     IAsyncEnumerable<SettlementReportResultRow> TryReadBalanceFixingResultsAsync(SettlementReportRequestFilterDto filter);
 }

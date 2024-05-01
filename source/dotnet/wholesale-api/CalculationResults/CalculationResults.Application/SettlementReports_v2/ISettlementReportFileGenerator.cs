@@ -18,5 +18,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementR
 
 public interface ISettlementReportFileGenerator
 {
+    string FileExtension { get; }
+
     Task WriteAsync(SettlementReportRequestFilterDto filter, StreamWriter destination);
 }
