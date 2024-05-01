@@ -271,6 +271,9 @@ message EnergyResultProducedV2 {
 
         // States that each time series point represents a time interval of one quarter (15 minutes).
         RESOLUTION_QUARTER = 1;
+
+        // States that each time series point represents a time interval of one hour (60 minutes).
+        RESOLUTION_HOUR = 2;
     }
 }
 ";
