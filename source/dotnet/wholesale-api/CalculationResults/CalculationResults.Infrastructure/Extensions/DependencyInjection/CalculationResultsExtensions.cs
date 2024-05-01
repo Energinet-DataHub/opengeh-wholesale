@@ -52,6 +52,7 @@ public static class CalculationResultsExtensions
         services.AddScoped<ISettlementReportFileRequestHandler, SettlementReportFileRequestHandler>();
         services.AddScoped<ISettlementReportFinalizeHandler, SettlementReportFinalizeHandler>();
         services.AddScoped<ISettlementReportDataRepository, LegacySettlementReportDataRepository>();
+        services.AddScoped<ISettlementReportFileGeneratorFactory, SettlementReportFileGeneratorFactory>();
         services.AddSettlementReportBlobStorage(configuration);
 
         // Used by sql statements (queries)
