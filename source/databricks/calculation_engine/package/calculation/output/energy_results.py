@@ -24,6 +24,7 @@ from package.infrastructure.paths import (
     ENERGY_RESULT_TABLE_NAME,
     CATALOGUE_NAME,
     OUTPUT_DATABASE_NAME,
+    TEST,
 )
 
 
@@ -44,10 +45,11 @@ def _write(name: str, df: DataFrame) -> None:
             "mergeSchema", "false"
         ).insertInto(f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}")
 
-        try:
+        spark = SparkSession.builder.getOrCreate()
+        if len(spark.catalog.listCatalogs()) > 1:
             df.write.format("delta").mode("append").option(
                 "mergeSchema", "false"
             ).insertInto("ctl_shres_d_we_002.dbs_wholesale.energy_results")
             print("The unity catalog exist!")
-        except AssertionError:
+        else:
             print("The unity catalog does not exist!")
