@@ -200,6 +200,7 @@ def _create_calculation_args() -> CalculatorArgs:
         calculation_execution_time_start=datetime(2018, 1, 5, 23, 0, 0),
         time_zone="Europe/Copenhagen",
         quarterly_resolution_transition_datetime=datetime(2018, 1, 5, 23, 0, 0),
+        created_by_user_id="bar",
     )
 
 
