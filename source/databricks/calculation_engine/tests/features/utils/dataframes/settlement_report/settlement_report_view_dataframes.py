@@ -82,8 +82,8 @@ def create_energy_results_v1_view(spark: SparkSession, df: DataFrame) -> DataFra
     from features.utils.dataframes.settlement_report.settlement_report_view_column_names import (
         EnergyResultsV1ColumnNames,
     )
-    from features.utils.dataframes.settlement_report.energy_results_v1_schema import (
-        energy_results_v1_schema,
+    from features.utils.dataframes.settlement_report.energy_results_v1_view_schema import (
+        energy_results_v1_view_schema,
     )
 
     df = df.withColumn(
@@ -97,7 +97,7 @@ def create_energy_results_v1_view(spark: SparkSession, df: DataFrame) -> DataFra
             EnergyResultsV1ColumnNames.time,
         ).cast(TimestampType()),
     )
-    return spark.createDataFrame(df.rdd, energy_results_v1_schema)
+    return spark.createDataFrame(df.rdd, energy_results_v1_view_schema)
 
 
 def _parse_qualities(qualities_str: str) -> list[dict]:

@@ -41,3 +41,10 @@ class BasisDataTableReader:
         return self._spark.read.format("delta").table(
             f"{BASIS_DATA_DATABASE_NAME}.{paths.TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME}"
         )
+
+    def read_calculations(
+        self,
+    ) -> DataFrame:
+        return self._spark.read.format("delta").table(
+            f"{BASIS_DATA_DATABASE_NAME}.{paths.CALCULATIONS_TABLE_NAME}"
+        )

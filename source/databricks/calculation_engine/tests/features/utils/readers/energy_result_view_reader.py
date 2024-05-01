@@ -20,7 +20,7 @@ from package.infrastructure.paths import (
 )
 
 
-class EnergyResultTableReader:
+class EnergyResultViewReader:
 
     def __init__(
         self,

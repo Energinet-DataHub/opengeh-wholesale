@@ -15,15 +15,15 @@ from features.utils.dataframes.settlement_report import (
     metering_point_period_v1_view_schema,
     metering_point_time_series_v1_view_schema,
 )
-from features.utils.dataframes.settlement_report.energy_results_v1_schema import (
-    energy_results_v1_schema,
+from features.utils.dataframes.settlement_report.energy_results_v1_view_schema import (
+    energy_results_v1_view_schema,
 )
 from features.utils.dataframes.settlement_report.settlement_report_view_dataframes import (
     create_metering_point_periods_v1_view,
     create_metering_point_time_series_v1_view,
     create_energy_results_v1_view,
 )
-from features.utils.readers.settlement_report_view_reader import (
+from features.utils.readers import (
     SettlementReportViewReader,
 )
 
@@ -44,7 +44,7 @@ def get_output_specifications() -> dict[str, tuple]:
             create_metering_point_time_series_v1_view,
         ),
         "energy_results_v1.csv": (
-            energy_results_v1_schema,
+            energy_results_v1_view_schema,
             SettlementReportViewReader.read_energy_results_v1,
             create_energy_results_v1_view,
         ),

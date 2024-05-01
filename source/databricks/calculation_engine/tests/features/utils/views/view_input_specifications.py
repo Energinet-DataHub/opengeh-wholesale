@@ -16,11 +16,15 @@ from features.utils.dataframes.basis_data.basis_data_dataframes import (
     create_metering_point_periods,
     create_time_series_points,
 )
-from features.utils.readers.basis_data_table_reader import BasisDataTableReader
-from features.utils.readers.energy_result_table_reader import EnergyResultTableReader
+from features.utils.dataframes.basis_data.calculations_dataframe import (
+    create_calculations_dataframe,
+)
+from features.utils.readers import BasisDataTableReader, EnergyResultViewReader
+
 from package.calculation.basis_data.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
+    calculations_schema,
 )
 from package.calculation.output.schemas import energy_results_schema
 from package.infrastructure.paths import (
@@ -51,8 +55,14 @@ def get_input_specifications() -> dict[str, tuple]:
         ),
         "energy_results.csv": (
             energy_results_schema,
-            EnergyResultTableReader.read_energy_results,
+            EnergyResultViewReader.read_energy_results,
             create_energy_result_dataframe,
             OUTPUT_DATABASE_NAME,
+        ),
+        "calculations.csv": (
+            calculations_schema,
+            BasisDataTableReader.read_calculations,
+            create_calculations_dataframe,
+            BASIS_DATA_DATABASE_NAME,
         ),
     }

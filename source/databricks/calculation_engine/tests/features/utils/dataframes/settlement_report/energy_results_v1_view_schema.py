@@ -24,7 +24,7 @@ from features.utils.dataframes.settlement_report.settlement_report_view_column_n
     EnergyResultsV1ColumnNames,
 )
 
-energy_results_v1_schema = StructType(
+energy_results_v1_view_schema = StructType(
     [
         StructField(EnergyResultsV1ColumnNames.calculation_id, StringType(), False),
         StructField(EnergyResultsV1ColumnNames.calculation_type, StringType(), False),
