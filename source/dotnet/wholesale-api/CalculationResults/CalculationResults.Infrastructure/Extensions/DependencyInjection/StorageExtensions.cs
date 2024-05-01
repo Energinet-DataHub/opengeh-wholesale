@@ -49,7 +49,7 @@ public static class StorageExtensions
 
             return new SettlementReportFileBlobStorage(blobContainerClient);
         });
-        
+
         return services;
     }
 }
