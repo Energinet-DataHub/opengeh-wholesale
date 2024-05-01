@@ -11,8 +11,26 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from .column_names.settlement_report_colname import (
-    MeteringPointTimeSeriesColname,
+
+from pyspark.sql import SparkSession, DataFrame
+
+from package.infrastructure import paths
+from package.infrastructure.paths import (
+    OUTPUT_DATABASE_NAME,
 )
-from .schemas.metering_point_period_schema import metering_point_period_schema
-from .schemas.metering_point_time_series_schema import metering_point_time_series_schema
+
+
+class EnergyResultViewReader:
+
+    def __init__(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        self._spark = spark
+
+    def read_energy_results(
+        self,
+    ) -> DataFrame:
+        return self._spark.read.format("delta").table(
+            f"{OUTPUT_DATABASE_NAME}.{paths.ENERGY_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1}"
+        )
