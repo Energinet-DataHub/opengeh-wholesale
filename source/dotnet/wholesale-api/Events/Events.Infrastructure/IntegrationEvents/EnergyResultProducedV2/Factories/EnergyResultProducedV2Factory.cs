@@ -115,7 +115,7 @@ public class EnergyResultProducedV2Factory : IEnergyResultProducedV2Factory
         var energyResultProduced = new Contracts.IntegrationEvents.EnergyResultProducedV2
         {
             CalculationId = result.CalculationId.ToString(),
-            Resolution = Contracts.IntegrationEvents.EnergyResultProducedV2.Types.Resolution.Quarter,
+            Resolution = ResolutionMapper.MapResolution(result.Resolution),
             CalculationType = CalculationTypeMapper.MapCalculationType(result.CalculationType),
             QuantityUnit = QuantityUnit.Kwh,
             PeriodStartUtc = result.PeriodStart.ToTimestamp(),
