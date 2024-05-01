@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Edi.Contracts;
-using WholesaleResolution = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution;
 using EnergyResultResolution = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.Resolution;
+using WholesaleResolution = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution;
 
 namespace Energinet.DataHub.Wholesale.Edi.Mappers;
 
