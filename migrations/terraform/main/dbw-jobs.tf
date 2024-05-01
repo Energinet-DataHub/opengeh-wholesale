@@ -45,4 +45,6 @@ resource "databricks_permissions" "jobs" {
     group_name       = "SEC-A-GreenForce-DevelopmentTeamAzure"
     permission_level = "CAN_MANAGE"
   }
+
+  depends_on = [ null_resource.scim ]
 }
