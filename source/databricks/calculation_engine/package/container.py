@@ -26,7 +26,7 @@ class Container(containers.DeclarativeContainer):
 
 def create_and_configure_container(
     infrastructure_settings: InfrastructureSettings,
-    spark: SparkSession = initialize_spark,
+    spark: SparkSession = initialize_spark(),
 ) -> Container:
     Container.spark = spark
 
