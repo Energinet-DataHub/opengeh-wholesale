@@ -19,7 +19,7 @@ resource "databricks_external_location" "migrations_bronze_storage" {
 resource "databricks_schema" "migrations_bronze" {
   provider     = databricks.dbw
   catalog_name = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
-  name         = "dbs_migrations_bronze"
+  name         = "migrations_bronze"
   comment      = "Migrations Bronze Schema"
   storage_root = databricks_external_location.migrations_bronze_storage.url
 
@@ -38,7 +38,7 @@ resource "databricks_external_location" "migrations_silver_storage" {
 resource "databricks_schema" "migrations_silver" {
   provider     = databricks.dbw
   catalog_name = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
-  name         = "dbs_migrations_silver"
+  name         = "migrations_silver"
   comment      = "Migrations Silver Schema"
   storage_root = databricks_external_location.migrations_silver_storage.url
 
@@ -57,7 +57,7 @@ resource "databricks_external_location" "migrations_gold_storage" {
 resource "databricks_schema" "migrations_gold" {
   provider     = databricks.dbw
   catalog_name = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
-  name         = "dbs_migrations_gold"
+  name         = "migrations_gold"
   comment      = "Migrations Gold Schema"
   storage_root = databricks_external_location.migrations_gold_storage.url
 
@@ -76,7 +76,7 @@ resource "databricks_external_location" "eloverblik_storage" {
 resource "databricks_schema" "eloverblik" {
   provider     = databricks.dbw
   catalog_name = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
-  name         = "dbs_eloverblik"
+  name         = "eloverblik"
   comment      = "Eloverblik Schema"
   storage_root = databricks_external_location.eloverblik_storage.url
 
@@ -95,7 +95,7 @@ resource "databricks_external_location" "migrations_storage" {
 resource "databricks_schema" "migrations" {
   provider     = databricks.dbw
   catalog_name = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
-  name         = "dbs_migrations"
+  name         = "migrations"
   comment      = "Migrations Schema"
   storage_root = databricks_external_location.migrations_storage.url
 
