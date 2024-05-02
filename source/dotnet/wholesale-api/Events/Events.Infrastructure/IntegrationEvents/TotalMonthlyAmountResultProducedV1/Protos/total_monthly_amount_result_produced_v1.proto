@@ -51,11 +51,16 @@ message TotalMonthlyAmountResultProducedV1 {
 
   string energy_supplier_id = 6;
 
-  optional string charge_owner_id = 7;
+  string charge_owner_id = 7;
 
   Currency currency = 8;
 
   optional DecimalValue amount = 9;
+  
+  /*
+   * The version of the calculation result. It is a positive integer (int64).
+  */
+  int64 calculation_result_version = 10;
 
   // ---------------------------- NESTED TYPES BELOW ----------------------------------------
 
