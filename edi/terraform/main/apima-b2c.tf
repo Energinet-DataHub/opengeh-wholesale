@@ -37,7 +37,7 @@ module "apima_b2c" {
                 <metadata name="CorrelationId" value="@($"{context.RequestId}")" />
             </trace>
             <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Failed policy requirements, or token is invalid or missing.">
-                <openid-config url="${data.azurerm_key_vault_secret.backend_open_id_url.value}" />
+                <openid-config url="${data.azurerm_key_vault_secret.api_backend_open_id_url.value}" />
                 <required-claims>
                     <claim name="aud" match="any">
                         <value>${data.azurerm_key_vault_secret.backend_bff_app_id.value}</value>
@@ -78,6 +78,5 @@ resource "azurerm_api_management_backend" "edi-b2c" {
   resource_group_name = data.azurerm_key_vault_secret.apim_instance_resource_group_name.value
   api_management_name = data.azurerm_key_vault_secret.apim_instance_name.value
   protocol            = "http"
-  #   url                 = "https://${module.b2c_web_api.default_hostname}"
-  url = "https://localhost"
+  url                 = "https://${module.b2c_web_api.default_hostname}"
 }

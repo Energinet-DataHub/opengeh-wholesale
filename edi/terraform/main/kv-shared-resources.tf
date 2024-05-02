@@ -13,11 +13,6 @@ data "azurerm_key_vault_secret" "mssql_data_url" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "appi_instrumentation_key" {
-  name         = "appi-shared-instrumentation-key"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
 data "azurerm_key_vault_secret" "appi_shared_id" {
   name         = "appi-shared-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
@@ -93,7 +88,7 @@ data "azurerm_key_vault_secret" "apim_oauth_server_name" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "backend_open_id_url" {
+data "azurerm_key_vault_secret" "api_backend_open_id_url" {
   name         = "api-backend-open-id-url"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
@@ -110,5 +105,10 @@ data "azurerm_key_vault_secret" "shared_adf_id" {
 
 data "azurerm_key_vault_secret" "shared_adf_principal_id" {
   name         = "adf-principal-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "appi_shared_connection_string" {
+  name         = "appi-shared-connection-string"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
