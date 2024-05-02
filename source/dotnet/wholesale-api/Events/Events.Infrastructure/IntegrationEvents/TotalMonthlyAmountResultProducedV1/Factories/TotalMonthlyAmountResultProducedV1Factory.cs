@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TotalMonthlyAmountResults;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Common;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.TotalMonthlyAmountResultProducedV1.Mappers;
 
@@ -20,12 +20,9 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.To
 
 public class TotalMonthlyAmountResultProducedV1Factory : ITotalMonthlyAmountResultProducedV1Factory
 {
-    public bool CanCreate(WholesaleResult result) =>
-        result.AmountType == AmountType.TotalMonthlyAmount
-        && result.Resolution is Resolution.Month
-        && result.TimeSeriesPoints.Count == 1;
+    public bool CanCreate(TotalMonthlyAmountResult result) => true;
 
-    public Contracts.IntegrationEvents.TotalMonthlyAmountResultProducedV1 Create(WholesaleResult result)
+    public Contracts.IntegrationEvents.TotalMonthlyAmountResultProducedV1 Create(TotalMonthlyAmountResult result)
     {
         if (!CanCreate(result))
             throw new ArgumentException($"Cannot create '{nameof(TotalMonthlyAmountResultProducedV1Factory)}' from wholesale result.", nameof(result));
@@ -39,12 +36,10 @@ public class TotalMonthlyAmountResultProducedV1Factory : ITotalMonthlyAmountResu
             GridAreaCode = result.GridArea,
             EnergySupplierId = result.EnergySupplierId,
             Currency = Contracts.IntegrationEvents.TotalMonthlyAmountResultProducedV1.Types.Currency.Dkk,
-            Amount = result.TimeSeriesPoints.Single().Amount,
+            ChargeOwnerId = result.ChargeOwnerId,
+            Amount = result.Amount,
             CalculationResultVersion = result.Version,
         };
-
-        if (result.ChargeOwnerId is not null)
-            totalMonthlyAmountResultProducedV1.ChargeOwnerId = result.ChargeOwnerId;
 
         return totalMonthlyAmountResultProducedV1;
     }

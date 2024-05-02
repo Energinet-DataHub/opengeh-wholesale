@@ -13,13 +13,16 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TotalMonthlyAmountResults;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.TotalMonthlyAmountResultProducedV1.Factories;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 
-public interface ITotalMonthlyAmountResultProducedV1Factory
+/// <summary>
+/// Used to query total monthly amount data for a single calculation result
+/// </summary>
+public interface ITotalMonthlyAmountResultQueries
 {
-    bool CanCreate(TotalMonthlyAmountResult result);
-
-    Contracts.IntegrationEvents.TotalMonthlyAmountResultProducedV1 Create(TotalMonthlyAmountResult result);
+    /// <summary>
+    /// Get all wholesale results for a given calculation.
+    /// </summary>
+    IAsyncEnumerable<TotalMonthlyAmountResult> GetAsync(Guid calculationId);
 }
