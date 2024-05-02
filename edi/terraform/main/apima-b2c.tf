@@ -78,5 +78,6 @@ resource "azurerm_api_management_backend" "edi-b2c" {
   resource_group_name = data.azurerm_key_vault_secret.apim_instance_resource_group_name.value
   api_management_name = data.azurerm_key_vault_secret.apim_instance_name.value
   protocol            = "http"
-  url                 = "https://${module.b2c_web_api.default_hostname}"
+  #   url                 = "https://${module.b2c_web_api.default_hostname}"
+  url = "https://localhost"
 }

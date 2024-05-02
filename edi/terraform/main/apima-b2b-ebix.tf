@@ -12,7 +12,8 @@ module "apima_b2b_ebix" {
   logger_verbosity           = "verbose"
   path                       = "ebix"
   api_type                   = "soap"
-  backend_service_url        = "https://${module.func_receiver.default_hostname}"
+  #backend_service_url        = "https://${module.func_receiver.default_hostname}"
+  backend_service_url = "https://localhost"
 
   /* The WSDL schema import below works, but we're unsure if we gain any value from using it instead of creating the endpoints manually in terraform. Keeping it here for potential future use.
   import = {
