@@ -3,8 +3,6 @@
 
 locals {
   credential_name = "dbw_${local.resources_suffix_no_dash}"
-  # Users that need access to the catalog - Change when SCIM from Data Infrastructure
-  developers      = ["nhq", "xrtni", "pth", "irs", "pta", "jmw", "jdd", "mkq", "xheso", "xjdml", "xanpo", "mnd", "kwq", "jmg", "jvm", "bjm", "ajw", "bjh", "xdast", "xclpe", "xknni"]
 }
 
 resource "azurerm_databricks_workspace" "this" {
@@ -56,11 +54,12 @@ resource "databricks_external_location" "datalake_shres" {
 
 # Shared catalog
 resource "databricks_catalog" "shared" {
-  provider     = databricks.dbw
-  name         = "ctl_${local.resources_suffix_no_dash}"
-  comment      = "Shared catalog in ${azurerm_databricks_workspace.this.name} workspace"
-  owner        = data.azurerm_client_config.current.client_id
-  storage_root = databricks_external_location.datalake_shres.url
+  provider       = databricks.dbw
+  name           = "ctl_${local.resources_suffix_no_dash}"
+  comment        = "Shared catalog in ${azurerm_databricks_workspace.this.name} workspace"
+  owner          = data.azurerm_client_config.current.client_id
+  storage_root   = databricks_external_location.datalake_shres.url
+  isolation_mode = "ISOLATED"
 
   depends_on = [azurerm_databricks_workspace.this]
 }
@@ -86,11 +85,10 @@ resource "databricks_grant" "self_storage_credential" {
 }
 
 # Grant developers access to the catalog
-resource "databricks_grant" "developers_access" {
-  count      = length(local.developers)
+resource "databricks_grant" "developers_access_catalog" {
   provider   = databricks.dbw
   catalog    = databricks_catalog.shared.id
-  principal  = "${local.developers[count.index]}-aadadmin@energinet.dk"
+  principal  = "SEC-A-GreenForce-DevelopmentTeamAzure"
   privileges = ["USE_CATALOG", "SELECT", "READ_VOLUME", "USE_SCHEMA"]
 
   depends_on = [azurerm_databricks_workspace.this]
