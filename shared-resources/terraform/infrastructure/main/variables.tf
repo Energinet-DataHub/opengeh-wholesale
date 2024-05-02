@@ -250,7 +250,13 @@ variable "front_door_id" {
   description = "ID of the Front Door to use for ensuring calls are made through the Front Door"
 }
 
+# TODO: remove when we only have the OMADA group
 variable "databricks_group_id" {
   type        = string
   description = "The ID of the Databricks group containing Databricks users."
+}
+
+variable "databricks_developers_group_id" {
+  type        = string
+  description = "The ID of the Databricks group containing Databricks users synced from the OMADA group."
 }

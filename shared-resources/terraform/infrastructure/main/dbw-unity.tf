@@ -84,7 +84,7 @@ resource "databricks_grant" "self_storage_credential" {
   depends_on = [azurerm_databricks_workspace.this]
 }
 
-# Grant developers access to the catalog
+# Grant developers access to the catalog TODO: remove when we have the new OMADA group
 resource "databricks_grant" "developers_access_catalog" {
   provider   = databricks.dbw
   catalog    = databricks_catalog.shared.id
