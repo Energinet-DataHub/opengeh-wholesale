@@ -5,11 +5,11 @@ module "mssql_database_application_access" {
   database_name   = module.mssqldb_market_participant.name
   application_hosts_names = [
     module.app_api.name,
-    module.func_entrypoint_marketparticipant.name,
+    module.func_organization.name,
   ]
 
   depends_on = [
     module.app_api.name,
-    module.func_entrypoint_marketparticipant.name,
+    module.func_organization.name,
   ]
 }

@@ -1,5 +1,5 @@
-module "func_entrypoint_certificate_synchronization" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=v14"
+module "func_certificatesynchronization" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v14"
 
   name                                   = "certificatesynchronization"
   project_name                           = var.domain_name_short
@@ -9,11 +9,10 @@ module "func_entrypoint_certificate_synchronization" {
   location                               = azurerm_resource_group.this.location
   vnet_integration_subnet_id             = data.azurerm_key_vault_secret.snet_vnet_integration_id.value
   private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
-  app_service_plan_id                    = module.func_service_plan.id
+  app_service_plan_id                    = module.webapp_service_plan.id
   application_insights_connection_string = data.azurerm_key_vault_secret.appi_shared_connection_string.value
   health_check_path                      = "/api/monitor/ready"
-  elastic_instance_minimum               = 1
-  pre_warmed_instance_count              = 1
+  always_on                              = true
   ip_restrictions                        = var.ip_restrictions
   scm_ip_restrictions                    = var.ip_restrictions
   health_check_alert = {
@@ -22,7 +21,7 @@ module "func_entrypoint_certificate_synchronization" {
   }
   dotnet_framework_version    = "v8.0"
   use_dotnet_isolated_runtime = true
-  app_settings                = local.default_certificate_synchronization_app_settings
+  app_settings                = local.default_certificatesynchronization_app_settings
 
   role_assignments = [
     {
@@ -37,7 +36,7 @@ module "func_entrypoint_certificate_synchronization" {
 }
 
 locals {
-  default_certificate_synchronization_app_settings = {
+  default_certificatesynchronization_app_settings = {
     CERTIFICATES_KEY_VAULT = module.kv_dh2_certificates.vault_uri
     APIM_SERVICE_NAME      = data.azurerm_key_vault_secret.apim_instance_id.value
 
