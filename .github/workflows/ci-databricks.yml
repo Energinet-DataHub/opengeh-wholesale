@@ -39,6 +39,24 @@ jobs:
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # this is required to get the full history
+
+      - name: Check for changes in migration scripts
+        run: |
+          # Get a list of files changed in the last commit
+          CHANGED_FILES=$(git diff --name-only HEAD~1..HEAD)
+          # Loop through the list of changed files
+          for FILE in $CHANGED_FILES
+          do
+            # If the file is in the migration scripts directory
+            if [[ $FILE == ./source/databricks/calculation_engine/package/datamigration/migration_scripts/* ]]
+            then
+              # Fail the job
+              echo "Migration script $FILE was altered"
+              exit 1
+            fi
+          done
 
       - name: Get files from PR branch
         id: get_script_files_in_pr
