@@ -35,6 +35,7 @@ resource "databricks_job" "this" {
   }
 }
 
+# TOOD: delete this when we have the new omada group
 resource "databricks_permissions" "jobs" {
   for_each = toset(local.job_names)
 
@@ -46,5 +47,19 @@ resource "databricks_permissions" "jobs" {
     permission_level = "CAN_MANAGE"
   }
 
-  depends_on = [ null_resource.scim ]
+  depends_on = [null_resource.scim]
+}
+
+resource "databricks_permissions" "jobs_developers" {
+  for_each = toset(local.job_names)
+
+  provider = databricks.dbw
+  job_id   = databricks_job.this[each.value].id
+
+  access_control {
+    group_name       = "SEC-G-Datahub-DevelopersAzure"
+    permission_level = "CAN_MANAGE"
+  }
+
+  depends_on = [module.dbw, null_resource.scim_developers]
 }

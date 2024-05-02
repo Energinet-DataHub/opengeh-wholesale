@@ -17,6 +17,7 @@ module "kvs_databricks_sql_endpoint_id" {
   key_vault_id = module.kv_internal.id
 }
 
+# TOOD: delete this when we have the new omada group
 resource "databricks_permissions" "endpoint_permissions" {
   provider        = databricks.dbw
   sql_endpoint_id = databricks_sql_endpoint.migration_sql_endpoint.id
@@ -25,4 +26,16 @@ resource "databricks_permissions" "endpoint_permissions" {
     group_name       = "SEC-A-GreenForce-DevelopmentTeamAzure"
     permission_level = "CAN_MANAGE"
   }
+}
+
+resource "databricks_permissions" "endpoint_permissions_developers" {
+  provider        = databricks.dbw
+  sql_endpoint_id = databricks_sql_endpoint.migration_sql_endpoint.id
+
+  access_control {
+    group_name       = "SEC-G-Datahub-DevelopersAzure"
+    permission_level = "CAN_MANAGE"
+  }
+
+  depends_on = [module.dbw, null_resource.scim_developers]
 }
