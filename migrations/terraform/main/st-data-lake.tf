@@ -10,7 +10,7 @@ module "st_migrations" {
   account_replication_type   = "LRS"
   private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   ip_rules                   = local.ip_restrictions_as_string
-  prevent_deletion           = true
+  prevent_deletion           = false
 
   role_assignments = [
     {
