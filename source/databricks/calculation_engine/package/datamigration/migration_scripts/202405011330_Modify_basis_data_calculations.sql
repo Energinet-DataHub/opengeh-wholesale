@@ -1,3 +1,0 @@
-ALTER TABLE {BASIS_DATA_DATABASE_NAME}.calculations
-DROP COLUMN created_time
-GO
