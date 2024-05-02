@@ -38,7 +38,7 @@ class CsvToDataframeParser:
         df = spark_session.read.csv(file_path, header=True, sep=";")
         name, extension = os.path.splitext(file_name)
 
-        return DataframeWrapper(name=name, df=df)
+        return DataframeWrapper(key=file_name, name=name, df=df)
 
     def parse_csv_files_concurrently(
         self, path: str, specifications: dict[str, tuple]

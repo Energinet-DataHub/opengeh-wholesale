@@ -11,45 +11,29 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from pyspark.sql.types import (
     StructField,
     StringType,
     TimestampType,
     StructType,
-    ArrayType,
-    DecimalType,
 )
 
-from features.public_data_models.given_basis_data_for_settlement_report.common.column_names.settlement_report_colname import (
-    MeteringPointTimeSeriesColname,
-)
-from package.constants import TimeSeriesColname, MeteringPointPeriodColname
+from package.constants import MeteringPointPeriodColname
 
-element = StructType(
-    [
-        StructField(TimeSeriesColname.observation_time, TimestampType(), False),
-        StructField(TimeSeriesColname.quantity, DecimalType(18, 3), False),
-    ]
-)
-
-
-metering_point_time_series_schema = StructType(
+metering_point_period_v1_view_schema = StructType(
     [
         StructField(MeteringPointPeriodColname.calculation_id, StringType(), False),
         StructField(MeteringPointPeriodColname.metering_point_id, StringType(), False),
+        StructField(MeteringPointPeriodColname.from_date, TimestampType(), False),
+        StructField(MeteringPointPeriodColname.to_date, TimestampType(), True),
+        StructField(MeteringPointPeriodColname.grid_area, StringType(), False),
+        StructField(MeteringPointPeriodColname.from_grid_area, StringType(), True),
+        StructField(MeteringPointPeriodColname.to_grid_area, StringType(), True),
         StructField(
             MeteringPointPeriodColname.metering_point_type, StringType(), False
         ),
-        StructField(MeteringPointPeriodColname.resolution, StringType(), False),
-        StructField(MeteringPointPeriodColname.grid_area, StringType(), False),
+        StructField(MeteringPointPeriodColname.settlement_method, StringType(), True),
         StructField(MeteringPointPeriodColname.energy_supplier_id, StringType(), True),
-        StructField(
-            MeteringPointTimeSeriesColname.observation_day, TimestampType(), False
-        ),
-        StructField(
-            MeteringPointTimeSeriesColname.quantities,
-            ArrayType(element, False),
-            False,
-        ),
     ]
 )
