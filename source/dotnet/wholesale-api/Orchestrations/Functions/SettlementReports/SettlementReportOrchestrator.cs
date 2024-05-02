@@ -15,6 +15,7 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Activities;
+using Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.DurableTask;
 using Microsoft.Extensions.Logging;
@@ -36,8 +37,12 @@ internal sealed class SettlementReportOrchestrator
             return "Error: No input specified.";
         }
 
+        var scatterInput = new ScatterSettlementReportFilesInput(
+            context.InstanceId,
+            settlementReportRequest);
+
         var scatterResults = await context
-            .CallActivityAsync<IEnumerable<SettlementReportFileRequestDto>>(nameof(ScatterSettlementReportFiles), settlementReportRequest)
+            .CallActivityAsync<IEnumerable<SettlementReportFileRequestDto>>(nameof(ScatterSettlementReportFiles), scatterInput)
             .ConfigureAwait(false);
 
         var coldRetryHandler = TaskOptions.FromRetryHandler(retryContext => HandleColdDataSource(

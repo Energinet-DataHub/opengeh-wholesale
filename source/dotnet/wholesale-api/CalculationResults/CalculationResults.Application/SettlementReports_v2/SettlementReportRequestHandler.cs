@@ -20,14 +20,16 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementR
 
 public sealed class SettlementReportRequestHandler : ISettlementReportRequestHandler
 {
-    public Task<IEnumerable<SettlementReportFileRequestDto>> RequestReportAsync(SettlementReportRequestDto reportRequest)
+    public Task<IEnumerable<SettlementReportFileRequestDto>> RequestReportAsync(
+        SettlementReportRequestId requestId,
+        SettlementReportRequestDto reportRequest)
     {
         IEnumerable<SettlementReportFileRequestDto> filesToRequest;
 
         switch (reportRequest.CalculationType)
         {
             case CalculationType.BalanceFixing:
-                filesToRequest = RequestFilesForAggregatedEnergyResults(reportRequest);
+                filesToRequest = RequestFilesForAggregatedEnergyResults(requestId, reportRequest);
                 break;
 
             // Future tasks: case CalculationType.WholesaleFixing:
@@ -39,12 +41,13 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
     }
 
     private static IEnumerable<SettlementReportFileRequestDto> RequestFilesForAggregatedEnergyResults(
+        SettlementReportRequestId requestId,
         SettlementReportRequestDto reportRequest)
     {
         var resultsFile = new SettlementReportFileRequestDto(
             SettlementReportFileContent.BalanceFixingResult,
             "Result Energy",
-            reportRequest.Id,
+            requestId,
             reportRequest.Filter);
 
         return [resultsFile];

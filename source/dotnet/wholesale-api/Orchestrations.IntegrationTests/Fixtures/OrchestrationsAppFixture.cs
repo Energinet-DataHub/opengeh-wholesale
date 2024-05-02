@@ -258,7 +258,7 @@ public class OrchestrationsAppFixture : IAsyncLifetime
             hostStartupLog = hostManager.GetHostLogSnapshot();
 
             if (Debugger.IsAttached)
-                Debugger.Break();
+                 Debugger.Break();
 
             // Rethrow
             throw;

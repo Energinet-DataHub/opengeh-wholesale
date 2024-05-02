@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
 using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Activities;
@@ -28,8 +29,8 @@ public sealed class ScatterSettlementReportFiles
     }
 
     [Function(nameof(ScatterSettlementReportFiles))]
-    public Task<IEnumerable<SettlementReportFileRequestDto>> Run([ActivityTrigger] SettlementReportRequestDto request)
+    public Task<IEnumerable<SettlementReportFileRequestDto>> Run([ActivityTrigger] ScatterSettlementReportFilesInput input)
     {
-        return _settlementReportRequestHandler.RequestReportAsync(request);
+        return _settlementReportRequestHandler.RequestReportAsync(new SettlementReportRequestId(input.InstanceId), input.Request);
     }
 }

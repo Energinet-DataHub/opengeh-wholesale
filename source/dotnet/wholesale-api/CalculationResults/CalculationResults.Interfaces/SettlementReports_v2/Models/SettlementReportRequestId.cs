@@ -14,4 +14,4 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
-public sealed record SettlementReportRequestId(Guid Id);
+public sealed record SettlementReportRequestId(string Id);

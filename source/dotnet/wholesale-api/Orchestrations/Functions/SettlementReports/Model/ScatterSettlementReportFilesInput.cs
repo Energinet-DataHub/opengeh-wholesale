@@ -12,10 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
 
-public sealed record SettlementReportRequestDto(
-    CalculationType CalculationType,
-    SettlementReportRequestFilterDto Filter);
+public sealed record ScatterSettlementReportFilesInput(string InstanceId, SettlementReportRequestDto Request);
