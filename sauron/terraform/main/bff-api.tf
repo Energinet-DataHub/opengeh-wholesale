@@ -1,5 +1,5 @@
 module "apima_bff_api" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=v13"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=14.7.1"
   count  = 1
 
   name                       = "sauron-bff"
@@ -11,12 +11,12 @@ module "apima_bff_api" {
   apim_logger_id             = data.azurerm_key_vault_secret.apim_logger_id.value
   logger_sampling_percentage = 100.0
   logger_verbosity           = "verbose"
-  backend_service_url        = "https://${module.func_bff.default_hostname}"
+  backend_service_url        = "https://${module.func_bff.default_hostname}" # In step 2 update to: "https://${module.func_bff_api.default_hostname}"
   path                       = "sauron"
 }
 
 module "apimao_get_deployments" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=v13"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=14.7.1"
 
   count                   = 1
   operation_id            = "get-deployments"

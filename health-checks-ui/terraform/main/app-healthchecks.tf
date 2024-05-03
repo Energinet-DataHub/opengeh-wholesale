@@ -1,7 +1,7 @@
-module "app_health_checks_ui" {
+module "app_health_checks" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=14.7.1"
 
-  name                                   = "healthchecksui"
+  name                                   = "healthchecks"
   project_name                           = var.domain_name_short
   environment_short                      = var.environment_short
   environment_instance                   = var.environment_instance
@@ -9,7 +9,7 @@ module "app_health_checks_ui" {
   location                               = azurerm_resource_group.this.location
   vnet_integration_subnet_id             = data.azurerm_key_vault_secret.snet_vnet_integration_id.value
   private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
-  app_service_plan_id                    = data.azurerm_key_vault_secret.plan_shared_id.value
+  app_service_plan_id                    = module.webapp_service_plan.id
   health_check_path                      = "/monitor/ready"
   health_check_alert_action_group_id     = data.azurerm_key_vault_secret.primary_action_group_id.value
   health_check_alert_enabled             = true
@@ -21,11 +21,11 @@ module "app_health_checks_ui" {
   # Ensure that IHostedServices are not terminated due to unloading of the application in periods with no traffic
   always_on = true
 
-  app_settings = local.default_app_health_checks_ui_app_settings
+  app_settings = local.default_app_health_checks_app_settings
 }
 
 locals {
-  default_app_health_checks_ui_app_settings = {
+  default_app_health_checks_app_settings = {
     # Health Checks to monitor
     # Ready - prefix with 0xx
     "HealthChecksUI__HealthChecks__001__Name" = "greenforce-frontend:::Web API"

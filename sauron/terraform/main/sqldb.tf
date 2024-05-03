@@ -4,7 +4,7 @@
 }
 
 module "mssqldb" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=v14"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=14.7.1"
 
   name                               = "data"
   location                           = azurerm_resource_group.this.location
@@ -19,19 +19,23 @@ module "mssqldb" {
 }
 
 module "mssql_database_application_access" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database-application-access?ref=v13"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database-application-access?ref=14.7.1"
 
   sql_server_name = data.azurerm_mssql_server.mssqlsrv.name
   database_name   = module.mssqldb.name
 
   application_hosts_names = [
     module.func_githubapi.name,
-    module.func_bff.name
+    module.func_github_api.name,
+    module.func_bff.name,
+    module.func_bff_api.name
   ]
 
   depends_on = [
     module.func_githubapi.name,
-    module.func_bff.name
+    module.func_github_api.name,
+    module.func_bff.name,
+    module.func_bff_api.name
   ]
 }
 
