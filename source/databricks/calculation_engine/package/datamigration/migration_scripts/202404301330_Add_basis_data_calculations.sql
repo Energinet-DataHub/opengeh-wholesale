@@ -8,7 +8,7 @@ CREATE TABLE {BASIS_DATA_DATABASE_NAME}.calculations
     period_start TIMESTAMP NOT NULL,
     period_end TIMESTAMP NOT NULL,
     execution_time_start TIMESTAMP NOT NULL,
-    created_time TIMESTAMP NOT NULL,
+    created_time TIMESTAMP,
     created_by_user_id STRING NOT NULL,
     version BIGINT NOT NULL
 )
