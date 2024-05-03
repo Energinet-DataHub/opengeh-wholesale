@@ -4,6 +4,7 @@
     <RootNamespace>Energinet.DataHub.Wholesale.CalculationResults.Infrastructure</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.AzureStorage" Version="7.0.0" />
     <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.17.1" />
     <PackageReference Include="CsvHelper" Version="32.0.1" />
     <PackageReference Include="Energinet.DataHub.Core.JsonSerialization" Version="2.2.11" />
