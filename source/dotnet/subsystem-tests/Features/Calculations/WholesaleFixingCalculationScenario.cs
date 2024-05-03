@@ -15,6 +15,7 @@
 using System.Globalization;
 using Azure.Monitor.Query;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
+using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtures;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
@@ -39,13 +40,11 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
     [SubsystemFact]
     public void Given_CalculationInput()
     {
-        Fixture.ScenarioState.CalculationInput = new Clients.v3.CalculationRequestDto
-        {
-            CalculationType = Clients.v3.CalculationType.WholesaleFixing,
-            GridAreaCodes = new List<string> { "804" },
-            StartDate = new DateTimeOffset(2023, 1, 31, 23, 0, 0, TimeSpan.Zero),
-            EndDate = new DateTimeOffset(2023, 2, 28, 23, 0, 0, TimeSpan.Zero),
-        };
+        Fixture.ScenarioState.CalculationInput = new StartCalculationRequestDto(
+            CalculationType: Common.Interfaces.Models.CalculationType.WholesaleFixing,
+            GridAreaCodes: new List<string> { "804" },
+            StartDate: new DateTimeOffset(2023, 1, 31, 23, 0, 0, TimeSpan.Zero),
+            EndDate: new DateTimeOffset(2023, 2, 28, 23, 0, 0, TimeSpan.Zero));
     }
 
     [ScenarioStep(1)]
@@ -63,7 +62,7 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
     public async Task When_CalculationIsStarted()
     {
         Fixture.ScenarioState.CalculationId =
-            await Fixture.StartCalculationAsync(Fixture.ScenarioState.CalculationInput);
+            await Fixture.StartCalculationAsync(Fixture.ScenarioState.CalculationInput!);
 
         // Assert
         Fixture.ScenarioState.CalculationId.Should().NotBeEmpty();
