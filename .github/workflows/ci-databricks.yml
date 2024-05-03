@@ -82,6 +82,7 @@ jobs:
           if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^source/databricks/calculation_engine/package/datamigration/migration_scripts/.*\.sql$'
           then
             echo "SQL files in migration_scripts have been changed"
+            exit 1
           else
             echo "No SQL files in migration_scripts have been changed"
           fi
