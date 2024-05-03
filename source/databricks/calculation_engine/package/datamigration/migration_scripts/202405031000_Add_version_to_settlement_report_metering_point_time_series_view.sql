@@ -1,0 +1,2 @@
+ALTER VIEW {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_time_series RENAME TO metering_point_time_series_v1
+GO
