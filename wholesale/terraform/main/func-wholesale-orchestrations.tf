@@ -64,3 +64,11 @@ module "func_wholesale_orchestrations" {
     "CONNECTIONSTRINGS__DB_CONNECTION_STRING" = local.DB_CONNECTION_STRING
   }
 }
+
+module "kvs_func_wholesale_orchestrations_base_url" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
+
+  name         = "func-wholesale-orchestrations-base-url"
+  value        = "https://${module.func_wholesale_orchestrations.default_hostname}"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
