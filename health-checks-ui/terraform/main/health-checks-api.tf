@@ -10,7 +10,7 @@ module "apima_health_api" {
   apim_logger_id             = data.azurerm_key_vault_secret.apim_logger_id.value
   logger_sampling_percentage = 100.0
   logger_verbosity           = "error"
-  backend_service_url        = "https://${module.app_health_checks_ui.default_hostname}" # In step 2 update to: "https://${module.app_health_checks.default_hostname}"
+  backend_service_url        = "https://${module.app_health_checks.default_hostname}"
   path                       = "health"
   policies = [
     {
