@@ -10,7 +10,6 @@ locals {
     "Gold_To_Wholesale",
     "Landing_To_Gold",
     "optimize_bronze_time_series",
-    "Quarantine_Reprocessing",
     "Reprocess_Metering_Points_Silver_Quarantine",
     "Reprocess_Time_Series_Silver_Quarantine",
     "duplicates_in_time_series_silver",
@@ -20,7 +19,8 @@ locals {
     "Stream_Time_Series_Silver_To_Gold",
     "duplicates_in_metering_points_wholesale",
     "monitor_wholesale_metering_points",
-    "monitor_wholesale_time_series"
+    "monitor_wholesale_time_series",
+    "Reprocess_Metering_Points_Bronze_Quarantine",
   ]
 }
 
