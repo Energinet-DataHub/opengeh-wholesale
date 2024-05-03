@@ -73,9 +73,13 @@ jobs:
 
           # Compare the content of each file in the two arrays. If there are any differences, throw an error.
           for i in "${!SCRIPT_FILES_IN_PR_ARRAY[@]}"; do
-            if ! diff -q "${SCRIPT_FILES_IN_PR_ARRAY[i]}" "${SCRIPT_FILES_IN_MAIN_ARRAY[i]}" > /dev/null 2>&1; then
-              echo "Existing migration script ${SCRIPT_FILES_IN_PR_ARRAY[i]} has been altered."
-              exit 1
+            PR_FILE="./source/databricks/calculation_engine/package/datamigration/migration_scripts/${SCRIPT_FILES_IN_PR_ARRAY[i]}"
+            MAIN_FILE="./source/databricks/calculation_engine/package/datamigration/migration_scripts/${SCRIPT_FILES_IN_MAIN_ARRAY[i]}"
+            if [ -f "$PR_FILE" ] && [ -f "$MAIN_FILE" ]; then
+              if ! diff -q "$PR_FILE" "$MAIN_FILE" > /dev/null 2>&1; then
+                echo "Existing migration script ${SCRIPT_FILES_IN_PR_ARRAY[i]} has been altered."
+                exit 1
+              fi
             fi
           done
 
