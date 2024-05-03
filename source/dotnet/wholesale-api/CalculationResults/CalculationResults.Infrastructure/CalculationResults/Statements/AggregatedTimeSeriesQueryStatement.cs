@@ -117,5 +117,6 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
         EnergyResultColumnNames.QuantityQualities,
         EnergyResultColumnNames.CalculationResultId,
         EnergyResultColumnNames.CalculationType,
+        EnergyResultColumnNames.Resolution,
     };
 }
