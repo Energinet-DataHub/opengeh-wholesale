@@ -90,6 +90,10 @@ schema_config = [
                 name=paths.GRID_LOSS_METERING_POINTS_TABLE_NAME,
                 schema=basis_data_schemas.grid_loss_metering_points_schema,
             ),
+            Table(
+                name=paths.CALCULATIONS_TABLE_NAME,
+                schema=basis_data_schemas.calculations_schema,
+            ),
         ],
         views=[],
     ),
@@ -99,6 +103,7 @@ schema_config = [
         views=[
             View(name=paths.METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1),
             View(name=paths.METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME_V1),
+            View(name=paths.ENERGY_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1),
         ],
     ),
 ]
