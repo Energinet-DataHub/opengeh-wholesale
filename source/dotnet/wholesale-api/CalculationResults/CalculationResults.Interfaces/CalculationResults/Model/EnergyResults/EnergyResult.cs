@@ -32,7 +32,14 @@ public sealed class EnergyResult(
     string? meteringPointId,
     Resolution resolution,
     long version)
-    : AggregatedTimeSeries(gridArea, timeSeriesPoints, timeSeriesType, calculationType, periodStart, periodEnd, version)
+    : AggregatedTimeSeries(gridArea,
+        timeSeriesPoints,
+        timeSeriesType,
+        calculationType,
+        periodStart,
+        periodEnd,
+        resolution,
+        version)
 {
     public Guid Id { get; } = id;
 
@@ -45,6 +52,4 @@ public sealed class EnergyResult(
     public string? BalanceResponsibleId { get; private set; } = balanceResponsibleId;
 
     public string? MeteringPointId { get; } = meteringPointId;
-
-    public Resolution Resolution { get; } = resolution;
 }
