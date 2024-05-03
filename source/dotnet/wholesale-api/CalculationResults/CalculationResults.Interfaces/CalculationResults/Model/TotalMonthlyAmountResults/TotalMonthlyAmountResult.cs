@@ -25,7 +25,7 @@ public sealed class TotalMonthlyAmountResult
         CalculationType calculationType,
         Instant periodStart,
         Instant periodEnd,
-        string gridArea,
+        string gridAreaCode,
         string energySupplierId,
         string? chargeOwnerId,
         decimal amount,
@@ -36,7 +36,7 @@ public sealed class TotalMonthlyAmountResult
         CalculationType = calculationType;
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
-        GridArea = gridArea;
+        GridAreaCode = gridAreaCode;
         EnergySupplierId = energySupplierId;
         ChargeOwnerId = chargeOwnerId;
         Amount = amount;
@@ -53,7 +53,7 @@ public sealed class TotalMonthlyAmountResult
 
     public Instant PeriodEnd { get; }
 
-    public string GridArea { get; }
+    public string GridAreaCode { get; }
 
     public string EnergySupplierId { get; }
 

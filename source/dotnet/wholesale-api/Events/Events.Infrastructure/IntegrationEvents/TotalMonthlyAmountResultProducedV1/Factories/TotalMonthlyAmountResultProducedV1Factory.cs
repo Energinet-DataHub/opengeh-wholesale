@@ -33,7 +33,7 @@ public class TotalMonthlyAmountResultProducedV1Factory : ITotalMonthlyAmountResu
             CalculationType = CalculationTypeMapper.MapCalculationType(result.CalculationType),
             PeriodStartUtc = result.PeriodStart.ToTimestamp(),
             PeriodEndUtc = result.PeriodEnd.ToTimestamp(),
-            GridAreaCode = result.GridArea,
+            GridAreaCode = result.GridAreaCode,
             EnergySupplierId = result.EnergySupplierId,
             Currency = Contracts.IntegrationEvents.TotalMonthlyAmountResultProducedV1.Types.Currency.Dkk,
             ChargeOwnerId = result.ChargeOwnerId,
