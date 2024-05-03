@@ -42,30 +42,27 @@ internal sealed class SettlementReportOrchestrator
             settlementReportRequest);
 
         var scatterResults = await context
-            .CallActivityAsync<IEnumerable<SettlementReportFileRequestDto>>(nameof(ScatterSettlementReportFiles), scatterInput)
-            .ConfigureAwait(false);
+            .CallActivityAsync<IEnumerable<SettlementReportFileRequestDto>>(nameof(ScatterSettlementReportFiles), scatterInput);
 
         var coldRetryHandler = TaskOptions.FromRetryHandler(retryContext => HandleColdDataSource(
                 retryContext,
                 executionContext.GetLogger<SettlementReportOrchestrator>()));
 
-        var fileRequestTasks = scatterResults.Select(fileRequest =>
-            context.CallActivityAsync<GeneratedSettlementReportFileDto>(
+        var fileRequestTasks = scatterResults.Select(fileRequest => context
+            .CallActivityAsync<GeneratedSettlementReportFileDto>(
                 nameof(GenerateSettlementReportFile),
                 fileRequest,
                 coldRetryHandler));
 
-        var generatedFiles = await Task
-            .WhenAll(fileRequestTasks)
-            .ConfigureAwait(false);
+        var generatedFiles = await Task.WhenAll(fileRequestTasks);
 
         var generatedSettlementReport = await context.CallActivityAsync<GeneratedSettlementReportDto>(
             nameof(GatherSettlementReportFiles),
-            generatedFiles).ConfigureAwait(false);
+            generatedFiles);
 
         await context.CallActivityAsync(
             nameof(FinalizeSettlementReport),
-            generatedSettlementReport).ConfigureAwait(false);
+            generatedSettlementReport);
 
         // calculationMetadata.Progress = "??";
         // context.SetCustomStatus(calculationMetadata);

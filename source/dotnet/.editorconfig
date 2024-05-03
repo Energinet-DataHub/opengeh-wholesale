@@ -530,7 +530,15 @@ dotnet_diagnostic.SX1101.severity = error
 dotnet_diagnostic.SX1309.severity = error
 
 ##############################################################
-# C# Test Conventions (overrides default configuration)       #
+# Durable Functions Orchestrator                             #
+##############################################################
+[**/Orchestrations/Functions/**/*Orchestrator.cs]
+
+dotnet_diagnostic.CA2007.severity = none        # CA2007: Consider calling ConfigureAwait on the awaited task
+dotnet_diagnostic.VSTHRD111.severity = none	    # VSTHRD111: [Similar to CA2007] Use ConfigureAwait(bool)
+
+##############################################################
+# C# Test Conventions (overrides default configuration)      #
 ##############################################################
 
 # .NET Analyzers (CAxxxx)

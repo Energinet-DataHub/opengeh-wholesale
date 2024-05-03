@@ -20,6 +20,7 @@ using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.DurableTask;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
+using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Newtonsoft.Json;
 using Xunit.Abstractions;
 using GridAreaCode = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models.GridAreaCode;
@@ -91,6 +92,8 @@ public class SettlementReportOrchestratorTests : IAsyncLifetime
 
         var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(
             httpResponse.RequestId.Id,
-            TimeSpan.FromMinutes(3));
+            TimeSpan.FromMinutes(5));
+
+        Assert.Equal(OrchestrationRuntimeStatus.Completed, completeOrchestrationStatus.RuntimeStatus);
     }
 }
