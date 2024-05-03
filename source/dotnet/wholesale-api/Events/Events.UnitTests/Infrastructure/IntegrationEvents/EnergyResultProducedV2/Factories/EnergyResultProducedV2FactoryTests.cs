@@ -39,6 +39,7 @@ public class EnergyResultProducedV2FactoryTests
     private readonly Instant _periodStart = SystemClock.Instance.GetCurrentInstant();
     private readonly Instant _periodEnd = SystemClock.Instance.GetCurrentInstant();
     private readonly long _version = DateTime.Now.Ticks;
+    private readonly Resolution _resolution = Resolution.Quarter;
 
     [Theory]
     [InlineAutoMoqData]
@@ -133,6 +134,7 @@ public class EnergyResultProducedV2FactoryTests
             _periodEnd,
             _fromGridArea,
             null,
+            _resolution,
             _version);
     }
 

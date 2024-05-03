@@ -34,6 +34,7 @@ using NodaTime.Extensions;
 using Xunit;
 using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
+using Resolution = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.Resolution;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.Edi.UnitTests;
@@ -389,6 +390,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
                 calculationType: CalculationType.Aggregation,
                 DateTimeOffset.Parse("2022-01-01T00:00Z").ToInstant(),
                 DateTimeOffset.Parse("2022-01-01T00:15Z").ToInstant(),
+                Resolution.Quarter,
                 1),
         };
     }

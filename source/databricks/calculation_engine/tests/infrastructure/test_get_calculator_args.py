@@ -27,7 +27,7 @@ DEFAULT_CALCULATION_ID = "the-calculation-id"
 
 
 def _get_contract_parameters(filename: str) -> list[str]:
-    """Get the parameters as they are expected to be received from the process manager."""
+    """Get the parameters as they are expected to be received from the calculation invoker."""
     with open(filename) as file:
         text = file.read()
         text = text.replace("{calculation-id}", DEFAULT_CALCULATION_ID)
@@ -133,7 +133,7 @@ class TestWhenInvokedWithValidParameters:
         )
         assert actual_args.calculation_period_end_datetime == datetime(2022, 6, 1, 22)
         assert actual_args.calculation_type == CalculationType.BALANCE_FIXING
-        assert actual_args.calculation_execution_time_start == datetime(2022, 6, 4, 22)
+        assert isinstance(actual_args.calculation_execution_time_start, datetime)
         assert actual_args.time_zone == "Europe/Copenhagen"
 
         # Assert - Infrastructure settings
