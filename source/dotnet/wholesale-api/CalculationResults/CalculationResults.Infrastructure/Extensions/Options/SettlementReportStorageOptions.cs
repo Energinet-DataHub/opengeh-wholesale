@@ -12,13 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.ComponentModel.DataAnnotations;
+
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.Options;
 
 public class SettlementReportStorageOptions
 {
     public const string SectionName = "SettlementReportStorage";
 
+    [Required]
     public Uri StorageAccountUri { get; set; } = null!;
 
+    [Required]
     public string StorageContainerName { get; set; } = string.Empty;
 }

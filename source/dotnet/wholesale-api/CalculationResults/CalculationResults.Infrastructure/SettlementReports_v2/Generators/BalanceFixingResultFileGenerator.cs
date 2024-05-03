@@ -54,7 +54,7 @@ public sealed class BalanceFixingResultFileGenerator : ISettlementReportFileGene
                 .Index(0)
                 .Convert(row => row.Value.GridAreaCode.Code);
 
-            Map(r => r)
+            Map(r => r.GridAreaCode)
                 .Name("ENERGYBUSINESSPROCESS")
                 .Index(1)
                 .Convert(_ => "D04");
@@ -101,7 +101,7 @@ public sealed class BalanceFixingResultFileGenerator : ISettlementReportFileGene
                 .Index(6)
                 .Data.TypeConverterOptions.Formats = ["0.000"];
 
-            Map(r => r)
+            Map(r => r.GridAreaCode)
                 .Name("ENERGYSUPPLIERID")
                 .Index(7)
                 .Convert(_ => string.Empty);

@@ -47,8 +47,6 @@ public class SettlementReportOrchestratorTests : IAsyncLifetime
         // Clear mappings etc. before each test
         Fixture.MockServer.Reset();
 
-        Fixture.ServiceBusListenerMock.ResetMessageHandlersAndReceivedMessages();
-
         return Task.CompletedTask;
     }
 

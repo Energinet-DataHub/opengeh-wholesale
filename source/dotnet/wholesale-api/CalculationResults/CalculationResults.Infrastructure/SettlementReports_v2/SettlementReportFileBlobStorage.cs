@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
@@ -48,8 +49,8 @@ public sealed class SettlementReportFileBlobStorage : ISettlementReportFileRepos
         return blobClient.DeleteIfExistsAsync();
     }
 
-    private string GetBlobName(SettlementReportRequestId reportRequestId, string fileName)
+    private static string GetBlobName(SettlementReportRequestId reportRequestId, string fileName)
     {
-        return Path.Combine("settlement-reports", reportRequestId.Id.ToString(), fileName);
+        return Path.Combine("settlement-reports", reportRequestId.Id, fileName);
     }
 }

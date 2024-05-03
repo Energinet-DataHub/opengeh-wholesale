@@ -36,15 +36,7 @@ public static class StorageExtensions
         {
             var blobSettings = d.GetRequiredService<IOptions<SettlementReportStorageOptions>>().Value;
 
-            var webJobsStorage = configuration.GetValue<string>("AzureWebJobsStorage");
-            if (webJobsStorage == "UseDevelopmentStorage=true")
-            {
-                var containerClient = new BlobContainerClient(webJobsStorage, blobSettings.StorageContainerName);
-                containerClient.CreateIfNotExists();
-                return new SettlementReportFileBlobStorage(containerClient);
-            }
-
-            var blobContainerUri = new Uri(blobSettings.StorageAccountUri, blobSettings.StorageContainerName);
+            var blobContainerUri = new Uri(blobSettings.StorageAccountUri + "/" + blobSettings.StorageContainerName);
             var blobContainerClient = new BlobContainerClient(blobContainerUri, new DefaultAzureCredential());
 
             return new SettlementReportFileBlobStorage(blobContainerClient);

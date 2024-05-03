@@ -49,14 +49,14 @@ internal sealed class SettlementReportOrchestrator
                 retryContext,
                 executionContext.GetLogger<SettlementReportOrchestrator>()));
 
-        var fileRequests = scatterResults
-            .Select(settlementReportFileRequest => context.CallActivityAsync<GeneratedSettlementReportFileDto>(
+        var fileRequestTasks = scatterResults.Select(fileRequest =>
+            context.CallActivityAsync<GeneratedSettlementReportFileDto>(
                 nameof(GenerateSettlementReportFile),
-                settlementReportFileRequest,
+                fileRequest,
                 coldRetryHandler));
 
         var generatedFiles = await Task
-            .WhenAll(fileRequests)
+            .WhenAll(fileRequestTasks)
             .ConfigureAwait(false);
 
         var generatedSettlementReport = await context.CallActivityAsync<GeneratedSettlementReportDto>(
