@@ -59,7 +59,7 @@ jobs:
           SCRIPT_FILES_IN_MAIN=$(find ./source/databricks/calculation_engine/package/datamigration/migration_scripts -type f -name '*.sql' -printf "%f,")
           echo "::set-output name=script_files_in_main::$SCRIPT_FILES_IN_MAIN"
 
-      - name: Compare file contents in PR and main branch
+      - name: Compare files in PR and main branch
         run: |
           # Get the comma separated string saved to output script_files_in_pr
           SCRIPT_FILES_IN_PR="${{ steps.get_script_files_in_pr.outputs.script_files_in_pr }}"
@@ -71,16 +71,19 @@ jobs:
           # Turns comma seperated string in to an array using the IFS
           read -ra SCRIPT_FILES_IN_MAIN_ARRAY <<<"$SCRIPT_FILES_IN_MAIN"
 
-          # Compare the content of each file in the two arrays. If there are any differences, throw an error.
-          for i in "${!SCRIPT_FILES_IN_PR_ARRAY[@]}"; do
-            PR_FILE="./source/databricks/calculation_engine/package/datamigration/migration_scripts/${SCRIPT_FILES_IN_PR_ARRAY[i]}"
-            MAIN_FILE="./source/databricks/calculation_engine/package/datamigration/migration_scripts/${SCRIPT_FILES_IN_MAIN_ARRAY[i]}"
-            if [ -f "$PR_FILE" ] && [ -f "$MAIN_FILE" ]; then
-              DIFF_OUTPUT=$(git diff --quiet "$PR_FILE" "$MAIN_FILE" || echo "diff")
-              if [ "$DIFF_OUTPUT" == "diff" ]; then
-                echo "Existing migration script ${SCRIPT_FILES_IN_PR_ARRAY[i]} has been altered."
-                exit 1
-              fi
+          # Compare the two arrays. If there are any differences, throw an error.
+          if [[ ${#SCRIPT_FILES_IN_PR_ARRAY[@]} -ne ${#SCRIPT_FILES_IN_MAIN_ARRAY[@]} ]]; then
+            echo "Number of scripts in PR and main branch do not match."
+            exit 1
+          fi
+
+          # Compare each file line by line
+          for index in "${!SCRIPT_FILES_IN_PR_ARRAY[@]}"
+          do
+            diff -q <(sort "${SCRIPT_FILES_IN_PR_ARRAY[index]}") <(sort "${SCRIPT_FILES_IN_MAIN_ARRAY[index]}") > /dev/null
+            if [[ $? -ne 0 ]]; then
+              echo "File ${SCRIPT_FILES_IN_PR_ARRAY[index]} in PR and main branch are not identical."
+              exit 1
             fi
           done
 
