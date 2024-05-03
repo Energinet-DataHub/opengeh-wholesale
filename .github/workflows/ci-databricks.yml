@@ -76,7 +76,8 @@ jobs:
             PR_FILE="./source/databricks/calculation_engine/package/datamigration/migration_scripts/${SCRIPT_FILES_IN_PR_ARRAY[i]}"
             MAIN_FILE="./source/databricks/calculation_engine/package/datamigration/migration_scripts/${SCRIPT_FILES_IN_MAIN_ARRAY[i]}"
             if [ -f "$PR_FILE" ] && [ -f "$MAIN_FILE" ]; then
-              if ! diff -q "$PR_FILE" "$MAIN_FILE" > /dev/null 2>&1; then
+              DIFF_OUTPUT=$(git diff --quiet "$PR_FILE" "$MAIN_FILE" || echo "diff")
+              if [ "$DIFF_OUTPUT" == "diff" ]; then
                 echo "Existing migration script ${SCRIPT_FILES_IN_PR_ARRAY[i]} has been altered."
                 exit 1
               fi
