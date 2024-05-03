@@ -77,6 +77,15 @@ jobs:
             exit 1
           fi
 
+      - name: Check if SQL files in migration_scripts have been changed
+        run: |
+          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^source/databricks/calculation_engine/package/datamigration/migration_scripts/.*\.sql$'
+          then
+            echo "SQL files in migration_scripts have been changed"
+          else
+            echo "No SQL files in migration_scripts have been changed"
+          fi
+
       - name: Verify migration script names
         run: |
           CURRENT_DATETIME=$(TZ=Europe/Paris date +"%Y-%m-%d %H:%M:%S")
