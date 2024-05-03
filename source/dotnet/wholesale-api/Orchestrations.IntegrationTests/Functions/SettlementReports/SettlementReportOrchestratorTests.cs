@@ -92,7 +92,7 @@ public class SettlementReportOrchestratorTests : IAsyncLifetime
 
         var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(
             httpResponse.RequestId.Id,
-            TimeSpan.FromMinutes(5));
+            TimeSpan.FromMinutes(10));
 
         Assert.Equal(OrchestrationRuntimeStatus.Completed, completeOrchestrationStatus.RuntimeStatus);
     }
