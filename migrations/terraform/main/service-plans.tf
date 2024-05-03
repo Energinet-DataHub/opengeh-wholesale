@@ -35,7 +35,7 @@ module "webapp_service_plan" {
   environment_instance           = var.environment_instance
   resource_group_name            = azurerm_resource_group.this.name
   location                       = azurerm_resource_group.this.location
-  sku_name                       = "P0v3"
+  sku_name                       = "P1v3"
   monitor_alerts_action_group_id = module.monitor_action_group.id
   cpu_alert_information = {
     alerts_enabled = true
