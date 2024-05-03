@@ -5,8 +5,8 @@ module "func_service_plan" {
   project_name                   = var.domain_name_short
   environment_short              = var.environment_short
   environment_instance           = var.environment_instance
-  resource_group_name            = data.azurerm_resource_group.shared.name
-  location                       = data.azurerm_resource_group.shared.location
+  resource_group_name            = azurerm_resource_group.this.name
+  location                       = azurerm_resource_group.this.location
   sku_name                       = "EP1"
   maximum_elastic_worker_count   = 20
   monitor_alerts_action_group_id = module.monitor_action_group.id
@@ -33,8 +33,8 @@ module "webapp_service_plan" {
   project_name                   = var.domain_name_short
   environment_short              = var.environment_short
   environment_instance           = var.environment_instance
-  resource_group_name            = data.azurerm_resource_group.shared.name
-  location                       = data.azurerm_resource_group.shared.location
+  resource_group_name            = azurerm_resource_group.this.name
+  location                       = azurerm_resource_group.this.location
   sku_name                       = "P0v3"
   monitor_alerts_action_group_id = module.monitor_action_group.id
   cpu_alert_information = {

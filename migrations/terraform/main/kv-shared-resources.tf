@@ -13,6 +13,11 @@ data "azurerm_key_vault_secret" "appi_instrumentation_key" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
+data "azurerm_key_vault_secret" "appi_shared_connection_string" {
+  name         = "appi-shared-connection-string"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
 data "azurerm_key_vault_secret" "appi_id" {
   name         = "appi-shared-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
@@ -50,16 +55,6 @@ data "azurerm_key_vault_secret" "vnet_resource_group_name" {
 
 data "azurerm_key_vault_secret" "snet_vnet_integration_id" {
   name         = "snet-vnet-integration-id"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "plan_shared_id" {
-  name         = "plan-services-id"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "plan_shared_name" {
-  name         = "plan-services-name"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 

@@ -12,8 +12,7 @@ module "apim_timeseriesapi" {
   logger_sampling_percentage = 100.0
   logger_verbosity           = "verbose"
   path                       = "timeseriesapi"
-  #   backend_service_url        = "https://${module.app_time_series_api.default_hostname}"
-  backend_service_url = "https://localhost"
+  backend_service_url        = "https://${module.app_time_series_api.default_hostname}"
   import = {
     content_format = "openapi+json"
     content_value  = data.local_file.swagger_file.content
