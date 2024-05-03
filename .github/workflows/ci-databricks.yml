@@ -59,6 +59,34 @@ jobs:
           SCRIPT_FILES_IN_MAIN=$(find ./source/databricks/calculation_engine/package/datamigration/migration_scripts -type f -name '*.sql' -printf "%f,")
           echo "::set-output name=script_files_in_main::$SCRIPT_FILES_IN_MAIN"
 
+      - name: Compare files in PR and main branch
+        run: |
+          # Get the comma separated string saved to output script_files_in_pr
+          SCRIPT_FILES_IN_PR="${{ steps.get_script_files_in_pr.outputs.script_files_in_pr }}"
+          # Turns comma seperated string in to an array using the IFS
+          read -ra SCRIPT_FILES_IN_PR_ARRAY <<<"$SCRIPT_FILES_IN_PR"
+
+          # Get the comma separated string saved to output script_files_in_main
+          SCRIPT_FILES_IN_MAIN="${{ steps.get_script_files_in_main.outputs.script_files_in_main }}"
+          # Turns comma seperated string in to an array using the IFS
+          read -ra SCRIPT_FILES_IN_MAIN_ARRAY <<<"$SCRIPT_FILES_IN_MAIN"
+
+          # Compare the two arrays. If there are any differences, throw an error.
+          if [[ ${SCRIPT_FILES_IN_PR_ARRAY[@]} != ${SCRIPT_FILES_IN_MAIN_ARRAY[@]} ]]; then
+            echo "Existing migration scripts have been altered or deleted."
+            exit 1
+          fi
+
+      - name: Check if SQL files in migration_scripts have been changed
+        run: |
+          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^source/databricks/calculation_engine/package/datamigration/migration_scripts/.*\.sql$'
+          then
+            echo "SQL files in migration_scripts have been changed"
+            exit 1
+          else
+            echo "No SQL files in migration_scripts have been changed"
+          fi
+
       - name: Verify migration script names
         run: |
           CURRENT_DATETIME=$(TZ=Europe/Paris date +"%Y-%m-%d %H:%M:%S")
