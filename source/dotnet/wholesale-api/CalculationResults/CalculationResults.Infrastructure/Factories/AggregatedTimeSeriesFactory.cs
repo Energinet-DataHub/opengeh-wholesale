@@ -15,6 +15,7 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.EnergyResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using NodaTime;
 
@@ -32,6 +33,7 @@ public class AggregatedTimeSeriesFactory
         var gridArea = databricksSqlRow[EnergyResultColumnNames.GridArea];
         var timeSeriesType = databricksSqlRow[EnergyResultColumnNames.TimeSeriesType];
         var calculationType = databricksSqlRow[EnergyResultColumnNames.CalculationType];
+        var resolution = databricksSqlRow[EnergyResultColumnNames.Resolution];
 
         return new AggregatedTimeSeries(
             gridArea: gridArea!,
@@ -40,6 +42,7 @@ public class AggregatedTimeSeriesFactory
             calculationType: CalculationTypeMapper.FromDeltaTableValue(calculationType!),
             periodStart: periodStart,
             periodEnd: periodEnd,
+            ResolutionMapper.FromDeltaTableValue(resolution!),
             version: version);
     }
 }

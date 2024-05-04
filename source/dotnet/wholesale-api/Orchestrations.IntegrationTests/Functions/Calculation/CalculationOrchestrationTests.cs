@@ -12,7 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
+using System.Net.Http.Json;
+using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
@@ -24,6 +28,7 @@ using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using NodaTime;
 using Xunit.Abstractions;
@@ -33,16 +38,12 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.
 [Collection(nameof(OrchestrationsAppCollectionFixture))]
 public class CalculationOrchestrationTests : IAsyncLifetime
 {
-    private readonly DateTimeZone _dateTimeZone;
-
     public CalculationOrchestrationTests(
         OrchestrationsAppFixture fixture,
         ITestOutputHelper testOutputHelper)
     {
         Fixture = fixture;
         Fixture.SetTestOutputHelper(testOutputHelper);
-
-        _dateTimeZone = DateTimeZoneProviders.Tzdb["Europe/Copenhagen"];
     }
 
     private OrchestrationsAppFixture Fixture { get; }
@@ -102,31 +103,20 @@ public class CalculationOrchestrationTests : IAsyncLifetime
             .MockEnergySqlStatementsResultChunks(statementId, chunkIndex, path)
             .MockEnergySqlStatementsResultStream(path, calculationIdInMock);
 
-        var todayAtMidnight = new LocalDate(2024, 5, 17)
-            .AtMidnight()
-            .InZoneStrictly(_dateTimeZone)
-            .ToDateTimeOffset();
+        // => Request
+        using var request = CreateStartCalculationRequest();
 
         // Act
-        var beforeCreated = DateTime.UtcNow;
-        using var actualResponse = await Fixture.AppHostManager.HttpClient.PostAsync(
-            "api/StartCalculation",
-            new StringContent(
-                JsonConvert.SerializeObject(new StartCalculationRequestDto(
-                CalculationType.Aggregation,
-                ["256", "512"],
-                todayAtMidnight,
-                todayAtMidnight.AddDays(2))),
-                Encoding.UTF8,
-                "application/json"));
+        var beforeOrchestrationCreated = DateTime.UtcNow;
+        using var actualResponse = await Fixture.AppHostManager.HttpClient.SendAsync(request);
 
         // Assert
         // => Verify endpoint response
         actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        var calculationId = await actualResponse.Content.ReadAsAsync<Guid>();
+        var calculationId = await actualResponse.Content.ReadFromJsonAsync<Guid>();
 
         // => Verify expected behaviour by searching the orchestration history
-        var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeCreated);
+        var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeOrchestrationCreated);
 
         // => Function has the expected calculation id
         var calculationMetadata = orchestrationStatus.CustomStatus.ToObject<CalculationMetadata>();
@@ -210,31 +200,20 @@ public class CalculationOrchestrationTests : IAsyncLifetime
             .MockEnergySqlStatementsResultChunks(statementId, chunkIndex, path)
             .MockEnergySqlStatementsResultStream(path);
 
-        var dateAtMidnight = new LocalDate(2024, 5, 17)
-            .AtMidnight()
-            .InZoneStrictly(_dateTimeZone)
-            .ToDateTimeOffset();
+        // => Request
+        using var request = CreateStartCalculationRequest();
 
         // Act
-        var beforeCreated = DateTime.UtcNow;
-        using var actualResponse = await Fixture.AppHostManager.HttpClient.PostAsync(
-            "api/StartCalculation",
-            new StringContent(
-                JsonConvert.SerializeObject(new StartCalculationRequestDto(
-                CalculationType.Aggregation,
-                ["256", "512"],
-                dateAtMidnight,
-                dateAtMidnight.AddDays(2))),
-                Encoding.UTF8,
-                "application/json"));
+        var beforeOrchestrationCreated = DateTime.UtcNow;
+        using var actualResponse = await Fixture.AppHostManager.HttpClient.SendAsync(request);
 
         // Assert
         // => Verify endpoint response
         actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        var calculationId = await actualResponse.Content.ReadAsAsync<Guid>();
+        var calculationId = await actualResponse.Content.ReadFromJsonAsync<Guid>();
 
         // => Verify expected behaviour by searching the orchestration history
-        var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeCreated);
+        var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeOrchestrationCreated);
 
         // => Expect calculation id
         var calculationMetadata = orchestrationStatus.CustomStatus.ToObject<CalculationMetadata>();
@@ -286,31 +265,20 @@ public class CalculationOrchestrationTests : IAsyncLifetime
             .MockJobsRunNow(runId)
             .MockJobsRunsGet(runId, "RUNNING", "EXCLUDED");
 
-        var dateAtMidnight = new LocalDate(2024, 5, 17)
-            .AtMidnight()
-            .InZoneStrictly(_dateTimeZone)
-            .ToDateTimeOffset();
+        // => Request
+        using var request = CreateStartCalculationRequest();
 
         // Act
-        var beforeCreated = DateTime.UtcNow;
-        using var actualResponse = await Fixture.AppHostManager.HttpClient.PostAsync(
-            "api/StartCalculation",
-            new StringContent(
-                JsonConvert.SerializeObject(new StartCalculationRequestDto(
-                CalculationType.Aggregation,
-                ["256", "512"],
-                dateAtMidnight,
-                dateAtMidnight.AddDays(2))),
-                Encoding.UTF8,
-                "application/json"));
+        var beforeOrchestrationCreated = DateTime.UtcNow;
+        using var actualResponse = await Fixture.AppHostManager.HttpClient.SendAsync(request);
 
         // Assert
         // => Verify endpoint response
         actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        var calculationId = await actualResponse.Content.ReadAsAsync<Guid>();
+        var calculationId = await actualResponse.Content.ReadFromJsonAsync<Guid>();
 
         // => Verify expected behaviour by searching the orchestration history
-        var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeCreated);
+        var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeOrchestrationCreated);
 
         // => Expect calculation id
         var calculationMetadata = orchestrationStatus.CustomStatus.ToObject<CalculationMetadata>();
@@ -329,5 +297,63 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         var last = completeOrchestrationStatus.History.Last();
         last.Value<string>("EventType").Should().Be("ExecutionCompleted");
         last.Value<string>("Result").Should().Be("Error: Job status 'Running'.");
+    }
+
+    private static HttpRequestMessage CreateStartCalculationRequest()
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, "api/StartCalculation");
+
+        var dateTimeZone = DateTimeZoneProviders.Tzdb["Europe/Copenhagen"];
+        var dateAtMidnight = new LocalDate(2024, 5, 17)
+            .AtMidnight()
+            .InZoneStrictly(dateTimeZone)
+            .ToDateTimeOffset();
+
+        // Input parameters
+        var requestDto = new StartCalculationRequestDto(
+            CalculationType.Aggregation,
+            GridAreaCodes: ["256", "512"],
+            StartDate: dateAtMidnight,
+            EndDate: dateAtMidnight.AddDays(2));
+
+        request.Content = new StringContent(
+            JsonConvert.SerializeObject(requestDto),
+            Encoding.UTF8,
+            "application/json");
+
+        var token = CreateFakeInternalToken();
+        request.Headers.Add("Authorization", $"Bearer {token}");
+
+        return request;
+    }
+
+    /// <summary>
+    /// Create a fake token which is used by the 'UserMiddleware' to create
+    /// the 'UserContext'.
+    /// </summary>
+    private static string CreateFakeInternalToken()
+    {
+        var kid = "049B6F7F-F5A5-4D2C-A407-C4CD170A759F";
+        RsaSecurityKey testKey = new(RSA.Create()) { KeyId = kid };
+
+        var issuer = "https://test.datahub.dk";
+        var audience = Guid.Empty.ToString();
+        var validFrom = DateTime.UtcNow;
+        var validTo = DateTime.UtcNow.AddMinutes(15);
+
+        var userClaim = new Claim(JwtRegisteredClaimNames.Sub, "A1AAB954-136A-444A-94BD-E4B615CA4A78");
+        var actorClaim = new Claim(JwtRegisteredClaimNames.Azp, "A1DEA55A-3507-4777-8CF3-F425A6EC2094");
+
+        var internalToken = new JwtSecurityToken(
+            issuer,
+            audience,
+            new[] { userClaim, actorClaim },
+            validFrom,
+            validTo,
+            new SigningCredentials(testKey, SecurityAlgorithms.RsaSha256));
+
+        var handler = new JwtSecurityTokenHandler();
+        var writtenToken = handler.WriteToken(internalToken);
+        return writtenToken;
     }
 }
