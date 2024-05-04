@@ -50,7 +50,7 @@ from pyspark.sql import Row, SparkSession, DataFrame
 
 DEFAULT_TIME_ZONE = "Europe/Copenhagen"
 
-# Variables names below refer to local time
+# Variables names below refer to local time represented in UTC time in the DEFAULT_TIME_ZONE
 JAN_1ST = datetime(2021, 12, 31, 23)
 JAN_2ND = datetime(2022, 1, 1, 23)
 JAN_3RD = datetime(2022, 1, 2, 23)
