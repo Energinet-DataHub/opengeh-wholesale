@@ -89,12 +89,8 @@ def get_charge_master_data_basis_data(
     return input_charges_container.charge_master_data._df.select(
         f.lit(calculation_id).alias(ChargeMasterDataPeriodsColname.calculation_id),
         f.col(Colname.charge_key).alias(ChargeMasterDataPeriodsColname.charge_key),
-        f.col(Colname.charge_code).alias(
-            ChargeMasterDataPeriodsColname.charge_code
-        ),
-        f.col(Colname.charge_type).alias(
-            ChargeMasterDataPeriodsColname.charge_type
-        ),
+        f.col(Colname.charge_code).alias(ChargeMasterDataPeriodsColname.charge_code),
+        f.col(Colname.charge_type).alias(ChargeMasterDataPeriodsColname.charge_type),
         f.col(Colname.charge_owner).alias(
             ChargeMasterDataPeriodsColname.charge_owner_id,
         ),
