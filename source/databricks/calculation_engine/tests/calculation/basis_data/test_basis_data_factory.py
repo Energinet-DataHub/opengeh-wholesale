@@ -48,16 +48,6 @@ from package.constants import Colname
 import pytest
 from pyspark.sql import Row, SparkSession, DataFrame
 
-DEFAULT_TIME_ZONE = "Europe/Copenhagen"
-
-# Variables names below refer to local time
-JAN_1ST = datetime(2021, 12, 31, 23)
-JAN_2ND = datetime(2022, 1, 1, 23)
-JAN_3RD = datetime(2022, 1, 2, 23)
-JAN_4TH = datetime(2022, 1, 3, 23)
-JAN_5TH = datetime(2022, 1, 4, 23)
-FEB_1ST = datetime(2022, 1, 31, 23)
-
 
 class DefaultValues:
     CALCULATION_ID = "12345"
@@ -77,6 +67,13 @@ class DefaultValues:
     PERIOD_START_DATETIME = datetime(2019, 12, 31, 23)
     FROM_DATE: datetime = datetime(2019, 12, 31, 23)
     TO_DATE: datetime = datetime(2020, 1, 31, 23)
+    TIME_ZONE = "Europe/Copenhagen"
+    CALCULATION_GRID_AREAS = ["805", "806"]
+    CALCULATION_PERIOD_START_DATETIME=datetime(2018, 1, 1, 23, 0, 0)
+    CALCULATION_PERIOD_END_DATETIME=datetime(2018, 1, 3, 23, 0, 0)
+    CALCULATION_EXECUTION_TIME_START=datetime(2018, 1, 5, 23, 0, 0)
+    QUARTERLY_RESOLUTION_TRANSITION_DATETIME=datetime(2018, 1, 5, 23, 0, 0)
+    CREATED_BY_USER_ID="bar"
 
 
 def _create_charge_master_data_row(
@@ -192,15 +189,15 @@ def _create_charge_links(
 
 def _create_calculation_args() -> CalculatorArgs:
     return CalculatorArgs(
-        calculation_id="foo",
+        calculation_id=DefaultValues.CALCULATION_ID,
         calculation_type=e.CalculationType.AGGREGATION,
-        calculation_grid_areas=["805", "806"],
-        calculation_period_start_datetime=datetime(2018, 1, 1, 23, 0, 0),
-        calculation_period_end_datetime=datetime(2018, 1, 3, 23, 0, 0),
-        calculation_execution_time_start=datetime(2018, 1, 5, 23, 0, 0),
-        time_zone="Europe/Copenhagen",
-        quarterly_resolution_transition_datetime=datetime(2018, 1, 5, 23, 0, 0),
-        created_by_user_id="bar",
+        calculation_grid_areas=DefaultValues.CALCULATION_GRID_AREAS,
+        calculation_period_start_datetime=DefaultValues.CALCULATION_PERIOD_START_DATETIME,
+        calculation_period_end_datetime=DefaultValues.CALCULATION_PERIOD_END_DATETIME,
+        calculation_execution_time_start=DefaultValues.CALCULATION_EXECUTION_TIME_START,
+        time_zone=DefaultValues.TIME_ZONE,
+        quarterly_resolution_transition_datetime=DefaultValues.QUARTERLY_RESOLUTION_TRANSITION_DATETIME,
+        created_by_user_id=DefaultValues.CREATED_BY_USER_ID,
     )
 
 

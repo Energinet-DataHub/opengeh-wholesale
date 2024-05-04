@@ -303,7 +303,7 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
     # Arrange
     actual = spark.read.table(
         f"{paths.BASIS_DATA_DATABASE_NAME}.{basis_data_table_name}"
-    ).where(f.col("calculation_id") == c.executed_wholesale_calculation_id)
+    )
 
     # Act: Calculator job is executed just once per session.
     #      See the fixtures `results_df` and `executed_wholesale_fixing`

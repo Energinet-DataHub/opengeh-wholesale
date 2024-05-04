@@ -41,17 +41,22 @@ def create(
         )
     )
 
-    charge_master_data_basis_data = basis_data.get_charge_master_data_basis_data(
-        args.calculation_id, input_charges_container
-    )
+    if input_charges_container:
+        charge_master_data_basis_data = basis_data.get_charge_master_data_basis_data(
+            args.calculation_id, input_charges_container
+        )
 
-    charge_prices_basis_data = basis_data.get_charge_prices_basis_data(
-        args.calculation_id, input_charges_container
-    )
+        charge_prices_basis_data = basis_data.get_charge_prices_basis_data(
+            args.calculation_id, input_charges_container
+        )
 
-    charge_links_basis_data = basis_data.get_charge_links_basis_data(
-        args.calculation_id, input_charges_container
-    )
+        charge_links_basis_data = basis_data.get_charge_links_basis_data(
+            args.calculation_id, input_charges_container
+        )
+    else:
+        charge_master_data_basis_data = None
+        charge_prices_basis_data = None
+        charge_links_basis_data = None
 
     return BasisDataContainer(
         time_series_points=time_series_points_basis_data,
