@@ -236,7 +236,7 @@ def _create_basis_data_factory(spark: SparkSession) -> BasisDataContainer:
     )
 
 
-def test__basis_data_is_stored_with_correct_schema(spark: SparkSession):
+def test__basis_data_uses_correct_schema(spark: SparkSession):
     basis_data_container = _create_basis_data_factory(spark)
     assert (
         basis_data_container.metering_point_periods.schema
