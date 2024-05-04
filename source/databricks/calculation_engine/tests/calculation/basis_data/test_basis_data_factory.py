@@ -69,11 +69,11 @@ class DefaultValues:
     TO_DATE: datetime = datetime(2020, 1, 31, 23)
     TIME_ZONE = "Europe/Copenhagen"
     CALCULATION_GRID_AREAS = ["805", "806"]
-    CALCULATION_PERIOD_START_DATETIME=datetime(2018, 1, 1, 23, 0, 0)
-    CALCULATION_PERIOD_END_DATETIME=datetime(2018, 1, 3, 23, 0, 0)
-    CALCULATION_EXECUTION_TIME_START=datetime(2018, 1, 5, 23, 0, 0)
-    QUARTERLY_RESOLUTION_TRANSITION_DATETIME=datetime(2018, 1, 5, 23, 0, 0)
-    CREATED_BY_USER_ID="bar"
+    CALCULATION_PERIOD_START_DATETIME = datetime(2018, 1, 1, 23, 0, 0)
+    CALCULATION_PERIOD_END_DATETIME = datetime(2018, 1, 3, 23, 0, 0)
+    CALCULATION_EXECUTION_TIME_START = datetime(2018, 1, 5, 23, 0, 0)
+    QUARTERLY_RESOLUTION_TRANSITION_DATETIME = datetime(2018, 1, 5, 23, 0, 0)
+    CREATED_BY_USER_ID = "bar"
 
 
 def _create_charge_master_data_row(
