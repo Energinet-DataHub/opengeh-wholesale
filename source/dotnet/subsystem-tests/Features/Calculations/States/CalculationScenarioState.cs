@@ -13,14 +13,14 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
+using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.States;
 
 public class CalculationScenarioState
 {
-    public CalculationRequestDto CalculationInput { get; set; }
-        = new();
+    public StartCalculationRequestDto? CalculationInput { get; set; }
 
     public IList<string> SubscribedIntegrationEventNames { get; }
         = new List<string>();
