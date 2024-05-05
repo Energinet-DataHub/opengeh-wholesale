@@ -75,7 +75,7 @@ variable "calculation_input_folder" {
 variable "quarterly_resolution_transition_datetime" {
   type        = string
   description = "Start date 15 minuts imbalance settlement"
-  default = "2023-04-30T22:00:00Z"
+  default     = "2023-04-30T22:00:00Z"
 }
 
 variable "pim_sql_reader_ad_group_name" {
@@ -103,4 +103,9 @@ variable "ip_restrictions" {
 variable "databricks_group_id" {
   type        = string
   description = "The ID of the Databricks group containing Databricks users."
+}
+
+variable "databricks_developers_group_id" {
+  type        = string
+  description = "The ID of the Databricks group containing Databricks users synced from the OMADA group."
 }

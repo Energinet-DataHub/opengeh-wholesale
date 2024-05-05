@@ -29,7 +29,7 @@ resource "databricks_external_location" "shared_delta_lake" {
 resource "databricks_schema" "shared_delta_lake_wholesale" {
   provider     = databricks.dbw
   catalog_name = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
-  name         = "dbs_wholesale"
+  name         = "wholesale"
   comment      = "Wholesale Schema"
   storage_root = databricks_external_location.shared_delta_lake.url
 
