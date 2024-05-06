@@ -71,6 +71,10 @@ module "func_wholesale_orchestrations" {
 
     # Database
     "CONNECTIONSTRINGS__DB_CONNECTION_STRING" = local.DB_CONNECTION_STRING
+
+    # Durable Functions Task Hub Name
+    # See naming constraints: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-task-hubs?tabs=csharp#task-hub-names
+    "OrchestrationsTaskHubName" = "Wholesale01"
   }
 }
 
