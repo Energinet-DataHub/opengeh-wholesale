@@ -19,7 +19,7 @@ from pyspark.sql.types import DecimalType
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.energy.data_structures.energy_results import EnergyResults
 from package.calculation.energy.resolution_transition_factory import (
-    get_resolution,
+    get_energy_result_resolution,
 )
 from package.calculation.output.add_meta_data import add_metadata
 from package.codelists import TimeSeriesType, AggregationLevel
@@ -37,7 +37,7 @@ def create(
         energy_results.df, aggregation_level, time_series_type
     )
     df = add_metadata(args, _get_column_group_for_calculation_result_id(), df)
-    metering_point_resolution = get_resolution(
+    metering_point_resolution = get_energy_result_resolution(
         args.quarterly_resolution_transition_datetime,
         args.calculation_period_end_datetime,
     )

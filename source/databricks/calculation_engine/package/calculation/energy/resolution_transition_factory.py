@@ -25,7 +25,7 @@ from package.calculation.preparation.data_structures.metering_point_time_series 
 from package.codelists import MeteringPointResolution
 
 
-def get_resolution(
+def get_energy_result_resolution(
     quarterly_resolution_transition_datetime: datetime,
     calculation_period_end_datetime: datetime,
 ) -> MeteringPointResolution:
@@ -34,12 +34,12 @@ def get_resolution(
     return MeteringPointResolution.QUARTER
 
 
-def get_resolution_adjusted_metering_point_time_series(
+def get_energy_result_resolution_adjusted_metering_point_time_series(
     args: CalculatorArgs,
     prepared_metering_point_time_series: PreparedMeteringPointTimeSeries,
 ) -> MeteringPointTimeSeries:
     if (
-        get_resolution(
+        get_energy_result_resolution(
             args.quarterly_resolution_transition_datetime,
             args.calculation_period_end_datetime,
         )
