@@ -25,6 +25,11 @@ module "func_wholesale_orchestrations" {
       role_definition_name = "Storage Blob Data Contributor"
     },
     {
+      // Blob
+      resource_id          = module.storage_settlement_reports.id
+      role_definition_name = "Storage Blob Data Contributor"
+    },
+    {
       // Key Vault
       resource_id          = module.kv_internal.id
       role_definition_name = "Key Vault Secrets User"
@@ -49,6 +54,10 @@ module "func_wholesale_orchestrations" {
     # Storage (DataLake)
     STORAGE_CONTAINER_NAME = local.STORAGE_CONTAINER_NAME
     STORAGE_ACCOUNT_URI    = local.STORAGE_ACCOUNT_URI
+
+    # Storage (Blob)
+    "SettlementReportStorage__StorageAccountUri"    = local.BLOB_STORAGE_ACCOUNT_URI
+    "SettlementReportStorage__StorageContainerName" = local.BLOB_CONTAINER_SETTLEMENTREPORTS_NAME
 
     # Service Bus
     "ServiceBus__ConnectionString"        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-transceiver-connection-string)"
