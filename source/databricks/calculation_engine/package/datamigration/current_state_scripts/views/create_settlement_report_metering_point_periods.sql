@@ -10,4 +10,5 @@ SELECT calculation_id,
        settlement_method,
        energy_supplier_id
 FROM {BASIS_DATA_DATABASE_NAME}.metering_point_periods
+INNER JOIN (SELECT calculation_id FROM {BASIS_DATA_DATABASE_NAME}.calculations) AS c ON c.calculation_id = m.calculation_id
 WHERE metering_point_type != 'exchange'
