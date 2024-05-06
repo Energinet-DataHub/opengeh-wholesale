@@ -29,6 +29,7 @@ public sealed class WholesaleSubsystemConfiguration : SubsystemTestConfiguration
     public WholesaleSubsystemConfiguration()
     {
         WebApiBaseAddress = new Uri(Root.GetValue<string>("WEBAPI_BASEADDRESS")!);
+        OrchestrationsApiBaseAddress = new Uri(Root.GetValue<string>("ORCHESTRATIONSAPI_BASEADDRESS")!);
         UserTokenConfiguration = B2CUserTokenConfiguration.CreateFromConfiguration(Root);
 
         var secretsConfiguration = Root.BuildSecretsConfiguration();
@@ -41,6 +42,11 @@ public sealed class WholesaleSubsystemConfiguration : SubsystemTestConfiguration
     /// Base address setting for Wholesale Web API in live environment.
     /// </summary>
     public Uri WebApiBaseAddress { get; }
+
+    /// <summary>
+    /// Base address setting for Wholesale Orchestrations API in live environment.
+    /// </summary>
+    public Uri OrchestrationsApiBaseAddress { get; }
 
     /// <summary>
     /// Settings necessary to retrieve a user token for authentication with Wholesale Web API in live environment.

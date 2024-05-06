@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
+using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtures;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
@@ -37,13 +38,11 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
     [SubsystemFact]
     public void Given_CalculationInput()
     {
-        Fixture.ScenarioState.CalculationInput = new Clients.v3.CalculationRequestDto
-        {
-            CalculationType = Clients.v3.CalculationType.BalanceFixing,
-            GridAreaCodes = new List<string> { "543" },
-            StartDate = new DateTimeOffset(2022, 1, 11, 23, 0, 0, TimeSpan.Zero),
-            EndDate = new DateTimeOffset(2022, 1, 12, 23, 0, 0, TimeSpan.Zero),
-        };
+        Fixture.ScenarioState.CalculationInput = new StartCalculationRequestDto(
+            CalculationType: Common.Interfaces.Models.CalculationType.BalanceFixing,
+            GridAreaCodes: new List<string> { "543" },
+            StartDate: new DateTimeOffset(2022, 1, 11, 23, 0, 0, TimeSpan.Zero),
+            EndDate: new DateTimeOffset(2022, 1, 12, 23, 0, 0, TimeSpan.Zero));
     }
 
     [ScenarioStep(1)]
@@ -59,7 +58,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
     public async Task When_CalculationIsStarted()
     {
         Fixture.ScenarioState.CalculationId =
-            await Fixture.StartCalculationAsync(Fixture.ScenarioState.CalculationInput);
+            await Fixture.StartCalculationAsync(Fixture.ScenarioState.CalculationInput!);
 
         // Assert
         Fixture.ScenarioState.CalculationId.Should().NotBeEmpty();
