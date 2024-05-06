@@ -37,13 +37,13 @@ public sealed class SettlementReportScenarioFixture : LazyFixtureBase
     /// <summary>
     /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
     /// </summary>
-    private WholesaleClient_V3 WholesaleClient { get; set; } = null!;
+    private WholesaleClient_V3 WholesaleWebApiClient { get; set; } = null!;
 
     private WholesaleSubsystemConfiguration Configuration { get; }
 
     public async Task<ZipArchive> StartDownloadingAsync(SettlementDownloadInput settlementDownloadInput)
     {
-        using var fileResponse = await WholesaleClient.DownloadAsync(
+        using var fileResponse = await WholesaleWebApiClient.DownloadAsync(
             settlementDownloadInput.GridAreaCodes,
             settlementDownloadInput.CalculationType,
             settlementDownloadInput.CalculationPeriodStart,
@@ -105,7 +105,7 @@ public sealed class SettlementReportScenarioFixture : LazyFixtureBase
             throw new Exception("Unable to start Databricks SQL warehouse. Reason unknown.");
         }
 
-        WholesaleClient = await WholesaleClientFactory.CreateAsync(Configuration, useAuthentication: true);
+        WholesaleWebApiClient = await WholesaleClientFactory.CreateWebApiClientAsync(Configuration, useAuthentication: true);
     }
 
     protected override Task OnDisposeAsync()

@@ -74,7 +74,7 @@ public class RequestTelemetryScenario : SubsystemTestsBase<TelemetryScenarioFixt
     [SubsystemFact]
     public async Task When_RequestingCalculationById()
     {
-        var act = async () => await Fixture.WholesaleClient.GetCalculationAsync(Fixture.ScenarioState.CalculationId);
+        var act = async () => await Fixture.WholesaleWebApiClient.GetCalculationAsync(Fixture.ScenarioState.CalculationId);
 
         // Assert request is failing
         await act.Should().ThrowAsync<Clients.v3.ApiException>();
