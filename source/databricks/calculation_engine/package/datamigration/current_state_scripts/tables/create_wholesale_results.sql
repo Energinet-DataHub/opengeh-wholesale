@@ -49,8 +49,6 @@ TBLPROPERTIES (
     delta.constraints.charge_owner_id_chk = "LENGTH ( charge_owner_id ) = 13 OR LENGTH ( charge_owner_id ) = 16",
     delta.constraints.amount_type_chk = "amount_type IN ( 'amount_per_charge' , 'monthly_amount_per_charge' , 'total_monthly_amount' )",
     delta.columnMapping.mode = "name",
-    delta.minReaderVersion = "2",
-    delta.minWriterVersion = "5",
     delta.constraints.grid_area_code_chk = "LENGTH ( grid_area_code ) = 3"
 )
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
