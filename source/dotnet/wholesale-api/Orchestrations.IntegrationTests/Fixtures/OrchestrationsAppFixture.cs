@@ -15,6 +15,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Azure.Identity;
+using Azure.Storage.Blobs;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
@@ -117,8 +118,9 @@ public class OrchestrationsAppFixture : IAsyncLifetime
             topicResource.Name,
             topicResource.Subscriptions.Single().SubscriptionName);
 
-        // DataLake
+        // Storage: DataLake + Blob Containers
         await EnsureCalculationStorageContainerExistsAsync();
+        await EnsureSettlementReportStorageContainerExistsAsync();
 
         // Create and start host
         AppHostManager = new FunctionAppHostManager(appHostSettings, TestLogger);
@@ -252,6 +254,14 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         await fileSystemClient.CreateIfNotExistsAsync();
     }
 
+    private async Task EnsureSettlementReportStorageContainerExistsAsync()
+    {
+        var blobContainerUri = new Uri(AzuriteManager.BlobStorageServiceUri + "/settlement-report-container");
+        var blobContainerClient = new BlobContainerClient(blobContainerUri, new DefaultAzureCredential());
+
+        await blobContainerClient.CreateIfNotExistsAsync();
+    }
+
     private static void StartHost(FunctionAppHostManager hostManager)
     {
         IEnumerable<string> hostStartupLog;
@@ -267,7 +277,7 @@ public class OrchestrationsAppFixture : IAsyncLifetime
             hostStartupLog = hostManager.GetHostLogSnapshot();
 
             if (Debugger.IsAttached)
-                 Debugger.Break();
+                Debugger.Break();
 
             // Rethrow
             throw;

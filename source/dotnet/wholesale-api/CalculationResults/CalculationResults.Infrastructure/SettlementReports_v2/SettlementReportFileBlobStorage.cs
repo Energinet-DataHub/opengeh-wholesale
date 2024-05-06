@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
