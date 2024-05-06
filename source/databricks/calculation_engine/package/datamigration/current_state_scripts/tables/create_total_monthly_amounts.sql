@@ -24,8 +24,6 @@ TBLPROPERTIES (
     delta.constraints.energy_supplier_id_chk = "LENGTH ( energy_supplier_id ) = 13 OR LENGTH ( energy_supplier_id ) = 16",
     delta.constraints.charge_owner_id_chk = "charge_owner_id IS NULL OR LENGTH ( charge_owner_id ) = 13 OR LENGTH ( charge_owner_id ) = 16",
     delta.columnMapping.mode = "name",
-    delta.minReaderVersion = "2",
-    delta.minWriterVersion = "5",
     delta.constraints.grid_area_code_chk = "LENGTH ( grid_area_code ) = 3"
 )
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
