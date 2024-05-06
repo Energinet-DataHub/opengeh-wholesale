@@ -43,7 +43,7 @@ wholesaleSubsystem = group "Wholesale" {
             tags "Simple View"
         }
     }
-    wholesaleOrchestration = container "Wholesale Orchestration" {
+    wholesaleOrchestrations = container "Wholesale Orchestrations" {
         description "Orchestrate calculation workflow"
         technology "Azure function, C#"
         tags "Microsoft Azure - Function Apps" "Mandalorian"
