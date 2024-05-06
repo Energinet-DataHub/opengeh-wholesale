@@ -16,11 +16,13 @@ function CheckFileExists
 
 $templatesPath = "templates/"
 
+$s1 = "/" + $templatesPath + "calculation-test-template.py"
+$s2 = "/" + $templatesPath + "public-model-test-template.py"
 # Define the path to the calculation test template file
-$calculationTestTemplateFilePath = Join-Path $PSScriptRoot $templatesPath "calculation-test-template.py"
+$calculationTestTemplateFilePath = Join-Path $PSScriptRoot $s1
 
 # Define the path to the public data model test template file
-$publicModelTestTemplateFilePath = Join-Path $PSScriptRoot $templatesPath "public-model-test-template.py"
+$publicModelTestTemplateFilePath = Join-Path $PSScriptRoot $s2
 
 # Ensure the template files exists
 CheckFileExists -filePath $calculationTestTemplateFilePath
