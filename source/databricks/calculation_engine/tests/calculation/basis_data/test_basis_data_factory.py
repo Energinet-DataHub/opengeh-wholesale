@@ -26,10 +26,12 @@ from package.calculation.basis_data.schemas.time_series_point_schema import (
 from package.calculation.basis_data.schemas.metering_point_period_schema import (
     metering_point_period_schema,
 )
-
+from tests.calculation.basis_data.basis_data_test_factory import (
+    create_basis_data_factory,
+)
 import pytest
 from pyspark.sql import SparkSession
-from tests.calculation.basis_data.basis_data_test_factory import create_basis_data_factory
+
 
 
 def test__basis_data_uses_correct_schema(spark: SparkSession):
