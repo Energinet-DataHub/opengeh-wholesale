@@ -13,10 +13,10 @@ data "azurerm_key_vault_secret" "dh2_certificate_secret" {
   key_vault_id = module.kv_internal.id
 }
 
-resource "azurerm_app_service_certificate" "dh2_certificate_app" {
-  name                = "cert-dh2bridge-dh2-authentication-app"
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
-  pfx_blob            = data.azurerm_key_vault_secret.dh2_certificate_secret.value
-  app_service_plan_id = data.azurerm_key_vault_secret.plan_shared_id.value
-}
+# resource "azurerm_app_service_certificate" "dh2_certificate_app" {
+#   name                = "cert-dh2bridge-dh2-authentication-app"
+#   resource_group_name = azurerm_resource_group.this.name
+#   location            = azurerm_resource_group.this.location
+#   pfx_blob            = data.azurerm_key_vault_secret.dh2_certificate_secret.value
+#   app_service_plan_id = module.func_service_plan.id
+# }
