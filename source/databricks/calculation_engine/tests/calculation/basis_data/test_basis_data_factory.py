@@ -33,7 +33,6 @@ import pytest
 from pyspark.sql import SparkSession
 
 
-
 def test__basis_data_uses_correct_schema(spark: SparkSession):
     basis_data_container = create_basis_data_factory(spark)
     assert (
