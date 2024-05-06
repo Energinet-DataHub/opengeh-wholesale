@@ -39,7 +39,7 @@ total_monthly_amounts_schema = StructType(
         ),
         StructField(TotalMonthlyAmountsColumnNames.grid_area, StringType(), False),
         StructField(
-            TotalMonthlyAmountsColumnNames.energy_supplier_id, StringType(), False
+            TotalMonthlyAmountsColumnNames.energy_supplier_id, StringType(), True
         ),
         StructField(TotalMonthlyAmountsColumnNames.time, TimestampType(), False),
         StructField(TotalMonthlyAmountsColumnNames.amount, DecimalType(18, 6), True),
