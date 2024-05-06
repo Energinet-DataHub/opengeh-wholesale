@@ -26,7 +26,7 @@ from features.utils.scenario_output_files import get_output_names
 # and then run the power-shell script "Use-Template.ps1" to update all test_output.py files.
 
 
-@unittest.skip("demonstrating skipping")
+@pytest.mark.skip(reason="Skipping until #274 is fixed")
 @pytest.mark.parametrize("output_name", get_output_names())
 def test__equals_expected(
     actual_and_expected: Any,
