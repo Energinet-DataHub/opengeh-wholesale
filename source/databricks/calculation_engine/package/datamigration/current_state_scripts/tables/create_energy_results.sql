@@ -33,8 +33,6 @@ TBLPROPERTIES (
     delta.constraints.metering_point_id_chk = "metering_point_id IS NULL OR LENGTH ( metering_point_id ) = 18",
     delta.constraints.metering_point_id_conditional_chk = "( time_series_type IN ( 'negative_grid_loss' , 'positive_grid_loss' ) AND metering_point_id IS NOT NULL ) OR ( time_series_type NOT IN ( 'negative_grid_loss' , 'positive_grid_loss' ) AND metering_point_id IS NULL )",
     delta.columnMapping.mode = "name",
-    delta.minReaderVersion = "2",
-    delta.minWriterVersion = "5",
     delta.constraints.grid_area_code_chk = "LENGTH ( grid_area_code ) = 3",
     delta.constraints.out_grid_area_code_chk = "out_grid_area_code IS NULL OR LENGTH ( out_grid_area_code ) = 3",
     delta.constraints.resolution_chk = "resolution IN ( 'PT15M' , 'PT1H' )"
