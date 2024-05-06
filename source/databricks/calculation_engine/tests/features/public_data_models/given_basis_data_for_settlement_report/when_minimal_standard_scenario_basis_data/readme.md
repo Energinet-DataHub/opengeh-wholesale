@@ -20,5 +20,4 @@ All metering point types relevant for energy calculations
 - E18
 - E18 (skmp)
 
-Each of the metering point types both have a metering point with resolution 15M and 1H. The expected output does not 
-contain exchange metering points.
+Each of the metering point types both have a metering point with resolution 15M and 1H. The expected output does not contain exchange metering points.
