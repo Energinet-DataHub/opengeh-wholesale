@@ -13,12 +13,13 @@
 // limitations under the License.
 
 using System.Net;
+using Energinet.DataHub.Core.App.Common.Abstractions.Users;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.DurableTask.Client;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -26,10 +27,14 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation;
 
 internal class CalculationTrigger
 {
+    private readonly IUserContext<FrontendUser> _userContext;
     private readonly CalculationJobStatusMonitorOptions _jobStatusMonitorOptions;
 
-    public CalculationTrigger(IOptions<CalculationJobStatusMonitorOptions> jobStatusMonitorOptions)
+    public CalculationTrigger(
+        IUserContext<FrontendUser> userContext,
+        IOptions<CalculationJobStatusMonitorOptions> jobStatusMonitorOptions)
     {
+        _userContext = userContext;
         _jobStatusMonitorOptions = jobStatusMonitorOptions.Value;
     }
 
@@ -45,8 +50,7 @@ internal class CalculationTrigger
         var orchestrationInput = new CalculationOrchestrationInput(
             _jobStatusMonitorOptions,
             startCalculationRequestDto,
-            // TODO: Retrieve user id from token sent as part of http request
-            Guid.Parse("3A3A90B7-C624-4844-B990-3221DEE54F04"));
+            _userContext.CurrentUser.UserId);
 
         var instanceId = await client.ScheduleNewOrchestrationInstanceAsync(nameof(CalculationOrchestration.Calculation), orchestrationInput).ConfigureAwait(false);
         logger.LogInformation("Created new orchestration with instance ID = {instanceId}", instanceId);
