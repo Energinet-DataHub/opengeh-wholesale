@@ -20,21 +20,14 @@ using Microsoft.Azure.Functions.Worker;
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
 
 #pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
-internal class StartCalculationActivity
+internal class StartCalculationActivity(
+    IUnitOfWork calculationUnitOfWork,
+    ICalculationRepository calculationRepository,
+    ICalculationEngineClient calculationEngineClient)
 {
-    private readonly IUnitOfWork _calculationUnitOfWork;
-    private readonly ICalculationRepository _calculationRepository;
-    private readonly ICalculationEngineClient _calculationEngineClient;
-
-    public StartCalculationActivity(
-        IUnitOfWork calculationUnitOfWork,
-        ICalculationRepository calculationRepository,
-        ICalculationEngineClient calculationEngineClient)
-    {
-        _calculationUnitOfWork = calculationUnitOfWork;
-        _calculationRepository = calculationRepository;
-        _calculationEngineClient = calculationEngineClient;
-    }
+    private readonly IUnitOfWork _calculationUnitOfWork = calculationUnitOfWork;
+    private readonly ICalculationRepository _calculationRepository = calculationRepository;
+    private readonly ICalculationEngineClient _calculationEngineClient = calculationEngineClient;
 
     /// <summary>
     /// Start calculation in Databricks.

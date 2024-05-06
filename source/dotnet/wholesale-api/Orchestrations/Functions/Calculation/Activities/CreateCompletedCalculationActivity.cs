@@ -20,27 +20,18 @@ using Microsoft.Azure.Functions.Worker;
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
 
 #pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
-internal class CreateCompletedCalculationActivity
+internal class CreateCompletedCalculationActivity(
+    ICalculationRepository calculationRepository,
+    ICalculationDtoMapper calculationDtoMapper,
+    ICompletedCalculationFactory completedCalculationFactory,
+    Events.Application.UseCases.IUnitOfWork eventsUnitOfWork,
+    ICompletedCalculationRepository completedCalculationRepository)
 {
-    private readonly ICalculationRepository _calculationRepository;
-    private readonly ICalculationDtoMapper _calculationDtoMapper;
-    private readonly ICompletedCalculationFactory _completedCalculationFactory;
-    private readonly Events.Application.UseCases.IUnitOfWork _eventsUnitOfWork;
-    private readonly ICompletedCalculationRepository _completedCalculationRepository;
-
-    public CreateCompletedCalculationActivity(
-        ICalculationRepository calculationRepository,
-        ICalculationDtoMapper calculationDtoMapper,
-        ICompletedCalculationFactory completedCalculationFactory,
-        Events.Application.UseCases.IUnitOfWork eventsUnitOfWork,
-        ICompletedCalculationRepository completedCalculationRepository)
-    {
-        _calculationRepository = calculationRepository;
-        _calculationDtoMapper = calculationDtoMapper;
-        _completedCalculationFactory = completedCalculationFactory;
-        _eventsUnitOfWork = eventsUnitOfWork;
-        _completedCalculationRepository = completedCalculationRepository;
-    }
+    private readonly ICalculationRepository _calculationRepository = calculationRepository;
+    private readonly ICalculationDtoMapper _calculationDtoMapper = calculationDtoMapper;
+    private readonly ICompletedCalculationFactory _completedCalculationFactory = completedCalculationFactory;
+    private readonly Events.Application.UseCases.IUnitOfWork _eventsUnitOfWork = eventsUnitOfWork;
+    private readonly ICompletedCalculationRepository _completedCalculationRepository = completedCalculationRepository;
 
     /// <summary>
     /// Update calculation status record in SQL database.

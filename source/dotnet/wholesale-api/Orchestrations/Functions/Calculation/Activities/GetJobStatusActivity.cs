@@ -19,15 +19,10 @@ using Microsoft.Azure.Functions.Worker;
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
 
 #pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
-internal class GetJobStatusActivity
+internal class GetJobStatusActivity(
+    ICalculationEngineClient calculationEngineClient)
 {
-    private readonly ICalculationEngineClient _calculationEngineClient;
-
-    public GetJobStatusActivity(
-        ICalculationEngineClient calculationEngineClient)
-    {
-        _calculationEngineClient = calculationEngineClient;
-    }
+    private readonly ICalculationEngineClient _calculationEngineClient = calculationEngineClient;
 
     /// <summary>
     /// Request calculation job status in Databricks.

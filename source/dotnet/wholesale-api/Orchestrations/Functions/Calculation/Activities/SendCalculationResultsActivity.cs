@@ -18,15 +18,10 @@ using Microsoft.Azure.Functions.Worker;
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
 
 #pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
-internal class SendCalculationResultsActivity
+internal class SendCalculationResultsActivity(
+    IPublisher integrationEventsPublisher)
 {
-    private readonly IPublisher _integrationEventsPublisher;
-
-    public SendCalculationResultsActivity(
-        IPublisher integrationEventsPublisher)
-    {
-        _integrationEventsPublisher = integrationEventsPublisher;
-    }
+    private readonly IPublisher _integrationEventsPublisher = integrationEventsPublisher;
 
     /// <summary>
     /// Retrieve calculation results from Databricks and send them as events using ServiceBus.

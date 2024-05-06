@@ -19,15 +19,10 @@ using Microsoft.Azure.Functions.Worker;
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
 
 #pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
-internal class CreateCalculationRecordActivity
+internal class CreateCalculationRecordActivity(
+    ICreateCalculationHandler createCalculationHandler)
 {
-    private readonly ICreateCalculationHandler _createCalculationHandler;
-
-    public CreateCalculationRecordActivity(
-        ICreateCalculationHandler createCalculationHandler)
-    {
-        _createCalculationHandler = createCalculationHandler;
-    }
+    private readonly ICreateCalculationHandler _createCalculationHandler = createCalculationHandler;
 
     /// <summary>
     /// Create calculation status record in SQL database.
