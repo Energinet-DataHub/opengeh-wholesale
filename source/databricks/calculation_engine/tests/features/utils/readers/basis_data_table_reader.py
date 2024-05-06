@@ -25,18 +25,8 @@ class BasisDataTableReader:
     def __init__(
         self,
         spark: SparkSession,
-        metering_point_periods_table_name: str | None = None,
-        time_series_points_table_name: str | None = None,
     ) -> None:
         self._spark = spark
-        self._metering_point_periods_view_name = (
-            metering_point_periods_table_name
-            or paths.METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME
-        )
-        self._metering_point_time_series_view_name = (
-            time_series_points_table_name
-            or paths.TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME
-        )
 
     def read_metering_point_periods(
         self,
@@ -50,4 +40,11 @@ class BasisDataTableReader:
     ) -> DataFrame:
         return self._spark.read.format("delta").table(
             f"{BASIS_DATA_DATABASE_NAME}.{paths.TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME}"
+        )
+
+    def read_calculations(
+        self,
+    ) -> DataFrame:
+        return self._spark.read.format("delta").table(
+            f"{BASIS_DATA_DATABASE_NAME}.{paths.CALCULATIONS_TABLE_NAME}"
         )

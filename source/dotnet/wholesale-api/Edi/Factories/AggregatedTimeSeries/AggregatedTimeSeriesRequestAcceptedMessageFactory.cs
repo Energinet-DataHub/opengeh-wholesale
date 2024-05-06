@@ -52,7 +52,7 @@ public static class AggregatedTimeSeriesRequestAcceptedMessageFactory
                 QuantityUnit = QuantityUnit.Kwh,
                 TimeSeriesPoints = { points },
                 TimeSeriesType = CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromCalculationsResult(series.TimeSeriesType),
-                Resolution = Resolution.Pt15M,
+                Resolution = ResolutionMapper.Map(series.Resolution),
                 CalculationResultVersion = series.Version,
                 Period = new Period()
                 {

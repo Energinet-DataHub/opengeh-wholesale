@@ -30,8 +30,16 @@ public sealed class EnergyResult(
     Instant periodEnd,
     string? fromGridArea,
     string? meteringPointId,
+    Resolution resolution,
     long version)
-    : AggregatedTimeSeries(gridArea, timeSeriesPoints, timeSeriesType, calculationType, periodStart, periodEnd, version)
+    : AggregatedTimeSeries(gridArea,
+        timeSeriesPoints,
+        timeSeriesType,
+        calculationType,
+        periodStart,
+        periodEnd,
+        resolution,
+        version)
 {
     public Guid Id { get; } = id;
 
