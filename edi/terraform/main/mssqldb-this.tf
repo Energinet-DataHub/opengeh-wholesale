@@ -4,7 +4,7 @@ data "azurerm_mssql_server" "mssqlsrv" {
 }
 
 module "mssqldb_edi" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=14.7.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=14.8.2"
 
   name                 = "edi"
   location             = azurerm_resource_group.this.location
@@ -20,8 +20,10 @@ module "mssqldb_edi" {
   max_size_gb                 = 20
   auto_pause_delay_in_minutes = -1
 
-  monitor_alerts_action_group_id     = data.azurerm_key_vault_secret.primary_action_group_id.value
-  monitor_alerts_resource_group_name = azurerm_resource_group.this.name
+  monitor_action_group = {
+    id                  = data.azurerm_key_vault_secret.primary_action_group_id.value
+    resource_group_name = azurerm_resource_group.this.name
+  }
 }
 
 module "kvs_sql_ms_edi_database_name" {
