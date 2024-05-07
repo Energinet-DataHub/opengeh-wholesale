@@ -5,7 +5,7 @@ terraform {
       version = "1.38.0"
     }
     # It is recommended to pin to a given version of the Azure provider
-    azurerm = "3.92.0"
+    azurerm = "3.98.0"
   }
 }
 
