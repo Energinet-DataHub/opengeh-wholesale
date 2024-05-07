@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TotalMonthlyAmountResults;
 using NodaTime;
 
@@ -26,15 +28,24 @@ public class TotalMonthlyAmountResultFactory
         Instant periodEnd,
         long version)
     {
+        var id = databricksSqlRow[TotalMonthlyAmountsColumnNames.CalculationResultId];
+        var calculationId = databricksSqlRow[TotalMonthlyAmountsColumnNames.CalculationId];
+        var calculationType = databricksSqlRow[TotalMonthlyAmountsColumnNames.CalculationType];
+        var gridArea = databricksSqlRow[TotalMonthlyAmountsColumnNames.GridArea];
+        var energySupplierId = databricksSqlRow[TotalMonthlyAmountsColumnNames.EnergySupplierId];
+        var chargeOwnerId = databricksSqlRow[TotalMonthlyAmountsColumnNames.ChargeOwnerId];
+        var amount = databricksSqlRow[TotalMonthlyAmountsColumnNames.Amount];
 
-        var id = databricksSqlRow[WholesaleResultColumnNames.CalculationResultId];
-        var calculationId = databricksSqlRow[WholesaleResultColumnNames.CalculationId];
-        var calculationType = databricksSqlRow[WholesaleResultColumnNames.CalculationType];
-        var gridArea = databricksSqlRow[WholesaleResultColumnNames.GridArea];
-        var energySupplierId = databricksSqlRow[WholesaleResultColumnNames.EnergySupplierId];
-        var chargeOwnerId = databricksSqlRow[WholesaleResultColumnNames.ChargeOwnerId];
-        var resolution = databricksSqlRow[WholesaleResultColumnNames.Resolution];
-        
-        return new TotalMonthlyAmountResult();
+        return new TotalMonthlyAmountResult(
+            SqlResultValueConverters.ToGuid(id!),
+            SqlResultValueConverters.ToGuid(calculationId!),
+            CalculationTypeMapper.FromDeltaTableValue(calculationType!),
+            periodStart,
+            periodEnd,
+            gridArea!,
+            energySupplierId!,
+            chargeOwnerId,
+            SqlResultValueConverters.ToDecimal(amount)!.Value,
+            version);
     }
 }

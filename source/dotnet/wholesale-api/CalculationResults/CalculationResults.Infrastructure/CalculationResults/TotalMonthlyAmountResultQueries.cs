@@ -14,8 +14,8 @@
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TotalMonthlyAmountResults;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
@@ -30,7 +30,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 public class TotalMonthlyAmountResultQueries : ITotalMonthlyAmountResultQueries
 {
     private readonly ICalculationsClient _calculationsClient;
-    private readonly IOptions<DeltaTableOptions> _deltaTableOptions;
+    private readonly DeltaTableOptions _deltaTableOptions;
     private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor;
     private readonly ILogger<WholesaleResultQueries> _logger;
 
@@ -41,7 +41,7 @@ public class TotalMonthlyAmountResultQueries : ITotalMonthlyAmountResultQueries
         ILogger<WholesaleResultQueries> logger)
     {
         _calculationsClient = calculationsClient;
-        _deltaTableOptions = deltaTableOptions;
+        _deltaTableOptions = deltaTableOptions.Value;
         _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
         _logger = logger;
     }

@@ -36,10 +36,12 @@ public class TotalMonthlyAmountResultProducedV1Factory : ITotalMonthlyAmountResu
             GridAreaCode = result.GridAreaCode,
             EnergySupplierId = result.EnergySupplierId,
             Currency = Contracts.IntegrationEvents.TotalMonthlyAmountResultProducedV1.Types.Currency.Dkk,
-            ChargeOwnerId = result.ChargeOwnerId,
             Amount = result.Amount,
             CalculationResultVersion = result.Version,
         };
+
+        if (result.ChargeOwnerId is not null)
+            totalMonthlyAmountResultProducedV1.ChargeOwnerId = result.ChargeOwnerId;
 
         return totalMonthlyAmountResultProducedV1;
     }
