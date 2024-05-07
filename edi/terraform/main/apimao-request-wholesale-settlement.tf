@@ -21,6 +21,7 @@ module "apimao_request_wholesale_settlement" {
                         <value>energysupplier</value>
                         <value>delegated</value>
                         <value>systemoperator</value>
+                        <value>gridaccessprovider</value>
                     </claim>
                 </required-claims>
             </validate-jwt>
