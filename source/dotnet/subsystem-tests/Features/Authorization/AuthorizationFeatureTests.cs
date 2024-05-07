@@ -87,7 +87,7 @@ public class AuthorizationFeatureTests
             // Arrange
 
             // Act
-            var actualResult = await Fixture.WholesaleClient.SearchCalculationsAsync();
+            var actualResult = await Fixture.WholesaleWebApiClient.SearchCalculationsAsync();
 
             // Assert
             actualResult.Should().NotBeNull();
