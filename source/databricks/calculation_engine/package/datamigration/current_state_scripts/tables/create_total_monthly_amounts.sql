@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.total_monthly_amounts
     calculation_result_id STRING NOT NULL,
 
     grid_area_code STRING NOT NULL,
-    energy_supplier_id STRING NOT NULL,
+    energy_supplier_id STRING,
     time TIMESTAMP NOT NULL,
     amount DECIMAL(18, 6),
     charge_owner_id STRING
