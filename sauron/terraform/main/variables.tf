@@ -67,3 +67,9 @@ variable "frontend_url" {
   type        = string
   default     = null
 }
+
+variable "alert_email_address" {
+  type        = string
+  description = "(Optional) The email address to which alerts are sent."
+  default     = null
+}

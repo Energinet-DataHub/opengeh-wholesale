@@ -15,7 +15,7 @@ module "mssqldb" {
   sql_server_name      = data.azurerm_mssql_server.mssqlsrv.name
   elastic_pool_id      = data.azurerm_key_vault_secret.mssql_data_elastic_pool_id.value
   monitor_action_group = {
-    id                  = data.azurerm_key_vault_secret.ag_primary_id.value
+    id                  = module.monitor_action_group_sauron.id
     resource_group_name = azurerm_resource_group.this.name
   }
 }

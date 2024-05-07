@@ -11,9 +11,13 @@ module "func_bff_api" {
   private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   app_service_plan_id                    = module.webapp_service_plan.id
   application_insights_connection_string = data.azurerm_key_vault_secret.appi_shared_connection_string.value
-  ip_restrictions                        = var.ip_restrictions
-  scm_ip_restrictions                    = var.ip_restrictions
-  dotnet_framework_version               = "v8.0"
+  health_check_alert = {
+    enabled         = true
+    action_group_id = module.monitor_action_group_sauron.id
+  }
+  ip_restrictions          = var.ip_restrictions
+  scm_ip_restrictions      = var.ip_restrictions
+  dotnet_framework_version = "v8.0"
   app_settings = {
     CONNECTION_STRING_DATABASE = "Server=tcp:${data.azurerm_key_vault_secret.mssql_data_url.value},1433;Initial Catalog=${module.mssqldb.name};Persist Security Info=False;Authentication=Active Directory Managed Identity;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;"
   }
