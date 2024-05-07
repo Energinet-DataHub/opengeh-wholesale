@@ -51,7 +51,7 @@ message TotalMonthlyAmountResultProducedV1 {
 
   string energy_supplier_id = 6;
 
-  string charge_owner_id = 7;
+  optional string charge_owner_id = 7;
 
   Currency currency = 8;
 
