@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.total_monthly_amounts
     calculation_result_id STRING NOT NULL,
 
     grid_area_code STRING NOT NULL,
-    energy_supplier_id STRING NOT NULL,
+    energy_supplier_id STRING,
     time TIMESTAMP NOT NULL,
     amount DECIMAL(18, 6),
     charge_owner_id STRING
@@ -24,8 +24,6 @@ TBLPROPERTIES (
     delta.constraints.energy_supplier_id_chk = "LENGTH ( energy_supplier_id ) = 13 OR LENGTH ( energy_supplier_id ) = 16",
     delta.constraints.charge_owner_id_chk = "charge_owner_id IS NULL OR LENGTH ( charge_owner_id ) = 13 OR LENGTH ( charge_owner_id ) = 16",
     delta.columnMapping.mode = "name",
-    delta.minReaderVersion = "2",
-    delta.minWriterVersion = "5",
     delta.constraints.grid_area_code_chk = "LENGTH ( grid_area_code ) = 3"
 )
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.

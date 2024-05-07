@@ -26,6 +26,7 @@ public class AggregatedTimeSeries
         CalculationType calculationType,
         Instant periodStart,
         Instant periodEnd,
+        Resolution resolution,
         long version)
     {
         if (timeSeriesPoints.Length == 0)
@@ -37,6 +38,7 @@ public class AggregatedTimeSeries
         CalculationType = calculationType;
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
+        Resolution = resolution;
         Version = version;
     }
 
@@ -51,6 +53,8 @@ public class AggregatedTimeSeries
     public Instant PeriodStart { get; init; }
 
     public Instant PeriodEnd { get; init; }
+
+    public Resolution Resolution { get; }
 
     public long Version { get; init; }
 }

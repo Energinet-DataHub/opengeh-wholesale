@@ -20,7 +20,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures;
 
 public static class WholesaleClientFactory
 {
-    public static async Task<WholesaleClient_V3> CreateAsync(WholesaleSubsystemConfiguration configuration, bool useAuthentication)
+    public static async Task<WholesaleClient_V3> CreateWebApiClientAsync(WholesaleSubsystemConfiguration configuration, bool useAuthentication)
     {
         var httpClient = new HttpClient
         {
@@ -38,5 +38,23 @@ public static class WholesaleClientFactory
         return new WholesaleClient_V3(
             configuration.WebApiBaseAddress.ToString(),
             httpClient);
+    }
+
+    public static async Task<HttpClient> CreateOrchestrationsApiClientAsync(WholesaleSubsystemConfiguration configuration, bool useAuthentication)
+    {
+        var httpClient = new HttpClient
+        {
+            BaseAddress = configuration.OrchestrationsApiBaseAddress,
+        };
+
+        if (useAuthentication)
+        {
+            using var userAuthenticationClient = new B2CUserTokenAuthenticationClient(configuration.UserTokenConfiguration);
+            var accessToken = await userAuthenticationClient.AcquireAccessTokenAsync();
+
+            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
+        }
+
+        return httpClient;
     }
 }
