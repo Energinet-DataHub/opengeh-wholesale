@@ -1,4 +1,4 @@
-CREATE VIEW {SETTLEMENT_REPORT_DATABASE_NAME}.energy_results_v1 as
+CREATE IF NOT EXISTS VIEW {SETTLEMENT_REPORT_DATABASE_NAME}.energy_results_v1 as
 SELECT e.calculation_id,
        e.calculation_type,
        e.grid_area_code,
