@@ -63,7 +63,7 @@ public class GridLossResultProducedV1Tests
         Assert.Equal(LastKnownContentOfContract, actualContent, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
     }
 
-    private const int LastKnownMinorEventVersion = 0;
+    private const int LastKnownMinorEventVersion = 1;
     private const string LastKnownContentOfContract = @"/* Copyright 2020 Energinet DataHub A/S
  *
  * Licensed under the Apache License, Version 2.0 (the ""License2"");
@@ -173,6 +173,9 @@ message GridLossResultProducedV1 {
 
         // States that each time series point represents a time interval of one quarter (15 minutes).
         RESOLUTION_QUARTER = 1;
+
+        // States that each time series point represents a time interval of one hour (60 minutes).
+        RESOLUTION_HOUR = 2;
     }
 }
 ";
