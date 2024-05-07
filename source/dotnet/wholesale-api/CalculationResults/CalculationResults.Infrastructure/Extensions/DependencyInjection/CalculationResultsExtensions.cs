@@ -49,7 +49,7 @@ public static class CalculationResultsExtensions
         services.AddScoped<IEnergyResultQueries, EnergyResultQueries>();
         services.AddScoped<IWholesaleResultQueries, WholesaleResultQueries>();
         services.AddScoped<IWholesaleServicesQueries, WholesaleServicesQueries>();
-        services.AddScoped<TotalMonthlyAmountResultQueries, TotalMonthlyAmountResultQueries>();
+        services.AddScoped<ITotalMonthlyAmountResultQueries, TotalMonthlyAmountResultQueries>();
         services.AddScoped<IAggregatedTimeSeriesQueries, AggregatedTimeSeriesQueries>();
         services.AddScoped<ISettlementReportResultQueries, SettlementReportResultQueries>();
 
