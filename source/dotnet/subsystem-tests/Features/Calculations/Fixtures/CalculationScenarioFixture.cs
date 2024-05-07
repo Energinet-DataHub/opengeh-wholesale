@@ -186,7 +186,7 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
     {
         return await ParseCsvAsync(
             testFileName,
-            "grid_area_code,energy_supplier_id,balance_responsible_id,quantity,quantity_qualities,time,aggregation_level,time_series_type,calculation_id,calculation_type,calculation_execution_time_start,out_grid_area_code,calculation_result_id,resolution",
+            "grid_area_code,energy_supplier_id,balance_responsible_id,quantity,quantity_qualities,time,aggregation_level,time_series_type,calculation_id,calculation_type,calculation_execution_time_start,out_grid_area_code,calculation_result_id",
             ParseEnergyResultProducedV2TimeSeriesPoint);
     }
 
@@ -197,7 +197,7 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
     {
         return await ParseCsvAsync(
             testFileName,
-            "grid_area_code,energy_supplier_id,balance_responsible_id,quantity,quantity_qualities,time,aggregation_level,time_series_type,calculation_id,calculation_type,calculation_execution_time_start,out_grid_area_code,calculation_result_id,metering_point_id,resolution",
+            "grid_area_code,energy_supplier_id,balance_responsible_id,quantity,quantity_qualities,time,aggregation_level,time_series_type,calculation_id,calculation_type,calculation_execution_time_start,out_grid_area_code,calculation_result_id,metering_point_id",
             ParseGridLossProducedV1TimeSeriesPoint);
     }
 
