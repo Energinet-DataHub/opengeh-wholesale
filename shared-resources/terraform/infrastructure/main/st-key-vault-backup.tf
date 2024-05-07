@@ -1,5 +1,5 @@
 module "st_key_vault_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=14.0.3"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=14.3.0"
 
   name                       = "kvbackup"
   project_name               = var.domain_name_short
