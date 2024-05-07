@@ -35,7 +35,7 @@ public class GridLossResultProducedV1Factory : IGridLossResultProducedV1Factory
             CalculationId = result.CalculationId.ToString(),
             MeteringPointId = result.MeteringPointId,
             MeteringPointType = GridLossMeteringPointTypeMapper.MapFromTimeSeriesType(result.TimeSeriesType),
-            Resolution = Contracts.IntegrationEvents.GridLossResultProducedV1.Types.Resolution.Quarter,
+            Resolution = ResolutionMapper.MapResolution(result.Resolution),
             QuantityUnit = Contracts.IntegrationEvents.GridLossResultProducedV1.Types.QuantityUnit.Kwh,
             PeriodStartUtc = result.PeriodStart.ToTimestamp(),
             PeriodEndUtc = result.PeriodEnd.ToTimestamp(),
