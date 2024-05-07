@@ -91,3 +91,12 @@ resource "azuread_application_federated_identity_credential" "esett_deprecated" 
   issuer    = local.federated_identity_credential.issuer_github
 }
 
+resource "azuread_application_federated_identity_credential" "opengeh_revision_log" {
+  application_object_id = azuread_application.app_ci.object_id
+
+  display_name = "opengeh-revision-log-azureauth"
+  subject      = "repo:Energinet-DataHub/opengeh-revision-log:environment:AzureAuth"
+
+  audiences = [local.federated_identity_credential.audience_azuread]
+  issuer    = local.federated_identity_credential.issuer_github
+}
