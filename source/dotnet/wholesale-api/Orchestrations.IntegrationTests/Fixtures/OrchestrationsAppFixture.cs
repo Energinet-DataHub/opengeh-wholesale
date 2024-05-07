@@ -40,6 +40,12 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 /// </summary>
 public class OrchestrationsAppFixture : IAsyncLifetime
 {
+    /// <summary>
+    /// Durable Functions Task Hub Name
+    /// See naming constraints: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-task-hubs?tabs=csharp#task-hub-names
+    /// </summary>
+    private const string TaskHubName = "WholesaleTest01";
+
     public OrchestrationsAppFixture()
     {
         TestLogger = new TestDiagnosticsLogger();
@@ -124,7 +130,7 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         StartHost(AppHostManager);
 
         // Create durable client when TaskHub has been created
-        DurableClient = DurableTaskManager.CreateClient(taskHubName: "Wholesale01");
+        DurableClient = DurableTaskManager.CreateClient(taskHubName: TaskHubName);
     }
 
     public async Task DisposeAsync()
@@ -185,6 +191,11 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         appHostSettings.ProcessEnvironmentVariables.Add(
             "APPLICATIONINSIGHTS_CONNECTION_STRING",
             IntegrationTestConfiguration.ApplicationInsightsConnectionString);
+
+        // Durable Functions Task Hub Name
+        appHostSettings.ProcessEnvironmentVariables.Add(
+            "OrchestrationsTaskHubName",
+            TaskHubName);
 
         // Database
         appHostSettings.ProcessEnvironmentVariables.Add(
