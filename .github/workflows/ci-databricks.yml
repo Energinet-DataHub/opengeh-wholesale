@@ -74,7 +74,7 @@ jobs:
           SCRIPT_FILES_IN_MAIN="${{ steps.get_script_files_in_main.outputs.script_files_in_main }}"
           # Turns comma seperated string in to an array using the IFS
           read -ra SCRIPT_FILES_IN_MAIN_ARRAY <<<"$SCRIPT_FILES_IN_MAIN"
-          
+
           for item in "${SCRIPT_FILES_IN_MAIN_ARRAY[@]}"
           do
             # If a item from the SCRIPT_FILES_IN_MAIN_ARRAY does not exist in the SCRIPT_FILES_IN_PR_ARRAY then
