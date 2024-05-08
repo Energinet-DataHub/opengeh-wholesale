@@ -13,5 +13,5 @@ SELECT l.calculation_id,
        m.energy_supplier_id
 FROM {BASIS_DATA_DATABASE_NAME}.charge_link_periods AS l
 INNER JOIN (SELECT * FROM {BASIS_DATA_DATABASE_NAME}.metering_point_periods) AS m ON m.metering_point_id = l.metering_point_id AND m.calculation_id = l.calculation_id
-INNER JOIN (SELECT calculation_id FROM {BASIS_DATA_DATABASE_NAME}.calculations) AS c ON c.calculation_id = l.calculation_id
+INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = l.calculation_id
 
