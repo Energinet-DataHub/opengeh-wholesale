@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.DurableTask;
@@ -36,14 +37,14 @@ internal class CalculationOrchestration
 
         // Create calculation (SQL)
         var calculationMetadata = await context.CallActivityAsync<CalculationMetadata>(
-            nameof(CalculationActivities.CreateCalculationRecordActivity),
+            nameof(CreateCalculationRecordActivity),
             input);
         calculationMetadata.OrchestrationProgress = "CalculationCreated";
         context.SetCustomStatus(calculationMetadata);
 
         // Start calculation (Databricks)
         calculationMetadata.JobId = await context.CallActivityAsync<CalculationJobId>(
-            nameof(CalculationActivities.StartCalculationActivity),
+            nameof(StartCalculationActivity),
             calculationMetadata.Id);
         calculationMetadata.OrchestrationProgress = "CalculationJobQueued";
         context.SetCustomStatus(calculationMetadata);
@@ -53,7 +54,7 @@ internal class CalculationOrchestration
         {
             // Monitor calculation (Databricks)
             calculationMetadata.JobStatus = await context.CallActivityAsync<CalculationState>(
-                nameof(CalculationActivities.GetJobStatusActivity),
+                nameof(GetJobStatusActivity),
                 calculationMetadata.JobId);
             context.SetCustomStatus(calculationMetadata);
 
@@ -62,7 +63,7 @@ internal class CalculationOrchestration
             {
                 // Update calculation execution status (SQL)
                 await context.CallActivityAsync(
-                    nameof(CalculationActivities.UpdateCalculationExecutionStatusActivity),
+                    nameof(UpdateCalculationExecutionStatusActivity),
                     calculationMetadata);
 
                 // Wait for the next checkpoint
@@ -77,7 +78,7 @@ internal class CalculationOrchestration
 
         // Update calculation execution status (SQL)
         await context.CallActivityAsync(
-            nameof(CalculationActivities.UpdateCalculationExecutionStatusActivity),
+            nameof(UpdateCalculationExecutionStatusActivity),
             calculationMetadata);
 
         if (calculationMetadata.JobStatus == CalculationState.Completed)
@@ -87,14 +88,14 @@ internal class CalculationOrchestration
 
             // OBSOLETE: Create calculation completed (SQL - Event database)
             await context.CallActivityAsync(
-                nameof(CalculationActivities.CreateCompletedCalculationActivity),
+                nameof(CreateCompletedCalculationActivity),
                 calculationMetadata.Id);
 
             //// TODO: Wait for warehouse to start (could use retry policy); could be done using fan-out/fan-in
 
             // Send calculation results (ServiceBus)
             await context.CallActivityAsync(
-                nameof(CalculationActivities.SendCalculationResultsActivity),
+                nameof(SendCalculationResultsActivity),
                 calculationMetadata.Id);
             calculationMetadata.OrchestrationProgress = "CalculationResultsSend";
             context.SetCustomStatus(calculationMetadata);
