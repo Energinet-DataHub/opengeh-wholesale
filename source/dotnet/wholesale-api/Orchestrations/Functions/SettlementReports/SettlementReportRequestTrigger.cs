@@ -21,7 +21,7 @@ using Microsoft.DurableTask.Client;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports;
 
-internal sealed class SettlementReportRequestHttpTrigger
+internal sealed class SettlementReportRequestTrigger
 {
     [Function(nameof(RequestSettlementReport))]
     public async Task<HttpResponseData> RequestSettlementReport(

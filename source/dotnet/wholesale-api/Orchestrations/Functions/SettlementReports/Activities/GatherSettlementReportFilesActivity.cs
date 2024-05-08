@@ -18,18 +18,18 @@ using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Activities;
 
-public sealed class GenerateSettlementReportFile
+public sealed class GatherSettlementReportFilesActivity
 {
-    private readonly ISettlementReportFileRequestHandler _settlementReportFileRequestHandler;
+    private readonly ISettlementReportFromFilesHandler _settlementReportFromFilesHandler;
 
-    public GenerateSettlementReportFile(ISettlementReportFileRequestHandler settlementReportFileRequestHandler)
+    public GatherSettlementReportFilesActivity(ISettlementReportFromFilesHandler settlementReportFromFilesHandler)
     {
-        _settlementReportFileRequestHandler = settlementReportFileRequestHandler;
+        _settlementReportFromFilesHandler = settlementReportFromFilesHandler;
     }
 
-    [Function(nameof(GenerateSettlementReportFile))]
-    public Task<GeneratedSettlementReportFileDto> Run([ActivityTrigger] SettlementReportFileRequestDto fileRequest)
+    [Function(nameof(GatherSettlementReportFilesActivity))]
+    public Task<GeneratedSettlementReportDto> Run([ActivityTrigger] IReadOnlyCollection<GeneratedSettlementReportFileDto> input)
     {
-        return _settlementReportFileRequestHandler.RequestFileAsync(fileRequest);
+        return _settlementReportFromFilesHandler.CombineAsync(input);
     }
 }

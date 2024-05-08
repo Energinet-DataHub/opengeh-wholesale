@@ -18,11 +18,18 @@ using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Activities;
 
-public sealed class FinalizeSettlementReport(ISettlementReportFinalizeHandler settlementReportFinalizeHandler)
+public sealed class GenerateSettlementReportFileActivity
 {
-    [Function(nameof(FinalizeSettlementReport))]
-    public Task Run([ActivityTrigger] GeneratedSettlementReportDto input)
+    private readonly ISettlementReportFileRequestHandler _settlementReportFileRequestHandler;
+
+    public GenerateSettlementReportFileActivity(ISettlementReportFileRequestHandler settlementReportFileRequestHandler)
     {
-        return settlementReportFinalizeHandler.FinalizeAsync(input);
+        _settlementReportFileRequestHandler = settlementReportFileRequestHandler;
+    }
+
+    [Function(nameof(GenerateSettlementReportFileActivity))]
+    public Task<GeneratedSettlementReportFileDto> Run([ActivityTrigger] SettlementReportFileRequestDto fileRequest)
+    {
+        return _settlementReportFileRequestHandler.RequestFileAsync(fileRequest);
     }
 }
