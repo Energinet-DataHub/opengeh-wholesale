@@ -165,6 +165,7 @@ def create_grid_loss_metering_points_row(
 
     return Row(**row)
 
+
 def create_charge_master_data(
     spark: SparkSession, data: None | Row | list[Row] = None
 ) -> ChargeMasterData:
