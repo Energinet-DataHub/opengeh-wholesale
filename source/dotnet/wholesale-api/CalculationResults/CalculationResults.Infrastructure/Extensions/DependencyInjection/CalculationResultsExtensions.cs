@@ -59,7 +59,7 @@ public static class CalculationResultsExtensions
         services.AddScoped<ISettlementReportFinalizeHandler, SettlementReportFinalizeHandler>();
         services.AddScoped<ISettlementReportInitializeHandler, SettlementReportInitializeHandler>();
         services.AddScoped<ISettlementReportDataRepository, LegacySettlementReportDataRepository>();
-        services.AddScoped<ISettlementReportRequestRepository, SettlementReportRequestRepository>();
+        services.AddScoped<ISettlementReportRepository, SettlementReportRepository>();
         services.AddScoped<ISettlementReportFileGeneratorFactory, SettlementReportFileGeneratorFactory>();
         services.AddSettlementReportBlobStorage(configuration);
 

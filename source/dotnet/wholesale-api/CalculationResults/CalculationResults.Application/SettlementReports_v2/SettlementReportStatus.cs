@@ -14,7 +14,7 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 
-public enum SettlementReportRequestStatus
+public enum SettlementReportStatus
 {
     Running,
     Completed,

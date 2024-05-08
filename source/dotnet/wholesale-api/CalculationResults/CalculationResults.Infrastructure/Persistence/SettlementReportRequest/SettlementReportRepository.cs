@@ -17,41 +17,41 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.SettlementReportRequest;
 
-public class SettlementReportRequestRepository : ISettlementReportRequestRepository
+public class SettlementReportRepository : ISettlementReportRepository
 {
     private readonly IDatabaseContext _context;
 
-    public SettlementReportRequestRepository(IDatabaseContext context)
+    public SettlementReportRepository(IDatabaseContext context)
     {
         _context = context;
     }
 
-    public async Task AddOrUpdateAsync(Application.SettlementReports_v2.SettlementReportRequest request)
+    public async Task AddOrUpdateAsync(SettlementReport request)
     {
         if (request.Id == 0)
         {
-            await _context.SettlementReportRequests.AddAsync(request).ConfigureAwait(false);
+            await _context.SettlementReports.AddAsync(request).ConfigureAwait(false);
         }
 
         await _context.SaveChangesAsync().ConfigureAwait(false);
     }
 
-    public Task<Application.SettlementReports_v2.SettlementReportRequest> GetAsync(string requestId)
+    public Task<SettlementReport> GetAsync(string requestId)
     {
-        return _context.SettlementReportRequests
+        return _context.SettlementReports
             .FirstAsync(x => x.RequestId == requestId);
     }
 
-    public async Task<IEnumerable<Application.SettlementReports_v2.SettlementReportRequest>> GetAsync()
+    public async Task<IEnumerable<SettlementReport>> GetAsync()
     {
-        return await _context.SettlementReportRequests
+        return await _context.SettlementReports
             .ToListAsync()
             .ConfigureAwait(false);
     }
 
-    public async Task<IEnumerable<Application.SettlementReports_v2.SettlementReportRequest>> GetAsync(Guid userId, Guid actorId)
+    public async Task<IEnumerable<SettlementReport>> GetAsync(Guid userId, Guid actorId)
     {
-        return await _context.SettlementReportRequests
+        return await _context.SettlementReports
             .Where(x => x.UserId == userId && x.ActorId == actorId)
             .ToListAsync()
             .ConfigureAwait(false);

@@ -17,11 +17,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.SettlementReportRequest;
 
-public class SettlementReportRequestEntityConfiguration : IEntityTypeConfiguration<Application.SettlementReports_v2.SettlementReportRequest>
+public class SettlementReportEntityConfiguration : IEntityTypeConfiguration<Application.SettlementReports_v2.SettlementReport>
 {
-    public void Configure(EntityTypeBuilder<Application.SettlementReports_v2.SettlementReportRequest> builder)
+    public void Configure(EntityTypeBuilder<Application.SettlementReports_v2.SettlementReport> builder)
     {
-        builder.ToTable(nameof(Application.SettlementReports_v2.SettlementReportRequest));
+        builder.ToTable(nameof(Application.SettlementReports_v2.SettlementReport));
         builder.HasKey(e => e.Id);
     }
 }

@@ -14,13 +14,13 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 
-public interface ISettlementReportRequestRepository
+public interface ISettlementReportRepository
 {
-    Task AddOrUpdateAsync(SettlementReportRequest request);
+    Task AddOrUpdateAsync(SettlementReport request);
 
-    Task<SettlementReportRequest> GetAsync(string requestId);
+    Task<SettlementReport> GetAsync(string requestId);
 
-    Task<IEnumerable<SettlementReportRequest>> GetAsync();
+    Task<IEnumerable<SettlementReport>> GetAsync();
 
-    Task<IEnumerable<SettlementReportRequest>> GetAsync(Guid userId, Guid actorId);
+    Task<IEnumerable<SettlementReport>> GetAsync(Guid userId, Guid actorId);
 }

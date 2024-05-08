@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persiste
 
 public interface IDatabaseContext
 {
-    DbSet<Application.SettlementReports_v2.SettlementReportRequest> SettlementReportRequests { get; }
+    DbSet<Application.SettlementReports_v2.SettlementReport> SettlementReports { get; }
 
     /// <summary>
     /// Saves changes to the database.

@@ -20,14 +20,14 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementR
 public sealed class SettlementReportFinalizeHandler : ISettlementReportFinalizeHandler
 {
     private readonly ISettlementReportFileRepository _fileRepository;
-    private readonly ISettlementReportRequestRepository _requestRepository;
+    private readonly ISettlementReportRepository _repository;
 
     public SettlementReportFinalizeHandler(
         ISettlementReportFileRepository fileRepository,
-        ISettlementReportRequestRepository requestRepository)
+        ISettlementReportRepository repository)
     {
         _fileRepository = fileRepository;
-        _requestRepository = requestRepository;
+        _repository = repository;
     }
 
     public async Task FinalizeAsync(GeneratedSettlementReportDto generatedReport)
@@ -39,13 +39,13 @@ public sealed class SettlementReportFinalizeHandler : ISettlementReportFinalizeH
                 .ConfigureAwait(false);
         }
 
-        var request = await _requestRepository
+        var request = await _repository
             .GetAsync(generatedReport.RequestId.Id)
             .ConfigureAwait(false);
 
         request.MarkAsCompleted(generatedReport);
 
-        await _requestRepository
+        await _repository
             .AddOrUpdateAsync(request)
             .ConfigureAwait(false);
     }

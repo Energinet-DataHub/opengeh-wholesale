@@ -28,7 +28,7 @@ public class DatabaseContext : DbContext, IDatabaseContext
 
     public DatabaseContext() { }
 
-    public DbSet<Application.SettlementReports_v2.SettlementReportRequest> SettlementReportRequests { get; init; } = null!;
+    public DbSet<Application.SettlementReports_v2.SettlementReport> SettlementReports { get; init; } = null!;
 
     public Task<int> SaveChangesAsync() => base.SaveChangesAsync();
 
@@ -36,7 +36,7 @@ public class DatabaseContext : DbContext, IDatabaseContext
     {
         modelBuilder.HasDefaultSchema(Schema);
 
-        modelBuilder.ApplyConfiguration(new SettlementReportRequestEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new SettlementReportEntityConfiguration());
 
         base.OnModelCreating(modelBuilder);
     }

@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 
-public sealed class SettlementReportRequest
+public sealed class SettlementReport
 {
     public int Id { get; init; }
 
@@ -28,27 +28,27 @@ public sealed class SettlementReportRequest
 
     public DateTimeOffset CreatedDateTime { get; init; }
 
-    public SettlementReportRequestStatus Status { get; private set; }
+    public SettlementReportStatus Status { get; private set; }
 
     public string? BlobFilename { get; private set; }
 
-    public SettlementReportRequest(Guid userId, Guid actorId, string requestId)
+    public SettlementReport(Guid userId, Guid actorId, string requestId)
     {
         UserId = userId;
         ActorId = actorId;
         RequestId = requestId;
         CreatedDateTime = DateTimeOffset.UtcNow;
-        Status = SettlementReportRequestStatus.Running;
+        Status = SettlementReportStatus.Running;
     }
 
     public void MarkAsCompleted(GeneratedSettlementReportDto generatedSettlementReport)
     {
-        Status = SettlementReportRequestStatus.Completed;
+        Status = SettlementReportStatus.Completed;
         BlobFilename = generatedSettlementReport.FinalReport.FileName;
     }
 
     public void MarkAsFailed()
     {
-        Status = SettlementReportRequestStatus.Failed;
+        Status = SettlementReportStatus.Failed;
     }
 }

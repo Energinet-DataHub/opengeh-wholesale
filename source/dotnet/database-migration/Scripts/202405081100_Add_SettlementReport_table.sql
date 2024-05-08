@@ -1,7 +1,7 @@
 CREATE SCHEMA [settlementreports]
 GO
 
-CREATE TABLE [settlementreports].[SettlementReportRequest]
+CREATE TABLE [settlementreports].[SettlementReport]
 (
     [Id] [int] IDENTITY(1,1) NOT NULL,
     [UserId] [uniqueidentifier] NOT NULL,

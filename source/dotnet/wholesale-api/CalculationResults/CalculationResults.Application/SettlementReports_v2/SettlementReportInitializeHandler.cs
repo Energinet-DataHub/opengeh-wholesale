@@ -19,17 +19,17 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementR
 
 public sealed class SettlementReportInitializeHandler : ISettlementReportInitializeHandler
 {
-    private readonly ISettlementReportRequestRepository _requestRepository;
+    private readonly ISettlementReportRepository _repository;
 
-    public SettlementReportInitializeHandler(ISettlementReportRequestRepository requestRepository)
+    public SettlementReportInitializeHandler(ISettlementReportRepository repository)
     {
-        _requestRepository = requestRepository;
+        _repository = repository;
     }
 
     public async Task InitializeAsync(Guid userId, Guid actorId, SettlementReportRequestId requestId)
     {
-        await _requestRepository
-            .AddOrUpdateAsync(new SettlementReportRequest(userId, actorId, requestId.Id))
+        await _repository
+            .AddOrUpdateAsync(new SettlementReport(userId, actorId, requestId.Id))
             .ConfigureAwait(false);
     }
 }

@@ -21,11 +21,11 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SettlementReports_v2.Persistence;
 
-public class SettlementReportRequestRepositoryTests : IClassFixture<WholesaleDatabaseFixture<DatabaseContext>>
+public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFixture<DatabaseContext>>
 {
     private readonly WholesaleDatabaseManager<DatabaseContext> _databaseManager;
 
-    public SettlementReportRequestRepositoryTests(WholesaleDatabaseFixture<DatabaseContext> fixture)
+    public SettlementReportRepositoryTests(WholesaleDatabaseFixture<DatabaseContext> fixture)
     {
         _databaseManager = fixture.DatabaseManager;
     }
@@ -35,15 +35,15 @@ public class SettlementReportRequestRepositoryTests : IClassFixture<WholesaleDat
     {
         // arrange
         await using var writeContext = _databaseManager.CreateDbContext();
-        var target = new SettlementReportRequestRepository(writeContext);
-        var settlementReportRequest = new SettlementReportRequest(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid().ToString());
+        var target = new SettlementReportRepository(writeContext);
+        var settlementReportRequest = new SettlementReport(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid().ToString());
 
         // act
         await target.AddOrUpdateAsync(settlementReportRequest);
 
         // assert
         await using var readContext = _databaseManager.CreateDbContext();
-        var actual = await readContext.SettlementReportRequests.SingleOrDefaultAsync(x => x.Id == settlementReportRequest.Id);
+        var actual = await readContext.SettlementReports.SingleOrDefaultAsync(x => x.Id == settlementReportRequest.Id);
         Assert.NotNull(actual);
         Assert.Equal(settlementReportRequest.Id, actual.Id);
         Assert.Equal(settlementReportRequest.UserId, actual.UserId);
@@ -61,7 +61,7 @@ public class SettlementReportRequestRepositoryTests : IClassFixture<WholesaleDat
         var expectedRequest = await PrepareNewRequestAsync();
 
         await using var context = _databaseManager.CreateDbContext();
-        var repository = new SettlementReportRequestRepository(context);
+        var repository = new SettlementReportRepository(context);
 
         // act
         var actual = await repository.GetAsync(expectedRequest.RequestId);
@@ -75,14 +75,14 @@ public class SettlementReportRequestRepositoryTests : IClassFixture<WholesaleDat
     public async Task GetAsync_RequestsExists_ReturnsRequests()
     {
         // arrange
-        IEnumerable<SettlementReportRequest> preparedRequests =
+        IEnumerable<SettlementReport> preparedRequests =
         [
             await PrepareNewRequestAsync(),
             await PrepareNewRequestAsync(),
         ];
 
         await using var context = _databaseManager.CreateDbContext();
-        var repository = new SettlementReportRequestRepository(context);
+        var repository = new SettlementReportRepository(context);
 
         // act
         var actual = (await repository.GetAsync()).ToList();
@@ -104,7 +104,7 @@ public class SettlementReportRequestRepositoryTests : IClassFixture<WholesaleDat
         var expectedRequest = await PrepareNewRequestAsync();
 
         await using var context = _databaseManager.CreateDbContext();
-        var repository = new SettlementReportRequestRepository(context);
+        var repository = new SettlementReportRepository(context);
 
         // act
         var actual = (await repository.GetAsync(expectedRequest.UserId, expectedRequest.ActorId)).ToList();
@@ -114,11 +114,11 @@ public class SettlementReportRequestRepositoryTests : IClassFixture<WholesaleDat
         Assert.Equal(expectedRequest.Id, actual[0].Id);
     }
 
-    private async Task<SettlementReportRequest> PrepareNewRequestAsync()
+    private async Task<SettlementReport> PrepareNewRequestAsync()
     {
         await using var setupContext = _databaseManager.CreateDbContext();
-        var setupRepository = new SettlementReportRequestRepository(setupContext);
-        var settlementReportRequest = new SettlementReportRequest(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid().ToString());
+        var setupRepository = new SettlementReportRepository(setupContext);
+        var settlementReportRequest = new SettlementReport(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid().ToString());
         await setupRepository.AddOrUpdateAsync(settlementReportRequest);
         return settlementReportRequest;
     }
