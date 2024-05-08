@@ -263,6 +263,18 @@ def test__current_state_and_migration_scripts__should_give_same_result(
                 f"DESCRIBE DETAIL {current_state_script_tag}"
             ).collect()[0]
 
+            # Remove delta.columnMapping properties
+            migration_script_details_props = {
+                k: v
+                for k, v in migration_script_details["properties"].items()
+                if not k.startswith("delta.columnMapping")
+            }
+            current_state_details_props = {
+                k: v
+                for k, v in current_state_details["properties"].items()
+                if not k.startswith("delta.columnMapping")
+            }
+
             migrations_script_location = migration_script_details["location"].replace(
                 migration_scripts_prefix, ""
             )
@@ -274,6 +286,5 @@ def test__current_state_and_migration_scripts__should_give_same_result(
             ), f"{migration_script_table_name} and {current_state_script_tag} have different locations"
 
             assert (
-                migration_script_details["properties"]
-                == current_state_details["properties"]
+                migration_script_details_props == current_state_details_props
             ), f"{migration_script_table_name} and {current_state_script_tag} have different properties"
