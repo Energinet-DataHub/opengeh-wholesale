@@ -35,6 +35,7 @@ from pyspark.sql import SparkSession
 
 def test__basis_data_uses_correct_schema(spark: SparkSession):
     basis_data_container = create_basis_data_factory(spark)
+
     assert (
         basis_data_container.metering_point_periods.schema
         == metering_point_period_schema

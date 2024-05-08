@@ -29,7 +29,7 @@ def create(
     args: CalculatorArgs,
     metering_point_periods_df: DataFrame,
     metering_point_time_series_df: PreparedMeteringPointTimeSeries,
-    input_charges_container: InputChargesContainer,
+    input_charges_container: InputChargesContainer | None,
 ) -> BasisDataContainer:
     time_series_points_basis_data = basis_data.get_time_series_points_basis_data(
         args.calculation_id, metering_point_time_series_df
