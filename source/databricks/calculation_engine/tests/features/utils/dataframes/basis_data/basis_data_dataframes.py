@@ -20,6 +20,7 @@ from pyspark.sql.types import (
 
 BASIS_DATA_METERING_POINT_PERIODS_CSV = "metering_point_periods"
 BASIS_DATA_TIME_SERIES_POINTS_CSV = "time_series_points"
+BASIS_DATA_CHARGE_LINK_PERIODS_CSV = "charge_link_periods"
 
 
 def create_basis_data_result_dataframe(
@@ -30,6 +31,8 @@ def create_basis_data_result_dataframe(
         return create_time_series_points(spark, df)
     if filename == BASIS_DATA_METERING_POINT_PERIODS_CSV:
         return create_metering_point_periods(spark, df)
+    if filename == BASIS_DATA_CHARGE_LINK_PERIODS_CSV:
+        return create_charge_link_periods(spark, df)
 
     raise Exception(f"Unknown expected basis data file {filename}.")
 
@@ -70,3 +73,22 @@ def create_metering_point_periods(spark: SparkSession, df: DataFrame) -> DataFra
     )
 
     return spark.createDataFrame(df.rdd, metering_point_period_schema)
+
+
+def create_charge_link_periods(spark: SparkSession, df: DataFrame) -> DataFrame:
+
+    # Don't remove. Believed needed because this function is an argument to the setup function
+    # and therefore the following packages are not automatically included.
+    from package.constants import MeteringPointPeriodColname
+    from package.calculation.basis_data.schemas import charge_link_periods_schema
+
+    # df = df.withColumn(
+    #     MeteringPointPeriodColname.from_date,
+    #     col(MeteringPointPeriodColname.from_date).cast(TimestampType()),
+    # )
+    # df = df.withColumn(
+    #     MeteringPointPeriodColname.to_date,
+    #     col(MeteringPointPeriodColname.to_date).cast(TimestampType()),
+    # )
+
+    return spark.createDataFrame(df.rdd, charge_link_periods_schema)

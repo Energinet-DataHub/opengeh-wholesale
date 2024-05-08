@@ -15,6 +15,9 @@ from features.utils.dataframes.settlement_report import (
     metering_point_period_v1_view_schema,
     metering_point_time_series_v1_view_schema,
 )
+from features.utils.dataframes.settlement_report.charge_link_periods_v1_view_schema import (
+    charge_link_periods_v1_view_schema,
+)
 from features.utils.dataframes.settlement_report.energy_results_v1_view_schema import (
     energy_results_v1_view_schema,
 )
@@ -41,6 +44,11 @@ def get_output_specifications() -> dict[str, tuple]:
         "metering_point_time_series.csv": (
             metering_point_time_series_v1_view_schema,
             SettlementReportViewReader.read_metering_point_time_series_v1,
+            create_metering_point_time_series_v1_view,
+        ),
+        "charge_link_periods_v1.csv": (
+            charge_link_periods_v1_view_schema,
+            SettlementReportViewReader.rd_metering_point_time_series_v1,
             create_metering_point_time_series_v1_view,
         ),
         "energy_results_v1.csv": (
