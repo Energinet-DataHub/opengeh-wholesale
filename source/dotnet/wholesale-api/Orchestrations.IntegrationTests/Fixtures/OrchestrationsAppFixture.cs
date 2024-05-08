@@ -55,7 +55,11 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         DatabaseManager = new WholesaleDatabaseManager<DatabaseContext>();
         DurableTaskDatabaseManager = new DurableTaskDatabaseManager();
 
-        // TODO: Need to change this to use SQL Provider; did not work by just changing settings so maybe we need to register additional types
+        // TODO:
+        // Need to change this to use SQL Provider, requires additional code
+        // See sample https://github.com/microsoft/durabletask-netherite/commit/d8f5925e4290c163fbad5b3773d6ecd6d7875df4
+        // And relevant issue https://github.com/microsoft/durabletask-netherite/issues/49#issuecomment-1402285930
+        // and issue https://github.com/Azure/azure-functions-durable-extension/issues/2365
         DurableTaskManager = new DurableTaskManager(
             "AzureWebJobsStorage",
             AzuriteManager.FullConnectionString);
