@@ -20,16 +20,12 @@ from package.infrastructure.infrastructure_settings import InfrastructureSetting
 
 
 class Container(containers.DeclarativeContainer):
-    spark = None
     infrastructure_settings = providers.Configuration()
 
 
 def create_and_configure_container(
     infrastructure_settings: InfrastructureSettings,
-    spark: SparkSession = initialize_spark,
 ) -> Container:
-    Container.spark = spark
-
     container = Container()
 
     container.infrastructure_settings.from_value(infrastructure_settings)

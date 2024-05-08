@@ -44,7 +44,7 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
 
     # IMPORTANT: Write the succeeded calculation after the results to ensure that the calculation
     # is only marked as succeeded when all results are written
-    write_calculation(args)
+    write_calculation(args, prepared_data_reader)
 
 
 def _execute(

@@ -15,6 +15,8 @@ from dependency_injector.wiring import inject, Provide
 from pyspark.sql import SparkSession, Row
 import pyspark.sql.functions as f
 
+from package.calculation import PreparedDataReader
+from package.calculation.basis_data.schemas import calculations_schema
 from package.codelists import CalculationType
 from package.container import Container
 from package.infrastructure import logging_configuration, paths
@@ -26,16 +28,10 @@ from package.constants.calculation_column_names import CalculationColumnNames
 @inject
 def write_calculation(
     args: CalculatorArgs,
+    prepared_data_reader: PreparedDataReader,
 ) -> None:
     """Writes the succeeded calculation to the calculations table."""
-    _write_calculation(args)
 
-
-@inject
-def _write_calculation(
-    args: CalculatorArgs,
-    spark: SparkSession = Provide[Container.spark],
-) -> None:
     next_version = _get_next_version(args.calculation_type, spark)
 
     calculation = {
@@ -48,17 +44,7 @@ def _write_calculation(
         CalculationColumnNames.version: next_version,
     }
 
-    calculation_schema = """
-calculation_id STRING NOT NULL,
-calculation_type STRING NOT NULL,
-period_start TIMESTAMP NOT NULL,
-period_end TIMESTAMP NOT NULL,
-execution_time_start TIMESTAMP NOT NULL,
-created_by_user_id STRING NOT NULL,
-version INT NOT NULL
-"""
-
-    df = spark.createDataFrame(data=[Row(**calculation)], schema=calculation_schema)
+    df = spark.createDataFrame(data=[Row(**calculation)], schema=calculations_schema)
     df.write.format("delta").mode("append").option("mergeSchema", "false").insertInto(
         f"{paths.BASIS_DATA_DATABASE_NAME}.{paths.CALCULATIONS_TABLE_NAME}"
     )
