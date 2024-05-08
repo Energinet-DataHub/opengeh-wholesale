@@ -1,6 +1,6 @@
 CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.charge_link_periods_v1 as
 SELECT l.calculation_id,
-       l.calculation_type,
+       c.calculation_type,
        l.metering_point_id,
        l.metering_point_type,
        l.charge_type,
