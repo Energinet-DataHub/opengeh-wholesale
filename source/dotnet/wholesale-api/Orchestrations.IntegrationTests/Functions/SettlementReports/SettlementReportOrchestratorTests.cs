@@ -82,30 +82,14 @@ public class SettlementReportOrchestratorTests : IAsyncLifetime
                 DateTimeOffset.UtcNow,
                 null));
 
-        // => Databricks Jobs API
-        var jobId = Random.Shared.Next(1, 1000);
-        var runId = Random.Shared.Next(1000, 2000);
-
-        Fixture.MockServer
-            .MockJobsList(jobId)
-            .MockJobsGet(jobId)
-            .MockJobsRunNow(runId)
-            .MockJobsRunsGet(runId, "TERMINATED", "SUCCESS");
-
         // => Databricks SQL Statement API
-        var chunkIndex = 0;
         var statementId = Guid.NewGuid().ToString();
         var path = "GetDatabricksDataPath";
 
-        // This is the calculationId returned in the energyResult from the mocked databricks.
-        // It should match the ID returned by the http client calling 'api/StartCalculation'
-        // But we have to set up the mocked response before we reach this step, hence we have a mismatch.
-        var calculationIdInMock = Guid.NewGuid();
-
         Fixture.MockServer
-            .MockEnergySqlStatements(statementId, chunkIndex)
-            .MockEnergySqlStatementsResultChunks(statementId, chunkIndex, path)
-            .MockEnergySqlStatementsResultStream(path, calculationIdInMock);
+            .MockEnergySqlStatements(statementId, 0)
+            .MockEnergySqlStatementsResultChunks(statementId, 0, path)
+            .MockEnergySqlStatementsResultStream(path);
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Post, "api/RequestSettlementReport");
