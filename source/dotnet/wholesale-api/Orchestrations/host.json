@@ -8,7 +8,7 @@
       // See configuration possibilities here: https://microsoft.github.io/durabletask-mssql/#/quickstart?id=hostjson-configuration
       "storageProvider": {
         "type": "mssql",
-        "connectionStringName": "CONNECTIONSTRINGS__SQLAZURECONNSTR"
+        "connectionStringName": "SQLAZURECONNSTR"
       }
     }
   },

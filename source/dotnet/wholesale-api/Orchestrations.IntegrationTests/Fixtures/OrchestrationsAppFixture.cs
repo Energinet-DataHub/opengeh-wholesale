@@ -53,7 +53,9 @@ public class OrchestrationsAppFixture : IAsyncLifetime
 
         AzuriteManager = new AzuriteManager(useOAuth: true);
         DatabaseManager = new WholesaleDatabaseManager<DatabaseContext>();
+        DurableTaskDatabaseManager = new DurableTaskDatabaseManager();
 
+        // TODO: Need to change this to use SQL Provider; did not work by just changing settings so maybe we need to register additional types
         DurableTaskManager = new DurableTaskManager(
             "AzureWebJobsStorage",
             AzuriteManager.FullConnectionString);
@@ -89,6 +91,8 @@ public class OrchestrationsAppFixture : IAsyncLifetime
 
     private WholesaleDatabaseManager<DatabaseContext> DatabaseManager { get; }
 
+    private DurableTaskDatabaseManager DurableTaskDatabaseManager { get; }
+
     private DurableTaskManager DurableTaskManager { get; }
 
     private ServiceBusResourceProvider ServiceBusResourceProvider { get; }
@@ -100,8 +104,9 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         // Storage emulator
         AzuriteManager.StartAzurite();
 
-        // Database
+        // Databases
         await DatabaseManager.CreateDatabaseAsync();
+        await DurableTaskDatabaseManager.CreateDatabaseAsync();
 
         // Prepare host settings
         var port = 8000;
@@ -140,6 +145,7 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         DurableTaskManager.Dispose();
         AzuriteManager.Dispose();
         await DatabaseManager.DeleteDatabaseAsync();
+        await DurableTaskDatabaseManager.DeleteDatabaseAsync();
     }
 
     public void EnsureAppHostUsesActualDatabricksJobs()
@@ -197,10 +203,14 @@ public class OrchestrationsAppFixture : IAsyncLifetime
             "OrchestrationsTaskHubName",
             TaskHubName);
 
-        // Database
+        // Databases
         appHostSettings.ProcessEnvironmentVariables.Add(
-            $"{ConnectionStringsOptions.ConnectionStrings}__{nameof(ConnectionStringsOptions.DB_CONNECTION_STRING)}",
+            $"{ConnectionStringsOptions.SectionName}__{nameof(ConnectionStringsOptions.DB_CONNECTION_STRING)}",
             DatabaseManager.ConnectionString);
+        // => Setting in 'host.json' must not contains the "section name", but here we can.
+        appHostSettings.ProcessEnvironmentVariables.Add(
+            $"{ConnectionStringsOptions.SectionName}__SQLAZURECONNSTR",
+            DurableTaskDatabaseManager.ConnectionString);
 
         // Databricks
         // => Notice we reconfigure this setting in "EnsureAppHostUsesActualDatabricksJobs" and "EnsureAppHostUsesMockedDatabricksJobs"
