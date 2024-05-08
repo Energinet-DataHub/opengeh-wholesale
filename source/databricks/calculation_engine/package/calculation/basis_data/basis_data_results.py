@@ -41,9 +41,9 @@ def write_basis_data(basis_data: BasisDataContainer) -> None:
         )
 
     with logging_configuration.start_span("grid_loss_metering_points"):
-        basis_data.grid_loss_metering_points.write.format("delta").mode("append").option(
-            "mergeSchema", "false"
-        ).insertInto(
+        basis_data.grid_loss_metering_points.write.format("delta").mode(
+            "append"
+        ).option("mergeSchema", "false").insertInto(
             f"{BASIS_DATA_DATABASE_NAME}.{GRID_LOSS_METERING_POINTS_BASIS_DATA_TABLE_NAME}"
         )
 

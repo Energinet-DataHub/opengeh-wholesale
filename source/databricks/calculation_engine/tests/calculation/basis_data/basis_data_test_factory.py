@@ -231,7 +231,9 @@ def create_grid_loss_metering_points(
         data = [create_grid_loss_metering_points_row()]
     elif isinstance(data, Row):
         data = [data]
-    return GridLossMeteringPoints(spark.createDataFrame(data, grid_loss_metering_points_schema))
+    return GridLossMeteringPoints(
+        spark.createDataFrame(data, grid_loss_metering_points_schema)
+    )
 
 
 def create_basis_data_factory(spark: SparkSession) -> BasisDataContainer:

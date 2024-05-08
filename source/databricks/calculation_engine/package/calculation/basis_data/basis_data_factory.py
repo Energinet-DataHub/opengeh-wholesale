@@ -22,7 +22,9 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
 from package.calculation.basis_data import basis_data
 from package.infrastructure import logging_configuration
 from package.calculation.preparation.data_structures import InputChargesContainer
-from package.calculation.preparation.data_structures.grid_loss_metering_points import GridLossMeteringPoints
+from package.calculation.preparation.data_structures.grid_loss_metering_points import (
+    GridLossMeteringPoints,
+)
 
 
 @logging_configuration.use_span("calculation.basis_data.prepare")

@@ -29,7 +29,9 @@ from package.constants import (
 )
 from package.infrastructure import logging_configuration
 from package.calculation.preparation.data_structures import InputChargesContainer
-from package.calculation.preparation.data_structures.grid_loss_metering_points import GridLossMeteringPoints
+from package.calculation.preparation.data_structures.grid_loss_metering_points import (
+    GridLossMeteringPoints,
+)
 
 
 @logging_configuration.use_span("get_metering_point_periods_basis_data")

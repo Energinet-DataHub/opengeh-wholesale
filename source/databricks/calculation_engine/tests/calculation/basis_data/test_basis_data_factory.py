@@ -50,4 +50,7 @@ def test__basis_data_uses_correct_schema(spark: SparkSession):
     )
     assert basis_data_container.charge_prices.schema == charge_price_points_schema
     assert basis_data_container.charge_links.schema == charge_link_periods_schema
-    assert basis_data_container.grid_loss_metering_points.schema == grid_loss_metering_points_schema
+    assert (
+        basis_data_container.grid_loss_metering_points.schema
+        == grid_loss_metering_points_schema
+    )
