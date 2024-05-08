@@ -15,6 +15,7 @@
 from datetime import datetime
 
 from pyspark.sql import DataFrame
+import pyspark.sql.functions as f
 
 from package.calculation.input import TableReader
 from package.calculation.preparation.data_structures.grid_loss_responsible import (
@@ -29,9 +30,10 @@ from package.calculation.preparation.data_structures.prepared_charges import (
 from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
-from package.codelists import ChargeResolution
+from package.codelists import ChargeResolution, CalculationType
 from . import transformations as T
 from ...constants import Colname
+from ...constants.calculation_column_names import CalculationColumnNames
 from ...infrastructure import logging_configuration
 
 
@@ -159,3 +161,27 @@ class PreparedDataReader:
             Colname.metering_point_id,
             "left_anti",
         )
+
+    # TODO BJM: Unit test with both 0 and 1 existing calculations
+    def get_latest_calculation_version(
+        self, calculation_type: CalculationType
+    ) -> int | None:
+        """Returns the latest used version for the selected calculation type or None."""
+
+        calculations = self._table_reader.read_calculations()
+
+        latest_calculation = (
+            calculations.where(
+                f.col(CalculationColumnNames.calculation_type) == calculation_type
+            )
+            .agg(f.max(CalculationColumnNames.version))
+            .collect()
+        )
+
+        latest_version = (
+            latest_calculation[0][CalculationColumnNames.version]
+            if len(latest_calculation) > 0
+            else None
+        )
+
+        return latest_version

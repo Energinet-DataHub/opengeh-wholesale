@@ -40,11 +40,7 @@ from ..codelists.calculation_type import is_wholesale_calculation_type
 @logging_configuration.use_span("calculation")
 def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> None:
     results = _execute(args, prepared_data_reader)
-    _write_results(results)
-
-    # IMPORTANT: Write the succeeded calculation after the results to ensure that the calculation
-    # is only marked as succeeded when all results are written
-    write_calculation(args, prepared_data_reader)
+    _write_output(results, args, prepared_data_reader)
 
 
 def _execute(
@@ -150,7 +146,11 @@ def _execute(
 
 
 @logging_configuration.use_span("calculation.write")
-def _write_results(results: CalculationResultsContainer) -> None:
+def _write_output(
+    results: CalculationResultsContainer,
+    args: CalculatorArgs,
+    prepared_data_reader: PreparedDataReader,
+) -> None:
     write_energy_results(results.energy_results)
     if results.wholesale_results is not None:
         write_wholesale_results(results.wholesale_results)
@@ -160,3 +160,7 @@ def _write_results(results: CalculationResultsContainer) -> None:
 
     # We write basis data at the end of the calculation to make it easier to analyze performance of the calculation part
     write_basis_data(results.basis_data)
+
+    # IMPORTANT: Write the succeeded calculation after the results to ensure that the calculation
+    # is only marked as succeeded when all results are written
+    write_calculation(args, prepared_data_reader)

@@ -11,17 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from dependency_injector.wiring import inject, Provide
-from pyspark.sql import SparkSession, Row
-import pyspark.sql.functions as f
+from dependency_injector.wiring import inject
+from pyspark.sql import Row, SparkSession, DataFrame
 
 from package.calculation import PreparedDataReader
 from package.calculation.basis_data.schemas import calculations_schema
-from package.codelists import CalculationType
-from package.container import Container
-from package.infrastructure import logging_configuration, paths
 from package.calculation.calculator_args import CalculatorArgs
 from package.constants.calculation_column_names import CalculationColumnNames
+from package.infrastructure import logging_configuration, paths, initialize_spark
 
 
 @logging_configuration.use_span("calculation.write-succeeded-calculation")
@@ -30,13 +27,38 @@ def write_calculation(
     args: CalculatorArgs,
     prepared_data_reader: PreparedDataReader,
 ) -> None:
+    _write_calculation(args, prepared_data_reader)
+
+
+def _write_calculation(
+    args: CalculatorArgs,
+    prepared_data_reader: PreparedDataReader,
+) -> None:
     """Writes the succeeded calculation to the calculations table."""
 
-    next_version = _get_next_version(args.calculation_type, spark)
+    df = _create_calculation(args, prepared_data_reader)
+
+    df.write.format("delta").mode("append").option("mergeSchema", "false").insertInto(
+        f"{paths.BASIS_DATA_DATABASE_NAME}.{paths.CALCULATIONS_TABLE_NAME}"
+    )
+
+
+# TODO BJM: Create and use Calculations typed data frame?
+def _create_calculation(
+    args: CalculatorArgs,
+    prepared_data_reader: PreparedDataReader,
+    spark: SparkSession = initialize_spark(),
+) -> DataFrame:
+    latest_version = prepared_data_reader.get_latest_calculation_version(
+        args.calculation_type
+    )
+
+    # Next version begins with 1 and increments by 1
+    next_version = (latest_version or 0) + 1
 
     calculation = {
         CalculationColumnNames.calculation_id: args.calculation_id,
-        CalculationColumnNames.calculation_type: args.calculation_type,
+        CalculationColumnNames.calculation_type: args.calculation_type.value,
         CalculationColumnNames.period_start: args.calculation_period_start_datetime,
         CalculationColumnNames.period_end: args.calculation_period_end_datetime,
         CalculationColumnNames.execution_time_start: args.calculation_execution_time_start,
@@ -44,31 +66,4 @@ def write_calculation(
         CalculationColumnNames.version: next_version,
     }
 
-    df = spark.createDataFrame(data=[Row(**calculation)], schema=calculations_schema)
-    df.write.format("delta").mode("append").option("mergeSchema", "false").insertInto(
-        f"{paths.BASIS_DATA_DATABASE_NAME}.{paths.CALCULATIONS_TABLE_NAME}"
-    )
-
-
-def _get_next_version(calculation_type: CalculationType, spark: SparkSession) -> int:
-    """Returns the next available version for the selected calculation type."""
-
-    calculations = spark.read.format("delta").table(
-        f"{paths.BASIS_DATA_DATABASE_NAME}.{paths.CALCULATIONS_TABLE_NAME}"
-    )
-
-    latest_calculation = (
-        calculations.where(
-            f.col(CalculationColumnNames.calculation_type) == calculation_type
-        )
-        .agg(f.max(CalculationColumnNames.version))
-        .collect()
-    )
-
-    current_version = (
-        latest_calculation[0][CalculationColumnNames.version]
-        if len(latest_calculation) > 0
-        else 0
-    )
-
-    return current_version + 1
+    return spark.createDataFrame(data=[Row(**calculation)], schema=calculations_schema)

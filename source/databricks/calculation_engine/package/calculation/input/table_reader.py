@@ -23,6 +23,7 @@ from .schemas import (
     time_series_point_schema,
     grid_loss_metering_points_schema,
 )
+from ..basis_data.schemas import calculations_schema
 
 
 class TableReader:
@@ -103,5 +104,13 @@ class TableReader:
         df = self._spark.read.format("delta").load(path)
 
         assert_schema(df.schema, grid_loss_metering_points_schema)
+
+        return df
+
+    def read_calculations(self) -> DataFrame:
+        path = f"{paths.BASIS_DATA_DATABASE_NAME}.{paths.CALCULATIONS_TABLE_NAME}"
+        df = self._spark.read.format("delta").load(path)
+
+        assert_schema(df.schema, calculations_schema)
 
         return df
