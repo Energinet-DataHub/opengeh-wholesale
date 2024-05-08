@@ -267,12 +267,12 @@ def test__current_state_and_migration_scripts__should_give_same_result(
             migration_script_details_props = {
                 k: v
                 for k, v in migration_script_details["properties"].items()
-                if not k.startswith("delta.columnMapping")
+                if not k.startswith("delta.columnMapping.maxColumnId")
             }
             current_state_details_props = {
                 k: v
                 for k, v in current_state_details["properties"].items()
-                if not k.startswith("delta.columnMapping")
+                if not k.startswith("delta.columnMapping.maxColumnId")
             }
 
             migrations_script_location = migration_script_details["location"].replace(
