@@ -29,6 +29,16 @@ module "dbw" {
       resource_name = data.azurerm_key_vault_secret.st_data_lake_name.value
       dns_zone      = "privatelink.dfs.core.windows.net"
       ip_record     = data.azurerm_key_vault_secret.st_data_lake_dfs_private_ip_address.value
+    },
+    {
+      resource_name = module.st_data_wholesale.name
+      dns_zone      = "privatelink.blob.core.windows.net"
+      ip_record     = module.st_data_wholesale.blob_private_ip_address
+    },
+    {
+      resource_name = module.st_data_wholesale.name
+      dns_zone      = "privatelink.dfs.core.windows.net"
+      ip_record     = module.st_data_wholesale.dfs_private_ip_address
     }
   ]
 }
