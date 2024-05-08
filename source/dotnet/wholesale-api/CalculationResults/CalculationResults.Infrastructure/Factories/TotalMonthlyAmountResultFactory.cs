@@ -31,7 +31,7 @@ public class TotalMonthlyAmountResultFactory
         var id = databricksSqlRow[TotalMonthlyAmountsColumnNames.CalculationResultId];
         var calculationId = databricksSqlRow[TotalMonthlyAmountsColumnNames.CalculationId];
         var calculationType = databricksSqlRow[TotalMonthlyAmountsColumnNames.CalculationType];
-        var gridArea = databricksSqlRow[TotalMonthlyAmountsColumnNames.GridArea];
+        var gridArea = databricksSqlRow[TotalMonthlyAmountsColumnNames.GridAreaCode];
         var energySupplierId = databricksSqlRow[TotalMonthlyAmountsColumnNames.EnergySupplierId];
         var chargeOwnerId = databricksSqlRow[TotalMonthlyAmountsColumnNames.ChargeOwnerId];
         var amount = databricksSqlRow[TotalMonthlyAmountsColumnNames.Amount];

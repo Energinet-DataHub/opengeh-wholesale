@@ -28,6 +28,7 @@ public sealed class WholesaleResultBuilder
     private readonly string _gridArea = "543";
     private readonly string _energySupplierId = "es_id";
     private readonly string _chargeCode = "charge_code";
+    private readonly string _chargeOwnerId = "charge_owner_id";
     private readonly bool _isTax = true;
     private readonly long _version = 1;
 
@@ -38,7 +39,6 @@ public sealed class WholesaleResultBuilder
     private AmountType _amountType = AmountType.AmountPerCharge;
     private Resolution _resolution = Resolution.Hour;
     private ChargeType _chargeType = ChargeType.Tariff;
-    private string _chargeOwnerId = "charge_owner_id";
 
     public WholesaleResultBuilder WithCalculationType(CalculationType calculationType)
     {
@@ -67,12 +67,6 @@ public sealed class WholesaleResultBuilder
     public WholesaleResultBuilder WithChargeType(ChargeType chargeType)
     {
         _chargeType = chargeType;
-        return this;
-    }
-
-    public WholesaleResultBuilder WithChargeOwner(string chargeOwnerId)
-    {
-        _chargeOwnerId = chargeOwnerId;
         return this;
     }
 

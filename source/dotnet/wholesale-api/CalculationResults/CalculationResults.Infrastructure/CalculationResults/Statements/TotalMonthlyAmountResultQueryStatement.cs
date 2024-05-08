@@ -44,7 +44,7 @@ public class TotalMonthlyAmountResultQueryStatement : DatabricksStatement
         TotalMonthlyAmountsColumnNames.CalculationResultId,
         TotalMonthlyAmountsColumnNames.CalculationId,
         TotalMonthlyAmountsColumnNames.CalculationType,
-        TotalMonthlyAmountsColumnNames.GridArea,
+        TotalMonthlyAmountsColumnNames.GridAreaCode,
         TotalMonthlyAmountsColumnNames.EnergySupplierId,
         TotalMonthlyAmountsColumnNames.ChargeOwnerId,
         TotalMonthlyAmountsColumnNames.Amount,

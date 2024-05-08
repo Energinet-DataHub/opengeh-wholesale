@@ -22,7 +22,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationR
 public interface ITotalMonthlyAmountResultQueries
 {
     /// <summary>
-    /// Get all wholesale results for a given calculation.
+    /// Get all total monthly amount results for a given calculation.
     /// </summary>
     IAsyncEnumerable<TotalMonthlyAmountResult> GetAsync(Guid calculationId);
 }

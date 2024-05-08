@@ -16,6 +16,7 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TotalMonthlyAmountResults;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
@@ -60,7 +61,9 @@ public class TotalMonthlyAmountResultQueries : ITotalMonthlyAmountResultQueries
         var resultCount = 0;
         await foreach (var row in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {
-            yield return TotalMonthlyAmountResultFactory.CreateTotalMonthlyAmountResult(row, periodStart, periodEnd, version);
+            var convertedNextRow = new DatabricksSqlRow(row);
+            TotalMonthlyAmountResult totalMonthlyAmountResult = TotalMonthlyAmountResultFactory.CreateTotalMonthlyAmountResult(convertedNextRow, periodStart, periodEnd, version);
+            yield return totalMonthlyAmountResult;
             resultCount++;
         }
 
