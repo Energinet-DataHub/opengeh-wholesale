@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Data.SqlClient;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Database;
 using Microsoft.EntityFrameworkCore;
 
@@ -39,6 +40,18 @@ public class DurableTaskDatabaseManager : SqlServerDatabaseManager<DbContext>
             .UseSqlServer(ConnectionString);
 
         return (DbContext)Activator.CreateInstance(typeof(DbContext), optionsBuilder.Options)!;
+    }
+
+    /// <summary>
+    /// Disable multi-tenancy to be able to configure Task Hub Name.
+    /// See https://microsoft.github.io/durabletask-mssql/#/multitenancy?id=enabling-shared-schema-multitenancy
+    /// </summary>
+    public void DisableMultiTenancy()
+    {
+        using var connection = new SqlConnection(ConnectionString);
+        using var command = new SqlCommand("EXECUTE dt.SetGlobalSetting @Name='TaskHubMode', @Value=0", connection);
+        connection.Open();
+        command.ExecuteNonQuery();
     }
 
     /// <summary>

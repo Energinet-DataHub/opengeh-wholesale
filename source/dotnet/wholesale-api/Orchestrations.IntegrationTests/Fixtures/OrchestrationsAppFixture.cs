@@ -134,6 +134,9 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         AppHostManager = new FunctionAppHostManager(appHostSettings, TestLogger);
         StartHost(AppHostManager);
 
+        // Disable multi-tenancy to be able to configure Task Hub Name
+        DurableTaskDatabaseManager.DisableMultiTenancy();
+
         // Create durable client when TaskHub has been created
         DurableClient = DurableTaskManager.CreateClient(taskHubName: TaskHubName);
     }
