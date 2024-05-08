@@ -161,6 +161,11 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         });
     }
 
+    public BlobContainerClient CreateBlobContainerClient()
+    {
+        return new BlobContainerClient(AzuriteManager.FullConnectionString, "settlement-report-container");
+    }
+
     /// <summary>
     /// Use this method to attach <paramref name="testOutputHelper"/> to the host logging pipeline.
     /// While attached, any entries written to host log pipeline will also be logged to xUnit test output.

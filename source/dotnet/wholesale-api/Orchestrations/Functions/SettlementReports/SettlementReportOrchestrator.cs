@@ -33,7 +33,6 @@ internal sealed class SettlementReportOrchestrator
         var settlementReportRequest = context.GetInput<SettlementReportRequestDto>();
         if (settlementReportRequest == null)
         {
-            // TODO: What do we return here?
             return "Error: No input specified.";
         }
 
@@ -64,8 +63,6 @@ internal sealed class SettlementReportOrchestrator
             nameof(FinalizeSettlementReportActivity),
             generatedSettlementReport);
 
-        // calculationMetadata.Progress = "??";
-        // context.SetCustomStatus(calculationMetadata);
         return "Success";
     }
 

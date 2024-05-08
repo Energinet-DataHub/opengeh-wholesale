@@ -16,7 +16,6 @@ using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementRepor
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
-using NodaTime;
 using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
@@ -37,16 +36,14 @@ public sealed class LegacySettlementReportDataRepository : ISettlementReportData
 
         try
         {
-            //rows = await _settlementReportResultQueries
-            //    .GetRowsAsync(
-            //        filter.GridAreas.Select(gridArea => gridArea.Code).ToArray(),
-            //        CalculationType.BalanceFixing,
-            //        filter.PeriodStart.ToInstant(),
-            //        filter.PeriodEnd.ToInstant(),
-            //        null)
-            //    .ConfigureAwait(false);
-            await Task.Delay(100).ConfigureAwait(false);
-            rows = [new Interfaces.SettlementReports.Model.SettlementReportResultRow("042", CalculationType.BalanceFixing, Instant.FromDateTimeOffset(DateTimeOffset.UtcNow), "PT15M", null, null, 42)];
+            rows = await _settlementReportResultQueries
+                .GetRowsAsync(
+                    filter.GridAreas.Select(gridArea => gridArea.Code).ToArray(),
+                    CalculationType.BalanceFixing,
+                    filter.PeriodStart.ToInstant(),
+                    filter.PeriodEnd.ToInstant(),
+                    null)
+                .ConfigureAwait(false);
         }
         catch (Exception ex)
         {
