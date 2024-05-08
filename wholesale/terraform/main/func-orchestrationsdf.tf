@@ -1,8 +1,3 @@
-# TODOs as part of step 2:
-# - dhe-infrastructure/ui/app-bff: update ApiClientSettings__WholesaleOrchestrationsBaseUrl func-wholesale-orchestrationsdf-base-url
-# - dh3-environments/wholesale-cd: update orchestrationsapi_baseaddress to
-# - update healthchecks UI references
-# - Create Sauron SQL migration script to delete old orchestrations function
 module "func_orchestrationsdf" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=v14"
 

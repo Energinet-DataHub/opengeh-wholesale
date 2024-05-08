@@ -1,8 +1,3 @@
-# TODOs as part of step 2:
-# - dhe-infrastructure/ui/app-bff: update ApiClientSettings__WholesaleBaseUrl to app-wholesale-webapi-base-url
-# - dh3-environments/wholesale-cd: update webapi_baseaddress
-# - update healthchecks UI references
-# - Create Sauron SQL migration script to delete old webapi
 module "app_api" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=v14"
 

@@ -53,7 +53,7 @@ locals {
     "HealthChecksUI__HealthChecks__012__Name" = "opengeh-esett-exchange:::Web API"
     "HealthChecksUI__HealthChecks__012__Uri"  = "https://app-webapi-esett-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/ready"
     "HealthChecksUI__HealthChecks__013__Name" = "opengeh-wholesale:::Web API"
-    "HealthChecksUI__HealthChecks__013__Uri"  = "https://app-webapi-wholsal-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/ready"
+    "HealthChecksUI__HealthChecks__013__Uri"  = "https://app-api-wholsal-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/ready"
     # Note: 014-018 was previously taken by esett-deprecated
     "HealthChecksUI__HealthChecks__019__Name" = "geh-market-participant:::Certificate Synchronization"
     "HealthChecksUI__HealthChecks__019__Uri"  = "https://func-certificatesynchronization-markpart-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
@@ -75,7 +75,7 @@ locals {
     "HealthChecksUI__HealthChecks__028__Name" = "opengeh-esett-exchange:::Application Workers"
     "HealthChecksUI__HealthChecks__028__Uri"  = "https://func-application-workers-esett-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
     "HealthChecksUI__HealthChecks__029__Name" = "opengeh-wholesale:::Orchestrations"
-    "HealthChecksUI__HealthChecks__029__Uri"  = "https://func-orchestrations-wholsal-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
+    "HealthChecksUI__HealthChecks__029__Uri"  = "https://func-orchestrationsdf-wholsal-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
 
     # Live - prefix with 2xx
     "HealthChecksUI__HealthChecks__200__Name" = "health-checks-ui:::Health Check UI - live"
@@ -105,7 +105,7 @@ locals {
     "HealthChecksUI__HealthChecks__212__Name" = "opengeh-esett-exchange:::Web API - live"
     "HealthChecksUI__HealthChecks__212__Uri"  = "https://app-webapi-esett-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/live"
     "HealthChecksUI__HealthChecks__213__Name" = "opengeh-wholesale:::Web API - live"
-    "HealthChecksUI__HealthChecks__213__Uri"  = "https://app-webapi-wholsal-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/live"
+    "HealthChecksUI__HealthChecks__213__Uri"  = "https://app-api-wholsal-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/live"
     # Note: 214-218 was previously taken by esett-deprecated
     "HealthChecksUI__HealthChecks__219__Name" = "geh-market-participant:::Certificate Synchronization - live"
     "HealthChecksUI__HealthChecks__219__Uri"  = "https://func-certificatesynchronization-markpart-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
@@ -127,7 +127,7 @@ locals {
     "HealthChecksUI__HealthChecks__228__Name" = "opengeh-esett-exchange:::Application Workers - live"
     "HealthChecksUI__HealthChecks__228__Uri"  = "https://func-application-workers-esett-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
     "HealthChecksUI__HealthChecks__229__Name" = "opengeh-wholesale:::Orchestrations - live"
-    "HealthChecksUI__HealthChecks__229__Uri"  = "https://func-orchestrations-wholsal-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
+    "HealthChecksUI__HealthChecks__229__Uri"  = "https://func-orchestrationsdf-wholsal-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
 
     # Polling Interval
     "HealthChecksUI__EvaluationTimeinSeconds" = 600
