@@ -65,6 +65,12 @@ def _execute(
             )
         )
 
+        grid_loss_metering_points_df = (
+            prepared_data_reader.get_grid_loss_metering_points(
+                all_metering_point_periods
+            )
+        )
+
         metering_point_time_series = (
             prepared_data_reader.get_metering_point_time_series(
                 args.calculation_period_start_datetime,
@@ -139,6 +145,7 @@ def _execute(
         metering_point_periods_for_basis_data,
         metering_point_time_series,
         input_charges,
+        grid_loss_metering_points_df,
     )
 
     return results

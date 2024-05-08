@@ -26,6 +26,9 @@ from package.calculation.basis_data.schemas.time_series_point_schema import (
 from package.calculation.basis_data.schemas.metering_point_period_schema import (
     metering_point_period_schema,
 )
+from package.calculation.basis_data.schemas.grid_loss_metering_points_schema import (
+    grid_loss_metering_points_schema,
+)
 from tests.calculation.basis_data.basis_data_test_factory import (
     create_basis_data_factory,
 )
@@ -47,3 +50,4 @@ def test__basis_data_uses_correct_schema(spark: SparkSession):
     )
     assert basis_data_container.charge_prices.schema == charge_price_points_schema
     assert basis_data_container.charge_links.schema == charge_link_periods_schema
+    assert basis_data_container.grid_loss_metering_points.schema == grid_loss_metering_points_schema

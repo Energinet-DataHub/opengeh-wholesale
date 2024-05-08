@@ -20,6 +20,9 @@ from package.calculation.input import TableReader
 from package.calculation.preparation.data_structures.grid_loss_responsible import (
     GridLossResponsible,
 )
+from package.calculation.preparation.data_structures.grid_loss_metering_points import (
+    GridLossMeteringPoints,
+)
 from package.calculation.preparation.data_structures.input_charges import (
     InputChargesContainer,
 )
@@ -158,4 +161,16 @@ class PreparedDataReader:
             self._table_reader.read_grid_loss_metering_points(),
             Colname.metering_point_id,
             "left_anti",
+        )
+
+    @logging_configuration.use_span("get_grid_loss_metering_points")
+    def get_grid_loss_metering_points(
+        self, metering_point_periods_df: DataFrame
+    ) -> GridLossMeteringPoints:
+        return GridLossMeteringPoints(
+            metering_point_periods_df.join(
+                self._table_reader.read_grid_loss_metering_points(),
+                Colname.metering_point_id,
+                "inner",
+            )
         )

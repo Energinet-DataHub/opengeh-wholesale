@@ -20,6 +20,7 @@ from package.infrastructure.paths import (
     CHARGE_MASTER_DATA_PERIODS_BASIS_DATA_TABLE_NAME,
     CHARGE_PRICE_POINTS_BASIS_DATA_TABLE_NAME,
     CHARGE_LINK_PERIODS_BASIS_DATA_TABLE_NAME,
+    GRID_LOSS_METERING_POINTS_BASIS_DATA_TABLE_NAME,
 )
 
 
@@ -37,6 +38,13 @@ def write_basis_data(basis_data: BasisDataContainer) -> None:
             "mergeSchema", "false"
         ).insertInto(
             f"{BASIS_DATA_DATABASE_NAME}.{TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME}"
+        )
+
+    with logging_configuration.start_span("grid_loss_metering_points"):
+        basis_data.grid_loss_metering_points.write.format("delta").mode("append").option(
+            "mergeSchema", "false"
+        ).insertInto(
+            f"{BASIS_DATA_DATABASE_NAME}.{GRID_LOSS_METERING_POINTS_BASIS_DATA_TABLE_NAME}"
         )
 
     if basis_data.charge_master_data:

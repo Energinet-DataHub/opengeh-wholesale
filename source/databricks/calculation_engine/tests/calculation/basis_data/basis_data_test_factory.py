@@ -33,6 +33,12 @@ from package.calculation.basis_data.schemas.charge_master_data_periods_schema im
 from package.calculation.basis_data.schemas.charge_price_points_schema import (
     charge_price_points_schema,
 )
+from package.calculation.basis_data.schemas.grid_loss_metering_points_schema import (
+    grid_loss_metering_points_schema,
+)
+from package.calculation.preparation.data_structures.grid_loss_metering_points import (
+    GridLossMeteringPoints,
+)
 from datetime import timedelta, datetime
 from decimal import Decimal
 from package.codelists import ChargeType
@@ -148,6 +154,17 @@ def create_charge_link_row(
     return Row(**row)
 
 
+def create_grid_loss_metering_points_row(
+    calculation_id: str = DefaultValues.CALCULATION_ID,
+    metering_point_id: str = DefaultValues.METERING_POINT_ID,
+) -> Row:
+    row = {
+        Colname.calculation_id: calculation_id,
+        Colname.metering_point_id: metering_point_id,
+    }
+
+    return Row(**row)
+
 def create_charge_master_data(
     spark: SparkSession, data: None | Row | list[Row] = None
 ) -> ChargeMasterData:
@@ -207,10 +224,21 @@ def create_prepared_metering_point_time_series(spark: SparkSession):
     return metering_point_time_series_df
 
 
+def create_grid_loss_metering_points(
+    spark: SparkSession, data: None | Row | list[Row] = None
+) -> GridLossMeteringPoints:
+    if data is None:
+        data = [create_grid_loss_metering_points_row()]
+    elif isinstance(data, Row):
+        data = [data]
+    return GridLossMeteringPoints(spark.createDataFrame(data, grid_loss_metering_points_schema))
+
+
 def create_basis_data_factory(spark: SparkSession) -> BasisDataContainer:
     calculation_args = create_calculation_args()
     metering_point_period_df = metering_point_periods_factory.create(spark)
     metering_point_time_series_df = create_prepared_metering_point_time_series(spark)
+    grid_loss_metering_points = create_grid_loss_metering_points(spark)
     charge_links = create_charge_links(spark)
     charge_prices = create_charge_prices(spark)
     charge_master_data = create_charge_master_data(spark)
@@ -226,4 +254,5 @@ def create_basis_data_factory(spark: SparkSession) -> BasisDataContainer:
         metering_point_periods_df=metering_point_period_df,
         metering_point_time_series_df=metering_point_time_series_df,
         input_charges_container=input_charges_container,
+        grid_loss_metering_points_df=grid_loss_metering_points,
     )

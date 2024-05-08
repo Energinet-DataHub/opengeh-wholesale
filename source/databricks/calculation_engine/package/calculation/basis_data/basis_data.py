@@ -25,10 +25,11 @@ from package.constants import (
     ChargeMasterDataPeriodsColname,
     ChargePricePointsColname,
     ChargeLinkPeriodsColname,
+    GridLossMeteringPointsColName,
 )
 from package.infrastructure import logging_configuration
-
 from package.calculation.preparation.data_structures import InputChargesContainer
+from package.calculation.preparation.data_structures.grid_loss_metering_points import GridLossMeteringPoints
 
 
 @logging_configuration.use_span("get_metering_point_periods_basis_data")
@@ -134,4 +135,17 @@ def get_charge_links_basis_data(
         f.col(Colname.quantity).alias(ChargeLinkPeriodsColname.quantity),
         f.col(Colname.from_date).alias(ChargeLinkPeriodsColname.from_date),
         f.col(Colname.to_date).alias(ChargeLinkPeriodsColname.to_date),
+    )
+
+
+@logging_configuration.use_span("get_grid_loss_metering_points_basis_data")
+def get_grid_loss_metering_points_basis_data(
+    calculation_id: str,
+    grid_loss_metering_points: GridLossMeteringPoints,
+) -> DataFrame:
+    return grid_loss_metering_points.df.select(
+        f.lit(calculation_id).alias(GridLossMeteringPointsColName.calculation_id),
+        f.col(Colname.metering_point_id).alias(
+            GridLossMeteringPointsColName.metering_point_id
+        ),
     )
