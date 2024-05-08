@@ -131,3 +131,8 @@ variable "databricks_developers_group_id" {
   type        = string
   description = "The ID of the Databricks group containing Databricks users synced from the OMADA group."
 }
+
+variable "databricks_migrations_group_id" {
+  type        = string
+  description = "The ID of the Databricks group containing Databricks users synced from the OMADA group for people with unrestricted data access."
+}
