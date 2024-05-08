@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 
 public sealed class SettlementReportRequest
@@ -39,10 +41,10 @@ public sealed class SettlementReportRequest
         Status = SettlementReportRequestStatus.Running;
     }
 
-    public void MarkAsCompleted(string blobFilename)
+    public void MarkAsCompleted(GeneratedSettlementReportDto generatedSettlementReport)
     {
         Status = SettlementReportRequestStatus.Completed;
-        BlobFilename = blobFilename;
+        BlobFilename = generatedSettlementReport.FinalReport.FileName;
     }
 
     public void MarkAsFailed()

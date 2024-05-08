@@ -47,13 +47,15 @@ internal sealed class SettlementReportRequestTrigger
             .ScheduleNewOrchestrationInstanceAsync(nameof(SettlementReportOrchestrator.OrchestrateSettlementReportAsync), settlementReportRequest)
             .ConfigureAwait(false);
 
+        var requestId = new SettlementReportRequestId(instanceId);
+
         await _settlementReportInitializeHandler
-            .InitializeAsync(_userContext.CurrentUser.UserId, _userContext.CurrentUser.ActorId, instanceId)
+            .InitializeAsync(_userContext.CurrentUser.UserId, _userContext.CurrentUser.ActorId, requestId)
             .ConfigureAwait(false);
 
         var response = req.CreateResponse(HttpStatusCode.OK);
         await response
-            .WriteAsJsonAsync(new SettlementReportHttpResponse(new SettlementReportRequestId(instanceId)))
+            .WriteAsJsonAsync(new SettlementReportHttpResponse(requestId))
             .ConfigureAwait(false);
 
         return response;
