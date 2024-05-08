@@ -12,18 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonSerialization;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.SettlementReportRequest;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -52,9 +57,30 @@ public static class CalculationResultsExtensions
         services.AddScoped<ISettlementReportFileRequestHandler, SettlementReportFileRequestHandler>();
         services.AddScoped<ISettlementReportFromFilesHandler, SettlementReportFromFilesHandler>();
         services.AddScoped<ISettlementReportFinalizeHandler, SettlementReportFinalizeHandler>();
+        services.AddScoped<ISettlementReportInitializeHandler, SettlementReportInitializeHandler>();
         services.AddScoped<ISettlementReportDataRepository, LegacySettlementReportDataRepository>();
+        services.AddScoped<ISettlementReportRequestRepository, SettlementReportRequestRepository>();
         services.AddScoped<ISettlementReportFileGeneratorFactory, SettlementReportFileGeneratorFactory>();
         services.AddSettlementReportBlobStorage(configuration);
+
+        services.AddScoped<IDatabaseContext, DatabaseContext>();
+        services.AddDbContext<DatabaseContext>(
+            options => options.UseSqlServer(
+                configuration
+                    .GetSection(ConnectionStringsOptions.ConnectionStrings)
+                    .Get<ConnectionStringsOptions>()!.DB_CONNECTION_STRING,
+                o =>
+                {
+                    o.UseNodaTime();
+                    o.EnableRetryOnFailure();
+                }));
+        // Database Health check
+        services.TryAddHealthChecks(
+            registrationKey: HealthCheckNames.WholesaleDatabase,
+            (key, builder) =>
+            {
+                builder.AddDbContextCheck<DatabaseContext>(name: key);
+            });
 
         // Used by sql statements (queries)
         services.AddOptions<DeltaTableOptions>().Bind(configuration);

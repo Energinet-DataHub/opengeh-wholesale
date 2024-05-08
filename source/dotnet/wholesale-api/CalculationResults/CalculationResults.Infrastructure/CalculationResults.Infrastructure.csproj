@@ -7,8 +7,14 @@
     <PackageReference Include="AspNetCore.HealthChecks.AzureStorage" Version="7.0.0" />
     <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.17.1" />
     <PackageReference Include="CsvHelper" Version="32.0.1" />
+    <PackageReference Include="Energinet.DataHub.Core.App.Common" Version="12.2.1" />
     <PackageReference Include="Energinet.DataHub.Core.JsonSerialization" Version="2.2.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="8.0.4" />
     <PackageReference Include="NodaTime" Version="3.1.11" />
+    <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Version="8.0.1" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.9.28">
       <PrivateAssets>all</PrivateAssets>
