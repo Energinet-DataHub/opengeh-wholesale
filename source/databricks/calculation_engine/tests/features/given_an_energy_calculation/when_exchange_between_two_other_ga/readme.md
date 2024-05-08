@@ -19,5 +19,3 @@ two other grid areas than the one it is in.
 - E17 (glmp)
 - E18
 - E18 (skmp)
-
-
