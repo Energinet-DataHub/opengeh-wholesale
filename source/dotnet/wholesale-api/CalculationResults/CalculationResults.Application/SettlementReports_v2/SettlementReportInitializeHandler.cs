@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 
@@ -25,10 +26,10 @@ public sealed class SettlementReportInitializeHandler : ISettlementReportInitial
         _requestRepository = requestRepository;
     }
 
-    public async Task InitializeAsync(Guid userId, Guid actorId, string requestId)
+    public async Task InitializeAsync(Guid userId, Guid actorId, SettlementReportRequestId requestId)
     {
         await _requestRepository
-            .AddOrUpdateAsync(new SettlementReportRequest(userId, actorId, requestId))
+            .AddOrUpdateAsync(new SettlementReportRequest(userId, actorId, requestId.Id))
             .ConfigureAwait(false);
     }
 }

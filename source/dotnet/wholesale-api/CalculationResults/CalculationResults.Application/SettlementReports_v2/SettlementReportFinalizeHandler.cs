@@ -43,7 +43,7 @@ public sealed class SettlementReportFinalizeHandler : ISettlementReportFinalizeH
             .GetAsync(generatedReport.RequestId.Id)
             .ConfigureAwait(false);
 
-        request.MarkAsCompleted(generatedReport.FinalReport.FileName);
+        request.MarkAsCompleted(generatedReport);
 
         await _requestRepository
             .AddOrUpdateAsync(request)
