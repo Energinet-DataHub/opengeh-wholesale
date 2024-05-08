@@ -75,6 +75,30 @@ def create_metering_point_time_series_v1_view(
     return spark.createDataFrame(df.rdd, metering_point_time_series_v1_view_schema)
 
 
+def create_charge_link_periods_v1_view(spark: SparkSession, df: DataFrame) -> DataFrame:
+
+    # Don't remove. Believed needed because this function is an argument to the setup function
+    # and therefore the following packages are not automatically included.
+    from features.utils.dataframes.settlement_report.settlement_report_view_column_names import (
+        ChargeLinkPeriodsV1ColumnNames,
+    )
+    from features.utils.dataframes.settlement_report.charge_link_periods_v1_view_schema import (
+        charge_link_periods_v1_view_schema,
+    )
+
+    df = df.withColumn(
+        ChargeLinkPeriodsV1ColumnNames.from_date,
+        col(ChargeLinkPeriodsV1ColumnNames.from_date).cast(TimestampType()),
+    )
+
+    df = df.withColumn(
+        ChargeLinkPeriodsV1ColumnNames.to_date,
+        col(ChargeLinkPeriodsV1ColumnNames.to_date).cast(TimestampType()),
+    )
+
+    return spark.createDataFrame(df.rdd, charge_link_periods_v1_view_schema)
+
+
 def create_energy_results_v1_view(spark: SparkSession, df: DataFrame) -> DataFrame:
 
     # Don't remove. Believed needed because this function is an argument to the setup function

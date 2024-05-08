@@ -25,6 +25,7 @@ from features.utils.dataframes.settlement_report.settlement_report_view_datafram
     create_metering_point_periods_v1_view,
     create_metering_point_time_series_v1_view,
     create_energy_results_v1_view,
+    create_charge_link_periods_v1_view,
 )
 from features.utils.readers import (
     SettlementReportViewReader,
@@ -48,8 +49,8 @@ def get_output_specifications() -> dict[str, tuple]:
         ),
         "charge_link_periods_v1.csv": (
             charge_link_periods_v1_view_schema,
-            SettlementReportViewReader.rd_metering_point_time_series_v1,
-            create_metering_point_time_series_v1_view,
+            SettlementReportViewReader.read_charge_link_periods_v1,
+            create_charge_link_periods_v1_view,
         ),
         "energy_results_v1.csv": (
             energy_results_v1_view_schema,
