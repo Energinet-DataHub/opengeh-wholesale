@@ -1,5 +1,0 @@
-﻿grid_area;energy_supplier_id;balance_responsible_id;quantity;quantity_qualities;time;aggregation_level;time_series_type;calculation_id;calculation_type;calculation_execution_time_start;from_grid_area;calculation_result_id;metering_point_id;resolution
-800;;;200.08;['measured'];2023-10-10 06:00:00;total_ga;net_exchange_per_ga;0b15a420-9fc8-409a-a169-fbd49479d718;Aggregation;2024-01-01 23:00:00;;IGNORED;;PT15M
-800;;;200.081;['measured'];2023-10-10 06:15:00;total_ga;net_exchange_per_ga;0b15a420-9fc8-409a-a169-fbd49479d718;Aggregation;2024-01-01 23:00:00;;IGNORED;;PT15M
-800;;;200.08;['measured'];2023-10-10 06:30:00;total_ga;net_exchange_per_ga;0b15a420-9fc8-409a-a169-fbd49479d718;Aggregation;2024-01-01 23:00:00;;IGNORED;;PT15M
-800;;;200.08;['measured'];2023-10-10 06:45:00;total_ga;net_exchange_per_ga;0b15a420-9fc8-409a-a169-fbd49479d718;Aggregation;2024-01-01 23:00:00;;IGNORED;;PT15M
