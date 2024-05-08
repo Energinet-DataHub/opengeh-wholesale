@@ -15,22 +15,32 @@
 using AutoFixture;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.SettlementReportRequest;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Application.SettlementReports;
 
 public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<SettlementReportFinalizeHandler>,
+    IClassFixture<WholesaleDatabaseFixture<DatabaseContext>>,
     IClassFixture<SettlementReportFileBlobStorageFixture>
 {
+    private readonly WholesaleDatabaseFixture<DatabaseContext> _wholesaleDatabaseFixture;
     private readonly SettlementReportFileBlobStorageFixture _settlementReportFileBlobStorageFixture;
 
     public SettlementReportFinalizeHandlerIntegrationTests(
+        WholesaleDatabaseFixture<DatabaseContext> wholesaleDatabaseFixture,
         SettlementReportFileBlobStorageFixture settlementReportFileBlobStorageFixture)
     {
+        _wholesaleDatabaseFixture = wholesaleDatabaseFixture;
         _settlementReportFileBlobStorageFixture = settlementReportFileBlobStorageFixture;
+
+        Fixture.Inject<ISettlementReportRequestRepository>(new SettlementReportRequestRepository(wholesaleDatabaseFixture.DatabaseManager.CreateDbContext()));
 
         var blobContainerClient = settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
         Fixture.Inject<ISettlementReportFileRepository>(new SettlementReportFileBlobStorage(blobContainerClient));
@@ -54,6 +64,10 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
             new GeneratedSettlementReportFileDto(requestId, "Report.zip"),
             inputFiles);
 
+        await using var dbContext = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
+        await dbContext.SettlementReportRequests.AddAsync(new SettlementReportRequest(Guid.NewGuid(), Guid.NewGuid(), requestId.Id));
+        await dbContext.SaveChangesAsync();
+
         // Act
         await Fixture
             .Create<SettlementReportFinalizeHandler>()
@@ -67,6 +81,31 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
             var generatedFileBlob = container.GetBlobClient($"settlement-reports/{requestId.Id}/{inputFile.FileName}");
             Assert.False(await generatedFileBlob.ExistsAsync());
         }
+    }
+
+    [Fact]
+    public async Task FinalizeAsync_CompletesReportRequest()
+    {
+        var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
+
+        var generatedSettlementReport = new GeneratedSettlementReportDto(
+            requestId,
+            new GeneratedSettlementReportFileDto(requestId, "Report.zip"),
+            []);
+
+        await using var dbContextArrange = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
+        await dbContextArrange.SettlementReportRequests.AddAsync(new SettlementReportRequest(Guid.NewGuid(), Guid.NewGuid(), requestId.Id));
+        await dbContextArrange.SaveChangesAsync();
+
+        // Act
+        await Fixture
+            .Create<SettlementReportFinalizeHandler>()
+            .FinalizeAsync(generatedSettlementReport);
+
+        // Assert
+        await using var dbContextAct = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
+        var completedRequest = await dbContextAct.SettlementReportRequests.SingleAsync(r => r.RequestId == requestId.Id);
+        Assert.Equal(SettlementReportRequestStatus.Completed, completedRequest.Status);
     }
 
     private Task MakeTestFileAsync(GeneratedSettlementReportFileDto file)
