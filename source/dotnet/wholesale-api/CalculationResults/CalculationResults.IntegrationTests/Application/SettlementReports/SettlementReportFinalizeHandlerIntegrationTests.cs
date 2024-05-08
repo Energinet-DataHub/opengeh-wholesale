@@ -40,7 +40,7 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
         _wholesaleDatabaseFixture = wholesaleDatabaseFixture;
         _settlementReportFileBlobStorageFixture = settlementReportFileBlobStorageFixture;
 
-        Fixture.Inject<ISettlementReportRequestRepository>(new SettlementReportRequestRepository(wholesaleDatabaseFixture.DatabaseManager.CreateDbContext()));
+        Fixture.Inject<ISettlementReportRepository>(new SettlementReportRepository(wholesaleDatabaseFixture.DatabaseManager.CreateDbContext()));
 
         var blobContainerClient = settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
         Fixture.Inject<ISettlementReportFileRepository>(new SettlementReportFileBlobStorage(blobContainerClient));
@@ -65,7 +65,7 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
             inputFiles);
 
         await using var dbContext = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
-        await dbContext.SettlementReportRequests.AddAsync(new SettlementReportRequest(Guid.NewGuid(), Guid.NewGuid(), requestId.Id));
+        await dbContext.SettlementReports.AddAsync(new SettlementReport(Guid.NewGuid(), Guid.NewGuid(), requestId.Id));
         await dbContext.SaveChangesAsync();
 
         // Act
@@ -94,7 +94,7 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
             []);
 
         await using var dbContextArrange = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
-        await dbContextArrange.SettlementReportRequests.AddAsync(new SettlementReportRequest(Guid.NewGuid(), Guid.NewGuid(), requestId.Id));
+        await dbContextArrange.SettlementReports.AddAsync(new SettlementReport(Guid.NewGuid(), Guid.NewGuid(), requestId.Id));
         await dbContextArrange.SaveChangesAsync();
 
         // Act
@@ -104,8 +104,8 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
 
         // Assert
         await using var dbContextAct = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
-        var completedRequest = await dbContextAct.SettlementReportRequests.SingleAsync(r => r.RequestId == requestId.Id);
-        Assert.Equal(SettlementReportRequestStatus.Completed, completedRequest.Status);
+        var completedRequest = await dbContextAct.SettlementReports.SingleAsync(r => r.RequestId == requestId.Id);
+        Assert.Equal(SettlementReportStatus.Completed, completedRequest.Status);
     }
 
     private Task MakeTestFileAsync(GeneratedSettlementReportFileDto file)
