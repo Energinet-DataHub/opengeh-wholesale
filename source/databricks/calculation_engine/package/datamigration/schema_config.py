@@ -75,24 +75,20 @@ schema_config = [
                 schema=basis_data_schemas.time_series_point_schema,
             ),
             Table(
-                name=paths.CHARGE_LINK_PERIODS_TABLE_NAME,
+                name=paths.CHARGE_LINK_PERIODS_BASIS_DATA_TABLE_NAME,
                 schema=basis_data_schemas.charge_link_periods_schema,
             ),
             Table(
-                name=paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME,
+                name=paths.CHARGE_MASTER_DATA_PERIODS_BASIS_DATA_TABLE_NAME,
                 schema=basis_data_schemas.charge_master_data_periods_schema,
             ),
             Table(
-                name=paths.CHARGE_PRICE_POINTS_TABLE_NAME,
+                name=paths.CHARGE_PRICE_POINTS_BASIS_DATA_TABLE_NAME,
                 schema=basis_data_schemas.charge_price_points_schema,
             ),
             Table(
                 name=paths.GRID_LOSS_METERING_POINTS_TABLE_NAME,
                 schema=basis_data_schemas.grid_loss_metering_points_schema,
-            ),
-            Table(
-                name=paths.CALCULATIONS_TABLE_NAME,
-                schema=basis_data_schemas.calculations_schema,
             ),
         ],
         views=[],
@@ -103,6 +99,7 @@ schema_config = [
         views=[
             View(name=paths.METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1),
             View(name=paths.METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME_V1),
+            View(name=paths.ENERGY_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1),
         ],
     ),
 ]

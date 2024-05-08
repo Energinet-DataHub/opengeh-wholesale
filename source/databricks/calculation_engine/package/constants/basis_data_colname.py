@@ -41,3 +41,47 @@ class TimeSeriesColname:
     observation_time = "observation_time"
     quantity = "quantity"
     quality = "quality"
+
+
+class ChargeMasterDataPeriodsColname:
+    calculation_id = "calculation_id"
+    charge_key = "charge_key"
+    charge_code = "charge_code"
+    charge_type = "charge_type"
+    charge_owner_id = "charge_owner_id"
+    resolution = "resolution"
+    is_tax = "is_tax"
+    from_date = "from_date"
+    to_date = "to_date"
+
+
+class ChargePricePointsColname:
+    calculation_id = "calculation_id"
+    charge_key = "charge_key"
+    charge_code = "charge_code"
+    charge_type = "charge_type"
+    charge_owner_id = "charge_owner_id"
+    charge_price = "charge_price"
+    charge_time = "charge_time"
+
+
+class ChargeLinkPeriodsColname:
+    calculation_id = "calculation_id"
+    charge_key = "charge_key"
+    charge_code = "charge_code"
+    charge_type = "charge_type"
+    charge_owner_id = "charge_owner_id"
+    metering_point_id = "metering_point_id"
+    quantity = "quantity"
+    from_date = "from_date"
+    to_date = "to_date"
+
+
+class CalculationsColumnName:
+    calculation_id = "calculation_id"
+    calculation_type = "calculation_type"
+    period_start = "period_start"
+    period_end = "period_end"
+    execution_time_start = "execution_time_start"
+    created_by_user_id = "created_by_user_id"
+    version = "version"

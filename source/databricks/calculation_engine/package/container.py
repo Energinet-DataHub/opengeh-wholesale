@@ -12,10 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from dependency_injector import containers, providers
-from pyspark.sql import SparkSession
 
 import package
-from package.infrastructure import initialize_spark
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 
 

@@ -136,11 +136,14 @@ def _execute(
             get_metering_point_periods_for_energy_basis_data(all_metering_point_periods)
         )
 
+        input_charges = None
+
     # Add basis data to results
     results.basis_data = basis_data_factory.create(
         args,
         metering_point_periods_for_basis_data,
         metering_point_time_series,
+        input_charges,
     )
 
     return results

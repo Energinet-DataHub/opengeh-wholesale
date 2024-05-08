@@ -1,5 +1,21 @@
 # Wholesale Contracts Release notes
 
+## Version 9.3.1
+
+Added `TotalMonthlyAmountResultProducedV1.cs` as partial class to the TotalMonthlyAmountResultProducedV1 event.
+
+## Version 9.3.0
+
+Added `CalculationResultVersion` property to `TotalMonthlyAmountResultProducedV1`
+
+## Version 9.2.0
+
+GridLossProducedV1: Resolution enum extended with Hour
+
+## Version 9.1.2
+
+EnergyResultProducedV2: Resolution enum extended with Hour
+
 ## Version 9.1.1
 
 No functional changes.

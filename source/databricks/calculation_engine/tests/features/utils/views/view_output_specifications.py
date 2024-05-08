@@ -11,13 +11,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from features.public_data_models.given_basis_data_for_settlement_report.common import (
-    metering_point_period_schema,
-    metering_point_time_series_schema,
+from features.utils.dataframes.settlement_report import (
+    metering_point_period_v1_view_schema,
+    metering_point_time_series_v1_view_schema,
 )
-from features.utils.dataframes.settlement_report.view_results_dataframe import (
-    create_metering_point_periods_view,
-    create_metering_point_time_series_view,
+from features.utils.dataframes.settlement_report.energy_results_v1_view_schema import (
+    energy_results_v1_view_schema,
+)
+from features.utils.dataframes.settlement_report.settlement_report_view_dataframes import (
+    create_metering_point_periods_v1_view,
+    create_metering_point_time_series_v1_view,
+    create_energy_results_v1_view,
+)
+from features.utils.readers import (
+    SettlementReportViewReader,
 )
 
 
@@ -27,13 +34,18 @@ def get_output_specifications() -> dict[str, tuple]:
     """
     return {
         "metering_point_periods.csv": (
-            metering_point_period_schema,
-            "read_metering_point_periods",
-            create_metering_point_periods_view,
+            metering_point_period_v1_view_schema,
+            SettlementReportViewReader.read_metering_point_periods_v1,
+            create_metering_point_periods_v1_view,
         ),
         "metering_point_time_series.csv": (
-            metering_point_time_series_schema,
-            "read_metering_point_time_series",
-            create_metering_point_time_series_view,
+            metering_point_time_series_v1_view_schema,
+            SettlementReportViewReader.read_metering_point_time_series_v1,
+            create_metering_point_time_series_v1_view,
+        ),
+        "energy_results_v1.csv": (
+            energy_results_v1_view_schema,
+            SettlementReportViewReader.read_energy_results_v1,
+            create_energy_results_v1_view,
         ),
     }

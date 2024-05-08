@@ -6,6 +6,11 @@ wholesaleSubsystem = group "Wholesale" {
         technology "Azure Data Lake Gen 2"
         tags "Data Storage" "Microsoft Azure - Data Lake Store Gen1" "Mandalorian"
     }
+    wholesaleBlobStorage = container "Settlement Report Blob Storage" {
+        description "Contains (drafts of) settlement reports"
+        technology "Azure Blob Storage"
+        tags "Data Storage" "Raccoons"
+    }
     wholesaleCalculator = container "Calculation Engine" {
         description "Executes calculation job"
         technology "Azure Databricks"
@@ -43,8 +48,9 @@ wholesaleSubsystem = group "Wholesale" {
             tags "Simple View"
         }
     }
-    wholesaleOrchestration = container "Wholesale Orchestration" {
-        description "Orchestrate calculation workflow"
+
+    wholesaleOrchestrations = container "Wholesale Orchestrations" {
+        description "Orchestrate calculation workflow, generate settlement reports"
         technology "Azure function, C#"
         tags "Microsoft Azure - Function Apps" "Mandalorian"
 
@@ -55,6 +61,7 @@ wholesaleSubsystem = group "Wholesale" {
         this -> wholesaleDb "Uses" "EF Core"
         this -> wholesaleCalculator "Sends requests to"
         this -> wholesaleDataLake "Retrieves results from"
+        this -> wholesaleBlobStorage "Reads from and writes settlement reports to"
 
         # Subsystem-to-Subsystem relationships
         this -> edi "Publish calculation results" "integration event/amqp" {
@@ -62,4 +69,3 @@ wholesaleSubsystem = group "Wholesale" {
         }
     }
 }
-
