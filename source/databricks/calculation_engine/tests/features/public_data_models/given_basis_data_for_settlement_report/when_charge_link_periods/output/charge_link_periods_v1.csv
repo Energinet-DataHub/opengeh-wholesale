@@ -1,2 +1,2 @@
-﻿calculation_id,calculation_type,metering_point_id,metering_point_type,charge_type,charge_owner,charge_code,quantity,from_date,to_date,grid_area_code,energy_supplier_id
-40000;tariff;5790001330552;571313180400140455;1;2023-01-31 23:00:00;
+﻿calculation_id;calculation_type;metering_point_id;metering_point_type;charge_type;charge_owner_id;charge_code;quantity;from_date;to_date;grid_area_code;energy_supplier_id
+0b15a420-9fc8-409a-a169-fbd49479d718;WholesaleFixing;571313180400140455;5790001330552;tariff;5790001330552;40000;1;2023-01-31 23:00:00;2023-02-28 23:00:00;804;8100000000115
