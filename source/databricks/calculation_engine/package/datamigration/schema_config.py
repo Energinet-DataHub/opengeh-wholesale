@@ -75,15 +75,15 @@ schema_config = [
                 schema=basis_data_schemas.time_series_point_schema,
             ),
             Table(
-                name=paths.CHARGE_LINK_PERIODS_TABLE_NAME,
+                name=paths.CHARGE_LINK_PERIODS_BASIS_DATA_TABLE_NAME,
                 schema=basis_data_schemas.charge_link_periods_schema,
             ),
             Table(
-                name=paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME,
+                name=paths.CHARGE_MASTER_DATA_PERIODS_BASIS_DATA_TABLE_NAME,
                 schema=basis_data_schemas.charge_master_data_periods_schema,
             ),
             Table(
-                name=paths.CHARGE_PRICE_POINTS_TABLE_NAME,
+                name=paths.CHARGE_PRICE_POINTS_BASIS_DATA_TABLE_NAME,
                 schema=basis_data_schemas.charge_price_points_schema,
             ),
             Table(

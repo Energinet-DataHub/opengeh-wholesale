@@ -17,6 +17,9 @@ from package.infrastructure.paths import (
     METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME,
     TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME,
     BASIS_DATA_DATABASE_NAME,
+    CHARGE_MASTER_DATA_PERIODS_BASIS_DATA_TABLE_NAME,
+    CHARGE_PRICE_POINTS_BASIS_DATA_TABLE_NAME,
+    CHARGE_LINK_PERIODS_BASIS_DATA_TABLE_NAME,
 )
 
 
@@ -35,3 +38,27 @@ def write_basis_data(basis_data: BasisDataContainer) -> None:
         ).insertInto(
             f"{BASIS_DATA_DATABASE_NAME}.{TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME}"
         )
+
+    if basis_data.charge_master_data:
+        with logging_configuration.start_span("charge_master_data"):
+            basis_data.charge_master_data.write.format("delta").mode("append").option(
+                "mergeSchema", "false"
+            ).insertInto(
+                f"{BASIS_DATA_DATABASE_NAME}.{CHARGE_MASTER_DATA_PERIODS_BASIS_DATA_TABLE_NAME}"
+            )
+
+    if basis_data.charge_prices:
+        with logging_configuration.start_span("charge_prices"):
+            basis_data.charge_prices.write.format("delta").mode("append").option(
+                "mergeSchema", "false"
+            ).insertInto(
+                f"{BASIS_DATA_DATABASE_NAME}.{CHARGE_PRICE_POINTS_BASIS_DATA_TABLE_NAME}"
+            )
+
+    if basis_data.charge_links:
+        with logging_configuration.start_span("charge_links"):
+            basis_data.charge_links.write.format("delta").mode("append").option(
+                "mergeSchema", "false"
+            ).insertInto(
+                f"{BASIS_DATA_DATABASE_NAME}.{CHARGE_LINK_PERIODS_BASIS_DATA_TABLE_NAME}"
+            )
