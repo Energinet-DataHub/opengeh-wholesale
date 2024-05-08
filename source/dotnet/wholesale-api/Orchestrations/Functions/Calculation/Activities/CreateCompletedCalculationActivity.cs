@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Calculations.Application;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Common.Application;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Microsoft.Azure.Functions.Worker;
 
@@ -24,13 +25,13 @@ internal class CreateCompletedCalculationActivity(
     ICalculationRepository calculationRepository,
     ICalculationDtoMapper calculationDtoMapper,
     ICompletedCalculationFactory completedCalculationFactory,
-    Events.Application.UseCases.IUnitOfWork eventsUnitOfWork,
+    IUnitOfWork eventsUnitOfWork,
     ICompletedCalculationRepository completedCalculationRepository)
 {
     private readonly ICalculationRepository _calculationRepository = calculationRepository;
     private readonly ICalculationDtoMapper _calculationDtoMapper = calculationDtoMapper;
     private readonly ICompletedCalculationFactory _completedCalculationFactory = completedCalculationFactory;
-    private readonly Events.Application.UseCases.IUnitOfWork _eventsUnitOfWork = eventsUnitOfWork;
+    private readonly IUnitOfWork _eventsUnitOfWork = eventsUnitOfWork;
     private readonly ICompletedCalculationRepository _completedCalculationRepository = completedCalculationRepository;
 
     /// <summary>

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Common.Application;
 
 namespace Energinet.DataHub.Wholesale.Calculations.Application.UseCases;
 

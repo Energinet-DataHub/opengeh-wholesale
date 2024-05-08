@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Calculations.Application;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Application.UseCases;
@@ -21,9 +20,7 @@ using Energinet.DataHub.Wholesale.Calculations.Infrastructure.CalculationState;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
-using Microsoft.EntityFrameworkCore;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -48,26 +45,7 @@ public static class CalculationsExtensions
         services.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
         services.AddScoped<ICalculationParametersFactory, DatabricksCalculationParametersFactory>();
 
-        services.AddScoped<IDatabaseContext, DatabaseContext>();
-        services.AddDbContext<DatabaseContext>(
-            options => options.UseSqlServer(
-                configuration
-                    .GetSection(ConnectionStringsOptions.ConnectionStrings)
-                    .Get<ConnectionStringsOptions>()!.DB_CONNECTION_STRING,
-                o =>
-                {
-                    o.UseNodaTime();
-                    o.EnableRetryOnFailure();
-                }));
-        // Database Health check
-        services.TryAddHealthChecks(
-            registrationKey: HealthCheckNames.WholesaleDatabase,
-            (key, builder) =>
-            {
-                builder.AddDbContextCheck<DatabaseContext>(name: key);
-            });
-
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddWholesaleSqlDatabase<IDatabaseContext, DatabaseContext>(configuration);
         services.AddScoped<ICalculationDtoMapper, CalculationDtoMapper>();
 
         services.AddScoped<ICreateCalculationHandler, CreateCalculationHandler>();

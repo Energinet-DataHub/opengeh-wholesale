@@ -12,21 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Calculations.Application;
+namespace Energinet.DataHub.Wholesale.Common.Application;
 
-namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
-
-public class UnitOfWork : IUnitOfWork
+public interface IUnitOfWork
 {
-    private readonly IDatabaseContext _databaseContext;
-
-    public UnitOfWork(IDatabaseContext databaseContext)
-    {
-        _databaseContext = databaseContext;
-    }
-
-    public async Task CommitAsync()
-    {
-        await _databaseContext.SaveChangesAsync().ConfigureAwait(false);
-    }
+    Task CommitAsync();
 }

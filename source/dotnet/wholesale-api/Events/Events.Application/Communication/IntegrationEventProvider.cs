@@ -14,8 +14,8 @@
 
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Publisher;
+using Energinet.DataHub.Wholesale.Common.Application;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
-using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 

@@ -12,9 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Events.Application.UseCases;
+using Energinet.DataHub.Wholesale.Common.Application;
+using Microsoft.EntityFrameworkCore;
 
-public interface IUnitOfWork
+namespace Energinet.DataHub.Wholesale.Common.Infrastructure;
+
+public sealed class UnitOfWork : IUnitOfWork
 {
-    Task CommitAsync();
+    private readonly DbContext _context;
+
+    public UnitOfWork(DbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task CommitAsync()
+    {
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+    }
 }
