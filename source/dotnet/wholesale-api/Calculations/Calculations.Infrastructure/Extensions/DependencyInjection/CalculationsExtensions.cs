@@ -52,7 +52,7 @@ public static class CalculationsExtensions
         services.AddDbContext<DatabaseContext>(
             options => options.UseSqlServer(
                 configuration
-                    .GetSection(ConnectionStringsOptions.ConnectionStrings)
+                    .GetSection(ConnectionStringsOptions.SectionName)
                     .Get<ConnectionStringsOptions>()!.DB_CONNECTION_STRING,
                 o =>
                 {
