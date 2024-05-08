@@ -12,21 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Calculations.Application;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
-namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
 
-public class UnitOfWork : IUnitOfWork
+public interface ISettlementReportFromFilesHandler
 {
-    private readonly IDatabaseContext _databaseContext;
-
-    public UnitOfWork(IDatabaseContext databaseContext)
-    {
-        _databaseContext = databaseContext;
-    }
-
-    public async Task CommitAsync()
-    {
-        await _databaseContext.SaveChangesAsync().ConfigureAwait(false);
-    }
+    Task<GeneratedSettlementReportDto> CombineAsync(IReadOnlyCollection<GeneratedSettlementReportFileDto> generatedFiles);
 }

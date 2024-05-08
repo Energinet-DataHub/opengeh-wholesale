@@ -13,12 +13,15 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports;
+using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonSerialization;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Extensions.Configuration;
@@ -43,6 +46,15 @@ public static class CalculationResultsExtensions
         services.AddScoped<IDataLakeClient, DataLakeClient>();
         services.AddScoped<IStreamZipper, StreamZipper>();
         services.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
+
+        // Settlement Reports
+        services.AddScoped<ISettlementReportRequestHandler, SettlementReportRequestHandler>();
+        services.AddScoped<ISettlementReportFileRequestHandler, SettlementReportFileRequestHandler>();
+        services.AddScoped<ISettlementReportFromFilesHandler, SettlementReportFromFilesHandler>();
+        services.AddScoped<ISettlementReportFinalizeHandler, SettlementReportFinalizeHandler>();
+        services.AddScoped<ISettlementReportDataRepository, LegacySettlementReportDataRepository>();
+        services.AddScoped<ISettlementReportFileGeneratorFactory, SettlementReportFileGeneratorFactory>();
+        services.AddSettlementReportBlobStorage(configuration);
 
         // Used by sql statements (queries)
         services.AddOptions<DeltaTableOptions>().Bind(configuration);

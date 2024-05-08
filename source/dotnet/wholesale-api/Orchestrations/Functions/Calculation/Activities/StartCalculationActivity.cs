@@ -15,6 +15,7 @@
 using Energinet.DataHub.Wholesale.Calculations.Application;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
+using Energinet.DataHub.Wholesale.Common.Application;
 using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;

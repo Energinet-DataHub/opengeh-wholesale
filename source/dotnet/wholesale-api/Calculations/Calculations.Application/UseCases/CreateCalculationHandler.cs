@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Common.Application;
 using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Calculations.Application.UseCases;

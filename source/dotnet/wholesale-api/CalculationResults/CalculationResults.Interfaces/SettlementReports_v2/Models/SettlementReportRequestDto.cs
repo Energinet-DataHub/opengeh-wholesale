@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Calculations.Application;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
-public interface IUnitOfWork
-{
-    Task CommitAsync();
-}
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+
+public sealed record SettlementReportRequestDto(
+    CalculationType CalculationType,
+    SettlementReportRequestFilterDto Filter);

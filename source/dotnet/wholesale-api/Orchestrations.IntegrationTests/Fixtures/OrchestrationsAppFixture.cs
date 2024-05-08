@@ -15,6 +15,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Azure.Identity;
+using Azure.Storage.Blobs;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
@@ -23,6 +24,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
@@ -122,8 +124,9 @@ public class OrchestrationsAppFixture : IAsyncLifetime
             topicResource.Name,
             topicResource.Subscriptions.Single().SubscriptionName);
 
-        // DataLake
+        // Storage: DataLake + Blob Containers
         await EnsureCalculationStorageContainerExistsAsync();
+        await EnsureSettlementReportStorageContainerExistsAsync();
 
         // Create and start host
         AppHostManager = new FunctionAppHostManager(appHostSettings, TestLogger);
@@ -227,6 +230,14 @@ public class OrchestrationsAppFixture : IAsyncLifetime
             $"{ServiceBusNamespaceOptions.SectionName}__{nameof(ServiceBusNamespaceOptions.ConnectionString)}",
             ServiceBusResourceProvider.ConnectionString);
 
+        // Settlement Report blob storage configuration
+        appHostSettings.ProcessEnvironmentVariables.Add(
+            $"{SettlementReportStorageOptions.SectionName}__{nameof(SettlementReportStorageOptions.StorageContainerName)}",
+            "settlement-report-container");
+        appHostSettings.ProcessEnvironmentVariables.Add(
+            $"{SettlementReportStorageOptions.SectionName}__{nameof(SettlementReportStorageOptions.StorageAccountUri)}",
+            AzuriteManager.BlobStorageServiceUri.ToString());
+
         // Override default CalculationJob status monitor configuration
         appHostSettings.ProcessEnvironmentVariables.Add(
             $"{CalculationJobStatusMonitorOptions.SectionName}__{nameof(CalculationJobStatusMonitorOptions.PollingIntervalInSeconds)}",
@@ -252,6 +263,14 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         var fileSystemClient = dataLakeServiceClient.GetFileSystemClient("wholesale");
 
         await fileSystemClient.CreateIfNotExistsAsync();
+    }
+
+    private async Task EnsureSettlementReportStorageContainerExistsAsync()
+    {
+        var blobContainerUri = new Uri(AzuriteManager.BlobStorageServiceUri + "/settlement-report-container");
+        var blobContainerClient = new BlobContainerClient(blobContainerUri, new DefaultAzureCredential());
+
+        await blobContainerClient.CreateIfNotExistsAsync();
     }
 
     private static void StartHost(FunctionAppHostManager hostManager)

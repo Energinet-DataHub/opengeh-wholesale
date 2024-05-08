@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Publisher;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
@@ -28,7 +27,6 @@ using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.GridLo
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedCalculations;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -46,26 +44,7 @@ public static class EventsExtensions
     {
         ArgumentNullException.ThrowIfNull(configuration);
 
-        services.AddScoped<IEventsDatabaseContext, EventsDatabaseContext>();
-        services.AddDbContext<EventsDatabaseContext>(
-            options => options.UseSqlServer(
-                configuration
-                    .GetSection(ConnectionStringsOptions.ConnectionStrings)
-                    .Get<ConnectionStringsOptions>()!.DB_CONNECTION_STRING,
-                o =>
-                {
-                    o.UseNodaTime();
-                    o.EnableRetryOnFailure();
-                }));
-        // Database Health check
-        services.TryAddHealthChecks(
-            registrationKey: HealthCheckNames.WholesaleDatabase,
-            (key, builder) =>
-        {
-            builder.AddDbContextCheck<EventsDatabaseContext>(name: key);
-        });
-
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddWholesaleSqlDatabase<IEventsDatabaseContext, EventsDatabaseContext>(configuration);
         services.AddScoped<ICompletedCalculationRepository, CompletedCalculationRepository>();
 
         return services;

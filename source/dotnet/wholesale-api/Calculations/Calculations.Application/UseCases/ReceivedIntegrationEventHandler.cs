@@ -15,6 +15,7 @@
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Wholesale.Calculations.Application.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Calculations.Application.IntegrationEvents.Handlers;
+using Energinet.DataHub.Wholesale.Common.Application;
 using IIntegrationEventHandler = Energinet.DataHub.Core.Messaging.Communication.Subscriber.IIntegrationEventHandler;
 
 namespace Energinet.DataHub.Wholesale.Calculations.Application.UseCases;

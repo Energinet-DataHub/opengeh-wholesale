@@ -12,9 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Events.Application.UseCases;
+using Microsoft.EntityFrameworkCore;
 
-public interface IUnitOfWork
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence;
+
+public class DatabaseContext : DbContext, IDatabaseContext
 {
-    Task CommitAsync();
+    private const string Schema = "calculationresults";
+
+    public DatabaseContext(DbContextOptions<DatabaseContext> options)
+        : base(options)
+    {
+    }
+
+    // Added to support Moq in tests
+    public DatabaseContext()
+    {
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.HasDefaultSchema(Schema);
+        base.OnModelCreating(modelBuilder);
+    }
 }
