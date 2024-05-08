@@ -2,7 +2,14 @@
   "version": "2.0",
   "extensions": {
     "durableTask": {
-      "hubName": "%OrchestrationsTaskHubName%"
+      // To be able to specify Task Hub Name we must disable multitenancy in the SQL database
+      // See https://microsoft.github.io/durabletask-mssql/#/multitenancy
+      "hubName": "%OrchestrationsTaskHubName%",
+      // See configuration possibilities here: https://microsoft.github.io/durabletask-mssql/#/quickstart?id=hostjson-configuration
+      "storageProvider": {
+        "type": "mssql",
+        "connectionStringName": "CONNECTIONSTRINGS__SQLAZURECONNSTR"
+      }
     }
   },
   "logging": {
