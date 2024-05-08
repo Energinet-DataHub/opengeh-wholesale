@@ -13,7 +13,10 @@
 // limitations under the License.
 
 using System.Net;
+using Energinet.DataHub.Core.App.Common.Abstractions.Users;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
@@ -23,15 +26,29 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports
 
 internal sealed class SettlementReportRequestTrigger
 {
+    private readonly IUserContext<FrontendUser> _userContext;
+    private readonly ISettlementReportInitializeHandler _settlementReportInitializeHandler;
+
+    public SettlementReportRequestTrigger(IUserContext<FrontendUser> userContext, ISettlementReportInitializeHandler settlementReportInitializeHandler)
+    {
+        _userContext = userContext;
+        _settlementReportInitializeHandler = settlementReportInitializeHandler;
+    }
+
     [Function(nameof(RequestSettlementReport))]
     public async Task<HttpResponseData> RequestSettlementReport(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData req,
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post")]
+        HttpRequestData req,
         [FromBody] SettlementReportRequestDto settlementReportRequest,
         [DurableClient] DurableTaskClient client,
         FunctionContext executionContext)
     {
         var instanceId = await client
             .ScheduleNewOrchestrationInstanceAsync(nameof(SettlementReportOrchestrator.OrchestrateSettlementReportAsync), settlementReportRequest)
+            .ConfigureAwait(false);
+
+        await _settlementReportInitializeHandler
+            .InitializeAsync(_userContext.CurrentUser.UserId, _userContext.CurrentUser.ActorId, instanceId)
             .ConfigureAwait(false);
 
         var response = req.CreateResponse(HttpStatusCode.OK);

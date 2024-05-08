@@ -13,40 +13,22 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 
-public sealed class SettlementReportFinalizeHandler : ISettlementReportFinalizeHandler
+public sealed class SettlementReportInitializeHandler : ISettlementReportInitializeHandler
 {
-    private readonly ISettlementReportFileRepository _fileRepository;
     private readonly ISettlementReportRequestRepository _requestRepository;
 
-    public SettlementReportFinalizeHandler(
-        ISettlementReportFileRepository fileRepository,
-        ISettlementReportRequestRepository requestRepository)
+    public SettlementReportInitializeHandler(ISettlementReportRequestRepository requestRepository)
     {
-        _fileRepository = fileRepository;
         _requestRepository = requestRepository;
     }
 
-    public async Task FinalizeAsync(GeneratedSettlementReportDto generatedReport)
+    public async Task InitializeAsync(Guid userId, Guid actorId, string requestId)
     {
-        foreach (var file in generatedReport.TemporaryFiles)
-        {
-            await _fileRepository
-                .DeleteAsync(file.RequestId, file.FileName)
-                .ConfigureAwait(false);
-        }
-
-        var request = await _requestRepository
-            .GetAsync(generatedReport.RequestId.Id)
-            .ConfigureAwait(false);
-
-        request.MarkAsCompleted(generatedReport.FinalReport.FileName);
-
         await _requestRepository
-            .AddOrUpdateAsync(request)
+            .AddOrUpdateAsync(new SettlementReportRequest(userId, actorId, requestId))
             .ConfigureAwait(false);
     }
 }
