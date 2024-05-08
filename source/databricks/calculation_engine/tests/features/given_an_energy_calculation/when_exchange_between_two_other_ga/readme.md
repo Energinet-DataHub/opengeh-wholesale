@@ -12,8 +12,8 @@ two other grid areas than the one it is in.
 
 ## Coverage
 
-- E20 (energy in)
-- E20 (two other GA)
+- E20 (exchange energy in)
+- E20 (exchange to other GA)
 - E17 (flex)
 - E17 (nonprofiled)
 - E17 (glmp)
