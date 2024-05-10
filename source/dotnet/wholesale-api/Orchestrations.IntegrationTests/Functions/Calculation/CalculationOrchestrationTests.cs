@@ -18,6 +18,8 @@ using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
+using AutoFixture;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
@@ -29,7 +31,6 @@ using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 using NodaTime;
 using Xunit.Abstractions;
 
@@ -216,8 +217,19 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeOrchestrationCreated);
 
         // => Expect calculation id
-        var calculationMetadata = orchestrationStatus.CustomStatus.ToObject<CalculationMetadata>();
+        var customStatusString = orchestrationStatus.CustomStatus.ToString();
+        var calculationMetadata = JsonSerializer.Deserialize<CalculationMetadata>(customStatusString);
         calculationMetadata!.Id.Should().Be(calculationId);
+
+        // TODO: Polling for status of an instance seems to impact the orchestration and it fails.
+        // Maybe it is related to the fact that we add a dependency to the "Microsoft.DurableTask.SqlServer.AzureFunctions",
+        // but this is the only way to get the type "SqlDurabilityProviderFactory".
+        // Maybe this "working on the history" messes something up for the orchestration.
+        // If we wait enough time to let the orchestration complete and then use the GetStatus everything works.
+        // Maybe we should just retrieve data directly in the database using the connection. They do mention something like
+        // that in the DFM, see https://github.com/microsoft/DurableFunctionsMonitor/tree/main/durablefunctionsmonitor.dotnetisolated.core#limitations
+        // and the code https://github.com/microsoft/DurableFunctionsMonitor/blob/main/custom-backends/mssql/Startup.cs
+        await Task.Delay(TimeSpan.FromMinutes(2));
 
         // => Wait for completion
         var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(
@@ -317,7 +329,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
             EndDate: dateAtMidnight.AddDays(2));
 
         request.Content = new StringContent(
-            JsonConvert.SerializeObject(requestDto),
+            JsonSerializer.Serialize(requestDto),
             Encoding.UTF8,
             "application/json");
 
