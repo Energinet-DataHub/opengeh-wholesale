@@ -58,13 +58,13 @@ basis_data_container = create_basis_data_factory(SparkSession.builder.getOrCreat
         (basis_data_container.charge_prices.schema, charge_price_points_schema),
         (
             basis_data_container.grid_loss_metering_points.schema,
-            grid_loss_metering_points_schema
+            grid_loss_metering_points_schema,
         ),
     ],
 )
 def test__basis_data_uses_correct_schema(
     spark: SparkSession,
     basis_data_table_schema: StructType,
-    expected_schema: StructType
+    expected_schema: StructType,
 ):
     assert basis_data_table_schema == expected_schema
