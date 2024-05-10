@@ -29,7 +29,9 @@ def _get_metering_point_dataframe(spark: SparkSession, data: List[str]) -> DataF
 def _init_test(df_table_reader_mock_dataframe: DataFrame) -> PreparedDataReader:
     table_reader = Mock()
     # Mock should return sample dataframe when called
-    table_reader.read_grid_loss_metering_points = MagicMock(return_value=df_table_reader_mock_dataframe)
+    table_reader.read_grid_loss_metering_points = MagicMock(
+        return_value=df_table_reader_mock_dataframe
+    )
     return PreparedDataReader(table_reader)
 
 
@@ -37,43 +39,106 @@ def _init_test(df_table_reader_mock_dataframe: DataFrame) -> PreparedDataReader:
     "table_reader_grid_loss_mock_data, calculation_metering_point_data, expected_count_after_join",
     [
         (
-            [('A',), ('B',), ('C',), ('D',), ('E',), ('F',),],
-            [('C',), ('D',),],
+            [
+                ('A',),
+                ('B',),
+                ('C',),
+                ('D',),
+                ('E',),
+                ('F',),
+            ],
+            [
+                ('C',),
+                ('D',),
+            ],
             2,
         ),
         (
-            [('A',), ('B',), ('C',), ('D',), ('E',), ('F',),],
-            [('A',), ('B',), ('C',), ('D',), ('E',), ('F',),],
+            [
+                ('A',),
+                ('B',),
+                ('C',),
+                ('D',),
+                ('E',),
+                ('F',),
+            ],
+            [
+                ('A',),
+                ('B',),
+                ('C',),
+                ('D',),
+                ('E',),
+                ('F',),
+            ],
             6,
         ),
         (
-            [('A',), ('B',), ('C',), ('D',), ('E',), ('F',),],
-            [('G',), ('H',),],
+            [
+                ('A',),
+                ('B',),
+                ('C',),
+                ('D',),
+                ('E',),
+                ('F',),
+            ],
+            [
+                ('G',),
+                ('H',),
+            ],
             0,
         ),
         (
-            [('A',), ('B',), ('C',), ('C',), ('D',), ('E',), ('F',),],
-            [('C',), ('D',),],
+            [
+                ('A',),
+                ('B',),
+                ('C',),
+                ('C',),
+                ('D',),
+                ('E',),
+                ('F',),
+            ],
+            [
+                ('C',),
+                ('D',),
+            ],
             2,
         ),
         (
-            [('A',), ('B',), ('C',), ('D',), ('E',), ('F',),],
-            [('C',), ('C',), ('D',),],
+            [
+                ('A',),
+                ('B',),
+                ('C',),
+                ('C',),
+                ('D',),
+                ('E',),
+                ('F',),
+            ],
+            [
+                ('C',),
+                ('C',),
+                ('D',),
+            ],
             2,
         ),
     ],
 )
-def test(
-    spark: SparkSession, 
-    table_reader_grid_loss_mock_data: List[str], 
+def test__when_get_grid_loss_metering_points__count_is_correct(
+    spark: SparkSession,
+    table_reader_grid_loss_mock_data: List[str],
     calculation_metering_point_data: List[str],
     expected_count_after_join: int,
 ):
-    df_table_reader_mock_dataframe = _get_metering_point_dataframe(spark, table_reader_grid_loss_mock_data)
+    df_table_reader_mock_dataframe = _get_metering_point_dataframe(
+        spark, table_reader_grid_loss_mock_data
+    )
     prepared_data_reader = _init_test(df_table_reader_mock_dataframe)
     
-    df_calculation_metering_point_data = _get_metering_point_dataframe(spark, calculation_metering_point_data)
+    df_calculation_metering_point_data = _get_metering_point_dataframe(
+        spark, calculation_metering_point_data
+    )
 
-    result = prepared_data_reader.get_grid_loss_metering_points(df_calculation_metering_point_data)
+    result = prepared_data_reader.get_grid_loss_metering_points(
+        df_calculation_metering_point_data
+    )
 
     assert result.df.count() == expected_count_after_join
