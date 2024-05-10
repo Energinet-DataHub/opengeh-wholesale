@@ -11,7 +11,7 @@ time period (one hour).
 - Input quantities have been set so production, flex, and nonprofiled do not produce the same result.
 - Energy Supplier and Balance Responsible id's have set so that ga_es, ga_brp and ga_brp_es do not produce the same
   result/rows.
-- Oracle Excel-sheet included (EnergyResults-when_minimal_standard_calculation.xlsx)
+- Oracle Excel-sheet included (Oracle - minimal standard calculation.xlsx)
 - Metering point id's denote the type
     - Production metering points start with e.g. '18' for production metering points
     - Metering points with resolution 15M have a 15 in them
