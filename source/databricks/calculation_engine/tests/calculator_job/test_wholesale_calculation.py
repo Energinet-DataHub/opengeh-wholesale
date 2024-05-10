@@ -295,7 +295,10 @@ def test__when_wholesale_calculation__basis_data_is_stored(
             charge_master_data_periods_schema,
         ),
         (paths.CHARGE_PRICE_POINTS_BASIS_DATA_TABLE_NAME, charge_price_points_schema),
-        (paths.GRID_LOSS_METERING_POINTS_BASIS_DATA_TABLE_NAME, grid_loss_metering_points_schema),
+        (
+            paths.GRID_LOSS_METERING_POINTS_BASIS_DATA_TABLE_NAME,
+            grid_loss_metering_points_schema
+        ),
     ],
 )
 def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
