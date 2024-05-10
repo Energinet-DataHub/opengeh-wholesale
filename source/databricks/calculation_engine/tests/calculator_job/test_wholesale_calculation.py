@@ -297,7 +297,7 @@ def test__when_wholesale_calculation__basis_data_is_stored(
         (paths.CHARGE_PRICE_POINTS_BASIS_DATA_TABLE_NAME, charge_price_points_schema),
         (
             paths.GRID_LOSS_METERING_POINTS_BASIS_DATA_TABLE_NAME,
-            grid_loss_metering_points_schema
+            grid_loss_metering_points_schema,
         ),
     ],
 )
