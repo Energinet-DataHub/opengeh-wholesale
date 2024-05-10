@@ -34,23 +34,30 @@ from tests.calculation.basis_data.basis_data_test_factory import (
 )
 import pytest
 from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType
+
+basis_data_container = create_basis_data_factory(SparkSession.builder.getOrCreate())
 
 
-def test__basis_data_uses_correct_schema(spark: SparkSession):
-    basis_data_container = create_basis_data_factory(spark)
-
-    assert (
-        basis_data_container.metering_point_periods.schema
-        == metering_point_period_schema
-    )
-    assert basis_data_container.time_series_points.schema == time_series_point_schema
-    assert (
-        basis_data_container.charge_master_data.schema
-        == charge_master_data_periods_schema
-    )
-    assert basis_data_container.charge_prices.schema == charge_price_points_schema
-    assert basis_data_container.charge_links.schema == charge_link_periods_schema
-    assert (
-        basis_data_container.grid_loss_metering_points.schema
-        == grid_loss_metering_points_schema
-    )
+@pytest.mark.parametrize(
+    "basis_data_table_schema, expected_schema",
+    [
+        (
+            basis_data_container.metering_point_periods.schema,
+            metering_point_period_schema,
+        ),
+        (
+            basis_data_container.time_series_points.schema,
+            time_series_point_schema,
+        ),
+        (basis_data_container.charge_links.schema, charge_link_periods_schema),
+        (
+            basis_data_container.charge_master_data.schema,
+            charge_master_data_periods_schema,
+        ),
+        (basis_data_container.charge_prices.schema, charge_price_points_schema),
+        (basis_data_container.grid_loss_metering_points.schema, grid_loss_metering_points_schema),
+    ],
+)
+def test__basis_data_uses_correct_schema(spark: SparkSession, basis_data_table_schema: StructType, expected_schema: StructType):
+    assert (basis_data_table_schema == expected_schema)

@@ -29,12 +29,6 @@ class GridLossMeteringPoints(DataFrameWrapper):
         super().__init__(
             df,
             grid_loss_metering_points_schema,
-            # We ignore_nullability because it has turned out to be too hard and even possibly
-            # introducing more errors than solving in order to stay in exact sync with the
-            # logically correct schema.
-            ignore_nullability=True,
-            ignore_decimal_scale=True,
-            ignore_decimal_precision=True,
         )
 
 

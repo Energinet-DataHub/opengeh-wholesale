@@ -172,5 +172,5 @@ class PreparedDataReader:
                 self._table_reader.read_grid_loss_metering_points(),
                 Colname.metering_point_id,
                 "inner",
-            )
+            ).distinct()
         )
