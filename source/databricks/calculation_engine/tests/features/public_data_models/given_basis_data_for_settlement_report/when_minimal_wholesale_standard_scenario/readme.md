@@ -1,6 +1,6 @@
-# When charge link periods basis data is available
+# When minimal standard wholesale scenario
 
-The purpose of this test is to test the view for settlement reports that is used to get charge link periods basis data.
+The purpose is to test that the views for settlement reports returns the expected columns and rows for the wholesale standard scenario. 
 
 ## Design considerations
 
