@@ -108,7 +108,7 @@ class TableReader:
         return df
 
     def read_calculations(self) -> DataFrame:
-        path = f"{paths.BASIS_DATA_DATABASE_NAME}.{paths.CALCULATIONS_TABLE_NAME}"
+        path = f"{paths.BASIS_DATA_DATABASE_NAME}/{paths.CALCULATIONS_TABLE_NAME}"
         df = self._spark.read.format("delta").load(path)
 
         assert_schema(df.schema, calculations_schema)
