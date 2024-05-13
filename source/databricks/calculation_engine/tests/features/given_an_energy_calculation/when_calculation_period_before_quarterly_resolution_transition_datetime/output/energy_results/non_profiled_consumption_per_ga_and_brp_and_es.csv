@@ -1,0 +1,3 @@
+﻿grid_area_code;energy_supplier_id;balance_responsible_id;quantity;quantity_qualities;time;aggregation_level;time_series_type;calculation_id;calculation_type;calculation_execution_time_start;from_grid_area;calculation_result_id;metering_point_id;resolution
+800;1000000000000;1100000000000;12;['measured', 'calculated'];2023-02-01 00:00:00;es_brp_ga;nonprofiled_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;Aggregation;2024-01-01 23:00:00;;IGNORED;;PT1H
+800;3000000000000;3300000000000;10;['measured'];2023-02-01 00:00:00;es_brp_ga;nonprofiled_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;Aggregation;2024-01-01 23:00:00;;IGNORED;;PT1H
