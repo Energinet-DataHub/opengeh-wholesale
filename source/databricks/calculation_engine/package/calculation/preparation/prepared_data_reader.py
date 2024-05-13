@@ -162,7 +162,6 @@ class PreparedDataReader:
             "left_anti",
         )
 
-    # TODO BJM: Unit test with both 0 and 1 existing calculations
     def get_latest_calculation_version(
         self, calculation_type: CalculationType
     ) -> int | None:

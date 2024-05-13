@@ -56,6 +56,7 @@ def _create_calculation(
     # Next version begins with 1 and increments by 1
     next_version = (latest_version or 0) + 1
 
+    # TODO BJM: Use factory?
     calculation = {
         CalculationColumnNames.calculation_id: args.calculation_id,
         CalculationColumnNames.calculation_type: args.calculation_type.value,
