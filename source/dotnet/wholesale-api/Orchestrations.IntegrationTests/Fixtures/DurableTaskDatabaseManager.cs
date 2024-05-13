@@ -27,7 +27,7 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 public class DurableTaskDatabaseManager : SqlServerDatabaseManager<DbContext>
 {
     public DurableTaskDatabaseManager()
-        : base("WholesaleDT")
+        : base("WholesaleDT", DurableTaskCollationName)
     {
     }
 
