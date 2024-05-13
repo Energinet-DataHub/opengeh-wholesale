@@ -20,7 +20,9 @@ using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 
-// This implementation redirects to the old SQL statement implementation.
+/// <summary>
+/// This implementation redirects to the old SQL statement implementation.
+/// </summary>
 public sealed class LegacySettlementReportDataRepository : ISettlementReportDataRepository
 {
     private readonly ISettlementReportResultQueries _settlementReportResultQueries;

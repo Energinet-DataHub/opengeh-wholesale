@@ -21,7 +21,7 @@ public class SettlementReportEntityConfiguration : IEntityTypeConfiguration<Appl
 {
     public void Configure(EntityTypeBuilder<Application.SettlementReports_v2.SettlementReport> builder)
     {
-        builder.ToTable(nameof(Application.SettlementReports_v2.SettlementReport));
+        builder.ToTable("SettlementReport");
         builder.HasKey(e => e.Id);
     }
 }
