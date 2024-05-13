@@ -12,7 +12,8 @@ module "apim_biztalk_inbox" {
   logger_sampling_percentage = 100.0
   logger_verbosity           = "verbose"
   path                       = "biztalkreceiver"
-  backend_service_url        = "https://${module.func_entrypoint_ecp_inbox.default_hostname}"
+  #backend_service_url        = "https://${module.func_entrypoint_ecp_inbox.default_hostname}"
+  backend_service_url = "https://localhost"
   policies = [
     {
       xml_content = <<XML
@@ -37,13 +38,14 @@ module "apim_biztalk_inbox" {
 }
 
 resource "azurerm_api_management_backend" "biztalk_inbox_backend" {
-  count               = 1
+  count = 1
 
   name                = "biztalk-inbox-backend"
   resource_group_name = data.azurerm_key_vault_secret.apim_instance_resource_group_name.value
   api_management_name = data.azurerm_key_vault_secret.apim_instance_name.value
   protocol            = "http"
-  url                 = "https://${module.func_entrypoint_ecp_inbox.default_hostname}"
+  #url                 = "https://${module.func_entrypoint_ecp_inbox.default_hostname}"
+  url = "https://localhost"
 }
 
 module "apimao_biztalk_inbox" {
