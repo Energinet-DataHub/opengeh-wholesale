@@ -16,7 +16,7 @@ using System.Data.SqlClient;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Database;
 using Microsoft.EntityFrameworkCore;
 
-namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
+namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.DurableTask;
 
 /// <summary>
 /// A database manager for managing a database to be used by the Durable Task SQL Provider.
@@ -26,6 +26,8 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 /// </summary>
 public class DurableTaskDatabaseManager : SqlServerDatabaseManager<DbContext>
 {
+    // TODO:
+    // We could move this class to TestCommon. See also "DurableTaskManager".
     public DurableTaskDatabaseManager()
         : base("WholesaleDT", DurableTaskCollationName)
     {
