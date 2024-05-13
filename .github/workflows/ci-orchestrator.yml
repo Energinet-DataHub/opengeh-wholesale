@@ -43,7 +43,7 @@ jobs:
   ci_dotnet:
     needs: changes
     if: ${{ needs.changes.outputs.dotnet == 'true' }}
-    uses: ./.github/workflows/ci-dotnet.yml@michaelmajgaard/feat--settlement-report---skeleton
+    uses: ./.github/workflows/ci-dotnet.yml
 
   ci_databricks:
     needs: [changes, ci_docker]
