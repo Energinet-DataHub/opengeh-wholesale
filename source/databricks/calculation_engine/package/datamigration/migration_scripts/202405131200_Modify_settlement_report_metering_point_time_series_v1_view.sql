@@ -2,7 +2,8 @@ DROP VIEW IF EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_time_series
 GO
 
 CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_time_series_v1 as
-SELECT m.calculation_id,
+SELECT c.calculation_id,
+       c.calculation_type,
        m.metering_point_id,
        m.metering_point_type,
        m.resolution,
