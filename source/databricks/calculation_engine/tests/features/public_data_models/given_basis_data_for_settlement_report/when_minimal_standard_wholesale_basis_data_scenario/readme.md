@@ -1,6 +1,6 @@
 # When minimal standard wholesale scenario
 
-The purpose is to test that the wholesale specific views for settlement reports returns the expected data for the minimal standard wholesale scenario. 
+The purpose is to test that the wholesale specific views for settlement reports returns the expected data for the minimal standard wholesale scenario.
 
 ## Design considerations
 
