@@ -37,7 +37,9 @@ public class DurableTaskManager : IDisposable
     // TODO:
     // We should move this class to TestCommon, maybe to a new project named DurableFunctionApp.TestCommon.
     // It should recide in the namespace "DurableTask" like it does here.
-    // When it has been moved we should remove our current dependency to the NuGet package "Microsoft.Azure.WebJobs.Extensions.DurableTask".
+    // When it has been moved we should remove our current dependencies to the following NuGet packages:
+    //  - "Microsoft.Azure.WebJobs.Extensions.DurableTask"
+    //  - "Microsoft.DurableTask.SqlServer.AzureFunctions"
     public DurableTaskManager(
         string storageProviderConnectionStringName,
         string storageProviderConnectionString,
