@@ -50,6 +50,8 @@ var host = new HostBuilder()
         // Modules
         services.AddCalculationsModule(context.Configuration);
         services.AddCalculationResultsModule(context.Configuration);
+        services.AddSettlementReportBlobStorage();
+
         // => Sub-modules of Events
         services.AddEventsDatabase(context.Configuration);
         services.AddIntegrationEventsPublishing(context.Configuration);
