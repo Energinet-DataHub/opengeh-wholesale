@@ -3,8 +3,7 @@ locals {
   ESETT_ERROR_DOCUMENT_STORAGE_CONTAINER_NAME = "esett-error-documents"
   ESETT_DOCUMENT_STORAGE_ACCOUNT_URI          = "https://${module.storage_esett_documents.name}.blob.core.windows.net"
 
-  #DH2_ENDPOINT                                = "https://${module.app_dh2_placeholder.default_hostname}"
-  DH2_ENDPOINT = "https://localhost"
+  DH2_ENDPOINT = "https://${module.app_dh2_placeholder.default_hostname}"
 
   MS_ESETT_EXCHANGE_CONNECTION_STRING = "Server=tcp:${data.azurerm_key_vault_secret.mssql_data_url.value},1433;Initial Catalog=${module.mssqldb_esett_exchange.name};Persist Security Info=False;Authentication=Active Directory Managed Identity;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;"
   CONNECTION_STRING_DB_MIGRATIONS     = "Server=tcp:${data.azurerm_key_vault_secret.mssql_data_url.value},1433;Initial Catalog=${module.mssqldb_esett_exchange.name};Persist Security Info=False;Authentication=Active Directory Default;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;"
