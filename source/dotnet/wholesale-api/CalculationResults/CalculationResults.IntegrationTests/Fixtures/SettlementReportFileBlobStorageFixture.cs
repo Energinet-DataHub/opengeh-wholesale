@@ -35,7 +35,7 @@ public sealed class SettlementReportFileBlobStorageFixture : IAsyncLifetime
 
     public Task DisposeAsync()
     {
-        // AzuriteManager.Dispose();
+        AzuriteManager.Dispose();
         return Task.CompletedTask;
     }
 
