@@ -47,6 +47,60 @@ public static class DurableClientExtensions
     }
 
     /// <summary>
+    /// Search for an orchestration with <paramref name="instanceId"/> which
+    /// is inactive (completed, canceled, terminated or failed).
+    ///
+    /// If more than one orchestration exists an exception is thrown.
+    /// </summary>
+    public static async Task<DurableOrchestrationStatus?> FindInactiveOrchestationStatusAsync(
+        this IDurableClient client,
+        string instanceId)
+    {
+        var filter = new OrchestrationStatusQueryCondition()
+        {
+            InstanceIdPrefix = instanceId,
+            RuntimeStatus =
+            [
+                OrchestrationRuntimeStatus.Completed,
+                OrchestrationRuntimeStatus.Canceled,
+                OrchestrationRuntimeStatus.Terminated,
+                OrchestrationRuntimeStatus.Failed,
+            ],
+        };
+        var queryResult = await client.ListInstancesAsync(filter, CancellationToken.None);
+
+        return queryResult.DurableOrchestrationState.SingleOrDefault();
+    }
+
+    /// <summary>
+    /// Wait for orchestration instance to be inactive within given <paramref name="waitTimeLimit"/>.
+    /// </summary>
+    /// <param name="client"></param>
+    /// <param name="instanceId"></param>
+    /// <param name="waitTimeLimit">Max time to wait for orchestration to reach state. If not specified it defaults to 30 seconds.</param>
+    /// <returns>If inactive within given <paramref name="waitTimeLimit"/> it returns the orchestration status including history; otherwise it throws an exception.</returns>
+    public static async Task<DurableOrchestrationStatus> WaitForInactiveInstanceAsync(
+        this IDurableClient client,
+        string instanceId,
+        TimeSpan? waitTimeLimit = null)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(instanceId);
+
+        var isInactive = await Awaiter.TryWaitUntilConditionAsync(
+            async () =>
+            {
+                var inactiveOrchestrationStatus = await client.FindInactiveOrchestationStatusAsync(instanceId);
+                return inactiveOrchestrationStatus != null;
+            },
+            waitTimeLimit ?? TimeSpan.FromSeconds(30),
+            delay: TimeSpan.FromSeconds(5));
+
+        return isInactive
+            ? await client.GetStatusAsync(instanceId, showHistory: true, showHistoryOutput: true)
+            : throw new Exception($"Orchestration instance '{instanceId}' did not complete within configured wait time limit.");
+    }
+
+    /// <summary>
     /// Wait for orchestration instance to be completed within given <paramref name="waitTimeLimit"/>.
     /// </summary>
     /// <param name="client"></param>

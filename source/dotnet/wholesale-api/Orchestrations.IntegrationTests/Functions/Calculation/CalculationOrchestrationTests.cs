@@ -120,11 +120,12 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeOrchestrationCreated);
 
         // => Function has the expected calculation id
-        var calculationMetadata = orchestrationStatus.CustomStatus.ToObject<CalculationMetadata>();
+        var customStatusString = orchestrationStatus.CustomStatus.ToString();
+        var calculationMetadata = JsonSerializer.Deserialize<CalculationMetadata>(customStatusString);
         calculationMetadata!.Id.Should().Be(calculationId);
 
         // => Wait for completion, this should be fairly quick, since we have mocked databricks
-        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(
+        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInactiveInstanceAsync(
             orchestrationStatus.InstanceId,
             TimeSpan.FromMinutes(3));
 
@@ -229,10 +230,10 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         // Maybe we should just retrieve data directly in the database using the connection. They do mention something like
         // that in the DFM, see https://github.com/microsoft/DurableFunctionsMonitor/tree/main/durablefunctionsmonitor.dotnetisolated.core#limitations
         // and the code https://github.com/microsoft/DurableFunctionsMonitor/blob/main/custom-backends/mssql/Startup.cs
-        await Task.Delay(TimeSpan.FromMinutes(2));
+        ////await Task.Delay(TimeSpan.FromMinutes(2));
 
         // => Wait for completion
-        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(
+        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInactiveInstanceAsync(
             orchestrationStatus.InstanceId,
             TimeSpan.FromMinutes(1)); // We will loop at least twice to get job status
 
@@ -293,11 +294,12 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeOrchestrationCreated);
 
         // => Expect calculation id
-        var calculationMetadata = orchestrationStatus.CustomStatus.ToObject<CalculationMetadata>();
+        var customStatusString = orchestrationStatus.CustomStatus.ToString();
+        var calculationMetadata = JsonSerializer.Deserialize<CalculationMetadata>(customStatusString);
         calculationMetadata!.Id.Should().Be(calculationId);
 
         // => Wait for completion
-        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(
+        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInactiveInstanceAsync(
             orchestrationStatus.InstanceId,
             TimeSpan.FromMinutes(1)); // We will loop at least until expiry time has been reached
 
