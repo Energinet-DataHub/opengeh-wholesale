@@ -530,9 +530,9 @@ dotnet_diagnostic.SX1101.severity = error
 dotnet_diagnostic.SX1309.severity = error
 
 ##############################################################
-# Durable Functions Orchestrator                             #
+# Durable Functions Orchestration                            #
 ##############################################################
-[**/Orchestrations/Functions/**/*Orchestrator.cs]
+[**/Orchestrations/Functions/**/*Orchestration.cs]
 
 dotnet_diagnostic.CA2007.severity = none        # CA2007: Consider calling ConfigureAwait on the awaited task
 dotnet_diagnostic.VSTHRD111.severity = none	    # VSTHRD111: [Similar to CA2007] Use ConfigureAwait(bool)

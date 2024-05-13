@@ -34,9 +34,9 @@ using GridAreaCode = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.S
 namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.SettlementReports;
 
 [Collection(nameof(OrchestrationsAppCollectionFixture))]
-public class SettlementReportOrchestratorTests : IAsyncLifetime
+public class SettlementReportOrchestrationTests : IAsyncLifetime
 {
-    public SettlementReportOrchestratorTests(
+    public SettlementReportOrchestrationTests(
         OrchestrationsAppFixture fixture,
         ITestOutputHelper testOutputHelper)
     {

@@ -44,7 +44,7 @@ internal sealed class SettlementReportRequestTrigger
         FunctionContext executionContext)
     {
         var instanceId = await client
-            .ScheduleNewOrchestrationInstanceAsync(nameof(SettlementReportOrchestrator.OrchestrateSettlementReportAsync), settlementReportRequest)
+            .ScheduleNewOrchestrationInstanceAsync(nameof(SettlementReportOrchestration.OrchestrateSettlementReportAsync), settlementReportRequest)
             .ConfigureAwait(false);
 
         var requestId = new SettlementReportRequestId(instanceId);
