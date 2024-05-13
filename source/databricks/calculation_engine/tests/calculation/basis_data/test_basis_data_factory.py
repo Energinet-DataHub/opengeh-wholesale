@@ -68,6 +68,8 @@ def test__basis_data_uses_correct_schema(
     basis_data_container = create_basis_data_factory(spark)
 
     # Refer to the property so we can use paramterization
-    basis_data_container_property = getattr(basis_data_container, basis_data_table_property_name)
+    basis_data_container_property = getattr(
+        basis_data_container, basis_data_table_property_name
+    )
 
     assert basis_data_container_property.schema == expected_schema
