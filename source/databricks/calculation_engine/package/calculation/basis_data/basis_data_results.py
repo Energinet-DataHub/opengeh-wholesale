@@ -40,13 +40,14 @@ def write_basis_data(basis_data: BasisDataContainer) -> None:
             f"{BASIS_DATA_DATABASE_NAME}.{TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME}"
         )
 
+    """
     with logging_configuration.start_span("grid_loss_metering_points"):
         basis_data.grid_loss_metering_points.write.format("delta").mode(
             "append"
         ).option("mergeSchema", "false").insertInto(
             f"{BASIS_DATA_DATABASE_NAME}.{GRID_LOSS_METERING_POINTS_BASIS_DATA_TABLE_NAME}"
         )
-
+    """
     if basis_data.charge_master_data:
         with logging_configuration.start_span("charge_master_data"):
             basis_data.charge_master_data.write.format("delta").mode("append").option(
