@@ -9,4 +9,3 @@ SELECT m.calculation_id,
        m.energy_supplier_id
 FROM {BASIS_DATA_DATABASE_NAME}.metering_point_periods as m
 INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = m.calculation_id
-WHERE m.metering_point_type != 'exchange'
