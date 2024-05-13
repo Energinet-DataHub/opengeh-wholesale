@@ -90,6 +90,10 @@ schema_config = [
                 name=paths.GRID_LOSS_METERING_POINTS_TABLE_NAME,
                 schema=basis_data_schemas.grid_loss_metering_points_schema,
             ),
+            Table(
+                name=paths.CALCULATIONS_TABLE_NAME,
+                schema=basis_data_schemas.calculations_schema,
+            ),
         ],
         views=[],
     ),
