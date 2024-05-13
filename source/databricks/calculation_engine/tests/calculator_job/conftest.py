@@ -82,7 +82,7 @@ def executed_balance_fixing(
         calculation_input_path,
     )
     prepared_data_reader = PreparedDataReader(table_reader)
-    calculation.execute(calculator_args_balance_fixing, prepared_data_reader)
+    calculation.execute(calculator_args_balance_fixing, prepared_data_reader, spark)
 
 
 @pytest.fixture(scope="session")
@@ -102,7 +102,7 @@ def executed_wholesale_fixing(
 
     table_reader = TableReader(spark, calculation_input_path)
     prepared_data_reader = PreparedDataReader(table_reader)
-    calculation.execute(calculator_args_wholesale_fixing, prepared_data_reader)
+    calculation.execute(calculator_args_wholesale_fixing, prepared_data_reader, spark)
 
 
 @pytest.fixture(scope="session")

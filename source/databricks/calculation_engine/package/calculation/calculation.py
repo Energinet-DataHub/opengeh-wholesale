@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from pyspark.sql import SparkSession
 
 from package.calculation.basis_data.basis_data_results import write_basis_data
 from package.calculation.energy.calculated_grid_loss import (
@@ -38,9 +39,13 @@ from ..codelists.calculation_type import is_wholesale_calculation_type
 
 
 @logging_configuration.use_span("calculation")
-def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> None:
+def execute(
+    args: CalculatorArgs,
+    prepared_data_reader: PreparedDataReader,
+    spark: SparkSession,
+) -> None:
     results = _execute(args, prepared_data_reader)
-    _write_output(results, args, prepared_data_reader)
+    _write_output(results, args, prepared_data_reader, spark)
 
 
 def _execute(
@@ -150,6 +155,7 @@ def _write_output(
     results: CalculationResultsContainer,
     args: CalculatorArgs,
     prepared_data_reader: PreparedDataReader,
+    spark: SparkSession,
 ) -> None:
     write_energy_results(results.energy_results)
     if results.wholesale_results is not None:
@@ -163,4 +169,4 @@ def _write_output(
 
     # IMPORTANT: Write the succeeded calculation after the results to ensure that the calculation
     # is only marked as succeeded when all results are written
-    write_calculation(args, prepared_data_reader)
+    write_calculation(args, prepared_data_reader, spark)

@@ -18,7 +18,7 @@ from package.calculation import PreparedDataReader
 from package.calculation.basis_data.schemas import calculations_schema
 from package.calculation.calculator_args import CalculatorArgs
 from package.constants.calculation_column_names import CalculationColumnNames
-from package.infrastructure import logging_configuration, paths, initialize_spark
+from package.infrastructure import logging_configuration, paths
 
 
 @logging_configuration.use_span("calculation.write-succeeded-calculation")
@@ -26,17 +26,11 @@ from package.infrastructure import logging_configuration, paths, initialize_spar
 def write_calculation(
     args: CalculatorArgs,
     prepared_data_reader: PreparedDataReader,
-) -> None:
-    _write_calculation(args, prepared_data_reader)
-
-
-def _write_calculation(
-    args: CalculatorArgs,
-    prepared_data_reader: PreparedDataReader,
+    spark: SparkSession,
 ) -> None:
     """Writes the succeeded calculation to the calculations table."""
 
-    df = _create_calculation(args, prepared_data_reader)
+    df = _create_calculation(args, prepared_data_reader, spark)
 
     df.write.format("delta").mode("append").option("mergeSchema", "false").insertInto(
         f"{paths.BASIS_DATA_DATABASE_NAME}.{paths.CALCULATIONS_TABLE_NAME}"
@@ -47,7 +41,7 @@ def _write_calculation(
 def _create_calculation(
     args: CalculatorArgs,
     prepared_data_reader: PreparedDataReader,
-    spark: SparkSession = initialize_spark(),
+    spark: SparkSession,
 ) -> DataFrame:
     latest_version = prepared_data_reader.get_latest_calculation_version(
         args.calculation_type
