@@ -104,7 +104,7 @@ data "external" "databricks_token_integration_test" {
 resource "databricks_instance_pool" "migration_pool_integration_test" {
   instance_pool_name                    = "migration-integration-test-instance-pool"
   min_idle_instances                    = 0
-  max_capacity                          = 5
+  max_capacity                          = 10
   node_type_id                          = "Standard_E4d_v4"
   idle_instance_autotermination_minutes = 60
   preloaded_spark_versions = [local.databricks_runtime_version]
