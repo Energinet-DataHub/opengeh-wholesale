@@ -4,7 +4,7 @@ The purpose of this test is to test the view for settlement reports that is used
 
 ## Design considerations
 
-- Verify that only only succeeded calculations are included (those that are in the 'calculation' delta table)
+- Verify that only succeeded calculations are included (those that are in the 'calculations' delta table)
 - Verify that metering points that do not have a charge link is not part of the result
 
 ## Coverage

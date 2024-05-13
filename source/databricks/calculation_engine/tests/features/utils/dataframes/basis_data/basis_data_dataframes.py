@@ -79,16 +79,6 @@ def create_charge_link_periods(spark: SparkSession, df: DataFrame) -> DataFrame:
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
-    from package.constants import MeteringPointPeriodColname
     from package.calculation.basis_data.schemas import charge_link_periods_schema
-
-    # df = df.withColumn(
-    #     MeteringPointPeriodColname.from_date,
-    #     col(MeteringPointPeriodColname.from_date).cast(TimestampType()),
-    # )
-    # df = df.withColumn(
-    #     MeteringPointPeriodColname.to_date,
-    #     col(MeteringPointPeriodColname.to_date).cast(TimestampType()),
-    # )
 
     return spark.createDataFrame(df.rdd, charge_link_periods_schema)
