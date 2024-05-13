@@ -23,10 +23,10 @@ using RetryContext = Microsoft.DurableTask.RetryContext;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports;
 
-internal sealed class SettlementReportOrchestrator
+internal sealed class SettlementReportOrchestration
 {
-    [Function(nameof(OrchestrateSettlementReportAsync))]
-    public async Task<string> OrchestrateSettlementReportAsync(
+    [Function(nameof(OrchestrateSettlementReport))]
+    public async Task<string> OrchestrateSettlementReport(
          [OrchestrationTrigger] TaskOrchestrationContext context,
          FunctionContext executionContext)
     {
@@ -45,7 +45,7 @@ internal sealed class SettlementReportOrchestrator
 
         var coldRetryHandler = TaskOptions.FromRetryHandler(retryContext => HandleColdDataSource(
                 retryContext,
-                executionContext.GetLogger<SettlementReportOrchestrator>()));
+                executionContext.GetLogger<SettlementReportOrchestration>()));
 
         var fileRequestTasks = scatterResults.Select(fileRequest => context
             .CallActivityAsync<GeneratedSettlementReportFileDto>(
@@ -66,7 +66,7 @@ internal sealed class SettlementReportOrchestrator
         return "Success";
     }
 
-    private static bool HandleColdDataSource(RetryContext retryContext, ILogger<SettlementReportOrchestrator> logger)
+    private static bool HandleColdDataSource(RetryContext retryContext, ILogger<SettlementReportOrchestration> logger)
     {
         if (retryContext.LastFailure.ErrorMessage == ISettlementReportDataRepository.DataSourceUnavailableExceptionMessage)
         {
