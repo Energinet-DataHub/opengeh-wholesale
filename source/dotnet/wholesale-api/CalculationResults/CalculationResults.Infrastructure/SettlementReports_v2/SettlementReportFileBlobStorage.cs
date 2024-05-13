@@ -50,6 +50,6 @@ public sealed class SettlementReportFileBlobStorage : ISettlementReportFileRepos
 
     private static string GetBlobName(SettlementReportRequestId reportRequestId, string fileName)
     {
-        return Path.Combine("settlement-reports", reportRequestId.Id, fileName);
+        return string.Join('/', "settlement-reports", reportRequestId.Id, fileName);
     }
 }

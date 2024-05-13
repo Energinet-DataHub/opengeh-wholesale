@@ -52,6 +52,49 @@ public static class CalculationResultsExtensions
         services.AddScoped<IStreamZipper, StreamZipper>();
         services.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
 
+        services.AddScoped<IDatabaseContext, DatabaseContext>();
+        services.AddDbContext<DatabaseContext>(
+            options => options.UseSqlServer(
+                configuration
+                    .GetSection(ConnectionStringsOptions.ConnectionStrings)
+                    .Get<ConnectionStringsOptions>()!.DB_CONNECTION_STRING,
+                o =>
+                {
+                    o.UseNodaTime();
+                    o.EnableRetryOnFailure();
+                }));
+        // Database Health check
+        services.TryAddHealthChecks(
+            registrationKey: HealthCheckNames.WholesaleDatabase,
+            (key, builder) =>
+            {
+                builder.AddDbContextCheck<DatabaseContext>(name: key);
+            });
+
+        // Used by sql statements (queries)
+        services.AddOptions<DeltaTableOptions>().Bind(configuration);
+        services.AddScoped<IEnergyResultQueries, EnergyResultQueries>();
+        services.AddScoped<IWholesaleResultQueries, WholesaleResultQueries>();
+        services.AddScoped<IWholesaleServicesQueries, WholesaleServicesQueries>();
+        services.AddScoped<IAggregatedTimeSeriesQueries, AggregatedTimeSeriesQueries>();
+        services.AddScoped<ISettlementReportResultQueries, SettlementReportResultQueries>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddCalculationResultsV2Module(this IServiceCollection services, IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(configuration);
+
+        services.AddDatabricksSqlStatementForApplication(configuration);
+        services.AddDataLakeClientForApplication();
+
+        services.AddScoped<ISettlementReportClient, SettlementReportClient>();
+        services.AddScoped<ISettlementReportResultsCsvWriter, SettlementReportResultsCsvWriter>();
+        services.AddScoped<IDataLakeClient, DataLakeClient>();
+        services.AddScoped<IStreamZipper, StreamZipper>();
+        services.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
+
         // Settlement Reports
         services.AddScoped<ISettlementReportRequestHandler, SettlementReportRequestHandler>();
         services.AddScoped<ISettlementReportFileRequestHandler, SettlementReportFileRequestHandler>();
@@ -61,6 +104,7 @@ public static class CalculationResultsExtensions
         services.AddScoped<ISettlementReportDataRepository, LegacySettlementReportDataRepository>();
         services.AddScoped<ISettlementReportRepository, SettlementReportRepository>();
         services.AddScoped<ISettlementReportFileGeneratorFactory, SettlementReportFileGeneratorFactory>();
+        services.AddSettlementReportBlobStorage();
 
         services.AddScoped<IDatabaseContext, DatabaseContext>();
         services.AddDbContext<DatabaseContext>(
