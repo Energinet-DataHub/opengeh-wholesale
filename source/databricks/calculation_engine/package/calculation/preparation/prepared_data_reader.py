@@ -169,18 +169,12 @@ class PreparedDataReader:
 
         calculations = self._table_reader.read_calculations()
 
-        latest_calculation = (
+        latest_version = (
             calculations.where(
                 f.col(CalculationColumnNames.calculation_type) == calculation_type
             )
-            .agg(f.max(CalculationColumnNames.version))
-            .collect()
-        )
-
-        latest_version = (
-            latest_calculation[0][CalculationColumnNames.version]
-            if len(latest_calculation) > 0
-            else None
+            .agg(f.max(CalculationColumnNames.version).alias("version"))
+            .collect()[0]["version"]
         )
 
         return latest_version
