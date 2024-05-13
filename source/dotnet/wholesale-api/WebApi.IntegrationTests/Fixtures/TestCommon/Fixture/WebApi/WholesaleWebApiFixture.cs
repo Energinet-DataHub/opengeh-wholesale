@@ -71,7 +71,7 @@ public class WholesaleWebApiFixture : WebApiFixture
 
         // Overwrites the setting so the Web Api app uses the database we have control of in the test
         Environment.SetEnvironmentVariable(
-            $"{nameof(ConnectionStringsOptions.ConnectionStrings)}__{nameof(ConnectionStringsOptions.DB_CONNECTION_STRING)}",
+            $"{ConnectionStringsOptions.SectionName}__{nameof(ConnectionStringsOptions.DB_CONNECTION_STRING)}",
             DatabaseManager.ConnectionString);
 
         Environment.SetEnvironmentVariable(

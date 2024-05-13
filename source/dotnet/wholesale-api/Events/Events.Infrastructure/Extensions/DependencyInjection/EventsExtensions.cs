@@ -50,7 +50,7 @@ public static class EventsExtensions
         services.AddDbContext<EventsDatabaseContext>(
             options => options.UseSqlServer(
                 configuration
-                    .GetSection(ConnectionStringsOptions.ConnectionStrings)
+                    .GetSection(ConnectionStringsOptions.SectionName)
                     .Get<ConnectionStringsOptions>()!.DB_CONNECTION_STRING,
                 o =>
                 {
