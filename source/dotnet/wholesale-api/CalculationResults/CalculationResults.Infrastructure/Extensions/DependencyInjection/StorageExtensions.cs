@@ -17,7 +17,6 @@ using Azure.Storage.Blobs;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -25,21 +24,33 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensio
 
 public static class StorageExtensions
 {
-    // TODO: Cleanup health check.
-    public static IServiceCollection AddSettlementReportBlobStorage(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddSettlementReportBlobStorage(this IServiceCollection services)
     {
         services
             .AddOptions<SettlementReportStorageOptions>()
             .BindConfiguration(SettlementReportStorageOptions.SectionName);
 
-        services.AddScoped<ISettlementReportFileRepository, SettlementReportFileBlobStorage>(d =>
+        services.AddScoped<ISettlementReportFileRepository, SettlementReportFileBlobStorage>(serviceProvider =>
         {
-            var blobSettings = d.GetRequiredService<IOptions<SettlementReportStorageOptions>>().Value;
+            var blobSettings = serviceProvider.GetRequiredService<IOptions<SettlementReportStorageOptions>>().Value;
 
             var blobContainerUri = new Uri(blobSettings.StorageAccountUri + "/" + blobSettings.StorageContainerName);
             var blobContainerClient = new BlobContainerClient(blobContainerUri, new DefaultAzureCredential());
 
             return new SettlementReportFileBlobStorage(blobContainerClient);
+        });
+
+        // Health checks
+        services.AddHealthChecks().AddAzureBlobStorage(
+        serviceProvider =>
+        {
+            var blobSettings = serviceProvider.GetRequiredService<IOptions<SettlementReportStorageOptions>>().Value;
+            return new BlobServiceClient(blobSettings.StorageAccountUri, new DefaultAzureCredential());
+        },
+        (serviceProvider, options) =>
+        {
+            var blobSettings = serviceProvider.GetRequiredService<IOptions<SettlementReportStorageOptions>>().Value;
+            options.ContainerName = blobSettings.StorageContainerName;
         });
 
         return services;

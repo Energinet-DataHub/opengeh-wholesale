@@ -44,7 +44,6 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
         SettlementReportRequestId requestId,
         SettlementReportRequestDto reportRequest)
     {
-        // TODO: Hvis der anmodes om rapporten uden datagrundlag for flere netområder, skal de kunne vælge om at kombinere rapporten til en fil eller få en fil per netområde.
         var resultsFile = new SettlementReportFileRequestDto(
             SettlementReportFileContent.BalanceFixingResult,
             "Result Energy",

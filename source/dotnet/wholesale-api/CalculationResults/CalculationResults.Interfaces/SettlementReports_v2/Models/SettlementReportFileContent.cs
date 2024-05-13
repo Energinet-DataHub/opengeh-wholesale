@@ -16,6 +16,5 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementRe
 
 public enum SettlementReportFileContent
 {
-    // TODO: Name?
     BalanceFixingResult,
 }
