@@ -21,8 +21,9 @@ from package.calculation.preparation.data_structures.grid_loss_metering_points i
     GridLossMeteringPoints,
 )
 
+
 def get_grid_loss_metering_points(
-     grid_loss_responsible_df: GridLossResponsible
+    grid_loss_responsible_df: GridLossResponsible
 ) -> GridLossMeteringPoints:
     return GridLossMeteringPoints(
         grid_loss_responsible_df
