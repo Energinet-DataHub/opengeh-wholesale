@@ -3,3 +3,4 @@
 feature_management_use_monthly_amount_per_charge_result_produced = true
 feature_management_use_amount_per_charge_result_produced         = true
 feature_management_use_energy_result_produced                    = true
+feature_management_use_request_wholesale_settlement_receiver     = true
