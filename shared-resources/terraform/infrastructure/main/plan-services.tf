@@ -1,3 +1,4 @@
+# TODO: remove plan_services and all related resources once all services are migrated to other plans
 module "plan_services" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service-plan?ref=14.0.3"
 
