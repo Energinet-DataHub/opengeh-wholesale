@@ -33,7 +33,7 @@ public class TotalMonthlyAmountResultQueryStatement : DatabricksStatement
     {
         return $@"
             SELECT {string.Join(", ", SqlColumnNames)}
-            FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.WHOLESALE_RESULTS_TABLE_NAME}
+            FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}
             WHERE {WholesaleResultColumnNames.CalculationId} = '{_calculationId}'
             ORDER BY {WholesaleResultColumnNames.CalculationResultId}, {WholesaleResultColumnNames.Time}
             ";
