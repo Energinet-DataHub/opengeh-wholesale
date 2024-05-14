@@ -68,7 +68,7 @@ jobs:
             contentroot_variable_name: empty # Means skip
           - name: Calculation Results
             paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
-            use_azure_functions_tools: false
+            use_azure_functions_tools: true
             contentroot_variable_name: empty # Means skip
           - name: Events
             paths: \source\dotnet\wholesale-api\Events\Events.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Events.IntegrationTests.dll
