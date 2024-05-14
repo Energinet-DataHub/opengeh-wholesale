@@ -30,29 +30,13 @@ message CalculationCompletedV1 {
    * Example: 65801e3c-5131-426e-b1bb-7b186349c996
    */
   string calculation_id = 1;
-
-  /*
-  * The type of calculation.
-  */
+  
   CalculationType calculation_type = 2;
   
   /*
   * Is the version number corresponding to the calculation for the given type and period.
-  * Is a tick since unix epoch.  
   */
-  int64 calculation_version_number = 3;
-
-  /*
-  * The beginning of the calculation period.
-  * The time is included in the period.
-  */
-  google.protobuf.Timestamp period_start_utc = 4;
-
-  /*
-  * The end of the calculation period.
-  * The time is excluded from the period.
-  */
-  google.protobuf.Timestamp period_end_utc = 5;
+  int64 calculation_version = 3;
   
   enum CalculationType {
   /*
