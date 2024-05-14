@@ -68,8 +68,8 @@ def _execute(
             )
         )
 
-        grid_loss_metering_points_df = (
-            get_grid_loss_metering_points(grid_loss_responsible_df)
+        grid_loss_metering_points_df = get_grid_loss_metering_points(
+            grid_loss_responsible_df
         )
 
         metering_point_time_series = (

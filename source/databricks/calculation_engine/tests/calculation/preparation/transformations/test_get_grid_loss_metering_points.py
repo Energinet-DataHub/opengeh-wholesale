@@ -24,11 +24,14 @@ from package.calculation.input.schemas.grid_loss_metering_points_schema import (
 from package.calculation.preparation.data_structures.grid_loss_responsible import (
     grid_loss_responsible_schema,
 )
-from package.calculation.preparation.transformations.grid_loss_metering_points import get_grid_loss_metering_points
+from package.calculation.preparation.transformations.grid_loss_metering_points import (
+    get_grid_loss_metering_points,
+)
 from package.constants import Colname
 from package.codelists import MeteringPointType
 
 from typing import List, Dict
+
 
 class DefaultValues:
     DEFAULT_GRID_AREA = ["804"]
@@ -51,7 +54,9 @@ def _create_grid_loss_responsible_data(data: List[str]) -> List[Row]:
     return resulting_data_frame
 
 
-def _get_grid_loss_responsible_dataframe(spark: SparkSession, data: List[str]) -> GridLossResponsible:
+def _get_grid_loss_responsible_dataframe(
+    spark: SparkSession, data: List[str]
+) -> GridLossResponsible:
     grid_loss_responsible_list = _create_grid_loss_responsible_data(data)
 
     metering_point_period = factory.create(spark, data=grid_loss_responsible_list)
@@ -103,9 +108,7 @@ def test__get_grid_loss_metering_points__count_is_correct(
     )
 
     # Act
-    result = get_grid_loss_metering_points(
-        grid_loss_responsible
-    )
+    result = get_grid_loss_metering_points(grid_loss_responsible)
 
     # Assert
     assert result.df.count() == expected_count
