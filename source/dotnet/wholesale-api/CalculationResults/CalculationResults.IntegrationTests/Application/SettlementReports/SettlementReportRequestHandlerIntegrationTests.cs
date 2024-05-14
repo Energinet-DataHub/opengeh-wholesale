@@ -59,7 +59,6 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             DateTimeOffset.UtcNow.Date.AddDays(2),
             null);
 
-
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var reportRequest = new SettlementReportRequestDto(CalculationType.BalanceFixing, true, filter);
 
