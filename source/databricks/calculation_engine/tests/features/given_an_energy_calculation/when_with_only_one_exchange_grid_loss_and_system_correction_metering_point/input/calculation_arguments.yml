@@ -1,6 +1,0 @@
-- grid_areas: [ '800' ]
-  calculation_id: '0b15a420-9fc8-409a-a169-fbd49479d718'
-  period_start: '2023-10-10 06:00:00'
-  period_end: '2023-10-10 08:00:00'
-  calculation_type: 'Aggregation'
-  calculation_execution_time_start: '2024-01-01 23:00:00'

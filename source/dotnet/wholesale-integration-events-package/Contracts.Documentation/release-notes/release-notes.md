@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 9.3.2
+
+Added `CalculationCompletedV1.cs` integration event.
+
 ## Version 9.3.1
 
 Added `TotalMonthlyAmountResultProducedV1.cs` as partial class to the TotalMonthlyAmountResultProducedV1 event.

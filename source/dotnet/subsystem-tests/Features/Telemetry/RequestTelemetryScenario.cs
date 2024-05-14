@@ -86,7 +86,7 @@ public class RequestTelemetryScenario : SubsystemTestsBase<TelemetryScenarioFixt
     {
         var query = $@"
                 let OperationIds = AppRequests
-                | where AppRoleName contains ""app-webapi-wholsal-""
+                | where AppRoleName contains ""api-wholsal-""
                 | where Url contains ""/v3/calculations/{Fixture.ScenarioState.CalculationId}""
                 | order by TimeGenerated desc
                 | take 1
