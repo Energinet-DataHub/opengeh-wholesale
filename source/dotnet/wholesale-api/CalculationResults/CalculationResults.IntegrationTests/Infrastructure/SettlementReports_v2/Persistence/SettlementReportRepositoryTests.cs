@@ -21,11 +21,11 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SettlementReports_v2.Persistence;
 
-public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFixture<DatabaseContext>>
+public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFixture<SettlementReportDatabaseContext>>
 {
-    private readonly WholesaleDatabaseManager<DatabaseContext> _databaseManager;
+    private readonly WholesaleDatabaseManager<SettlementReportDatabaseContext> _databaseManager;
 
-    public SettlementReportRepositoryTests(WholesaleDatabaseFixture<DatabaseContext> fixture)
+    public SettlementReportRepositoryTests(WholesaleDatabaseFixture<SettlementReportDatabaseContext> fixture)
     {
         _databaseManager = fixture.DatabaseManager;
     }

@@ -52,8 +52,8 @@ public static class CalculationResultsExtensions
         services.AddScoped<IStreamZipper, StreamZipper>();
         services.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
 
-        services.AddScoped<IDatabaseContext, DatabaseContext>();
-        services.AddDbContext<DatabaseContext>(
+        services.AddScoped<ISettlementReportDatabaseContext, SettlementReportDatabaseContext>();
+        services.AddDbContext<SettlementReportDatabaseContext>(
             options => options.UseSqlServer(
                 configuration
                     .GetSection(ConnectionStringsOptions.ConnectionStrings)
@@ -68,7 +68,7 @@ public static class CalculationResultsExtensions
             registrationKey: HealthCheckNames.WholesaleDatabase,
             (key, builder) =>
             {
-                builder.AddDbContextCheck<DatabaseContext>(name: key);
+                builder.AddDbContextCheck<SettlementReportDatabaseContext>(name: key);
             });
 
         // Used by sql statements (queries)
@@ -106,8 +106,8 @@ public static class CalculationResultsExtensions
         services.AddScoped<ISettlementReportFileGeneratorFactory, SettlementReportFileGeneratorFactory>();
         services.AddSettlementReportBlobStorage();
 
-        services.AddScoped<IDatabaseContext, DatabaseContext>();
-        services.AddDbContext<DatabaseContext>(
+        services.AddScoped<ISettlementReportDatabaseContext, SettlementReportDatabaseContext>();
+        services.AddDbContext<SettlementReportDatabaseContext>(
             options => options.UseSqlServer(
                 configuration
                     .GetSection(ConnectionStringsOptions.ConnectionStrings)
@@ -122,7 +122,7 @@ public static class CalculationResultsExtensions
             registrationKey: HealthCheckNames.WholesaleDatabase,
             (key, builder) =>
             {
-                builder.AddDbContextCheck<DatabaseContext>(name: key);
+                builder.AddDbContextCheck<SettlementReportDatabaseContext>(name: key);
             });
 
         // Used by sql statements (queries)

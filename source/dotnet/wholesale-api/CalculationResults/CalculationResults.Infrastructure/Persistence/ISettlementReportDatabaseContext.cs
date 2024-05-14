@@ -16,12 +16,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence;
 
-public interface IDatabaseContext
+public interface ISettlementReportDatabaseContext
 {
     DbSet<Application.SettlementReports_v2.SettlementReport> SettlementReports { get; }
 
-    /// <summary>
-    /// Saves changes to the database.
-    /// </summary>
     Task<int> SaveChangesAsync();
 }

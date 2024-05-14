@@ -19,9 +19,9 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persiste
 
 public class SettlementReportRepository : ISettlementReportRepository
 {
-    private readonly IDatabaseContext _context;
+    private readonly ISettlementReportDatabaseContext _context;
 
-    public SettlementReportRepository(IDatabaseContext context)
+    public SettlementReportRepository(ISettlementReportDatabaseContext context)
     {
         _context = context;
     }

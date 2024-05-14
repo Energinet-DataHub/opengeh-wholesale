@@ -79,9 +79,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             .DeltaTableOptions);
 
         // Act
-        var actual = await Fixture
-            .Create<SettlementReportFileRequestHandler>()
-            .RequestFileAsync(fileRequest);
+        var actual = await Sut.RequestFileAsync(fileRequest);
 
         // Assert
         Assert.Equal(requestId, actual.RequestId);

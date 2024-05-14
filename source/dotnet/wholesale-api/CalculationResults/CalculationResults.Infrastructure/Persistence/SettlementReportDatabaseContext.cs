@@ -17,16 +17,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence;
 
-public class DatabaseContext : DbContext, IDatabaseContext
+public class SettlementReportDatabaseContext : DbContext, ISettlementReportDatabaseContext
 {
     private const string Schema = "settlementreports";
 
-    public DatabaseContext(DbContextOptions<DatabaseContext> options)
+    public SettlementReportDatabaseContext(DbContextOptions<SettlementReportDatabaseContext> options)
         : base(options)
     {
     }
 
-    public DatabaseContext() { }
+    public SettlementReportDatabaseContext() { }
 
     public DbSet<Application.SettlementReports_v2.SettlementReport> SettlementReports { get; init; } = null!;
 

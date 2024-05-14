@@ -52,9 +52,7 @@ public sealed class SettlementReportFromFilesHandlerIntegrationTests : TestBase<
         await Task.WhenAll(inputFiles.Select(MakeTestFileAsync));
 
         // Act
-        var actual = await Fixture
-            .Create<SettlementReportFromFilesHandler>()
-            .CombineAsync(inputFiles);
+        var actual = await Sut.CombineAsync(inputFiles);
 
         // Assert
         Assert.Equal(requestId, actual.RequestId);

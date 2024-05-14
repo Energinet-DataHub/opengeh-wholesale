@@ -28,13 +28,13 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Applic
 
 [Collection(nameof(SettlementReportFileCollectionFixture))]
 public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<SettlementReportFinalizeHandler>,
-    IClassFixture<WholesaleDatabaseFixture<DatabaseContext>>
+    IClassFixture<WholesaleDatabaseFixture<SettlementReportDatabaseContext>>
 {
-    private readonly WholesaleDatabaseFixture<DatabaseContext> _wholesaleDatabaseFixture;
+    private readonly WholesaleDatabaseFixture<SettlementReportDatabaseContext> _wholesaleDatabaseFixture;
     private readonly SettlementReportFileBlobStorageFixture _settlementReportFileBlobStorageFixture;
 
     public SettlementReportFinalizeHandlerIntegrationTests(
-        WholesaleDatabaseFixture<DatabaseContext> wholesaleDatabaseFixture,
+        WholesaleDatabaseFixture<SettlementReportDatabaseContext> wholesaleDatabaseFixture,
         SettlementReportFileBlobStorageFixture settlementReportFileBlobStorageFixture)
     {
         _wholesaleDatabaseFixture = wholesaleDatabaseFixture;
@@ -69,9 +69,7 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
         await dbContext.SaveChangesAsync();
 
         // Act
-        await Fixture
-            .Create<SettlementReportFinalizeHandler>()
-            .FinalizeAsync(generatedSettlementReport);
+        await Sut.FinalizeAsync(generatedSettlementReport);
 
         // Assert
         var container = _settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
@@ -98,9 +96,7 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
         await dbContextArrange.SaveChangesAsync();
 
         // Act
-        await Fixture
-            .Create<SettlementReportFinalizeHandler>()
-            .FinalizeAsync(generatedSettlementReport);
+        await Sut.FinalizeAsync(generatedSettlementReport);
 
         // Assert
         await using var dbContextAct = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
