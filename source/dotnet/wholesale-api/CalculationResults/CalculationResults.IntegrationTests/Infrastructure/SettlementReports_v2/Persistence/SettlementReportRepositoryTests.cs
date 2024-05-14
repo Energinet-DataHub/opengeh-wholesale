@@ -15,6 +15,8 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.SettlementReportRequest;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -36,7 +38,18 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
         // arrange
         await using var writeContext = _databaseManager.CreateDbContext();
         var target = new SettlementReportRepository(writeContext);
-        var settlementReportRequest = new SettlementReport(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid().ToString());
+
+        var requestFilterDto = new SettlementReportRequestFilterDto(
+            [new GridAreaCode("805"), new GridAreaCode("806")],
+            new DateTimeOffset(2024, 1, 1, 22, 0, 0, TimeSpan.Zero),
+            new DateTimeOffset(2024, 2, 1, 22, 0, 0, TimeSpan.Zero),
+            null);
+
+        var settlementReportRequest = new SettlementReport(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            new SettlementReportRequestId(Guid.NewGuid().ToString()),
+            new SettlementReportRequestDto(CalculationType.BalanceFixing, false, requestFilterDto));
 
         // act
         await target.AddOrUpdateAsync(settlementReportRequest);
@@ -44,14 +57,20 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
         // assert
         await using var readContext = _databaseManager.CreateDbContext();
         var actual = await readContext.SettlementReports.SingleOrDefaultAsync(x => x.Id == settlementReportRequest.Id);
+
         Assert.NotNull(actual);
         Assert.Equal(settlementReportRequest.Id, actual.Id);
+        Assert.Equal(settlementReportRequest.RequestId, actual.RequestId);
         Assert.Equal(settlementReportRequest.UserId, actual.UserId);
         Assert.Equal(settlementReportRequest.ActorId, actual.ActorId);
-        Assert.Equal(settlementReportRequest.RequestId, actual.RequestId);
         Assert.Equal(settlementReportRequest.CreatedDateTime, actual.CreatedDateTime);
+        Assert.Equal(settlementReportRequest.CalculationType, actual.CalculationType);
+        Assert.Equal(settlementReportRequest.ContainsBasisData, actual.ContainsBasisData);
+        Assert.Equal(settlementReportRequest.PeriodStart, actual.PeriodStart);
+        Assert.Equal(settlementReportRequest.PeriodEnd, actual.PeriodEnd);
+        Assert.Equal(settlementReportRequest.GridAreaCount, actual.GridAreaCount);
         Assert.Equal(settlementReportRequest.Status, actual.Status);
-        Assert.Equal(settlementReportRequest.BlobFilename, actual.BlobFilename);
+        Assert.Equal(settlementReportRequest.BlobFileName, actual.BlobFileName);
     }
 
     [Fact]
@@ -118,7 +137,19 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
     {
         await using var setupContext = _databaseManager.CreateDbContext();
         var setupRepository = new SettlementReportRepository(setupContext);
-        var settlementReportRequest = new SettlementReport(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid().ToString());
+
+        var requestFilterDto = new SettlementReportRequestFilterDto(
+            [new GridAreaCode("805"), new GridAreaCode("806")],
+            new DateTimeOffset(2024, 1, 1, 22, 0, 0, TimeSpan.Zero),
+            new DateTimeOffset(2024, 2, 1, 22, 0, 0, TimeSpan.Zero),
+            null);
+
+        var settlementReportRequest = new SettlementReport(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            new SettlementReportRequestId(Guid.NewGuid().ToString()),
+            new SettlementReportRequestDto(CalculationType.BalanceFixing, false, requestFilterDto));
+
         await setupRepository.AddOrUpdateAsync(settlementReportRequest);
         return settlementReportRequest;
     }

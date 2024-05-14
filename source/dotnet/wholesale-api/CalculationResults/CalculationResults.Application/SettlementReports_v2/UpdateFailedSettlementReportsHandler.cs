@@ -17,21 +17,25 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 
-public sealed class SettlementReportInitializeHandler : ISettlementReportInitializeHandler
+public sealed class UpdateFailedSettlementReportsHandler : IUpdateFailedSettlementReportsHandler
 {
     private readonly ISettlementReportRepository _repository;
 
-    public SettlementReportInitializeHandler(ISettlementReportRepository repository)
+    public UpdateFailedSettlementReportsHandler(ISettlementReportRepository repository)
     {
         _repository = repository;
     }
 
-    public Task InitializeAsync(
-        Guid userId,
-        Guid actorId,
-        SettlementReportRequestId requestId,
-        SettlementReportRequestDto request)
+    public async Task UpdateFailedReportAsync(SettlementReportRequestId failedReportId)
     {
-        return _repository.AddOrUpdateAsync(new SettlementReport(userId, actorId, requestId, request));
+        var request = await _repository
+            .GetAsync(failedReportId.Id)
+            .ConfigureAwait(false);
+
+        request.MarkAsFailed();
+
+        await _repository
+            .AddOrUpdateAsync(request)
+            .ConfigureAwait(false);
     }
 }
