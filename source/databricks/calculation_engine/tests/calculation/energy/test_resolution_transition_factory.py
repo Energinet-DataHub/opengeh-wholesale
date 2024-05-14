@@ -58,7 +58,7 @@ class TestGetEnergyResultResolution:
 
 class TestEnergyResultResolutionAdjustedMeteringPointTimeSeries:
     @pytest.mark.parametrize(
-        "transition_datetime, start_datetime, end_datetime, expected_resolution, expected_rows",
+        "transition_datetime, start_datetime, end_datetime, expected_rows",
         [
             (
                 datetime(2023, 4, 30, 23),
