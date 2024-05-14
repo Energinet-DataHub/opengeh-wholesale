@@ -96,13 +96,20 @@ message CalculationCompletedV1 {
    * Example: 65801e3c-5131-426e-b1bb-7b186349c996
    */
   string calculation_id = 1;
+
+  /*
+   * The ID of the workflow responsible for the calculation.
+   * The ID is a UUID consisting of hexadecimal digits in the form XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX.
+   * Example: 65801e3c-5131-426e-b1bb-7b186349c996
+   */
+  string instance_id = 2;
   
-  CalculationType calculation_type = 2;
+  CalculationType calculation_type = 3;
   
   /*
   * Is the version number corresponding to the calculation for the given type and period.
   */
-  int64 calculation_version = 3;
+  int64 calculation_version = 4;
   
   enum CalculationType {
   /*
