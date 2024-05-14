@@ -18,4 +18,5 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementRe
 
 public sealed record SettlementReportRequestDto(
     CalculationType CalculationType,
+    bool SplitReportPerGridArea,
     SettlementReportRequestFilterDto Filter);

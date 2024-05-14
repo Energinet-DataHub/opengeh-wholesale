@@ -76,6 +76,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
         // Arrange
         var settlementReportRequest = new SettlementReportRequestDto(
             CalculationType.BalanceFixing,
+            false,
             new SettlementReportRequestFilterDto(
                 [new GridAreaCode("042")],
                 DateTimeOffset.UtcNow,
