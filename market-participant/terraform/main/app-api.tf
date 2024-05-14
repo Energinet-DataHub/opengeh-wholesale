@@ -57,11 +57,6 @@ module "kvs_backend_api_open_id_url" {
 
 locals {
   default_api_app_settings = {
-    MITID_EXTERNAL_OPEN_ID_URL = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=mitid-frontend-open-id-url)"
-    EXTERNAL_OPEN_ID_URL       = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=frontend-open-id-url)"
-    INTERNAL_OPEN_ID_URL       = "https://app-api-${var.domain_name_short}-${var.environment_short}-we-${var.environment_instance}.azurewebsites.net/.well-known/openid-configuration"
-    BACKEND_BFF_APP_ID         = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-bff-app-id)"
-
     "UserAuthentication:MitIdExternalMetadataAddress" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=mitid-frontend-open-id-url)"
     "UserAuthentication:ExternalMetadataAddress"      = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=frontend-open-id-url)"
     "UserAuthentication:InternalMetadataAddress"      = "https://app-api-${var.domain_name_short}-${var.environment_short}-we-${var.environment_instance}.azurewebsites.net/.well-known/openid-configuration"
@@ -80,5 +75,23 @@ locals {
     CVR_BASE_ADDRESS                = var.cvr_base_address
     CVR_USERNAME                    = var.cvr_username
     CVR_PASSWORD                    = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_cvr_password.name})"
+
+    "Database:ConnectionString"     = local.MS_MARKET_PARTICIPANT_CONNECTION_STRING
+
+    "AzureB2c:Tenant"               = var.b2c_tenant
+    "AzureB2c:SpnId"                = var.b2c_spn_id
+    "AzureB2c:SpnSecret"            = var.b2c_spn_secret
+    "AzureB2c:BackendObjectId"      = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-b2b-app-obj-id)"
+    "AzureB2c:BackendSpnObjectiId"  = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-b2b-app-sp-id)"
+    "AzureB2c:BackendId"            = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-b2b-app-id)"
+
+
+    "KeyVault:KeyVault"             = module.kv_internal.vault_uri
+    "KeyVault:KeyName"              = azurerm_key_vault_key.token_sign.name
+    "KeyVault:CertificatesKeyVault" = module.kv_dh2_certificates.vault_uri
+
+    "Cvr:BaseAddress"               = var.cvr_base_address
+    "Cvr:Username"                  = var.cvr_username
+    "Cvr:Password"                  = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_cvr_password.name})"
   }
 }

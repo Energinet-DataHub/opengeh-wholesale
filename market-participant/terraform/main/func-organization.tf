@@ -63,5 +63,29 @@ locals {
     "ConsumeServiceBusSettings:IntegrationEventSubscription" = module.sbtsub_market_participant_event_listener.name
 
     FeatureManagement__EnabledOrganizationIdentityUpdateTrigger = var.enabled_organization_identity_update_trigger
+
+    "Database:ConnectionString"                               = local.MS_MARKET_PARTICIPANT_CONNECTION_STRING
+
+    "ProduceServiceBus:ServiceBusConnectionString"            = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-send-connection-string)",
+    "ProduceServiceBus:ServiceBusHealthCheckConnectionString" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-transceiver-connection-string)",
+    "ProduceServiceBus:SbtMarketParticipantChangedName"       = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-shres-integrationevent-received-name)",
+
+    "SendGrid.ApiKey"                                         = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_sendgrid_api_key.name})",
+    "SendGrid.SenderEmail"                                    = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_sendgrid_from_email.name})",
+    "SendGrid.BccEmail"                                       = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_sendgrid_bcc_email.name})",
+    "SendGrid.UserInviteFlow"                                 = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=b2c-invitation-flow-uri)",
+
+    "AzureB2c:Tenant"                                         = var.b2c_tenant
+    "AzureB2c:SpnId"                                          = var.b2c_spn_id
+    "AzureB2c:SpnSecret"                                      = var.b2c_spn_secret
+    "AzureB2c:BackendObjectId"                                = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-b2b-app-obj-id)"
+    "AzureB2c:BackendSpnObjectId"                             = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-b2b-app-sp-id)"
+    "AzureB2c:BackendId"                                      = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-b2b-app-id)"
+
+    "Cvr:BaseAddress"                                         = var.cvr_base_address
+    "Cvr:Username"                                            = var.cvr_username
+    "Cvr:Password"                                            = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_cvr_password.name})"
+    "Cvr:OrgUpdatedNotificationToEmail"                       = var.cvr_update_notification_to_email
+    "Cvr:BalanceResposibleChangedNotificationToEamil"         = var.balance_responsible_changed_notification_to_email
   }
 }

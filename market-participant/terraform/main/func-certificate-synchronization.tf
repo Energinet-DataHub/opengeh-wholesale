@@ -39,9 +39,14 @@ locals {
   default_certificatesynchronization_app_settings = {
     CERTIFICATES_KEY_VAULT = module.kv_dh2_certificates.vault_uri
     APIM_SERVICE_NAME      = data.azurerm_key_vault_secret.apim_instance_id.value
-
     APIM_TENANT_ID        = data.azurerm_subscription.this.tenant_id
     APIM_SP_CLIENT_ID     = azuread_application.app_market_participant.application_id
     APIM_SP_CLIENT_SECRET = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_app_market_participant_password.name})"
+
+    "CertificateSynchronization:CertificatesKeyVault" = module.kv_dh2_certificates.vault_uri
+    "CertificateSynchronization:ApimServiceName"      = data.azurerm_key_vault_secret.apim_instance_id.value
+    "CertificateSynchronization:ApimTenantId"         = data.azurerm_subscription.this.tenant_id
+    "CertificateSynchronization:ApimSpClientId"       = azuread_application.app_market_participant.application_id
+    "CertificateSynchronization:ApimSpClientSecret"   = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_app_market_participant_password.name})"
   }
 }
