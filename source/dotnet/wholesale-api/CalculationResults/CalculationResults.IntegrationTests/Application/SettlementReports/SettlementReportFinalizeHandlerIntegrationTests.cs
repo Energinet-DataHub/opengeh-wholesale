@@ -26,9 +26,9 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Application.SettlementReports;
 
+[Collection(nameof(SettlementReportFileCollectionFixture))]
 public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<SettlementReportFinalizeHandler>,
-    IClassFixture<WholesaleDatabaseFixture<DatabaseContext>>,
-    IClassFixture<SettlementReportFileBlobStorageFixture>
+    IClassFixture<WholesaleDatabaseFixture<DatabaseContext>>
 {
     private readonly WholesaleDatabaseFixture<DatabaseContext> _wholesaleDatabaseFixture;
     private readonly SettlementReportFileBlobStorageFixture _settlementReportFileBlobStorageFixture;

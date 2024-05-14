@@ -27,9 +27,9 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Application.SettlementReports;
 
+[Collection(nameof(SettlementReportFileCollectionFixture))]
 public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBase<SettlementReportFileRequestHandler>,
-    IClassFixture<DatabricksSqlStatementApiFixture>,
-    IClassFixture<SettlementReportFileBlobStorageFixture>
+    IClassFixture<DatabricksSqlStatementApiFixture>
 {
     private const string GridAreaA = "805";
     private const string GridAreaB = "111";

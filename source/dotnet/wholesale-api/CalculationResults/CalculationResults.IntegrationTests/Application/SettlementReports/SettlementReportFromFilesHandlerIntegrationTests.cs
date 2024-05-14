@@ -23,7 +23,8 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Application.SettlementReports;
 
-public sealed class SettlementReportFromFilesHandlerIntegrationTests : TestBase<SettlementReportFromFilesHandler>, IClassFixture<SettlementReportFileBlobStorageFixture>
+[Collection(nameof(SettlementReportFileCollectionFixture))]
+public sealed class SettlementReportFromFilesHandlerIntegrationTests : TestBase<SettlementReportFromFilesHandler>
 {
     private readonly SettlementReportFileBlobStorageFixture _settlementReportFileBlobStorageFixture;
 
