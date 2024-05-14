@@ -29,7 +29,7 @@ locals {
     # Health Checks to monitor
     # Ready - prefix with 0xx
     "HealthChecksUI__HealthChecks__001__Name" = "greenforce-frontend:::Web API"
-    "HealthChecksUI__HealthChecks__001__Uri"  = "https://app-bff-fe-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/ready"
+    "HealthChecksUI__HealthChecks__001__Uri"  = "https://app-backend-for-frontend-fe-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/ready"
     "HealthChecksUI__HealthChecks__002__Name" = "geh-market-participant:::Web API"
     "HealthChecksUI__HealthChecks__002__Uri"  = "https://app-api-markpart-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/ready"
     "HealthChecksUI__HealthChecks__003__Name" = "geh-market-participant:::Function"
@@ -81,7 +81,7 @@ locals {
     "HealthChecksUI__HealthChecks__200__Name" = "health-checks-ui:::Health Check UI - live"
     "HealthChecksUI__HealthChecks__200__Uri"  = "https://app-healthchecks-health-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/live"
     "HealthChecksUI__HealthChecks__201__Name" = "greenforce-frontend:::Web API - live"
-    "HealthChecksUI__HealthChecks__201__Uri"  = "https://app-bff-fe-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/live"
+    "HealthChecksUI__HealthChecks__201__Uri"  = "https://app-backend-for-frontend-fe-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/live"
     "HealthChecksUI__HealthChecks__202__Name" = "geh-market-participant:::Web API - live"
     "HealthChecksUI__HealthChecks__202__Uri"  = "https://app-api-markpart-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/live"
     "HealthChecksUI__HealthChecks__203__Name" = "geh-market-participant:::Function - live"
