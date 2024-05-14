@@ -29,7 +29,7 @@ def get_energy_result_resolution(
     quarterly_resolution_transition_datetime: datetime,
     calculation_period_end_datetime: datetime,
 ) -> MeteringPointResolution:
-    if calculation_period_end_datetime < quarterly_resolution_transition_datetime:
+    if calculation_period_end_datetime <= quarterly_resolution_transition_datetime:
         return MeteringPointResolution.HOUR
     return MeteringPointResolution.QUARTER
 
