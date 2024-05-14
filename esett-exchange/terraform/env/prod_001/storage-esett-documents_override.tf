@@ -1,3 +1,3 @@
 module "storage_esett_documents" {
-  prevent_deletion = false
+  prevent_deletion = true
 }
