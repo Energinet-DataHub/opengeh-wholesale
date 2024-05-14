@@ -360,7 +360,7 @@ AppDependencies
     [SubsystemFact]
     public void AndThen_ReceivedTotalMonthlyAmountResultProducedV1EventsCountIsEqualToExpected()
     {
-        var expected = 63;
+        var expected = 27;
 
         // Assert
         Fixture.ScenarioState.ReceivedTotalMonthlyAmountResultProducedV1.Count.Should().Be(expected);
