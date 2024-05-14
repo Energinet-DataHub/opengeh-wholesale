@@ -12,10 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TotalMonthlyAmountResults;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
@@ -26,26 +28,51 @@ public class TotalMonthlyAmountResultFactory
         DatabricksSqlRow databricksSqlRow,
         Instant periodStart,
         Instant periodEnd,
+        ILogger<WholesaleResultQueries> logger,
         long version)
     {
-        var id = databricksSqlRow[TotalMonthlyAmountsColumnNames.CalculationResultId];
-        var calculationId = databricksSqlRow[TotalMonthlyAmountsColumnNames.CalculationId];
-        var calculationType = databricksSqlRow[TotalMonthlyAmountsColumnNames.CalculationType];
-        var gridArea = databricksSqlRow[TotalMonthlyAmountsColumnNames.GridAreaCode];
-        var energySupplierId = databricksSqlRow[TotalMonthlyAmountsColumnNames.EnergySupplierId];
-        var chargeOwnerId = databricksSqlRow[TotalMonthlyAmountsColumnNames.ChargeOwnerId];
-        var amount = databricksSqlRow[TotalMonthlyAmountsColumnNames.Amount];
+        try
+        {
+            var id = databricksSqlRow[TotalMonthlyAmountsColumnNames.CalculationResultId];
+            var calculationId = databricksSqlRow[TotalMonthlyAmountsColumnNames.CalculationId];
+            var calculationType = databricksSqlRow[TotalMonthlyAmountsColumnNames.CalculationType];
+            var gridArea = databricksSqlRow[TotalMonthlyAmountsColumnNames.GridAreaCode];
+            var energySupplierId = databricksSqlRow[TotalMonthlyAmountsColumnNames.EnergySupplierId];
+            var chargeOwnerId = databricksSqlRow[TotalMonthlyAmountsColumnNames.ChargeOwnerId];
+            var amount = databricksSqlRow[TotalMonthlyAmountsColumnNames.Amount];
 
-        return new TotalMonthlyAmountResult(
-            SqlResultValueConverters.ToGuid(id!),
-            SqlResultValueConverters.ToGuid(calculationId!),
-            CalculationTypeMapper.FromDeltaTableValue(calculationType!),
-            periodStart,
-            periodEnd,
-            gridArea!,
-            energySupplierId!,
-            chargeOwnerId,
-            SqlResultValueConverters.ToDecimal(amount)!.Value,
-            version);
+            return new TotalMonthlyAmountResult(
+                SqlResultValueConverters.ToGuid(id!),
+                SqlResultValueConverters.ToGuid(calculationId!),
+                CalculationTypeMapper.FromDeltaTableValue(calculationType!),
+                periodStart,
+                periodEnd,
+                gridArea!,
+                energySupplierId!,
+                chargeOwnerId,
+                SqlResultValueConverters.ToDecimal(amount)!.Value,
+                version);
+        }
+        catch (Exception)
+        {
+            logger.LogInformation(databricksSqlRow.ToString());
+            var id = databricksSqlRow[TotalMonthlyAmountsColumnNames.CalculationResultId];
+            var calculationId = databricksSqlRow[TotalMonthlyAmountsColumnNames.CalculationId];
+            var calculationType = databricksSqlRow[TotalMonthlyAmountsColumnNames.CalculationType];
+            var gridArea = databricksSqlRow[TotalMonthlyAmountsColumnNames.GridAreaCode];
+            var energySupplierId = databricksSqlRow[TotalMonthlyAmountsColumnNames.EnergySupplierId];
+            var chargeOwnerId = databricksSqlRow[TotalMonthlyAmountsColumnNames.ChargeOwnerId];
+            var amount = databricksSqlRow[TotalMonthlyAmountsColumnNames.Amount];
+
+            logger.LogInformation("Creating TotalMonthlyAmountResult with id {id} and calculationId {calculationId}", id, calculationId);
+            logger.LogInformation(
+                "CalculationType: {calculationType}; gridArea: {gridArea}; energySupplierId: {energySupplierId}; chargeOwnerId: {chargeOwnerId}; amount; {amount}",
+                calculationType,
+                gridArea,
+                energySupplierId,
+                chargeOwnerId,
+                amount);
+            throw;
+        }
     }
 }

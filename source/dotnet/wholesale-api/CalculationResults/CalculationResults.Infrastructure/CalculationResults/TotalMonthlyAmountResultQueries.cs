@@ -62,7 +62,7 @@ public class TotalMonthlyAmountResultQueries : ITotalMonthlyAmountResultQueries
         await foreach (var row in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {
             var convertedNextRow = new DatabricksSqlRow(row);
-            TotalMonthlyAmountResult totalMonthlyAmountResult = TotalMonthlyAmountResultFactory.CreateTotalMonthlyAmountResult(convertedNextRow, periodStart, periodEnd, version);
+            TotalMonthlyAmountResult totalMonthlyAmountResult = TotalMonthlyAmountResultFactory.CreateTotalMonthlyAmountResult(convertedNextRow, periodStart, periodEnd, _logger, version);
             yield return totalMonthlyAmountResult;
             resultCount++;
         }
