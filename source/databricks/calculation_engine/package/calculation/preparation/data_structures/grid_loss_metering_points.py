@@ -22,7 +22,7 @@ from package.constants import Colname
 
 class GridLossMeteringPoints(DataFrameWrapper):
     """
-    Represents the grid loss metering points.
+    Represents grid loss metering points.
     """
 
     def __init__(self, df: DataFrame):
