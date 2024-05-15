@@ -1,4 +1,4 @@
-CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_time_series_v1 as
+CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_time_series_v1
     (calculation_id,
     calculation_type calculation_type COMMENT '''BalanceFixing'' | ''Aggregation'' | ''WholesaleFixing'' | ''FirstCorrectionSettlement'' | ''SecondCorrectionSettlement'' | ''ThirdCorrectionSettlement''',
     metering_point_id,
@@ -6,6 +6,7 @@ CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_time_
     resolution COMMENT '''PT1H'' | ''PT15M''',
     grid_area_code,
     energy_supplier_id COMMENT '<value> | NULL')
+AS
 SELECT c.calculation_id,
        c.calculation_type,
        m.metering_point_id,
