@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Net;
+using Azure;
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
@@ -42,11 +43,19 @@ internal sealed class SettlementReportDownloadTrigger
         [FromBody] SettlementReportRequestId settlementReportRequestId,
         FunctionContext executionContext)
     {
-        var response = req.CreateResponse(HttpStatusCode.OK);
-        response.Headers.Add("Content-Type", "application/octet-stream");
-        await _settlementReportDownloadHandler
-            .DownloadReportAsync(settlementReportRequestId, response.Body)
-            .ConfigureAwait(false);
-        return response;
+        try
+        {
+            var response = req.CreateResponse(HttpStatusCode.OK);
+            response.Headers.Add("Content-Type", "application/octet-stream");
+            await _settlementReportDownloadHandler
+                .DownloadReportAsync(settlementReportRequestId, response.Body)
+                .ConfigureAwait(false);
+            return response;
+        }
+        catch (RequestFailedException)
+        {
+            var response = req.CreateResponse(HttpStatusCode.NotFound);
+            return response;
+        }
     }
 }
