@@ -23,4 +23,6 @@ public interface ISettlementReportFileRepository
     Task<Stream> OpenForWritingAsync(SettlementReportRequestId reportRequestId, string fileName);
 
     Task DeleteAsync(SettlementReportRequestId reportRequestId, string fileName);
+
+    Task<Stream> GetForDownloadAsync(SettlementReportRequestId reportRequestId, string fileName)
 }

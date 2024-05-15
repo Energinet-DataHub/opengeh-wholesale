@@ -39,7 +39,7 @@ public sealed class SettlementReportDownloadHandler : ISettlementReportDownloadH
         return string.IsNullOrEmpty(report.BlobFileName)
             ? Stream.Null
             : await _fileRepository
-            .OpenForReadingAsync(requestId, report.BlobFileName)
+            .GetForDownloadAsync(requestId, report.BlobFileName)
             .ConfigureAwait(false);
     }
 }
