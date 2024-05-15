@@ -82,12 +82,12 @@ locals {
     "AzureB2c:SpnId"                = var.b2c_spn_id
     "AzureB2c:SpnSecret"            = var.b2c_spn_secret
     "AzureB2c:BackendObjectId"      = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-b2b-app-obj-id)"
-    "AzureB2c:BackendSpnObjectiId"  = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-b2b-app-sp-id)"
+    "AzureB2c:BackendSpnObjectId"   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-b2b-app-sp-id)"
     "AzureB2c:BackendId"            = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-b2b-app-id)"
 
 
-    "KeyVault:KeyVault"             = module.kv_internal.vault_uri
-    "KeyVault:KeyName"              = azurerm_key_vault_key.token_sign.name
+    "KeyVault:TokenSignKeyVault"    = module.kv_internal.vault_uri
+    "KeyVault:TokenSignKeyName"     = azurerm_key_vault_key.token_sign.name
     "KeyVault:CertificatesKeyVault" = module.kv_dh2_certificates.vault_uri
 
     "Cvr:BaseAddress"               = var.cvr_base_address
