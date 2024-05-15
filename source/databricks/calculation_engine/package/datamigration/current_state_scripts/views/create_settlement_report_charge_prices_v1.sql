@@ -31,10 +31,14 @@ charge_key | grid_area_code | energy_supplier
 charge_owner | grid_area_code | energy_supplier
 
 
---
--- -- For netvirksomhed:
--- SELECT * FROM charge_prices_v1
--- WHERE grid_area_code = '804'
+
+-- For netvirksomhed:
+SELECT * FROM charge_prices_v1
+WHERE grid_area_code = '804'
+AND start_date_time >= '2021-01-01'
+AND start_date_time < '2022-02-01'
+AND calculation_type = 'BalanceFixing'
+
 --
 -- -- For system operator:
 -- SELECT * FROM charge_prices_v1
