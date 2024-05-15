@@ -21,6 +21,9 @@ from package.calculation.input import TableReader
 from package.calculation.preparation.data_structures.grid_loss_responsible import (
     GridLossResponsible,
 )
+from package.calculation.preparation.data_structures.grid_loss_metering_points import (
+    GridLossMeteringPoints,
+)
 from package.calculation.preparation.data_structures.input_charges import (
     InputChargesContainer,
 )
