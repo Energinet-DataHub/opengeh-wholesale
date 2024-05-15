@@ -105,6 +105,7 @@ public static class CalculationResultsExtensions
         services.AddScoped<IGetSettlementReportsHandler, GetSettlementReportsHandler>();
         services.AddScoped<IUpdateFailedSettlementReportsHandler, UpdateFailedSettlementReportsHandler>();
 
+        services.AddScoped<IRemoveExpiredSettlementReports, RemoveExpiredSettlementReports>();
         services.AddScoped<ISettlementReportDataRepository, LegacySettlementReportDataRepository>();
         services.AddScoped<ISettlementReportRepository, SettlementReportRepository>();
         services.AddScoped<ISettlementReportFileGeneratorFactory, SettlementReportFileGeneratorFactory>();

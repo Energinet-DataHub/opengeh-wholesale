@@ -14,28 +14,41 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 
 public sealed class GetSettlementReportsHandler : IGetSettlementReportsHandler
 {
-    private readonly ISettlementReportRepository _repository;
+    private readonly ISettlementReportRepository _settlementReportRepository;
+    private readonly IRemoveExpiredSettlementReports _removeExpiredSettlementReports;
 
-    public GetSettlementReportsHandler(ISettlementReportRepository repository)
+    public GetSettlementReportsHandler(
+        ISettlementReportRepository settlementReportRepository,
+        IRemoveExpiredSettlementReports removeExpiredSettlementReports)
     {
-        _repository = repository;
+        _settlementReportRepository = settlementReportRepository;
+        _removeExpiredSettlementReports = removeExpiredSettlementReports;
     }
 
     public async Task<IEnumerable<RequestedSettlementReportDto>> GetAsync()
     {
-        var settlementReports = await _repository.GetAsync().ConfigureAwait(false);
+        var settlementReports = (await _settlementReportRepository
+                .GetAsync()
+                .ConfigureAwait(false))
+            .ToList();
+
+        await _removeExpiredSettlementReports.RemoveExpiredAsync(settlementReports).ConfigureAwait(false);
         return settlementReports.Select(Map);
     }
 
     public async Task<IEnumerable<RequestedSettlementReportDto>> GetAsync(Guid userId, Guid actorId)
     {
-        var settlementReports = await _repository.GetAsync(userId, actorId).ConfigureAwait(false);
+        var settlementReports = (await _settlementReportRepository
+                .GetAsync(userId, actorId)
+                .ConfigureAwait(false))
+            .ToList();
+
+        await _removeExpiredSettlementReports.RemoveExpiredAsync(settlementReports).ConfigureAwait(false);
         return settlementReports.Select(Map);
     }
 
