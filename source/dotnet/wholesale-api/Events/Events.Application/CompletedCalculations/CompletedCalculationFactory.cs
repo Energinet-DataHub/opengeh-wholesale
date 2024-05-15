@@ -37,7 +37,8 @@ public class CompletedCalculationFactory : ICompletedCalculationFactory
                 completedCalculationDto.CalculationType,
                 completedCalculationDto.PeriodStart.ToInstant(),
                 completedCalculationDto.PeriodEnd.ToInstant(),
-                completedTime: completedCalculationDto.ExecutionTimeEnd.Value.ToInstant());
+                completedTime: completedCalculationDto.ExecutionTimeEnd.Value.ToInstant(),
+                completedCalculationDto.Version);
         }
         else
         {
@@ -48,8 +49,8 @@ public class CompletedCalculationFactory : ICompletedCalculationFactory
                 completedCalculationDto.PeriodStart.ToInstant(),
                 completedCalculationDto.PeriodEnd.ToInstant(),
                 completedTime: completedCalculationDto.ExecutionTimeEnd.Value.ToInstant(),
-                orchestrationInstanceId: orchestrationInstanceId,
-                calculationVersion: 1); // TODO: Get from completedCalculationDto
+                completedCalculationDto.Version,
+                orchestrationInstanceId);
         }
     }
 }
