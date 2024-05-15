@@ -36,6 +36,10 @@ locals {
     {
       environment = "www"
       url         = "calm-sky-050b30c03.3.azurestaticapps.net"
+    },
+    {
+      environment = "dev003"
+      url         = "delightful-wave-0db400a03.5.azurestaticapps.net"
     }
   ]
 }
