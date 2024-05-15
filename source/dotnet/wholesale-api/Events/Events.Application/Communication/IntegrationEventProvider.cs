@@ -131,6 +131,23 @@ public class IntegrationEventProvider : IIntegrationEventProvider
                 }
             }
 
+            // Publish integration events for calculation completed
+            IntegrationEvent? calculationCompletedEvent = default;
+            try
+            {
+                calculationCompletedEvent = _calculationCompletedEventProvider.Get(unpublishedCalculation);
+            }
+            catch (Exception ex)
+            {
+                hasFailed = true;
+                _logger.LogError(ex, "Failed calculation completed event publishing for completed calculation {calculation_id}.", unpublishedCalculation.Id);
+            }
+
+            if (calculationCompletedEvent != null)
+            {
+                yield return calculationCompletedEvent;
+            }
+
             if (hasFailed)
             {
                 // Quick fix: We currently do not have any status field to mark failures, so instead we set this property to a constant.
@@ -140,9 +157,6 @@ public class IntegrationEventProvider : IIntegrationEventProvider
             {
                 unpublishedCalculation.PublishedTime = _clock.GetCurrentInstant();
             }
-
-            // Publish integration events for calculation completed
-            yield return _calculationCompletedEventProvider.Get(unpublishedCalculation);
 
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
