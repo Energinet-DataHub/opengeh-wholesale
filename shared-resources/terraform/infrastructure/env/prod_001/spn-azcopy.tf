@@ -47,6 +47,16 @@ resource "azuread_application_federated_identity_credential" "dev_002" {
   issuer    = local.federated_identity_credential.issuer_github
 }
 
+resource "azuread_application_federated_identity_credential" "dev_003" {
+  application_object_id = azuread_application.app_azcopy.object_id
+
+  display_name = "dev_003"
+  subject      = "repo:Energinet-DataHub/dh3-environments:environment:dev_003"
+
+  audiences = [local.federated_identity_credential.audience_azuread]
+  issuer    = local.federated_identity_credential.issuer_github
+}
+
 resource "azuread_application_federated_identity_credential" "test_001" {
   application_object_id = azuread_application.app_azcopy.object_id
 

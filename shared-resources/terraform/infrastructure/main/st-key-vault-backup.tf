@@ -48,3 +48,4 @@ resource "azurerm_storage_management_policy" "retention" {
     }
   }
 }
+

@@ -2,7 +2,7 @@ terraform {
   required_providers {
     # It is recommended to pin to a given version of the Azure provider
 
-    azurerm = "3.96.0"
+    azurerm = "3.97.1"
     azuread = "2.47.0"
 
     databricks = {
