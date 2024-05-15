@@ -30,16 +30,17 @@ public sealed class SettlementReportDownloadHandler : ISettlementReportDownloadH
         _repository = repository;
     }
 
-    public async Task<Stream> DownloadReportAsync(SettlementReportRequestId requestId)
+    public async Task DownloadReportAsync(SettlementReportRequestId requestId, Stream downloadStream)
     {
         var report = await _repository
             .GetAsync(requestId.Id)
             .ConfigureAwait(false);
 
-        return string.IsNullOrEmpty(report.BlobFileName)
-            ? Stream.Null
-            : await _fileRepository
-            .GetForDownloadAsync(requestId, report.BlobFileName)
+        if (string.IsNullOrEmpty(report.BlobFileName))
+            throw new InvalidOperationException("Report does not have a Blob file name.");
+
+        await _fileRepository
+            .DownloadAsync(requestId, report.BlobFileName, downloadStream)
             .ConfigureAwait(false);
     }
 }

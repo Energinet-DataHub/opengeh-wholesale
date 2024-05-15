@@ -72,11 +72,12 @@ public sealed class SettlementReportDownloadHandlerIntegrationTests : TestBase<S
         await dbContext.SaveChangesAsync();
 
         // Act
-        var stream = await Sut.DownloadReportAsync(requestId);
+        await using var downloadStream = new MemoryStream();
+        await Sut.DownloadReportAsync(requestId, downloadStream);
 
         // Assert
-        Assert.NotNull(stream);
-        Assert.NotEqual(0, stream.Length);
+        Assert.NotNull(downloadStream);
+        Assert.NotEqual(0, downloadStream.Length);
     }
 
     private Task MakeTestFileAsync(SettlementReportRequestId requestId)

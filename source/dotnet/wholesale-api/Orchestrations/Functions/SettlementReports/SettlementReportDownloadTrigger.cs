@@ -42,21 +42,11 @@ internal sealed class SettlementReportDownloadTrigger
         [FromBody] SettlementReportRequestId settlementReportRequestId,
         FunctionContext executionContext)
     {
-        var stream = await _settlementReportDownloadHandler
-            .DownloadReportAsync(settlementReportRequestId)
+        var response = req.CreateResponse(HttpStatusCode.OK);
+        response.Headers.Add("Content-Type", "application/octet-stream");
+        await _settlementReportDownloadHandler
+            .DownloadReportAsync(settlementReportRequestId, response.Body)
             .ConfigureAwait(false);
-
-        if (stream.Length == 0)
-        {
-            var response = req.CreateResponse(HttpStatusCode.NotFound);
-            return response;
-        }
-        else
-        {
-            var response = req.CreateResponse(HttpStatusCode.OK);
-            response.Headers.Add("Content-Type", "application/octet-stream");
-            response.Body = stream;
-            return response;
-        }
+        return response;
     }
 }

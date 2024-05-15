@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure;
 using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
@@ -36,12 +34,11 @@ public sealed class SettlementReportFileBlobStorage : ISettlementReportFileRepos
         return blobClient.OpenReadAsync();
     }
 
-    public async Task<Stream> GetForDownloadAsync(SettlementReportRequestId reportRequestId, string fileName)
+    public async Task DownloadAsync(SettlementReportRequestId reportRequestId, string fileName, Stream downloadStream)
     {
         var blobName = GetBlobName(reportRequestId, fileName);
         var blobClient = _blobContainerClient.GetBlobClient(blobName);
-        var download = await blobClient.DownloadStreamingAsync().ConfigureAwait(false);
-        return download.Value.Content;
+        await blobClient.DownloadToAsync(downloadStream).ConfigureAwait(false);
     }
 
     public Task<Stream> OpenForWritingAsync(SettlementReportRequestId reportRequestId, string fileName)

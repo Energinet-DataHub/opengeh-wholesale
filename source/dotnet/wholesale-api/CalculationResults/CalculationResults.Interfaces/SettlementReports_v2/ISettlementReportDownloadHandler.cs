@@ -18,5 +18,5 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementRe
 
 public interface ISettlementReportDownloadHandler
 {
-    Task<Stream> DownloadReportAsync(SettlementReportRequestId requestId);
+    Task DownloadReportAsync(SettlementReportRequestId requestId, Stream downloadStream);
 }
