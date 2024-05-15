@@ -360,7 +360,7 @@ AppDependencies
     [SubsystemFact]
     public void AndThen_ReceivedTotalMonthlyAmountResultProducedV1EventsCountIsEqualToExpected()
     {
-        var expected = 18; // 18 for charge owner, 9 for energy supplier
+        var expected = 27; // 18 for charge owner, 9 for energy supplier
 
         // Assert
         Fixture.ScenarioState.ReceivedTotalMonthlyAmountResultProducedV1.Count.Should().Be(expected);
