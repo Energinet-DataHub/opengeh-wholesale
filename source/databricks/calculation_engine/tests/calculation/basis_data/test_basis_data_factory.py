@@ -26,24 +26,53 @@ from package.calculation.basis_data.schemas.time_series_point_schema import (
 from package.calculation.basis_data.schemas.metering_point_period_schema import (
     metering_point_period_schema,
 )
+from package.calculation.basis_data.schemas.grid_loss_metering_points_schema import (
+    grid_loss_metering_points_schema,
+)
 from tests.calculation.basis_data.basis_data_test_factory import (
     create_basis_data_factory,
 )
 import pytest
 from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType
 
 
-def test__basis_data_uses_correct_schema(spark: SparkSession):
+@pytest.mark.parametrize(
+    "basis_data_table_property_name, expected_schema",
+    [
+        (
+            "metering_point_periods",
+            metering_point_period_schema,
+        ),
+        (
+            "time_series_points",
+            time_series_point_schema,
+        ),
+        ("charge_links", charge_link_periods_schema),
+        (
+            "charge_master_data",
+            charge_master_data_periods_schema,
+        ),
+        ("charge_prices", charge_price_points_schema),
+        (
+            "grid_loss_metering_points",
+            grid_loss_metering_points_schema,
+        ),
+    ],
+)
+def test__basis_data_uses_correct_schema(
+    spark: SparkSession,
+    basis_data_table_property_name: str,
+    expected_schema: StructType,
+):
+    # Arrange
     basis_data_container = create_basis_data_factory(spark)
 
-    assert (
-        basis_data_container.metering_point_periods.schema
-        == metering_point_period_schema
+    # Act
+    # Refer to the property so we can use paramterization
+    basis_data_container_property = getattr(
+        basis_data_container, basis_data_table_property_name
     )
-    assert basis_data_container.time_series_points.schema == time_series_point_schema
-    assert (
-        basis_data_container.charge_master_data.schema
-        == charge_master_data_periods_schema
-    )
-    assert basis_data_container.charge_prices.schema == charge_price_points_schema
-    assert basis_data_container.charge_links.schema == charge_link_periods_schema
+
+    # Assert
+    assert basis_data_container_property.schema == expected_schema

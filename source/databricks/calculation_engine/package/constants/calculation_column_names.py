@@ -11,16 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from package.constants.result_column_names import ResultColumnNames
 
-from .colname import Colname
-from .basis_data_colname import (
-    MeteringPointPeriodColname,
-    TimeSeriesColname,
-    ChargeMasterDataPeriodsColname,
-    ChargePricePointsColname,
-    ChargeLinkPeriodsColname,
-    GridLossMeteringPointsColName,
-)
-from .energy_result_column_names import EnergyResultColumnNames
-from .wholesale_result_column_names import WholesaleResultColumnNames
-from .total_monthly_amounts_column_names import TotalMonthlyAmountsColumnNames
+
+class CalculationColumnNames(ResultColumnNames):
+    execution_time_start = "execution_time_start"
+    calculation_type = "calculation_type"
+    period_start = "period_start"
+    period_end = "period_end"
+    created_by_user_id = "created_by_user_id"
+    version = "version"
