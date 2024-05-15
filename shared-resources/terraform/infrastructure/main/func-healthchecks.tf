@@ -12,6 +12,7 @@ module "func_healthchecks" {
   app_service_plan_id                    = module.webapp_service_plan.id
   ip_restrictions                        = var.ip_restrictions
   scm_ip_restrictions                    = var.ip_restrictions
+  always_on                              = true
   dotnet_framework_version               = "v8.0"
   application_insights_connection_string = module.appi_shared.connection_string
 
