@@ -32,9 +32,9 @@ public class CalculationCompletedEventProvider : ResultEventProvider, ICalculati
     {
         var calculationCompletedV1 = _calculationCompletedFactory.Create(
             unpublishedCalculation.Id,
-            unpublishedCalculation.OrchestrationInstanceId,
+            unpublishedCalculation.OrchestrationInstanceId!,
             unpublishedCalculation.CalculationType,
-            unpublishedCalculation.CalculationVersion);
+            unpublishedCalculation.CalculationVersion!.Value);
         return CreateIntegrationEvent(calculationCompletedV1);
     }
 }

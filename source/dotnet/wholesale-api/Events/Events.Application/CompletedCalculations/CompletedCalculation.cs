@@ -33,6 +33,28 @@ public sealed class CompletedCalculation
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
         CompletedTime = completedTime;
+        OrchestrationInstanceId = null;
+        CalculationVersion = null;
+    }
+
+    public CompletedCalculation(
+        Guid id,
+        List<string> gridAreaCodes,
+        CalculationType calculationType,
+        Instant periodStart,
+        Instant periodEnd,
+        Instant completedTime,
+        string orchestrationInstanceId,
+        long calculationVersion)
+    {
+        Id = id;
+        GridAreaCodes = gridAreaCodes;
+        CalculationType = calculationType;
+        PeriodStart = periodStart;
+        PeriodEnd = periodEnd;
+        CompletedTime = completedTime;
+        OrchestrationInstanceId = orchestrationInstanceId;
+        CalculationVersion = calculationVersion;
     }
 
     /// <summary>
@@ -51,4 +73,8 @@ public sealed class CompletedCalculation
     public Instant PeriodEnd { get; init; }
 
     public Instant CompletedTime { get; private set; }
+
+    public string? OrchestrationInstanceId { get; init; }
+
+    public long? CalculationVersion { get; init; }
 }

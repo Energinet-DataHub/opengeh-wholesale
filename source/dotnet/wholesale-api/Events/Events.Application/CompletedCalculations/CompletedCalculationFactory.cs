@@ -21,20 +21,35 @@ public class CompletedCalculationFactory : ICompletedCalculationFactory
 {
     public IEnumerable<CompletedCalculation> CreateFromCalculations(IEnumerable<CalculationDto> completedCalculationDtos)
     {
-        return completedCalculationDtos.Select(CreateFromCalculation);
+        return completedCalculationDtos.Select(dto => CreateFromCalculation(dto));
     }
 
-    public CompletedCalculation CreateFromCalculation(CalculationDto completedCalculationDto)
+    public CompletedCalculation CreateFromCalculation(CalculationDto completedCalculationDto, string? orchestrationInstanceId = null)
     {
         if (completedCalculationDto.ExecutionTimeEnd == null)
             throw new ArgumentNullException($"{nameof(CalculationDto.ExecutionTimeEnd)} should not be null for a completed calculation.");
 
-        return new CompletedCalculation(
-            completedCalculationDto.CalculationId,
-            completedCalculationDto.GridAreaCodes.ToList(),
-            completedCalculationDto.CalculationType,
-            completedCalculationDto.PeriodStart.ToInstant(),
-            completedCalculationDto.PeriodEnd.ToInstant(),
-            completedTime: completedCalculationDto.ExecutionTimeEnd.Value.ToInstant());
+        if (orchestrationInstanceId == null)
+        {
+            return new CompletedCalculation(
+                completedCalculationDto.CalculationId,
+                completedCalculationDto.GridAreaCodes.ToList(),
+                completedCalculationDto.CalculationType,
+                completedCalculationDto.PeriodStart.ToInstant(),
+                completedCalculationDto.PeriodEnd.ToInstant(),
+                completedTime: completedCalculationDto.ExecutionTimeEnd.Value.ToInstant());
+        }
+        else
+        {
+            return new CompletedCalculation(
+                completedCalculationDto.CalculationId,
+                completedCalculationDto.GridAreaCodes.ToList(),
+                completedCalculationDto.CalculationType,
+                completedCalculationDto.PeriodStart.ToInstant(),
+                completedCalculationDto.PeriodEnd.ToInstant(),
+                completedTime: completedCalculationDto.ExecutionTimeEnd.Value.ToInstant(),
+                orchestrationInstanceId: orchestrationInstanceId,
+                calculationVersion: 1); // TODO: Get from completedCalculationDto
+        }
     }
 }

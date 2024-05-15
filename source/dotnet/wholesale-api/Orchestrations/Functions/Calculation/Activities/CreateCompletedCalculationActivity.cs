@@ -44,8 +44,8 @@ internal class CreateCompletedCalculationActivity(
         var calculation = await _calculationRepository.GetAsync(input.CalculationId);
         var calculationDto = _calculationDtoMapper.Map(calculation);
 
-        var completedCalculations = _completedCalculationFactory.CreateFromCalculations([calculationDto]);
-        await _completedCalculationRepository.AddAsync(completedCalculations);
+        var completedCalculation = _completedCalculationFactory.CreateFromCalculation(calculationDto, input.OrchestrationInstanceId);
+        await _completedCalculationRepository.AddAsync([completedCalculation]);
         await _eventsUnitOfWork.CommitAsync();
     }
 }
