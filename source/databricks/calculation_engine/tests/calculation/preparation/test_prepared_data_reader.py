@@ -26,12 +26,11 @@ class TestGetLatestCalculationVersion:
         self, spark: SparkSession
     ) -> None:
         # Arrange
-        table_reader: TableReader = mock.Mock()
+        table_reader = TableReader(mock.Mock(), mock.Mock())
         prepared_data_reader = PreparedDataReader(table_reader)
         with patch.object(
             table_reader,
-            # table_reader.read_calculations.__name__,
-            "read_calculations",
+            table_reader.read_calculations.__name__,
             return_value=factory.create_empty_calculations(spark),
         ):
             # Act
