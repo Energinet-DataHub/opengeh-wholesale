@@ -19,7 +19,6 @@ from package.calculation.calculator_args import CalculatorArgs
 from package.constants.calculation_column_names import CalculationColumnNames
 
 
-# TODO BJM: Create and use Calculations typed data frame?
 def create_calculation(
     args: CalculatorArgs,
     prepared_data_reader: PreparedDataReader,
@@ -32,7 +31,6 @@ def create_calculation(
     # Next version begins with 1 and increments by 1
     next_version = (latest_version or 0) + 1
 
-    # TODO BJM: Use factory?
     calculation = {
         CalculationColumnNames.calculation_id: args.calculation_id,
         CalculationColumnNames.calculation_type: args.calculation_type.value,
