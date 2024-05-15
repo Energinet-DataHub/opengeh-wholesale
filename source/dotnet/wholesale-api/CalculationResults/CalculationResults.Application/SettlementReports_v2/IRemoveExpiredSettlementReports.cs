@@ -14,15 +14,7 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 
-public interface ISettlementReportRepository
+public interface IRemoveExpiredSettlementReports
 {
-    Task AddOrUpdateAsync(SettlementReport request);
-
-    Task DeleteAsync(SettlementReport request);
-
-    Task<SettlementReport> GetAsync(string requestId);
-
-    Task<IEnumerable<SettlementReport>> GetAsync();
-
-    Task<IEnumerable<SettlementReport>> GetAsync(Guid userId, Guid actorId);
+    Task RemoveExpiredAsync(IList<SettlementReport> settlementReports);
 }
