@@ -22,6 +22,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
+using NodaTime;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Application.SettlementReports;
@@ -63,7 +64,7 @@ public sealed class SettlementReportDownloadHandlerIntegrationTests : TestBase<S
             []);
 
         var settlementReport =
-            new SettlementReport(Guid.NewGuid(), Guid.NewGuid(), requestId, _mockedSettlementReportRequest);
+            new SettlementReport(SystemClock.Instance, Guid.NewGuid(), Guid.NewGuid(), requestId, _mockedSettlementReportRequest);
         settlementReport.MarkAsCompleted(generatedSettlementReport);
 
         await using var dbContext = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
