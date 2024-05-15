@@ -26,12 +26,20 @@ from package.calculation.wholesale.data_structures.total_monthly_amount import (
 from package.constants import Colname
 
 
+class DefaultValues:
+    GRID_AREA = "543"
+    ENERGY_SUPPLIER_ID = "1234567890123"
+    CHARGE_TIME = datetime.datetime.now()
+    TOTAL_AMOUNT = None
+    CHARGE_OWNER = "001"
+
+
 def create_row(
-    grid_area: str = "543",
-    energy_supplier_id: str = "1234567890123",
-    charge_time: datetime = datetime.datetime.now(),
-    total_amount: int | Decimal | None = None,
-    charge_owner: str = "001",
+    grid_area: str = DefaultValues.GRID_AREA,
+    energy_supplier_id: str = DefaultValues.ENERGY_SUPPLIER_ID,
+    charge_time: datetime = DefaultValues.CHARGE_TIME,
+    total_amount: int | Decimal | None = DefaultValues.TOTAL_AMOUNT,
+    charge_owner: str = DefaultValues.CHARGE_OWNER,
 ) -> Row:
 
     row = {
