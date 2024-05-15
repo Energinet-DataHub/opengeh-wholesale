@@ -174,7 +174,11 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
         Assert.Equal(HttpStatusCode.OK, actualDownloadResponse.StatusCode);
         Assert.NotNull(actualResponse.Content);
 
-        using var archive = new ZipArchive(await actualResponse.Content.ReadAsStreamAsync(), ZipArchiveMode.Read);
+        var httpStream = await actualDownloadResponse.Content.ReadAsStreamAsync();
+        using var reader = new StreamReader(httpStream);
+        var zipStream = new MemoryStream();
+        await httpStream.CopyToAsync(zipStream);
+        using var archive = new ZipArchive(zipStream, ZipArchiveMode.Read);
         Assert.NotEmpty(archive.Entries);
     }
 
