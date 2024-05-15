@@ -17,7 +17,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.SettlementReportRequest;
 
-public class SettlementReportRepository : ISettlementReportRepository
+public sealed class SettlementReportRepository : ISettlementReportRepository
 {
     private readonly ISettlementReportDatabaseContext _context;
 
@@ -33,6 +33,12 @@ public class SettlementReportRepository : ISettlementReportRepository
             await _context.SettlementReports.AddAsync(request).ConfigureAwait(false);
         }
 
+        await _context.SaveChangesAsync().ConfigureAwait(false);
+    }
+
+    public async Task DeleteAsync(SettlementReport request)
+    {
+        _context.SettlementReports.Remove(request);
         await _context.SaveChangesAsync().ConfigureAwait(false);
     }
 
