@@ -38,6 +38,9 @@ from package.calculation.basis_data.schemas.charge_price_points_schema import (
 from package.calculation.basis_data.schemas.metering_point_period_schema import (
     metering_point_period_schema,
 )
+from package.calculation.basis_data.schemas.grid_loss_metering_points_schema import (
+    grid_loss_metering_points_schema,
+)
 from package.calculation.basis_data.schemas.time_series_point_schema import (
     time_series_point_schema,
 )
@@ -292,6 +295,10 @@ def test__when_wholesale_calculation__basis_data_is_stored(
             charge_master_data_periods_schema,
         ),
         (paths.CHARGE_PRICE_POINTS_BASIS_DATA_TABLE_NAME, charge_price_points_schema),
+        (
+            paths.GRID_LOSS_METERING_POINTS_BASIS_DATA_TABLE_NAME,
+            grid_loss_metering_points_schema,
+        ),
     ],
 )
 def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(

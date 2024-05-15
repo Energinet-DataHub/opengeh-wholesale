@@ -19,6 +19,7 @@ from .basis_data_colname import (
     ChargeMasterDataPeriodsColname,
     ChargePricePointsColname,
     ChargeLinkPeriodsColname,
+    GridLossMeteringPointsColName,
 )
 from .energy_result_column_names import EnergyResultColumnNames
 from .wholesale_result_column_names import WholesaleResultColumnNames

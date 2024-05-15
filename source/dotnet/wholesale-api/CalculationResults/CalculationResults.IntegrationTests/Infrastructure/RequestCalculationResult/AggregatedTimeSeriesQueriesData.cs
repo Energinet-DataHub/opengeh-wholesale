@@ -87,7 +87,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infras
   `1' we have a balance fixing, first correction, second correction, and third correction point/element/row.
 
   The test data also contains aggregation data for `BalanceResponsibleAndGridArea', `EnergySupplierAndGridArea', and
-  `GridArea'. This data is derived directly from the points above, which are all of the aggregation level
+  `GridAreaCode'. This data is derived directly from the points above, which are all of the aggregation level
   `EnergySupplierAndBalanceResponsibleAndGridArea', as each data point—as seen in the diagram—is bound to a grid area,
   balance responsible, and energy supplier. The generation of aggregated data is generated as summarised below.
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -95,7 +95,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infras
   ───────────────────────────────────────────────────────────────────
    BalanceResponsibleAndGridArea  Sum of all points within BR in GA
    EnergySupplierAndGridArea      Sum of all points for ES within GA
-   GridArea                       Sum of all points within GA
+   GridAreaCode                       Sum of all points within GA
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   It is worth noticing that each generated aggregation is done for each calculation level too, i.e. balance fixing,
   first correction, second correction, and third correction.
