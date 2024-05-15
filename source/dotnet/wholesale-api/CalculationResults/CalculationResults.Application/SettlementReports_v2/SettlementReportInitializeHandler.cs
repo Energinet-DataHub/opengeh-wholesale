@@ -26,10 +26,12 @@ public sealed class SettlementReportInitializeHandler : ISettlementReportInitial
         _repository = repository;
     }
 
-    public async Task InitializeAsync(Guid userId, Guid actorId, SettlementReportRequestId requestId)
+    public Task InitializeAsync(
+        Guid userId,
+        Guid actorId,
+        SettlementReportRequestId requestId,
+        SettlementReportRequestDto request)
     {
-        await _repository
-            .AddOrUpdateAsync(new SettlementReport(userId, actorId, requestId.Id))
-            .ConfigureAwait(false);
+        return _repository.AddOrUpdateAsync(new SettlementReport(userId, actorId, requestId, request));
     }
 }

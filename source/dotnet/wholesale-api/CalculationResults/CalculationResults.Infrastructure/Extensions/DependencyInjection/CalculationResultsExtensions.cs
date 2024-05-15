@@ -101,6 +101,10 @@ public static class CalculationResultsExtensions
         services.AddScoped<ISettlementReportFromFilesHandler, SettlementReportFromFilesHandler>();
         services.AddScoped<ISettlementReportFinalizeHandler, SettlementReportFinalizeHandler>();
         services.AddScoped<ISettlementReportInitializeHandler, SettlementReportInitializeHandler>();
+
+        services.AddScoped<IGetSettlementReportsHandler, GetSettlementReportsHandler>();
+        services.AddScoped<IUpdateFailedSettlementReportsHandler, UpdateFailedSettlementReportsHandler>();
+
         services.AddScoped<ISettlementReportDataRepository, LegacySettlementReportDataRepository>();
         services.AddScoped<ISettlementReportRepository, SettlementReportRepository>();
         services.AddScoped<ISettlementReportFileGeneratorFactory, SettlementReportFileGeneratorFactory>();
@@ -117,6 +121,7 @@ public static class CalculationResultsExtensions
                     o.UseNodaTime();
                     o.EnableRetryOnFailure();
                 }));
+
         // Database Health check
         services.TryAddHealthChecks(
             registrationKey: HealthCheckNames.WholesaleDatabase,
@@ -130,6 +135,7 @@ public static class CalculationResultsExtensions
         services.AddScoped<IEnergyResultQueries, EnergyResultQueries>();
         services.AddScoped<IWholesaleResultQueries, WholesaleResultQueries>();
         services.AddScoped<IWholesaleServicesQueries, WholesaleServicesQueries>();
+        services.AddScoped<ITotalMonthlyAmountResultQueries, TotalMonthlyAmountResultQueries>();
         services.AddScoped<IAggregatedTimeSeriesQueries, AggregatedTimeSeriesQueries>();
         services.AddScoped<ISettlementReportResultQueries, SettlementReportResultQueries>();
 
