@@ -57,6 +57,7 @@ OUTPUT_FOLDER = "calculation-output"
 BASIS_DATA_FOLDER = "basis_data"
 
 BASIS_DATA_TABLE_NAMES = [
+    CALCULATIONS_TABLE_NAME,
     METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME,
     TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME,
     CHARGE_LINK_PERIODS_BASIS_DATA_TABLE_NAME,
@@ -83,7 +84,3 @@ def get_calculation_input_path(
 ) -> str:
     input_folder = input_folder or env_vars.get_calculation_input_folder_name()
     return f"{get_container_root_path(storage_account_name)}{input_folder}/"
-
-
-def get_calculation_relative_path(calculation_id: str) -> str:
-    return f"{OUTPUT_FOLDER}/batch_id={calculation_id}"
