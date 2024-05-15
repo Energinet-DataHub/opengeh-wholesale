@@ -58,12 +58,7 @@ def create_calculation_args(input_path: str) -> CalculatorArgs:
             calculation_args[Colname.calculation_execution_time_start],
             CSV_DATE_FORMAT,
         ),
-        # TODO BJM: In another PR - add the missing field to the calculation arguments (and remove this else-branch)
-        created_by_user_id=(
-            calculation_args[Colname.created_by_user_id]
-            if Colname.created_by_user_id in calculation_args
-            else "a8efc21d-3508-4d76-a712-828330e6674d"
-        ),
+        created_by_user_id=calculation_args[Colname.created_by_user_id],
         time_zone=time_zone,
         quarterly_resolution_transition_datetime=quarterly_resolution_transition_datetime,
     )
