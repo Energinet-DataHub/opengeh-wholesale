@@ -6,7 +6,7 @@ CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_time_
     resolution COMMENT '\'PT1H\' | \'PT15M\'',
     grid_area_code,
     energy_supplier_id COMMENT '<value> | NULL',
-    observation_time_start,
+    observation_day,
     quantities)
 AS
 SELECT c.calculation_id,
@@ -16,7 +16,7 @@ SELECT c.calculation_id,
        m.resolution,
        m.grid_area_code,
        m.energy_supplier_id,
-       MIN(t.observation_time)                                                        AS observation_time_start,
+       TO_UTC_TIMESTAMP(DATE_TRUNC('day', FROM_UTC_TIMESTAMP(t.observation_time, 'Europe/Copenhagen')),'Europe/Copenhagen') AS observation_day,
        ARRAY_SORT(ARRAY_AGG(struct(t.observation_time, t.quantity)))                  AS quantities
 FROM {BASIS_DATA_DATABASE_NAME}.metering_point_periods AS m
          INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = m.calculation_id
