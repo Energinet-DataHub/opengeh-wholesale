@@ -46,10 +46,17 @@ internal sealed class SettlementReportDownloadTrigger
             .DownloadReportAsync(settlementReportRequestId)
             .ConfigureAwait(false);
 
-        var response = req.CreateResponse(HttpStatusCode.OK);
-        response.Headers.Add("Content-Type", "application/octet-stream");
-        response.Body = stream;
-
-        return response;
+        if (stream.Length == 0)
+        {
+            var response = req.CreateResponse(HttpStatusCode.NotFound);
+            return response;
+        }
+        else
+        {
+            var response = req.CreateResponse(HttpStatusCode.OK);
+            response.Headers.Add("Content-Type", "application/octet-stream");
+            response.Body = stream;
+            return response;
+        }
     }
 }

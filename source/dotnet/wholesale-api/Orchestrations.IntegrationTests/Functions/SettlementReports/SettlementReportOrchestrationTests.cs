@@ -162,8 +162,8 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
             TimeSpan.FromMinutes(3));
 
         using var downloadRequest = new HttpRequestMessage(HttpMethod.Post, "api/SettlementReportDownload");
-        request.Headers.Add("Authorization", $"Bearer {CreateFakeInternalToken()}");
-        request.Content = new StringContent(
+        downloadRequest.Headers.Add("Authorization", $"Bearer {CreateFakeInternalToken()}");
+        downloadRequest.Content = new StringContent(
             JsonConvert.SerializeObject(httpResponse!.RequestId),
             Encoding.UTF8,
             "application/json");
