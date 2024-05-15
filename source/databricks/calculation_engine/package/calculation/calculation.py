@@ -33,6 +33,9 @@ from package.calculation.preparation.transformations.metering_point_periods_for_
     get_metering_point_periods_for_energy_basis_data,
     get_metering_point_periods_for_wholesale_calculation,
 )
+from package.calculation.preparation.transformations.grid_loss_metering_points import (
+    get_grid_loss_metering_points,
+)
 from ..codelists.calculation_type import is_wholesale_calculation_type
 
 
@@ -63,6 +66,10 @@ def _execute(
             prepared_data_reader.get_metering_point_periods_without_grid_loss(
                 all_metering_point_periods
             )
+        )
+
+        grid_loss_metering_points_df = get_grid_loss_metering_points(
+            grid_loss_responsible_df
         )
 
         metering_point_time_series = (
@@ -139,6 +146,7 @@ def _execute(
         metering_point_periods_for_basis_data,
         metering_point_time_series,
         input_charges,
+        grid_loss_metering_points_df,
     )
 
     return results
