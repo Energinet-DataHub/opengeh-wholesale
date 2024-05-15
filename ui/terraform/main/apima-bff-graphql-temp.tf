@@ -11,8 +11,7 @@ module "apima_bff_graphql_temp" {
   logger_sampling_percentage = 100.0
   logger_verbosity           = "verbose"
   path                       = "bff/graphql"
-  backend_service_url        = "https://${module.bff.default_hostname}/graphql"
-  # TODO: Update URL in step 2
+  backend_service_url        = "https://${module.backend_for_frontend.default_hostname}/graphql"
   policies = [
     {
       xml_content = <<XML

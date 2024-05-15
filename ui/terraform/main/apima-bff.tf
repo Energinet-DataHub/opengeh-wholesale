@@ -11,8 +11,7 @@ module "apima_bff" {
   logger_sampling_percentage = 100.0
   logger_verbosity           = "verbose"
   path                       = "bff"
-  backend_service_url        = "https://${module.bff.default_hostname}"
-  # TODO: Update URL in step 2
+  backend_service_url        = "https://${module.backend_for_frontend.default_hostname}"
   import = {
     content_format = "openapi+json"
     content_value  = data.local_file.swagger_file.content

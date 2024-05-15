@@ -3,12 +3,6 @@ data "azurerm_key_vault" "kv_shared_resources" {
   resource_group_name = data.azurerm_resource_group.shared.name
 }
 
-#TODO: Delete in step 2
-data "azurerm_key_vault_secret" "appi_shared_instrumentation_key" {
-  name         = "appi-shared-instrumentation-key"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
 data "azurerm_key_vault_secret" "appi_shared_connection_string" {
   name         = "appi-shared-connection-string"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
@@ -89,10 +83,6 @@ data "azurerm_key_vault_secret" "snet_vnet_integration_id" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "plan_shared_id" {
-  name         = "plan-services-id"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
 
 data "azurerm_key_vault_secret" "log_shared_id" {
   name         = "log-shared-id"
