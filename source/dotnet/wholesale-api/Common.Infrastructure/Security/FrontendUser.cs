@@ -16,16 +16,16 @@ namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 
 public sealed class FrontendUser
 {
-    public FrontendUser(Guid userId, Guid actorId, bool isFas)
+    public FrontendUser(Guid userId, Guid actorId, bool multiTenancy)
     {
         UserId = userId;
         ActorId = actorId;
-        IsFas = isFas;
+        MultiTenancy = multiTenancy;
     }
 
     public Guid UserId { get; }
 
     public Guid ActorId { get; }
 
-    public bool IsFas { get; }
+    public bool MultiTenancy { get; }
 }
