@@ -26,7 +26,6 @@ from .sum_within_month import sum_within_month
 
 from ..calculation_results import (
     WholesaleResultsContainer,
-    TotalMonthlyAmountsContainer,
 )
 from ..calculator_args import CalculatorArgs
 from ...codelists import AmountType
@@ -37,7 +36,7 @@ from ...infrastructure import logging_configuration
 def execute(
     args: CalculatorArgs,
     prepared_charges: d.PreparedChargesContainer,
-) -> Tuple[WholesaleResultsContainer, TotalMonthlyAmountsContainer]:
+) -> Tuple[WholesaleResultsContainer, WholesaleResultsContainer]:
     results = WholesaleResultsContainer()
 
     monthly_fees = _calculate_fees(
@@ -196,8 +195,8 @@ def _calculate_total_monthly_amount(
     monthly_subscriptions: MonthlyAmountPerCharge,
     monthly_hourly_tariffs: MonthlyAmountPerCharge,
     monthly_daily_tariffs: MonthlyAmountPerCharge,
-) -> TotalMonthlyAmountsContainer:
-    total_monthly_amounts = TotalMonthlyAmountsContainer()
+) -> WholesaleResultsContainer:
+    total_monthly_amounts = WholesaleResultsContainer()
 
     all_monthly_amounts = (
         monthly_fees.union(monthly_subscriptions)
