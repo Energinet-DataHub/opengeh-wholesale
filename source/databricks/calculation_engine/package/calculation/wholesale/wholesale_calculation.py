@@ -205,12 +205,20 @@ def _calculate_total_monthly_amount(
         .union(monthly_daily_tariffs)
     )
 
-    total_monthly_amount_per_co = total_amount_calculator.calculate_per_ga_co_es(
+    total_monthly_amounts_per_ga_co_es = total_amount_calculator.calculate_per_ga_co_es(
         all_monthly_amounts,
     )
 
+    total_monthly_amounts_per_ga_es = total_amount_calculator.calculate_per_ga_es(
+        total_monthly_amounts_per_ga_co_es,
+    )
+
     total_monthly_amounts.total_monthly_amounts_per_ga_co_es = (
-        total_monthly_amounts_factory.create(args, total_monthly_amount_per_co)
+        total_monthly_amounts_factory.create(args, total_monthly_amounts_per_ga_co_es)
+    )
+
+    total_monthly_amounts.total_monthly_amounts_per_ga_es = (
+        total_monthly_amounts_factory.create(args, total_monthly_amounts_per_ga_es)
     )
 
     return total_monthly_amounts
