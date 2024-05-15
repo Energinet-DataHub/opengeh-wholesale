@@ -17,6 +17,9 @@ from package.calculation.basis_data.basis_data_results import write_basis_data
 from package.calculation.energy.calculated_grid_loss import (
     add_calculated_grid_loss_to_metering_point_times_series,
 )
+from package.calculation.preparation.transformations.grid_loss_metering_points import (
+    get_grid_loss_metering_points,
+)
 from package.calculation.preparation.transformations.metering_point_periods_for_calculation_type import (
     get_metering_points_periods_for_wholesale_basis_data,
     get_metering_point_periods_for_energy_basis_data,
@@ -35,14 +38,6 @@ from .output.total_monthly_amounts import write_total_monthly_amounts
 from .output.wholesale_results import write_wholesale_results
 from .preparation import PreparedDataReader
 from .wholesale import wholesale_calculation
-from package.calculation.preparation.transformations.metering_point_periods_for_calculation_type import (
-    get_metering_points_periods_for_wholesale_basis_data,
-    get_metering_point_periods_for_energy_basis_data,
-    get_metering_point_periods_for_wholesale_calculation,
-)
-from package.calculation.preparation.transformations.grid_loss_metering_points import (
-    get_grid_loss_metering_points,
-)
 from ..codelists.calculation_type import is_wholesale_calculation_type
 
 
