@@ -56,6 +56,7 @@ class WholesaleResultsContainer:
 @dataclass
 class TotalMonthlyAmountsContainer:
     total_monthly_amounts_per_ga_co_es: DataFrame | None = None
+    total_monthly_amounts_per_ga_es: DataFrame | None = None
 
 
 @dataclass
@@ -65,6 +66,7 @@ class BasisDataContainer:
     charge_master_data: DataFrame | None
     charge_prices: DataFrame | None
     charge_links: DataFrame | None
+    grid_loss_metering_points: DataFrame
 
 
 @dataclass

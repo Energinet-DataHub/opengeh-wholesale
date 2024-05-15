@@ -16,6 +16,7 @@ using AutoFixture;
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TotalMonthlyAmountResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
@@ -23,6 +24,7 @@ using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.AmountPerChargeResultProducedV1.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1.Factories;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.TotalMonthlyAmountResultProducedV1.Factories;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -99,9 +101,49 @@ public class WholesaleResultEventProviderTests
 
     [Theory]
     [InlineAutoMoqData]
+    public async Task GetAsync_WhenCanCreateTotalMonthlyAmountResultProducedV_ReturnsExpectedEvent(
+        [Frozen] Mock<IAmountPerChargeResultProducedV1Factory> amountPerChargeResultProducedV1FactoryMock,
+        [Frozen] Mock<IMonthlyAmountPerChargeResultProducedV1Factory> monthlyAmountPerChargeResultProducedV1FactoryMock,
+        [Frozen] Mock<ITotalMonthlyAmountResultProducedV1Factory> totalMonthlyAmountResultProducedV1FactoryMock,
+        [Frozen] Mock<ITotalMonthlyAmountResultQueries> totalMonthlyAmountResultQueriesMock,
+        TotalMonthlyAmountResult totalMonthlyAmountResult,
+        WholesaleResultEventProvider sut)
+    {
+        // Arrange
+        var expectedIntegrationEvent = new Contracts.IntegrationEvents.TotalMonthlyAmountResultProducedV1();
+        var wholesaleFixingCalculation = CreateWholesaleFixingCalculation();
+        var totalMonthlyAmountResults = new[] { totalMonthlyAmountResult };
+
+        totalMonthlyAmountResultQueriesMock
+            .Setup(mock => mock.GetAsync(wholesaleFixingCalculation.Id))
+            .Returns(totalMonthlyAmountResults.ToAsyncEnumerable());
+
+        amountPerChargeResultProducedV1FactoryMock
+            .Setup(mock => mock.CanCreate(It.IsAny<WholesaleResult>()))
+            .Returns(false);
+        monthlyAmountPerChargeResultProducedV1FactoryMock
+            .Setup(mock => mock.CanCreate(It.IsAny<WholesaleResult>()))
+            .Returns(false);
+        totalMonthlyAmountResultProducedV1FactoryMock
+            .Setup(mock => mock.CanCreate(It.IsAny<TotalMonthlyAmountResult>()))
+            .Returns(true);
+        totalMonthlyAmountResultProducedV1FactoryMock
+            .Setup(mock => mock.Create(It.IsAny<TotalMonthlyAmountResult>()))
+            .Returns(expectedIntegrationEvent);
+
+        // Act
+        var actualIntegrationEvents = await sut.GetAsync(wholesaleFixingCalculation).ToListAsync();
+
+        // Assert
+        actualIntegrationEvents.Single().EventName.Should().Be(((IEventMessage)expectedIntegrationEvent).EventName);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
     public async Task GetAsync_WhenCannotCreateEventFromResult_IgnoresThatResult(
         [Frozen] Mock<IAmountPerChargeResultProducedV1Factory> amountPerChargeResultProducedV1FactoryMock,
         [Frozen] Mock<IMonthlyAmountPerChargeResultProducedV1Factory> monthlyAmountPerChargeResultProducedV1FactoryMock,
+        [Frozen] Mock<ITotalMonthlyAmountResultProducedV1Factory> totalMonthlyAmountResultProducedV1FactoryMock,
         [Frozen] Mock<IWholesaleResultQueries> wholesaleResultQueriesMock,
         WholesaleResult wholesaleResult,
         WholesaleResultEventProvider sut)
@@ -119,6 +161,9 @@ public class WholesaleResultEventProviderTests
             .Returns(false);
         monthlyAmountPerChargeResultProducedV1FactoryMock
             .Setup(mock => mock.CanCreate(It.IsAny<WholesaleResult>()))
+            .Returns(false);
+        totalMonthlyAmountResultProducedV1FactoryMock
+            .Setup(mock => mock.CanCreate(It.IsAny<TotalMonthlyAmountResult>()))
             .Returns(false);
 
         // Act
@@ -178,11 +223,14 @@ public class WholesaleResultEventProviderTests
             .Create();
 
         var wholesaleResultQueriesStub = Mock.Of<IWholesaleResultQueries>();
+        var totalMonthlyAmountResultQueriesStub = Mock.Of<ITotalMonthlyAmountResultQueries>();
 
         var sut = new WholesaleResultEventProvider(
             wholesaleResultQueriesStub,
+            totalMonthlyAmountResultQueriesStub,
             new AmountPerChargeResultProducedV1Factory(),
-            new MonthlyAmountPerChargeResultProducedV1Factory());
+            new MonthlyAmountPerChargeResultProducedV1Factory(),
+            new TotalMonthlyAmountResultProducedV1Factory());
 
         // Act
         var actualResult = sut.CanContainWholesaleResults(calculation);

@@ -23,12 +23,12 @@ public sealed class FrontendUserProvider : IUserProvider<FrontendUser>
     public Task<FrontendUser?> ProvideUserAsync(
         Guid userId,
         Guid actorId,
-        bool isFas,
+        bool multiTenancy,
         IEnumerable<Claim> claims)
     {
         return Task.FromResult<FrontendUser?>(new FrontendUser(
             userId,
             actorId,
-            isFas));
+            multiTenancy));
     }
 }

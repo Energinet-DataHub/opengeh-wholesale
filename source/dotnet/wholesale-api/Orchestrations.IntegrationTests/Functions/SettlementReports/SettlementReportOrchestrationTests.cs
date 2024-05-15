@@ -71,11 +71,12 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
     ///  - A report file is generated.
     /// </summary>
     [Fact]
-    public async Task MockExternalDependencies_WhenCallingDurableFunctionEndPoint_OrchestrationCompletesWithReportPresent()
+    public async Task MockExternalDependencies_WhenCallingDurableFunctionEndpoint_OrchestrationCompletesWithReportPresent()
     {
         // Arrange
         var settlementReportRequest = new SettlementReportRequestDto(
             CalculationType.BalanceFixing,
+            false,
             new SettlementReportRequestFilterDto(
                 [new GridAreaCode("042")],
                 DateTimeOffset.UtcNow,
@@ -93,13 +94,11 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Post, "api/RequestSettlementReport");
+        request.Headers.Add("Authorization", $"Bearer {CreateFakeInternalToken()}");
         request.Content = new StringContent(
             JsonConvert.SerializeObject(settlementReportRequest),
             Encoding.UTF8,
             "application/json");
-
-        var token = CreateFakeInternalToken();
-        request.Headers.Add("Authorization", $"Bearer {token}");
 
         var actualResponse = await Fixture.AppHostManager.HttpClient.SendAsync(request);
 
@@ -117,6 +116,62 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
 
         var isReportPresent = await IsReportPresentAsync(httpResponse.RequestId);
         Assert.True(isReportPresent);
+    }
+
+    /// <summary>
+    /// Verifies that listing the reports returns a correct status.
+    /// </summary>
+    [Fact]
+    public async Task MockExternalDependencies_WhenCallingListReportsFunctionEndpoint_StatusIsValid()
+    {
+        // Arrange
+        var settlementReportRequest = new SettlementReportRequestDto(
+            CalculationType.BalanceFixing,
+            false,
+            new SettlementReportRequestFilterDto(
+                [new GridAreaCode("042")],
+                DateTimeOffset.UtcNow,
+                DateTimeOffset.UtcNow,
+                null));
+
+        // => Databricks SQL Statement API
+        var statementId = Guid.NewGuid().ToString();
+        var path = "GetDatabricksDataPath";
+
+        Fixture.MockServer
+            .MockEnergySqlStatements(statementId, 0)
+            .MockEnergySqlStatementsResultChunks(statementId, 0, path)
+            .MockEnergySqlStatementsResultStream(path);
+
+        // Act A: Start generating report.
+        using var requestReport = new HttpRequestMessage(HttpMethod.Post, "api/RequestSettlementReport");
+        requestReport.Headers.Add("Authorization", $"Bearer {CreateFakeInternalToken()}");
+        requestReport.Content = new StringContent(
+            JsonConvert.SerializeObject(settlementReportRequest),
+            Encoding.UTF8,
+            "application/json");
+
+        var reportResponse = await Fixture.AppHostManager.HttpClient.SendAsync(requestReport);
+        Assert.Equal(HttpStatusCode.OK, reportResponse.StatusCode);
+
+        var reportHttpResponse = await reportResponse.Content.ReadFromJsonAsync<SettlementReportHttpResponse>();
+        Assert.NotNull(reportHttpResponse);
+
+        // Act B: Request report status.
+        using var requestList = new HttpRequestMessage(HttpMethod.Get, "api/ListSettlementReports");
+        requestList.Headers.Add("Authorization", $"Bearer {CreateFakeInternalToken()}");
+
+        var listResponse = await Fixture.AppHostManager.HttpClient.SendAsync(requestList);
+        Assert.Equal(HttpStatusCode.OK, listResponse.StatusCode);
+
+        // Assert
+        var listHttpResponse = await listResponse.Content.ReadFromJsonAsync<RequestedSettlementReportDto[]>();
+        Assert.NotNull(listHttpResponse);
+        Assert.Contains(
+            listHttpResponse,
+            generatingReport =>
+                generatingReport.RequestId == reportHttpResponse.RequestId &&
+                generatingReport.Status is SettlementReportStatus.InProgress or SettlementReportStatus.Completed);
     }
 
     private async Task<bool> IsReportPresentAsync(SettlementReportRequestId id)
