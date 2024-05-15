@@ -29,7 +29,7 @@ public sealed class SettlementReport
 
     public Guid ActorId { get; init; }
 
-    public DateTimeOffset CreatedDateTime { get; init; }
+    public Instant CreatedDateTime { get; init; }
 
     public CalculationType CalculationType { get; init; }
 
@@ -46,6 +46,7 @@ public sealed class SettlementReport
     public string? BlobFileName { get; private set; }
 
     public SettlementReport(
+        IClock clock,
         Guid userId,
         Guid actorId,
         SettlementReportRequestId requestId,
@@ -54,7 +55,7 @@ public sealed class SettlementReport
         RequestId = requestId.Id;
         UserId = userId;
         ActorId = actorId;
-        CreatedDateTime = DateTimeOffset.UtcNow;
+        CreatedDateTime = clock.GetCurrentInstant();
         Status = SettlementReportStatus.InProgress;
         CalculationType = request.CalculationType;
         ContainsBasisData = false;
