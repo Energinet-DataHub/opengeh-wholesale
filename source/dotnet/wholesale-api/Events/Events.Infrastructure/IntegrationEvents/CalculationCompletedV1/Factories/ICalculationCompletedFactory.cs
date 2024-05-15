@@ -18,5 +18,5 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ca
 
 public interface ICalculationCompletedFactory
 {
-    Contracts.IntegrationEvents.CalculationCompletedV1 Create(string calculationId, string orchestrationInstanceId, CalculationType calculationType, long calculationVersion);
+    Contracts.IntegrationEvents.CalculationCompletedV1 Create(Guid calculationId, string orchestrationInstanceId, CalculationType calculationType, long calculationVersion);
 }
