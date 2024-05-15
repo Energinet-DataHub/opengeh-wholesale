@@ -18,6 +18,8 @@ public interface ISettlementReportRepository
 {
     Task AddOrUpdateAsync(SettlementReport request);
 
+    Task DeleteAsync(SettlementReport request);
+
     Task<SettlementReport> GetAsync(string requestId);
 
     Task<IEnumerable<SettlementReport>> GetAsync();

@@ -44,12 +44,28 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
         SettlementReportRequestId requestId,
         SettlementReportRequestDto reportRequest)
     {
-        var resultsFile = new SettlementReportFileRequestDto(
-            SettlementReportFileContent.BalanceFixingResult,
-            "Result Energy",
-            requestId,
-            reportRequest.Filter);
+        var filesToGenerate = new List<SettlementReportFileRequestDto>();
 
-        return [resultsFile];
+        if (reportRequest is { SplitReportPerGridArea: true, Filter.GridAreas.Count: > 1 })
+        {
+            foreach (var filterGridArea in reportRequest.Filter.GridAreas)
+            {
+                filesToGenerate.Add(new SettlementReportFileRequestDto(
+                    SettlementReportFileContent.BalanceFixingResult,
+                    $"Result Energy ({filterGridArea.Code})",
+                    requestId,
+                    reportRequest.Filter with { GridAreas = [filterGridArea] }));
+            }
+        }
+        else
+        {
+            filesToGenerate.Add(new SettlementReportFileRequestDto(
+                SettlementReportFileContent.BalanceFixingResult,
+                "Result Energy",
+                requestId,
+                reportRequest.Filter));
+        }
+
+        return filesToGenerate;
     }
 }

@@ -43,7 +43,7 @@ class TestWhenInvokedWithValidArguments:
         start_with_deps(
             parse_command_line_args=lambda: command_line_args,
             parse_job_args=lambda args: (any_calculator_args, infrastructure_settings),
-            calculation_executor=lambda args, reader: None,
+            calculation_executor=lambda args, reader, spark: None,
             is_storage_locked_checker=lambda name, cred: False,
         )
 
