@@ -18,6 +18,7 @@ from pyspark.sql import SparkSession
 
 from package.calculation import TableReader, PreparedDataReader
 import tests.calculation.calculations_factory as factory
+from package.codelists import CalculationType
 
 
 class TestGetLatestCalculationVersion:
@@ -27,7 +28,6 @@ class TestGetLatestCalculationVersion:
         # Arrange
         table_reader: TableReader = mock.Mock()
         prepared_data_reader = PreparedDataReader(table_reader)
-        calculation = factory.create_calculation()
         with patch.object(
             table_reader,
             # table_reader.read_calculations.__name__,
@@ -36,7 +36,7 @@ class TestGetLatestCalculationVersion:
         ):
             # Act
             actual = prepared_data_reader.get_latest_calculation_version(
-                calculation.calculation_type
+                CalculationType.WHOLESALE_FIXING
             )
 
             # Assert
@@ -48,15 +48,19 @@ class TestGetLatestCalculationVersion:
         # Arrange
         table_reader: TableReader = mock.Mock()
         prepared_data_reader = PreparedDataReader(table_reader)
-        calculation = factory.create_calculation(version=7)
+
+        calculation_type = CalculationType.BALANCE_FIXING
+        calculation = factory.create_calculation(
+            version=7, calculation_type=calculation_type
+        )
         with patch.object(
             table_reader,
             "read_calculations",
-            return_value=factory.create_calculations(spark),
+            return_value=factory.create_calculations(spark, data=[calculation]),
         ):
             # Act
             actual = prepared_data_reader.get_latest_calculation_version(
-                calculation.calculation_type
+                calculation_type
             )
 
             # Assert

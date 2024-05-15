@@ -198,8 +198,6 @@ def calculation_output_path(data_lake_path: str) -> str:
 @pytest.fixture(scope="session")
 def migrations_executed(
     spark: SparkSession,
-    data_lake_path: str,
-    calculation_input_folder: str,
     calculation_output_path: str,
     energy_input_data_written_to_delta: None,
 ) -> None:

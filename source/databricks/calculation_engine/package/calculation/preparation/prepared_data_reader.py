@@ -171,7 +171,7 @@ class PreparedDataReader:
 
         latest_version = (
             calculations.where(
-                f.col(CalculationColumnNames.calculation_type) == calculation_type
+                f.col(CalculationColumnNames.calculation_type) == calculation_type.value
             )
             .agg(f.max(CalculationColumnNames.version).alias("version"))
             .collect()[0]["version"]

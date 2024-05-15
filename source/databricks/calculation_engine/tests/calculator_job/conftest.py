@@ -33,9 +33,7 @@ from . import configuration as C
 
 
 @pytest.fixture(scope="session")
-def calculator_args_balance_fixing(
-    data_lake_path: str, calculation_input_path: str
-) -> CalculatorArgs:
+def calculator_args_balance_fixing() -> CalculatorArgs:
     return CalculatorArgs(
         calculation_id=C.executed_balance_fixing_calculation_id,
         calculation_type=CalculationType.BALANCE_FIXING,
