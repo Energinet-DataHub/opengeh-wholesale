@@ -52,8 +52,7 @@ public sealed class GetSettlementReportsHandler : IGetSettlementReportsHandler
         var currentReports = new List<RequestedSettlementReportDto>();
         var cutOffPeriod = _clock
             .GetCurrentInstant()
-            .Minus(TimeSpan.FromDays(7).ToDuration())
-            .ToDateTimeOffset();
+            .Minus(TimeSpan.FromDays(7).ToDuration());
 
         foreach (var settlementReport in settlementReports)
         {

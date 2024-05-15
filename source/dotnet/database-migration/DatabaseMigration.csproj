@@ -20,7 +20,7 @@ limitations under the License.
     <AssemblyName>Energinet.DataHub.Wholesale.DatabaseMigration</AssemblyName>
     <RootNamespace>Energinet.DataHub.Wholesale.DatabaseMigration</RootNamespace>
   </PropertyGroup>
-
+  
   <ItemGroup>
     <EmbeddedResource Include="Scripts\202401110800_Add_Version.sql" />
     <EmbeddedResource Include="Scripts\202302031200_Drop_MessageHub.sql" />
@@ -49,6 +49,7 @@ limitations under the License.
     <EmbeddedResource Include="Scripts\202402011100_Rename_ProcessType_To_CalculationType.sql" />
     <EmbeddedResource Include="Scripts\202405081100_Add_SettlementReport_table.sql" />
     <EmbeddedResource Include="Scripts\202405141445_Add_Period_To_SettlementReport.sql" />
+    <EmbeddedResource Include="Scripts\202405151335_Use_DateTime_In_SettlementReport.sql" />
   </ItemGroup>
 
   <ItemGroup>

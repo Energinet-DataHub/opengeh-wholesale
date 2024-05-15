@@ -29,7 +29,7 @@ public sealed class SettlementReport
 
     public Guid ActorId { get; init; }
 
-    public DateTimeOffset CreatedDateTime { get; init; }
+    public Instant CreatedDateTime { get; init; }
 
     public CalculationType CalculationType { get; init; }
 
@@ -55,7 +55,7 @@ public sealed class SettlementReport
         RequestId = requestId.Id;
         UserId = userId;
         ActorId = actorId;
-        CreatedDateTime = clock.GetCurrentInstant().ToDateTimeOffset();
+        CreatedDateTime = clock.GetCurrentInstant();
         Status = SettlementReportStatus.InProgress;
         CalculationType = request.CalculationType;
         ContainsBasisData = false;
