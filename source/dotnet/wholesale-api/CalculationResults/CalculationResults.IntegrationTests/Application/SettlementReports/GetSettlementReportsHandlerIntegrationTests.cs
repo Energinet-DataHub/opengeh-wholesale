@@ -172,6 +172,7 @@ public sealed class GetSettlementReportsHandlerIntegrationTests : TestBase<GetSe
 
         var blobClient = _settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
         var blobName = $"settlement-reports/{requestId.Id}/{generatedSettlementReportDto.FinalReport.FileName}";
+        await blobClient.UploadBlobAsync(blobName, new BinaryData("data"));
 
         // Act
         var items = (await Sut.GetAsync()).ToList();
