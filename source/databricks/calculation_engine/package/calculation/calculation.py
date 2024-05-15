@@ -11,8 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pyspark import Row
-from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql import SparkSession
 
 from package.calculation.basis_data.basis_data_results import write_basis_data
 from package.calculation.energy.calculated_grid_loss import (
@@ -28,7 +27,7 @@ from package.calculation.preparation.transformations.metering_point_periods_for_
 )
 from package.infrastructure import logging_configuration
 from .basis_data import basis_data_factory
-from .basis_data.schemas import calculations_schema
+from .basis_data.calculations_factory import create_calculation
 from .calculation_results import (
     CalculationResultsContainer,
 )
@@ -41,7 +40,6 @@ from .output.wholesale_results import write_wholesale_results
 from .preparation import PreparedDataReader
 from .wholesale import wholesale_calculation
 from ..codelists.calculation_type import is_wholesale_calculation_type
-from ..constants.calculation_column_names import CalculationColumnNames
 
 
 @logging_configuration.use_span("calculation")
@@ -60,7 +58,7 @@ def _execute(
     results = CalculationResultsContainer()
 
     with logging_configuration.start_span("calculation.prepare"):
-        calculations = _create_calculation(args, prepared_data_reader, spark)
+        calculations = create_calculation(args, prepared_data_reader, spark)
 
         # cache of metering_point_time_series had no effect on performance (01-12-2023)
         all_metering_point_periods = prepared_data_reader.get_metering_point_periods_df(
@@ -184,30 +182,3 @@ def _write_output(
     # IMPORTANT: Write the succeeded calculation after the results to ensure that the calculation
     # is only marked as succeeded when all results are written
     write_calculation(args, prepared_data_reader, spark)
-
-
-# TODO BJM: Create and use Calculations typed data frame?
-def _create_calculation(
-    args: CalculatorArgs,
-    prepared_data_reader: PreparedDataReader,
-    spark: SparkSession,
-) -> DataFrame:
-    latest_version = prepared_data_reader.get_latest_calculation_version(
-        args.calculation_type
-    )
-
-    # Next version begins with 1 and increments by 1
-    next_version = (latest_version or 0) + 1
-
-    # TODO BJM: Use factory?
-    calculation = {
-        CalculationColumnNames.calculation_id: args.calculation_id,
-        CalculationColumnNames.calculation_type: args.calculation_type.value,
-        CalculationColumnNames.period_start: args.calculation_period_start_datetime,
-        CalculationColumnNames.period_end: args.calculation_period_end_datetime,
-        CalculationColumnNames.execution_time_start: args.calculation_execution_time_start,
-        CalculationColumnNames.created_by_user_id: args.created_by_user_id,
-        CalculationColumnNames.version: next_version,
-    }
-
-    return spark.createDataFrame(data=[Row(**calculation)], schema=calculations_schema)
