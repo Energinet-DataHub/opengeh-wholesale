@@ -141,7 +141,8 @@ public class IntegrationEventProvider : IIntegrationEventProvider
                 unpublishedCalculation.PublishedTime = _clock.GetCurrentInstant();
             }
 
-            yield return _calculationCompletedEventProvider.Get(unpublishedCalculation.Id, unpublishedCalculation.InstanceId, unpublishedCalculation.CalculationType, unpublishedCalculation.CalculationVersion);
+            // Publish integration events for calculation completed
+            yield return _calculationCompletedEventProvider.Get(unpublishedCalculation);
 
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
 

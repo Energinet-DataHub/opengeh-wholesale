@@ -13,15 +13,11 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Messaging.Communication;
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.Communication;
 
 public interface ICalculationCompletedEventProvider
 {
-    IntegrationEvent Get(
-        string calculationId,
-        string instanceId,
-        CalculationType calculationType,
-        int calculationVersion);
+    IntegrationEvent Get(CompletedCalculation unpublishedCalculation);
 }
