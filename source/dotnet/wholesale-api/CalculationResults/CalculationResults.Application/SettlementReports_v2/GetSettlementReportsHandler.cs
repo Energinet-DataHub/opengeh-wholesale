@@ -14,29 +14,70 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using NodaTime;
+using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 
 public sealed class GetSettlementReportsHandler : IGetSettlementReportsHandler
 {
-    private readonly ISettlementReportRepository _repository;
+    private readonly IClock _clock;
+    private readonly ISettlementReportRepository _settlementReportRepository;
+    private readonly ISettlementReportFileRepository _settlementReportFileRepository;
 
-    public GetSettlementReportsHandler(ISettlementReportRepository repository)
+    public GetSettlementReportsHandler(
+        IClock clock,
+        ISettlementReportRepository settlementReportRepository,
+        ISettlementReportFileRepository settlementReportFileRepository)
     {
-        _repository = repository;
+        _clock = clock;
+        _settlementReportRepository = settlementReportRepository;
+        _settlementReportFileRepository = settlementReportFileRepository;
     }
 
     public async Task<IEnumerable<RequestedSettlementReportDto>> GetAsync()
     {
-        var settlementReports = await _repository.GetAsync().ConfigureAwait(false);
-        return settlementReports.Select(Map);
+        var settlementReports = await _settlementReportRepository.GetAsync().ConfigureAwait(false);
+        return await FilterOutExpiredReportsAsync(settlementReports).ConfigureAwait(false);
     }
 
     public async Task<IEnumerable<RequestedSettlementReportDto>> GetAsync(Guid userId, Guid actorId)
     {
-        var settlementReports = await _repository.GetAsync(userId, actorId).ConfigureAwait(false);
-        return settlementReports.Select(Map);
+        var settlementReports = await _settlementReportRepository.GetAsync(userId, actorId).ConfigureAwait(false);
+        return await FilterOutExpiredReportsAsync(settlementReports).ConfigureAwait(false);
+    }
+
+    private async Task<IEnumerable<RequestedSettlementReportDto>> FilterOutExpiredReportsAsync(IEnumerable<SettlementReport> settlementReports)
+    {
+        var currentReports = new List<RequestedSettlementReportDto>();
+        var cutOffPeriod = _clock
+            .GetCurrentInstant()
+            .Plus(TimeSpan.FromDays(7).ToDuration())
+            .ToDateTimeOffset();
+
+        foreach (var settlementReport in settlementReports)
+        {
+            if (settlementReport.Status == SettlementReportStatus.InProgress ||
+                settlementReport.CreatedDateTime > cutOffPeriod)
+            {
+                currentReports.Add(Map(settlementReport));
+            }
+            else
+            {
+                if (settlementReport.BlobFileName != null)
+                {
+                    await _settlementReportFileRepository
+                        .DeleteAsync(new SettlementReportRequestId(settlementReport.RequestId), settlementReport.BlobFileName)
+                        .ConfigureAwait(false);
+                }
+
+                await _settlementReportRepository
+                    .DeleteAsync(settlementReport)
+                    .ConfigureAwait(false);
+            }
+        }
+
+        return currentReports;
     }
 
     private static RequestedSettlementReportDto Map(SettlementReport report)

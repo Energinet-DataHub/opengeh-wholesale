@@ -17,17 +17,24 @@ using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.SettlementReportRequest;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
+using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
+using Microsoft.EntityFrameworkCore;
+using Moq;
+using NodaTime;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Application.SettlementReports;
 
+[Collection(nameof(SettlementReportFileCollectionFixture))]
 public sealed class GetSettlementReportsHandlerIntegrationTests : TestBase<GetSettlementReportsHandler>,
     IClassFixture<WholesaleDatabaseFixture<SettlementReportDatabaseContext>>
 {
     private readonly WholesaleDatabaseFixture<SettlementReportDatabaseContext> _wholesaleDatabaseFixture;
+    private readonly SettlementReportFileBlobStorageFixture _settlementReportFileBlobStorageFixture;
 
     private readonly SettlementReportRequestDto _mockedSettlementReportRequest = new(
         CalculationType.BalanceFixing,
@@ -35,10 +42,17 @@ public sealed class GetSettlementReportsHandlerIntegrationTests : TestBase<GetSe
         new SettlementReportRequestFilterDto([], DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null));
 
     public GetSettlementReportsHandlerIntegrationTests(
-        WholesaleDatabaseFixture<SettlementReportDatabaseContext> wholesaleDatabaseFixture)
+        WholesaleDatabaseFixture<SettlementReportDatabaseContext> wholesaleDatabaseFixture,
+        SettlementReportFileBlobStorageFixture settlementReportFileBlobStorageFixture)
     {
         _wholesaleDatabaseFixture = wholesaleDatabaseFixture;
+        _settlementReportFileBlobStorageFixture = settlementReportFileBlobStorageFixture;
         Fixture.Inject<ISettlementReportRepository>(new SettlementReportRepository(wholesaleDatabaseFixture.DatabaseManager.CreateDbContext()));
+
+        Fixture.Inject<IClock>(SystemClock.Instance);
+
+        var blobContainerClient = settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
+        Fixture.Inject<ISettlementReportFileRepository>(new SettlementReportFileBlobStorage(blobContainerClient));
     }
 
     [Fact]
@@ -52,7 +66,7 @@ public sealed class GetSettlementReportsHandlerIntegrationTests : TestBase<GetSe
         {
             var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
             expectedReports.Add(requestId);
-            await dbContext.SettlementReports.AddAsync(new SettlementReport(Guid.NewGuid(), Guid.NewGuid(), requestId, _mockedSettlementReportRequest));
+            await dbContext.SettlementReports.AddAsync(CreateMockedSettlementReport(Guid.NewGuid(), Guid.NewGuid(), requestId));
         }
 
         await dbContext.SaveChangesAsync();
@@ -76,13 +90,13 @@ public sealed class GetSettlementReportsHandlerIntegrationTests : TestBase<GetSe
 
         await using var dbContext = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
 
-        await dbContext.SettlementReports.AddAsync(new SettlementReport(targetUserId, Guid.NewGuid(), new SettlementReportRequestId(Guid.NewGuid().ToString()), _mockedSettlementReportRequest));
-        await dbContext.SettlementReports.AddAsync(new SettlementReport(targetUserId, Guid.NewGuid(), new SettlementReportRequestId(Guid.NewGuid().ToString()), _mockedSettlementReportRequest));
+        await dbContext.SettlementReports.AddAsync(CreateMockedSettlementReport(targetUserId, Guid.NewGuid(), new SettlementReportRequestId(Guid.NewGuid().ToString())));
+        await dbContext.SettlementReports.AddAsync(CreateMockedSettlementReport(targetUserId, Guid.NewGuid(), new SettlementReportRequestId(Guid.NewGuid().ToString())));
 
-        await dbContext.SettlementReports.AddAsync(new SettlementReport(targetUserId, targetActorId, requestId, _mockedSettlementReportRequest));
+        await dbContext.SettlementReports.AddAsync(CreateMockedSettlementReport(targetUserId, targetActorId, requestId));
 
-        await dbContext.SettlementReports.AddAsync(new SettlementReport(Guid.NewGuid(), targetActorId, new SettlementReportRequestId(Guid.NewGuid().ToString()), _mockedSettlementReportRequest));
-        await dbContext.SettlementReports.AddAsync(new SettlementReport(Guid.NewGuid(), targetActorId, new SettlementReportRequestId(Guid.NewGuid().ToString()), _mockedSettlementReportRequest));
+        await dbContext.SettlementReports.AddAsync(CreateMockedSettlementReport(Guid.NewGuid(), targetActorId, new SettlementReportRequestId(Guid.NewGuid().ToString())));
+        await dbContext.SettlementReports.AddAsync(CreateMockedSettlementReport(Guid.NewGuid(), targetActorId, new SettlementReportRequestId(Guid.NewGuid().ToString())));
 
         await dbContext.SaveChangesAsync();
 
@@ -92,5 +106,89 @@ public sealed class GetSettlementReportsHandlerIntegrationTests : TestBase<GetSe
         // Assert
         Assert.Single(items);
         Assert.Contains(items, item => item.RequestId == requestId);
+    }
+
+    [Fact]
+    public async Task GetAsync_HasFailedReport_ReportIsRemoved()
+    {
+        // Arrange
+        var clockMock = new Mock<IClock>();
+        clockMock
+            .Setup(clock => clock.GetCurrentInstant())
+            .Returns(Instant.FromUtc(2021, 1, 1, 0, 0));
+
+        var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
+        var report = new SettlementReport(
+            clockMock.Object,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            requestId,
+            _mockedSettlementReportRequest);
+
+        report.MarkAsFailed();
+
+        await using var dbContext = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
+        await dbContext.SettlementReports.AddAsync(report);
+        await dbContext.SaveChangesAsync();
+
+        // Act
+        var items = (await Sut.GetAsync()).ToList();
+
+        // Assert
+        Assert.DoesNotContain(items, item => item.RequestId == requestId);
+
+        await using var assertContext = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
+        var actualReport = await assertContext.SettlementReports.SingleOrDefaultAsync(r => r.RequestId == requestId.Id);
+        Assert.Null(actualReport);
+    }
+
+    [Fact]
+    public async Task GetAsync_HasExpiredReport_ReportIsRemoved()
+    {
+        // Arrange
+        var clockMock = new Mock<IClock>();
+        clockMock
+            .Setup(clock => clock.GetCurrentInstant())
+            .Returns(Instant.FromUtc(2021, 1, 1, 0, 0));
+
+        var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
+        var report = new SettlementReport(
+            clockMock.Object,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            requestId,
+            _mockedSettlementReportRequest);
+
+        var generatedSettlementReportDto = new GeneratedSettlementReportDto(
+            requestId,
+            new GeneratedSettlementReportFileDto(requestId, "TestFile.csv"),
+            []);
+
+        report.MarkAsCompleted(generatedSettlementReportDto);
+
+        await using var dbContext = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
+        await dbContext.SettlementReports.AddAsync(report);
+        await dbContext.SaveChangesAsync();
+
+        var blobClient = _settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
+        var blobName = $"settlement-reports/{requestId.Id}/{generatedSettlementReportDto.FinalReport.FileName}";
+        await blobClient.UploadBlobAsync(blobName, new BinaryData("data"));
+
+        // Act
+        var items = (await Sut.GetAsync()).ToList();
+
+        // Assert
+        Assert.DoesNotContain(items, item => item.RequestId == requestId);
+
+        await using var assertContext = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
+        var actualReport = await assertContext.SettlementReports.SingleOrDefaultAsync(r => r.RequestId == requestId.Id);
+        Assert.Null(actualReport);
+
+        Assert.False(await blobClient.GetBlobClient(blobName).ExistsAsync());
+    }
+
+    private SettlementReport CreateMockedSettlementReport(Guid userId, Guid actorId, SettlementReportRequestId requestId)
+    {
+        return new SettlementReport(SystemClock.Instance, userId, actorId, requestId, _mockedSettlementReportRequest);
     }
 }
