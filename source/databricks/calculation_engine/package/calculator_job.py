@@ -18,6 +18,7 @@ from argparse import Namespace
 from typing import Callable, Tuple
 
 from opentelemetry.trace import SpanKind, Status, StatusCode, Span
+from pyspark.sql import SparkSession
 
 import package.infrastructure.logging_configuration as config
 from package import calculation
@@ -85,8 +86,11 @@ def start_with_deps(
                 is_storage_locked_checker, infrastructure_settings
             )
 
-            prepared_data_reader = create_prepared_data_reader(infrastructure_settings)
-            calculation_executor(args, prepared_data_reader)
+            spark = initialize_spark()
+            prepared_data_reader = create_prepared_data_reader(
+                infrastructure_settings, spark
+            )
+            calculation_executor(args, prepared_data_reader, spark)
 
         # Added as ConfigArgParse uses sys.exit() rather than raising exceptions
         except SystemExit as e:
@@ -110,9 +114,9 @@ def record_exception(exception: SystemExit | Exception, span: Span) -> None:
 
 def create_prepared_data_reader(
     settings: InfrastructureSettings,
+    spark: SparkSession,
 ) -> calculation.PreparedDataReader:
     """Create calculation execution dependencies."""
-    spark = initialize_spark()
     delta_table_reader = input.TableReader(
         spark,
         settings.calculation_input_path,

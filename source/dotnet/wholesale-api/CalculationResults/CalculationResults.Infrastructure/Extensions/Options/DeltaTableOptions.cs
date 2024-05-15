@@ -40,4 +40,9 @@ public class DeltaTableOptions
     /// Name of the wholesale results delta table.
     /// </summary>
     public string WHOLESALE_RESULTS_TABLE_NAME { get; set; } = "wholesale_results";
+
+    /// <summary>
+    /// Name of the wholesale results delta table.
+    /// </summary>
+    public string TOTAL_MONTHLY_AMOUNTS_TABLE_NAME { get; set; } = "total_monthly_amounts";
 }

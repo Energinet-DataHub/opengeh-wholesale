@@ -77,6 +77,11 @@ class ChargeLinkPeriodsColname:
     to_date = "to_date"
 
 
+class GridLossMeteringPointsColName:
+    calculation_id = "calculation_id"
+    metering_point_id = "metering_point_id"
+
+
 class CalculationsColumnName:
     calculation_id = "calculation_id"
     calculation_type = "calculation_type"
