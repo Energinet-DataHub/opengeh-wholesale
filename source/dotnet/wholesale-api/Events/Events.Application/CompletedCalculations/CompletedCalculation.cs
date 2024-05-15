@@ -26,27 +26,8 @@ public sealed class CompletedCalculation
         Instant periodStart,
         Instant periodEnd,
         Instant completedTime,
-        long calculationVersion)
-    {
-        Id = id;
-        GridAreaCodes = gridAreaCodes;
-        CalculationType = calculationType;
-        PeriodStart = periodStart;
-        PeriodEnd = periodEnd;
-        CompletedTime = completedTime;
-        CalculationVersion = calculationVersion;
-        OrchestrationInstanceId = null;
-    }
-
-    public CompletedCalculation(
-        Guid id,
-        List<string> gridAreaCodes,
-        CalculationType calculationType,
-        Instant periodStart,
-        Instant periodEnd,
-        Instant completedTime,
         long calculationVersion,
-        string orchestrationInstanceId)
+        string? orchestrationInstanceId = null)
     {
         Id = id;
         GridAreaCodes = gridAreaCodes;
