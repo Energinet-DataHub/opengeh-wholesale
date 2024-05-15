@@ -23,6 +23,7 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Communication;
 
 public class IntegrationEventProvider : IIntegrationEventProvider
 {
+    private readonly ICalculationCompletedEventProvider _calculationCompletedEventProvider;
     private readonly IEnergyResultEventProvider _energyResultEventProvider;
     private readonly IWholesaleResultEventProvider _wholesaleResultEventProvider;
     private readonly ICompletedCalculationRepository _completedCalculationRepository;
@@ -31,6 +32,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
     private readonly ILogger<IntegrationEventProvider> _logger;
 
     public IntegrationEventProvider(
+        ICalculationCompletedEventProvider calculationCompletedEventProvider,
         IEnergyResultEventProvider energyResultEventProvider,
         IWholesaleResultEventProvider wholesaleResultEventProvider,
         ICompletedCalculationRepository completedCalculationRepository,
@@ -38,6 +40,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
         IUnitOfWork unitOfWork,
         ILogger<IntegrationEventProvider> logger)
     {
+        _calculationCompletedEventProvider = calculationCompletedEventProvider;
         _energyResultEventProvider = energyResultEventProvider;
         _wholesaleResultEventProvider = wholesaleResultEventProvider;
         _completedCalculationRepository = completedCalculationRepository;
@@ -137,6 +140,8 @@ public class IntegrationEventProvider : IIntegrationEventProvider
             {
                 unpublishedCalculation.PublishedTime = _clock.GetCurrentInstant();
             }
+
+            yield return _calculationCompletedEventProvider.Get(unpublishedCalculation.Id, unpublishedCalculation.InstanceId, unpublishedCalculation.CalculationType, unpublishedCalculation.CalculationVersion);
 
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
