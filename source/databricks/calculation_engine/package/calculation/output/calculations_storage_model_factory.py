@@ -24,6 +24,11 @@ def create_calculation(
     prepared_data_reader: PreparedDataReader,
     spark: SparkSession,
 ) -> DataFrame:
+    """
+    Creates a data frame with a row representing the currently executing calculation.
+    The version is the next available version for the given calculation type.
+    """
+
     latest_version = prepared_data_reader.get_latest_calculation_version(
         args.calculation_type
     )
