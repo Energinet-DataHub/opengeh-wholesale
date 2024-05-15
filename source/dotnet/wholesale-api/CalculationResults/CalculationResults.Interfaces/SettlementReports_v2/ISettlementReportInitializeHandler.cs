@@ -18,5 +18,9 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementRe
 
 public interface ISettlementReportInitializeHandler
 {
-    Task InitializeAsync(Guid userId, Guid actorId, SettlementReportRequestId requestId);
+    Task InitializeAsync(
+        Guid userId,
+        Guid actorId,
+        SettlementReportRequestId requestId,
+        SettlementReportRequestDto request);
 }
