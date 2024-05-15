@@ -28,11 +28,8 @@ public class TotalMonthlyAmountResultFactory
         DatabricksSqlRow databricksSqlRow,
         Instant periodStart,
         Instant periodEnd,
-        ILogger<WholesaleResultQueries> logger,
         long version)
     {
-        try
-        {
             var id = databricksSqlRow[TotalMonthlyAmountsColumnNames.CalculationResultId];
             var calculationId = databricksSqlRow[TotalMonthlyAmountsColumnNames.CalculationId];
             var calculationType = databricksSqlRow[TotalMonthlyAmountsColumnNames.CalculationType];
@@ -52,27 +49,5 @@ public class TotalMonthlyAmountResultFactory
                 chargeOwnerId,
                 SqlResultValueConverters.ToDecimal(amount)!.Value,
                 version);
-        }
-        catch (Exception)
-        {
-            logger.LogInformation(databricksSqlRow.ToString());
-            var id = databricksSqlRow[TotalMonthlyAmountsColumnNames.CalculationResultId];
-            var calculationId = databricksSqlRow[TotalMonthlyAmountsColumnNames.CalculationId];
-            var calculationType = databricksSqlRow[TotalMonthlyAmountsColumnNames.CalculationType];
-            var gridArea = databricksSqlRow[TotalMonthlyAmountsColumnNames.GridAreaCode];
-            var energySupplierId = databricksSqlRow[TotalMonthlyAmountsColumnNames.EnergySupplierId];
-            var chargeOwnerId = databricksSqlRow[TotalMonthlyAmountsColumnNames.ChargeOwnerId];
-            var amount = databricksSqlRow[TotalMonthlyAmountsColumnNames.Amount];
-
-            logger.LogInformation("Creating TotalMonthlyAmountResult with id {id} and calculationId {calculationId}", id, calculationId);
-            logger.LogInformation(
-                "CalculationType: {calculationType}; gridArea: {gridArea}; energySupplierId: {energySupplierId}; chargeOwnerId: {chargeOwnerId}; amount; {amount}",
-                calculationType,
-                gridArea,
-                energySupplierId,
-                chargeOwnerId,
-                amount);
-            throw;
-        }
     }
 }
