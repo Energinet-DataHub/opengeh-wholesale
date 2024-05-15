@@ -5,7 +5,9 @@ CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_time_
     metering_point_type COMMENT 'production | consumption | exchange | ve_production | ve_consumption | ve_exchange | ve_total_consumption | ve_non_profiled_consumption | ve_flex_consumption',
     resolution COMMENT 'PT1H | PT15M',
     grid_area_code,
-    energy_supplier_id COMMENT '<value> | NULL')
+    energy_supplier_id COMMENT '<value> | NULL',
+    observation_day,
+    quantities)
 AS
 SELECT c.calculation_id,
        c.calculation_type,
