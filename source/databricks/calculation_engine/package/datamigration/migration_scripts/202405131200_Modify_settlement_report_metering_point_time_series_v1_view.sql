@@ -2,6 +2,13 @@ DROP VIEW IF EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_time_series
 GO
 
 CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_time_series_v1 as
+    (calculation_id,
+    calculation_type calculation_type COMMENT '''BalanceFixing'' | ''Aggregation'' | ''WholesaleFixing'' | ''FirstCorrectionSettlement'' | ''SecondCorrectionSettlement'' | ''ThirdCorrectionSettlement''',
+    metering_point_id,
+    metering_point_type COMMENT '''production'' | ''consumption'' | ''exchange'' | ''ve_production'' | ''ve_consumption'' | ''ve_exchange'' | ''ve_total_consumption'' | ''ve_non_profiled_consumption'' | ''ve_flex_consumption''',
+    resolution COMMENT '''PT1H'' | ''PT15M''',
+    grid_area_code,
+    energy_supplier_id COMMENT '<value> | NULL')
 SELECT c.calculation_id,
        c.calculation_type,
        m.metering_point_id,
