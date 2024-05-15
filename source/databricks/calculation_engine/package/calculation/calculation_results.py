@@ -74,5 +74,4 @@ class CalculationResultsContainer:
 
     energy_results: EnergyResultsContainer = cast(EnergyResultsContainer, None)
     wholesale_results: WholesaleResultsContainer | None = None
-    total_monthly_amounts: WholesaleResultsContainer | None = None
     basis_data: BasisDataContainer = cast(BasisDataContainer, None)
