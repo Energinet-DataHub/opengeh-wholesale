@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from datetime import datetime
+
 from decimal import Decimal
 
 import pytest
@@ -22,10 +22,8 @@ from package.codelists import (
 )
 from package.constants import Colname
 import calculation.wholesale.factories.monthly_amount_per_charge_factory as monthly_amount_per_charge_factory
-import calculation.wholesale.factories.total_monthly_amount_factory as total_monthly_amount_factory
 from package.calculation.wholesale.total_monthly_amount_calculator import (
     calculate_per_ga_co_es,
-    calculate_per_ga_es,
 )
 
 
@@ -280,93 +278,3 @@ def test__calculate_per_ga_co_es__when_tax_charge_has_other_energy_supplier__ign
     # Assert
     assert actual.collect()[0][Colname.total_amount] == Decimal("2.000000")
     assert actual.count() == 1
-
-
-@pytest.mark.parametrize(
-    "grid_area, energy_supplier_id, total_amount, charge_owner, charge_time, expected_count, expected_total_amount",
-    [
-        [  # match on grid_area, energy_supplier_id, charge_time
-            "123",
-            "es_id_1",
-            Decimal("1"),
-            "co_id_1",
-            datetime(2021, 1, 1),
-            1,
-            Decimal("3"),
-        ],
-        [  # match on grid_area, energy_supplier_id
-            "123",
-            "es_id_1",
-            Decimal("1"),
-            "co_id_1",
-            datetime(2021, 2, 1),
-            2,
-            Decimal("1"),
-        ],
-        [  # # match on energy_supplier_id, charge_time
-            "321",
-            "es_id_1",
-            Decimal("1"),
-            "co_id_1",
-            datetime(2021, 1, 1),
-            2,
-            Decimal("1"),
-        ],
-        [  # match on grid_area, charge_time
-            "123",
-            "es_id_2",
-            Decimal("1"),
-            "co_id_1",
-            datetime(2021, 1, 1),
-            2,
-            Decimal("1"),
-        ],
-        [  # match on none
-            "321",
-            "es_id_2",
-            Decimal("1"),
-            "co_id_1",
-            datetime(2021, 2, 1),
-            2,
-            Decimal("1"),
-        ],
-    ],
-)
-def test__calculate_per_ga_es__when_grid_area_and_energy_supplier_and_charge_time__group_them_and_ignore_charge_owner(
-    grid_area: str,
-    energy_supplier_id: str,
-    total_amount: Decimal,
-    charge_owner: str,
-    charge_time: datetime,
-    expected_count: int,
-    expected_total_amount: Decimal,
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    rows = [
-        total_monthly_amount_factory.create_row(
-            grid_area=grid_area,
-            energy_supplier_id=energy_supplier_id,
-            total_amount=total_amount,
-            charge_owner=charge_owner,
-            charge_time=charge_time,
-        ),
-        total_monthly_amount_factory.create_row(
-            grid_area="123",
-            energy_supplier_id="es_id_1",
-            total_amount=Decimal("2"),
-            charge_owner="co_id_1",
-            charge_time=datetime(2021, 1, 1),
-        ),
-    ]
-    total_monthly_amount_per_ga_co_es = total_monthly_amount_factory.create(spark, rows)
-
-    # Act
-    actual = calculate_per_ga_es(
-        total_monthly_amount_per_ga_co_es,
-    )
-
-    # Assert
-    assert actual.df.count() == expected_count
-    assert actual.df.collect()[0][Colname.total_amount] == expected_total_amount
-    assert actual.df.collect()[0][Colname.charge_owner] is None

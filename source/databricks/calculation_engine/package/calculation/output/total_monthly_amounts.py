@@ -26,7 +26,6 @@ def write_total_monthly_amounts(
     total_monthly_amounts: TotalMonthlyAmountsContainer,
 ) -> None:
     _write(total_monthly_amounts.total_monthly_amounts_per_ga_co_es)
-    _write(total_monthly_amounts.total_monthly_amounts_per_ga_es)
 
 
 @logging_configuration.use_span("calculation.write.total_monthly_amounts")

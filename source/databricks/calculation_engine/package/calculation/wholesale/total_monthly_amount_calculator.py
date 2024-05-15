@@ -81,19 +81,6 @@ def calculate_per_ga_co_es(
     return TotalMonthlyAmount(total_monthly_amount)
 
 
-def calculate_per_ga_es(
-    total_monthly_amount_per_ga_co_es: TotalMonthlyAmount,
-) -> TotalMonthlyAmount:
-    total_monthly_amount_per_ga_es = (
-        total_monthly_amount_per_ga_co_es.df.groupBy(
-            Colname.grid_area, Colname.energy_supplier_id, Colname.charge_time
-        )
-        .agg(f.sum(Colname.total_amount).alias(Colname.total_amount))
-        .withColumn(Colname.charge_owner, f.lit(None).cast(StringType()))
-    )
-    return TotalMonthlyAmount(total_monthly_amount_per_ga_es)
-
-
 def _calculate_total_amount_for_charge_tax_value(
     monthly_amount_per_charge: MonthlyAmountPerCharge, charge_tax: bool
 ) -> DataFrame:
