@@ -12,23 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Security.Claims;
-using Energinet.DataHub.Core.App.Common.Abstractions.Users;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
-namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
-// ReSharper disable once ClassNeverInstantiated.Global
-public sealed class FrontendUserProvider : IUserProvider<FrontendUser>
-{
-    public Task<FrontendUser?> ProvideUserAsync(
-        Guid userId,
-        Guid actorId,
-        bool multiTenancy,
-        IEnumerable<Claim> claims)
-    {
-        return Task.FromResult<FrontendUser?>(new FrontendUser(
-            userId,
-            actorId,
-            multiTenancy));
-    }
-}
+public sealed record RequestedSettlementReportDto(
+    SettlementReportRequestId RequestId,
+    CalculationType CalculationType,
+    DateTimeOffset PeriodStart,
+    DateTimeOffset PeriodEnd,
+    SettlementReportStatus Status,
+    int GridAreaCount,
+    int Progress,
+    Guid RequestedByActorId,
+    bool ContainsBasisData);

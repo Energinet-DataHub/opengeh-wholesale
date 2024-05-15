@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
-public enum SettlementReportStatus
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
+
+public interface IUpdateFailedSettlementReportsHandler
 {
-    Running,
-    Completed,
-    Failed,
+    Task UpdateFailedReportAsync(SettlementReportRequestId failedReportId);
 }

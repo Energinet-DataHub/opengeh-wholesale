@@ -20,6 +20,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Persistence.
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -32,6 +33,11 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
 {
     private readonly WholesaleDatabaseFixture<SettlementReportDatabaseContext> _wholesaleDatabaseFixture;
     private readonly SettlementReportFileBlobStorageFixture _settlementReportFileBlobStorageFixture;
+
+    private readonly SettlementReportRequestDto _mockedSettlementReportRequest = new(
+        CalculationType.BalanceFixing,
+        false,
+        new SettlementReportRequestFilterDto([], DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null));
 
     public SettlementReportFinalizeHandlerIntegrationTests(
         WholesaleDatabaseFixture<SettlementReportDatabaseContext> wholesaleDatabaseFixture,
@@ -65,7 +71,7 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
             inputFiles);
 
         await using var dbContext = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
-        await dbContext.SettlementReports.AddAsync(new SettlementReport(Guid.NewGuid(), Guid.NewGuid(), requestId.Id));
+        await dbContext.SettlementReports.AddAsync(new SettlementReport(Guid.NewGuid(), Guid.NewGuid(), requestId, _mockedSettlementReportRequest));
         await dbContext.SaveChangesAsync();
 
         // Act
@@ -92,7 +98,7 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
             []);
 
         await using var dbContextArrange = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
-        await dbContextArrange.SettlementReports.AddAsync(new SettlementReport(Guid.NewGuid(), Guid.NewGuid(), requestId.Id));
+        await dbContextArrange.SettlementReports.AddAsync(new SettlementReport(Guid.NewGuid(), Guid.NewGuid(), requestId, _mockedSettlementReportRequest));
         await dbContextArrange.SaveChangesAsync();
 
         // Act

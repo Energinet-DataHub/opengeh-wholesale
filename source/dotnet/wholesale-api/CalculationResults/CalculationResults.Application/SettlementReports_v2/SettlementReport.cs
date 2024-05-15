@@ -13,6 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using NodaTime;
+using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 
@@ -20,31 +23,56 @@ public sealed class SettlementReport
 {
     public int Id { get; init; }
 
+    public string RequestId { get; init; } = null!;
+
     public Guid UserId { get; init; }
 
     public Guid ActorId { get; init; }
 
-    public string RequestId { get; init; }
-
     public DateTimeOffset CreatedDateTime { get; init; }
+
+    public CalculationType CalculationType { get; init; }
+
+    public bool ContainsBasisData { get; init; }
+
+    public Instant PeriodStart { get; init; }
+
+    public Instant PeriodEnd { get; init; }
+
+    public int GridAreaCount { get; init; }
 
     public SettlementReportStatus Status { get; private set; }
 
-    public string? BlobFilename { get; private set; }
+    public string? BlobFileName { get; private set; }
 
-    public SettlementReport(Guid userId, Guid actorId, string requestId)
+    public SettlementReport(
+        Guid userId,
+        Guid actorId,
+        SettlementReportRequestId requestId,
+        SettlementReportRequestDto request)
     {
+        RequestId = requestId.Id;
         UserId = userId;
         ActorId = actorId;
-        RequestId = requestId;
         CreatedDateTime = DateTimeOffset.UtcNow;
-        Status = SettlementReportStatus.Running;
+        Status = SettlementReportStatus.InProgress;
+        CalculationType = request.CalculationType;
+        ContainsBasisData = false;
+        PeriodStart = request.Filter.PeriodStart.ToInstant();
+        PeriodEnd = request.Filter.PeriodEnd.ToInstant();
+        GridAreaCount = request.Filter.GridAreas.Count;
+    }
+
+    // EF Core Constructor.
+    // ReSharper disable once UnusedMember.Local
+    private SettlementReport()
+    {
     }
 
     public void MarkAsCompleted(GeneratedSettlementReportDto generatedSettlementReport)
     {
         Status = SettlementReportStatus.Completed;
-        BlobFilename = generatedSettlementReport.FinalReport.FileName;
+        BlobFileName = generatedSettlementReport.FinalReport.FileName;
     }
 
     public void MarkAsFailed()
