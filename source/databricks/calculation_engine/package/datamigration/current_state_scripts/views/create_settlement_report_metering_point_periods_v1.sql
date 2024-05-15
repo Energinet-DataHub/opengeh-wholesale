@@ -1,6 +1,6 @@
 CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_periods_v1
     (calculation_id,
-    calculation_type COMMENT 'BalanceFixing | Aggregation | WholesaleFixing | FirstCorrectionSettlement | SecondCorrectionSettlement | ThirdCorrectionSettlement',
+    calculation_type COMMENT '\'BalanceFixing\' | \'Aggregation\' | WholesaleFixing | FirstCorrectionSettlement | SecondCorrectionSettlement | ThirdCorrectionSettlement',
     metering_point_id,
     from_date,
     to_date COMMENT '<value> | NULL',
