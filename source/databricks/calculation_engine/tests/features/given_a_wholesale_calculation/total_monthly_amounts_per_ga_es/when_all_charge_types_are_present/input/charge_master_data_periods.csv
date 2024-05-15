@@ -1,7 +1,0 @@
-charge_code;charge_type;charge_owner_id;resolution;is_tax;from_date;to_date
-40000;subscription;5790001330777;P1M;false;2022-01-31 23:00:00;
-fee_1;fee;5790001330777;P1M;false;2022-01-31 23:00:00;
-tarif_hour;tariff;5790001330777;PT1H;false;2022-01-31 23:00:00;
-tarif_day;tariff;5790001330777;P1D;false;2022-01-31 23:00:00;
-EA-001;tariff;5790001330555;P1D;true;2022-01-31 23:00:00;
-tarif_so_dag;tariff;5790001330555;P1D;false;2022-01-31 23:00:00;
