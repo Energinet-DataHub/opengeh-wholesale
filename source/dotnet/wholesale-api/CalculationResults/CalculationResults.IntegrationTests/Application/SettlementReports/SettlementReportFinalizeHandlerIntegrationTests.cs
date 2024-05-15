@@ -23,6 +23,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
 using Microsoft.EntityFrameworkCore;
+using NodaTime;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Application.SettlementReports;
@@ -71,7 +72,7 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
             inputFiles);
 
         await using var dbContext = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
-        await dbContext.SettlementReports.AddAsync(new SettlementReport(Guid.NewGuid(), Guid.NewGuid(), requestId, _mockedSettlementReportRequest));
+        await dbContext.SettlementReports.AddAsync(new SettlementReport(SystemClock.Instance, Guid.NewGuid(), Guid.NewGuid(), requestId, _mockedSettlementReportRequest));
         await dbContext.SaveChangesAsync();
 
         // Act
@@ -98,7 +99,7 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
             []);
 
         await using var dbContextArrange = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
-        await dbContextArrange.SettlementReports.AddAsync(new SettlementReport(Guid.NewGuid(), Guid.NewGuid(), requestId, _mockedSettlementReportRequest));
+        await dbContextArrange.SettlementReports.AddAsync(new SettlementReport(SystemClock.Instance, Guid.NewGuid(), Guid.NewGuid(), requestId, _mockedSettlementReportRequest));
         await dbContextArrange.SaveChangesAsync();
 
         // Act
