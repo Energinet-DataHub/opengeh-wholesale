@@ -19,12 +19,12 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ca
 
 public class CalculationCompletedV1Factory : ICalculationCompletedFactory
 {
-    public Contracts.IntegrationEvents.CalculationCompletedV1 Create(string calculationId, string instanceId, CalculationType calculationType, int calculationVersion)
+    public Contracts.IntegrationEvents.CalculationCompletedV1 Create(string calculationId, string orchestrationInstanceId, CalculationType calculationType, long calculationVersion)
     {
         return new Contracts.IntegrationEvents.CalculationCompletedV1
         {
             CalculationId = calculationId,
-            InstanceId = instanceId,
+            InstanceId = orchestrationInstanceId,
             CalculationType = CalculationTypeMapper.MapCalculationType(calculationType),
             CalculationVersion = calculationVersion,
         };
