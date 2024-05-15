@@ -35,12 +35,11 @@ internal sealed class SettlementReportDownloadTrigger
         _settlementReportDownloadHandler = settlementReportDownloadHandler;
     }
 
-    [Function(nameof(RequestSettlementReport))]
-    public async Task<HttpResponseData> RequestSettlementReport(
+    [Function(nameof(SettlementReportDownload))]
+    public async Task<HttpResponseData> SettlementReportDownload(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post")]
         HttpRequestData req,
         [FromBody] SettlementReportRequestId settlementReportRequestId,
-        [DurableClient] DurableTaskClient client,
         FunctionContext executionContext)
     {
         var stream = await _settlementReportDownloadHandler
@@ -48,7 +47,7 @@ internal sealed class SettlementReportDownloadTrigger
             .ConfigureAwait(false);
 
         var response = req.CreateResponse(HttpStatusCode.OK);
-        response.Headers.Add("Content-Type", "application/json");
+        response.Headers.Add("Content-Type", "application/octet-stream");
         response.Body = stream;
 
         return response;
