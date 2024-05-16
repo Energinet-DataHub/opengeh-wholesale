@@ -29,7 +29,7 @@ from pyspark.sql.window import Window
 # Source variables
 source_database = "hive_metastore.wholesale_output" # FILL IN
 source_energy_results_table_name = "energy_results"
-source_calculation_id_to_use = "" # FILL IN
+source_calculation_id_to_use = "1fba2899-7ea5-4d36-8330-67022bdcac14" # FILL IN
 
 # Target variables
 target_database = "hive_metastore.wholesale_output_anonymised" # FILL IN
@@ -42,7 +42,7 @@ grid_area_code_column_name = "grid_area_code"
 metering_point_id_column_name = "metering_point_id"
 balance_responsible_id_column_name = "balance_responsible_id"
 energy_supplier_id_column_name = "energy_supplier_id"
-calculation_id_column_name = "calculation_result_id"
+calculation_id_column_name = "calculation_id"
 
 # Anonymised columns variables
 anonymised_grid_area_code_column_name = "anonymised_grid_area_code"
@@ -338,6 +338,13 @@ df_source_energy_results_table_anonymised = (
     )
     .withColumn(balance_responsible_id_column_name, F.col(anonymised_balance_or_supplier_id_column_name))
     .drop(anonymised_balance_or_supplier_id_column_name)
+    .join(
+        df_anonymised_grid_area_codes,
+        [grid_area_code_column_name],
+        "left",
+    )
+    .withColumn(grid_area_code_column_name, F.col(anonymised_grid_area_code_column_name))
+    .drop(anonymised_grid_area_code_column_name)
     .select(df_source_energy_results_table.columns)
     .distinct()
 ).cache()
@@ -419,6 +426,10 @@ assert (
     df_source_energy_results_table_anonymised.filter(F.col(grid_area_code_column_name).isNull()).count()
     == df_source_energy_results_table.filter(F.col(grid_area_code_column_name).isNull()).count()
 )
+
+# COMMAND ----------
+
+display(df_source_energy_results_table_anonymised.filter("energy_supplier_id IS NOT NULL").orderBy("energy_supplier_id"))
 
 # COMMAND ----------
 
