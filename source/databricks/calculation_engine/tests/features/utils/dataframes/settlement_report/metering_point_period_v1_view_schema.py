@@ -24,6 +24,7 @@ from package.constants import MeteringPointPeriodColname
 metering_point_period_v1_view_schema = StructType(
     [
         StructField(MeteringPointPeriodColname.calculation_id, StringType(), False),
+        StructField(MeteringPointPeriodColname.calculation_type, StringType(), False),
         StructField(MeteringPointPeriodColname.metering_point_id, StringType(), False),
         StructField(MeteringPointPeriodColname.from_date, TimestampType(), False),
         StructField(MeteringPointPeriodColname.to_date, TimestampType(), True),
