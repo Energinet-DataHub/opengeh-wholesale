@@ -157,7 +157,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
 
         var actualResponse = await Fixture.AppHostManager.HttpClient.SendAsync(request);
         var httpResponse = await actualResponse.Content.ReadFromJsonAsync<SettlementReportHttpResponse>();
-        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(
+        await Fixture.DurableClient.WaitForInstanceCompletedAsync(
             httpResponse!.RequestId.Id,
             TimeSpan.FromMinutes(3));
 

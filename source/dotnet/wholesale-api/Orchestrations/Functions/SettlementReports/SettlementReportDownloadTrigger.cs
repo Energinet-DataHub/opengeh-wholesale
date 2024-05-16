@@ -18,10 +18,8 @@ using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
-using Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.DurableTask.Client;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports;
 
@@ -48,11 +46,11 @@ internal sealed class SettlementReportDownloadTrigger
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Headers.Add("Content-Type", "application/octet-stream");
             await _settlementReportDownloadHandler
-                .DownloadReportAsync(settlementReportRequestId, response.Body)
+                .DownloadReportAsync(settlementReportRequestId, response.Body, _userContext.CurrentUser.UserId, _userContext.CurrentUser.ActorId)
                 .ConfigureAwait(false);
             return response;
         }
-        catch (RequestFailedException)
+        catch (Exception ex) when (ex is InvalidOperationException or RequestFailedException)
         {
             var response = req.CreateResponse(HttpStatusCode.NotFound);
             return response;
