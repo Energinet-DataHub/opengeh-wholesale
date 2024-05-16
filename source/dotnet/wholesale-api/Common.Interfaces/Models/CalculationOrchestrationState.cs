@@ -15,7 +15,7 @@
 namespace Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 /// <summary>
-/// Enum representing the state of a calculation orchestration.
+/// Used to represent the state of a calculation orchestration.
 /// </summary>
 public enum CalculationOrchestrationState
 {
