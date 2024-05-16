@@ -1,14 +1,4 @@
-CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_time_series_v1
-    (calculation_id,
-    calculation_type COMMENT '\'BalanceFixing\' | \'Aggregation\' | \'WholesaleFixing\' | \'FirstCorrectionSettlement\' | \'SecondCorrectionSettlement\' | \'ThirdCorrectionSettlement\'',
-    metering_point_id,
-    metering_point_type COMMENT '\'production\' | \'consumption\' | \'exchange\' | \'ve_production\' | \'net_production\' | \'supply_to_grid\' | \'consumption_from_grid\' | \'wholesale_services_information\' | \'own_production\' | \'net_from_grid\' | \'net_to_grid\' | \'total_consumption\' | \'electrical_heating\' | \'net_consumption\' | \'effect_settlement\'',
-    resolution COMMENT '\'PT1H\' | \'PT15M\'',
-    grid_area_code,
-    energy_supplier_id COMMENT '<value> | NULL',
-    observation_day,
-    quantities)
-AS
+CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_time_series_v1 AS
 SELECT c.calculation_id,
        c.calculation_type,
        m.metering_point_id,
