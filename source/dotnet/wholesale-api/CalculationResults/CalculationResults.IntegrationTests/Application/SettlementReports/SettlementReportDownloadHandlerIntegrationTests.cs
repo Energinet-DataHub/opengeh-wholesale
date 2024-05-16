@@ -63,8 +63,10 @@ public sealed class SettlementReportDownloadHandlerIntegrationTests : TestBase<S
             new GeneratedSettlementReportFileDto(requestId, "Report.zip"),
             []);
 
+        var userId = Guid.NewGuid();
+        var actorId = Guid.NewGuid();
         var settlementReport =
-            new SettlementReport(SystemClock.Instance, Guid.NewGuid(), Guid.NewGuid(), requestId, _mockedSettlementReportRequest);
+            new SettlementReport(SystemClock.Instance, userId, actorId, requestId, _mockedSettlementReportRequest);
         settlementReport.MarkAsCompleted(generatedSettlementReport);
 
         await using var dbContext = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
@@ -73,7 +75,7 @@ public sealed class SettlementReportDownloadHandlerIntegrationTests : TestBase<S
 
         // Act
         await using var downloadStream = new MemoryStream();
-        await Sut.DownloadReportAsync(requestId, downloadStream);
+        await Sut.DownloadReportAsync(requestId, downloadStream, userId, actorId);
 
         // Assert
         Assert.NotNull(downloadStream);
