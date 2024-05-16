@@ -10,7 +10,7 @@ module "st_key_vault_backup" {
   access_tier                = "Hot"
   private_endpoint_subnet_id = data.azurerm_subnet.snet_private_endpoints.id
   ip_rules                   = local.ip_restrictions_as_string
-  prevent_deletion           = true
+  prevent_deletion           = false
   role_assignments = [
     {
       principal_id         = data.azurerm_client_config.current.object_id
