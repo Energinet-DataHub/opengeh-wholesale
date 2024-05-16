@@ -6,3 +6,4 @@ feature_management_use_request_wholesale_settlement_receiver     = true
 feature_management_use_peek_messages                             = true
 feature_management_use_request_messages                          = true
 feature_management_use_energy_result_produced                    = true
+feature_management_use_message_delegation                        = true
