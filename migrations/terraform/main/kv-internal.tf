@@ -17,6 +17,9 @@ module "kv_internal" {
 resource "azurerm_role_assignment" "microsoft_azure_website_access" {
   count                = var.developers_security_group_object_id == null ? 0 : 1
   scope                = module.kv_internal.id
+
+  # principal_id is an app-registration 'Microsoft Azure Websites'
+  # Reference: https://portal.azure.com/#view/Microsoft_AAD_IAM/ManagedAppMenuBlade/~/Overview/objectId/e383250e-d5d6-45b3-89f1-5321b821b063/appId/abfa0a7c-a6b6-4736-8310-5855508787cd
   principal_id         = "e383250e-d5d6-45b3-89f1-5321b821b063"
   role_definition_name = "Key Vault Secrets User"
 }
