@@ -30,3 +30,4 @@ from .get_charge_link_metering_point_periods import (
     get_charge_link_metering_point_periods,
 )
 from .time_series_points import get_time_series_points
+from .grid_loss_metering_points import get_grid_loss_metering_points

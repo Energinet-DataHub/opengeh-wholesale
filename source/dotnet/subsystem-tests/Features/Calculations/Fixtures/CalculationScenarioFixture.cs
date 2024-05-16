@@ -372,6 +372,23 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
                     }
 
                     break;
+                case TotalMonthlyAmountResultProducedV1.EventName:
+                    var totalMonthlyAmountResultProduced = TotalMonthlyAmountResultProducedV1.Parser.ParseFrom(data);
+                    if (totalMonthlyAmountResultProduced.CalculationId == calculationId.ToString())
+                    {
+                        DiagnosticMessageSink.WriteDiagnosticMessage($"""
+                            {nameof(TotalMonthlyAmountResultProducedV1)} received with values:
+                                {nameof(monthlyAmountPerChargeResultProduced.CalculationId)}={totalMonthlyAmountResultProduced.CalculationId}
+                                {nameof(monthlyAmountPerChargeResultProduced.GridAreaCode)}={totalMonthlyAmountResultProduced.GridAreaCode}
+                                {nameof(monthlyAmountPerChargeResultProduced.EnergySupplierId)}={totalMonthlyAmountResultProduced.EnergySupplierId}
+                                {nameof(monthlyAmountPerChargeResultProduced.ChargeOwnerId)}={totalMonthlyAmountResultProduced.ChargeOwnerId}
+                                {nameof(monthlyAmountPerChargeResultProduced.Amount)}={totalMonthlyAmountResultProduced.Amount}
+                            """);
+                        eventMessage = totalMonthlyAmountResultProduced;
+                        shouldCollect = true;
+                    }
+
+                    break;
             }
         }
 

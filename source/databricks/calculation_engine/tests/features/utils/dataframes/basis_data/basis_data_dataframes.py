@@ -18,8 +18,17 @@ from pyspark.sql.types import (
     DecimalType,
 )
 
+from features.utils.dataframes.basis_data.calculations_dataframe import (
+    create_calculations_dataframe,
+)
+from features.utils.dataframes.basis_data.grid_loss_metering_points import (
+    create_grid_loss_metering_points_dataframe,
+)
+
 BASIS_DATA_METERING_POINT_PERIODS_CSV = "metering_point_periods"
 BASIS_DATA_TIME_SERIES_POINTS_CSV = "time_series_points"
+BASIS_DATA_CALCULATIONS_CSV = "calculations"
+BASIS_GRID_LOSS_METERING_POINTS = "grid_loss_metering_points"
 
 
 def create_basis_data_result_dataframe(
@@ -30,6 +39,10 @@ def create_basis_data_result_dataframe(
         return create_time_series_points(spark, df)
     if filename == BASIS_DATA_METERING_POINT_PERIODS_CSV:
         return create_metering_point_periods(spark, df)
+    if filename == BASIS_DATA_CALCULATIONS_CSV:
+        return create_calculations_dataframe(spark, df)
+    if filename == BASIS_GRID_LOSS_METERING_POINTS:
+        return create_grid_loss_metering_points_dataframe(spark, df)
 
     raise Exception(f"Unknown expected basis data file {filename}.")
 
