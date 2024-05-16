@@ -13,7 +13,9 @@
 # limitations under the License.
 from pyspark.sql import DataFrame
 
-from package.calculation.calculation_results import TotalMonthlyAmountsContainer
+from package.calculation.calculation_results import (
+    WholesaleResultsContainer,
+)
 from package.infrastructure import logging_configuration
 from package.infrastructure.paths import (
     OUTPUT_DATABASE_NAME,
@@ -23,17 +25,20 @@ from package.infrastructure.paths import (
 
 @logging_configuration.use_span("calculation.write.wholesale")
 def write_total_monthly_amounts(
-    total_monthly_amounts: TotalMonthlyAmountsContainer,
+    total_monthly_amounts: WholesaleResultsContainer,
 ) -> None:
-    _write(total_monthly_amounts.total_monthly_amounts_per_ga_co_es)
-    _write(total_monthly_amounts.total_monthly_amounts_per_ga_es)
+    _write(
+        "total_monthly_amounts_per_ga_co_es",
+        total_monthly_amounts.total_monthly_amounts_per_ga_co_es,
+    )
+    _write(
+        "total_monthly_amounts_per_ga_es",
+        total_monthly_amounts.total_monthly_amounts_per_ga_es,
+    )
 
 
-@logging_configuration.use_span("calculation.write.total_monthly_amounts")
-def _write(
-    total_monthly_amounts: DataFrame,
-) -> None:
-    """Write total monthly amounts to the delta table."""
-    total_monthly_amounts.write.format("delta").mode("append").option(
-        "mergeSchema", "false"
-    ).insertInto(f"{OUTPUT_DATABASE_NAME}.{TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}")
+def _write(name: str, df: DataFrame) -> None:
+    with logging_configuration.start_span(name):
+        df.write.format("delta").mode("append").option(
+            "mergeSchema", "false"
+        ).insertInto(f"{OUTPUT_DATABASE_NAME}.{TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}")

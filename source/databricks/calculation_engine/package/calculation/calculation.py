@@ -133,11 +133,9 @@ def _execute(
                 args.time_zone,
             )
 
-        results.wholesale_results, results.total_monthly_amounts = (
-            wholesale_calculation.execute(
-                args,
-                prepared_charges,
-            )
+        results.wholesale_results = wholesale_calculation.execute(
+            args,
+            prepared_charges,
         )
     else:
         metering_point_periods_for_basis_data = (
@@ -168,9 +166,7 @@ def _write_output(
     write_energy_results(results.energy_results)
     if results.wholesale_results is not None:
         write_wholesale_results(results.wholesale_results)
-
-    if results.total_monthly_amounts is not None:
-        write_total_monthly_amounts(results.total_monthly_amounts)
+        write_total_monthly_amounts(results.wholesale_results)
 
     # We write basis data at the end of the calculation to make it easier to analyze performance of the calculation part
     write_basis_data(results.basis_data)
