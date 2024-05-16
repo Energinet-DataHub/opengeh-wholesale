@@ -27,7 +27,7 @@ public sealed class CompletedCalculation
         Instant periodEnd,
         Instant completedTime,
         long version,
-        string? orchestrationInstanceId = null)
+        string? orchestrationInstanceId)
     {
         Id = id;
         GridAreaCodes = gridAreaCodes;

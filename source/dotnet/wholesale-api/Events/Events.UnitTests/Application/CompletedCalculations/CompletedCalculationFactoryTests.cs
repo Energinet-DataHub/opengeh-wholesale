@@ -35,7 +35,8 @@ public class CompletedCalculationFactoryTests
             calculation.PeriodStart.ToInstant(),
             calculation.PeriodEnd.ToInstant(),
             calculation.ExecutionTimeEnd!.Value.ToInstant(),
-            calculation.Version);
+            calculation.Version,
+            null);
 
         // Act
         var actual = sut.CreateFromCalculation(calculation);

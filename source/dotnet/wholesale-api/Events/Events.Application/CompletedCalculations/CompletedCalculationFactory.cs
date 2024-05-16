@@ -29,28 +29,14 @@ public class CompletedCalculationFactory : ICompletedCalculationFactory
         if (completedCalculationDto.ExecutionTimeEnd == null)
             throw new ArgumentNullException($"{nameof(CalculationDto.ExecutionTimeEnd)} should not be null for a completed calculation.");
 
-        if (orchestrationInstanceId == null)
-        {
-            return new CompletedCalculation(
-                completedCalculationDto.CalculationId,
-                completedCalculationDto.GridAreaCodes.ToList(),
-                completedCalculationDto.CalculationType,
-                completedCalculationDto.PeriodStart.ToInstant(),
-                completedCalculationDto.PeriodEnd.ToInstant(),
-                completedTime: completedCalculationDto.ExecutionTimeEnd.Value.ToInstant(),
-                completedCalculationDto.Version);
-        }
-        else
-        {
-            return new CompletedCalculation(
-                completedCalculationDto.CalculationId,
-                completedCalculationDto.GridAreaCodes.ToList(),
-                completedCalculationDto.CalculationType,
-                completedCalculationDto.PeriodStart.ToInstant(),
-                completedCalculationDto.PeriodEnd.ToInstant(),
-                completedTime: completedCalculationDto.ExecutionTimeEnd.Value.ToInstant(),
-                completedCalculationDto.Version,
-                orchestrationInstanceId);
-        }
+        return new CompletedCalculation(
+            completedCalculationDto.CalculationId,
+            completedCalculationDto.GridAreaCodes.ToList(),
+            completedCalculationDto.CalculationType,
+            completedCalculationDto.PeriodStart.ToInstant(),
+            completedCalculationDto.PeriodEnd.ToInstant(),
+            completedTime: completedCalculationDto.ExecutionTimeEnd.Value.ToInstant(),
+            completedCalculationDto.Version,
+            orchestrationInstanceId);
     }
 }
