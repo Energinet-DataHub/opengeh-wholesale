@@ -18,7 +18,9 @@ from pyspark.sql import Row, SparkSession
 
 from package.calculation.basis_data.schemas import calculations_schema
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.output.calculation_writer import _create_calculation
+from package.calculation.output.calculations_storage_model_factory import (
+    create_calculation,
+)
 from package.calculation.preparation import PreparedDataReader
 from package.constants.calculation_column_names import CalculationColumnNames
 
@@ -33,7 +35,7 @@ def test__when_valid_input__creates_calculation_with_expected_schema(
         prepared_data_reader.get_latest_calculation_version.__name__,
         return_value=0,
     ):
-        actual = _create_calculation(any_calculator_args, prepared_data_reader, spark)
+        actual = create_calculation(any_calculator_args, prepared_data_reader, spark)
         assert actual.schema == calculations_schema
 
 
@@ -59,7 +61,7 @@ def test__when_valid_input__creates_expected_calculation(
         prepared_data_reader.get_latest_calculation_version.__name__,
         return_value=latest_version,
     ):
-        actual = _create_calculation(any_calculator_args, prepared_data_reader, spark)
+        actual = create_calculation(any_calculator_args, prepared_data_reader, spark)
         assert actual.collect()[0] == Row(**expected)
 
 
@@ -74,7 +76,7 @@ def test__when_no_calculation_exists__creates_new_calculation_with_version_1(
         prepared_data_reader.get_latest_calculation_version.__name__,
         return_value=latest_version,
     ):
-        actual = _create_calculation(any_calculator_args, prepared_data_reader, spark)
+        actual = create_calculation(any_calculator_args, prepared_data_reader, spark)
         assert actual.collect()[0].version == 1
 
 
@@ -88,5 +90,5 @@ def test__when_calculation_exists__creates_new_calculation_with_latest_version_p
         prepared_data_reader.get_latest_calculation_version.__name__,
         return_value=7,
     ):
-        actual = _create_calculation(any_calculator_args, prepared_data_reader, spark)
+        actual = create_calculation(any_calculator_args, prepared_data_reader, spark)
         assert actual.collect()[0].version == 8

@@ -11,6 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from calculation.output.calculations_storage_model_test_factory import (
+    create_calculations,
+)
 from package.calculation.calculator_args import CalculatorArgs
 from tests.calculation.preparation.transformations import metering_point_periods_factory
 from tests.calculation.preparation.transformations import (
@@ -239,6 +242,7 @@ def create_grid_loss_metering_points(
 
 def create_basis_data_factory(spark: SparkSession) -> BasisDataContainer:
     calculation_args = create_calculation_args()
+    calculations = create_calculations(spark)
     metering_point_period_df = metering_point_periods_factory.create(spark)
     metering_point_time_series_df = create_prepared_metering_point_time_series(spark)
     grid_loss_metering_points = create_grid_loss_metering_points(spark)
@@ -254,6 +258,7 @@ def create_basis_data_factory(spark: SparkSession) -> BasisDataContainer:
 
     return basis_data_factory.create(
         args=calculation_args,
+        calculations=calculations,
         metering_point_periods_df=metering_point_period_df,
         metering_point_time_series_df=metering_point_time_series_df,
         input_charges_container=input_charges_container,
