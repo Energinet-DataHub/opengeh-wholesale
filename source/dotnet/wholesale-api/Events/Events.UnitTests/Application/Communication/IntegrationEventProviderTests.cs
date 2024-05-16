@@ -81,6 +81,7 @@ public class IntegrationEventProviderTests
         Instant instant,
         CompletedCalculation completedCalculation,
         [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
+        [Frozen] Mock<ICalculationCompletedEventProvider> calculationCompletedEventProvider,
         [Frozen] Mock<IClock> clockMock,
         IntegrationEventProvider sut)
     {
@@ -89,6 +90,10 @@ public class IntegrationEventProviderTests
             .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
             .ReturnsAsync(completedCalculation)
             .ReturnsAsync((CompletedCalculation)null!);
+
+        calculationCompletedEventProvider
+            .Setup(m => m.Get(It.IsAny<CompletedCalculation>()))
+            .Returns((IntegrationEvent)null!);
 
         clockMock
             .Setup(mock => mock.GetCurrentInstant())
