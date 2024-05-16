@@ -30,7 +30,7 @@ class DefaultValues:
     VERSION = 7
 
 
-def create_calculation(
+def create_calculation_row(
     calculation_id: str = DefaultValues.CALCULATION_ID,
     calculation_type: CalculationType = DefaultValues.CALCULATION_TYPE,
     calculation_period_start_datetime: datetime = DefaultValues.CALCULATION_PERIOD_START_DATETIME,
@@ -56,7 +56,7 @@ def create_calculations(
     spark: SparkSession, data: None | Row | list[Row] = None
 ) -> DataFrame:
     if data is None:
-        data = [create_calculation()]
+        data = [create_calculation_row()]
     elif isinstance(data, Row):
         data = [data]
     return spark.createDataFrame(data=data, schema=calculations_schema)
