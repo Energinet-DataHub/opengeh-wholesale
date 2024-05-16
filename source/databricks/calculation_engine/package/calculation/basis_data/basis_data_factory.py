@@ -30,6 +30,7 @@ from package.calculation.preparation.data_structures.grid_loss_metering_points i
 @logging_configuration.use_span("calculation.basis_data.prepare")
 def create(
     args: CalculatorArgs,
+    calculations: DataFrame,
     metering_point_periods_df: DataFrame,
     metering_point_time_series_df: PreparedMeteringPointTimeSeries,
     input_charges_container: InputChargesContainer | None,
@@ -69,6 +70,7 @@ def create(
         charge_links_basis_data = None
 
     return BasisDataContainer(
+        calculations=calculations,
         time_series_points=time_series_points_basis_data,
         metering_point_periods=metering_point_periods_basis_data,
         charge_master_data=charge_master_data_basis_data,

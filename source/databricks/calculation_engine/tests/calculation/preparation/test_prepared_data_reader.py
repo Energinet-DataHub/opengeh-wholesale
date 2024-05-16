@@ -17,7 +17,7 @@ from unittest.mock import patch
 from pyspark.sql import SparkSession
 
 from package.calculation import TableReader, PreparedDataReader
-import tests.calculation.calculations_factory as factory
+import tests.calculation.output.calculations_storage_model_test_factory as factory
 from package.codelists import CalculationType
 
 
@@ -49,7 +49,7 @@ class TestGetLatestCalculationVersion:
         prepared_data_reader = PreparedDataReader(table_reader)
 
         calculation_type = CalculationType.BALANCE_FIXING
-        calculation = factory.create_calculation(
+        calculation = factory.create_calculation_row(
             version=7, calculation_type=calculation_type
         )
         with patch.object(
