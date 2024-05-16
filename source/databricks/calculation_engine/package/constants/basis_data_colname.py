@@ -15,6 +15,7 @@
 
 class MeteringPointPeriodColname:
     calculation_id = "calculation_id"
+    calculation_type = "calculation_type"
 
     # Master data
     metering_point_id = "metering_point_id"

@@ -61,8 +61,8 @@ def create_metering_point_time_series_v1_view(
     )
 
     df = df.withColumn(
-        MeteringPointTimeSeriesV1ColumnNames.observation_day,
-        col(MeteringPointTimeSeriesV1ColumnNames.observation_day).cast(TimestampType()),
+        MeteringPointTimeSeriesV1ColumnNames.start_date_time,
+        col(MeteringPointTimeSeriesV1ColumnNames.start_date_time).cast(TimestampType()),
     )
 
     df = df.withColumn(
