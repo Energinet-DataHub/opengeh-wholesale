@@ -108,13 +108,6 @@ class TestWhenEnergyResultsIsEmpty:
                 factories.create_row(quantity=100),
                 0,
             ),
-            (  # Empty net exchange (Not possible according to SME)
-                [],
-                factories.create_row(quantity=100),
-                factories.create_row(quantity=100),
-                factories.create_row(quantity=100),
-                -100,
-            ),
             (  # Empty non profiled
                 factories.create_row(quantity=100),
                 [],
@@ -136,13 +129,6 @@ class TestWhenEnergyResultsIsEmpty:
                 [],
                 -100,
             ),
-            (  # Empty net exchange and production
-                [],
-                factories.create_row(quantity=100),
-                factories.create_row(quantity=100),
-                [],
-                -200,
-            ),
             (  # Empty non profiled and flex
                 factories.create_row(quantity=100),
                 [],
@@ -157,12 +143,12 @@ class TestWhenEnergyResultsIsEmpty:
                 [],
                 0,
             ),
-            (  # Empty non profiled, flex and production
+            (  # Empty non-profiled and production
                 factories.create_row(quantity=100),
                 [],
+                factories.create_row(quantity=100),
                 [],
-                [],
-                100,
+                0,
             ),
         ],
     )

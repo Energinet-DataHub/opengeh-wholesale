@@ -63,7 +63,7 @@ def calculate_grid_loss(
         .join(
             agg_production_result,
             [Colname.grid_area, Colname.observation_time],
-            "full",
+            "left",
         )
         .join(
             agg_flex_consumption_result.join(
@@ -72,7 +72,7 @@ def calculate_grid_loss(
                 "full",
             ),
             [Colname.grid_area, Colname.observation_time],
-            "full",
+            "left",
         )
         .orderBy(Colname.grid_area, Colname.observation_time)
     )
