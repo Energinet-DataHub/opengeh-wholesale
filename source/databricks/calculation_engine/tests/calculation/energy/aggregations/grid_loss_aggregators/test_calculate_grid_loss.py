@@ -150,6 +150,41 @@ class TestWhenEnergyResultsIsEmpty:
                 [],
                 0,
             ),
+            (  # Empty exchange
+                [],
+                factories.create_row(quantity=100),
+                factories.create_row(quantity=100),
+                factories.create_row(quantity=100),
+                -100,
+            ),
+            (  # Empty exchange and non profiled
+                [],
+                [],
+                factories.create_row(quantity=100),
+                factories.create_row(quantity=100),
+                0,
+            ),
+            (  # Empty exchange and flex
+                [],
+                factories.create_row(quantity=100),
+                [],
+                factories.create_row(quantity=100),
+                0,
+            ),
+            (  # Empty exchange and production
+                [],
+                factories.create_row(quantity=100),
+                factories.create_row(quantity=100),
+                [],
+                -200,
+            ),
+            (  # Empty
+                [],
+                [],
+                [],
+                [],
+                0,
+            ),
         ],
     )
     def test_returns_correct_quantity(
