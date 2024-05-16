@@ -90,3 +90,8 @@ class CalculationsColumnName:
     execution_time_start = "execution_time_start"
     created_by_user_id = "created_by_user_id"
     version = "version"
+
+
+class GridLossMeteringPointsColName:
+    calculation_id = "calculation_id"
+    metering_point_id = "metering_point_id"
