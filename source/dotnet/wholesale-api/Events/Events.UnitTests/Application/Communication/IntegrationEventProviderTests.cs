@@ -429,11 +429,9 @@ public class IntegrationEventProviderTests
     [Theory]
     [InlineAutoMoqData]
     public async Task GetAsync_WhenNoUnpublishedCalculations_ReturnsNoCalculationCompletedIntegrationEvents(
-        IntegrationEvent[] anyIntegrationEvents,
         IntegrationEvent calculationCompletedEvent,
         [Frozen] Mock<ICalculationCompletedEventProvider> calculationCompletedEventProvider,
         [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
-        [Frozen] Mock<IEnergyResultEventProvider> energyResultEventProviderMock,
         IntegrationEventProvider sut)
     {
         // Arrange
@@ -445,14 +443,13 @@ public class IntegrationEventProviderTests
             .Setup(m => m.Get(It.IsAny<CompletedCalculation>()))
             .Returns(calculationCompletedEvent);
 
-        energyResultEventProviderMock
-            .Setup(mock => mock.GetAsync(It.IsAny<CompletedCalculation>()))
-            .Returns(anyIntegrationEvents.ToAsyncEnumerable());
-
         // Act
         var actualEvents = await sut.GetAsync().ToListAsync();
 
         // Assert
+        calculationCompletedEventProvider
+            .Verify(m => m.Get(It.IsAny<CompletedCalculation>()), Times.Never);
+
         actualEvents.Should().NotContain(e => e == calculationCompletedEvent);
     }
 
@@ -487,7 +484,6 @@ public class IntegrationEventProviderTests
         // Act
         var actualEvents = await sut.GetAsync().ToListAsync();
 
-        // Assert
         actualEvents.Where(e => e == calculationCompletedEvent).Should().HaveSameCount(anyCompletedCalculations);
     }
 
