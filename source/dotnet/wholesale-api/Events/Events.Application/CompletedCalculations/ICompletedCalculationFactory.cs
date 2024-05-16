@@ -20,5 +20,5 @@ public interface ICompletedCalculationFactory
 {
     IEnumerable<CompletedCalculation> CreateFromCalculations(IEnumerable<CalculationDto> completedCalculationDtos);
 
-    CompletedCalculation CreateFromCalculation(CalculationDto completedCalculationDto, string orchestrationInstanceId);
+    CompletedCalculation CreateFromCalculation(CalculationDto calculation, string orchestrationInstanceId);
 }
