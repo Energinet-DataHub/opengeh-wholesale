@@ -4,3 +4,5 @@
   period_end: '2023-02-28 23:00:00'
   calculation_type: 'WholesaleFixing'
   calculation_execution_time_start: '2024-01-01 23:00:00'
+  created_by_user_id: 'a8efc21d-3508-4d76-a712-828330e6674d'
+

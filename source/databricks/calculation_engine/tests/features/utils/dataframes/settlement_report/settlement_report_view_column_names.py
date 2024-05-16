@@ -20,7 +20,7 @@ from package.constants.result_column_names import ResultColumnNames
 
 
 class MeteringPointTimeSeriesV1ColumnNames:
-    observation_day = "observation_day"
+    start_date_time = "start_date_time"
     quantities = "quantities"
 
 
