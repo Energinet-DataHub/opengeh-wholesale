@@ -23,7 +23,7 @@ from pyspark.sql.types import (
 from features.utils.dataframes.settlement_report.settlement_report_view_column_names import (
     ChargeLinkPeriodsV1ColumnNames,
 )
-from package.constants import MeteringPointPeriodColname, ChargeLinkPeriodsColname
+from package.constants import MeteringPointPeriodColname
 
 charge_link_periods_v1_view_schema = StructType(
     [
