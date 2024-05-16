@@ -34,7 +34,7 @@ public class CalculationCompletedEventProvider : ResultEventProvider, ICalculati
             unpublishedCalculation.Id,
             unpublishedCalculation.OrchestrationInstanceId!,
             unpublishedCalculation.CalculationType,
-            unpublishedCalculation.CalculationVersion);
+            unpublishedCalculation.Version);
         return CreateIntegrationEvent(calculationCompletedV1);
     }
 }

@@ -26,7 +26,7 @@ public sealed class CompletedCalculation
         Instant periodStart,
         Instant periodEnd,
         Instant completedTime,
-        long calculationVersion,
+        long version,
         string? orchestrationInstanceId = null)
     {
         Id = id;
@@ -35,7 +35,7 @@ public sealed class CompletedCalculation
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
         CompletedTime = completedTime;
-        CalculationVersion = calculationVersion;
+        Version = version;
         OrchestrationInstanceId = orchestrationInstanceId;
     }
 
@@ -56,7 +56,7 @@ public sealed class CompletedCalculation
 
     public Instant CompletedTime { get; private set; }
 
-    public long CalculationVersion { get; init; }
+    public long Version { get; init; }
 
     public string? OrchestrationInstanceId { get; init; }
 }
