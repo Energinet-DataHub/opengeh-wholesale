@@ -426,6 +426,71 @@ public class IntegrationEventProviderTests
         actualImplementations.Should().HaveCount(1, $"The interface {nameof(IIntegrationEventProvider)} must be implemented.");
     }
 
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetAsync_WhenNoUnpublishedCalculations_ReturnsNoCalculationCompletedIntegrationEvents(
+        IntegrationEvent[] anyIntegrationEvents,
+        IntegrationEvent calculationCompletedEvent,
+        [Frozen] Mock<ICalculationCompletedEventProvider> calculationCompletedEventProvider,
+        [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
+        [Frozen] Mock<IEnergyResultEventProvider> energyResultEventProviderMock,
+        IntegrationEventProvider sut)
+    {
+        // Arrange
+        completedCalculationRepositoryMock
+            .Setup(mock => mock.GetNextUnpublishedOrNullAsync())
+            .ReturnsAsync((CompletedCalculation)null!);
+
+        calculationCompletedEventProvider
+            .Setup(m => m.Get(It.IsAny<CompletedCalculation>()))
+            .Returns(calculationCompletedEvent);
+
+        energyResultEventProviderMock
+            .Setup(mock => mock.GetAsync(It.IsAny<CompletedCalculation>()))
+            .Returns(anyIntegrationEvents.ToAsyncEnumerable());
+
+        // Act
+        var actualEvents = await sut.GetAsync().ToListAsync();
+
+        // Assert
+        actualEvents.Should().NotContain(e => e == calculationCompletedEvent);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetAsync_WhenMultipleUnpublishedCalculations_ReturnsMultipleCalculationCompletedIntegrationEvents(
+        List<CompletedCalculation> anyCompletedCalculations,
+        IntegrationEvent[] anyIntegrationEvents,
+        IntegrationEvent calculationCompletedEvent,
+        [Frozen] Mock<ICalculationCompletedEventProvider> calculationCompletedEventProvider,
+        [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
+        [Frozen] Mock<IEnergyResultEventProvider> energyResultEventProviderMock,
+        IntegrationEventProvider sut)
+    {
+        // Arrange
+        var setupGetNextUnpublishedSequence = completedCalculationRepositoryMock
+            .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync());
+
+        foreach (var completedCalculation in anyCompletedCalculations)
+            setupGetNextUnpublishedSequence.ReturnsAsync(completedCalculation);
+
+        setupGetNextUnpublishedSequence.ReturnsAsync((CompletedCalculation)null!);
+
+        calculationCompletedEventProvider
+            .Setup(m => m.Get(It.IsAny<CompletedCalculation>()))
+            .Returns(calculationCompletedEvent);
+
+        energyResultEventProviderMock
+            .Setup(mock => mock.GetAsync(It.IsAny<CompletedCalculation>()))
+            .Returns(anyIntegrationEvents.ToAsyncEnumerable());
+
+        // Act
+        var actualEvents = await sut.GetAsync().ToListAsync();
+
+        // Assert
+        actualEvents.Where(e => e == calculationCompletedEvent).Should().HaveSameCount(anyCompletedCalculations);
+    }
+
     private static async IAsyncEnumerable<IntegrationEvent> ThrowsExceptionAfterAllItems(IntegrationEvent[] integrationEvents)
     {
         await foreach (var integrationEvent in integrationEvents.ToAsyncEnumerable())
