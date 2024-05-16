@@ -45,7 +45,9 @@ metering_point_time_series_v1_view_schema = StructType(
         StructField(MeteringPointPeriodColname.grid_area, StringType(), False),
         StructField(MeteringPointPeriodColname.energy_supplier_id, StringType(), True),
         StructField(
-            MeteringPointTimeSeriesV1ColumnNames.observation_day, TimestampType(), False
+            MeteringPointTimeSeriesV1ColumnNames.start_date_time,
+            TimestampType(),
+            False,
         ),
         StructField(
             MeteringPointTimeSeriesV1ColumnNames.quantities,

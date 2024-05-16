@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 
@@ -32,6 +33,6 @@ public sealed class SettlementReportInitializeHandler : ISettlementReportInitial
         SettlementReportRequestId requestId,
         SettlementReportRequestDto request)
     {
-        return _repository.AddOrUpdateAsync(new SettlementReport(userId, actorId, requestId, request));
+        return _repository.AddOrUpdateAsync(new SettlementReport(SystemClock.Instance, userId, actorId, requestId, request));
     }
 }
