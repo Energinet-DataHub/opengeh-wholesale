@@ -19,6 +19,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
 using Microsoft.EntityFrameworkCore;
+using NodaTime;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SettlementReports_v2.Persistence;
@@ -46,6 +47,7 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
             null);
 
         var settlementReportRequest = new SettlementReport(
+            SystemClock.Instance,
             Guid.NewGuid(),
             Guid.NewGuid(),
             new SettlementReportRequestId(Guid.NewGuid().ToString()),
@@ -71,6 +73,39 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
         Assert.Equal(settlementReportRequest.GridAreaCount, actual.GridAreaCount);
         Assert.Equal(settlementReportRequest.Status, actual.Status);
         Assert.Equal(settlementReportRequest.BlobFileName, actual.BlobFileName);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_GivenRequest_RequestIsDeleted()
+    {
+        // Arrange
+        var requestFilterDto = new SettlementReportRequestFilterDto(
+            [new GridAreaCode("805"), new GridAreaCode("806")],
+            new DateTimeOffset(2024, 1, 1, 22, 0, 0, TimeSpan.Zero),
+            new DateTimeOffset(2024, 2, 1, 22, 0, 0, TimeSpan.Zero),
+            null);
+
+        var settlementReport = new SettlementReport(
+            SystemClock.Instance,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            new SettlementReportRequestId(Guid.NewGuid().ToString()),
+            new SettlementReportRequestDto(CalculationType.BalanceFixing, false, requestFilterDto));
+
+        await using var writeContext = _databaseManager.CreateDbContext();
+        var arrangeRepository = new SettlementReportRepository(writeContext);
+        await arrangeRepository.AddOrUpdateAsync(settlementReport);
+
+        await using var deleteContext = _databaseManager.CreateDbContext();
+        var target = new SettlementReportRepository(deleteContext);
+
+        // Act
+        await target.DeleteAsync(settlementReport);
+
+        // Assert
+        await using var readContext = _databaseManager.CreateDbContext();
+        var actual = await readContext.SettlementReports.SingleOrDefaultAsync(x => x.Id == settlementReport.Id);
+        Assert.Null(actual);
     }
 
     [Fact]
@@ -145,6 +180,7 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
             null);
 
         var settlementReportRequest = new SettlementReport(
+            SystemClock.Instance,
             Guid.NewGuid(),
             Guid.NewGuid(),
             new SettlementReportRequestId(Guid.NewGuid().ToString()),
