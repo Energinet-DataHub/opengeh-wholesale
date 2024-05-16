@@ -26,7 +26,6 @@ from .sum_within_month import sum_within_month
 
 from ..calculation_results import (
     WholesaleResultsContainer,
-    TotalMonthlyAmountsContainer,
 )
 from ..calculator_args import CalculatorArgs
 from ...codelists import AmountType
@@ -37,7 +36,7 @@ from ...infrastructure import logging_configuration
 def execute(
     args: CalculatorArgs,
     prepared_charges: d.PreparedChargesContainer,
-) -> Tuple[WholesaleResultsContainer, TotalMonthlyAmountsContainer]:
+) -> WholesaleResultsContainer:
     results = WholesaleResultsContainer()
 
     monthly_fees = _calculate_fees(
@@ -64,15 +63,16 @@ def execute(
         results,
     )
 
-    total_monthly_amounts = _calculate_total_monthly_amount(
+    _calculate_total_monthly_amount(
         args,
         monthly_fees,
         monthly_subscriptions,
         monthly_hourly_tariffs,
         monthly_daily_tariffs,
+        results,
     )
 
-    return results, total_monthly_amounts
+    return results
 
 
 @logging_configuration.use_span("calculate_fees")
@@ -196,9 +196,8 @@ def _calculate_total_monthly_amount(
     monthly_subscriptions: MonthlyAmountPerCharge,
     monthly_hourly_tariffs: MonthlyAmountPerCharge,
     monthly_daily_tariffs: MonthlyAmountPerCharge,
-) -> TotalMonthlyAmountsContainer:
-    total_monthly_amounts = TotalMonthlyAmountsContainer()
-
+    results: WholesaleResultsContainer,
+) -> WholesaleResultsContainer:
     all_monthly_amounts = (
         monthly_fees.union(monthly_subscriptions)
         .union(monthly_hourly_tariffs)
@@ -213,12 +212,12 @@ def _calculate_total_monthly_amount(
         total_monthly_amounts_per_ga_co_es,
     )
 
-    total_monthly_amounts.total_monthly_amounts_per_ga_co_es = (
-        total_monthly_amounts_factory.create(args, total_monthly_amounts_per_ga_co_es)
+    results.total_monthly_amounts_per_ga_co_es = total_monthly_amounts_factory.create(
+        args, total_monthly_amounts_per_ga_co_es
     )
 
-    total_monthly_amounts.total_monthly_amounts_per_ga_es = (
-        total_monthly_amounts_factory.create(args, total_monthly_amounts_per_ga_es)
+    results.total_monthly_amounts_per_ga_es = total_monthly_amounts_factory.create(
+        args, total_monthly_amounts_per_ga_es
     )
 
-    return total_monthly_amounts
+    return results
