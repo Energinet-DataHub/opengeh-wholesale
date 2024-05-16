@@ -33,6 +33,7 @@ from .calculation_results import (
 from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
 from .output.calculation_writer import write_calculation
+from .output.calculations_storage_model_factory import create_calculation
 from .output.energy_results import write_energy_results
 from .output.total_monthly_amounts import write_total_monthly_amounts
 from .output.wholesale_results import write_wholesale_results
@@ -47,16 +48,18 @@ def execute(
     prepared_data_reader: PreparedDataReader,
     spark: SparkSession,
 ) -> None:
-    results = _execute(args, prepared_data_reader)
-    _write_output(results, args, prepared_data_reader, spark)
+    results = _execute(args, prepared_data_reader, spark)
+    _write_output(results)
 
 
 def _execute(
-    args: CalculatorArgs, prepared_data_reader: PreparedDataReader
+    args: CalculatorArgs, prepared_data_reader: PreparedDataReader, spark: SparkSession
 ) -> CalculationResultsContainer:
     results = CalculationResultsContainer()
 
     with logging_configuration.start_span("calculation.prepare"):
+        calculations = create_calculation(args, prepared_data_reader, spark)
+
         # cache of metering_point_time_series had no effect on performance (01-12-2023)
         all_metering_point_periods = prepared_data_reader.get_metering_point_periods_df(
             args.calculation_period_start_datetime,
@@ -147,6 +150,7 @@ def _execute(
     # Add basis data to results
     results.basis_data = basis_data_factory.create(
         args,
+        calculations,
         metering_point_periods_for_basis_data,
         metering_point_time_series,
         input_charges,
@@ -159,9 +163,6 @@ def _execute(
 @logging_configuration.use_span("calculation.write")
 def _write_output(
     results: CalculationResultsContainer,
-    args: CalculatorArgs,
-    prepared_data_reader: PreparedDataReader,
-    spark: SparkSession,
 ) -> None:
     write_energy_results(results.energy_results)
     if results.wholesale_results is not None:
@@ -173,4 +174,4 @@ def _write_output(
 
     # IMPORTANT: Write the succeeded calculation after the results to ensure that the calculation
     # is only marked as succeeded when all results are written
-    write_calculation(args, prepared_data_reader, spark)
+    write_calculation(results.basis_data.calculations)
