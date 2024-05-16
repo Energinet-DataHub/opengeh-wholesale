@@ -51,20 +51,19 @@ class WholesaleResultsContainer:
     monthly_subscription_per_ga_co_es: DataFrame | None = None
     fee_per_ga_co_es: DataFrame | None = None
     monthly_fee_per_ga_co_es: DataFrame | None = None
-
-
-@dataclass
-class TotalMonthlyAmountsContainer:
     total_monthly_amounts_per_ga_co_es: DataFrame | None = None
+    total_monthly_amounts_per_ga_es: DataFrame | None = None
 
 
 @dataclass
 class BasisDataContainer:
+    calculations: DataFrame
     metering_point_periods: DataFrame
     time_series_points: DataFrame
     charge_master_data: DataFrame | None
     charge_prices: DataFrame | None
     charge_links: DataFrame | None
+    grid_loss_metering_points: DataFrame
 
 
 @dataclass
@@ -76,5 +75,4 @@ class CalculationResultsContainer:
 
     energy_results: EnergyResultsContainer = cast(EnergyResultsContainer, None)
     wholesale_results: WholesaleResultsContainer | None = None
-    total_monthly_amounts: TotalMonthlyAmountsContainer | None = None
     basis_data: BasisDataContainer = cast(BasisDataContainer, None)

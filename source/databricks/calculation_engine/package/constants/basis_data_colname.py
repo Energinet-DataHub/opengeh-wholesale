@@ -15,6 +15,7 @@
 
 class MeteringPointPeriodColname:
     calculation_id = "calculation_id"
+    calculation_type = "calculation_type"
 
     # Master data
     metering_point_id = "metering_point_id"
@@ -75,6 +76,11 @@ class ChargeLinkPeriodsColname:
     quantity = "quantity"
     from_date = "from_date"
     to_date = "to_date"
+
+
+class GridLossMeteringPointsColName:
+    calculation_id = "calculation_id"
+    metering_point_id = "metering_point_id"
 
 
 class CalculationsColumnName:

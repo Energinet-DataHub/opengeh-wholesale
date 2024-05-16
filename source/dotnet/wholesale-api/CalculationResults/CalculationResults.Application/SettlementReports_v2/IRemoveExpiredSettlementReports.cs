@@ -14,9 +14,7 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 
-public enum SettlementReportStatus
+public interface IRemoveExpiredSettlementReports
 {
-    Running,
-    Completed,
-    Failed,
+    Task RemoveExpiredAsync(IList<SettlementReport> settlementReports);
 }

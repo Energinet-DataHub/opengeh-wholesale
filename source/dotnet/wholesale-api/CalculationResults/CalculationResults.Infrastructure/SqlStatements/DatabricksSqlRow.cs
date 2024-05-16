@@ -34,4 +34,9 @@ public class DatabricksSqlRow
             return value == null ? null : Convert.ToString(value);
         }
     }
+
+    public override string ToString()
+    {
+        return _dictionary.Aggregate(string.Empty, (current, kvp) => current + $"Key = {kvp.Key}, Value = {kvp.Value}");
+    }
 }

@@ -20,8 +20,8 @@ import os
 import shutil
 import subprocess
 import uuid
-from shutil import rmtree
 from datetime import datetime
+from shutil import rmtree
 from typing import Generator, Callable, Optional
 
 import pytest
@@ -31,6 +31,7 @@ from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType
 
+import tests.helpers.spark_sql_migration_helper as sql_migration_helper
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.input.schemas import (
     time_series_point_schema,
@@ -51,7 +52,6 @@ from package.infrastructure.paths import (
 )
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.integration_test_configuration import IntegrationTestConfiguration
-import tests.helpers.spark_sql_migration_helper as sql_migration_helper
 
 
 @pytest.fixture(scope="session")
@@ -198,8 +198,6 @@ def calculation_output_path(data_lake_path: str) -> str:
 @pytest.fixture(scope="session")
 def migrations_executed(
     spark: SparkSession,
-    data_lake_path: str,
-    calculation_input_folder: str,
     calculation_output_path: str,
     energy_input_data_written_to_delta: None,
 ) -> None:

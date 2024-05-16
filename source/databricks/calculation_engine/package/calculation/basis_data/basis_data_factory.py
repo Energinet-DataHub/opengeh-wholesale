@@ -22,14 +22,19 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
 from package.calculation.basis_data import basis_data
 from package.infrastructure import logging_configuration
 from package.calculation.preparation.data_structures import InputChargesContainer
+from package.calculation.preparation.data_structures.grid_loss_metering_points import (
+    GridLossMeteringPoints,
+)
 
 
 @logging_configuration.use_span("calculation.basis_data.prepare")
 def create(
     args: CalculatorArgs,
+    calculations: DataFrame,
     metering_point_periods_df: DataFrame,
     metering_point_time_series_df: PreparedMeteringPointTimeSeries,
     input_charges_container: InputChargesContainer | None,
+    grid_loss_metering_points_df: GridLossMeteringPoints,
 ) -> BasisDataContainer:
     time_series_points_basis_data = basis_data.get_time_series_points_basis_data(
         args.calculation_id, metering_point_time_series_df
@@ -38,6 +43,12 @@ def create(
     metering_point_periods_basis_data = (
         basis_data.get_metering_point_periods_basis_data(
             args.calculation_id, metering_point_periods_df
+        )
+    )
+
+    grid_loss_metering_points_basis_data = (
+        basis_data.get_grid_loss_metering_points_basis_data(
+            args.calculation_id, grid_loss_metering_points_df
         )
     )
 
@@ -59,9 +70,11 @@ def create(
         charge_links_basis_data = None
 
     return BasisDataContainer(
+        calculations=calculations,
         time_series_points=time_series_points_basis_data,
         metering_point_periods=metering_point_periods_basis_data,
         charge_master_data=charge_master_data_basis_data,
         charge_prices=charge_prices_basis_data,
         charge_links=charge_links_basis_data,
+        grid_loss_metering_points=grid_loss_metering_points_basis_data,
     )
