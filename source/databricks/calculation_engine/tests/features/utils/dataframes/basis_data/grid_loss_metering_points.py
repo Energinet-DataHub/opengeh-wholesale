@@ -12,11 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import col
-from pyspark.sql.types import (
-    TimestampType,
-    LongType,
-)
 
 
 def create_grid_loss_metering_points_dataframe(
@@ -25,27 +20,6 @@ def create_grid_loss_metering_points_dataframe(
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
-    from package.constants.basis_data_colname import CalculationsColumnName
-    from package.calculation.basis_data.schemas import calculations_schema
-
-    df = df.withColumn(
-        CalculationsColumnName.period_start,
-        col(CalculationsColumnName.period_start).cast(TimestampType()),
-    )
-
-    df = df.withColumn(
-        CalculationsColumnName.period_end,
-        col(CalculationsColumnName.period_end).cast(TimestampType()),
-    )
-
-    df = df.withColumn(
-        CalculationsColumnName.execution_time_start,
-        col(CalculationsColumnName.execution_time_start).cast(TimestampType()),
-    )
-
-    df = df.withColumn(
-        CalculationsColumnName.version,
-        col(CalculationsColumnName.version).cast(LongType()),
-    )
+    from package.calculation.basis_data.schemas import grid_loss_metering_points_schema
 
     return spark.createDataFrame(df.rdd, grid_loss_metering_points_schema)
