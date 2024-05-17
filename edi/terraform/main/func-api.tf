@@ -12,6 +12,7 @@ module "func_receiver" {
   private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   dotnet_framework_version               = "v8.0"
   use_dotnet_isolated_runtime            = true
+  is_durable_function                    = true
   health_check_path                      = "/api/monitor/ready"
   ip_restrictions                        = var.ip_restrictions
   scm_ip_restrictions                    = var.ip_restrictions
@@ -72,12 +73,16 @@ locals {
     ServiceBus__ListenConnectionString = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-listen-connection-string)"
     ServiceBus__SendConnectionString   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-send-connection-string)"
 
-    #Queue names
+    # Queue names
     EdiInbox__QueueName         = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbq-edi-inbox-messagequeue-name)"
     WholesaleInbox__QueueName   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbq-wholesale-inbox-messagequeue-name)"
     IncomingMessages__QueueName = azurerm_servicebus_queue.edi_incoming_messages_queue.name
 
     IntegrationEvents__TopicName        = local.INTEGRATION_EVENTS_TOPIC_NAME
     IntegrationEvents__SubscriptionName = module.sbtsub_edi_integration_event_listener.name
+
+    # Durable Functions Task Hub Name
+    # See naming constraints: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-task-hubs?tabs=csharp#task-hub-names
+    "OrchestrationsTaskHubName" = "Edi01"
   }
 }
