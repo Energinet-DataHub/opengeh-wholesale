@@ -21,20 +21,22 @@ public class CompletedCalculationFactory : ICompletedCalculationFactory
 {
     public IEnumerable<CompletedCalculation> CreateFromCalculations(IEnumerable<CalculationDto> completedCalculationDtos)
     {
-        return completedCalculationDtos.Select(CreateFromCalculation);
+        return completedCalculationDtos.Select(dto => CreateFromCalculation(dto, orchestrationInstanceId: null));
     }
 
-    public CompletedCalculation CreateFromCalculation(CalculationDto completedCalculationDto)
+    public CompletedCalculation CreateFromCalculation(CalculationDto calculation, string? orchestrationInstanceId)
     {
-        if (completedCalculationDto.ExecutionTimeEnd == null)
+        if (calculation.ExecutionTimeEnd == null)
             throw new ArgumentNullException($"{nameof(CalculationDto.ExecutionTimeEnd)} should not be null for a completed calculation.");
 
         return new CompletedCalculation(
-            completedCalculationDto.CalculationId,
-            completedCalculationDto.GridAreaCodes.ToList(),
-            completedCalculationDto.CalculationType,
-            completedCalculationDto.PeriodStart.ToInstant(),
-            completedCalculationDto.PeriodEnd.ToInstant(),
-            completedTime: completedCalculationDto.ExecutionTimeEnd.Value.ToInstant());
+            calculation.CalculationId,
+            calculation.GridAreaCodes.ToList(),
+            calculation.CalculationType,
+            calculation.PeriodStart.ToInstant(),
+            calculation.PeriodEnd.ToInstant(),
+            completedTime: calculation.ExecutionTimeEnd.Value.ToInstant(),
+            calculation.Version,
+            orchestrationInstanceId);
     }
 }
