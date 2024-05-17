@@ -1,22 +1,22 @@
 module "func_receiver" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=v14"
 
-  name                                     = "api"
-  project_name                             = var.domain_name_short
-  environment_short                        = var.environment_short
-  environment_instance                     = var.environment_instance
-  resource_group_name                      = azurerm_resource_group.this.name
-  location                                 = azurerm_resource_group.this.location
-  app_service_plan_id                      = module.func_service_plan.id
-  vnet_integration_subnet_id               = data.azurerm_key_vault_secret.snet_vnet_integration_id.value
-  private_endpoint_subnet_id               = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
-  dotnet_framework_version                 = "v8.0"
-  use_dotnet_isolated_runtime              = true
-  health_check_path                        = "/api/monitor/ready"
-  ip_restrictions                          = var.ip_restrictions
-  scm_ip_restrictions                      = var.ip_restrictions
-  client_certificate_mode                  = "Optional"
-  application_insights_connection_string   = data.azurerm_key_vault_secret.appi_shared_connection_string.value
+  name                                   = "api"
+  project_name                           = var.domain_name_short
+  environment_short                      = var.environment_short
+  environment_instance                   = var.environment_instance
+  resource_group_name                    = azurerm_resource_group.this.name
+  location                               = azurerm_resource_group.this.location
+  app_service_plan_id                    = module.func_service_plan.id
+  vnet_integration_subnet_id             = data.azurerm_key_vault_secret.snet_vnet_integration_id.value
+  private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
+  dotnet_framework_version               = "v8.0"
+  use_dotnet_isolated_runtime            = true
+  health_check_path                      = "/api/monitor/ready"
+  ip_restrictions                        = var.ip_restrictions
+  scm_ip_restrictions                    = var.ip_restrictions
+  client_certificate_mode                = "Optional"
+  application_insights_connection_string = data.azurerm_key_vault_secret.appi_shared_connection_string.value
 
   app_settings = local.default_func_api_app_settings
 
@@ -34,7 +34,7 @@ module "func_receiver" {
 }
 
 module "kvs_edi_api_base_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v14"
+  source       = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v14"
   name         = "func-edi-api-base-url"
   value        = "https://${module.func_receiver.default_hostname}"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
@@ -52,9 +52,9 @@ locals {
     AZURE_STORAGE_ACCOUNT_URL = local.AZURE_STORAGE_ACCOUNT_URL
 
     # Logging
-    "Logging__ApplicationInsights__LogLevel__Default"                     = local.LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT
-    "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Edi"       = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_EDI
-    "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Core"      = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE
+    "Logging__ApplicationInsights__LogLevel__Default"                = local.LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT
+    "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Edi"  = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_EDI
+    "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Core" = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE
 
     # FeatureManagement
     FeatureManagement__UseMonthlyAmountPerChargeResultProduced  = var.feature_management_use_monthly_amount_per_charge_result_produced
@@ -65,6 +65,7 @@ locals {
     FeatureManagement__UseRequestMessages                       = var.feature_management_use_request_messages
     FeatureManagement__UseEnergyResultProduced                  = var.feature_management_use_energy_result_produced
     FeatureManagement__UseTotalMonthlyAmountResultProducedAsync = var.feature_management_use_total_monthly_amount_result_produced
+    FeatureManagement__UseCalculationCompletedEvent             = var.feature_management_use_calculation_completed_event
 
     # Service Bus
     ServiceBus__ManageConnectionString = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-manage-connection-string)"

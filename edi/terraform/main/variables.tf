@@ -88,13 +88,11 @@ variable "feature_management_use_peek_messages" {
   default     = false
 }
 
-
 variable "feature_management_use_request_messages" {
   type        = bool
   description = "Used to allow actors to request messages."
   default     = false
 }
-
 
 variable "feature_management_use_energy_result_produced" {
   type        = bool
@@ -105,6 +103,12 @@ variable "feature_management_use_energy_result_produced" {
 variable "feature_management_use_total_monthly_amount_result_produced" {
   type        = bool
   description = "Should use total monthly amount result produced."
+  default     = false
+}
+
+variable "feature_management_use_calculation_completed_event" {
+  type        = bool
+  description = "Should use Calculation Completed event sent from Wholesale."
   default     = false
 }
 
