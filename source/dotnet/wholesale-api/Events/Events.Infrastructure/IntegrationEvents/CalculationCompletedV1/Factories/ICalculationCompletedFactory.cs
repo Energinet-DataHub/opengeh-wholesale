@@ -12,13 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
-namespace Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.CalculationCompletedV1.Factories;
 
-public interface ICompletedCalculationFactory
+public interface ICalculationCompletedFactory
 {
-    IEnumerable<CompletedCalculation> CreateFromCalculations(IEnumerable<CalculationDto> completedCalculationDtos);
-
-    CompletedCalculation CreateFromCalculation(CalculationDto calculation, string orchestrationInstanceId);
+    Contracts.IntegrationEvents.CalculationCompletedV1 Create(Guid calculationId, string orchestrationInstanceId, CalculationType calculationType, long calculationVersion);
 }

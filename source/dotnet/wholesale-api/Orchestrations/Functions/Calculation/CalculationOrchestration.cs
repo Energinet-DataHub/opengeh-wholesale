@@ -26,8 +26,7 @@ internal class CalculationOrchestration
 {
     [Function(nameof(Calculation))]
     public async Task<string> Calculation(
-        [OrchestrationTrigger] TaskOrchestrationContext context,
-        FunctionContext executionContext)
+        [OrchestrationTrigger] TaskOrchestrationContext context)
     {
         var input = context.GetInput<CalculationOrchestrationInput>();
         if (input == null)
@@ -89,7 +88,7 @@ internal class CalculationOrchestration
             // OBSOLETE: Create calculation completed (SQL - Event database)
             await context.CallActivityAsync(
                 nameof(CreateCompletedCalculationActivity),
-                calculationMetadata.Id);
+                new CreateCompletedCalculationInput(calculationMetadata.Id, context.InstanceId));
 
             //// TODO: Wait for warehouse to start (could use retry policy); could be done using fan-out/fan-in
 
