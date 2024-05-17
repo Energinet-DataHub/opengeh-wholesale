@@ -62,8 +62,8 @@ public class CalculationDtoMapperTests
     {
         // Arrange
         var calculation = new CalculationBuilder().Build();
-        calculation.MarkAsExecuting(); // this sets ExecutionTimeStart
-        calculation.MarkAsCompleted(calculation.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2))); // this sets ExecutionTimeEnd
+        calculation.MarkAsCalculating(); // this sets ExecutionTimeStart
+        calculation.MarkAsCalculated(calculation.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2))); // this sets ExecutionTimeEnd
 
         // Act
         var calculationDto = sut.Map(calculation);

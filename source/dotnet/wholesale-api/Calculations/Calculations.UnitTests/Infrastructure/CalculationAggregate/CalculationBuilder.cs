@@ -63,6 +63,18 @@ public class CalculationBuilder
         return this;
     }
 
+    public CalculationBuilder WithStateFailed()
+    {
+        _state = CalculationExecutionState.Failed;
+        return this;
+    }
+
+    public CalculationBuilder WithState(CalculationExecutionState state)
+    {
+        _state = state;
+        return this;
+    }
+
     public CalculationBuilder WithGridAreaCode(string gridAreaCode)
     {
         _gridAreaCodes = new GridAreaCode(gridAreaCode).InList();
@@ -107,7 +119,11 @@ public class CalculationBuilder
             SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc().Ticks);
         var jobRunId = new CalculationJobId(new Random().Next(1, 1000));
 
-        if (_state == CalculationExecutionState.Submitted)
+        if (_state == CalculationExecutionState.Created)
+        {
+            // Do nothing, since created is the default value
+        }
+        else if (_state == CalculationExecutionState.Submitted)
         {
             calculation.MarkAsSubmitted(jobRunId);
         }
@@ -120,14 +136,21 @@ public class CalculationBuilder
         {
             calculation.MarkAsSubmitted(jobRunId);
             calculation.MarkAsPending();
-            calculation.MarkAsExecuting();
+            calculation.MarkAsCalculating();
         }
         else if (_state == CalculationExecutionState.Completed)
         {
             calculation.MarkAsSubmitted(jobRunId);
             calculation.MarkAsPending();
-            calculation.MarkAsExecuting();
-            calculation.MarkAsCompleted(SystemClock.Instance.GetCurrentInstant());
+            calculation.MarkAsCalculating();
+            calculation.MarkAsCalculated(SystemClock.Instance.GetCurrentInstant());
+        }
+        else if (_state == CalculationExecutionState.Failed)
+        {
+            calculation.MarkAsSubmitted(jobRunId);
+            calculation.MarkAsPending();
+            calculation.MarkAsCalculating();
+            calculation.MarkAsCalculationFailed();
         }
         else if (_state != null)
         {

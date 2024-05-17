@@ -32,6 +32,7 @@ public class CalculationEntityConfiguration : IEntityTypeConfiguration<Calculati
             .ValueGeneratedNever();
 
         builder.Property(b => b.ExecutionState);
+        builder.Property(b => b.OrchestrationState);
         builder.Property(b => b.PeriodStart);
         builder.Property(b => b.PeriodEnd);
         builder.Property(b => b.ExecutionTimeStart);

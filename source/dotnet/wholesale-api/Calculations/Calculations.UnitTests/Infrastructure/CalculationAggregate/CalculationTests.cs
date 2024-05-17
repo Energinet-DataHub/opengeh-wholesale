@@ -232,7 +232,7 @@ public class CalculationTests
     public void MarkAsCompleted_WhenComplete_ThrowsBusinessValidationException()
     {
         var sut = new CalculationBuilder().WithStateCompleted().Build();
-        Assert.Throws<BusinessValidationException>(() => sut.MarkAsCompleted(It.IsAny<Instant>()));
+        Assert.Throws<BusinessValidationException>(() => sut.MarkAsCalculated(It.IsAny<Instant>()));
     }
 
     [Theory]
@@ -296,7 +296,7 @@ public class CalculationTests
         var executionTimeEndGreaterThanStart = sut.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2));
 
         // Act
-        sut.MarkAsCompleted(executionTimeEndGreaterThanStart);
+        sut.MarkAsCalculated(executionTimeEndGreaterThanStart);
 
         // Assert
         sut.ExecutionState.Should().Be(CalculationExecutionState.Completed);
@@ -310,7 +310,7 @@ public class CalculationTests
         var executionTimeEndGreaterThanStart = sut.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2));
 
         // Act
-        sut.MarkAsCompleted(executionTimeEndGreaterThanStart);
+        sut.MarkAsCalculated(executionTimeEndGreaterThanStart);
 
         // Assert
         sut.ExecutionTimeEnd.Should().NotBeNull();
@@ -324,7 +324,7 @@ public class CalculationTests
         var executionTimeEndLessThanStart = sut.ExecutionTimeStart!.Value.Minus(Duration.FromDays(2));
 
         // Act
-        var actual = Assert.Throws<BusinessValidationException>(() => sut.MarkAsCompleted(executionTimeEndLessThanStart));
+        var actual = Assert.Throws<BusinessValidationException>(() => sut.MarkAsCalculated(executionTimeEndLessThanStart));
 
         // Assert
         sut.ExecutionTimeEnd.Should().BeNull();
@@ -335,21 +335,21 @@ public class CalculationTests
     public void MarkAsExecuting_WhenExecuting_ThrowsBusinessValidationException()
     {
         var sut = new CalculationBuilder().WithStateExecuting().Build();
-        Assert.Throws<BusinessValidationException>(() => sut.MarkAsExecuting());
+        Assert.Throws<BusinessValidationException>(() => sut.MarkAsCalculating());
     }
 
     [Fact]
     public void MarkAsExecuting_WhenComplete_ThrowsBusinessValidationException()
     {
         var sut = new CalculationBuilder().WithStateCompleted().Build();
-        Assert.Throws<BusinessValidationException>(() => sut.MarkAsExecuting());
+        Assert.Throws<BusinessValidationException>(() => sut.MarkAsCalculating());
     }
 
     [Fact]
     public void MarkAsExecuting_WhenPending_ExecutesCalculation()
     {
         var sut = new CalculationBuilder().WithStatePending().Build();
-        sut.MarkAsExecuting();
+        sut.MarkAsCalculating();
         sut.ExecutionState.Should().Be(CalculationExecutionState.Executing);
     }
 
@@ -357,7 +357,7 @@ public class CalculationTests
     public void MarkAsExecuting_ExecutionTimeIsSetToNull()
     {
         var sut = new CalculationBuilder().WithStatePending().Build();
-        sut.MarkAsExecuting();
+        sut.MarkAsCalculating();
         sut.ExecutionTimeEnd.Should().BeNull();
     }
 
@@ -390,5 +390,68 @@ public class CalculationTests
     {
         var sut = new CalculationBuilder().WithStateCompleted().Build();
         Assert.Throws<BusinessValidationException>(() => sut.Reset());
+    }
+
+    [Theory]
+    [InlineData(CalculationExecutionState.Created)]
+    [InlineData(CalculationExecutionState.Submitted)]
+    [InlineData(CalculationExecutionState.Pending)]
+    [InlineData(CalculationExecutionState.Executing)]
+    [InlineData(CalculationExecutionState.Failed)]
+    public void Reset_WhenGivenExecutionState_SetsOrchestrationStateScheduled(CalculationExecutionState givenExecutionState)
+    {
+        var sut = new CalculationBuilder()
+            .WithState(givenExecutionState)
+            .Build();
+
+        sut.Reset();
+
+        sut.OrchestrationState.Should().Be(CalculationOrchestrationState.Scheduled);
+    }
+
+    [Theory]
+    [InlineData(CalculationExecutionState.Created, CalculationOrchestrationState.Scheduled)]
+    [InlineData(CalculationExecutionState.Submitted, CalculationOrchestrationState.Scheduled)]
+    [InlineData(CalculationExecutionState.Pending, CalculationOrchestrationState.Scheduled)]
+    [InlineData(CalculationExecutionState.Executing, CalculationOrchestrationState.Calculating)]
+    [InlineData(CalculationExecutionState.Completed, CalculationOrchestrationState.Calculated)]
+    [InlineData(CalculationExecutionState.Failed, CalculationOrchestrationState.CalculationFailed)]
+    public void WhenUpdatingExecutionState_SetsExpectedOrchestrationState(CalculationExecutionState executionState, CalculationOrchestrationState expectedOrchestrationState)
+    {
+        var sut = new CalculationBuilder().Build();
+
+        switch (executionState)
+        {
+            case CalculationExecutionState.Created:
+                break;
+            case CalculationExecutionState.Submitted:
+                sut.MarkAsSubmitted(new CalculationJobId(1));
+                break;
+            case CalculationExecutionState.Pending:
+                sut.MarkAsSubmitted(new CalculationJobId(1));
+                sut.MarkAsPending();
+                break;
+            case CalculationExecutionState.Executing:
+                sut.MarkAsSubmitted(new CalculationJobId(1));
+                sut.MarkAsPending();
+                sut.MarkAsCalculating();
+                break;
+            case CalculationExecutionState.Completed:
+                sut.MarkAsSubmitted(new CalculationJobId(1));
+                sut.MarkAsPending();
+                sut.MarkAsCalculating();
+                sut.MarkAsCalculated(sut.ExecutionTimeStart!.Value.Plus(Duration.FromMinutes(15)));
+                break;
+            case CalculationExecutionState.Failed:
+                sut.MarkAsSubmitted(new CalculationJobId(1));
+                sut.MarkAsPending();
+                sut.MarkAsCalculating();
+                sut.MarkAsCalculationFailed();
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(executionState), executionState, null);
+        }
+
+        sut.OrchestrationState.Should().Be(expectedOrchestrationState);
     }
 }

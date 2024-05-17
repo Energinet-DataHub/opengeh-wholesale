@@ -39,6 +39,7 @@ public class Calculation
             throw new BusinessValidationException(string.Join(" ", errorMessages));
 
         ExecutionState = CalculationExecutionState.Created;
+        OrchestrationState = CalculationOrchestrationState.Scheduled;
         CalculationType = calculationType;
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
@@ -126,6 +127,8 @@ public class Calculation
 
     public CalculationExecutionState ExecutionState { get; private set; }
 
+    public CalculationOrchestrationState OrchestrationState { get; private set; }
+
     /// <summary>
     /// The calculation engine registers its own perception of the start time.
     /// So the values will most likely differ and depend on from which data source
@@ -211,6 +214,11 @@ public class Calculation
 
         CalculationJobId = calculationJobId;
         ExecutionState = CalculationExecutionState.Submitted;
+
+        if (OrchestrationState is not CalculationOrchestrationState.Scheduled)
+            ThrowInvalidStateTransitionException(OrchestrationState, CalculationOrchestrationState.Scheduled);
+
+        OrchestrationState = CalculationOrchestrationState.Scheduled;
     }
 
     public void MarkAsPending()
@@ -218,17 +226,27 @@ public class Calculation
         if (ExecutionState is CalculationExecutionState.Pending or CalculationExecutionState.Executing or CalculationExecutionState.Completed or CalculationExecutionState.Failed)
             ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Pending);
         ExecutionState = CalculationExecutionState.Pending;
+
+        if (OrchestrationState is not CalculationOrchestrationState.Scheduled)
+            ThrowInvalidStateTransitionException(OrchestrationState, CalculationOrchestrationState.Scheduled);
+
+        OrchestrationState = CalculationOrchestrationState.Scheduled;
     }
 
-    public void MarkAsExecuting()
+    public void MarkAsCalculating()
     {
         if (ExecutionState is CalculationExecutionState.Executing or CalculationExecutionState.Completed or CalculationExecutionState.Failed)
             ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Executing);
 
         ExecutionState = CalculationExecutionState.Executing;
+
+        if (OrchestrationState is not CalculationOrchestrationState.Scheduled)
+            ThrowInvalidStateTransitionException(OrchestrationState, CalculationOrchestrationState.Calculating);
+
+        OrchestrationState = CalculationOrchestrationState.Calculating;
     }
 
-    public void MarkAsCompleted(Instant executionTimeEnd)
+    public void MarkAsCalculated(Instant executionTimeEnd)
     {
         if (ExecutionState is CalculationExecutionState.Completed or CalculationExecutionState.Failed)
             ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Completed);
@@ -241,14 +259,24 @@ public class Calculation
 
         ExecutionState = CalculationExecutionState.Completed;
         ExecutionTimeEnd = executionTimeEnd;
+
+        if (OrchestrationState is not CalculationOrchestrationState.Calculating)
+            ThrowInvalidStateTransitionException(OrchestrationState, CalculationOrchestrationState.Calculated);
+
+        OrchestrationState = CalculationOrchestrationState.Calculated;
     }
 
-    public void MarkAsFailed()
+    public void MarkAsCalculationFailed()
     {
         if (ExecutionState is CalculationExecutionState.Failed)
             ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Failed);
 
         ExecutionState = CalculationExecutionState.Failed;
+
+        if (OrchestrationState is not (CalculationOrchestrationState.Scheduled or CalculationOrchestrationState.Calculating))
+            ThrowInvalidStateTransitionException(OrchestrationState, CalculationOrchestrationState.CalculationFailed);
+
+        OrchestrationState = CalculationOrchestrationState.CalculationFailed;
     }
 
     /// <summary>
@@ -260,10 +288,20 @@ public class Calculation
             ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Created);
 
         ExecutionState = CalculationExecutionState.Created;
+
+        if (OrchestrationState is not (CalculationOrchestrationState.Scheduled or CalculationOrchestrationState.Calculating or CalculationOrchestrationState.CalculationFailed))
+            ThrowInvalidStateTransitionException(OrchestrationState, CalculationOrchestrationState.Scheduled);
+
+        OrchestrationState = CalculationOrchestrationState.Scheduled;
     }
 
     private void ThrowInvalidStateTransitionException(CalculationExecutionState currentState, CalculationExecutionState desiredState)
     {
         throw new BusinessValidationException($"Cannot change {nameof(CalculationExecutionState)} from {currentState} to {desiredState}");
+    }
+
+    private void ThrowInvalidStateTransitionException(CalculationOrchestrationState currentState, CalculationOrchestrationState desiredState)
+    {
+        throw new BusinessValidationException($"Cannot change {nameof(CalculationOrchestrationState)} from {currentState} to {desiredState}");
     }
 }

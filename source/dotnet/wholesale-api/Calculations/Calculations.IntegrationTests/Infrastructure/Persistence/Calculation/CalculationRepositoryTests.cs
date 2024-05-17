@@ -65,8 +65,8 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
         var calculation = CreateCalculation(someGridAreasIds);
         var sut = new CalculationRepository(writeContext);
-        calculation.MarkAsExecuting(); // This call will ensure ExecutionTimeStart is set
-        calculation.MarkAsCompleted(
+        calculation.MarkAsCalculating(); // This call will ensure ExecutionTimeStart is set
+        calculation.MarkAsCalculated(
             calculation.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2))); // This call will ensure ExecutionTimeEnd is set
         calculation.ExecutionTimeEnd.Should().NotBeNull(); // Additional check
         calculation.ExecutionTimeStart.Should().NotBeNull(); // Additional check

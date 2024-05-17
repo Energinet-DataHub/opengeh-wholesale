@@ -49,13 +49,13 @@ internal class UpdateCalculationExecutionStatusActivity(
                     calculation.MarkAsPending();
                     break;
                 case CalculationExecutionState.Executing:
-                    calculation.MarkAsExecuting();
+                    calculation.MarkAsCalculating();
                     break;
                 case CalculationExecutionState.Completed:
-                    calculation.MarkAsCompleted(_clock.GetCurrentInstant());
+                    calculation.MarkAsCalculated(_clock.GetCurrentInstant());
                     break;
                 case CalculationExecutionState.Failed:
-                    calculation.MarkAsFailed();
+                    calculation.MarkAsCalculationFailed();
                     break;
                 case CalculationExecutionState.Canceled:
                     // Jobs may be cancelled in Databricks for various reasons. For example they can be cancelled due to migrations in CD
