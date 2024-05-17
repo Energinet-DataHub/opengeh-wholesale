@@ -14,21 +14,14 @@
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 
-/// <summary>
-/// An immutable calculation.
-/// </summary>
-public sealed record CalculationDto(
-    long? RunId,
-    Guid CalculationId,
-    DateTimeOffset PeriodStart,
-    DateTimeOffset PeriodEnd,
-    string Resolution,
-    string Unit,
-    DateTimeOffset? ExecutionTimeStart,
-    DateTimeOffset? ExecutionTimeEnd,
-    CalculationState ExecutionState,
-    CalculationOrchestrationState OrchestrationState,
-    bool AreSettlementReportsCreated,
-    string[] GridAreaCodes,
-    CalculationType CalculationType,
-    Guid CreatedByUserId);
+public enum CalculationOrchestrationState
+{
+    Scheduled, // Planlagt
+    Calculating, // Beregner
+    Calculated, // Beregnet
+    CalculationFailed, // Beregning fejlet
+    MessagesEnqueuing, // Beskeder dannes
+    MessagesEnqueued, // Beskeder dannet
+    MessagesEnqueuingFailed, // Besked dannelse fejlet
+    Completed, // Orchestration færdig
+}
