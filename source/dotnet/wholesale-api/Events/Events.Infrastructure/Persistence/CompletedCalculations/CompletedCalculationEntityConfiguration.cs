@@ -35,6 +35,8 @@ public class CompletedCalculationEntityConfiguration : IEntityTypeConfiguration<
         builder.Property(b => b.CalculationType);
         builder.Property(b => b.CompletedTime);
         builder.Property(b => b.PublishedTime);
+        builder.Property(b => b.Version);
+        builder.Property(b => b.OrchestrationInstanceId);
 
         // Grid area codes are stored as a JSON array
         builder
