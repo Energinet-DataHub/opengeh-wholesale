@@ -66,10 +66,6 @@ locals {
 
     "Database:ConnectionString"                               = local.MS_MARKET_PARTICIPANT_CONNECTION_STRING
 
-    "ProduceServiceBus:ServiceBusConnectionString"            = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-send-connection-string)",
-    "ProduceServiceBus:ServiceBusHealthCheckConnectionString" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-transceiver-connection-string)",
-    "ProduceServiceBus:SbtMarketParticipantChangedName"       = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-shres-integrationevent-received-name)",
-
     "SendGrid:ApiKey"                                         = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_sendgrid_api_key.name})",
     "SendGrid:SenderEmail"                                    = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_sendgrid_from_email.name})",
     "SendGrid:BccEmail"                                       = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_sendgrid_bcc_email.name})",
@@ -92,5 +88,11 @@ locals {
     "CvrUpdate:NotificationToEmail"                           = var.cvr_update_notification_to_email
 
     "BalanceResponsibleChanged:NotificationToEmail"           = var.balance_responsible_changed_notification_to_email
+
+    "ServiceBus:SharedIntegrationEventTopic"                  = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-shres-integrationevent-received-name)"
+    "ServiceBus:IntegrationEventSubscription"                 = module.sbtsub_market_participant_event_listener.name
+    "ServiceBus:ConsumerConnectionString"                     = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-listen-connection-string)"
+    "ServiceBus:ProducerConnectionString"                     = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-send-connection-string)",
+    "ServiceBus:HealthConnectionString"                       = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-transceiver-connection-string)",
   }
 }
