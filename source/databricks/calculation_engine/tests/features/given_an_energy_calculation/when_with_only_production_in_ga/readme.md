@@ -5,14 +5,14 @@ The purpose of this test is the scenario where a grid area only has non-profiled
 ## Design considerations
 
 - Input period is post May 2023 so that results are quarterly
-- Input data is mostly minimal standard scenario, but without flex metering points
+- Input data is mostly minimal standard scenario, but without consumption metering points.
 
 ## Coverage
 
 All metering point types relevant for energy calculations
 
 - Exchange (energy in)
-- Non-profiled consumption
+- Exchange (energy out)
 - Flex consumption (grid loss)
-- Production
 - Production (system correction)
+- Production
