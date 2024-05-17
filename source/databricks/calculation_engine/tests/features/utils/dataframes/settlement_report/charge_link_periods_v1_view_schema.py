@@ -38,6 +38,7 @@ charge_link_periods_v1_view_schema = StructType(
             ChargeLinkPeriodsV1ColumnNames.metering_point_type, StringType(), False
         ),
         StructField(ChargeLinkPeriodsV1ColumnNames.charge_type, StringType(), False),
+        StructField(ChargeLinkPeriodsV1ColumnNames.charge_code, StringType(), False),
         StructField(
             ChargeLinkPeriodsV1ColumnNames.charge_owner_id, StringType(), False
         ),
