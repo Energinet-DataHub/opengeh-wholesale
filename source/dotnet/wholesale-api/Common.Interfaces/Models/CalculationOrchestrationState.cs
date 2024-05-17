@@ -16,15 +16,16 @@ namespace Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 /// <summary>
 /// Used to represent the state of a calculation orchestration.
+/// IMPORTANT: Do not change numeric values as it is persisted in the database.
 /// </summary>
 public enum CalculationOrchestrationState
 {
-    Scheduled, // Planlagt
-    Calculating, // Beregner
-    Calculated, // Beregnet
-    CalculationFailed, // Beregning fejlet
-    MessagesEnqueuing, // Beskeder dannes
-    MessagesEnqueued, // Beskeder dannet
-    MessagesEnqueuingFailed, // Besked dannelse fejlet
-    Completed, // Orchestration færdig
+    Scheduled = 1, // Planlagt
+    Calculating = 2, // Beregner
+    Calculated = 3, // Beregnet
+    CalculationFailed = 4, // Beregning fejlet
+    MessagesEnqueuing = 5, // Beskeder dannes
+    MessagesEnqueued = 6, // Beskeder dannet
+    MessagesEnqueuingFailed = 7, // Besked dannelse fejlet
+    Completed = 8, // Orchestration færdig
 }
