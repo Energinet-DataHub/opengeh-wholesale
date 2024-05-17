@@ -34,6 +34,13 @@ public sealed class SettlementReportFileBlobStorage : ISettlementReportFileRepos
         return blobClient.OpenReadAsync();
     }
 
+    public async Task DownloadAsync(SettlementReportRequestId reportRequestId, string fileName, Stream downloadStream)
+    {
+        var blobName = GetBlobName(reportRequestId, fileName);
+        var blobClient = _blobContainerClient.GetBlobClient(blobName);
+        await blobClient.DownloadToAsync(downloadStream).ConfigureAwait(false);
+    }
+
     public Task<Stream> OpenForWritingAsync(SettlementReportRequestId reportRequestId, string fileName)
     {
         var blobName = GetBlobName(reportRequestId, fileName);
