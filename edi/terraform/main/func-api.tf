@@ -65,7 +65,7 @@ locals {
     FeatureManagement__UsePeekMessages                          = var.feature_management_use_peek_messages
     FeatureManagement__UseRequestMessages                       = var.feature_management_use_request_messages
     FeatureManagement__UseEnergyResultProduced                  = var.feature_management_use_energy_result_produced
-    FeatureManagement__UseTotalMonthlyAmountResultProducedAsync = var.feature_management_use_total_monthly_amount_result_produced
+    FeatureManagement__UseTotalMonthlyAmountResultProduced      = var.feature_management_use_total_monthly_amount_result_produced
     FeatureManagement__UseCalculationCompletedEvent             = var.feature_management_use_calculation_completed_event
 
     # Service Bus
