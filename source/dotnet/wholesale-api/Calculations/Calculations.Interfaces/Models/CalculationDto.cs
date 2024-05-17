@@ -33,4 +33,5 @@ public sealed record CalculationDto(
     string[] GridAreaCodes,
     CalculationType CalculationType,
     Guid CreatedByUserId,
-    long Version);
+    long Version,
+    CalculationOrchestrationState OrchestrationState);
