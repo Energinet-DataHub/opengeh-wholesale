@@ -30,6 +30,7 @@ public static class CalculationDtoMapper
             calculationDto.ExecutionTimeStart,
             calculationDto.ExecutionTimeEnd,
             CalculationStateMapper.MapState(calculationDto.ExecutionState),
+            CalculationOrchestrationStateMapper.MapState(calculationDto.OrchestrationState),
             calculationDto.AreSettlementReportsCreated,
             calculationDto.GridAreaCodes,
             CalculationTypeMapper.Map(calculationDto.CalculationType),
