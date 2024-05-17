@@ -1,14 +1,14 @@
 CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.charge_link_periods_v1 as
 SELECT c.calculation_id,
        c.calculation_type,
+       m.metering_point_id,
+       m.metering_point_type,
        l.charge_type,
-       l.charge_owner_id,
        l.charge_code,
+       l.charge_owner_id,
        l.quantity,
        l.from_date,
        l.to_date,
-       m.metering_point_id,
-       m.metering_point_type,
        m.grid_area_code,
        m.energy_supplier_id
 FROM {BASIS_DATA_DATABASE_NAME}.charge_link_periods AS l

@@ -19,6 +19,7 @@ from pyspark.sql.types import (
     TimestampType,
     ArrayType,
     DecimalType,
+    IntegerType,
 )
 
 
@@ -94,6 +95,11 @@ def create_charge_link_periods_v1_view(spark: SparkSession, df: DataFrame) -> Da
     df = df.withColumn(
         ChargeLinkPeriodsV1ColumnNames.to_date,
         col(ChargeLinkPeriodsV1ColumnNames.to_date).cast(TimestampType()),
+    )
+
+    df = df.withColumn(
+        ChargeLinkPeriodsV1ColumnNames.quantity,
+        col(ChargeLinkPeriodsV1ColumnNames.quantity).cast(IntegerType()),
     )
 
     return spark.createDataFrame(df.rdd, charge_link_periods_v1_view_schema)
