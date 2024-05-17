@@ -7,6 +7,7 @@ module "backup_vault" {
   resource_group_name  = azurerm_resource_group.this.name
   location             = azurerm_resource_group.this.location
   datastore_type       = "VaultStore"
+  soft_delete          = "Off"
 }
 
 module "kvs_bvault_policy_id" {
