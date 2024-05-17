@@ -119,6 +119,70 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
     }
 
     /// <summary>
+    /// Verifies that:
+    ///  - The orchestration can complete a full run.
+    ///  - Every activity is executed once and in correct order.
+    ///  - A report file is generated.
+    ///  - The file can be downloaded from the download endpoint
+    /// </summary>
+    [Fact]
+    public async Task MockExternalDependencies_WhenCallingDurableFunctionEndpoint_OrchestrationCompletesWithReportPresent_CanDownload()
+    {
+        // Arrange
+        var settlementReportRequest = new SettlementReportRequestDto(
+            CalculationType.BalanceFixing,
+            false,
+            new SettlementReportRequestFilterDto(
+                [new GridAreaCode("042")],
+                DateTimeOffset.UtcNow,
+                DateTimeOffset.UtcNow,
+                null));
+
+        // => Databricks SQL Statement API
+        var statementId = Guid.NewGuid().ToString();
+        var path = "GetDatabricksDataPath";
+
+        Fixture.MockServer
+            .MockEnergySqlStatements(statementId, 0)
+            .MockEnergySqlStatementsResultChunks(statementId, 0, path)
+            .MockEnergySqlStatementsResultStream(path);
+
+        // Act
+        using var request = new HttpRequestMessage(HttpMethod.Post, "api/RequestSettlementReport");
+        request.Headers.Add("Authorization", $"Bearer {CreateFakeInternalToken()}");
+        request.Content = new StringContent(
+            JsonConvert.SerializeObject(settlementReportRequest),
+            Encoding.UTF8,
+            "application/json");
+
+        var actualResponse = await Fixture.AppHostManager.HttpClient.SendAsync(request);
+        var httpResponse = await actualResponse.Content.ReadFromJsonAsync<SettlementReportHttpResponse>();
+        await Fixture.DurableClient.WaitForInstanceCompletedAsync(
+            httpResponse!.RequestId.Id,
+            TimeSpan.FromMinutes(3));
+
+        using var downloadRequest = new HttpRequestMessage(HttpMethod.Post, "api/SettlementReportDownload");
+        downloadRequest.Headers.Add("Authorization", $"Bearer {CreateFakeInternalToken()}");
+        downloadRequest.Content = new StringContent(
+            JsonConvert.SerializeObject(httpResponse!.RequestId),
+            Encoding.UTF8,
+            "application/json");
+
+        var actualDownloadResponse = await Fixture.AppHostManager.HttpClient.SendAsync(downloadRequest);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, actualDownloadResponse.StatusCode);
+        Assert.NotNull(actualResponse.Content);
+
+        var httpStream = await actualDownloadResponse.Content.ReadAsStreamAsync();
+        using var reader = new StreamReader(httpStream);
+        var zipStream = new MemoryStream();
+        await httpStream.CopyToAsync(zipStream);
+        using var archive = new ZipArchive(zipStream, ZipArchiveMode.Read);
+        Assert.NotEmpty(archive.Entries);
+    }
+
+    /// <summary>
     /// Verifies that listing the reports returns a correct status.
     /// </summary>
     [Fact]

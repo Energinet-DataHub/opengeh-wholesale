@@ -14,15 +14,9 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
 
-public interface ISettlementReportFileRepository
+public interface ISettlementReportDownloadHandler
 {
-    Task<Stream> OpenForReadingAsync(SettlementReportRequestId reportRequestId, string fileName);
-
-    Task<Stream> OpenForWritingAsync(SettlementReportRequestId reportRequestId, string fileName);
-
-    Task DeleteAsync(SettlementReportRequestId reportRequestId, string fileName);
-
-    Task DownloadAsync(SettlementReportRequestId reportRequestId, string fileName, Stream downloadStream);
+    Task DownloadReportAsync(SettlementReportRequestId requestId, Stream downloadStream, Guid userId, Guid actorId);
 }
