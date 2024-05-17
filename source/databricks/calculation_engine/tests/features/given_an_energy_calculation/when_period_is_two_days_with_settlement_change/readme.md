@@ -12,6 +12,7 @@ The purpose is to test that an consumption metering point changes settlement met
 ## Coverage
 
 Metering point types:
+
 - Exchange (energy in)
 - Flex consumption
 - Nonprofiled consumption
