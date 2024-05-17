@@ -11,7 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from features.utils.dataframes import create_energy_result_dataframe
+from features.utils.dataframes import (
+    create_energy_result_dataframe,
+    create_wholesale_result_dataframe,
+)
 from features.utils.dataframes.basis_data.basis_data_dataframes import (
     create_metering_point_periods,
     create_time_series_points,
@@ -26,7 +29,10 @@ from package.calculation.basis_data.schemas import (
     metering_point_period_schema,
     calculations_schema,
 )
-from package.calculation.output.schemas import energy_results_schema
+from package.calculation.output.schemas import (
+    energy_results_schema,
+    wholesale_results_schema,
+)
 from package.infrastructure.paths import (
     BASIS_DATA_DATABASE_NAME,
     OUTPUT_DATABASE_NAME,
@@ -64,5 +70,11 @@ def get_input_specifications() -> dict[str, tuple]:
             BasisDataTableReader.read_calculations,
             create_calculations_dataframe,
             BASIS_DATA_DATABASE_NAME,
+        ),
+        "wholesale_results.csv": (
+            wholesale_results_schema,
+            EnergyResultViewReader.read_wholesale_results,
+            create_wholesale_result_dataframe,
+            OUTPUT_DATABASE_NAME,
         ),
     }

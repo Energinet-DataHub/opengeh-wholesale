@@ -22,6 +22,10 @@ from features.utils.dataframes.settlement_report.settlement_report_view_datafram
     create_metering_point_periods_v1_view,
     create_metering_point_time_series_v1_view,
     create_energy_results_v1_view,
+    create_wholesale_results_v1_view,
+)
+from features.utils.dataframes.settlement_report.wholesale_results_v1_view_schema import (
+    wholesale_results_v1_view_schema,
 )
 from features.utils.readers import (
     SettlementReportViewReader,
@@ -47,5 +51,10 @@ def get_output_specifications() -> dict[str, tuple]:
             energy_results_v1_view_schema,
             SettlementReportViewReader.read_energy_results_v1,
             create_energy_results_v1_view,
+        ),
+        "wholesale_results_v1.csv": (
+            wholesale_results_v1_view_schema,
+            SettlementReportViewReader.read_wholesale_results_v1,
+            create_wholesale_results_v1_view,
         ),
     }

@@ -100,6 +100,32 @@ def create_energy_results_v1_view(spark: SparkSession, df: DataFrame) -> DataFra
     return spark.createDataFrame(df.rdd, energy_results_v1_view_schema)
 
 
+def create_wholesale_results_v1_view(spark: SparkSession, df: DataFrame) -> DataFrame:
+
+    # Don't remove. Believed needed because this function is an argument to the setup function
+    # and therefore the following packages are not automatically included.
+    from features.utils.dataframes.settlement_report.settlement_report_view_column_names import (
+        WholesaleResultColumnNames,
+    )
+    from features.utils.dataframes.settlement_report.wholesale_results_v1_view_schema import (
+        wholesale_results_v1_view_schema,
+    )
+
+    df = df.withColumn(
+        WholesaleResultColumnNames.time,
+        col(
+            WholesaleResultColumnNames.time,
+        ).cast(TimestampType()),
+    )
+
+    df = df.withColumn(
+        WholesaleResultColumnNames.amount,
+        col(WholesaleResultColumnNames.amount).cast(DecimalType(18, 3)),
+    )
+
+    return spark.createDataFrame(df.rdd, wholesale_results_v1_view_schema)
+
+
 def _parse_qualities(qualities_str: str) -> list[dict]:
     # Parse the string into a list of dictionaries
     return literal_eval(qualities_str)

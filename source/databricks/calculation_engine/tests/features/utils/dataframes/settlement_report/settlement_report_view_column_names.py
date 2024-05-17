@@ -11,7 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from package.constants import EnergyResultColumnNames, Colname
+from package.constants import (
+    EnergyResultColumnNames,
+    Colname,
+    WholesaleResultColumnNames,
+)
 
 
 class MeteringPointTimeSeriesV1ColumnNames:
@@ -30,3 +34,18 @@ class EnergyResultsV1ColumnNames:
     resolution = Colname.resolution
     settlement_method = Colname.settlement_method
     aggregation_level = EnergyResultColumnNames.aggregation_level
+
+
+class WholesaleResultsV1ColumnNames:
+    calculation_id = WholesaleResultColumnNames.calculation_id
+    calculation_type = WholesaleResultColumnNames.calculation_type
+    grid_area_code = WholesaleResultColumnNames.grid_area
+    energy_supplier_id = WholesaleResultColumnNames.energy_supplier_id
+    time = WholesaleResultColumnNames.time
+    resolution = Colname.resolution
+    quantity_unit = WholesaleResultColumnNames.quantity_unit
+    currency = "currency"
+    amount = WholesaleResultColumnNames.amount
+    charge_type = WholesaleResultColumnNames.charge_type
+    charge_code = WholesaleResultColumnNames.charge_code
+    charge_owner_id = WholesaleResultColumnNames.charge_owner_id
