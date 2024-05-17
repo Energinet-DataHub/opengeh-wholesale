@@ -16,6 +16,7 @@ from pyspark.sql.functions import col
 from pyspark.sql.types import (
     TimestampType,
     DecimalType,
+    IntegerType,
 )
 
 from features.utils.dataframes.basis_data.calculations_dataframe import (
@@ -93,5 +94,19 @@ def create_charge_link_periods(spark: SparkSession, df: DataFrame) -> DataFrame:
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
     from package.calculation.basis_data.schemas import charge_link_periods_schema
+    from package.constants import ChargeLinkPeriodsColname
+
+    df = df.withColumn(
+        ChargeLinkPeriodsColname.quantity,
+        col(ChargeLinkPeriodsColname.quantity).cast(IntegerType()),
+    )
+    df = df.withColumn(
+        ChargeLinkPeriodsColname.from_date,
+        col(ChargeLinkPeriodsColname.from_date).cast(TimestampType()),
+    )
+    df = df.withColumn(
+        ChargeLinkPeriodsColname.to_date,
+        col(ChargeLinkPeriodsColname.to_date).cast(TimestampType()),
+    )
 
     return spark.createDataFrame(df.rdd, charge_link_periods_schema)

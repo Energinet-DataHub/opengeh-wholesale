@@ -27,6 +27,8 @@ def assert_output(
 
     actual_result = _get_expected_for_output(actual_results, output_name)
     expected_result = _get_expected_for_output(expected_results, output_name)
+    actual_result.printSchema()
+    expected_result.printSchema()
 
     assert_dataframe_and_schema(
         actual_result,
