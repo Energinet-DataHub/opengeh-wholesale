@@ -25,7 +25,9 @@ public sealed class CompletedCalculation
         CalculationType calculationType,
         Instant periodStart,
         Instant periodEnd,
-        Instant completedTime)
+        Instant completedTime,
+        long version,
+        string? orchestrationInstanceId)
     {
         Id = id;
         GridAreaCodes = gridAreaCodes;
@@ -33,6 +35,8 @@ public sealed class CompletedCalculation
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
         CompletedTime = completedTime;
+        Version = version;
+        OrchestrationInstanceId = orchestrationInstanceId;
     }
 
     /// <summary>
@@ -51,4 +55,8 @@ public sealed class CompletedCalculation
     public Instant PeriodEnd { get; init; }
 
     public Instant CompletedTime { get; private set; }
+
+    public long Version { get; init; }
+
+    public string? OrchestrationInstanceId { get; init; }
 }
