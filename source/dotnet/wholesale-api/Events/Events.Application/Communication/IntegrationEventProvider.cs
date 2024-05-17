@@ -23,6 +23,7 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Communication;
 
 public class IntegrationEventProvider : IIntegrationEventProvider
 {
+    private readonly ICalculationCompletedEventProvider _calculationCompletedEventProvider;
     private readonly IEnergyResultEventProvider _energyResultEventProvider;
     private readonly IWholesaleResultEventProvider _wholesaleResultEventProvider;
     private readonly ICompletedCalculationRepository _completedCalculationRepository;
@@ -31,6 +32,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
     private readonly ILogger<IntegrationEventProvider> _logger;
 
     public IntegrationEventProvider(
+        ICalculationCompletedEventProvider calculationCompletedEventProvider,
         IEnergyResultEventProvider energyResultEventProvider,
         IWholesaleResultEventProvider wholesaleResultEventProvider,
         ICompletedCalculationRepository completedCalculationRepository,
@@ -38,6 +40,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
         IUnitOfWork unitOfWork,
         ILogger<IntegrationEventProvider> logger)
     {
+        _calculationCompletedEventProvider = calculationCompletedEventProvider;
         _energyResultEventProvider = energyResultEventProvider;
         _wholesaleResultEventProvider = wholesaleResultEventProvider;
         _completedCalculationRepository = completedCalculationRepository;
@@ -126,6 +129,23 @@ public class IntegrationEventProvider : IIntegrationEventProvider
                         await wholesaleResultEventProviderEnumerator.DisposeAsync().ConfigureAwait(false);
                     }
                 }
+            }
+
+            // Publish integration events for calculation completed
+            IntegrationEvent? calculationCompletedEvent = default;
+            try
+            {
+                calculationCompletedEvent = _calculationCompletedEventProvider.Get(unpublishedCalculation);
+            }
+            catch (Exception ex)
+            {
+                hasFailed = true;
+                _logger.LogError(ex, "Failed calculation completed event publishing for completed calculation {calculation_id}.", unpublishedCalculation.Id);
+            }
+
+            if (calculationCompletedEvent != null)
+            {
+                yield return calculationCompletedEvent;
             }
 
             if (hasFailed)

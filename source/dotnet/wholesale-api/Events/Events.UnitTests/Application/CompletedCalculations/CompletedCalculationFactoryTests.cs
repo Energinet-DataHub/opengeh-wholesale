@@ -28,16 +28,19 @@ public class CompletedCalculationFactoryTests
     public void CreateFromCalculation_ReturnsCompletedCalculation(CalculationDto calculation, CompletedCalculationFactory sut)
     {
         // Arrange
+        var orchestrationId = "orchestration-id";
         var expectedCompletedCalculation = new CompletedCalculation(
             calculation.CalculationId,
             calculation.GridAreaCodes.ToList(),
             calculation.CalculationType,
             calculation.PeriodStart.ToInstant(),
             calculation.PeriodEnd.ToInstant(),
-            calculation.ExecutionTimeEnd!.Value.ToInstant());
+            calculation.ExecutionTimeEnd!.Value.ToInstant(),
+            calculation.Version,
+            orchestrationId);
 
         // Act
-        var actual = sut.CreateFromCalculation(calculation);
+        var actual = sut.CreateFromCalculation(calculation, orchestrationId);
 
         // Assert
         actual.Should().BeEquivalentTo(expectedCompletedCalculation);
