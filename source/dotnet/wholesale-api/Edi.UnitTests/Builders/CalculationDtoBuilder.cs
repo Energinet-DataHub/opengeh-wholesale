@@ -56,7 +56,8 @@ public class CalculationDtoBuilder
             new[] { "543" },
             _calculationType,
             Guid.NewGuid(),
-            _version);
+            _version,
+            CalculationOrchestrationState.Calculated);
     }
 
     public static CalculationDtoBuilder CalculationDto()

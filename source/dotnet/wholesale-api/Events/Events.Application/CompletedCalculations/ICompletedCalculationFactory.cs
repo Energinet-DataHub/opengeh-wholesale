@@ -19,4 +19,6 @@ namespace Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 public interface ICompletedCalculationFactory
 {
     IEnumerable<CompletedCalculation> CreateFromCalculations(IEnumerable<CalculationDto> completedCalculationDtos);
+
+    CompletedCalculation CreateFromCalculation(CalculationDto calculation, string orchestrationInstanceId);
 }

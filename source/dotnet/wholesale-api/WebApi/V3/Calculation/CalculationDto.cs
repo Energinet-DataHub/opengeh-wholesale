@@ -27,6 +27,7 @@ public sealed record CalculationDto(
     DateTimeOffset? ExecutionTimeStart,
     DateTimeOffset? ExecutionTimeEnd,
     CalculationState ExecutionState,
+    CalculationOrchestrationState OrchestrationState,
     bool AreSettlementReportsCreated,
     string[] GridAreaCodes,
     CalculationType CalculationType,
