@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import decimal
 
 import pytest
 from pyspark.sql import SparkSession
@@ -94,3 +95,102 @@ class TestWhenValidInput:
             spark,
             [factories.create_row(qualities=quality) for quality in qualities],
         )
+
+
+class TestWhenEnergyResultsIsEmpty:
+    @pytest.mark.parametrize(
+        "net_exchange_per_ga, non_profiled_consumption, flex_consumption, production, expected_quantity",
+        [
+            (  # Empty non profiled
+                factories.create_row(quantity=400),
+                [],
+                factories.create_row(quantity=200),
+                factories.create_row(quantity=100),
+                300,
+            ),
+            (  # Empty flex
+                factories.create_row(quantity=400),
+                factories.create_row(quantity=300),
+                [],
+                factories.create_row(quantity=100),
+                200,
+            ),
+            (  # Empty production
+                factories.create_row(quantity=400),
+                factories.create_row(quantity=300),
+                factories.create_row(quantity=200),
+                [],
+                -100,
+            ),
+            (  # Empty non profiled and flex
+                factories.create_row(quantity=400),
+                [],
+                [],
+                factories.create_row(quantity=100),
+                500,
+            ),
+            (  # Empty flex and production
+                factories.create_row(quantity=400),
+                factories.create_row(quantity=300),
+                [],
+                [],
+                100,
+            ),
+            (  # Empty non-profiled and production
+                factories.create_row(quantity=400),
+                [],
+                factories.create_row(quantity=200),
+                [],
+                200,
+            ),
+            (  # Empty exchange
+                [],
+                factories.create_row(quantity=300),
+                factories.create_row(quantity=200),
+                factories.create_row(quantity=100),
+                -400,
+            ),
+            (  # Empty exchange and non profiled
+                [],
+                [],
+                factories.create_row(quantity=200),
+                factories.create_row(quantity=100),
+                -100,
+            ),
+            (  # Empty exchange and flex
+                [],
+                factories.create_row(quantity=300),
+                [],
+                factories.create_row(quantity=100),
+                -200,
+            ),
+            (  # Empty exchange and production
+                [],
+                factories.create_row(quantity=300),
+                factories.create_row(quantity=200),
+                [],
+                -500,
+            ),
+        ],
+    )
+    def test_returns_correct_quantity(
+        self,
+        spark: SparkSession,
+        net_exchange_per_ga: factories.Row,
+        non_profiled_consumption: factories.Row,
+        flex_consumption: factories.Row,
+        production: factories.Row,
+        expected_quantity: decimal,
+    ) -> None:
+        # Arrange
+        exchange = factories.create(spark, net_exchange_per_ga)
+        non_profiled = factories.create(spark, non_profiled_consumption)
+        flex = factories.create(spark, flex_consumption)
+        production = factories.create(spark, production)
+
+        # Act
+        actual = calculate_grid_loss(exchange, non_profiled, flex, production)
+        actual.df.show(100, False)
+
+        # Assert
+        assert actual.df.collect()[0][Colname.quantity] == expected_quantity
