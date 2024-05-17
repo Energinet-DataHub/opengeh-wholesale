@@ -19,7 +19,7 @@ using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Calcul
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
 
-public class CalculationCompletedEventProvider : ResultEventProvider, ICalculationCompletedEventProvider
+public class CalculationCompletedEventProvider : ICalculationCompletedEventProvider
 {
     private readonly ICalculationCompletedFactory _calculationCompletedFactory;
 
@@ -35,6 +35,11 @@ public class CalculationCompletedEventProvider : ResultEventProvider, ICalculati
             unpublishedCalculation.OrchestrationInstanceId!,
             unpublishedCalculation.CalculationType,
             unpublishedCalculation.Version);
-        return CreateIntegrationEvent(calculationCompletedV1);
+
+        return new IntegrationEvent(
+            unpublishedCalculation.Id,
+            Contracts.IntegrationEvents.CalculationCompletedV1.EventName,
+            Contracts.IntegrationEvents.CalculationCompletedV1.EventMinorVersion,
+            calculationCompletedV1);
     }
 }
