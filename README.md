@@ -22,12 +22,6 @@ For people on the project please read the internal documentation (Confluence) fo
 
 ![Detailed with OAuth](docs/diagrams/c4-model/views/WholesaleDetailed.png)
 
-## The Public Data Models
-
-The public data models are the data models that the wholesale subsystem provides for accessing the data related to calculations. The public data models is provided as a delta lake and is accessed from Databricks.
-
-Learn about the wholesale public data models [here](docs/public-data-models/README.md).
-
 ## Thanks to all the people who already contributed
 
 <a href="https://github.com/Energinet-DataHub/opengeh-wholesale/graphs/contributors">
