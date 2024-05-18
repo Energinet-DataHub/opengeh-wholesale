@@ -24,8 +24,8 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation;
 #pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
 internal class CalculationOrchestration
 {
-    [Function(nameof(Calculation))]
-    public async Task<string> Calculation(
+    [Function(nameof(CalculationOrchestration))]
+    public async Task<string> Run(
         [OrchestrationTrigger] TaskOrchestrationContext context)
     {
         var input = context.GetInput<CalculationOrchestrationInput>();
