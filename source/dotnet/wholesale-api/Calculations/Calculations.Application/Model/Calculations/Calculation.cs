@@ -288,7 +288,8 @@ public class Calculation
     private CalculationOrchestrationState[] ValidOrchestrationStateTransitions(CalculationOrchestrationState fromState) =>
         fromState switch
         {
-            CalculationOrchestrationState.Scheduled => [CalculationOrchestrationState.Calculating, CalculationOrchestrationState.Scheduled],
+            // The state can move from Scheduled -> Calculated if the calculation was so quick we didn't see the Calculating state
+            CalculationOrchestrationState.Scheduled => [CalculationOrchestrationState.Calculating, CalculationOrchestrationState.Calculated, CalculationOrchestrationState.Scheduled],
             CalculationOrchestrationState.Calculating => [CalculationOrchestrationState.Calculated, CalculationOrchestrationState.CalculationFailed, CalculationOrchestrationState.Scheduled], // Reset to Scheduled?
             CalculationOrchestrationState.Calculated => [CalculationOrchestrationState.MessagesEnqueuing],
             CalculationOrchestrationState.CalculationFailed => [CalculationOrchestrationState.Scheduled],

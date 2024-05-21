@@ -420,36 +420,37 @@ public class CalculationTests
     {
         var sut = new CalculationBuilder().Build();
 
+        var calculationJobId = new CalculationJobId(1);
         switch (executionState)
         {
             case CalculationExecutionState.Created:
                 break;
             case CalculationExecutionState.Submitted:
-                sut.MarkAsSubmitted(new CalculationJobId(1));
+                sut.MarkAsSubmitted(calculationJobId);
                 break;
             case CalculationExecutionState.Pending:
-                sut.MarkAsSubmitted(new CalculationJobId(1));
+                sut.MarkAsSubmitted(calculationJobId);
                 sut.MarkAsPending();
                 break;
             case CalculationExecutionState.Executing:
-                sut.MarkAsSubmitted(new CalculationJobId(1));
+                sut.MarkAsSubmitted(calculationJobId);
                 sut.MarkAsPending();
                 sut.MarkAsCalculating();
                 break;
             case CalculationExecutionState.Completed:
-                sut.MarkAsSubmitted(new CalculationJobId(1));
+                sut.MarkAsSubmitted(calculationJobId);
                 sut.MarkAsPending();
                 sut.MarkAsCalculating();
                 sut.MarkAsCalculated(sut.ExecutionTimeStart!.Value.Plus(Duration.FromMinutes(15)));
                 break;
             case CalculationExecutionState.Failed:
-                sut.MarkAsSubmitted(new CalculationJobId(1));
+                sut.MarkAsSubmitted(calculationJobId);
                 sut.MarkAsPending();
                 sut.MarkAsCalculating();
                 sut.MarkAsCalculationFailed();
                 break;
             default:
-                throw new ArgumentOutOfRangeException(nameof(executionState), executionState, null);
+                throw new ArgumentOutOfRangeException(nameof(executionState), executionState, "The given execution state is not supported in the test");
         }
 
         sut.OrchestrationState.Should().Be(expectedOrchestrationState);
