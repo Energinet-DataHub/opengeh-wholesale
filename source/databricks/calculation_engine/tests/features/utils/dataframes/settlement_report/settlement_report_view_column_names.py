@@ -11,12 +11,50 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from package.constants import EnergyResultColumnNames, Colname
+from package.constants import EnergyResultColumnNames, Colname, ChargeLinkPeriodsColname
+from package.constants.basis_data_colname import (
+    CalculationsColumnName,
+    MeteringPointPeriodColname,
+    ChargePricePointsColname,
+    ChargeMasterDataPeriodsColname,
+)
+from package.constants.result_column_names import ResultColumnNames
 
 
 class MeteringPointTimeSeriesV1ColumnNames:
     start_date_time = "start_date_time"
     quantities = "quantities"
+
+
+class ChargePricesV1ColumnNames:
+    calculation_id = ChargePricePointsColname.calculation_id
+    calculation_type = CalculationsColumnName.calculation_type
+    charge_type = ChargePricePointsColname.charge_type
+    charge_owner_id = ChargePricePointsColname.charge_owner_id
+    charge_price = ChargePricePointsColname.charge_price
+    charge_time = ChargePricePointsColname.charge_time
+    charge_code = ChargePricePointsColname.charge_code
+    resolution = ChargeMasterDataPeriodsColname.resolution
+    is_tax = ChargeMasterDataPeriodsColname.is_tax
+    start_date_time = "start_date_time"
+    prices = "prices"
+    grid_area = MeteringPointPeriodColname.grid_area
+    energy_supplier_id = MeteringPointPeriodColname.energy_supplier_id
+
+
+class ChargeLinkPeriodsV1ColumnNames:
+    calculation_id = ChargeLinkPeriodsColname.calculation_id
+    calculation_type = CalculationsColumnName.calculation_type
+    metering_point_id = ChargeLinkPeriodsColname.metering_point_id
+    metering_point_type = MeteringPointPeriodColname.metering_point_type
+    charge_type = ChargeLinkPeriodsColname.charge_type
+    charge_owner_id = ChargeLinkPeriodsColname.charge_owner_id
+    charge_code = ChargeLinkPeriodsColname.charge_code
+    quantity = ChargeLinkPeriodsColname.quantity
+    from_date = ChargeLinkPeriodsColname.from_date
+    to_date = ChargeLinkPeriodsColname.to_date
+    grid_area = MeteringPointPeriodColname.grid_area
+    energy_supplier_id = MeteringPointPeriodColname.energy_supplier_id
 
 
 class EnergyResultsV1ColumnNames:
