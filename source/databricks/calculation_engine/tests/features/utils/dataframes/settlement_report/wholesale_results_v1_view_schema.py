@@ -32,6 +32,8 @@ wholesale_results_v1_view_schema = StructType(
         StructField(WholesaleResultColumnNames.resolution, StringType(), False),
         StructField(WholesaleResultColumnNames.quantity_unit, StringType(), False),
         StructField(Colname.currency, StringType(), False),
+        StructField(WholesaleResultColumnNames.quantity, DecimalType(18, 3), False),
+        StructField(WholesaleResultColumnNames.price, DecimalType(18, 3), False),
         StructField(WholesaleResultColumnNames.amount, DecimalType(18, 3), True),
         StructField(WholesaleResultColumnNames.charge_type, StringType(), True),
         StructField(WholesaleResultColumnNames.charge_code, StringType(), True),

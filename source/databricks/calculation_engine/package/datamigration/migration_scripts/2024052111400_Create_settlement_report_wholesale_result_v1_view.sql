@@ -11,6 +11,8 @@ SELECT wr.calculation_id,
        wr.resolution,
        wr.quantity_unit,
        "DDK" as currency,
+       wr.quantity,
+       wr.price,
        wr.amount,
        wr.charge_type,
        wr.charge_code,
@@ -18,3 +20,4 @@ SELECT wr.calculation_id,
 FROM {OUTPUT_DATABASE_NAME}.wholesale_results AS wr
 INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS C ON c.calculation_id = wr.calculation_id
 WHERE wr.amount_type = "amount_per_charge"
+

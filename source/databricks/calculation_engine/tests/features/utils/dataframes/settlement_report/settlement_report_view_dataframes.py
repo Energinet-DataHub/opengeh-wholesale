@@ -112,6 +112,16 @@ def create_wholesale_results_v1_view(spark: SparkSession, df: DataFrame) -> Data
     )
 
     df = df.withColumn(
+        WholesaleResultColumnNames.quantity,
+        col(WholesaleResultColumnNames.quantity).cast(DecimalType(18, 3)),
+    )
+
+    df = df.withColumn(
+        WholesaleResultColumnNames.price,
+        col(WholesaleResultColumnNames.price).cast(DecimalType(18, 3)),
+    )
+
+    df = df.withColumn(
         WholesaleResultColumnNames.amount,
         col(WholesaleResultColumnNames.amount).cast(DecimalType(18, 3)),
     )
