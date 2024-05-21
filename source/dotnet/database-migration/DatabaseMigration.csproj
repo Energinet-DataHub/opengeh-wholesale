@@ -52,6 +52,9 @@ limitations under the License.
     <EmbeddedResource Include="Scripts\202405151400_CompletedCalculation_Add_CalculationId_OrchestrationInstanceId.sql" />
     <EmbeddedResource Include="Scripts\202405141445_Add_Period_To_SettlementReport.sql" />
     <EmbeddedResource Include="Scripts\202405151335_Use_DateTime_In_SettlementReport.sql" />
+    <EmbeddedResource Include="Scripts\202405211257_Add_CompletedTime_to_Calculation.sql" />
+    <EmbeddedResource Include="Scripts\202405211256_Add_MessagesEnqueuingTimeEnd_to_Calculation.sql" />
+    <EmbeddedResource Include="Scripts\202405211256_Add_MessagesEnqueuingTimeStart_to_Calculation.sql" />
   </ItemGroup>
 
   <ItemGroup>

@@ -156,6 +156,12 @@ public class Calculation
 
     public Instant? ExecutionTimeEnd { get; private set; }
 
+    public Instant? MessagesEnqueuingTimeStart { get; private set; }
+
+    public Instant? MessagesEnqueuingTimeEnd { get; private set; }
+
+    public Instant? CompletedTime { get; private set; }
+
     public CalculationJobId? CalculationJobId { get; private set; }
 
     /// <summary>
@@ -271,6 +277,34 @@ public class Calculation
 
         ExecutionState = CalculationExecutionState.Failed;
         OrchestrationState = CalculationOrchestrationState.CalculationFailed;
+    }
+
+    public void MarkAsMessagesEnqueuing(Instant enqueuingTimeStart)
+    {
+        MessagesEnqueuingTimeStart = enqueuingTimeStart;
+        OrchestrationState = CalculationOrchestrationState.MessagesEnqueuing;
+    }
+
+    public void MarkAsMessagesEnqueued(Instant enqueuingTimeEnd)
+    {
+        if (enqueuingTimeEnd < MessagesEnqueuingTimeStart)
+        {
+            throw new BusinessValidationException(
+                $"Enqueuing time end '{enqueuingTimeEnd}' cannot be before enqueuing time start '{MessagesEnqueuingTimeStart}'");
+        }
+
+        OrchestrationState = CalculationOrchestrationState.MessagesEnqueued;
+    }
+
+    public void MarkAsMessagesEnqueuingFailed()
+    {
+        OrchestrationState = CalculationOrchestrationState.MessagesEnqueuingFailed;
+    }
+
+    public void MarkAsCompleted(Instant completedAt)
+    {
+        OrchestrationState = CalculationOrchestrationState.Completed;
+        CompletedTime = completedAt;
     }
 
     /// <summary>
