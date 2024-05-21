@@ -21,6 +21,7 @@ namespace Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculation
 public class Calculation
 {
     private readonly List<GridAreaCode> _gridAreaCodes;
+    private CalculationOrchestrationState _orchestrationState;
 
     public Calculation(
         Instant createdTime,
@@ -39,7 +40,7 @@ public class Calculation
             throw new BusinessValidationException(string.Join(" ", errorMessages));
 
         ExecutionState = CalculationExecutionState.Created;
-        OrchestrationState = CalculationOrchestrationState.Scheduled;
+        _orchestrationState = CalculationOrchestrationState.Scheduled;
         CalculationType = calculationType;
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
@@ -127,7 +128,20 @@ public class Calculation
 
     public CalculationExecutionState ExecutionState { get; private set; }
 
-    public CalculationOrchestrationState OrchestrationState { get; private set; }
+    /// <summary>
+    /// Get/set the orchestration state of the calculation.
+    ///     Throws a <see cref="BusinessValidationException"/> if the state transition is invalid.
+    /// </summary>
+    public CalculationOrchestrationState OrchestrationState
+    {
+        get => _orchestrationState;
+        private set
+        {
+            if (!ValidOrchestrationStateTransitions(_orchestrationState).Contains(value))
+                ThrowInvalidStateTransitionException(_orchestrationState, value);
+            _orchestrationState = value;
+        }
+    }
 
     /// <summary>
     /// The calculation engine registers its own perception of the start time.
@@ -214,10 +228,6 @@ public class Calculation
 
         CalculationJobId = calculationJobId;
         ExecutionState = CalculationExecutionState.Submitted;
-
-        if (OrchestrationState is not CalculationOrchestrationState.Scheduled)
-            ThrowInvalidStateTransitionException(OrchestrationState, CalculationOrchestrationState.Scheduled);
-
         OrchestrationState = CalculationOrchestrationState.Scheduled;
     }
 
@@ -226,10 +236,6 @@ public class Calculation
         if (ExecutionState is CalculationExecutionState.Pending or CalculationExecutionState.Executing or CalculationExecutionState.Completed or CalculationExecutionState.Failed)
             ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Pending);
         ExecutionState = CalculationExecutionState.Pending;
-
-        if (OrchestrationState is not CalculationOrchestrationState.Scheduled)
-            ThrowInvalidStateTransitionException(OrchestrationState, CalculationOrchestrationState.Scheduled);
-
         OrchestrationState = CalculationOrchestrationState.Scheduled;
     }
 
@@ -239,10 +245,6 @@ public class Calculation
             ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Executing);
 
         ExecutionState = CalculationExecutionState.Executing;
-
-        if (OrchestrationState is not CalculationOrchestrationState.Scheduled)
-            ThrowInvalidStateTransitionException(OrchestrationState, CalculationOrchestrationState.Calculating);
-
         OrchestrationState = CalculationOrchestrationState.Calculating;
     }
 
@@ -259,10 +261,6 @@ public class Calculation
 
         ExecutionState = CalculationExecutionState.Completed;
         ExecutionTimeEnd = executionTimeEnd;
-
-        if (OrchestrationState is not CalculationOrchestrationState.Calculating)
-            ThrowInvalidStateTransitionException(OrchestrationState, CalculationOrchestrationState.Calculated);
-
         OrchestrationState = CalculationOrchestrationState.Calculated;
     }
 
@@ -272,10 +270,6 @@ public class Calculation
             ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Failed);
 
         ExecutionState = CalculationExecutionState.Failed;
-
-        if (OrchestrationState is not (CalculationOrchestrationState.Scheduled or CalculationOrchestrationState.Calculating))
-            ThrowInvalidStateTransitionException(OrchestrationState, CalculationOrchestrationState.CalculationFailed);
-
         OrchestrationState = CalculationOrchestrationState.CalculationFailed;
     }
 
@@ -288,12 +282,22 @@ public class Calculation
             ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Created);
 
         ExecutionState = CalculationExecutionState.Created;
-
-        if (OrchestrationState is not (CalculationOrchestrationState.Scheduled or CalculationOrchestrationState.Calculating or CalculationOrchestrationState.CalculationFailed))
-            ThrowInvalidStateTransitionException(OrchestrationState, CalculationOrchestrationState.Scheduled);
-
         OrchestrationState = CalculationOrchestrationState.Scheduled;
     }
+
+    private CalculationOrchestrationState[] ValidOrchestrationStateTransitions(CalculationOrchestrationState fromState) =>
+        fromState switch
+        {
+            CalculationOrchestrationState.Scheduled => [CalculationOrchestrationState.Calculating, CalculationOrchestrationState.Scheduled],
+            CalculationOrchestrationState.Calculating => [CalculationOrchestrationState.Calculated, CalculationOrchestrationState.CalculationFailed, CalculationOrchestrationState.Scheduled], // Reset to Scheduled?
+            CalculationOrchestrationState.Calculated => [CalculationOrchestrationState.MessagesEnqueuing],
+            CalculationOrchestrationState.CalculationFailed => [CalculationOrchestrationState.Scheduled],
+            CalculationOrchestrationState.MessagesEnqueuing => [CalculationOrchestrationState.MessagesEnqueued, CalculationOrchestrationState.MessagesEnqueuingFailed],
+            CalculationOrchestrationState.MessagesEnqueued => [CalculationOrchestrationState.Completed],
+            CalculationOrchestrationState.MessagesEnqueuingFailed => [], // We do not support reruns, so we are stuck in failed
+            CalculationOrchestrationState.Completed => [], // We do not support reruns, so we are stuck in completed
+            _ => throw new ArgumentOutOfRangeException(nameof(fromState), fromState, "Unsupported CalculationOrchestrationState to get valid state transitions for"),
+        };
 
     private void ThrowInvalidStateTransitionException(CalculationExecutionState currentState, CalculationExecutionState desiredState)
     {

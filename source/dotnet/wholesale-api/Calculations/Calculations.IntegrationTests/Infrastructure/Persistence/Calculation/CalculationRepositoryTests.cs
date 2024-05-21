@@ -42,6 +42,7 @@ public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
         var expectedCalculation = CreateCalculation(CalculationType.Aggregation, someGridAreasIds);
+        expectedCalculation.MarkAsCalculating();
         var sut = new CalculationRepository(writeContext);
 
         // Act
