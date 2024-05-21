@@ -52,24 +52,19 @@ def create_metering_point_time_series_v1_view(
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
-    from features.utils.dataframes.settlement_report.settlement_report_view_column_names import (
-        MeteringPointTimeSeriesV1ColumnNames,
-    )
     from features.utils.dataframes.settlement_report.metering_point_time_series_v1_view_schema import (
         metering_point_time_series_v1_view_schema,
         element,
     )
 
     df = df.withColumn(
-        MeteringPointTimeSeriesV1ColumnNames.start_date_time,
-        col(MeteringPointTimeSeriesV1ColumnNames.start_date_time).cast(TimestampType()),
+        "start_date_time",
+        col("start_date_time").cast(TimestampType()),
     )
 
     df = df.withColumn(
-        MeteringPointTimeSeriesV1ColumnNames.quantities,
-        from_json(
-            col(MeteringPointTimeSeriesV1ColumnNames.quantities), ArrayType(element)
-        ),
+        "quantities",
+        from_json(col("quantities"), ArrayType(element)),
     )
 
     return spark.createDataFrame(df.rdd, metering_point_time_series_v1_view_schema)
@@ -104,12 +99,10 @@ def create_wholesale_results_v1_view(spark: SparkSession, df: DataFrame) -> Data
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
-    from features.utils.dataframes.settlement_report.settlement_report_view_column_names import (
-        WholesaleResultColumnNames,
-    )
     from features.utils.dataframes.settlement_report.wholesale_results_v1_view_schema import (
         wholesale_results_v1_view_schema,
     )
+    from package.constants import WholesaleResultColumnNames
 
     df = df.withColumn(
         WholesaleResultColumnNames.time,

@@ -30,6 +30,7 @@ class WholesaleResultColumnNames(ResultColumnNames):
     charge_code = "charge_code"
     charge_type = "charge_type"
     charge_owner_id = "charge_owner_id"
+    currency = "currency"
 
     quantity = "quantity"
     quantity_qualities = "quantity_qualities"

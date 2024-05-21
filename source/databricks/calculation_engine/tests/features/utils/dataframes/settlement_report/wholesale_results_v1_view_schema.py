@@ -20,27 +20,21 @@ from pyspark.sql.types import (
     DecimalType,
 )
 
-from features.utils.dataframes.settlement_report.settlement_report_view_column_names import (
-    WholesaleResultsV1ColumnNames,
-)
+from package.constants import WholesaleResultColumnNames
 
 wholesale_results_v1_view_schema = StructType(
     [
-        StructField(WholesaleResultsV1ColumnNames.calculation_id, StringType(), False),
-        StructField(
-            WholesaleResultsV1ColumnNames.calculation_type, StringType(), False
-        ),
-        StructField(WholesaleResultsV1ColumnNames.grid_area_code, StringType(), False),
-        StructField(
-            WholesaleResultsV1ColumnNames.energy_supplier_id, StringType(), False
-        ),
-        StructField(WholesaleResultsV1ColumnNames.time, TimestampType(), False),
-        StructField(WholesaleResultsV1ColumnNames.resolution, StringType(), False),
-        StructField(WholesaleResultsV1ColumnNames.quantity_unit, StringType(), False),
-        StructField(WholesaleResultsV1ColumnNames.currency, StringType(), False),
-        StructField(WholesaleResultsV1ColumnNames.amount, DecimalType(18, 3), True),
-        StructField(WholesaleResultsV1ColumnNames.charge_type, StringType(), True),
-        StructField(WholesaleResultsV1ColumnNames.charge_code, StringType(), True),
-        StructField(WholesaleResultsV1ColumnNames.charge_owner_id, StringType(), True),
+        StructField(WholesaleResultColumnNames.calculation_id, StringType(), False),
+        StructField(WholesaleResultColumnNames.calculation_type, StringType(), False),
+        StructField(WholesaleResultColumnNames.grid_area, StringType(), False),
+        StructField(WholesaleResultColumnNames.energy_supplier_id, StringType(), False),
+        StructField(WholesaleResultColumnNames.time, TimestampType(), False),
+        StructField(WholesaleResultColumnNames.resolution, StringType(), False),
+        StructField(WholesaleResultColumnNames.quantity_unit, StringType(), False),
+        StructField(WholesaleResultColumnNames.currency, StringType(), False),
+        StructField(WholesaleResultColumnNames.amount, DecimalType(18, 3), True),
+        StructField(WholesaleResultColumnNames.charge_type, StringType(), True),
+        StructField(WholesaleResultColumnNames.charge_code, StringType(), True),
+        StructField(WholesaleResultColumnNames.charge_owner_id, StringType(), True),
     ]
 )
