@@ -85,6 +85,9 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
         calculation.Should().NotBeNull();
 
         calculation!.ExecutionState.Should().Be(Clients.v3.CalculationState.Completed);
+
+        // TODO: Should be CalculationOrchestrationState.Completed when the EDI flow is implemented
+        calculation.OrchestrationState.Should().Be(Clients.v3.CalculationOrchestrationState.MessagesEnqueuing);
     }
 
     [ScenarioStep(4)]
@@ -127,6 +130,7 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
         Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1.Should().NotBeEmpty();
         Fixture.ScenarioState.ReceivedTotalMonthlyAmountResultProducedV1.Should().NotBeEmpty();
         Fixture.ScenarioState.ReceivedGridLossProducedV1.Should().NotBeEmpty();
+        // TODO: Assert CalculationCompletedV1 received?
     }
 
     [ScenarioStep(6)]

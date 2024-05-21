@@ -80,6 +80,9 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
         calculation.Should().NotBeNull();
 
         calculation!.ExecutionState.Should().Be(Clients.v3.CalculationState.Completed);
+
+        // TODO: Should be CalculationOrchestrationState.Completed when the EDI flow is implemented
+        calculation.OrchestrationState.Should().Be(Clients.v3.CalculationOrchestrationState.MessagesEnqueuing);
     }
 
     [ScenarioStep(4)]
@@ -126,6 +129,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
         // => Empty
         Fixture.ScenarioState.ReceivedAmountPerChargeResultProducedV1.Should().BeEmpty();
         Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1.Should().BeEmpty();
+        // TODO: Assert CalculationCompletedV1 received?
     }
 
     [ScenarioStep(6)]
