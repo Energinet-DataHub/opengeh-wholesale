@@ -20,7 +20,7 @@ from pyspark.sql.types import (
     DecimalType,
 )
 
-from package.constants import WholesaleResultColumnNames
+from package.constants import WholesaleResultColumnNames, Colname
 
 wholesale_results_v1_view_schema = StructType(
     [
@@ -31,7 +31,7 @@ wholesale_results_v1_view_schema = StructType(
         StructField(WholesaleResultColumnNames.time, TimestampType(), False),
         StructField(WholesaleResultColumnNames.resolution, StringType(), False),
         StructField(WholesaleResultColumnNames.quantity_unit, StringType(), False),
-        StructField(WholesaleResultColumnNames.currency, StringType(), False),
+        StructField(Colname.currency, StringType(), False),
         StructField(WholesaleResultColumnNames.amount, DecimalType(18, 3), True),
         StructField(WholesaleResultColumnNames.charge_type, StringType(), True),
         StructField(WholesaleResultColumnNames.charge_code, StringType(), True),
