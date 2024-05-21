@@ -11,7 +11,6 @@ module "st_source_maps" {
   access_tier                = "Hot"
   private_endpoint_subnet_id = data.azurerm_subnet.snet_private_endpoints.id
   ip_rules                   = local.ip_restrictions_as_string
-
   containers = [
     {
       name = "sourcemaps"
@@ -31,6 +30,12 @@ module "st_source_maps" {
       role_definition_name = "Storage Queue Data Reader"
     }
   ]
+  blob_storage_backup_policy = {
+    backup_policy_id          = module.backup_vault.blob_storage_backup_policy_id
+    backup_vault_id           = module.backup_vault.id
+    backup_vault_location     = azurerm_resource_group.this.location
+    backup_vault_principal_id = module.backup_vault.identity.0.principal_id
+  }
 }
 
 module "kvs_st_source_maps_name" {
