@@ -48,9 +48,6 @@ module "func_dropzoneunzipper" {
     "Logging__LogLevel__Default"                      = local.LOGGING_LOGLEVEL_WORKER_DEFAULT
     "Logging__LogLevel__Energinet.DataHub.Migrations" = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_MIGRATIONS
     "Logging__LogLevel__Energinet.DataHub.Core"       = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE
-
-    # Logging Host
-    "AzureFunctionsJobHost__Logging__LogLevel__Default" = local.LOGGING_LOGLEVEL_HOST_DEFAULT
   }
 
   # Role assigments is needed to connect to the storage accounts using URI
