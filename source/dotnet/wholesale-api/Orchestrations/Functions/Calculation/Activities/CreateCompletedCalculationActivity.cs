@@ -15,6 +15,7 @@
 using Energinet.DataHub.Wholesale.Calculations.Application;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
+using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
@@ -38,13 +39,13 @@ internal class CreateCompletedCalculationActivity(
     /// </summary>
     [Function(nameof(CreateCompletedCalculationActivity))]
     public async Task Run(
-        [ActivityTrigger] Guid calculationdId)
+        [ActivityTrigger] CreateCompletedCalculationInput input)
     {
-        var calculation = await _calculationRepository.GetAsync(calculationdId);
+        var calculation = await _calculationRepository.GetAsync(input.CalculationId);
         var calculationDto = _calculationDtoMapper.Map(calculation);
 
-        var completedCalculations = _completedCalculationFactory.CreateFromCalculations([calculationDto]);
-        await _completedCalculationRepository.AddAsync(completedCalculations);
+        var completedCalculation = _completedCalculationFactory.CreateFromCalculation(calculationDto, input.OrchestrationInstanceId);
+        await _completedCalculationRepository.AddAsync([completedCalculation]);
         await _eventsUnitOfWork.CommitAsync();
     }
 }

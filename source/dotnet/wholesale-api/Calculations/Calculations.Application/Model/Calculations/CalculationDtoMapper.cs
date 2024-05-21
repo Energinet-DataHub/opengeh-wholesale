@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 
@@ -34,7 +35,26 @@ public class CalculationDtoMapper : ICalculationDtoMapper
             MapGridAreaCodes(calculation.GridAreaCodes),
             calculation.CalculationType,
             calculation.CreatedByUserId,
-            calculation.Version);
+            calculation.Version,
+            MapOrchestrationState(calculation.ExecutionState));
+    }
+
+    private CalculationOrchestrationState MapOrchestrationState(CalculationExecutionState state)
+    {
+        return state switch
+        {
+            CalculationExecutionState.Created => CalculationOrchestrationState.Scheduled,
+            CalculationExecutionState.Submitted => CalculationOrchestrationState.Scheduled,
+            CalculationExecutionState.Pending => CalculationOrchestrationState.Scheduled,
+            CalculationExecutionState.Executing => CalculationOrchestrationState.Calculating,
+            CalculationExecutionState.Completed => CalculationOrchestrationState.Calculated,
+            CalculationExecutionState.Failed => CalculationOrchestrationState.CalculationFailed,
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(state),
+                actualValue: state,
+                "Value cannot be mapped to a CalculationOrchestrationState."),
+        };
     }
 
     private static Interfaces.Models.CalculationState MapState(CalculationExecutionState state)
