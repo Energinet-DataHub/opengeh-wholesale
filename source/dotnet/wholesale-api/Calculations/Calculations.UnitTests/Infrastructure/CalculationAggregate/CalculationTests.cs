@@ -229,7 +229,7 @@ public class CalculationTests
     }
 
     [Fact]
-    public void MarkAsCompleted_WhenComplete_ThrowsBusinessValidationException()
+    public void MarkAsCalculated_WhenComplete_ThrowsBusinessValidationException()
     {
         var sut = new CalculationBuilder().WithStateCompleted().Build();
         Assert.Throws<BusinessValidationException>(() => sut.MarkAsCalculated(It.IsAny<Instant>()));
@@ -289,7 +289,7 @@ public class CalculationTests
     }
 
     [Fact]
-    public void MarkAsCompleted_WhenExecuting_CompletesCalculation()
+    public void MarkAsCalculated_WhenExecuting_CompletesCalculation()
     {
         // Arrange
         var sut = new CalculationBuilder().WithStateExecuting().Build();
@@ -303,7 +303,7 @@ public class CalculationTests
     }
 
     [Fact]
-    public void MarkAsCompleted_SetsExecutionTimeEnd()
+    public void MarkAsCalculated_SetsExecutionTimeEnd()
     {
         // Arrange
         var sut = new CalculationBuilder().WithStateExecuting().Build();
@@ -317,7 +317,7 @@ public class CalculationTests
     }
 
     [Fact]
-    public void MarkAsCompleted_WhenExecutionTimeEndLessThanStart_ThrowsBusinessValidationException()
+    public void MarkAsCalculated_WhenExecutionTimeEndLessThanStart_ThrowsBusinessValidationException()
     {
         // Arrange
         var sut = new CalculationBuilder().WithStateExecuting().Build();
@@ -332,21 +332,21 @@ public class CalculationTests
     }
 
     [Fact]
-    public void MarkAsExecuting_WhenExecuting_ThrowsBusinessValidationException()
+    public void MarkAsCalculating_WhenExecuting_ThrowsBusinessValidationException()
     {
         var sut = new CalculationBuilder().WithStateExecuting().Build();
         Assert.Throws<BusinessValidationException>(() => sut.MarkAsCalculating());
     }
 
     [Fact]
-    public void MarkAsExecuting_WhenComplete_ThrowsBusinessValidationException()
+    public void MarkAsCalculating_WhenComplete_ThrowsBusinessValidationException()
     {
         var sut = new CalculationBuilder().WithStateCompleted().Build();
         Assert.Throws<BusinessValidationException>(() => sut.MarkAsCalculating());
     }
 
     [Fact]
-    public void MarkAsExecuting_WhenPending_ExecutesCalculation()
+    public void MarkAsCalculating_WhenPending_ExecutesCalculation()
     {
         var sut = new CalculationBuilder().WithStatePending().Build();
         sut.MarkAsCalculating();
@@ -354,7 +354,7 @@ public class CalculationTests
     }
 
     [Fact]
-    public void MarkAsExecuting_ExecutionTimeIsSetToNull()
+    public void MarkAsCalculating_ExecutionTimeIsSetToNull()
     {
         var sut = new CalculationBuilder().WithStatePending().Build();
         sut.MarkAsCalculating();
