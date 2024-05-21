@@ -104,6 +104,7 @@ public class IntegrationEventProviderTests
 
         // Assert
         completedCalculation.PublishedTime.Should().Be(instant);
+        completedCalculation.IsPublished.Should().BeTrue();
     }
 
     [Theory]
@@ -134,7 +135,7 @@ public class IntegrationEventProviderTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_WhenRetrievalOfEnergyResultEventsFails_ReturnsEventsUpUntilFailureAndSetsPublishedTimeOfCalculationToUnixEpoch(
+    public async Task GetAsync_WhenRetrievalOfEnergyResultEventsFails_ReturnsEventsUpUntilFailureAndPublishIsFailed(
         CompletedCalculation completedCalculation,
         IntegrationEvent[] anyIntegrationEvents,
         [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
@@ -156,7 +157,7 @@ public class IntegrationEventProviderTests
 
         // Assert
         using var assertionAcope = new AssertionScope();
-        completedCalculation.PublishedTime.Should().Be(NodaConstants.UnixEpoch);
+        completedCalculation.PublishFailed.Should().BeTrue();
         actualEvents.Should().HaveCount(anyIntegrationEvents.Length);
     }
 
@@ -196,7 +197,7 @@ public class IntegrationEventProviderTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_WhenCalculationCanContainWholesaleResultsAndRetrievalOfWholesaleResultEventsFails_ReturnsEventsUpUntilFailureAndSetsPublishedTimeOfCalculationToUnixEpoch(
+    public async Task GetAsync_WhenCalculationCanContainWholesaleResultsAndRetrievalOfWholesaleResultEventsFails_ReturnsEventsUpUntilFailureAndSetsPublishFailed(
         IntegrationEvent[] anyIntegrationEvents,
         [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
         [Frozen] Mock<IWholesaleResultEventProvider> wholesaleResultEventProviderMock,
@@ -226,7 +227,7 @@ public class IntegrationEventProviderTests
 
         // Assert
         using var assertionAcope = new AssertionScope();
-        completedCalculation.PublishedTime.Should().Be(NodaConstants.UnixEpoch);
+        completedCalculation.PublishFailed.Should().BeTrue();
         actualEvents.Should().HaveCount(anyIntegrationEvents.Length);
     }
 
