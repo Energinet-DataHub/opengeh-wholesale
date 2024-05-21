@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.charge_masterdata_periods
+CREATE TABLE IF NOT EXISTS {BASIS_DATA_DATABASE_NAME}.charge_price_information_periods
 (
     calculation_id STRING NOT NULL,
     charge_key STRING NOT NULL,
@@ -20,5 +20,5 @@ TBLPROPERTIES (
 )
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used.
 -- In the production it is set to empty and the respective location is used. This means the production tables won't be deleted if the schema is.
-{TEST}LOCATION '{CONTAINER_PATH}/{BASIS_DATA_FOLDER}/charge_masterdata_periods'
+{TEST}LOCATION '{CONTAINER_PATH}/{BASIS_DATA_FOLDER}/charge_price_information_periods'
 GO
