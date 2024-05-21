@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
 
 /// <summary>
 /// Options for the CalculationJob status monitor implemented as part of the
-/// <see cref="CalculationOrchestration.Calculation"/>.
+/// <see cref="CalculationOrchestration"/>.
 /// </summary>
 public class CalculationJobStatusMonitorOptions
 {

@@ -45,14 +45,14 @@ internal class CalculationTrigger
         [DurableClient] DurableTaskClient client,
         FunctionContext executionContext)
     {
-        var logger = executionContext.GetLogger<CalculationOrchestration>();
+        var logger = executionContext.GetLogger<CalculationTrigger>();
 
         var orchestrationInput = new CalculationOrchestrationInput(
             _jobStatusMonitorOptions,
             startCalculationRequestDto,
             _userContext.CurrentUser.UserId);
 
-        var instanceId = await client.ScheduleNewOrchestrationInstanceAsync(nameof(CalculationOrchestration.Calculation), orchestrationInput).ConfigureAwait(false);
+        var instanceId = await client.ScheduleNewOrchestrationInstanceAsync(nameof(CalculationOrchestration), orchestrationInput).ConfigureAwait(false);
         logger.LogInformation("Created new orchestration with instance ID = {instanceId}", instanceId);
 
         var orchestrationMetadata = await client.WaitForInstanceStartAsync(instanceId).ConfigureAwait(false);
