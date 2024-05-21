@@ -129,7 +129,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
         // => Empty
         Fixture.ScenarioState.ReceivedAmountPerChargeResultProducedV1.Should().BeEmpty();
         Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1.Should().BeEmpty();
-        // TODO: Assert CalculationCompletedV1 received?
+        // TODO: Assert CalculationCompletedV1 received
     }
 
     [ScenarioStep(6)]

@@ -130,7 +130,7 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
         Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1.Should().NotBeEmpty();
         Fixture.ScenarioState.ReceivedTotalMonthlyAmountResultProducedV1.Should().NotBeEmpty();
         Fixture.ScenarioState.ReceivedGridLossProducedV1.Should().NotBeEmpty();
-        // TODO: Assert CalculationCompletedV1 received?
+        // TODO: Assert CalculationCompletedV1 received
     }
 
     [ScenarioStep(6)]
