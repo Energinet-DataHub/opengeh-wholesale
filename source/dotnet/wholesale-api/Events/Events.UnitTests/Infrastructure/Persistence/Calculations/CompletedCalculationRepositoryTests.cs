@@ -95,8 +95,8 @@ public class CompletedCalculationRepositoryTests
         [Frozen] Mock<EventsDatabaseContext> databaseContextMock)
     {
         // Arrange
-        calculationCompletedFirst.PublishedTime = null;
-        calculationCompletedLast.PublishedTime = null;
+        calculationCompletedFirst.SetPrivateProperty(b => b.PublishedTime, null);
+        calculationCompletedLast.SetPrivateProperty(b => b.PublishedTime, null);
         calculationCompletedLast.SetPrivateProperty(b => b.CompletedTime, calculationCompletedFirst.CompletedTime.PlusSeconds(1));
 
         databaseContextMock

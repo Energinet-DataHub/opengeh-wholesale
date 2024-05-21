@@ -24,7 +24,7 @@ using NodaTime;
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
 
 #pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
-internal class UpdateCalculationExecutionStatusActivity(
+internal class UpdateCalculationStatusActivity(
     IClock clock,
     IUnitOfWork calculationUnitOfWork,
     ICalculationRepository calculationRepository)
@@ -36,7 +36,7 @@ internal class UpdateCalculationExecutionStatusActivity(
     /// <summary>
     /// Update calculation status record in SQL database.
     /// </summary>
-    [Function(nameof(UpdateCalculationExecutionStatusActivity))]
+    [Function(nameof(UpdateCalculationStatusActivity))]
     public async Task Run(
         [ActivityTrigger] CalculationMetadata calculationMetadata)
     {
@@ -46,6 +46,7 @@ internal class UpdateCalculationExecutionStatusActivity(
         {
             // Jobs may be cancelled in Databricks for various reasons. For example they can be cancelled due to migrations in CD
             // Setting calculation state back to "created" ensure they will be picked up and started again
+            // TODO: Is this still handled after moving to durable function?
             calculation.Reset();
         }
         else

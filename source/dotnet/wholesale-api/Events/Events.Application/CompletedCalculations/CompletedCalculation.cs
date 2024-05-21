@@ -42,7 +42,7 @@ public sealed class CompletedCalculation
     /// <summary>
     /// The time when integration events for the calculation were published.
     /// </summary>
-    public Instant? PublishedTime { get; set; }
+    public Instant? PublishedTime { get; private set; }
 
     public Guid Id { get; init; }
 
@@ -59,4 +59,19 @@ public sealed class CompletedCalculation
     public long Version { get; init; }
 
     public string? OrchestrationInstanceId { get; init; }
+
+    public void SetPublishFailed()
+    {
+        // Quick fix: We currently do not have any status field to mark failures, so instead we set this property to a constant.
+        PublishedTime = NodaConstants.UnixEpoch;
+    }
+
+    public void SetPublished(Instant publishedTime)
+    {
+        PublishedTime = publishedTime;
+    }
+
+    public bool PublishFailed => PublishedTime != null && PublishedTime == NodaConstants.UnixEpoch;
+
+    public bool IsPublished => PublishedTime != null && !PublishFailed;
 }
