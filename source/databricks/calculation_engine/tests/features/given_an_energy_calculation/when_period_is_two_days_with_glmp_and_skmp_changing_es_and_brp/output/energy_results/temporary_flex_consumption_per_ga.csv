@@ -107,10 +107,10 @@
 800;;;0.0;['missing'];2023-11-03 01:15;total_ga;temp_flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
 800;;;0.0;['missing'];2023-11-03 01:30;total_ga;temp_flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
 800;;;0.0;['missing'];2023-11-03 01:45;total_ga;temp_flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
-800;;;5.1;['measured'];2023-11-03 02:00;total_ga;temp_flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
-800;;;5.2;['measured'];2023-11-03 02:15;total_ga;temp_flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
-800;;;5.3;['measured'];2023-11-03 02:30;total_ga;temp_flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
-800;;;5.4;['measured'];2023-11-03 02:45;total_ga;temp_flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
+800;;;1.103;['measured'];2023-11-03 02:00;total_ga;temp_flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
+800;;;1.203;['measured'];2023-11-03 02:15;total_ga;temp_flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
+800;;;1.302;['measured'];2023-11-03 02:30;total_ga;temp_flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
+800;;;1.403;['measured'];2023-11-03 02:45;total_ga;temp_flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
 800;;;0.0;['missing'];2023-11-03 03:00;total_ga;temp_flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
 800;;;0.0;['missing'];2023-11-03 03:15;total_ga;temp_flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
 800;;;0.0;['missing'];2023-11-03 03:30;total_ga;temp_flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
