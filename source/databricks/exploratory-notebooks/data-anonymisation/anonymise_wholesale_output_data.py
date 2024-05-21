@@ -326,7 +326,7 @@ df_source_energy_results_table_anonymised = (
     .withColumn(metering_point_id_column_name, F.col(anonymised_metering_point_id_column_name))
     .drop(anonymised_metering_point_id_column_name)
     .join(df_anonymised_suppliers_and_balancers, [(df_anonymised_suppliers_and_balancers[tmp_balance_and_supplier_id_column_name]==df_source_energy_results_table.energy_supplier_id) | (df_anonymised_suppliers_and_balancers[tmp_balance_and_supplier_id_column_name]==df_source_energy_results_table.balance_responsible_id)], "left")
-    .withColumn(tmp_balance_and_supplier_id_column_name, F.col(anonymised_balance_or_supplier_id_column_name))
+    .withColumn(energy_supplier_id_column_name, F.col(anonymised_balance_or_supplier_id_column_name))
     .drop(anonymised_balance_or_supplier_id_column_name)
     .join(
         df_anonymised_suppliers_and_balancers.select(
@@ -429,12 +429,8 @@ assert (
 
 # COMMAND ----------
 
-display(df_source_energy_results_table_anonymised.filter("energy_supplier_id IS NOT NULL").orderBy("energy_supplier_id"))
-
-# COMMAND ----------
-
 # MAGIC %md
-# MAGIC # Step 5: Write the taable
+# MAGIC # Step 5: Write the table
 
 # COMMAND ----------
 
