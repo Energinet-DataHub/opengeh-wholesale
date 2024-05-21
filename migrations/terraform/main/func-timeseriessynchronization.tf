@@ -64,6 +64,7 @@ module "func_timeseriessynchronization" {
     "StorageAccount__Dh2TimeSeriesIntermediaryContainerName"               = azurerm_storage_container.timeseriesintermediary.name
     "ServiceBus__ConnectionString"                                         = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-transceiver-connection-string)"
     "ServiceBus__TimeSeriesMessagesQueueName"                              = azurerm_servicebus_queue.time_series_imported_messages_queue.name
+    "ServiceBus__TimeSeriesMessagesTopicName"                              = azurerm_servicebus_topic.time_series_imported_messages_topic.name
     "DataHub2Client__EndpointAddress"                                      = var.datahub2_migration_url,
     "FeatureManagement__DataHub2HealthCheck"                               = var.feature_flag_datahub2_healthcheck
     "FeatureManagement__DataHub2TimeSeriesImport"                          = var.feature_flag_datahub2_time_series_import
