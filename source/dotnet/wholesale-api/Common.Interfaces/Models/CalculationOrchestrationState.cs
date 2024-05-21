@@ -12,23 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
+namespace Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 /// <summary>
-/// An immutable calculation.
+/// Used to represent the state of a calculation orchestration.
 /// </summary>
-public sealed record CalculationDto(
-    long? RunId,
-    Guid CalculationId,
-    DateTimeOffset PeriodStart,
-    DateTimeOffset PeriodEnd,
-    string Resolution,
-    string Unit,
-    DateTimeOffset? ExecutionTimeStart,
-    DateTimeOffset? ExecutionTimeEnd,
-    CalculationState ExecutionState,
-    CalculationOrchestrationState OrchestrationState,
-    bool AreSettlementReportsCreated,
-    string[] GridAreaCodes,
-    CalculationType CalculationType,
-    Guid CreatedByUserId);
+public enum CalculationOrchestrationState
+{
+    Scheduled, // Planlagt
+    Calculating, // Beregner
+    Calculated, // Beregnet
+    CalculationFailed, // Beregning fejlet
+    MessagesEnqueuing, // Beskeder dannes
+    MessagesEnqueued, // Beskeder dannet
+    MessagesEnqueuingFailed, // Besked dannelse fejlet
+    Completed, // Orchestration færdig
+}

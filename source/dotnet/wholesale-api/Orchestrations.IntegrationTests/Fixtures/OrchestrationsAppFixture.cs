@@ -139,6 +139,8 @@ public class OrchestrationsAppFixture : IAsyncLifetime
     public async Task DisposeAsync()
     {
         AppHostManager.Dispose();
+        await ServiceBusListenerMock.DisposeAsync();
+        await ServiceBusResourceProvider.DisposeAsync();
         MockServer.Dispose();
         DurableTaskManager.Dispose();
         AzuriteManager.Dispose();
