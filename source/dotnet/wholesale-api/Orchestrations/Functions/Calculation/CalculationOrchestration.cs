@@ -105,7 +105,7 @@ internal class CalculationOrchestration
             return $"Error: Job status '{calculationMetadata.JobStatus}'.";
         }
 
-        // TODO: Could wait for an event to notiy us that messages are ready for customer in EDI
+        // TODO: Could wait for an event to notify us that messages are ready for customer in EDI
         return "Success";
     }
 }

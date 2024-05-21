@@ -13,8 +13,10 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Calculations.Application;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.CalculationState;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
 using NodaTime;
@@ -39,34 +41,57 @@ internal class UpdateCalculationExecutionStatusActivity(
         [ActivityTrigger] CalculationMetadata calculationMetadata)
     {
         var calculation = await _calculationRepository.GetAsync(calculationMetadata.Id);
-        var newExecutionState = CalculationStateMapper.MapState(calculationMetadata.JobStatus);
 
-        if (calculation.ExecutionState != newExecutionState)
+        if (calculationMetadata.JobStatus == CalculationState.Canceled)
         {
-            switch (newExecutionState)
-            {
-                case CalculationExecutionState.Pending:
-                    calculation.MarkAsPending();
-                    break;
-                case CalculationExecutionState.Executing:
-                    calculation.MarkAsCalculating();
-                    break;
-                case CalculationExecutionState.Completed:
-                    calculation.MarkAsCalculated(_clock.GetCurrentInstant());
-                    break;
-                case CalculationExecutionState.Failed:
-                    calculation.MarkAsCalculationFailed();
-                    break;
-                case CalculationExecutionState.Canceled:
-                    // Jobs may be cancelled in Databricks for various reasons. For example they can be cancelled due to migrations in CD
-                    // Setting calculation state back to "created" ensure they will be picked up and started again
-                    calculation.Reset();
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException($"Unexpected execution state: {newExecutionState}.");
-            }
+            // Jobs may be cancelled in Databricks for various reasons. For example they can be cancelled due to migrations in CD
+            // Setting calculation state back to "created" ensure they will be picked up and started again
+            calculation.Reset();
+        }
+        else
+        {
+            var newState = CalculationStateMapper.MapState(calculationMetadata.JobStatus);
 
-            await _calculationUnitOfWork.CommitAsync();
+            // If state wasn't changed, do nothing
+            if (calculation.OrchestrationState == newState)
+                return;
+
+            UpdateState(calculation, newState);
+        }
+
+        await _calculationUnitOfWork.CommitAsync();
+    }
+
+    private void UpdateState(Calculations.Application.Model.Calculations.Calculation calculation, CalculationOrchestrationState newState)
+    {
+        switch (newState)
+        {
+            case CalculationOrchestrationState.Scheduled:
+                calculation.MarkAsPending();
+                break;
+            case CalculationOrchestrationState.Calculating:
+                calculation.MarkAsCalculating();
+                break;
+            case CalculationOrchestrationState.Calculated:
+                calculation.MarkAsCalculated(_clock.GetCurrentInstant());
+                break;
+            case CalculationOrchestrationState.CalculationFailed:
+                calculation.MarkAsCalculationFailed();
+                break;
+            case CalculationOrchestrationState.MessagesEnqueuing:
+                calculation.MarkAsMessagesEnqueuing(_clock.GetCurrentInstant());
+                break;
+            case CalculationOrchestrationState.MessagesEnqueued:
+                calculation.MarkAsMessagesEnqueued(_clock.GetCurrentInstant());
+                break;
+            case CalculationOrchestrationState.MessagesEnqueuingFailed:
+                calculation.MarkAsMessagesEnqueuingFailed();
+                break;
+            case CalculationOrchestrationState.Completed:
+                calculation.MarkAsCompleted(_clock.GetCurrentInstant());
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(newState), newState, $"Unexpected orchestration state: {newState}.");
         }
     }
 }
