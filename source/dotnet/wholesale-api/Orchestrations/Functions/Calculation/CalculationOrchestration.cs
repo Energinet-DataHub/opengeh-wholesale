@@ -21,7 +21,6 @@ using Microsoft.DurableTask;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation;
 
-#pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
 internal class CalculationOrchestration
 {
     [Function(nameof(CalculationOrchestration))]
@@ -110,4 +109,3 @@ internal class CalculationOrchestration
         return "Success";
     }
 }
-#pragma warning restore CA2007 // Consider calling ConfigureAwait on the awaited task
