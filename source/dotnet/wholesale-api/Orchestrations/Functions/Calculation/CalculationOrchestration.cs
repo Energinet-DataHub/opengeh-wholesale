@@ -107,6 +107,7 @@ internal class CalculationOrchestration
         }
 
         // TODO: Wait for an event to notify us that messages are ready for customer in EDI, and update orchestration status
+        // TODO: Set calculation orchestration status to completed
         return "Success";
     }
 }
