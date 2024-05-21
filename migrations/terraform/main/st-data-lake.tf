@@ -62,8 +62,15 @@ resource "azurerm_eventgrid_system_topic_event_subscription" "st_migrations_bron
 
 #---- Containers
 
+# Remove "schema_migration" storage after transition to Unity Catalog, replaced by "intenal" container
 resource "azurerm_storage_container" "schema_migration" {
   name                  = "schema-migration"
+  storage_account_name  = module.st_migrations.name
+  container_access_type = "private"
+}
+
+resource "azurerm_storage_container" "internal" {
+  name                  = "internal"
   storage_account_name  = module.st_migrations.name
   container_access_type = "private"
 }
