@@ -15,27 +15,21 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Activities;
 
 public sealed class GenerateSettlementReportFileActivity
 {
     private readonly ISettlementReportFileRequestHandler _settlementReportFileRequestHandler;
-    private readonly ILogger<GenerateSettlementReportFileActivity> _logger;
 
-    public GenerateSettlementReportFileActivity(
-        ISettlementReportFileRequestHandler settlementReportFileRequestHandler,
-        ILogger<GenerateSettlementReportFileActivity> logger)
+    public GenerateSettlementReportFileActivity(ISettlementReportFileRequestHandler settlementReportFileRequestHandler)
     {
         _settlementReportFileRequestHandler = settlementReportFileRequestHandler;
-        _logger = logger;
     }
 
     [Function(nameof(GenerateSettlementReportFileActivity))]
     public Task<GeneratedSettlementReportFileDto> Run([ActivityTrigger] SettlementReportFileRequestDto fileRequest)
     {
-        _logger.LogError("DTO: " + fileRequest.SuggestedName + " and " + fileRequest.RequestId.Id + ".");
         return _settlementReportFileRequestHandler.RequestFileAsync(fileRequest);
     }
 }

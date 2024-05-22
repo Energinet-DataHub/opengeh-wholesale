@@ -57,6 +57,7 @@ public sealed class SettlementReportFileBlobStorage : ISettlementReportFileRepos
 
     private static string GetBlobName(SettlementReportRequestId reportRequestId, string fileName)
     {
-        return string.Join('/', "settlement-reports", reportRequestId.Id, fileName);
+        throw new Exception("Opening file: " + string.Join('/', "settlement-reports", reportRequestId.Id, fileName));
+        // return string.Join('/', "settlement-reports", reportRequestId.Id, fileName);
     }
 }
