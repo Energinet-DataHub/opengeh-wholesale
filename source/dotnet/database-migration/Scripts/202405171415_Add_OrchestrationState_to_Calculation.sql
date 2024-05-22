@@ -21,7 +21,7 @@ UPDATE calculations.Calculation -- Map from Failed to CalculationFailed
     SET [OrchestrationState] = 4
     WHERE [OrchestrationState] IS NULL AND [ExecutionState] = 3
 
-UPDATE calculations.Calculation -- Map from Canceled to CalculationFailed -- TODO: We do not have a new canceled state
+UPDATE calculations.Calculation -- Map from Canceled to CalculationFailed
     SET [OrchestrationState] = 4
     WHERE [OrchestrationState] IS NULL AND [ExecutionState] = 4
 GO
