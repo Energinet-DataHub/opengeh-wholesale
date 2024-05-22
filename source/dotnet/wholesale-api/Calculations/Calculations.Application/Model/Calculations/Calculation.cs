@@ -130,7 +130,7 @@ public class Calculation
 
     /// <summary>
     /// Get/set the orchestration state of the calculation.
-    ///     Throws a <see cref="BusinessValidationException"/> if the state transition is invalid.
+    /// Throws a <see cref="BusinessValidationException"/> if the state transition is invalid.
     /// </summary>
     public CalculationOrchestrationState OrchestrationState
     {
