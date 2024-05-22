@@ -20,7 +20,7 @@ public class EnergySupplierValidationRule : IValidationRule<DataHub.Edi.Requests
 {
     public Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.WholesaleServicesRequest subject)
     {
-        return EnergySupplierIsOnlyLowedToRequestOwnDataHelper.ValidateAsync(
+        return EnergySupplierIsOnlyAllowedToRequestOwnDataHelper.ValidateAsync(
             subject.RequestedForActorRole,
             subject.RequestedForActorNumber,
             subject.EnergySupplierId);

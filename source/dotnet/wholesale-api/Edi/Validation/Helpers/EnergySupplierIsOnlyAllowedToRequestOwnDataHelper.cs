@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.Edi.Contracts;
 
 namespace Energinet.DataHub.Wholesale.Edi.Validation.Helpers;
 
-public static class EnergySupplierIsOnlyLowedToRequestOwnDataHelper
+public static class EnergySupplierIsOnlyAllowedToRequestOwnDataHelper
 {
     private static readonly ValidationError _invalidEnergySupplierField = new("Feltet EnergySupplier skal være udfyldt med et valid GLN/EIC nummer når en elleverandør anmoder om data / EnergySupplier must be submitted with a valid GLN/EIC number when an energy supplier requests data", "E16");
     private static readonly ValidationError _notEqualToRequestedBy = new("Elleverandør i besked stemmer ikke overenes med elleverandør i header / Energy supplier in message does not correspond with energy supplier in header", "E16");
