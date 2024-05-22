@@ -18,6 +18,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementRepor
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.DependencyInjection;
@@ -36,6 +37,9 @@ public static class StorageExtensions
 
             var blobContainerUri = new Uri(blobSettings.StorageAccountUri + "/" + blobSettings.StorageContainerName);
             var blobContainerClient = new BlobContainerClient(blobContainerUri, new DefaultAzureCredential());
+
+            var debugger = serviceProvider.GetRequiredService<ILogger<SettlementReportFileBlobStorage>>();
+            debugger.LogError("TEST LOG: " + blobContainerClient.AccountName + " and " + blobContainerClient.Name + ".");
 
             return new SettlementReportFileBlobStorage(blobContainerClient);
         });
