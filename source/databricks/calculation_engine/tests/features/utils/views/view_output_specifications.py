@@ -62,7 +62,7 @@ def get_output_specifications() -> dict[str, tuple]:
         ),
         "charge_prices_v1.csv": (
             charge_prices_v1_view_schema,
-            SettlementReportViewReader.read_charge_link_periods_v1,
+            SettlementReportViewReader.read_charge_prices_v1,
             create_charge_prices_v1_view,
         ),
         "energy_results_v1.csv": (
