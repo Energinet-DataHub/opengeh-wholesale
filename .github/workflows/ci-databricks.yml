@@ -112,7 +112,7 @@ jobs:
               # Fail if the items datetime is equal the LATEST_SCRIPT_FILE_IN_MAIN_DATETIME
               if [[ $UNIQUE_SCRIPT_FILE_IN_PR_DATETIME == $LATEST_SCRIPT_FILE_IN_MAIN_DATETIME ]]; then
                 echo "New migration script file: ${item} can not be the same time as the latest migration script"
-                # exit 1
+                exit 1
               fi
               # Fail if the items datetime is greater than the CURRENT_DATETIME
               if [[ $UNIQUE_SCRIPT_FILE_IN_PR_DATETIME > $CURRENT_DATETIME ]]; then
