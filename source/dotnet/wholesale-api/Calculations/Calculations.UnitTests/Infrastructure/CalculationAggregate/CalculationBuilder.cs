@@ -130,25 +130,25 @@ public class CalculationBuilder
         else if (_state == CalculationExecutionState.Pending)
         {
             calculation.MarkAsSubmitted(jobRunId);
-            calculation.MarkAsPending();
+            calculation.MarkAsScheduled();
         }
         else if (_state == CalculationExecutionState.Executing)
         {
             calculation.MarkAsSubmitted(jobRunId);
-            calculation.MarkAsPending();
+            calculation.MarkAsScheduled();
             calculation.MarkAsCalculating();
         }
         else if (_state == CalculationExecutionState.Completed)
         {
             calculation.MarkAsSubmitted(jobRunId);
-            calculation.MarkAsPending();
+            calculation.MarkAsScheduled();
             calculation.MarkAsCalculating();
             calculation.MarkAsCalculated(SystemClock.Instance.GetCurrentInstant());
         }
         else if (_state == CalculationExecutionState.Failed)
         {
             calculation.MarkAsSubmitted(jobRunId);
-            calculation.MarkAsPending();
+            calculation.MarkAsScheduled();
             calculation.MarkAsCalculating();
             calculation.MarkAsCalculationFailed();
         }

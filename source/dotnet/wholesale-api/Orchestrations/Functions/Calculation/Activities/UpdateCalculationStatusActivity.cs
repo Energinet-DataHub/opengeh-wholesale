@@ -68,7 +68,7 @@ internal class UpdateCalculationStatusActivity(
         switch (newState)
         {
             case CalculationOrchestrationState.Scheduled:
-                calculation.MarkAsPending();
+                calculation.MarkAsScheduled();
                 break;
             case CalculationOrchestrationState.Calculating:
                 calculation.MarkAsCalculating();

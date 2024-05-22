@@ -137,6 +137,9 @@ public class Calculation
         get => _orchestrationState;
         private set
         {
+            if (value == _orchestrationState)
+                return;
+
             if (!ValidOrchestrationStateTransitions(_orchestrationState).Contains(value))
                 ThrowInvalidStateTransitionException(_orchestrationState, value);
             _orchestrationState = value;
@@ -237,7 +240,7 @@ public class Calculation
         OrchestrationState = CalculationOrchestrationState.Scheduled;
     }
 
-    public void MarkAsPending()
+    public void MarkAsScheduled()
     {
         if (ExecutionState is CalculationExecutionState.Pending or CalculationExecutionState.Executing or CalculationExecutionState.Completed or CalculationExecutionState.Failed)
             ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Pending);

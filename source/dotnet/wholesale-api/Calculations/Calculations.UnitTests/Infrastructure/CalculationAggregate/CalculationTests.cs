@@ -430,22 +430,22 @@ public class CalculationTests
                 break;
             case CalculationExecutionState.Pending:
                 sut.MarkAsSubmitted(calculationJobId);
-                sut.MarkAsPending();
+                sut.MarkAsScheduled();
                 break;
             case CalculationExecutionState.Executing:
                 sut.MarkAsSubmitted(calculationJobId);
-                sut.MarkAsPending();
+                sut.MarkAsScheduled();
                 sut.MarkAsCalculating();
                 break;
             case CalculationExecutionState.Completed:
                 sut.MarkAsSubmitted(calculationJobId);
-                sut.MarkAsPending();
+                sut.MarkAsScheduled();
                 sut.MarkAsCalculating();
                 sut.MarkAsCalculated(sut.ExecutionTimeStart!.Value.Plus(Duration.FromMinutes(15)));
                 break;
             case CalculationExecutionState.Failed:
                 sut.MarkAsSubmitted(calculationJobId);
-                sut.MarkAsPending();
+                sut.MarkAsScheduled();
                 sut.MarkAsCalculating();
                 sut.MarkAsCalculationFailed();
                 break;

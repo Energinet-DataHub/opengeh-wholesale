@@ -85,7 +85,7 @@ public class CalculationStateInfrastructureService : ICalculationStateInfrastruc
         switch (state)
         {
             case CalculationOrchestrationState.Scheduled:
-                calculation.MarkAsPending();
+                calculation.MarkAsScheduled();
                 break;
             case CalculationOrchestrationState.Calculating:
                 calculation.MarkAsCalculating();
