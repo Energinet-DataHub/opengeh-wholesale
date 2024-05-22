@@ -17,6 +17,7 @@ from pyspark.sql.types import (
     TimestampType,
     DecimalType,
     IntegerType,
+    BooleanType,
 )
 
 from features.utils.dataframes.basis_data.calculations_dataframe import (
@@ -147,6 +148,10 @@ def create_charge_master_data_periods(spark: SparkSession, df: DataFrame) -> Dat
     df = df.withColumn(
         ChargeMasterDataPeriodsColname.to_date,
         col(ChargeMasterDataPeriodsColname.to_date).cast(TimestampType()),
+    )
+    df = df.withColumn(
+        ChargeMasterDataPeriodsColname.is_tax,
+        col(ChargeMasterDataPeriodsColname.is_tax).cast(BooleanType()),
     )
 
     return spark.createDataFrame(df.rdd, charge_master_data_periods_schema)
