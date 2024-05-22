@@ -35,7 +35,7 @@ public class EnergySupplierValidatorTest
     private readonly EnergySupplierValidationRule _sut = new();
 
     [Fact]
-    public async Task Validate_WhenEnergySupplierAndEnergySupplierIsValidGlnNumber_ReturnsNoValidationErrors()
+    public async Task Validate_WhenEnergySupplierWithValidGlnNumber_ReturnsNoValidationErrors()
     {
         // Arrange
         var message = new WholesaleServicesRequestBuilder()
