@@ -15,6 +15,7 @@
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.CalculationState;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
 using Xunit;
 
@@ -23,26 +24,24 @@ namespace Energinet.DataHub.Wholesale.Calculations.UnitTests.Infrastructure.Calc
 public class CalculationStateMapperTests
 {
     [Theory]
-    [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Pending, CalculationExecutionState.Pending)]
-    [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Running, CalculationExecutionState.Executing)]
-    [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Completed, CalculationExecutionState.Completed)]
-    [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Canceled, CalculationExecutionState.Canceled)]
-    [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Failed, CalculationExecutionState.Failed)]
-    public void MapState_CalledWithACalculationStateItCanMap_ExpectedCalculationExecutionState(Wholesale.Calculations.Application.Model.CalculationState calculationState, CalculationExecutionState expectedCalculationExecutionState)
+    [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Pending, CalculationOrchestrationState.Scheduled)]
+    [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Running, CalculationOrchestrationState.Calculating)]
+    [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Completed, CalculationOrchestrationState.Calculated)]
+    [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Failed, CalculationOrchestrationState.CalculationFailed)]
+    public void MapState_CalledWithACalculationStateItCanMap_ExpectedCalculationOrchestrationState(Wholesale.Calculations.Application.Model.CalculationState calculationState, CalculationOrchestrationState expectedCalculationOrchestrationState)
     {
         // Act
         var actualCalculationExecutionState = CalculationStateMapper.MapState(calculationState);
 
         // Assert
-        actualCalculationExecutionState.Should().Be(expectedCalculationExecutionState);
+        actualCalculationExecutionState.Should().Be(expectedCalculationOrchestrationState);
     }
 
-    [Fact]
-    public void MapState_CalledWithAUnexpectedCalculationStateItCanNotMap_ThrowsArgumentOutOfRangeException()
+    [Theory]
+    [InlineAutoMoqData(Wholesale.Calculations.Application.Model.CalculationState.Canceled)]
+    [InlineAutoMoqData((Wholesale.Calculations.Application.Model.CalculationState)99)]
+    public void MapState_CalledWithAUnexpectedCalculationStateItCanNotMap_ThrowsArgumentOutOfRangeException(Wholesale.Calculations.Application.Model.CalculationState unexpectedCalculationState)
     {
-        // Arrange
-        const Wholesale.Calculations.Application.Model.CalculationState unexpectedCalculationState = (Wholesale.Calculations.Application.Model.CalculationState)99;
-
         // Act
         var act = () => CalculationStateMapper.MapState(unexpectedCalculationState);
 

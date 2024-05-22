@@ -65,8 +65,8 @@ def create_metering_point_time_series_v1_view(
     )
 
     df = df.withColumn(
-        "start_date_time",
-        col("start_date_time").cast(TimestampType()),
+        Colname.start_date_time,
+        col(Colname.start_date_time).cast(TimestampType()),
     )
 
     df = df.withColumn(
@@ -152,9 +152,9 @@ def create_energy_results_v1_view(spark: SparkSession, df: DataFrame) -> DataFra
     )
 
     df = df.withColumn(
-        EnergyResultsV1ColumnNames.time,
+        Colname.start_date_time,
         col(
-            EnergyResultsV1ColumnNames.time,
+            Colname.start_date_time,
         ).cast(TimestampType()),
     )
     return spark.createDataFrame(df.rdd, energy_results_v1_view_schema)

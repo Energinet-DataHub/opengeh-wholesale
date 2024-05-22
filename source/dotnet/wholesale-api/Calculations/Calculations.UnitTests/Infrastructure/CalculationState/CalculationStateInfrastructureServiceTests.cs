@@ -27,14 +27,14 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Calculations.UnitTests.Infrastructure.CalculationState;
 
-public class CalculationExecutionStateInfrastructureServiceTests
+public class CalculationStateInfrastructureServiceTests
 {
     [Theory]
     [InlineAutoMoqData]
     public async Task UpdateExecutionState_WhenJobStateIsRunning_UpdateCalculationToExecuting(
         [Frozen] Mock<ICalculationRepository> calculationRepositoryMock,
         [Frozen] Mock<ICalculationInfrastructureService> calculatorJobRunnerMock,
-        CalculationExecutionStateInfrastructureService sut)
+        CalculationStateInfrastructureService sut)
     {
         // Arrange
         var calculation = new CalculationBuilder().WithStatePending().Build();
@@ -44,7 +44,7 @@ public class CalculationExecutionStateInfrastructureServiceTests
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(calculation.CalculationJobId!)).ReturnsAsync(Wholesale.Calculations.Application.Model.CalculationState.Running);
 
         // Act
-        await sut.UpdateExecutionStateAsync();
+        await sut.UpdateStateAsync();
 
         // Assert
         calculation.ExecutionState.Should().Be(CalculationExecutionState.Executing);
@@ -56,7 +56,7 @@ public class CalculationExecutionStateInfrastructureServiceTests
         [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<ICalculationRepository> calculationRepositoryMock,
         [Frozen] Mock<ICalculationInfrastructureService> calculatorJobRunnerMock,
-        CalculationExecutionStateInfrastructureService sut)
+        CalculationStateInfrastructureService sut)
     {
         // Arrange
         var calculation = new CalculationBuilder().WithStateExecuting().Build();
@@ -68,7 +68,7 @@ public class CalculationExecutionStateInfrastructureServiceTests
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(calculation.CalculationJobId!)).ReturnsAsync(Wholesale.Calculations.Application.Model.CalculationState.Completed);
 
         // Act
-        await sut.UpdateExecutionStateAsync();
+        await sut.UpdateStateAsync();
 
         // Assert
         calculation.ExecutionState.Should().Be(CalculationExecutionState.Completed);
@@ -83,7 +83,7 @@ public class CalculationExecutionStateInfrastructureServiceTests
     public async Task UpdateExecutionState_WhenJobStateIsCancelled_UpdateCalculationToCreated(
         [Frozen] Mock<ICalculationRepository> calculationRepositoryMock,
         [Frozen] Mock<ICalculationInfrastructureService> calculatorJobRunnerMock,
-        CalculationExecutionStateInfrastructureService sut)
+        CalculationStateInfrastructureService sut)
     {
         // Arrange
         var calculation = new CalculationBuilder().WithStateExecuting().Build();
@@ -93,7 +93,7 @@ public class CalculationExecutionStateInfrastructureServiceTests
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(calculation.CalculationJobId!)).ReturnsAsync(Wholesale.Calculations.Application.Model.CalculationState.Canceled);
 
         // Act
-        await sut.UpdateExecutionStateAsync();
+        await sut.UpdateStateAsync();
 
         // Assert
         calculation.ExecutionState.Should().Be(CalculationExecutionState.Created);
@@ -105,7 +105,7 @@ public class CalculationExecutionStateInfrastructureServiceTests
         [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<ICalculationRepository> calculationRepositoryMock,
         [Frozen] Mock<ICalculationInfrastructureService> calculatorJobRunnerMock,
-        CalculationExecutionStateInfrastructureService sut)
+        CalculationStateInfrastructureService sut)
     {
         // Arrange
         var calculation1 = new CalculationBuilder().WithStatePending().Build();
@@ -122,7 +122,7 @@ public class CalculationExecutionStateInfrastructureServiceTests
             .ReturnsAsync(Wholesale.Calculations.Application.Model.CalculationState.Completed);
 
         // Act
-        await sut.UpdateExecutionStateAsync();
+        await sut.UpdateStateAsync();
 
         // Assert
         calculation2.ExecutionState.Should().Be(CalculationExecutionState.Completed);
@@ -135,7 +135,7 @@ public class CalculationExecutionStateInfrastructureServiceTests
         [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<ICalculationRepository> calculationRepositoryMock,
         [Frozen] Mock<ICalculationInfrastructureService> calculatorJobRunnerMock,
-        CalculationExecutionStateInfrastructureService sut)
+        CalculationStateInfrastructureService sut)
     {
         // Arrange
         var calculation1 = new CalculationBuilder().WithStatePending().Build();
@@ -149,7 +149,7 @@ public class CalculationExecutionStateInfrastructureServiceTests
             .ReturnsAsync(Wholesale.Calculations.Application.Model.CalculationState.Completed);
 
         // Act
-        await sut.UpdateExecutionStateAsync();
+        await sut.UpdateStateAsync();
 
         // Assert
         calculation2.ExecutionState.Should().Be(CalculationExecutionState.Completed);
@@ -161,7 +161,7 @@ public class CalculationExecutionStateInfrastructureServiceTests
         [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<ICalculationRepository> calculationRepositoryMock,
         [Frozen] Mock<ICalculationInfrastructureService> calculatorJobRunnerMock,
-        CalculationExecutionStateInfrastructureService sut)
+        CalculationStateInfrastructureService sut)
     {
         // Arrange
         var calculation1 = new CalculationBuilder().WithStateSubmitted().Build();
@@ -180,7 +180,7 @@ public class CalculationExecutionStateInfrastructureServiceTests
             .ReturnsAsync(Wholesale.Calculations.Application.Model.CalculationState.Completed);
 
         // Act
-        await sut.UpdateExecutionStateAsync();
+        await sut.UpdateStateAsync();
 
         // Assert: Events was published for calculation1 and calculation3, but not for calculation2
         calculation1.ExecutionState.Should().Be(CalculationExecutionState.Completed);
@@ -191,11 +191,11 @@ public class CalculationExecutionStateInfrastructureServiceTests
     [Theory]
     [InlineAutoMoqData]
     public async Task UpdateExecutionState_When_JobRunnerThrowsException_LogsExpectedErrorMessage(
-        [Frozen] Mock<ILogger<CalculationExecutionStateInfrastructureService>> loggerMock,
+        [Frozen] Mock<ILogger<CalculationStateInfrastructureService>> loggerMock,
         [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<ICalculationRepository> calculationRepositoryMock,
         [Frozen] Mock<ICalculationInfrastructureService> calculatorJobRunnerMock,
-        CalculationExecutionStateInfrastructureService sut)
+        CalculationStateInfrastructureService sut)
     {
         // Arrange
         const string expectedLogMessage = $"Exception caught while trying to update execution state for run ID {LoggingConstants.CalculationId}";
@@ -208,7 +208,7 @@ public class CalculationExecutionStateInfrastructureServiceTests
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(It.IsAny<CalculationJobId>())).ThrowsAsync(default!);
 
         // Act
-        await sut.UpdateExecutionStateAsync();
+        await sut.UpdateStateAsync();
 
         // Assert
         loggerMock.ShouldBeCalledWith(LogLevel.Error, expectedLogMessage);
