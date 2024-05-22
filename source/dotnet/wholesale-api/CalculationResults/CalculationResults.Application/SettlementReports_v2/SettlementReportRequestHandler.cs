@@ -20,11 +20,11 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementR
 
 public sealed class SettlementReportRequestHandler : ISettlementReportRequestHandler
 {
-    public Task<IEnumerable<SettlementReportFileRequestDto>> RequestReportAsync(
+    public Task<SettlementReportFileRequestDto[]> RequestReportAsync(
         SettlementReportRequestId requestId,
         SettlementReportRequestDto reportRequest)
     {
-        IEnumerable<SettlementReportFileRequestDto> filesToRequest;
+        SettlementReportFileRequestDto[] filesToRequest;
 
         switch (reportRequest.CalculationType)
         {
@@ -40,13 +40,13 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
         return Task.FromResult(filesToRequest);
     }
 
-    private static IEnumerable<SettlementReportFileRequestDto> RequestFilesForAggregatedEnergyResults(
+    private static SettlementReportFileRequestDto[] RequestFilesForAggregatedEnergyResults(
         SettlementReportRequestId requestId,
         SettlementReportRequestDto reportRequest)
     {
         var filesToGenerate = new List<SettlementReportFileRequestDto>();
 
-        if (reportRequest is { SplitReportPerGridArea: true, Filter.GridAreas.Count: > 1 })
+        if (reportRequest is { SplitReportPerGridArea: true, Filter.GridAreas.Length: > 1 })
         {
             foreach (var filterGridArea in reportRequest.Filter.GridAreas)
             {
@@ -66,6 +66,6 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                 reportRequest.Filter));
         }
 
-        return filesToGenerate;
+        return filesToGenerate.ToArray();
     }
 }
