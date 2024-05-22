@@ -14,12 +14,11 @@
 
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
 using Energinet.DataHub.Wholesale.Edi.Contracts;
-using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.Validation.Helpers;
 
-namespace Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
+namespace Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules;
 
-public class GridAreaValidationRule : IValidationRule<DataHub.Edi.Requests.AggregatedTimeSeriesRequest>
+public class GridAreaValidationRule : IValidationRule<DataHub.Edi.Requests.WholesaleServicesRequest>
 {
     private readonly IGridAreaOwnerRepository _gridAreaOwnerRepository;
     private static readonly ValidationError _missingGridAreaCode = new("Netområde er obligatorisk for rollen MDR / Grid area is mandatory for the role MDR.", "D64");
@@ -30,9 +29,9 @@ public class GridAreaValidationRule : IValidationRule<DataHub.Edi.Requests.Aggre
         _gridAreaOwnerRepository = gridAreaOwnerRepository;
     }
 
-    public async Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.AggregatedTimeSeriesRequest subject)
+    public async Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.WholesaleServicesRequest subject)
     {
-        if (subject.RequestedForActorRole != DataHubNames.ActorRole.MeteredDataResponsible) return NoError;
+        if (subject.RequestedForActorRole != DataHubNames.ActorRole.GridOperator) return NoError;
 
         if (subject.GridAreaCodes.Count == 0)
             return MissingGridAreaCodeError;

@@ -19,14 +19,14 @@ using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
 using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.Validation;
-using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
+using Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Moq;
 using NodaTime;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.AggregatedTimeSeriesRequest;
+namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.WholesaleServicesRequest;
 
 [SuppressMessage("Style", "VSTHRD200:Use \"Async\" suffix for async methods", Justification = "Async suffix is not needed for test methods")]
 public class GridAreaValidatorTest
@@ -52,10 +52,9 @@ public class GridAreaValidatorTest
                 Instant.MinValue,
                 0));
 
-        var message = AggregatedTimeSeriesRequestBuilder
-            .AggregatedTimeSeriesRequest()
+        var message = new WholesaleServicesRequestBuilder()
             .WithRequestedByActorId(ValidGlnNumber)
-            .WithRequestedByActorRole(DataHubNames.ActorRole.MeteredDataResponsible)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.GridOperator)
             .WithGridArea(gridAreaCode)
             .Build();
 
@@ -84,10 +83,9 @@ public class GridAreaValidatorTest
                 Instant.MinValue,
                 0));
 
-        var message = AggregatedTimeSeriesRequestBuilder
-            .AggregatedTimeSeriesRequest()
+        var message = new WholesaleServicesRequestBuilder()
             .WithRequestedByActorId(ValidGlnNumber)
-            .WithRequestedByActorRole(DataHubNames.ActorRole.MeteredDataResponsible)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.GridOperator)
             .WithGridArea(gridAreaCode)
             .Build();
 
@@ -109,11 +107,10 @@ public class GridAreaValidatorTest
         GridAreaValidationRule sut)
     {
         // Arrange
-        var message = AggregatedTimeSeriesRequestBuilder
-            .AggregatedTimeSeriesRequest()
+        var message = new WholesaleServicesRequestBuilder()
             .WithRequestedByActorId(ValidGlnNumber)
-            .WithRequestedByActorRole(DataHubNames.ActorRole.MeteredDataResponsible)
-            .WithGridArea(null)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.GridOperator)
+            .WithGridArea(null!)
             .Build();
 
         // Act
@@ -140,10 +137,9 @@ public class GridAreaValidatorTest
         gridAreaOwnerRepository.Setup(repo => repo.GetCurrentOwnerAsync(notExistingGridAreaCode, It.IsAny<CancellationToken>()))
             .Returns(Task.FromResult<GridAreaOwner?>(null));
 
-        var message = AggregatedTimeSeriesRequestBuilder
-            .AggregatedTimeSeriesRequest()
+        var message = new WholesaleServicesRequestBuilder()
             .WithRequestedByActorId(ValidGlnNumber)
-            .WithRequestedByActorRole(DataHubNames.ActorRole.MeteredDataResponsible)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.GridOperator)
             .WithGridArea(notExistingGridAreaCode)
             .Build();
 
