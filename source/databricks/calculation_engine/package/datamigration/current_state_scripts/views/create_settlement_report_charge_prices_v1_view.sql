@@ -8,7 +8,7 @@ SELECT
   FIRST_VALUE(cm.resolution) as resolution,
   FIRST_VALUE(cm.is_tax) as is_tax,
   TO_UTC_TIMESTAMP(DATE_TRUNC('day', FROM_UTC_TIMESTAMP(cp.charge_time, 'Europe/Copenhagen')),'Europe/Copenhagen') AS start_date_time,
-  ARRAY_SORT(ARRAY_AGG(struct(cp.charge_time, cp.charge_price))) AS prices,
+  ARRAY_SORT(ARRAY_AGG(struct(cp.charge_time, cp.charge_price))) AS price_points,
   es_ga.grid_area_code,
   es_ga.energy_supplier_id
 FROM {BASIS_DATA_DATABASE_NAME}.charge_masterdata_periods as cm
