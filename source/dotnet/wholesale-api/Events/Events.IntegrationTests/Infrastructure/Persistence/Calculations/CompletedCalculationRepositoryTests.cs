@@ -75,21 +75,22 @@ public class CompletedCalculationRepositoryTests : IClassFixture<WholesaleDataba
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task AddAsync_WhenPublishFailed_AddsCompletedCalculationWithFailedPublishTime(CompletedCalculation expectedCalculation)
+    public async Task GetAsync_RetrievesCompletedCalculationWithExpectedData(CompletedCalculation expectedCalculation)
     {
         // Arrange
-        await using var writeContext = _databaseManager.CreateDbContext();
-        var sut = new CompletedCalculationRepository(writeContext);
-        expectedCalculation.SetPublishFailed();
+        await using (var writeContext = _databaseManager.CreateDbContext())
+        {
+            writeContext.CompletedCalculations.Add(expectedCalculation);
+            await writeContext.SaveChangesAsync();
+        }
+
+        await using var readContext = _databaseManager.CreateDbContext();
+        var sut = new CompletedCalculationRepository(readContext);
 
         // Act
-        await sut.AddAsync(new[] { expectedCalculation });
-        await writeContext.SaveChangesAsync();
+        var actual = await sut.GetAsync(expectedCalculation.Id);
 
         // Assert
-        await using var readContext = _databaseManager.CreateDbContext();
-        var actual = await readContext.CompletedCalculations.SingleAsync(b => b.Id == expectedCalculation.Id);
-
-        actual.PublishedTime.Should().Be(NodaConstants.UnixEpoch);
+        actual.Should().BeEquivalentTo(expectedCalculation);
     }
 }
