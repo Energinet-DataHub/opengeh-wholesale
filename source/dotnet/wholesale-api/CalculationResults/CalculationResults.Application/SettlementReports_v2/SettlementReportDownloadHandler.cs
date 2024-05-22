@@ -30,13 +30,13 @@ public sealed class SettlementReportDownloadHandler : ISettlementReportDownloadH
         _repository = repository;
     }
 
-    public async Task DownloadReportAsync(SettlementReportRequestId requestId, Stream downloadStream, Guid userId, Guid actorId)
+    public async Task DownloadReportAsync(SettlementReportRequestId requestId, Stream downloadStream, Guid userId, Guid actorId, bool isMultitenancy)
     {
         var report = await _repository
             .GetAsync(requestId.Id)
             .ConfigureAwait(false) ?? throw new InvalidOperationException("Report not found.");
 
-        if (report.UserId != userId || report.ActorId != actorId)
+        if (!isMultitenancy && (report.UserId != userId || report.ActorId != actorId))
             throw new InvalidOperationException("User does not have access to the report.");
 
         if (string.IsNullOrEmpty(report.BlobFileName))

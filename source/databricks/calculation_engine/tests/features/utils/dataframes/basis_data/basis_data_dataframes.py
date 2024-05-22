@@ -16,6 +16,7 @@ from pyspark.sql.functions import col
 from pyspark.sql.types import (
     TimestampType,
     DecimalType,
+    IntegerType,
 )
 
 from features.utils.dataframes.basis_data.calculations_dataframe import (
@@ -27,6 +28,7 @@ from features.utils.dataframes.basis_data.grid_loss_metering_points import (
 
 BASIS_DATA_METERING_POINT_PERIODS_CSV = "metering_point_periods"
 BASIS_DATA_TIME_SERIES_POINTS_CSV = "time_series_points"
+BASIS_DATA_CHARGE_LINK_PERIODS_CSV = "charge_link_periods"
 BASIS_DATA_CALCULATIONS_CSV = "calculations"
 BASIS_GRID_LOSS_METERING_POINTS = "grid_loss_metering_points"
 
@@ -43,6 +45,8 @@ def create_basis_data_result_dataframe(
         return create_calculations_dataframe(spark, df)
     if filename == BASIS_GRID_LOSS_METERING_POINTS:
         return create_grid_loss_metering_points_dataframe(spark, df)
+    if filename == BASIS_DATA_CHARGE_LINK_PERIODS_CSV:
+        return create_charge_link_periods(spark, df)
 
     raise Exception(f"Unknown expected basis data file {filename}.")
 
@@ -83,3 +87,26 @@ def create_metering_point_periods(spark: SparkSession, df: DataFrame) -> DataFra
     )
 
     return spark.createDataFrame(df.rdd, metering_point_period_schema)
+
+
+def create_charge_link_periods(spark: SparkSession, df: DataFrame) -> DataFrame:
+
+    # Don't remove. Believed needed because this function is an argument to the setup function
+    # and therefore the following packages are not automatically included.
+    from package.calculation.basis_data.schemas import charge_link_periods_schema
+    from package.constants import ChargeLinkPeriodsColname
+
+    df = df.withColumn(
+        ChargeLinkPeriodsColname.quantity,
+        col(ChargeLinkPeriodsColname.quantity).cast(IntegerType()),
+    )
+    df = df.withColumn(
+        ChargeLinkPeriodsColname.from_date,
+        col(ChargeLinkPeriodsColname.from_date).cast(TimestampType()),
+    )
+    df = df.withColumn(
+        ChargeLinkPeriodsColname.to_date,
+        col(ChargeLinkPeriodsColname.to_date).cast(TimestampType()),
+    )
+
+    return spark.createDataFrame(df.rdd, charge_link_periods_schema)

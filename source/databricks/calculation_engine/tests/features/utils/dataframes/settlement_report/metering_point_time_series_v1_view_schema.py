@@ -20,9 +20,6 @@ from pyspark.sql.types import (
     DecimalType,
 )
 
-from features.utils.dataframes.settlement_report.settlement_report_view_column_names import (
-    MeteringPointTimeSeriesV1ColumnNames,
-)
 from package.constants import TimeSeriesColname, MeteringPointPeriodColname
 
 element = StructType(
@@ -45,12 +42,12 @@ metering_point_time_series_v1_view_schema = StructType(
         StructField(MeteringPointPeriodColname.grid_area, StringType(), False),
         StructField(MeteringPointPeriodColname.energy_supplier_id, StringType(), True),
         StructField(
-            MeteringPointTimeSeriesV1ColumnNames.start_date_time,
+            "start_date_time",
             TimestampType(),
             False,
         ),
         StructField(
-            MeteringPointTimeSeriesV1ColumnNames.quantities,
+            "quantities",
             ArrayType(element, False),
             False,
         ),
