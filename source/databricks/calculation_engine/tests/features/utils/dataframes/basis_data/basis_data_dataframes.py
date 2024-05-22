@@ -49,7 +49,7 @@ def create_basis_data_result_dataframe(
     if filename == BASIS_DATA_CHARGE_LINK_PERIODS_CSV:
         return create_charge_link_periods(spark, df)
     if filename == BASIS_DATA_CHARGE_PRICES_CSV:
-        return create_charge_prices(spark, df)
+        return create_charge_price_points(spark, df)
 
     raise Exception(f"Unknown expected basis data file {filename}.")
 

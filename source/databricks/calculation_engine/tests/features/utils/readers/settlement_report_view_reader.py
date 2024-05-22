@@ -43,13 +43,13 @@ class SettlementReportViewReader:
         )
 
     @staticmethod
-    def read_charge_prices_v1(spark: SparkSession) -> DataFrame:
+    def read_charge_link_periods_v1(spark: SparkSession) -> DataFrame:
         return spark.read.format("delta").table(
             f"{SETTLEMENT_REPORT_DATABASE_NAME}.{CHARGE_LINK_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1}"
         )
 
     @staticmethod
-    def read_charge_link_periods_v1(spark: SparkSession) -> DataFrame:
+    def read_charge_prices_v1(spark: SparkSession) -> DataFrame:
         return spark.read.format("delta").table(
             f"{SETTLEMENT_REPORT_DATABASE_NAME}.{CHARGE_PRICES_SETTLEMENT_REPORT_VIEW_NAME_V1}"
         )

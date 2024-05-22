@@ -102,6 +102,17 @@ def create_charge_link_periods_v1_view(spark: SparkSession, df: DataFrame) -> Da
     return spark.createDataFrame(df.rdd, charge_link_periods_v1_view_schema)
 
 
+def create_charge_prices_v1_view(spark: SparkSession, df: DataFrame) -> DataFrame:
+
+    # Don't remove. Believed needed because this function is an argument to the setup function
+    # and therefore the following packages are not automatically included.
+    from features.utils.dataframes.settlement_report.charge_prices_v1_view_schema import (
+        charge_prices_v1_view_schema,
+    )
+
+    return spark.createDataFrame(df.rdd, charge_prices_v1_view_schema)
+
+
 def create_energy_results_v1_view(spark: SparkSession, df: DataFrame) -> DataFrame:
 
     # Don't remove. Believed needed because this function is an argument to the setup function
