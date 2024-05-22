@@ -21,20 +21,20 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Calculations.UnitTests.Application.Calculations;
 
-public class UpdateExecutionStateHandlerTests
+public class UpdateCalculationStateHandlerTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public async Task UpdateExecutionStateAsync_ActivatesCalculationExecutionStateInfrastructureServiceAndCommits(
+    public async Task UpdateStateAsync_ActivatesCalculationExecutionStateInfrastructureServiceAndCommits(
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
-        [Frozen] Mock<ICalculationExecutionStateInfrastructureService> calculationExecutionStateInfrastructureServiceMock,
-        UpdateCalculationExecutionStateHandler sut)
+        [Frozen] Mock<ICalculationStateInfrastructureService> calculationExecutionStateInfrastructureServiceMock,
+        UpdateCalculationStateHandler sut)
     {
         // Arrange & Act
-        await sut.UpdateAsync();
+        await sut.UpdateStateAsync();
 
         // Assert
         unitOfWorkMock.Verify(x => x.CommitAsync());
-        calculationExecutionStateInfrastructureServiceMock.Verify(x => x.UpdateExecutionStateAsync());
+        calculationExecutionStateInfrastructureServiceMock.Verify(x => x.UpdateStateAsync());
     }
 }

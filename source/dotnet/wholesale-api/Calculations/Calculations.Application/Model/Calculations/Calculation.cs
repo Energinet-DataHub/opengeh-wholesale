@@ -21,6 +21,7 @@ namespace Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculation
 public class Calculation
 {
     private readonly List<GridAreaCode> _gridAreaCodes;
+    private CalculationOrchestrationState _orchestrationState;
 
     public Calculation(
         Instant createdTime,
@@ -39,6 +40,7 @@ public class Calculation
             throw new BusinessValidationException(string.Join(" ", errorMessages));
 
         ExecutionState = CalculationExecutionState.Created;
+        _orchestrationState = CalculationOrchestrationState.Scheduled;
         CalculationType = calculationType;
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
@@ -127,6 +129,39 @@ public class Calculation
     public CalculationExecutionState ExecutionState { get; private set; }
 
     /// <summary>
+    /// Get/set the orchestration state of the calculation.
+    /// Throws a <see cref="BusinessValidationException"/> if the state transition is invalid.
+    /// </summary>
+    public CalculationOrchestrationState OrchestrationState
+    {
+        get => _orchestrationState;
+        private set
+        {
+            if (_orchestrationState == value)
+                return; // Do nothing if the state isn't changing
+
+            CalculationOrchestrationState[] validStateTransitions = _orchestrationState switch
+            {
+                // The state can move from Scheduled -> Calculated if the calculation was so quick we didn't see the Calculating state
+                CalculationOrchestrationState.Scheduled => [CalculationOrchestrationState.Calculating, CalculationOrchestrationState.Calculated],
+                CalculationOrchestrationState.Calculating => [CalculationOrchestrationState.Calculated, CalculationOrchestrationState.CalculationFailed, CalculationOrchestrationState.Scheduled],
+                CalculationOrchestrationState.Calculated => [CalculationOrchestrationState.ActorMessagesEnqueuing],
+                CalculationOrchestrationState.CalculationFailed => [CalculationOrchestrationState.Scheduled],
+                CalculationOrchestrationState.ActorMessagesEnqueuing => [CalculationOrchestrationState.ActorMessagesEnqueued, CalculationOrchestrationState.MessagesEnqueuingFailed],
+                CalculationOrchestrationState.ActorMessagesEnqueued => [CalculationOrchestrationState.Completed],
+                CalculationOrchestrationState.MessagesEnqueuingFailed => [], // We do not support retries, so we are stuck in failed
+                CalculationOrchestrationState.Completed => [],
+                _ => throw new ArgumentOutOfRangeException(nameof(_orchestrationState), _orchestrationState, "Unsupported CalculationOrchestrationState to get valid state transitions for"),
+            };
+
+            if (!validStateTransitions.Contains(value))
+                ThrowInvalidStateTransitionException(_orchestrationState, value);
+
+            _orchestrationState = value;
+        }
+    }
+
+    /// <summary>
     /// The calculation engine registers its own perception of the start time.
     /// So the values will most likely differ and depend on from which data source
     /// it's being read.
@@ -138,6 +173,12 @@ public class Calculation
     public Guid CreatedByUserId { get; }
 
     public Instant? ExecutionTimeEnd { get; private set; }
+
+    public Instant? ActorMessagesEnqueuingTimeStart { get; private set; }
+
+    public Instant? ActorMessagesEnqueuedTimeEnd { get; private set; }
+
+    public Instant? CompletedTime { get; private set; }
 
     public CalculationJobId? CalculationJobId { get; private set; }
 
@@ -211,24 +252,27 @@ public class Calculation
 
         CalculationJobId = calculationJobId;
         ExecutionState = CalculationExecutionState.Submitted;
+        OrchestrationState = CalculationOrchestrationState.Scheduled;
     }
 
-    public void MarkAsPending()
+    public void MarkAsScheduled()
     {
         if (ExecutionState is CalculationExecutionState.Pending or CalculationExecutionState.Executing or CalculationExecutionState.Completed or CalculationExecutionState.Failed)
             ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Pending);
         ExecutionState = CalculationExecutionState.Pending;
+        OrchestrationState = CalculationOrchestrationState.Scheduled;
     }
 
-    public void MarkAsExecuting()
+    public void MarkAsCalculating()
     {
         if (ExecutionState is CalculationExecutionState.Executing or CalculationExecutionState.Completed or CalculationExecutionState.Failed)
             ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Executing);
 
         ExecutionState = CalculationExecutionState.Executing;
+        OrchestrationState = CalculationOrchestrationState.Calculating;
     }
 
-    public void MarkAsCompleted(Instant executionTimeEnd)
+    public void MarkAsCalculated(Instant executionTimeEnd)
     {
         if (ExecutionState is CalculationExecutionState.Completed or CalculationExecutionState.Failed)
             ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Completed);
@@ -241,14 +285,45 @@ public class Calculation
 
         ExecutionState = CalculationExecutionState.Completed;
         ExecutionTimeEnd = executionTimeEnd;
+        OrchestrationState = CalculationOrchestrationState.Calculated;
     }
 
-    public void MarkAsFailed()
+    public void MarkAsCalculationFailed()
     {
         if (ExecutionState is CalculationExecutionState.Failed)
             ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Failed);
 
         ExecutionState = CalculationExecutionState.Failed;
+        OrchestrationState = CalculationOrchestrationState.CalculationFailed;
+    }
+
+    public void MarkAsActorMessagesEnqueuing(Instant enqueuingTimeStart)
+    {
+        ActorMessagesEnqueuingTimeStart = enqueuingTimeStart;
+        OrchestrationState = CalculationOrchestrationState.ActorMessagesEnqueuing;
+    }
+
+    public void MarkAsActorMessagesEnqueued(Instant enqueuedTimeEnd)
+    {
+        if (enqueuedTimeEnd < ActorMessagesEnqueuingTimeStart)
+        {
+            throw new BusinessValidationException(
+                $"Actor messages enqueued time end '{enqueuedTimeEnd}' cannot be before enqueuing time start '{ActorMessagesEnqueuingTimeStart}'");
+        }
+
+        ActorMessagesEnqueuedTimeEnd = enqueuedTimeEnd;
+        OrchestrationState = CalculationOrchestrationState.ActorMessagesEnqueued;
+    }
+
+    public void MarkAsMessagesEnqueuingFailed()
+    {
+        OrchestrationState = CalculationOrchestrationState.MessagesEnqueuingFailed;
+    }
+
+    public void MarkAsCompleted(Instant completedAt)
+    {
+        OrchestrationState = CalculationOrchestrationState.Completed;
+        CompletedTime = completedAt;
     }
 
     /// <summary>
@@ -260,10 +335,16 @@ public class Calculation
             ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Created);
 
         ExecutionState = CalculationExecutionState.Created;
+        OrchestrationState = CalculationOrchestrationState.Scheduled;
     }
 
     private void ThrowInvalidStateTransitionException(CalculationExecutionState currentState, CalculationExecutionState desiredState)
     {
         throw new BusinessValidationException($"Cannot change {nameof(CalculationExecutionState)} from {currentState} to {desiredState}");
+    }
+
+    private void ThrowInvalidStateTransitionException(CalculationOrchestrationState currentState, CalculationOrchestrationState desiredState)
+    {
+        throw new BusinessValidationException($"Cannot change {nameof(CalculationOrchestrationState)} from {currentState} to {desiredState}");
     }
 }

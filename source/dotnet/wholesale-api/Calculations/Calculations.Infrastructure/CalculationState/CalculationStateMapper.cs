@@ -13,25 +13,26 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.CalculationState;
 
 public class CalculationStateMapper
 {
-    public static CalculationExecutionState MapState(Application.Model.CalculationState calculationState)
+    public static CalculationOrchestrationState MapState(Application.Model.CalculationState calculationState)
     {
         return calculationState switch
         {
-            Application.Model.CalculationState.Pending => CalculationExecutionState.Pending,
-            Application.Model.CalculationState.Running => CalculationExecutionState.Executing,
-            Application.Model.CalculationState.Completed => CalculationExecutionState.Completed,
-            Application.Model.CalculationState.Canceled => CalculationExecutionState.Canceled,
-            Application.Model.CalculationState.Failed => CalculationExecutionState.Failed,
+            Application.Model.CalculationState.Pending => CalculationOrchestrationState.Scheduled,
+            Application.Model.CalculationState.Running => CalculationOrchestrationState.Calculating,
+            Application.Model.CalculationState.Completed => CalculationOrchestrationState.Calculated,
+            Application.Model.CalculationState.Failed => CalculationOrchestrationState.CalculationFailed,
 
+            // Application.Model.CalculationState.Canceled cannot be mapped, since it is a databricks thing unrelated to domain
             _ => throw new ArgumentOutOfRangeException(
                 nameof(calculationState),
                 actualValue: calculationState,
-                "Value cannot be mapped to a calculation execution state."),
+                "Value cannot be mapped to a calculation orchestration state."),
         };
     }
 }

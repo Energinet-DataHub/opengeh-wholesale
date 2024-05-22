@@ -14,7 +14,7 @@
 
 namespace Energinet.DataHub.Wholesale.Calculations.Application;
 
-public interface ICalculationExecutionStateInfrastructureService
+public interface ICalculationStateInfrastructureService
 {
-    Task UpdateExecutionStateAsync();
+    Task UpdateStateAsync();
 }

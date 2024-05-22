@@ -61,7 +61,7 @@ internal class CalculationOrchestration
             {
                 // Update calculation execution status (SQL)
                 await context.CallActivityAsync(
-                    nameof(UpdateCalculationExecutionStatusActivity),
+                    nameof(UpdateCalculationStatusActivity),
                     calculationMetadata);
 
                 // Wait for the next checkpoint
@@ -76,7 +76,7 @@ internal class CalculationOrchestration
 
         // Update calculation execution status (SQL)
         await context.CallActivityAsync(
-            nameof(UpdateCalculationExecutionStatusActivity),
+            nameof(UpdateCalculationStatusActivity),
             calculationMetadata);
 
         if (calculationMetadata.JobStatus == CalculationState.Completed)
@@ -96,6 +96,7 @@ internal class CalculationOrchestration
                 nameof(SendCalculationResultsActivity),
                 calculationMetadata.Id);
             calculationMetadata.OrchestrationProgress = "CalculationResultsSend";
+
             context.SetCustomStatus(calculationMetadata);
         }
         else
@@ -105,7 +106,8 @@ internal class CalculationOrchestration
             return $"Error: Job status '{calculationMetadata.JobStatus}'.";
         }
 
-        // TODO: Could wait for an event to notiy us that messages are ready for customer in EDI
+        // TODO: Wait for an event to notify us that messages are ready for customer in EDI, and update orchestration status
+        // TODO: Set calculation orchestration status to completed
         return "Success";
     }
 }
