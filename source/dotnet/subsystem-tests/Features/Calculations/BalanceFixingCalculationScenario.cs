@@ -82,7 +82,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
         calculation!.ExecutionState.Should().Be(Clients.v3.CalculationState.Completed);
 
         // TODO: Should be CalculationOrchestrationState.Completed when the EDI flow is implemented
-        calculation.OrchestrationState.Should().Be(Clients.v3.CalculationOrchestrationState.MessagesEnqueuing);
+        calculation.OrchestrationState.Should().Be(Clients.v3.CalculationOrchestrationState.ActorMessagesEnqueuing);
     }
 
     [ScenarioStep(4)]
