@@ -140,7 +140,7 @@ df_anonymised_grid_area_codes = (
 
 # MAGIC %md
 # MAGIC Assert that:
-# MAGIC 1) There are no duplicates in the new anonymised MP IDs, meaning that we have a 1:1 relationship between original MP IDs to anonymised MP IDs.
+# MAGIC 1) There are no duplicates in the new anonymised grid area codes, meaning that we have a 1:1 relationship between original grid area codes to anonymised grid area codes.
 
 # COMMAND ----------
 
