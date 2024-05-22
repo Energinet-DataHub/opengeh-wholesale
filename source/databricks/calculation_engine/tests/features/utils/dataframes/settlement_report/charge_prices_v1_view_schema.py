@@ -26,7 +26,7 @@ from features.utils.dataframes.settlement_report.settlement_report_view_column_n
     ChargePricesV1ColumnNames,
 )
 
-charge_time_and_price = StructType(
+price_point = StructType(
     [
         StructField("time", TimestampType(), False),
         StructField("price", DecimalType(18, 6), False),
@@ -45,7 +45,7 @@ charge_prices_v1_view_schema = StructType(
         StructField(ChargePricesV1ColumnNames.start_date_time, TimestampType(), False),
         StructField(
             ChargePricesV1ColumnNames.prices,
-            ArrayType(charge_time_and_price, False),
+            ArrayType(price_point, False),
             False,
         ),
         StructField(ChargePricesV1ColumnNames.grid_area, StringType(), False),

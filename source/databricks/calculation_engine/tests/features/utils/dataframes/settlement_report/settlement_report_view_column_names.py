@@ -29,7 +29,7 @@ class ChargePricesV1ColumnNames:
     resolution = ChargeMasterDataPeriodsColname.resolution
     is_tax = ChargeMasterDataPeriodsColname.is_tax
     start_date_time = "start_date_time"
-    prices = "prices"
+    price_points = "price_points"
     grid_area = MeteringPointPeriodColname.grid_area
     energy_supplier_id = MeteringPointPeriodColname.energy_supplier_id
 
