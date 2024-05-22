@@ -4,7 +4,7 @@ SELECT wr.calculation_id,
        wr.calculation_type,
        wr.grid_area_code,
        wr.energy_supplier_id,
-       wr.time,
+       wr.time AS start_date_time,
        wr.resolution,
        wr.quantity_unit,
        "DDK" as currency,
@@ -15,5 +15,5 @@ SELECT wr.calculation_id,
        wr.charge_code,
        wr.charge_owner_id
 FROM {OUTPUT_DATABASE_NAME}.wholesale_results AS wr
-INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS C ON c.calculation_id = wr.calculation_id
+INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = wr.calculation_id
 WHERE wr.amount_type = "amount_per_charge"

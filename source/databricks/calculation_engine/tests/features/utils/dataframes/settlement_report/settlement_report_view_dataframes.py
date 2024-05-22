@@ -22,6 +22,8 @@ from pyspark.sql.types import (
     IntegerType,
 )
 
+from package.constants import Colname
+
 
 def create_metering_point_periods_v1_view(
     spark: SparkSession, df: DataFrame
@@ -135,9 +137,9 @@ def create_wholesale_results_v1_view(spark: SparkSession, df: DataFrame) -> Data
     from package.constants import WholesaleResultColumnNames
 
     df = df.withColumn(
-        WholesaleResultColumnNames.time,
+        Colname.start_date_time,
         col(
-            WholesaleResultColumnNames.time,
+            Colname.start_date_time,
         ).cast(TimestampType()),
     )
 
@@ -148,12 +150,12 @@ def create_wholesale_results_v1_view(spark: SparkSession, df: DataFrame) -> Data
 
     df = df.withColumn(
         WholesaleResultColumnNames.price,
-        col(WholesaleResultColumnNames.price).cast(DecimalType(18, 3)),
+        col(WholesaleResultColumnNames.price).cast(DecimalType(18, 6)),
     )
 
     df = df.withColumn(
         WholesaleResultColumnNames.amount,
-        col(WholesaleResultColumnNames.amount).cast(DecimalType(18, 3)),
+        col(WholesaleResultColumnNames.amount).cast(DecimalType(18, 6)),
     )
 
     return spark.createDataFrame(df.rdd, wholesale_results_v1_view_schema)
