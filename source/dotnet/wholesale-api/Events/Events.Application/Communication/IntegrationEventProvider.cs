@@ -150,12 +150,11 @@ public class IntegrationEventProvider : IIntegrationEventProvider
 
             if (hasFailed)
             {
-                // Quick fix: We currently do not have any status field to mark failures, so instead we set this property to a constant.
-                unpublishedCalculation.PublishedTime = NodaConstants.UnixEpoch;
+                unpublishedCalculation.SetPublishFailed();
             }
             else
             {
-                unpublishedCalculation.PublishedTime = _clock.GetCurrentInstant();
+                unpublishedCalculation.SetPublished(_clock.GetCurrentInstant());
             }
 
             await _unitOfWork.CommitAsync().ConfigureAwait(false);

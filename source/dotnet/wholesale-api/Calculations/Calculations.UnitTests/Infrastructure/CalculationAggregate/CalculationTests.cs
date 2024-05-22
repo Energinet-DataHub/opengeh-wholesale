@@ -229,10 +229,10 @@ public class CalculationTests
     }
 
     [Fact]
-    public void MarkAsCompleted_WhenComplete_ThrowsBusinessValidationException()
+    public void MarkAsCalculated_WhenComplete_ThrowsBusinessValidationException()
     {
         var sut = new CalculationBuilder().WithStateCompleted().Build();
-        Assert.Throws<BusinessValidationException>(() => sut.MarkAsCompleted(It.IsAny<Instant>()));
+        Assert.Throws<BusinessValidationException>(() => sut.MarkAsCalculated(It.IsAny<Instant>()));
     }
 
     [Theory]
@@ -289,42 +289,42 @@ public class CalculationTests
     }
 
     [Fact]
-    public void MarkAsCompleted_WhenExecuting_CompletesCalculation()
+    public void MarkAsCalculated_WhenExecuting_CompletesCalculation()
     {
         // Arrange
         var sut = new CalculationBuilder().WithStateExecuting().Build();
         var executionTimeEndGreaterThanStart = sut.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2));
 
         // Act
-        sut.MarkAsCompleted(executionTimeEndGreaterThanStart);
+        sut.MarkAsCalculated(executionTimeEndGreaterThanStart);
 
         // Assert
         sut.ExecutionState.Should().Be(CalculationExecutionState.Completed);
     }
 
     [Fact]
-    public void MarkAsCompleted_SetsExecutionTimeEnd()
+    public void MarkAsCalculated_SetsExecutionTimeEnd()
     {
         // Arrange
         var sut = new CalculationBuilder().WithStateExecuting().Build();
         var executionTimeEndGreaterThanStart = sut.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2));
 
         // Act
-        sut.MarkAsCompleted(executionTimeEndGreaterThanStart);
+        sut.MarkAsCalculated(executionTimeEndGreaterThanStart);
 
         // Assert
         sut.ExecutionTimeEnd.Should().NotBeNull();
     }
 
     [Fact]
-    public void MarkAsCompleted_WhenExecutionTimeEndLessThanStart_ThrowsBusinessValidationException()
+    public void MarkAsCalculated_WhenExecutionTimeEndLessThanStart_ThrowsBusinessValidationException()
     {
         // Arrange
         var sut = new CalculationBuilder().WithStateExecuting().Build();
         var executionTimeEndLessThanStart = sut.ExecutionTimeStart!.Value.Minus(Duration.FromDays(2));
 
         // Act
-        var actual = Assert.Throws<BusinessValidationException>(() => sut.MarkAsCompleted(executionTimeEndLessThanStart));
+        var actual = Assert.Throws<BusinessValidationException>(() => sut.MarkAsCalculated(executionTimeEndLessThanStart));
 
         // Assert
         sut.ExecutionTimeEnd.Should().BeNull();
@@ -332,32 +332,32 @@ public class CalculationTests
     }
 
     [Fact]
-    public void MarkAsExecuting_WhenExecuting_ThrowsBusinessValidationException()
+    public void MarkAsCalculating_WhenExecuting_ThrowsBusinessValidationException()
     {
         var sut = new CalculationBuilder().WithStateExecuting().Build();
-        Assert.Throws<BusinessValidationException>(() => sut.MarkAsExecuting());
+        Assert.Throws<BusinessValidationException>(() => sut.MarkAsCalculating());
     }
 
     [Fact]
-    public void MarkAsExecuting_WhenComplete_ThrowsBusinessValidationException()
+    public void MarkAsCalculating_WhenComplete_ThrowsBusinessValidationException()
     {
         var sut = new CalculationBuilder().WithStateCompleted().Build();
-        Assert.Throws<BusinessValidationException>(() => sut.MarkAsExecuting());
+        Assert.Throws<BusinessValidationException>(() => sut.MarkAsCalculating());
     }
 
     [Fact]
-    public void MarkAsExecuting_WhenPending_ExecutesCalculation()
+    public void MarkAsCalculating_WhenPending_ExecutesCalculation()
     {
         var sut = new CalculationBuilder().WithStatePending().Build();
-        sut.MarkAsExecuting();
+        sut.MarkAsCalculating();
         sut.ExecutionState.Should().Be(CalculationExecutionState.Executing);
     }
 
     [Fact]
-    public void MarkAsExecuting_ExecutionTimeIsSetToNull()
+    public void MarkAsCalculating_ExecutionTimeIsSetToNull()
     {
         var sut = new CalculationBuilder().WithStatePending().Build();
-        sut.MarkAsExecuting();
+        sut.MarkAsCalculating();
         sut.ExecutionTimeEnd.Should().BeNull();
     }
 
@@ -390,5 +390,69 @@ public class CalculationTests
     {
         var sut = new CalculationBuilder().WithStateCompleted().Build();
         Assert.Throws<BusinessValidationException>(() => sut.Reset());
+    }
+
+    [Theory]
+    [InlineData(CalculationExecutionState.Created)]
+    [InlineData(CalculationExecutionState.Submitted)]
+    [InlineData(CalculationExecutionState.Pending)]
+    [InlineData(CalculationExecutionState.Executing)]
+    [InlineData(CalculationExecutionState.Failed)]
+    public void Reset_WhenGivenExecutionState_SetsOrchestrationStateScheduled(CalculationExecutionState givenExecutionState)
+    {
+        var sut = new CalculationBuilder()
+            .WithState(givenExecutionState)
+            .Build();
+
+        sut.Reset();
+
+        sut.OrchestrationState.Should().Be(CalculationOrchestrationState.Scheduled);
+    }
+
+    [Theory]
+    [InlineData(CalculationExecutionState.Created, CalculationOrchestrationState.Scheduled)]
+    [InlineData(CalculationExecutionState.Submitted, CalculationOrchestrationState.Scheduled)]
+    [InlineData(CalculationExecutionState.Pending, CalculationOrchestrationState.Scheduled)]
+    [InlineData(CalculationExecutionState.Executing, CalculationOrchestrationState.Calculating)]
+    [InlineData(CalculationExecutionState.Completed, CalculationOrchestrationState.Calculated)]
+    [InlineData(CalculationExecutionState.Failed, CalculationOrchestrationState.CalculationFailed)]
+    public void WhenUpdatingExecutionState_SetsExpectedOrchestrationState(CalculationExecutionState executionState, CalculationOrchestrationState expectedOrchestrationState)
+    {
+        var sut = new CalculationBuilder().Build();
+
+        var calculationJobId = new CalculationJobId(1);
+        switch (executionState)
+        {
+            case CalculationExecutionState.Created:
+                break;
+            case CalculationExecutionState.Submitted:
+                sut.MarkAsSubmitted(calculationJobId);
+                break;
+            case CalculationExecutionState.Pending:
+                sut.MarkAsSubmitted(calculationJobId);
+                sut.MarkAsScheduled();
+                break;
+            case CalculationExecutionState.Executing:
+                sut.MarkAsSubmitted(calculationJobId);
+                sut.MarkAsScheduled();
+                sut.MarkAsCalculating();
+                break;
+            case CalculationExecutionState.Completed:
+                sut.MarkAsSubmitted(calculationJobId);
+                sut.MarkAsScheduled();
+                sut.MarkAsCalculating();
+                sut.MarkAsCalculated(sut.ExecutionTimeStart!.Value.Plus(Duration.FromMinutes(15)));
+                break;
+            case CalculationExecutionState.Failed:
+                sut.MarkAsSubmitted(calculationJobId);
+                sut.MarkAsScheduled();
+                sut.MarkAsCalculating();
+                sut.MarkAsCalculationFailed();
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(executionState), executionState, "The given execution state is not supported in the test");
+        }
+
+        sut.OrchestrationState.Should().Be(expectedOrchestrationState);
     }
 }

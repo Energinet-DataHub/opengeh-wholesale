@@ -14,22 +14,23 @@
 
 using Energinet.DataHub.Wholesale.Calculations.Application;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.CalculationState;
 
-public class CalculationExecutionStateInfrastructureService : ICalculationExecutionStateInfrastructureService
+public class CalculationStateInfrastructureService : ICalculationStateInfrastructureService
 {
     private readonly ICalculationRepository _calculationRepository;
     private readonly ICalculationInfrastructureService _calculationInfrastructureService;
     private readonly IClock _clock;
     private readonly ILogger _logger;
 
-    public CalculationExecutionStateInfrastructureService(
+    public CalculationStateInfrastructureService(
         ICalculationRepository calculationRepository,
         ICalculationInfrastructureService calculationInfrastructureService,
-        ILogger<CalculationExecutionStateInfrastructureService> logger,
+        ILogger<CalculationStateInfrastructureService> logger,
         IClock clock)
     {
         _calculationRepository = calculationRepository;
@@ -39,10 +40,10 @@ public class CalculationExecutionStateInfrastructureService : ICalculationExecut
     }
 
     /// <summary>
-    /// Update the execution states in the calculation repository by mapping the job states from the runs <see cref="ICalculationInfrastructureService"/>
+    /// Update the states in the calculation repository by mapping the job states from the runs <see cref="ICalculationInfrastructureService"/>
     /// </summary>
     /// <returns>Calculations that have been completed</returns>
-    public async Task UpdateExecutionStateAsync()
+    public async Task UpdateStateAsync()
     {
         var completedCalculations = new List<Calculation>();
         var states = new List<CalculationExecutionState>
@@ -58,10 +59,18 @@ public class CalculationExecutionStateInfrastructureService : ICalculationExecut
                     .GetStatusAsync(calculation.CalculationJobId!)
                     .ConfigureAwait(false);
 
-                var executionState = CalculationStateMapper.MapState(jobState);
-                if (executionState != calculation.ExecutionState)
+                if (jobState == Application.Model.CalculationState.Canceled)
                 {
-                    HandleNewState(executionState, calculation, completedCalculations);
+                    // Jobs may be cancelled in Databricks for various reasons. For example they can be cancelled due to migrations in CD
+                    // Setting calculation state back to "created" ensure they will be picked up and started again
+                    calculation.Reset();
+                    continue;
+                }
+
+                var state = CalculationStateMapper.MapState(jobState);
+                if (state != calculation.OrchestrationState)
+                {
+                    HandleNewState(state, calculation, completedCalculations);
                 }
             }
             catch (Exception e)
@@ -71,30 +80,37 @@ public class CalculationExecutionStateInfrastructureService : ICalculationExecut
         }
     }
 
-    private void HandleNewState(CalculationExecutionState state, Calculation calculation, ICollection<Calculation> completedCalculations)
+    private void HandleNewState(CalculationOrchestrationState state, Calculation calculation, ICollection<Calculation> completedCalculations)
     {
         switch (state)
         {
-            case CalculationExecutionState.Pending:
-                calculation.MarkAsPending();
+            case CalculationOrchestrationState.Scheduled:
+                calculation.MarkAsScheduled();
                 break;
-            case CalculationExecutionState.Executing:
-                calculation.MarkAsExecuting();
+            case CalculationOrchestrationState.Calculating:
+                calculation.MarkAsCalculating();
                 break;
-            case CalculationExecutionState.Completed:
-                calculation.MarkAsCompleted(_clock.GetCurrentInstant());
+            case CalculationOrchestrationState.Calculated:
+                calculation.MarkAsCalculated(_clock.GetCurrentInstant());
                 completedCalculations.Add(calculation);
                 break;
-            case CalculationExecutionState.Failed:
-                calculation.MarkAsFailed();
+            case CalculationOrchestrationState.CalculationFailed:
+                calculation.MarkAsCalculationFailed();
                 break;
-            case CalculationExecutionState.Canceled:
-                // Jobs may be cancelled in Databricks for various reasons. For example they can be cancelled due to migrations in CD
-                // Setting calculation state back to "created" ensure they will be picked up and started again
-                calculation.Reset();
+            case CalculationOrchestrationState.ActorMessagesEnqueuing:
+                calculation.MarkAsActorMessagesEnqueuing(_clock.GetCurrentInstant());
+                break;
+            case CalculationOrchestrationState.ActorMessagesEnqueued:
+                calculation.MarkAsActorMessagesEnqueued(_clock.GetCurrentInstant());
+                break;
+            case CalculationOrchestrationState.MessagesEnqueuingFailed:
+                calculation.MarkAsMessagesEnqueuingFailed();
+                break;
+            case CalculationOrchestrationState.Completed:
+                calculation.MarkAsCompleted(_clock.GetCurrentInstant());
                 break;
             default:
-                throw new ArgumentOutOfRangeException($"Unexpected execution state: {state}.");
+                throw new ArgumentOutOfRangeException(nameof(state), state, "Unhandled CalculationOrchestrationState when changing state");
         }
     }
 }
