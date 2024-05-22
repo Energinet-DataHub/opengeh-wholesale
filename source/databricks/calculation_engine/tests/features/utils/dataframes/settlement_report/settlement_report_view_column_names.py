@@ -16,12 +16,6 @@ from package.constants.basis_data_colname import (
     CalculationsColumnName,
     MeteringPointPeriodColname,
 )
-from package.constants.result_column_names import ResultColumnNames
-
-
-class MeteringPointTimeSeriesV1ColumnNames:
-    start_date_time = "start_date_time"
-    quantities = "quantities"
 
 
 class ChargeLinkPeriodsV1ColumnNames:

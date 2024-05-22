@@ -32,5 +32,12 @@ class EnergyResultViewReader:
         self,
     ) -> DataFrame:
         return self._spark.read.format("delta").table(
-            f"{OUTPUT_DATABASE_NAME}.{paths.ENERGY_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1}"
+            f"{OUTPUT_DATABASE_NAME}.{paths.ENERGY_RESULT_TABLE_NAME}"
+        )
+
+    def read_wholesale_results(
+        self,
+    ) -> DataFrame:
+        return self._spark.read.format("delta").table(
+            f"{OUTPUT_DATABASE_NAME}.{paths.WHOLESALE_RESULT_TABLE_NAME}"
         )
