@@ -55,6 +55,8 @@ limitations under the License.
     <EmbeddedResource Include="Scripts\202405211257_Add_CompletedTime_to_Calculation.sql" />
     <EmbeddedResource Include="Scripts\202405211256_Add_MessagesEnqueuingTimeEnd_to_Calculation.sql" />
     <EmbeddedResource Include="Scripts\202405211256_Add_MessagesEnqueuingTimeStart_to_Calculation.sql" />
+    <EmbeddedResource Include="Scripts\202405221137_Rename_MessagesEnqueuingTimeEnd_to_ActorMessagesEnqueuedTimeEnd.sql" />
+    <EmbeddedResource Include="Scripts\202405221137_Rename_MessagesEnqueuingTimeStart_to_ActorMessagesEnqueuingTimeStart.sql" />
   </ItemGroup>
 
   <ItemGroup>

@@ -145,10 +145,10 @@ public class Calculation
                 // The state can move from Scheduled -> Calculated if the calculation was so quick we didn't see the Calculating state
                 CalculationOrchestrationState.Scheduled => [CalculationOrchestrationState.Calculating, CalculationOrchestrationState.Calculated],
                 CalculationOrchestrationState.Calculating => [CalculationOrchestrationState.Calculated, CalculationOrchestrationState.CalculationFailed, CalculationOrchestrationState.Scheduled],
-                CalculationOrchestrationState.Calculated => [CalculationOrchestrationState.MessagesEnqueuing],
+                CalculationOrchestrationState.Calculated => [CalculationOrchestrationState.ActorMessagesEnqueuing],
                 CalculationOrchestrationState.CalculationFailed => [CalculationOrchestrationState.Scheduled],
-                CalculationOrchestrationState.MessagesEnqueuing => [CalculationOrchestrationState.MessagesEnqueued, CalculationOrchestrationState.MessagesEnqueuingFailed],
-                CalculationOrchestrationState.MessagesEnqueued => [CalculationOrchestrationState.Completed],
+                CalculationOrchestrationState.ActorMessagesEnqueuing => [CalculationOrchestrationState.ActorMessagesEnqueued, CalculationOrchestrationState.MessagesEnqueuingFailed],
+                CalculationOrchestrationState.ActorMessagesEnqueued => [CalculationOrchestrationState.Completed],
                 CalculationOrchestrationState.MessagesEnqueuingFailed => [], // We do not support retries, so we are stuck in failed
                 CalculationOrchestrationState.Completed => [],
                 _ => throw new ArgumentOutOfRangeException(nameof(_orchestrationState), _orchestrationState, "Unsupported CalculationOrchestrationState to get valid state transitions for"),
@@ -174,9 +174,9 @@ public class Calculation
 
     public Instant? ExecutionTimeEnd { get; private set; }
 
-    public Instant? MessagesEnqueuingTimeStart { get; private set; }
+    public Instant? ActorMessagesEnqueuingTimeStart { get; private set; }
 
-    public Instant? MessagesEnqueuingTimeEnd { get; private set; }
+    public Instant? ActorMessagesEnqueuedTimeEnd { get; private set; }
 
     public Instant? CompletedTime { get; private set; }
 
@@ -297,21 +297,22 @@ public class Calculation
         OrchestrationState = CalculationOrchestrationState.CalculationFailed;
     }
 
-    public void MarkAsMessagesEnqueuing(Instant enqueuingTimeStart)
+    public void MarkAsActorMessagesEnqueuing(Instant enqueuingTimeStart)
     {
-        MessagesEnqueuingTimeStart = enqueuingTimeStart;
-        OrchestrationState = CalculationOrchestrationState.MessagesEnqueuing;
+        ActorMessagesEnqueuingTimeStart = enqueuingTimeStart;
+        OrchestrationState = CalculationOrchestrationState.ActorMessagesEnqueuing;
     }
 
-    public void MarkAsMessagesEnqueued(Instant enqueuingTimeEnd)
+    public void MarkAsActorMessagesEnqueued(Instant enqueuedTimeEnd)
     {
-        if (enqueuingTimeEnd < MessagesEnqueuingTimeStart)
+        if (enqueuedTimeEnd < ActorMessagesEnqueuingTimeStart)
         {
             throw new BusinessValidationException(
-                $"Enqueuing time end '{enqueuingTimeEnd}' cannot be before enqueuing time start '{MessagesEnqueuingTimeStart}'");
+                $"Actor messages enqueued time end '{enqueuedTimeEnd}' cannot be before enqueuing time start '{ActorMessagesEnqueuingTimeStart}'");
         }
 
-        OrchestrationState = CalculationOrchestrationState.MessagesEnqueued;
+        ActorMessagesEnqueuedTimeEnd = enqueuedTimeEnd;
+        OrchestrationState = CalculationOrchestrationState.ActorMessagesEnqueued;
     }
 
     public void MarkAsMessagesEnqueuingFailed()

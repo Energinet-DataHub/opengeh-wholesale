@@ -79,11 +79,11 @@ internal class UpdateCalculationStatusActivity(
             case CalculationOrchestrationState.CalculationFailed:
                 calculation.MarkAsCalculationFailed();
                 break;
-            case CalculationOrchestrationState.MessagesEnqueuing:
-                calculation.MarkAsMessagesEnqueuing(_clock.GetCurrentInstant());
+            case CalculationOrchestrationState.ActorMessagesEnqueuing:
+                calculation.MarkAsActorMessagesEnqueuing(_clock.GetCurrentInstant());
                 break;
-            case CalculationOrchestrationState.MessagesEnqueued:
-                calculation.MarkAsMessagesEnqueued(_clock.GetCurrentInstant());
+            case CalculationOrchestrationState.ActorMessagesEnqueued:
+                calculation.MarkAsActorMessagesEnqueued(_clock.GetCurrentInstant());
                 break;
             case CalculationOrchestrationState.MessagesEnqueuingFailed:
                 calculation.MarkAsMessagesEnqueuingFailed();

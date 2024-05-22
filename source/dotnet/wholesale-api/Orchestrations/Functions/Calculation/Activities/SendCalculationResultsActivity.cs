@@ -52,7 +52,7 @@ internal class SendCalculationResultsActivity(
             throw new Exception($"Completed calculation (id: {calculationId}) was not published");
 
         var calculation = await _calculationRepository.GetAsync(calculationId);
-        calculation.MarkAsMessagesEnqueuing(_clock.GetCurrentInstant());
+        calculation.MarkAsActorMessagesEnqueuing(_clock.GetCurrentInstant());
 
         await _calculationUnitOfWork.CommitAsync();
     }
