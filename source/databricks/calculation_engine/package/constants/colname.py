@@ -47,6 +47,7 @@ class Colname:
     quantity = "quantity"
     resolution = "resolution"
     settlement_method = "settlement_method"
+    start_date_time = "start_date_time"
     time_series_type = "time_series_type"
     to_date = "to_date"
     to_grid_area = "to_grid_area_code"
