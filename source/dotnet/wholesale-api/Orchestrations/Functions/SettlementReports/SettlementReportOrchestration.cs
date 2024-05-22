@@ -43,6 +43,11 @@ internal sealed class SettlementReportOrchestration
         var scatterResults = await context
             .CallActivityAsync<SettlementReportFileRequestDto[]>(nameof(ScatterSettlementReportFilesActivity), scatterInput);
 
+        if (string.IsNullOrWhiteSpace(scatterResults.First().SuggestedName))
+        {
+            throw new Exception("WTF!");
+        }
+
         var coldRetryHandler = TaskOptions.FromRetryHandler(retryContext => HandleColdDataSource(
                 retryContext,
                 executionContext.GetLogger<SettlementReportOrchestration>()));
