@@ -32,7 +32,7 @@ namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.WholesaleServices
 public class GridAreaValidatorTest
 {
     private const string ValidGlnNumber = "qwertyuiopasd"; // Must be 13 characters to be a valid GLN
-    private static readonly ValidationError _missingGridAreaCode = new("Netområde er obligatorisk for rollen MDR / Grid area is mandatory for the role MDR.", "D64");
+    private static readonly ValidationError _missingGridAreaCode = new("Netområde er obligatorisk for rollen DDM / Grid area is mandatory for the role DDM.", "D64");
     private static readonly ValidationError _invalidGridArea = new("Ugyldig netområde / Invalid gridarea", "E86");
 
     [Theory]
