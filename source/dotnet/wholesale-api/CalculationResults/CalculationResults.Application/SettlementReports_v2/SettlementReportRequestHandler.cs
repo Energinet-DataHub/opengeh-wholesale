@@ -46,7 +46,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
     {
         var filesToGenerate = new List<SettlementReportFileRequestDto>();
 
-        if (reportRequest is { SplitReportPerGridArea: true, Filter.GridAreas.Count: > 1 })
+        if (reportRequest is { SplitReportPerGridArea: true, Filter.GridAreas.Length: > 1 })
         {
             foreach (var filterGridArea in reportRequest.Filter.GridAreas)
             {
