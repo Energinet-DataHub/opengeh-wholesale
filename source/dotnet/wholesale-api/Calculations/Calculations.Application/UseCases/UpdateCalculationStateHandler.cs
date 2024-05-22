@@ -16,22 +16,22 @@ using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 
 namespace Energinet.DataHub.Wholesale.Calculations.Application.UseCases;
 
-public class UpdateCalculationExecutionStateHandler : IUpdateCalculationExecutionStateHandler
+public class UpdateCalculationStateHandler : IUpdateCalculationStateHandler
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ICalculationExecutionStateInfrastructureService _calculationExecutionStateInfrastructureService;
+    private readonly ICalculationStateInfrastructureService _calculationStateInfrastructureService;
 
-    public UpdateCalculationExecutionStateHandler(
+    public UpdateCalculationStateHandler(
         IUnitOfWork unitOfWork,
-        ICalculationExecutionStateInfrastructureService calculationExecutionStateInfrastructureService)
+        ICalculationStateInfrastructureService calculationStateInfrastructureService)
     {
         _unitOfWork = unitOfWork;
-        _calculationExecutionStateInfrastructureService = calculationExecutionStateInfrastructureService;
+        _calculationStateInfrastructureService = calculationStateInfrastructureService;
     }
 
-    public async Task UpdateAsync()
+    public async Task UpdateStateAsync()
     {
-        await _calculationExecutionStateInfrastructureService.UpdateExecutionStateAsync().ConfigureAwait(false);
+        await _calculationStateInfrastructureService.UpdateStateAsync().ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 }

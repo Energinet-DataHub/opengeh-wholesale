@@ -48,9 +48,15 @@ limitations under the License.
     <EmbeddedResource Include="Scripts\202401311400_Rename_Batch_To_Calculation.sql" />
     <EmbeddedResource Include="Scripts\202402011100_Rename_ProcessType_To_CalculationType.sql" />
     <EmbeddedResource Include="Scripts\202405081100_Add_SettlementReport_table.sql" />
+    <EmbeddedResource Include="Scripts\202405171415_Add_OrchestrationState_to_Calculation.sql" />
     <EmbeddedResource Include="Scripts\202405151400_CompletedCalculation_Add_CalculationId_OrchestrationInstanceId.sql" />
     <EmbeddedResource Include="Scripts\202405141445_Add_Period_To_SettlementReport.sql" />
     <EmbeddedResource Include="Scripts\202405151335_Use_DateTime_In_SettlementReport.sql" />
+    <EmbeddedResource Include="Scripts\202405211257_Add_CompletedTime_to_Calculation.sql" />
+    <EmbeddedResource Include="Scripts\202405211256_Add_MessagesEnqueuingTimeEnd_to_Calculation.sql" />
+    <EmbeddedResource Include="Scripts\202405211256_Add_MessagesEnqueuingTimeStart_to_Calculation.sql" />
+    <EmbeddedResource Include="Scripts\202405221137_Rename_MessagesEnqueuingTimeEnd_to_ActorMessagesEnqueuedTimeEnd.sql" />
+    <EmbeddedResource Include="Scripts\202405221137_Rename_MessagesEnqueuingTimeStart_to_ActorMessagesEnqueuingTimeStart.sql" />
   </ItemGroup>
 
   <ItemGroup>
