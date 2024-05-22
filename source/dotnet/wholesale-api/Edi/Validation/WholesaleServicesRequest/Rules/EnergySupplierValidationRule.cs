@@ -14,11 +14,11 @@
 
 using Energinet.DataHub.Wholesale.Edi.Validation.Helpers;
 
-namespace Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
+namespace Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules;
 
-public class EnergySupplierValidationRule : IValidationRule<DataHub.Edi.Requests.AggregatedTimeSeriesRequest>
+public class EnergySupplierValidationRule : IValidationRule<DataHub.Edi.Requests.WholesaleServicesRequest>
 {
-    public Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.AggregatedTimeSeriesRequest subject)
+    public Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.WholesaleServicesRequest subject)
     {
         return EnergySupplierIsOnlyLowedToRequestOwnDataHelper.ValidateAsync(
             subject.RequestedForActorRole,
