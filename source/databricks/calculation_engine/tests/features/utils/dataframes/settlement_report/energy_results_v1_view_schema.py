@@ -23,6 +23,7 @@ from pyspark.sql.types import (
 from features.utils.dataframes.settlement_report.settlement_report_view_column_names import (
     EnergyResultsV1ColumnNames,
 )
+from package.constants import Colname
 
 energy_results_v1_view_schema = StructType(
     [
@@ -34,7 +35,7 @@ energy_results_v1_view_schema = StructType(
         ),
         StructField(EnergyResultsV1ColumnNames.settlement_method, StringType(), True),
         StructField(EnergyResultsV1ColumnNames.resolution, StringType(), False),
-        StructField(EnergyResultsV1ColumnNames.time, TimestampType(), False),
+        StructField(Colname.start_date_time, TimestampType(), False),
         StructField(EnergyResultsV1ColumnNames.quantity, DecimalType(18, 3), False),
         StructField(EnergyResultsV1ColumnNames.energy_supplier_id, StringType(), True),
         StructField(EnergyResultsV1ColumnNames.aggregation_level, StringType(), False),
