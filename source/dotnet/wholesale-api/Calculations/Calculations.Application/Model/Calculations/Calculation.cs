@@ -137,11 +137,26 @@ public class Calculation
         get => _orchestrationState;
         private set
         {
-            if (value == _orchestrationState)
-                return;
+            if (_orchestrationState == value)
+                return; // Do nothing if the state isn't changing
 
-            if (!ValidOrchestrationStateTransitions(_orchestrationState).Contains(value))
+            CalculationOrchestrationState[] validStateTransitions = _orchestrationState switch
+            {
+                // The state can move from Scheduled -> Calculated if the calculation was so quick we didn't see the Calculating state
+                CalculationOrchestrationState.Scheduled => [CalculationOrchestrationState.Calculating, CalculationOrchestrationState.Calculated],
+                CalculationOrchestrationState.Calculating => [CalculationOrchestrationState.Calculated, CalculationOrchestrationState.CalculationFailed, CalculationOrchestrationState.Scheduled],
+                CalculationOrchestrationState.Calculated => [CalculationOrchestrationState.MessagesEnqueuing],
+                CalculationOrchestrationState.CalculationFailed => [CalculationOrchestrationState.Scheduled],
+                CalculationOrchestrationState.MessagesEnqueuing => [CalculationOrchestrationState.MessagesEnqueued, CalculationOrchestrationState.MessagesEnqueuingFailed],
+                CalculationOrchestrationState.MessagesEnqueued => [CalculationOrchestrationState.Completed],
+                CalculationOrchestrationState.MessagesEnqueuingFailed => [], // We do not support retries, so we are stuck in failed
+                CalculationOrchestrationState.Completed => [],
+                _ => throw new ArgumentOutOfRangeException(nameof(_orchestrationState), _orchestrationState, "Unsupported CalculationOrchestrationState to get valid state transitions for"),
+            };
+
+            if (!validStateTransitions.Contains(value))
                 ThrowInvalidStateTransitionException(_orchestrationState, value);
+
             _orchestrationState = value;
         }
     }
@@ -321,21 +336,6 @@ public class Calculation
         ExecutionState = CalculationExecutionState.Created;
         OrchestrationState = CalculationOrchestrationState.Scheduled;
     }
-
-    private CalculationOrchestrationState[] ValidOrchestrationStateTransitions(CalculationOrchestrationState fromState) =>
-        fromState switch
-        {
-            // The state can move from Scheduled -> Calculated if the calculation was so quick we didn't see the Calculating state
-            CalculationOrchestrationState.Scheduled => [CalculationOrchestrationState.Calculating, CalculationOrchestrationState.Calculated, CalculationOrchestrationState.Scheduled],
-            CalculationOrchestrationState.Calculating => [CalculationOrchestrationState.Calculated, CalculationOrchestrationState.CalculationFailed, CalculationOrchestrationState.Scheduled], // Reset to Scheduled?
-            CalculationOrchestrationState.Calculated => [CalculationOrchestrationState.MessagesEnqueuing],
-            CalculationOrchestrationState.CalculationFailed => [CalculationOrchestrationState.Scheduled],
-            CalculationOrchestrationState.MessagesEnqueuing => [CalculationOrchestrationState.MessagesEnqueued, CalculationOrchestrationState.MessagesEnqueuingFailed],
-            CalculationOrchestrationState.MessagesEnqueued => [CalculationOrchestrationState.Completed],
-            CalculationOrchestrationState.MessagesEnqueuingFailed => [], // We do not support reruns, so we are stuck in failed
-            CalculationOrchestrationState.Completed => [], // We do not support reruns, so we are stuck in completed
-            _ => throw new ArgumentOutOfRangeException(nameof(fromState), fromState, "Unsupported CalculationOrchestrationState to get valid state transitions for"),
-        };
 
     private void ThrowInvalidStateTransitionException(CalculationExecutionState currentState, CalculationExecutionState desiredState)
     {
