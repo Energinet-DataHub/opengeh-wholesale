@@ -13,7 +13,7 @@ jobs:
   # License and Markdown Check
   #
   ci_base:
-    uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@v13
+    uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@v14
     with:
       skip_license_check: true
     secrets:
@@ -159,20 +159,20 @@ jobs:
   render_c4model_deployment:
     needs: changes
     if: ${{ needs.changes.outputs.render_c4model_deployment == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/structurizr-render-diagrams.yml@v13
+    uses: Energinet-DataHub/.github/.github/workflows/structurizr-render-diagrams.yml@v14
     with:
       structurizr_workspace_filename: deployment
     secrets:
-      dh3serviceaccount_privatekey: ${{ secrets.dh3serviceaccount_privatekey }}
+      token: ${{ secrets.GITHUB_TOKEN }}
 
   render_c4model_ownership_views:
     needs: [changes, render_c4model_deployment]
     if: ${{ always() && needs.changes.outputs.render_c4model_ownership_views == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/structurizr-render-diagrams.yml@v13
+    uses: Energinet-DataHub/.github/.github/workflows/structurizr-render-diagrams.yml@v14
     with:
       structurizr_workspace_filename: ownership-views
     secrets:
-      dh3serviceaccount_privatekey: ${{ secrets.dh3serviceaccount_privatekey }}
+      token: ${{ secrets.GITHUB_TOKEN }}
 
   #
   # Branch policy status check
