@@ -23,12 +23,6 @@ variable "domain_name_short" {
   description = "Name of the project this infrastructure is a part of."
 }
 
-variable "enable_health_check_alerts" {
-  type        = bool
-  description = "Specify if health check alerts for Azure Functions and App Services should be enabled. Defaults to `true`"
-  default     = true
-}
-
 variable "developer_ad_group_name" {
   type        = string
   description = "(Optional) Name of the AD group containing developers to have read access to SQL database."
@@ -108,4 +102,10 @@ variable "databricks_group_id" {
 variable "databricks_developers_group_id" {
   type        = string
   description = "The ID of the Databricks group containing Databricks users synced from the OMADA group."
+}
+
+variable "alert_email_address" {
+  type        = string
+  description = "(Optional) The email address to which alerts are sent."
+  default     = null
 }

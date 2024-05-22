@@ -4,7 +4,7 @@ data "azurerm_mssql_server" "mssqlsrv" {
 }
 
 module "mssqldb_wholesale" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=14.8.2"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=v14"
 
   name                 = "data"
   location             = azurerm_resource_group.this.location
@@ -15,7 +15,7 @@ module "mssqldb_wholesale" {
   sql_server_name      = data.azurerm_mssql_server.mssqlsrv.name
   elastic_pool_id      = data.azurerm_key_vault_secret.mssql_data_elastic_pool_id.value
   monitor_action_group = {
-    id                  = data.azurerm_key_vault_secret.primary_action_group_id.value
+    id                  = module.monitor_action_group_wholesale.id
     resource_group_name = azurerm_resource_group.this.name
   }
 }

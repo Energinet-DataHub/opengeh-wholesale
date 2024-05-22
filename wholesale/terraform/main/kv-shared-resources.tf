@@ -3,11 +3,6 @@ data "azurerm_key_vault" "kv_shared_resources" {
   resource_group_name = data.azurerm_resource_group.shared.name
 }
 
-data "azurerm_key_vault_secret" "primary_action_group_id" {
-  name         = "ag-primary-id"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
 data "azurerm_key_vault_secret" "snet_vnet_integration_id" {
   name         = "snet-vnet-integration-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
