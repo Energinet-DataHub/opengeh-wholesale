@@ -47,7 +47,7 @@ locals {
 
     "Environment:Description"                                   = local.ENV_DESC,
 
-    "UserInvite.InviteFlowUrl"                                  = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=b2c-invitation-flow-uri)",
+    "UserInvite:InviteFlowUrl"                                  = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=b2c-invitation-flow-uri)",
 
     "AzureB2c:Tenant"                                           = var.b2c_tenant
     "AzureB2c:SpnId"                                            = var.b2c_spn_id
