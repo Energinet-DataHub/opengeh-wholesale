@@ -140,7 +140,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
             "CreateCalculationRecordActivity",
             "StartCalculationActivity",
             "GetJobStatusActivity",
-            "UpdateCalculationExecutionStatusActivity",
+            "UpdateCalculationStatusActivity",
             "CreateCompletedCalculationActivity",
             "SendCalculationResultsActivity",
             null

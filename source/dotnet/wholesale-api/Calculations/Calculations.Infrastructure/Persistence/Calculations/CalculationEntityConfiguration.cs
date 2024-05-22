@@ -32,10 +32,14 @@ public class CalculationEntityConfiguration : IEntityTypeConfiguration<Calculati
             .ValueGeneratedNever();
 
         builder.Property(b => b.ExecutionState);
+        builder.Property(b => b.OrchestrationState);
         builder.Property(b => b.PeriodStart);
         builder.Property(b => b.PeriodEnd);
         builder.Property(b => b.ExecutionTimeStart);
         builder.Property(b => b.ExecutionTimeEnd);
+        builder.Property(b => b.ActorMessagesEnqueuingTimeStart);
+        builder.Property(b => b.ActorMessagesEnqueuedTimeEnd);
+        builder.Property(b => b.CompletedTime);
         builder.Property(b => b.AreSettlementReportsCreated);
         builder.Property(b => b.CalculationJobId).HasConversion(
             calculationJobId => calculationJobId == null ? (long?)null : calculationJobId.Id,

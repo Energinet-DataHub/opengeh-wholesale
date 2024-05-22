@@ -16,12 +16,43 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 
 public enum CalculationOrchestrationState
 {
-    Scheduled, // Planlagt
-    Calculating, // Beregner
-    Calculated, // Beregnet
-    CalculationFailed, // Beregning fejlet
-    MessagesEnqueuing, // Beskeder dannes
-    MessagesEnqueued, // Beskeder dannet
-    MessagesEnqueuingFailed, // Besked dannelse fejlet
-    Completed, // Orchestration færdig
+    /// <summary>
+    /// // The calculation is created but not yet started
+    /// </summary>
+    Scheduled,
+
+    /// <summary>
+    /// The data calculation is running and the result is not yet available
+    /// </summary>
+    Calculating,
+
+    /// <summary>
+    /// The data calculation is completed and data is ready to be consumed
+    /// </summary>
+    Calculated,
+
+    /// <summary>
+    /// The data calculation failed during calculation
+    /// </summary>
+    CalculationFailed,
+
+    /// <summary>
+    /// The completed calculation is sent for enqueuing as actor messages
+    /// </summary>
+    ActorMessagesEnqueuing,
+
+    /// <summary>
+    /// The actor messages for the completed calculation are enqueued and ready to be consumed by actors
+    /// </summary>
+    ActorMessagesEnqueued,
+
+    /// <summary>
+    /// Enqueuing the completed calculation as actor messages has failed
+    /// </summary>
+    ActorMessagesEnqueuingFailed,
+
+    /// <summary>
+    /// The calculation orchestration is completed (the calculation is completed and actor messages are enqueued)
+    /// </summary>
+    Completed,
 }

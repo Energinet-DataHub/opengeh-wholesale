@@ -31,6 +31,12 @@ public class CompletedCalculationRepository : ICompletedCalculationRepository
         await _context.CompletedCalculations.AddRangeAsync(completedCalculations).ConfigureAwait(false);
     }
 
+    public Task<CompletedCalculation> GetAsync(Guid calculationId)
+    {
+        return _context.CompletedCalculations
+            .SingleAsync(c => c.Id == calculationId);
+    }
+
     public async Task<CompletedCalculation?> GetLastCompletedOrNullAsync()
     {
         return await _context.CompletedCalculations
