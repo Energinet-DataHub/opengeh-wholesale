@@ -25,8 +25,6 @@ class ChargePricesV1ColumnNames:
     calculation_type = CalculationsColumnName.calculation_type
     charge_type = ChargePricePointsColname.charge_type
     charge_owner_id = ChargePricePointsColname.charge_owner_id
-    charge_price = ChargePricePointsColname.charge_price
-    charge_time = ChargePricePointsColname.charge_time
     charge_code = ChargePricePointsColname.charge_code
     resolution = ChargeMasterDataPeriodsColname.resolution
     is_tax = ChargeMasterDataPeriodsColname.is_tax

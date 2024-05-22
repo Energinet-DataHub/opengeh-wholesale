@@ -28,8 +28,8 @@ from features.utils.dataframes.settlement_report.settlement_report_view_column_n
 
 charge_time_and_price = StructType(
     [
-        StructField(ChargePricesV1ColumnNames.charge_time, TimestampType(), False),
-        StructField(ChargePricesV1ColumnNames.charge_price, DecimalType(18, 6), False),
+        StructField("time", TimestampType(), False),
+        StructField("price", DecimalType(18, 6), False),
     ]
 )
 
