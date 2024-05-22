@@ -44,7 +44,7 @@ charge_prices_v1_view_schema = StructType(
         StructField(ChargePricesV1ColumnNames.is_tax, BooleanType(), False),
         StructField(ChargePricesV1ColumnNames.start_date_time, TimestampType(), False),
         StructField(
-            ChargePricesV1ColumnNames.prices,
+            ChargePricesV1ColumnNames.price_points,
             ArrayType(price_point, False),
             False,
         ),
