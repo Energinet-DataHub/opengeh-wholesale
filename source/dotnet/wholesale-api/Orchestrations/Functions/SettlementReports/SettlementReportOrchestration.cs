@@ -41,7 +41,7 @@ internal sealed class SettlementReportOrchestration
             settlementReportRequest);
 
         var scatterResults = await context
-            .CallActivityAsync<IEnumerable<SettlementReportFileRequestDto>>(nameof(ScatterSettlementReportFilesActivity), scatterInput);
+            .CallActivityAsync<SettlementReportFileRequestDto[]>(nameof(ScatterSettlementReportFilesActivity), scatterInput);
 
         var coldRetryHandler = TaskOptions.FromRetryHandler(retryContext => HandleColdDataSource(
                 retryContext,

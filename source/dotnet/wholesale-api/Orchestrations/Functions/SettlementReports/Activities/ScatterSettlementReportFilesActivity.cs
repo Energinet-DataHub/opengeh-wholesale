@@ -29,7 +29,7 @@ public sealed class ScatterSettlementReportFilesActivity
     }
 
     [Function(nameof(ScatterSettlementReportFilesActivity))]
-    public Task<IEnumerable<SettlementReportFileRequestDto>> Run([ActivityTrigger] ScatterSettlementReportFilesInput input)
+    public Task<SettlementReportFileRequestDto[]> Run([ActivityTrigger] ScatterSettlementReportFilesInput input)
     {
         return _settlementReportRequestHandler.RequestReportAsync(new SettlementReportRequestId(input.InstanceId), input.Request);
     }
