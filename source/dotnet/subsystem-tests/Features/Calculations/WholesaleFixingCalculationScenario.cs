@@ -22,7 +22,6 @@ using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Xunit;
-using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations;
 
@@ -364,5 +363,17 @@ AppDependencies
 
         // Assert
         Fixture.ScenarioState.ReceivedTotalMonthlyAmountResultProducedV1.Count.Should().Be(expected);
+    }
+
+    [ScenarioStep(18)]
+    [SubsystemFact]
+    public async Task AndThen_OneTableInEachPublicDataModelsMustExistsAndContainData()
+    {
+        var publicDataModelsAndTables = new List<Tuple<string, string>>
+        {
+            new("settlement_report", "metering_point_periods_v1"),
+        };
+        var actual = await Fixture.ArePublicDataModelsAccessibleAsync(publicDataModelsAndTables);
+        actual.Should().Be(true);
     }
 }

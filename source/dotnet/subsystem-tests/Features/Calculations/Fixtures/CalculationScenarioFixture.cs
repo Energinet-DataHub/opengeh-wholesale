@@ -14,7 +14,6 @@
 
 using System.Diagnostics;
 using System.Globalization;
-using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
 using Azure;
@@ -23,6 +22,7 @@ using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
 using Azure.Monitor.Query;
 using Azure.Monitor.Query.Models;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents;
@@ -35,6 +35,8 @@ using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Extensions;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using Energinet.DataHub.Wholesale.Test.Core;
 using Google.Protobuf.WellKnownTypes;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Xunit.Abstractions;
 
@@ -52,9 +54,31 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
         ServiceBusClient = new ServiceBusClient(Configuration.ServiceBus.ConnectionString);
         ScenarioState = new CalculationScenarioState();
         LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
+        DatabricksSqlWarehouseQueryExecutor = GetDatabricksSqlWarehouseQueryExecutor();
+    }
+
+    private DatabricksSqlWarehouseQueryExecutor GetDatabricksSqlWarehouseQueryExecutor()
+    {
+        var inMemorySettings = new Dictionary<string, string>
+        {
+            { "WorkspaceUrl", Configuration.DatabricksWorkspace.BaseUrl },
+            { "WorkspaceToken", Configuration.DatabricksWorkspace.Token },
+            { "WarehouseId", Configuration.DatabricksWorkspace.WarehouseId },
+        };
+
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(inMemorySettings!)
+            .Build();
+
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddDatabricksSqlStatementExecution(configuration);
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        return serviceProvider.GetRequiredService<DatabricksSqlWarehouseQueryExecutor>();
     }
 
     public CalculationScenarioState ScenarioState { get; }
+
+    public DatabricksSqlWarehouseQueryExecutor DatabricksSqlWarehouseQueryExecutor { get; set; }
 
     /// <summary>
     /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
@@ -199,6 +223,28 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
             testFileName,
             "grid_area_code,energy_supplier_id,balance_responsible_id,quantity,quantity_qualities,time,aggregation_level,time_series_type,calculation_id,calculation_type,calculation_execution_time_start,out_grid_area_code,calculation_result_id,metering_point_id,resolution",
             ParseGridLossProducedV1TimeSeriesPoint);
+    }
+
+    public async Task<bool> ArePublicDataModelsAccessibleAsync(IList<Tuple<string, string>> modelsAndTables)
+    {
+        var ok = true;
+        foreach (var model in modelsAndTables)
+        {
+            try
+            {
+                var statement = DatabricksStatement.FromRawSql($"SELECT * FROM {model.Item1}.{model.Item2} LIMIT 1");
+                var result = DatabricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement.Build());
+                var list = await result.ToListAsync();
+                if (list.Count == 0) throw new Exception("Missing data in table");
+            }
+            catch (Exception e)
+            {
+                ok = false;
+                DiagnosticMessageSink.WriteDiagnosticMessage($"Table '{model.Item2}' in model '{model.Item1}' is either missing or doesn't contain data. Exception: {e.Message}");
+            }
+        }
+
+        return ok;
     }
 
     protected override async Task OnInitializeAsync()
