@@ -29,7 +29,9 @@ internal sealed class SettlementReportRequestTrigger
     private readonly IUserContext<FrontendUser> _userContext;
     private readonly ISettlementReportInitializeHandler _settlementReportInitializeHandler;
 
-    public SettlementReportRequestTrigger(IUserContext<FrontendUser> userContext, ISettlementReportInitializeHandler settlementReportInitializeHandler)
+    public SettlementReportRequestTrigger(
+        IUserContext<FrontendUser> userContext,
+        ISettlementReportInitializeHandler settlementReportInitializeHandler)
     {
         _userContext = userContext;
         _settlementReportInitializeHandler = settlementReportInitializeHandler;
@@ -43,6 +45,15 @@ internal sealed class SettlementReportRequestTrigger
         [DurableClient] DurableTaskClient client,
         FunctionContext executionContext)
     {
+        if (!_userContext.CurrentUser.MultiTenancy && settlementReportRequest.Filter.EnergySupplier != null)
+        {
+            // Energy Supplier filtering is only supporter, if user works across tenants.
+            settlementReportRequest = settlementReportRequest with
+            {
+                Filter = settlementReportRequest.Filter with { EnergySupplier = null },
+            };
+        }
+
         var instanceId = await client
             .ScheduleNewOrchestrationInstanceAsync(nameof(SettlementReportOrchestration.OrchestrateSettlementReport), settlementReportRequest)
             .ConfigureAwait(false);

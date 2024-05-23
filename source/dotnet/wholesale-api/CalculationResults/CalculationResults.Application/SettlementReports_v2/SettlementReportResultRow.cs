@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementR
 public sealed record SettlementReportResultRow(
     Instant Time,
     decimal Quantity,
-    GridAreaCode GridAreaCode,
+    string GridAreaCode,
     Resolution Resolution,
     MeteringPointType? MeteringPointType,
     SettlementMethod? SettlementMethod);

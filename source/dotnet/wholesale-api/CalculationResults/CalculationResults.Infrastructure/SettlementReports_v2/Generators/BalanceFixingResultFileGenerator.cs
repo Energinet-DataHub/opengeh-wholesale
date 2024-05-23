@@ -52,9 +52,9 @@ public sealed class BalanceFixingResultFileGenerator : ISettlementReportFileGene
             Map(r => r.GridAreaCode)
                 .Name("METERINGGRIDAREAID")
                 .Index(0)
-                .Convert(row => row.Value.GridAreaCode.Code);
+                .Convert(row => row.Value.GridAreaCode);
 
-            Map(r => r.GridAreaCode)
+            Map(r => r.Quantity)
                 .Name("ENERGYBUSINESSPROCESS")
                 .Index(1)
                 .Convert(_ => "D04");
@@ -101,7 +101,7 @@ public sealed class BalanceFixingResultFileGenerator : ISettlementReportFileGene
                 .Index(6)
                 .Data.TypeConverterOptions.Formats = ["0.000"];
 
-            Map(r => r.GridAreaCode)
+            Map(r => r.Quantity)
                 .Name("ENERGYSUPPLIERID")
                 .Index(7)
                 .Convert(_ => string.Empty);
