@@ -76,7 +76,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
 
         // Assert
         using var assertionScope = new AssertionScope();
-        isCompletedOrFailed.Should().BeTrue();
+        isCompletedOrFailed.Should().BeTrue("Calculation took too long. Wait time exceeded.");
         calculation.Should().NotBeNull();
         calculation!.ExecutionState.Should().Be(Clients.v3.CalculationState.Completed);
         calculation.OrchestrationState.Should().NotBe(Clients.v3.CalculationOrchestrationState.CalculationFailed);
