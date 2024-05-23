@@ -1,4 +1,7 @@
-CREATE VIEW {SETTLEMENT_REPORT_DATABASE_NAME}.energy_results_v1 as
+DROP VIEW IF EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.energy_results_v1
+GO
+
+CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.energy_results_v1 as
 SELECT e.calculation_id,
        e.calculation_type,
        e.grid_area_code,
@@ -17,7 +20,7 @@ SELECT e.calculation_id,
            WHEN e.time_series_type = 'total_consumption' THEN NULL
        END as settlement_method,
        e.resolution,
-       e.time,
+       e.time as start_date_time,
        e.quantity,
        e.energy_supplier_id,
        e.aggregation_level

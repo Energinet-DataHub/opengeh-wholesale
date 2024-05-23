@@ -139,6 +139,8 @@ public class OrchestrationsAppFixture : IAsyncLifetime
     public async Task DisposeAsync()
     {
         AppHostManager.Dispose();
+        await ServiceBusListenerMock.DisposeAsync();
+        await ServiceBusResourceProvider.DisposeAsync();
         MockServer.Dispose();
         DurableTaskManager.Dispose();
         AzuriteManager.Dispose();
@@ -241,7 +243,7 @@ public class OrchestrationsAppFixture : IAsyncLifetime
             "settlement-report-container");
         appHostSettings.ProcessEnvironmentVariables.Add(
             $"{SettlementReportStorageOptions.SectionName}__{nameof(SettlementReportStorageOptions.StorageAccountUri)}",
-            AzuriteManager.BlobStorageServiceUri.ToString());
+            AzuriteManager.BlobStorageServiceUri + "/");
 
         // Override default CalculationJob status monitor configuration
         appHostSettings.ProcessEnvironmentVariables.Add(

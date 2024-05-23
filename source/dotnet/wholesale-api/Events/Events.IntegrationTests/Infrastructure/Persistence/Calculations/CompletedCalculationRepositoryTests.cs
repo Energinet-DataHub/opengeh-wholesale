@@ -19,6 +19,7 @@ using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedCal
 using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using NodaTime;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Events.IntegrationTests.Infrastructure.Persistence.Calculations;
@@ -48,6 +49,48 @@ public class CompletedCalculationRepositoryTests : IClassFixture<WholesaleDataba
         await using var readContext = _databaseManager.CreateDbContext();
         var actual = await readContext.CompletedCalculations.SingleAsync(b => b.Id == expectedCalculation.Id);
 
+        actual.Should().BeEquivalentTo(expectedCalculation);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task AddAsync_WhenPublished_AddsCompletedCalculationWithExpectedPublishTime(CompletedCalculation expectedCalculation)
+    {
+        // Arrange
+        await using var writeContext = _databaseManager.CreateDbContext();
+        var sut = new CompletedCalculationRepository(writeContext);
+        var publishedTime = Instant.FromUtc(2024, 2, 2, 13, 37);
+        expectedCalculation.SetPublished(publishedTime);
+
+        // Act
+        await sut.AddAsync(new[] { expectedCalculation });
+        await writeContext.SaveChangesAsync();
+
+        // Assert
+        await using var readContext = _databaseManager.CreateDbContext();
+        var actual = await readContext.CompletedCalculations.SingleAsync(b => b.Id == expectedCalculation.Id);
+
+        actual.PublishedTime.Should().Be(publishedTime);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetAsync_RetrievesCompletedCalculationWithExpectedData(CompletedCalculation expectedCalculation)
+    {
+        // Arrange
+        await using (var writeContext = _databaseManager.CreateDbContext())
+        {
+            writeContext.CompletedCalculations.Add(expectedCalculation);
+            await writeContext.SaveChangesAsync();
+        }
+
+        await using var readContext = _databaseManager.CreateDbContext();
+        var sut = new CompletedCalculationRepository(readContext);
+
+        // Act
+        var actual = await sut.GetAsync(expectedCalculation.Id);
+
+        // Assert
         actual.Should().BeEquivalentTo(expectedCalculation);
     }
 }

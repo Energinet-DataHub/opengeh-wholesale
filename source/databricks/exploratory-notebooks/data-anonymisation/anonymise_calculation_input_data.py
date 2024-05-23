@@ -316,7 +316,7 @@ df_source_mp_table_anonymised = (
     .withColumn(parent_metering_point_id_column_name, F.col(anonymised_mp_id_column_name))
     .drop(anonymised_mp_id_column_name)
     .join(df_anonymised_suppliers_and_balancers, [(df_anonymised_suppliers_and_balancers[tmp_balance_and_supplier_id_column_name]==df_source_mp_table.energy_supplier_id) | (df_anonymised_suppliers_and_balancers[tmp_balance_and_supplier_id_column_name]==df_source_mp_table.balance_responsible_id)], "left")
-    .withColumn(tmp_balance_and_supplier_id_column_name, F.col(anonymised_balance_or_supplier_id_column_name))
+    .withColumn(energy_supplier_id_column_name, F.col(anonymised_balance_or_supplier_id_column_name))
     .drop(anonymised_balance_or_supplier_id_column_name)
     .join(
         df_anonymised_suppliers_and_balancers.select(

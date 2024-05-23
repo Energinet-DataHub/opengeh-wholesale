@@ -136,11 +136,11 @@ public class CalculationOrchestrationTests : IAsyncLifetime
 
         activities.Should().NotBeNull().And.Equal(
         [
-            "Calculation",
+            "CalculationOrchestration",
             "CreateCalculationRecordActivity",
             "StartCalculationActivity",
             "GetJobStatusActivity",
-            "UpdateCalculationExecutionStatusActivity",
+            "UpdateCalculationStatusActivity",
             "CreateCompletedCalculationActivity",
             "SendCalculationResultsActivity",
             null
@@ -227,7 +227,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         // => Expect history
         using var assertionScope = new AssertionScope();
         var first = completeOrchestrationStatus.History.First();
-        first.Value<string>("FunctionName").Should().Be("Calculation");
+        first.Value<string>("FunctionName").Should().Be("CalculationOrchestration");
 
         var last = completeOrchestrationStatus.History.Last();
         last.Value<string>("EventType").Should().Be("ExecutionCompleted");
@@ -292,7 +292,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         // => Expect history
         using var assertionScope = new AssertionScope();
         var first = completeOrchestrationStatus.History.First();
-        first.Value<string>("FunctionName").Should().Be("Calculation");
+        first.Value<string>("FunctionName").Should().Be("CalculationOrchestration");
 
         var last = completeOrchestrationStatus.History.Last();
         last.Value<string>("EventType").Should().Be("ExecutionCompleted");

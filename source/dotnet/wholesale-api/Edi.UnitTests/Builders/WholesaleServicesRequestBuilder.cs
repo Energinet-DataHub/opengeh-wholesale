@@ -23,7 +23,7 @@ namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 public class WholesaleServicesRequestBuilder
 {
     private string _requestedByActorId = EnergySupplierValidatorTest.ValidGlnNumber;
-    private string _requestedByActorRole = DataHubNames.ActorRole.EnergySupplier;
+    private string _requestedByActorRole = DataHubNames.ActorRole.SystemOperator;
     private string _businessReason = DataHubNames.BusinessReason.WholesaleFixing;
     private string? _resolution;
     private string _periodStart = Instant.FromUtc(2023, 1, 31, 23, 0, 0).ToString();

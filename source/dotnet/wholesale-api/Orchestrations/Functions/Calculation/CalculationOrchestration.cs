@@ -21,11 +21,10 @@ using Microsoft.DurableTask;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation;
 
-#pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
 internal class CalculationOrchestration
 {
-    [Function(nameof(Calculation))]
-    public async Task<string> Calculation(
+    [Function(nameof(CalculationOrchestration))]
+    public async Task<string> Run(
         [OrchestrationTrigger] TaskOrchestrationContext context)
     {
         var input = context.GetInput<CalculationOrchestrationInput>();
@@ -62,7 +61,7 @@ internal class CalculationOrchestration
             {
                 // Update calculation execution status (SQL)
                 await context.CallActivityAsync(
-                    nameof(UpdateCalculationExecutionStatusActivity),
+                    nameof(UpdateCalculationStatusActivity),
                     calculationMetadata);
 
                 // Wait for the next checkpoint
@@ -77,7 +76,7 @@ internal class CalculationOrchestration
 
         // Update calculation execution status (SQL)
         await context.CallActivityAsync(
-            nameof(UpdateCalculationExecutionStatusActivity),
+            nameof(UpdateCalculationStatusActivity),
             calculationMetadata);
 
         if (calculationMetadata.JobStatus == CalculationState.Completed)
@@ -97,6 +96,7 @@ internal class CalculationOrchestration
                 nameof(SendCalculationResultsActivity),
                 calculationMetadata.Id);
             calculationMetadata.OrchestrationProgress = "CalculationResultsSend";
+
             context.SetCustomStatus(calculationMetadata);
         }
         else
@@ -106,8 +106,8 @@ internal class CalculationOrchestration
             return $"Error: Job status '{calculationMetadata.JobStatus}'.";
         }
 
-        // TODO: Could wait for an event to notiy us that messages are ready for customer in EDI
+        // TODO: Wait for an event to notify us that messages are ready for customer in EDI, and update orchestration status
+        // TODO: Set calculation orchestration status to completed
         return "Success";
     }
 }
-#pragma warning restore CA2007 // Consider calling ConfigureAwait on the awaited task
