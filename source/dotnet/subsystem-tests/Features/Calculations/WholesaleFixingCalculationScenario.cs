@@ -370,11 +370,16 @@ AppDependencies
     [SubsystemFact]
     public async Task AndThen_OneTableInEachPublicDataModelsMustExistsAndContainData()
     {
+        // Arrange
         var publicDataModelsAndTables = new List<Tuple<string, string>>
         {
             new("settlement_report", "metering_point_periods_v1"),
         };
+
+        // Act
         var actual = await Fixture.ArePublicDataModelsAccessibleAsync(publicDataModelsAndTables);
+
+        // Assert
         actual.Should().Be(true);
     }
 }
