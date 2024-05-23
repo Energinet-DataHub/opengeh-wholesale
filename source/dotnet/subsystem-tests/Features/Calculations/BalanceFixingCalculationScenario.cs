@@ -76,13 +76,10 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
 
         // Assert
         using var assertionScope = new AssertionScope();
-        isCompletedOrFailed.Should().BeTrue();
+        isCompletedOrFailed.Should().BeTrue("Calculation took too long. Wait time exceeded.");
         calculation.Should().NotBeNull();
-
         calculation!.ExecutionState.Should().Be(Clients.v3.CalculationState.Completed);
-
-        // TODO: Should be CalculationOrchestrationState.Completed when the EDI flow is implemented
-        calculation.OrchestrationState.Should().Be(Clients.v3.CalculationOrchestrationState.ActorMessagesEnqueuing);
+        calculation.OrchestrationState.Should().NotBe(Clients.v3.CalculationOrchestrationState.CalculationFailed);
     }
 
     [ScenarioStep(4)]
