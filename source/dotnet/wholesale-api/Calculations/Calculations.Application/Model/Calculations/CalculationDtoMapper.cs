@@ -36,25 +36,7 @@ public class CalculationDtoMapper : ICalculationDtoMapper
             calculation.CalculationType,
             calculation.CreatedByUserId,
             calculation.Version,
-            MapOrchestrationState(calculation.ExecutionState));
-    }
-
-    private CalculationOrchestrationState MapOrchestrationState(CalculationExecutionState state)
-    {
-        return state switch
-        {
-            CalculationExecutionState.Created => CalculationOrchestrationState.Scheduled,
-            CalculationExecutionState.Submitted => CalculationOrchestrationState.Scheduled,
-            CalculationExecutionState.Pending => CalculationOrchestrationState.Scheduled,
-            CalculationExecutionState.Executing => CalculationOrchestrationState.Calculating,
-            CalculationExecutionState.Completed => CalculationOrchestrationState.Calculated,
-            CalculationExecutionState.Failed => CalculationOrchestrationState.CalculationFailed,
-
-            _ => throw new ArgumentOutOfRangeException(
-                nameof(state),
-                actualValue: state,
-                "Value cannot be mapped to a CalculationOrchestrationState."),
-        };
+            calculation.OrchestrationState);
     }
 
     private static Interfaces.Models.CalculationState MapState(CalculationExecutionState state)

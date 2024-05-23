@@ -18,6 +18,8 @@ public interface ICompletedCalculationRepository
 {
     Task AddAsync(IEnumerable<CompletedCalculation> completedCalculations);
 
+    Task<CompletedCalculation> GetAsync(Guid calculationId);
+
     Task<CompletedCalculation?> GetLastCompletedOrNullAsync();
 
     Task<CompletedCalculation?> GetNextUnpublishedOrNullAsync();
