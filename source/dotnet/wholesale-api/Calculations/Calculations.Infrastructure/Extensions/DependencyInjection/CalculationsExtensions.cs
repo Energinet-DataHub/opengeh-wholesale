@@ -37,7 +37,7 @@ public static class CalculationsExtensions
     public static IServiceCollection AddCalculationsModule(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<ICalculationsClient, CalculationsClient>();
-        services.AddScoped<ICalculationExecutionStateInfrastructureService, CalculationExecutionStateInfrastructureService>();
+        services.AddScoped<ICalculationStateInfrastructureService, CalculationStateInfrastructureService>();
         services.AddScoped<ICalculationInfrastructureService, CalculationInfrastructureService>();
         services.AddScoped<ICalculationFactory, CalculationFactory>();
         services.AddScoped<ICalculationRepository, CalculationRepository>();
@@ -72,7 +72,7 @@ public static class CalculationsExtensions
 
         services.AddScoped<ICreateCalculationHandler, CreateCalculationHandler>();
         services.AddScoped<IStartCalculationHandler, StartCalculationHandler>();
-        services.AddScoped<IUpdateCalculationExecutionStateHandler, UpdateCalculationExecutionStateHandler>();
+        services.AddScoped<IUpdateCalculationStateHandler, UpdateCalculationStateHandler>();
 
         return services;
     }
