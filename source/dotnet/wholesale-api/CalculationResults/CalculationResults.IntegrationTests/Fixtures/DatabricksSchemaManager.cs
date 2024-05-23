@@ -127,6 +127,7 @@ public class DatabricksSchemaManager
             .Replace("{INPUT_DATABASE_NAME}", DeltaTableOptions.Value.SCHEMA_NAME)
             .Replace("{BASIS_DATA_DATABASE_NAME}", DeltaTableOptions.Value.BasisDataSchemaName)
             .Replace("{SETTLEMENT_REPORT_DATABASE_NAME}", DeltaTableOptions.Value.SettlementReportSchemaName)
+            .Replace("{EDI_RESULTS_DATABASE_NAME}", DeltaTableOptions.Value.EdiResultsSchemaName)
             .Replace("{TEST}", "--");
     }
 
