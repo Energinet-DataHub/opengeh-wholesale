@@ -147,9 +147,9 @@ public class Calculation
                 CalculationOrchestrationState.Calculating => [CalculationOrchestrationState.Calculated, CalculationOrchestrationState.CalculationFailed, CalculationOrchestrationState.Scheduled],
                 CalculationOrchestrationState.Calculated => [CalculationOrchestrationState.ActorMessagesEnqueuing],
                 CalculationOrchestrationState.CalculationFailed => [CalculationOrchestrationState.Scheduled],
-                CalculationOrchestrationState.ActorMessagesEnqueuing => [CalculationOrchestrationState.ActorMessagesEnqueued, CalculationOrchestrationState.MessagesEnqueuingFailed],
+                CalculationOrchestrationState.ActorMessagesEnqueuing => [CalculationOrchestrationState.ActorMessagesEnqueued, CalculationOrchestrationState.ActorMessagesEnqueuingFailed],
                 CalculationOrchestrationState.ActorMessagesEnqueued => [CalculationOrchestrationState.Completed],
-                CalculationOrchestrationState.MessagesEnqueuingFailed => [], // We do not support retries, so we are stuck in failed
+                CalculationOrchestrationState.ActorMessagesEnqueuingFailed => [], // We do not support retries, so we are stuck in failed
                 CalculationOrchestrationState.Completed => [],
                 _ => throw new ArgumentOutOfRangeException(nameof(_orchestrationState), _orchestrationState, "Unsupported CalculationOrchestrationState to get valid state transitions for"),
             };
@@ -317,7 +317,7 @@ public class Calculation
 
     public void MarkAsMessagesEnqueuingFailed()
     {
-        OrchestrationState = CalculationOrchestrationState.MessagesEnqueuingFailed;
+        OrchestrationState = CalculationOrchestrationState.ActorMessagesEnqueuingFailed;
     }
 
     public void MarkAsCompleted(Instant completedAt)

@@ -103,7 +103,7 @@ public class CalculationStateInfrastructureService : ICalculationStateInfrastruc
             case CalculationOrchestrationState.ActorMessagesEnqueued:
                 calculation.MarkAsActorMessagesEnqueued(_clock.GetCurrentInstant());
                 break;
-            case CalculationOrchestrationState.MessagesEnqueuingFailed:
+            case CalculationOrchestrationState.ActorMessagesEnqueuingFailed:
                 calculation.MarkAsMessagesEnqueuingFailed();
                 break;
             case CalculationOrchestrationState.Completed:

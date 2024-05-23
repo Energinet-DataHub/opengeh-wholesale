@@ -49,7 +49,7 @@ internal class ActorMessagesEnqueuedTrigger(ILogger<ActorMessagesEnqueuedTrigger
 
         await durableTaskClient.RaiseEventAsync(
                 messageEnqueuedEvent.OrchestrationInstanceId,
-                MessagesEnqueuedV1.EventName,
+                messageEnqueuedEvent.EventName,
                 messageEnqueuedEvent)
             .ConfigureAwait(false);
     }

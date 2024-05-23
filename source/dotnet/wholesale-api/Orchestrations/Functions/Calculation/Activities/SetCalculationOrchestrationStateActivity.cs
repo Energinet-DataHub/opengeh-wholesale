@@ -24,43 +24,23 @@ using NodaTime;
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
 
 #pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
-internal class UpdateCalculationStatusActivity(
+internal class SetCalculationOrchestrationStateActivity(
     IClock clock,
     IUnitOfWork calculationUnitOfWork,
     ICalculationRepository calculationRepository)
 {
-    private readonly IClock _clock = clock;
-    private readonly IUnitOfWork _calculationUnitOfWork = calculationUnitOfWork;
-    private readonly ICalculationRepository _calculationRepository = calculationRepository;
-
     /// <summary>
     /// Update calculation status record in SQL database.
     /// </summary>
-    [Function(nameof(UpdateCalculationStatusActivity))]
+    [Function(nameof(SetCalculationOrchestrationStateActivity))]
     public async Task Run(
-        [ActivityTrigger] CalculationMetadata calculationMetadata)
+        [ActivityTrigger] SetCalculationOrchestrationStateInput input)
     {
-        var calculation = await _calculationRepository.GetAsync(calculationMetadata.Id);
+        var calculation = await calculationRepository.GetAsync(input.CalculationId);
 
-        if (calculationMetadata.JobStatus == CalculationState.Canceled)
-        {
-            // Jobs may be cancelled in Databricks for various reasons. For example they can be cancelled due to migrations in CD
-            // Setting calculation state back to "created" ensure they will be picked up and started again
-            // TODO: Is this still handled after moving to durable function?
-            calculation.Reset();
-        }
-        else
-        {
-            var newState = CalculationStateMapper.MapState(calculationMetadata.JobStatus);
+        UpdateState(calculation, input.State);
 
-            // If state wasn't changed, do nothing
-            if (calculation.OrchestrationState == newState)
-                return;
-
-            UpdateState(calculation, newState);
-        }
-
-        await _calculationUnitOfWork.CommitAsync();
+        await calculationUnitOfWork.CommitAsync();
     }
 
     private void UpdateState(Calculations.Application.Model.Calculations.Calculation calculation, CalculationOrchestrationState newState)
@@ -74,22 +54,22 @@ internal class UpdateCalculationStatusActivity(
                 calculation.MarkAsCalculating();
                 break;
             case CalculationOrchestrationState.Calculated:
-                calculation.MarkAsCalculated(_clock.GetCurrentInstant());
+                calculation.MarkAsCalculated(clock.GetCurrentInstant());
                 break;
             case CalculationOrchestrationState.CalculationFailed:
                 calculation.MarkAsCalculationFailed();
                 break;
             case CalculationOrchestrationState.ActorMessagesEnqueuing:
-                calculation.MarkAsActorMessagesEnqueuing(_clock.GetCurrentInstant());
+                calculation.MarkAsActorMessagesEnqueuing(clock.GetCurrentInstant());
                 break;
             case CalculationOrchestrationState.ActorMessagesEnqueued:
-                calculation.MarkAsActorMessagesEnqueued(_clock.GetCurrentInstant());
+                calculation.MarkAsActorMessagesEnqueued(clock.GetCurrentInstant());
                 break;
             case CalculationOrchestrationState.ActorMessagesEnqueuingFailed:
                 calculation.MarkAsMessagesEnqueuingFailed();
                 break;
             case CalculationOrchestrationState.Completed:
-                calculation.MarkAsCompleted(_clock.GetCurrentInstant());
+                calculation.MarkAsCompleted(clock.GetCurrentInstant());
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(newState), newState, $"Unexpected orchestration state: {newState}.");

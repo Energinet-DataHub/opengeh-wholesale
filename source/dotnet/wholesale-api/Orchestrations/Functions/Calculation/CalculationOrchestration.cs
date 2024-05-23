@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.EnergySupplying.RequestResponse.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
@@ -103,11 +105,61 @@ internal class CalculationOrchestration
         {
             calculationMetadata.OrchestrationProgress = "CalculationJobFailed";
             context.SetCustomStatus(calculationMetadata);
-            return $"Error: Job status '{calculationMetadata.JobStatus}'.";
+            return $"Error: Job status '{calculationMetadata.JobStatus}'";
         }
 
-        // TODO: Wait for an event to notify us that messages are ready for customer in EDI, and update orchestration status
+        // Wait for an ActorMessagesEnqueued event to notify us that messages are ready to be consumed by actors
+        // Pattern #5: Human interaction - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview?tabs=isolated-process%2Cnodejs-v3%2Cv1-model&pivots=csharp#human
+        var waitForActorMessagesEnqueuedEventResult = await WaitForActorMessagesEnqueuedEvent(context, calculationMetadata.Id);
+        if (!waitForActorMessagesEnqueuedEventResult.Success)
+        {
+            calculationMetadata.OrchestrationProgress = waitForActorMessagesEnqueuedEventResult.Error ?? "UnknownWaitForActorMessagesEnqueuedEventError";
+            context.SetCustomStatus(calculationMetadata);
+            return $"Error: {waitForActorMessagesEnqueuedEventResult.ErrorDescription}";
+        }
+
+        calculationMetadata.OrchestrationProgress = "ActorMessagesEnqueued";
+        context.SetCustomStatus(calculationMetadata);
+
+        // Update calculation state to ActorMessagesEnqueued in database
+        await context.CallActivityAsync(
+            nameof(SetCalculationOrchestrationStateActivity),
+            CalculationOrchestrationState.ActorMessagesEnqueued);
+
         // TODO: Set calculation orchestration status to completed
         return "Success";
+    }
+
+    private static async Task<(bool Success, string? Error, string? ErrorDescription)> WaitForActorMessagesEnqueuedEvent(
+        TaskOrchestrationContext context,
+        Guid calculationId)
+    {
+        using (var timeoutCts = new CancellationTokenSource())
+        {
+            // TODO: Get timeout from config
+            var timeoutAt = context.CurrentUtcDateTime.AddHours(1);
+
+            var waitForTimeoutTask = context.CreateTimer(timeoutAt, timeoutCts.Token);
+
+            // ReSharper disable once MethodSupportsCancellation
+            // Cancellation is handled by the waitForTimeoutTask, so the cancellation token shouldn't be passed to waiting for the actual event
+            var waitForMessagesEnqueuedEventTask = context.WaitForExternalEvent<MessagesEnqueuedV1>(MessagesEnqueuedV1.EventName);
+
+            var finishedTask = await Task.WhenAny(waitForMessagesEnqueuedEventTask, waitForTimeoutTask);
+            if (finishedTask == waitForMessagesEnqueuedEventTask)
+            {
+                var messagesEnqueuedEvent = waitForMessagesEnqueuedEventTask.Result;
+                if (!Guid.TryParse(messagesEnqueuedEvent.CalculationId, out var messagesEnqueuedCalculationId) || messagesEnqueuedCalculationId != calculationId)
+                    return (false, "ActorMessagesEnqueuedCalculationIdMismatch", $"Error: Calculation id mismatch for actor messages enqueued event (expected: {calculationId}, actual: {messagesEnqueuedEvent.CalculationId})");
+            }
+            else
+            {
+                return (false, "ActorMessagesEnqueuingTimeout", "Error: Timeout while waiting for actor messages enqueued event");
+            }
+
+            await timeoutCts.CancelAsync();
+        }
+
+        return (true, null, null);
     }
 }
