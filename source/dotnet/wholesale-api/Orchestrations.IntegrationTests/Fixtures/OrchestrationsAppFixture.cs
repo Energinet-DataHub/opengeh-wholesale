@@ -243,7 +243,7 @@ public class OrchestrationsAppFixture : IAsyncLifetime
             "settlement-report-container");
         appHostSettings.ProcessEnvironmentVariables.Add(
             $"{SettlementReportStorageOptions.SectionName}__{nameof(SettlementReportStorageOptions.StorageAccountUri)}",
-            AzuriteManager.BlobStorageServiceUri.ToString());
+            AzuriteManager.BlobStorageServiceUri + "/");
 
         // Override default CalculationJob status monitor configuration
         appHostSettings.ProcessEnvironmentVariables.Add(
