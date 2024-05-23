@@ -28,13 +28,14 @@ public static class StorageExtensions
     {
         services
             .AddOptions<SettlementReportStorageOptions>()
-            .BindConfiguration(SettlementReportStorageOptions.SectionName);
+            .BindConfiguration(SettlementReportStorageOptions.SectionName)
+            .ValidateDataAnnotations();
 
         services.AddScoped<ISettlementReportFileRepository, SettlementReportFileBlobStorage>(serviceProvider =>
         {
             var blobSettings = serviceProvider.GetRequiredService<IOptions<SettlementReportStorageOptions>>().Value;
 
-            var blobContainerUri = new Uri(blobSettings.StorageAccountUri + "/" + blobSettings.StorageContainerName);
+            var blobContainerUri = new Uri(blobSettings.StorageAccountUri, blobSettings.StorageContainerName);
             var blobContainerClient = new BlobContainerClient(blobContainerUri, new DefaultAzureCredential());
 
             return new SettlementReportFileBlobStorage(blobContainerClient);

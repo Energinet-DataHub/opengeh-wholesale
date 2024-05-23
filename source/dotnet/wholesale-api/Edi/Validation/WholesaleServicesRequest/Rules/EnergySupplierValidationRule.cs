@@ -12,9 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Edi.Validation.Helpers;
 
-public interface IUpdateCalculationExecutionStateHandler
+namespace Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules;
+
+public class EnergySupplierValidationRule : IValidationRule<DataHub.Edi.Requests.WholesaleServicesRequest>
 {
-    Task UpdateAsync();
+    public Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.WholesaleServicesRequest subject)
+    {
+        return EnergySupplierIsOnlyAllowedToRequestOwnDataHelper.ValidateAsync(
+            subject.RequestedForActorRole,
+            subject.RequestedForActorNumber,
+            subject.EnergySupplierId);
+    }
 }
