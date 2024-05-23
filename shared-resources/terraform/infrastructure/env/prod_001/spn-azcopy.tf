@@ -20,13 +20,6 @@ resource "azuread_service_principal" "spn_azcopy" {
 # Federated identity credentials for the azcopy service principal
 #
 
-locals {
-  federated_identity_credential = {
-    audience_azuread = "api://AzureADTokenExchange"
-    issuer_github    = "https://token.actions.githubusercontent.com"
-  }
-}
-
 resource "azuread_application_federated_identity_credential" "dev_001" {
   application_object_id = azuread_application.app_azcopy.object_id
 
