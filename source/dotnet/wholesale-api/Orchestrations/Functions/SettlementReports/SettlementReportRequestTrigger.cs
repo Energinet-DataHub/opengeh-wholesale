@@ -47,7 +47,7 @@ internal sealed class SettlementReportRequestTrigger
     {
         if (!_userContext.CurrentUser.MultiTenancy && settlementReportRequest.Filter.EnergySupplier != null)
         {
-            // Energy Supplier filtering is only supporter, if user works across tenants.
+            // Energy Supplier filtering is only supported, if user works across tenants.
             settlementReportRequest = settlementReportRequest with
             {
                 Filter = settlementReportRequest.Filter with { EnergySupplier = null },
