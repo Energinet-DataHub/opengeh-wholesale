@@ -52,7 +52,7 @@ public class EnergySupplierValidatorTest
     }
 
     [Fact]
-    public async Task Validate_WhenEnergySupplierAndEnergySupplierIsValidEicNumber_ReturnsNoValidationErrors()
+    public async Task Validate_WhenEnergySupplierWithValidEicNumber_ReturnsNoValidationErrors()
     {
         // Arrange
         var message = new WholesaleServicesRequestBuilder()
