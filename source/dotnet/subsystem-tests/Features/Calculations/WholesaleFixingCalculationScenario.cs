@@ -80,10 +80,10 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
 
         // Assert
         using var assertionScope = new AssertionScope();
-        isCompletedOrFailed.Should().BeTrue();
+        isCompletedOrFailed.Should().BeTrue("Calculation took too long. Wait time exceeded.");
         calculation.Should().NotBeNull();
-
         calculation!.ExecutionState.Should().Be(Clients.v3.CalculationState.Completed);
+        calculation.OrchestrationState.Should().NotBe(Clients.v3.CalculationOrchestrationState.CalculationFailed);
     }
 
     [ScenarioStep(4)]
@@ -126,6 +126,7 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
         Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1.Should().NotBeEmpty();
         Fixture.ScenarioState.ReceivedTotalMonthlyAmountResultProducedV1.Should().NotBeEmpty();
         Fixture.ScenarioState.ReceivedGridLossProducedV1.Should().NotBeEmpty();
+        // TODO: Assert CalculationCompletedV1 received
     }
 
     [ScenarioStep(6)]

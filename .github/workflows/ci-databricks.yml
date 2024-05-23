@@ -119,6 +119,11 @@ jobs:
                 echo "New migration script file: ${item} can not be later than current datetime"
                 exit 1
               fi
+              # Fail if the first character after the datetime is not an underscore
+              if [[ "${item:12:1}" != "_" ]]; then
+                echo "New migration script file: ${item} does not have an underscore after the datetime"
+                exit 1
+              fi
             fi
           done
 

@@ -10,17 +10,11 @@
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
-// limitations under the License.
+// limitations under the License.using Energinet.DataHub.Wholesale.Common.JobRunner;
 
-namespace Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
+namespace Energinet.DataHub.Wholesale.Calculations.Application;
 
-public interface ICompletedCalculationRepository
+public interface ICalculationStateInfrastructureService
 {
-    Task AddAsync(IEnumerable<CompletedCalculation> completedCalculations);
-
-    Task<CompletedCalculation> GetAsync(Guid calculationId);
-
-    Task<CompletedCalculation?> GetLastCompletedOrNullAsync();
-
-    Task<CompletedCalculation?> GetNextUnpublishedOrNullAsync();
+    Task UpdateStateAsync();
 }

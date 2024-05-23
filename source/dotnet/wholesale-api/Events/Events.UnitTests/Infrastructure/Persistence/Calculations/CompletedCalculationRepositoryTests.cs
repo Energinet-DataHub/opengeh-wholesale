@@ -23,6 +23,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer.NodaTime.Extensions;
 using Moq;
 using Moq.EntityFrameworkCore;
+using NodaTime;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Persistence.Calculations;
@@ -95,8 +96,8 @@ public class CompletedCalculationRepositoryTests
         [Frozen] Mock<EventsDatabaseContext> databaseContextMock)
     {
         // Arrange
-        calculationCompletedFirst.PublishedTime = null;
-        calculationCompletedLast.PublishedTime = null;
+        calculationCompletedFirst.SetPrivateProperty(b => b.PublishedTime, null);
+        calculationCompletedLast.SetPrivateProperty(b => b.PublishedTime, null);
         calculationCompletedLast.SetPrivateProperty(b => b.CompletedTime, calculationCompletedFirst.CompletedTime.PlusSeconds(1));
 
         databaseContextMock
@@ -118,6 +119,7 @@ public class CompletedCalculationRepositoryTests
         [Frozen] Mock<EventsDatabaseContext> databaseContextMock)
     {
         // Arrange
+        publishedCalculation.SetPublished(Instant.FromUtc(2024, 3, 2, 13, 37));
         databaseContextMock
             .Setup<DbSet<CompletedCalculation>>(context => context.CompletedCalculations)
             .ReturnsDbSet(new List<CompletedCalculation> { publishedCalculation });
