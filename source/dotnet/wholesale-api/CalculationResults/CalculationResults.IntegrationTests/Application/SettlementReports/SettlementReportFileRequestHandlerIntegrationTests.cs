@@ -91,12 +91,12 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         var fileContents = generatedFile.Value.Content.ToString();
         var fileLines = fileContents.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 
-        Assert.Equal("STARTDATETIME,RESOLUTIONDURATION,TYPEOFMP,SETTLEMENTMETHOD,ENERGYQUANTITY,ENERGYSUPPLIERID", fileLines[0]);
-        Assert.Equal("2022-01-01T01:00:00Z,PT15M,E18,,1.100,", fileLines[1]);
-        Assert.Equal("2022-01-01T01:00:00Z,PT15M,E18,,2.100,", fileLines[2]);
-        Assert.Equal("2022-01-02T01:00:00Z,PT15M,E18,,2.200,", fileLines[3]);
-        Assert.Equal("2022-01-02T01:00:00Z,PT15M,E18,,1.200,", fileLines[4]);
-        Assert.Equal("2022-01-03T01:00:00Z,PT15M,E18,,3.200,", fileLines[5]);
+        Assert.Equal("METERINGGRIDAREAID,ENERGYBUSINESSPROCESS,STARTDATETIME,RESOLUTIONDURATION,TYPEOFMP,SETTLEMENTMETHOD,ENERGYQUANTITY", fileLines[0]);
+        Assert.Equal("805,D04,2022-01-01T01:00:00Z,PT15M,E18,,1.100", fileLines[1]);
+        Assert.Equal("111,D04,2022-01-01T01:00:00Z,PT15M,E18,,2.100", fileLines[2]);
+        Assert.Equal("111,D04,2022-01-02T01:00:00Z,PT15M,E18,,2.200", fileLines[3]);
+        Assert.Equal("805,D04,2022-01-02T01:00:00Z,PT15M,E18,,1.200", fileLines[4]);
+        Assert.Equal("805,D04,2022-01-03T01:00:00Z,PT15M,E18,,3.200", fileLines[5]);
     }
 
     // NOTE: This will only work with LegacyRepo. When view arrives, this has to be redone.

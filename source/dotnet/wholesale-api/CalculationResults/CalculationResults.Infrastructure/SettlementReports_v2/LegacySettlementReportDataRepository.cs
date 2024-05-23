@@ -63,6 +63,7 @@ public sealed class LegacySettlementReportDataRepository : ISettlementReportData
                 row.Quantity,
                 row.GridArea,
                 resolution,
+                row.CalculationType,
                 row.MeteringPointType,
                 row.SettlementMethod);
         }

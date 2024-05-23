@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
@@ -23,5 +24,6 @@ public sealed record SettlementReportResultRow(
     decimal Quantity,
     string GridAreaCode,
     Resolution Resolution,
+    CalculationType CalculationType,
     MeteringPointType? MeteringPointType,
     SettlementMethod? SettlementMethod);
