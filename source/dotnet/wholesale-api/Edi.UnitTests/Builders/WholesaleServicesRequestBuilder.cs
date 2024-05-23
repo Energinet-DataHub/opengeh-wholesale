@@ -127,4 +127,10 @@ public class WholesaleServicesRequestBuilder
         _chargeType = chargeTypes;
         return this;
     }
+
+    public WholesaleServicesRequestBuilder WithGridArea(string gridAreaCode)
+    {
+        _gridAreaCode = gridAreaCode;
+        return this;
+    }
 }
