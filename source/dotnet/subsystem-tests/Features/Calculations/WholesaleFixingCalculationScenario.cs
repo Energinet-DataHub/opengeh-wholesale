@@ -371,15 +371,18 @@ AppDependencies
     public async Task AndThen_OneTableInEachPublicDataModelsMustExistsAndContainData()
     {
         // Arrange
-        var publicDataModelsAndTables = new List<Tuple<string, string>>
+        var publicDataModelsAndTables = new List<(string Name, string TableName)>
         {
             new("settlement_report", "metering_point_periods_v1"),
         };
 
         // Act
-        var actual = await Fixture.ArePublicDataModelsAccessibleAsync(publicDataModelsAndTables);
+        var results = await Fixture.ArePublicDataModelsAccessibleAsync(publicDataModelsAndTables);
 
         // Assert
-        actual.Should().Be(true);
+        foreach (var actual in results)
+        {
+            actual.IsAccessible.Should().Be(true, actual.ErrorMessage);
+        }
     }
 }

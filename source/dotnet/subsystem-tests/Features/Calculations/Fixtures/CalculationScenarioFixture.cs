@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Globalization;
 using System.Net.Http.Json;
@@ -225,26 +226,38 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
             ParseGridLossProducedV1TimeSeriesPoint);
     }
 
-    public async Task<bool> ArePublicDataModelsAccessibleAsync(IList<Tuple<string, string>> modelsAndTables)
+    public async Task<IReadOnlyList<(bool IsAccessible, string ErrorMessage)>> ArePublicDataModelsAccessibleAsync(
+        IReadOnlyList<(string Name, string TableName)> modelsAndTables)
     {
-        var ok = true;
-        foreach (var model in modelsAndTables)
+        var results = new ConcurrentBag<(bool IsAccessible, string ErrorMessage)>();
+        var tasks = modelsAndTables.Select(async model =>
         {
             try
             {
-                var statement = DatabricksStatement.FromRawSql($"SELECT * FROM {model.Item1}.{model.Item2} LIMIT 1");
+                var statement = DatabricksStatement.FromRawSql($"SELECT * FROM {model.Name}.{model.TableName} LIMIT 1");
                 var result = DatabricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement.Build());
                 var list = await result.ToListAsync();
-                if (list.Count == 0) throw new Exception("Missing data in table");
+                if (list.Count == 0)
+                {
+                    results.Add(new(
+                        false,
+                        $"Table '{model.TableName}' in model '{model.Name}' doesn't contain data."));
+                }
+                else
+                {
+                    results.Add(new(true, string.Empty));
+                }
             }
             catch (Exception e)
             {
-                ok = false;
-                DiagnosticMessageSink.WriteDiagnosticMessage($"Table '{model.Item2}' in model '{model.Item1}' is either missing or doesn't contain data. Exception: {e.Message}");
+                results.Add(new(
+                    false,
+                    $"Table '{model.TableName}' in model '{model.Name}' is missing. Exception: {e.Message}"));
             }
-        }
+        }).ToList();
 
-        return ok;
+        await Task.WhenAll(tasks);
+        return results.ToList();
     }
 
     protected override async Task OnInitializeAsync()

@@ -26,8 +26,6 @@ public static class MessageSinkExtensions
 
     private static DiagnosticMessage CreateDiagnosticMessage(string message)
     {
-        message = $"Mandalorian: {message}";
-        Console.WriteLine(message);
-        return new DiagnosticMessage(message);
+        return new DiagnosticMessage($"Mandalorian: {message}");
     }
 }
