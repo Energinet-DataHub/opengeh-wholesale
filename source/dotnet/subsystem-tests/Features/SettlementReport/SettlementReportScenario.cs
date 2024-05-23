@@ -80,9 +80,9 @@ public class SettlementReportScenario : SubsystemTestsBase<SettlementReportScena
         var (consumptionLines, productionLines, exchangeLines) = Fixture.CountLinesPerTimeSeriesTypes(Fixture.ScenarioState.EntryDataLines);
 
         // Assert
-        productionLines.Should().Be(96); //// 4 x 15 minutes x 24 hours = 96
-        exchangeLines.Should().Be(96);
-        consumptionLines.Should().Be(288); //// 4 x 15 minutes x 24 hours x 3 types of consumption = 288
+        productionLines.Should().Be(24); //// 24 hours
+        exchangeLines.Should().Be(24);
+        consumptionLines.Should().Be(72); //// 24 hours x 3 types of consumption = 72
     }
 
     [ScenarioStep(5)]
@@ -114,6 +114,6 @@ public class SettlementReportScenario : SubsystemTestsBase<SettlementReportScena
         // Assert
         Fixture.GetUtcDate(Fixture.ScenarioState.EntryDataLines.Last())
             .Should()
-            .Be("2022-01-12T22:45:00Z");
+            .Be("2022-01-12T22:00:00Z");
     }
 }
