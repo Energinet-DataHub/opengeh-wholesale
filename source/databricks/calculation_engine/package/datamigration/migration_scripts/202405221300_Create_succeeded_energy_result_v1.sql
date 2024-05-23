@@ -1,4 +1,4 @@
-CREATE VIEW {OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1 as
+CREATE VIEW IF NOT EXISTS {OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1 as
 SELECT c.calculation_id,
        c.calculation_type,
        c.period_start AS calculation_period_start,
