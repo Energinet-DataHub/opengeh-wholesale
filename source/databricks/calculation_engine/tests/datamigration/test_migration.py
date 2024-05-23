@@ -21,6 +21,7 @@ from package.infrastructure.paths import (
     INPUT_DATABASE_NAME,
     BASIS_DATA_DATABASE_NAME,
     SETTLEMENT_REPORT_DATABASE_NAME,
+    EdiResults,
 )
 import package.datamigration.migration as sut
 import package.datamigration.schema_config as schema_config
@@ -194,6 +195,7 @@ def test__current_state_and_migration_scripts__should_give_same_result(
             "{OUTPUT_DATABASE_NAME}": f"{migration_scripts_prefix}{OUTPUT_DATABASE_NAME}",
             "{INPUT_DATABASE_NAME}": f"{migration_scripts_prefix}{INPUT_DATABASE_NAME}",
             "{BASIS_DATA_DATABASE_NAME}": f"{migration_scripts_prefix}{BASIS_DATA_DATABASE_NAME}",
+            "{EDI_RESULTS_DATABASE_NAME}": f"{migration_scripts_prefix}{EdiResults.DATABASE_NAME}",
             "{SETTLEMENT_REPORT_DATABASE_NAME}": f"{migration_scripts_prefix}{SETTLEMENT_REPORT_DATABASE_NAME}",
             "{OUTPUT_FOLDER}": f"{migration_scripts_prefix}migration_test",
             "{BASIS_DATA_FOLDER}": f"{migration_scripts_prefix}basis_folder",
