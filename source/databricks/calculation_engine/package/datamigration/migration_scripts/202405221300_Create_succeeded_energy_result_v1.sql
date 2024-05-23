@@ -38,6 +38,6 @@ SELECT c.calculation_id,
            WHEN e.time_series_type = 'flex_consumption' THEN 'flex'
            WHEN e.time_series_type = 'temp_flex_consumption' THEN 'flex'
        END as settlement_method,
-    e.metering_point_id
+       e.metering_point_id
 FROM {OUTPUT_DATABASE_NAME}.energy_results AS e
 INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = e.calculation_id
