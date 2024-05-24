@@ -41,9 +41,10 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
         var target = new SettlementReportRepository(writeContext);
 
         var requestFilterDto = new SettlementReportRequestFilterDto(
-            [new GridAreaCode("805"), new GridAreaCode("806")],
+            [new CalculationFilterDto("D116DD8A-898E-48F1-8200-D31D12F82545", "805"), new CalculationFilterDto("D116DD8A-898E-48F1-8200-D31D12F82545", "806")],
             new DateTimeOffset(2024, 1, 1, 22, 0, 0, TimeSpan.Zero),
             new DateTimeOffset(2024, 2, 1, 22, 0, 0, TimeSpan.Zero),
+            null,
             null);
 
         var settlementReportRequest = new SettlementReport(
@@ -80,9 +81,10 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
     {
         // Arrange
         var requestFilterDto = new SettlementReportRequestFilterDto(
-            [new GridAreaCode("805"), new GridAreaCode("806")],
+            [new CalculationFilterDto("D116DD8A-898E-48F1-8200-D31D12F82545", "805"), new CalculationFilterDto("D116DD8A-898E-48F1-8200-D31D12F82545", "806")],
             new DateTimeOffset(2024, 1, 1, 22, 0, 0, TimeSpan.Zero),
             new DateTimeOffset(2024, 2, 1, 22, 0, 0, TimeSpan.Zero),
+            null,
             null);
 
         var settlementReport = new SettlementReport(
@@ -174,9 +176,10 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
         var setupRepository = new SettlementReportRepository(setupContext);
 
         var requestFilterDto = new SettlementReportRequestFilterDto(
-            [new GridAreaCode("805"), new GridAreaCode("806")],
+            [new CalculationFilterDto("D116DD8A-898E-48F1-8200-D31D12F82545", "805"), new CalculationFilterDto("D116DD8A-898E-48F1-8200-D31D12F82545", "806")],
             new DateTimeOffset(2024, 1, 1, 22, 0, 0, TimeSpan.Zero),
             new DateTimeOffset(2024, 2, 1, 22, 0, 0, TimeSpan.Zero),
+            null,
             null);
 
         var settlementReportRequest = new SettlementReport(
