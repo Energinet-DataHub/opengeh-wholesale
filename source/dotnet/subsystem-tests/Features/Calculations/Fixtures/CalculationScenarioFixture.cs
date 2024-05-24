@@ -227,21 +227,21 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
     }
 
     public async Task<IReadOnlyList<(bool IsAccessible, string ErrorMessage)>> ArePublicDataModelsAccessibleAsync(
-        IReadOnlyList<(string Name, string TableName)> modelsAndTables)
+        IReadOnlyList<(string ModelName, string TableName)> modelsAndTables)
     {
         var results = new ConcurrentBag<(bool IsAccessible, string ErrorMessage)>();
-        var tasks = modelsAndTables.Select(async model =>
+        var tasks = modelsAndTables.Select(async item =>
         {
             try
             {
-                var statement = DatabricksStatement.FromRawSql($"SELECT * FROM {model.Name}.{model.TableName} LIMIT 1");
-                var result = DatabricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement.Build());
-                var list = await result.ToListAsync();
+                var statement = DatabricksStatement.FromRawSql($"SELECT * FROM {item.ModelName}.{item.TableName} LIMIT 1");
+                var queryResult = DatabricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement.Build());
+                var list = await queryResult.ToListAsync();
                 if (list.Count == 0)
                 {
                     results.Add(new(
                         false,
-                        $"Table '{model.TableName}' in model '{model.Name}' doesn't contain data."));
+                        $"Table '{item.TableName}' in model '{item.ModelName}' doesn't contain data."));
                 }
                 else
                 {
@@ -252,7 +252,7 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
             {
                 results.Add(new(
                     false,
-                    $"Table '{model.TableName}' in model '{model.Name}' is missing. Exception: {e.Message}"));
+                    $"Table '{item.TableName}' in model '{item.ModelName}' is missing. Exception: {e.Message}"));
             }
         }).ToList();
 

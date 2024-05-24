@@ -381,6 +381,7 @@ AppDependencies
         var results = await Fixture.ArePublicDataModelsAccessibleAsync(publicDataModelsAndTables);
 
         // Assert
+        using var assertionScope = new AssertionScope();
         foreach (var actual in results)
         {
             actual.IsAccessible.Should().Be(true, actual.ErrorMessage);
