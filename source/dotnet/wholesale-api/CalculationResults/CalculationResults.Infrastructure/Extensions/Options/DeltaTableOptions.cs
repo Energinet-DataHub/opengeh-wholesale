@@ -45,4 +45,6 @@ public class DeltaTableOptions
     /// Name of the wholesale results delta table.
     /// </summary>
     public string TOTAL_MONTHLY_AMOUNTS_TABLE_NAME { get; set; } = "total_monthly_amounts";
+
+    public string EdiResultsSchemaName { get; set; } = "wholesale_edi_results";
 }

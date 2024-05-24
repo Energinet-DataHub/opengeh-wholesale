@@ -40,11 +40,11 @@ public sealed class LegacySettlementReportDataRepository : ISettlementReportData
         {
             rows = await _settlementReportResultQueries
                 .GetRowsAsync(
-                    filter.GridAreas.Select(gridArea => gridArea.Code).ToArray(),
+                    filter.Calculations.Select(calculation => calculation.GridAreaCode).ToArray(),
                     CalculationType.BalanceFixing,
                     filter.PeriodStart.ToInstant(),
                     filter.PeriodEnd.ToInstant(),
-                    null)
+                    filter.EnergySupplier)
                 .ConfigureAwait(false);
         }
         catch (Exception ex)
@@ -61,8 +61,9 @@ public sealed class LegacySettlementReportDataRepository : ISettlementReportData
             yield return new SettlementReportResultRow(
                 row.Time,
                 row.Quantity,
-                new GridAreaCode(row.GridArea),
+                row.GridArea,
                 resolution,
+                row.CalculationType,
                 row.MeteringPointType,
                 row.SettlementMethod);
         }

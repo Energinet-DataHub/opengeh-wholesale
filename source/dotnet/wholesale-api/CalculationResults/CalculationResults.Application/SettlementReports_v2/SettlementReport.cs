@@ -61,7 +61,7 @@ public sealed class SettlementReport
         ContainsBasisData = false;
         PeriodStart = request.Filter.PeriodStart.ToInstant();
         PeriodEnd = request.Filter.PeriodEnd.ToInstant();
-        GridAreaCount = request.Filter.GridAreas.Count;
+        GridAreaCount = request.Filter.Calculations.Count;
     }
 
     // EF Core Constructor.

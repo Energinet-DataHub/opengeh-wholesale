@@ -37,7 +37,7 @@ public sealed class SettlementReportDownloadHandlerIntegrationTests : TestBase<S
     private readonly SettlementReportRequestDto _mockedSettlementReportRequest = new(
         CalculationType.BalanceFixing,
         false,
-        new SettlementReportRequestFilterDto([], DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null));
+        new SettlementReportRequestFilterDto([], DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, null));
 
     public SettlementReportDownloadHandlerIntegrationTests(
         WholesaleDatabaseFixture<SettlementReportDatabaseContext> wholesaleDatabaseFixture,
