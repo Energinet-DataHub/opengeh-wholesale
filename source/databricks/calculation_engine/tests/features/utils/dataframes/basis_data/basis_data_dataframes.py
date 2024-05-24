@@ -127,6 +127,11 @@ def create_charge_price_points(spark: SparkSession, df: DataFrame) -> DataFrame:
     from package.constants.basis_data_colname import ChargePricePointsColname
 
     df = df.withColumn(
+        ChargePricePointsColname.charge_price,
+        col(ChargePricePointsColname.charge_price).cast(DecimalType(18, 6)),
+    )
+
+    df = df.withColumn(
         ChargePricePointsColname.charge_time,
         col(ChargePricePointsColname.charge_time).cast(TimestampType()),
     )
