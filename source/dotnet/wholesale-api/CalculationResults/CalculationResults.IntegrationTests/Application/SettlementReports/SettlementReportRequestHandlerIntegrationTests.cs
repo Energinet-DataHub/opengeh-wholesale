@@ -27,9 +27,10 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
     {
         // Arrange
         var filter = new SettlementReportRequestFilterDto(
-            [new GridAreaCode("805")],
+            [new CalculationFilterDto("45B9732A-49F8-450B-AA68-ED4661879D6F", "805")],
             DateTimeOffset.UtcNow.Date,
             DateTimeOffset.UtcNow.Date.AddDays(2),
+            null,
             null);
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
@@ -50,13 +51,14 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
     public async Task RequestReportAsync_SplitResult_ReturnsSplitFiles()
     {
         // Arrange
-        var gridAreaCodeA = new GridAreaCode("805");
-        var gridAreaCodeB = new GridAreaCode("806");
+        var gridAreaCodeA = new CalculationFilterDto("45B9732A-49F8-450B-AA68-ED4661879D6F", "805");
+        var gridAreaCodeB = new CalculationFilterDto("45B9732A-49F8-450B-AA68-ED4661879D6F", "806");
 
         var filter = new SettlementReportRequestFilterDto(
             [gridAreaCodeA, gridAreaCodeB],
             DateTimeOffset.UtcNow.Date,
             DateTimeOffset.UtcNow.Date.AddDays(2),
+            null,
             null);
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
@@ -68,13 +70,13 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         // Assert
         var energyResultA = actual[0];
         Assert.Equal(requestId, energyResultA.RequestId);
-        Assert.Equal(gridAreaCodeA, energyResultA.RequestFilter.GridAreas.Single());
+        Assert.Equal(gridAreaCodeA, energyResultA.RequestFilter.Calculations.Single());
         Assert.Equal("Result Energy (805)", energyResultA.SuggestedName);
         Assert.Equal(SettlementReportFileContent.BalanceFixingResult, energyResultA.FileContent);
 
         var energyResultB = actual[1];
         Assert.Equal(requestId, energyResultB.RequestId);
-        Assert.Equal(gridAreaCodeB, energyResultB.RequestFilter.GridAreas.Single());
+        Assert.Equal(gridAreaCodeB, energyResultB.RequestFilter.Calculations.Single());
         Assert.Equal("Result Energy (806)", energyResultB.SuggestedName);
         Assert.Equal(SettlementReportFileContent.BalanceFixingResult, energyResultB.FileContent);
     }
