@@ -45,10 +45,14 @@ class TestWhenMeteringPointPeriodsHasMeteringPointType:
         spark: SparkSession,
     ):
         # Arrange
-        row = factory.create_row(
-            metering_point_type=metering_point_type,
-        )
-        metering_point_periods = factory.create(spark, row)
+        rows = [
+            factory.create_row(
+                metering_point_type=metering_point_type,
+                parent_metering_point_id="parent_metering_point_id",
+            ),
+            factory.create_row(metering_point_id="parent_metering_point_id"),
+        ]
+        metering_point_periods = factory.create(spark, rows)
 
         # Act
         actual = _get_child_metering_points_with_energy_suppliers(
@@ -414,3 +418,26 @@ class TestGetMeteringPointPeriodsWholesaleCalculation:
             ).count()
             == 0
         )
+
+
+class TestWhenNoMeteringPointIdMatchingParentMeteringPointId:
+    def test__returns_no_child_metering_points(
+        self,
+        spark: SparkSession,
+    ):
+        # Arrange
+        rows = [
+            factory.create_row(
+                metering_point_type=MeteringPointType.CONSUMPTION_FROM_GRID,
+                parent_metering_point_id="parent_metering_point_id",
+            )
+        ]
+        metering_point_periods = factory.create(spark, rows)
+
+        # Act
+        actual = _get_child_metering_points_with_energy_suppliers(
+            metering_point_periods,
+        )
+
+        # Assert
+        assert actual.count() == 0
