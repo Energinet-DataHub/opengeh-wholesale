@@ -371,7 +371,7 @@ AppDependencies
     public async Task AndThen_OneTableInEachPublicDataModelMustExistsAndContainData()
     {
         // Arrange
-        var publicDataModelsAndTables = new List<(string Name, string TableName)>
+        var publicDataModelsAndTables = new List<(string ModelName, string TableName)>
         {
             new("settlement_report", "metering_point_periods_v1"),
             new("wholesale_edi_results", "energy_result_points_per_ga_v1"),
