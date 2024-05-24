@@ -18,6 +18,7 @@ using CsvHelper.Configuration;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Generators;
 
@@ -52,12 +53,16 @@ public sealed class BalanceFixingResultFileGenerator : ISettlementReportFileGene
             Map(r => r.GridAreaCode)
                 .Name("METERINGGRIDAREAID")
                 .Index(0)
-                .Convert(row => row.Value.GridAreaCode.Code);
+                .Convert(row => row.Value.GridAreaCode);
 
-            Map(r => r.GridAreaCode)
+            Map(r => r.CalculationType)
                 .Name("ENERGYBUSINESSPROCESS")
                 .Index(1)
-                .Convert(_ => "D04");
+                .Convert(row => row.Value.CalculationType switch
+                {
+                    CalculationType.BalanceFixing => "D04",
+                    _ => throw new ArgumentOutOfRangeException(nameof(row.Value.Resolution)),
+                });
 
             Map(r => r.Time)
                 .Name("STARTDATETIME")
@@ -100,11 +105,6 @@ public sealed class BalanceFixingResultFileGenerator : ISettlementReportFileGene
                 .Name("ENERGYQUANTITY")
                 .Index(6)
                 .Data.TypeConverterOptions.Formats = ["0.000"];
-
-            Map(r => r.GridAreaCode)
-                .Name("ENERGYSUPPLIERID")
-                .Index(7)
-                .Convert(_ => string.Empty);
         }
     }
 }

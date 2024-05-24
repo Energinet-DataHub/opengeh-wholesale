@@ -29,7 +29,6 @@ using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Xunit.Abstractions;
-using GridAreaCode = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models.GridAreaCode;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.SettlementReports;
 
@@ -78,9 +77,10 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
             CalculationType.BalanceFixing,
             false,
             new SettlementReportRequestFilterDto(
-                [new GridAreaCode("042")],
+                [new CalculationFilterDto("404F04A8-08A4-411E-9D69-358ADF88A2C7", "042")],
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow,
+                null,
                 null));
 
         // => Databricks SQL Statement API
@@ -133,9 +133,10 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
             CalculationType.BalanceFixing,
             false,
             new SettlementReportRequestFilterDto(
-                [new GridAreaCode("042")],
+                [new CalculationFilterDto("404F04A8-08A4-411E-9D69-358ADF88A2C7", "042")],
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow,
+                null,
                 null));
 
         // => Databricks SQL Statement API
@@ -193,9 +194,10 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
             CalculationType.BalanceFixing,
             false,
             new SettlementReportRequestFilterDto(
-                [new GridAreaCode("042")],
+                [new CalculationFilterDto("404F04A8-08A4-411E-9D69-358ADF88A2C7", "042")],
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow,
+                null,
                 null));
 
         // => Databricks SQL Statement API
