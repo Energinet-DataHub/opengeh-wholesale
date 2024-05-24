@@ -43,6 +43,15 @@ jobs:
       infrastructure_path: ./market-participant/terraform
     secrets: inherit
 
+  revision_log_ci:
+    needs: changes
+    if: ${{ needs.changes.outputs.revision_log_ci == 'true' }}
+    uses: ./.github/workflows/infrastructure-build-prerelease.yml
+    with:
+      release_name_prefix: revision_log_infrastructure
+      infrastructure_path: ./revision-log/terraform
+    secrets: inherit
+
   dh2_bridge_ci:
     needs: changes
     if: ${{ needs.changes.outputs.dh2_bridge_ci == 'true' }}
@@ -185,6 +194,7 @@ jobs:
         ci_base,
         edi_ci,
         market_participant_ci,
+        revision_log_ci,
         dh2_bridge_ci,
         grid_loss_imbalance_prices_ci,
         esett_exchange_ci,
