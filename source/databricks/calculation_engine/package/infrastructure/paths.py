@@ -21,7 +21,7 @@ INPUT_DATABASE_NAME = "wholesale_input"
 METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods"
 TIME_SERIES_POINTS_TABLE_NAME = "time_series_points_v2"
 CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods"
-CHARGE_MASTER_DATA_PERIODS_TABLE_NAME = "charge_masterdata_periods"
+CHARGE_MASTER_DATA_PERIODS_TABLE_NAME = "charge_price_information_periods"
 CHARGE_PRICE_POINTS_TABLE_NAME = "charge_price_points"
 GRID_LOSS_METERING_POINTS_TABLE_NAME = "grid_loss_metering_points"
 
@@ -30,16 +30,23 @@ OUTPUT_DATABASE_NAME = "wholesale_output"
 ENERGY_RESULT_TABLE_NAME = "energy_results"
 WHOLESALE_RESULT_TABLE_NAME = "wholesale_results"
 TOTAL_MONTHLY_AMOUNTS_TABLE_NAME = "total_monthly_amounts"
+SUCCEEDED_ENERGY_RESULTS_V1_VIEW_NAME = "succeeded_energy_results_v1"
 
 # Basis data database and tables
 BASIS_DATA_DATABASE_NAME = "basis_data"
 METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME = "metering_point_periods"
 TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME = "time_series_points"
 CHARGE_LINK_PERIODS_BASIS_DATA_TABLE_NAME = "charge_link_periods"
-CHARGE_MASTER_DATA_PERIODS_BASIS_DATA_TABLE_NAME = "charge_masterdata_periods"
+CHARGE_MASTER_DATA_PERIODS_BASIS_DATA_TABLE_NAME = "charge_price_information_periods"
 CHARGE_PRICE_POINTS_BASIS_DATA_TABLE_NAME = "charge_price_points"
 GRID_LOSS_METERING_POINTS_BASIS_DATA_TABLE_NAME = "grid_loss_metering_points"
 CALCULATIONS_TABLE_NAME = "calculations"
+
+
+class EdiResults:
+    DATABASE_NAME = "wholesale_edi_results"
+    ENERGY_RESULT_POINTS_PER_GA_V1_VIEW_NAME = "energy_result_points_per_ga_v1"
+
 
 # Settlement report database and views
 SETTLEMENT_REPORT_DATABASE_NAME = "settlement_report"

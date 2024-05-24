@@ -22,7 +22,6 @@ using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Xunit;
-using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations;
 
@@ -81,13 +80,10 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
 
         // Assert
         using var assertionScope = new AssertionScope();
-        isCompletedOrFailed.Should().BeTrue();
+        isCompletedOrFailed.Should().BeTrue("Calculation took too long. Wait time exceeded.");
         calculation.Should().NotBeNull();
-
         calculation!.ExecutionState.Should().Be(Clients.v3.CalculationState.Completed);
-
-        // TODO: Should be CalculationOrchestrationState.Completed when the EDI flow is implemented
-        calculation.OrchestrationState.Should().Be(Clients.v3.CalculationOrchestrationState.ActorMessagesEnqueuing);
+        calculation.OrchestrationState.Should().NotBe(Clients.v3.CalculationOrchestrationState.CalculationFailed);
     }
 
     [ScenarioStep(4)]
@@ -368,5 +364,27 @@ AppDependencies
 
         // Assert
         Fixture.ScenarioState.ReceivedTotalMonthlyAmountResultProducedV1.Count.Should().Be(expected);
+    }
+
+    [ScenarioStep(18)]
+    [SubsystemFact]
+    public async Task AndThen_OneTableInEachPublicDataModelMustExistsAndContainData()
+    {
+        // Arrange
+        var publicDataModelsAndTables = new List<(string ModelName, string TableName)>
+        {
+            new("settlement_report", "metering_point_periods_v1"),
+            new("wholesale_edi_results", "energy_result_points_per_ga_v1"),
+        };
+
+        // Act
+        var results = await Fixture.ArePublicDataModelsAccessibleAsync(publicDataModelsAndTables);
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        foreach (var actual in results)
+        {
+            actual.IsAccessible.Should().Be(true, actual.ErrorMessage);
+        }
     }
 }

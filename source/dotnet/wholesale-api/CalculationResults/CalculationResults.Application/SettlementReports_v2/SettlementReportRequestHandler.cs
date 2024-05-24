@@ -46,15 +46,15 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
     {
         var filesToGenerate = new List<SettlementReportFileRequestDto>();
 
-        if (reportRequest is { SplitReportPerGridArea: true, Filter.GridAreas.Count: > 1 })
+        if (reportRequest is { SplitReportPerGridArea: true, Filter.Calculations.Count: > 1 })
         {
-            foreach (var filterGridArea in reportRequest.Filter.GridAreas)
+            foreach (var calculation in reportRequest.Filter.Calculations)
             {
                 filesToGenerate.Add(new SettlementReportFileRequestDto(
                     SettlementReportFileContent.BalanceFixingResult,
-                    $"Result Energy ({filterGridArea.Code})",
+                    $"Result Energy ({calculation.GridAreaCode})",
                     requestId,
-                    reportRequest.Filter with { GridAreas = [filterGridArea] }));
+                    reportRequest.Filter with { Calculations = [calculation] }));
             }
         }
         else

@@ -71,7 +71,7 @@ class TestWhenValidInput:
     ) -> None:
         # Arrange
         calculation_input_path = f"{str(tmp_path)}/{calculation_input_folder}"
-        table_location = f"{calculation_input_path}/charge_masterdata_periods"
+        table_location = f"{calculation_input_path}/charge_price_information_periods"
         row = _create_charge_master_period_row()
         df = spark.createDataFrame(data=[row], schema=charge_master_data_periods_schema)
         write_dataframe_to_table(

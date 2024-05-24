@@ -12,20 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Xunit.Abstractions;
-using Xunit.Sdk;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Extensions;
+namespace Energinet.DataHub.Wholesale.Edi.Validation.Helpers;
 
-public static class MessageSinkExtensions
+public static class GridAreaValidationHelper
 {
-    public static void WriteDiagnosticMessage(this IMessageSink messageSink, string message)
+    public static async Task<bool> IsGridAreaOwnerAsync(
+        IGridAreaOwnerRepository gridAreaOwnerRepository,
+        string gridAreaCode,
+        string actorId)
     {
-        messageSink.OnMessage(CreateDiagnosticMessage(message));
-    }
-
-    private static DiagnosticMessage CreateDiagnosticMessage(string message)
-    {
-        return new DiagnosticMessage($"Mandalorian: {message}");
+        var gridAreaOwner = await gridAreaOwnerRepository
+            .GetCurrentOwnerAsync(gridAreaCode, CancellationToken.None).ConfigureAwait(false);
+        return gridAreaOwner != null && gridAreaOwner.OwnerActorNumber.Equals(actorId, StringComparison.OrdinalIgnoreCase);
     }
 }
