@@ -29,7 +29,7 @@ from features.utils.dataframes.basis_data.grid_loss_metering_points import (
 
 BASIS_DATA_METERING_POINT_PERIODS_CSV = "metering_point_periods"
 BASIS_DATA_TIME_SERIES_POINTS_CSV = "time_series_points"
-BASIS_DATA_CHARGE_MASTER_DATA_PERIODS_CSV = "charge_master_data_periods"
+BASIS_DATA_CHARGE_MASTER_DATA_PERIODS_CSV = "charge_price_information_periods"
 BASIS_DATA_CHARGE_LINK_PERIODS_CSV = "charge_link_periods"
 BASIS_DATA_CHARGE_PRICES_CSV = "charge_prices"
 BASIS_DATA_CALCULATIONS_CSV = "calculations"
@@ -53,7 +53,7 @@ def create_basis_data_result_dataframe(
     if filename == BASIS_DATA_CHARGE_PRICES_CSV:
         return create_charge_price_points(spark, df)
     if filename == BASIS_DATA_CHARGE_MASTER_DATA_PERIODS_CSV:
-        return create_charge_master_data_periods(spark, df)
+        return create_charge_price_information_periods(spark, df)
 
     raise Exception(f"Unknown expected basis data file {filename}.")
 
@@ -139,7 +139,9 @@ def create_charge_price_points(spark: SparkSession, df: DataFrame) -> DataFrame:
     return spark.createDataFrame(df.rdd, charge_price_points_schema)
 
 
-def create_charge_master_data_periods(spark: SparkSession, df: DataFrame) -> DataFrame:
+def create_charge_price_information_periods(
+    spark: SparkSession, df: DataFrame
+) -> DataFrame:
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.

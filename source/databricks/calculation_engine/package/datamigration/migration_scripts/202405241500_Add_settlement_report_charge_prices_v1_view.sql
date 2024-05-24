@@ -11,7 +11,7 @@ SELECT
   ARRAY_SORT(ARRAY_AGG(struct(cp.charge_time AS time, cp.charge_price AS price))) AS price_points,
   es_ga.grid_area_code,
   es_ga.energy_supplier_id
-FROM {BASIS_DATA_DATABASE_NAME}.charge_masterdata_periods as cm
+FROM {BASIS_DATA_DATABASE_NAME}.charge_price_information_periods as cm
 INNER JOIN {BASIS_DATA_DATABASE_NAME}.charge_price_points as cp ON cm.calculation_id = cp.calculation_id AND cm.charge_key = cp.charge_key
 INNER JOIN (
   SELECT distinct mp.calculation_id, charge_key, energy_supplier_id, grid_area_code FROM {BASIS_DATA_DATABASE_NAME}.charge_link_periods AS cl

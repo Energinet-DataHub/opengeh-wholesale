@@ -35,8 +35,6 @@ def assert_output(
     if "result_id" in expected_result.columns:
         columns_to_skip.append("result_id")
 
-    actual_result.show()
-
     assert_dataframe_and_schema(
         actual_result,
         expected_result,
