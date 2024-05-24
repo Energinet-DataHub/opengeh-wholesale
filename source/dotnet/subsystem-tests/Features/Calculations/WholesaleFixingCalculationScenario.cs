@@ -368,7 +368,7 @@ AppDependencies
 
     [ScenarioStep(18)]
     [SubsystemFact]
-    public async Task AndThen_OneTableInEachPublicDataModelsMustExistsAndContainData()
+    public async Task AndThen_OneTableInEachPublicDataModelMustExistsAndContainData()
     {
         // Arrange
         var publicDataModelsAndTables = new List<(string Name, string TableName)>
