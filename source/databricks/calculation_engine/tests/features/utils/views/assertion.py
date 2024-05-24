@@ -16,6 +16,7 @@ from pyspark.sql import DataFrame
 
 from features.utils.views.dataframe_wrapper import DataframeWrapper
 from helpers.data_frame_utils import assert_dataframe_and_schema
+from package.constants.result_column_names import ResultColumnNames
 
 
 def assert_output(
@@ -28,6 +29,12 @@ def assert_output(
     actual_result = _get_expected_for_output(actual_results, output_name)
     expected_result = _get_expected_for_output(expected_results, output_name)
 
+    columns_to_skip = []
+    if ResultColumnNames.calculation_result_id in expected_result.columns:
+        columns_to_skip.append(ResultColumnNames.calculation_result_id)
+    if "result_id" in expected_result.columns:
+        columns_to_skip.append("result_id")
+
     actual_result.show()
 
     assert_dataframe_and_schema(
@@ -36,6 +43,7 @@ def assert_output(
         ignore_decimal_precision=True,
         ignore_nullability=True,
         ignore_decimal_scale=True,
+        columns_to_skip=columns_to_skip,
         drop_columns_when_actual_and_expected_are_equal=skip_columns_when_actual_and_expected_are_equal,
     )
 

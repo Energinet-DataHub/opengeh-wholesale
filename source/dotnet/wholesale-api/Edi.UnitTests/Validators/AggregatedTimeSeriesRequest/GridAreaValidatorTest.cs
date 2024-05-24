@@ -16,6 +16,7 @@ using System.Diagnostics.CodeAnalysis;
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
+using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.Edi.Validation;
 using Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
@@ -30,7 +31,6 @@ namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Validators.AggregatedTimeSer
 [SuppressMessage("Style", "VSTHRD200:Use \"Async\" suffix for async methods", Justification = "Async suffix is not needed for test methods")]
 public class GridAreaValidatorTest
 {
-    private const string MeteredDataResponsible = "MeteredDataResponsible";
     private const string ValidGlnNumber = "qwertyuiopasd"; // Must be 13 characters to be a valid GLN
     private static readonly ValidationError _missingGridAreaCode = new("Netområde er obligatorisk for rollen MDR / Grid area is mandatory for the role MDR.", "D64");
     private static readonly ValidationError _invalidGridArea = new("Ugyldig netområde / Invalid gridarea", "E86");
@@ -55,7 +55,7 @@ public class GridAreaValidatorTest
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
             .WithRequestedByActorId(ValidGlnNumber)
-            .WithRequestedByActorRole(MeteredDataResponsible)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.MeteredDataResponsible)
             .WithGridArea(gridAreaCode)
             .Build();
 
@@ -87,7 +87,7 @@ public class GridAreaValidatorTest
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
             .WithRequestedByActorId(ValidGlnNumber)
-            .WithRequestedByActorRole(MeteredDataResponsible)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.MeteredDataResponsible)
             .WithGridArea(gridAreaCode)
             .Build();
 
@@ -112,7 +112,7 @@ public class GridAreaValidatorTest
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
             .WithRequestedByActorId(ValidGlnNumber)
-            .WithRequestedByActorRole(MeteredDataResponsible)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.MeteredDataResponsible)
             .WithGridArea(null)
             .Build();
 
@@ -143,7 +143,7 @@ public class GridAreaValidatorTest
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
             .WithRequestedByActorId(ValidGlnNumber)
-            .WithRequestedByActorRole(MeteredDataResponsible)
+            .WithRequestedByActorRole(DataHubNames.ActorRole.MeteredDataResponsible)
             .WithGridArea(notExistingGridAreaCode)
             .Build();
 

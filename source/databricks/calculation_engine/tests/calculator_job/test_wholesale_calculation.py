@@ -317,3 +317,19 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
 
     # Assert
     assert actual.schema == expected_schema
+
+
+@pytest.mark.parametrize(
+    "view_name, has_data",
+    [
+        (
+            f"{paths.EdiResults.DATABASE_NAME}.energy_result_points_per_ga_v1",
+            True,
+        )
+    ],
+)
+def test__when_wholesale_fixing__view_has_data_if_expected(
+    spark: SparkSession, executed_wholesale_fixing: None, view_name: str, has_data: bool
+) -> None:
+    actual = spark.sql(f"SELECT * FROM {view_name}")
+    assert actual.count() > 0 if has_data else actual.count() == 0

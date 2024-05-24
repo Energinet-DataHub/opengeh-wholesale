@@ -11,6 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from features.utils.dataframes.edi_results.view_dataframes import (
+    create_energy_result_points_per_ga_v1_view,
+)
+from features.utils.dataframes.edi_results.energy_result_points_per_ga_v1_view_schema import (
+    energy_result_points_per_ga_v1_view_schema,
+)
 from features.utils.dataframes.settlement_report import (
     metering_point_period_v1_view_schema,
     metering_point_time_series_v1_view_schema,
@@ -38,6 +44,7 @@ from features.utils.dataframes.settlement_report.wholesale_results_v1_view_schem
 from features.utils.readers import (
     SettlementReportViewReader,
 )
+from features.utils.readers.edi_results_view_reader import EdiResultsViewReader
 
 
 def get_output_specifications() -> dict[str, tuple]:
@@ -45,6 +52,11 @@ def get_output_specifications() -> dict[str, tuple]:
     Contains the specifications for scenario outputs.
     """
     return {
+        "energy_result_points_per_ga_v1.csv": (
+            energy_result_points_per_ga_v1_view_schema,
+            EdiResultsViewReader.read_energy_result_points_per_ga_v1,
+            create_energy_result_points_per_ga_v1_view,
+        ),
         "metering_point_periods.csv": (
             metering_point_period_v1_view_schema,
             SettlementReportViewReader.read_metering_point_periods_v1,

@@ -183,3 +183,19 @@ def test__when_energy_calculation__basis_data_is_stored(
 
     # Assert: The result is created if there are rows
     assert actual.count() > 0
+
+
+@pytest.mark.parametrize(
+    "view_name, has_data",
+    [
+        (
+            f"{paths.EdiResults.DATABASE_NAME}.{paths.EdiResults.ENERGY_RESULT_POINTS_PER_GA_V1_VIEW_NAME}",
+            True,
+        )
+    ],
+)
+def test__when_balance_fixing__view_has_data_if_expected(
+    spark: SparkSession, executed_balance_fixing: None, view_name: str, has_data: bool
+) -> None:
+    actual = spark.sql(f"SELECT * FROM {view_name}")
+    assert actual.count() > 0 if has_data else actual.count() == 0
