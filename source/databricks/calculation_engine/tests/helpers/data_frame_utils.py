@@ -70,7 +70,8 @@ def assert_dataframe_and_schema(
         print("EXPECTED SCHEMA:")
         expected.printSchema()
         raise
-
+    # actual.show(truncate=False)
+    # expected.show(truncate=False)
     try:
         assert_dataframes_equal(actual, expected)
     except AssertionError:
