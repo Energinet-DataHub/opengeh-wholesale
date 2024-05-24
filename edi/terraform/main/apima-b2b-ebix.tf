@@ -256,7 +256,6 @@ module "apima_b2b_ebix" {
         </wsdl:binding>
         <wsdl:service name="marketMessagingB2BServiceV01">
           <wsdl:port name="marketMessagingB2BServiceV01HTTPEndpoint" binding="tns:marketMessagingB2BServiceV01HTTPEndpointBinding">
-            <!-- <soap:address location="https://apim-shared-sharedres-u-001.azure-api.net/ebix"/> // is this one needed? -->
           </wsdl:port>
         </wsdl:service>
       </wsdl:definitions>
