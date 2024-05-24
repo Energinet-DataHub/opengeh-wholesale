@@ -72,14 +72,32 @@ resource "azurerm_storage_container" "dh2_metering_point_history" {
   container_access_type = "private"
 }
 
+resource "azurerm_storage_container" "dh2_metering_point_history_processed" {
+  name                  = "dh2-metering-point-history-processed"
+  storage_account_name  = module.st_dh2data.name
+  container_access_type = "private"
+}
+
 resource "azurerm_storage_container" "dh2_timeseries" {
   name                  = "dh2-timeseries"
   storage_account_name  = module.st_dh2data.name
   container_access_type = "private"
 }
 
+resource "azurerm_storage_container" "dh2_timeseries_processed" {
+  name                  = "dh2-timeseries-processed"
+  storage_account_name  = module.st_dh2data.name
+  container_access_type = "private"
+}
+
 resource "azurerm_storage_container" "dh2_timeseries_synchronization" {
   name                  = "dh2-timeseries-synchronization"
+  storage_account_name  = module.st_dh2data.name
+  container_access_type = "private"
+}
+
+resource "azurerm_storage_container" "dh2_timeseries_synchronization_processed" {
+  name                  = "dh2-timeseries-synchronization-processed"
   storage_account_name  = module.st_dh2data.name
   container_access_type = "private"
 }
