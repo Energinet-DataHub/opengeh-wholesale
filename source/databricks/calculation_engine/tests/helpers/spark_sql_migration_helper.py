@@ -12,8 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
+import shutil
+from datetime import datetime
+from enum import Enum
 
+from delta import DeltaTable
 from pyspark.sql import SparkSession
+import pyspark.sql.functions as f
 from spark_sql_migrations import (
     SparkSqlMigrationsConfiguration,
     create_and_configure_container,
@@ -30,21 +35,83 @@ schema_migration_location = "schema_migration"
 schema_migration_table_name = "executed_migrations"
 
 
+class MigrationsExecution(Enum):
+    """
+    Configure the execution of migrations.
+    The purpose is to allow the developer to determine what migrations should be executed to
+    improve development speed and avoid unnecessary execution of migrations.
+    """
+
+    NONE = "NONE"
+    """Do not execute any migrations."""
+    ALL = "ALL"
+    """Execute all migrations. This is similar to the CI behavior."""
+    MODIFIED = "MODIFIED"
+    """Execute only the migrations that have been modified since the last execution."""
+    MODIFIED_AND_SUBSEQUENT = "MODIFIED_AND_SUBSEQUENT"
+    """Execute the migrations that have been modified since the last execution and all subsequent migrations."""
+
+
 def migrate(
     spark: SparkSession,
     table_prefix: str = "",
     location: str = schema_migration_location,
-    substitution_variables: dict[str, str] = None,
+    substitution_variables: dict[str, str] | None = None,
+    migrations_execution: MigrationsExecution = MigrationsExecution.ALL,
 ) -> None:
+    if migrations_execution == MigrationsExecution.NONE:
+        return
+
+    if migrations_execution in [
+        MigrationsExecution.MODIFIED,
+        MigrationsExecution.MODIFIED_AND_SUBSEQUENT,
+    ]:
+        _remove_registration_of_modified_scripts(spark, migrations_execution)
+
+    if migrations_execution == MigrationsExecution.ALL:
+        warehouse_location = spark.conf.get("spark.sql.warehouse.dir")
+        if os.path.exists(warehouse_location):
+            shutil.rmtree(warehouse_location)
+
     configure_spark_sql_migration(spark, table_prefix, location, substitution_variables)
     schema_migration_pipeline.migrate()
+
+
+def _remove_registration_of_modified_scripts(
+    spark: SparkSession, migrations_execution: MigrationsExecution
+):
+    migrations_table = f"{schema_migration_schema_name}.{schema_migration_table_name}"
+    if DeltaTable.isDeltaTable(
+        spark,
+        migrations_table,
+    ):
+        latest_execution_time = (
+            spark.sql(f"SELECT * FROM {migrations_table}")
+            .agg(f.max("execution_time").alias("latest_execution_time"))
+            .collect()[0]["latest_execution_time"]
+        )
+        modified_scripts = _get_recently_modified_migration_scripts(
+            _get_migration_scripts_path(), latest_execution_time
+        )
+
+        if migrations_execution == MigrationsExecution.MODIFIED:
+            spark.sql(
+                f"DELETE FROM TABLE {migrations_table} WHERE migration_name in ({'.'.join(modified_scripts)})"
+            )
+
+        if migrations_execution == MigrationsExecution.MODIFIED_AND_SUBSEQUENT:
+            modified_scripts.sort(reverse=True)
+            first_modified_script = modified_scripts[0]
+            spark.sql(
+                f"DELETE FROM TABLE {migrations_table} WHERE migration_name >= '{first_modified_script}'"
+            )
 
 
 def configure_spark_sql_migration(
     spark: SparkSession,
     table_prefix: str = "",
     location: str = schema_migration_location,
-    substitution_variables: dict[str, str] = None,
+    substitution_variables: dict[str, str] | None = None,
 ) -> None:
     if substitution_variables is None:
         substitution_variables = update_substitutions(get_migration_script_args(spark))
@@ -84,7 +151,7 @@ def migrate_with_current_state(spark: SparkSession) -> None:
     )
 
     # Get all SQL files from migration_scripts folder
-    directory_path = f"{os.path.dirname(c.__file__)}/migration_scripts/"
+    directory_path = _get_migration_scripts_path()
     files = [
         file
         for file in os.listdir(directory_path)
@@ -100,11 +167,36 @@ def migrate_with_current_state(spark: SparkSession) -> None:
 
 
 def update_substitutions(
-    migration_args: MigrationScriptArgs, replacements: dict[str, str] = {}
+    migration_args: MigrationScriptArgs, replacements: dict[str, str] | None = None
 ) -> dict[str, str]:
+    replacements = replacements or {}
     _substitutions = substitutions(migration_args)
 
     for key, value in replacements.items():
         _substitutions[key] = value
 
     return _substitutions
+
+
+def _get_migration_scripts_path() -> str:
+    return f"{os.path.dirname(c.__file__)}/migration_scripts/"
+
+
+def _get_recently_modified_migration_scripts(
+    root_folder: str, reference_datetime: datetime
+) -> list[str]:
+    recent_files = []
+
+    # Traverse the folder and its subfolders
+    for subdir, _, files in os.walk(root_folder):
+        for file in files:
+            if file.endswith(".sql"):
+                file_path = os.path.join(subdir, file)
+                # Get the modification time of the file
+                modification_time = datetime.fromtimestamp(os.path.getmtime(file_path))
+
+                # Compare with the reference datetime
+                if modification_time > reference_datetime:
+                    recent_files.append(os.path.basename(file_path))
+
+    return recent_files
