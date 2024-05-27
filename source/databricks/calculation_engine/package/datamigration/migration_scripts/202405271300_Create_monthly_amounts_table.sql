@@ -10,12 +10,12 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.monthly_amounts
     calculation_result_id STRING NOT NULL,
 
     grid_area_code STRING NOT NULL,
-    energy_supplier_id STRING,
+    energy_supplier_id STRING NOT NULL,
     time TIMESTAMP NOT NULL,
     amount DECIMAL(18, 6),
     charge_owner_id STRING NOT NULL,
     charge_code STRING,
-    charge_type STRING
+    charge_type STRING NOT NULL
 )
 USING DELTA
 TBLPROPERTIES (
