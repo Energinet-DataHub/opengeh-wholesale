@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from dataclasses import fields
 
 from pyspark.sql import DataFrame
 
@@ -19,7 +18,7 @@ from package.calculation.calculation_results import WholesaleResultsContainer
 from package.infrastructure import logging_configuration
 from package.infrastructure.paths import (
     OUTPUT_DATABASE_NAME,
-    WHOLESALE_RESULT_TABLE_NAME,
+    MONTHLY_AMOUNTS_TABLE_NAME,
 )
 
 
@@ -48,4 +47,4 @@ def _write(name: str, df: DataFrame) -> None:
     with logging_configuration.start_span(name):
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
-        ).insertInto(f"{OUTPUT_DATABASE_NAME}.{WHOLESALE_RESULT_TABLE_NAME}")
+        ).insertInto(f"{OUTPUT_DATABASE_NAME}.{MONTHLY_AMOUNTS_TABLE_NAME}")
