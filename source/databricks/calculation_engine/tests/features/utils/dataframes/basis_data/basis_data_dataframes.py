@@ -17,6 +17,7 @@ from pyspark.sql.types import (
     TimestampType,
     DecimalType,
     IntegerType,
+    BooleanType,
 )
 
 from features.utils.dataframes.basis_data.calculations_dataframe import (
@@ -30,7 +31,10 @@ BASIS_DATA_METERING_POINT_PERIODS_CSV = "metering_point_periods"
 BASIS_DATA_TIME_SERIES_POINTS_CSV = "time_series_points"
 BASIS_DATA_CHARGE_LINK_PERIODS_CSV = "charge_link_periods"
 BASIS_DATA_CALCULATIONS_CSV = "calculations"
-BASIS_GRID_LOSS_METERING_POINTS = "grid_loss_metering_points"
+BASIS_GRID_LOSS_METERING_POINTS_CSV = "grid_loss_metering_points"
+BASIS_DATA_CHARGE_MASTER_DATA_CSV = "charge_master_data"
+BASIS_DATA_CHARGE_PRICES_CSV = "charge_prices"
+BASIS_DATA_CHARGE_PRICE_INFORMATION_PERIODS_CSV = "charge_price_information_periods"
 
 
 def create_basis_data_result_dataframe(
@@ -43,10 +47,16 @@ def create_basis_data_result_dataframe(
         return create_metering_point_periods(spark, df)
     if filename == BASIS_DATA_CALCULATIONS_CSV:
         return create_calculations_dataframe(spark, df)
-    if filename == BASIS_GRID_LOSS_METERING_POINTS:
+    if filename == BASIS_GRID_LOSS_METERING_POINTS_CSV:
         return create_grid_loss_metering_points_dataframe(spark, df)
     if filename == BASIS_DATA_CHARGE_LINK_PERIODS_CSV:
         return create_charge_link_periods(spark, df)
+    if filename == BASIS_DATA_CHARGE_MASTER_DATA_CSV:
+        return create_charge_master_data(spark, df)
+    if filename == BASIS_DATA_CHARGE_PRICES_CSV:
+        return create_charge_prices(spark, df)
+    if filename == BASIS_DATA_CHARGE_PRICE_INFORMATION_PERIODS_CSV:
+        return create_charge_master_data(spark, df)
 
     raise Exception(f"Unknown expected basis data file {filename}.")
 
@@ -110,3 +120,48 @@ def create_charge_link_periods(spark: SparkSession, df: DataFrame) -> DataFrame:
     )
 
     return spark.createDataFrame(df.rdd, charge_link_periods_schema)
+
+
+def create_charge_master_data(spark: SparkSession, df: DataFrame) -> DataFrame:
+
+    # Don't remove. Believed needed because this function is an argument to the setup function
+    # and therefore the following packages are not automatically included.
+    from package.constants import ChargeMasterDataPeriodsColname
+    from package.calculation.preparation.data_structures.charge_master_data import (
+        charge_master_data_schema,
+    )
+
+    df = df.withColumn(
+        ChargeMasterDataPeriodsColname.is_tax,
+        col(ChargeMasterDataPeriodsColname.is_tax).cast(BooleanType()),
+    )
+    df = df.withColumn(
+        ChargeMasterDataPeriodsColname.from_date,
+        col(ChargeMasterDataPeriodsColname.from_date).cast(TimestampType()),
+    )
+    df = df.withColumn(
+        ChargeMasterDataPeriodsColname.to_date,
+        col(ChargeMasterDataPeriodsColname.to_date).cast(TimestampType()),
+    )
+
+    return spark.createDataFrame(df.rdd, charge_master_data_schema)
+
+
+def create_charge_prices(spark: SparkSession, df: DataFrame) -> DataFrame:
+
+    # Don't remove. Believed needed because this function is an argument to the setup function
+    # and therefore the following packages are not automatically included.
+    from package.constants import ChargePricePointsColname
+    from package.calculation.basis_data.schemas import charge_price_points_schema
+
+    df = df.withColumn(
+        ChargePricePointsColname.charge_price,
+        col(ChargePricePointsColname.charge_price).cast(DecimalType(18, 6)),
+    )
+
+    df = df.withColumn(
+        ChargePricePointsColname.charge_time,
+        col(ChargePricePointsColname.charge_time).cast(TimestampType()),
+    )
+
+    return spark.createDataFrame(df.rdd, charge_price_points_schema)
