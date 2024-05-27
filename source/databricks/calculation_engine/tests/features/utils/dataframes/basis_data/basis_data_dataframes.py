@@ -52,11 +52,11 @@ def create_basis_data_result_dataframe(
     if filename == BASIS_DATA_CHARGE_LINK_PERIODS_CSV:
         return create_charge_link_periods(spark, df)
     if filename == BASIS_DATA_CHARGE_MASTER_DATA_CSV:
-        return create_charge_master_data_periods(spark, df)
+        return create_charge_master_data(spark, df)
     if filename == BASIS_DATA_CHARGE_PRICES_CSV:
         return create_charge_prices(spark, df)
     if filename == BASIS_DATA_CHARGE_PRICE_INFORMATION_PERIODS_CSV:
-        return create_charge_master_data_periods(spark, df)
+        return create_charge_master_data(spark, df)
 
     raise Exception(f"Unknown expected basis data file {filename}.")
 
@@ -122,10 +122,36 @@ def create_charge_link_periods(spark: SparkSession, df: DataFrame) -> DataFrame:
     return spark.createDataFrame(df.rdd, charge_link_periods_schema)
 
 
-def create_charge_master_data_periods(spark: SparkSession, df: DataFrame) -> DataFrame:
+def create_charge_master_data(spark: SparkSession, df: DataFrame) -> DataFrame:
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
+    from package.constants import ChargeMasterDataPeriodsColname
+    from package.calculation.preparation.data_structures.charge_master_data import (
+        charge_master_data_schema,
+    )
+
+    df = df.withColumn(
+        ChargeMasterDataPeriodsColname.is_tax,
+        col(ChargeMasterDataPeriodsColname.is_tax).cast(BooleanType()),
+    )
+    df = df.withColumn(
+        ChargeMasterDataPeriodsColname.from_date,
+        col(ChargeMasterDataPeriodsColname.from_date).cast(TimestampType()),
+    )
+    df = df.withColumn(
+        ChargeMasterDataPeriodsColname.to_date,
+        col(ChargeMasterDataPeriodsColname.to_date).cast(TimestampType()),
+    )
+
+    return spark.createDataFrame(df.rdd, charge_master_data_periods_schema)
+
+
+def create_charge_prices(spark: SparkSession, df: DataFrame) -> DataFrame:
+
+    # Don't remove. Believed needed because this function is an argument to the setup function
+    # and therefore the following packages are not automatically included.
+    from package.constants import ChargePricePointsColname
     from package.constants import ChargeMasterDataPeriodsColname
     from package.calculation.basis_data.schemas import charge_master_data_periods_schema
 
