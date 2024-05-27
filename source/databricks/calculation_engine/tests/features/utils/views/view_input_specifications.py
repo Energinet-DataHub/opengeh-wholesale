@@ -59,10 +59,22 @@ def get_input_specifications() -> dict[str, tuple]:
             create_calculations_dataframe,
             BASIS_DATA_DATABASE_NAME,
         ),
+        "charge_price_information_periods.csv": (
+            basis_data_schemas.charge_master_data_periods_schema,
+            BasisDataTableReader.read_charge_price_information_periods,
+            basis_data_dataframes.create_charge_price_information_periods,
+            BASIS_DATA_DATABASE_NAME,
+        ),
         "charge_link_periods.csv": (
             basis_data_schemas.charge_link_periods_schema,
             BasisDataTableReader.read_charge_link_periods,
             basis_data_dataframes.create_charge_link_periods,
+            BASIS_DATA_DATABASE_NAME,
+        ),
+        "charge_price_points.csv": (
+            basis_data_schemas.charge_price_points_schema,
+            BasisDataTableReader.read_charge_price_points,
+            basis_data_dataframes.create_charge_price_points,
             BASIS_DATA_DATABASE_NAME,
         ),
         # results
