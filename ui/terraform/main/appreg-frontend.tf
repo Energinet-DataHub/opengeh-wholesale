@@ -1,6 +1,6 @@
 resource "azuread_service_principal" "msgraph" {
-  application_id = data.azuread_application_published_app_ids.well_known.result.MicrosoftGraph
-  use_existing   = true
+  client_id    = data.azuread_application_published_app_ids.well_known.result.MicrosoftGraph
+  use_existing = true
 }
 
 resource "azuread_application" "frontend_app" {
@@ -53,7 +53,7 @@ resource "azuread_application" "frontend_app" {
 }
 
 resource "azuread_service_principal" "frontend_app_sp" {
-  application_id               = azuread_application.frontend_app.application_id
+  client_id                    = azuread_application.frontend_app.client_id
   app_role_assignment_required = false
   owners                       = [data.azuread_client_config.current.object_id]
 }
@@ -74,7 +74,7 @@ module "kvs_frontend_app_id" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
 
   name         = "frontend-app-id"
-  value        = azuread_application.frontend_app.application_id
+  value        = azuread_application.frontend_app.client_id
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 

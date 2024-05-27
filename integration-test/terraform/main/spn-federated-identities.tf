@@ -12,7 +12,7 @@ locals {
 }
 
 resource "azuread_application_federated_identity_credential" "geh_core" {
-  application_object_id = azuread_application.app_ci.object_id
+  application_id = azuread_application.app_ci.id
 
   display_name = "geh-core-azureauth"
   subject      = "repo:Energinet-DataHub/geh-core:environment:AzureAuth"
@@ -22,7 +22,7 @@ resource "azuread_application_federated_identity_credential" "geh_core" {
 }
 
 resource "azuread_application_federated_identity_credential" "geh_market_participant" {
-  application_object_id = azuread_application.app_ci.object_id
+  application_id = azuread_application.app_ci.id
 
   display_name = "geh-market-participant-azureauth"
   subject      = "repo:Energinet-DataHub/geh-market-participant:environment:AzureAuth"
@@ -32,7 +32,7 @@ resource "azuread_application_federated_identity_credential" "geh_market_partici
 }
 
 resource "azuread_application_federated_identity_credential" "opengeh_wholesale" {
-  application_object_id = azuread_application.app_ci.object_id
+  application_id = azuread_application.app_ci.id
 
   display_name = "opengeh-wholesale-azureauth"
   subject      = "repo:Energinet-DataHub/opengeh-wholesale:environment:AzureAuth"
@@ -42,7 +42,7 @@ resource "azuread_application_federated_identity_credential" "opengeh_wholesale"
 }
 
 resource "azuread_application_federated_identity_credential" "opengeh_edi" {
-  application_object_id = azuread_application.app_ci.object_id
+  application_id = azuread_application.app_ci.id
 
   display_name = "opengeh-edi-azureauth"
   subject      = "repo:Energinet-DataHub/opengeh-edi:environment:AzureAuth"
@@ -52,7 +52,7 @@ resource "azuread_application_federated_identity_credential" "opengeh_edi" {
 }
 
 resource "azuread_application_federated_identity_credential" "opengeh_esett_exchange" {
-  application_object_id = azuread_application.app_ci.object_id
+  application_id = azuread_application.app_ci.id
 
   display_name = "opengeh-esett-exchange-azureauth"
   subject      = "repo:Energinet-DataHub/opengeh-esett-exchange:environment:AzureAuth"
@@ -62,7 +62,7 @@ resource "azuread_application_federated_identity_credential" "opengeh_esett_exch
 }
 
 resource "azuread_application_federated_identity_credential" "opengeh_migration" {
-  application_object_id = azuread_application.app_ci.object_id
+  application_id = azuread_application.app_ci.id
 
   display_name = "opengeh-migration-azureauth"
   subject      = "repo:Energinet-DataHub/opengeh-migration:environment:AzureAuth"
@@ -72,7 +72,7 @@ resource "azuread_application_federated_identity_credential" "opengeh_migration"
 }
 
 resource "azuread_application_federated_identity_credential" "greenforce_frontend" {
-  application_object_id = azuread_application.app_ci.object_id
+  application_id = azuread_application.app_ci.id
 
   display_name = "greenforce-frontend-azureauth"
   subject      = "repo:Energinet-DataHub/greenforce-frontend:environment:AzureAuth"
@@ -82,7 +82,7 @@ resource "azuread_application_federated_identity_credential" "greenforce_fronten
 }
 
 resource "azuread_application_federated_identity_credential" "esett_deprecated" {
-  application_object_id = azuread_application.app_ci.object_id
+  application_id = azuread_application.app_ci.id
 
   display_name = "esett-deprecated-azureauth"
   subject      = "repo:Energinet-DataHub/esett-deprecated:environment:AzureAuth"
@@ -92,7 +92,7 @@ resource "azuread_application_federated_identity_credential" "esett_deprecated" 
 }
 
 resource "azuread_application_federated_identity_credential" "opengeh_revision_log" {
-  application_object_id = azuread_application.app_ci.object_id
+  application_id = azuread_application.app_ci.id
 
   display_name = "opengeh-revision-log-azureauth"
   subject      = "repo:Energinet-DataHub/opengeh-revision-log:environment:AzureAuth"

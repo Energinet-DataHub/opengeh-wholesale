@@ -6,7 +6,7 @@ resource "databricks_secret_scope" "migration_scope" {
 resource "databricks_secret" "spn_app_id" {
   provider     = databricks.dbw
   key          = "spn_app_id"
-  string_value = azuread_application.app_databricks.application_id
+  string_value = azuread_application.app_databricks.client_id
   scope        = databricks_secret_scope.migration_scope.id
 }
 

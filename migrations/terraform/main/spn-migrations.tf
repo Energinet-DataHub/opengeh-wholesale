@@ -8,7 +8,7 @@ resource "azuread_application" "app_databricks" {
 }
 
 resource "azuread_service_principal" "spn_databricks" {
-  application_id               = azuread_application.app_databricks.application_id
+  client_id                    = azuread_application.app_databricks.client_id
   app_role_assignment_required = false
   owners = [
     data.azuread_client_config.current.object_id
@@ -16,7 +16,7 @@ resource "azuread_service_principal" "spn_databricks" {
 }
 
 resource "azuread_application_password" "secret" {
-  application_object_id = azuread_application.app_databricks.object_id
+  application_id = azuread_application.app_databricks.id
 }
 
 module "kvs_app_databricks_password" {
@@ -35,7 +35,7 @@ resource "azuread_application" "app_cgi_dh2_data_migration" {
 }
 
 resource "azuread_service_principal" "spn_cgi_dh2_data_migration" {
-  application_id               = azuread_application.app_cgi_dh2_data_migration.application_id
+  client_id                    = azuread_application.app_cgi_dh2_data_migration.client_id
   app_role_assignment_required = false
   owners = [
     data.azuread_client_config.current.object_id
@@ -43,5 +43,5 @@ resource "azuread_service_principal" "spn_cgi_dh2_data_migration" {
 }
 
 resource "azuread_application_password" "dh2_migration_secret" {
-  application_object_id = azuread_application.app_cgi_dh2_data_migration.object_id
+  application_id = azuread_application.app_cgi_dh2_data_migration.id
 }

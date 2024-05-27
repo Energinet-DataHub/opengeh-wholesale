@@ -9,7 +9,7 @@ resource "azuread_application" "app_azcopy" {
 }
 
 resource "azuread_service_principal" "spn_azcopy" {
-  application_id               = azuread_application.app_azcopy.application_id
+  client_id                    = azuread_application.app_azcopy.client_id
   app_role_assignment_required = false
   owners = [
     data.azuread_client_config.current_client.object_id
@@ -21,7 +21,7 @@ resource "azuread_service_principal" "spn_azcopy" {
 #
 
 resource "azuread_application_federated_identity_credential" "dev_001" {
-  application_object_id = azuread_application.app_azcopy.object_id
+  application_id = azuread_application.app_azcopy.id
 
   display_name = "dev_001"
   subject      = "repo:Energinet-DataHub/dh3-environments:environment:dev_001"
@@ -31,7 +31,7 @@ resource "azuread_application_federated_identity_credential" "dev_001" {
 }
 
 resource "azuread_application_federated_identity_credential" "dev_002" {
-  application_object_id = azuread_application.app_azcopy.object_id
+  application_id = azuread_application.app_azcopy.id
 
   display_name = "dev_002"
   subject      = "repo:Energinet-DataHub/dh3-environments:environment:dev_002"
@@ -41,7 +41,7 @@ resource "azuread_application_federated_identity_credential" "dev_002" {
 }
 
 resource "azuread_application_federated_identity_credential" "dev_003" {
-  application_object_id = azuread_application.app_azcopy.object_id
+  application_id = azuread_application.app_azcopy.id
 
   display_name = "dev_003"
   subject      = "repo:Energinet-DataHub/dh3-environments:environment:dev_003"
@@ -51,7 +51,7 @@ resource "azuread_application_federated_identity_credential" "dev_003" {
 }
 
 resource "azuread_application_federated_identity_credential" "test_001" {
-  application_object_id = azuread_application.app_azcopy.object_id
+  application_id = azuread_application.app_azcopy.id
 
   display_name = "test_001"
   subject      = "repo:Energinet-DataHub/dh3-environments:environment:test_001"
@@ -61,7 +61,7 @@ resource "azuread_application_federated_identity_credential" "test_001" {
 }
 
 resource "azuread_application_federated_identity_credential" "test_002" {
-  application_object_id = azuread_application.app_azcopy.object_id
+  application_id = azuread_application.app_azcopy.id
 
   display_name = "test_002"
   subject      = "repo:Energinet-DataHub/dh3-environments:environment:test_002"
@@ -71,7 +71,7 @@ resource "azuread_application_federated_identity_credential" "test_002" {
 }
 
 resource "azuread_application_federated_identity_credential" "preprod_001" {
-  application_object_id = azuread_application.app_azcopy.object_id
+  application_id = azuread_application.app_azcopy.id
 
   display_name = "preprod_001"
   subject      = "repo:Energinet-DataHub/dh3-environments:environment:preprod_001"
@@ -81,7 +81,7 @@ resource "azuread_application_federated_identity_credential" "preprod_001" {
 }
 
 resource "azuread_application_federated_identity_credential" "prod_001" {
-  application_object_id = azuread_application.app_azcopy.object_id
+  application_id = azuread_application.app_azcopy.id
 
   display_name = "prod_001"
   subject      = "repo:Energinet-DataHub/dh3-environments:environment:prod_001"

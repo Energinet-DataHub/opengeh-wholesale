@@ -36,7 +36,7 @@ resource "databricks_secret_scope" "migration_scope_integration_test" {
 
 resource "databricks_secret" "spn_app_id_integration_test" {
   key          = "spn_app_id"
-  string_value = azuread_application.app_ci.application_id
+  string_value = azuread_application.app_ci.client_id
   scope        = databricks_secret_scope.migration_scope_integration_test.id
 }
 
@@ -107,7 +107,7 @@ resource "databricks_instance_pool" "migration_pool_integration_test" {
   max_capacity                          = 10
   node_type_id                          = "Standard_E4d_v4"
   idle_instance_autotermination_minutes = 60
-  preloaded_spark_versions = [local.databricks_runtime_version]
+  preloaded_spark_versions              = [local.databricks_runtime_version]
 }
 
 resource "databricks_job" "migration_workflow" {

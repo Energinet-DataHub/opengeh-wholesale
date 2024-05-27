@@ -8,7 +8,7 @@ resource "azuread_application" "app_market_participant" {
 }
 
 resource "azuread_service_principal" "spn_market_participant" {
-  application_id               = azuread_application.app_market_participant.application_id
+  client_id                    = azuread_application.app_market_participant.client_id
   app_role_assignment_required = false
   owners = [
     data.azuread_client_config.current.object_id
@@ -16,7 +16,7 @@ resource "azuread_service_principal" "spn_market_participant" {
 }
 
 resource "azuread_application_password" "secret" {
-  application_object_id = azuread_application.app_market_participant.object_id
+  application_id = azuread_application.app_market_participant.id
 }
 
 module "kvs_app_market_participant_password" {
