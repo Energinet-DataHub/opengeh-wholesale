@@ -4,3 +4,6 @@
 # market-participant app settings
 market-participant/terraform/**/*.app-settings.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
 market-participant/terraform/**/*.subsystem.auto.tfvars @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
+
+# migrations job names
+migrations/terraform/main/dbw-job-names.tf @Energinet-DataHub/volt @Energinet-DataHub/TheOutlaws
