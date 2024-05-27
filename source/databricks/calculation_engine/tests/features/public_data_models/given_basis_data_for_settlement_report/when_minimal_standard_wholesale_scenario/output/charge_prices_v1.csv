@@ -1,0 +1,2 @@
+﻿calculation_id;calculation_type;charge_type;charge_code;charge_owner_id;resolution;is_tax;start_date_time;price_points;grid_area;energy_supplier_id
+0b15a420-9fc8-409a-a169-fbd49479d718;WholesaleFixing;tariff;40000;5790001330552;PT1H;false;2023-01-31 23:00:00;[{'time':'2023-01-31 23:00:00','price':'1.123456'},{'time':'2023-02-01 00:00:00','price':'2.345678'}];804;8100000000115
