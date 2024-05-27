@@ -10,10 +10,8 @@ terraform {
 }
 
 provider "databricks" {
-  alias     = "dbw"
-  auth_type = "pat"
-  host      = "https://${module.dbw.workspace_url}"
-  token     = module.dbw.databricks_token
+  alias = "dbw"
+  host  = "https://${module.dbw.workspace_url}"
 }
 
 provider "azurerm" {

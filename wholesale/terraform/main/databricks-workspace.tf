@@ -1,5 +1,8 @@
 module "dbw" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-workspace?ref=14.2.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-workspace?ref=14.12.0"
+  providers = { # The databricks module requires a databricks provider, as it uses databricks resources
+    databricks = databricks.dbw
+  }
 
   project_name                             = var.domain_name_short
   environment_short                        = var.environment_short
