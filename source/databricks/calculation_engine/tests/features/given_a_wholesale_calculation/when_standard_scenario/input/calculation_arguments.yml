@@ -1,0 +1,7 @@
+- grid_areas: [ '804' ]
+  calculation_id: '0b15a420-9fc8-409a-a169-fbd49479d718'
+  period_start: '2023-01-31 23:00:00'
+  period_end: '2023-02-11 23:00:00'
+  calculation_type: 'WholesaleFixing'
+  calculation_execution_time_start: '2024-01-01 23:00:00'
+  created_by_user_id: 'a8efc21d-3508-4d76-a712-828330e6674d'
