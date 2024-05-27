@@ -10,7 +10,7 @@ resource "azurerm_data_factory" "this" {
 }
 
 module "kvs_azure_data_factory_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.0.3"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.11.0"
 
   name         = "adf-id"
   value        = azurerm_data_factory.this.id
@@ -18,7 +18,7 @@ module "kvs_azure_data_factory_id" {
 }
 
 module "kvs_azure_data_factory_principal_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.0.3"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.11.0"
 
   name         = "adf-principal-id"
   value        = azurerm_data_factory.this.identity[0].principal_id
