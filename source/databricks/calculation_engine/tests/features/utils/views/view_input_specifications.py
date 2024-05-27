@@ -73,7 +73,7 @@ def get_input_specifications() -> dict[str, tuple]:
         "charge_price_points.csv": (
             basis_data_schemas.charge_price_points_schema,
             BasisDataTableReader.read_charge_price_points,
-            basis_data_dataframes.create_charge_prices,
+            basis_data_dataframes.create_charge_prices_points,
             BASIS_DATA_DATABASE_NAME,
         ),
         # results
