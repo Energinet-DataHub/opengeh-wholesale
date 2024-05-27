@@ -19,7 +19,10 @@ from pyspark.sql.types import (
     TimestampType,
     ArrayType,
     DecimalType,
+    IntegerType,
 )
+
+from package.constants import Colname
 
 
 def create_metering_point_periods_v1_view(
@@ -52,27 +55,51 @@ def create_metering_point_time_series_v1_view(
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
-    from features.utils.dataframes.settlement_report.settlement_report_view_column_names import (
-        MeteringPointTimeSeriesV1ColumnNames,
-    )
     from features.utils.dataframes.settlement_report.metering_point_time_series_v1_view_schema import (
         metering_point_time_series_v1_view_schema,
         element,
     )
 
     df = df.withColumn(
-        MeteringPointTimeSeriesV1ColumnNames.start_date_time,
-        col(MeteringPointTimeSeriesV1ColumnNames.start_date_time).cast(TimestampType()),
+        Colname.start_date_time,
+        col(Colname.start_date_time).cast(TimestampType()),
     )
 
     df = df.withColumn(
-        MeteringPointTimeSeriesV1ColumnNames.quantities,
-        from_json(
-            col(MeteringPointTimeSeriesV1ColumnNames.quantities), ArrayType(element)
-        ),
+        "quantities",
+        from_json(col("quantities"), ArrayType(element)),
     )
 
     return spark.createDataFrame(df.rdd, metering_point_time_series_v1_view_schema)
+
+
+def create_charge_link_periods_v1_view(spark: SparkSession, df: DataFrame) -> DataFrame:
+
+    # Don't remove. Believed needed because this function is an argument to the setup function
+    # and therefore the following packages are not automatically included.
+    from features.utils.dataframes.settlement_report.settlement_report_view_column_names import (
+        ChargeLinkPeriodsV1ColumnNames,
+    )
+    from features.utils.dataframes.settlement_report.charge_link_periods_v1_view_schema import (
+        charge_link_periods_v1_view_schema,
+    )
+
+    df = df.withColumn(
+        ChargeLinkPeriodsV1ColumnNames.from_date,
+        col(ChargeLinkPeriodsV1ColumnNames.from_date).cast(TimestampType()),
+    )
+
+    df = df.withColumn(
+        ChargeLinkPeriodsV1ColumnNames.to_date,
+        col(ChargeLinkPeriodsV1ColumnNames.to_date).cast(TimestampType()),
+    )
+
+    df = df.withColumn(
+        ChargeLinkPeriodsV1ColumnNames.quantity,
+        col(ChargeLinkPeriodsV1ColumnNames.quantity).cast(IntegerType()),
+    )
+
+    return spark.createDataFrame(df.rdd, charge_link_periods_v1_view_schema)
 
 
 def create_energy_results_v1_view(spark: SparkSession, df: DataFrame) -> DataFrame:
@@ -92,12 +119,46 @@ def create_energy_results_v1_view(spark: SparkSession, df: DataFrame) -> DataFra
     )
 
     df = df.withColumn(
-        EnergyResultsV1ColumnNames.time,
+        Colname.start_date_time,
         col(
-            EnergyResultsV1ColumnNames.time,
+            Colname.start_date_time,
         ).cast(TimestampType()),
     )
     return spark.createDataFrame(df.rdd, energy_results_v1_view_schema)
+
+
+def create_wholesale_results_v1_view(spark: SparkSession, df: DataFrame) -> DataFrame:
+
+    # Don't remove. Believed needed because this function is an argument to the setup function
+    # and therefore the following packages are not automatically included.
+    from features.utils.dataframes.settlement_report.wholesale_results_v1_view_schema import (
+        wholesale_results_v1_view_schema,
+    )
+    from package.constants import WholesaleResultColumnNames
+
+    df = df.withColumn(
+        Colname.start_date_time,
+        col(
+            Colname.start_date_time,
+        ).cast(TimestampType()),
+    )
+
+    df = df.withColumn(
+        WholesaleResultColumnNames.quantity,
+        col(WholesaleResultColumnNames.quantity).cast(DecimalType(18, 3)),
+    )
+
+    df = df.withColumn(
+        WholesaleResultColumnNames.price,
+        col(WholesaleResultColumnNames.price).cast(DecimalType(18, 6)),
+    )
+
+    df = df.withColumn(
+        WholesaleResultColumnNames.amount,
+        col(WholesaleResultColumnNames.amount).cast(DecimalType(18, 6)),
+    )
+
+    return spark.createDataFrame(df.rdd, wholesale_results_v1_view_schema)
 
 
 def _parse_qualities(qualities_str: str) -> list[dict]:

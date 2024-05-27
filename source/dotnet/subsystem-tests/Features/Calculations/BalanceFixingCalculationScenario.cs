@@ -76,10 +76,10 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
 
         // Assert
         using var assertionScope = new AssertionScope();
-        isCompletedOrFailed.Should().BeTrue();
+        isCompletedOrFailed.Should().BeTrue("Calculation took too long. Wait time exceeded.");
         calculation.Should().NotBeNull();
-
         calculation!.ExecutionState.Should().Be(Clients.v3.CalculationState.Completed);
+        calculation.OrchestrationState.Should().NotBe(Clients.v3.CalculationOrchestrationState.CalculationFailed);
     }
 
     [ScenarioStep(4)]
@@ -126,6 +126,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
         // => Empty
         Fixture.ScenarioState.ReceivedAmountPerChargeResultProducedV1.Should().BeEmpty();
         Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1.Should().BeEmpty();
+        // TODO: Assert CalculationCompletedV1 received
     }
 
     [ScenarioStep(6)]

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Extensions;
 
@@ -23,8 +24,8 @@ public static class MessageSinkExtensions
         messageSink.OnMessage(CreateDiagnosticMessage(message));
     }
 
-    private static Xunit.Sdk.DiagnosticMessage CreateDiagnosticMessage(string message)
+    private static DiagnosticMessage CreateDiagnosticMessage(string message)
     {
-        return new Xunit.Sdk.DiagnosticMessage($"Mandalorian: {message}");
+        return new DiagnosticMessage($"Mandalorian: {message}");
     }
 }

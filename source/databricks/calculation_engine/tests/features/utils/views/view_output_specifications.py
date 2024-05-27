@@ -11,9 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from features.utils.dataframes.edi_results.view_dataframes import (
+    create_energy_result_points_per_ga_v1_view,
+)
+from features.utils.dataframes.edi_results.energy_result_points_per_ga_v1_view_schema import (
+    energy_result_points_per_ga_v1_view_schema,
+)
 from features.utils.dataframes.settlement_report import (
     metering_point_period_v1_view_schema,
     metering_point_time_series_v1_view_schema,
+)
+from features.utils.dataframes.settlement_report.charge_link_periods_v1_view_schema import (
+    charge_link_periods_v1_view_schema,
 )
 from features.utils.dataframes.settlement_report.energy_results_v1_view_schema import (
     energy_results_v1_view_schema,
@@ -22,10 +31,16 @@ from features.utils.dataframes.settlement_report.settlement_report_view_datafram
     create_metering_point_periods_v1_view,
     create_metering_point_time_series_v1_view,
     create_energy_results_v1_view,
+    create_charge_link_periods_v1_view,
+    create_wholesale_results_v1_view,
+)
+from features.utils.dataframes.settlement_report.wholesale_results_v1_view_schema import (
+    wholesale_results_v1_view_schema,
 )
 from features.utils.readers import (
     SettlementReportViewReader,
 )
+from features.utils.readers.edi_results_view_reader import EdiResultsViewReader
 
 
 def get_output_specifications() -> dict[str, tuple]:
@@ -33,6 +48,11 @@ def get_output_specifications() -> dict[str, tuple]:
     Contains the specifications for scenario outputs.
     """
     return {
+        "energy_result_points_per_ga_v1.csv": (
+            energy_result_points_per_ga_v1_view_schema,
+            EdiResultsViewReader.read_energy_result_points_per_ga_v1,
+            create_energy_result_points_per_ga_v1_view,
+        ),
         "metering_point_periods.csv": (
             metering_point_period_v1_view_schema,
             SettlementReportViewReader.read_metering_point_periods_v1,
@@ -43,9 +63,19 @@ def get_output_specifications() -> dict[str, tuple]:
             SettlementReportViewReader.read_metering_point_time_series_v1,
             create_metering_point_time_series_v1_view,
         ),
+        "charge_link_periods_v1.csv": (
+            charge_link_periods_v1_view_schema,
+            SettlementReportViewReader.read_charge_link_periods_v1,
+            create_charge_link_periods_v1_view,
+        ),
         "energy_results_v1.csv": (
             energy_results_v1_view_schema,
             SettlementReportViewReader.read_energy_results_v1,
             create_energy_results_v1_view,
+        ),
+        "wholesale_results_v1.csv": (
+            wholesale_results_v1_view_schema,
+            SettlementReportViewReader.read_wholesale_results_v1,
+            create_wholesale_results_v1_view,
         ),
     }

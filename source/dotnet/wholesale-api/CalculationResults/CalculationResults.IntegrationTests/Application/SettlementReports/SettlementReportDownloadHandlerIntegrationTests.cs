@@ -37,7 +37,7 @@ public sealed class SettlementReportDownloadHandlerIntegrationTests : TestBase<S
     private readonly SettlementReportRequestDto _mockedSettlementReportRequest = new(
         CalculationType.BalanceFixing,
         false,
-        new SettlementReportRequestFilterDto([], DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null));
+        new SettlementReportRequestFilterDto([], DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, null));
 
     public SettlementReportDownloadHandlerIntegrationTests(
         WholesaleDatabaseFixture<SettlementReportDatabaseContext> wholesaleDatabaseFixture,
@@ -75,7 +75,63 @@ public sealed class SettlementReportDownloadHandlerIntegrationTests : TestBase<S
 
         // Act
         await using var downloadStream = new MemoryStream();
-        await Sut.DownloadReportAsync(requestId, downloadStream, userId, actorId);
+        await Sut.DownloadReportAsync(requestId, downloadStream, userId, actorId, false);
+
+        // Assert
+        Assert.NotNull(downloadStream);
+        Assert.NotEqual(0, downloadStream.Length);
+    }
+
+    [Fact]
+    public async Task DownloadAsync_NoAccess_ThrowsException()
+    {
+        var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
+        await MakeTestFileAsync(requestId);
+
+        var generatedSettlementReport = new GeneratedSettlementReportDto(
+            requestId,
+            new GeneratedSettlementReportFileDto(requestId, "Report.zip"),
+            []);
+
+        var userId = Guid.NewGuid();
+        var actorId = Guid.NewGuid();
+        var settlementReport =
+            new SettlementReport(SystemClock.Instance, userId, actorId, requestId, _mockedSettlementReportRequest);
+        settlementReport.MarkAsCompleted(generatedSettlementReport);
+
+        await using var dbContext = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
+        await dbContext.SettlementReports.AddAsync(settlementReport);
+        await dbContext.SaveChangesAsync();
+
+        // Act + Assert
+        await using var downloadStream = new MemoryStream();
+        await Assert.ThrowsAsync<InvalidOperationException>(() => Sut.DownloadReportAsync(requestId, downloadStream, Guid.NewGuid(), Guid.NewGuid(), false));
+    }
+
+    [Fact]
+    public async Task DownloadAsync_AsFAS_ReturnsStream()
+    {
+        var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
+        await MakeTestFileAsync(requestId);
+
+        var generatedSettlementReport = new GeneratedSettlementReportDto(
+            requestId,
+            new GeneratedSettlementReportFileDto(requestId, "Report.zip"),
+            []);
+
+        var userId = Guid.NewGuid();
+        var actorId = Guid.NewGuid();
+        var settlementReport =
+            new SettlementReport(SystemClock.Instance, userId, actorId, requestId, _mockedSettlementReportRequest);
+        settlementReport.MarkAsCompleted(generatedSettlementReport);
+
+        await using var dbContext = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
+        await dbContext.SettlementReports.AddAsync(settlementReport);
+        await dbContext.SaveChangesAsync();
+
+        // Act
+        await using var downloadStream = new MemoryStream();
+        await Sut.DownloadReportAsync(requestId, downloadStream, Guid.NewGuid(), Guid.NewGuid(), true);
 
         // Assert
         Assert.NotNull(downloadStream);

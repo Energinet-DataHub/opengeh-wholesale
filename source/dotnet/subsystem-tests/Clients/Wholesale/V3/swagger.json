@@ -349,9 +349,9 @@
           "Calculating",
           "Calculated",
           "CalculationFailed",
-          "MessagesEnqueuing",
-          "MessagesEnqueued",
-          "MessagesEnqueuingFailed",
+          "ActorMessagesEnqueuing",
+          "ActorMessagesEnqueued",
+          "ActorMessagesEnqueuingFailed",
           "Completed"
         ]
       },

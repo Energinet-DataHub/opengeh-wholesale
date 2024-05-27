@@ -671,14 +671,14 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
         [System.Runtime.Serialization.EnumMember(Value = @"CalculationFailed")]
         CalculationFailed = 3,
 
-        [System.Runtime.Serialization.EnumMember(Value = @"MessagesEnqueuing")]
-        MessagesEnqueuing = 4,
+        [System.Runtime.Serialization.EnumMember(Value = @"ActorMessagesEnqueuing")]
+        ActorMessagesEnqueuing = 4,
 
-        [System.Runtime.Serialization.EnumMember(Value = @"MessagesEnqueued")]
-        MessagesEnqueued = 5,
+        [System.Runtime.Serialization.EnumMember(Value = @"ActorMessagesEnqueued")]
+        ActorMessagesEnqueued = 5,
 
-        [System.Runtime.Serialization.EnumMember(Value = @"MessagesEnqueuingFailed")]
-        MessagesEnqueuingFailed = 6,
+        [System.Runtime.Serialization.EnumMember(Value = @"ActorMessagesEnqueuingFailed")]
+        ActorMessagesEnqueuingFailed = 6,
 
         [System.Runtime.Serialization.EnumMember(Value = @"Completed")]
         Completed = 7,

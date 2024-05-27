@@ -49,7 +49,9 @@ schema_config = [
                 schema=total_monthly_amounts_schema,
             ),
         ],
-        views=[],
+        views=[
+            View(name=paths.SUCCEEDED_ENERGY_RESULTS_V1_VIEW_NAME),
+        ],
     ),
     Schema(
         # Tables in this schema are externals and schemas are not defined in the SQL scripts.
@@ -104,6 +106,14 @@ schema_config = [
             View(name=paths.METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1),
             View(name=paths.METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME_V1),
             View(name=paths.ENERGY_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1),
+            View(name=paths.CHARGE_LINK_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1),
+        ],
+    ),
+    Schema(
+        name=paths.EdiResults.DATABASE_NAME,
+        tables=[],
+        views=[
+            View(name=paths.EdiResults.ENERGY_RESULT_POINTS_PER_GA_V1_VIEW_NAME),
         ],
     ),
 ]
