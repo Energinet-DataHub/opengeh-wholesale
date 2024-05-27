@@ -84,7 +84,7 @@ def create_metering_point_periods(spark: SparkSession, df: DataFrame) -> DataFra
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
-    from package.constants import MeteringPointPeriodColname
+    from package.constants.basis_data_colname import MeteringPointPeriodColname
     from package.calculation.basis_data.schemas import metering_point_period_schema
 
     df = df.withColumn(
@@ -104,7 +104,7 @@ def create_charge_link_periods(spark: SparkSession, df: DataFrame) -> DataFrame:
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
     from package.calculation.basis_data.schemas import charge_link_periods_schema
-    from package.constants import ChargeLinkPeriodsColname
+    from package.constants.basis_data_colname import ChargeLinkPeriodsColname
 
     df = df.withColumn(
         ChargeLinkPeriodsColname.quantity,
@@ -163,3 +163,28 @@ def create_charge_prices(spark: SparkSession, df: DataFrame) -> DataFrame:
     )
 
     return spark.createDataFrame(df.rdd, charge_price_points_schema)
+
+
+def create_charge_price_information_periods(
+    spark: SparkSession, df: DataFrame
+) -> DataFrame:
+
+    # Don't remove. Believed needed because this function is an argument to the setup function
+    # and therefore the following packages are not automatically included.
+    from package.calculation.basis_data.schemas import charge_master_data_periods_schema
+    from package.constants.basis_data_colname import ChargeMasterDataPeriodsColname
+
+    df = df.withColumn(
+        ChargeMasterDataPeriodsColname.from_date,
+        col(ChargeMasterDataPeriodsColname.from_date).cast(TimestampType()),
+    )
+    df = df.withColumn(
+        ChargeMasterDataPeriodsColname.to_date,
+        col(ChargeMasterDataPeriodsColname.to_date).cast(TimestampType()),
+    )
+    df = df.withColumn(
+        ChargeMasterDataPeriodsColname.is_tax,
+        col(ChargeMasterDataPeriodsColname.is_tax).cast(BooleanType()),
+    )
+
+    return spark.createDataFrame(df.rdd, charge_master_data_periods_schema)

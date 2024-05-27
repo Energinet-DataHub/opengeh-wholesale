@@ -49,7 +49,17 @@ class BasisDataTableReader:
             f"{BASIS_DATA_DATABASE_NAME}.{paths.CALCULATIONS_TABLE_NAME}"
         )
 
+    def read_charge_price_information_periods(self) -> DataFrame:
+        return self._spark.read.format("delta").table(
+            f"{BASIS_DATA_DATABASE_NAME}.{paths.CHARGE_MASTER_DATA_PERIODS_BASIS_DATA_TABLE_NAME}"
+        )
+
     def read_charge_link_periods(self) -> DataFrame:
         return self._spark.read.format("delta").table(
             f"{BASIS_DATA_DATABASE_NAME}.{paths.CHARGE_LINK_PERIODS_BASIS_DATA_TABLE_NAME}"
+        )
+
+    def read_charge_price_points(self) -> DataFrame:
+        return self._spark.read.format("delta").table(
+            f"{BASIS_DATA_DATABASE_NAME}.{paths.CHARGE_PRICE_POINTS_BASIS_DATA_TABLE_NAME}"
         )

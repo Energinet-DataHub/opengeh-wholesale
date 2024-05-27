@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import features.utils.dataframes.basis_data.basis_data_dataframes as basis_data_dataframes
+import package.calculation.basis_data.schemas as basis_data_schemas
 from features.utils.dataframes import (
     create_energy_result_dataframe,
     create_wholesale_result_dataframe,
@@ -20,8 +21,6 @@ from features.utils.dataframes.basis_data.calculations_dataframe import (
     create_calculations_dataframe,
 )
 from features.utils.readers import BasisDataTableReader, EnergyResultViewReader
-
-import package.calculation.basis_data.schemas as basis_data_schemas
 from package.calculation.output.schemas import (
     energy_results_schema,
     wholesale_results_schema,
@@ -59,10 +58,22 @@ def get_input_specifications() -> dict[str, tuple]:
             create_calculations_dataframe,
             BASIS_DATA_DATABASE_NAME,
         ),
+        "charge_price_information_periods.csv": (
+            basis_data_schemas.charge_master_data_periods_schema,
+            BasisDataTableReader.read_charge_price_information_periods,
+            basis_data_dataframes.create_charge_price_information_periods,
+            BASIS_DATA_DATABASE_NAME,
+        ),
         "charge_link_periods.csv": (
             basis_data_schemas.charge_link_periods_schema,
             BasisDataTableReader.read_charge_link_periods,
             basis_data_dataframes.create_charge_link_periods,
+            BASIS_DATA_DATABASE_NAME,
+        ),
+        "charge_price_points.csv": (
+            basis_data_schemas.charge_price_points_schema,
+            BasisDataTableReader.read_charge_price_points,
+            basis_data_dataframes.create_charge_prices,
             BASIS_DATA_DATABASE_NAME,
         ),
         # results
