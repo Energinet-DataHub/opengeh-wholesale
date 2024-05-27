@@ -65,35 +65,7 @@ internal class UpdateCalculationStatusActivity(
 
     private void UpdateState(Calculations.Application.Model.Calculations.Calculation calculation, CalculationOrchestrationState newState)
     {
-        switch (newState)
-        {
-            case CalculationOrchestrationState.Scheduled:
-                calculation.MarkAsScheduled();
-                break;
-            case CalculationOrchestrationState.Calculating:
-                calculation.MarkAsCalculating();
-                break;
-            case CalculationOrchestrationState.Calculated:
-                calculation.MarkAsCalculated(_clock.GetCurrentInstant());
-                break;
-            case CalculationOrchestrationState.CalculationFailed:
-                calculation.MarkAsCalculationFailed();
-                break;
-            case CalculationOrchestrationState.ActorMessagesEnqueuing:
-                calculation.MarkAsActorMessagesEnqueuing(_clock.GetCurrentInstant());
-                break;
-            case CalculationOrchestrationState.ActorMessagesEnqueued:
-                calculation.MarkAsActorMessagesEnqueued(_clock.GetCurrentInstant());
-                break;
-            case CalculationOrchestrationState.ActorMessagesEnqueuingFailed:
-                calculation.MarkAsMessagesEnqueuingFailed();
-                break;
-            case CalculationOrchestrationState.Completed:
-                calculation.MarkAsCompleted(_clock.GetCurrentInstant());
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(newState), newState, $"Unexpected orchestration state: {newState}.");
-        }
+        calculation.UpdateState(newState, _clock.GetCurrentInstant());
     }
 }
 #pragma warning restore CA2007 // Consider calling ConfigureAwait on the awaited task

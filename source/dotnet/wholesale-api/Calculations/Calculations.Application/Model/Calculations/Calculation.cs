@@ -326,6 +326,39 @@ public class Calculation
         CompletedTime = completedAt;
     }
 
+    public void UpdateState(CalculationOrchestrationState newState, Instant now)
+    {
+        switch (newState)
+        {
+            case CalculationOrchestrationState.Scheduled:
+                MarkAsScheduled();
+                break;
+            case CalculationOrchestrationState.Calculating:
+                MarkAsCalculating();
+                break;
+            case CalculationOrchestrationState.Calculated:
+                MarkAsCalculated(now);
+                break;
+            case CalculationOrchestrationState.CalculationFailed:
+                MarkAsCalculationFailed();
+                break;
+            case CalculationOrchestrationState.ActorMessagesEnqueuing:
+                MarkAsActorMessagesEnqueuing(now);
+                break;
+            case CalculationOrchestrationState.ActorMessagesEnqueued:
+                MarkAsActorMessagesEnqueued(now);
+                break;
+            case CalculationOrchestrationState.ActorMessagesEnqueuingFailed:
+                MarkAsMessagesEnqueuingFailed();
+                break;
+            case CalculationOrchestrationState.Completed:
+                MarkAsCompleted(now);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(newState), newState, $"Unexpected orchestration state: {newState}.");
+        }
+    }
+
     /// <summary>
     /// Reset a <see cref="Calculation"/>. This will ensure that it will be picked up and run again in a new calculation.
     /// </summary>

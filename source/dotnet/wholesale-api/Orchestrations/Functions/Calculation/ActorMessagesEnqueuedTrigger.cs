@@ -31,6 +31,8 @@ internal class ActorMessagesEnqueuedTrigger(ILogger<ActorMessagesEnqueuedTrigger
         ServiceBusReceivedMessage serviceBusReceivedMessage,
         [DurableClient] DurableTaskClient durableTaskClient)
     {
+        // TODO: Check for event type and only handle ActorMessagesEnqueuedEvent
+        // -- Do we need a subscription with a filter? Else we need to handle other event types here
         logger.LogInformation(
             "Received ActorMessagesEnqueued event with MessageId: {EventId}, Subject: {Subject} from Service Bus",
             serviceBusReceivedMessage.MessageId,

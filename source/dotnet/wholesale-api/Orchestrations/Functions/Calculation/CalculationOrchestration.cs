@@ -111,11 +111,11 @@ internal class CalculationOrchestration
         // Wait for an ActorMessagesEnqueued event to notify us that messages are ready to be consumed by actors
         // Pattern #5: Human interaction - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview?tabs=isolated-process%2Cnodejs-v3%2Cv1-model&pivots=csharp#human
         var waitForActorMessagesEnqueuedEventResult = await WaitForActorMessagesEnqueuedEvent(context, calculationMetadata.Id);
-        if (!waitForActorMessagesEnqueuedEventResult.Success)
+        if (!waitForActorMessagesEnqueuedEventResult.IsSuccess)
         {
-            calculationMetadata.OrchestrationProgress = waitForActorMessagesEnqueuedEventResult.Error ?? "UnknownWaitForActorMessagesEnqueuedEventError";
+            calculationMetadata.OrchestrationProgress = waitForActorMessagesEnqueuedEventResult.ErrorSubject ?? "UnknownWaitForActorMessagesEnqueuedEventError";
             context.SetCustomStatus(calculationMetadata);
-            return $"Error: {waitForActorMessagesEnqueuedEventResult.ErrorDescription}";
+            return $"Error: {waitForActorMessagesEnqueuedEventResult.ErrorDescription ?? "Unknown error waiting for actor messages enqueued event"}";
         }
 
         calculationMetadata.OrchestrationProgress = "ActorMessagesEnqueued";
@@ -124,13 +124,19 @@ internal class CalculationOrchestration
         // Update calculation state to ActorMessagesEnqueued in database
         await context.CallActivityAsync(
             nameof(SetCalculationOrchestrationStateActivity),
-            CalculationOrchestrationState.ActorMessagesEnqueued);
+            new SetCalculationOrchestrationStateInput(calculationMetadata.Id, CalculationOrchestrationState.ActorMessagesEnqueued));
 
-        // TODO: Set calculation orchestration status to completed
+        calculationMetadata.OrchestrationProgress = "Completed";
+        context.SetCustomStatus(calculationMetadata);
+        // Set calculation orchestration status to completed
+        await context.CallActivityAsync(
+            nameof(SetCalculationOrchestrationStateActivity),
+            new SetCalculationOrchestrationStateInput(calculationMetadata.Id, CalculationOrchestrationState.Completed));
+
         return "Success";
     }
 
-    private static async Task<(bool Success, string? Error, string? ErrorDescription)> WaitForActorMessagesEnqueuedEvent(
+    private static async Task<OrchestrationResult> WaitForActorMessagesEnqueuedEvent(
         TaskOrchestrationContext context,
         Guid calculationId)
     {
@@ -149,17 +155,20 @@ internal class CalculationOrchestration
             if (finishedTask == waitForMessagesEnqueuedEventTask)
             {
                 var messagesEnqueuedEvent = waitForMessagesEnqueuedEventTask.Result;
-                if (!Guid.TryParse(messagesEnqueuedEvent.CalculationId, out var messagesEnqueuedCalculationId) || messagesEnqueuedCalculationId != calculationId)
-                    return (false, "ActorMessagesEnqueuedCalculationIdMismatch", $"Error: Calculation id mismatch for actor messages enqueued event (expected: {calculationId}, actual: {messagesEnqueuedEvent.CalculationId})");
+                var canParseCalculationId = Guid.TryParse(messagesEnqueuedEvent.CalculationId, out var messagesEnqueuedCalculationId);
+                if (!canParseCalculationId || messagesEnqueuedCalculationId != calculationId)
+                {
+                    return OrchestrationResult.Error("ActorMessagesEnqueuedCalculationIdMismatch", $"Calculation id mismatch for actor messages enqueued event (expected: {calculationId}, actual: {messagesEnqueuedEvent.CalculationId})");
+                }
             }
             else
             {
-                return (false, "ActorMessagesEnqueuingTimeout", "Error: Timeout while waiting for actor messages enqueued event");
+                return OrchestrationResult.Error("ActorMessagesEnqueuingTimeout", "Timeout while waiting for actor messages enqueued event");
             }
 
             await timeoutCts.CancelAsync();
         }
 
-        return (true, null, null);
+        return OrchestrationResult.Success();
     }
 }

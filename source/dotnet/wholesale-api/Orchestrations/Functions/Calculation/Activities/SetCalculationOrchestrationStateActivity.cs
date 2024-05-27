@@ -13,9 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Calculations.Application;
-using Energinet.DataHub.Wholesale.Calculations.Application.Model;
-using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
-using Energinet.DataHub.Wholesale.Calculations.Infrastructure.CalculationState;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
@@ -45,35 +42,7 @@ internal class SetCalculationOrchestrationStateActivity(
 
     private void UpdateState(Calculations.Application.Model.Calculations.Calculation calculation, CalculationOrchestrationState newState)
     {
-        switch (newState)
-        {
-            case CalculationOrchestrationState.Scheduled:
-                calculation.MarkAsScheduled();
-                break;
-            case CalculationOrchestrationState.Calculating:
-                calculation.MarkAsCalculating();
-                break;
-            case CalculationOrchestrationState.Calculated:
-                calculation.MarkAsCalculated(clock.GetCurrentInstant());
-                break;
-            case CalculationOrchestrationState.CalculationFailed:
-                calculation.MarkAsCalculationFailed();
-                break;
-            case CalculationOrchestrationState.ActorMessagesEnqueuing:
-                calculation.MarkAsActorMessagesEnqueuing(clock.GetCurrentInstant());
-                break;
-            case CalculationOrchestrationState.ActorMessagesEnqueued:
-                calculation.MarkAsActorMessagesEnqueued(clock.GetCurrentInstant());
-                break;
-            case CalculationOrchestrationState.ActorMessagesEnqueuingFailed:
-                calculation.MarkAsMessagesEnqueuingFailed();
-                break;
-            case CalculationOrchestrationState.Completed:
-                calculation.MarkAsCompleted(clock.GetCurrentInstant());
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(newState), newState, $"Unexpected orchestration state: {newState}.");
-        }
+        calculation.UpdateState(newState, clock.GetCurrentInstant());
     }
 }
 #pragma warning restore CA2007 // Consider calling ConfigureAwait on the awaited task

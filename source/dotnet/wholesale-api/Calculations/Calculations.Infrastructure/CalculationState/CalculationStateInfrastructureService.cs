@@ -82,35 +82,6 @@ public class CalculationStateInfrastructureService : ICalculationStateInfrastruc
 
     private void HandleNewState(CalculationOrchestrationState state, Calculation calculation, ICollection<Calculation> completedCalculations)
     {
-        switch (state)
-        {
-            case CalculationOrchestrationState.Scheduled:
-                calculation.MarkAsScheduled();
-                break;
-            case CalculationOrchestrationState.Calculating:
-                calculation.MarkAsCalculating();
-                break;
-            case CalculationOrchestrationState.Calculated:
-                calculation.MarkAsCalculated(_clock.GetCurrentInstant());
-                completedCalculations.Add(calculation);
-                break;
-            case CalculationOrchestrationState.CalculationFailed:
-                calculation.MarkAsCalculationFailed();
-                break;
-            case CalculationOrchestrationState.ActorMessagesEnqueuing:
-                calculation.MarkAsActorMessagesEnqueuing(_clock.GetCurrentInstant());
-                break;
-            case CalculationOrchestrationState.ActorMessagesEnqueued:
-                calculation.MarkAsActorMessagesEnqueued(_clock.GetCurrentInstant());
-                break;
-            case CalculationOrchestrationState.ActorMessagesEnqueuingFailed:
-                calculation.MarkAsMessagesEnqueuingFailed();
-                break;
-            case CalculationOrchestrationState.Completed:
-                calculation.MarkAsCompleted(_clock.GetCurrentInstant());
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(state), state, "Unhandled CalculationOrchestrationState when changing state");
-        }
+        calculation.UpdateState(state, _clock.GetCurrentInstant());
     }
 }
