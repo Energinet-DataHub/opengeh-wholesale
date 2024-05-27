@@ -9,3 +9,4 @@ developer_ad_group_name                            = "SEC-A-GreenForce-Developme
 omada_developers_security_group_name               = "SEC-G-Datahub-DevelopersAzure"
 quarterly_resolution_transition_datetime           = "2023-01-31T23:00:00Z"
 alert_email_address                                = "5543d1b6.energinet.onmicrosoft.com@emea.teams.ms"
+pim_sql_writer_ad_group_name                       = "SEC-A-Datahub-Dev-001-Contributor"

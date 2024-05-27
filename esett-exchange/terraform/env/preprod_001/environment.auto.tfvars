@@ -2,3 +2,5 @@
 # For values that persist across all environments, refer to /main/terraform.tfvars
 disable_biztalk_connection_check   = true
 biztalk_hybrid_connection_hostname = "datahub.preproduction.biztalk.energinet.local"
+pim_sql_writer_ad_group_name       = "SEC-A-Datahub-PreProd-001-Contributor"
+pim_sql_reader_ad_group_name       = "SEC-A-Datahub-PreProd-001-Reader"

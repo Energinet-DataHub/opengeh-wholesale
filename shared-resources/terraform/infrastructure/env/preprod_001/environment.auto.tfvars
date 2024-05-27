@@ -10,3 +10,5 @@ ag_primary_email_address            = "ea2175c9.energinet.onmicrosoft.com@emea.t
 arm_client_id                       = "b3b75554-366e-4c0d-b18a-c47b345589cb"
 biztalk_hybrid_connection_hostname  = "datahub.preproduction.biztalk.energinet.local:443"
 apim_url                            = "https://preprod.b2b.datahub3.dk"
+pim_contributor_group_name          = "SEC-A-Datahub-PreProd-001-Contributor"
+pim_reader_group_name               = "SEC-A-Datahub-PreProd-001-Reader"

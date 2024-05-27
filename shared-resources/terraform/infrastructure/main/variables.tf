@@ -250,3 +250,15 @@ variable "databricks_developers_group_id" {
   type        = string
   description = "The ID of the Databricks group containing Databricks users synced from the OMADA group."
 }
+
+variable "pim_contributor_group_name" {
+  type        = string
+  description = "Name of the PIM controlled security group with contributors permissions."
+  default     = null
+}
+
+variable "pim_reader_group_name" {
+  type        = string
+  description = "Name of the PIM controlled security group with reader permissions."
+  default     = null
+}

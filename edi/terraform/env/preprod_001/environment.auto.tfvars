@@ -7,3 +7,5 @@ feature_management_use_peek_messages                             = true
 feature_management_use_request_messages                          = true
 feature_management_use_energy_result_produced                    = true
 feature_management_use_message_delegation                        = true
+pim_sql_writer_ad_group_name                                     = "SEC-A-Datahub-PreProd-001-Contributor"
+pim_sql_reader_ad_group_name                                     = "SEC-A-Datahub-PreProd-001-Reader"

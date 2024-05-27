@@ -10,3 +10,4 @@ feature_management_use_energy_result_produced                    = true
 feature_management_use_total_monthly_amount_result_produced      = true
 developer_ad_group_name                                          = "SEC-A-GreenForce-DevelopmentTeamAzure"
 omada_developers_security_group_name                             = "SEC-G-Datahub-DevelopersAzure"
+pim_sql_writer_ad_group_name                                     = "SEC-A-Datahub-Test-001-Contributor"
