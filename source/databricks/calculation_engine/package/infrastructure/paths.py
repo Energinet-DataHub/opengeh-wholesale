@@ -29,6 +29,7 @@ GRID_LOSS_METERING_POINTS_TABLE_NAME = "grid_loss_metering_points"
 OUTPUT_DATABASE_NAME = "wholesale_output"
 ENERGY_RESULT_TABLE_NAME = "energy_results"
 WHOLESALE_RESULT_TABLE_NAME = "wholesale_results"
+MONTHLY_AMOUNTS_TABLE_NAME = "monthly_amounts"
 TOTAL_MONTHLY_AMOUNTS_TABLE_NAME = "total_monthly_amounts"
 SUCCEEDED_ENERGY_RESULTS_V1_VIEW_NAME = "succeeded_energy_results_v1"
 
