@@ -28,7 +28,7 @@ public static class MeteringPointTypeMapper
             MeteringPointType.VeProduction => WholesaleServicesRequestSeries.Types.MeteringPointType.VeProduction,
             MeteringPointType.NetProduction => WholesaleServicesRequestSeries.Types.MeteringPointType.NetProduction,
             MeteringPointType.SupplyToGrid => WholesaleServicesRequestSeries.Types.MeteringPointType.SupplyToGrid,
-            MeteringPointType.ConsumptionFromGrid => WholesaleServicesRequestSeries.Types.MeteringPointType.Consumption,
+            MeteringPointType.ConsumptionFromGrid => WholesaleServicesRequestSeries.Types.MeteringPointType.ConsumptionFromGrid,
             MeteringPointType.WholesaleServicesInformation => WholesaleServicesRequestSeries.Types.MeteringPointType.WholesaleServicesInformation,
             MeteringPointType.OwnProduction => WholesaleServicesRequestSeries.Types.MeteringPointType.OwnProduction,
             MeteringPointType.NetFromGrid => WholesaleServicesRequestSeries.Types.MeteringPointType.NetFromGrid,
