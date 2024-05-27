@@ -29,7 +29,8 @@ from pyspark.sql.window import Window
 # Source variables
 source_database = "hive_metastore.wholesale_output" # FILL IN
 source_energy_results_table_name = "energy_results"
-source_calculation_id_to_use = "1fba2899-7ea5-4d36-8330-67022bdcac14" # FILL IN
+source_metering_points_database_and_table_name = "wholesale_input.metering_point_periods"
+source_calculation_id_to_use = "51d60f89-bbc5-4f7a-be98-6139aab1c1b2" # FILL IN
 
 # Target variables
 target_database = "hive_metastore.wholesale_output_anonymised" # FILL IN
@@ -89,6 +90,15 @@ df_source_energy_results_table = (
 
 # COMMAND ----------
 
+# Read all grid area codes
+df_source_grid_area_codes_table = (
+    spark.read.table(f"{source_metering_points_database_and_table_name}")
+    .select(grid_area_code_column_name)
+    .distinct()
+)
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC # Step 3: Find and anonymised all grid_area_codes, and metering_point_id's and energy_supplier_ids + balance_supplier_ids
 
@@ -118,23 +128,31 @@ df_all_grid_area_codes = (
     .distinct()
 ).cache()
 
-count_distinct_mpids = len(str(df_all_grid_area_codes.count()))
+count_distinct_grid_area_codes = len(str(df_all_grid_area_codes.count()))
 window_random_order = Window.orderBy(F.rand())
 
-df_anonymised_grid_area_codes = (
-    df_all_grid_area_codes.withColumn(
-        anonymised_grid_area_code_column_name, 
-        F.lpad(F.row_number().over(window_random_order), 3, "0")
-    )
-    .withColumn(
-        anonymised_grid_area_code_column_name,
-        F.when(
-            F.col(grid_area_code_column_name).isNull(),
-            F.lit(None),
-        ).otherwise(F.col(anonymised_grid_area_code_column_name)),
-    )
-    .na.drop()
-).cache()
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC For each grid area code give it a new 3 digit anonymized code, however if the anoynmized grid area code is identical to a real one, then we skip it and create a new one
+
+# COMMAND ----------
+
+anonymised_grid_area_codes = []
+list_unique_grid_area_codes = [row[grid_area_code_column_name] for row in df_source_grid_area_codes_table.collect()]
+
+first_anonymized_id_iteration = 1
+for grid_area_code in list_unique_grid_area_codes:
+    str_i = str(first_anonymized_id_iteration).rjust(3, '0')
+    first_anonymized_id_iteration += 1
+    if str_i in list_unique_grid_area_codes:
+        continue
+    else:
+        anonymised_grid_area_codes.append((grid_area_code, str_i))
+
+# COMMAND ----------
+
+df_anonymised_grid_area_codes = spark.createDataFrame(anonymised_grid_area_codes, [grid_area_code_column_name, anonymised_grid_area_code_column_name]).cache()
 
 # COMMAND ----------
 
@@ -434,6 +452,6 @@ assert (
 
 # COMMAND ----------
 
-df_source_energy_results_table_anonymised.write.format("delta").mode("append").saveAsTable(
+df_source_energy_results_table_anonymised.write.format("delta").mode("overwrite").saveAsTable(
     f"{target_database}.{target_energy_results_table_name}"
 )
