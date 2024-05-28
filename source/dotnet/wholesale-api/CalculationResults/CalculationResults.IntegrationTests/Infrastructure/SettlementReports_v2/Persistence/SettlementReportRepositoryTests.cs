@@ -151,7 +151,7 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
     }
 
     [Fact]
-    public async Task GetAsync_UserIdActorIdMatches_ReturnsRequests()
+    public async Task GetAsync_ActorIdMatches_ReturnsRequests()
     {
         // arrange
         await PrepareNewRequestAsync();
@@ -163,7 +163,7 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
         var repository = new SettlementReportRepository(context);
 
         // act
-        var actual = (await repository.GetAsync(expectedRequest.UserId, expectedRequest.ActorId)).ToList();
+        var actual = (await repository.GetAsync(expectedRequest.ActorId)).ToList();
 
         // assert
         Assert.Single(actual);
