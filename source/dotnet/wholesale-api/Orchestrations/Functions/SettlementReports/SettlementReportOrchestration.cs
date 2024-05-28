@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Activities;
@@ -40,18 +41,21 @@ internal sealed class SettlementReportOrchestration
             context.InstanceId,
             settlementReportRequest);
 
-        var scatterResults = await context
-            .CallActivityAsync<IEnumerable<SettlementReportFileRequestDto>>(nameof(ScatterSettlementReportFilesActivity), scatterInput);
-
-        var coldRetryHandler = TaskOptions.FromRetryHandler(retryContext => HandleColdDataSource(
+        var dataSourceExceptionHandler = TaskOptions.FromRetryHandler(retryContext => HandleDataSourceExceptions(
                 retryContext,
                 executionContext.GetLogger<SettlementReportOrchestration>()));
+
+        var scatterResults = await context
+            .CallActivityAsync<IEnumerable<SettlementReportFileRequestDto>>(
+                nameof(ScatterSettlementReportFilesActivity),
+                scatterInput,
+                dataSourceExceptionHandler);
 
         var fileRequestTasks = scatterResults.Select(fileRequest => context
             .CallActivityAsync<GeneratedSettlementReportFileDto>(
                 nameof(GenerateSettlementReportFileActivity),
                 fileRequest,
-                coldRetryHandler));
+                dataSourceExceptionHandler));
 
         var generatedFiles = await Task.WhenAll(fileRequestTasks);
 
@@ -66,14 +70,26 @@ internal sealed class SettlementReportOrchestration
         return "Success";
     }
 
-    private static bool HandleColdDataSource(RetryContext retryContext, ILogger<SettlementReportOrchestration> logger)
+    private static bool HandleDataSourceExceptions(RetryContext retryContext, ILogger<SettlementReportOrchestration> logger)
     {
+        // When running ScatterSettlementReportFilesActivity or GenerateSettlementReportFile, the call to the data source may time out for several reasons:
+        // 1) The server is stopped, but requesting the data has triggered a startup. It should come online within 3 retries.
+        // 2) The query for getting the data timed out. It is not known if query will succeed, but we are trying 3 to 6 times.
         if (retryContext.LastFailure.ErrorMessage == ISettlementReportDataRepository.DataSourceUnavailableExceptionMessage)
         {
-            logger.LogError("GenerateSettlementReportFile databricks failed. Inner exception message: {innerException}.", retryContext.LastFailure.InnerFailure?.ToString());
+            logger.LogError("Databricks data source failed. Inner exception message: {innerException}.", retryContext.LastFailure.InnerFailure?.ToString());
+            return retryContext.LastAttemptNumber <= 6;
         }
 
-        return retryContext.LastFailure.ErrorMessage == ISettlementReportDataRepository.DataSourceUnavailableExceptionMessage &&
-               retryContext.LastAttemptNumber <= 3;
+        // In case the error is not related to the data source, we are retrying twice to take care of transient failures:
+        // 1) From SQL.
+        // 2) From BlobStorage.
+        if (retryContext.LastFailure.ErrorType.Contains("SqlException") ||
+            retryContext.LastFailure.ErrorType == typeof(RequestFailedException).FullName)
+        {
+            return retryContext.LastAttemptNumber <= 3;
+        }
+
+        return false;
     }
 }
