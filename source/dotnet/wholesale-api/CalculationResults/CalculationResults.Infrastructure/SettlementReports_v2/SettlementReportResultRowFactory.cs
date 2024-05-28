@@ -15,8 +15,8 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
@@ -39,28 +39,26 @@ public static class SettlementReportResultRowFactory
         var chargeType = databricksSqlRow[SettlementReportWholesaleResultQueryStatement.ColumnNames.ChargeType];
         var chargeCode = databricksSqlRow[SettlementReportWholesaleResultQueryStatement.ColumnNames.ChargeCode];
         var chargeOwnerId = databricksSqlRow[SettlementReportWholesaleResultQueryStatement.ColumnNames.ChargeOwnerId];
-        // var meteringPointType = databricksSqlRow[SettlementReportWholesaleResultQueryStatement.ColumnNames.MeteringPointType];
-        // var settlementMethod = databricksSqlRow[SettlementReportWholesaleResultQueryStatement.ColumnNames.SettlementMethod];
+        var meteringPointType = databricksSqlRow[SettlementReportWholesaleResultQueryStatement.ColumnNames.MeteringPointType];
+        var settlementMethod = databricksSqlRow[SettlementReportWholesaleResultQueryStatement.ColumnNames.SettlementMethod];
+
         return new SettlementReportWholesaleResultRow(
             SqlResultValueConverters.ToGuid(id!),
             SqlResultValueConverters.ToGuid(calculationId!),
-            // from calculation_type
-            "EnergyBusinessProcess",
-            "ProcessVariant",
+            CalculationTypeMapper.FromDeltaTableValue(calculationType!),
             gridArea!,
             energySupplierId!,
             SqlResultValueConverters.ToInstant(startTime!)!.Value,
             ResolutionMapper.FromDeltaTableValue(resolution!),
-            // incoming
-            MeteringPointType.Consumption,
-            SettlementMethod.Flex,
+            MeteringPointTypeMapper.FromDeltaTableValue(meteringPointType!)!,
+            SettlementMethodMapper.FromDeltaTableValue(settlementMethod!)!,
             QuantityUnitMapper.FromDeltaTableValue(quantityUnit!),
             Currency.DKK,
-            SqlResultValueConverters.ToDecimal(quantity!)!.Value,
-            SqlResultValueConverters.ToDecimal(price!)!.Value,
-            SqlResultValueConverters.ToDecimal(amount!)!.Value,
+            SqlResultValueConverters.ToDecimal(quantity),
+            SqlResultValueConverters.ToDecimal(price),
+            SqlResultValueConverters.ToDecimal(amount),
             ChargeTypeMapper.FromDeltaTableValue(chargeType!),
-            chargeCode!,
+            chargeCode,
             chargeOwnerId!,
             version);
     }
