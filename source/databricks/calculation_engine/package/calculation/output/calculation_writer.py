@@ -14,6 +14,7 @@
 from dependency_injector.wiring import inject
 from pyspark.sql import DataFrame
 
+from package.constants import Colname
 from package.infrastructure import logging_configuration, paths
 
 
@@ -21,6 +22,12 @@ from package.infrastructure import logging_configuration, paths
 @inject
 def write_calculation(calculations: DataFrame) -> None:
     """Writes the succeeded calculation to the calculations table."""
+
+    #  get current time
+
+    calculations = calculations.withColumn(
+        Colname.calculation_execution_time_end,
+    )
 
     calculations.write.format("delta").mode("append").option(
         "mergeSchema", "false"
