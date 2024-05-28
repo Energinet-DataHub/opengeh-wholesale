@@ -1,4 +1,4 @@
-calculation_id;calculation_type;grid_area_code;energy_supplier_id;time;resolution;quantity_unit;currency;amount;charge_type;charge_code;charge_owner_id
+calculation_id;calculation_type;grid_area_code;energy_supplier_id;start_date_time;resolution;quantity_unit;currency;amount;charge_type;charge_code;charge_owner_id
 0b15a420-9fc8-409a-a169-fbd49479d719;WholesaleFixing;805;5790001662233;2023-02-02 23:00;P1M;kWh;DKK;3.3;tariff;Fee-801;5790001330552
 0b15a420-9fc8-409a-a169-fbd49479d719;WholesaleFixing;804;5790001662233;2023-02-02 23:00;P1M;kWh;DKK;4.4;tariff;Fee-801;5790001330552
 0b15a420-9fc8-409a-a169-fbd49479d718;WholesaleFixing;804;8100000000108;2023-01-31 23:00;P1M;kWh;DKK;87.000000;;;
