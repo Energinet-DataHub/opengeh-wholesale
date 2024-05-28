@@ -51,7 +51,7 @@ def create_basis_data_result_dataframe(
     if filename == BASIS_DATA_CHARGE_LINK_PERIODS_CSV:
         return create_charge_link_periods(spark, df)
     if filename == BASIS_DATA_CHARGE_PRICES_CSV:
-        return create_charge_prices_points(spark, df)
+        return create_charge_price_points(spark, df)
     if filename == BASIS_DATA_CHARGE_PRICE_INFORMATION_PERIODS_CSV:
         return create_charge_price_information_periods(spark, df)
 
@@ -120,29 +120,6 @@ def create_charge_link_periods(spark: SparkSession, df: DataFrame) -> DataFrame:
 
 
 def create_charge_price_points(spark: SparkSession, df: DataFrame) -> DataFrame:
-
-    # Don't remove. Believed needed because this function is an argument to the setup function
-    # and therefore the following packages are not automatically included.
-    from package.constants import ChargeMasterDataPeriodsColname
-    from package.calculation.basis_data.schemas import charge_master_data_periods_schema
-
-    df = df.withColumn(
-        ChargeMasterDataPeriodsColname.is_tax,
-        col(ChargeMasterDataPeriodsColname.is_tax).cast(BooleanType()),
-    )
-    df = df.withColumn(
-        ChargeMasterDataPeriodsColname.from_date,
-        col(ChargeMasterDataPeriodsColname.from_date).cast(TimestampType()),
-    )
-    df = df.withColumn(
-        ChargeMasterDataPeriodsColname.to_date,
-        col(ChargeMasterDataPeriodsColname.to_date).cast(TimestampType()),
-    )
-
-    return spark.createDataFrame(df.rdd, charge_master_data_periods_schema)
-
-
-def create_charge_prices_points(spark: SparkSession, df: DataFrame) -> DataFrame:
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
