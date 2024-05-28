@@ -16,12 +16,12 @@ from datetime import datetime
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, concat_ws
 
+from package.calculation.input import TableReader
 from package.calculation.preparation.data_structures.charge_master_data import (
     ChargeMasterData,
 )
 from package.calculation.preparation.data_structures.charge_prices import ChargePrices
 from package.calculation.preparation.transformations.clamp_period import clamp_period
-from package.calculation.input import TableReader
 from package.constants import Colname
 
 
@@ -72,7 +72,7 @@ def read_charge_links(
     period_end_datetime: datetime,
 ) -> DataFrame:
     charge_links_df = (
-        table_reader.read_charge_links_periods()
+        table_reader.read_charge_link_periods()
         .where(col(Colname.from_date) < period_end_datetime)
         .where(
             col(Colname.to_date).isNull()
