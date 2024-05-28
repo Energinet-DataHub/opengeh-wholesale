@@ -82,7 +82,7 @@ schema_config = [
             ),
             Table(
                 name=paths.CHARGE_MASTER_DATA_PERIODS_BASIS_DATA_TABLE_NAME,
-                schema=basis_data_schemas.charge_master_data_periods_schema,
+                schema=basis_data_schemas.charge_price_information_periods_schema,
             ),
             Table(
                 name=paths.CHARGE_PRICE_POINTS_BASIS_DATA_TABLE_NAME,

@@ -19,7 +19,7 @@ from pyspark.sql.types import (
 )
 
 
-def create_calculations_dataframe(spark: SparkSession, df: DataFrame) -> DataFrame:
+def create_calculations(spark: SparkSession, df: DataFrame) -> DataFrame:
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
