@@ -73,6 +73,12 @@ public static class EventsExtensions
         return services;
     }
 
+    public static void AddWholesaleInboxHandler(this IServiceCollection services)
+    {
+        // Wholesale inbox events handler
+        services.AddScoped<WholesaleInboxHandler>();
+    }
+
     public static IServiceCollection AddIntegrationEventsPublishing(this IServiceCollection services, IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration);

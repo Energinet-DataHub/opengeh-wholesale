@@ -48,7 +48,6 @@ builder.Services.AddCalculationResultsModule(builder.Configuration);
 
 // ServieBus channels
 builder.Services.AddIntegrationEventsSubscription();
-builder.Services.AddInboxHandling();
 builder.Services.AddEdiModule();
 
 // Http channels
