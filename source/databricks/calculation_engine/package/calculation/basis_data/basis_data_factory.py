@@ -74,7 +74,7 @@ def create(
         time_series_points=time_series_points_basis_data,
         metering_point_periods=metering_point_periods_basis_data,
         charge_price_information_periods=charge_master_data_basis_data,
-        charge_prices_points=charge_prices_basis_data,
+        charge_price_points=charge_prices_basis_data,
         charge_link_periods=charge_links_basis_data,
         grid_loss_metering_points=grid_loss_metering_points_basis_data,
     )

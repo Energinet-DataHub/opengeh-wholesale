@@ -61,7 +61,7 @@ class BasisDataContainer:
     metering_point_periods: DataFrame
     time_series_points: DataFrame
     charge_price_information_periods: DataFrame | None
-    charge_prices_points: DataFrame | None
+    charge_price_points: DataFrame | None
     charge_link_periods: DataFrame | None
     grid_loss_metering_points: DataFrame
 
