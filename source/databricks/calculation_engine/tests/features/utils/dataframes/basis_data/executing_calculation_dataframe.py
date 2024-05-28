@@ -24,7 +24,7 @@ def create_executing_calculation(spark: SparkSession, df: DataFrame) -> DataFram
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
     from package.constants.basis_data_colname import CalculationsColumnName
-    from package.calculation.basis_data.schemas import calculations_schema
+    from package.calculation.basis_data.schemas import executing_calculation_schema
 
     df = df.withColumn(
         CalculationsColumnName.period_start,
@@ -46,4 +46,4 @@ def create_executing_calculation(spark: SparkSession, df: DataFrame) -> DataFram
         col(CalculationsColumnName.version).cast(LongType()),
     )
 
-    return spark.createDataFrame(df.rdd, calculations_schema)
+    return spark.createDataFrame(df.rdd, executing_calculation_schema)
