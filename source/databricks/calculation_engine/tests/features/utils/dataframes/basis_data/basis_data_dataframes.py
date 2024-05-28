@@ -33,7 +33,7 @@ BASIS_DATA_CHARGE_LINK_PERIODS_CSV = "charge_link_periods"
 BASIS_DATA_CALCULATIONS_CSV = "calculations"
 BASIS_GRID_LOSS_METERING_POINTS_CSV = "grid_loss_metering_points"
 BASIS_DATA_CHARGE_PRICES_CSV = "charge_prices"
-BASIS_DATA_CHARGE_PRICE_INFORMATION_PERIODS_CSV = "charge_price_information_periods"
+BASIS_DATA_CHARGE_PRICE_INFORMATION_PERIODS_CSV = "charge_master_data"
 
 
 def create_basis_data_result_dataframe(
