@@ -86,6 +86,8 @@ def spark() -> SparkSession:
             "spark.sql.catalog.spark_catalog",
             "org.apache.spark.sql.delta.catalog.DeltaCatalog",
         )
+        .config("spark.sql.autoBroadcastJoinThreshold", -1)
+        .config("spark.driver.memory", "2g")
     ).getOrCreate()
 
     yield session
