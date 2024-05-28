@@ -65,5 +65,8 @@ public class SettlementReportWholesaleResultQueryStatement : DatabricksStatement
         public const string ChargeType = "charge_type";
         public const string ChargeCode = "charge_code";
         public const string ChargeOwnerId = "charge_owner_id";
+        // todo: mjm - below column names are best guess as they're not implemented yet.
+        public const string MeteringPointType = "metering_point_type";
+        public const string SettlementMethod = "settlement_method";
     }
 }
