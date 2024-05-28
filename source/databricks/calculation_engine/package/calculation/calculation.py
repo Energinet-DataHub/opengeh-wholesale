@@ -58,7 +58,9 @@ def _execute(
     results = CalculationResultsContainer()
 
     with logging_configuration.start_span("calculation.prepare"):
-        calculations = create_executing_calculation(args, prepared_data_reader, spark)
+        executing_calculation = create_executing_calculation(
+            args, prepared_data_reader, spark
+        )
 
         # cache of metering_point_time_series had no effect on performance (01-12-2023)
         all_metering_point_periods = prepared_data_reader.get_metering_point_periods_df(
@@ -150,7 +152,7 @@ def _execute(
     # Add basis data to results
     results.basis_data = basis_data_factory.create(
         args,
-        calculations,
+        executing_calculation,
         metering_point_periods_for_basis_data,
         metering_point_time_series,
         input_charges,

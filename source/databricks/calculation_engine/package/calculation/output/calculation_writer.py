@@ -24,10 +24,10 @@ from package.infrastructure import logging_configuration, paths
 def write_calculation(executing_calculation: DataFrame) -> None:
     """Writes the succeeded calculation to the calculations table."""
 
-    completed_calculation = executing_calculation.withColumn(
+    succeeded_calculation = executing_calculation.withColumn(
         Colname.calculation_execution_time_end, f.current_timestamp()
     )
 
-    completed_calculation.write.format("delta").mode("append").option(
+    succeeded_calculation.write.format("delta").mode("append").option(
         "mergeSchema", "false"
     ).insertInto(f"{paths.BASIS_DATA_DATABASE_NAME}.{paths.CALCULATIONS_TABLE_NAME}")
