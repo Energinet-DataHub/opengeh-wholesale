@@ -44,7 +44,7 @@ public class SettlementReportWholesaleResultQueryStatement : DatabricksStatement
                     ColumnNames.Price,
                     ColumnNames.Amount,
                 ])}
-                FROM settlement.wholesale_results_v1
+                FROM settlement_report.wholesale_results_v1
                 WHERE {ColumnNames.CalculationId} = '{_calculationId}'
                 """;
     }
