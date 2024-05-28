@@ -89,6 +89,22 @@ def spark(
             "spark.sql.catalog.spark_catalog",
             "org.apache.spark.sql.delta.catalog.DeltaCatalog",
         )
+        # Enable Hive support for persistence across test sessions
+        .config("spark.sql.catalogImplementation", "hive")
+        .config(
+            "javax.jdo.option.ConnectionURL",
+            "jdbc:derby:;databaseName=metastore_db;create=true",
+        )
+        .config(
+            "javax.jdo.option.ConnectionDriverName",
+            "org.apache.derby.jdbc.EmbeddedDriver",
+        )
+        .config("javax.jdo.option.ConnectionUserName", "APP")
+        .config("javax.jdo.option.ConnectionPassword", "mine")
+        .config("datanucleus.autoCreateSchema", "true")
+        .config("hive.metastore.schema.verification", "false")
+        .config("hive.metastore.schema.verification.record.version", "false")
+        .enableHiveSupport()
     ).getOrCreate()
 
     yield session

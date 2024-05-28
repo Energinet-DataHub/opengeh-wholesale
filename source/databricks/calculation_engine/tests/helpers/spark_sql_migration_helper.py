@@ -16,7 +16,6 @@ import shutil
 from datetime import datetime
 from enum import Enum
 
-from delta import DeltaTable
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as f
 from spark_sql_migrations import (
@@ -24,6 +23,7 @@ from spark_sql_migrations import (
     create_and_configure_container,
     schema_migration_pipeline,
 )
+from spark_sql_migrations.utility import delta_table_helper
 
 import package.datamigration.constants as c
 from package.datamigration.migration_script_args import MigrationScriptArgs
@@ -42,75 +42,90 @@ class MigrationsExecution(Enum):
     improve development speed and avoid unnecessary execution of migrations.
     """
 
-    NONE = "NONE"
+    NONE = 0
     """Do not execute any migrations."""
-    ALL = "ALL"
+    ALL = 1
     """Execute all migrations. This is similar to the CI behavior."""
-    MODIFIED = "MODIFIED"
+    MODIFIED = 2
     """Execute only the migrations that have been modified since the last execution."""
-    MODIFIED_AND_SUBSEQUENT = "MODIFIED_AND_SUBSEQUENT"
+    MODIFIED_AND_SUBSEQUENT = 3
     """Execute the migrations that have been modified since the last execution and all subsequent migrations."""
 
 
 def migrate(
     spark: SparkSession,
-    table_prefix: str = "",
-    location: str = schema_migration_location,
     substitution_variables: dict[str, str] | None = None,
     migrations_execution: MigrationsExecution = MigrationsExecution.ALL,
 ) -> None:
-    if migrations_execution == MigrationsExecution.NONE:
+    print(
+        f"Preparing execution of migrations with execution type: {migrations_execution}"
+    )
+    if migrations_execution.value == MigrationsExecution.NONE.value:
+        print("Skipping migrations as MigrationsExecution is set to NONE")
         return
 
-    if migrations_execution in [
-        MigrationsExecution.MODIFIED,
-        MigrationsExecution.MODIFIED_AND_SUBSEQUENT,
+    if migrations_execution.value in [
+        MigrationsExecution.MODIFIED.value,
+        MigrationsExecution.MODIFIED_AND_SUBSEQUENT.value,
     ]:
+        print("Removing registration of modified scripts from migrations table")
         _remove_registration_of_modified_scripts(spark, migrations_execution)
 
-    if migrations_execution == MigrationsExecution.ALL:
+    if migrations_execution.value == MigrationsExecution.ALL.value:
         warehouse_location = spark.conf.get("spark.sql.warehouse.dir")
+        if warehouse_location.startswith("file:"):
+            warehouse_location = warehouse_location[5:]
         if os.path.exists(warehouse_location):
+            print(f"Removing warehouse before clean run (path={warehouse_location})")
             shutil.rmtree(warehouse_location)
 
-    configure_spark_sql_migration(spark, table_prefix, location, substitution_variables)
+    configure_spark_sql_migration(spark, substitution_variables)
     schema_migration_pipeline.migrate()
 
 
 def _remove_registration_of_modified_scripts(
     spark: SparkSession, migrations_execution: MigrationsExecution
-):
+) -> None:
+    for db in spark.catalog.listDatabases():
+        print(f"Database: {db.name}, location={db.locationUri}")
+        for table in spark.catalog.listTables(db.name):
+            print(f"Table: {table.database}.{table.name}")
     migrations_table = f"{schema_migration_schema_name}.{schema_migration_table_name}"
-    if DeltaTable.isDeltaTable(
-        spark,
-        migrations_table,
+    if not delta_table_helper.delta_table_exists(
+        spark, schema_migration_schema_name, schema_migration_table_name
     ):
-        latest_execution_time = (
-            spark.sql(f"SELECT * FROM {migrations_table}")
-            .agg(f.max("execution_time").alias("latest_execution_time"))
-            .collect()[0]["latest_execution_time"]
+        print(
+            f"Table {migrations_table} does not exist. Skipping removal of modified scripts"
         )
-        modified_scripts = _get_recently_modified_migration_scripts(
-            _get_migration_scripts_path(), latest_execution_time
+        return
+
+    latest_execution_time = (
+        spark.sql(f"SELECT * FROM {migrations_table}")
+        .agg(f.max("execution_datetime").alias("latest_execution_time"))
+        .collect()[0]["latest_execution_time"]
+    )
+    modified_scripts = _get_recently_modified_migration_scripts(
+        _get_migration_scripts_path(), latest_execution_time
+    )
+    print(
+        f"Scripts modified after {latest_execution_time}: {'.'.join(modified_scripts)}"
+    )
+
+    if migrations_execution == MigrationsExecution.MODIFIED:
+        spark.sql(
+            f"DELETE FROM TABLE {migrations_table} WHERE migration_name in ({'.'.join(modified_scripts)})"
         )
 
-        if migrations_execution == MigrationsExecution.MODIFIED:
-            spark.sql(
-                f"DELETE FROM TABLE {migrations_table} WHERE migration_name in ({'.'.join(modified_scripts)})"
-            )
-
-        if migrations_execution == MigrationsExecution.MODIFIED_AND_SUBSEQUENT:
-            modified_scripts.sort(reverse=True)
-            first_modified_script = modified_scripts[0]
-            spark.sql(
-                f"DELETE FROM TABLE {migrations_table} WHERE migration_name >= '{first_modified_script}'"
-            )
+    if migrations_execution == MigrationsExecution.MODIFIED_AND_SUBSEQUENT:
+        modified_scripts.sort(reverse=True)
+        first_modified_script = modified_scripts[0]
+        spark.sql(
+            f"DELETE FROM TABLE {migrations_table} WHERE migration_name >= '{first_modified_script}'"
+        )
 
 
 def configure_spark_sql_migration(
     spark: SparkSession,
-    table_prefix: str = "",
-    location: str = schema_migration_location,
     substitution_variables: dict[str, str] | None = None,
 ) -> None:
     if substitution_variables is None:
@@ -118,16 +133,16 @@ def configure_spark_sql_migration(
 
     configuration = SparkSqlMigrationsConfiguration(
         migration_schema_name=schema_migration_schema_name,
-        migration_schema_location=location,
+        migration_schema_location="",
         migration_table_name=schema_migration_table_name,
-        migration_table_location=location,
+        migration_table_location="",
         migration_scripts_folder_path=c.MIGRATION_SCRIPTS_FOLDER_PATH,
         current_state_schemas_folder_path=c.CURRENT_STATE_SCHEMAS_FOLDER_PATH,
         current_state_tables_folder_path=c.CURRENT_STATE_TABLES_FOLDER_PATH,
         current_state_views_folder_path=c.CURRENT_STATE_VIEWS_FOLDER_PATH,
         schema_config=schema_config,
         substitution_variables=substitution_variables,
-        table_prefix=table_prefix,
+        table_prefix="",
     )
 
     create_and_configure_container(configuration)

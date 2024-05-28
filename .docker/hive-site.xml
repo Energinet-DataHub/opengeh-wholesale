@@ -1,0 +1,42 @@
+<configuration>
+  <property>
+    <name>javax.jdo.option.ConnectionURL</name>
+    <value>jdbc:derby:;databaseName=__metastore_db__;create=true</value>
+    <description>JDBC connect string for a JDBC metastore</description>
+  </property>
+  <property>
+    <name>javax.jdo.option.ConnectionDriverName</name>
+    <value>org.apache.derby.jdbc.EmbeddedDriver</value>
+    <description>Driver class name for a JDBC metastore</description>
+  </property>
+  <property>
+    <name>javax.jdo.option.ConnectionUserName</name>
+    <value>APP</value>
+    <description>username to use against metastore database</description>
+  </property>
+  <property>
+    <name>javax.jdo.option.ConnectionPassword</name>
+    <value>mine</value>
+    <description>password to use against metastore database</description>
+  </property>
+  <property>
+    <name>datanucleus.autoCreateSchema</name>
+    <value>true</value>
+    <description>create necessary schema</description>
+  </property>
+  <property>
+    <name>hive.metastore.schema.verification</name>
+    <value>false</value>
+    <description>do not verify the schema version</description>
+  </property>
+  <property>
+    <name>hive.metastore.schema.verification.record.version</name>
+    <value>false</value>
+    <description>do not record the schema version in metastore</description>
+  </property>
+  <property>
+    <name>hive.support.concurrency</name>
+    <value>false</value>
+    <description>disable support for concurrency</description>
+  </property>
+</configuration>
