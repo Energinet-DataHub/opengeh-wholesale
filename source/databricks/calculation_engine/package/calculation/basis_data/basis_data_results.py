@@ -47,11 +47,11 @@ def write_basis_data(basis_data: BasisDataContainer) -> None:
             f"{BASIS_DATA_DATABASE_NAME}.{GRID_LOSS_METERING_POINTS_BASIS_DATA_TABLE_NAME}"
         )
 
-    if basis_data.charge_master_data:
+    if basis_data.charge_price_information_periods:
         with logging_configuration.start_span("charge_master_data"):
-            basis_data.charge_master_data.write.format("delta").mode("append").option(
-                "mergeSchema", "false"
-            ).insertInto(
+            basis_data.charge_price_information_periods.write.format("delta").mode(
+                "append"
+            ).option("mergeSchema", "false").insertInto(
                 f"{BASIS_DATA_DATABASE_NAME}.{CHARGE_MASTER_DATA_PERIODS_BASIS_DATA_TABLE_NAME}"
             )
 
