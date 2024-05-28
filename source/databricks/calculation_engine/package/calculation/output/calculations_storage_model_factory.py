@@ -19,7 +19,7 @@ from package.calculation.calculator_args import CalculatorArgs
 from package.constants.calculation_column_names import CalculationColumnNames
 
 
-def create_calculation(
+def create_executing_calculation(
     args: CalculatorArgs,
     prepared_data_reader: PreparedDataReader,
     spark: SparkSession,
@@ -42,7 +42,6 @@ def create_calculation(
         CalculationColumnNames.period_start: args.calculation_period_start_datetime,
         CalculationColumnNames.period_end: args.calculation_period_end_datetime,
         CalculationColumnNames.execution_time_start: args.calculation_execution_time_start,
-        CalculationColumnNames.execution_time_end: None,
         CalculationColumnNames.created_by_user_id: args.created_by_user_id,
         CalculationColumnNames.version: next_version,
     }

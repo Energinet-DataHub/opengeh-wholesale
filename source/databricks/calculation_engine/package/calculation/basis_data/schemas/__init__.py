@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .calculations_schema import calculations_schema
+from .calculations_schema import calculations_schema, executing_calculation_schema
 from .charge_link_periods_schema import charge_link_periods_schema
 from .charge_master_data_periods_schema import charge_price_information_periods_schema
 from .charge_price_points_schema import charge_price_points_schema

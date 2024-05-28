@@ -30,6 +30,7 @@ from features.utils.dataframes.basis_data.grid_loss_metering_points import (
 BASIS_DATA_METERING_POINT_PERIODS_CSV = "metering_point_periods"
 BASIS_DATA_TIME_SERIES_POINTS_CSV = "time_series_points"
 BASIS_DATA_CHARGE_LINK_PERIODS_CSV = "charge_link_periods"
+BASIS_DATA_EXECUTING_CALCULATION_CSV = "executing_calculation"
 BASIS_DATA_CALCULATIONS_CSV = "calculations"
 BASIS_GRID_LOSS_METERING_POINTS_CSV = "grid_loss_metering_points"
 BASIS_DATA_CHARGE_PRICES_CSV = "charge_prices"
@@ -44,6 +45,8 @@ def create_basis_data_result_dataframe(
         return create_time_series_points(spark, df)
     if filename == BASIS_DATA_METERING_POINT_PERIODS_CSV:
         return create_metering_point_periods(spark, df)
+    if filename == BASIS_DATA_EXECUTING_CALCULATION_CSV:
+        return create_executing_calculation(spark, df)
     if filename == BASIS_DATA_CALCULATIONS_CSV:
         return create_calculations(spark, df)
     if filename == BASIS_GRID_LOSS_METERING_POINTS_CSV:

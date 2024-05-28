@@ -33,7 +33,7 @@ from .calculation_results import (
 from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
 from .output.calculation_writer import write_calculation
-from .output.calculations_storage_model_factory import create_calculation
+from .output.calculations_storage_model_factory import create_executing_calculation
 from .output.energy_results import write_energy_results
 from .output.total_monthly_amounts import write_total_monthly_amounts
 from .output.wholesale_results import write_wholesale_results
@@ -58,7 +58,7 @@ def _execute(
     results = CalculationResultsContainer()
 
     with logging_configuration.start_span("calculation.prepare"):
-        calculations = create_calculation(args, prepared_data_reader, spark)
+        calculations = create_executing_calculation(args, prepared_data_reader, spark)
 
         # cache of metering_point_time_series had no effect on performance (01-12-2023)
         all_metering_point_periods = prepared_data_reader.get_metering_point_periods_df(
@@ -174,4 +174,4 @@ def _write_output(
 
     # IMPORTANT: Write the succeeded calculation after the results to ensure that the calculation
     # is only marked as succeeded when all results are written
-    write_calculation(results.basis_data.calculations)
+    write_calculation(results.basis_data.executing_calculation)

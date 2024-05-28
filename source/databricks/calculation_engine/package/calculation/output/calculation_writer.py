@@ -21,13 +21,13 @@ from package.infrastructure import logging_configuration, paths
 
 @logging_configuration.use_span("calculation.write-succeeded-calculation")
 @inject
-def write_calculation(calculations: DataFrame) -> None:
+def write_calculation(executing_calculation: DataFrame) -> None:
     """Writes the succeeded calculation to the calculations table."""
 
-    calculations = calculations.withColumn(
+    completed_calculation = executing_calculation.withColumn(
         Colname.calculation_execution_time_end, f.current_timestamp()
     )
 
-    calculations.write.format("delta").mode("append").option(
+    completed_calculation.write.format("delta").mode("append").option(
         "mergeSchema", "false"
     ).insertInto(f"{paths.BASIS_DATA_DATABASE_NAME}.{paths.CALCULATIONS_TABLE_NAME}")
