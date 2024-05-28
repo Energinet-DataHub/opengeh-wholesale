@@ -67,7 +67,7 @@ internal sealed class SettlementReportListHttpTrigger
         if (_userContext.CurrentUser.MultiTenancy)
             return _getSettlementReportsHandler.GetAsync();
 
-        return _getSettlementReportsHandler.GetAsync(_userContext.CurrentUser.UserId, _userContext.CurrentUser.ActorId);
+        return _getSettlementReportsHandler.GetAsync(_userContext.CurrentUser.ActorId);
     }
 
     private async Task<IEnumerable<RequestedSettlementReportDto>> CheckStatusOfSettlementReportsAsync(
