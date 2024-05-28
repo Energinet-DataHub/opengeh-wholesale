@@ -191,18 +191,6 @@ variable "ad_group_directory_reader" {
   default     = ""
 }
 
-variable "cert_b2b_datahub3_password" {
-  type        = string
-  description = "Password for the B2C Datahub 3 certificate."
-  default     = null
-}
-
-variable "cert_ebix_datahub3_password" {
-  type        = string
-  description = "Password for the eBix Datahub 3 certificate."
-  default     = null
-}
-
 variable "ip_restrictions" {
   type = list(object({
     ip_address = string
