@@ -145,7 +145,9 @@ def create_charge_price_information_periods(
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
-    from package.calculation.basis_data.schemas import charge_price_information_periods_schema
+    from package.calculation.basis_data.schemas import (
+        charge_price_information_periods_schema,
+    )
     from package.constants.basis_data_colname import ChargeMasterDataPeriodsColname
 
     df = df.withColumn(
