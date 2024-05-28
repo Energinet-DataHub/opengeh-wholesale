@@ -81,13 +81,13 @@ internal sealed class SettlementReportOrchestration
             return retryContext.LastAttemptNumber <= 6;
         }
 
-        // In case the error is not related to the data source, we are retrying thrice to take care of transient failures:
+        // In case the error is not related to the data source, we are retrying twice to take care of transient failures:
         // 1) From SQL.
         // 2) From BlobStorage.
         if (retryContext.LastFailure.ErrorType.Contains("SqlException") ||
             retryContext.LastFailure.ErrorType == typeof(RequestFailedException).FullName)
         {
-            return retryContext.LastAttemptNumber <= 3;
+            return retryContext.LastAttemptNumber <= 2;
         }
 
         return false;
