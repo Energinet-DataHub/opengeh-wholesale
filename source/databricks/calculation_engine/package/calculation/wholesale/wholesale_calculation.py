@@ -137,7 +137,6 @@ def _calculate_hourly_tariffs(
     hourly_tariff_per_ga_co_es = tariff_calculator.calculate_tariff_price_per_ga_co_es(
         prepared_hourly_tariffs
     )
-    hourly_tariff_per_ga_co_es.cache_internal()
 
     results.hourly_tariff_per_ga_co_es = factory.create(
         args,
