@@ -16,6 +16,7 @@ from package.constants.result_column_names import ResultColumnNames
 
 class CalculationColumnNames(ResultColumnNames):
     execution_time_start = "execution_time_start"
+    execution_time_end = "execution_time_end"
     calculation_type = "calculation_type"
     period_start = "period_start"
     period_end = "period_end"
