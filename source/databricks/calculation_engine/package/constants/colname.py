@@ -16,6 +16,7 @@
 class Colname:
     balance_responsible_id = "balance_responsible_id"
     calculation_execution_time_start = "calculation_execution_time_start"
+    calculation_execution_time_end = "calculation_execution_time_end"
     calculation_id = "calculation_id"
     calculation_type = "calculation_type"
     charge_count = "charge_count"

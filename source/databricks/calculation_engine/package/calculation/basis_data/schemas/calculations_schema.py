@@ -20,14 +20,19 @@ from pyspark.sql.types import (
     LongType,
 )
 
-calculations_schema = StructType(
+executing_calculation_schema = StructType(
     [
         StructField("calculation_id", StringType(), False),
         StructField("calculation_type", StringType(), False),
         StructField("period_start", TimestampType(), False),
         StructField("period_end", TimestampType(), False),
         StructField("execution_time_start", TimestampType(), False),
+        StructField("execution_time_end", TimestampType(), False),
         StructField("created_by_user_id", StringType(), False),
         StructField("version", LongType(), False),
     ]
+)
+
+calculations_schema = executing_calculation_schema.add(
+    "execution_time_end", TimestampType(), False
 )

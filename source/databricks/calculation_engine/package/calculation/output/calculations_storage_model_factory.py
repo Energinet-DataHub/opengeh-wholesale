@@ -14,12 +14,12 @@
 from pyspark.sql import SparkSession, DataFrame, Row
 
 from package.calculation import PreparedDataReader
-from package.calculation.basis_data.schemas import calculations_schema
+from package.calculation.basis_data.schemas import executing_calculation_schema
 from package.calculation.calculator_args import CalculatorArgs
 from package.constants.calculation_column_names import CalculationColumnNames
 
 
-def create_calculation(
+def create_executing_calculation(
     args: CalculatorArgs,
     prepared_data_reader: PreparedDataReader,
     spark: SparkSession,
@@ -46,4 +46,6 @@ def create_calculation(
         CalculationColumnNames.version: next_version,
     }
 
-    return spark.createDataFrame(data=[Row(**calculation)], schema=calculations_schema)
+    return spark.createDataFrame(
+        data=[Row(**calculation)], schema=executing_calculation_schema
+    )

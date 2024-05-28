@@ -13,15 +13,21 @@
 # limitations under the License.
 from dependency_injector.wiring import inject
 from pyspark.sql import DataFrame
+from pyspark.sql import functions as f
 
+from package.constants import Colname
 from package.infrastructure import logging_configuration, paths
 
 
 @logging_configuration.use_span("calculation.write-succeeded-calculation")
 @inject
-def write_calculation(calculations: DataFrame) -> None:
+def write_calculation(executing_calculation: DataFrame) -> None:
     """Writes the succeeded calculation to the calculations table."""
 
-    calculations.write.format("delta").mode("append").option(
+    succeeded_calculation = executing_calculation.withColumn(
+        Colname.calculation_execution_time_end, f.current_timestamp()
+    )
+
+    succeeded_calculation.write.format("delta").mode("append").option(
         "mergeSchema", "false"
     ).insertInto(f"{paths.BASIS_DATA_DATABASE_NAME}.{paths.CALCULATIONS_TABLE_NAME}")

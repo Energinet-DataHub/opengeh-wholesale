@@ -19,12 +19,12 @@ from pyspark.sql.types import (
 )
 
 
-def create_calculations(spark: SparkSession, df: DataFrame) -> DataFrame:
+def create_executing_calculation(spark: SparkSession, df: DataFrame) -> DataFrame:
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
     from package.constants.basis_data_colname import CalculationsColumnName
-    from package.calculation.basis_data.schemas import calculations_schema
+    from package.calculation.basis_data.schemas import executing_calculation_schema
 
     df = df.withColumn(
         CalculationsColumnName.period_start,
@@ -40,14 +40,10 @@ def create_calculations(spark: SparkSession, df: DataFrame) -> DataFrame:
         CalculationsColumnName.execution_time_start,
         col(CalculationsColumnName.execution_time_start).cast(TimestampType()),
     )
-    df = df.withColumn(
-        CalculationsColumnName.execution_time_end,
-        col(CalculationsColumnName.execution_time_end).cast(TimestampType()),
-    )
 
     df = df.withColumn(
         CalculationsColumnName.version,
         col(CalculationsColumnName.version).cast(LongType()),
     )
 
-    return spark.createDataFrame(df.rdd, calculations_schema)
+    return spark.createDataFrame(df.rdd, executing_calculation_schema)

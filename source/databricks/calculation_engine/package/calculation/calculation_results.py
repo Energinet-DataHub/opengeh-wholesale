@@ -57,7 +57,7 @@ class WholesaleResultsContainer:
 
 @dataclass
 class BasisDataContainer:
-    calculations: DataFrame
+    executing_calculation: DataFrame
     metering_point_periods: DataFrame
     time_series_points: DataFrame
     charge_price_information_periods: DataFrame | None
