@@ -29,7 +29,7 @@ def get_data_input_specifications(table_reader: TableReader) -> dict[str, tuple]
     to be mocked.
     """
     return {
-        "executing_calculation.csv": (
+        "calculations.csv": (
             calculations_schema,
             table_reader.read_calculations,
         ),

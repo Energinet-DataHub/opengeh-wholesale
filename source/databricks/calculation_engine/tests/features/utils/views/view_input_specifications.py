@@ -52,7 +52,7 @@ def get_input_specifications() -> dict[str, tuple]:
             basis_data_dataframes.create_time_series_points,
             BASIS_DATA_DATABASE_NAME,
         ),
-        "executing_calculation.csv": (
+        "calculations.csv": (
             basis_data_schemas.calculations_schema,
             BasisDataTableReader.read_calculations,
             create_calculations,
