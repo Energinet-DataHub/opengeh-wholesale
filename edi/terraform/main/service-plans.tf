@@ -8,7 +8,7 @@ module "func_service_plan" {
   resource_group_name          = azurerm_resource_group.this.name
   location                     = azurerm_resource_group.this.location
   sku_name                     = "EP1"
-  maximum_elastic_worker_count = 10
+  maximum_elastic_worker_count = 20
 }
 
 module "webapp_service_plan" {
