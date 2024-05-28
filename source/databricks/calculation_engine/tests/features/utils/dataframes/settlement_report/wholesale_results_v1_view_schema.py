@@ -30,6 +30,10 @@ wholesale_results_v1_view_schema = StructType(
         StructField(WholesaleResultColumnNames.energy_supplier_id, StringType(), False),
         StructField(Colname.start_date_time, TimestampType(), False),
         StructField(WholesaleResultColumnNames.resolution, StringType(), False),
+        StructField(
+            WholesaleResultColumnNames.metering_point_type, StringType(), False
+        ),
+        StructField(WholesaleResultColumnNames.settlement_method, StringType(), True),
         StructField(WholesaleResultColumnNames.quantity_unit, StringType(), False),
         StructField(Colname.currency, StringType(), False),
         StructField(WholesaleResultColumnNames.quantity, DecimalType(18, 3), False),
