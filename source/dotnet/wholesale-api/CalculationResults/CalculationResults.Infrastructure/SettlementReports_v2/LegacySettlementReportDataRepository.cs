@@ -32,7 +32,7 @@ public sealed class LegacySettlementReportDataRepository : ISettlementReportData
         _settlementReportResultQueries = settlementReportResultQueries;
     }
 
-    public async IAsyncEnumerable<SettlementReportResultRow> TryReadBalanceFixingResultsAsync(SettlementReportRequestFilterDto filter)
+    public async IAsyncEnumerable<SettlementReportEnergyResultRow> TryReadBalanceFixingResultsAsync(SettlementReportRequestFilterDto filter)
     {
         IEnumerable<Interfaces.SettlementReports.Model.SettlementReportResultRow> rows;
 
@@ -58,7 +58,7 @@ public sealed class LegacySettlementReportDataRepository : ISettlementReportData
                 ? Resolution.QuarterHour
                 : throw new InvalidOperationException($"Resolution {row.Resolution} is not supported in legacy mode.");
 
-            yield return new SettlementReportResultRow(
+            yield return new SettlementReportEnergyResultRow(
                 row.Time,
                 row.Quantity,
                 row.GridArea,

@@ -19,7 +19,7 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 
-public sealed record SettlementReportResultRow(
+public sealed record SettlementReportEnergyResultRow(
     Instant Time,
     decimal Quantity,
     string GridAreaCode,

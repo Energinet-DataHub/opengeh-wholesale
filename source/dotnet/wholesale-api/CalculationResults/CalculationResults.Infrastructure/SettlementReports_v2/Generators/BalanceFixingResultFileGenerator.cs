@@ -40,7 +40,7 @@ public sealed class BalanceFixingResultFileGenerator : ISettlementReportFileGene
 
         await using (csvHelper.ConfigureAwait(false))
         {
-            csvHelper.WriteHeader<SettlementReportResultRow>();
+            csvHelper.WriteHeader<SettlementReportEnergyResultRow>();
             await csvHelper.NextRecordAsync().ConfigureAwait(false);
 
             await foreach (var record in _dataSource.TryReadBalanceFixingResultsAsync(filter).ConfigureAwait(false))
@@ -51,7 +51,7 @@ public sealed class BalanceFixingResultFileGenerator : ISettlementReportFileGene
         }
     }
 
-    public sealed class SettlementReportResultRowMap : ClassMap<SettlementReportResultRow>
+    public sealed class SettlementReportResultRowMap : ClassMap<SettlementReportEnergyResultRow>
     {
         public SettlementReportResultRowMap()
         {

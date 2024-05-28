@@ -24,5 +24,5 @@ public interface ISettlementReportDataRepository
     /// Streams the requested data from the data source.
     /// If the data source is not ready, a TimeoutException with DataSourceUnavailableExceptionMessage is thrown.
     /// </summary>
-    IAsyncEnumerable<SettlementReportResultRow> TryReadBalanceFixingResultsAsync(SettlementReportRequestFilterDto filter);
+    IAsyncEnumerable<SettlementReportEnergyResultRow> TryReadBalanceFixingResultsAsync(SettlementReportRequestFilterDto filter);
 }

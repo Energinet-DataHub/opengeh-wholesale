@@ -21,7 +21,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 
-public static class SettlementReportResultRowFactory
+public static class SettlementReportWholesaleResultRowFactory
 {
     public static SettlementReportWholesaleResultRow Create(DatabricksSqlRow databricksSqlRow, long version)
     {
