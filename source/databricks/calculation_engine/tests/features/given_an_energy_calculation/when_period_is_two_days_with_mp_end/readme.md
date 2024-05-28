@@ -1,13 +1,11 @@
 # When Minimal Standard Scenario
 
-The purpose is to test that an consumption metering point changes settlement method
+The purpose is to test that we can handle a metering point being discontinued.
 
 ## Design considerations
 
-- Input period is post May 2023 so that results are quarterly
-- Input period is two days with settlement method change between the two days
-- Included is a flex metering point changing to non-profiled and a non-profiled changing to flex. Both metering points also change resolution from 1H to 15M on day two.
-- There is positive grid loss on day one and negative grid loss on day two. Production results are included to check negative grid loss.
+- Input period is two days with four of the metering points ending between the two days
+- On day 2, a new exchange metering point is initiated
 
 ## Coverage
 

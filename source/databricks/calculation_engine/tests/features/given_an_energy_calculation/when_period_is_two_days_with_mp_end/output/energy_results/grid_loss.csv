@@ -12,9 +12,9 @@
 800;;;0.0;['calculated'];2023-11-02 01:30;total_ga;grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
 800;;;0.0;['calculated'];2023-11-02 01:45;total_ga;grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
 800;;;5.269;['calculated'];2023-11-02 02:00;total_ga;grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
-800;;;4.17;['calculated'];2023-11-02 02:15;total_ga;grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
-800;;;3.071;['calculated'];2023-11-02 02:30;total_ga;grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
-800;;;1.969;['calculated'];2023-11-02 02:45;total_ga;grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
+800;;;5.170;['calculated'];2023-11-02 02:15;total_ga;grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
+800;;;5.071;['calculated'];2023-11-02 02:30;total_ga;grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
+800;;;-10.031;['calculated'];2023-11-02 02:45;total_ga;grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
 800;;;0.0;['calculated'];2023-11-02 03:00;total_ga;grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
 800;;;0.0;['calculated'];2023-11-02 03:15;total_ga;grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
 800;;;0.0;['calculated'];2023-11-02 03:30;total_ga;grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
@@ -107,10 +107,10 @@
 800;;;0.0;['calculated'];2023-11-03 01:15;total_ga;grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
 800;;;0.0;['calculated'];2023-11-03 01:30;total_ga;grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
 800;;;0.0;['calculated'];2023-11-03 01:45;total_ga;grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
-800;;;-0.475;['calculated'];2023-11-03 02:00;total_ga;grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
-800;;;-1.574;['calculated'];2023-11-03 02:15;total_ga;grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
-800;;;-2.675;['calculated'];2023-11-03 02:30;total_ga;grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
-800;;;-3.775;['calculated'];2023-11-03 02:45;total_ga;grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
+800;;;1;['calculated'];2023-11-03 02:00;total_ga;grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
+800;;;1;['calculated'];2023-11-03 02:15;total_ga;grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
+800;;;1;['calculated'];2023-11-03 02:30;total_ga;grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
+800;;;1;['calculated'];2023-11-03 02:45;total_ga;grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
 800;;;0.0;['calculated'];2023-11-03 03:00;total_ga;grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
 800;;;0.0;['calculated'];2023-11-03 03:15;total_ga;grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
 800;;;0.0;['calculated'];2023-11-03 03:30;total_ga;grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;2024-01-31 09:39:00;;IGNORED;;PT15M
