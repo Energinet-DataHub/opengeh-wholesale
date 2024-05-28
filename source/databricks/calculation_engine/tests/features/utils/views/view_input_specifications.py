@@ -18,7 +18,7 @@ from features.utils.dataframes import (
     create_wholesale_result_dataframe,
 )
 from features.utils.dataframes.basis_data.calculations_dataframe import (
-    create_calculations_dataframe,
+    create_calculations,
 )
 from features.utils.readers import BasisDataTableReader, EnergyResultViewReader
 from package.calculation.output.schemas import (
@@ -55,11 +55,11 @@ def get_input_specifications() -> dict[str, tuple]:
         "calculations.csv": (
             basis_data_schemas.calculations_schema,
             BasisDataTableReader.read_calculations,
-            create_calculations_dataframe,
+            create_calculations,
             BASIS_DATA_DATABASE_NAME,
         ),
         "charge_price_information_periods.csv": (
-            basis_data_schemas.charge_master_data_periods_schema,
+            basis_data_schemas.charge_price_information_periods_schema,
             BasisDataTableReader.read_charge_price_information_periods,
             basis_data_dataframes.create_charge_price_information_periods,
             BASIS_DATA_DATABASE_NAME,
@@ -73,7 +73,7 @@ def get_input_specifications() -> dict[str, tuple]:
         "charge_price_points.csv": (
             basis_data_schemas.charge_price_points_schema,
             BasisDataTableReader.read_charge_price_points,
-            basis_data_dataframes.create_charge_prices,
+            basis_data_dataframes.create_charge_price_points,
             BASIS_DATA_DATABASE_NAME,
         ),
         # results
