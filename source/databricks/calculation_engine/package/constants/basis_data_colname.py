@@ -89,5 +89,6 @@ class CalculationsColumnName:
     period_start = "period_start"
     period_end = "period_end"
     execution_time_start = "execution_time_start"
+    execution_time_end = "execution_time_end"
     created_by_user_id = "created_by_user_id"
     version = "version"

@@ -40,6 +40,10 @@ def create_calculations_dataframe(spark: SparkSession, df: DataFrame) -> DataFra
         CalculationsColumnName.execution_time_start,
         col(CalculationsColumnName.execution_time_start).cast(TimestampType()),
     )
+    df = df.withColumn(
+        CalculationsColumnName.execution_time_end,
+        col(CalculationsColumnName.execution_time_end).cast(TimestampType()),
+    )
 
     df = df.withColumn(
         CalculationsColumnName.version,

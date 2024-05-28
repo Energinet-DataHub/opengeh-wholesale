@@ -1,1 +1,1 @@
-calculation_id;calculation_type;period_start;period_end;execution_time_start;created_by_user_id;version
+calculation_id;calculation_type;period_start;period_end;execution_time_start;execution_time_end;execution_time_end;created_by_user_id;version
