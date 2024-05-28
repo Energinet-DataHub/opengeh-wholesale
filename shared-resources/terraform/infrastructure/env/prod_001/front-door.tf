@@ -38,9 +38,9 @@ resource "azurerm_cdn_frontdoor_security_policy" "this" {
 }
 
 resource "azurerm_monitor_diagnostic_setting" "front_door" {
-  name                        = "mds-diagnostic-settings"
-  target_resource_id          = azurerm_cdn_frontdoor_profile.this.id
-  log_analytics_workspace_id  = module.log_workspace_shared.id
+  name                       = "mds-diagnostic-settings"
+  target_resource_id         = azurerm_cdn_frontdoor_profile.this.id
+  log_analytics_workspace_id = module.log_workspace_shared.id
 
   enabled_log {
     category = "FrontDoorAccessLog"
@@ -52,5 +52,10 @@ resource "azurerm_monitor_diagnostic_setting" "front_door" {
 
   enabled_log {
     category = "FrontDoorWebApplicationFirewallLog"
+  }
+
+  metric {
+    category = "AllMetrics"
+    enabled  = false
   }
 }
