@@ -152,8 +152,8 @@ public class WholesaleInboxHandlerTests(ITestOutputHelper testOutputHelper)
         var receiveRequestWithoutReferenceId = () => sut.ProcessAsync(serviceBusReceivedMessage, CancellationToken.None);
 
         // Assert
-        await receiveRequestWithoutReferenceId.Should().ThrowAsync<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter '*.Subject')");
+        await receiveRequestWithoutReferenceId.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("Missing subject for received Wholesale inbox service bus message");
 
         var messageHasBeenReceived = messageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(1));
         messageHasBeenReceived.Should().BeFalse();
