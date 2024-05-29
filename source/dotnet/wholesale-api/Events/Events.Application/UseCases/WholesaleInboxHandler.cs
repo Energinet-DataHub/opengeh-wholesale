@@ -35,28 +35,19 @@ public class WholesaleInboxHandler
     {
         receivedMessage.ApplicationProperties.TryGetValue("ReferenceId", out var referenceIdObject);
 
-        if (referenceIdObject is not string referenceId)
-        {
-            _logger.LogError(
-                "Missing reference id for Wholesale inbox service bus message (reference id: {reference_id}, subject: {subject}, message id: {message_id})",
-                referenceIdObject ?? "null",
-                receivedMessage.MessageId,
-                receivedMessage.Subject);
-            throw new InvalidOperationException("Missing reference id for received Wholesale inbox service bus message");
-        }
-
         _logger.LogInformation(
             "Processing Wholesale inbox message (reference id: {reference_id}, subject: {subject}, message id: {message_id})",
-            referenceId,
+            referenceIdObject ?? "null",
             receivedMessage.Subject,
             receivedMessage.MessageId);
+
+        if (referenceIdObject is not string referenceId)
+            throw new InvalidOperationException("Missing reference id for received Wholesale inbox service bus message");
 
         if (string.IsNullOrEmpty(receivedMessage.Subject))
             throw new InvalidOperationException("Missing subject for received Wholesale inbox service bus message");
 
-        var requestHandler = _requestHandlers.SingleOrDefault(h => h.CanHandle(receivedMessage.Subject)) ??
-                             throw new InvalidOperationException(
-                                 $"No request handler found for Wholesale inbox message with subject \"{receivedMessage.Subject}\"");
+        var requestHandler = GetWholesaleInboxRequestHandler(receivedMessage.Subject);
 
         await requestHandler.ProcessAsync(receivedMessage, referenceId, cancellationToken).ConfigureAwait(true);
 
@@ -65,5 +56,14 @@ public class WholesaleInboxHandler
             referenceId,
             receivedMessage.Subject,
             receivedMessage.MessageId);
+    }
+
+    private IWholesaleInboxRequestHandler GetWholesaleInboxRequestHandler(string subject)
+    {
+        var requestHandler = _requestHandlers.SingleOrDefault(h => h.CanHandle(subject));
+
+        return requestHandler ??
+            throw new InvalidOperationException(
+                $"No request handler found for Wholesale inbox message with subject: {subject}");
     }
 }
