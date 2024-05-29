@@ -26,10 +26,8 @@ public static class AggregationLevelMapper
             case TimeSeriesType.NonProfiledConsumption:
             case TimeSeriesType.Production:
             case TimeSeriesType.FlexConsumption:
-                if (energySupplierGln != null && balanceResponsiblePartyGln != null)
-                    return DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea;
                 if (energySupplierGln != null)
-                    return DeltaTableAggregationLevel.EnergySupplierAndGridArea;
+                    return DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea;
                 if (balanceResponsiblePartyGln != null)
                     return DeltaTableAggregationLevel.BalanceResponsibleAndGridArea;
                 return DeltaTableAggregationLevel.GridArea;
