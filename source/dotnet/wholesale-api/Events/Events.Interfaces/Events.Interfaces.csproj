@@ -1,0 +1,9 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <AssemblyName>Energinet.DataHub.Wholesale.Events.Interfaces</AssemblyName>
+        <RootNamespace>Energinet.DataHub.Wholesale.Events.Interfaces</RootNamespace>
+    </PropertyGroup>
+    <ItemGroup>
+      <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.17.5" />
+    </ItemGroup>
+</Project>
