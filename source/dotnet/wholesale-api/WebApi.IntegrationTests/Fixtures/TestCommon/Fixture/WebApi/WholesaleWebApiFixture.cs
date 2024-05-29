@@ -107,17 +107,6 @@ public class WholesaleWebApiFixture : WebApiFixture
             .SetEnvironmentVariableToSubscriptionName($"{IntegrationEventsOptions.SectionName}__{nameof(IntegrationEventsOptions.SubscriptionName)}")
             .CreateAsync();
 
-        // Add events configuration variables
-        await ServiceBusResourceProvider
-            .BuildQueue("sbq-wholesale-inbox")
-            .SetEnvironmentVariableToQueueName($"{WholesaleInboxQueueOptions.SectionName}__{nameof(WholesaleInboxQueueOptions.QueueName)}")
-            .CreateAsync();
-
-        await ServiceBusResourceProvider
-            .BuildQueue("sbq-edi-inbox")
-            .SetEnvironmentVariableToQueueName($"{EdiInboxQueueOptions.SectionName}__{nameof(EdiInboxQueueOptions.QueueName)}")
-            .CreateAsync();
-
         await EnsureCalculationStorageContainerExistsAsync();
     }
 
