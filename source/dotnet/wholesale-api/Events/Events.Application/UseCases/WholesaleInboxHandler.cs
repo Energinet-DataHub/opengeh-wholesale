@@ -21,14 +21,14 @@ namespace Energinet.DataHub.Wholesale.Events.Application.UseCases;
 public class WholesaleInboxHandler
 {
     private readonly ILogger<WholesaleInboxHandler> _logger;
-    private readonly IEnumerable<IWholesaleInboxRequestHandler> _requestHandlers;
+    private readonly IReadOnlyCollection<IWholesaleInboxRequestHandler> _requestHandlers;
 
     public WholesaleInboxHandler(
         ILogger<WholesaleInboxHandler> logger,
         IEnumerable<IWholesaleInboxRequestHandler> requestHandlers)
     {
         _logger = logger;
-        _requestHandlers = requestHandlers;
+        _requestHandlers = requestHandlers.ToArray();
     }
 
     public async Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, CancellationToken cancellationToken)
