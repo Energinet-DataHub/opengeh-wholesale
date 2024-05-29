@@ -42,7 +42,6 @@ public class WholesaleInboxTriggerTests : IAsyncLifetime
 
     public Task InitializeAsync()
     {
-        Fixture.EnsureAppHostUsesMockedDatabricksJobs();
         Fixture.AppHostManager.ClearHostLog();
         Fixture.ServiceBusListenerMock.ResetMessageHandlersAndReceivedMessages();
 
