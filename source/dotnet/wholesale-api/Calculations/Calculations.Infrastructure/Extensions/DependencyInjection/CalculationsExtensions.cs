@@ -38,6 +38,8 @@ public static class CalculationsExtensions
 {
     public static IServiceCollection AddCalculationsModule(this IServiceCollection services, IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
         services.AddScoped<ICalculationsClient, CalculationsClient>();
         services.AddScoped<ICalculationStateInfrastructureService, CalculationStateInfrastructureService>();
         services.AddScoped<ICalculationInfrastructureService, CalculationInfrastructureService>();

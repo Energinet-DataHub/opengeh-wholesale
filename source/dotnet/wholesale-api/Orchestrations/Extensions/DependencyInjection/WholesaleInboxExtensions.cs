@@ -27,6 +27,8 @@ public static class WholesaleInboxExtensions
 {
     public static IServiceCollection AddWholesaleInboxHandling(this IServiceCollection services, IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
         services
             .AddOptions<WholesaleInboxQueueOptions>()
             .BindConfiguration(WholesaleInboxQueueOptions.SectionName)
