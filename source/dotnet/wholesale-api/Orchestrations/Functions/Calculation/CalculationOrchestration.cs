@@ -59,12 +59,23 @@ internal class CalculationOrchestration
             context.SetCustomStatus(calculationMetadata);
 
             if (calculationMetadata.JobStatus is CalculationState.Running
-                or CalculationState.Pending)
+                or CalculationState.Pending
+                or CalculationState.Canceled)
             {
                 // Update calculation execution status (SQL)
                 await context.CallActivityAsync(
                     nameof(UpdateCalculationStatusActivity),
                     calculationMetadata);
+
+                if (calculationMetadata.JobStatus is CalculationState.Canceled)
+                {
+                    // (Re) Start calculation (Databricks)
+                    calculationMetadata.JobId = await context.CallActivityAsync<CalculationJobId>(
+                        nameof(StartCalculationActivity),
+                        calculationMetadata.Id);
+                    calculationMetadata.OrchestrationProgress = "CalculationJobQueuedAgain";
+                    context.SetCustomStatus(calculationMetadata);
+                }
 
                 // Wait for the next checkpoint
                 var nextCheckpoint = context.CurrentUtcDateTime.AddSeconds(input.JobStatusMonitorOptions.PollingIntervalInSeconds);

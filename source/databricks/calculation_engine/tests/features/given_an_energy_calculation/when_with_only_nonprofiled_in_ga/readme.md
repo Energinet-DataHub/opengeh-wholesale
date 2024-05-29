@@ -12,6 +12,7 @@ The purpose of this test is the scenario where a grid area only has non-profiled
 All metering point types relevant for energy calculations
 
 - Exchange (energy in)
+- Exchange (energy out)
 - Non-profiled consumption
 - Flex consumption (grid loss)
 - Production

@@ -55,10 +55,10 @@ public sealed class SettlementReportRepository : ISettlementReportRepository
             .ConfigureAwait(false);
     }
 
-    public async Task<IEnumerable<SettlementReport>> GetAsync(Guid userId, Guid actorId)
+    public async Task<IEnumerable<SettlementReport>> GetAsync(Guid actorId)
     {
         return await _context.SettlementReports
-            .Where(x => x.UserId == userId && x.ActorId == actorId)
+            .Where(x => x.ActorId == actorId)
             .ToListAsync()
             .ConfigureAwait(false);
     }

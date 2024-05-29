@@ -15,6 +15,7 @@
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
 using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Edi.Models;
+using Energinet.DataHub.Wholesale.Edi.Validation.Helpers;
 
 namespace Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
 
@@ -38,18 +39,11 @@ public class GridAreaValidationRule : IValidationRule<DataHub.Edi.Requests.Aggre
 
         foreach (var gridAreaCode in subject.GridAreaCodes)
         {
-            if (!await IsGridAreaOwnerAsync(gridAreaCode, subject.RequestedForActorNumber).ConfigureAwait(false))
+            if (!await GridAreaValidationHelper.IsGridAreaOwnerAsync(_gridAreaOwnerRepository, gridAreaCode, subject.RequestedForActorNumber).ConfigureAwait(false))
                 return InvalidGridAreaError;
         }
 
         return NoError;
-    }
-
-    private async Task<bool> IsGridAreaOwnerAsync(string gridAreaCode, string actorId)
-    {
-        var gridAreaOwner = await _gridAreaOwnerRepository
-            .GetCurrentOwnerAsync(gridAreaCode, CancellationToken.None).ConfigureAwait(false);
-        return gridAreaOwner != null && gridAreaOwner.OwnerActorNumber.Equals(actorId, StringComparison.OrdinalIgnoreCase);
     }
 
     private static IList<ValidationError> NoError => new List<ValidationError>();

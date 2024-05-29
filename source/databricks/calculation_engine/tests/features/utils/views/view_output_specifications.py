@@ -24,6 +24,9 @@ from features.utils.dataframes.settlement_report import (
 from features.utils.dataframes.settlement_report.charge_link_periods_v1_view_schema import (
     charge_link_periods_v1_view_schema,
 )
+from features.utils.dataframes.settlement_report.charge_prices_v1_view_schema import (
+    charge_prices_v1_view_schema,
+)
 from features.utils.dataframes.settlement_report.energy_results_v1_view_schema import (
     energy_results_v1_view_schema,
 )
@@ -32,6 +35,7 @@ from features.utils.dataframes.settlement_report.settlement_report_view_datafram
     create_metering_point_time_series_v1_view,
     create_energy_results_v1_view,
     create_charge_link_periods_v1_view,
+    create_charge_prices_v1_view,
     create_wholesale_results_v1_view,
 )
 from features.utils.dataframes.settlement_report.wholesale_results_v1_view_schema import (
@@ -67,6 +71,11 @@ def get_output_specifications() -> dict[str, tuple]:
             charge_link_periods_v1_view_schema,
             SettlementReportViewReader.read_charge_link_periods_v1,
             create_charge_link_periods_v1_view,
+        ),
+        "charge_prices_v1.csv": (
+            charge_prices_v1_view_schema,
+            SettlementReportViewReader.read_charge_prices_v1,
+            create_charge_prices_v1_view,
         ),
         "energy_results_v1.csv": (
             energy_results_v1_view_schema,
