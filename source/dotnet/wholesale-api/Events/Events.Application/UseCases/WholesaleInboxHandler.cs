@@ -18,29 +18,52 @@ using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.UseCases;
 
-public class WholesaleInboxHandler(
-    ILogger<WholesaleInboxHandler> logger,
-    IEnumerable<IWholesaleInboxRequestHandler> requestHandlers)
+public class WholesaleInboxHandler
 {
+    private readonly ILogger<WholesaleInboxHandler> _logger;
+    private readonly IEnumerable<IWholesaleInboxRequestHandler> _requestHandlers;
+
+    public WholesaleInboxHandler(
+        ILogger<WholesaleInboxHandler> logger,
+        IEnumerable<IWholesaleInboxRequestHandler> requestHandlers)
+    {
+        _logger = logger;
+        _requestHandlers = requestHandlers;
+    }
+
     public async Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, CancellationToken cancellationToken)
     {
-        if (!receivedMessage.ApplicationProperties.TryGetValue("ReferenceId", out var referenceIdValue))
+        receivedMessage.ApplicationProperties.TryGetValue("ReferenceId", out var referenceIdObject);
+
+        if (referenceIdObject is not string referenceId)
         {
-            logger.LogError("Missing reference id for Wholesale inbox service bus message (MessageId: {MessageId}, Subject: {Subject})", receivedMessage.MessageId, receivedMessage.Subject);
+            _logger.LogError(
+                "Missing reference id for Wholesale inbox service bus message (reference id: {reference_id}, subject: {subject}, message id: {message_id})",
+                referenceIdObject ?? "null",
+                receivedMessage.MessageId,
+                receivedMessage.Subject);
             throw new InvalidOperationException("Missing reference id for received Wholesale inbox service bus message");
         }
 
-        logger.LogInformation("Processing Wholesale inbox message with reference id: {reference_id}, subject: {subject}, message id: {message_id}.", referenceIdValue, receivedMessage.Subject, receivedMessage.MessageId);
-
-        var referenceId = referenceIdValue.ToString() ?? throw new InvalidOperationException("Cannot get referenceId as string");
+        _logger.LogInformation(
+            "Processing Wholesale inbox message (reference id: {reference_id}, subject: {subject}, message id: {message_id})",
+            referenceId,
+            receivedMessage.Subject,
+            receivedMessage.MessageId);
 
         if (string.IsNullOrEmpty(receivedMessage.Subject))
             throw new InvalidOperationException("Missing subject for received Wholesale inbox service bus message");
 
-        var requestHandler = requestHandlers.SingleOrDefault(h => h.CanHandle(receivedMessage.Subject)) ??
+        var requestHandler = _requestHandlers.SingleOrDefault(h => h.CanHandle(receivedMessage.Subject)) ??
                              throw new InvalidOperationException(
                                  $"No request handler found for Wholesale inbox message with subject \"{receivedMessage.Subject}\"");
 
         await requestHandler.ProcessAsync(receivedMessage, referenceId, cancellationToken).ConfigureAwait(true);
+
+        _logger.LogInformation(
+            "Finished processing Wholesale inbox message (reference id: {reference_id}, subject: {subject}, message id: {message_id}) from queue",
+            referenceId,
+            receivedMessage.Subject,
+            receivedMessage.MessageId);
     }
 }
