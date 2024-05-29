@@ -32,14 +32,13 @@ internal class WholesaleInboxTrigger
     }
 
     [Function(nameof(WholesaleInboxTrigger))]
-    public async Task ReceiveWholesaleInboxMessageAsync(
+    public Task ReceiveWholesaleInboxMessageAsync(
         [ServiceBusTrigger(
             $"%{WholesaleInboxQueueOptions.SectionName}:{nameof(WholesaleInboxQueueOptions.QueueName)}%",
             Connection = $"{ServiceBusNamespaceOptions.SectionName}:{nameof(ServiceBusNamespaceOptions.ConnectionString)}")]
         ServiceBusReceivedMessage inboxMessage,
         CancellationToken cancellationToken)
     {
-        await _wholesaleInboxHandler.ProcessAsync(inboxMessage, cancellationToken)
-            .ConfigureAwait(false);
+        return _wholesaleInboxHandler.ProcessAsync(inboxMessage, cancellationToken);
     }
 }
