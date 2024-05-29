@@ -18,7 +18,6 @@ using Asp.Versioning;
 using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.App.WebApp.Extensions.Builder;
 using Energinet.DataHub.Core.App.WebApp.Extensions.DependencyInjection;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
@@ -43,7 +42,6 @@ builder.Services.AddServiceBusClientForApplication(builder.Configuration);
 
 // Modules
 builder.Services.AddCalculationsModule(builder.Configuration);
-builder.Services.AddCalculationResultsModule(builder.Configuration);
 
 // ServieBus channels
 builder.Services.AddIntegrationEventsSubscription();

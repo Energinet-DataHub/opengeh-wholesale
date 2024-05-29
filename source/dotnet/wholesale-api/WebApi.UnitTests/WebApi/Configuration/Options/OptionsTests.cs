@@ -25,7 +25,6 @@ public class OptionsTests
     [Theory]
     [InlineAutoMoqData(typeof(DataLakeOptions), 4, "STORAGE_ACCOUNT_URI", "STORAGE_CONTAINER_NAME", "DATALAKE_HEALTH_CHECK_START", "DATALAKE_HEALTH_CHECK_END")]
     [InlineAutoMoqData(typeof(ConnectionStringsOptions), 1, "DB_CONNECTION_STRING")]
-    [InlineAutoMoqData(typeof(DeltaTableOptions), 7, "SCHEMA_NAME", "BasisDataSchemaName", "SettlementReportSchemaName", "ENERGY_RESULTS_TABLE_NAME", "WHOLESALE_RESULTS_TABLE_NAME", "TOTAL_MONTHLY_AMOUNTS_TABLE_NAME", "EdiResultsSchemaName")]
     public void Options_HaveTheCorrectSettingNamesAndNumberOfSettings(Type sut, int settingsCount, params string[] expectedNames)
     {
         // Arrange & Act
