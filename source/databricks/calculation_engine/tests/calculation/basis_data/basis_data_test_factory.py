@@ -11,27 +11,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from datetime import datetime
+from decimal import Decimal
+
+from pyspark.sql import Row, SparkSession, DataFrame
+
+import package.calculation.basis_data.basis_data_factory as basis_data_factory
+import package.codelists as e
+import tests.calculation.charges_factory as charges_factory
 from calculation.output.calculations_storage_model_test_factory import (
     create_calculations,
 )
-from package.calculation.calculator_args import CalculatorArgs
-from tests.calculation.preparation.transformations import metering_point_periods_factory
-from tests.calculation.preparation.transformations import (
-    prepared_metering_point_time_series_factory,
-)
-from package.calculation.calculation_results import BasisDataContainer
-import package.calculation.basis_data.basis_data_factory as basis_data_factory
-from package.calculation.preparation.data_structures import InputChargesContainer
-from package.calculation.preparation.data_structures.charge_master_data import (
-    ChargeMasterData,
-)
-import tests.calculation.charges_factory as charges_factory
-from package.calculation.preparation.data_structures.charge_prices import ChargePrices
 from package.calculation.basis_data.schemas.charge_link_periods_schema import (
     charge_link_periods_schema,
 )
 from package.calculation.basis_data.schemas.charge_master_data_periods_schema import (
-    charge_master_data_periods_schema,
+    charge_price_information_periods_schema,
 )
 from package.calculation.basis_data.schemas.charge_price_points_schema import (
     charge_price_points_schema,
@@ -39,16 +34,22 @@ from package.calculation.basis_data.schemas.charge_price_points_schema import (
 from package.calculation.basis_data.schemas.grid_loss_metering_points_schema import (
     grid_loss_metering_points_schema,
 )
+from package.calculation.calculation_results import BasisDataContainer
+from package.calculation.calculator_args import CalculatorArgs
+from package.calculation.preparation.data_structures import InputChargesContainer
+from package.calculation.preparation.data_structures.charge_master_data import (
+    ChargeMasterData,
+)
+from package.calculation.preparation.data_structures.charge_prices import ChargePrices
 from package.calculation.preparation.data_structures.grid_loss_metering_points import (
     GridLossMeteringPoints,
 )
-from datetime import timedelta, datetime
-from decimal import Decimal
 from package.codelists import ChargeType
 from package.constants import Colname
-import package.calculation.preparation.data_structures as d
-import package.codelists as e
-from pyspark.sql import Row, SparkSession, DataFrame
+from tests.calculation.preparation.transformations import metering_point_periods_factory
+from tests.calculation.preparation.transformations import (
+    prepared_metering_point_time_series_factory,
+)
 
 
 class DefaultValues:
@@ -176,7 +177,7 @@ def create_charge_master_data(
         data = [create_charge_master_data_row()]
     elif isinstance(data, Row):
         data = [data]
-    df = spark.createDataFrame(data, charge_master_data_periods_schema)
+    df = spark.createDataFrame(data, charge_price_information_periods_schema)
     return ChargeMasterData(df)
 
 

@@ -20,5 +20,5 @@ public interface IGetSettlementReportsHandler
 {
     Task<IEnumerable<RequestedSettlementReportDto>> GetAsync();
 
-    Task<IEnumerable<RequestedSettlementReportDto>> GetAsync(Guid userId, Guid actorId);
+    Task<IEnumerable<RequestedSettlementReportDto>> GetAsync(Guid actorId);
 }
