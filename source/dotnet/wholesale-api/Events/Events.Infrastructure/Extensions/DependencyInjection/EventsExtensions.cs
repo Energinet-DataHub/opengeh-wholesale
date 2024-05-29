@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Runtime.CompilerServices;
 using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Publisher;
@@ -73,10 +74,12 @@ public static class EventsExtensions
         return services;
     }
 
-    public static void AddWholesaleInboxHandler(this IServiceCollection services)
+    public static IServiceCollection AddWholesaleInboxHandler(this IServiceCollection services)
     {
         // Wholesale inbox events handler
         services.AddScoped<WholesaleInboxHandler>();
+
+        return services;
     }
 
     public static IServiceCollection AddIntegrationEventsPublishing(this IServiceCollection services, IConfiguration configuration)
