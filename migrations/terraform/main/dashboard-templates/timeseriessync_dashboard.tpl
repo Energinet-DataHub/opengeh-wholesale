@@ -452,7 +452,7 @@
                         }
                       }
                     ],
-                    "title": "Avg Time series message size",
+                    "title": "Time series message size",
                     "titleKind": 2,
                     "visualization": {
                       "chartType": 2,
@@ -508,32 +508,54 @@
                         "resourceMetadata": {
                           "id": "${appi_sharedres_id}"
                         },
-                        "name": "customMetrics/PeekedTimeSeriesMessageSize",
+                        "name": "customMetrics/TransformedTimeSeriesTransactions",
                         "aggregationType": 4,
                         "namespace": "microsoft.insights/components/kusto",
                         "metricVisualization": {
-                          "displayName": "PeekedTimeSeriesMessageSize"
+                          "displayName": "TransformedTimeSeriesTransactions"
+                        }
+                      },
+                      {
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
+                        },
+                        "name": "customMetrics/TransformedTimeSeriesTransactions",
+                        "aggregationType": 2,
+                        "namespace": "microsoft.insights/components/kusto",
+                        "metricVisualization": {
+                          "displayName": "TransformedTimeSeriesTransactions"
+                        }
+                      },
+                      {
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
+                        },
+                        "name": "customMetrics/TransformedTimeSeriesTransactions",
+                        "aggregationType": 3,
+                        "namespace": "microsoft.insights/components/kusto",
+                        "metricVisualization": {
+                          "displayName": "TransformedTimeSeriesTransactions"
                         }
                       }
                     ],
-                    "title": "Avg transaction pr. message (TBD when data arrives)",
+                    "title": "Transactions pr. message",
                     "titleKind": 2,
                     "visualization": {
                       "chartType": 2,
                       "legendVisualization": {
-                        "isVisible": true,
-                        "position": 2,
                         "hideHoverCard": false,
-                        "hideLabelNames": true
+                        "hideLabelNames": true,
+                        "isVisible": true,
+                        "position": 2
                       },
                       "axisVisualization": {
                         "x": {
-                          "isVisible": true,
-                          "axisType": 2
+                          "axisType": 2,
+                          "isVisible": true
                         },
                         "y": {
-                          "isVisible": true,
-                          "axisType": 1
+                          "axisType": 1,
+                          "isVisible": true
                         }
                       },
                       "disablePinning": true
