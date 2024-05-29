@@ -14,7 +14,6 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using Azure.Identity;
 using Azure.Storage.Blobs;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
@@ -78,6 +77,9 @@ public class OrchestrationsAppFixture : IAsyncLifetime
     public WireMockServer MockServer { get; }
 
     [NotNull]
+    public QueueResource? WholesaleInboxQueue { get; set; }
+
+    [NotNull]
     public FunctionAppHostManager? AppHostManager { get; private set; }
 
     [NotNull]
@@ -123,6 +125,23 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         await ServiceBusListenerMock.AddTopicSubscriptionListenerAsync(
             topicResource.Name,
             topicResource.Subscriptions.Single().SubscriptionName);
+
+        // Create Wholesale Inbox service bus queue used by WholesaleInboxTrigger service bus trigger
+        WholesaleInboxQueue = await ServiceBusResourceProvider
+            .BuildQueue("wholesale-inbox")
+            .Do(queue => appHostSettings.ProcessEnvironmentVariables
+                .Add($"{WholesaleInboxQueueOptions.SectionName}__{nameof(WholesaleInboxQueueOptions.QueueName)}", queue.Name))
+            .CreateAsync();
+
+        // Create EDI Inbox service bus queue (used by WholesaleInboxTrigger to deliver messages back to EDI)
+        var ediInboxResource = await ServiceBusResourceProvider
+            .BuildQueue("edi-inbox")
+            .Do(queue => appHostSettings.ProcessEnvironmentVariables
+                .Add($"{EdiInboxQueueOptions.SectionName}__{nameof(EdiInboxQueueOptions.QueueName)}", queue.Name))
+            .CreateAsync();
+
+        // => Receive messages on EDI Inbox queue
+        await ServiceBusListenerMock.AddQueueListenerAsync(ediInboxResource.Name);
 
         // Storage: DataLake + Blob Containers
         await EnsureCalculationStorageContainerExistsAsync();
@@ -263,21 +282,23 @@ public class OrchestrationsAppFixture : IAsyncLifetime
     /// </summary>
     private async Task EnsureCalculationStorageContainerExistsAsync()
     {
-        var dataLakeServiceClient = new DataLakeServiceClient(
-            serviceUri: AzuriteManager.BlobStorageServiceUri,
-            credential: new DefaultAzureCredential());
-
+        // Uses BlobStorageConnectionString instead of Uri and DefaultAzureCredential for faster test execution
+        // (new DefaultAzureCredential() takes >30 seconds to check credentials)
+        var dataLakeServiceClient = new DataLakeServiceClient(AzuriteManager.BlobStorageConnectionString);
         var fileSystemClient = dataLakeServiceClient.GetFileSystemClient("wholesale");
-
-        await fileSystemClient.CreateIfNotExistsAsync();
+        if (!await fileSystemClient.ExistsAsync())
+            await fileSystemClient.CreateAsync();
     }
 
     private async Task EnsureSettlementReportStorageContainerExistsAsync()
     {
-        var blobContainerUri = new Uri(AzuriteManager.BlobStorageServiceUri + "/settlement-report-container");
-        var blobContainerClient = new BlobContainerClient(blobContainerUri, new DefaultAzureCredential());
-
-        await blobContainerClient.CreateIfNotExistsAsync();
+        // Uses BlobStorageConnectionString instead of Uri and DefaultAzureCredential for faster test execution
+        // (new DefaultAzureCredential() takes >30 seconds to check credentials)
+        var blobClient = new BlobServiceClient(AzuriteManager.BlobStorageConnectionString);
+        var blobContainerClient = blobClient.GetBlobContainerClient("settlement-report-container");
+        var containerExists = await blobContainerClient.ExistsAsync();
+        if (!containerExists)
+            await blobContainerClient.CreateAsync();
     }
 
     private static void StartHost(FunctionAppHostManager hostManager)
