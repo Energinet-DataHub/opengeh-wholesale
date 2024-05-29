@@ -12,17 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Runtime.CompilerServices;
 using Energinet.DataHub.Core.App.Common.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
-using Energinet.DataHub.Wholesale.Edi;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.InboxEvents.ActorMessagesEnqueuedV1;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.AmountPerChargeResultProducedV1.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.CalculationCompletedV1.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Factories;
@@ -75,10 +74,12 @@ public static class EventsExtensions
         return services;
     }
 
-    public static void AddWholesaleInboxHandler(this IServiceCollection services)
+    public static IServiceCollection AddWholesaleInboxHandler(this IServiceCollection services)
     {
         // Wholesale inbox events handler
         services.AddScoped<WholesaleInboxHandler>();
+
+        return services;
     }
 
     public static IServiceCollection AddIntegrationEventsPublishing(this IServiceCollection services, IConfiguration configuration)
@@ -97,8 +98,6 @@ public static class EventsExtensions
             .AddScoped<IEnergyResultEventProvider, EnergyResultEventProvider>()
             .AddScoped<IWholesaleResultEventProvider, WholesaleResultEventProvider>()
             .AddScoped<ICalculationCompletedEventProvider, CalculationCompletedEventProvider>();
-
-        services.AddScoped<IWholesaleInboxRequestHandler, ActorMessagesEnqueuedV1RequestHandler>();
 
         var serviceBusNamespaceOptions = configuration
             .GetRequiredSection(ServiceBusNamespaceOptions.SectionName)

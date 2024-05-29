@@ -42,7 +42,6 @@ public class WholesaleInboxTriggerTests : IAsyncLifetime
 
     public Task InitializeAsync()
     {
-        Fixture.EnsureAppHostUsesMockedDatabricksJobs();
         Fixture.AppHostManager.ClearHostLog();
         Fixture.ServiceBusListenerMock.ResetMessageHandlersAndReceivedMessages();
 
@@ -159,7 +158,7 @@ public class WholesaleInboxTriggerTests : IAsyncLifetime
         var functionHostLogs = Fixture.AppHostManager.GetHostLogSnapshot();
         functionHostLogs.Should()
             .ContainMatch(
-                "*No request handler found for Wholesale inbox message with subject \"UnhandledSubject\"*");
+                "*No request handler found for Wholesale inbox message with subject: UnhandledSubject*");
     }
 
     private async Task SendMessageToWholesaleInbox(string subject, byte[]? body, string? referenceId = "required-reference-id")

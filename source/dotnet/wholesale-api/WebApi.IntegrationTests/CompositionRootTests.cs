@@ -49,8 +49,6 @@ public class CompositionRootTests
                 ["ServiceBus:ConnectionString"] = "Endpoint=sb://unknown.servicebus.windows.net/;SharedAccessKeyName=Yyy;SharedAccessKey=Xxx",
                 ["IntegrationEvents:TopicName"] = "NotEmpty",
                 ["IntegrationEvents:SubscriptionName"] = "NotEmpty",
-                ["WholesaleInbox:QueueName"] = "NotEmpty",
-                ["EdiInbox:QueueName"] = "NotEmpty",
                 ["UserAuthentication:MitIdExternalMetadataAddress"] = "NotEmpty",
                 ["UserAuthentication:ExternalMetadataAddress"] = "NotEmpty",
                 ["UserAuthentication:BackendBffAppId"] = "NotEmpty",

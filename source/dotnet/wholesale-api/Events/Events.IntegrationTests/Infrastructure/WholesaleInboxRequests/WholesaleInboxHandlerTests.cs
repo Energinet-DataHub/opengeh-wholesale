@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Diagnostics;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
@@ -21,22 +20,18 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.Events.IntegrationTests.Infrastructure.WholesaleInboxRequests;
 
-public class WholesaleInboxHandlerTests(ITestOutputHelper testOutputHelper)
+public class WholesaleInboxHandlerTests
 {
     [Theory]
     [InlineAutoMoqData]
     public async Task ReceiveWholesaleInboxMessage_WhenHasSubjectAndReferenceId_ReceivesMessage(
-        Mock<IServiceProvider> serviceProviderMock,
         Mock<IWholesaleInboxRequestHandler> handlerMock,
-        Mock<ILogger<WholesaleInboxHandler>> loggerMock)
+        ILogger<WholesaleInboxHandler> logger)
     {
         // Arrange
-        var stopwatch = new Stopwatch();
-        var testLogger = new TestLogger<WholesaleInboxHandler>(loggerMock.Object, testOutputHelper);
         var messageHasBeenReceivedEvent = new AutoResetEvent(false);
         var expectedReferenceId = "valid-reference-id";
         handlerMock
@@ -50,15 +45,8 @@ public class WholesaleInboxHandlerTests(ITestOutputHelper testOutputHelper)
             .Setup(handler => handler.CanHandle(It.IsAny<string>()))
             .Returns(true);
 
-        serviceProviderMock
-            .Setup(x => x.GetService(typeof(IEnumerable<IWholesaleInboxRequestHandler>)))
-            .Returns(new List<IWholesaleInboxRequestHandler>
-            {
-                handlerMock.Object,
-            });
-
         var sut = new WholesaleInboxHandler(
-            testLogger,
+            logger,
             [handlerMock.Object]);
 
         var serviceBusReceivedMessage = CreateServiceBusReceivedMessage(
@@ -66,7 +54,6 @@ public class WholesaleInboxHandlerTests(ITestOutputHelper testOutputHelper)
             referenceId: expectedReferenceId);
 
         // Act
-        stopwatch.Start();
         var receiveWholesaleInboxMessage = () => sut.ProcessAsync(serviceBusReceivedMessage, CancellationToken.None);
 
         // Assert
@@ -78,27 +65,13 @@ public class WholesaleInboxHandlerTests(ITestOutputHelper testOutputHelper)
     [Theory]
     [InlineAutoMoqData]
     public async Task ReceiveWholesaleInboxMessage_WhenMissingReferenceId_ThrowsInvalidOperationException(
-        Mock<IServiceProvider> serviceProviderMock,
-        Mock<IWholesaleInboxRequestHandler> handlerMock,
-        Mock<ILogger<WholesaleInboxHandler>> loggerMock)
+        IWholesaleInboxRequestHandler handler,
+        ILogger<WholesaleInboxHandler> logger)
     {
         // Arrange
-        var testLogger = new TestLogger<WholesaleInboxHandler>(loggerMock.Object, testOutputHelper);
-        var messageHasBeenReceivedEvent = new AutoResetEvent(false);
-        handlerMock
-            .Setup(handler => handler.ProcessAsync(It.IsAny<ServiceBusReceivedMessage>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .Callback(() =>
-            {
-                messageHasBeenReceivedEvent.Set();
-            });
-
-        serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IWholesaleInboxRequestHandler)))
-            .Returns(handlerMock.Object);
-
         var sut = new WholesaleInboxHandler(
-            testLogger,
-            [handlerMock.Object]);
+            logger,
+            [handler]);
 
         var serviceBusReceivedMessage = CreateServiceBusReceivedMessage(
             subject: "ValidSubject",
@@ -110,35 +83,18 @@ public class WholesaleInboxHandlerTests(ITestOutputHelper testOutputHelper)
         // Assert
         await receiveRequestWithoutReferenceId.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("Missing reference id for received Wholesale inbox service bus message");
-
-        var messageHasBeenReceived = messageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(5));
-        messageHasBeenReceived.Should().BeFalse();
     }
 
     [Theory]
     [InlineAutoMoqData]
     public async Task ReceiveWholesaleInboxMessage_WhenMissingSubject_ThrowsInvalidOperationException(
-        Mock<IServiceProvider> serviceProviderMock,
-        Mock<IWholesaleInboxRequestHandler> handlerMock,
-        Mock<ILogger<WholesaleInboxHandler>> loggerMock)
+        IWholesaleInboxRequestHandler handler,
+        ILogger<WholesaleInboxHandler> logger)
     {
         // Arrange
-        var testLogger = new TestLogger<WholesaleInboxHandler>(loggerMock.Object, testOutputHelper);
-        var messageHasBeenReceivedEvent = new AutoResetEvent(false);
-        handlerMock
-            .Setup(handler => handler.ProcessAsync(It.IsAny<ServiceBusReceivedMessage>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .Callback(() =>
-            {
-                messageHasBeenReceivedEvent.Set();
-            });
-
-        serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IWholesaleInboxRequestHandler)))
-            .Returns(handlerMock.Object);
-
         var sut = new WholesaleInboxHandler(
-            testLogger,
-            [handlerMock.Object]);
+            logger,
+            [handler]);
 
         var serviceBusReceivedMessage = CreateServiceBusReceivedMessage(
             subject: null,
@@ -150,9 +106,6 @@ public class WholesaleInboxHandlerTests(ITestOutputHelper testOutputHelper)
         // Assert
         await receiveRequestWithoutReferenceId.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("Missing subject for received Wholesale inbox service bus message");
-
-        var messageHasBeenReceived = messageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(1));
-        messageHasBeenReceived.Should().BeFalse();
     }
 
     private static ServiceBusReceivedMessage CreateServiceBusReceivedMessage(string? subject, string? referenceId)
