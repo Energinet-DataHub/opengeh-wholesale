@@ -33,7 +33,7 @@ internal class WholesaleInboxTrigger(ILogger<WholesaleInboxTrigger> logger, Whol
         CancellationToken cancellationToken)
     {
         logger.LogInformation(
-            "Started receiving Wholesale inbox message (Subject: \"{Subject}\", MessageId: \"{EventId}\") from queue",
+            "Started receiving Wholesale inbox message (Subject: \"{Subject}\", MessageId: \"{MessageId}\") from queue",
             inboxMessage.Subject,
             inboxMessage.MessageId);
 
@@ -41,7 +41,7 @@ internal class WholesaleInboxTrigger(ILogger<WholesaleInboxTrigger> logger, Whol
             .ConfigureAwait(false);
 
         logger.LogInformation(
-            "Finished receiving Wholesale inbox message (Subject: \"{Subject}\", MessageId: \"{EventId}\") from queue",
+            "Finished receiving Wholesale inbox message (Subject: \"{Subject}\", MessageId: \"{MessageId}\") from queue",
             inboxMessage.Subject,
             inboxMessage.MessageId);
     }
