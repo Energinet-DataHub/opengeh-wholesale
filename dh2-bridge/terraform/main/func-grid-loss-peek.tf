@@ -30,5 +30,5 @@ module "func_entrypoint_grid_loss_peek" {
       role_definition_name = "Key Vault Secrets User"
     }
   ]
-  app_settings = local.default_peek_app_settings
+  app_settings = local.entrypoint_grid_loss_peek.app_settings
 }

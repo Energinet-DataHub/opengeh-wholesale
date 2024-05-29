@@ -2,11 +2,12 @@
 /docs/diagrams @Energinet-DataHub/TheOutlaws @Energinet-DataHub/team-raccoons @Energinet-DataHub/Mandalorian @Energinet-DataHub/spectrum @Energinet-DataHub/volt @Energinet-DataHub/team-mosaic
 
 # market-participant app settings
-market-participant/terraform/**/*.app-settings.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
+market-participant/terraform/**/func-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
+market-participant/terraform/**/app-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
 market-participant/terraform/**/*subsystem.auto.tfvars @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
 
 # dh2-bridge app settings
-dh2-bridge/terraform/**/*.app-settings.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
+dh2-bridge/terraform/**/func-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
 dh2-bridge/terraform/**/*subsystem.auto.tfvars @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
 
 # migrations job names

@@ -26,5 +26,5 @@ module "func_entrypoint_grid_loss_sender" {
       role_definition_name = "Storage Blob Data Contributor"
     }
   ]
-  app_settings = local.default_sender_app_settings
+  app_settings = local.entrypoint_grid_loss_sender.app_settings
 }

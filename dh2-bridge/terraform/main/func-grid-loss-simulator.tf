@@ -30,5 +30,5 @@ module "func_entrypoint_grid_loss_simulator" {
       role_definition_name = "Key Vault Secrets User"
     }
   ]
-  app_settings = local.default_simulator_app_settings
+  app_settings = local.entrypoint_grid_loss_simulator.app_settings
 }

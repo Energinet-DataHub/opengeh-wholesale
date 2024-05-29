@@ -30,5 +30,5 @@ module "func_entrypoint_grid_loss_event_receiver" {
       role_definition_name = "Key Vault Secrets User"
     }
   ]
-  app_settings = local.default_event_receiver_app_settings
+  app_settings = local.entrypoint_grid_loss_event_receiver.app_settings
 }

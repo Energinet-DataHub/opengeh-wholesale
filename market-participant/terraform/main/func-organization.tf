@@ -21,7 +21,7 @@ module "func_organization" {
   }
   dotnet_framework_version    = "v8.0"
   use_dotnet_isolated_runtime = true
-  app_settings                = local.default_organization_app_settings
+  app_settings                = local.func_organization.app_settings
 
   role_assignments = [
     {

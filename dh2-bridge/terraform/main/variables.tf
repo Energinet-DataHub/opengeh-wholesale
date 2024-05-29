@@ -72,3 +72,21 @@ variable "ip_restrictions" {
   description = "A list of IP restrictions defining allowed access to domain services. Each entry should include an 'ip_address' representing the allowed IP, a 'name' for identification, and an optional 'priority' for rule order. Defaults to `[]`."
   default     = []
 }
+
+variable "dh2_bridge_recipient_party_gln" {
+  type        = string
+  description = "GLN of the recipient party."
+  default     = null
+}
+
+variable "dh2_bridge_sender_party_gln" {
+  type        = string
+  description = "GLN of the sender party."
+  default     = null
+}
+
+variable "dh2_endpoint" {
+  type        = string
+  description = "Endpoint for DH2"
+  default     = null
+}

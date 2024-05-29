@@ -21,7 +21,7 @@ module "func_certificatesynchronization" {
   }
   dotnet_framework_version    = "v8.0"
   use_dotnet_isolated_runtime = true
-  app_settings                = local.default_certificatesynchronization_app_settings
+  app_settings                = local.func_certificatesynchronization.app_settings
 
   role_assignments = [
     {
