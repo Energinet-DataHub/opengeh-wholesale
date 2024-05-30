@@ -240,8 +240,9 @@ jobs:
           common/
           infrastructure/
           entry_points/
-          datamigration/!(test_migration.py)
-          datamigration/test_migration.py
+          datamigration/migration
+          datamigration/domain
+          datamigration/scripts
           contracts"
 
           IMAGE_TAG=${{ inputs.image_tag }} docker compose -f .devcontainer/docker-compose.yml run --rm -u root -w //workspaces/${repository_name} python-unit-test ./.devcontainer/check_test_count.sh $filter
