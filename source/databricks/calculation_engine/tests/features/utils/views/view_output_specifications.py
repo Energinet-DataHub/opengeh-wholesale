@@ -102,7 +102,7 @@ def get_output_specifications() -> dict[str, tuple]:
         ),
         "latest_calculations_v1.csv": (
             latest_calculations_v1_view_schema,
-            SettlementReportViewReader.read_wholesale_results_v1,
+            SettlementReportViewReader.read_latest_calculations_v1,
             create_latest_calculations_v1_view,
         ),
     }
