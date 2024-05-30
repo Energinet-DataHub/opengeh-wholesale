@@ -34,7 +34,7 @@ public static class AggregatedTimeSeriesRequestFactory
     private static TimeSeriesType[] GetTimeSeriesTypes(
         Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request)
     {
-        return request.MeteringPointType != string.Empty
+        return request.HasMeteringPointType
             ? [TimeSeriesTypeMapper.MapTimeSeriesType(request.MeteringPointType, request.SettlementMethod)]
             : request.RequestedForActorRole switch
             {

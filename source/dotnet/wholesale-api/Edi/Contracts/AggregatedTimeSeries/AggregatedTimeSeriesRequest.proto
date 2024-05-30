@@ -19,7 +19,7 @@ option csharp_namespace = "Energinet.DataHub.Edi.Requests";
 
 message AggregatedTimeSeriesRequest {
   Period period = 1;
-  string metering_point_type = 2;
+  optional string metering_point_type = 2;
   optional string settlement_method = 3;
   optional string energy_supplier_id = 4;
   string requested_for_actor_number = 5;

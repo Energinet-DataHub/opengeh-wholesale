@@ -12,9 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pyspark.sql.functions as f
-from pyspark.sql.types import DecimalType
 from pyspark.sql import DataFrame
+from pyspark.sql.types import DecimalType
 
+from package.calculation.preparation.data_structures import InputChargesContainer
+from package.calculation.preparation.data_structures.grid_loss_metering_points import (
+    GridLossMeteringPoints,
+)
 from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
@@ -28,10 +32,6 @@ from package.constants import (
     GridLossMeteringPointsColName,
 )
 from package.infrastructure import logging_configuration
-from package.calculation.preparation.data_structures import InputChargesContainer
-from package.calculation.preparation.data_structures.grid_loss_metering_points import (
-    GridLossMeteringPoints,
-)
 
 
 @logging_configuration.use_span("get_metering_point_periods_basis_data")
@@ -104,7 +104,7 @@ def get_charge_master_data_basis_data(
     )
 
 
-@logging_configuration.use_span("get_charge_prices_basis_data")
+@logging_configuration.use_span("get_charge_price_points_basis_data")
 def get_charge_prices_basis_data(
     calculation_id: str,
     input_charges_container: InputChargesContainer,
@@ -120,7 +120,7 @@ def get_charge_prices_basis_data(
     )
 
 
-@logging_configuration.use_span("get_charge_links_basis_data")
+@logging_configuration.use_span("get_charge_link_periods_basis_data")
 def get_charge_links_basis_data(
     calculation_id: str,
     input_charges_container: InputChargesContainer,
