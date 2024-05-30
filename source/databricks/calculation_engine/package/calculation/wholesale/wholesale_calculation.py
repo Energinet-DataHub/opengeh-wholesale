@@ -105,7 +105,7 @@ def _calculate_fees(
         args,
         monthly_fee_per_ga_co_es,
     )
-    return monthly_fee_per_ga_co_es
+    return MonthlyAmountPerCharge(monthly_fee_per_ga_co_es.df)
 
 
 @logging_configuration.use_span("calculate_subscriptions")
@@ -144,7 +144,7 @@ def _calculate_subscriptions(
         monthly_subscription_per_ga_co_es,
     )
 
-    return monthly_subscription_per_ga_co_es
+    return MonthlyAmountPerCharge(monthly_subscription_per_ga_co_es.df)
 
 
 @logging_configuration.use_span("calculate_hourly_tariffs")
@@ -183,7 +183,7 @@ def _calculate_hourly_tariffs(
         monthly_tariff_from_hourly_per_ga_co_es,
     )
 
-    return monthly_tariff_from_hourly_per_ga_co_es
+    return MonthlyAmountPerCharge(monthly_tariff_from_hourly_per_ga_co_es.df)
 
 
 @logging_configuration.use_span("calculate_daily_tariffs")
@@ -223,7 +223,7 @@ def _calculate_daily_tariffs(
         monthly_tariff_from_daily_per_ga_co_es,
     )
 
-    return monthly_tariff_from_daily_per_ga_co_es
+    return MonthlyAmountPerCharge(monthly_tariff_from_daily_per_ga_co_es.df)
 
 
 @logging_configuration.use_span("calculate_total_monthly_amount")
