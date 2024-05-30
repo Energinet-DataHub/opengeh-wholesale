@@ -93,6 +93,12 @@ def _calculate_fees(
         args.calculation_period_start_datetime,
     )
 
+    results.monthly_fee_per_ga_co_es = wholesale_results_factory.create(
+        args,
+        monthly_fee_per_ga_co_es,
+        AmountType.MONTHLY_AMOUNT_PER_CHARGE,
+    )
+
     monthly_fee_per_ga_co_es = MonthlyAmountPerCharge(monthly_fee_per_ga_co_es.df)
 
     results.monthly_fee_per_ga_co_es = monthly_amounts_factory.create(
@@ -121,6 +127,12 @@ def _calculate_subscriptions(
     monthly_subscription_per_ga_co_es = sum_within_month(
         subscription_per_ga_co_es,
         args.calculation_period_start_datetime,
+    )
+
+    results.monthly_subscription_per_ga_co_es = wholesale_results_factory.create(
+        args,
+        monthly_subscription_per_ga_co_es,
+        AmountType.MONTHLY_AMOUNT_PER_CHARGE,
     )
 
     monthly_subscription_per_ga_co_es = MonthlyAmountPerCharge(
@@ -156,6 +168,12 @@ def _calculate_hourly_tariffs(
         args.calculation_period_start_datetime,
     )
 
+    results.monthly_tariff_from_hourly_per_ga_co_es = wholesale_results_factory.create(
+        args,
+        monthly_tariff_from_hourly_per_ga_co_es,
+        AmountType.MONTHLY_AMOUNT_PER_CHARGE,
+    )
+
     monthly_tariff_from_hourly_per_ga_co_es = MonthlyAmountPerCharge(
         monthly_tariff_from_hourly_per_ga_co_es.df
     )
@@ -188,6 +206,12 @@ def _calculate_daily_tariffs(
     monthly_tariff_from_daily_per_ga_co_es = sum_within_month(
         daily_tariff_per_ga_co_es,
         args.calculation_period_start_datetime,
+    )
+
+    results.monthly_tariff_from_daily_per_ga_co_es = wholesale_results_factory.create(
+        args,
+        monthly_tariff_from_daily_per_ga_co_es,
+        AmountType.MONTHLY_AMOUNT_PER_CHARGE,
     )
 
     monthly_tariff_from_daily_per_ga_co_es = MonthlyAmountPerCharge(
