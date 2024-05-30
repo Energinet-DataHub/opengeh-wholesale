@@ -1,4 +1,5 @@
 calculation_type;version
+Aggregation;1
 BalanceFixing;2
 WholesaleFixing;2
-FirstCorrectionMethod;3
+FirstCorrectionSettlement;3
