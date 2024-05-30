@@ -49,12 +49,12 @@ from tests.calculation.basis_data.basis_data_test_factory import (
             "time_series_points",
             time_series_point_schema,
         ),
-        ("charge_links", charge_link_periods_schema),
+        ("charge_link_periods", charge_link_periods_schema),
         (
             "charge_price_information_periods",
             charge_price_information_periods_schema,
         ),
-        ("charge_prices", charge_price_points_schema),
+        ("charge_price_points", charge_price_points_schema),
         (
             "grid_loss_metering_points",
             grid_loss_metering_points_schema,
