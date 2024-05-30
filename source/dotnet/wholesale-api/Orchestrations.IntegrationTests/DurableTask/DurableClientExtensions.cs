@@ -74,4 +74,35 @@ public static class DurableClientExtensions
             ? await client.GetStatusAsync(instanceId, showHistory: true, showHistoryOutput: true)
             : throw new Exception($"Orchestration instance '{instanceId}' did not complete within configured wait time limit.");
     }
+
+    /// <summary>
+    /// Wait for orchestration instance to have a custom status where the given <paramref name="matchFunction"/> returns true
+    /// </summary>
+    /// <exception cref="InvalidCastException">Throws InvalidCastException if CustomStatus property cannot be parsed to given type</exception>
+    public static async Task<DurableOrchestrationStatus> WaitForCustomStatusAsync<TCustomStatus>(
+        this IDurableClient client,
+        string instanceId,
+        Func<TCustomStatus, bool> matchFunction,
+        TimeSpan? waitTimeLimit = null)
+    {
+        var matchesCustomStatus = await Awaiter.TryWaitUntilConditionAsync(
+            async () =>
+            {
+                // Do not retrieve history here as it could be expensive
+                var orchestrationStatus = await client.GetStatusAsync(instanceId);
+
+                var customStatus = orchestrationStatus.CustomStatus.ToObject<TCustomStatus>()
+                    ?? throw new InvalidCastException($"Cannot cast CustomStatus to {typeof(TCustomStatus).Name}");
+
+                var isMatch = matchFunction(customStatus);
+
+                return isMatch;
+            },
+            waitTimeLimit ?? TimeSpan.FromSeconds(30),
+            delay: TimeSpan.FromSeconds(5));
+
+        return matchesCustomStatus
+            ? await client.GetStatusAsync(instanceId, showHistory: true, showHistoryOutput: true)
+            : throw new Exception($"Orchestration instance '{instanceId}' did not match custom status- within configured wait time limit.");
+    }
 }

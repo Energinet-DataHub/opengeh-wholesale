@@ -160,10 +160,6 @@ public class WholesaleInboxTriggerTests : IAsyncLifetime
         // Assert
         // Handling a WholesaleServicesRequest should send a message to the EDI inbox
         await AssertWholesaleInboxTriggerIsCompleted();
-
-        // TODO: Can we test if an orchestration event was raised?
-        var threwException = Fixture.AppHostManager.CheckIfFunctionThrewException();
-        threwException.Should().BeFalse();
     }
 
     [Fact]

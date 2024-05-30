@@ -19,6 +19,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
+using Energinet.DataHub.EnergySupplying.RequestResponse.InboxEvents;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
@@ -122,6 +123,19 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         var calculationMetadata = orchestrationStatus.CustomStatus.ToObject<CalculationMetadata>();
         calculationMetadata!.Id.Should().Be(calculationId);
 
+        // => Wait for the orchestration to reach the "ActorMessagesEnqueuing" state
+        await Fixture.DurableClient.WaitForCustomStatusAsync<CalculationMetadata>(orchestrationStatus.InstanceId, (status) => status.OrchestrationProgress == "ActorMessagesEnqueuing");
+
+        // => Raise "ActorMessagesEnqueued" event to the orchestrator
+        await Fixture.DurableClient.RaiseEventAsync(
+            orchestrationStatus.InstanceId,
+            MessagesEnqueuedV1.EventName,
+            new MessagesEnqueuedV1
+            {
+                CalculationId = calculationId.ToString(),
+                OrchestrationInstanceId = orchestrationStatus.InstanceId,
+            });
+
         // => Wait for completion, this should be fairly quick, since we have mocked databricks
         var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(
             orchestrationStatus.InstanceId,
@@ -132,22 +146,29 @@ public class CalculationOrchestrationTests : IAsyncLifetime
 
         var activities = completeOrchestrationStatus.History
             .OrderBy(item => item["Timestamp"])
-            .Select(item => item.Value<string>("FunctionName"));
+            .Select(item => item.ToObject<OrchestrationHistoryItem>())
+            .ToList();
 
         activities.Should().NotBeNull().And.Equal(
         [
-            "CalculationOrchestration",
-            "CreateCalculationRecordActivity",
-            "StartCalculationActivity",
-            "GetJobStatusActivity",
-            "UpdateCalculationStatusActivity",
-            "CreateCompletedCalculationActivity",
-            "SendCalculationResultsActivity",
-            null
+            new OrchestrationHistoryItem("ExecutionStarted", FunctionName: "CalculationOrchestration"),
+            new OrchestrationHistoryItem("TaskCompleted", FunctionName: "CreateCalculationRecordActivity"),
+            new OrchestrationHistoryItem("TaskCompleted", FunctionName: "StartCalculationActivity"),
+            new OrchestrationHistoryItem("TaskCompleted", FunctionName: "GetJobStatusActivity"),
+            new OrchestrationHistoryItem("TaskCompleted", FunctionName: "UpdateCalculationStatusActivity"),
+            new OrchestrationHistoryItem("TaskCompleted", FunctionName: "CreateCompletedCalculationActivity"),
+            new OrchestrationHistoryItem("TaskCompleted", FunctionName: "SendCalculationResultsActivity"),
+            new OrchestrationHistoryItem("TimerCreated"), // Wait for raised event (ActorMessagesEnqueued)
+            new OrchestrationHistoryItem("EventRaised", Name: "MessagesEnqueuedV1"),
+            new OrchestrationHistoryItem("TaskCompleted", FunctionName: "SetCalculationOrchestrationStateActivity"),
+            new OrchestrationHistoryItem("TaskCompleted", FunctionName: "SetCalculationOrchestrationStateActivity"),
+            new OrchestrationHistoryItem("ExecutionCompleted"),
         ]);
 
         // => Verify that the durable function completed successfully
-        var last = completeOrchestrationStatus.History.Last();
+        var last = completeOrchestrationStatus.History
+            .OrderBy(item => item["Timestamp"])
+            .Last();
         last.Value<string>("EventType").Should().Be("ExecutionCompleted");
         last.Value<string>("Result").Should().Be("Success");
 
@@ -170,7 +191,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
             .VerifyCountAsync(1);
 
         var wait = verifyServiceBusMessages.Wait(TimeSpan.FromMinutes(1));
-        wait.Should().BeTrue("We did not receive the expected message on the ServiceBus");
+        wait.Should().BeTrue("We did not send the expected message on the ServiceBus");
     }
 
     /// <summary>
@@ -219,19 +240,16 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         var calculationMetadata = orchestrationStatus.CustomStatus.ToObject<CalculationMetadata>();
         calculationMetadata!.Id.Should().Be(calculationId);
 
-        // => Wait for completion
-        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(
+        // => Wait for calculation job to be completed
+        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForCustomStatusAsync<CalculationMetadata>(
             orchestrationStatus.InstanceId,
+            status => status.JobStatus == CalculationState.Completed,
             TimeSpan.FromMinutes(1)); // We will loop at least twice to get job status
 
         // => Expect history
         using var assertionScope = new AssertionScope();
         var first = completeOrchestrationStatus.History.First();
         first.Value<string>("FunctionName").Should().Be("CalculationOrchestration");
-
-        var last = completeOrchestrationStatus.History.Last();
-        last.Value<string>("EventType").Should().Be("ExecutionCompleted");
-        last.Value<string>("Result").Should().Be("Success");
 
         // => Job status (loop)
         var getJobStatusResults = completeOrchestrationStatus.History
@@ -295,8 +313,9 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         first.Value<string>("FunctionName").Should().Be("CalculationOrchestration");
 
         var last = completeOrchestrationStatus.History.Last();
-        last.Value<string>("EventType").Should().Be("ExecutionCompleted");
-        last.Value<string>("Result").Should().Be("Error: Job status 'Running'.");
+        var lastResult = new { EventType = last.Value<string>("EventType"), Result = last.Value<string>("Result") };
+        lastResult.EventType.Should().Be("ExecutionCompleted");
+        lastResult.Result.Should().Be("Error: Job status 'Running'");
     }
 
     private static HttpRequestMessage CreateStartCalculationRequest()

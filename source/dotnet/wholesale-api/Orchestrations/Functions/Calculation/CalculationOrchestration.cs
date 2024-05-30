@@ -108,7 +108,7 @@ internal class CalculationOrchestration
             await context.CallActivityAsync(
                 nameof(SendCalculationResultsActivity),
                 calculationMetadata.Id);
-            calculationMetadata.OrchestrationProgress = "CalculationResultsSend";
+            calculationMetadata.OrchestrationProgress = "ActorMessagesEnqueuing";
 
             context.SetCustomStatus(calculationMetadata);
         }
@@ -177,7 +177,8 @@ internal class CalculationOrchestration
                 return OrchestrationResult.Error("ActorMessagesEnqueuingTimeout", "Timeout while waiting for actor messages enqueued event");
             }
 
-            await timeoutCts.CancelAsync();
+            // ReSharper disable once MethodHasAsyncOverload -- Do not use .CanceAsync() since it is not a durable task and will cause the the durable function to fail
+            timeoutCts.Cancel();
         }
 
         return OrchestrationResult.Success();
