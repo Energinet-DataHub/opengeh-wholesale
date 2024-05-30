@@ -41,10 +41,10 @@ public sealed class GetSettlementReportsHandler : IGetSettlementReportsHandler
         return settlementReports.Select(Map);
     }
 
-    public async Task<IEnumerable<RequestedSettlementReportDto>> GetAsync(Guid userId, Guid actorId)
+    public async Task<IEnumerable<RequestedSettlementReportDto>> GetAsync(Guid actorId)
     {
         var settlementReports = (await _settlementReportRepository
-                .GetAsync(userId, actorId)
+                .GetAsync(actorId)
                 .ConfigureAwait(false))
             .ToList();
 
