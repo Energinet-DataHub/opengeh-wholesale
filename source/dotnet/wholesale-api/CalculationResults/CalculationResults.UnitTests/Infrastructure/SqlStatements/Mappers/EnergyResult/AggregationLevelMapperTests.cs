@@ -70,7 +70,7 @@ public class AggregationLevelMapperTests
     public void ToDeltaTableValue_WhenEnergySupplierIsNotNull_ReturnsExpectedAggLevel(TimeSeriesType type)
     {
         // Act
-        const string expected = DeltaTableAggregationLevel.EnergySupplierAndGridArea;
+        const string expected = DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea;
         var actual = AggregationLevelMapper.ToDeltaTableValue(type, "someEnergySupplier", null);
 
         // Assert
