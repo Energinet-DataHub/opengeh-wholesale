@@ -44,8 +44,10 @@ def _select_output_columns(df: DataFrame) -> DataFrame:
         col(Colname.energy_supplier_id).alias(
             MonthlyAmountsColumnNames.energy_supplier_id
         ),
+        col(Colname.unit).alias(MonthlyAmountsColumnNames.quantity_unit),
         col(Colname.charge_time).alias(MonthlyAmountsColumnNames.time),
         col(Colname.total_amount).alias(MonthlyAmountsColumnNames.amount),
+        col(Colname.charge_tax).alias(MonthlyAmountsColumnNames.is_tax),
         col(Colname.charge_code).alias(MonthlyAmountsColumnNames.charge_code),
         col(Colname.charge_type).alias(MonthlyAmountsColumnNames.charge_type),
         col(Colname.charge_owner).alias(MonthlyAmountsColumnNames.charge_owner_id),

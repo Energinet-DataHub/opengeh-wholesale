@@ -21,3 +21,5 @@ class MonthlyAmountsColumnNames(ResultColumnNames):
     charge_owner_id = "charge_owner_id"
     charge_code = "charge_code"
     charge_type = "charge_type"
+    is_tax = "is_tax"
+    quantity_unit = "quantity_unit"
