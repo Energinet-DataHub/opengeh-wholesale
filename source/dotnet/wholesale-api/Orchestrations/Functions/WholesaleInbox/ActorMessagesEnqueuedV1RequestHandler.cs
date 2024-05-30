@@ -14,26 +14,25 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.EnergySupplying.RequestResponse.InboxEvents;
-using Energinet.DataHub.Wholesale.Edi;
-using Microsoft.Azure.WebJobs.Extensions.DurableTask.ContextImplementations;
-using Microsoft.Azure.WebJobs.Extensions.DurableTask.Options;
+using Energinet.DataHub.Wholesale.Events.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.InboxEvents.ActorMessagesEnqueuedV1;
+namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.WholesaleInbox;
 
 public class ActorMessagesEnqueuedV1RequestHandler(
-    IDurableClientFactory durableClientFactory,
-    ILogger<ActorMessagesEnqueuedV1RequestHandler> logger)
+    ILogger<ActorMessagesEnqueuedV1RequestHandler> logger,
+    DurableTaskClientAccessor durableTaskClientAccessor)
     : IWholesaleInboxRequestHandler
 {
     public bool CanHandle(string requestSubject) => requestSubject.Equals(MessagesEnqueuedV1.EventName);
 
-    public async Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken)
+    public Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken)
     {
         logger.LogInformation(
-            "Received ActorMessagesEnqueued event with MessageId: {EventId}, Subject: {Subject} from Service Bus",
+            "Handling ActorMessagesEnqueued event with message id: {MessageId}, subject: {Subject}, reference id: {ReferenceId}",
             receivedMessage.MessageId,
-            receivedMessage.Subject);
+            receivedMessage.Subject,
+            referenceId);
 
         var messageEnqueuedEvent = MessagesEnqueuedV1.Parser.ParseFrom(receivedMessage.Body);
 
@@ -44,16 +43,10 @@ public class ActorMessagesEnqueuedV1RequestHandler(
             messageEnqueuedEvent.CalculationId,
             receivedMessage.MessageId);
 
-        var durableTaskClient = durableClientFactory.CreateClient(new DurableClientOptions
-        {
-            TaskHub = "TASKHUBNAME", // TODO: Get task hub name from options pattern in configuration
-            ConnectionName = "CONNECTIONNAME", // TODO: Get connection name from options pattern in configuration
-        });
-
-        await durableTaskClient.RaiseEventAsync(
-                messageEnqueuedEvent.OrchestrationInstanceId,
-                MessagesEnqueuedV1.EventName,
-                messageEnqueuedEvent)
-            .ConfigureAwait(false);
+        return durableTaskClientAccessor.Current.RaiseEventAsync(
+            messageEnqueuedEvent.OrchestrationInstanceId,
+            MessagesEnqueuedV1.EventName,
+            messageEnqueuedEvent,
+            cancellationToken);
     }
 }

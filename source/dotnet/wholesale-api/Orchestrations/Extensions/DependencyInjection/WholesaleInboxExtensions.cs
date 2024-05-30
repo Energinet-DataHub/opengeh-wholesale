@@ -17,6 +17,8 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInj
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Extensions.DependencyInjection;
+using Energinet.DataHub.Wholesale.Events.Interfaces;
+using Energinet.DataHub.Wholesale.Orchestrations.Functions.WholesaleInbox;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -43,9 +45,17 @@ public static class WholesaleInboxExtensions
                 name: "WholesaleInboxQueue");
 
         services.AddWholesaleInboxHandler();
+
+        // EDI Wholesale inbox request handlers
         services.AddEdiModule(); // Edi module has Wholesale inbox handlers for requests from EDI
         services.AddCalculationsModule(configuration); // Calculations module is used by EDI
         services.AddServiceBusClientForApplication(configuration); // Service bus client is used by EDI
+
+        // Orchestration Wholesale inbox request handlers
+        services.AddScoped<IWholesaleInboxRequestHandler, ActorMessagesEnqueuedV1RequestHandler>();
+
+        // Durable task client injection
+        services.AddScoped<DurableTaskClientAccessor>();
 
         return services;
     }

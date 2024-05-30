@@ -17,6 +17,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Edi.Requests;
 using Energinet.DataHub.Edi.Responses;
+using Energinet.DataHub.EnergySupplying.RequestResponse.InboxEvents;
 using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 using FluentAssertions;
@@ -135,6 +136,32 @@ public class WholesaleInboxTriggerTests : IAsyncLifetime
             .Which
             .ApplicationProperties.Should().ContainKey("ReferenceId")
             .WhoseValue.Should().Be(referenceId);
+    }
+
+    [Fact]
+    public async Task GivenActorMessagesEnqueued_WhenEventIsHandled_FunctionCompletesWithRaisedOrchestrationEvent()
+    {
+        // Arrange
+        var actorMessagesEnqueued = new MessagesEnqueuedV1
+        {
+            CalculationId = "valid-calculation-id",
+            OrchestrationInstanceId = "valid-orchestration-id",
+        };
+
+        var referenceId = "valid-reference-id";
+        await SendMessageToWholesaleInbox(
+            subject: MessagesEnqueuedV1.Descriptor.Name,
+            body: actorMessagesEnqueued.ToByteArray(),
+            referenceId: referenceId);
+
+        // Act
+        // => WholesaleInboxTrigger is running in the fixture and triggered by the given Wholesale inbox message
+
+        // Assert
+        // Handling a WholesaleServicesRequest should send a message to the EDI inbox
+        await AssertWholesaleInboxTriggerIsCompleted();
+        var threwException = Fixture.AppHostManager.CheckIfFunctionThrewException();
+        threwException.Should().BeFalse();
     }
 
     [Fact]
