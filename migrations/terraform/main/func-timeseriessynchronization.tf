@@ -66,6 +66,8 @@ module "func_timeseriessynchronization" {
     "ServiceBus__TimeSeriesMessagesQueueName"                                             = azurerm_servicebus_queue.time_series_imported_messages_queue.name
     "ServiceBus__TimeSeriesMessagesTopicName"                                             = azurerm_servicebus_topic.time_series_imported_messages_topic.name
     "ServiceBus__TimeSeriesMessagesSubscriptionName"                                      = module.sbtsub_time_series_imported_messages.name
+    "ServiceBus__TimeSeriesProcessingSubscriptionName"                                    = module.sbtsub_time_series_sync_processing.name
+    "ServiceBus__TimeSeriesAuditSubscriptionName"                                         = module.sbtsub_time_series_sync_audit.name
     "DataHub2Client__EndpointAddress"                                                     = var.datahub2_migration_url,
     "FeatureManagement__DataHub2HealthCheck"                                              = var.feature_flag_datahub2_healthcheck
     "FeatureManagement__DataHub2TimeSeriesImport"                                         = var.feature_flag_datahub2_time_series_import
