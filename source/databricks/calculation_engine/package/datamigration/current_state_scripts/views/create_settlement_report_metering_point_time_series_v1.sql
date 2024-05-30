@@ -1,6 +1,7 @@
 CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_time_series_v1 AS
 SELECT c.calculation_id,
-       c.calculation_type,
+       FIRST(c.calculation_type),
+       FIRST(c.version) as calculation_version,
        m.metering_point_id,
        m.metering_point_type,
        m.resolution,
@@ -14,4 +15,4 @@ FROM {BASIS_DATA_DATABASE_NAME}.metering_point_periods AS m
              .calculation_id
 WHERE t.observation_time >= m.from_date
   AND (m.to_date IS NULL OR t.observation_time < m.to_date)
-GROUP BY c.calculation_id, c.calculation_type, m.metering_point_id, m.metering_point_type, DATE_TRUNC('day', FROM_UTC_TIMESTAMP(t.observation_time, 'Europe/Copenhagen')), m.resolution, m.grid_area_code, m.energy_supplier_id
+GROUP BY c.calculation_id, m.metering_point_id, m.metering_point_type, DATE_TRUNC('day', FROM_UTC_TIMESTAMP(t.observation_time, 'Europe/Copenhagen')), m.resolution, m.grid_area_code, m.energy_supplier_id

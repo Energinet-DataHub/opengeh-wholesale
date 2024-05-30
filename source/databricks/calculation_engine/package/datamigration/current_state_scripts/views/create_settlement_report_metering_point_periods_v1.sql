@@ -1,6 +1,7 @@
 CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_periods_v1 AS
 SELECT c.calculation_id,
        c.calculation_type,
+       c.version as calculation_version,
        m.metering_point_id,
        m.from_date,
        m.to_date,

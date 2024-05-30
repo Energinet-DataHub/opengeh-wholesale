@@ -2,6 +2,7 @@ CREATE VIEW {SETTLEMENT_REPORT_DATABASE_NAME}.charge_prices_v1 as
 SELECT
   c.calculation_id,
   FIRST_VALUE(c.calculation_type) as calculation_type,
+  FIRST_VALUE(c.version) as calculation_version,
   FIRST_VALUE(cm.charge_type) as charge_type,
   FIRST_VALUE(cm.charge_code) as charge_code,
   FIRST_VALUE(cm.charge_owner_id) as charge_owner_id,
@@ -10,7 +11,8 @@ SELECT
   TO_UTC_TIMESTAMP(DATE_TRUNC('day', FROM_UTC_TIMESTAMP(cp.charge_time, 'Europe/Copenhagen')),'Europe/Copenhagen') AS start_date_time,
   ARRAY_SORT(ARRAY_AGG(struct(cp.charge_time AS time, cp.charge_price AS price))) AS price_points,
   es_ga.grid_area_code,
-  es_ga.energy_supplier_id
+  es_ga.energy_supplier_id,
+  calculations.version as calculation_version
 FROM {BASIS_DATA_DATABASE_NAME}.charge_price_information_periods as cm
 INNER JOIN {BASIS_DATA_DATABASE_NAME}.charge_price_points as cp ON cm.calculation_id = cp.calculation_id AND cm.charge_key = cp.charge_key
 INNER JOIN (
