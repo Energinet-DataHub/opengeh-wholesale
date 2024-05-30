@@ -33,7 +33,10 @@ RUN apt-get update; \
     rm -rf /var/lib/apt/lists/*
 
 # This replaces the default spark configuration in the docker image with the ones defined in the sibling file
-COPY spark-defaults.conf $SPARK_HOME/conf/spark-defaults.conf
+COPY spark-defaults.conf $SPARK_HOME/conf/
+
+# Copy Hive configuration files
+COPY hive-site.xml $SPARK_HOME/conf/
 
 # Install spark packages with mamba (packages has to be updated according to spark version)
 COPY mamba_requirements.txt mamba_requirements.txt
