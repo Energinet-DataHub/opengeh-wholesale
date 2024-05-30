@@ -15,12 +15,12 @@
 By having a conftest.py in this directory, we are able to add all packages
 defined in the geh_stream directory in our tests.
 """
-
+import logging
 import os
-import shutil
 import subprocess
 import uuid
 from datetime import datetime
+from pathlib import Path
 from shutil import rmtree
 from typing import Generator, Callable, Optional
 
@@ -47,11 +47,13 @@ from package.infrastructure import paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
     OUTPUT_FOLDER,
-    INPUT_DATABASE_NAME,
-    OUTPUT_DATABASE_NAME,
 )
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.integration_test_configuration import IntegrationTestConfiguration
+from testsession_configuration import (
+    TestSessionConfiguration,
+    MigrationsExecution,
+)
 
 
 @pytest.fixture(scope="session")
@@ -60,13 +62,14 @@ def test_files_folder_path(tests_path: str) -> str:
 
 
 @pytest.fixture(scope="session")
-def spark() -> SparkSession:
-    warehouse_location = os.path.abspath("spark-warehouse")
-    if os.path.exists(warehouse_location):
-        rmtree(warehouse_location)
+def spark(
+    test_session_configuration: TestSessionConfiguration, tests_path: str
+) -> SparkSession:
+    warehouse_location = f"{tests_path}/__spark-warehouse__"
 
     session = configure_spark_with_delta_pip(
-        SparkSession.builder.config("spark.sql.streaming.schemaInference", True)
+        SparkSession.builder.config("spark.sql.warehouse.dir", warehouse_location)
+        .config("spark.sql.streaming.schemaInference", True)
         .config("spark.ui.showConsoleProgress", "false")
         .config("spark.ui.enabled", "false")
         .config("spark.ui.dagGraph.retainedRootRDDs", "1")
@@ -86,6 +89,22 @@ def spark() -> SparkSession:
             "spark.sql.catalog.spark_catalog",
             "org.apache.spark.sql.delta.catalog.DeltaCatalog",
         )
+        # Enable Hive support for persistence across test sessions
+        .config("spark.sql.catalogImplementation", "hive")
+        .config(
+            "javax.jdo.option.ConnectionURL",
+            "jdbc:derby:;databaseName=metastore_db;create=true",
+        )
+        .config(
+            "javax.jdo.option.ConnectionDriverName",
+            "org.apache.derby.jdbc.EmbeddedDriver",
+        )
+        .config("javax.jdo.option.ConnectionUserName", "APP")
+        .config("javax.jdo.option.ConnectionPassword", "mine")
+        .config("datanucleus.autoCreateSchema", "true")
+        .config("hive.metastore.schema.verification", "false")
+        .config("hive.metastore.schema.verification.record.version", "false")
+        .enableHiveSupport()
     ).getOrCreate()
 
     yield session
@@ -200,13 +219,12 @@ def migrations_executed(
     spark: SparkSession,
     calculation_output_path: str,
     energy_input_data_written_to_delta: None,
+    test_session_configuration: TestSessionConfiguration,
 ) -> None:
-    # Clean up to prevent problems from previous test runs
-    shutil.rmtree(calculation_output_path, ignore_errors=True)
-    spark.sql(f"DROP DATABASE IF EXISTS {OUTPUT_DATABASE_NAME} CASCADE")
-
     # Execute all migrations
-    sql_migration_helper.migrate(spark)
+    sql_migration_helper.migrate(
+        spark, migrations_execution=test_session_configuration.migrations.execute
+    )
 
 
 @pytest.fixture(scope="session")
@@ -254,22 +272,20 @@ def installed_package(
 
 
 @pytest.fixture(scope="session")
+def test_session_configuration(tests_path: str) -> TestSessionConfiguration:
+    settings_file_path = Path(tests_path) / "test.local.settings.yml"
+    settings = _load_settings_from_file(settings_file_path)
+    return TestSessionConfiguration(settings)
+
+
+@pytest.fixture(scope="session")
 def integration_test_configuration(tests_path: str) -> IntegrationTestConfiguration:
     """
     Load settings for integration tests either from a local YAML settings file or from environment variables.
     Proceeds even if certain Azure-related keys are not present in the settings file.
     """
-    from pathlib import Path
-    import logging
 
     settings_file_path = Path(tests_path) / "integrationtest.local.settings.yml"
-
-    def load_settings_from_file(file_path: Path) -> dict:
-        if file_path.exists():
-            with file_path.open() as stream:
-                return yaml.safe_load(stream)
-        else:
-            return {}
 
     def load_settings_from_env() -> dict:
         return {
@@ -284,7 +300,7 @@ def integration_test_configuration(tests_path: str) -> IntegrationTestConfigurat
             if os.getenv(key) is not None
         }
 
-    settings = load_settings_from_file(settings_file_path) or load_settings_from_env()
+    settings = _load_settings_from_file(settings_file_path) or load_settings_from_env()
 
     # Set environment variables from loaded settings
     for key, value in settings.items():
@@ -302,6 +318,14 @@ def integration_test_configuration(tests_path: str) -> IntegrationTestConfigurat
     raise Exception(
         "Failed to load integration test settings. Ensure that the Azure Key Vault URL is provided in the settings file or as an environment variable."
     )
+
+
+def _load_settings_from_file(file_path: Path) -> dict:
+    if file_path.exists():
+        with file_path.open() as stream:
+            return yaml.safe_load(stream)
+    else:
+        return {}
 
 
 @pytest.fixture(scope="session")
@@ -362,11 +386,11 @@ def dependency_injection_container(
 
 @pytest.fixture(scope="session")
 def energy_input_data_written_to_delta(
-    spark: SparkSession, test_files_folder_path: str, calculation_input_path: str
+    spark: SparkSession,
+    test_files_folder_path: str,
+    calculation_input_path: str,
+    test_session_configuration: TestSessionConfiguration,
 ) -> None:
-    shutil.rmtree(calculation_input_path, ignore_errors=True)
-    spark.sql(f"DROP DATABASE IF EXISTS {INPUT_DATABASE_NAME} CASCADE")
-
     _write_input_test_data_to_table(
         spark,
         file_name=f"{test_files_folder_path}/MeteringPointsPeriods.csv",
@@ -419,7 +443,10 @@ def energy_input_data_written_to_delta(
 
 @pytest.fixture(scope="session")
 def price_input_data_written_to_delta(
-    spark: SparkSession, test_files_folder_path: str, calculation_input_path: str
+    spark: SparkSession,
+    test_files_folder_path: str,
+    calculation_input_path: str,
+    test_session_configuration: TestSessionConfiguration,
 ) -> None:
     # Charge master data periods
     _write_input_test_data_to_table(

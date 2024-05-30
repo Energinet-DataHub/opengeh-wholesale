@@ -1,0 +1,11 @@
+# ===============================================================================================
+# This file contains the configuration settings for test sessions.
+# Create a copy of this file and remove the .sample extension and update the values.
+# ===============================================================================================
+
+migrations:
+    # Use this setting to speed up development by controlling when to execute which migrations in test sessions.
+    # Options: NONE | ALL | MODIFIED
+    # `ALL` is the default if not provided as this is similar to the CI behavior.
+    # Recommendation: Try MODIFIED and if doesn't work for you use ALL.
+    execute: MODIFIED
