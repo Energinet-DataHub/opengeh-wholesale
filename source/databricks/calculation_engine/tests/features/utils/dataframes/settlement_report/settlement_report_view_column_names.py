@@ -15,7 +15,23 @@ from package.constants import EnergyResultColumnNames, Colname, ChargeLinkPeriod
 from package.constants.basis_data_colname import (
     CalculationsColumnName,
     MeteringPointPeriodColname,
+    ChargePricePointsColname,
+    ChargeMasterDataPeriodsColname,
 )
+
+
+class ChargePricesV1ColumnNames:
+    calculation_id = ChargePricePointsColname.calculation_id
+    calculation_type = CalculationsColumnName.calculation_type
+    charge_type = ChargePricePointsColname.charge_type
+    charge_owner_id = ChargePricePointsColname.charge_owner_id
+    charge_code = ChargePricePointsColname.charge_code
+    resolution = ChargeMasterDataPeriodsColname.resolution
+    is_tax = ChargeMasterDataPeriodsColname.is_tax
+    start_date_time = "start_date_time"
+    price_points = "price_points"
+    grid_area = MeteringPointPeriodColname.grid_area
+    energy_supplier_id = MeteringPointPeriodColname.energy_supplier_id
 
 
 class ChargeLinkPeriodsV1ColumnNames:
