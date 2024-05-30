@@ -30,6 +30,9 @@ from features.utils.dataframes.settlement_report.charge_prices_v1_view_schema im
 from features.utils.dataframes.settlement_report.energy_results_v1_view_schema import (
     energy_results_v1_view_schema,
 )
+from features.utils.dataframes.settlement_report.latest_calculations_v1_view_schema import (
+    latest_calculations_v1_view_schema,
+)
 from features.utils.dataframes.settlement_report.monthly_amounts_v1_view_schema import (
     monthly_amounts_v1_view_schema,
 )

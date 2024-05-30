@@ -15,7 +15,7 @@
 from pyspark.sql.types import (
     StructField,
     StringType,
-    StructType,,
+    StructType,
 )
 
 from package.constants.calculation_column_names import CalculationColumnNames
