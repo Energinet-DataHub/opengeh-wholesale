@@ -103,6 +103,7 @@ schema_config = [
         name=paths.SETTLEMENT_REPORT_DATABASE_NAME,
         tables=[],
         views=[
+            View(name=paths.LATEST_CALCULATIONS_SETTLEMENT_REPORT_VIEW_NAME_V1),
             View(name=paths.METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1),
             View(name=paths.METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME_V1),
             View(name=paths.ENERGY_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1),
