@@ -25,7 +25,7 @@ public class MeteringPointTypeValidatorTests
 {
     private static readonly ValidationError _invalidMeteringPointType =
         new(
-            "Metering point type skal være tom eller en af følgende: {PropertyName} / Metering point type has to be empty or one of the following: {PropertyName}",
+            "Metering point type skal være en af følgende: {PropertyName} eller undladt / Metering point type has one of the following: {PropertyName} or omitted",
             "D18");
 
     private readonly MeteringPointTypeValidationRule _sut = new();
@@ -34,8 +34,8 @@ public class MeteringPointTypeValidatorTests
     [InlineData(DataHubNames.MeteringPointType.Consumption)]
     [InlineData(DataHubNames.MeteringPointType.Production)]
     [InlineData(DataHubNames.MeteringPointType.Exchange)]
-    [InlineData("")]
-    public async Task Validate_WhenMeteringPointIsValid_ReturnsExpectedNoValidationErrors(string meteringPointType)
+    [InlineData(null)]
+    public async Task Validate_WhenMeteringPointIsValid_ReturnsExpectedNoValidationErrors(string? meteringPointType)
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -50,13 +50,16 @@ public class MeteringPointTypeValidatorTests
         errors.Should().BeEmpty();
     }
 
-    [Fact]
-    public async Task Validate_WhenMeteringPointTypeIsInvalid_ReturnsExpectedValidationError()
+    [Theory]
+    [InlineData("Invalid")]
+    [InlineData("")]
+    [InlineData(" ")]
+    public async Task Validate_WhenMeteringPointTypeIsInvalid_ReturnsExpectedValidationError(string? meteringPointType)
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithMeteringPointType("Invalid")
+            .WithMeteringPointType(meteringPointType)
             .Build();
 
         // Act
