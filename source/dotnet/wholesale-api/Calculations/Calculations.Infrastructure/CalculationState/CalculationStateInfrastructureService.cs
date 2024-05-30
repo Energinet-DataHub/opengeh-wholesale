@@ -82,6 +82,6 @@ public class CalculationStateInfrastructureService : ICalculationStateInfrastruc
 
     private void HandleNewState(CalculationOrchestrationState state, Calculation calculation, ICollection<Calculation> completedCalculations)
     {
-        calculation.UpdateState(state, _clock.GetCurrentInstant());
+        calculation.UpdateState(state, _clock);
     }
 }

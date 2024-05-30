@@ -64,7 +64,7 @@ internal class UpdateCalculationStatusActivity(
 
     private void UpdateState(Calculations.Application.Model.Calculations.Calculation calculation, CalculationOrchestrationState newState)
     {
-        calculation.UpdateState(newState, _clock.GetCurrentInstant());
+        calculation.UpdateState(newState, _clock);
     }
 }
 #pragma warning restore CA2007 // Consider calling ConfigureAwait on the awaited task

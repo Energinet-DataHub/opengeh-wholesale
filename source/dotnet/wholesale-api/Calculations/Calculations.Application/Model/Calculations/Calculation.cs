@@ -326,7 +326,7 @@ public class Calculation
         CompletedTime = completedAt;
     }
 
-    public void UpdateState(CalculationOrchestrationState newState, Instant now)
+    public void UpdateState(CalculationOrchestrationState newState, IClock clock)
     {
         switch (newState)
         {
@@ -337,22 +337,22 @@ public class Calculation
                 MarkAsCalculating();
                 break;
             case CalculationOrchestrationState.Calculated:
-                MarkAsCalculated(now);
+                MarkAsCalculated(clock.GetCurrentInstant());
                 break;
             case CalculationOrchestrationState.CalculationFailed:
                 MarkAsCalculationFailed();
                 break;
             case CalculationOrchestrationState.ActorMessagesEnqueuing:
-                MarkAsActorMessagesEnqueuing(now);
+                MarkAsActorMessagesEnqueuing(clock.GetCurrentInstant());
                 break;
             case CalculationOrchestrationState.ActorMessagesEnqueued:
-                MarkAsActorMessagesEnqueued(now);
+                MarkAsActorMessagesEnqueued(clock.GetCurrentInstant());
                 break;
             case CalculationOrchestrationState.ActorMessagesEnqueuingFailed:
                 MarkAsMessagesEnqueuingFailed();
                 break;
             case CalculationOrchestrationState.Completed:
-                MarkAsCompleted(now);
+                MarkAsCompleted(clock.GetCurrentInstant());
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(newState), newState, $"Unexpected orchestration state: {newState}.");

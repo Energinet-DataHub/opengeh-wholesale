@@ -42,7 +42,7 @@ internal class SetCalculationOrchestrationStateActivity(
 
     private void UpdateState(Calculations.Application.Model.Calculations.Calculation calculation, CalculationOrchestrationState newState)
     {
-        calculation.UpdateState(newState, clock.GetCurrentInstant());
+        calculation.UpdateState(newState, clock);
     }
 }
 #pragma warning restore CA2007 // Consider calling ConfigureAwait on the awaited task
