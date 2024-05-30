@@ -36,7 +36,7 @@ public static class StorageExtensions
             var blobSettings = serviceProvider.GetRequiredService<IOptions<SettlementReportStorageOptions>>().Value;
 
             var blobContainerUri = new Uri(blobSettings.StorageAccountUri, blobSettings.StorageContainerName);
-            var blobContainerClient = new BlobContainerClient(blobContainerUri, new DefaultAzureCredential());
+            var blobContainerClient = new BlobContainerClient(blobContainerUri, new DefaultAzureCredential(new DefaultAzureCredentialOptions { CredentialProcessTimeout = TimeSpan.FromSeconds(2) }));
 
             return new SettlementReportFileBlobStorage(blobContainerClient);
         });

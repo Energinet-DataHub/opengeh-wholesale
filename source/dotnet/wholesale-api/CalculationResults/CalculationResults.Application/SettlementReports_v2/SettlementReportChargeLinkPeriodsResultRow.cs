@@ -22,8 +22,8 @@ public sealed record SettlementReportChargeLinkPeriodsResultRow(
     string MeteringPointId,
     MeteringPointType? MeteringPointType,
     ChargeType ChargeType,
-    string ChargeTypeOwnerId,
-    string? ChargeTypeId,
-    int ChargeOccurrences,
+    string ChargeOwnerId,
+    string? ChargeCode,
+    int Quantity,
     Instant PeriodStart,
     Instant PeriodEnd);
