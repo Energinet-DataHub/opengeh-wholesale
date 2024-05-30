@@ -40,7 +40,7 @@ def write_wholesale_results(wholesale_results: WholesaleResultsContainer) -> Non
         wholesale_results.fee_per_ga_co_es,
     )
 
-    # TODO: Remove when monthly amounts is fully implemented
+    # TODO JVM: Remove when monthly amounts is fully implemented
     _write(
         "monthly_tariff_from_hourly_per_ga_co_es",
         wholesale_results.monthly_tariff_from_hourly_per_ga_co_es,
