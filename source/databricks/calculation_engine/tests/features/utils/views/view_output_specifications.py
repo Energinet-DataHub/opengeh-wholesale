@@ -87,4 +87,9 @@ def get_output_specifications() -> dict[str, tuple]:
             SettlementReportViewReader.read_wholesale_results_v1,
             create_wholesale_results_v1_view,
         ),
+        "latest_calculations_v1.csv": (
+            latest_calculations_v1_view_schema,
+            SettlementReportViewReader.read_wholesale_results_v1,
+            create_wholesale_results_v1_view,
+        ),
     }

@@ -22,6 +22,7 @@ from package.infrastructure.paths import (
     CHARGE_LINK_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1,
     CHARGE_PRICES_SETTLEMENT_REPORT_VIEW_NAME_V1,
     WHOLESALE_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1,
+    LATEST_CALCULATIONS_SETTLEMENT_REPORT_VIEW_NAME_V1,
 )
 
 
@@ -64,4 +65,10 @@ class SettlementReportViewReader:
     def read_wholesale_results_v1(spark: SparkSession) -> DataFrame:
         return spark.read.format("delta").table(
             f"{SETTLEMENT_REPORT_DATABASE_NAME}.{WHOLESALE_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1}"
+        )
+
+    @staticmethod
+    def read_latest_calculations_v1(spark: SparkSession) -> DataFrame:
+        return spark.read.format("delta").table(
+            f"{SETTLEMENT_REPORT_DATABASE_NAME}.{LATEST_CALCULATIONS_SETTLEMENT_REPORT_VIEW_NAME_V1}"
         )
