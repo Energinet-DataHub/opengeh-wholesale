@@ -75,6 +75,8 @@ module "func_timeseriessynchronization" {
     "Logging__ApplicationInsights__LogLevel__Default"                      = local.LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT
     "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Migrations" = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_MIGRATIONS
     "Logging__ApplicationInsights__LogLevel__Energinet.Datahub.Core"       = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE
+    "Logging__ApplicationInsights__SamplingSettings_IsEnabled"             = local.LOGGING_APPINSIGHTS_SAMPLINGSETTINGS_ISENABLED
+    "Logging__ApplicationInsights__SamplingSettings_ExcludedTypes"         = local.LOGGING_APPINSIGHTS_SAMPLINGSETTINGS_EXCLUDEDTYPES
 
     # Logging Host
     "AzureFunctionsJobHost__Logging__LogLevel__Default"                    = local.AZUREFUNCTIONSJOBHOST_LOGGING_LOGLEVEL_DEFAULT
