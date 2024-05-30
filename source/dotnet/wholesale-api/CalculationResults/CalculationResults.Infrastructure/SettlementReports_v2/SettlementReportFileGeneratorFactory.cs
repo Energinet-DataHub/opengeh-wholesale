@@ -32,7 +32,7 @@ public sealed class SettlementReportFileGeneratorFactory : ISettlementReportFile
         switch (fileContent)
         {
             case SettlementReportFileContent.BalanceFixingResult:
-                return new BalanceFixingResultFileGenerator(_dataRepository);
+                return new EnergyResultFileGenerator(_dataRepository);
             default:
                 throw new ArgumentOutOfRangeException(nameof(fileContent), fileContent, null);
         }

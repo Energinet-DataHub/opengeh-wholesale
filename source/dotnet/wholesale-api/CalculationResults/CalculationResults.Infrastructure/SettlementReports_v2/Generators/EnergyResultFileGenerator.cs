@@ -22,11 +22,11 @@ using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Generators;
 
-public sealed class BalanceFixingResultFileGenerator : ISettlementReportFileGenerator
+public sealed class EnergyResultFileGenerator : ISettlementReportFileGenerator
 {
     private readonly ISettlementReportDataRepository _dataSource;
 
-    public BalanceFixingResultFileGenerator(ISettlementReportDataRepository dataSource)
+    public EnergyResultFileGenerator(ISettlementReportDataRepository dataSource)
     {
         _dataSource = dataSource;
     }
