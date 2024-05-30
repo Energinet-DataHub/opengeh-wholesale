@@ -14,17 +14,16 @@
 import pathlib
 from datetime import datetime
 from unittest import mock
+
+import pyspark.sql.functions as f
 import pytest
 from pyspark.sql import SparkSession
-import pyspark.sql.functions as f
-
 
 from package.calculation.input import TableReader
 from package.calculation.input.schemas import charge_link_periods_schema
-
 from package.constants import Colname
-from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.helpers.data_frame_utils import assert_dataframes_equal
+from tests.helpers.delta_table_utils import write_dataframe_to_table
 
 DEFAULT_FROM_DATE = datetime(2022, 6, 8, 22, 0, 0)
 DEFAULT_TO_DATE = datetime(2022, 6, 8, 22, 0, 0)
@@ -58,7 +57,7 @@ class TestWhenSchemaMismatch:
             reader._spark.read.format("delta"), "load", return_value=df
         ):
             with pytest.raises(AssertionError) as exc_info:
-                reader.read_charge_links_periods()
+                reader.read_charge_link_periods()
 
             assert "Schema mismatch" in str(exc_info.value)
 
@@ -87,7 +86,7 @@ class TestWhenValidInput:
         reader = TableReader(spark, calculation_input_path)
 
         # Act
-        actual = reader.read_charge_links_periods()
+        actual = reader.read_charge_link_periods()
 
         # Assert
         assert_dataframes_equal(actual, expected)

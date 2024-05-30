@@ -51,7 +51,7 @@ def get_data_input_specifications(table_reader: TableReader) -> dict[str, tuple]
         ),
         "charge_link_periods.csv": (
             charge_link_periods_schema,
-            table_reader.read_charge_links_periods,
+            table_reader.read_charge_link_periods,
         ),
         "charge_price_points.csv": (
             charge_price_points_schema,
