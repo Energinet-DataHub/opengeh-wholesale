@@ -82,7 +82,7 @@ schema_config = [
             ),
             Table(
                 name=paths.CHARGE_MASTER_DATA_PERIODS_BASIS_DATA_TABLE_NAME,
-                schema=basis_data_schemas.charge_master_data_periods_schema,
+                schema=basis_data_schemas.charge_price_information_periods_schema,
             ),
             Table(
                 name=paths.CHARGE_PRICE_POINTS_BASIS_DATA_TABLE_NAME,
@@ -106,6 +106,7 @@ schema_config = [
             View(name=paths.METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1),
             View(name=paths.METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME_V1),
             View(name=paths.ENERGY_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1),
+            View(name=paths.CHARGE_PRICES_SETTLEMENT_REPORT_VIEW_NAME_V1),
             View(name=paths.CHARGE_LINK_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1),
         ],
     ),

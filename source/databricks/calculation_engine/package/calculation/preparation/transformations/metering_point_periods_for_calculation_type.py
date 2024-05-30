@@ -134,7 +134,7 @@ def _get_child_metering_points_with_energy_suppliers(
                 )
             )
         ),
-        "left",
+        "inner",
     ).select(
         all_child_metering_points[Colname.metering_point_id],
         all_child_metering_points[Colname.metering_point_type],

@@ -71,7 +71,7 @@ public static class WholesaleServiceRequestAcceptedMessageFactory
                 CalculationType = MapCalculationType(series.CalculationType),
             };
             if (series.MeteringPointType is not null)
-                wholesaleSeries.MeteringPointType = MapMeteringPointType(series.MeteringPointType.Value);
+                wholesaleSeries.MeteringPointType = MeteringPointTypeMapper.Map(series.MeteringPointType.Value);
 
             if (series.SettlementMethod is not null)
                 wholesaleSeries.SettlementMethod = MapSettlementMethod(series.SettlementMethod.Value);
@@ -112,19 +112,6 @@ public static class WholesaleServiceRequestAcceptedMessageFactory
                 nameof(seriesSettlementMethod),
                 actualValue: seriesSettlementMethod,
                 $"Value cannot be mapped to a {nameof(WholesaleServicesRequestSeries.Types.SettlementMethod)}."),
-        };
-    }
-
-    private static WholesaleServicesRequestSeries.Types.MeteringPointType MapMeteringPointType(MeteringPointType seriesMeteringPointType)
-    {
-        return seriesMeteringPointType switch
-        {
-            MeteringPointType.Consumption => WholesaleServicesRequestSeries.Types.MeteringPointType.Consumption,
-            MeteringPointType.Production => WholesaleServicesRequestSeries.Types.MeteringPointType.Production,
-            _ => throw new ArgumentOutOfRangeException(
-                nameof(seriesMeteringPointType),
-                actualValue: seriesMeteringPointType,
-                $"Value cannot be mapped to a {nameof(WholesaleServicesRequestSeries.Types.MeteringPointType)}."),
         };
     }
 

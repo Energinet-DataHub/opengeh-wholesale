@@ -69,25 +69,4 @@ public static class EventsExtensions
 
         return services;
     }
-
-    public static IServiceCollection AddInboxHandling(this IServiceCollection services)
-    {
-        services
-            .AddOptions<WholesaleInboxQueueOptions>()
-            .BindConfiguration(WholesaleInboxQueueOptions.SectionName)
-            .ValidateDataAnnotations();
-
-        // Health checks
-        services.AddHealthChecks()
-            // Must use a listener connection string
-            .AddAzureServiceBusQueue(
-                sp => sp.GetRequiredService<IOptions<ServiceBusNamespaceOptions>>().Value.ConnectionString,
-                sp => sp.GetRequiredService<IOptions<WholesaleInboxQueueOptions>>().Value.QueueName,
-                name: "WholesaleInboxQueue");
-
-        services
-            .AddHostedService<WholesaleInboxServiceBusWorker>();
-
-        return services;
-    }
 }
