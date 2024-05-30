@@ -15,20 +15,20 @@
 from datetime import datetime
 
 import pyspark.sql.functions as f
+from pyspark.sql import DataFrame
 from pyspark.sql.types import StringType, DecimalType, ArrayType
 
-from package.calculation.wholesale.data_structures import MonthlyAmountPerCharge
 from package.calculation.wholesale.data_structures.wholesale_results import (
     WholesaleResults,
 )
-from package.codelists import WholesaleResultResolution
+from package.codelists import WholesaleResultResolution, ChargeType
 from package.constants import Colname
 
 
 def sum_within_month(
     wholesale_results: WholesaleResults,
     period_start_datetime: datetime,
-) -> MonthlyAmountPerCharge:
+) -> WholesaleResults:
     agg_df = (
         wholesale_results.df.groupBy(
             Colname.energy_supplier_id,
@@ -47,8 +47,14 @@ def sum_within_month(
         .select(
             f.col(Colname.grid_area),
             f.col(Colname.energy_supplier_id),
+            f.lit(None).cast(DecimalType(18, 3)).alias(Colname.total_quantity),
             f.col(Colname.unit),
+            f.lit(None).cast(ArrayType(StringType())).alias(Colname.qualities),
             f.lit(period_start_datetime).alias(Colname.charge_time),
+            f.lit(WholesaleResultResolution.MONTH.value).alias(Colname.resolution),
+            f.lit(None).cast(StringType()).alias(Colname.metering_point_type),
+            f.lit(None).cast(StringType()).alias(Colname.settlement_method),
+            f.lit(None).cast(DecimalType(18, 6)).alias(Colname.charge_price),
             f.col(Colname.total_amount),
             f.col(Colname.charge_tax),
             f.col(Colname.charge_code),
@@ -57,4 +63,4 @@ def sum_within_month(
         )
     )
 
-    return MonthlyAmountPerCharge(agg_df)
+    return WholesaleResults(agg_df)
