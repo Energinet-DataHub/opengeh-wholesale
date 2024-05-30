@@ -40,6 +40,24 @@ def write_wholesale_results(wholesale_results: WholesaleResultsContainer) -> Non
         wholesale_results.fee_per_ga_co_es,
     )
 
+    # TODO: Remove when monthly amounts is fully implemented
+    _write(
+        "monthly_tariff_from_hourly_per_ga_co_es",
+        wholesale_results.monthly_tariff_from_hourly_per_ga_co_es,
+    )
+    _write(
+        "monthly_tariff_from_daily_per_ga_co_es",
+        wholesale_results.monthly_tariff_from_daily_per_ga_co_es,
+    )
+    _write(
+        "monthly_subscription_per_ga_co_es",
+        wholesale_results.monthly_subscription_per_ga_co_es,
+    )
+    _write(
+        "monthly_fee_per_ga_co_es",
+        wholesale_results.monthly_fee_per_ga_co_es,
+    )
+
 
 def _write(name: str, df: DataFrame) -> None:
     with logging_configuration.start_span(name):
