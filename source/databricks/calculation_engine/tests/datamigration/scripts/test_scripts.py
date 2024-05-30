@@ -26,6 +26,7 @@ import package.datamigration.migration as sut
 import package.datamigration.schema_config as schema_config
 import tests.helpers.mock_helper as mock_helper
 import tests.helpers.spark_sql_migration_helper as spark_sql_migration_helper
+import tests.helpers.spark_helper as spark_helper
 
 
 def test__schema_config__when_current_state_script_files_are_executed(

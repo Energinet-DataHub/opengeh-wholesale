@@ -15,11 +15,7 @@ from unittest.mock import Mock
 
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField
-import package.datamigration.migration as sut
 import package.datamigration.schema_config as schema_config
-import tests.helpers.mock_helper as mock_helper
-import tests.helpers.spark_helper as spark_helper
-import tests.helpers.spark_sql_migration_helper as spark_sql_migration_helper
 
 
 def _diff(schema1: StructType, schema2: StructType) -> dict[str, set[StructField]]:
