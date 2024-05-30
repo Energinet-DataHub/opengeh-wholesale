@@ -160,8 +160,8 @@ public class CalculationOrchestrationTests : IAsyncLifetime
             new OrchestrationHistoryItem("TaskCompleted", FunctionName: "SendCalculationResultsActivity"),
             new OrchestrationHistoryItem("TimerCreated"), // Wait for raised event (ActorMessagesEnqueued)
             new OrchestrationHistoryItem("EventRaised", Name: "MessagesEnqueuedV1"),
-            new OrchestrationHistoryItem("TaskCompleted", FunctionName: "SetCalculationOrchestrationStateActivity"),
-            new OrchestrationHistoryItem("TaskCompleted", FunctionName: "SetCalculationOrchestrationStateActivity"),
+            new OrchestrationHistoryItem("TaskCompleted", FunctionName: "UpdateCalculationOrchestrationStateActivity"),
+            new OrchestrationHistoryItem("TaskCompleted", FunctionName: "UpdateCalculationOrchestrationStateActivity"),
             new OrchestrationHistoryItem("ExecutionCompleted"),
         ]);
 

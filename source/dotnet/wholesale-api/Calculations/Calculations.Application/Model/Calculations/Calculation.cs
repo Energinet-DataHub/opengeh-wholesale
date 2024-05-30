@@ -315,7 +315,7 @@ public class Calculation
         OrchestrationState = CalculationOrchestrationState.ActorMessagesEnqueued;
     }
 
-    public void MarkAsMessagesEnqueuingFailed()
+    public void MarkAsActorMessagesEnqueuingFailed()
     {
         OrchestrationState = CalculationOrchestrationState.ActorMessagesEnqueuingFailed;
     }
@@ -349,7 +349,7 @@ public class Calculation
                 MarkAsActorMessagesEnqueued(clock.GetCurrentInstant());
                 break;
             case CalculationOrchestrationState.ActorMessagesEnqueuingFailed:
-                MarkAsMessagesEnqueuingFailed();
+                MarkAsActorMessagesEnqueuingFailed();
                 break;
             case CalculationOrchestrationState.Completed:
                 MarkAsCompleted(clock.GetCurrentInstant());

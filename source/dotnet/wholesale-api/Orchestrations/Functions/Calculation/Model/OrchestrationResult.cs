@@ -14,7 +14,7 @@
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 
-internal record OrchestrationResult
+internal sealed record OrchestrationResult
 {
     public bool IsSuccess { get; }
 

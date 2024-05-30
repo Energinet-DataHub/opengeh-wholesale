@@ -16,6 +16,6 @@ using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 
-public sealed record SetCalculationOrchestrationStateInput(
+public sealed record UpdateCalculationOrchestrationStateInput(
     Guid CalculationId,
     CalculationOrchestrationState State);

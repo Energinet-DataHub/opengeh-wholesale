@@ -21,28 +21,34 @@ using NodaTime;
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
 
 #pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
-internal class SetCalculationOrchestrationStateActivity(
-    IClock clock,
-    IUnitOfWork calculationUnitOfWork,
-    ICalculationRepository calculationRepository)
+internal class UpdateCalculationOrchestrationStateActivity
 {
+    private readonly IClock _clock;
+    private readonly IUnitOfWork _calculationUnitOfWork;
+    private readonly ICalculationRepository _calculationRepository;
+
+    public UpdateCalculationOrchestrationStateActivity(
+        IClock clock,
+        IUnitOfWork calculationUnitOfWork,
+        ICalculationRepository calculationRepository)
+    {
+        _clock = clock;
+        _calculationUnitOfWork = calculationUnitOfWork;
+        _calculationRepository = calculationRepository;
+    }
+
     /// <summary>
     /// Update calculation status record in SQL database.
     /// </summary>
-    [Function(nameof(SetCalculationOrchestrationStateActivity))]
+    [Function(nameof(UpdateCalculationOrchestrationStateActivity))]
     public async Task Run(
-        [ActivityTrigger] SetCalculationOrchestrationStateInput input)
+        [ActivityTrigger] UpdateCalculationOrchestrationStateInput input)
     {
-        var calculation = await calculationRepository.GetAsync(input.CalculationId);
+        var calculation = await _calculationRepository.GetAsync(input.CalculationId);
 
-        UpdateState(calculation, input.State);
+        calculation.UpdateState(input.State, _clock);
 
-        await calculationUnitOfWork.CommitAsync();
-    }
-
-    private void UpdateState(Calculations.Application.Model.Calculations.Calculation calculation, CalculationOrchestrationState newState)
-    {
-        calculation.UpdateState(newState, clock);
+        await _calculationUnitOfWork.CommitAsync();
     }
 }
 #pragma warning restore CA2007 // Consider calling ConfigureAwait on the awaited task
