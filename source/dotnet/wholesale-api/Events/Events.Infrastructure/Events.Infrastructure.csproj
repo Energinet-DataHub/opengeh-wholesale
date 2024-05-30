@@ -26,12 +26,12 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Protobuf Include="InboxEvents\ActorMessagesEnqueuedV1\MessagesEnqueued.proto">
+    <Protobuf Include="InboxEvents/ActorMessagesEnqueuedV1/MessagesEnqueued.proto">
       <GrpcServices>None</GrpcServices>
       <Access>Public</Access>
       <ProtoCompile>True</ProtoCompile>
+      <ProtoRoot>InboxEvents</ProtoRoot>
       <CompileOutputs>True</CompileOutputs>
-      <OutputDir>obj\Debug\net8.0\</OutputDir>
       <Generator>MSBuild:Compile</Generator>
     </Protobuf>
     <Protobuf Include="IntegrationEvents/Protos/*.proto">
