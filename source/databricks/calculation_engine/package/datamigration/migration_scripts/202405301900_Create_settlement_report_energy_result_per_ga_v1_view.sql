@@ -1,3 +1,6 @@
+DROP VIEW IF EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.energy_results_v1
+GO
+
 CREATE VIEW {SETTLEMENT_REPORT_DATABASE_NAME}.energy_results_per_ga_v1 as
 SELECT calculation_id,
        calculation_type,
