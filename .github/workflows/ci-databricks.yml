@@ -189,6 +189,8 @@ jobs:
             paths: datamigration/!(test_migration.py)
           - name: Current state migrations
             paths: datamigration/test_migration.py
+          - name: Test scripts
+            paths: datamigration/scripts/
     if: ${{ inputs.has_delta_migration_changes }}
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
