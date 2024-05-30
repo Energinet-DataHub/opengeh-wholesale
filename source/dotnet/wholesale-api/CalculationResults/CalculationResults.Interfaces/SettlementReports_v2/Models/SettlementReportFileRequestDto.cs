@@ -19,3 +19,4 @@ public sealed record SettlementReportFileRequestDto(
     string SuggestedName,
     SettlementReportRequestId RequestId,
     SettlementReportRequestFilterDto RequestFilter);
+//TODO: should the SettlementReportRequestPartialInfo be here?

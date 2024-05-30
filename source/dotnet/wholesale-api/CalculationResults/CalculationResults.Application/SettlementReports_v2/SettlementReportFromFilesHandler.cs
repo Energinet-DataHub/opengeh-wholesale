@@ -42,19 +42,23 @@ public sealed class SettlementReportFromFilesHandler : ISettlementReportFromFile
         await using (compressedStream.ConfigureAwait(false))
         {
             using var archive = new ZipArchive(compressedStream, ZipArchiveMode.Create);
-            foreach (var reportFile in generatedFiles)
+
+            foreach (var reportFilesGrouped in generatedFiles.GroupBy(x => x.FileName))
             {
-                var entry = archive.CreateEntry(reportFile.FileName);
+                var entry = archive.CreateEntry(reportFilesGrouped.Key);
                 var entryStream = entry.Open();
                 await using (entryStream.ConfigureAwait(false))
                 {
-                    var readStream = await _fileRepository
-                        .OpenForReadingAsync(requestId, reportFile.FileName)
-                        .ConfigureAwait(false);
-
-                    await using (readStream.ConfigureAwait(false))
+                    foreach (var reportFile in reportFilesGrouped)
                     {
-                        await readStream.CopyToAsync(entryStream).ConfigureAwait(false);
+                        var readStream = await _fileRepository
+                            .OpenForReadingAsync(requestId, reportFile.PartialFileName ?? reportFile.FileName)
+                            .ConfigureAwait(false);
+
+                        await using (readStream.ConfigureAwait(false))
+                        {
+                            await readStream.CopyToAsync(entryStream).ConfigureAwait(false);
+                        }
                     }
                 }
             }

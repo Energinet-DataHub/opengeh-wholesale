@@ -20,6 +20,9 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementR
 
 public sealed class SettlementReportRequestHandler : ISettlementReportRequestHandler
 {
+    //TODO: move to config?
+    public const long ThresholdToSplitFiles = 10000;
+
     public Task<IEnumerable<SettlementReportFileRequestDto>> RequestReportAsync(
         SettlementReportRequestId requestId,
         SettlementReportRequestDto reportRequest)
@@ -29,10 +32,12 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
         switch (reportRequest.CalculationType)
         {
             case CalculationType.BalanceFixing:
-                filesToRequest = RequestFilesForAggregatedEnergyResults(requestId, reportRequest);
+                filesToRequest = RequestFilesForAggregatedEnergyResults(requestId, reportRequest, SettlementReportFileContent.BalanceFixingResult);
                 break;
 
-            // Future tasks: case CalculationType.WholesaleFixing:
+            case CalculationType.WholesaleFixing:
+                filesToRequest = RequestFilesForAggregatedEnergyResults(requestId, reportRequest, SettlementReportFileContent.WholesaleFixingResult);
+                break;
             default:
                 throw new InvalidOperationException($"Cannot generate report for calculation type {reportRequest.CalculationType}.");
         }
@@ -41,29 +46,43 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
     }
 
     private static IEnumerable<SettlementReportFileRequestDto> RequestFilesForAggregatedEnergyResults(
-        SettlementReportRequestId requestId,
-        SettlementReportRequestDto reportRequest)
+       SettlementReportRequestId requestId,
+       SettlementReportRequestDto reportRequest,
+       SettlementReportFileContent settlementReportFileContent)
     {
         var filesToGenerate = new List<SettlementReportFileRequestDto>();
 
         if (reportRequest is { SplitReportPerGridArea: true, Filter.Calculations.Count: > 1 })
         {
+            //TODO: check the logic here, when repository is available
             foreach (var calculation in reportRequest.Filter.Calculations)
             {
-                filesToGenerate.Add(new SettlementReportFileRequestDto(
-                    SettlementReportFileContent.BalanceFixingResult,
-                    $"Result Energy ({calculation.GridAreaCode})",
-                    requestId,
-                    reportRequest.Filter with { Calculations = [calculation] }));
+                double randomNumber = new Random().Next(5000, 100000); //TODO: replace randomNumber with a call to repository when available
+                var parts = Math.Ceiling(randomNumber / ThresholdToSplitFiles);
+                for (var index = 0; index < parts; index++)
+                {
+                    var partialInfo = parts > 1 ? new SettlementReportRequestPartialInfo(index) : null;
+                    filesToGenerate.Add(new SettlementReportFileRequestDto(
+                        settlementReportFileContent,
+                        $"Result Energy ({calculation.GridAreaCode})",
+                        requestId,
+                        reportRequest.Filter with { Calculations = [calculation], PartialInfo = partialInfo }));
+                }
             }
         }
         else
         {
-            filesToGenerate.Add(new SettlementReportFileRequestDto(
-                SettlementReportFileContent.BalanceFixingResult,
-                "Result Energy",
-                requestId,
-                reportRequest.Filter));
+            double randomNumber = new Random().Next(5000, 100000); //TODO: replace randomNumber with a call to repository when available
+            var parts = Math.Ceiling(randomNumber / ThresholdToSplitFiles);
+            for (var index = 0; index < parts; index++)
+            {
+                var partialInfo = parts > 1 ? new SettlementReportRequestPartialInfo(index) : null;
+                filesToGenerate.Add(new SettlementReportFileRequestDto(
+                    settlementReportFileContent,
+                    "Result Energy",
+                    requestId,
+                    reportRequest.Filter with { PartialInfo = partialInfo }));
+            }
         }
 
         return filesToGenerate;

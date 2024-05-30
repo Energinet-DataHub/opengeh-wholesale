@@ -14,10 +14,6 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
-public sealed record SettlementReportRequestFilterDto(
-    IReadOnlyCollection<CalculationFilterDto> Calculations,
-    DateTimeOffset PeriodStart,
-    DateTimeOffset PeriodEnd,
-    string? EnergySupplier,
-    string? CsvFormatLocale,
-    SettlementReportRequestPartialInfo? PartialInfo = null);
+//TODO: does the name make sense?
+public sealed record SettlementReportRequestPartialInfo(
+    int PartNumber);
