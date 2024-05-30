@@ -40,9 +40,14 @@ public sealed class BalanceFixingResultFileGenerator : ISettlementReportFileGene
 
         await using (csvHelper.ConfigureAwait(false))
         {
-            await csvHelper
-                .WriteRecordsAsync(_dataSource.TryReadBalanceFixingResultsAsync(filter))
-                .ConfigureAwait(false);
+            csvHelper.WriteHeader<SettlementReportResultRow>();
+            await csvHelper.NextRecordAsync().ConfigureAwait(false);
+
+            await foreach (var record in _dataSource.TryReadBalanceFixingResultsAsync(filter).ConfigureAwait(false))
+            {
+                csvHelper.WriteRecord(record);
+                await csvHelper.NextRecordAsync().ConfigureAwait(false);
+            }
         }
     }
 
