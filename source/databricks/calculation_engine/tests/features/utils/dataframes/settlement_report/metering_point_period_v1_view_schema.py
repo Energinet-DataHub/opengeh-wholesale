@@ -28,9 +28,9 @@ metering_point_period_v1_view_schema = StructType(
         StructField(MeteringPointPeriodColname.metering_point_id, StringType(), False),
         StructField(MeteringPointPeriodColname.from_date, TimestampType(), False),
         StructField(MeteringPointPeriodColname.to_date, TimestampType(), True),
-        StructField(MeteringPointPeriodColname.grid_area, StringType(), False),
-        StructField(MeteringPointPeriodColname.from_grid_area, StringType(), True),
-        StructField(MeteringPointPeriodColname.to_grid_area, StringType(), True),
+        StructField(MeteringPointPeriodColname.grid_area_code, StringType(), False),
+        StructField(MeteringPointPeriodColname.from_grid_area_code, StringType(), True),
+        StructField(MeteringPointPeriodColname.to_grid_area_code, StringType(), True),
         StructField(
             MeteringPointPeriodColname.metering_point_type, StringType(), False
         ),
