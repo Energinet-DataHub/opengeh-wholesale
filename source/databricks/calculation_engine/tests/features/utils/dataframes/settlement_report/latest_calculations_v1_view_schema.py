@@ -16,6 +16,7 @@ from pyspark.sql.types import (
     StructField,
     StringType,
     StructType,
+    LongType,
 )
 
 from package.constants.calculation_column_names import CalculationColumnNames
@@ -23,6 +24,6 @@ from package.constants.calculation_column_names import CalculationColumnNames
 latest_calculations_v1_view_schema = StructType(
     [
         StructField(CalculationColumnNames.calculation_type, StringType(), False),
-        StructField(CalculationColumnNames.version, StringType(), True),
+        StructField(CalculationColumnNames.version, LongType(), False),
     ]
 )
