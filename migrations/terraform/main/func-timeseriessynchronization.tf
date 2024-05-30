@@ -62,6 +62,8 @@ module "func_timeseriessynchronization" {
     "StorageAccount__Dh2TimeSeriesSynchronizationArchiveContainerName"                    = azurerm_storage_container.dropzonetimeseriessyncarchive.name
     "StorageAccount__Dh2TimeSeriesIntermediaryStorageAccountUri"                          = "https://${module.st_dh2timeseries_intermediary.name}.blob.core.windows.net"
     "StorageAccount__Dh2TimeSeriesIntermediaryContainerName"                              = azurerm_storage_container.timeseriesintermediary.name
+    "StorageAccount__Dh2TimeSeriesAuditDataStorageAccountUri"                             = "https://${module.st_dh2timeseries_audit.name}.blob.core.windows.net"
+    "StorageAccount__Dh2TimeSeriesAuditDataContainerName"                                 = azurerm_storage_container.timeseriesaudit.name
     "ServiceBus__ConnectionString"                                                        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-manage-connection-string)"
     "ServiceBus__TimeSeriesMessagesQueueName"                                             = azurerm_servicebus_queue.time_series_imported_messages_queue.name
     "ServiceBus__TimeSeriesMessagesTopicName"                                             = azurerm_servicebus_topic.time_series_imported_messages_topic.name
