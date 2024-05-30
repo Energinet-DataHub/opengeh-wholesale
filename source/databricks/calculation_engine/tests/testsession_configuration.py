@@ -16,7 +16,7 @@ from helpers.spark_sql_migration_helper import MigrationsExecution
 
 class MigrationsConfiguration:
     def __init__(self, configuration: dict):
-        configuration.setdefault("execute", MigrationsExecution.ALL.value)
+        configuration.setdefault("execute", MigrationsExecution.ALL.name)
         self.execute = MigrationsExecution[configuration["execute"]]
 
 

@@ -5,7 +5,7 @@
 
 migrations:
     # Use this setting to speed up development by controlling when to execute which migrations in test sessions.
-    # Options: NONE | ALL | MODIFIED | MODIFIED_AND_SUBSEQUENT
+    # Options: NONE | ALL | MODIFIED
     # `ALL` is the default if not provided as this is similar to the CI behavior.
-    # Recommendation: Try MODIFIED and if doesn't work for you then try MODIFIED_AND_SUBSEQUENT before switching to ALL.
+    # Recommendation: Try MODIFIED and if doesn't work for you use ALL.
     execute: MODIFIED

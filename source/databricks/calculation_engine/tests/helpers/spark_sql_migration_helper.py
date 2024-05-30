@@ -15,6 +15,7 @@ import os
 import shutil
 from datetime import datetime
 from enum import Enum
+from pathlib import Path
 
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as f
@@ -48,8 +49,6 @@ class MigrationsExecution(Enum):
     """Execute all migrations. This is similar to the CI behavior."""
     MODIFIED = 2
     """Execute only the migrations that have been modified since the last execution."""
-    MODIFIED_AND_SUBSEQUENT = 3
-    """Execute the migrations that have been modified since the last execution and all subsequent migrations."""
 
 
 def migrate(
@@ -60,15 +59,12 @@ def migrate(
     print(
         f"Preparing execution of migrations with execution type: {migrations_execution}"
     )
+
     if migrations_execution.value == MigrationsExecution.NONE.value:
         print("Skipping migrations as MigrationsExecution is set to NONE")
         return
 
-    if migrations_execution.value in [
-        MigrationsExecution.MODIFIED.value,
-        MigrationsExecution.MODIFIED_AND_SUBSEQUENT.value,
-    ]:
-        print("Removing registration of modified scripts from migrations table")
+    if migrations_execution.value == MigrationsExecution.MODIFIED.value:
         _remove_registration_of_modified_scripts(spark, migrations_execution)
 
     if migrations_execution.value == MigrationsExecution.ALL.value:
@@ -86,10 +82,6 @@ def migrate(
 def _remove_registration_of_modified_scripts(
     spark: SparkSession, migrations_execution: MigrationsExecution
 ) -> None:
-    for db in spark.catalog.listDatabases():
-        print(f"Database: {db.name}, location={db.locationUri}")
-        for table in spark.catalog.listTables(db.name):
-            print(f"Table: {table.database}.{table.name}")
     migrations_table = f"{schema_migration_schema_name}.{schema_migration_table_name}"
     if not delta_table_helper.delta_table_exists(
         spark, schema_migration_schema_name, schema_migration_table_name
@@ -107,21 +99,17 @@ def _remove_registration_of_modified_scripts(
     modified_scripts = _get_recently_modified_migration_scripts(
         _get_migration_scripts_path(), latest_execution_time
     )
+    if not modified_scripts:
+        return
+
     print(
-        f"Scripts modified after {latest_execution_time}: {'.'.join(modified_scripts)}"
+        f"Scripts modified after last migrated script ({latest_execution_time}): {'.'.join(modified_scripts)}"
     )
 
-    if migrations_execution == MigrationsExecution.MODIFIED:
-        spark.sql(
-            f"DELETE FROM TABLE {migrations_table} WHERE migration_name in ({'.'.join(modified_scripts)})"
-        )
-
-    if migrations_execution == MigrationsExecution.MODIFIED_AND_SUBSEQUENT:
-        modified_scripts.sort(reverse=True)
-        first_modified_script = modified_scripts[0]
-        spark.sql(
-            f"DELETE FROM TABLE {migrations_table} WHERE migration_name >= '{first_modified_script}'"
-        )
+    if migrations_execution.value == MigrationsExecution.MODIFIED.value:
+        in_clause = "'" + "', '".join(modified_scripts) + "'"
+        sql = f"DELETE FROM {migrations_table} WHERE migration_name in ({in_clause})"
+        spark.sql(sql)
 
 
 def configure_spark_sql_migration(
@@ -212,6 +200,7 @@ def _get_recently_modified_migration_scripts(
 
                 # Compare with the reference datetime
                 if modification_time > reference_datetime:
-                    recent_files.append(os.path.basename(file_path))
+                    script_name_without_extension = Path(file_path).stem
+                    recent_files.append(script_name_without_extension)
 
     return recent_files

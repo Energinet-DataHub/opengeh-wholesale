@@ -391,7 +391,10 @@ def energy_input_data_written_to_delta(
     calculation_input_path: str,
     test_session_configuration: TestSessionConfiguration,
 ) -> None:
-    if test_session_configuration.migrations.execute != MigrationsExecution.ALL:
+    if (
+        test_session_configuration.migrations.execute.value
+        != MigrationsExecution.ALL.value
+    ):
         return
 
     _write_input_test_data_to_table(
@@ -451,7 +454,10 @@ def price_input_data_written_to_delta(
     calculation_input_path: str,
     test_session_configuration: TestSessionConfiguration,
 ) -> None:
-    if test_session_configuration.migrations.execute != MigrationsExecution.ALL:
+    if (
+        test_session_configuration.migrations.execute.value
+        != MigrationsExecution.ALL.value
+    ):
         return
 
     # Charge master data periods
