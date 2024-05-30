@@ -49,7 +49,7 @@ internal class CalculationOrchestration
         calculationMetadata.OrchestrationProgress = "CalculationJobQueued";
         context.SetCustomStatus(calculationMetadata);
 
-        var expiryTime = context.CurrentUtcDateTime.AddSeconds(input.JobStatusMonitorOptions.ExpiryTimeInSeconds);
+        var expiryTime = context.CurrentUtcDateTime.AddSeconds(input.OrchestrationMonitorOptions.CalculationJobStatusExpiryTimeInSeconds);
         while (context.CurrentUtcDateTime < expiryTime)
         {
             // Monitor calculation (Databricks)
@@ -78,7 +78,7 @@ internal class CalculationOrchestration
                 }
 
                 // Wait for the next checkpoint
-                var nextCheckpoint = context.CurrentUtcDateTime.AddSeconds(input.JobStatusMonitorOptions.PollingIntervalInSeconds);
+                var nextCheckpoint = context.CurrentUtcDateTime.AddSeconds(input.OrchestrationMonitorOptions.CalculationJobStatusPollingIntervalInSeconds);
                 await context.CreateTimer(nextCheckpoint, CancellationToken.None);
             }
             else
@@ -121,7 +121,7 @@ internal class CalculationOrchestration
 
         // Wait for an ActorMessagesEnqueued event to notify us that messages are ready to be consumed by actors
         // Pattern #5: Human interaction - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview?tabs=isolated-process%2Cnodejs-v3%2Cv1-model&pivots=csharp#human
-        var waitForActorMessagesEnqueuedEventResult = await WaitForActorMessagesEnqueuedEventAsync(context, calculationMetadata.Id);
+        var waitForActorMessagesEnqueuedEventResult = await WaitForActorMessagesEnqueuedEventAsync(context, calculationMetadata.Id, input.OrchestrationMonitorOptions.MessagesEnqueuingExpiryTimeInSeconds);
         if (!waitForActorMessagesEnqueuedEventResult.IsSuccess)
         {
             calculationMetadata.OrchestrationProgress = waitForActorMessagesEnqueuedEventResult.ErrorSubject ?? "UnknownWaitForActorMessagesEnqueuedEventError";
@@ -149,12 +149,12 @@ internal class CalculationOrchestration
 
     private static async Task<OrchestrationResult> WaitForActorMessagesEnqueuedEventAsync(
         TaskOrchestrationContext context,
-        Guid calculationId)
+        Guid calculationId,
+        int messagesEnqueuingExpiryTimeInSeconds)
     {
         using (var timeoutCts = new CancellationTokenSource())
         {
-            // TODO: Get timeout from config
-            var timeoutAt = context.CurrentUtcDateTime.AddHours(1);
+            var timeoutAt = context.CurrentUtcDateTime.AddSeconds(messagesEnqueuingExpiryTimeInSeconds);
 
             var waitForTimeoutTask = context.CreateTimer(timeoutAt, timeoutCts.Token);
 

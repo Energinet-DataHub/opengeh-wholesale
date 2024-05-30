@@ -266,10 +266,13 @@ public class OrchestrationsAppFixture : IAsyncLifetime
 
         // Override default CalculationJob status monitor configuration
         appHostSettings.ProcessEnvironmentVariables.Add(
-            $"{CalculationJobStatusMonitorOptions.SectionName}__{nameof(CalculationJobStatusMonitorOptions.PollingIntervalInSeconds)}",
+            $"{CalculationOrchestrationMonitorOptions.SectionName}__{nameof(CalculationOrchestrationMonitorOptions.CalculationJobStatusPollingIntervalInSeconds)}",
             "3");
         appHostSettings.ProcessEnvironmentVariables.Add(
-            $"{CalculationJobStatusMonitorOptions.SectionName}__{nameof(CalculationJobStatusMonitorOptions.ExpiryTimeInSeconds)}",
+            $"{CalculationOrchestrationMonitorOptions.SectionName}__{nameof(CalculationOrchestrationMonitorOptions.CalculationJobStatusExpiryTimeInSeconds)}",
+            "20");
+        appHostSettings.ProcessEnvironmentVariables.Add(
+            $"{CalculationOrchestrationMonitorOptions.SectionName}__{nameof(CalculationOrchestrationMonitorOptions.CalculationJobStatusExpiryTimeInSeconds)}",
             "20");
 
         return appHostSettings;

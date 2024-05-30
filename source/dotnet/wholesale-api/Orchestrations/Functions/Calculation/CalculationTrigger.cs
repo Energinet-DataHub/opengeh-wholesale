@@ -28,14 +28,14 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation;
 internal class CalculationTrigger
 {
     private readonly IUserContext<FrontendUser> _userContext;
-    private readonly CalculationJobStatusMonitorOptions _jobStatusMonitorOptions;
+    private readonly CalculationOrchestrationMonitorOptions _orchestrationMonitorOptions;
 
     public CalculationTrigger(
         IUserContext<FrontendUser> userContext,
-        IOptions<CalculationJobStatusMonitorOptions> jobStatusMonitorOptions)
+        IOptions<CalculationOrchestrationMonitorOptions> jobStatusMonitorOptions)
     {
         _userContext = userContext;
-        _jobStatusMonitorOptions = jobStatusMonitorOptions.Value;
+        _orchestrationMonitorOptions = jobStatusMonitorOptions.Value;
     }
 
     [Function(nameof(StartCalculation))]
@@ -48,7 +48,7 @@ internal class CalculationTrigger
         var logger = executionContext.GetLogger<CalculationTrigger>();
 
         var orchestrationInput = new CalculationOrchestrationInput(
-            _jobStatusMonitorOptions,
+            _orchestrationMonitorOptions,
             startCalculationRequestDto,
             _userContext.CurrentUser.UserId);
 
