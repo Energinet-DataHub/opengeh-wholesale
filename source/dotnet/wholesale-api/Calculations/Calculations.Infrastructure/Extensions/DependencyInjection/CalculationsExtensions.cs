@@ -20,7 +20,9 @@ using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.CalculationState;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Calculations;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.GridArea;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.HealthChecks;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.EntityFrameworkCore;
@@ -36,11 +38,14 @@ public static class CalculationsExtensions
 {
     public static IServiceCollection AddCalculationsModule(this IServiceCollection services, IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
+
         services.AddScoped<ICalculationsClient, CalculationsClient>();
         services.AddScoped<ICalculationStateInfrastructureService, CalculationStateInfrastructureService>();
         services.AddScoped<ICalculationInfrastructureService, CalculationInfrastructureService>();
         services.AddScoped<ICalculationFactory, CalculationFactory>();
         services.AddScoped<ICalculationRepository, CalculationRepository>();
+        services.AddScoped<IGridAreaOwnerRepository, GridAreaOwnerRepository>();
         services.AddSingleton(new CalculationStateMapper());
 
         services.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
