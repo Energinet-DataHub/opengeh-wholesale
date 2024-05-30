@@ -123,32 +123,27 @@ df_source_grid_area_codes_table = (
 
 # COMMAND ----------
 
-df_all_grid_area_codes = (
-    df_source_energy_results_table.select(grid_area_code_column_name)
-    .distinct()
-).cache()
-
-count_distinct_grid_area_codes = len(str(df_all_grid_area_codes.count()))
-window_random_order = Window.orderBy(F.rand())
-
-# COMMAND ----------
-
 # MAGIC %md
 # MAGIC For each grid area code give it a new 3 digit anonymized code, however if the anoynmized grid area code is identical to a real one, then we skip it and create a new one
 
 # COMMAND ----------
 
+df_all_grid_area_codes = df_source_grid_area_codes_table.union(df_source_energy_results_table.select(grid_area_code_column_name).distinct()).distinct()
+
 anonymised_grid_area_codes = []
-list_unique_grid_area_codes = [row[grid_area_code_column_name] for row in df_source_grid_area_codes_table.collect()]
+list_unique_grid_area_codes = [row[grid_area_code_column_name] for row in df_all_grid_area_codes.collect()]
 
 first_anonymized_id_iteration = 1
 for grid_area_code in list_unique_grid_area_codes:
     str_i = str(first_anonymized_id_iteration).rjust(3, '0')
     first_anonymized_id_iteration += 1
-    if str_i in list_unique_grid_area_codes:
-        continue
-    else:
-        anonymised_grid_area_codes.append((grid_area_code, str_i))
+
+    # Keep going until we reach a new unique grid area code
+    while str_i in list_unique_grid_area_codes:
+        str_i = str(first_anonymized_id_iteration).rjust(3, '0')
+        first_anonymized_id_iteration += 1
+    
+    anonymised_grid_area_codes.append((grid_area_code, str_i))
 
 # COMMAND ----------
 
@@ -271,29 +266,72 @@ df_all_supplier_and_balancers = (
         df_source_energy_results_table.select(F.col(balance_responsible_id_column_name).alias(tmp_balance_and_supplier_id_column_name))
     )
     .distinct()
-).cache()
+)
 
-count_distinct_suppliers_and_balancers = len(str(df_all_supplier_and_balancers.count()))
-window_random_order = Window.orderBy(F.rand())
+list_of_gln_numbers = [row[tmp_balance_and_supplier_id_column_name] for row in df_all_supplier_and_balancers.collect()]
 
-df_anonymised_suppliers_and_balancers = (
-    df_all_supplier_and_balancers.withColumn(
-        anonymised_balance_or_supplier_id_column_name,
-        F.rpad(
-            F.concat(
-                F.lit("4"), F.lpad(F.row_number().over(window_random_order), count_distinct_suppliers_and_balancers, "0"), F.lit("4")
-            ),
-            13,
-            "0",
-        ),
-    )
-    .withColumn(
-        anonymised_balance_or_supplier_id_column_name,
-        F.when(F.col(tmp_balance_and_supplier_id_column_name).isNull(), F.lit(None)).otherwise(
-            F.col(anonymised_balance_or_supplier_id_column_name)
-        ),
-    )
-).cache()
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC The functions below are a direct translation from C# to Python, and is a translation of Raccoons GLN Generator
+
+# COMMAND ----------
+
+import random
+import math
+
+
+def create_random_gln():
+    rng = random.Random()
+    location = ''.join(str(rng.randint(0, 9)) for _ in range(12))
+    
+    for check_digit in range(10):
+        gln = location + str(check_digit)
+        if calculate_checksum(gln) == check_digit:
+            return gln
+    
+    raise Exception("Should not happen")
+
+
+def calculate_checksum(gln_number):
+    sum_of_odd_numbers = 0
+    sum_of_even_numbers = 0
+
+    for i in range(1, len(gln_number)):
+        current_number = int(gln_number[i - 1])
+
+        if i % 2 == 0:
+            sum_of_even_numbers += current_number
+        else:
+            sum_of_odd_numbers += current_number
+    
+    sum = sum_of_even_numbers * 3 + sum_of_odd_numbers
+
+    return (math.ceil(sum / 10.0) * 10) - sum
+
+# COMMAND ----------
+
+list_of_anonymised_gln_numbers = []
+anonymised_gln_numbers_mapping = []
+for gln_number in list_of_gln_numbers:
+    if gln_number is None:
+        list_of_anonymised_gln_numbers.append(None)
+        anonymised_gln_numbers_mapping.append((None, None))
+        continue
+
+    anonymised_gln_number = create_random_gln()
+
+    # Create a new GLN number until we get one we haven't seen yet
+    while anonymised_gln_number in list_of_anonymised_gln_numbers:
+        anonymised_gln_number = create_random_gln()
+    
+    # Add to list of anonymised GLN numbers as well as the mapping
+    list_of_anonymised_gln_numbers.append(anonymised_gln_number)
+    anonymised_gln_numbers_mapping.append((gln_number, anonymised_gln_number))
+
+# COMMAND ----------
+
+df_anonymised_suppliers_and_balancers = spark.createDataFrame(anonymised_gln_numbers_mapping, [tmp_balance_and_supplier_id_column_name, anonymised_balance_or_supplier_id_column_name]).cache()
 
 # COMMAND ----------
 
