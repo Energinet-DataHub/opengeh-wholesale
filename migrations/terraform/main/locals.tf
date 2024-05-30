@@ -8,20 +8,20 @@ locals {
   databricks_runtime_version      = "14.3.x-scala2.12"
 
   # Logging (worker)
-  LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_MIGRATIONS        = "Information" # From opengeh-migration
-  LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE              = "Information" # From geh-core
-  LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT                             = "Warning"     # Everything else
+  LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_MIGRATIONS                 = "Information" # From opengeh-migration
+  LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE                       = "Information" # From geh-core
+  LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT                                      = "Warning"     # Everything else
 
   # Logging (host)
-  AZUREFUNCTIONSJOBHOST_LOGGING_LOGLEVEL_DEFAULT                   = "Warning"
-  AZUREFUNCTIONSJOBHOST_LOGGING_LOGLEVEL_DURABLETASK_CORE          = "Warning"
-  AZUREFUNCTIONSJOBHOST_LOGGING_LOGLEVEL_DURABLETASK_AZURESTORAGE  = "Warning"
-  AZUREFUNCTIONSJOBHOST_LOGGING_LOGLEVEL_HOST_TRIGGERS_DURABLETASK = "Warning"
-  LOGGING_APPINSIGHTS_SAMPLINGSETTINGS_ISENABLED                   = true
-  LOGGING_APPINSIGHTS_SAMPLINGSETTINGS_EXCLUDEDTYPES               = "Request"
+  AZUREFUNCTIONSJOBHOST_LOGGING_LOGLEVEL_DEFAULT                            = "Warning"
+  AZUREFUNCTIONSJOBHOST_LOGGING_LOGLEVEL_DURABLETASK_CORE                   = "Warning"
+  AZUREFUNCTIONSJOBHOST_LOGGING_LOGLEVEL_DURABLETASK_AZURESTORAGE           = "Warning"
+  AZUREFUNCTIONSJOBHOST_LOGGING_LOGLEVEL_HOST_TRIGGERS_DURABLETASK          = "Warning"
+  AZUREFUNCTIONSJOBHOST_LOGGING_APPINSIGHTS_SAMPLINGSETTINGS_ISENABLED      = true
+  AZUREFUNCTIONSJOBHOST_LOGGING_APPINSIGHTS_SAMPLINGSETTINGS_EXCLUDEDTYPES  = "Request"
 
   # Logging - deprecated
-  LOGGING_LOGLEVEL_DEFAULT                                         = "Warning"
-  LOGGING_LOGLEVEL_WORKER_DEFAULT                                  = "Warning"
-  LOGGING_LOGLEVEL_HOST_DEFAULT                                    = "Warning"
+  LOGGING_LOGLEVEL_DEFAULT                                                  = "Warning"
+  LOGGING_LOGLEVEL_WORKER_DEFAULT                                           = "Warning"
+  LOGGING_LOGLEVEL_HOST_DEFAULT                                             = "Warning"
 }

@@ -54,36 +54,34 @@ module "func_timeseriessynchronization" {
   ]
 
   app_settings = {
-    WEBSITE_LOAD_CERTIFICATES                                              = local.datahub2_certificate_thumbprint
-    "StorageAccount__Dh2StorageAccountUri"                                 = "https://${module.st_dh2data.name}.blob.core.windows.net"
-    "StorageAccount__TimeSeriesContainerName"                              = azurerm_storage_container.dh2_timeseries_synchronization.name # Kept for backwards compatibility
-    "StorageAccount__Dh2TimeSeriesSynchronizationContainerName"            = azurerm_storage_container.dh2_timeseries_synchronization.name
-    "StorageAccount__Dh2TimeSeriesSynchronizationArchiveStorageAccountUri" = "https://${module.st_dh2dropzone_archive.name}.blob.core.windows.net"
-    "StorageAccount__Dh2TimeSeriesSynchronizationArchiveContainerName"     = azurerm_storage_container.dropzonetimeseriessyncarchive.name
-    "StorageAccount__Dh2TimeSeriesIntermediaryStorageAccountUri"           = "https://${module.st_dh2timeseries_intermediary.name}.blob.core.windows.net"
-    "StorageAccount__Dh2TimeSeriesIntermediaryContainerName"               = azurerm_storage_container.timeseriesintermediary.name
-    "ServiceBus__ConnectionString"                                         = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-manage-connection-string)"
-    "ServiceBus__TimeSeriesMessagesQueueName"                              = azurerm_servicebus_queue.time_series_imported_messages_queue.name
-    "ServiceBus__TimeSeriesMessagesTopicName"                              = azurerm_servicebus_topic.time_series_imported_messages_topic.name
-    "ServiceBus__TimeSeriesMessagesSubscriptionName"                       = module.sbtsub_time_series_imported_messages.name
-    "ServiceBus__TimeSeriesProcessingSubscriptionName"                     = module.sbtsub_time_series_sync_processing.name
-    "ServiceBus__TimeSeriesAuditSubscriptionName"                          = module.sbtsub_time_series_sync_audit.name
-    "DataHub2Client__EndpointAddress"                                      = var.datahub2_migration_url,
-    "FeatureManagement__DataHub2HealthCheck"                               = var.feature_flag_datahub2_healthcheck
-    "FeatureManagement__DataHub2TimeSeriesImport"                          = var.feature_flag_datahub2_time_series_import
-    "TimeSeriesSynchronizationTaskHubName"                                 = "TimeSeriesSynchronization01"
+    WEBSITE_LOAD_CERTIFICATES                                                             = local.datahub2_certificate_thumbprint
+    "StorageAccount__Dh2StorageAccountUri"                                                = "https://${module.st_dh2data.name}.blob.core.windows.net"
+    "StorageAccount__TimeSeriesContainerName"                                             = azurerm_storage_container.dh2_timeseries_synchronization.name # Kept for backwards compatibility
+    "StorageAccount__Dh2TimeSeriesSynchronizationContainerName"                           = azurerm_storage_container.dh2_timeseries_synchronization.name
+    "StorageAccount__Dh2TimeSeriesSynchronizationArchiveStorageAccountUri"                = "https://${module.st_dh2dropzone_archive.name}.blob.core.windows.net"
+    "StorageAccount__Dh2TimeSeriesSynchronizationArchiveContainerName"                    = azurerm_storage_container.dropzonetimeseriessyncarchive.name
+    "StorageAccount__Dh2TimeSeriesIntermediaryStorageAccountUri"                          = "https://${module.st_dh2timeseries_intermediary.name}.blob.core.windows.net"
+    "StorageAccount__Dh2TimeSeriesIntermediaryContainerName"                              = azurerm_storage_container.timeseriesintermediary.name
+    "ServiceBus__ConnectionString"                                                        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-manage-connection-string)"
+    "ServiceBus__TimeSeriesMessagesQueueName"                                             = azurerm_servicebus_queue.time_series_imported_messages_queue.name
+    "ServiceBus__TimeSeriesMessagesTopicName"                                             = azurerm_servicebus_topic.time_series_imported_messages_topic.name
+    "ServiceBus__TimeSeriesMessagesSubscriptionName"                                      = module.sbtsub_time_series_imported_messages.name
+    "DataHub2Client__EndpointAddress"                                                     = var.datahub2_migration_url,
+    "FeatureManagement__DataHub2HealthCheck"                                              = var.feature_flag_datahub2_healthcheck
+    "FeatureManagement__DataHub2TimeSeriesImport"                                         = var.feature_flag_datahub2_time_series_import
+    "TimeSeriesSynchronizationTaskHubName"                                                = "TimeSeriesSynchronization01"
 
     # Logging Worker
-    "Logging__ApplicationInsights__LogLevel__Default"                      = local.LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT
-    "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Migrations" = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_MIGRATIONS
-    "Logging__ApplicationInsights__LogLevel__Energinet.Datahub.Core"       = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE
-    "Logging__ApplicationInsights__SamplingSettings_IsEnabled"             = local.LOGGING_APPINSIGHTS_SAMPLINGSETTINGS_ISENABLED
-    "Logging__ApplicationInsights__SamplingSettings_ExcludedTypes"         = local.LOGGING_APPINSIGHTS_SAMPLINGSETTINGS_EXCLUDEDTYPES
+    "Logging__ApplicationInsights__LogLevel__Default"                                     = local.LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT
+    "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Migrations"                = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_MIGRATIONS
+    "Logging__ApplicationInsights__LogLevel__Energinet.Datahub.Core"                      = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE
 
     # Logging Host
-    "AzureFunctionsJobHost__Logging__LogLevel__Default"                    = local.AZUREFUNCTIONSJOBHOST_LOGGING_LOGLEVEL_DEFAULT
-    "AzureFunctionsJobHost__Logging__LogLevel__DurableTask.Core"           = local.AZUREFUNCTIONSJOBHOST_LOGGING_LOGLEVEL_DURABLETASK_CORE
-    "AzureFunctionsJobHost__Logging__LogLevel__DurableTask.AzureStorage"   = local.AZUREFUNCTIONSJOBHOST_LOGGING_LOGLEVEL_DURABLETASK_AZURESTORAGE
-    "AzureFunctionsJobHost__Logging__LogLevel__Host.Triggers.DurableTask"  = local.AZUREFUNCTIONSJOBHOST_LOGGING_LOGLEVEL_HOST_TRIGGERS_DURABLETASK
+    "AzureFunctionsJobHost__Logging__LogLevel__Default"                                   = local.AZUREFUNCTIONSJOBHOST_LOGGING_LOGLEVEL_DEFAULT
+    "AzureFunctionsJobHost__Logging__LogLevel__DurableTask.Core"                          = local.AZUREFUNCTIONSJOBHOST_LOGGING_LOGLEVEL_DURABLETASK_CORE
+    "AzureFunctionsJobHost__Logging__LogLevel__DurableTask.AzureStorage"                  = local.AZUREFUNCTIONSJOBHOST_LOGGING_LOGLEVEL_DURABLETASK_AZURESTORAGE
+    "AzureFunctionsJobHost__Logging__LogLevel__Host.Triggers.DurableTask"                 = local.AZUREFUNCTIONSJOBHOST_LOGGING_LOGLEVEL_HOST_TRIGGERS_DURABLETASK
+    "AzureFunctionsJobHost__Logging__ApplicationInsights__SamplingSettings_IsEnabled"     = local.AZUREFUNCTIONSJOBHOST_LOGGING_APPINSIGHTS_SAMPLINGSETTINGS_ISENABLED
+    "AzureFunctionsJobHost__Logging__ApplicationInsights__SamplingSettings_ExcludedTypes" = local.AZUREFUNCTIONSJOBHOST_LOGGING_APPINSIGHTS_SAMPLINGSETTINGS_EXCLUDEDTYPES
   }
 }
