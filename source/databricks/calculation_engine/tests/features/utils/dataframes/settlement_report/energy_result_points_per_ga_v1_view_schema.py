@@ -21,33 +21,37 @@ from pyspark.sql.types import (
 )
 
 from features.utils.dataframes.settlement_report.settlement_report_view_column_names import (
-    EnergyResultsPerGaV1ColumnNames,
+    EnergyResultPointsPerGaV1ColumnNames,
 )
 
-energy_results_per_ga_v1_view_schema = StructType(
+energy_result_points_per_ga_v1_view_schema = StructType(
     [
         StructField(
-            EnergyResultsPerGaV1ColumnNames.calculation_id, StringType(), False
+            EnergyResultPointsPerGaV1ColumnNames.calculation_id, StringType(), False
         ),
         StructField(
-            EnergyResultsPerGaV1ColumnNames.calculation_type, StringType(), False
+            EnergyResultPointsPerGaV1ColumnNames.calculation_type, StringType(), False
         ),
-        StructField(EnergyResultsPerGaV1ColumnNames.grid_area, StringType(), False),
         StructField(
-            EnergyResultsPerGaV1ColumnNames.metering_point_type,
+            EnergyResultPointsPerGaV1ColumnNames.grid_area, StringType(), False
+        ),
+        StructField(
+            EnergyResultPointsPerGaV1ColumnNames.metering_point_type,
             StringType(),
             False,
         ),
         StructField(
-            EnergyResultsPerGaV1ColumnNames.settlement_method, StringType(), True
-        ),
-        StructField(EnergyResultsPerGaV1ColumnNames.resolution, StringType(), False),
-        StructField(EnergyResultsPerGaV1ColumnNames.time, TimestampType(), False),
-        StructField(
-            EnergyResultsPerGaV1ColumnNames.quantity, DecimalType(18, 3), False
+            EnergyResultPointsPerGaV1ColumnNames.settlement_method, StringType(), True
         ),
         StructField(
-            EnergyResultsPerGaV1ColumnNames.calculation_version,
+            EnergyResultPointsPerGaV1ColumnNames.resolution, StringType(), False
+        ),
+        StructField(EnergyResultPointsPerGaV1ColumnNames.time, TimestampType(), False),
+        StructField(
+            EnergyResultPointsPerGaV1ColumnNames.quantity, DecimalType(18, 3), False
+        ),
+        StructField(
+            EnergyResultPointsPerGaV1ColumnNames.calculation_version,
             StringType(),
             False,
         ),

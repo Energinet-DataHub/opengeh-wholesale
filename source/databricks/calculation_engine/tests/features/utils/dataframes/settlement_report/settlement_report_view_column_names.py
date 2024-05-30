@@ -49,7 +49,7 @@ class ChargeLinkPeriodsV1ColumnNames:
     energy_supplier_id = MeteringPointPeriodColname.energy_supplier_id
 
 
-class EnergyResultsPerGaV1ColumnNames:
+class EnergyResultPointsPerGaV1ColumnNames:
     calculation_id = EnergyResultColumnNames.calculation_id
     calculation_type = EnergyResultColumnNames.calculation_type
     energy_supplier_id = EnergyResultColumnNames.energy_supplier_id

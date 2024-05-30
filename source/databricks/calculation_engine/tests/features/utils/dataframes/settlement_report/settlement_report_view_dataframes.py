@@ -135,20 +135,22 @@ def create_charge_prices_v1_view(spark: SparkSession, df: DataFrame) -> DataFram
     return spark.createDataFrame(df.rdd, charge_prices_v1_view_schema)
 
 
-def create_energy_results_v1_view(spark: SparkSession, df: DataFrame) -> DataFrame:
+def create_energy_result_points_per_ga_v1_view(
+    spark: SparkSession, df: DataFrame
+) -> DataFrame:
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
     from features.utils.dataframes.settlement_report.settlement_report_view_column_names import (
-        EnergyResultsPerGaV1ColumnNames,
+        EnergyResultPointsPerGaV1ColumnNames,
     )
-    from features.utils.dataframes.settlement_report.energy_results_per_ga_v1_view_schema import (
-        energy_results_per_ga_v1_view_schema,
+    from features.utils.dataframes.settlement_report.energy_result_points_per_ga_v1_view_schema import (
+        energy_result_points_per_ga_v1_view_schema,
     )
 
     df = df.withColumn(
-        EnergyResultsPerGaV1ColumnNames.quantity,
-        col(EnergyResultsPerGaV1ColumnNames.quantity).cast(DecimalType(18, 3)),
+        EnergyResultPointsPerGaV1ColumnNames.quantity,
+        col(EnergyResultPointsPerGaV1ColumnNames.quantity).cast(DecimalType(18, 3)),
     )
 
     df = df.withColumn(
@@ -157,7 +159,7 @@ def create_energy_results_v1_view(spark: SparkSession, df: DataFrame) -> DataFra
             Colname.start_date_time,
         ).cast(TimestampType()),
     )
-    return spark.createDataFrame(df.rdd, energy_results_per_ga_v1_view_schema)
+    return spark.createDataFrame(df.rdd, energy_result_points_per_ga_v1_view_schema)
 
 
 def create_wholesale_results_v1_view(spark: SparkSession, df: DataFrame) -> DataFrame:
