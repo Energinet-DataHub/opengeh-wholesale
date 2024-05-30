@@ -75,7 +75,6 @@ variable "disable_biztalk_backoff" {
   default     = false
 }
 
-
 variable "cert_esett_dh2_datahub3_password" {
   type        = string
   description = "Password for the eSett DH2 certificate"
@@ -84,4 +83,46 @@ variable "cert_esett_dh2_datahub3_password" {
 variable "cert_esett_biztalk_datahub3_password" {
   type        = string
   description = "Password for the eSett Biztalk certificate"
+}
+
+variable "biz_talk_sender_code" {
+  type        = string
+  description = "Sender code for BizTalk"
+  default = null
+}
+
+variable "biz_talk_receiver_code" {
+  type        = string
+  description = "Receiver code for BizTalk"
+  default = null
+}
+
+variable "dh2_endpoint" {
+  type        = string
+  description = "Endpoint for DH2"
+  default = null
+}
+
+variable "biz_talk_biz_talk_end_point" {
+  type        = string
+  description = "Endpoint for BizTalk"
+  default     = "/EL_DataHubService/IntegrationService.svc"
+}
+
+variable "biz_talk_business_type_consumption" {
+  type        = string
+  description = "Business type for consumption"
+  default     = "NBS-RECI"
+}
+
+variable "biz_talk_business_type_production" {
+  type        = string
+  description = "Business type for production"
+  default     = "NBS-MGXI"
+}
+
+variable "biz_talk_business_type_exchange" {
+  type        = string
+  description = "Business type for exchange"
+  default     = "NBS-MEPI"
 }

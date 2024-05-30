@@ -1,5 +1,4 @@
 resource "null_resource" "ecp_outbox_biztalk_hybrid_connection" {
-
   triggers = {
     function_app_name      = module.func_entrypoint_ecp_outbox.name
     resource_group_name    = azurerm_resource_group.this.name

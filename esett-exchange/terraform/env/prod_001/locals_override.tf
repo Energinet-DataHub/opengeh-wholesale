@@ -1,5 +1,0 @@
-locals {
-  DH2_ENDPOINT           = "https://b2b.datahub.dk"
-  BIZ_TALK_SENDER_CODE   = "45V000000000056T"
-  BIZ_TALK_RECEIVER_CODE = "44V000000000029A"
-}
