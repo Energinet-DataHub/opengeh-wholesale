@@ -193,7 +193,6 @@ jobs:
             paths: datamigration/domain
           - name: Test Migration scripts
             paths: datamigration/migration_scripts
-
     if: ${{ inputs.has_delta_migration_changes }}
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
@@ -243,9 +242,10 @@ jobs:
           common/
           infrastructure/
           entry_points/
-          datamigration/migration_scripts
+          datamigration/all_scripts
+          datamigration/current_state
           datamigration/domain
-          datamigration/scripts
+          datamigration/migration_scripts
           contracts"
 
           IMAGE_TAG=${{ inputs.image_tag }} docker compose -f .devcontainer/docker-compose.yml run --rm -u root -w //workspaces/${repository_name} python-unit-test ./.devcontainer/check_test_count.sh $filter
