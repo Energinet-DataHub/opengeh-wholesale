@@ -194,6 +194,30 @@ def create_wholesale_results_v1_view(spark: SparkSession, df: DataFrame) -> Data
     return spark.createDataFrame(df.rdd, wholesale_results_v1_view_schema)
 
 
+def create_monthly_amounts_v1_view(spark: SparkSession, df: DataFrame) -> DataFrame:
+
+    # Don't remove. Believed needed because this function is an argument to the setup function
+    # and therefore the following packages are not automatically included.
+    from features.utils.dataframes.settlement_report.monthly_amounts_v1_view_schema import (
+        monthly_amounts_v1_view_schema,
+    )
+    from package.constants import WholesaleResultColumnNames
+
+    df = df.withColumn(
+        Colname.start_date_time,
+        col(
+            Colname.start_date_time,
+        ).cast(TimestampType()),
+    )
+
+    df = df.withColumn(
+        WholesaleResultColumnNames.amount,
+        col(WholesaleResultColumnNames.amount).cast(DecimalType(18, 6)),
+    )
+
+    return spark.createDataFrame(df.rdd, monthly_amounts_v1_view_schema)
+
+
 def _parse_qualities(qualities_str: str) -> list[dict]:
     # Parse the string into a list of dictionaries
     return literal_eval(qualities_str)
