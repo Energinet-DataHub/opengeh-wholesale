@@ -33,6 +33,8 @@ public sealed class SettlementReportFileGeneratorFactory : ISettlementReportFile
         {
             case SettlementReportFileContent.BalanceFixingResult:
                 return new BalanceFixingResultFileGenerator(_dataRepository);
+            case SettlementReportFileContent.WholesaleFixingResult:
+                return new WholesaleFixingResultFileGenerator(_dataRepository);
             default:
                 throw new ArgumentOutOfRangeException(nameof(fileContent), fileContent, null);
         }
