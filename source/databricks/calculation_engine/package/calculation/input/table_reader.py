@@ -73,7 +73,7 @@ class TableReader:
 
         return df
 
-    def read_charge_links_periods(self) -> DataFrame:
+    def read_charge_link_periods(self) -> DataFrame:
         path = f"{self._calculation_input_path}/{paths.CHARGE_LINK_PERIODS_TABLE_NAME}"
         df = self._spark.read.format("delta").load(path)
 
