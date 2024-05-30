@@ -140,15 +140,15 @@ def create_energy_results_v1_view(spark: SparkSession, df: DataFrame) -> DataFra
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
     from features.utils.dataframes.settlement_report.settlement_report_view_column_names import (
-        EnergyResultsV1ColumnNames,
+        EnergyResultsPerGaV1ColumnNames,
     )
-    from features.utils.dataframes.settlement_report.energy_results_v1_view_schema import (
-        energy_results_v1_view_schema,
+    from features.utils.dataframes.settlement_report.energy_results_per_ga_v1_view_schema import (
+        energy_results_per_ga_v1_view_schema,
     )
 
     df = df.withColumn(
-        EnergyResultsV1ColumnNames.quantity,
-        col(EnergyResultsV1ColumnNames.quantity).cast(DecimalType(18, 3)),
+        EnergyResultsPerGaV1ColumnNames.quantity,
+        col(EnergyResultsPerGaV1ColumnNames.quantity).cast(DecimalType(18, 3)),
     )
 
     df = df.withColumn(
@@ -157,7 +157,7 @@ def create_energy_results_v1_view(spark: SparkSession, df: DataFrame) -> DataFra
             Colname.start_date_time,
         ).cast(TimestampType()),
     )
-    return spark.createDataFrame(df.rdd, energy_results_v1_view_schema)
+    return spark.createDataFrame(df.rdd, energy_results_per_ga_v1_view_schema)
 
 
 def create_wholesale_results_v1_view(spark: SparkSession, df: DataFrame) -> DataFrame:

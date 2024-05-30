@@ -27,8 +27,8 @@ from features.utils.dataframes.settlement_report.charge_link_periods_v1_view_sch
 from features.utils.dataframes.settlement_report.charge_prices_v1_view_schema import (
     charge_prices_v1_view_schema,
 )
-from features.utils.dataframes.settlement_report.energy_results_v1_view_schema import (
-    energy_results_v1_view_schema,
+from features.utils.dataframes.settlement_report.energy_results_per_ga_v1_view_schema import (
+    energy_results_per_ga_v1_view_schema,
 )
 from features.utils.dataframes.settlement_report.monthly_amounts_v1_view_schema import (
     monthly_amounts_v1_view_schema,
@@ -49,7 +49,7 @@ def get_output_specifications() -> dict[str, tuple]:
     """
     return {
         "energy_result_points_per_ga_v1.csv": (
-            energy_result_points_per_ga_v1_view_schema,
+            energy_results_per_ga_v1_view_schema,
             EdiResultsViewReader.read_energy_result_points_per_ga_v1,
             create_energy_result_points_per_ga_v1_view,
         ),
@@ -74,7 +74,7 @@ def get_output_specifications() -> dict[str, tuple]:
             settlement_report_dataframes.create_charge_prices_v1_view,
         ),
         "energy_results_per_ga_v1.csv": (
-            energy_results_v1_view_schema,
+            energy_results_per_ga_v1_view_schema,
             SettlementReportViewReader.read_energy_results_per_ga_v1,
             settlement_report_dataframes.create_energy_results_v1_view,
         ),

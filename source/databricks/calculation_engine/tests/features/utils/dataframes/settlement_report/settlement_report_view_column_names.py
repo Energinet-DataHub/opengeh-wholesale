@@ -49,7 +49,7 @@ class ChargeLinkPeriodsV1ColumnNames:
     energy_supplier_id = MeteringPointPeriodColname.energy_supplier_id
 
 
-class EnergyResultsV1ColumnNames:
+class EnergyResultsPerGaV1ColumnNames:
     calculation_id = EnergyResultColumnNames.calculation_id
     calculation_type = EnergyResultColumnNames.calculation_type
     energy_supplier_id = EnergyResultColumnNames.energy_supplier_id
@@ -59,4 +59,4 @@ class EnergyResultsV1ColumnNames:
     quantity = EnergyResultColumnNames.quantity
     resolution = Colname.resolution
     settlement_method = Colname.settlement_method
-    aggregation_level = EnergyResultColumnNames.aggregation_level
+    calculation_version = "calculation_version"
