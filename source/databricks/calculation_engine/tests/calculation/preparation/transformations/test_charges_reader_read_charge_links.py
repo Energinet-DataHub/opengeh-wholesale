@@ -19,11 +19,10 @@ import pytest
 from pyspark import Row
 from pyspark.sql import SparkSession
 
-from package.calculation.preparation.transformations import read_charge_links
-from package.calculation.input.schemas import charge_link_periods_schema
-
 from package.calculation import input
 from package.calculation.input import TableReader
+from package.calculation.input.schemas import charge_link_periods_schema
+from package.calculation.preparation.transformations import read_charge_links
 from package.codelists import ChargeType
 from package.constants import Colname
 
@@ -66,11 +65,9 @@ class TestWhenValidInput:
         self, table_reader_mock: TableReader, spark: SparkSession
     ) -> None:
         # Arrange
-        table_reader_mock.read_charge_links_periods.return_value = (
-            spark.createDataFrame(
-                data=[_create_charge_link_periods_row()],
-                schema=charge_link_periods_schema,
-            )
+        table_reader_mock.read_charge_link_periods.return_value = spark.createDataFrame(
+            data=[_create_charge_link_periods_row()],
+            schema=charge_link_periods_schema,
         )
 
         # Act
@@ -133,16 +130,14 @@ class TestWhenChargeLinkPeriodExceedsCalculationPeriod:
         # Arrange
         calculation_from_date = datetime(2020, 1, 2, 0, 0)
         calculation_to_date = datetime(2020, 1, 3, 0, 0)
-        table_reader_mock.read_charge_links_periods.return_value = (
-            spark.createDataFrame(
-                data=[
-                    _create_charge_link_periods_row(
-                        from_date=charge_from_date,
-                        to_date=charge_to_date,
-                    )
-                ],
-                schema=charge_link_periods_schema,
-            )
+        table_reader_mock.read_charge_link_periods.return_value = spark.createDataFrame(
+            data=[
+                _create_charge_link_periods_row(
+                    from_date=charge_from_date,
+                    to_date=charge_to_date,
+                )
+            ],
+            schema=charge_link_periods_schema,
         )
 
         # Act
