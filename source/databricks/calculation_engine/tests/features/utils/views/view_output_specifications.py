@@ -44,6 +44,7 @@ from features.utils.dataframes.settlement_report.settlement_report_view_datafram
     create_charge_prices_v1_view,
     create_wholesale_results_v1_view,
     create_monthly_amounts_v1_view,
+    create_latest_calculations_v1_view,
 )
 from features.utils.dataframes.settlement_report.wholesale_results_v1_view_schema import (
     wholesale_results_v1_view_schema,
@@ -94,14 +95,14 @@ def get_output_specifications() -> dict[str, tuple]:
             SettlementReportViewReader.read_wholesale_results_v1,
             create_wholesale_results_v1_view,
         ),
-        "latest_calculations_v1.csv": (
-            latest_calculations_v1_view_schema,
-            SettlementReportViewReader.read_wholesale_results_v1,
-            create_wholesale_results_v1_view,
-        ),
         "monthly_amounts_v1.csv": (
             monthly_amounts_v1_view_schema,
             SettlementReportViewReader.read_monthly_amounts_v1,
             create_monthly_amounts_v1_view,
+        ),
+        "latest_calculations_v1.csv": (
+            latest_calculations_v1_view_schema,
+            SettlementReportViewReader.read_wholesale_results_v1,
+            create_latest_calculations_v1_view,
         ),
     }
