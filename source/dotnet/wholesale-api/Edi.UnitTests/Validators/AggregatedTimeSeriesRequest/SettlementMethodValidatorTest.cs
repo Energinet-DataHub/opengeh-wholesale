@@ -100,7 +100,10 @@ public class SettlementMethodValidatorTest
     [InlineData("", DataHubNames.SettlementMethod.Flex)]
     [InlineData("", DataHubNames.SettlementMethod.NonProfiled)]
     [InlineData("", "invalid-settlement-method")]
-    public async Task Validate_WhenNotConsumptionAndSettlementMethodIsGiven_ReturnsExpectedValidationErrorAsync(string meteringPointType, string settlementMethod)
+    [InlineData(null, DataHubNames.SettlementMethod.Flex)]
+    [InlineData(null, DataHubNames.SettlementMethod.NonProfiled)]
+    [InlineData(null, "invalid-settlement-method")]
+    public async Task Validate_WhenNotConsumptionAndSettlementMethodIsGiven_ReturnsExpectedValidationErrorAsync(string? meteringPointType, string settlementMethod)
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
