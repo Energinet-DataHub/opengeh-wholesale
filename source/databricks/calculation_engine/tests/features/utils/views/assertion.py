@@ -22,7 +22,8 @@ from package.constants.result_column_names import ResultColumnNames
 def assert_output(
     actual_and_expected: tuple[list[DataframeWrapper], list[DataframeWrapper]],
     output_name: str,
-    skip_columns_when_actual_and_expected_are_equal: bool = False,
+    skip_columns_when_actual_and_expected_are_equal: bool = True,
+    show_actual_and_expected: bool = False,
 ) -> None:
     actual_results, expected_results = actual_and_expected
 
@@ -43,6 +44,7 @@ def assert_output(
         ignore_decimal_scale=True,
         columns_to_skip=columns_to_skip,
         drop_columns_when_actual_and_expected_are_equal=skip_columns_when_actual_and_expected_are_equal,
+        show_actual_and_expected=show_actual_and_expected,
     )
 
 

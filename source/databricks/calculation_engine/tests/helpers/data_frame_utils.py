@@ -43,6 +43,7 @@ def assert_dataframe_and_schema(
     ignore_decimal_precision: bool = False,
     columns_to_skip: list[str] | None = None,
     drop_columns_when_actual_and_expected_are_equal: bool = False,
+    show_actual_and_expected: bool = False,
 ) -> None:
     assert actual is not None, "Actual data frame is None"
     assert expected is not None, "Expected data frame is None"
@@ -70,9 +71,14 @@ def assert_dataframe_and_schema(
         print("EXPECTED SCHEMA:")
         expected.printSchema()
         raise
-    # actual.show(truncate=False)
-    # expected.show(truncate=False)
+
     try:
+        if show_actual_and_expected:
+            print("ACTUAL:")
+            actual.show(3000, False)
+            print("EXPECTED:")
+            expected.show(3000, False)
+
         assert_dataframes_equal(actual, expected)
     except AssertionError:
 
