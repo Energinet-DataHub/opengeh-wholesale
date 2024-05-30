@@ -186,11 +186,11 @@ jobs:
         # IMPORTANT: When adding a new folder here it should also be added in the `unit_test_check` job!
         tests_filter_expression:
           - name: Migrations
-            paths: datamigration/migration/
+            paths: datamigration/migration
           - name: Migration domain tests
-            paths: datamigration/domain/
+            paths: datamigration/domain
           - name: Test scripts
-            paths: datamigration/scripts/
+            paths: datamigration/scripts
     if: ${{ inputs.has_delta_migration_changes }}
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
