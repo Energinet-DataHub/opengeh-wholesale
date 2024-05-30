@@ -186,9 +186,9 @@ jobs:
         # IMPORTANT: When adding a new folder here it should also be added in the `unit_test_check` job!
         tests_filter_expression:
           - name: Migrations
-            paths: datamigration/!(test_migration.py)
-          - name: Current state migrations
-            paths: datamigration/test_migration.py
+            paths: datamigration/migration/
+          - name: Migration domain tests
+            paths: datamigration/domain/
           - name: Test scripts
             paths: datamigration/scripts/
     if: ${{ inputs.has_delta_migration_changes }}

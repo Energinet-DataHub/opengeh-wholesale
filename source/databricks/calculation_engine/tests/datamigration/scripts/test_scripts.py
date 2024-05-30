@@ -28,6 +28,56 @@ import tests.helpers.mock_helper as mock_helper
 import tests.helpers.spark_sql_migration_helper as spark_sql_migration_helper
 
 
+def test__schema_config__when_current_state_script_files_are_executed(
+    mocker: Mock, spark: SparkSession
+) -> None:
+    # Arrange
+    storage_account = "storage_account_4"
+    mocker.patch.object(
+        sut.paths,
+        sut.paths.get_storage_account_url.__name__,
+        side_effect=mock_helper.base_path_helper,
+    )
+
+    mocker.patch.object(
+        sut.env_vars,
+        sut.env_vars.get_storage_account_name.__name__,
+        return_value=storage_account,
+    )
+
+    mocker.patch.object(
+        sut.env_vars,
+        sut.env_vars.get_calculation_input_folder_name.__name__,
+        return_value=storage_account,
+    )
+
+    mocker.patch.object(
+        sut.paths,
+        sut.paths.get_spark_sql_migrations_path.__name__,
+        return_value=storage_account,
+    )
+
+    mocker.patch.object(
+        sut.paths,
+        sut.paths.get_container_root_path.__name__,
+        return_value=storage_account,
+    )
+
+    spark_helper.reset_spark_catalog(spark)
+    spark_sql_migration_helper.migrate_with_current_state(spark)
+
+    # Act
+    sut.migrate_data_lake()
+
+    # Assert
+    schemas = spark.catalog.listDatabases()
+    for schema in schema_config.schema_config:
+        assert schema.name in [schema.name for schema in schemas]
+        for table in schema.tables:
+            actual_table = spark.table(f"{schema.name}.{table.name}")
+            assert actual_table.schema == table.schema
+
+
 def test__current_state_and_migration_scripts__should_give_same_result(
     mocker: Mock, spark: SparkSession
 ) -> None:
