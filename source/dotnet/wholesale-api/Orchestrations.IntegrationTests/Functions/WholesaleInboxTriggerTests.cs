@@ -139,7 +139,7 @@ public class WholesaleInboxTriggerTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task GivenActorMessagesEnqueued_WhenEventIsHandled_FunctionCompletesWithRaisedOrchestrationEvent()
+    public async Task GivenActorMessagesEnqueued_WhenEventIsHandled_FunctionCompletes()
     {
         // Arrange
         var actorMessagesEnqueued = new MessagesEnqueuedV1

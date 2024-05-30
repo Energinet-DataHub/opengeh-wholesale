@@ -198,7 +198,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
     /// Verify the job status monitor (loop) is working with the expected job status state changes.
     /// </summary>
     [Fact]
-    public async Task MockJobsRunsGetLifeCycleScenario_WhenCallingStartCalculationEndPoint_OrchestrationCompletesWithExpectedGetJobStatusActivity()
+    public async Task MockJobsRunsGetLifeCycleScenario_WhenCallingStartCalculationEndPoint_CalculationJobCompletesWithExpectedGetJobStatusActivity()
     {
         // Arrange
         // => Databricks Jobs API
