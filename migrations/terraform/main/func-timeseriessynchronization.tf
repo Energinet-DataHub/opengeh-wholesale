@@ -36,6 +36,10 @@ module "func_timeseriessynchronization" {
       role_definition_name = "Storage Blob Data Contributor"
     },
     {
+      resource_id          = module.st_dh2timeseries_audit.id
+      role_definition_name = "Storage Blob Data Contributor"
+    },
+    {
       resource_id          = module.kv_internal.id
       role_definition_name = "Key Vault Secrets User"
     },
