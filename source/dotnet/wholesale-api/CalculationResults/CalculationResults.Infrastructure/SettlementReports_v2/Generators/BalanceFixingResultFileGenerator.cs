@@ -36,7 +36,7 @@ public sealed class BalanceFixingResultFileGenerator : ISettlementReportFileGene
     public async Task WriteAsync(SettlementReportRequestFilterDto filter, StreamWriter destination)
     {
         var csvHelper = new CsvWriter(destination, new CultureInfo(filter.CsvFormatLocale ?? "en-US"));
-        csvHelper.Context.RegisterClassMap<SettlementReportResultRowMap>();
+        csvHelper.Context.RegisterClassMap<SettlementReportEnergyResultRowMap>();
 
         await using (csvHelper.ConfigureAwait(false))
         {
@@ -51,9 +51,9 @@ public sealed class BalanceFixingResultFileGenerator : ISettlementReportFileGene
         }
     }
 
-    public sealed class SettlementReportResultRowMap : ClassMap<SettlementReportEnergyResultRow>
+    public sealed class SettlementReportEnergyResultRowMap : ClassMap<SettlementReportEnergyResultRow>
     {
-        public SettlementReportResultRowMap()
+        public SettlementReportEnergyResultRowMap()
         {
             Map(r => r.GridAreaCode)
                 .Name("METERINGGRIDAREAID")
@@ -66,7 +66,7 @@ public sealed class BalanceFixingResultFileGenerator : ISettlementReportFileGene
                 .Convert(row => row.Value.CalculationType switch
                 {
                     CalculationType.BalanceFixing => "D04",
-                    _ => throw new ArgumentOutOfRangeException(nameof(row.Value.Resolution)),
+                    _ => throw new ArgumentOutOfRangeException(nameof(row.Value.CalculationType)),
                 });
 
             Map(r => r.Time)
