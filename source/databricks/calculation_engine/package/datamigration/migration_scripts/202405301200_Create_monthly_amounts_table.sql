@@ -14,10 +14,10 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.monthly_amounts
     quantity_unit STRING NOT NULL,
     time TIMESTAMP NOT NULL,
     amount DECIMAL(18, 6),
-    is_tax BOOLEAN,
-    charge_code STRING,
-    charge_type STRING NOT NULL
-    charge_owner_id STRING NOT NULL,
+    is_tax BOOLEAN NOT NULL,
+    charge_code STRING NOT NULL,
+    charge_type STRING NOT NULL,
+    charge_owner_id STRING NOT NULL
 )
 USING DELTA
 TBLPROPERTIES (
