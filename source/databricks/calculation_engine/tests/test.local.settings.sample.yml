@@ -13,12 +13,12 @@ migrations:
 feature_tests:
   # Use this setting to enable or disable showing the entire contents of the dataframes actual and expected in the test console.
   # Options: true | false
-  # `false` is the default.
-  # Recommendation: Keep it as false.
-  show_actual_and_expected: false
+  # `False` is the default. Note that both "False" and "false" are acceptable values.
+  # Recommendation: Keep it as False.
+  show_actual_and_expected: False
 
   # Use this setting to enable or disable showing equal columns from actual and expected in the test console.
   # Options: true | false
-  # `false` is the default.
-  # Recommendation: Keep it as false.
-  show_columns_when_actual_and_expected_are_equal: false
+  # `False` is the default. Note that both "False" and "false" are acceptable values.
+  # Recommendation: Keep it as False.
+  show_columns_when_actual_and_expected_are_equal: False
