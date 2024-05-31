@@ -15,10 +15,10 @@
 from pyspark.sql import SparkSession, Row
 
 from calculation.preparation.transformations import metering_point_periods_factory
-from package.calculation.basis_data.schemas import metering_point_period_schema
 from package.calculation.basis_data.basis_data import (
     get_metering_point_periods_basis_data,
 )
+from package.calculation.basis_data.schemas import metering_point_period_schema
 from package.codelists import (
     MeteringPointResolution,
 )
@@ -69,10 +69,10 @@ def test__columns_have_expected_values(spark: SparkSession) -> None:
         MeteringPointPeriodColname.metering_point_id: metering_point_periods_factory.DEFAULT_METERING_POINT_ID,
         MeteringPointPeriodColname.metering_point_type: metering_point_periods_factory.DEFAULT_METERING_POINT_TYPE.value,
         MeteringPointPeriodColname.settlement_method: metering_point_periods_factory.DEFAULT_SETTLEMENT_METHOD.value,
-        MeteringPointPeriodColname.grid_area: metering_point_periods_factory.DEFAULT_GRID_AREA,
+        MeteringPointPeriodColname.grid_area_code: metering_point_periods_factory.DEFAULT_GRID_AREA,
         MeteringPointPeriodColname.resolution: metering_point_periods_factory.DEFAULT_RESOLUTION.value,
-        MeteringPointPeriodColname.from_grid_area: metering_point_periods_factory.DEFAULT_FROM_GRID_AREA,
-        MeteringPointPeriodColname.to_grid_area: metering_point_periods_factory.DEFAULT_TO_GRID_AREA,
+        MeteringPointPeriodColname.from_grid_area_code: metering_point_periods_factory.DEFAULT_FROM_GRID_AREA,
+        MeteringPointPeriodColname.to_grid_area_code: metering_point_periods_factory.DEFAULT_TO_GRID_AREA,
         MeteringPointPeriodColname.parent_metering_point_id: metering_point_periods_factory.DEFAULT_PARENT_METERING_POINT_ID,
         MeteringPointPeriodColname.energy_supplier_id: metering_point_periods_factory.DEFAULT_ENERGY_SUPPLIER_ID,
         MeteringPointPeriodColname.balance_responsible_id: metering_point_periods_factory.DEFAULT_BALANCE_RESPONSIBLE_ID,

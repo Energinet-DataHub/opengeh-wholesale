@@ -48,7 +48,7 @@ class MonthlyAmountPerCharge(DataFrameWrapper):
 # See comments to the `assert_schema()` invocation.
 monthly_amount_per_charge_schema = t.StructType(
     [
-        t.StructField(Colname.grid_area, t.StringType(), False),
+        t.StructField(Colname.grid_area_code, t.StringType(), False),
         t.StructField(Colname.energy_supplier_id, t.StringType(), False),
         t.StructField(Colname.unit, t.StringType(), False),
         t.StructField(Colname.charge_time, t.TimestampType(), False),

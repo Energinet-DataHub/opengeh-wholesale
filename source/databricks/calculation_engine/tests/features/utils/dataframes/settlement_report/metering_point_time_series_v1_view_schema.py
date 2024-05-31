@@ -39,7 +39,7 @@ metering_point_time_series_v1_view_schema = StructType(
             MeteringPointPeriodColname.metering_point_type, StringType(), False
         ),
         StructField(MeteringPointPeriodColname.resolution, StringType(), False),
-        StructField(MeteringPointPeriodColname.grid_area, StringType(), False),
+        StructField(MeteringPointPeriodColname.grid_area_code, StringType(), False),
         StructField(MeteringPointPeriodColname.energy_supplier_id, StringType(), True),
         StructField(
             "start_date_time",
