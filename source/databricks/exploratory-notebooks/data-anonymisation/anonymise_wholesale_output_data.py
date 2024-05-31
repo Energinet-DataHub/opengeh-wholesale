@@ -128,10 +128,10 @@ df_source_grid_area_codes_table = (
 
 # COMMAND ----------
 
-df_all_grid_area_codes = df_source_grid_area_codes_table.union(df_source_energy_results_table.select(grid_area_code_column_name).distinct()).distinct()
+df_unique_grid_area_codes = df_source_grid_area_codes_table.union(df_source_energy_results_table.select(grid_area_code_column_name).distinct()).distinct()
 
 anonymised_grid_area_codes = []
-list_unique_grid_area_codes = [row[grid_area_code_column_name] for row in df_all_grid_area_codes.collect()]
+list_unique_grid_area_codes = [row[grid_area_code_column_name] for row in df_unique_grid_area_codes.collect()]
 
 first_anonymized_id_iteration = 1
 for grid_area_code in list_unique_grid_area_codes:
