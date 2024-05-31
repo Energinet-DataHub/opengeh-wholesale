@@ -18,6 +18,7 @@ from pyspark.sql.types import (
     StructField,
     StructType,
     TimestampType,
+    BooleanType,
 )
 
 from package.constants import MonthlyAmountsColumnNames
@@ -37,10 +38,12 @@ monthly_amounts_schema = StructType(
         ),
         StructField(MonthlyAmountsColumnNames.grid_area, StringType(), False),
         StructField(MonthlyAmountsColumnNames.energy_supplier_id, StringType(), True),
+        StructField(MonthlyAmountsColumnNames.quantity_unit, StringType(), False),
         StructField(MonthlyAmountsColumnNames.time, TimestampType(), False),
         StructField(MonthlyAmountsColumnNames.amount, DecimalType(18, 6), True),
-        StructField(MonthlyAmountsColumnNames.charge_owner_id, StringType(), False),
+        StructField(MonthlyAmountsColumnNames.is_tax, BooleanType(), True),
         StructField(MonthlyAmountsColumnNames.charge_code, StringType(), True),
         StructField(MonthlyAmountsColumnNames.charge_type, StringType(), True),
+        StructField(MonthlyAmountsColumnNames.charge_owner_id, StringType(), False),
     ]
 )
