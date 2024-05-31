@@ -37,13 +37,13 @@ monthly_amounts_schema = StructType(
             MonthlyAmountsColumnNames.calculation_result_id, StringType(), False
         ),
         StructField(MonthlyAmountsColumnNames.grid_area_code, StringType(), False),
-        StructField(MonthlyAmountsColumnNames.energy_supplier_id, StringType(), True),
+        StructField(MonthlyAmountsColumnNames.energy_supplier_id, StringType(), False),
         StructField(MonthlyAmountsColumnNames.quantity_unit, StringType(), False),
         StructField(MonthlyAmountsColumnNames.time, TimestampType(), False),
         StructField(MonthlyAmountsColumnNames.amount, DecimalType(18, 6), True),
-        StructField(MonthlyAmountsColumnNames.is_tax, BooleanType(), True),
-        StructField(MonthlyAmountsColumnNames.charge_code, StringType(), True),
-        StructField(MonthlyAmountsColumnNames.charge_type, StringType(), True),
+        StructField(MonthlyAmountsColumnNames.is_tax, BooleanType(), False),
+        StructField(MonthlyAmountsColumnNames.charge_code, StringType(), False),
+        StructField(MonthlyAmountsColumnNames.charge_type, StringType(), False),
         StructField(MonthlyAmountsColumnNames.charge_owner_id, StringType(), False),
     ]
 )
