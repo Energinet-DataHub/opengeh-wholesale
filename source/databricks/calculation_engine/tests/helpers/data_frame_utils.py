@@ -55,8 +55,6 @@ def assert_dataframe_and_schema(
         expected = expected.drop(*columns_to_skip)
 
     try:
-        actual.show()
-        expected.show()
         assert_schema(
             actual.schema,
             expected.schema,
