@@ -14,6 +14,15 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
-//TODO: does the name make sense?
-public sealed record SettlementReportRequestPartialInfo(
-    int PartNumber);
+public sealed record SettlementReportPartialFileInfo
+{
+    public SettlementReportPartialFileInfo(string fileName)
+    {
+        FileName = fileName;
+        ChunkOffset = 0;
+    }
+
+    public string FileName { get; init; }
+
+    public int ChunkOffset { get; init; }
+}

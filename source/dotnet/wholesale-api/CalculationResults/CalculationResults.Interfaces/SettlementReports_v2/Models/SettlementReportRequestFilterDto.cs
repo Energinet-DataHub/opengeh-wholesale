@@ -19,5 +19,4 @@ public sealed record SettlementReportRequestFilterDto(
     DateTimeOffset PeriodStart,
     DateTimeOffset PeriodEnd,
     string? EnergySupplier,
-    string? CsvFormatLocale,
-    SettlementReportRequestPartialInfo? PartialInfo = null);
+    string? CsvFormatLocale);

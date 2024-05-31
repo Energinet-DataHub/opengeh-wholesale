@@ -20,71 +20,179 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementR
 
 public sealed class SettlementReportRequestHandler : ISettlementReportRequestHandler
 {
-    //TODO: move to config?
-    public const long ThresholdToSplitFiles = 10000;
+    private readonly ISettlementReportFileGeneratorFactory _fileGeneratorFactory;
 
-    public Task<IEnumerable<SettlementReportFileRequestDto>> RequestReportAsync(
+    public SettlementReportRequestHandler(ISettlementReportFileGeneratorFactory fileGeneratorFactory)
+    {
+        _fileGeneratorFactory = fileGeneratorFactory;
+    }
+
+    public async Task<IEnumerable<SettlementReportFileRequestDto>> RequestReportAsync(
         SettlementReportRequestId requestId,
         SettlementReportRequestDto reportRequest)
     {
-        IEnumerable<SettlementReportFileRequestDto> filesToRequest;
+        var setsOfFiles = new List<IAsyncEnumerable<SettlementReportFileRequestDto>>();
 
         switch (reportRequest.CalculationType)
         {
             case CalculationType.BalanceFixing:
-                filesToRequest = RequestFilesForAggregatedEnergyResults(requestId, reportRequest, SettlementReportFileContent.BalanceFixingResult);
+                setsOfFiles.Add(RequestFilesForEnergyResultsAsync(true, requestId, reportRequest));
                 break;
-
             case CalculationType.WholesaleFixing:
-                filesToRequest = RequestFilesForAggregatedEnergyResults(requestId, reportRequest, SettlementReportFileContent.WholesaleFixingResult);
+                setsOfFiles.Add(RequestFilesForEnergyResultsAsync(false, requestId, reportRequest));
+                setsOfFiles.Add(RequestFilesForWholesaleResultsAsync(SettlementReportFileContent.WholesaleResult, requestId, reportRequest));
+                break;
+            case CalculationType.FirstCorrectionSettlement:
+                setsOfFiles.Add(RequestFilesForEnergyResultsAsync(false, requestId, reportRequest));
+                setsOfFiles.Add(RequestFilesForWholesaleResultsAsync(SettlementReportFileContent.FirstCorrectionResult, requestId, reportRequest));
+                break;
+            case CalculationType.SecondCorrectionSettlement:
+                setsOfFiles.Add(RequestFilesForEnergyResultsAsync(false, requestId, reportRequest));
+                setsOfFiles.Add(RequestFilesForWholesaleResultsAsync(SettlementReportFileContent.SecondCorrectionResult, requestId, reportRequest));
+                break;
+            case CalculationType.ThirdCorrectionSettlement:
+                setsOfFiles.Add(RequestFilesForEnergyResultsAsync(false, requestId, reportRequest));
+                setsOfFiles.Add(RequestFilesForWholesaleResultsAsync(SettlementReportFileContent.ThirdCorrectionResult, requestId, reportRequest));
                 break;
             default:
                 throw new InvalidOperationException($"Cannot generate report for calculation type {reportRequest.CalculationType}.");
         }
 
-        return Task.FromResult(filesToRequest);
+        var filesToRequest = new List<SettlementReportFileRequestDto>();
+
+        foreach (var fileSet in setsOfFiles)
+        {
+            await foreach (var fileRequest in fileSet.ConfigureAwait(false))
+            {
+                filesToRequest.Add(fileRequest);
+            }
+        }
+
+        return filesToRequest;
     }
 
-    private static IEnumerable<SettlementReportFileRequestDto> RequestFilesForAggregatedEnergyResults(
-       SettlementReportRequestId requestId,
-       SettlementReportRequestDto reportRequest,
-       SettlementReportFileContent settlementReportFileContent)
+    private async IAsyncEnumerable<SettlementReportFileRequestDto> RequestFilesForEnergyResultsAsync(
+        bool takeLatestPerDay,
+        SettlementReportRequestId requestId,
+        SettlementReportRequestDto reportRequest)
     {
-        var filesToGenerate = new List<SettlementReportFileRequestDto>();
+        var fileContent = takeLatestPerDay
+            ? SettlementReportFileContent.EnergyResultLatestPerDay
+            : SettlementReportFileContent.EnergyResultForCalculationId;
 
-        if (reportRequest is { SplitReportPerGridArea: true, Filter.Calculations.Count: > 1 })
+        if (reportRequest.SplitReportPerGridArea)
         {
-            //TODO: check the logic here, when repository is available
-            foreach (var calculation in reportRequest.Filter.Calculations)
+            foreach (var calculationFilter in reportRequest.Filter.Calculations)
             {
-                double randomNumber = new Random().Next(5000, 100000); //TODO: replace randomNumber with a call to repository when available
-                var parts = Math.Ceiling(randomNumber / ThresholdToSplitFiles);
-                for (var index = 0; index < parts; index++)
+                var requestPerGridArea = new SettlementReportFileRequestDto(
+                    fileContent,
+                    new SettlementReportPartialFileInfo($"Result Energy ({calculationFilter.GridAreaCode})"),
+                    requestId,
+                    reportRequest.Filter with { Calculations = [calculationFilter] });
+
+                await foreach (var splitFileRequest in SplitFileRequestIntoChunksAsync(requestPerGridArea).ConfigureAwait(false))
                 {
-                    var partialInfo = parts > 1 ? new SettlementReportRequestPartialInfo(index) : null;
-                    filesToGenerate.Add(new SettlementReportFileRequestDto(
-                        settlementReportFileContent,
-                        $"Result Energy ({calculation.GridAreaCode})",
-                        requestId,
-                        reportRequest.Filter with { Calculations = [calculation], PartialInfo = partialInfo }));
+                    yield return splitFileRequest;
                 }
             }
         }
         else
         {
-            double randomNumber = new Random().Next(5000, 100000); //TODO: replace randomNumber with a call to repository when available
-            var parts = Math.Ceiling(randomNumber / ThresholdToSplitFiles);
-            for (var index = 0; index < parts; index++)
+            var combinedFileRequest = new SettlementReportFileRequestDto(
+                fileContent,
+                new SettlementReportPartialFileInfo("Result Energy"),
+                requestId,
+                reportRequest.Filter);
+
+            await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(combinedFileRequest).ConfigureAwait(false))
             {
-                var partialInfo = parts > 1 ? new SettlementReportRequestPartialInfo(index) : null;
-                filesToGenerate.Add(new SettlementReportFileRequestDto(
-                    settlementReportFileContent,
-                    "Result Energy",
-                    requestId,
-                    reportRequest.Filter with { PartialInfo = partialInfo }));
+                yield return splitFileRequest;
             }
         }
+    }
 
-        return filesToGenerate;
+    private async IAsyncEnumerable<SettlementReportFileRequestDto> RequestFilesForWholesaleResultsAsync(
+        SettlementReportFileContent wholesaleFileContent,
+        SettlementReportRequestId requestId,
+        SettlementReportRequestDto reportRequest)
+    {
+        if (reportRequest.SplitReportPerGridArea)
+        {
+            foreach (var calculationFilter in reportRequest.Filter.Calculations)
+            {
+                var requestPerGridArea = new SettlementReportFileRequestDto(
+                    wholesaleFileContent,
+                    new SettlementReportPartialFileInfo($"Result Wholesale ({calculationFilter.GridAreaCode})"),
+                    requestId,
+                    reportRequest.Filter with { Calculations = [calculationFilter] });
+
+                await foreach (var splitFileRequest in SplitFileRequestIntoChunksAsync(requestPerGridArea).ConfigureAwait(false))
+                {
+                    yield return splitFileRequest;
+                }
+            }
+        }
+        else
+        {
+            var combinedFileRequest = new SettlementReportFileRequestDto(
+                wholesaleFileContent,
+                new SettlementReportPartialFileInfo("Result Wholesale"),
+                requestId,
+                reportRequest.Filter);
+
+            await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(combinedFileRequest).ConfigureAwait(false))
+            {
+                yield return splitFileRequest;
+            }
+        }
+    }
+
+    private async IAsyncEnumerable<SettlementReportFileRequestDto> SplitFileRequestPerGridAreaAsync(
+        SettlementReportFileRequestDto fileRequest)
+    {
+        var partialFileInfo = fileRequest.PartialFileInfo;
+
+        foreach (var calculationFilter in fileRequest.RequestFilter.Calculations)
+        {
+            var requestForSingleGridArea = fileRequest with
+            {
+                PartialFileInfo = partialFileInfo,
+
+                // Create a request with a single grid area.
+                RequestFilter = fileRequest.RequestFilter with { Calculations = [calculationFilter] },
+            };
+
+            // Split the single grid area request into further chunks.
+            await foreach (var splitFileRequest in SplitFileRequestIntoChunksAsync(requestForSingleGridArea).ConfigureAwait(false))
+            {
+                yield return splitFileRequest;
+
+                // Keep track of the offset of the chunks, so that the next grid area begins at the correct offset.
+                partialFileInfo = splitFileRequest.PartialFileInfo with
+                {
+                    ChunkOffset = splitFileRequest.PartialFileInfo.ChunkOffset + 1,
+                };
+            }
+        }
+    }
+
+    // Note: Always return ChunkOffset in increasing order, as SplitFileRequestPerGridAreaAsync expects last ChunkOffset to be the highest.
+    private async IAsyncEnumerable<SettlementReportFileRequestDto> SplitFileRequestIntoChunksAsync(
+        SettlementReportFileRequestDto fileRequest)
+    {
+        var partialFileInfo = fileRequest.PartialFileInfo;
+
+        var fileGenerator = _fileGeneratorFactory.Create(fileRequest.FileContent);
+        var chunks = await fileGenerator
+            .CountChunksAsync(fileRequest.RequestFilter)
+            .ConfigureAwait(false);
+
+        for (var i = 0; i < chunks; i++)
+        {
+            yield return fileRequest with
+            {
+                PartialFileInfo = partialFileInfo with { ChunkOffset = partialFileInfo.ChunkOffset + i },
+            };
+        }
     }
 }

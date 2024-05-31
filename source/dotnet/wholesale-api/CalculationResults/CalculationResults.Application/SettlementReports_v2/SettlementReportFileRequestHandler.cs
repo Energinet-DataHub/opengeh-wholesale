@@ -33,14 +33,11 @@ public sealed class SettlementReportFileRequestHandler : ISettlementReportFileRe
     public async Task<GeneratedSettlementReportFileDto> RequestFileAsync(SettlementReportFileRequestDto fileRequest)
     {
         var fileGenerator = _fileGeneratorFactory.Create(fileRequest.FileContent);
-        var finalFileName = fileRequest.SuggestedName + fileGenerator.FileExtension;
-
-        var partialFileName = fileRequest.RequestFilter.PartialInfo is not null ?
-            fileRequest.SuggestedName + $"_{fileRequest.RequestFilter.PartialInfo.PartNumber}" + fileGenerator.FileExtension
-            : null;
+        var suggestedFileName = fileRequest.PartialFileInfo.FileName + fileGenerator.FileExtension;
+        var locationFileName = $"{fileRequest.PartialFileInfo.FileName}_{fileRequest.PartialFileInfo.ChunkOffset}{fileGenerator.FileExtension}";
 
         var writeStream = await _fileRepository
-            .OpenForWritingAsync(fileRequest.RequestId, partialFileName ?? finalFileName)
+            .OpenForWritingAsync(fileRequest.RequestId, locationFileName)
             .ConfigureAwait(false);
 
         await using (writeStream.ConfigureAwait(false))
@@ -49,11 +46,14 @@ public sealed class SettlementReportFileRequestHandler : ISettlementReportFileRe
             await using (streamWriter.ConfigureAwait(false))
             {
                 await fileGenerator
-                    .WriteAsync(fileRequest.RequestFilter, streamWriter)
+                    .WriteAsync(fileRequest.RequestFilter, fileRequest.PartialFileInfo.ChunkOffset, streamWriter)
                     .ConfigureAwait(false);
             }
         }
 
-        return new GeneratedSettlementReportFileDto(fileRequest.RequestId, finalFileName, partialFileName);
+        return new GeneratedSettlementReportFileDto(
+            fileRequest.RequestId,
+            fileRequest.PartialFileInfo with { FileName = suggestedFileName },
+            locationFileName);
     }
 }

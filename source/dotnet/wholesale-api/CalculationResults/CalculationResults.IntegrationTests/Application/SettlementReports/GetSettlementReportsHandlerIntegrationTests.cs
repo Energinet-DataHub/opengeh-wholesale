@@ -162,7 +162,7 @@ public sealed class GetSettlementReportsHandlerIntegrationTests : TestBase<GetSe
 
         var generatedSettlementReportDto = new GeneratedSettlementReportDto(
             requestId,
-            new GeneratedSettlementReportFileDto(requestId, "TestFile.csv"),
+            new GeneratedSettlementReportFileDto(requestId, new SettlementReportPartialFileInfo("TestFile.csv"), "TestFile.csv"),
             []);
 
         report.MarkAsCompleted(generatedSettlementReportDto);
@@ -172,7 +172,7 @@ public sealed class GetSettlementReportsHandlerIntegrationTests : TestBase<GetSe
         await dbContext.SaveChangesAsync();
 
         var blobClient = _settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
-        var blobName = $"settlement-reports/{requestId.Id}/{generatedSettlementReportDto.FinalReport.FileName}";
+        var blobName = $"settlement-reports/{requestId.Id}/{generatedSettlementReportDto.FinalReport.StorageFileName}";
         await blobClient.UploadBlobAsync(blobName, new BinaryData("data"));
 
         // Act

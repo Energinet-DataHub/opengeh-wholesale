@@ -43,16 +43,17 @@ public sealed class SettlementReportFromFilesHandler : ISettlementReportFromFile
         {
             using var archive = new ZipArchive(compressedStream, ZipArchiveMode.Create);
 
-            foreach (var reportFilesGrouped in generatedFiles.GroupBy(x => x.FileName))
+            foreach (var chunks in generatedFiles.GroupBy(x => x.FileInfo.FileName))
             {
-                var entry = archive.CreateEntry(reportFilesGrouped.Key);
+                var entry = archive.CreateEntry(chunks.Key);
                 var entryStream = entry.Open();
+
                 await using (entryStream.ConfigureAwait(false))
                 {
-                    foreach (var reportFile in reportFilesGrouped)
+                    foreach (var chunk in chunks.OrderBy(c => c.FileInfo.ChunkOffset))
                     {
                         var readStream = await _fileRepository
-                            .OpenForReadingAsync(requestId, reportFile.PartialFileName ?? reportFile.FileName)
+                            .OpenForReadingAsync(requestId, chunk.StorageFileName)
                             .ConfigureAwait(false);
 
                         await using (readStream.ConfigureAwait(false))
@@ -66,7 +67,7 @@ public sealed class SettlementReportFromFilesHandler : ISettlementReportFromFile
 
         return new GeneratedSettlementReportDto(
             requestId,
-            new GeneratedSettlementReportFileDto(requestId, reportFileName),
+            new GeneratedSettlementReportFileDto(requestId, new SettlementReportPartialFileInfo(reportFileName), reportFileName),
             generatedFiles);
     }
 }

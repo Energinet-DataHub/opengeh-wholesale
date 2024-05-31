@@ -35,7 +35,7 @@ public sealed class SettlementReportFinalizeHandler : ISettlementReportFinalizeH
         foreach (var file in generatedReport.TemporaryFiles)
         {
             await _fileRepository
-                .DeleteAsync(file.RequestId, file.FileName)
+                .DeleteAsync(file.RequestId, file.StorageFileName)
                 .ConfigureAwait(false);
         }
 

@@ -33,15 +33,22 @@ public sealed class BalanceFixingResultFileGenerator : ISettlementReportFileGene
 
     public string FileExtension => ".csv";
 
-    public async Task WriteAsync(SettlementReportRequestFilterDto filter, StreamWriter destination)
+    public Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter)
+    {
+        return Task.FromResult(1);
+    }
+
+    public async Task WriteAsync(SettlementReportRequestFilterDto filter, int chunkOffset, StreamWriter destination)
     {
         var csvHelper = new CsvWriter(destination, new CultureInfo(filter.CsvFormatLocale ?? "en-US"));
         csvHelper.Context.RegisterClassMap<SettlementReportResultRowMap>();
 
         await using (csvHelper.ConfigureAwait(false))
         {
-            if (filter.PartialInfo?.PartNumber == 0)
+            if (chunkOffset == 0)
+            {
                 csvHelper.WriteHeader<SettlementReportResultRow>();
+            }
 
             await foreach (var record in _dataSource.TryReadBalanceFixingResultsAsync(filter).ConfigureAwait(false))
             {

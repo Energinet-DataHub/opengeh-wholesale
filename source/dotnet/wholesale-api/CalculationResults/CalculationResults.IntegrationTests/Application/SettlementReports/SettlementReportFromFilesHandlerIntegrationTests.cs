@@ -44,9 +44,9 @@ public sealed class SettlementReportFromFilesHandlerIntegrationTests : TestBase<
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var inputFiles = new GeneratedSettlementReportFileDto[]
         {
-            new(requestId, "fileA.csv"),
-            new(requestId, "fileB.csv"),
-            new(requestId, "fileC.csv"),
+            new(requestId, new("fileA.csv"), "fileA_0.csv"),
+            new(requestId, new("fileB.csv"), "fileB_0.csv"),
+            new(requestId, new("fileC.csv"), "fileC_0.csv"),
         };
 
         await Task.WhenAll(inputFiles.Select(MakeTestFileAsync));
@@ -59,26 +59,26 @@ public sealed class SettlementReportFromFilesHandlerIntegrationTests : TestBase<
         Assert.Equal(inputFiles, actual.TemporaryFiles);
 
         var container = _settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
-        var generatedFileBlob = container.GetBlobClient($"settlement-reports/{requestId.Id}/{actual.FinalReport.FileName}");
+        var generatedFileBlob = container.GetBlobClient($"settlement-reports/{requestId.Id}/{actual.FinalReport.StorageFileName}");
         var generatedFile = await generatedFileBlob.DownloadContentAsync();
 
         using var archive = new ZipArchive(generatedFile.Value.Content.ToStream(), ZipArchiveMode.Read);
 
         foreach (var inputFile in inputFiles)
         {
-            var entry = archive.GetEntry(inputFile.FileName);
+            var entry = archive.GetEntry(inputFile.FileInfo.FileName);
             Assert.NotNull(entry);
 
             using var streamReader = new StreamReader(entry.Open());
             var inputFileContents = await streamReader.ReadToEndAsync();
-            Assert.Equal($"Content: {inputFile.FileName}", inputFileContents);
+            Assert.Equal($"Content: {inputFile.FileInfo.FileName}", inputFileContents);
         }
     }
 
     private Task MakeTestFileAsync(GeneratedSettlementReportFileDto file)
     {
         var containerClient = _settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
-        var blobClient = containerClient.GetBlobClient($"settlement-reports/{file.RequestId.Id}/{file.FileName}");
-        return blobClient.UploadAsync(new BinaryData($"Content: {file.FileName}"));
+        var blobClient = containerClient.GetBlobClient($"settlement-reports/{file.RequestId.Id}/{file.StorageFileName}");
+        return blobClient.UploadAsync(new BinaryData($"Content: {file.FileInfo.FileName}"));
     }
 }

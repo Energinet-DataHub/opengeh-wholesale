@@ -43,8 +43,8 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         var energyResult = actual.Single();
         Assert.Equal(requestId, energyResult.RequestId);
         Assert.Equal(filter, energyResult.RequestFilter);
-        Assert.Equal("Result Energy", energyResult.SuggestedName);
-        Assert.Equal(SettlementReportFileContent.BalanceFixingResult, energyResult.FileContent);
+        Assert.Equal("Result Energy", energyResult.PartialFileInfo.FileName);
+        Assert.Equal(SettlementReportFileContent.EnergyResultLatestPerDay, energyResult.FileContent);
     }
 
     [Fact]
@@ -71,13 +71,13 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         var energyResultA = actual[0];
         Assert.Equal(requestId, energyResultA.RequestId);
         Assert.Equal(gridAreaCodeA, energyResultA.RequestFilter.Calculations.Single());
-        Assert.Equal("Result Energy (805)", energyResultA.SuggestedName);
-        Assert.Equal(SettlementReportFileContent.BalanceFixingResult, energyResultA.FileContent);
+        Assert.Equal("Result Energy (805)", energyResultA.PartialFileInfo.FileName);
+        Assert.Equal(SettlementReportFileContent.EnergyResultLatestPerDay, energyResultA.FileContent);
 
         var energyResultB = actual[1];
         Assert.Equal(requestId, energyResultB.RequestId);
         Assert.Equal(gridAreaCodeB, energyResultB.RequestFilter.Calculations.Single());
-        Assert.Equal("Result Energy (806)", energyResultB.SuggestedName);
-        Assert.Equal(SettlementReportFileContent.BalanceFixingResult, energyResultB.FileContent);
+        Assert.Equal("Result Energy (806)", energyResultB.PartialFileInfo.FileName);
+        Assert.Equal(SettlementReportFileContent.EnergyResultLatestPerDay, energyResultB.FileContent);
     }
 }

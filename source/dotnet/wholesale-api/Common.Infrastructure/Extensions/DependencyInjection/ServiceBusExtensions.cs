@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Microsoft.Extensions.Azure;

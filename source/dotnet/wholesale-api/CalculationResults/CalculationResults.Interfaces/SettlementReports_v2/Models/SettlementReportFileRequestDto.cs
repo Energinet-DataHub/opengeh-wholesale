@@ -16,7 +16,6 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementRe
 
 public sealed record SettlementReportFileRequestDto(
     SettlementReportFileContent FileContent,
-    string SuggestedName,
+    SettlementReportPartialFileInfo PartialFileInfo,
     SettlementReportRequestId RequestId,
     SettlementReportRequestFilterDto RequestFilter);
-//TODO: should the SettlementReportRequestPartialInfo be here?

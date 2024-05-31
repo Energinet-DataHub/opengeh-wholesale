@@ -70,8 +70,8 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var fileRequest = new SettlementReportFileRequestDto(
-            SettlementReportFileContent.BalanceFixingResult,
-            Guid.NewGuid().ToString(),
+            SettlementReportFileContent.EnergyResultLatestPerDay,
+            new SettlementReportPartialFileInfo(Guid.NewGuid().ToString()),
             requestId,
             filter);
 
@@ -86,7 +86,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         Assert.Equal(requestId, actual.RequestId);
 
         var container = _settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
-        var generatedFileBlob = container.GetBlobClient($"settlement-reports/{requestId.Id}/{actual.FileName}");
+        var generatedFileBlob = container.GetBlobClient($"settlement-reports/{requestId.Id}/{actual.StorageFileName}");
         var generatedFile = await generatedFileBlob.DownloadContentAsync();
         var fileContents = generatedFile.Value.Content.ToString();
         var fileLines = fileContents.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
