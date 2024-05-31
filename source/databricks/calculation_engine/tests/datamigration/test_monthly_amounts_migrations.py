@@ -42,11 +42,13 @@ def _create_df(spark: SparkSession) -> DataFrame:
         MonthlyAmountsColumnNames.calculation_result_id: "6033ab5c-436b-44e9-8a79-90489d324e53",
         MonthlyAmountsColumnNames.grid_area: "543",
         MonthlyAmountsColumnNames.energy_supplier_id: "1234567890123",
+        MonthlyAmountsColumnNames.quantity_unit: "kWh",
         MonthlyAmountsColumnNames.time: datetime(2020, 1, 1, 0, 0),
         MonthlyAmountsColumnNames.amount: Decimal("1.123"),
-        MonthlyAmountsColumnNames.charge_owner_id: "1234567890123",
+        MonthlyAmountsColumnNames.is_tax: True,
         MonthlyAmountsColumnNames.charge_code: "charge_code",
         MonthlyAmountsColumnNames.charge_type: ChargeType.SUBSCRIPTION.value,
+        MonthlyAmountsColumnNames.charge_owner_id: "1234567890123",
     }
     return spark.createDataFrame(data=[row], schema=monthly_amounts_schema)
 
@@ -84,13 +86,21 @@ def test__migrated_table__columns_matching_contract(
             "neither-16-nor-13-digits-long",
         ),
         (MonthlyAmountsColumnNames.energy_supplier_id, None),
-        (MonthlyAmountsColumnNames.time, None),
         (
-            MonthlyAmountsColumnNames.charge_owner_id,
-            "neither-16-nor-13-digits-long",
+            MonthlyAmountsColumnNames.quantity_unit,
+            None,
         ),
         (
-            MonthlyAmountsColumnNames.charge_owner_id,
+            MonthlyAmountsColumnNames.quantity_unit,
+            "invalid",
+        ),
+        (MonthlyAmountsColumnNames.time, None),
+        (
+            MonthlyAmountsColumnNames.is_tax,
+            None,
+        ),
+        (
+            MonthlyAmountsColumnNames.charge_code,
             None,
         ),
         (
@@ -99,6 +109,14 @@ def test__migrated_table__columns_matching_contract(
         ),
         (
             MonthlyAmountsColumnNames.charge_type,
+            None,
+        ),
+        (
+            MonthlyAmountsColumnNames.charge_owner_id,
+            "neither-16-nor-13-digits-long",
+        ),
+        (
+            MonthlyAmountsColumnNames.charge_owner_id,
             None,
         ),
     ],
@@ -150,14 +168,19 @@ actor_eic = "1234567890123456"
         (MonthlyAmountsColumnNames.grid_area, "007"),
         (MonthlyAmountsColumnNames.energy_supplier_id, actor_gln),
         (MonthlyAmountsColumnNames.energy_supplier_id, actor_eic),
+        (MonthlyAmountsColumnNames.quantity_unit, "kWh"),
+        (MonthlyAmountsColumnNames.quantity_unit, "pcs"),
         (MonthlyAmountsColumnNames.time, datetime(2020, 1, 1, 0, 0)),
         (MonthlyAmountsColumnNames.amount, max_18_6_decimal),
         (MonthlyAmountsColumnNames.amount, min_18_6_decimal),
-        (MonthlyAmountsColumnNames.charge_owner_id, actor_gln),
-        (MonthlyAmountsColumnNames.charge_owner_id, actor_eic),
+        (MonthlyAmountsColumnNames.is_tax, True),
+        (MonthlyAmountsColumnNames.is_tax, False),
+        (MonthlyAmountsColumnNames.charge_code, "valid-charge-code"),
         (MonthlyAmountsColumnNames.charge_type, ChargeType.SUBSCRIPTION.value),
         (MonthlyAmountsColumnNames.charge_type, ChargeType.FEE.value),
         (MonthlyAmountsColumnNames.charge_type, ChargeType.TARIFF.value),
+        (MonthlyAmountsColumnNames.charge_owner_id, actor_gln),
+        (MonthlyAmountsColumnNames.charge_owner_id, actor_eic),
     ],
 )
 def test__migrated_table_accepts_valid_data(
