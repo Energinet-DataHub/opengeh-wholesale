@@ -69,7 +69,6 @@ class EnergyResultPointsPerEsGaV1ColumnNames:
     energy_supplier_id = EnergyResultColumnNames.energy_supplier_id
     grid_area_code = EnergyResultColumnNames.grid_area_code
     time = EnergyResultColumnNames.time
-    metering_point_type = "metering_point_type"
     quantity = EnergyResultColumnNames.quantity
     resolution = Colname.resolution
     settlement_method = Colname.settlement_method
