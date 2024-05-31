@@ -12,16 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using AutoFixture;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using Moq;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Application.SettlementReports;
 
 public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<SettlementReportRequestHandler>
 {
+    public SettlementReportRequestHandlerIntegrationTests()
+    {
+        var mockedGenerator = new Mock<ISettlementReportFileGenerator>();
+        mockedGenerator
+            .Setup(generator => generator.CountChunksAsync(It.IsAny<SettlementReportRequestFilterDto>()))
+            .ReturnsAsync(1);
+
+        var mockedFactory = new Mock<ISettlementReportFileGeneratorFactory>();
+        mockedFactory
+            .Setup(factory => factory.Create(It.IsAny<SettlementReportFileContent>()))
+            .Returns(mockedGenerator.Object);
+
+        Fixture.Inject(mockedFactory.Object);
+    }
+
     [Fact]
     public async Task RequestReportAsync_ForBalanceFixing_ReturnsExpectedFiles()
     {
@@ -42,7 +59,11 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         // Assert
         var energyResult = actual.Single();
         Assert.Equal(requestId, energyResult.RequestId);
-        Assert.Equal(filter, energyResult.RequestFilter);
+        Assert.Equal(filter.PeriodStart, energyResult.RequestFilter.PeriodStart);
+        Assert.Equal(filter.PeriodEnd, energyResult.RequestFilter.PeriodEnd);
+        Assert.Equal(filter.CsvFormatLocale, energyResult.RequestFilter.CsvFormatLocale);
+        Assert.Equal(filter.EnergySupplier, energyResult.RequestFilter.EnergySupplier);
+        Assert.Equal(filter.Calculations.Single(), energyResult.RequestFilter.Calculations.Single());
         Assert.Equal("Result Energy", energyResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.EnergyResultLatestPerDay, energyResult.FileContent);
     }
