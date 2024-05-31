@@ -34,6 +34,12 @@ variable "developers_security_group_object_id" {
   default     = null
 }
 
+variable "omada_developers_security_group_object_id" {
+  type        = string
+  description = "(Optional) The Object ID of the Azure AD security group containing DataHub developers."
+  default     = null
+}
+
 variable "kv_variables" {
   type = list(object({
     name  = string

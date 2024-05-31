@@ -2,6 +2,7 @@
 # For environment-specific values, refer to /env/<env_name>/environment.auto.tfvars
 github_username                     = "PerTHenriksen"
 developers_security_group_object_id = "ffad55e0-f314-4852-9796-1d094a236e7b"
+omada_developers_security_group_object_id = "afb8f383-9e8d-40b9-8190-b9010e54a68b"
 kv_variables = [{
   "name" : "AZURE-B2C-TENANT",
   "value" : "b2cusersintegrtest002.onmicrosoft.com"
