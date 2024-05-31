@@ -119,6 +119,10 @@ public static class DatabricksApiWireMockExtensions
         return server;
     }
 
+    /// <summary>
+    /// Mock get job runs endpoint. Waits for <paramref name="getLifeCycleState"/> to not return null before
+    /// returning a response.
+    /// </summary>
     public static WireMockServer MockJobsRunsGet(this WireMockServer server, long runId, Func<string?> getLifeCycleState)
     {
         var request = Request
