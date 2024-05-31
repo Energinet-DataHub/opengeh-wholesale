@@ -18,6 +18,7 @@ from pyspark.sql.types import (
     TimestampType,
     StructType,
     IntegerType,
+    LongType,
 )
 
 from features.utils.dataframes.settlement_report.settlement_report_view_column_names import (
@@ -30,6 +31,9 @@ charge_link_periods_v1_view_schema = StructType(
         StructField(ChargeLinkPeriodsV1ColumnNames.calculation_id, StringType(), False),
         StructField(
             ChargeLinkPeriodsV1ColumnNames.calculation_type, StringType(), False
+        ),
+        StructField(
+            ChargeLinkPeriodsV1ColumnNames.calculation_version, LongType(), False
         ),
         StructField(
             ChargeLinkPeriodsV1ColumnNames.metering_point_id, StringType(), False
