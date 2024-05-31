@@ -72,7 +72,7 @@ GO
 
 CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_time_series_v1 AS
 SELECT c.calculation_id,
-       FIRST(c.calculation_type),
+       FIRST(c.calculation_type) as calculation_type,
        FIRST(c.version) as calculation_version,
        m.metering_point_id,
        m.metering_point_type,
