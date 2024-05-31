@@ -46,7 +46,7 @@ internal sealed class SettlementReportDownloadTrigger
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Headers.Add("Content-Type", "application/octet-stream");
             await _settlementReportDownloadHandler
-                .DownloadReportAsync(settlementReportRequestId, response.Body, _userContext.CurrentUser.UserId, _userContext.CurrentUser.ActorId, _userContext.CurrentUser.MultiTenancy)
+                .DownloadReportAsync(settlementReportRequestId, response.Body, _userContext.CurrentUser.ActorId, _userContext.CurrentUser.MultiTenancy)
                 .ConfigureAwait(false);
 
             return response;
