@@ -1,4 +1,4 @@
-CREATE VIEW {SETTLEMENT_REPORT_DATABASE_NAME}.energy_result_points_per_ga_es_v1 as
+CREATE VIEW {SETTLEMENT_REPORT_DATABASE_NAME}.energy_result_points_per_es_ga_v1 as
 SELECT calculation_id,
        calculation_type,
        calculation_version,
