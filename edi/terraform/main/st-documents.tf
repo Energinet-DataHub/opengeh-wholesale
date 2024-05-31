@@ -10,7 +10,7 @@ module "st_documents" {
   account_replication_type              = "LRS"
   private_endpoint_subnet_id            = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   ip_rules                              = local.ip_restrictions_as_string
-  prevent_deletion                      = false
+  prevent_deletion                      = true
   data_factory_backup = {
     id           = data.azurerm_key_vault_secret.shared_adf_id.value
     principal_id = data.azurerm_key_vault_secret.shared_adf_principal_id.value
@@ -36,6 +36,6 @@ module "st_documents_backup" {
   account_replication_type              = "LRS"
   private_endpoint_subnet_id            = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   ip_rules                              = local.ip_restrictions_as_string
-  prevent_deletion                      = false
-  lifecycle_retention_delete_after_days = 3285 # 9 years = (5 + 3 + current year) * 365 days.
+  prevent_deletion                      = true
+  lifecycle_retention_delete_after_days = 3285 # 9 years = (5 + 3 + current year) * 365 days
 }
