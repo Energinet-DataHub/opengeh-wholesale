@@ -20,7 +20,7 @@ UNION
 
 SELECT c.calculation_id,
        c.calculation_type,
-       c.version as calculation_version
+       c.version as calculation_version,
        tma.grid_area_code,
        tma.energy_supplier_id,
        tma.time,
