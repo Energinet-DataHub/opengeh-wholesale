@@ -20,6 +20,7 @@ from pyspark.sql.types import (
     BooleanType,
     ArrayType,
     DecimalType,
+    LongType,
 )
 
 from features.utils.dataframes.settlement_report.settlement_report_view_column_names import (
@@ -37,6 +38,7 @@ charge_prices_v1_view_schema = StructType(
     [
         StructField(ChargePricesV1ColumnNames.calculation_id, StringType(), False),
         StructField(ChargePricesV1ColumnNames.calculation_type, StringType(), False),
+        StructField(ChargePricesV1ColumnNames.calculation_version, LongType(), False),
         StructField(ChargePricesV1ColumnNames.charge_type, StringType(), False),
         StructField(ChargePricesV1ColumnNames.charge_code, StringType(), False),
         StructField(ChargePricesV1ColumnNames.charge_owner_id, StringType(), False),
