@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.TestCommon;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
+using Newtonsoft.Json;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.DurableTask;
 
@@ -101,8 +102,9 @@ public static class DurableClientExtensions
             waitTimeLimit ?? TimeSpan.FromSeconds(30),
             delay: TimeSpan.FromSeconds(5));
 
+        var actualStatus = await client.GetStatusAsync(instanceId, showHistory: true, showHistoryOutput: true);
         return matchesCustomStatus
-            ? await client.GetStatusAsync(instanceId, showHistory: true, showHistoryOutput: true)
-            : throw new Exception($"Orchestration instance '{instanceId}' did not match custom status- within configured wait time limit.");
+            ? actualStatus
+            : throw new Exception($"Orchestration instance '{instanceId}' did not match custom status within configured wait time limit. Actual status: {actualStatus.CustomStatus.ToString(Formatting.Indented)}");
     }
 }

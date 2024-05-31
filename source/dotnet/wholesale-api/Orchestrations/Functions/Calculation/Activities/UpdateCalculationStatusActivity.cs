@@ -19,27 +19,43 @@ using Energinet.DataHub.Wholesale.Calculations.Infrastructure.CalculationState;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
 
 #pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
-internal class UpdateCalculationStatusActivity(
-    IClock clock,
-    IUnitOfWork calculationUnitOfWork,
-    ICalculationRepository calculationRepository)
+internal class UpdateCalculationStatusActivity
 {
-    private readonly IClock _clock = clock;
-    private readonly IUnitOfWork _calculationUnitOfWork = calculationUnitOfWork;
-    private readonly ICalculationRepository _calculationRepository = calculationRepository;
+    private readonly IClock _clock;
+    private readonly IUnitOfWork _calculationUnitOfWork;
+    private readonly ICalculationRepository _calculationRepository;
+    private readonly ILogger<UpdateCalculationStatusActivity> _logger;
+
+    public UpdateCalculationStatusActivity(
+        IClock clock,
+        IUnitOfWork calculationUnitOfWork,
+        ICalculationRepository calculationRepository,
+        ILogger<UpdateCalculationStatusActivity> logger)
+    {
+        _clock = clock;
+        _calculationUnitOfWork = calculationUnitOfWork;
+        _calculationRepository = calculationRepository;
+        _logger = logger;
+    }
 
     /// <summary>
     /// Update calculation status record in SQL database.
     /// </summary>
     [Function(nameof(UpdateCalculationStatusActivity))]
-    public async Task Run(
+    public async Task<string> Run(
         [ActivityTrigger] CalculationMetadata calculationMetadata)
     {
+        _logger.LogInformation(
+            "Update calculation state from the calculation job status: {CalculationJobStatus}, calculation id: {CalculationId}",
+            calculationMetadata.JobStatus,
+            calculationMetadata.Id);
+
         var calculation = await _calculationRepository.GetAsync(calculationMetadata.Id);
 
         if (calculationMetadata.JobStatus == CalculationState.Canceled)
@@ -54,17 +70,24 @@ internal class UpdateCalculationStatusActivity(
 
             // If state wasn't changed, do nothing
             if (calculation.OrchestrationState == newState)
-                return;
+            {
+                _logger.LogInformation(
+                    "Do not set calculation state since it didn't update. Current state: {CurrentOrchestrationState}, calculation id: {CalculationId}",
+                    calculation.OrchestrationState,
+                    calculationMetadata.Id);
+                return "State didn't change from: " + calculation.OrchestrationState;
+            }
 
-            UpdateState(calculation, newState);
+            _logger.LogInformation(
+                "Set new calculation state to: {NewOrchestrationState}, current state: {CurrentOrchestrationState}, calculation id: {CalculationId}",
+                newState,
+                calculation.OrchestrationState,
+                calculationMetadata.Id);
+            calculation.UpdateState(newState, _clock);
         }
 
         await _calculationUnitOfWork.CommitAsync();
-    }
-
-    private void UpdateState(Calculations.Application.Model.Calculations.Calculation calculation, CalculationOrchestrationState newState)
-    {
-        calculation.UpdateState(newState, _clock);
+        return "Orchestration state updated to: " + calculation.OrchestrationState;
     }
 }
 #pragma warning restore CA2007 // Consider calling ConfigureAwait on the awaited task

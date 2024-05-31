@@ -16,6 +16,7 @@ using Energinet.DataHub.Wholesale.Calculations.Application;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
@@ -26,29 +27,40 @@ internal class UpdateCalculationOrchestrationStateActivity
     private readonly IClock _clock;
     private readonly IUnitOfWork _calculationUnitOfWork;
     private readonly ICalculationRepository _calculationRepository;
+    private readonly ILogger<UpdateCalculationOrchestrationStateActivity> _logger;
 
     public UpdateCalculationOrchestrationStateActivity(
         IClock clock,
         IUnitOfWork calculationUnitOfWork,
-        ICalculationRepository calculationRepository)
+        ICalculationRepository calculationRepository,
+        ILogger<UpdateCalculationOrchestrationStateActivity> logger)
     {
         _clock = clock;
         _calculationUnitOfWork = calculationUnitOfWork;
         _calculationRepository = calculationRepository;
+        _logger = logger;
     }
 
     /// <summary>
     /// Update calculation status record in SQL database.
     /// </summary>
     [Function(nameof(UpdateCalculationOrchestrationStateActivity))]
-    public async Task Run(
+    public async Task<string> Run(
         [ActivityTrigger] UpdateCalculationOrchestrationStateInput input)
     {
         var calculation = await _calculationRepository.GetAsync(input.CalculationId);
 
+        _logger.LogInformation(
+            "Update calculation state to: {NewState}, current state: {CurrentState}, calculation id: {CalculationId}",
+            input.State,
+            calculation.OrchestrationState,
+            input.CalculationId);
+
         calculation.UpdateState(input.State, _clock);
 
         await _calculationUnitOfWork.CommitAsync();
+
+        return $"Orchestration state updated to: {input.State}";
     }
 }
 #pragma warning restore CA2007 // Consider calling ConfigureAwait on the awaited task

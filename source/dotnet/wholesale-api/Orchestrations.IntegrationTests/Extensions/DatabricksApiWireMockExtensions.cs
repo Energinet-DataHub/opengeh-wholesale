@@ -119,6 +119,42 @@ public static class DatabricksApiWireMockExtensions
         return server;
     }
 
+    public static WireMockServer MockJobsRunsGet(this WireMockServer server, long runId, Func<string?> getLifeCycleState)
+    {
+        var request = Request
+            .Create()
+            .WithPath("/api/2.1/jobs/runs/get")
+            .WithParam("run_id", runId.ToString())
+            .UsingGet();
+
+        var response = Response
+            .Create()
+            .WithStatusCode(HttpStatusCode.OK)
+            .WithHeader(HeaderNames.ContentType, "application/json")
+            .WithBody(async _ =>
+            {
+                await Awaiter.WaitUntilConditionAsync(
+                    () => getLifeCycleState() != null,
+                    TimeSpan.FromSeconds(30),
+                    TimeSpan.FromMilliseconds(500));
+
+                var lifeCycleState = getLifeCycleState() ??
+                        throw new Exception("LifeCycleState is null, waiting for LifeCycleState state failed");
+
+                var resultState = "EXCLUDED";
+                if (lifeCycleState == "TERMINATED")
+                    resultState = "SUCCESS";
+
+                return BuildJobsRunsGetJson(runId, lifeCycleState, resultState);
+            });
+
+        server
+            .Given(request)
+            .RespondWith(response);
+
+        return server;
+    }
+
     /// <summary>
     /// JobStatusLifeCycle goes through "Pending" -> "Running" -> "Completed".
     /// </summary>
