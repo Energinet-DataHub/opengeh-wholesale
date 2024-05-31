@@ -154,6 +154,11 @@ def create_energy_result_points_per_ga_v1_view(
     )
 
     df = df.withColumn(
+        EnergyResultPointsPerGaV1ColumnNames.calculation_version,
+        col(EnergyResultPointsPerGaV1ColumnNames.calculation_version).cast(LongType()),
+    )
+
+    df = df.withColumn(
         EnergyResultPointsPerGaV1ColumnNames.quantity,
         col(EnergyResultPointsPerGaV1ColumnNames.quantity).cast(DecimalType(18, 3)),
     )
