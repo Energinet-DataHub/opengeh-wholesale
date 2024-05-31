@@ -19,16 +19,24 @@ using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.WholesaleInbox;
 
-public class ActorMessagesEnqueuedV1RequestHandler(
-    ILogger<ActorMessagesEnqueuedV1RequestHandler> logger,
-    DurableTaskClientAccessor durableTaskClientAccessor)
-    : IWholesaleInboxRequestHandler
+public class ActorMessagesEnqueuedV1RequestHandler : IWholesaleInboxRequestHandler
 {
+    private readonly ILogger<ActorMessagesEnqueuedV1RequestHandler> _logger;
+    private readonly DurableTaskClientAccessor _durableTaskClientAccessor;
+
+    public ActorMessagesEnqueuedV1RequestHandler(
+        ILogger<ActorMessagesEnqueuedV1RequestHandler> logger,
+        DurableTaskClientAccessor durableTaskClientAccessor)
+    {
+        _logger = logger;
+        _durableTaskClientAccessor = durableTaskClientAccessor;
+    }
+
     public bool CanHandle(string requestSubject) => requestSubject.Equals(MessagesEnqueuedV1.EventName);
 
     public Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken)
     {
-        logger.LogInformation(
+        _logger.LogInformation(
             "Handling ActorMessagesEnqueued event with message id: {MessageId}, subject: {Subject}, reference id: {ReferenceId}",
             receivedMessage.MessageId,
             receivedMessage.Subject,
@@ -36,14 +44,14 @@ public class ActorMessagesEnqueuedV1RequestHandler(
 
         var messageEnqueuedEvent = MessagesEnqueuedV1.Parser.ParseFrom(receivedMessage.Body);
 
-        logger.LogInformation(
+        _logger.LogInformation(
             "Raising event \"{OrchestrationEventName}\" to orchestration with OrchestrationInstanceId: {OrchestrationInstanceId}, CalculationId: {CalculationId}, ServiceBusMessageId: {ServiceBusMessageId}",
             MessagesEnqueuedV1.EventName,
             messageEnqueuedEvent.OrchestrationInstanceId,
             messageEnqueuedEvent.CalculationId,
             receivedMessage.MessageId);
 
-        return durableTaskClientAccessor.Current.RaiseEventAsync(
+        return _durableTaskClientAccessor.Current.RaiseEventAsync(
             messageEnqueuedEvent.OrchestrationInstanceId,
             MessagesEnqueuedV1.EventName,
             messageEnqueuedEvent,
