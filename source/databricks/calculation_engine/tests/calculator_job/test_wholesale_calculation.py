@@ -323,9 +323,17 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
     "view_name, has_data",
     [
         (
-            f"{paths.EdiResults.DATABASE_NAME}.energy_result_points_per_ga_v1",
+            f"{paths.EdiResults.DATABASE_NAME}.{paths.EdiResults.ENERGY_RESULT_POINTS_PER_GA_V1_VIEW_NAME}",
             True,
-        )
+        ),
+        (
+            f"{paths.EdiResults.DATABASE_NAME}.{paths.EdiResults.ENERGY_RESULT_POINTS_PER_BRP_GA_V1_VIEW_NAME}",
+            False,
+        ),
+        (
+            f"{paths.EdiResults.DATABASE_NAME}.{paths.EdiResults.ENERGY_RESULT_POINTS_PER_ES_BRP_GA_V1_VIEW_NAME}",
+            False,
+        ),
     ],
 )
 def test__when_wholesale_fixing__view_has_data_if_expected(
