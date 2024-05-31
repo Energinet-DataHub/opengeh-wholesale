@@ -95,14 +95,17 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         var path = "GetDatabricksDataPath";
 
         // This is the calculationId returned in the energyResult from the mocked databricks.
-        // It should match the ID returned by the http client calling 'api/StartCalculation'
-        // But we have to set up the mocked response before we reach this step, hence we have a mismatch.
-        var calculationIdInMock = Guid.NewGuid();
+        // It should match the ID returned by the http client calling 'api/StartCalculation'.
+        // The mocked response waits for this to not be null before responding, so it must be updated
+        // when we have the actual id.
+        Guid? calculationId = null;
 
         Fixture.MockServer
             .MockEnergySqlStatements(statementId, chunkIndex)
             .MockEnergySqlStatementsResultChunks(statementId, chunkIndex, path)
-            .MockEnergySqlStatementsResultStream(path, calculationIdInMock);
+            // ReSharper disable once AccessToModifiedClosure -- We need to modify calculation id in outer scope
+            // when we get a response from 'api/StartCalculation'
+            .MockEnergySqlStatementsResultStream(path, () => calculationId);
 
         // => Request
         using var request = CreateStartCalculationRequest();
@@ -114,14 +117,14 @@ public class CalculationOrchestrationTests : IAsyncLifetime
         // Assert
         // => Verify endpoint response
         actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        var calculationId = await actualResponse.Content.ReadFromJsonAsync<Guid>();
+        calculationId = await actualResponse.Content.ReadFromJsonAsync<Guid>();
 
         // => Verify expected behaviour by searching the orchestration history
         var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeOrchestrationCreated);
 
         // => Function has the expected calculation id
         var calculationMetadata = orchestrationStatus.CustomStatus.ToObject<CalculationMetadata>();
-        calculationMetadata!.Id.Should().Be(calculationId);
+        calculationMetadata!.Id.Should().Be(calculationId.Value);
 
         // => Wait for the orchestration to reach the "ActorMessagesEnqueuing" state
         await Fixture.DurableClient.WaitForCustomStatusAsync<CalculationMetadata>(orchestrationStatus.InstanceId, (status) => status.OrchestrationProgress == "ActorMessagesEnqueuing");
@@ -186,7 +189,7 @@ public class CalculationOrchestrationTests : IAsyncLifetime
                 // This should be the calculationId in "actualResponse".
                 // But the current implementation takes the calculationId from the databricks row,
                 // which is mocked in this scenario. Giving us a "false" comparison here.
-                return erp.CalculationId == calculationIdInMock.ToString();
+                return erp.CalculationId == calculationId.Value.ToString();
             })
             .VerifyCountAsync(1);
 

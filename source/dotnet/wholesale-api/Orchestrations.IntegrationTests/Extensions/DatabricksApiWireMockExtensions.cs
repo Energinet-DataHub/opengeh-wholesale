@@ -14,8 +14,10 @@
 
 using System.Net;
 using System.Text;
+using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Microsoft.Net.Http.Headers;
+using WireMock.Models;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 using WireMock.Server;
@@ -217,6 +219,40 @@ public static class DatabricksApiWireMockExtensions
             .Create()
             .WithStatusCode(HttpStatusCode.OK)
             .WithBody(Encoding.UTF8.GetBytes(DatabricksEnergyStatementRowMock(calculationId)));
+
+        server
+            .Given(request)
+            .RespondWith(response);
+        return server;
+    }
+
+    /// <summary>
+    /// Mock databrick energy sql statement result. Waits for <paramref name="getCalculationId"/> to not return null
+    /// before returning the response.
+    /// </summary>
+    /// <param name="server"></param>
+    /// <param name="path"></param>
+    /// <param name="getCalculationId">Will wait for the calculation id to have a value before returning a mocked response</param>
+    public static WireMockServer MockEnergySqlStatementsResultStream(this WireMockServer server, string path, Func<Guid?> getCalculationId)
+    {
+        var request = Request
+            .Create()
+            .WithPath($"/{path}")
+            .UsingGet();
+
+        var response = Response
+            .Create()
+            .WithStatusCode(HttpStatusCode.OK)
+            .WithBody(async (_) =>
+            {
+                await Awaiter.WaitUntilConditionAsync(
+                    () => getCalculationId() != null,
+                    TimeSpan.FromSeconds(30),
+                    TimeSpan.FromMilliseconds(500));
+
+                var calculationId = getCalculationId();
+                return DatabricksEnergyStatementRowMock(calculationId!.Value);
+            });
 
         server
             .Given(request)
