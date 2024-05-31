@@ -17,7 +17,6 @@ using System.Text;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Microsoft.Net.Http.Headers;
-using WireMock.Models;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 using WireMock.Server;
