@@ -109,7 +109,7 @@ schema_config = [
             View(name=paths.METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1),
             View(name=paths.METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME_V1),
             View(
-                name=paths.ENERGY_RESULT_POINTS_PER_GA_ES_SETTLEMENT_REPORT_VIEW_NAME_V1
+                name=paths.ENERGY_RESULT_POINTS_PER_ES_GA_SETTLEMENT_REPORT_VIEW_NAME_V1
             ),
             View(name=paths.CHARGE_PRICES_SETTLEMENT_REPORT_VIEW_NAME_V1),
             View(name=paths.CHARGE_LINK_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1),

@@ -62,10 +62,9 @@ class EnergyResultsV1ColumnNames:
     aggregation_level = EnergyResultColumnNames.aggregation_level
 
 
-class EnergyResultPointsPerGaEsV1ColumnNames:
+class EnergyResultPointsPerEsGa1ColumnNames:
     calculation_id = EnergyResultColumnNames.calculation_id
     calculation_type = EnergyResultColumnNames.calculation_type
-    result_id = "result_id"
     result_id = "result_id"
     energy_supplier_id = EnergyResultColumnNames.energy_supplier_id
     grid_area_code = EnergyResultColumnNames.grid_area_code
