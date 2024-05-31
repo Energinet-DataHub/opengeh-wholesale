@@ -4,11 +4,15 @@
 # ===============================================================================================
 
 migrations:
-  # Use this setting to speed up development by controlling when to execute which migrations in test sessions.
-  # Options: NONE | ALL | MODIFIED
-  # `ALL` is the default if not provided as this is similar to the CI behavior.
-  # Recommendation: Try MODIFIED and if doesn't work for you use ALL.
-  execute: MODIFIED
+    # Use this setting to speed up development by controlling when to execute which migrations in test sessions.
+    # Options: NONE | ALL | MODIFIED
+    # `ALL` is the default if not provided as this is similar to the CI behavior.
+    #
+    # Pro-tips:
+    #     - Try MODIFIED and if doesn't work for you use ALL. Hopefully just once and then revert to MODIFIED
+    #     - If you need to repeatedly update and execute a script you'll likely want to or need to
+    #       temporarily add a DROP view|table statement at the beginning of the script to avoid conflicts.
+    execute: MODIFIED
 
 feature_tests:
   # Use this setting to enable or disable showing the entire contents of the dataframes actual and expected in the test console.
