@@ -12,25 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Any
+from typing import Tuple
 
 import pytest
 
-from features.utils.assertion import assert_output
 from features.utils.scenario_output_files import get_output_names
+from features.utils.views.assertion import assert_output
+from features.utils.views.dataframe_wrapper import DataframeWrapper
 from testsession_configuration import TestSessionConfiguration
 
 
 # IMPORTANT:
 # All test files should be identical. This makes changing them cumbersome.
-# So in order to make it easier you can modify the utils/templates/calculation-test-template.py file instead,
+# So in order to make it easier you can modify the utils/templates/public_model_test_template.py file instead,
 # and then run the power-shell script "Use-Template.ps1" to update all test_output.py files.
 @pytest.mark.parametrize("output_name", get_output_names())
 def test__equals_expected(
-    actual_and_expected: Any,
+    migrations_executed: None,
+    actual_and_expected_views: Tuple[list[DataframeWrapper], list[DataframeWrapper]],
     output_name: str,
     test_session_configuration: TestSessionConfiguration,
 ) -> None:
     assert_output(
-        actual_and_expected, output_name, test_session_configuration.feature_tests
+        actual_and_expected_views, output_name, test_session_configuration.feature_tests
     )
