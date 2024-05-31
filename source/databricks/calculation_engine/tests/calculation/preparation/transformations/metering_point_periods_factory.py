@@ -64,10 +64,10 @@ def create_row(
         Colname.settlement_method: (
             settlement_method.value if settlement_method else None
         ),
-        Colname.grid_area: grid_area,
+        Colname.grid_area_code: grid_area,
         Colname.resolution: resolution.value,
-        Colname.from_grid_area: from_grid_area,
-        Colname.to_grid_area: to_grid_area,
+        Colname.from_grid_area_code: from_grid_area,
+        Colname.to_grid_area_code: to_grid_area,
         Colname.parent_metering_point_id: parent_metering_point_id,
         Colname.energy_supplier_id: energy_supplier_id,
         Colname.balance_responsible_id: balance_responsible_id,

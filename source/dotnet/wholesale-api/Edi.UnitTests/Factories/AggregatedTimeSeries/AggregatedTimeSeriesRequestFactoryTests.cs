@@ -98,7 +98,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
     }
 
     [Fact]
-    public void Parse_WhenMeteringPointTypeIsEmptyForEnergySupplier_ExpectedParsing()
+    public void Parse_WhenMeteringPointTypeIsNullForEnergySupplier_ExpectedParsing()
     {
         // Arrange
         var balanceResponsibleId = "1234567891234";
@@ -108,7 +108,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
             gridAreaCodes: [gridAreaCode],
             energySupplier: energySupplier,
             balanceResponsible: balanceResponsibleId,
-            meteringPointType: string.Empty,
+            meteringPointType: null,
             settlementMethod: string.Empty);
 
         // Act
@@ -130,7 +130,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
 
     [Fact]
     public void
-        Parse_WhenMeteringPointTypeIsEmptyForEnergySupplierWithNonProfiledSettlementMethod_IgnoreSettlementMethod()
+        Parse_WhenMeteringPointTypeIsNullForEnergySupplierWithNonProfiledSettlementMethod_IgnoreSettlementMethod()
     {
         // Arrange
         var balanceResponsibleId = "1234567891234";
@@ -140,7 +140,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
             gridAreaCodes: [gridAreaCode],
             energySupplier: energySupplier,
             balanceResponsible: balanceResponsibleId,
-            meteringPointType: string.Empty,
+            meteringPointType: null,
             settlementMethod: DataHubNames.SettlementMethod.NonProfiled);
 
         // Act
@@ -161,7 +161,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
     }
 
     [Fact]
-    public void Parse_WhenMeteringPointTypeIsEmptyForBalanceResponsibleParty_ExpectedParsing()
+    public void Parse_WhenMeteringPointTypeIsNullForBalanceResponsibleParty_ExpectedParsing()
     {
         // Arrange
         var balanceResponsibleId = "1234567891234";
@@ -171,7 +171,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
             gridAreaCodes: [gridAreaCode],
             energySupplier: energySupplier,
             balanceResponsible: balanceResponsibleId,
-            meteringPointType: string.Empty,
+            meteringPointType: null,
             settlementMethod: string.Empty);
 
         request.RequestedForActorRole = DataHubNames.ActorRole.BalanceResponsibleParty;
@@ -194,7 +194,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
     }
 
     [Fact]
-    public void Parse_WhenMeteringPointTypeIsEmptyForMeteredDataResponsible_ExpectedParsing()
+    public void Parse_WhenMeteringPointTypeIsNullForMeteredDataResponsible_ExpectedParsing()
     {
         // Arrange
         var balanceResponsibleId = "1234567891234";
@@ -204,7 +204,7 @@ public class AggregatedTimeSeriesRequestFactoryTests
             gridAreaCodes: [gridAreaCode],
             energySupplier: energySupplier,
             balanceResponsible: balanceResponsibleId,
-            meteringPointType: string.Empty,
+            meteringPointType: null,
             settlementMethod: string.Empty);
 
         request.RequestedForActorRole = DataHubNames.ActorRole.MeteredDataResponsible;
@@ -234,8 +234,8 @@ public class AggregatedTimeSeriesRequestFactoryTests
         IReadOnlyCollection<string> gridAreaCodes,
         string? energySupplier,
         string? balanceResponsible,
-        string meteringPointType = DataHubNames.MeteringPointType.Production,
-        string settlementMethod = DataHubNames.SettlementMethod.Flex)
+        string? meteringPointType = DataHubNames.MeteringPointType.Production,
+        string? settlementMethod = DataHubNames.SettlementMethod.Flex)
     {
         var request = new AggregatedTimeSeriesRequest()
         {
@@ -245,7 +245,6 @@ public class AggregatedTimeSeriesRequestFactoryTests
                 Start = "2022-12-30T23:00:00Z",
                 End = "2022-12-31T23:00:00Z",
             },
-            MeteringPointType = meteringPointType,
             RequestedForActorNumber = "1234567891234",
             RequestedForActorRole = DataHubNames.ActorRole.EnergySupplier,
             BusinessReason = DataHubNames.BusinessReason.BalanceFixing,
@@ -253,6 +252,11 @@ public class AggregatedTimeSeriesRequestFactoryTests
             // Optional
             SettlementMethod = settlementMethod,
         };
+
+        if (meteringPointType is not null)
+        {
+            request.MeteringPointType = meteringPointType;
+        }
 
         if (gridAreaCodes.Count > 0)
         {
