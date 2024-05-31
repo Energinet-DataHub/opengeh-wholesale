@@ -11,6 +11,98 @@ resource "azurerm_data_factory" "this" {
   }
 }
 
+resource "azurerm_data_factory_pipeline" "this" {
+  name            = "pl-move-processed-files-${local.resources_suffix}"
+  data_factory_id = azurerm_data_factory.this.id
+  variables = {
+    "thirtyOneDaysFromNow" = "string"
+  }
+  activities_json = templatefile("adf-pipelines/pl-move-processed-files.json",
+    {
+      stdh2data_md                = azurerm_data_factory_dataset_json.stdh2data_md.name
+      stdh2data_md_processed      = azurerm_data_factory_dataset_json.stdh2data_md_processed.name
+      stdh2data_ts                = azurerm_data_factory_dataset_json.stdh2data_ts.name
+      stdh2data_ts_processed      = azurerm_data_factory_dataset_json.stdh2data_ts_processed.name
+      stdh2data_ts_sync           = azurerm_data_factory_dataset_json.stdh2data_ts_sync.name
+      stdh2data_ts_sync_processed = azurerm_data_factory_dataset_json.stdh2data_ts_sync_processed.name
+  })
+}
+
+# Create datasets for the Data Factory
+
+resource "azurerm_data_factory_dataset_json" "stdh2data_md" {
+  name                = "stdh2data_md"
+  data_factory_id     = azurerm_data_factory.this.id
+  linked_service_name = azurerm_data_factory_linked_service_data_lake_storage_gen2.linked_service.name
+  azure_blob_storage_location {
+    container = azurerm_storage_container.dh2_metering_point_history.name
+    path      = ""
+    filename  = ""
+  }
+  encoding = "UTF-8"
+}
+
+resource "azurerm_data_factory_dataset_json" "stdh2data_md_processed" {
+  name                = "stdh2data_md_processed"
+  data_factory_id     = azurerm_data_factory.this.id
+  linked_service_name = azurerm_data_factory_linked_service_data_lake_storage_gen2.linked_service.name
+  azure_blob_storage_location {
+    container = azurerm_storage_container.dh2_metering_point_history_processed.name
+    path      = ""
+    filename  = ""
+  }
+  encoding = "UTF-8"
+}
+
+resource "azurerm_data_factory_dataset_json" "stdh2data_ts" {
+  name                = "stdh2data_ts"
+  data_factory_id     = azurerm_data_factory.this.id
+  linked_service_name = azurerm_data_factory_linked_service_data_lake_storage_gen2.linked_service.name
+  azure_blob_storage_location {
+    container = azurerm_storage_container.dh2_timeseries.name
+    path      = ""
+    filename  = ""
+  }
+  encoding = "UTF-8"
+}
+
+resource "azurerm_data_factory_dataset_json" "stdh2data_ts_processed" {
+  name                = "stdh2data_ts_processed"
+  data_factory_id     = azurerm_data_factory.this.id
+  linked_service_name = azurerm_data_factory_linked_service_data_lake_storage_gen2.linked_service.name
+  azure_blob_storage_location {
+    container = azurerm_storage_container.dh2_timeseries_processed.name
+    path      = ""
+    filename  = ""
+  }
+  encoding = "UTF-8"
+}
+
+resource "azurerm_data_factory_dataset_json" "stdh2data_ts_sync" {
+  name                = "stdh2data_ts_sync"
+  data_factory_id     = azurerm_data_factory.this.id
+  linked_service_name = azurerm_data_factory_linked_service_data_lake_storage_gen2.linked_service.name
+  azure_blob_storage_location {
+    container = azurerm_storage_container.dh2_timeseries_synchronization.name
+    path      = ""
+    filename  = ""
+  }
+  encoding = "UTF-8"
+}
+
+resource "azurerm_data_factory_dataset_json" "stdh2data_ts_sync_processed" {
+  name                = "stdh2data_ts_sync_processed"
+  data_factory_id     = azurerm_data_factory.this.id
+  linked_service_name = azurerm_data_factory_linked_service_data_lake_storage_gen2.linked_service.name
+  azure_blob_storage_location {
+    container = azurerm_storage_container.dh2_timeseries_synchronization_processed.name
+    path      = ""
+    filename  = ""
+  }
+  encoding = "UTF-8"
+}
+
+
 #
 # Ensure that the Data Factory has access to the storage account using managed identity and over private endpoint
 #

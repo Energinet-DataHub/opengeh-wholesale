@@ -1,0 +1,319 @@
+[
+    {
+        "name": "Set 31 days from current date",
+        "type": "SetVariable",
+        "dependsOn": [],
+        "policy": {
+            "secureOutput": false,
+            "secureInput": false
+        },
+        "userProperties": [],
+        "typeProperties": {
+            "variableName": "thirtyOneDaysFromNow",
+            "value": {
+                "value": "@getPastTime(31, 'Day')",
+                "type": "Expression"
+            }
+        }
+    },
+    {
+        "name": "MD - Copy processed data into processed container",
+        "description": "This activity copies metering point data that is older than 31 days, which we will see as processed - into a storage account for processed data.",
+        "type": "Copy",
+        "dependsOn": [
+            {
+                "activity": "Set 31 days from current date",
+                "dependencyConditions": [
+                    "Completed"
+                ]
+            }
+        ],
+        "policy": {
+            "timeout": "7.00:00:00",
+            "retry": 5,
+            "retryIntervalInSeconds": 30,
+            "secureOutput": false,
+            "secureInput": false
+        },
+        "userProperties": [],
+        "typeProperties": {
+            "source": {
+                "type": "JsonSource",
+                "storeSettings": {
+                    "type": "AzureBlobFSReadSettings",
+                    "recursive": true,
+                    "modifiedDatetimeEnd": {
+                        "value": "@variables('thirtyOneDaysFromNow')",
+                        "type": "Expression"
+                    },
+                    "wildcardFileName": "*.json",
+                    "enablePartitionDiscovery": false
+                },
+                "formatSettings": {
+                    "type": "JsonReadSettings"
+                }
+            },
+            "sink": {
+                "type": "JsonSink",
+                "storeSettings": {
+                    "type": "AzureBlobFSWriteSettings",
+                    "copyBehavior": "PreserveHierarchy"
+                },
+                "formatSettings": {
+                    "type": "JsonWriteSettings"
+                }
+            },
+            "enableStaging": false
+        },
+        "inputs": [
+            {
+                "referenceName": "${stdh2data_md}",
+                "type": "DatasetReference"
+            }
+        ],
+        "outputs": [
+            {
+                "referenceName": "${stdh2data_md_processed}",
+                "type": "DatasetReference"
+            }
+        ]
+    },
+    {
+        "name": "MD - Delete processed data",
+        "description": "This activity deletes the copied metering point data from the sink if it is older than 31 days from start of workflow. ",
+        "type": "Delete",
+        "dependsOn": [
+            {
+                "activity": "MD - Copy processed data into processed container",
+                "dependencyConditions": [
+                    "Succeeded"
+                ]
+            }
+        ],
+        "policy": {
+            "timeout": "7.00:00:00",
+            "retry": 5,
+            "retryIntervalInSeconds": 30,
+            "secureOutput": false,
+            "secureInput": false
+        },
+        "userProperties": [],
+        "typeProperties": {
+            "dataset": {
+                "referenceName": "${stdh2data_md}",
+                "type": "DatasetReference"
+            },
+            "enableLogging": false,
+            "storeSettings": {
+                "type": "AzureBlobStorageReadSettings",
+                "recursive": true,
+                "modifiedDatetimeEnd": {
+                    "value": "@variables('thirtyOneDaysFromNow')",
+                    "type": "Expression"
+                },
+                "wildcardFileName": "*.json",
+                "enablePartitionDiscovery": false
+            }
+        }
+    },
+    {
+        "name": "TS - Copy processed data into processed container",
+        "description": "This activity copies time series data that is older than 31 days, which we will see as processed - into a storage account for processed data.",
+        "type": "Copy",
+        "dependsOn": [
+            {
+                "activity": "Set 31 days from current date",
+                "dependencyConditions": [
+                    "Completed"
+                ]
+            }
+        ],
+        "policy": {
+            "timeout": "7.00:00:00",
+            "retry": 5,
+            "retryIntervalInSeconds": 30,
+            "secureOutput": false,
+            "secureInput": false
+        },
+        "userProperties": [],
+        "typeProperties": {
+            "source": {
+                "type": "JsonSource",
+                "storeSettings": {
+                    "type": "AzureBlobFSReadSettings",
+                    "recursive": true,
+                    "modifiedDatetimeEnd": {
+                        "value": "@variables('thirtyOneDaysFromNow')",
+                        "type": "Expression"
+                    },
+                    "wildcardFileName": "*.json",
+                    "enablePartitionDiscovery": false
+                },
+                "formatSettings": {
+                    "type": "JsonReadSettings"
+                }
+            },
+            "sink": {
+                "type": "JsonSink",
+                "storeSettings": {
+                    "type": "AzureBlobFSWriteSettings",
+                    "copyBehavior": "PreserveHierarchy"
+                },
+                "formatSettings": {
+                    "type": "JsonWriteSettings"
+                }
+            },
+            "enableStaging": false
+        },
+        "inputs": [
+            {
+                "referenceName": "${stdh2data_ts}",
+                "type": "DatasetReference"
+            }
+        ],
+        "outputs": [
+            {
+                "referenceName": "${stdh2data_ts_processed}",
+                "type": "DatasetReference"
+            }
+        ]
+    },
+    {
+        "name": "TS - Delete processed data",
+        "description": "This activity deletes the copied time series data from the sink if it is older than 31 days from start of workflow. ",
+        "type": "Delete",
+        "dependsOn": [
+            {
+                "activity": "TS - Copy processed data into processed container",
+                "dependencyConditions": [
+                    "Succeeded"
+                ]
+            }
+        ],
+        "policy": {
+            "timeout": "7.00:00:00",
+            "retry": 5,
+            "retryIntervalInSeconds": 30,
+            "secureOutput": false,
+            "secureInput": false
+        },
+        "userProperties": [],
+        "typeProperties": {
+            "dataset": {
+                "referenceName": "${stdh2data_ts}",
+                "type": "DatasetReference"
+            },
+            "enableLogging": false,
+            "storeSettings": {
+                "type": "AzureBlobStorageReadSettings",
+                "recursive": true,
+                "modifiedDatetimeEnd": {
+                    "value": "@variables('thirtyOneDaysFromNow')",
+                    "type": "Expression"
+                },
+                "wildcardFileName": "*.json",
+                "enablePartitionDiscovery": false
+            }
+        }
+    },
+    {
+        "name": "TS Sync - Copy processed data into processed container",
+        "description": "This activity copies synchronized time series data that is older than 31 days, which we will see as processed - into a storage account for processed data.",
+        "type": "Copy",
+        "dependsOn": [
+            {
+                "activity": "Set 31 days from current date",
+                "dependencyConditions": [
+                    "Completed"
+                ]
+            }
+        ],
+        "policy": {
+            "timeout": "7.00:00:00",
+            "retry": 5,
+            "retryIntervalInSeconds": 30,
+            "secureOutput": false,
+            "secureInput": false
+        },
+        "userProperties": [],
+        "typeProperties": {
+            "source": {
+                "type": "JsonSource",
+                "storeSettings": {
+                    "type": "AzureBlobStorageReadSettings",
+                    "recursive": true,
+                    "modifiedDatetimeEnd": {
+                        "value": "@variables('thirtyOneDaysFromNow')",
+                        "type": "Expression"
+                    },
+                    "wildcardFileName": "*.xml",
+                    "enablePartitionDiscovery": false
+                },
+                "formatSettings": {
+                    "type": "JsonReadSettings"
+                }
+            },
+            "sink": {
+                "type": "JsonSink",
+                "storeSettings": {
+                    "type": "AzureBlobStorageWriteSettings",
+                    "copyBehavior": "PreserveHierarchy"
+                },
+                "formatSettings": {
+                    "type": "JsonWriteSettings"
+                }
+            },
+            "enableStaging": false
+        },
+        "inputs": [
+            {
+                "referenceName": "${stdh2data_ts_sync}",
+                "type": "DatasetReference"
+            }
+        ],
+        "outputs": [
+            {
+                "referenceName": "${stdh2data_ts_sync_processed}",
+                "type": "DatasetReference"
+            }
+        ]
+    },
+    {
+        "name": "TS Sync - Delete processed data",
+        "description": "This activity deletes the copied synchronized time series data from the sink if it is older than 31 days from start of workflow. ",
+        "type": "Delete",
+        "dependsOn": [
+            {
+                "activity": "TS Sync - Copy processed data into processed container",
+                "dependencyConditions": [
+                    "Succeeded"
+                ]
+            }
+        ],
+        "policy": {
+            "timeout": "7.00:00:00",
+            "retry": 5,
+            "retryIntervalInSeconds": 30,
+            "secureOutput": false,
+            "secureInput": false
+        },
+        "userProperties": [],
+        "typeProperties": {
+            "dataset": {
+                "referenceName": "${stdh2data_ts_sync}",
+                "type": "DatasetReference"
+            },
+            "enableLogging": false,
+            "storeSettings": {
+                "type": "AzureBlobStorageReadSettings",
+                "recursive": true,
+                "modifiedDatetimeEnd": {
+                    "value": "@variables('thirtyOneDaysFromNow')",
+                    "type": "Expression"
+                },
+                "wildcardFileName": "*.xml",
+                "enablePartitionDiscovery": false
+            }
+        }
+    }
+]
