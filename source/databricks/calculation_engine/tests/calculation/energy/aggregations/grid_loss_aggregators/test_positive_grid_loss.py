@@ -118,9 +118,9 @@ class TestWhenValidInput:
         actual_row = actual_positive_grid_loss.df.collect()[1]
 
         expected = {
-            Colname.grid_area: "002",
-            Colname.to_grid_area: None,
-            Colname.from_grid_area: None,
+            Colname.grid_area_code: "002",
+            Colname.to_grid_area_code: None,
+            Colname.from_grid_area_code: None,
             Colname.balance_responsible_id: None,
             Colname.energy_supplier_id: grid_loss_responsible_factories.DEFAULT_ENERGY_SUPPLIER_ID,
             Colname.observation_time: grid_loss_responsible_factories.DEFAULT_FROM_DATE.replace(

@@ -11,9 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pyspark.sql.dataframe import DataFrame
-
 import pyspark.sql.functions as f
+from pyspark.sql.dataframe import DataFrame
 from pyspark.sql.types import DecimalType, StringType, ArrayType
 
 import package.calculation.energy.aggregators.transformations as t
@@ -24,11 +23,11 @@ from package.calculation.preparation.data_structures.charge_master_data import (
     ChargeMasterData,
 )
 from package.calculation.preparation.data_structures.charge_prices import ChargePrices
-from package.calculation.preparation.data_structures.prepared_tariffs import (
-    PreparedTariffs,
-)
 from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
+)
+from package.calculation.preparation.data_structures.prepared_tariffs import (
+    PreparedTariffs,
 )
 from package.codelists import ChargeType, ChargeResolution
 from package.constants import Colname
@@ -140,7 +139,7 @@ def _join_with_charge_link_metering_points(
         charge_link_metering_point_periods_df[Colname.metering_point_id],
         charge_link_metering_point_periods_df[Colname.metering_point_type],
         charge_link_metering_point_periods_df[Colname.settlement_method],
-        charge_link_metering_point_periods_df[Colname.grid_area],
+        charge_link_metering_point_periods_df[Colname.grid_area_code],
         charge_link_metering_point_periods_df[Colname.energy_supplier_id],
     )
     return df
@@ -226,7 +225,7 @@ def _join_with_grouped_time_series(
         df[Colname.energy_supplier_id],
         df[Colname.metering_point_type],
         df[Colname.settlement_method],
-        df[Colname.grid_area],
+        df[Colname.grid_area_code],
         grouped_time_series[Colname.quantity],
         grouped_time_series[Colname.qualities],
     )
