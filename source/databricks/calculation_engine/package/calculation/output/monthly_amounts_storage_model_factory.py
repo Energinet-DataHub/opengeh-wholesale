@@ -40,7 +40,7 @@ def _select_output_columns(df: DataFrame) -> DataFrame:
             MonthlyAmountsColumnNames.calculation_execution_time_start
         ),
         col(MonthlyAmountsColumnNames.calculation_result_id),
-        col(Colname.grid_area).alias(MonthlyAmountsColumnNames.grid_area),
+        col(Colname.grid_area_code).alias(MonthlyAmountsColumnNames.grid_area_code),
         col(Colname.energy_supplier_id).alias(
             MonthlyAmountsColumnNames.energy_supplier_id
         ),
