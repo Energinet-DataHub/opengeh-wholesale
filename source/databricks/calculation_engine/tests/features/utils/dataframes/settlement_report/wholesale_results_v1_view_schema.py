@@ -28,7 +28,7 @@ wholesale_results_v1_view_schema = StructType(
         StructField(WholesaleResultColumnNames.calculation_type, StringType(), False),
         StructField(WholesaleResultColumnNames.grid_area_code, StringType(), False),
         StructField(WholesaleResultColumnNames.energy_supplier_id, StringType(), False),
-        StructField(Colname.start_date_time, TimestampType(), False),
+        StructField(WholesaleResultColumnNames.time, TimestampType(), False),
         StructField(WholesaleResultColumnNames.resolution, StringType(), False),
         StructField(
             WholesaleResultColumnNames.metering_point_type, StringType(), False
