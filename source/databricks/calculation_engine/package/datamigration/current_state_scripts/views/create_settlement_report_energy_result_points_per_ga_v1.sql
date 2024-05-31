@@ -8,7 +8,7 @@ SELECT calculation_id,
        settlement_method,
        resolution,
        time,
-       quantity,
+       quantity
 FROM {OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
 WHERE time_series_type IN ('production', 'non_profiled_consumption', 'flex_consumption', 'net_exchange_per_ga', 'total_consumption')
 WHERE calculation_type IN ('BalanceFixing', 'WholesaleFixing', 'FirstCorrectionSettlement', 'SecondCorrectionSettlement', 'ThirdCorrectionSettlement')
