@@ -18,7 +18,6 @@ from pyspark.sql.types import (
     TimestampType,
     StructType,
     DecimalType,
-    LongType,
 )
 
 from package.constants import WholesaleResultColumnNames, Colname
@@ -27,7 +26,6 @@ monthly_amounts_v1_view_schema = StructType(
     [
         StructField(WholesaleResultColumnNames.calculation_id, StringType(), False),
         StructField(WholesaleResultColumnNames.calculation_type, StringType(), False),
-        StructField("calculation_version", LongType(), False),
         StructField(WholesaleResultColumnNames.grid_area_code, StringType(), False),
         StructField(WholesaleResultColumnNames.energy_supplier_id, StringType(), False),
         StructField(Colname.start_date_time, TimestampType(), False),
