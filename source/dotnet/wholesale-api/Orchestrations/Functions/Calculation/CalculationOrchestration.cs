@@ -120,8 +120,10 @@ internal class CalculationOrchestration
         }
 
         // Wait for an ActorMessagesEnqueued event to notify us that messages are ready to be consumed by actors
-        // Pattern #5: Human interaction - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview?tabs=isolated-process%2Cnodejs-v3%2Cv1-model&pivots=csharp#human
-        var waitForActorMessagesEnqueuedEventResult = await WaitForActorMessagesEnqueuedEventAsync(context, calculationMetadata.Id, input.OrchestrationMonitorOptions.MessagesEnqueuingExpiryTimeInSeconds);
+        var waitForActorMessagesEnqueuedEventResult = await WaitForActorMessagesEnqueuedEventAsync(
+            context,
+            calculationMetadata.Id,
+            input.OrchestrationMonitorOptions.MessagesEnqueuingExpiryTimeInSeconds);
         if (!waitForActorMessagesEnqueuedEventResult.IsSuccess)
         {
             calculationMetadata.OrchestrationProgress = waitForActorMessagesEnqueuedEventResult.ErrorSubject ?? "UnknownWaitForActorMessagesEnqueuedEventError";
@@ -129,57 +131,53 @@ internal class CalculationOrchestration
             return $"Error: {waitForActorMessagesEnqueuedEventResult.ErrorDescription ?? "Unknown error waiting for actor messages enqueued event"}";
         }
 
+        // Update state to ActorMessagesEnqueued
         calculationMetadata.OrchestrationProgress = "ActorMessagesEnqueued";
         context.SetCustomStatus(calculationMetadata);
+        await UpdateCalculationOrchestrationStateAsync(
+            context,
+            calculationMetadata.Id,
+            CalculationOrchestrationState.ActorMessagesEnqueued);
 
-        // Update calculation state to ActorMessagesEnqueued in database
-        await context.CallActivityAsync(
-            nameof(UpdateCalculationOrchestrationStateActivity),
-            new UpdateCalculationOrchestrationStateInput(calculationMetadata.Id, CalculationOrchestrationState.ActorMessagesEnqueued));
-
+        // Update state to Completed
         calculationMetadata.OrchestrationProgress = "Completed";
         context.SetCustomStatus(calculationMetadata);
-        // Set calculation orchestration status to completed
-        await context.CallActivityAsync(
-            nameof(UpdateCalculationOrchestrationStateActivity),
-            new UpdateCalculationOrchestrationStateInput(calculationMetadata.Id, CalculationOrchestrationState.Completed));
+        await UpdateCalculationOrchestrationStateAsync(
+            context,
+            calculationMetadata.Id,
+            CalculationOrchestrationState.Completed);
 
         return "Success";
     }
 
+    private static async Task UpdateCalculationOrchestrationStateAsync(
+        TaskOrchestrationContext context,
+        Guid calculationId,
+        CalculationOrchestrationState newState)
+    {
+        await context.CallActivityAsync(
+            nameof(UpdateCalculationOrchestrationStateActivity),
+            new UpdateCalculationOrchestrationStateInput(calculationId, newState));
+    }
+
+#pragma warning disable CS1570 // XML comment has badly formed XML -- XML doesn't like links
+    /// <summary>
+    /// Pattern #5: Human interaction - https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview?tabs=isolated-process%2Cnodejs-v3%2Cv1-model&pivots=csharp#human
+    /// </summary>
     private static async Task<OrchestrationResult> WaitForActorMessagesEnqueuedEventAsync(
         TaskOrchestrationContext context,
         Guid calculationId,
         int messagesEnqueuingExpiryTimeInSeconds)
     {
-        using (var timeoutCts = new CancellationTokenSource())
-        {
-            var timeoutAt = context.CurrentUtcDateTime.AddSeconds(messagesEnqueuingExpiryTimeInSeconds);
+        var messagesEnqueuedEvent = await context.WaitForExternalEvent<MessagesEnqueuedV1>(
+            MessagesEnqueuedV1.EventName,
+            timeout: TimeSpan.FromSeconds(messagesEnqueuingExpiryTimeInSeconds));
 
-            var waitForTimeoutTask = context.CreateTimer(timeoutAt, timeoutCts.Token);
-
-            // ReSharper disable once MethodSupportsCancellation
-            // Cancellation is handled by the waitForTimeoutTask, so the cancellation token shouldn't be passed to waiting for the actual event
-            var waitForMessagesEnqueuedEventTask = context.WaitForExternalEvent<MessagesEnqueuedV1>(MessagesEnqueuedV1.EventName);
-
-            var finishedTask = await Task.WhenAny(waitForMessagesEnqueuedEventTask, waitForTimeoutTask);
-
-            if (finishedTask == waitForMessagesEnqueuedEventTask)
-            {
-                // ReSharper disable once MethodHasAsyncOverload -- Do not use .CanceAsync() since it is not a durable task and will cause the the durable function to fail
-                timeoutCts.Cancel(); // Cancel the waitForTimeoutTask, so it doesn't complete when replaying the orchestration
-
-                var messagesEnqueuedEvent = waitForMessagesEnqueuedEventTask.Result;
-                var canParseCalculationId = Guid.TryParse(messagesEnqueuedEvent.CalculationId, out var messagesEnqueuedCalculationId);
-                if (!canParseCalculationId || messagesEnqueuedCalculationId != calculationId)
-                    return OrchestrationResult.Error("ActorMessagesEnqueuedCalculationIdMismatch", $"Calculation id mismatch for actor messages enqueued event (expected: {calculationId}, actual: {messagesEnqueuedEvent.CalculationId})");
-            }
-            else
-            {
-                return OrchestrationResult.Error("ActorMessagesEnqueuingTimeout", "Timeout while waiting for actor messages enqueued event");
-            }
-        }
+        var canParseCalculationId = Guid.TryParse(messagesEnqueuedEvent.CalculationId, out var messagesEnqueuedCalculationId);
+        if (!canParseCalculationId || messagesEnqueuedCalculationId != calculationId)
+            return OrchestrationResult.Error("ActorMessagesEnqueuedCalculationIdMismatch", $"Calculation id mismatch for actor messages enqueued event (expected: {calculationId}, actual: {messagesEnqueuedEvent.CalculationId})");
 
         return OrchestrationResult.Success();
     }
+#pragma warning restore CS1570 // XML comment has badly formed XML
 }

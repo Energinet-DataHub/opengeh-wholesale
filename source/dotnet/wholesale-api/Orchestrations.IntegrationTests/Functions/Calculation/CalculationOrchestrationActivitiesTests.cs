@@ -27,9 +27,9 @@ using Xunit.Abstractions;
 namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.Calculation;
 
 [Collection(nameof(OrchestrationsAppCollectionFixture))]
-public class CalculationOrchestrationActivityTests : IAsyncLifetime
+public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
 {
-    public CalculationOrchestrationActivityTests(
+    public CalculationOrchestrationActivitiesTests(
         OrchestrationsAppFixture fixture,
         ITestOutputHelper testOutputHelper)
     {
