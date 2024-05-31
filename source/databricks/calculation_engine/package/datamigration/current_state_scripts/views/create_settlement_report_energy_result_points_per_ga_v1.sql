@@ -2,7 +2,7 @@ CREATE VIEW {SETTLEMENT_REPORT_DATABASE_NAME}.energy_result_points_per_ga_v1 as
 SELECT calculation_id,
        calculation_type,
        calculation_version,
-       calculation_result_id as result_id,
+       result_id,
        grid_area_code,
        metering_point_type,
        settlement_method,
