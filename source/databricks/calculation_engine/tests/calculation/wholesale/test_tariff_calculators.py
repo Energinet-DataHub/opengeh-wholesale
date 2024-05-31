@@ -20,6 +20,7 @@ from typing import Any
 import pytest
 from pyspark.sql import SparkSession
 
+import calculation.wholesale.factories.prepared_tariffs_factory as factory
 from package.calculation.wholesale.tariff_calculators import (
     calculate_tariff_price_per_ga_co_es,
 )
@@ -32,7 +33,6 @@ from package.codelists import (
     WholesaleResultResolution,
 )
 from package.constants import Colname
-import calculation.wholesale.factories.prepared_tariffs_factory as factory
 
 
 def test__calculate_tariff_price_per_ga_co_es__returns_empty_df_when_input_df_is_empty(
@@ -59,7 +59,7 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_correct_columns(
 
     # Assert
     assert Colname.energy_supplier_id in actual.columns
-    assert Colname.grid_area in actual.columns
+    assert Colname.grid_area_code in actual.columns
     assert Colname.charge_time in actual.columns
     assert Colname.metering_point_type in actual.columns
     assert Colname.settlement_method in actual.columns
@@ -99,7 +99,7 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_expected_values(
         actual_row[Colname.energy_supplier_id]
         == factory.DefaultValues.ENERGY_SUPPLIER_ID
     )
-    assert actual_row[Colname.grid_area] == factory.DefaultValues.GRID_AREA
+    assert actual_row[Colname.grid_area_code] == factory.DefaultValues.GRID_AREA
     assert actual_row[Colname.charge_time] == factory.DefaultValues.CHARGE_TIME_HOUR_0
     assert (
         actual_row[Colname.metering_point_type]

@@ -34,8 +34,8 @@ class TestCtor:
             # Arrange
             df = factory.create(spark).df
             nullable_columns = [
-                Colname.to_grid_area,
-                Colname.from_grid_area,
+                Colname.to_grid_area_code,
+                Colname.from_grid_area_code,
                 Colname.balance_responsible_id,
                 Colname.energy_supplier_id,
                 Colname.metering_point_id,
