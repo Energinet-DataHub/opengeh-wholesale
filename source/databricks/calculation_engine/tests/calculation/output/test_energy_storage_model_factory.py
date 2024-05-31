@@ -38,9 +38,9 @@ from tests.contract_utils import (
 
 # The calculation id is used in parameterized test executed using xdist, which does not allow parameters to change
 DEFAULT_CALCULATION_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
-DEFAULT_GRID_AREA = "105"
-DEFAULT_FROM_GRID_AREA = "106"
-DEFAULT_TO_GRID_AREA = "107"
+DEFAULT_GRID_AREA_CODE = "105"
+DEFAULT_FROM_GRID_AREA_CODE = "106"
+DEFAULT_TO_GRID_AREA_CODE = "107"
 DEFAULT_ENERGY_SUPPLIER_ID = "9876543210123"
 DEFAULT_BALANCE_RESPONSIBLE_ID = "1234567890123"
 DEFAULT_CALCULATION_TYPE = e.CalculationType.BALANCE_FIXING
@@ -54,9 +54,9 @@ DEFAULT_METERING_POINT_TYPE = e.MeteringPointType.PRODUCTION
 DEFAULT_SETTLEMENT_METHOD = e.SettlementMethod.FLEX
 
 OTHER_CALCULATION_ID = "0b15a420-9fc8-409a-a169-fbd49479d719"
-OTHER_GRID_AREA = "205"
-OTHER_FROM_GRID_AREA = "206"
-OTHER_TO_GRID_AREA = "207"
+OTHER_GRID_AREA_CODE = "205"
+OTHER_FROM_GRID_AREA_CODE = "206"
+OTHER_TO_GRID_AREA_CODE = "207"
 OTHER_ENERGY_SUPPLIER_ID = "9876543210124"
 OTHER_BALANCE_RESPONSIBLE_ID = "1234567890124"
 OTHER_CALCULATION_TYPE = e.CalculationType.AGGREGATION
@@ -84,9 +84,9 @@ def args(any_calculator_args: CalculatorArgs) -> CalculatorArgs:
 
 
 def _create_result_row(
-    grid_area: str = DEFAULT_GRID_AREA,
-    to_grid_area: str = DEFAULT_TO_GRID_AREA,
-    from_grid_area: str = DEFAULT_FROM_GRID_AREA,
+    grid_area_code: str = DEFAULT_GRID_AREA_CODE,
+    to_grid_area_code: str = DEFAULT_TO_GRID_AREA_CODE,
+    from_grid_area_code: str = DEFAULT_FROM_GRID_AREA_CODE,
     energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
     balance_responsible_id: str = DEFAULT_BALANCE_RESPONSIBLE_ID,
     quantity: str = DEFAULT_QUANTITY,
@@ -95,9 +95,9 @@ def _create_result_row(
     metering_point_id: str | None = None,
 ) -> dict:
     row = {
-        Colname.grid_area: grid_area,
-        Colname.to_grid_area: to_grid_area,
-        Colname.from_grid_area: from_grid_area,
+        Colname.grid_area_code: grid_area_code,
+        Colname.to_grid_area_code: to_grid_area_code,
+        Colname.from_grid_area_code: from_grid_area_code,
         Colname.balance_responsible_id: balance_responsible_id,
         Colname.energy_supplier_id: energy_supplier_id,
         Colname.observation_time: observation_time,
@@ -129,15 +129,15 @@ def _create_energy_results_corresponding_to_four_calculation_results(
             observation_time=OTHER_OBSERVATION_TIME,
         ),
         # Second result
-        _create_result_row(grid_area=OTHER_GRID_AREA),
+        _create_result_row(grid_area_code=OTHER_GRID_AREA),
         _create_result_row(
-            grid_area=OTHER_GRID_AREA,
+            grid_area_code=OTHER_GRID_AREA,
             observation_time=OTHER_OBSERVATION_TIME,
         ),
         # Third result
-        _create_result_row(from_grid_area=OTHER_FROM_GRID_AREA),
+        _create_result_row(from_grid_area_code=OTHER_FROM_GRID_AREA),
         _create_result_row(
-            from_grid_area=OTHER_FROM_GRID_AREA,
+            from_grid_area_code=OTHER_FROM_GRID_AREA,
             observation_time=OTHER_OBSERVATION_TIME,
         ),
         # Fourth result
@@ -185,8 +185,8 @@ def test__create__with_correct_aggregation_level(
         ),
         (EnergyResultColumnNames.calculation_type, DEFAULT_CALCULATION_TYPE.value),
         (EnergyResultColumnNames.time_series_type, DEFAULT_TIME_SERIES_TYPE.value),
-        (EnergyResultColumnNames.grid_area, DEFAULT_GRID_AREA),
-        (EnergyResultColumnNames.from_grid_area, DEFAULT_FROM_GRID_AREA),
+        (EnergyResultColumnNames.grid_area_code, DEFAULT_GRID_AREA_CODE),
+        (EnergyResultColumnNames.from_grid_area, DEFAULT_FROM_GRID_AREA_CODE),
         (
             EnergyResultColumnNames.balance_responsible_id,
             DEFAULT_BALANCE_RESPONSIBLE_ID,
@@ -272,8 +272,12 @@ def test__create__with_correct_number_of_calculation_result_ids(
 @pytest.mark.parametrize(
     "column_name, value, other_value",
     [
-        (Colname.grid_area, DEFAULT_GRID_AREA, OTHER_GRID_AREA),
-        (Colname.from_grid_area, DEFAULT_FROM_GRID_AREA, OTHER_FROM_GRID_AREA),
+        (Colname.grid_area_code, DEFAULT_GRID_AREA_CODE, OTHER_GRID_AREA_CODE),
+        (
+            Colname.from_grid_area_code,
+            DEFAULT_FROM_GRID_AREA_CODE,
+            OTHER_FROM_GRID_AREA_CODE,
+        ),
         (
             Colname.balance_responsible_id,
             DEFAULT_BALANCE_RESPONSIBLE_ID,
@@ -325,7 +329,7 @@ def test__create__when_rows_belong_to_different_results__adds_different_calculat
             DEFAULT_QUALITY.value,
             OTHER_QUALITY.value,
         ),
-        (Colname.to_grid_area, DEFAULT_TO_GRID_AREA, OTHER_TO_GRID_AREA),
+        (Colname.to_grid_area_code, DEFAULT_TO_GRID_AREA_CODE, OTHER_TO_GRID_AREA_CODE),
         (
             Colname.metering_point_type,
             DEFAULT_METERING_POINT_TYPE.value,
@@ -347,9 +351,9 @@ def test__write__when_rows_belong_to_same_result__adds_same_calculation_result_i
     args: CalculatorArgs,
 ) -> None:
     # Arrange
-    row1 = _create_result_row(grid_area="804")
+    row1 = _create_result_row(grid_area_code="804")
     row1[column_name] = value
-    row2 = _create_result_row(grid_area="803")
+    row2 = _create_result_row(grid_area_code="803")
     row2[column_name] = other_value
     result_df = _create_energy_results(spark, [row1, row2])
 
@@ -410,9 +414,9 @@ def _map_colname_to_energy_result_column_name(field_name: str) -> str:
     Test workaround as the contract specifies the Delta table column names
     while some of the data frame column names are using `Colname` names.
     """
-    if field_name == Colname.grid_area:
-        return EnergyResultColumnNames.grid_area
-    if field_name == Colname.from_grid_area:
+    if field_name == Colname.grid_area_code:
+        return EnergyResultColumnNames.grid_area_code
+    if field_name == Colname.from_grid_area_code:
         return EnergyResultColumnNames.from_grid_area
     if field_name == Colname.balance_responsible_id:
         return EnergyResultColumnNames.balance_responsible_id

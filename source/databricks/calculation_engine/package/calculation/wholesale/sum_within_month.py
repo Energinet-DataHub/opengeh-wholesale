@@ -32,7 +32,7 @@ def sum_within_month(
     agg_df = (
         wholesale_results.df.groupBy(
             Colname.energy_supplier_id,
-            Colname.grid_area,
+            Colname.grid_area_code,
             Colname.charge_code,
             Colname.charge_type,
             Colname.charge_owner,
@@ -45,7 +45,7 @@ def sum_within_month(
             f.first(Colname.unit).alias(Colname.unit),
         )
         .select(
-            f.col(Colname.grid_area),
+            f.col(Colname.grid_area_code),
             f.col(Colname.energy_supplier_id),
             f.lit(None).cast(DecimalType(18, 3)).alias(Colname.total_quantity),
             f.col(Colname.unit),
