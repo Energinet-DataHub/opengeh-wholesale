@@ -272,7 +272,7 @@ public class OrchestrationsAppFixture : IAsyncLifetime
             $"{CalculationOrchestrationMonitorOptions.SectionName}__{nameof(CalculationOrchestrationMonitorOptions.CalculationJobStatusExpiryTimeInSeconds)}",
             "20");
         appHostSettings.ProcessEnvironmentVariables.Add(
-            $"{CalculationOrchestrationMonitorOptions.SectionName}__{nameof(CalculationOrchestrationMonitorOptions.CalculationJobStatusExpiryTimeInSeconds)}",
+            $"{CalculationOrchestrationMonitorOptions.SectionName}__{nameof(CalculationOrchestrationMonitorOptions.MessagesEnqueuingExpiryTimeInSeconds)}",
             "20");
 
         return appHostSettings;
