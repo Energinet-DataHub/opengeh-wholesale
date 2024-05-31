@@ -41,3 +41,10 @@ class EnergyResultViewReader:
         return self._spark.read.format("delta").table(
             f"{OUTPUT_DATABASE_NAME}.{paths.WHOLESALE_RESULT_TABLE_NAME}"
         )
+
+    def read_total_monthly_amounts(
+        self,
+    ) -> DataFrame:
+        return self._spark.read.format("delta").table(
+            f"{OUTPUT_DATABASE_NAME}.{paths.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
+        )

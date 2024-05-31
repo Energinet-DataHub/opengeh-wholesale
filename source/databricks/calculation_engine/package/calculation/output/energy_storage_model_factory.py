@@ -71,8 +71,8 @@ def _get_column_group_for_calculation_result_id() -> list[str]:
     and are thus neither part of this list.
     """
     return [
-        Colname.grid_area,
-        Colname.from_grid_area,
+        Colname.grid_area_code,
+        Colname.from_grid_area_code,
         Colname.balance_responsible_id,
         Colname.energy_supplier_id,
     ]
@@ -84,7 +84,7 @@ def _map_to_storage_dataframe(results: DataFrame) -> DataFrame:
     Note: The order of the columns must match the order of the columns in the Delta table
     """
     return results.select(
-        f.col(Colname.grid_area).alias(EnergyResultColumnNames.grid_area),
+        f.col(Colname.grid_area_code).alias(EnergyResultColumnNames.grid_area_code),
         f.col(Colname.energy_supplier_id).alias(
             EnergyResultColumnNames.energy_supplier_id
         ),
@@ -101,7 +101,9 @@ def _map_to_storage_dataframe(results: DataFrame) -> DataFrame:
         f.col(EnergyResultColumnNames.calculation_id),
         f.col(EnergyResultColumnNames.calculation_type),
         f.col(EnergyResultColumnNames.calculation_execution_time_start),
-        f.col(Colname.from_grid_area).alias(EnergyResultColumnNames.from_grid_area),
+        f.col(Colname.from_grid_area_code).alias(
+            EnergyResultColumnNames.from_grid_area
+        ),
         f.col(EnergyResultColumnNames.calculation_result_id),
         f.col(EnergyResultColumnNames.metering_point_id),
         f.col(EnergyResultColumnNames.resolution),

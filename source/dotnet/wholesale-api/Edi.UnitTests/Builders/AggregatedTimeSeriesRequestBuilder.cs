@@ -22,7 +22,7 @@ namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Builders;
 public class AggregatedTimeSeriesRequestBuilder
 {
     private readonly List<string> _gridAreaCodes = [];
-    private string _meteringPointType = DataHubNames.MeteringPointType.Production;
+    private string? _meteringPointType = DataHubNames.MeteringPointType.Production;
     private string _start;
     private string _end;
     private string? _energySupplierId;
@@ -58,11 +58,13 @@ public class AggregatedTimeSeriesRequestBuilder
                 Start = _start,
                 End = _end,
             },
-            MeteringPointType = _meteringPointType,
             RequestedForActorRole = _requestedByActorRole,
             RequestedForActorNumber = _requestedByActorNumber,
             BusinessReason = _businessReason,
         };
+
+        if (_meteringPointType != null)
+            request.MeteringPointType = _meteringPointType;
 
         if (_energySupplierId != null)
             request.EnergySupplierId = _energySupplierId;
@@ -112,7 +114,7 @@ public class AggregatedTimeSeriesRequestBuilder
         return this;
     }
 
-    public AggregatedTimeSeriesRequestBuilder WithMeteringPointType(string meteringPointType)
+    public AggregatedTimeSeriesRequestBuilder WithMeteringPointType(string? meteringPointType)
     {
         _meteringPointType = meteringPointType;
         return this;

@@ -24,7 +24,7 @@ class ArgsName:
     calculation_id = "calculation_id"
     period_start = "period_start"
     period_end = "period_end"
-    grid_areas = "grid_areas"
+    grid_area_codes = "grid_areas"
 
 
 CSV_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
@@ -46,7 +46,7 @@ def create_calculation_args(input_path: str) -> CalculatorArgs:
 
     return CalculatorArgs(
         calculation_id=calculation_args[ArgsName.calculation_id],
-        calculation_grid_areas=calculation_args[ArgsName.grid_areas],
+        calculation_grid_areas=calculation_args[ArgsName.grid_area_codes],
         calculation_period_start_datetime=datetime.strptime(
             calculation_args[ArgsName.period_start], CSV_DATE_FORMAT
         ),

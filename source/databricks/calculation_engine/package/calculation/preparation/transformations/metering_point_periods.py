@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from datetime import datetime
+
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import (
     col,
@@ -19,16 +21,15 @@ from pyspark.sql.functions import (
     lit,
 )
 
-from package.calculation.preparation.transformations.clamp_period import clamp_period
-from package.constants import Colname
-from datetime import datetime
 from package.calculation.input import TableReader
+from package.calculation.preparation.transformations.clamp_period import clamp_period
 from package.codelists import (
     InputMeteringPointType,
     InputSettlementMethod,
     MeteringPointType,
     SettlementMethod,
 )
+from package.constants import Colname
 
 
 def get_metering_point_periods_df(
@@ -40,9 +41,9 @@ def get_metering_point_periods_df(
     metering_point_periods_df = (
         calculation_input_reader.read_metering_point_periods()
         .where(
-            col(Colname.grid_area).isin(calculation_grid_areas)
-            | col(Colname.from_grid_area).isin(calculation_grid_areas)
-            | col(Colname.to_grid_area).isin(calculation_grid_areas)
+            col(Colname.grid_area_code).isin(calculation_grid_areas)
+            | col(Colname.from_grid_area_code).isin(calculation_grid_areas)
+            | col(Colname.to_grid_area_code).isin(calculation_grid_areas)
         )
         .where(col(Colname.from_date) < period_end)
         .where(col(Colname.to_date).isNull() | (col(Colname.to_date) > period_start))
@@ -63,10 +64,10 @@ def get_metering_point_periods_df(
         Colname.metering_point_type,
         Colname.calculation_type,
         Colname.settlement_method,
-        Colname.grid_area,
+        Colname.grid_area_code,
         Colname.resolution,
-        Colname.from_grid_area,
-        Colname.to_grid_area,
+        Colname.from_grid_area_code,
+        Colname.to_grid_area_code,
         Colname.parent_metering_point_id,
         Colname.energy_supplier_id,
         Colname.balance_responsible_id,

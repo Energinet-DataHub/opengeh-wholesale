@@ -202,43 +202,31 @@ public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSe
         var actual = await Sut.GetAsync(parameters).ToListAsync();
 
         using var assertionScope = new AssertionScope();
-        actual.Select(ats => ats.Version).Should().BeEquivalentTo([11L, 22L, 33L, 55L, 77L, 88L]);
+        actual.Select(ats => ats.Version).Should().BeEquivalentTo([256L, 512L, 1024L, 2048L]);
 
-        actual.Single(ats => ats.Version == 11L)
+        actual.Single(ats => ats.Version == 256L)
             .TimeSeriesPoints
             .Select(tsp => tsp.Quantity)
             .Should()
-            .BeEquivalentTo([1.111]);
+            .BeEquivalentTo([1.111, 4.444]);
 
-        actual.Single(ats => ats.Version == 22L)
-            .TimeSeriesPoints
-            .Select(tsp => tsp.Quantity)
-            .Should()
-            .BeEquivalentTo([4.444]);
-
-        actual.Single(ats => ats.Version == 33L)
+        actual.Single(ats => ats.Version == 512L)
             .TimeSeriesPoints
             .Select(tsp => tsp.Quantity)
             .Should()
             .BeEquivalentTo([1.222]);
 
-        actual.Single(ats => ats.Version == 55L)
+        actual.Single(ats => ats.Version == 1024L)
             .TimeSeriesPoints
             .Select(tsp => tsp.Quantity)
             .Should()
             .BeEquivalentTo([1.333]);
 
-        actual.Single(ats => ats.Version == 77L)
+        actual.Single(ats => ats.Version == 2048L)
             .TimeSeriesPoints
             .Select(tsp => tsp.Quantity)
             .Should()
-            .BeEquivalentTo([1.444]);
-
-        actual.Single(ats => ats.Version == 88L)
-            .TimeSeriesPoints
-            .Select(tsp => tsp.Quantity)
-            .Should()
-            .BeEquivalentTo([4.777]);
+            .BeEquivalentTo([1.444, 4.777]);
     }
 
     [Fact]
@@ -265,18 +253,14 @@ public sealed class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSe
             .Select(ats => (ats.Version, ats.GridArea, ats.TimeSeriesType))
             .Should()
             .BeEquivalentTo([
-                (11L, "301", TimeSeriesType.FlexConsumption),
-                (22L, "301", TimeSeriesType.FlexConsumption),
-                (33L, "301", TimeSeriesType.FlexConsumption),
-                (55L, "301", TimeSeriesType.FlexConsumption),
-                (77L, "301", TimeSeriesType.FlexConsumption),
-                (88L, "301", TimeSeriesType.FlexConsumption),
-                (11L, "301", TimeSeriesType.Production),
-                (22L, "301", TimeSeriesType.Production),
-                (33L, "301", TimeSeriesType.Production),
-                (55L, "301", TimeSeriesType.Production),
-                (77L, "301", TimeSeriesType.Production),
-                (88L, "301", TimeSeriesType.Production)
+                (256L, "301", TimeSeriesType.FlexConsumption),
+                (512L, "301", TimeSeriesType.FlexConsumption),
+                (1024L, "301", TimeSeriesType.FlexConsumption),
+                (2048L, "301", TimeSeriesType.FlexConsumption),
+                (256L, "301", TimeSeriesType.Production),
+                (512L, "301", TimeSeriesType.Production),
+                (1024L, "301", TimeSeriesType.Production),
+                (2048L, "301", TimeSeriesType.Production),
             ]);
     }
 

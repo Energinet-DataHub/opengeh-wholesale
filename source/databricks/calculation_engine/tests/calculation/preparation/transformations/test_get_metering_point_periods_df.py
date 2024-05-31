@@ -13,13 +13,13 @@
 # limitations under the License.
 
 from datetime import datetime, timedelta
+from unittest.mock import patch, Mock
 
+import pytest
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import when, col
 
-import pytest
-from unittest.mock import patch, Mock
-
+import calculation.input.table_reader.input_metering_point_periods_factory as factory
 from package.calculation import input
 from package.calculation.input import TableReader
 from package.calculation.preparation.transformations import (
@@ -32,8 +32,6 @@ from package.codelists import (
     SettlementMethod,
 )
 from package.constants import Colname
-
-import calculation.input.table_reader.input_metering_point_periods_factory as factory
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 
 june_1th = datetime(2022, 5, 31, 22, 0)
@@ -193,10 +191,10 @@ class TestWhenValidInput:
             == MeteringPointType.CONSUMPTION.value
         )
         assert actual_row[Colname.settlement_method] == SettlementMethod.FLEX.value
-        assert actual_row[Colname.grid_area] == factory.DEFAULT_GRID_AREA
+        assert actual_row[Colname.grid_area_code] == factory.DEFAULT_GRID_AREA
         assert actual_row[Colname.resolution] == factory.DEFAULT_RESOLUTION.value
-        assert actual_row[Colname.from_grid_area] == factory.DEFAULT_FROM_GRID_AREA
-        assert actual_row[Colname.to_grid_area] == factory.DEFAULT_TO_GRID_AREA
+        assert actual_row[Colname.from_grid_area_code] == factory.DEFAULT_FROM_GRID_AREA
+        assert actual_row[Colname.to_grid_area_code] == factory.DEFAULT_TO_GRID_AREA
         assert (
             actual_row[Colname.parent_metering_point_id]
             == factory.DEFAULT_PARENT_METERING_POINT_ID
@@ -346,17 +344,17 @@ class TestWhenThreeGridAreasExchangingWithEachOther:
         )
 
         # Assert
-        actual_rows = sorted(actual.collect(), key=lambda x: x[Colname.grid_area])
+        actual_rows = sorted(actual.collect(), key=lambda x: x[Colname.grid_area_code])
         assert len(actual_rows) == 3
-        assert actual_rows[0][Colname.grid_area] == "111"
-        assert actual_rows[0][Colname.from_grid_area] == "111"
-        assert actual_rows[0][Colname.to_grid_area] == "222"
-        assert actual_rows[1][Colname.grid_area] == "222"
-        assert actual_rows[1][Colname.from_grid_area] == "222"
-        assert actual_rows[1][Colname.to_grid_area] == "111"
-        assert actual_rows[2][Colname.grid_area] == "333"
-        assert actual_rows[2][Colname.from_grid_area] == "111"
-        assert actual_rows[2][Colname.to_grid_area] == "222"
+        assert actual_rows[0][Colname.grid_area_code] == "111"
+        assert actual_rows[0][Colname.from_grid_area_code] == "111"
+        assert actual_rows[0][Colname.to_grid_area_code] == "222"
+        assert actual_rows[1][Colname.grid_area_code] == "222"
+        assert actual_rows[1][Colname.from_grid_area_code] == "222"
+        assert actual_rows[1][Colname.to_grid_area_code] == "111"
+        assert actual_rows[2][Colname.grid_area_code] == "333"
+        assert actual_rows[2][Colname.from_grid_area_code] == "111"
+        assert actual_rows[2][Colname.to_grid_area_code] == "222"
 
 
 class TestWhenExchangeMeteringPoint:
