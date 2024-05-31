@@ -72,13 +72,13 @@ def assert_dataframe_and_schema(
         expected.printSchema()
         raise
 
-    try:
-        if feature_tests_configuration.show_actual_and_expected:
-            print("ACTUAL:")
-            actual.show(3000, False)
-            print("EXPECTED:")
-            expected.show(3000, False)
+    if feature_tests_configuration.show_actual_and_expected:
+        print("ACTUAL:")
+        actual.show(3000, False)
+        print("EXPECTED:")
+        expected.show(3000, False)
 
+    try:
         assert_dataframes_equal(actual, expected)
     except AssertionError:
 
