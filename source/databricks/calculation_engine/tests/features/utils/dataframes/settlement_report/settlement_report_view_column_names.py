@@ -60,3 +60,8 @@ class EnergyResultsV1ColumnNames:
     resolution = Colname.resolution
     settlement_method = Colname.settlement_method
     aggregation_level = EnergyResultColumnNames.aggregation_level
+
+
+class CurrentCalculationTypeVersionsV1ColumnNames:
+    calculation_type = CalculationsColumnName.calculation_type
+    version = CalculationsColumnName.version
