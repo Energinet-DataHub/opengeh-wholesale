@@ -102,10 +102,6 @@ def _remove_registration_of_modified_scripts(
     if not modified_scripts:
         return
 
-    print(
-        f"Scripts modified after last migrated script ({latest_execution_time}): {'.'.join(modified_scripts)}"
-    )
-
     if migrations_execution.value == MigrationsExecution.MODIFIED.value:
         in_clause = "'" + "', '".join(modified_scripts) + "'"
         sql = f"DELETE FROM {migrations_table} WHERE migration_name in ({in_clause})"

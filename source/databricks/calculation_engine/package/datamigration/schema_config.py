@@ -115,6 +115,8 @@ schema_config = [
         tables=[],
         views=[
             View(name=paths.EdiResults.ENERGY_RESULT_POINTS_PER_GA_V1_VIEW_NAME),
+            View(name=paths.EdiResults.ENERGY_RESULT_POINTS_PER_BRP_GA_V1_VIEW_NAME),
+            View(name=paths.EdiResults.ENERGY_RESULT_POINTS_PER_ES_BRP_GA_V1_VIEW_NAME),
         ],
     ),
 ]
