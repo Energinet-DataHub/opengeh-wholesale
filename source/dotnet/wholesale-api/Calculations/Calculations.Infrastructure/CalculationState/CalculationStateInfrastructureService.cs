@@ -70,7 +70,7 @@ public class CalculationStateInfrastructureService : ICalculationStateInfrastruc
                 var state = CalculationStateMapper.MapState(jobState);
                 if (state != calculation.OrchestrationState)
                 {
-                    HandleNewState(state, calculation, completedCalculations);
+                    calculation.UpdateState(state, _clock);
                 }
             }
             catch (Exception e)
@@ -78,10 +78,5 @@ public class CalculationStateInfrastructureService : ICalculationStateInfrastruc
                 _logger.LogError(e, "Exception caught while trying to update execution state for run ID {calculation_id}", calculation.CalculationJobId);
             }
         }
-    }
-
-    private void HandleNewState(CalculationOrchestrationState state, Calculation calculation, ICollection<Calculation> completedCalculations)
-    {
-        calculation.UpdateState(state, _clock);
     }
 }
