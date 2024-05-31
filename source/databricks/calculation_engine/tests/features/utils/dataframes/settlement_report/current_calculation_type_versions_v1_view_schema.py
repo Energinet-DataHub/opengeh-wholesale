@@ -14,16 +14,14 @@
 
 from pyspark.sql.types import (
     StructField,
-    StringType,
     StructType,
     LongType,
 )
 
 from package.constants.calculation_column_names import CalculationColumnNames
 
-current_calculation_type_versions_v1_view_schema = StructType(
+current_balance_fixing_calculation_version_v1_view_schema = StructType(
     [
-        StructField(CalculationColumnNames.calculation_type, StringType(), False),
         StructField(CalculationColumnNames.version, LongType(), False),
     ]
 )

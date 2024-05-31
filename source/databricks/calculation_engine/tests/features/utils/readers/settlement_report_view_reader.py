@@ -75,7 +75,9 @@ class SettlementReportViewReader:
         )
 
     @staticmethod
-    def read_current_calculation_type_versions_v1(spark: SparkSession) -> DataFrame:
+    def read_current_balance_fixing_calculation_version_v1(
+        spark: SparkSession,
+    ) -> DataFrame:
         return spark.read.format("delta").table(
             f"{SETTLEMENT_REPORT_DATABASE_NAME}.{CURRENT_BALANCE_FIXING_CALCULATION_VERSION_SETTLEMENT_REPORT_VIEW_NAME_V1}"
         )

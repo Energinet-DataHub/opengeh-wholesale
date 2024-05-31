@@ -31,7 +31,7 @@ from features.utils.dataframes.settlement_report.energy_results_v1_view_schema i
     energy_results_v1_view_schema,
 )
 from features.utils.dataframes.settlement_report.current_calculation_type_versions_v1_view_schema import (
-    current_calculation_type_versions_v1_view_schema,
+    current_balance_fixing_calculation_version_v1_view_schema,
 )
 from features.utils.dataframes.settlement_report.monthly_amounts_v1_view_schema import (
     monthly_amounts_v1_view_schema,
@@ -44,7 +44,7 @@ from features.utils.dataframes.settlement_report.settlement_report_view_datafram
     create_charge_prices_v1_view,
     create_wholesale_results_v1_view,
     create_monthly_amounts_v1_view,
-    create_current_calculation_type_versions_v1_view,
+    create_current_balance_fixing_calculation_version_v1_view,
 )
 from features.utils.dataframes.settlement_report.wholesale_results_v1_view_schema import (
     wholesale_results_v1_view_schema,
@@ -100,9 +100,9 @@ def get_output_specifications() -> dict[str, tuple]:
             SettlementReportViewReader.read_monthly_amounts_v1,
             create_monthly_amounts_v1_view,
         ),
-        "current_calculation_type_versions_v1.csv": (
-            current_calculation_type_versions_v1_view_schema,
-            SettlementReportViewReader.read_current_calculation_type_versions_v1,
-            create_current_calculation_type_versions_v1_view,
+        "current_balance_fixing_calculation_versions_v1.csv": (
+            current_balance_fixing_calculation_version_v1_view_schema,
+            SettlementReportViewReader.read_current_balance_fixing_calculation_version_v1,
+            create_current_balance_fixing_calculation_version_v1_view,
         ),
     }

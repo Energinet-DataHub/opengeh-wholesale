@@ -28,7 +28,7 @@ from features.utils.dataframes.settlement_report.charge_prices_v1_view_schema im
     price_point,
 )
 from features.utils.dataframes.settlement_report.current_calculation_type_versions_v1_view_schema import (
-    current_calculation_type_versions_v1_view_schema,
+    current_balance_fixing_calculation_version_v1_view_schema,
 )
 
 from package.constants import Colname
@@ -199,7 +199,7 @@ def create_wholesale_results_v1_view(spark: SparkSession, df: DataFrame) -> Data
     return spark.createDataFrame(df.rdd, wholesale_results_v1_view_schema)
 
 
-def create_current_calculation_type_versions_v1_view(
+def create_current_balance_fixing_calculation_version_v1_view(
     spark: SparkSession, df: DataFrame
 ) -> DataFrame:
 
@@ -216,7 +216,7 @@ def create_current_calculation_type_versions_v1_view(
     )
 
     return spark.createDataFrame(
-        df.rdd, current_calculation_type_versions_v1_view_schema
+        df.rdd, current_balance_fixing_calculation_version_v1_view_schema
     )
 
 
