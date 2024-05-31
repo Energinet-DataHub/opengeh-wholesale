@@ -62,6 +62,21 @@ class EnergyResultsV1ColumnNames:
     aggregation_level = EnergyResultColumnNames.aggregation_level
 
 
+class EnergyResultPointsPerGaEsV1ColumnNames:
+    calculation_id = EnergyResultColumnNames.calculation_id
+    calculation_type = EnergyResultColumnNames.calculation_type
+    result_id = "result_id"
+    result_id = "result_id"
+    energy_supplier_id = EnergyResultColumnNames.energy_supplier_id
+    grid_area_code = EnergyResultColumnNames.grid_area_code
+    time = EnergyResultColumnNames.time
+    metering_point_type = "metering_point_type"
+    quantity = EnergyResultColumnNames.quantity
+    resolution = Colname.resolution
+    settlement_method = Colname.settlement_method
+    calculation_version = "calculation_version"
+
+
 class CurrentCalculationTypeVersionsV1ColumnNames:
     calculation_type = CalculationsColumnName.calculation_type
     version = CalculationsColumnName.version
