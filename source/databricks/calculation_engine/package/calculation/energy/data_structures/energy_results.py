@@ -47,11 +47,11 @@ class EnergyResults(DataFrameWrapper):
 # See comments to the `assert_schema()` invocation.
 energy_results_schema = t.StructType(
     [
-        t.StructField(Colname.grid_area, t.StringType(), False),
+        t.StructField(Colname.grid_area_code, t.StringType(), False),
         # Required for exchange, otherwise null
-        t.StructField(Colname.to_grid_area, t.StringType(), True),
+        t.StructField(Colname.to_grid_area_code, t.StringType(), True),
         # Required for exchange, otherwise null
-        t.StructField(Colname.from_grid_area, t.StringType(), True),
+        t.StructField(Colname.from_grid_area_code, t.StringType(), True),
         # Required for non-exchange when aggregated per es or brp, otherwise null
         t.StructField(Colname.balance_responsible_id, t.StringType(), True),
         # Required when aggregated per es, otherwise null
