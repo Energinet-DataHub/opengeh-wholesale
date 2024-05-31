@@ -96,7 +96,7 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;
-        using var startCalculationResponse = await Fixture.StartCalculation();
+        using var startCalculationResponse = await Fixture.StartCalculationAsync();
 
         // Assert
         // => Verify endpoint response
@@ -189,7 +189,7 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;
-        using var startCalculationResponse = await Fixture.StartCalculation();
+        using var startCalculationResponse = await Fixture.StartCalculationAsync();
 
         // Assert
         // => Verify endpoint response
@@ -248,7 +248,7 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;
-        using var startCalculationResponse = await Fixture.StartCalculation();
+        using var startCalculationResponse = await Fixture.StartCalculationAsync();
 
         // Assert
         // => Verify endpoint response

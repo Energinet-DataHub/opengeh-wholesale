@@ -209,7 +209,7 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         TestLogger.TestOutputHelper = testOutputHelper;
     }
 
-    public Task<HttpResponseMessage> StartCalculation()
+    public Task<HttpResponseMessage> StartCalculationAsync()
     {
         var request = new HttpRequestMessage(HttpMethod.Post, "api/StartCalculation");
 
