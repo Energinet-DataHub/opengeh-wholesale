@@ -16,6 +16,7 @@ from pyspark.sql.functions import col
 from pyspark.sql.types import (
     TimestampType,
     DecimalType,
+    LongType,
 )
 
 
@@ -35,6 +36,11 @@ def create_total_monthly_amounts_dataframe(*args) -> DataFrame:
         col(TotalMonthlyAmountsColumnNames.calculation_execution_time_start).cast(
             TimestampType()
         ),
+    )
+
+    df = df.withColumn(
+        "calculation_version",
+        col("calculation_version").cast(LongType()),
     )
 
     df = df.withColumn(

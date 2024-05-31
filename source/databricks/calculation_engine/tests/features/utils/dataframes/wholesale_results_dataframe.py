@@ -19,6 +19,7 @@ from pyspark.sql.types import (
     BooleanType,
     DecimalType,
     ArrayType,
+    LongType,
 )
 
 
@@ -36,6 +37,11 @@ def create_wholesale_result_dataframe(*args) -> DataFrame:
         col(WholesaleResultColumnNames.calculation_execution_time_start).cast(
             TimestampType()
         ),
+    )
+
+    df = df.withColumn(
+        "calculation_version",
+        col("calculation_version").cast(LongType()),
     )
 
     df = df.withColumn(
