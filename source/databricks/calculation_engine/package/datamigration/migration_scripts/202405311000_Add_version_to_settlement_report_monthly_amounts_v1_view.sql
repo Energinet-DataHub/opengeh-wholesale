@@ -2,11 +2,12 @@ DROP VIEW IF EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.monthly_amounts_v1 as
 GO
 
 CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.monthly_amounts_v1 as
-SELECT wr.calculation_id,
-       wr.calculation_type,
+SELECT c.calculation_id,
+       c.calculation_type,
+       c.version as calculation_version,
        wr.grid_area_code,
        wr.energy_supplier_id,
-       wr.time AS start_date_time,
+       wr.time,
        wr.resolution,
        wr.quantity_unit,
        "DKK" as currency,
@@ -20,11 +21,12 @@ WHERE wr.amount_type = "monthly_amount_per_charge"
 
 UNION
 
-SELECT tma.calculation_id,
-       tma.calculation_type,
+SELECT c.calculation_id,
+       c.calculation_type,
+       c.version as calculation_version,
        tma.grid_area_code,
        tma.energy_supplier_id,
-       tma.time AS start_date_time,
+       tma.time,
        "P1M" as resolution,
        "kWh" as quantity_unit,
        "DKK" as currency,

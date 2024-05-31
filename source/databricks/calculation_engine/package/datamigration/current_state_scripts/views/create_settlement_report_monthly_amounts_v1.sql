@@ -1,7 +1,7 @@
 CREATE VIEW {SETTLEMENT_REPORT_DATABASE_NAME}.monthly_amounts_v1 as
 SELECT c.calculation_id,
        c.calculation_type,
-       c.version as calculation_version
+       c.version as calculation_version,
        wr.grid_area_code,
        wr.energy_supplier_id,
        wr.time,
