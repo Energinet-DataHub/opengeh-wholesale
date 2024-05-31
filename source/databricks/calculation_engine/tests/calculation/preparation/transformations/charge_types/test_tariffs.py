@@ -13,9 +13,12 @@
 # limitations under the License.
 from datetime import datetime
 from decimal import Decimal
+
 import pytest
 from pyspark.sql import Row, SparkSession
 
+import package.codelists as e
+import tests.calculation.charges_factory as factory
 from calculation.preparation.transformations import (
     prepared_metering_point_time_series_factory,
 )
@@ -25,11 +28,7 @@ from package.calculation.preparation.data_structures.prepared_tariffs import (
 from package.calculation.preparation.transformations import (
     get_prepared_tariffs,
 )
-import package.codelists as e
 from package.constants import Colname
-
-import tests.calculation.charges_factory as factory
-
 
 DEFAULT_TIME_ZONE = "Europe/Copenhagen"
 
@@ -68,7 +67,7 @@ def _create_expected_prepared_tariffs_row(
         Colname.energy_supplier_id: energy_supplier_id,
         Colname.metering_point_type: metering_point_type.value,
         Colname.settlement_method: settlement_method.value,
-        Colname.grid_area: grid_area,
+        Colname.grid_area_code: grid_area,
         Colname.quantity: quantity,
         Colname.qualities: qualities,
     }

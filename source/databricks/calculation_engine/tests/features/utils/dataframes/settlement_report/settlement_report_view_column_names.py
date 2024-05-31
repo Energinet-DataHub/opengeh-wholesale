@@ -30,7 +30,7 @@ class ChargePricesV1ColumnNames:
     is_tax = ChargeMasterDataPeriodsColname.is_tax
     start_date_time = "start_date_time"
     price_points = "price_points"
-    grid_area = MeteringPointPeriodColname.grid_area
+    grid_area_code = MeteringPointPeriodColname.grid_area_code
     energy_supplier_id = MeteringPointPeriodColname.energy_supplier_id
 
 
@@ -45,7 +45,7 @@ class ChargeLinkPeriodsV1ColumnNames:
     quantity = ChargeLinkPeriodsColname.quantity
     from_date = ChargeLinkPeriodsColname.from_date
     to_date = ChargeLinkPeriodsColname.to_date
-    grid_area = MeteringPointPeriodColname.grid_area
+    grid_area_code = MeteringPointPeriodColname.grid_area_code
     energy_supplier_id = MeteringPointPeriodColname.energy_supplier_id
 
 
@@ -53,10 +53,15 @@ class EnergyResultPointsPerGaV1ColumnNames:
     calculation_id = EnergyResultColumnNames.calculation_id
     calculation_type = EnergyResultColumnNames.calculation_type
     energy_supplier_id = EnergyResultColumnNames.energy_supplier_id
-    grid_area = EnergyResultColumnNames.grid_area
+    grid_area_code = EnergyResultColumnNames.grid_area_code
     time = EnergyResultColumnNames.time
     metering_point_type = "metering_point_type"
     quantity = EnergyResultColumnNames.quantity
     resolution = Colname.resolution
     settlement_method = Colname.settlement_method
     calculation_version = "calculation_version"
+
+
+class CurrentCalculationTypeVersionsV1ColumnNames:
+    calculation_type = CalculationsColumnName.calculation_type
+    version = CalculationsColumnName.version

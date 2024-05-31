@@ -45,7 +45,7 @@ charge_link_periods_v1_view_schema = StructType(
         StructField(ChargeLinkPeriodsV1ColumnNames.quantity, IntegerType(), False),
         StructField(ChargeLinkPeriodsV1ColumnNames.from_date, TimestampType(), False),
         StructField(ChargeLinkPeriodsV1ColumnNames.to_date, TimestampType(), True),
-        StructField(MeteringPointPeriodColname.grid_area, StringType(), False),
+        StructField(MeteringPointPeriodColname.grid_area_code, StringType(), False),
         StructField(MeteringPointPeriodColname.energy_supplier_id, StringType(), True),
     ]
 )

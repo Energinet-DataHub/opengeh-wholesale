@@ -17,11 +17,11 @@ defined in the geh_stream directory in our tests.
 """
 import logging
 import os
+import shutil
 import subprocess
 import uuid
 from datetime import datetime
 from pathlib import Path
-from shutil import rmtree
 from typing import Generator, Callable, Optional
 
 import pytest
@@ -52,7 +52,6 @@ from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.integration_test_configuration import IntegrationTestConfiguration
 from testsession_configuration import (
     TestSessionConfiguration,
-    MigrationsExecution,
 )
 
 
@@ -63,9 +62,22 @@ def test_files_folder_path(tests_path: str) -> str:
 
 @pytest.fixture(scope="session")
 def spark(
-    test_session_configuration: TestSessionConfiguration, tests_path: str
+    test_session_configuration: TestSessionConfiguration,
+    tests_path: str,
+    metastore_path: str,
 ) -> SparkSession:
     warehouse_location = f"{tests_path}/__spark-warehouse__"
+
+    if (
+        test_session_configuration.migrations.execute.value
+        == sql_migration_helper.MigrationsExecution.ALL.value
+    ):
+        if os.path.exists(warehouse_location):
+            print(f"Removing warehouse before clean run (path={warehouse_location})")
+            shutil.rmtree(warehouse_location)
+        if os.path.exists(metastore_path):
+            print(f"Removing metastore before clean run (path={metastore_path})")
+            shutil.rmtree(metastore_path)
 
     session = configure_spark_with_delta_pip(
         SparkSession.builder.config("spark.sql.warehouse.dir", warehouse_location)
@@ -215,15 +227,22 @@ def calculation_output_path(data_lake_path: str) -> str:
 
 
 @pytest.fixture(scope="session")
+def metastore_path(tests_path: str) -> str:
+    return f"{tests_path}/metastore_db"
+
+
+@pytest.fixture(scope="session")
 def migrations_executed(
     spark: SparkSession,
     calculation_output_path: str,
+    metastore_path: str,
     energy_input_data_written_to_delta: None,
     test_session_configuration: TestSessionConfiguration,
 ) -> None:
     # Execute all migrations
     sql_migration_helper.migrate(
-        spark, migrations_execution=test_session_configuration.migrations.execute
+        spark,
+        migrations_execution=test_session_configuration.migrations.execute,
     )
 
 

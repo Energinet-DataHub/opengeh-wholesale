@@ -46,7 +46,7 @@ DEFAULT_CALCULATION_EXECUTION_START = datetime(2022, 6, 10, 13, 15)
 
 # Input dataframe parameters
 DEFAULT_ENERGY_SUPPLIER_ID = "9876543210123"
-DEFAULT_GRID_AREA = "543"
+DEFAULT_GRID_AREA_CODE = "543"
 DEFAULT_CHARGE_TIME = datetime(2022, 6, 10, 13, 30)
 DEFAULT_CHARGE_OWNER_ID = "5790001330552"
 DEFAULT_TOTAL_AMOUNT = Decimal("123.456")
@@ -65,14 +65,14 @@ def args(any_calculator_args: CalculatorArgs) -> CalculatorArgs:
 
 def _create_result_row(
     energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
-    grid_area: str = DEFAULT_GRID_AREA,
+    grid_area_code: str = DEFAULT_GRID_AREA_CODE,
     charge_owner: str = DEFAULT_CHARGE_OWNER_ID,
     charge_time: datetime = DEFAULT_CHARGE_TIME,
     total_amount: Decimal = DEFAULT_TOTAL_AMOUNT,
 ) -> dict:
     row = {
         Colname.energy_supplier_id: energy_supplier_id,
-        Colname.grid_area: grid_area,
+        Colname.grid_area_code: grid_area_code,
         Colname.charge_time: charge_time,
         Colname.charge_owner: charge_owner,
         Colname.total_amount: total_amount,
@@ -95,9 +95,9 @@ def _create_multiple_total_monthly_amounts(
 ) -> TotalMonthlyAmount:
     # 3 calculation results with just one row each
     rows = [
-        _create_result_row(grid_area="001"),
-        _create_result_row(grid_area="002"),
-        _create_result_row(grid_area="003"),
+        _create_result_row(grid_area_code="001"),
+        _create_result_row(grid_area_code="002"),
+        _create_result_row(grid_area_code="003"),
     ]
 
     return TotalMonthlyAmount(spark.createDataFrame(data=rows))
@@ -131,7 +131,7 @@ def test__create__columns_matching_contract(
             TotalMonthlyAmountsColumnNames.calculation_execution_time_start,
             DEFAULT_CALCULATION_EXECUTION_START,
         ),
-        (TotalMonthlyAmountsColumnNames.grid_area, DEFAULT_GRID_AREA),
+        (TotalMonthlyAmountsColumnNames.grid_area_code, DEFAULT_GRID_AREA_CODE),
         (TotalMonthlyAmountsColumnNames.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
         (TotalMonthlyAmountsColumnNames.time, DEFAULT_CHARGE_TIME),
         (TotalMonthlyAmountsColumnNames.amount, DEFAULT_TOTAL_AMOUNT),
@@ -179,7 +179,7 @@ def test__get_column_group_for_calculation_result_id__returns_expected_column_na
     expected_column_names = [
         Colname.calculation_id,
         Colname.charge_owner,
-        Colname.grid_area,
+        Colname.grid_area_code,
         Colname.energy_supplier_id,
     ]
 

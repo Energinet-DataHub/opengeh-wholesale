@@ -49,10 +49,10 @@ def calculate_per_ga_co_es(
 
     total_monthly_amount = total_amount_without_tax.join(
         total_amount_with_tax,
-        [Colname.grid_area, Colname.energy_supplier_id],
+        [Colname.grid_area_code, Colname.energy_supplier_id],
         "left",
     ).select(
-        total_amount_without_tax[Colname.grid_area],
+        total_amount_without_tax[Colname.grid_area_code],
         total_amount_without_tax[Colname.charge_owner],
         total_amount_without_tax[Colname.energy_supplier_id],
         total_amount_without_tax[Colname.charge_time],
@@ -86,7 +86,7 @@ def calculate_per_ga_es(
 ) -> TotalMonthlyAmount:
     total_monthly_amount_per_ga_es = (
         total_monthly_amount_per_ga_co_es.df.groupBy(
-            Colname.grid_area, Colname.energy_supplier_id, Colname.charge_time
+            Colname.grid_area_code, Colname.energy_supplier_id, Colname.charge_time
         )
         .agg(f.sum(Colname.total_amount).alias(Colname.total_amount))
         .withColumn(Colname.charge_owner, f.lit(None).cast(StringType()))
@@ -103,7 +103,7 @@ def _calculate_total_amount_for_charge_tax_value(
     )
 
     total_monthly_amount_for_charge_type = monthly_amounts_with_tax.groupBy(
-        Colname.grid_area,
+        Colname.grid_area_code,
         Colname.charge_owner,
         Colname.energy_supplier_id,
     ).agg(

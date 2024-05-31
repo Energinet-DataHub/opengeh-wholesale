@@ -23,7 +23,6 @@ from package.calculation.energy.aggregators.metering_point_time_series_aggregato
 from package.codelists import MeteringPointType, SettlementMethod
 from package.constants import Colname
 
-
 ONE_TIME = datetime.datetime.now()
 ANOTHER_TIME = ONE_TIME + datetime.timedelta(minutes=15)
 ANY_METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
@@ -46,12 +45,12 @@ class TestWhenValidInput:
         actual_rows = actual.df.collect()
         assert len(actual_rows) == 1
         actual_row = actual_rows[0]
-        assert actual_row[Colname.grid_area] == factories.DEFAULT_GRID_AREA
+        assert actual_row[Colname.grid_area_code] == factories.DEFAULT_GRID_AREA
         assert (
-            actual_row[Colname.to_grid_area] is None
+            actual_row[Colname.to_grid_area_code] is None
         )  # None because it's not an exchange result
         assert (
-            actual_row[Colname.from_grid_area] is None
+            actual_row[Colname.from_grid_area_code] is None
         )  # None because it's not an exchange result
         assert (
             actual_row[Colname.balance_responsible_id]
@@ -157,7 +156,7 @@ class TestWhenValidInputAndFilteringApplied:
         # assert
         actual_rows = actual.df.collect()
         assert len(actual_rows) == 1
-        assert actual_rows[0][Colname.grid_area] == "a"
+        assert actual_rows[0][Colname.grid_area_code] == "a"
 
     def test_returns_rows_filtered_by_settlement_method(self, spark: SparkSession):
         # Arrange
@@ -179,7 +178,7 @@ class TestWhenValidInputAndFilteringApplied:
         # assert
         actual_rows = actual.df.collect()
         assert len(actual_rows) == 1
-        assert actual_rows[0][Colname.grid_area] == "a"
+        assert actual_rows[0][Colname.grid_area_code] == "a"
 
     def test_returns_rows_not_filtered_by_settlement_method(self, spark: SparkSession):
         # Arrange

@@ -30,8 +30,21 @@ from features.utils.dataframes.settlement_report.charge_prices_v1_view_schema im
 from features.utils.dataframes.settlement_report.energy_result_points_per_ga_v1_view_schema import (
     energy_result_points_per_ga_v1_view_schema,
 )
+from features.utils.dataframes.settlement_report.current_calculation_type_versions_v1_view_schema import (
+    current_calculation_type_versions_v1_view_schema,
+)
 from features.utils.dataframes.settlement_report.monthly_amounts_v1_view_schema import (
     monthly_amounts_v1_view_schema,
+)
+from features.utils.dataframes.settlement_report.settlement_report_view_dataframes import (
+    create_metering_point_periods_v1_view,
+    create_metering_point_time_series_v1_view,
+    create_energy_results_v1_view,
+    create_charge_link_periods_v1_view,
+    create_charge_prices_v1_view,
+    create_wholesale_results_v1_view,
+    create_monthly_amounts_v1_view,
+    create_current_calculation_type_versions_v1_view,
 )
 import features.utils.dataframes.settlement_report.settlement_report_view_dataframes as settlement_report_dataframes
 from features.utils.dataframes.settlement_report.wholesale_results_v1_view_schema import (
@@ -87,5 +100,10 @@ def get_output_specifications() -> dict[str, tuple]:
             monthly_amounts_v1_view_schema,
             SettlementReportViewReader.read_monthly_amounts_v1,
             settlement_report_dataframes.create_monthly_amounts_v1_view,
+        ),
+        "current_calculation_type_versions_v1.csv": (
+            current_calculation_type_versions_v1_view_schema,
+            SettlementReportViewReader.read_current_calculation_type_versions_v1,
+            create_current_calculation_type_versions_v1_view,
         ),
     }

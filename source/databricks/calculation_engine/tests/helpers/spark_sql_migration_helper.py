@@ -67,15 +67,7 @@ def migrate(
     if migrations_execution.value == MigrationsExecution.MODIFIED.value:
         _remove_registration_of_modified_scripts(spark, migrations_execution)
 
-    if migrations_execution.value == MigrationsExecution.ALL.value:
-        warehouse_location = spark.conf.get("spark.sql.warehouse.dir")
-        if warehouse_location.startswith("file:"):
-            warehouse_location = warehouse_location[5:]
-        if os.path.exists(warehouse_location):
-            print(f"Removing warehouse before clean run (path={warehouse_location})")
-            shutil.rmtree(warehouse_location)
-
-    configure_spark_sql_migration(spark, substitution_variables)
+    configure_spark_sql_migration(spark, "", substitution_variables)
     schema_migration_pipeline.migrate()
 
 
@@ -102,10 +94,6 @@ def _remove_registration_of_modified_scripts(
     if not modified_scripts:
         return
 
-    print(
-        f"Scripts modified after last migrated script ({latest_execution_time}): {'.'.join(modified_scripts)}"
-    )
-
     if migrations_execution.value == MigrationsExecution.MODIFIED.value:
         in_clause = "'" + "', '".join(modified_scripts) + "'"
         sql = f"DELETE FROM {migrations_table} WHERE migration_name in ({in_clause})"
@@ -114,6 +102,7 @@ def _remove_registration_of_modified_scripts(
 
 def configure_spark_sql_migration(
     spark: SparkSession,
+    table_prefix: str = "",
     substitution_variables: dict[str, str] | None = None,
 ) -> None:
     if substitution_variables is None:
@@ -130,7 +119,7 @@ def configure_spark_sql_migration(
         current_state_views_folder_path=c.CURRENT_STATE_VIEWS_FOLDER_PATH,
         schema_config=schema_config,
         substitution_variables=substitution_variables,
-        table_prefix="",
+        table_prefix=table_prefix,
     )
 
     create_and_configure_container(configuration)
