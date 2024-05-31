@@ -47,7 +47,7 @@ class WholesaleResults(DataFrameWrapper):
 # See comments to the `assert_schema()` invocation.
 wholesale_results_schema = t.StructType(
     [
-        t.StructField(Colname.grid_area, t.StringType(), False),
+        t.StructField(Colname.grid_area_code, t.StringType(), False),
         t.StructField(Colname.energy_supplier_id, t.StringType(), False),
         t.StructField(Colname.total_quantity, t.DecimalType(18, 3), True),
         t.StructField(Colname.unit, t.StringType(), False),

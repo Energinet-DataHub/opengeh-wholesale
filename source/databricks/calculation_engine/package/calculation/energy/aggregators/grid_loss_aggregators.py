@@ -45,36 +45,36 @@ def calculate_grid_loss(
 
     agg_non_profiled_consumption_result = t.aggregate_sum_quantity_and_qualities(
         non_profiled_consumption.df,
-        [Colname.grid_area, Colname.observation_time],
+        [Colname.grid_area_code, Colname.observation_time],
     ).withColumnRenamed(Colname.quantity, hourly_result)
 
     agg_flex_consumption_result = t.aggregate_sum_quantity_and_qualities(
         flex_consumption.df,
-        [Colname.grid_area, Colname.observation_time],
+        [Colname.grid_area_code, Colname.observation_time],
     ).withColumnRenamed(Colname.quantity, flex_result)
 
     agg_production_result = t.aggregate_sum_quantity_and_qualities(
         production.df,
-        [Colname.grid_area, Colname.observation_time],
+        [Colname.grid_area_code, Colname.observation_time],
     ).withColumnRenamed(Colname.quantity, prod_result)
 
     result = (
         net_exchange_per_ga.df.withColumnRenamed(Colname.quantity, net_exchange_result)
         .join(
             agg_production_result,
-            [Colname.grid_area, Colname.observation_time],
+            [Colname.grid_area_code, Colname.observation_time],
             "full",
         )
         .join(
             agg_flex_consumption_result.join(
                 agg_non_profiled_consumption_result,
-                [Colname.grid_area, Colname.observation_time],
+                [Colname.grid_area_code, Colname.observation_time],
                 "full",
             ),
-            [Colname.grid_area, Colname.observation_time],
+            [Colname.grid_area_code, Colname.observation_time],
             "full",
         )
-        .orderBy(Colname.grid_area, Colname.observation_time)
+        .orderBy(Colname.grid_area_code, Colname.observation_time)
     )
 
     # By having default values we ensure that the calculation below doesn't fail.
@@ -94,7 +94,7 @@ def calculate_grid_loss(
     )
 
     result = result.select(
-        Colname.grid_area,
+        Colname.grid_area_code,
         Colname.observation_time,
         Colname.quantity,  # grid loss
         # Quality of positive and negative grid loss must always be "calculated" as they become time series
@@ -141,7 +141,7 @@ def _calculate_negative_or_positive(
     result = (
         glr.join(
             gl,
-            (gl[Colname.grid_area] == glr[Colname.grid_area])
+            (gl[Colname.grid_area_code] == glr[Colname.grid_area_code])
             & (gl[Colname.observation_time] >= f.col(Colname.from_date))
             & (
                 f.col(Colname.to_date).isNull()
@@ -150,7 +150,7 @@ def _calculate_negative_or_positive(
             "inner",
         )
         .select(
-            glr[Colname.grid_area],
+            glr[Colname.grid_area_code],
             glr[Colname.energy_supplier_id],
             gl[Colname.observation_time],
             gl[Colname.quantity],
@@ -169,7 +169,7 @@ def calculate_total_consumption(
     result_production = (
         t.aggregate_sum_quantity_and_qualities(
             production_per_ga.df,
-            [Colname.grid_area, Colname.observation_time],
+            [Colname.grid_area_code, Colname.observation_time],
         )
         .withColumnRenamed(Colname.quantity, production_sum_quantity)
         .withColumnRenamed(Colname.qualities, aggregated_production_qualities)
@@ -178,7 +178,7 @@ def calculate_total_consumption(
     result_net_exchange = (
         t.aggregate_sum_quantity_and_qualities(
             net_exchange_per_ga.df,
-            [Colname.grid_area, Colname.observation_time],
+            [Colname.grid_area_code, Colname.observation_time],
         )
         .withColumnRenamed(Colname.quantity, exchange_sum_quantity)
         .withColumnRenamed(Colname.qualities, aggregated_net_exchange_qualities)
@@ -187,7 +187,7 @@ def calculate_total_consumption(
     result = (
         result_production.join(
             result_net_exchange,
-            [Colname.grid_area, Colname.observation_time],
+            [Colname.grid_area_code, Colname.observation_time],
             "inner",
         )
         .withColumn(
@@ -203,7 +203,7 @@ def calculate_total_consumption(
     )
 
     result = result.select(
-        Colname.grid_area,
+        Colname.grid_area_code,
         Colname.observation_time,
         Colname.qualities,
         Colname.quantity,
@@ -233,7 +233,7 @@ def apply_grid_loss_adjustment(
         Colname.from_date,
         Colname.to_date,
         Colname.energy_supplier_id,
-        f.col(Colname.grid_area).alias(grid_loss_responsible_grid_area),
+        f.col(Colname.grid_area_code).alias(grid_loss_responsible_grid_area),
         Colname.metering_point_type,
     )
 
@@ -248,10 +248,10 @@ def apply_grid_loss_adjustment(
             f.col(Colname.to_date).isNull()
             | (f.col(Colname.observation_time) < f.col(Colname.to_date))
         )
-        & (f.col(Colname.grid_area) == f.col(grid_loss_responsible_grid_area)),
+        & (f.col(Colname.grid_area_code) == f.col(grid_loss_responsible_grid_area)),
         "left",
     ).select(
-        Colname.grid_area,
+        Colname.grid_area_code,
         Colname.energy_supplier_id,
         Colname.observation_time,
         Colname.quantity,
@@ -260,10 +260,10 @@ def apply_grid_loss_adjustment(
 
     df = result_df.join(
         joined_grid_loss_result_and_responsible,
-        [Colname.observation_time, Colname.grid_area, Colname.energy_supplier_id],
+        [Colname.observation_time, Colname.grid_area_code, Colname.energy_supplier_id],
         "outer",
     ).select(
-        Colname.grid_area,
+        Colname.grid_area_code,
         result_df[Colname.balance_responsible_id],
         Colname.energy_supplier_id,
         Colname.observation_time,
@@ -294,14 +294,14 @@ def apply_grid_loss_adjustment(
     )
 
     result = result_df.select(
-        Colname.grid_area,
+        Colname.grid_area_code,
         Colname.balance_responsible_id,
         Colname.energy_supplier_id,
         Colname.observation_time,
         f.col(adjusted_sum_quantity).alias(Colname.quantity),
         Colname.qualities,
     ).orderBy(
-        Colname.grid_area,
+        Colname.grid_area_code,
         Colname.balance_responsible_id,
         Colname.energy_supplier_id,
         Colname.observation_time,
