@@ -16,6 +16,7 @@ from datetime import datetime
 from decimal import Decimal
 
 from pyspark.sql import Row, SparkSession
+
 from package.calculation.preparation.data_structures.prepared_tariffs import (
     PreparedTariffs,
     prepared_tariffs_schema,
@@ -77,7 +78,7 @@ def create_row(
         Colname.settlement_method: (
             settlement_method.value if settlement_method else None
         ),
-        Colname.grid_area: grid_area,
+        Colname.grid_area_code: grid_area,
         Colname.quantity: quantity,
         Colname.qualities: [quality.value],
     }

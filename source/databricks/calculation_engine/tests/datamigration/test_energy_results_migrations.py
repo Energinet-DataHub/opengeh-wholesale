@@ -12,15 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import uuid
 from datetime import datetime
 from decimal import Decimal
+
+import pytest
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import lit, col
-import pytest
-import uuid
 
 from contract_utils import assert_contract_matches_schema
 from helpers.data_frame_utils import set_column
+from package.calculation.output.schemas import energy_results_schema
 from package.codelists import (
     AggregationLevel,
     CalculationType,
@@ -30,12 +32,11 @@ from package.codelists import (
 )
 from package.constants import EnergyResultColumnNames
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
-from package.calculation.output.schemas import energy_results_schema
 
 
 def _create_df(spark: SparkSession) -> DataFrame:
     row = {
-        EnergyResultColumnNames.grid_area: "543",
+        EnergyResultColumnNames.grid_area_code: "543",
         EnergyResultColumnNames.energy_supplier_id: "1234567890123",
         EnergyResultColumnNames.balance_responsible_id: "9876543210987",
         EnergyResultColumnNames.quantity: Decimal("1.123"),
@@ -80,9 +81,9 @@ def test__migrated_table__columns_matching_contract(
         (EnergyResultColumnNames.calculation_type, "foo"),
         (EnergyResultColumnNames.time_series_type, None),
         (EnergyResultColumnNames.time_series_type, "foo"),
-        (EnergyResultColumnNames.grid_area, None),
-        (EnergyResultColumnNames.grid_area, "12"),
-        (EnergyResultColumnNames.grid_area, "1234"),
+        (EnergyResultColumnNames.grid_area_code, None),
+        (EnergyResultColumnNames.grid_area_code, "12"),
+        (EnergyResultColumnNames.grid_area_code, "1234"),
         (EnergyResultColumnNames.from_grid_area, "12"),
         (EnergyResultColumnNames.from_grid_area, "1234"),
         (EnergyResultColumnNames.time, None),
@@ -134,8 +135,8 @@ max_decimal = Decimal(f"{'9'*15}.999")  # Precision=18 and scale=3
             EnergyResultColumnNames.calculation_id,
             "9252d7a0-4363-42cc-a2d6-e04c026523f8",
         ),
-        (EnergyResultColumnNames.grid_area, "123"),
-        (EnergyResultColumnNames.grid_area, "007"),
+        (EnergyResultColumnNames.grid_area_code, "123"),
+        (EnergyResultColumnNames.grid_area_code, "007"),
         (EnergyResultColumnNames.from_grid_area, None),
         (EnergyResultColumnNames.from_grid_area, "123"),
         (EnergyResultColumnNames.from_grid_area, "007"),

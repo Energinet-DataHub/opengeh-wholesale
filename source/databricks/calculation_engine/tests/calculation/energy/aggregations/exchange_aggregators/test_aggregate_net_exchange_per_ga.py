@@ -15,12 +15,12 @@
 import pytest
 from pyspark.sql import SparkSession
 
+import tests.calculation.energy.metering_point_time_series_factories as factories
 from package.calculation.energy.aggregators.exchange_aggregators import (
     aggregate_net_exchange_per_ga,
     aggregate_net_exchange_per_neighbour_ga,
 )
-import tests.calculation.energy.metering_point_time_series_factories as factories
-from package.codelists import QuantityQuality, MeteringPointType
+from package.codelists import QuantityQuality
 from package.constants import Colname
 
 
@@ -130,7 +130,7 @@ class TestWhenMeteringPointIsNeitherInToOrFromGridArea:
         actual = aggregate_net_exchange_per_ga(exchange_per_neighbour_ga)
 
         # Assert
-        actual_grid_areas = [row[Colname.grid_area] for row in actual.df.collect()]
+        actual_grid_areas = [row[Colname.grid_area_code] for row in actual.df.collect()]
 
         assert sorted(actual_grid_areas) == sorted(
             [exchange_grid_area_1, exchange_grid_area_2]
@@ -168,4 +168,4 @@ class TestWhenInputHasDataNotBelongingToSelectedGridArea:
         # Assert
         actual_rows = actual.df.collect()
         assert len(actual_rows) == 1
-        assert actual_rows[0][Colname.grid_area] == selected_grid_area
+        assert actual_rows[0][Colname.grid_area_code] == selected_grid_area
