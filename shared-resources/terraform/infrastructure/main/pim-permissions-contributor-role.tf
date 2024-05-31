@@ -58,3 +58,11 @@ resource "azurerm_role_assignment" "pim_contributor_backup_contributor" {
   role_definition_name = "Backup Contributor"
   principal_id         = data.azuread_group.pim_contributor_group[0].object_id
 }
+
+resource "azurerm_role_assignment" "pim_contributor_locks_contributor" {
+  count = var.pim_contributor_group_name != null ? 1 : 0
+
+  scope                = data.azurerm_subscription.this.id
+  role_definition_name = azurerm_role_definition.locks_contributor_access.name
+  principal_id         = data.azuread_group.pim_contributor_group[0].object_id
+}

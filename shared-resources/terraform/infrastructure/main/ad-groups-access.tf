@@ -49,7 +49,7 @@ resource "azurerm_role_assignment" "shared_keyvault_platform_secrets_user" {
   role_definition_name = "Key Vault Secrets User"
   principal_id         = var.platform_team_security_group_object_id
 }
-  
+
 ##################
 # New Omada controlled security groups
 ##################
@@ -66,7 +66,7 @@ resource "azurerm_role_assignment" "omada_developers_subscription_reader" {
   role_definition_name = "Reader"
   principal_id         = var.omada_developers_security_group_object_id
 }
-  
+
 resource "azurerm_role_assignment" "omada_platformteam_keyvault_secrets_user" {
   scope                = module.kv_shared.id
   role_definition_name = "Key Vault Secrets User"
@@ -96,7 +96,6 @@ resource "azurerm_role_assignment" "omada_platform_support_contributor_access" {
   principal_id         = var.omada_platform_team_security_group_object_id
 }
 
-  
 ##################
 # Custom role definitions
 ##################
@@ -137,6 +136,19 @@ resource "azurerm_role_definition" "apim_groups_contributor_access" {
   permissions {
     actions = [
       "Microsoft.ApiManagement/service/groups/*"
+    ]
+  }
+}
+
+# There is no built-in role for managing locks without giving many other permissions
+resource "azurerm_role_definition" "locks_contributor_access" {
+  name        = "datahub-locks-contributor-access-${var.environment_short}-${var.region_short}-${var.environment_instance}"
+  scope       = data.azurerm_subscription.this.id
+  description = "Allow management and deletion of locks"
+
+  permissions {
+    actions = [
+      "Microsoft.Authorization/locks/*"
     ]
   }
 }
