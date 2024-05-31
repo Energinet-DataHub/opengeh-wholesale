@@ -246,7 +246,7 @@
                         "value": "@variables('thirtyOneDaysFromNow')",
                         "type": "Expression"
                     },
-                    "wildcardFileName": "*.xml",
+                    "wildcardFileName": "*.json",
                     "enablePartitionDiscovery": false
                 },
                 "formatSettings": {
@@ -311,7 +311,7 @@
                     "value": "@variables('thirtyOneDaysFromNow')",
                     "type": "Expression"
                 },
-                "wildcardFileName": "*.xml",
+                "wildcardFileName": "*.json",
                 "enablePartitionDiscovery": false
             }
         }
