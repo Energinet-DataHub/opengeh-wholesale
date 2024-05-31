@@ -191,7 +191,15 @@ def test__when_energy_calculation__basis_data_is_stored(
         (
             f"{paths.EdiResults.DATABASE_NAME}.{paths.EdiResults.ENERGY_RESULT_POINTS_PER_GA_V1_VIEW_NAME}",
             True,
-        )
+        ),
+        (
+            f"{paths.EdiResults.DATABASE_NAME}.{paths.EdiResults.ENERGY_RESULT_POINTS_PER_BRP_GA_V1_VIEW_NAME}",
+            True,
+        ),
+        (
+            f"{paths.EdiResults.DATABASE_NAME}.{paths.EdiResults.ENERGY_RESULT_POINTS_PER_ES_BRP_GA_V1_VIEW_NAME}",
+            True,
+        ),
     ],
 )
 def test__when_balance_fixing__view_has_data_if_expected(
