@@ -27,7 +27,7 @@ from package.constants import EnergyResultColumnNames
 energy_results_schema = StructType(
     [
         # The grid area in question. In case of exchange it's the to-grid area.
-        StructField(EnergyResultColumnNames.grid_area, StringType(), False),
+        StructField(EnergyResultColumnNames.grid_area_code, StringType(), False),
         StructField(EnergyResultColumnNames.energy_supplier_id, StringType(), True),
         StructField(EnergyResultColumnNames.balance_responsible_id, StringType(), True),
         # Energy quantity in kWh for the given observation time.
