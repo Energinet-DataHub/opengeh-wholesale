@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 
@@ -25,25 +25,23 @@ public static class SettlementReportWholesaleResultRowFactory
 {
     public static SettlementReportWholesaleResultRow Create(DatabricksSqlRow databricksSqlRow, long version)
     {
-        var id = databricksSqlRow[SettlementReportWholesaleResultQueryStatement.ColumnNames.CalculationId];
-        var calculationId = databricksSqlRow[SettlementReportWholesaleResultQueryStatement.ColumnNames.CalculationId];
-        var calculationType = databricksSqlRow[SettlementReportWholesaleResultQueryStatement.ColumnNames.CalculationType];
-        var gridArea = databricksSqlRow[SettlementReportWholesaleResultQueryStatement.ColumnNames.GridArea];
-        var energySupplierId = databricksSqlRow[SettlementReportWholesaleResultQueryStatement.ColumnNames.EnergySupplierId];
-        var startTime = databricksSqlRow[SettlementReportWholesaleResultQueryStatement.ColumnNames.Time];
-        var resolution = databricksSqlRow[SettlementReportWholesaleResultQueryStatement.ColumnNames.Resolution];
-        var quantityUnit = databricksSqlRow[SettlementReportWholesaleResultQueryStatement.ColumnNames.QuantityUnit];
-        var quantity = databricksSqlRow[SettlementReportWholesaleResultQueryStatement.ColumnNames.Quantity];
-        var price = databricksSqlRow[SettlementReportWholesaleResultQueryStatement.ColumnNames.Price];
-        var amount = databricksSqlRow[SettlementReportWholesaleResultQueryStatement.ColumnNames.Amount];
-        var chargeType = databricksSqlRow[SettlementReportWholesaleResultQueryStatement.ColumnNames.ChargeType];
-        var chargeCode = databricksSqlRow[SettlementReportWholesaleResultQueryStatement.ColumnNames.ChargeCode];
-        var chargeOwnerId = databricksSqlRow[SettlementReportWholesaleResultQueryStatement.ColumnNames.ChargeOwnerId];
-        var meteringPointType = databricksSqlRow[SettlementReportWholesaleResultQueryStatement.ColumnNames.MeteringPointType];
-        var settlementMethod = databricksSqlRow[SettlementReportWholesaleResultQueryStatement.ColumnNames.SettlementMethod];
+        var calculationId = databricksSqlRow[SettlementReportWholesaleViewColumns.CalculationId];
+        var calculationType = databricksSqlRow[SettlementReportWholesaleViewColumns.CalculationType];
+        var gridArea = databricksSqlRow[SettlementReportWholesaleViewColumns.GridArea];
+        var energySupplierId = databricksSqlRow[SettlementReportWholesaleViewColumns.EnergySupplierId];
+        var startTime = databricksSqlRow[SettlementReportWholesaleViewColumns.Time];
+        var resolution = databricksSqlRow[SettlementReportWholesaleViewColumns.Resolution];
+        var quantityUnit = databricksSqlRow[SettlementReportWholesaleViewColumns.QuantityUnit];
+        var quantity = databricksSqlRow[SettlementReportWholesaleViewColumns.Quantity];
+        var price = databricksSqlRow[SettlementReportWholesaleViewColumns.Price];
+        var amount = databricksSqlRow[SettlementReportWholesaleViewColumns.Amount];
+        var chargeType = databricksSqlRow[SettlementReportWholesaleViewColumns.ChargeType];
+        var chargeCode = databricksSqlRow[SettlementReportWholesaleViewColumns.ChargeCode];
+        var chargeOwnerId = databricksSqlRow[SettlementReportWholesaleViewColumns.ChargeOwnerId];
+        var meteringPointType = databricksSqlRow[SettlementReportWholesaleViewColumns.MeteringPointType];
+        var settlementMethod = databricksSqlRow[SettlementReportWholesaleViewColumns.SettlementMethod];
 
         return new SettlementReportWholesaleResultRow(
-            SqlResultValueConverters.ToGuid(id!),
             SqlResultValueConverters.ToGuid(calculationId!),
             CalculationTypeMapper.FromDeltaTableValue(calculationType!),
             gridArea!,

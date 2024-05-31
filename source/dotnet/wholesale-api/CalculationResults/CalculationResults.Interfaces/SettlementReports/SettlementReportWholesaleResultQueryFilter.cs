@@ -12,6 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using NodaTime;
 
-public sealed record CalculationFilterDto(string? CalculationId, string GridAreaCode);
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+
+public sealed record SettlementReportWholesaleResultQueryFilter(
+    Guid CalculationId,
+    string GridAreaCode,
+    CalculationType CalculationType,
+    Instant PeriodStart,
+    Instant PeriodEnd);

@@ -18,40 +18,19 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
 
-public sealed class SettlementReportWholesaleResultQueryStatement : DatabricksStatement
+public sealed class SettlementReportWholesaleResultCountQueryStatement : DatabricksStatement
 {
     private readonly SettlementReportWholesaleResultQueryFilter _filter;
-    private readonly int _skip;
-    private readonly int _take;
 
-    public SettlementReportWholesaleResultQueryStatement(SettlementReportWholesaleResultQueryFilter filter, int skip, int take)
+    public SettlementReportWholesaleResultCountQueryStatement(SettlementReportWholesaleResultQueryFilter filter)
     {
         _filter = filter;
-        _skip = skip;
-        _take = take;
     }
 
     protected override string GetSqlStatement()
     {
         return $"""
-                    SELECT {string.Join(", ", [
-                        SettlementReportWholesaleViewColumns.CalculationId,
-                        SettlementReportWholesaleViewColumns.CalculationType,
-                        SettlementReportWholesaleViewColumns.GridArea,
-                        SettlementReportWholesaleViewColumns.EnergySupplierId,
-                        SettlementReportWholesaleViewColumns.Time,
-                        SettlementReportWholesaleViewColumns.ChargeType,
-                        SettlementReportWholesaleViewColumns.ChargeCode,
-                        SettlementReportWholesaleViewColumns.ChargeOwnerId,
-                        SettlementReportWholesaleViewColumns.Resolution,
-                        SettlementReportWholesaleViewColumns.QuantityUnit,
-                        SettlementReportWholesaleViewColumns.Currency,
-                        SettlementReportWholesaleViewColumns.Quantity,
-                        SettlementReportWholesaleViewColumns.Price,
-                        SettlementReportWholesaleViewColumns.Amount,
-                        SettlementReportWholesaleViewColumns.MeteringPointType,
-                        SettlementReportWholesaleViewColumns.SettlementMethod,
-                    ])}
+                    SELECT COUNT {SettlementReportWholesaleViewColumns.CalculationId} AS {Columns.Count}
                     FROM
                         settlement_report.wholesale_results_v1
                     WHERE 
@@ -60,8 +39,11 @@ public sealed class SettlementReportWholesaleResultQueryStatement : DatabricksSt
                         {SettlementReportWholesaleViewColumns.Time} >= '{_filter.PeriodStart}' AND
                         {SettlementReportWholesaleViewColumns.Time} < '{_filter.PeriodEnd}' AND
                         {SettlementReportWholesaleViewColumns.CalculationId} = '{_filter.CalculationId}'
-                    ORDER BY
-                        {SettlementReportWholesaleViewColumns.Time} LIMIT {_take} OFFSET {_skip}
                 """;
+    }
+
+    public static class Columns
+    {
+        public const string Count = "count";
     }
 }

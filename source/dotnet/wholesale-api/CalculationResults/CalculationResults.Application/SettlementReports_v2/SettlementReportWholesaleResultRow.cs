@@ -19,32 +19,9 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 
-/// <summary>
-/// SettlementReportWholesaleResultRow
-/// </summary>
-// ENERGYBUSINESSPROCESS,
-// PROCESSVARIANT,
-// METERINGGRIDAREAID,
-// ENERGYSUPPLIERID,
-// STARTDATETIME,
-// RESOLUTIONDURATION,
-// TYPEOFMP,
-// SETTLEMENTMETHOD,
-// MEASUREUNIT,
-// ENERGYCURRENCY,
-// ENERGYQUANTITY,
-// PRICE,
-// AMOUNT,
-// CHARGETYPE,
-// CHARGETYPEID,
-// CHARGETYPEOWNERID
 public sealed record SettlementReportWholesaleResultRow
 {
-    /// <summary>
-    /// SettlementReportWholesaleResultRow
-    /// </summary>
     public SettlementReportWholesaleResultRow(
-        Guid id,
         Guid calculationId,
         CalculationType calculationType,
         string gridArea,
@@ -63,7 +40,6 @@ public sealed record SettlementReportWholesaleResultRow
         string chargeOwnerId,
         long version)
     {
-        Id = id;
         CalculationId = calculationId;
         CalculationType = calculationType;
         GridArea = gridArea;
@@ -102,8 +78,6 @@ public sealed record SettlementReportWholesaleResultRow
             _ => throw new ArgumentOutOfRangeException(nameof(calculationType)),
         };
     }
-
-    public Guid Id { get; }
 
     public Guid CalculationId { get; }
 
