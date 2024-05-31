@@ -21,6 +21,10 @@
         "type": "string"
       },
       {
+        "name": "quantity_unit",
+        "type": "string"
+      },
+      {
         "name": "time",
         "type": "timestamp"
       },
@@ -33,8 +37,8 @@
         "type": "string"
       },
       {
-        "name": "charge_owner_id",
-        "type": "string"
+        "name": "is_tax",
+        "type": "boolean"
       },
       {
         "name": "charge_code",
@@ -42,6 +46,10 @@
       },
       {
         "name": "charge_type",
+        "type": "string"
+      },
+      {
+        "name": "charge_owner_id",
         "type": "string"
       }
     ]
