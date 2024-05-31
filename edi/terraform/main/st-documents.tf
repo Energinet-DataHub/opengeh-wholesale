@@ -37,5 +37,5 @@ module "st_documents_backup" {
   private_endpoint_subnet_id            = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   ip_rules                              = local.ip_restrictions_as_string
   prevent_deletion                      = false
-  lifecycle_retention_delete_after_days = 3285 # 9 years = (5 + 3 + current year) * 365 days
+  lifecycle_retention_delete_after_days = 3285 # 9 years = (5 + 3 + current year) * 365 days.
 }
