@@ -18,6 +18,7 @@ SELECT c.calculation_id,
 FROM {BASIS_DATA_DATABASE_NAME}.charge_link_periods AS l
 INNER JOIN {BASIS_DATA_DATABASE_NAME}.metering_point_periods AS m ON m.metering_point_id = l.metering_point_id AND m.calculation_id = l.calculation_id
 INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = l.calculation_id
+WHERE c.calculation_type is in ('WholesaleFixing', 'FirstCorrectionSettlement', 'SecondCorrectionSettlement', 'ThirdCorrectionSettlement')
 GO
 
 DROP VIEW IF EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.charge_prices_v1;
@@ -44,6 +45,7 @@ INNER JOIN (
   INNER JOIN {BASIS_DATA_DATABASE_NAME}.metering_point_periods AS mp ON mp.calculation_id = cl.calculation_id AND mp.metering_point_id = cl.metering_point_id
 ) AS es_ga ON cm.calculation_id = es_ga.calculation_id AND cm.charge_key = es_ga.charge_key
 INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON cm.calculation_id = c.calculation_id
+WHERE c.calculation_type is in ('WholesaleFixing', 'FirstCorrectionSettlement', 'SecondCorrectionSettlement', 'ThirdCorrectionSettlement')
 GROUP BY c.calculation_id, cm.charge_key, es_ga.grid_area_code, es_ga.energy_supplier_id, DATE_TRUNC('day', FROM_UTC_TIMESTAMP(cp.charge_time, 'Europe/Copenhagen'))
 GO
 
@@ -65,6 +67,7 @@ SELECT c.calculation_id,
        m.energy_supplier_id
 FROM {BASIS_DATA_DATABASE_NAME}.metering_point_periods as m
 INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = m.calculation_id
+WHERE c.calculation_type is in ('BalanceFixing', 'WholesaleFixing', 'FirstCorrectionSettlement', 'SecondCorrectionSettlement', 'ThirdCorrectionSettlement')
 GO
 
 DROP VIEW IF EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_time_series_v1;
@@ -82,10 +85,10 @@ SELECT c.calculation_id,
        TO_UTC_TIMESTAMP(DATE_TRUNC('day', FROM_UTC_TIMESTAMP(t.observation_time, 'Europe/Copenhagen')),'Europe/Copenhagen') AS start_date_time,
        ARRAY_SORT(ARRAY_AGG(struct(t.observation_time, t.quantity)))                  AS quantities
 FROM {BASIS_DATA_DATABASE_NAME}.metering_point_periods AS m
-         INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = m.calculation_id
-         INNER JOIN {BASIS_DATA_DATABASE_NAME}.time_series_points AS t ON m.metering_point_id = t.metering_point_id AND m.calculation_id = t
-             .calculation_id
-WHERE t.observation_time >= m.from_date
+INNER JOIN {BASIS_DATA_DATABASE_NAME}.time_series_points AS t ON m.metering_point_id = t.metering_point_id AND m.calculation_id = t.calculation_id
+INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = m.calculation_id
+WHERE calculation_type is in ('BalanceFixing', 'WholesaleFixing', 'FirstCorrectionSettlement', 'SecondCorrectionSettlement', 'ThirdCorrectionSettlement')
+  AND t.observation_time >= m.from_date
   AND (m.to_date IS NULL OR t.observation_time < m.to_date)
 GROUP BY c.calculation_id, m.metering_point_id, m.metering_point_type, DATE_TRUNC('day', FROM_UTC_TIMESTAMP(t.observation_time, 'Europe/Copenhagen')), m.resolution, m.grid_area_code, m.energy_supplier_id
 

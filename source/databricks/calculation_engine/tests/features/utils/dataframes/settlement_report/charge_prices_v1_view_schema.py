@@ -20,6 +20,7 @@ from pyspark.sql.types import (
     BooleanType,
     ArrayType,
     DecimalType,
+    LongType,
 )
 
 from features.utils.dataframes.settlement_report.settlement_report_view_column_names import (
