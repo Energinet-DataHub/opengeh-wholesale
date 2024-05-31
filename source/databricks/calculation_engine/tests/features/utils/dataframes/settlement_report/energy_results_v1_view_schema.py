@@ -29,7 +29,7 @@ energy_results_v1_view_schema = StructType(
     [
         StructField(EnergyResultsV1ColumnNames.calculation_id, StringType(), False),
         StructField(EnergyResultsV1ColumnNames.calculation_type, StringType(), False),
-        StructField(EnergyResultsV1ColumnNames.grid_area, StringType(), False),
+        StructField(EnergyResultsV1ColumnNames.grid_area_code, StringType(), False),
         StructField(
             EnergyResultsV1ColumnNames.metering_point_type, StringType(), False
         ),

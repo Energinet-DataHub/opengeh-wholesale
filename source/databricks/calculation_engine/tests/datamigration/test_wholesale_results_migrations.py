@@ -12,15 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import uuid
 from datetime import datetime
 from decimal import Decimal
+
+import pytest
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col, lit
-import pytest
-import uuid
 
 from contract_utils import assert_contract_matches_schema
-from tests.helpers.data_frame_utils import set_column
+from package.calculation.output.schemas import wholesale_results_schema
 from package.codelists import (
     AmountType,
     ChargeQuality,
@@ -36,7 +37,7 @@ from package.infrastructure.paths import (
     OUTPUT_DATABASE_NAME,
     WHOLESALE_RESULT_TABLE_NAME,
 )
-from package.calculation.output.schemas import wholesale_results_schema
+from tests.helpers.data_frame_utils import set_column
 
 
 def _create_df(spark: SparkSession) -> DataFrame:
@@ -47,7 +48,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
             2020, 1, 1, 0, 0
         ),
         WholesaleResultColumnNames.calculation_result_id: "6033ab5c-436b-44e9-8a79-90489d324e53",
-        WholesaleResultColumnNames.grid_area: "543",
+        WholesaleResultColumnNames.grid_area_code: "543",
         WholesaleResultColumnNames.energy_supplier_id: "1234567890123",
         WholesaleResultColumnNames.quantity: Decimal("1.123"),
         WholesaleResultColumnNames.quantity_qualities: ["missing"],
@@ -94,9 +95,9 @@ def test__migrated_table__columns_matching_contract(
         (WholesaleResultColumnNames.calculation_result_id, "not-a-uuid"),
         (WholesaleResultColumnNames.amount_type, None),
         (WholesaleResultColumnNames.amount_type, "foo"),
-        (WholesaleResultColumnNames.grid_area, None),
-        (WholesaleResultColumnNames.grid_area, "12"),
-        (WholesaleResultColumnNames.grid_area, "1234"),
+        (WholesaleResultColumnNames.grid_area_code, None),
+        (WholesaleResultColumnNames.grid_area_code, "12"),
+        (WholesaleResultColumnNames.grid_area_code, "1234"),
         (WholesaleResultColumnNames.energy_supplier_id, None),
         (
             WholesaleResultColumnNames.energy_supplier_id,
@@ -163,8 +164,8 @@ actor_eic = "1234567890123456"
             "9252d7a0-4363-42cc-a2d6-e04c026523f8",
         ),
         (WholesaleResultColumnNames.amount_type, "amount_per_charge"),
-        (WholesaleResultColumnNames.grid_area, "123"),
-        (WholesaleResultColumnNames.grid_area, "007"),
+        (WholesaleResultColumnNames.grid_area_code, "123"),
+        (WholesaleResultColumnNames.grid_area_code, "007"),
         (WholesaleResultColumnNames.energy_supplier_id, actor_gln),
         (WholesaleResultColumnNames.energy_supplier_id, actor_eic),
         (WholesaleResultColumnNames.quantity, max_18_3_decimal),

@@ -48,7 +48,7 @@ charge_prices_v1_view_schema = StructType(
             ArrayType(price_point, False),
             False,
         ),
-        StructField(ChargePricesV1ColumnNames.grid_area, StringType(), False),
+        StructField(ChargePricesV1ColumnNames.grid_area_code, StringType(), False),
         StructField(ChargePricesV1ColumnNames.energy_supplier_id, StringType(), False),
     ]
 )

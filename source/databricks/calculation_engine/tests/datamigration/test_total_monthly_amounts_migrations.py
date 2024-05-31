@@ -12,24 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import uuid
 from datetime import datetime
 from decimal import Decimal
+
+import pytest
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col, lit
-import pytest
-import uuid
 
 from contract_utils import assert_contract_matches_schema
 from package.calculation.output.schemas.total_monthly_amounts_schema import (
     total_monthly_amounts_schema,
 )
-from tests.helpers.data_frame_utils import set_column
 from package.codelists import CalculationType
 from package.constants import TotalMonthlyAmountsColumnNames
 from package.infrastructure.paths import (
     OUTPUT_DATABASE_NAME,
     TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
 )
+from tests.helpers.data_frame_utils import set_column
 
 
 def _create_df(spark: SparkSession) -> DataFrame:
@@ -40,7 +41,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
             2020, 1, 1, 0, 0
         ),
         TotalMonthlyAmountsColumnNames.calculation_result_id: "6033ab5c-436b-44e9-8a79-90489d324e53",
-        TotalMonthlyAmountsColumnNames.grid_area: "543",
+        TotalMonthlyAmountsColumnNames.grid_area_code: "543",
         TotalMonthlyAmountsColumnNames.energy_supplier_id: "1234567890123",
         TotalMonthlyAmountsColumnNames.time: datetime(2020, 1, 1, 0, 0),
         TotalMonthlyAmountsColumnNames.amount: Decimal("1.123"),
@@ -76,9 +77,9 @@ def test__migrated_table__columns_matching_contract(
         (TotalMonthlyAmountsColumnNames.calculation_execution_time_start, None),
         (TotalMonthlyAmountsColumnNames.calculation_result_id, None),
         (TotalMonthlyAmountsColumnNames.calculation_result_id, "not-a-uuid"),
-        (TotalMonthlyAmountsColumnNames.grid_area, None),
-        (TotalMonthlyAmountsColumnNames.grid_area, "12"),
-        (TotalMonthlyAmountsColumnNames.grid_area, "1234"),
+        (TotalMonthlyAmountsColumnNames.grid_area_code, None),
+        (TotalMonthlyAmountsColumnNames.grid_area_code, "12"),
+        (TotalMonthlyAmountsColumnNames.grid_area_code, "1234"),
         (
             TotalMonthlyAmountsColumnNames.energy_supplier_id,
             "neither-16-nor-13-digits-long",
@@ -134,8 +135,8 @@ actor_eic = "1234567890123456"
             TotalMonthlyAmountsColumnNames.calculation_result_id,
             "9252d7a0-4363-42cc-a2d6-e04c026523f8",
         ),
-        (TotalMonthlyAmountsColumnNames.grid_area, "123"),
-        (TotalMonthlyAmountsColumnNames.grid_area, "007"),
+        (TotalMonthlyAmountsColumnNames.grid_area_code, "123"),
+        (TotalMonthlyAmountsColumnNames.grid_area_code, "007"),
         (TotalMonthlyAmountsColumnNames.energy_supplier_id, actor_gln),
         (TotalMonthlyAmountsColumnNames.energy_supplier_id, actor_eic),
         (TotalMonthlyAmountsColumnNames.time, datetime(2020, 1, 1, 0, 0)),
