@@ -62,6 +62,6 @@ class EnergyResultsV1ColumnNames:
     aggregation_level = EnergyResultColumnNames.aggregation_level
 
 
-class LatestCalculationsV1ColumnNames:
+class CurrentCalculationTypeVersionsV1ColumnNames:
     calculation_type = CalculationsColumnName.calculation_type
     version = CalculationsColumnName.version
