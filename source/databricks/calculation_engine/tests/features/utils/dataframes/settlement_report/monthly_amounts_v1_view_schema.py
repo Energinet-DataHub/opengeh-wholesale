@@ -26,7 +26,7 @@ monthly_amounts_v1_view_schema = StructType(
     [
         StructField(WholesaleResultColumnNames.calculation_id, StringType(), False),
         StructField(WholesaleResultColumnNames.calculation_type, StringType(), False),
-        StructField(WholesaleResultColumnNames.grid_area, StringType(), False),
+        StructField(WholesaleResultColumnNames.grid_area_code, StringType(), False),
         StructField(WholesaleResultColumnNames.energy_supplier_id, StringType(), False),
         StructField(Colname.start_date_time, TimestampType(), False),
         StructField(WholesaleResultColumnNames.resolution, StringType(), False),

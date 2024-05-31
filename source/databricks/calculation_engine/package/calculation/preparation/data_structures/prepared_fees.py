@@ -53,7 +53,7 @@ prepared_fees_schema = t.StructType(
         t.StructField(Colname.metering_point_type, t.StringType(), False),
         t.StructField(Colname.settlement_method, t.StringType(), False),
         t.StructField(Colname.metering_point_id, t.StringType(), False),
-        t.StructField(Colname.grid_area, t.StringType(), False),
+        t.StructField(Colname.grid_area_code, t.StringType(), False),
         t.StructField(Colname.energy_supplier_id, t.StringType(), False),
         t.StructField(Colname.resolution, t.StringType(), False),
     ]
