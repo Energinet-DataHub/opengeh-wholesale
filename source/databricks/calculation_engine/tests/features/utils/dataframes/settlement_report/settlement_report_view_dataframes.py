@@ -159,9 +159,9 @@ def create_energy_result_points_per_ga_v1_view(
     )
 
     df = df.withColumn(
-        Colname.start_date_time,
+        EnergyResultPointsPerGaV1ColumnNames.time,
         col(
-            Colname.start_date_time,
+            EnergyResultPointsPerGaV1ColumnNames.time,
         ).cast(TimestampType()),
     )
     return spark.createDataFrame(df.rdd, energy_result_points_per_ga_v1_view_schema)
