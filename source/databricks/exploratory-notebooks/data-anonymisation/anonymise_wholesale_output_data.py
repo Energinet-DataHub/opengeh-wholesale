@@ -377,30 +377,53 @@ assert (
 
 # COMMAND ----------
 
+df_anonymised_suppliers_and_balancers = df_anonymised_suppliers_and_balancers.select(
+    F.col(tmp_balance_and_supplier_id_column_name).alias(balance_responsible_id_column_name),
+    F.col(tmp_balance_and_supplier_id_column_name).alias(energy_supplier_id_column_name),
+    anonymised_balance_or_supplier_id_column_name,
+)
+
+# COMMAND ----------
+
 df_source_energy_results_table_anonymised = (
-    df_source_energy_results_table.join(df_anonymised_metering_points, [metering_point_id_column_name], "left")
+    df_source_energy_results_table
+    # Anonymise Metering Point Id
+    .join(
+        df_anonymised_metering_points,
+        df_source_energy_results_table[metering_point_id_column_name].eqNullSafe(df_anonymised_metering_points[metering_point_id_column_name]),
+        "left",
+    )
+    .drop(df_anonymised_metering_points[metering_point_id_column_name])
     .withColumn(metering_point_id_column_name, F.col(anonymised_metering_point_id_column_name))
-    .drop(anonymised_metering_point_id_column_name)
-    .join(df_anonymised_suppliers_and_balancers, [(df_anonymised_suppliers_and_balancers[tmp_balance_and_supplier_id_column_name]==df_source_energy_results_table.energy_supplier_id) | (df_anonymised_suppliers_and_balancers[tmp_balance_and_supplier_id_column_name]==df_source_energy_results_table.balance_responsible_id)], "left")
+    .drop(df_anonymised_metering_points[metering_point_id_column_name], anonymised_metering_point_id_column_name)
+    # Anonymise Energy Supplier Id
+    .join(
+        df_anonymised_suppliers_and_balancers,
+        df_anonymised_suppliers_and_balancers[energy_supplier_id_column_name].eqNullSafe(df_source_energy_results_table[energy_supplier_id_column_name]),
+        "left",
+    )
+    .drop(df_anonymised_suppliers_and_balancers[energy_supplier_id_column_name], df_anonymised_suppliers_and_balancers[balance_responsible_id_column_name])
     .withColumn(energy_supplier_id_column_name, F.col(anonymised_balance_or_supplier_id_column_name))
     .drop(anonymised_balance_or_supplier_id_column_name)
+    # Anonymise Balance Supplier Id
     .join(
-        df_anonymised_suppliers_and_balancers.select(
-            F.col(tmp_balance_and_supplier_id_column_name).alias(balance_responsible_id_column_name),
-            anonymised_balance_or_supplier_id_column_name,
-        ),
-        [balance_responsible_id_column_name],
+        df_anonymised_suppliers_and_balancers,
+        df_anonymised_suppliers_and_balancers[balance_responsible_id_column_name].eqNullSafe(df_source_energy_results_table[balance_responsible_id_column_name]),
         "left",
     )
+    .drop(df_anonymised_suppliers_and_balancers[energy_supplier_id_column_name], df_anonymised_suppliers_and_balancers[balance_responsible_id_column_name])
     .withColumn(balance_responsible_id_column_name, F.col(anonymised_balance_or_supplier_id_column_name))
     .drop(anonymised_balance_or_supplier_id_column_name)
+    # Anonymise Grid Area Code
     .join(
         df_anonymised_grid_area_codes,
-        [grid_area_code_column_name],
+        df_source_energy_results_table[grid_area_code_column_name].eqNullSafe(df_anonymised_grid_area_codes[grid_area_code_column_name]),
         "left",
     )
+    .drop(df_anonymised_grid_area_codes[grid_area_code_column_name])
     .withColumn(grid_area_code_column_name, F.col(anonymised_grid_area_code_column_name))
     .drop(anonymised_grid_area_code_column_name)
+    # Select and Distinct
     .select(df_source_energy_results_table.columns)
     .distinct()
 ).cache()
@@ -493,3 +516,7 @@ assert (
 df_source_energy_results_table_anonymised.write.format("delta").mode("overwrite").saveAsTable(
     f"{target_database}.{target_energy_results_table_name}"
 )
+
+# COMMAND ----------
+
+
