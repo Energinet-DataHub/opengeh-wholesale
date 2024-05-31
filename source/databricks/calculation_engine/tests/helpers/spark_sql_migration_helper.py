@@ -114,6 +114,7 @@ def _remove_registration_of_modified_scripts(
 
 def configure_spark_sql_migration(
     spark: SparkSession,
+    table_prefix: str = "",
     substitution_variables: dict[str, str] | None = None,
 ) -> None:
     if substitution_variables is None:
@@ -130,7 +131,7 @@ def configure_spark_sql_migration(
         current_state_views_folder_path=c.CURRENT_STATE_VIEWS_FOLDER_PATH,
         schema_config=schema_config,
         substitution_variables=substitution_variables,
-        table_prefix="",
+        table_prefix=table_prefix,
     )
 
     create_and_configure_container(configuration)
