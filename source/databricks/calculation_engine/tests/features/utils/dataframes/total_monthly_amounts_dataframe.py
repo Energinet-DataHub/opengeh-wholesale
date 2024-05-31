@@ -39,11 +39,6 @@ def create_total_monthly_amounts_dataframe(*args) -> DataFrame:
     )
 
     df = df.withColumn(
-        "calculation_version",
-        col("calculation_version").cast(LongType()),
-    )
-
-    df = df.withColumn(
         TotalMonthlyAmountsColumnNames.amount,
         col(TotalMonthlyAmountsColumnNames.amount).cast(DecimalType(18, 6)),
     )

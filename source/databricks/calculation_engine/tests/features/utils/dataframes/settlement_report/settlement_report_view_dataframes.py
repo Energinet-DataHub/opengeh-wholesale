@@ -175,6 +175,11 @@ def create_wholesale_results_v1_view(spark: SparkSession, df: DataFrame) -> Data
     from package.constants import WholesaleResultColumnNames
 
     df = df.withColumn(
+        "calculation_version",
+        col("calculation_version").cast(LongType()),
+    )
+
+    df = df.withColumn(
         WholesaleResultColumnNames.time,
         col(
             WholesaleResultColumnNames.time,
@@ -230,9 +235,14 @@ def create_monthly_amounts_v1_view(spark: SparkSession, df: DataFrame) -> DataFr
     from package.constants import WholesaleResultColumnNames
 
     df = df.withColumn(
-        Colname.start_date_time,
+        "calculation_version",
+        col("calculation_version").cast(LongType()),
+    )
+
+    df = df.withColumn(
+        WholesaleResultColumnNames.time,
         col(
-            Colname.start_date_time,
+            WholesaleResultColumnNames.time,
         ).cast(TimestampType()),
     )
 
