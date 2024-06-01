@@ -72,7 +72,7 @@ internal class UpdateCalculationStatusActivity
             if (calculation.OrchestrationState == newState)
             {
                 _logger.LogInformation(
-                    "Do not set calculation state since it didn't update. Current state: {CurrentOrchestrationState}, calculation id: {CalculationId}",
+                    "Did not update calculation state since it didn't change. Current state: {CurrentOrchestrationState}, calculation id: {CalculationId}",
                     calculation.OrchestrationState,
                     calculationMetadata.Id);
                 return "State didn't change from: " + calculation.OrchestrationState;
