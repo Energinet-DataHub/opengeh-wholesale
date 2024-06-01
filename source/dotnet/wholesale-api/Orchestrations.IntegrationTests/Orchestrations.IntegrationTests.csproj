@@ -11,8 +11,8 @@
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.DurableTask" Version="2.13.2" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.60.3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
-    <PackageReference Include="WireMock.Net" Version="1.5.52" />
-    <PackageReference Include="WireMock.Net.FluentAssertions" Version="1.5.52" />
+    <PackageReference Include="WireMock.Net" Version="1.5.55" />
+    <PackageReference Include="WireMock.Net.FluentAssertions" Version="1.5.55" />
     <PackageReference Include="WireMock.Net.xUnit" Version="1.5.52" />
     <PackageReference Include="xunit" Version="2.7.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.8">
