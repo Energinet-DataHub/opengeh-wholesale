@@ -149,7 +149,7 @@ def create_energy_result_points_per_es_ga_v1_view(
     from features.utils.dataframes.settlement_report.settlement_report_view_column_names import (
         EnergyResultPointsPerGaV1ColumnNames,
     )
-    from features.utils.dataframes.settlement_report.energy_result_points_per_ga_v1_view_schema import (
+    from features.utils.dataframes.settlement_report.energy_result_points_per_es_ga_v1_view_schema import (
         energy_result_points_per_ga_v1_view_schema,
     )
 
