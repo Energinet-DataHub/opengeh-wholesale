@@ -14,9 +14,7 @@
 from features.utils.dataframes.edi_results.view_dataframes import (
     create_energy_result_points_per_ga_v1_view,
 )
-from features.utils.dataframes.edi_results.energy_result_points_per_ga_v1_view_schema import (
-    energy_result_points_per_ga_v1_view_schema,
-)
+import features.utils.dataframes.edi_results as edi_results
 import features.utils.dataframes.settlement_report as settlement_reports
 import features.utils.dataframes.settlement_report.settlement_report_view_dataframes as settlement_report_dataframes
 from features.utils.readers import (
@@ -31,7 +29,7 @@ def get_output_specifications() -> dict[str, tuple]:
     """
     return {
         "energy_result_points_per_ga_v1.csv": (
-            energy_result_points_per_ga_v1_view_schema,
+            edi_results.energy_result_points_per_ga_v1_view_schema,
             EdiResultsViewReader.read_energy_result_points_per_ga_v1,
             create_energy_result_points_per_ga_v1_view,
         ),
