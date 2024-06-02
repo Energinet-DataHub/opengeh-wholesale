@@ -150,7 +150,7 @@ def create_energy_result_points_per_es_ga_v1_view(
         EnergyResultPointsPerGaV1ColumnNames,
     )
     from features.utils.dataframes.settlement_report.energy_result_points_per_es_ga_v1_view_schema import (
-        energy_result_points_per_ga_v1_view_schema,
+        energy_result_points_per_es_ga_v1_view_schema,
     )
 
     df = df.withColumn(
@@ -169,7 +169,7 @@ def create_energy_result_points_per_es_ga_v1_view(
             EnergyResultPointsPerGaV1ColumnNames.time,
         ).cast(TimestampType()),
     )
-    return spark.createDataFrame(df.rdd, energy_result_points_per_ga_v1_view_schema)
+    return spark.createDataFrame(df.rdd, energy_result_points_per_es_ga_v1_view_schema)
 
 
 def create_wholesale_results_v1_view(spark: SparkSession, df: DataFrame) -> DataFrame:

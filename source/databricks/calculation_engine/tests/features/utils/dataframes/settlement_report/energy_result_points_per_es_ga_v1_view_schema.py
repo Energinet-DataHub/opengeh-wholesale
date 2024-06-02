@@ -24,7 +24,7 @@ from features.utils.dataframes.settlement_report.settlement_report_view_column_n
     EnergyResultPointsPerEsGaV1ColumnNames,
 )
 
-energy_result_points_per_ga_v1_view_schema = StructType(
+energy_result_points_per_es_ga_v1_view_schema = StructType(
     [
         StructField(
             EnergyResultPointsPerEsGaV1ColumnNames.calculation_id, StringType(), False
@@ -33,20 +33,27 @@ energy_result_points_per_ga_v1_view_schema = StructType(
             EnergyResultPointsPerEsGaV1ColumnNames.calculation_type, StringType(), False
         ),
         StructField(
-            EnergyResultPointsPerEsGaV1ColumnNames.grid_area, StringType(), False
+            EnergyResultPointsPerEsGaV1ColumnNames.grid_area_code, StringType(), False
         ),
         StructField(
-            EnergyResultPointsPerGaV1ColumnNames.settlement_method, StringType(), True
+            EnergyResultPointsPerEsGaV1ColumnNames.settlement_method, StringType(), True
         ),
         StructField(
-            EnergyResultPointsPerGaV1ColumnNames.resolution, StringType(), False
-        ),
-        StructField(EnergyResultPointsPerGaV1ColumnNames.time, TimestampType(), False),
-        StructField(
-            EnergyResultPointsPerGaV1ColumnNames.quantity, DecimalType(18, 3), False
+            EnergyResultPointsPerEsGaV1ColumnNames.resolution, StringType(), False
         ),
         StructField(
-            EnergyResultPointsPerGaV1ColumnNames.calculation_version,
+            EnergyResultPointsPerEsGaV1ColumnNames.time, TimestampType(), False
+        ),
+        StructField(
+            EnergyResultPointsPerEsGaV1ColumnNames.quantity, DecimalType(18, 3), False
+        ),
+        StructField(
+            EnergyResultPointsPerEsGaV1ColumnNames.calculation_version,
+            StringType(),
+            False,
+        ),
+        StructField(
+            EnergyResultPointsPerEsGaV1ColumnNames.result_id,
             StringType(),
             False,
         ),
