@@ -33,7 +33,7 @@ energy_result_points_per_ga_v1_view_schema = StructType(
             EnergyResultPointsPerGaV1ColumnNames.calculation_type, StringType(), False
         ),
         StructField(
-            EnergyResultPointsPerGaV1ColumnNames.grid_area, StringType(), False
+            EnergyResultPointsPerGaV1ColumnNames.grid_area_code, StringType(), False
         ),
         StructField(
             EnergyResultPointsPerGaV1ColumnNames.metering_point_type,
