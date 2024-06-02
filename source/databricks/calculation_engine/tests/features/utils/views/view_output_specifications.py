@@ -30,9 +30,6 @@ from features.utils.dataframes.settlement_report.charge_prices_v1_view_schema im
 from features.utils.dataframes.settlement_report.energy_result_points_per_es_ga_v1_view_schema import (
     energy_result_points_per_es_ga_v1_view_schema,
 )
-from features.utils.dataframes.settlement_report.energy_results_v1_view_schema import (
-    energy_results_v1_view_schema,
-)
 from features.utils.dataframes.settlement_report.current_calculation_type_versions_v1_view_schema import (
     current_calculation_type_versions_v1_view_schema,
 )
