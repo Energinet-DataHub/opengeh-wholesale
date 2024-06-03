@@ -15,9 +15,6 @@
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.EnergySupplying.RequestResponse.InboxEvents;
 using Energinet.DataHub.Wholesale.Events.Interfaces;
-using Microsoft.Azure.WebJobs.Extensions.DurableTask.ContextImplementations;
-using Microsoft.DurableTask.Client;
-using Microsoft.DurableTask.Worker;
 using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.WholesaleInbox;
