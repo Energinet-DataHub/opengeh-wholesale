@@ -93,14 +93,15 @@ class WholesaleResultsV1ColumnNames:
 class EnergyResultPointsPerEsGaV1ColumnNames:
     calculation_id = EnergyResultColumnNames.calculation_id
     calculation_type = EnergyResultColumnNames.calculation_type
+    calculation_version = "calculation_version"
     result_id = "result_id"
     energy_supplier_id = EnergyResultColumnNames.energy_supplier_id
     grid_area_code = EnergyResultColumnNames.grid_area_code
+    resolution = Colname.resolution
+    metering_point_type = "metering_point_type"
+    settlement_method = Colname.settlement_method
     time = EnergyResultColumnNames.time
     quantity = EnergyResultColumnNames.quantity
-    resolution = Colname.resolution
-    settlement_method = Colname.settlement_method
-    calculation_version = "calculation_version"
 
 
 class CurrentCalculationTypeVersionsV1ColumnNames:

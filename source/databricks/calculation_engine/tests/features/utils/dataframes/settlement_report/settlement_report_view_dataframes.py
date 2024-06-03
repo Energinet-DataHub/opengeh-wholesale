@@ -167,26 +167,28 @@ def create_energy_result_points_per_es_ga_v1_view(
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
     from features.utils.dataframes.settlement_report.settlement_report_view_column_names import (
-        EnergyResultPointsPerGaV1ColumnNames,
+        EnergyResultPointsPerEsGaV1ColumnNames,
     )
     from features.utils.dataframes.settlement_report.energy_result_points_per_es_ga_v1_view_schema import (
         energy_result_points_per_es_ga_v1_view_schema,
     )
 
     df = df.withColumn(
-        EnergyResultPointsPerGaV1ColumnNames.calculation_version,
-        col(EnergyResultPointsPerGaV1ColumnNames.calculation_version).cast(LongType()),
+        EnergyResultPointsPerEsGaV1ColumnNames.calculation_version,
+        col(EnergyResultPointsPerEsGaV1ColumnNames.calculation_version).cast(
+            LongType()
+        ),
     )
 
     df = df.withColumn(
-        EnergyResultPointsPerGaV1ColumnNames.quantity,
-        col(EnergyResultPointsPerGaV1ColumnNames.quantity).cast(DecimalType(18, 3)),
+        EnergyResultPointsPerEsGaV1ColumnNames.quantity,
+        col(EnergyResultPointsPerEsGaV1ColumnNames.quantity).cast(DecimalType(18, 3)),
     )
 
     df = df.withColumn(
-        EnergyResultPointsPerGaV1ColumnNames.time,
+        EnergyResultPointsPerEsGaV1ColumnNames.time,
         col(
-            EnergyResultPointsPerGaV1ColumnNames.time,
+            EnergyResultPointsPerEsGaV1ColumnNames.time,
         ).cast(TimestampType()),
     )
     return spark.createDataFrame(df.rdd, energy_result_points_per_es_ga_v1_view_schema)

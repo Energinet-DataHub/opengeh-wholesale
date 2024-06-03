@@ -78,7 +78,7 @@ def get_output_specifications() -> dict[str, tuple]:
             settlement_report_dataframes.create_charge_prices_v1_view,
         ),
         "settlement_report_energy_result_points_per_es_ga_v1.csv": (
-            energy_result_points_per_es_ga_v1_view_schema,
+            settlement_report.energy_result_points_per_es_ga_v1_view_schema,
             SettlementReportViewReader.read_energy_result_points_per_es_ga_v1,
             settlement_report_dataframes.create_energy_result_points_per_es_ga_v1_view,
         ),
