@@ -65,9 +65,6 @@ public sealed class SettlementReportFromFilesHandler : ISettlementReportFromFile
             }
         }
 
-        return new GeneratedSettlementReportDto(
-            requestId,
-            new GeneratedSettlementReportFileDto(requestId, new SettlementReportPartialFileInfo(reportFileName), reportFileName),
-            generatedFiles);
+        return new GeneratedSettlementReportDto(requestId, reportFileName, generatedFiles);
     }
 }

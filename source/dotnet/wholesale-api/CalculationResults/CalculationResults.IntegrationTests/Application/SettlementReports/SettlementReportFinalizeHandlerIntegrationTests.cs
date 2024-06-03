@@ -38,7 +38,7 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
     private readonly SettlementReportRequestDto _mockedSettlementReportRequest = new(
         CalculationType.BalanceFixing,
         false,
-        new SettlementReportRequestFilterDto([], DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, null));
+        new SettlementReportRequestFilterDto(new Dictionary<GridAreaCode, CalculationId>(), DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, null));
 
     public SettlementReportFinalizeHandlerIntegrationTests(
         WholesaleDatabaseFixture<SettlementReportDatabaseContext> wholesaleDatabaseFixture,
@@ -68,7 +68,7 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
 
         var generatedSettlementReport = new GeneratedSettlementReportDto(
             requestId,
-            new GeneratedSettlementReportFileDto(requestId, new("Report.zip"), "Report.zip"),
+            "Report.zip",
             inputFiles);
 
         await using var dbContext = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
@@ -95,7 +95,7 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
 
         var generatedSettlementReport = new GeneratedSettlementReportDto(
             requestId,
-            new GeneratedSettlementReportFileDto(requestId, new SettlementReportPartialFileInfo("Report.zip"), "Report.zip"),
+            "Report.zip",
             []);
 
         await using var dbContextArrange = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();

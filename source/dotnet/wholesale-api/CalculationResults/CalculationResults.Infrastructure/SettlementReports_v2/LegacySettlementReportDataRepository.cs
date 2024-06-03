@@ -40,7 +40,7 @@ public sealed class LegacySettlementReportDataRepository : ISettlementReportData
         {
             rows = await _settlementReportResultQueries
                 .GetRowsAsync(
-                    filter.Calculations.Select(calculation => calculation.GridAreaCode).ToArray(),
+                    filter.Calculations.Select(calculation => calculation.Key.Code).ToArray(),
                     CalculationType.BalanceFixing,
                     filter.PeriodStart.ToInstant(),
                     filter.PeriodEnd.ToInstant(),

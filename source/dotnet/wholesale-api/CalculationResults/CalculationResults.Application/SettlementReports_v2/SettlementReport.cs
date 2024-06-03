@@ -73,7 +73,7 @@ public sealed class SettlementReport
     public void MarkAsCompleted(GeneratedSettlementReportDto generatedSettlementReport)
     {
         Status = SettlementReportStatus.Completed;
-        BlobFileName = generatedSettlementReport.FinalReport.StorageFileName;
+        BlobFileName = generatedSettlementReport.ReportFileName;
     }
 
     public void MarkAsFailed()

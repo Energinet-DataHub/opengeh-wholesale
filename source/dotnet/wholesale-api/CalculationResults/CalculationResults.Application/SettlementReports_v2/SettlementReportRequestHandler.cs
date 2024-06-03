@@ -80,34 +80,15 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
             ? SettlementReportFileContent.EnergyResultLatestPerDay
             : SettlementReportFileContent.EnergyResultForCalculationId;
 
-        if (reportRequest.SplitReportPerGridArea)
-        {
-            foreach (var calculationFilter in reportRequest.Filter.Calculations)
-            {
-                var requestPerGridArea = new SettlementReportFileRequestDto(
-                    fileContent,
-                    new SettlementReportPartialFileInfo($"Result Energy ({calculationFilter.GridAreaCode})"),
-                    requestId,
-                    reportRequest.Filter with { Calculations = [calculationFilter] });
+        var resultEnergy = new SettlementReportFileRequestDto(
+            fileContent,
+            new SettlementReportPartialFileInfo("Result Energy"),
+            requestId,
+            reportRequest.Filter);
 
-                await foreach (var splitFileRequest in SplitFileRequestIntoChunksAsync(requestPerGridArea).ConfigureAwait(false))
-                {
-                    yield return splitFileRequest;
-                }
-            }
-        }
-        else
+        await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(resultEnergy, reportRequest.SplitReportPerGridArea).ConfigureAwait(false))
         {
-            var combinedFileRequest = new SettlementReportFileRequestDto(
-                fileContent,
-                new SettlementReportPartialFileInfo("Result Energy"),
-                requestId,
-                reportRequest.Filter);
-
-            await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(combinedFileRequest).ConfigureAwait(false))
-            {
-                yield return splitFileRequest;
-            }
+            yield return splitFileRequest;
         }
     }
 
@@ -116,50 +97,40 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
         SettlementReportRequestId requestId,
         SettlementReportRequestDto reportRequest)
     {
-        if (reportRequest.SplitReportPerGridArea)
-        {
-            foreach (var calculationFilter in reportRequest.Filter.Calculations)
-            {
-                var requestPerGridArea = new SettlementReportFileRequestDto(
-                    wholesaleFileContent,
-                    new SettlementReportPartialFileInfo($"Result Wholesale ({calculationFilter.GridAreaCode})"),
-                    requestId,
-                    reportRequest.Filter with { Calculations = [calculationFilter] });
-
-                await foreach (var splitFileRequest in SplitFileRequestIntoChunksAsync(requestPerGridArea).ConfigureAwait(false))
-                {
-                    yield return splitFileRequest;
-                }
-            }
-        }
-        else
-        {
-            var combinedFileRequest = new SettlementReportFileRequestDto(
+        var resultWholesale = new SettlementReportFileRequestDto(
                 wholesaleFileContent,
                 new SettlementReportPartialFileInfo("Result Wholesale"),
                 requestId,
                 reportRequest.Filter);
 
-            await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(combinedFileRequest).ConfigureAwait(false))
-            {
-                yield return splitFileRequest;
-            }
+        await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(resultWholesale, reportRequest.SplitReportPerGridArea).ConfigureAwait(false))
+        {
+            yield return splitFileRequest;
         }
     }
 
     private async IAsyncEnumerable<SettlementReportFileRequestDto> SplitFileRequestPerGridAreaAsync(
-        SettlementReportFileRequestDto fileRequest)
+        SettlementReportFileRequestDto fileRequest,
+        bool splitReportPerGridArea)
     {
         var partialFileInfo = fileRequest.PartialFileInfo;
 
-        foreach (var calculationFilter in fileRequest.RequestFilter.Calculations)
+        foreach (var (gridAreaCode, calculationId) in fileRequest.RequestFilter.Calculations)
         {
+            if (splitReportPerGridArea)
+            {
+                partialFileInfo = fileRequest.PartialFileInfo with
+                {
+                    FileName = fileRequest.PartialFileInfo.FileName + $" ({gridAreaCode})",
+                };
+            }
+
             var requestForSingleGridArea = fileRequest with
             {
                 PartialFileInfo = partialFileInfo,
 
                 // Create a request with a single grid area.
-                RequestFilter = fileRequest.RequestFilter with { Calculations = [calculationFilter] },
+                RequestFilter = fileRequest.RequestFilter with { Calculations = new Dictionary<GridAreaCode, CalculationId> { { gridAreaCode, calculationId } } },
             };
 
             // Split the single grid area request into further chunks.

@@ -37,7 +37,7 @@ public sealed class SettlementReportDownloadHandlerIntegrationTests : TestBase<S
     private readonly SettlementReportRequestDto _mockedSettlementReportRequest = new(
         CalculationType.BalanceFixing,
         false,
-        new SettlementReportRequestFilterDto([], DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, null));
+        new SettlementReportRequestFilterDto(new Dictionary<GridAreaCode, CalculationId>(), DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, null));
 
     public SettlementReportDownloadHandlerIntegrationTests(
         WholesaleDatabaseFixture<SettlementReportDatabaseContext> wholesaleDatabaseFixture,
@@ -60,7 +60,7 @@ public sealed class SettlementReportDownloadHandlerIntegrationTests : TestBase<S
 
         var generatedSettlementReport = new GeneratedSettlementReportDto(
             requestId,
-            new GeneratedSettlementReportFileDto(requestId, new("Report.zip"), "Report.zip"),
+            "Report.zip",
             []);
 
         var userId = Guid.NewGuid();
@@ -89,7 +89,7 @@ public sealed class SettlementReportDownloadHandlerIntegrationTests : TestBase<S
 
         var generatedSettlementReport = new GeneratedSettlementReportDto(
             requestId,
-            new GeneratedSettlementReportFileDto(requestId, new("Report.zip"), "Report.zip"),
+            "Report.zip",
             []);
 
         var userId = Guid.NewGuid();
@@ -115,7 +115,7 @@ public sealed class SettlementReportDownloadHandlerIntegrationTests : TestBase<S
 
         var generatedSettlementReport = new GeneratedSettlementReportDto(
             requestId,
-            new GeneratedSettlementReportFileDto(requestId, new("Report.zip"), "Report.zip"),
+            "Report.zip",
             []);
 
         var userId = Guid.NewGuid();

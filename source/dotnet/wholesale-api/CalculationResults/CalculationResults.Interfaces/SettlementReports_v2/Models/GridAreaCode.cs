@@ -14,4 +14,20 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
-public sealed record CalculationFilterDto(string CalculationId, string GridAreaCode);
+public sealed record GridAreaCode
+{
+    public GridAreaCode(string code)
+    {
+        if (code.Length != 3 || !code.All(char.IsDigit))
+            throw new ArgumentException($"Invalid grid area code: {code}.", nameof(code));
+
+        Code = code;
+    }
+
+    public string Code { get; }
+
+    public override string ToString()
+    {
+        return Code;
+    }
+}

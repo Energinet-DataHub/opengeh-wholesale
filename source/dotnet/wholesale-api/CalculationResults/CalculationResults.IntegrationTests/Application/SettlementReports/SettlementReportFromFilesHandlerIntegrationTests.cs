@@ -59,7 +59,7 @@ public sealed class SettlementReportFromFilesHandlerIntegrationTests : TestBase<
         Assert.Equal(inputFiles, actual.TemporaryFiles);
 
         var container = _settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
-        var generatedFileBlob = container.GetBlobClient($"settlement-reports/{requestId.Id}/{actual.FinalReport.StorageFileName}");
+        var generatedFileBlob = container.GetBlobClient($"settlement-reports/{requestId.Id}/{actual.ReportFileName}");
         var generatedFile = await generatedFileBlob.DownloadContentAsync();
 
         using var archive = new ZipArchive(generatedFile.Value.Content.ToStream(), ZipArchiveMode.Read);
