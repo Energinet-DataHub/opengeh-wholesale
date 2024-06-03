@@ -13,6 +13,7 @@ module "func_dropzoneunzipper" {
   scm_ip_restrictions                    = var.ip_restrictions
   app_service_plan_id                    = module.func_service_plan.id
   application_insights_connection_string = data.azurerm_key_vault_secret.appi_shared_connection_string.value
+  use_32_bit_worker                      = false
   health_check_path                      = "/api/monitor/ready"
   pre_warmed_instance_count              = 1
   elastic_instance_minimum               = 1
