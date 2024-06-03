@@ -21,11 +21,16 @@ from pyspark.sql.types import (
     DecimalType,
     IntegerType,
     BooleanType,
+    LongType,
 )
 
 from features.utils.dataframes.settlement_report.charge_prices_v1_view_schema import (
     price_point,
 )
+from features.utils.dataframes.settlement_report.current_calculation_type_versions_v1_view_schema import (
+    current_calculation_type_versions_v1_view_schema,
+)
+
 from package.constants import Colname
 
 
@@ -38,6 +43,11 @@ def create_metering_point_periods_v1_view(
     from package.constants import MeteringPointPeriodColname
     from features.utils.dataframes.settlement_report.metering_point_period_v1_view_schema import (
         metering_point_period_v1_view_schema,
+    )
+
+    df = df.withColumn(
+        "calculation_version",
+        col("calculation_version").cast(LongType()),
     )
 
     df = df.withColumn(
@@ -65,6 +75,11 @@ def create_metering_point_time_series_v1_view(
     )
 
     df = df.withColumn(
+        "calculation_version",
+        col("calculation_version").cast(LongType()),
+    )
+
+    df = df.withColumn(
         Colname.start_date_time,
         col(Colname.start_date_time).cast(TimestampType()),
     )
@@ -86,6 +101,11 @@ def create_charge_link_periods_v1_view(spark: SparkSession, df: DataFrame) -> Da
     )
     from features.utils.dataframes.settlement_report.charge_link_periods_v1_view_schema import (
         charge_link_periods_v1_view_schema,
+    )
+
+    df = df.withColumn(
+        ChargeLinkPeriodsV1ColumnNames.calculation_version,
+        col(ChargeLinkPeriodsV1ColumnNames.calculation_version).cast(LongType()),
     )
 
     df = df.withColumn(
@@ -115,6 +135,11 @@ def create_charge_prices_v1_view(spark: SparkSession, df: DataFrame) -> DataFram
     )
     from features.utils.dataframes.settlement_report.settlement_report_view_column_names import (
         ChargePricesV1ColumnNames,
+    )
+
+    df = df.withColumn(
+        ChargePricesV1ColumnNames.calculation_version,
+        col(ChargePricesV1ColumnNames.calculation_version).cast(LongType()),
     )
 
     df = df.withColumn(
@@ -170,9 +195,14 @@ def create_wholesale_results_v1_view(spark: SparkSession, df: DataFrame) -> Data
     from package.constants import WholesaleResultColumnNames
 
     df = df.withColumn(
-        Colname.start_date_time,
+        "calculation_version",
+        col("calculation_version").cast(LongType()),
+    )
+
+    df = df.withColumn(
+        WholesaleResultColumnNames.time,
         col(
-            Colname.start_date_time,
+            WholesaleResultColumnNames.time,
         ).cast(TimestampType()),
     )
 
@@ -194,6 +224,27 @@ def create_wholesale_results_v1_view(spark: SparkSession, df: DataFrame) -> Data
     return spark.createDataFrame(df.rdd, wholesale_results_v1_view_schema)
 
 
+def create_current_calculation_type_versions_v1_view(
+    spark: SparkSession, df: DataFrame
+) -> DataFrame:
+
+    from features.utils.dataframes.settlement_report.settlement_report_view_column_names import (
+        CurrentCalculationTypeVersionsV1ColumnNames,
+    )
+
+    # Don't remove. Believed needed because this function is an argument to the setup function
+    # and therefore the following packages are not automatically included.
+
+    df = df.withColumn(
+        CurrentCalculationTypeVersionsV1ColumnNames.version,
+        col(CurrentCalculationTypeVersionsV1ColumnNames.version).cast(LongType()),
+    )
+
+    return spark.createDataFrame(
+        df.rdd, current_calculation_type_versions_v1_view_schema
+    )
+
+
 def create_monthly_amounts_v1_view(spark: SparkSession, df: DataFrame) -> DataFrame:
 
     # Don't remove. Believed needed because this function is an argument to the setup function
@@ -204,9 +255,14 @@ def create_monthly_amounts_v1_view(spark: SparkSession, df: DataFrame) -> DataFr
     from package.constants import WholesaleResultColumnNames
 
     df = df.withColumn(
-        Colname.start_date_time,
+        "calculation_version",
+        col("calculation_version").cast(LongType()),
+    )
+
+    df = df.withColumn(
+        WholesaleResultColumnNames.time,
         col(
-            Colname.start_date_time,
+            WholesaleResultColumnNames.time,
         ).cast(TimestampType()),
     )
 

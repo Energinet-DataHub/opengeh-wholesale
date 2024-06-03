@@ -46,6 +46,10 @@ CALCULATIONS_TABLE_NAME = "calculations"
 class EdiResults:
     DATABASE_NAME = "wholesale_edi_results"
     ENERGY_RESULT_POINTS_PER_GA_V1_VIEW_NAME = "energy_result_points_per_ga_v1"
+    ENERGY_RESULT_POINTS_PER_BRP_GA_V1_VIEW_NAME = "energy_result_points_per_brp_ga_v1"
+    ENERGY_RESULT_POINTS_PER_ES_BRP_GA_V1_VIEW_NAME = (
+        "energy_result_points_per_es_brp_ga_v1"
+    )
 
 
 # Settlement report database and views
@@ -58,6 +62,9 @@ CHARGE_LINK_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1 = "charge_link_periods_v1"
 CHARGE_PRICES_SETTLEMENT_REPORT_VIEW_NAME_V1 = "charge_prices_v1"
 ENERGY_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1 = "energy_results_v1"
 WHOLESALE_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1 = "wholesale_results_v1"
+CURRENT_CALCULATION_TYPE_VERSIONS_SETTLEMENT_REPORT_VIEW_NAME_V1 = (
+    "current_calculation_type_versions_v1"
+)
 MONTHLY_AMOUNTS_SETTLEMENT_REPORT_VIEW_NAME_V1 = "monthly_amounts_v1"
 
 TEST = ""
