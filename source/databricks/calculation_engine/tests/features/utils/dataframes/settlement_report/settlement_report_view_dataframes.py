@@ -27,7 +27,7 @@ from pyspark.sql.types import (
 from features.utils.dataframes.settlement_report.charge_prices_v1_view_schema import (
     price_point,
 )
-from features.utils.dataframes.settlement_report.current_calculation_type_versions_v1_view_schema import (
+from features.utils.dataframes.settlement_report.current_balance_fixing_calculation_version_v1_view_schema import (
     current_balance_fixing_calculation_version_v1_view_schema,
 )
 

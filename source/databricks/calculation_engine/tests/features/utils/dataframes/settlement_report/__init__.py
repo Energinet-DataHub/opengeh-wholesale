@@ -23,6 +23,6 @@ from .energy_result_points_per_ga_v1_view_schema import (
     energy_result_points_per_ga_v1_view_schema,
 )
 from .wholesale_results_v1_view_schema import wholesale_results_v1_view_schema
-from .current_calculation_type_versions_v1_view_schema import (
+from .current_balance_fixing_calculation_version_v1_view_schema import (
     current_calculation_type_versions_v1_view_schema,
 )
