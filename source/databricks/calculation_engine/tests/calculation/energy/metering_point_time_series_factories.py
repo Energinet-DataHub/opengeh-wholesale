@@ -55,9 +55,9 @@ def create_row(
         settlement_method = settlement_method.value
 
     row = {
-        Colname.grid_area: grid_area,
-        Colname.to_grid_area: to_grid_area,
-        Colname.from_grid_area: from_grid_area,
+        Colname.grid_area_code: grid_area,
+        Colname.to_grid_area_code: to_grid_area,
+        Colname.from_grid_area_code: from_grid_area,
         Colname.metering_point_id: metering_point_id,
         Colname.metering_point_type: metering_point_type.value,
         Colname.quantity: quantity,

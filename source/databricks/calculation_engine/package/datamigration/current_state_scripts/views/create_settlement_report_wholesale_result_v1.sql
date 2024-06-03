@@ -1,10 +1,12 @@
 -- This view represents the current state of the wholesale_results table with filter by "amount_per_charge".
 CREATE VIEW {SETTLEMENT_REPORT_DATABASE_NAME}.wholesale_results_v1 as
-SELECT wr.calculation_id,
-       wr.calculation_type,
+SELECT c.calculation_id,
+       c.calculation_type,
+       c.version as calculation_version,
+       wr.calculation_result_id as result_id,
        wr.grid_area_code,
        wr.energy_supplier_id,
-       wr.time AS start_date_time,
+       wr.time,
        wr.resolution,
        wr.metering_point_type,
        wr.settlement_method,

@@ -81,7 +81,6 @@ def test__current_state_and_migration_scripts__should_give_same_result(
     spark_sql_migration_helper.configure_spark_sql_migration(
         spark,
         substitution_variables=migration_scripts_substitutions,
-        location="migration_test",
         table_prefix="migration_",
     )
     schema_migration_pipeline.migrate()
@@ -104,7 +103,6 @@ def test__current_state_and_migration_scripts__should_give_same_result(
     spark_sql_migration_helper.configure_spark_sql_migration(
         spark,
         substitution_variables=substitutions,
-        location="migration_test",
         table_prefix="migration_",
     )
     schema_migration_pipeline._migrate(0)

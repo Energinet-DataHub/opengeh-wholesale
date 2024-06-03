@@ -57,7 +57,7 @@ def create_row(
         total_amount = Decimal(total_amount)
 
     row = {
-        Colname.grid_area: grid_area,
+        Colname.grid_area_code: grid_area,
         Colname.energy_supplier_id: energy_supplier_id,
         Colname.total_quantity: total_quantity,
         Colname.unit: unit,
