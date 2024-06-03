@@ -19,18 +19,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.WholesaleInbox;
 
-public class ActorMessagesEnqueuedV1RequestHandler : IWholesaleInboxRequestHandler
+public class ActorMessagesEnqueuedV1RequestHandler(
+    ILogger<ActorMessagesEnqueuedV1RequestHandler> logger,
+    DurableTaskClientAccessor durableTaskClientAccessor) : IWholesaleInboxRequestHandler
 {
-    private readonly ILogger<ActorMessagesEnqueuedV1RequestHandler> _logger;
-    private readonly DurableTaskClientAccessor _durableTaskClientAccessor;
-
-    public ActorMessagesEnqueuedV1RequestHandler(
-        ILogger<ActorMessagesEnqueuedV1RequestHandler> logger,
-        DurableTaskClientAccessor durableTaskClientAccessor)
-    {
-        _logger = logger;
-        _durableTaskClientAccessor = durableTaskClientAccessor;
-    }
+    private readonly ILogger<ActorMessagesEnqueuedV1RequestHandler> _logger = logger;
+    private readonly DurableTaskClientAccessor _durableTaskClientAccessor = durableTaskClientAccessor;
 
     public bool CanHandle(string requestSubject) => requestSubject.Equals(ActorMessagesEnqueuedV1.EventName);
 

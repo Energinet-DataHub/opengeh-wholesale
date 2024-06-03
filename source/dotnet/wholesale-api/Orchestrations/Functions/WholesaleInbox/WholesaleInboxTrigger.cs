@@ -20,16 +20,12 @@ using Microsoft.DurableTask.Client;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.WholesaleInbox;
 
-internal class WholesaleInboxTrigger
+internal class WholesaleInboxTrigger(
+    WholesaleInboxHandler wholesaleInboxHandler,
+    DurableTaskClientAccessor durableTaskClientAccessor)
 {
-    private readonly WholesaleInboxHandler _wholesaleInboxHandler;
-    private readonly DurableTaskClientAccessor _durableTaskClientAccessor;
-
-    public WholesaleInboxTrigger(WholesaleInboxHandler wholesaleInboxHandler, DurableTaskClientAccessor durableTaskClientAccessor)
-    {
-        _wholesaleInboxHandler = wholesaleInboxHandler;
-        _durableTaskClientAccessor = durableTaskClientAccessor;
-    }
+    private readonly WholesaleInboxHandler _wholesaleInboxHandler = wholesaleInboxHandler;
+    private readonly DurableTaskClientAccessor _durableTaskClientAccessor = durableTaskClientAccessor;
 
     [Function(nameof(WholesaleInboxTrigger))]
     public Task ReceiveWholesaleInboxMessageAsync(
