@@ -22,6 +22,7 @@ using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Generators;
 
+// TODO: Will be replaced by WholesaleResultFileGenerator from next PR.
 public sealed class WholesaleFixingResultFileGenerator : ISettlementReportFileGenerator
 {
     private readonly ISettlementReportDataRepository _dataSource;
