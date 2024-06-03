@@ -139,6 +139,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
                 new Dictionary<string, CalculationId>
                 {
                     { "042", new CalculationId("404F04A8-08A4-411E-9D69-358ADF88A2C7") },
+                    { "043", new CalculationId("404F04A8-08A4-411E-9D69-358ADF88A2C7") },
                 },
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow,
@@ -183,10 +184,18 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
 
         var httpStream = await actualDownloadResponse.Content.ReadAsStreamAsync();
         using var reader = new StreamReader(httpStream);
-        var zipStream = new MemoryStream();
+        using var zipStream = new MemoryStream();
         await httpStream.CopyToAsync(zipStream);
+
         using var archive = new ZipArchive(zipStream, ZipArchiveMode.Read);
         Assert.NotEmpty(archive.Entries);
+
+        foreach (var entry in archive.Entries)
+        {
+            using var streamReader = new StreamReader(entry.Open());
+            var contents = await streamReader.ReadToEndAsync();
+            Assert.NotEmpty(contents);
+        }
     }
 
     /// <summary>

@@ -75,6 +75,41 @@ public sealed class SettlementReportFromFilesHandlerIntegrationTests : TestBase<
         }
     }
 
+    [Fact]
+    public async Task CombineAsync_GivenSeveralChunks_ReturnsCombinedFile()
+    {
+        // Arrange
+        var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
+        var inputFiles = new GeneratedSettlementReportFileDto[]
+        {
+            new(requestId, new("target_file.csv") { ChunkOffset = 0 }, "fileA_0.csv"),
+            new(requestId, new("target_file.csv") { ChunkOffset = 1 }, "fileA_1.csv"),
+            new(requestId, new("target_file.csv") { ChunkOffset = 2 }, "fileA_2.csv"),
+        };
+
+        await Task.WhenAll(inputFiles.Select(MakeTestFileAsync));
+
+        // Act
+        var actual = await Sut.CombineAsync(inputFiles);
+
+        // Assert
+        Assert.Equal(requestId, actual.RequestId);
+        Assert.Equal(inputFiles, actual.TemporaryFiles);
+
+        var container = _settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
+        var generatedFileBlob = container.GetBlobClient($"settlement-reports/{requestId.Id}/{actual.ReportFileName}");
+        var generatedFile = await generatedFileBlob.DownloadContentAsync();
+
+        using var archive = new ZipArchive(generatedFile.Value.Content.ToStream(), ZipArchiveMode.Read);
+        var combinedEntry = archive.Entries.Single();
+
+        using var streamReader = new StreamReader(combinedEntry.Open());
+        var inputFileContents = await streamReader.ReadToEndAsync();
+        var expectedContents = string.Concat(Enumerable.Repeat("Content: target_file.csv", 3));
+
+        Assert.Equal(expectedContents, inputFileContents);
+    }
+
     private Task MakeTestFileAsync(GeneratedSettlementReportFileDto file)
     {
         var containerClient = _settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
