@@ -56,11 +56,19 @@ ENERGY_RESULT_TYPES = {
     ),
     (
         TimeSeriesType.PRODUCTION.value,
+        AggregationLevel.ES_PER_BRP_PER_GA.value,
+    ),
+    (
+        TimeSeriesType.PRODUCTION.value,
         AggregationLevel.TOTAL_GA.value,
     ),
     (
         TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
         AggregationLevel.ES_PER_GA.value,
+    ),
+    (
+        TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
+        AggregationLevel.ES_PER_BRP_PER_GA.value,
     ),
     (
         TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
@@ -69,6 +77,10 @@ ENERGY_RESULT_TYPES = {
     (
         TimeSeriesType.FLEX_CONSUMPTION.value,
         AggregationLevel.ES_PER_GA.value,
+    ),
+    (
+        TimeSeriesType.FLEX_CONSUMPTION.value,
+        AggregationLevel.ES_PER_BRP_PER_GA.value,
     ),
     (
         TimeSeriesType.FLEX_CONSUMPTION.value,
