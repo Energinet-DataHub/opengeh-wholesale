@@ -345,7 +345,7 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
         ),
         (
             f"{paths.EdiResults.DATABASE_NAME}.{paths.EdiResults.ENERGY_RESULT_POINTS_PER_ES_BRP_GA_V1_VIEW_NAME}",
-            False,
+            True,
         ),
     ],
 )
