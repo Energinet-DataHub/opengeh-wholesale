@@ -116,8 +116,8 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
         // => Raise "ActorMessagesEnqueued" event to the orchestrator
         await Fixture.DurableClient.RaiseEventAsync(
             orchestrationStatus.InstanceId,
-            MessagesEnqueuedV1.EventName,
-            new MessagesEnqueuedV1
+            ActorMessagesEnqueuedV1.EventName,
+            new ActorMessagesEnqueuedV1
             {
                 CalculationId = calculationId.ToString(),
                 OrchestrationInstanceId = orchestrationStatus.InstanceId,

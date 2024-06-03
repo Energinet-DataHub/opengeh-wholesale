@@ -15,6 +15,9 @@
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.EnergySupplying.RequestResponse.InboxEvents;
 using Energinet.DataHub.Wholesale.Events.Interfaces;
+using Microsoft.Azure.WebJobs.Extensions.DurableTask.ContextImplementations;
+using Microsoft.DurableTask.Client;
+using Microsoft.DurableTask.Worker;
 using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.WholesaleInbox;
@@ -32,7 +35,7 @@ public class ActorMessagesEnqueuedV1RequestHandler : IWholesaleInboxRequestHandl
         _durableTaskClientAccessor = durableTaskClientAccessor;
     }
 
-    public bool CanHandle(string requestSubject) => requestSubject.Equals(MessagesEnqueuedV1.EventName);
+    public bool CanHandle(string requestSubject) => requestSubject.Equals(ActorMessagesEnqueuedV1.EventName);
 
     public Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken)
     {
@@ -42,18 +45,18 @@ public class ActorMessagesEnqueuedV1RequestHandler : IWholesaleInboxRequestHandl
             receivedMessage.Subject,
             referenceId);
 
-        var messageEnqueuedEvent = MessagesEnqueuedV1.Parser.ParseFrom(receivedMessage.Body);
+        var messageEnqueuedEvent = ActorMessagesEnqueuedV1.Parser.ParseFrom(receivedMessage.Body);
 
         _logger.LogInformation(
             "Raising event \"{OrchestrationEventName}\" to orchestration with OrchestrationInstanceId: {OrchestrationInstanceId}, CalculationId: {CalculationId}, ServiceBusMessageId: {ServiceBusMessageId}",
-            MessagesEnqueuedV1.EventName,
+            ActorMessagesEnqueuedV1.EventName,
             messageEnqueuedEvent.OrchestrationInstanceId,
             messageEnqueuedEvent.CalculationId,
             receivedMessage.MessageId);
 
         return _durableTaskClientAccessor.Current.RaiseEventAsync(
             messageEnqueuedEvent.OrchestrationInstanceId,
-            MessagesEnqueuedV1.EventName,
+            ActorMessagesEnqueuedV1.EventName,
             messageEnqueuedEvent,
             cancellationToken);
     }

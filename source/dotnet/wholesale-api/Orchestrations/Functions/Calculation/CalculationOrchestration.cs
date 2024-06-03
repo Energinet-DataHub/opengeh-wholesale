@@ -169,8 +169,8 @@ internal class CalculationOrchestration
         Guid calculationId,
         int messagesEnqueuingExpiryTimeInSeconds)
     {
-        var messagesEnqueuedEvent = await context.WaitForExternalEvent<MessagesEnqueuedV1>(
-            MessagesEnqueuedV1.EventName,
+        var messagesEnqueuedEvent = await context.WaitForExternalEvent<ActorMessagesEnqueuedV1>(
+            ActorMessagesEnqueuedV1.EventName,
             timeout: TimeSpan.FromSeconds(messagesEnqueuingExpiryTimeInSeconds));
 
         var canParseCalculationId = Guid.TryParse(messagesEnqueuedEvent.CalculationId, out var messagesEnqueuedCalculationId);

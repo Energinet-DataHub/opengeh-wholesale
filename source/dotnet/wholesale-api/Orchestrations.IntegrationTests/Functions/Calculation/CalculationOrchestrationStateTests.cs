@@ -155,8 +155,8 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
         // => Raise "ActorMessagesEnqueued" event to the orchestrator
         await Fixture.DurableClient.RaiseEventAsync(
             orchestrationStatus.InstanceId,
-            MessagesEnqueuedV1.EventName,
-            new MessagesEnqueuedV1
+            ActorMessagesEnqueuedV1.EventName,
+            new ActorMessagesEnqueuedV1
             {
                 CalculationId = calculationId.ToString(),
                 OrchestrationInstanceId = orchestrationStatus.InstanceId,
@@ -185,17 +185,16 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
         var verifyServiceBusMessages = await Fixture.ServiceBusListenerMock
             .When(msg =>
             {
-                if (msg.Subject != EnergyResultProducedV2.EventName)
+                if (msg.Subject != CalculationCompletedV1.EventName)
                 {
                     return false;
                 }
 
-                var erp = EnergyResultProducedV2.Parser.ParseFrom(msg.Body);
+                var calculationCompleted = CalculationCompletedV1.Parser.ParseFrom(msg.Body);
 
-                // This should be the calculationId in "actualResponse".
-                // But the current implementation takes the calculationId from the databricks row,
+                // The current implementation takes the calculationId from the databricks row,
                 // which is mocked in this scenario. Giving us a "false" comparison here.
-                return erp.CalculationId == calculationId.Value.ToString();
+                return calculationCompleted.CalculationId == calculationId.Value.ToString();
             })
             .VerifyCountAsync(1);
 

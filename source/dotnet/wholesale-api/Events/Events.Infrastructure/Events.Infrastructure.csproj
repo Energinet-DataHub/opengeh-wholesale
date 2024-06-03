@@ -23,7 +23,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Protobuf Include="InboxEvents/ActorMessagesEnqueuedV1/MessagesEnqueued.proto">
+    <Protobuf Include="InboxEvents\ActorMessagesEnqueuedV1\ActorMessagesEnqueued.proto">
       <GrpcServices>None</GrpcServices>
       <Access>Public</Access>
       <ProtoCompile>True</ProtoCompile>

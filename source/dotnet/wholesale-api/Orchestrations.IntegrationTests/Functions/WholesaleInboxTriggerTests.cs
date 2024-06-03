@@ -142,7 +142,7 @@ public class WholesaleInboxTriggerTests : IAsyncLifetime
     public async Task GivenActorMessagesEnqueued_WhenEventIsHandled_FunctionCompletes()
     {
         // Arrange
-        var actorMessagesEnqueued = new MessagesEnqueuedV1
+        var actorMessagesEnqueued = new ActorMessagesEnqueuedV1
         {
             CalculationId = "valid-calculation-id",
             OrchestrationInstanceId = "valid-orchestration-id",
@@ -150,7 +150,7 @@ public class WholesaleInboxTriggerTests : IAsyncLifetime
 
         var referenceId = "valid-reference-id";
         await SendMessageToWholesaleInbox(
-            subject: MessagesEnqueuedV1.Descriptor.Name,
+            subject: ActorMessagesEnqueuedV1.Descriptor.Name,
             body: actorMessagesEnqueued.ToByteArray(),
             referenceId: referenceId);
 
