@@ -191,6 +191,7 @@ def create_energy_result_points_per_ga_v1_view(
     )
     return spark.createDataFrame(df.rdd, energy_result_points_per_ga_v1_view_schema)
 
+
 def create_energy_result_points_per_es_ga_v1_view(
     spark: SparkSession, df: DataFrame
 ) -> DataFrame:
