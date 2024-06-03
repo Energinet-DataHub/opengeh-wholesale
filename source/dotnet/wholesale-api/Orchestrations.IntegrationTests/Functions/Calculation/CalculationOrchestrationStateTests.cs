@@ -79,13 +79,13 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
 
         // The current databrick calculation state. Can be null, "PENDING", "RUNNING", "TERMINATED" (success)
         // The mock response will wait for the value to not be null before returning
-        string? currentCalculationJobState = null;
+        var calculationJobStateCallback = new CallbackValue<string?>(null);
         Fixture.MockServer
             .MockJobsList(jobId)
             .MockJobsGet(jobId)
             .MockJobsRunNow(runId)
             // ReSharper disable once AccessToModifiedClosure -- We need to modify calculation job state in outer scope
-            .MockJobsRunsGet(runId, () => currentCalculationJobState);
+            .MockJobsRunsGet(runId, calculationJobStateCallback.GetValue);
 
         // => Databricks SQL Statement API
         var chunkIndex = 0;
@@ -126,18 +126,18 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
         isScheduledState.ActualState.Should().Be(CalculationOrchestrationState.Scheduled);
 
         // => Calculation job is "PENDING", state should be Calculating
-        currentCalculationJobState = "PENDING";
+        calculationJobStateCallback.SetValue("PENDING");
         var isStillScheduledCalculatingState = await dbContext.WaitForCalculationWithState(calculationId.Value, CalculationOrchestrationState.Scheduled, Fixture.TestLogger);
         isStillScheduledCalculatingState.ActualState.Should().Be(CalculationOrchestrationState.Scheduled);
 
         // => Calculation job is "RUNNING", state should be Calculating
-        currentCalculationJobState = "RUNNING";
+        calculationJobStateCallback.SetValue("RUNNING");
         var isCalculatingState = await dbContext.WaitForCalculationWithState(calculationId.Value, CalculationOrchestrationState.Calculating, Fixture.TestLogger);
         isCalculatingState.ActualState.Should().Be(CalculationOrchestrationState.Calculating);
 
         // => Calculation job is "TERMINATED" (success), state should be Calculated or ActorMessagesEnqueuing
         // The state changes from Calculated to ActorMessagesEnqueuing immediately, so we need to check for both states.
-        currentCalculationJobState = "TERMINATED";
+        calculationJobStateCallback.SetValue("TERMINATED");
         var isCalculatedState = await dbContext.WaitForCalculationWithOneOfStates(
             calculationId.Value,
             [CalculationOrchestrationState.Calculated, CalculationOrchestrationState.ActorMessagesEnqueuing],

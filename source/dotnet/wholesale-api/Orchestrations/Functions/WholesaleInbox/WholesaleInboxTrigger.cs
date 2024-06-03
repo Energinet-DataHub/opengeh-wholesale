@@ -17,19 +17,16 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.DurableTask.Client;
-using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.WholesaleInbox;
 
 internal class WholesaleInboxTrigger
 {
-    private readonly ILogger<WholesaleInboxTrigger> _logger;
     private readonly WholesaleInboxHandler _wholesaleInboxHandler;
     private readonly DurableTaskClientAccessor _durableTaskClientAccessor;
 
-    public WholesaleInboxTrigger(ILogger<WholesaleInboxTrigger> logger, WholesaleInboxHandler wholesaleInboxHandler, DurableTaskClientAccessor durableTaskClientAccessor)
+    public WholesaleInboxTrigger(WholesaleInboxHandler wholesaleInboxHandler, DurableTaskClientAccessor durableTaskClientAccessor)
     {
-        _logger = logger;
         _wholesaleInboxHandler = wholesaleInboxHandler;
         _durableTaskClientAccessor = durableTaskClientAccessor;
     }

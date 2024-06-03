@@ -85,14 +85,14 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
         // It should match the ID returned by the http client calling 'api/StartCalculation'.
         // The mocked response waits for this to not be null before responding, so it must be updated
         // when we have the actual id.
-        Guid? calculationId = null;
+        var calculationIdCallback = new CallbackValue<Guid?>(null);
 
         Fixture.MockServer
             .MockEnergySqlStatements(statementId, chunkIndex)
             .MockEnergySqlStatementsResultChunks(statementId, chunkIndex, path)
             // ReSharper disable once AccessToModifiedClosure -- We need to modify calculation id in outer scope
             // when we get a response from 'api/StartCalculation'
-            .MockEnergySqlStatementsResultStream(path, () => calculationId);
+            .MockEnergySqlStatementsResultStream(path, calculationIdCallback.GetValue);
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;
@@ -101,14 +101,15 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
         // Assert
         // => Verify endpoint response
         startCalculationResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        calculationId = await startCalculationResponse.Content.ReadFromJsonAsync<Guid>();
+        var calculationId = await startCalculationResponse.Content.ReadFromJsonAsync<Guid>();
+        calculationIdCallback.SetValue(calculationId);
 
         // => Verify expected behaviour by searching the orchestration history
         var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeOrchestrationCreated);
 
         // => Function has the expected calculation id
         var calculationMetadata = orchestrationStatus.CustomStatus.ToObject<CalculationMetadata>();
-        calculationMetadata!.Id.Should().Be(calculationId.Value);
+        calculationMetadata!.Id.Should().Be(calculationId);
 
         // => Wait for the orchestration to reach the "ActorMessagesEnqueuing" state
         await Fixture.DurableClient.WaitForCustomStatusAsync<CalculationMetadata>(orchestrationStatus.InstanceId, (status) => status.OrchestrationProgress == "ActorMessagesEnqueuing");
@@ -146,7 +147,7 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
             new OrchestrationHistoryItem("TaskCompleted", FunctionName: "CreateCompletedCalculationActivity"),
             new OrchestrationHistoryItem("TaskCompleted", FunctionName: "SendCalculationResultsActivity"),
             new OrchestrationHistoryItem("TimerCreated"), // Wait for raised event (ActorMessagesEnqueued)
-            new OrchestrationHistoryItem("EventRaised", Name: "MessagesEnqueuedV1"),
+            new OrchestrationHistoryItem("EventRaised", Name: "ActorMessagesEnqueuedV1"),
             new OrchestrationHistoryItem("TaskCompleted", FunctionName: "UpdateCalculationOrchestrationStateActivity"),
             new OrchestrationHistoryItem("TaskCompleted", FunctionName: "UpdateCalculationOrchestrationStateActivity"),
             new OrchestrationHistoryItem("ExecutionCompleted"),
