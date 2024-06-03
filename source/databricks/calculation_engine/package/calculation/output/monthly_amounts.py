@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from dataclasses import fields
 
 from pyspark.sql import DataFrame
 
@@ -19,43 +18,28 @@ from package.calculation.calculation_results import WholesaleResultsContainer
 from package.infrastructure import logging_configuration
 from package.infrastructure.paths import (
     OUTPUT_DATABASE_NAME,
-    WHOLESALE_RESULT_TABLE_NAME,
+    MONTHLY_AMOUNTS_TABLE_NAME,
 )
 
 
 @logging_configuration.use_span("calculation.write.wholesale")
-def write_wholesale_results(wholesale_results: WholesaleResultsContainer) -> None:
+def write_monthly_amounts(wholesale_results: WholesaleResultsContainer) -> None:
     """Write each wholesale result to the output table."""
-    _write("hourly_tariff_per_ga_co_es", wholesale_results.hourly_tariff_per_ga_co_es)
-    _write(
-        "daily_tariff_per_ga_co_es",
-        wholesale_results.daily_tariff_per_ga_co_es,
-    )
-    _write(
-        "subscription_per_ga_co_es",
-        wholesale_results.subscription_per_ga_co_es,
-    )
-    _write(
-        "fee_per_ga_co_es",
-        wholesale_results.fee_per_ga_co_es,
-    )
-
-    # TODO JVM: Remove when monthly amounts is fully implemented
     _write(
         "monthly_tariff_from_hourly_per_ga_co_es",
-        wholesale_results.monthly_tariff_from_hourly_per_ga_co_es,
+        wholesale_results.monthly_tariff_from_hourly_per_ga_co_es_as_monthly_amount,
     )
     _write(
         "monthly_tariff_from_daily_per_ga_co_es",
-        wholesale_results.monthly_tariff_from_daily_per_ga_co_es,
+        wholesale_results.monthly_tariff_from_daily_per_ga_co_es_as_monthly_amount,
     )
     _write(
         "monthly_subscription_per_ga_co_es",
-        wholesale_results.monthly_subscription_per_ga_co_es,
+        wholesale_results.monthly_subscription_per_ga_co_es_as_monthly_amount,
     )
     _write(
         "monthly_fee_per_ga_co_es",
-        wholesale_results.monthly_fee_per_ga_co_es,
+        wholesale_results.monthly_fee_per_ga_co_es_as_monthly_amount,
     )
 
 
@@ -63,4 +47,4 @@ def _write(name: str, df: DataFrame) -> None:
     with logging_configuration.start_span(name):
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
-        ).insertInto(f"{OUTPUT_DATABASE_NAME}.{WHOLESALE_RESULT_TABLE_NAME}")
+        ).insertInto(f"{OUTPUT_DATABASE_NAME}.{MONTHLY_AMOUNTS_TABLE_NAME}")

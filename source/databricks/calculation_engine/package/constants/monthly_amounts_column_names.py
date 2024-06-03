@@ -11,6 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from .basis_data_table_reader import BasisDataTableReader
-from .energy_result_view_reader import EnergyResultViewReader
-from .settlement_report_view_reader import SettlementReportViewReader
+
+
+from .result_column_names import ResultColumnNames
+
+
+class MonthlyAmountsColumnNames(ResultColumnNames):
+    amount = "amount"
+    charge_owner_id = "charge_owner_id"
+    charge_code = "charge_code"
+    charge_type = "charge_type"
+    is_tax = "is_tax"
+    quantity_unit = "quantity_unit"
