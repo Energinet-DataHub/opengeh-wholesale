@@ -18,6 +18,7 @@ from pyspark.sql.types import (
     TimestampType,
     StructType,
     DecimalType,
+    LongType,
 )
 
 from features.utils.dataframes.settlement_report.settlement_report_view_column_names import (
@@ -31,6 +32,12 @@ energy_result_points_per_ga_v1_view_schema = StructType(
         ),
         StructField(
             EnergyResultPointsPerGaV1ColumnNames.calculation_type, StringType(), False
+        ),
+        StructField(
+            EnergyResultPointsPerGaV1ColumnNames.calculation_version, LongType(), False
+        ),
+        StructField(
+            EnergyResultPointsPerGaV1ColumnNames.result_id, StringType(), False
         ),
         StructField(
             EnergyResultPointsPerGaV1ColumnNames.grid_area_code, StringType(), False

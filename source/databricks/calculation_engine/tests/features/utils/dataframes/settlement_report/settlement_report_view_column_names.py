@@ -59,6 +59,8 @@ class ChargeLinkPeriodsV1ColumnNames:
 class EnergyResultPointsPerGaV1ColumnNames:
     calculation_id = EnergyResultColumnNames.calculation_id
     calculation_type = EnergyResultColumnNames.calculation_type
+    calculation_version = "calculation_version"
+    result_id = "result_id"
     energy_supplier_id = EnergyResultColumnNames.energy_supplier_id
     grid_area_code = EnergyResultColumnNames.grid_area_code
     time = EnergyResultColumnNames.time
@@ -66,7 +68,6 @@ class EnergyResultPointsPerGaV1ColumnNames:
     quantity = EnergyResultColumnNames.quantity
     resolution = Colname.resolution
     settlement_method = Colname.settlement_method
-    calculation_version = "calculation_version"
 
 
 class WholesaleResultsV1ColumnNames:
