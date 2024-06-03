@@ -57,10 +57,5 @@ energy_result_points_per_ga_v1_view_schema = StructType(
         StructField(
             EnergyResultPointsPerGaV1ColumnNames.quantity, DecimalType(18, 3), False
         ),
-        StructField(
-            EnergyResultPointsPerGaV1ColumnNames.calculation_version,
-            StringType(),
-            False,
-        ),
     ]
 )
