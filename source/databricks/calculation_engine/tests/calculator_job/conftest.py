@@ -159,7 +159,7 @@ def wholesale_fixing_total_monthly_amounts(
 
 
 @pytest.fixture(scope="session")
-def wholesale_fixing_monthly_amounts_df(
+def wholesale_fixing_monthly_amounts(
     spark: SparkSession,
     executed_wholesale_fixing: None,
 ) -> DataFrame:
