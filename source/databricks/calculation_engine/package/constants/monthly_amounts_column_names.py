@@ -12,16 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .colname import Colname
-from .basis_data_colname import (
-    MeteringPointPeriodColname,
-    TimeSeriesColname,
-    ChargeMasterDataPeriodsColname,
-    ChargePricePointsColname,
-    ChargeLinkPeriodsColname,
-    GridLossMeteringPointsColName,
-)
-from .energy_result_column_names import EnergyResultColumnNames
-from .wholesale_result_column_names import WholesaleResultColumnNames
-from .total_monthly_amounts_column_names import TotalMonthlyAmountsColumnNames
-from .monthly_amounts_column_names import MonthlyAmountsColumnNames
+
+from .result_column_names import ResultColumnNames
+
+
+class MonthlyAmountsColumnNames(ResultColumnNames):
+    amount = "amount"
+    charge_owner_id = "charge_owner_id"
+    charge_code = "charge_code"
+    charge_type = "charge_type"
+    is_tax = "is_tax"
+    quantity_unit = "quantity_unit"
