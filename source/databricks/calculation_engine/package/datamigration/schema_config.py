@@ -26,6 +26,9 @@ from package.calculation.output.schemas.energy_results_schema import (
 from package.calculation.output.schemas.total_monthly_amounts_schema import (
     total_monthly_amounts_schema,
 )
+from package.calculation.output.schemas.monthly_amounts_schema import (
+    monthly_amounts_schema,
+)
 
 # calculation_output
 from package.calculation.output.schemas.wholesale_results_schema import (
@@ -43,6 +46,10 @@ schema_config = [
             Table(
                 name=paths.ENERGY_RESULT_TABLE_NAME,
                 schema=energy_results_schema,
+            ),
+            Table(
+                name=paths.MONTHLY_AMOUNTS_TABLE_NAME,
+                schema=monthly_amounts_schema,
             ),
             Table(
                 name=paths.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
