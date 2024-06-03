@@ -19,12 +19,15 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "this" {
       operator           = "GeoMatch"
       negation_condition = true
       # Max 10 is allowed
+      # See abbreviations here: https://learn.microsoft.com/en-us/azure/web-application-firewall/ag/geomatch-custom-rules
+      # See why countries are added here: https://energinet.atlassian.net/wiki/spaces/D3/pages/816087043/Azure+Front+Door+and+Web+Application+Firewall
       # US is added due to our runners
       # Approved list is Norden Fi-SE-No-DK
       # Germany (Modstrøm)
       # United Kingdom and Netherlands  (Azure)
       # Poland (development for KMD - Ørsted)
-      match_values = ["NL", "DK", "US", "FI", "SE", "NO", "DE", "GB", "PL"]
+      # Ireland (customers (EG) of Datahub 3.0 has a virtual machines located in Ireland)
+      match_values = ["NL", "DK", "US", "FI", "SE", "NO", "DE", "GB", "PL", "IE"]
     }
   }
 
