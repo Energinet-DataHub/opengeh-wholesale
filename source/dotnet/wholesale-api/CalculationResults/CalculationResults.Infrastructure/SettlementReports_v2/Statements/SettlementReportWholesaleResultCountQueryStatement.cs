@@ -15,29 +15,33 @@
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
 
 public sealed class SettlementReportWholesaleResultCountQueryStatement : DatabricksStatement
 {
+    private readonly IOptions<DeltaTableOptions> _deltaTableOptions;
     private readonly SettlementReportWholesaleResultQueryFilter _filter;
 
-    public SettlementReportWholesaleResultCountQueryStatement(SettlementReportWholesaleResultQueryFilter filter)
+    public SettlementReportWholesaleResultCountQueryStatement(IOptions<DeltaTableOptions> deltaTableOptions, SettlementReportWholesaleResultQueryFilter filter)
     {
+        _deltaTableOptions = deltaTableOptions;
         _filter = filter;
     }
 
     protected override string GetSqlStatement()
     {
         return $"""
-                    SELECT COUNT {SettlementReportWholesaleViewColumns.CalculationId} AS {Columns.Count}
+                    SELECT COUNT({SettlementReportWholesaleViewColumns.CalculationId}) AS {Columns.Count}
                     FROM
-                        settlement_report.wholesale_results_v1
+                        {_deltaTableOptions.Value.SCHEMA_NAME}.{_deltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME}
                     WHERE 
                         {SettlementReportWholesaleViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
                         {SettlementReportWholesaleViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND
-                        {SettlementReportWholesaleViewColumns.Time} >= '{_filter.PeriodStart}' AND
-                        {SettlementReportWholesaleViewColumns.Time} < '{_filter.PeriodEnd}' AND
+                        {SettlementReportWholesaleViewColumns.StartDateTime} >= '{_filter.PeriodStart}' AND
+                        {SettlementReportWholesaleViewColumns.StartDateTime} < '{_filter.PeriodEnd}' AND
                         {SettlementReportWholesaleViewColumns.CalculationId} = '{_filter.CalculationId}'
                 """;
     }

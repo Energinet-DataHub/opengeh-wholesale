@@ -15,17 +15,21 @@
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
 
 public sealed class SettlementReportWholesaleResultQueryStatement : DatabricksStatement
 {
+    private readonly IOptions<DeltaTableOptions> _deltaTableOptions;
     private readonly SettlementReportWholesaleResultQueryFilter _filter;
     private readonly int _skip;
     private readonly int _take;
 
-    public SettlementReportWholesaleResultQueryStatement(SettlementReportWholesaleResultQueryFilter filter, int skip, int take)
+    public SettlementReportWholesaleResultQueryStatement(IOptions<DeltaTableOptions> deltaTableOptions, SettlementReportWholesaleResultQueryFilter filter, int skip, int take)
     {
+        _deltaTableOptions = deltaTableOptions;
         _filter = filter;
         _skip = skip;
         _take = take;
@@ -39,7 +43,7 @@ public sealed class SettlementReportWholesaleResultQueryStatement : DatabricksSt
                         SettlementReportWholesaleViewColumns.CalculationType,
                         SettlementReportWholesaleViewColumns.GridArea,
                         SettlementReportWholesaleViewColumns.EnergySupplierId,
-                        SettlementReportWholesaleViewColumns.Time,
+                        SettlementReportWholesaleViewColumns.StartDateTime,
                         SettlementReportWholesaleViewColumns.ChargeType,
                         SettlementReportWholesaleViewColumns.ChargeCode,
                         SettlementReportWholesaleViewColumns.ChargeOwnerId,
@@ -53,15 +57,15 @@ public sealed class SettlementReportWholesaleResultQueryStatement : DatabricksSt
                         SettlementReportWholesaleViewColumns.SettlementMethod,
                     ])}
                     FROM
-                        settlement_report.wholesale_results_v1
+                        {_deltaTableOptions.Value.SCHEMA_NAME}.{_deltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME}
                     WHERE 
                         {SettlementReportWholesaleViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
                         {SettlementReportWholesaleViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND
-                        {SettlementReportWholesaleViewColumns.Time} >= '{_filter.PeriodStart}' AND
-                        {SettlementReportWholesaleViewColumns.Time} < '{_filter.PeriodEnd}' AND
+                        {SettlementReportWholesaleViewColumns.StartDateTime} >= '{_filter.PeriodStart}' AND
+                        {SettlementReportWholesaleViewColumns.StartDateTime} < '{_filter.PeriodEnd}' AND
                         {SettlementReportWholesaleViewColumns.CalculationId} = '{_filter.CalculationId}'
                     ORDER BY
-                        {SettlementReportWholesaleViewColumns.Time} LIMIT {_take} OFFSET {_skip}
+                        {SettlementReportWholesaleViewColumns.StartDateTime} LIMIT {_take} OFFSET {_skip}
                 """;
     }
 }

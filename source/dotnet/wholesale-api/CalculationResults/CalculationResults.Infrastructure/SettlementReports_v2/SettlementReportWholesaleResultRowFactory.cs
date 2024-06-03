@@ -29,7 +29,7 @@ public static class SettlementReportWholesaleResultRowFactory
         var calculationType = databricksSqlRow[SettlementReportWholesaleViewColumns.CalculationType];
         var gridArea = databricksSqlRow[SettlementReportWholesaleViewColumns.GridArea];
         var energySupplierId = databricksSqlRow[SettlementReportWholesaleViewColumns.EnergySupplierId];
-        var startTime = databricksSqlRow[SettlementReportWholesaleViewColumns.Time];
+        var startTime = databricksSqlRow[SettlementReportWholesaleViewColumns.StartDateTime];
         var resolution = databricksSqlRow[SettlementReportWholesaleViewColumns.Resolution];
         var quantityUnit = databricksSqlRow[SettlementReportWholesaleViewColumns.QuantityUnit];
         var quantity = databricksSqlRow[SettlementReportWholesaleViewColumns.Quantity];

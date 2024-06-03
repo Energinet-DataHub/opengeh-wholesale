@@ -19,25 +19,30 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatement
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 
 public sealed class SettlementReportWholesaleResultQueries : ISettlementReportWholesaleResultQueries
 {
+    private readonly IOptions<DeltaTableOptions> _deltaTableOptions;
     private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor;
     private readonly ICalculationsClient _calculationsClient;
 
     public SettlementReportWholesaleResultQueries(
+        IOptions<DeltaTableOptions> deltaTableOptions,
         DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor,
         ICalculationsClient calculationsClient)
     {
+        _deltaTableOptions = deltaTableOptions;
         _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
         _calculationsClient = calculationsClient;
     }
 
     public async Task<int> CountAsync(SettlementReportWholesaleResultQueryFilter filter)
     {
-        var statement = new SettlementReportWholesaleResultCountQueryStatement(filter);
+        var statement = new SettlementReportWholesaleResultCountQueryStatement(_deltaTableOptions, filter);
 
         await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {
@@ -51,7 +56,7 @@ public sealed class SettlementReportWholesaleResultQueries : ISettlementReportWh
     public async IAsyncEnumerable<SettlementReportWholesaleResultRow> GetAsync(SettlementReportWholesaleResultQueryFilter filter, int skip, int take)
     {
         var calculation = await _calculationsClient.GetAsync(filter.CalculationId).ConfigureAwait(false);
-        var statement = new SettlementReportWholesaleResultQueryStatement(filter, skip, take);
+        var statement = new SettlementReportWholesaleResultQueryStatement(_deltaTableOptions, filter, skip, take);
 
         await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {

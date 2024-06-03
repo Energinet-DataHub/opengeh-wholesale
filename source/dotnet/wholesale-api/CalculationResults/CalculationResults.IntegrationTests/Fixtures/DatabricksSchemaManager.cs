@@ -17,6 +17,7 @@ using System.Net.Http.Json;
 using System.Reflection;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Exceptions;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -49,6 +50,8 @@ public class DatabricksSchemaManager
             BasisDataSchemaName = $"{schemaPrefix}_basis_data_{postfix}",
             SettlementReportSchemaName = $"{schemaPrefix}_settlement_report_{postfix}",
         });
+
+        DeltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME += "_view_table";
     }
 
     // TODO JMG: Consider if we can hide these settings or ensure they are readonly in DatabricksWarehouseSettings,
@@ -65,6 +68,7 @@ public class DatabricksSchemaManager
     public async Task CreateSchemaAsync()
     {
         await ExecuteSqlScriptsAsync();
+        await CreateTableAsync(DeltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME, SettlementReportWholesaleViewColumns.SchemaDefinition);
     }
 
     public async Task DropSchemaAsync()
@@ -103,7 +107,7 @@ public class DatabricksSchemaManager
 
     private async Task ExecuteSqlScriptsAsync()
     {
-        var sqlScripts = Directory.EnumerateFiles("./migration_sql_scripts", "*.sql");
+        var sqlScripts = Directory.EnumerateFiles("./migration_sql_scripts", "*.sql").OrderBy(x => x);
 
         // We only want to split on GO when it is on a line by itself
         string[] delimiters = { "\r\nGO\r\n", "\nGO\n", "\rGO\r" };
@@ -145,8 +149,8 @@ public class DatabricksSchemaManager
             statement = sqlStatement,
             warehouse_id = Settings.WarehouseId,
         };
-        var state = string.Empty;
-        var jsonResponse = string.Empty;
+        string state;
+        string jsonResponse;
         var retryCount = 0;
         do
         {
@@ -193,5 +197,15 @@ public class DatabricksSchemaManager
         httpClient.BaseAddress = new Uri(settings.WorkspaceUrl);
 
         return httpClient;
+    }
+
+    private async Task CreateTableAsync(string tableName, Dictionary<string, (string DataType, bool IsNullable)> columnDefinition)
+    {
+        var columnDefinitions =
+            string.Join(", ", columnDefinition.Select(c =>
+                $"{c.Key} {c.Value.DataType}{(c.Value.IsNullable ? string.Empty : " NOT NULL")}"));
+
+        var sqlStatement = $"CREATE TABLE IF NOT EXISTS {SchemaName}.{tableName} ({columnDefinitions})";
+        await ExecuteSqlAsync(sqlStatement).ConfigureAwait(false);
     }
 }

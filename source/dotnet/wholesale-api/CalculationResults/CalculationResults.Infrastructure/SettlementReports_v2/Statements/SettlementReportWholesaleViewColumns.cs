@@ -14,14 +14,16 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
 
-public static class SettlementReportWholesaleViewColumns
+public class SettlementReportWholesaleViewColumns
 {
     public const string CalculationId = "calculation_id";
     public const string CalculationType = "calculation_type";
     public const string GridArea = "grid_area_code";
     public const string EnergySupplierId = "energy_supplier_id";
-    public const string Time = "time";
+    public const string StartDateTime = "start_date_time";
     public const string Resolution = "resolution";
+    public const string MeteringPointType = "metering_point_type";
+    public const string SettlementMethod = "settlement_method";
     public const string QuantityUnit = "quantity_unit";
     public const string Currency = "currency";
     public const string Quantity = "quantity";
@@ -30,6 +32,24 @@ public static class SettlementReportWholesaleViewColumns
     public const string ChargeType = "charge_type";
     public const string ChargeCode = "charge_code";
     public const string ChargeOwnerId = "charge_owner_id";
-    public const string MeteringPointType = "metering_point_type";
-    public const string SettlementMethod = "settlement_method";
+
+    public static Dictionary<string, (string Type, bool Nullable)> SchemaDefinition { get; } = new()
+    {
+        { CalculationId, ("string", false) },
+        { CalculationType, ("string", false) },
+        { GridArea, ("string", false) },
+        { EnergySupplierId, ("string", false) },
+        { StartDateTime, ("timestamp", false) },
+        { Resolution, ("string", false) },
+        { MeteringPointType, ("string", false) },
+        { SettlementMethod, ("string", false) },
+        { QuantityUnit, ("string", false) },
+        { Currency, ("string", false) },
+        { Quantity, ("decimal(18,3)", true) },
+        { Price, ("decimal(18,6)", true) },
+        { Amount, ("decimal(18,6)", true) },
+        { ChargeType, ("string", false) },
+        { ChargeCode, ("string", true) },
+        { ChargeOwnerId, ("string", false) },
+    };
 }
