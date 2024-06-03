@@ -189,8 +189,8 @@ jobs:
             paths: datamigration/all_scripts
           - name: Current State Scripts
             paths: datamigration/current_state
-          - name: Migration domain tests
-            paths: datamigration/domain
+          - name: Migration subsystem
+            paths: datamigration/subsystem
           - name: Test Migration scripts
             paths: datamigration/migration_scripts
     if: ${{ inputs.has_delta_migration_changes }}
