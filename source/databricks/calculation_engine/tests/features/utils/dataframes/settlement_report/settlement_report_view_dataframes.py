@@ -46,6 +46,11 @@ def create_metering_point_periods_v1_view(
     )
 
     df = df.withColumn(
+        "calculation_version",
+        col("calculation_version").cast(LongType()),
+    )
+
+    df = df.withColumn(
         MeteringPointPeriodColname.from_date,
         col(MeteringPointPeriodColname.from_date).cast(TimestampType()),
     )
@@ -70,6 +75,11 @@ def create_metering_point_time_series_v1_view(
     )
 
     df = df.withColumn(
+        "calculation_version",
+        col("calculation_version").cast(LongType()),
+    )
+
+    df = df.withColumn(
         Colname.start_date_time,
         col(Colname.start_date_time).cast(TimestampType()),
     )
@@ -91,6 +101,11 @@ def create_charge_link_periods_v1_view(spark: SparkSession, df: DataFrame) -> Da
     )
     from features.utils.dataframes.settlement_report.charge_link_periods_v1_view_schema import (
         charge_link_periods_v1_view_schema,
+    )
+
+    df = df.withColumn(
+        ChargeLinkPeriodsV1ColumnNames.calculation_version,
+        col(ChargeLinkPeriodsV1ColumnNames.calculation_version).cast(LongType()),
     )
 
     df = df.withColumn(
@@ -120,6 +135,11 @@ def create_charge_prices_v1_view(spark: SparkSession, df: DataFrame) -> DataFram
     )
     from features.utils.dataframes.settlement_report.settlement_report_view_column_names import (
         ChargePricesV1ColumnNames,
+    )
+
+    df = df.withColumn(
+        ChargePricesV1ColumnNames.calculation_version,
+        col(ChargePricesV1ColumnNames.calculation_version).cast(LongType()),
     )
 
     df = df.withColumn(
