@@ -45,9 +45,14 @@ module "func_dropzoneunzipper" {
     INGRESS_EVENT_HUB_CONSUMER_GROUP    = azurerm_eventhub_consumer_group.consumer_group_dropzone_zipped.name
 
     # Logging Worker
-    "Logging__LogLevel__Default"                      = local.LOGGING_LOGLEVEL_WORKER_DEFAULT
-    "Logging__LogLevel__Energinet.DataHub.Migrations" = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_MIGRATIONS
-    "Logging__LogLevel__Energinet.DataHub.Core"       = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE
+    "Logging__ApplicationInsights__LogLevel__Default"                      = local.LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT
+    "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Migrations" = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_MIGRATIONS
+    "Logging__ApplicationInsights__LogLevel__Energinet.Datahub.Core"       = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE
+
+    # Logging Host
+    "AzureFunctionsJobHost__logging__logLevel__Default"                                    = local.AZUREFUNCTIONSJOBHOST_LOGGING_LOGLEVEL_DEFAULT
+    "AzureFunctionsJobHost__logging__applicationInsights__samplingSettings__isEnabled"     = local.AZUREFUNCTIONSJOBHOST_LOGGING_APPINSIGHTS_SAMPLINGSETTINGS_ISENABLED
+    "AzureFunctionsJobHost__logging__applicationInsights__samplingSettings__excludedTypes" = local.AZUREFUNCTIONSJOBHOST_LOGGING_APPINSIGHTS_SAMPLINGSETTINGS_EXCLUDEDTYPES
   }
 
   # Role assigments is needed to connect to the storage accounts using URI

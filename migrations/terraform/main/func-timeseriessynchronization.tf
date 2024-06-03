@@ -85,11 +85,11 @@ module "func_timeseriessynchronization" {
     "Logging__ApplicationInsights__LogLevel__Energinet.Datahub.Core"                      = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE
 
     # Logging Host
-    "AzureFunctionsJobHost__Logging__LogLevel__Default"                                   = local.AZUREFUNCTIONSJOBHOST_LOGGING_LOGLEVEL_DEFAULT
-    "AzureFunctionsJobHost__Logging__LogLevel__DurableTask.Core"                          = local.AZUREFUNCTIONSJOBHOST_LOGGING_LOGLEVEL_DURABLETASK_CORE
-    "AzureFunctionsJobHost__Logging__LogLevel__DurableTask.AzureStorage"                  = local.AZUREFUNCTIONSJOBHOST_LOGGING_LOGLEVEL_DURABLETASK_AZURESTORAGE
-    "AzureFunctionsJobHost__Logging__LogLevel__Host.Triggers.DurableTask"                 = local.AZUREFUNCTIONSJOBHOST_LOGGING_LOGLEVEL_HOST_TRIGGERS_DURABLETASK
-    "AzureFunctionsJobHost__Logging__ApplicationInsights__SamplingSettings_IsEnabled"     = local.AZUREFUNCTIONSJOBHOST_LOGGING_APPINSIGHTS_SAMPLINGSETTINGS_ISENABLED
-    "AzureFunctionsJobHost__Logging__ApplicationInsights__SamplingSettings_ExcludedTypes" = local.AZUREFUNCTIONSJOBHOST_LOGGING_APPINSIGHTS_SAMPLINGSETTINGS_EXCLUDEDTYPES
+    "AzureFunctionsJobHost__logging__logLevel__Default"                                   = local.AZUREFUNCTIONSJOBHOST_LOGGING_LOGLEVEL_DEFAULT
+    "AzureFunctionsJobHost__logging__logLevel__DurableTask.Core"                          = local.AZUREFUNCTIONSJOBHOST_LOGGING_LOGLEVEL_DURABLETASK_CORE
+    "AzureFunctionsJobHost__logging__logLevel__DurableTask.AzureStorage"                  = local.AZUREFUNCTIONSJOBHOST_LOGGING_LOGLEVEL_DURABLETASK_AZURESTORAGE
+    "AzureFunctionsJobHost__logging__logLevel__Host.Triggers.DurableTask"                 = local.AZUREFUNCTIONSJOBHOST_LOGGING_LOGLEVEL_HOST_TRIGGERS_DURABLETASK
+    "AzureFunctionsJobHost__logging__applicationInsights__samplingSettings__isEnabled"     = local.AZUREFUNCTIONSJOBHOST_LOGGING_APPINSIGHTS_SAMPLINGSETTINGS_ISENABLED
+    "AzureFunctionsJobHost__logging__applicationInsights__samplingSettings__excludedTypes" = local.AZUREFUNCTIONSJOBHOST_LOGGING_APPINSIGHTS_SAMPLINGSETTINGS_EXCLUDEDTYPES
   }
 }
