@@ -115,7 +115,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
     {
         var partialFileInfo = fileRequest.PartialFileInfo;
 
-        foreach (var (gridAreaCode, calculationId) in fileRequest.RequestFilter.Calculations)
+        foreach (var (gridAreaCode, calculationId) in fileRequest.RequestFilter.GridAreas)
         {
             if (splitReportPerGridArea)
             {
@@ -130,7 +130,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                 PartialFileInfo = partialFileInfo,
 
                 // Create a request with a single grid area.
-                RequestFilter = fileRequest.RequestFilter with { Calculations = new Dictionary<GridAreaCode, CalculationId> { { gridAreaCode, calculationId } } },
+                RequestFilter = fileRequest.RequestFilter with { GridAreas = new Dictionary<string, CalculationId> { { gridAreaCode, calculationId } } },
             };
 
             // Split the single grid area request into further chunks.

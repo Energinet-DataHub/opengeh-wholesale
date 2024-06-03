@@ -77,9 +77,9 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
             CalculationType.BalanceFixing,
             false,
             new SettlementReportRequestFilterDto(
-                new Dictionary<GridAreaCode, CalculationId>
+                new Dictionary<string, CalculationId>
                 {
-                    { new GridAreaCode("042"), new CalculationId("404F04A8-08A4-411E-9D69-358ADF88A2C7") },
+                    { "042", new CalculationId("404F04A8-08A4-411E-9D69-358ADF88A2C7") },
                 },
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow,
@@ -136,9 +136,9 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
             CalculationType.BalanceFixing,
             false,
             new SettlementReportRequestFilterDto(
-                new Dictionary<GridAreaCode, CalculationId>
+                new Dictionary<string, CalculationId>
                 {
-                    { new GridAreaCode("042"), new CalculationId("404F04A8-08A4-411E-9D69-358ADF88A2C7") },
+                    { "042", new CalculationId("404F04A8-08A4-411E-9D69-358ADF88A2C7") },
                 },
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow,
@@ -200,9 +200,9 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
             CalculationType.BalanceFixing,
             false,
             new SettlementReportRequestFilterDto(
-                new Dictionary<GridAreaCode, CalculationId>
+                new Dictionary<string, CalculationId>
                 {
-                    { new GridAreaCode("042"), new CalculationId("404F04A8-08A4-411E-9D69-358ADF88A2C7") },
+                    { "042", new CalculationId("404F04A8-08A4-411E-9D69-358ADF88A2C7") },
                 },
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow,

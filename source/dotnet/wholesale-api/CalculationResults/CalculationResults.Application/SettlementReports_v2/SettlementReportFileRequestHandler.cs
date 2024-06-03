@@ -33,7 +33,7 @@ public sealed class SettlementReportFileRequestHandler : ISettlementReportFileRe
     public async Task<GeneratedSettlementReportFileDto> RequestFileAsync(SettlementReportFileRequestDto fileRequest)
     {
         var fileGenerator = _fileGeneratorFactory.Create(fileRequest.FileContent);
-        var suggestedFileName = fileRequest.PartialFileInfo.FileName + fileGenerator.FileExtension;
+        var outputFileName = fileRequest.PartialFileInfo.FileName + fileGenerator.FileExtension;
         var locationFileName = $"{fileRequest.PartialFileInfo.FileName}_{fileRequest.PartialFileInfo.ChunkOffset}{fileGenerator.FileExtension}";
 
         var writeStream = await _fileRepository
@@ -53,7 +53,7 @@ public sealed class SettlementReportFileRequestHandler : ISettlementReportFileRe
 
         return new GeneratedSettlementReportFileDto(
             fileRequest.RequestId,
-            fileRequest.PartialFileInfo with { FileName = suggestedFileName },
+            fileRequest.PartialFileInfo with { FileName = outputFileName },
             locationFileName);
     }
 }

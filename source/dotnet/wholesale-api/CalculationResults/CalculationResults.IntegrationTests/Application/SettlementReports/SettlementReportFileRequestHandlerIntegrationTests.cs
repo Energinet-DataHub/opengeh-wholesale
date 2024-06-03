@@ -62,7 +62,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
     {
         // Arrange
         var filter = new SettlementReportRequestFilterDto(
-            _gridAreaCodes.ToDictionary(x => new GridAreaCode(x), _ => new CalculationId("8E1E8B45-6101-426B-8A0A-B2AB0354A442")),
+            _gridAreaCodes.ToDictionary(x => x, _ => new CalculationId("8E1E8B45-6101-426B-8A0A-B2AB0354A442")),
             _january1St.ToDateTimeOffset(),
             _january5Th.ToDateTimeOffset(),
             null,

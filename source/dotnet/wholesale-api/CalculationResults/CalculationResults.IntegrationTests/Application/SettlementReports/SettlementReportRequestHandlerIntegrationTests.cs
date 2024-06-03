@@ -43,9 +43,9 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
     public async Task RequestReportAsync_ForBalanceFixingChunked_ReturnsPartialFiles()
     {
         // Arrange
-        var calculationFilter = new Dictionary<GridAreaCode, CalculationId>
+        var calculationFilter = new Dictionary<string, CalculationId>
         {
-            { new GridAreaCode("805"), new CalculationId("45B9732A-49F8-450B-AA68-ED4661879D6F") },
+            { "805", new CalculationId("45B9732A-49F8-450B-AA68-ED4661879D6F") },
         };
 
         var filter = new SettlementReportRequestFilterDto(
@@ -76,14 +76,14 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         // Assert
         var chunkA = actual[0];
         Assert.Equal(requestId, chunkA.RequestId);
-        Assert.Equal(calculationFilter.Single(), chunkA.RequestFilter.Calculations.Single());
+        Assert.Equal(calculationFilter.Single(), chunkA.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Energy", chunkA.PartialFileInfo.FileName);
         Assert.Equal(0, chunkA.PartialFileInfo.ChunkOffset);
         Assert.Equal(SettlementReportFileContent.EnergyResultLatestPerDay, chunkA.FileContent);
 
         var chunkB = actual[1];
         Assert.Equal(requestId, chunkB.RequestId);
-        Assert.Equal(calculationFilter.Single(), chunkB.RequestFilter.Calculations.Single());
+        Assert.Equal(calculationFilter.Single(), chunkB.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Energy", chunkB.PartialFileInfo.FileName);
         Assert.Equal(1, chunkB.PartialFileInfo.ChunkOffset);
         Assert.Equal(SettlementReportFileContent.EnergyResultLatestPerDay, chunkB.FileContent);
@@ -93,9 +93,9 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
     public async Task RequestReportAsync_ForBalanceFixingWithoutBasisData_ReturnsExpectedFiles()
     {
         // Arrange
-        var calculationFilter = new Dictionary<GridAreaCode, CalculationId>
+        var calculationFilter = new Dictionary<string, CalculationId>
         {
-            { new GridAreaCode("805"), new CalculationId("45B9732A-49F8-450B-AA68-ED4661879D6F") },
+            { "805", new CalculationId("45B9732A-49F8-450B-AA68-ED4661879D6F") },
         };
 
         var filter = new SettlementReportRequestFilterDto(
@@ -118,7 +118,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         Assert.Equal(filter.PeriodEnd, energyResult.RequestFilter.PeriodEnd);
         Assert.Equal(filter.CsvFormatLocale, energyResult.RequestFilter.CsvFormatLocale);
         Assert.Equal(filter.EnergySupplier, energyResult.RequestFilter.EnergySupplier);
-        Assert.Equal(filter.Calculations.Single(), energyResult.RequestFilter.Calculations.Single());
+        Assert.Equal(filter.GridAreas.Single(), energyResult.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Energy", energyResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.EnergyResultLatestPerDay, energyResult.FileContent);
     }
@@ -127,10 +127,10 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
     public async Task RequestReportAsync_ForBalanceFixingWithoutBasisDataWithSplitResult_ReturnsSplitFiles()
     {
         // Arrange
-        var calculationFilter = new Dictionary<GridAreaCode, CalculationId>
+        var calculationFilter = new Dictionary<string, CalculationId>
         {
-            { new GridAreaCode("805"), new CalculationId("45B9732A-49F8-450B-AA68-ED4661879D6F") },
-            { new GridAreaCode("806"), new CalculationId("45B9732A-49F8-450B-AA68-ED4661879D6F") },
+            { "805", new CalculationId("45B9732A-49F8-450B-AA68-ED4661879D6F") },
+            { "806", new CalculationId("45B9732A-49F8-450B-AA68-ED4661879D6F") },
         };
 
         var filter = new SettlementReportRequestFilterDto(
@@ -149,13 +149,13 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         // Assert
         var energyResultA = actual[0];
         Assert.Equal(requestId, energyResultA.RequestId);
-        Assert.Equal(calculationFilter.First(), energyResultA.RequestFilter.Calculations.Single());
+        Assert.Equal(calculationFilter.First(), energyResultA.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Energy (805)", energyResultA.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.EnergyResultLatestPerDay, energyResultA.FileContent);
 
         var energyResultB = actual[1];
         Assert.Equal(requestId, energyResultB.RequestId);
-        Assert.Equal(calculationFilter.Last(), energyResultB.RequestFilter.Calculations.Single());
+        Assert.Equal(calculationFilter.Last(), energyResultB.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Energy (806)", energyResultB.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.EnergyResultLatestPerDay, energyResultB.FileContent);
     }
@@ -168,9 +168,9 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
     public async Task RequestReportAsync_ForWholesaleFixingWithoutBasisData_ReturnsExpectedFiles(CalculationType calculationType, SettlementReportFileContent fileContent)
     {
         // Arrange
-        var calculationFilter = new Dictionary<GridAreaCode, CalculationId>
+        var calculationFilter = new Dictionary<string, CalculationId>
         {
-            { new GridAreaCode("805"), new CalculationId("45B9732A-49F8-450B-AA68-ED4661879D6F") },
+            { "805", new CalculationId("45B9732A-49F8-450B-AA68-ED4661879D6F") },
         };
 
         var filter = new SettlementReportRequestFilterDto(
@@ -189,13 +189,13 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         // Assert
         var energyResult = actual[0];
         Assert.Equal(requestId, energyResult.RequestId);
-        Assert.Equal(calculationFilter.Single(), energyResult.RequestFilter.Calculations.Single());
+        Assert.Equal(calculationFilter.Single(), energyResult.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Energy", energyResult.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.EnergyResultForCalculationId, energyResult.FileContent);
 
         var wholesaleResult = actual[1];
         Assert.Equal(requestId, wholesaleResult.RequestId);
-        Assert.Equal(calculationFilter.Single(), wholesaleResult.RequestFilter.Calculations.Single());
+        Assert.Equal(calculationFilter.Single(), wholesaleResult.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Wholesale", wholesaleResult.PartialFileInfo.FileName);
         Assert.Equal(fileContent, wholesaleResult.FileContent);
     }
@@ -208,10 +208,10 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
     public async Task RequestReportAsync_ForWholesaleFixingWithoutBasisDataWithSplitResult_ReturnsExpectedFiles(CalculationType calculationType, SettlementReportFileContent fileContent)
     {
         // Arrange
-        var calculationFilter = new Dictionary<GridAreaCode, CalculationId>
+        var calculationFilter = new Dictionary<string, CalculationId>
         {
-            { new GridAreaCode("805"), new CalculationId("45B9732A-49F8-450B-AA68-ED4661879D6F") },
-            { new GridAreaCode("806"), new CalculationId("45B9732A-49F8-450B-AA68-ED4661879D6F") },
+            { "805", new CalculationId("45B9732A-49F8-450B-AA68-ED4661879D6F") },
+            { "806", new CalculationId("45B9732A-49F8-450B-AA68-ED4661879D6F") },
         };
 
         var filter = new SettlementReportRequestFilterDto(
@@ -230,25 +230,25 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         // Assert
         var energyResultA = actual[0];
         Assert.Equal(requestId, energyResultA.RequestId);
-        Assert.Equal(calculationFilter.First(), energyResultA.RequestFilter.Calculations.Single());
+        Assert.Equal(calculationFilter.First(), energyResultA.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Energy (805)", energyResultA.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.EnergyResultForCalculationId, energyResultA.FileContent);
 
         var energyResultB = actual[1];
         Assert.Equal(requestId, energyResultB.RequestId);
-        Assert.Equal(calculationFilter.Last(), energyResultB.RequestFilter.Calculations.Single());
+        Assert.Equal(calculationFilter.Last(), energyResultB.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Energy (806)", energyResultB.PartialFileInfo.FileName);
         Assert.Equal(SettlementReportFileContent.EnergyResultForCalculationId, energyResultB.FileContent);
 
         var wholesaleResultA = actual[2];
         Assert.Equal(requestId, wholesaleResultA.RequestId);
-        Assert.Equal(calculationFilter.First(), wholesaleResultA.RequestFilter.Calculations.Single());
+        Assert.Equal(calculationFilter.First(), wholesaleResultA.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Wholesale (805)", wholesaleResultA.PartialFileInfo.FileName);
         Assert.Equal(fileContent, wholesaleResultA.FileContent);
 
         var wholesaleResultB = actual[3];
         Assert.Equal(requestId, wholesaleResultB.RequestId);
-        Assert.Equal(calculationFilter.Last(), wholesaleResultB.RequestFilter.Calculations.Single());
+        Assert.Equal(calculationFilter.Last(), wholesaleResultB.RequestFilter.GridAreas.Single());
         Assert.Equal("Result Wholesale (806)", wholesaleResultB.PartialFileInfo.FileName);
         Assert.Equal(fileContent, wholesaleResultB.FileContent);
     }
