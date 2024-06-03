@@ -158,7 +158,8 @@ public class WholesaleInboxTriggerTests : IAsyncLifetime
         // => WholesaleInboxTrigger is running in the fixture and triggered by the given Wholesale inbox message
 
         // Assert
-        // Handling a WholesaleServicesRequest should send a message to the EDI inbox
+        // Handling a MessagesEnqueuedV1 should raise an event to the Durable Task client, which we cannot test without
+        // using some kind of mock, but we can atleast verify that the function completes.
         await AssertWholesaleInboxTriggerIsCompleted();
     }
 

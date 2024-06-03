@@ -55,6 +55,7 @@ public static class WholesaleInboxExtensions
         services.AddScoped<IWholesaleInboxRequestHandler, ActorMessagesEnqueuedV1RequestHandler>();
 
         // Durable task client injection
+        // Must be registered as scoped, since it needs to share its state throughout a functions scope
         services.AddScoped<DurableTaskClientAccessor>();
 
         return services;
