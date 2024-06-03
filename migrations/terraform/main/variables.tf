@@ -29,12 +29,6 @@ variable "domain_name_short" {
   description = "Shortest possible edition of the domain name."
 }
 
-variable "developers_security_group_object_id" {
-  type        = string
-  description = "(Optional) The Object ID of the Omada controlled security group containing DataHub developers."
-  default     = null
-}
-
 variable "omada_developers_security_group_object_id" {
   type        = string
   description = "(Optional) The Object ID of the Azure AD security group containing DataHub developers."

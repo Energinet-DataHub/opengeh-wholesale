@@ -24,12 +24,6 @@ variable "enable_health_check_alerts" {
   default     = true
 }
 
-variable "developer_ad_group_name" {
-  type        = string
-  description = "(Optional) Name of the AD group containing developers to have read access to SQL database."
-  default     = ""
-}
-
 variable "omada_developers_security_group_name" {
   type        = string
   description = "(Optional) Name of the Omada controlled security group containing developers to have access to the SQL database."
@@ -88,19 +82,19 @@ variable "cert_esett_biztalk_datahub3_password" {
 variable "biz_talk_sender_code" {
   type        = string
   description = "Sender code for BizTalk"
-  default = null
+  default     = null
 }
 
 variable "biz_talk_receiver_code" {
   type        = string
   description = "Receiver code for BizTalk"
-  default = null
+  default     = null
 }
 
 variable "dh2_endpoint" {
   type        = string
   description = "Endpoint for DH2"
-  default = null
+  default     = null
 }
 
 variable "biz_talk_biz_talk_end_point" {

@@ -24,12 +24,6 @@ variable "domain_name_short" {
   description = "Shortest possible edition of the domain name"
 }
 
-variable "developer_ad_group_name" {
-  type        = string
-  description = "(Optional) Name of the AD group containing developers to have read access to SQL database."
-  default     = ""
-}
-
 variable "omada_developers_security_group_name" {
   type        = string
   description = "(Optional) Name of the Omada controlled security group containing developers to have access to the SQL database."

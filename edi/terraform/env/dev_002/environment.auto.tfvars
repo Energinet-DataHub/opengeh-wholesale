@@ -8,5 +8,4 @@ feature_management_use_peek_messages                             = true
 feature_management_use_request_messages                          = true
 feature_management_use_energy_result_produced                    = true
 feature_management_use_total_monthly_amount_result_produced      = true
-developer_ad_group_name                                          = "SEC-A-GreenForce-DevelopmentTeamAzure"
 omada_developers_security_group_name                             = "SEC-G-Datahub-DevelopersAzure"

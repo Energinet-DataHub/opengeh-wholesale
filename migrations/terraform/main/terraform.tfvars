@@ -8,7 +8,6 @@ ip_restrictions = [{
   name       = "github_largerunner"
 }]
 github_username                           = "PerTHenriksen"
-developers_security_group_object_id       = "ffad55e0-f314-4852-9796-1d094a236e7b"
 omada_developers_security_group_object_id = "afb8f383-9e8d-40b9-8190-b9010e54a68b"
 databricks_group_id                       = "427884581735458" # TODO: remove when we only have the OMADA group
 databricks_group_id_migrations            = "141994886557178" # TODO: remove when we only have the OMADA group

@@ -21,11 +21,6 @@ resource "databricks_permissions" "endpoint_permissions" {
   provider        = databricks.dbw
   sql_endpoint_id = databricks_sql_endpoint.migration_sql_endpoint.id
 
-  access_control { # TOOD: delete this when we have the new omada group
-    group_name       = "SEC-A-GreenForce-DevelopmentTeamAzure"
-    permission_level = "CAN_MANAGE"
-  }
-
   access_control {
     group_name       = "SEC-G-Datahub-DevelopersAzure"
     permission_level = "CAN_MANAGE"

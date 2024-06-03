@@ -1,5 +1,8 @@
 # TODO: delete when we only have the new OMADA group
 resource "null_resource" "scim" {
+  triggers = {
+    trigger = true
+  }
   # Sync account level user into the workspace
   provisioner "local-exec" {
     interpreter = ["pwsh", "-Command"]
@@ -12,17 +15,16 @@ resource "null_resource" "scim" {
           'Authorization' = "Bearer $aadToken"
       }
 
-      Invoke-RestMethod -Method PUT -Uri "https://${module.dbw.workspace_url}/api/2.0/preview/permissionassignments/principals/${var.databricks_group_id}" -Headers $headers -Body '{
-        "permissions": [
-            "USER"
-        ]
-      }'
+      Invoke-RestMethod -Method DELETE -Uri "https://${module.dbw.workspace_url}/api/2.0/preview/permissionassignments/principals/${var.databricks_group_id}" -Headers $headers
     EOF
   }
 }
 
 # TODO: delete when we only have the new OMADA group
 resource "null_resource" "scim_mig" {
+  triggers = {
+    trigger = true
+  }
   # Sync account level user into the workspace
   provisioner "local-exec" {
     interpreter = ["pwsh", "-Command"]
@@ -35,11 +37,7 @@ resource "null_resource" "scim_mig" {
           'Authorization' = "Bearer $aadToken"
       }
 
-      Invoke-RestMethod -Method PUT -Uri "https://${module.dbw.workspace_url}/api/2.0/preview/permissionassignments/principals/${var.databricks_group_id_migrations}" -Headers $headers -Body '{
-        "permissions": [
-            "ADMIN"
-        ]
-      }'
+      Invoke-RestMethod -Method DELETE -Uri "https://${module.dbw.workspace_url}/api/2.0/preview/permissionassignments/principals/${var.databricks_group_id_migrations}" -Headers $headers
     EOF
   }
 }

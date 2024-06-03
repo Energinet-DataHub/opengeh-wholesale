@@ -108,6 +108,7 @@ resource "databricks_instance_pool" "migration_pool_integration_test" {
   node_type_id                          = "Standard_E4d_v4"
   idle_instance_autotermination_minutes = 60
   preloaded_spark_versions              = [local.databricks_runtime_version]
+  depends_on = [ azurerm_databricks_workspace.this ]
 }
 
 resource "databricks_job" "migration_workflow" {

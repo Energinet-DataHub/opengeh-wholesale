@@ -12,23 +12,9 @@ resource "null_resource" "scim" {
           'Authorization' = "Bearer $aadToken"
       }
 
-      Invoke-RestMethod -Method PUT -Uri "https://${azurerm_databricks_workspace.this.workspace_url}/api/2.0/preview/permissionassignments/principals/${var.databricks_group_id}" -Headers $headers -Body '{
-        "permissions": [
-            "USER"
-        ]
-      }'
+      Invoke-RestMethod -Method DELETE  -Uri "https://${azurerm_databricks_workspace.this.workspace_url}/api/2.0/preview/permissionassignments/principals/${var.databricks_group_id}" -Headers $headers
     EOF
   }
-}
-
-# TODO: remove when we only have the OMADA group
-resource "databricks_grant" "dev_access_catalog" {
-  provider   = databricks.dbw
-  catalog    = databricks_catalog.shared.id
-  principal  = "SEC-A-GreenForce-DevelopmentTeamAzure"
-  privileges = ["USE_CATALOG", "SELECT", "READ_VOLUME", "USE_SCHEMA"]
-
-  depends_on = [azurerm_databricks_workspace.this, null_resource.scim]
 }
 
 resource "null_resource" "scim_developers" {

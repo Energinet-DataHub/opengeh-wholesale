@@ -48,28 +48,6 @@ resource "azurerm_key_vault_access_policy" "kv_spn_ci" {
   ]
 }
 
-resource "azurerm_key_vault_access_policy" "kv_developer_ad_group" {
-  key_vault_id = azurerm_key_vault.this.id
-  tenant_id    = data.azurerm_client_config.this.tenant_id
-  object_id    = var.developers_security_group_object_id
-
-  secret_permissions = [
-    "Get",
-    "Set",
-    "List",
-    "Delete",
-  ]
-
-  key_permissions = [
-    "Get",
-    "List",
-    "Update",
-    "Create",
-    "Delete",
-    "Sign",
-  ]
-}
-
 resource "azurerm_key_vault_access_policy" "kv_omada_developer_ad_group" {
   key_vault_id = azurerm_key_vault.this.id
   tenant_id    = data.azurerm_client_config.this.tenant_id

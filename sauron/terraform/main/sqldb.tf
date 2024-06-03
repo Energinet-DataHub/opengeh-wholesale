@@ -49,17 +49,10 @@ locals {
   ]
   developer_security_group_rules_001_dev_test = [
     {
-      name = var.developer_ad_group_name
-    },
-    {
       name = var.omada_developers_security_group_name
     }
   ]
   developer_security_group_rules_002 = [
-    {
-      name                 = var.developer_ad_group_name
-      enable_db_datawriter = true
-    },
     {
       name                 = var.omada_developers_security_group_name
       enable_db_datawriter = true

@@ -84,16 +84,6 @@ resource "databricks_grant" "self_storage_credential" {
   depends_on = [azurerm_databricks_workspace.this]
 }
 
-# Grant developers access to the catalog TODO: remove when we have the new OMADA group
-resource "databricks_grant" "developers_access_catalog" {
-  provider   = databricks.dbw
-  catalog    = databricks_catalog.shared.id
-  principal  = "SEC-A-GreenForce-DevelopmentTeamAzure"
-  privileges = ["USE_CATALOG", "SELECT", "READ_VOLUME", "USE_SCHEMA"]
-
-  depends_on = [azurerm_databricks_workspace.this]
-}
-
 module "shared_unity_catalog_name" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.11.0"
 

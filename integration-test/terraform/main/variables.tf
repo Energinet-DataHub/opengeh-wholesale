@@ -28,12 +28,6 @@ variable "github_personal_access_token" {
   description = "Personal access token for Github access"
 }
 
-variable "developers_security_group_object_id" {
-  type        = string
-  description = "(Optional) The Object ID of the Azure AD security group containing DataHub developers."
-  default     = null
-}
-
 variable "omada_developers_security_group_object_id" {
   type        = string
   description = "(Optional) The Object ID of the Azure AD security group containing DataHub developers."

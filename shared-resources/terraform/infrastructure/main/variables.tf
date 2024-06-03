@@ -161,18 +161,6 @@ variable "ag_primary_email_address" {
   description = "Email address of primary action group to which alerts will be routed."
 }
 
-variable "developers_security_group_object_id" {
-  type        = string
-  description = "The Object ID of the Azure AD security group containing DataHub developers."
-  default     = null
-}
-
-variable "platform_team_security_group_object_id" {
-  type        = string
-  description = "The Object ID of the Azure AD security group containing Outlaws developers."
-  default     = null
-}
-
 variable "omada_developers_security_group_object_id" {
   type        = string
   description = "The Object ID of the Azure AD security group containing DataHub developers registered in Omada."

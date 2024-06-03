@@ -19,10 +19,6 @@ module "st_testdata" {
   ]
   role_assignments = [
     {
-      principal_id         = var.developers_security_group_object_id
-      role_definition_name = "Storage Blob Data Reader"
-    },
-    {
       principal_id         = data.azurerm_client_config.current.object_id
       role_definition_name = "Storage Blob Data Contributor"
     },

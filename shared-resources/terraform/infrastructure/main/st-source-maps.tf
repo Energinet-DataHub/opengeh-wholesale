@@ -18,16 +18,12 @@ module "st_source_maps" {
   ]
   role_assignments = [
     {
-      principal_id         = var.developers_security_group_object_id
-      role_definition_name = "Storage Blob Data Reader"
-    },
-    {
       principal_id         = data.azurerm_client_config.current.object_id
       role_definition_name = "Storage Blob Data Contributor"
     },
     {
       principal_id         = var.omada_developers_security_group_object_id
-      role_definition_name = "Storage Queue Data Reader"
+      role_definition_name = "Storage Blob Data Reader"
     }
   ]
   blob_storage_backup_policy = {
