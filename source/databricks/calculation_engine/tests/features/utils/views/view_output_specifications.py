@@ -51,7 +51,7 @@ def get_output_specifications() -> dict[str, tuple]:
             settlement_reports.energy_result_points_per_ga_v1_view_schema,
             settlement_report_dataframes.create_energy_result_points_per_ga_v1_view,
         ),
-        "settlement_report_energy_result_points_per_es_ga_v1.csv": (
+        "settlement_report.energy_result_points_per_es_ga_v1.csv": (
             settlement_reports.energy_result_points_per_es_ga_v1_view_schema,
             settlement_report_dataframes.create_energy_result_points_per_es_ga_v1_view,
         ),

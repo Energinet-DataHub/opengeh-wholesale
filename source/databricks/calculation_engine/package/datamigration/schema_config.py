@@ -121,6 +121,8 @@ schema_config = [
             ),
             View(name=paths.CHARGE_PRICES_SETTLEMENT_REPORT_VIEW_NAME_V1),
             View(name=paths.CHARGE_LINK_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1),
+            View(name=paths.MONTHLY_AMOUNTS_SETTLEMENT_REPORT_VIEW_NAME_V1),
+            View(name=paths.WHOLESALE_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1),
         ],
     ),
     Schema(
