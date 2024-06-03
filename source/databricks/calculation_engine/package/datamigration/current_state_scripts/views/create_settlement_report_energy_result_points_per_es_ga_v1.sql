@@ -11,6 +11,6 @@ SELECT calculation_id,
        quantity,
        energy_supplier_id
 FROM {OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
-WHERE time_series_type IN ('production', 'non_profiled_consumption', 'flex_consumption', 'net_exchange_per_ga', 'total_consumption')
+WHERE time_series_type IN ('production', 'non_profiled_consumption', 'flex_consumption')
 AND calculation_type IN ('BalanceFixing', 'WholesaleFixing', 'FirstCorrectionSettlement', 'SecondCorrectionSettlement', 'ThirdCorrectionSettlement')
 AND aggregation_level = 'es_brp_ga'
