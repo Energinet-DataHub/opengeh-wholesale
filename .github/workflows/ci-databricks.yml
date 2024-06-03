@@ -244,7 +244,7 @@ jobs:
           entry_points/
           datamigration/all_scripts
           datamigration/current_state
-          datamigration/domain
+          datamigration/subsystem
           datamigration/migration_scripts
           contracts"
 
