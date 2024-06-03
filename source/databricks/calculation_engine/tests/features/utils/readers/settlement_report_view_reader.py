@@ -18,7 +18,7 @@ from package.infrastructure.paths import (
     METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1,
     SETTLEMENT_REPORT_DATABASE_NAME,
     METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME_V1,
-    ENERGY_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1,
+    ENERGY_RESULT_POINTS_PER_GA_SETTLEMENT_REPORT_VIEW_NAME_V1,
     CHARGE_LINK_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1,
     CHARGE_PRICES_SETTLEMENT_REPORT_VIEW_NAME_V1,
     WHOLESALE_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1,
@@ -57,9 +57,9 @@ class SettlementReportViewReader:
         )
 
     @staticmethod
-    def read_energy_results_v1(spark: SparkSession) -> DataFrame:
+    def read_energy_result_points_per_ga_v1(spark: SparkSession) -> DataFrame:
         return spark.read.format("delta").table(
-            f"{SETTLEMENT_REPORT_DATABASE_NAME}.{ENERGY_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1}"
+            f"{SETTLEMENT_REPORT_DATABASE_NAME}.{ENERGY_RESULT_POINTS_PER_GA_SETTLEMENT_REPORT_VIEW_NAME_V1}"
         )
 
     @staticmethod
