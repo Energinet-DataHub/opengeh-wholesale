@@ -257,6 +257,19 @@ def test__total_monthly_amounts__are_stored(
     assert wholesale_fixing_total_monthly_amounts.count() > 0
 
 
+def test__monthly_amounts__are_stored(
+    spark: SparkSession,
+    wholesale_fixing_monthly_amounts: DataFrame,
+) -> None:
+    # Arrange
+
+    # Act: Calculator job is executed just once per session.
+    #      See the fixtures `results_df` and `executed_wholesale_fixing`
+
+    # Assert: The result is created if there are rows
+    assert wholesale_fixing_monthly_amounts.count() > 0
+
+
 @pytest.mark.parametrize(
     "basis_data_table_name",
     paths.BASIS_DATA_TABLE_NAMES,
@@ -323,9 +336,17 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
     "view_name, has_data",
     [
         (
-            f"{paths.EdiResults.DATABASE_NAME}.energy_result_points_per_ga_v1",
+            f"{paths.EdiResults.DATABASE_NAME}.{paths.EdiResults.ENERGY_RESULT_POINTS_PER_GA_V1_VIEW_NAME}",
             True,
-        )
+        ),
+        (
+            f"{paths.EdiResults.DATABASE_NAME}.{paths.EdiResults.ENERGY_RESULT_POINTS_PER_BRP_GA_V1_VIEW_NAME}",
+            False,
+        ),
+        (
+            f"{paths.EdiResults.DATABASE_NAME}.{paths.EdiResults.ENERGY_RESULT_POINTS_PER_ES_BRP_GA_V1_VIEW_NAME}",
+            False,
+        ),
     ],
 )
 def test__when_wholesale_fixing__view_has_data_if_expected(

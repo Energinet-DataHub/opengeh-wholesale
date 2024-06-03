@@ -1,4 +1,0 @@
-calculation_id;calculation_type;metering_point_id;from_date;to_date;grid_area_code;from_grid_area_code;to_grid_area_code;metering_point_type;settlement_method;energy_supplier_id
-0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;170000001500001000;2023-10-27 22:00:00;2023-10-30 23:00:00;800;;;consumption;flex;1000000000000
-0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;180000001500001000;2023-10-27 22:00:00;2023-10-30 23:00:00;800;;;production;;3000000000000
-0b15a420-9fc8-409a-a169-fbd49479d718;BalanceFixing;200000001500000001;2023-10-27 22:00:00;2023-10-30 23:00:00;801;801;800;exchange;;

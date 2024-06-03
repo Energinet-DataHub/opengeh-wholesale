@@ -1,0 +1,57 @@
+{
+    "fields": [
+      {
+        "name": "calculation_id",
+        "type": "string"
+      },
+      {
+        "name": "calculation_execution_time_start",
+        "type": "timestamp"
+      },
+      {
+        "name": "calculation_type",
+        "type": "string"
+      },
+      {
+        "name": "grid_area_code",
+        "type": "string"
+      },
+      {
+        "name": "energy_supplier_id",
+        "type": "string"
+      },
+      {
+        "name": "quantity_unit",
+        "type": "string"
+      },
+      {
+        "name": "time",
+        "type": "timestamp"
+      },
+      {
+        "name": "amount",
+        "type": "decimal(18,6)"
+      },
+      {
+        "name": "calculation_result_id",
+        "type": "string"
+      },
+      {
+        "name": "is_tax",
+        "type": "boolean"
+      },
+      {
+        "name": "charge_code",
+        "type": "string"
+      },
+      {
+        "name": "charge_type",
+        "type": "string"
+      },
+      {
+        "name": "charge_owner_id",
+        "type": "string"
+      }
+    ]
+  }
+  

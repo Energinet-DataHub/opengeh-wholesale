@@ -46,6 +46,11 @@ def create_metering_point_periods_v1_view(
     )
 
     df = df.withColumn(
+        "calculation_version",
+        col("calculation_version").cast(LongType()),
+    )
+
+    df = df.withColumn(
         MeteringPointPeriodColname.from_date,
         col(MeteringPointPeriodColname.from_date).cast(TimestampType()),
     )
@@ -70,6 +75,11 @@ def create_metering_point_time_series_v1_view(
     )
 
     df = df.withColumn(
+        "calculation_version",
+        col("calculation_version").cast(LongType()),
+    )
+
+    df = df.withColumn(
         Colname.start_date_time,
         col(Colname.start_date_time).cast(TimestampType()),
     )
@@ -91,6 +101,11 @@ def create_charge_link_periods_v1_view(spark: SparkSession, df: DataFrame) -> Da
     )
     from features.utils.dataframes.settlement_report.charge_link_periods_v1_view_schema import (
         charge_link_periods_v1_view_schema,
+    )
+
+    df = df.withColumn(
+        ChargeLinkPeriodsV1ColumnNames.calculation_version,
+        col(ChargeLinkPeriodsV1ColumnNames.calculation_version).cast(LongType()),
     )
 
     df = df.withColumn(
@@ -123,6 +138,11 @@ def create_charge_prices_v1_view(spark: SparkSession, df: DataFrame) -> DataFram
     )
 
     df = df.withColumn(
+        ChargePricesV1ColumnNames.calculation_version,
+        col(ChargePricesV1ColumnNames.calculation_version).cast(LongType()),
+    )
+
+    df = df.withColumn(
         ChargePricesV1ColumnNames.start_date_time,
         col(ChargePricesV1ColumnNames.start_date_time).cast(TimestampType()),
     )
@@ -140,29 +160,36 @@ def create_charge_prices_v1_view(spark: SparkSession, df: DataFrame) -> DataFram
     return spark.createDataFrame(df.rdd, charge_prices_v1_view_schema)
 
 
-def create_energy_results_v1_view(spark: SparkSession, df: DataFrame) -> DataFrame:
+def create_energy_result_points_per_ga_v1_view(
+    spark: SparkSession, df: DataFrame
+) -> DataFrame:
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
     from features.utils.dataframes.settlement_report.settlement_report_view_column_names import (
-        EnergyResultsV1ColumnNames,
+        EnergyResultPointsPerGaV1ColumnNames,
     )
-    from features.utils.dataframes.settlement_report.energy_results_v1_view_schema import (
-        energy_results_v1_view_schema,
-    )
-
-    df = df.withColumn(
-        EnergyResultsV1ColumnNames.quantity,
-        col(EnergyResultsV1ColumnNames.quantity).cast(DecimalType(18, 3)),
+    from features.utils.dataframes.settlement_report.energy_result_points_per_ga_v1_view_schema import (
+        energy_result_points_per_ga_v1_view_schema,
     )
 
     df = df.withColumn(
-        Colname.start_date_time,
+        EnergyResultPointsPerGaV1ColumnNames.calculation_version,
+        col(EnergyResultPointsPerGaV1ColumnNames.calculation_version).cast(LongType()),
+    )
+
+    df = df.withColumn(
+        EnergyResultPointsPerGaV1ColumnNames.quantity,
+        col(EnergyResultPointsPerGaV1ColumnNames.quantity).cast(DecimalType(18, 3)),
+    )
+
+    df = df.withColumn(
+        EnergyResultPointsPerGaV1ColumnNames.time,
         col(
-            Colname.start_date_time,
+            EnergyResultPointsPerGaV1ColumnNames.time,
         ).cast(TimestampType()),
     )
-    return spark.createDataFrame(df.rdd, energy_results_v1_view_schema)
+    return spark.createDataFrame(df.rdd, energy_result_points_per_ga_v1_view_schema)
 
 
 def create_wholesale_results_v1_view(spark: SparkSession, df: DataFrame) -> DataFrame:
@@ -175,9 +202,14 @@ def create_wholesale_results_v1_view(spark: SparkSession, df: DataFrame) -> Data
     from package.constants import WholesaleResultColumnNames
 
     df = df.withColumn(
-        Colname.start_date_time,
+        "calculation_version",
+        col("calculation_version").cast(LongType()),
+    )
+
+    df = df.withColumn(
+        WholesaleResultColumnNames.time,
         col(
-            Colname.start_date_time,
+            WholesaleResultColumnNames.time,
         ).cast(TimestampType()),
     )
 
@@ -230,9 +262,14 @@ def create_monthly_amounts_v1_view(spark: SparkSession, df: DataFrame) -> DataFr
     from package.constants import WholesaleResultColumnNames
 
     df = df.withColumn(
-        Colname.start_date_time,
+        "calculation_version",
+        col("calculation_version").cast(LongType()),
+    )
+
+    df = df.withColumn(
+        WholesaleResultColumnNames.time,
         col(
-            Colname.start_date_time,
+            WholesaleResultColumnNames.time,
         ).cast(TimestampType()),
     )
 
