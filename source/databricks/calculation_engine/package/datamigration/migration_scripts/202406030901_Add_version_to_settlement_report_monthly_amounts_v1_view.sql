@@ -1,4 +1,7 @@
-CREATE VIEW {SETTLEMENT_REPORT_DATABASE_NAME}.monthly_amounts_v1 as
+DROP VIEW IF EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.monthly_amounts_v1
+GO
+
+CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.monthly_amounts_v1 as
 SELECT c.calculation_id,
        c.calculation_type,
        c.version as calculation_version,
