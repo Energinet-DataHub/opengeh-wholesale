@@ -18,6 +18,7 @@ import pytest
 
 from features.utils.assertion import assert_output
 from features.utils.scenario_output_files import get_output_names
+from testsession_configuration import TestSessionConfiguration
 
 
 # IMPORTANT:
@@ -28,5 +29,8 @@ from features.utils.scenario_output_files import get_output_names
 def test__equals_expected(
     actual_and_expected: Any,
     output_name: str,
+    test_session_configuration: TestSessionConfiguration,
 ) -> None:
-    assert_output(actual_and_expected, output_name, True)
+    assert_output(
+        actual_and_expected, output_name, test_session_configuration.feature_tests
+    )
