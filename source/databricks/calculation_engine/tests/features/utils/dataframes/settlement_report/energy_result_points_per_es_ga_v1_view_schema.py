@@ -45,6 +45,11 @@ energy_result_points_per_es_ga_v1_view_schema = StructType(
             EnergyResultPointsPerEsGaV1ColumnNames.grid_area_code, StringType(), False
         ),
         StructField(
+            EnergyResultPointsPerEsGaV1ColumnNames.metering_point_type,
+            StringType(),
+            False,
+        ),
+        StructField(
             EnergyResultPointsPerEsGaV1ColumnNames.settlement_method, StringType(), True
         ),
         StructField(
