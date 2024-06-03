@@ -23,6 +23,7 @@ from package.constants.basis_data_colname import (
 class ChargePricesV1ColumnNames:
     calculation_id = ChargePricePointsColname.calculation_id
     calculation_type = CalculationsColumnName.calculation_type
+    calculation_version = "calculation_version"
     charge_type = ChargePricePointsColname.charge_type
     charge_owner_id = ChargePricePointsColname.charge_owner_id
     charge_code = ChargePricePointsColname.charge_code
@@ -37,6 +38,7 @@ class ChargePricesV1ColumnNames:
 class ChargeLinkPeriodsV1ColumnNames:
     calculation_id = ChargeLinkPeriodsColname.calculation_id
     calculation_type = CalculationsColumnName.calculation_type
+    calculation_version = "calculation_version"
     metering_point_id = ChargeLinkPeriodsColname.metering_point_id
     metering_point_type = MeteringPointPeriodColname.metering_point_type
     charge_type = ChargeLinkPeriodsColname.charge_type
