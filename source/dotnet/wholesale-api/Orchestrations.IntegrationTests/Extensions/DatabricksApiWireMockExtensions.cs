@@ -282,7 +282,7 @@ public static class DatabricksApiWireMockExtensions
         var response = Response
             .Create()
             .WithStatusCode(HttpStatusCode.OK)
-            .WithBody(async (_) =>
+            .WithBody(async _ =>
             {
                 await Awaiter.WaitUntilConditionAsync(
                     () => getCalculationId() != null,

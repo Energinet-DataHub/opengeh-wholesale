@@ -96,7 +96,7 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;
-        using var startCalculationResponse = await Fixture.StartCalculationAsync();
+        using var startCalculationResponse = await Fixture.AppHostManager.StartCalculationAsync();
 
         // Assert
         // => Verify endpoint response
@@ -143,7 +143,7 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
             new OrchestrationHistoryItem("TaskCompleted", FunctionName: "CreateCalculationRecordActivity"),
             new OrchestrationHistoryItem("TaskCompleted", FunctionName: "StartCalculationActivity"),
             new OrchestrationHistoryItem("TaskCompleted", FunctionName: "GetJobStatusActivity"),
-            new OrchestrationHistoryItem("TaskCompleted", FunctionName: "UpdateCalculationStatusActivity"),
+            new OrchestrationHistoryItem("TaskCompleted", FunctionName: "UpdateCalculationStateFromJobStatusActivity"),
             new OrchestrationHistoryItem("TaskCompleted", FunctionName: "CreateCompletedCalculationActivity"),
             new OrchestrationHistoryItem("TaskCompleted", FunctionName: "SendCalculationResultsActivity"),
             new OrchestrationHistoryItem("TimerCreated"), // Wait for raised event (ActorMessagesEnqueued)
@@ -190,7 +190,7 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;
-        using var startCalculationResponse = await Fixture.StartCalculationAsync();
+        using var startCalculationResponse = await Fixture.AppHostManager.StartCalculationAsync();
 
         // Assert
         // => Verify endpoint response
@@ -249,7 +249,7 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;
-        using var startCalculationResponse = await Fixture.StartCalculationAsync();
+        using var startCalculationResponse = await Fixture.AppHostManager.StartCalculationAsync();
 
         // Assert
         // => Verify endpoint response

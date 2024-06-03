@@ -107,7 +107,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;
-        using var startCalculationResponse = await Fixture.StartCalculationAsync();
+        using var startCalculationResponse = await Fixture.AppHostManager.StartCalculationAsync();
 
         // Assert
         // => Verify endpoint response

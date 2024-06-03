@@ -22,24 +22,16 @@ using NodaTime;
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
 
 #pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
-internal class UpdateCalculationOrchestrationStateActivity
+internal class UpdateCalculationOrchestrationStateActivity(
+    IClock clock,
+    IUnitOfWork calculationUnitOfWork,
+    ICalculationRepository calculationRepository,
+    ILogger<UpdateCalculationOrchestrationStateActivity> logger)
 {
-    private readonly IClock _clock;
-    private readonly IUnitOfWork _calculationUnitOfWork;
-    private readonly ICalculationRepository _calculationRepository;
-    private readonly ILogger<UpdateCalculationOrchestrationStateActivity> _logger;
-
-    public UpdateCalculationOrchestrationStateActivity(
-        IClock clock,
-        IUnitOfWork calculationUnitOfWork,
-        ICalculationRepository calculationRepository,
-        ILogger<UpdateCalculationOrchestrationStateActivity> logger)
-    {
-        _clock = clock;
-        _calculationUnitOfWork = calculationUnitOfWork;
-        _calculationRepository = calculationRepository;
-        _logger = logger;
-    }
+    private readonly IClock _clock = clock;
+    private readonly IUnitOfWork _calculationUnitOfWork = calculationUnitOfWork;
+    private readonly ICalculationRepository _calculationRepository = calculationRepository;
+    private readonly ILogger<UpdateCalculationOrchestrationStateActivity> _logger = logger;
 
     /// <summary>
     /// Update calculation status record in SQL database.

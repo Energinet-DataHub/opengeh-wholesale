@@ -14,9 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Calculations.Application;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
-using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.CalculationState;
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
@@ -25,29 +23,21 @@ using NodaTime;
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
 
 #pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
-internal class UpdateCalculationStatusActivity
+internal class UpdateCalculationStateFromJobStatusActivity(
+    IClock clock,
+    IUnitOfWork calculationUnitOfWork,
+    ICalculationRepository calculationRepository,
+    ILogger<UpdateCalculationStateFromJobStatusActivity> logger)
 {
-    private readonly IClock _clock;
-    private readonly IUnitOfWork _calculationUnitOfWork;
-    private readonly ICalculationRepository _calculationRepository;
-    private readonly ILogger<UpdateCalculationStatusActivity> _logger;
-
-    public UpdateCalculationStatusActivity(
-        IClock clock,
-        IUnitOfWork calculationUnitOfWork,
-        ICalculationRepository calculationRepository,
-        ILogger<UpdateCalculationStatusActivity> logger)
-    {
-        _clock = clock;
-        _calculationUnitOfWork = calculationUnitOfWork;
-        _calculationRepository = calculationRepository;
-        _logger = logger;
-    }
+    private readonly IClock _clock = clock;
+    private readonly IUnitOfWork _calculationUnitOfWork = calculationUnitOfWork;
+    private readonly ICalculationRepository _calculationRepository = calculationRepository;
+    private readonly ILogger<UpdateCalculationStateFromJobStatusActivity> _logger = logger;
 
     /// <summary>
     /// Update calculation status record in SQL database.
     /// </summary>
-    [Function(nameof(UpdateCalculationStatusActivity))]
+    [Function(nameof(UpdateCalculationStateFromJobStatusActivity))]
     public async Task<string> Run(
         [ActivityTrigger] CalculationMetadata calculationMetadata)
     {

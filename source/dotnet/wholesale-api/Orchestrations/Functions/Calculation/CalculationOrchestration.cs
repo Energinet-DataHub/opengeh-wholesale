@@ -64,7 +64,7 @@ internal class CalculationOrchestration
             {
                 // Update calculation execution status (SQL)
                 await context.CallActivityAsync(
-                    nameof(UpdateCalculationStatusActivity),
+                    nameof(UpdateCalculationStateFromJobStatusActivity),
                     calculationMetadata);
 
                 if (calculationMetadata.JobStatus is CalculationState.Canceled)
@@ -89,7 +89,7 @@ internal class CalculationOrchestration
 
         // Update calculation execution status (SQL)
         await context.CallActivityAsync(
-            nameof(UpdateCalculationStatusActivity),
+            nameof(UpdateCalculationStateFromJobStatusActivity),
             calculationMetadata);
 
         if (calculationMetadata.JobStatus == CalculationState.Completed)
