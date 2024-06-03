@@ -49,9 +49,9 @@ def add_calculated_grid_loss_to_metering_point_times_series(
     df = (
         positive.union(negative)
         .select(
-            f.col(Colname.grid_area),
-            f.col(Colname.to_grid_area),
-            f.col(Colname.from_grid_area),
+            f.col(Colname.grid_area_code),
+            f.col(Colname.to_grid_area_code),
+            f.col(Colname.from_grid_area_code),
             f.col(Colname.metering_point_id),
             f.col(Colname.metering_point_type),
             f.lit(MeteringPointResolution.QUARTER.value).alias(

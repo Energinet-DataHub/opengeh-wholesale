@@ -475,36 +475,6 @@ public sealed class AggregatedTimeSeriesQueriesData(DatabricksSqlStatementApiFix
                         calculationType: grouping.Key.CalculationType.Replace("'", string.Empty)))
                 .ToList();
 
-            var aggregatedByEnergyAndGrid = dataRowsToAddToDatabricks
-                .GroupBy(row => new
-                {
-                    Time = row.ElementAt(6),
-                    GridArea = row.ElementAt(4),
-                    TimeSeriesType = row.ElementAt(11),
-                    // BalanceResponsibleId = row.ElementAt(8),
-                    EnergySupplierId = row.ElementAt(5),
-                    CalculationId = row.ElementAt(3),
-                    CalculationType = row.ElementAt(2),
-                })
-                .Select(grouping =>
-                    EnergyResultDeltaTableHelper.CreateRowValues(
-                        calculationId: GetCalculationIdForEsGaAggregation(
-                            grouping.Key.Time.Replace("'", string.Empty),
-                            grouping.Key.CalculationType.Replace("'", string.Empty)),
-                        calculationResultId: GetCalculationIdForEsGaAggregation(
-                            grouping.Key.Time.Replace("'", string.Empty),
-                            grouping.Key.CalculationType.Replace("'", string.Empty)),
-                        time: grouping.Key.Time.Replace("'", string.Empty),
-                        gridArea: grouping.Key.GridArea.Replace("'", string.Empty),
-                        quantity: grouping.Sum(row => decimal.Parse(row.ElementAt(7), CultureInfo.InvariantCulture))
-                            .ToString(CultureInfo.InvariantCulture),
-                        aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndGridArea,
-                        // balanceResponsibleId: grouping.Key.BalanceResponsibleId.Replace("'", string.Empty),
-                        energySupplierId: grouping.Key.EnergySupplierId.Replace("'", string.Empty),
-                        timeSeriesType: grouping.Key.TimeSeriesType.Replace("'", string.Empty),
-                        calculationType: grouping.Key.CalculationType.Replace("'", string.Empty)))
-                .ToList();
-
             var aggregatedByGrid = dataRowsToAddToDatabricks
                 .GroupBy(row => new
                 {
@@ -536,7 +506,6 @@ public sealed class AggregatedTimeSeriesQueriesData(DatabricksSqlStatementApiFix
                 .ToList();
 
             dataRowsToAddToDatabricks.AddRange(aggregatedByBalanceAndGrid);
-            dataRowsToAddToDatabricks.AddRange(aggregatedByEnergyAndGrid);
             dataRowsToAddToDatabricks.AddRange(aggregatedByGrid);
 
             dataRowsToAddToDatabricks = dataRowsToAddToDatabricks.OrderBy(_ => Random.Shared.NextInt64()).ToList();

@@ -46,7 +46,9 @@ def _select_output_columns(df: DataFrame) -> DataFrame:
             TotalMonthlyAmountsColumnNames.calculation_execution_time_start
         ),
         col(TotalMonthlyAmountsColumnNames.calculation_result_id),
-        col(Colname.grid_area).alias(TotalMonthlyAmountsColumnNames.grid_area),
+        col(Colname.grid_area_code).alias(
+            TotalMonthlyAmountsColumnNames.grid_area_code
+        ),
         col(Colname.energy_supplier_id).alias(
             TotalMonthlyAmountsColumnNames.energy_supplier_id
         ),
@@ -60,6 +62,6 @@ def _get_column_group_for_calculation_result_id() -> list[str]:
     return [
         Colname.calculation_id,
         Colname.charge_owner,
-        Colname.grid_area,
+        Colname.grid_area_code,
         Colname.energy_supplier_id,
     ]

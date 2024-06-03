@@ -22,6 +22,7 @@ using Energinet.DataHub.Wholesale.Edi.Factories.AggregatedTimeSeries;
 using Energinet.DataHub.Wholesale.Edi.Mappers;
 using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.Validation;
+using Energinet.DataHub.Wholesale.Events.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Edi;

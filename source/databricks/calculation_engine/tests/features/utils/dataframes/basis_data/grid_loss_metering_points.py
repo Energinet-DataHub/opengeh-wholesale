@@ -14,9 +14,7 @@
 from pyspark.sql import DataFrame, SparkSession
 
 
-def create_grid_loss_metering_points_dataframe(
-    spark: SparkSession, df: DataFrame
-) -> DataFrame:
+def create_grid_loss_metering_points(spark: SparkSession, df: DataFrame) -> DataFrame:
 
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.

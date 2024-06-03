@@ -74,7 +74,7 @@ public sealed class SettlementReportDownloadHandlerIntegrationTests : TestBase<S
 
         // Act
         await using var downloadStream = new MemoryStream();
-        await Sut.DownloadReportAsync(requestId, downloadStream, userId, actorId, false);
+        await Sut.DownloadReportAsync(requestId, downloadStream, actorId, false);
 
         // Assert
         Assert.NotNull(downloadStream);
@@ -104,7 +104,7 @@ public sealed class SettlementReportDownloadHandlerIntegrationTests : TestBase<S
 
         // Act + Assert
         await using var downloadStream = new MemoryStream();
-        await Assert.ThrowsAsync<InvalidOperationException>(() => Sut.DownloadReportAsync(requestId, downloadStream, Guid.NewGuid(), Guid.NewGuid(), false));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => Sut.DownloadReportAsync(requestId, downloadStream, Guid.NewGuid(), false));
     }
 
     [Fact]
@@ -130,7 +130,7 @@ public sealed class SettlementReportDownloadHandlerIntegrationTests : TestBase<S
 
         // Act
         await using var downloadStream = new MemoryStream();
-        await Sut.DownloadReportAsync(requestId, downloadStream, Guid.NewGuid(), Guid.NewGuid(), true);
+        await Sut.DownloadReportAsync(requestId, downloadStream, Guid.NewGuid(), true);
 
         // Assert
         Assert.NotNull(downloadStream);

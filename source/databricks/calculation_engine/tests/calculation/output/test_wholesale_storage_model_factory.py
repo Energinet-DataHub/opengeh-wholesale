@@ -52,7 +52,7 @@ DEFAULT_CALCULATION_EXECUTION_START = datetime(2022, 6, 10, 13, 15)
 # Input dataframe parameters
 DEFAULT_AMOUNT_TYPE = AmountType.AMOUNT_PER_CHARGE
 DEFAULT_ENERGY_SUPPLIER_ID = "9876543210123"
-DEFAULT_GRID_AREA = "543"
+DEFAULT_GRID_AREA_CODE = "543"
 DEFAULT_CHARGE_TIME = datetime(2022, 6, 10, 13, 30)
 DEFAULT_INPUT_METERING_POINT_TYPE = MeteringPointType.ELECTRICAL_HEATING
 DEFAULT_METERING_POINT_TYPE = (
@@ -85,7 +85,7 @@ def args(any_calculator_args: CalculatorArgs) -> CalculatorArgs:
 
 def _create_result_row(
     energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
-    grid_area: str = DEFAULT_GRID_AREA,
+    grid_area_code: str = DEFAULT_GRID_AREA_CODE,
     charge_time: datetime = DEFAULT_CHARGE_TIME,
     metering_point_type: MeteringPointType = DEFAULT_INPUT_METERING_POINT_TYPE,
     settlement_method: SettlementMethod = DEFAULT_SETTLEMENT_METHOD,
@@ -103,7 +103,7 @@ def _create_result_row(
 ) -> dict:
     row = {
         Colname.energy_supplier_id: energy_supplier_id,
-        Colname.grid_area: grid_area,
+        Colname.grid_area_code: grid_area_code,
         Colname.charge_time: charge_time,
         Colname.metering_point_type: metering_point_type.value,
         Colname.settlement_method: settlement_method.value,
@@ -137,9 +137,9 @@ def _create_result_df_corresponding_to_multiple_calculation_results(
 ) -> DataFrame:
     # 3 calculation results with just one row each
     rows = [
-        _create_result_row(grid_area="001"),
-        _create_result_row(grid_area="002"),
-        _create_result_row(grid_area="003"),
+        _create_result_row(grid_area_code="001"),
+        _create_result_row(grid_area_code="002"),
+        _create_result_row(grid_area_code="003"),
     ]
 
     return spark.createDataFrame(data=rows)
@@ -170,7 +170,7 @@ def test__create__columns_matching_contract(
             WholesaleResultColumnNames.calculation_execution_time_start,
             DEFAULT_CALCULATION_EXECUTION_START,
         ),
-        (WholesaleResultColumnNames.grid_area, DEFAULT_GRID_AREA),
+        (WholesaleResultColumnNames.grid_area_code, DEFAULT_GRID_AREA_CODE),
         (WholesaleResultColumnNames.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
         (WholesaleResultColumnNames.quantity, DEFAULT_TOTAL_QUANTITY),
         (WholesaleResultColumnNames.quantity_unit, DEFAULT_UNIT.value),
@@ -253,7 +253,7 @@ def test__get_column_group_for_calculation_result_id__returns_expected_column_na
         Colname.charge_type,
         Colname.charge_owner,
         Colname.charge_code,
-        Colname.grid_area,
+        Colname.grid_area_code,
         Colname.energy_supplier_id,
         Colname.metering_point_type,
         Colname.settlement_method,

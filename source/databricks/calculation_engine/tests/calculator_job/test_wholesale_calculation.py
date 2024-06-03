@@ -17,6 +17,24 @@ import pytest
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StructType
 
+from package.calculation.basis_data.schemas.charge_link_periods_schema import (
+    charge_link_periods_schema,
+)
+from package.calculation.basis_data.schemas.charge_master_data_periods_schema import (
+    charge_price_information_periods_schema,
+)
+from package.calculation.basis_data.schemas.charge_price_points_schema import (
+    charge_price_points_schema,
+)
+from package.calculation.basis_data.schemas.grid_loss_metering_points_schema import (
+    grid_loss_metering_points_schema,
+)
+from package.calculation.basis_data.schemas.metering_point_period_schema import (
+    metering_point_period_schema,
+)
+from package.calculation.basis_data.schemas.time_series_point_schema import (
+    time_series_point_schema,
+)
 from package.codelists import (
     AggregationLevel,
     ChargeType,
@@ -26,24 +44,6 @@ from package.codelists import (
 from package.constants import EnergyResultColumnNames, WholesaleResultColumnNames
 from package.infrastructure import paths
 from . import configuration as c
-from package.calculation.basis_data.schemas.charge_link_periods_schema import (
-    charge_link_periods_schema,
-)
-from package.calculation.basis_data.schemas.charge_master_data_periods_schema import (
-    charge_master_data_periods_schema,
-)
-from package.calculation.basis_data.schemas.charge_price_points_schema import (
-    charge_price_points_schema,
-)
-from package.calculation.basis_data.schemas.metering_point_period_schema import (
-    metering_point_period_schema,
-)
-from package.calculation.basis_data.schemas.grid_loss_metering_points_schema import (
-    grid_loss_metering_points_schema,
-)
-from package.calculation.basis_data.schemas.time_series_point_schema import (
-    time_series_point_schema,
-)
 
 ENERGY_RESULT_TYPES = {
     (
@@ -292,7 +292,7 @@ def test__when_wholesale_calculation__basis_data_is_stored(
         (paths.CHARGE_LINK_PERIODS_BASIS_DATA_TABLE_NAME, charge_link_periods_schema),
         (
             paths.CHARGE_MASTER_DATA_PERIODS_BASIS_DATA_TABLE_NAME,
-            charge_master_data_periods_schema,
+            charge_price_information_periods_schema,
         ),
         (paths.CHARGE_PRICE_POINTS_BASIS_DATA_TABLE_NAME, charge_price_points_schema),
         (
@@ -323,9 +323,17 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
     "view_name, has_data",
     [
         (
-            f"{paths.EdiResults.DATABASE_NAME}.energy_result_points_per_ga_v1",
+            f"{paths.EdiResults.DATABASE_NAME}.{paths.EdiResults.ENERGY_RESULT_POINTS_PER_GA_V1_VIEW_NAME}",
             True,
-        )
+        ),
+        (
+            f"{paths.EdiResults.DATABASE_NAME}.{paths.EdiResults.ENERGY_RESULT_POINTS_PER_BRP_GA_V1_VIEW_NAME}",
+            False,
+        ),
+        (
+            f"{paths.EdiResults.DATABASE_NAME}.{paths.EdiResults.ENERGY_RESULT_POINTS_PER_ES_BRP_GA_V1_VIEW_NAME}",
+            False,
+        ),
     ],
 )
 def test__when_wholesale_fixing__view_has_data_if_expected(

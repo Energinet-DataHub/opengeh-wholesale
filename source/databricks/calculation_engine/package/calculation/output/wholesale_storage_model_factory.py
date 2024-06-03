@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, lit, first
+from pyspark.sql.functions import col, lit
 
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.output.add_meta_data import add_metadata
@@ -54,7 +54,7 @@ def _select_output_columns(df: DataFrame) -> DataFrame:
             WholesaleResultColumnNames.calculation_execution_time_start
         ),
         col(WholesaleResultColumnNames.calculation_result_id),
-        col(Colname.grid_area).alias(WholesaleResultColumnNames.grid_area),
+        col(Colname.grid_area_code).alias(WholesaleResultColumnNames.grid_area_code),
         col(Colname.energy_supplier_id).alias(
             WholesaleResultColumnNames.energy_supplier_id
         ),
@@ -86,7 +86,7 @@ def _get_column_group_for_calculation_result_id() -> list[str]:
         Colname.charge_type,
         Colname.charge_owner,
         Colname.charge_code,
-        Colname.grid_area,
+        Colname.grid_area_code,
         Colname.energy_supplier_id,
         Colname.metering_point_type,
         Colname.settlement_method,

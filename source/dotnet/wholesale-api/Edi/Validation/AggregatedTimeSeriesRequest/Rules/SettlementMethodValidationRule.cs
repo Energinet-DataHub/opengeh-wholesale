@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Edi.Contracts;
-using Energinet.DataHub.Wholesale.Edi.Models;
 
 namespace Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest.Rules;
 
@@ -28,6 +27,9 @@ public class SettlementMethodValidationRule : IValidationRule<DataHub.Edi.Reques
     {
         if (!subject.HasSettlementMethod)
             return Task.FromResult(NoError);
+
+        if (!subject.HasMeteringPointType)
+            return Task.FromResult(InvalidSettlementMethod);
 
         if (!IsValidSettlementMethod(subject.SettlementMethod))
             return Task.FromResult(InvalidSettlementMethod);
