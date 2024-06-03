@@ -31,10 +31,6 @@ def assert_output(
     expected_result = _get_expected_for_output(expected_results, output_name)
 
     columns_to_skip = []
-    if ResultColumnNames.calculation_result_id in expected_result.columns:
-        columns_to_skip.append(ResultColumnNames.calculation_result_id)
-    if "result_id" in expected_result.columns:
-        columns_to_skip.append("result_id")
 
     assert_dataframe_and_schema(
         actual_result,
