@@ -65,7 +65,7 @@ ENERGY_RESULT_POINTS_PER_GA_SETTLEMENT_REPORT_VIEW_NAME_V1 = (
     "energy_result_points_per_ga_v1"
 )
 ENERGY_RESULT_POINTS_PER_ES_GA_SETTLEMENT_REPORT_VIEW_NAME_V1 = (
-    "energy_result_points_per_ga_es_v1"
+    "energy_result_points_per_es_ga_v1"
 )
 WHOLESALE_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1 = "wholesale_results_v1"
 CURRENT_CALCULATION_TYPE_VERSIONS_SETTLEMENT_REPORT_VIEW_NAME_V1 = (
