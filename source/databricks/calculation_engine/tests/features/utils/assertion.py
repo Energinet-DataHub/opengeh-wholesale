@@ -19,13 +19,14 @@ from pyspark.sql import DataFrame
 from helpers.data_frame_utils import assert_dataframe_and_schema
 from package.calculation.calculation_results import CalculationResultsContainer
 from package.constants.result_column_names import ResultColumnNames
+from testsession_configuration import FeatureTestsConfiguration
 from .expected_output import ExpectedOutput
 
 
 def assert_output(
     actual_and_expected: tuple[CalculationResultsContainer, list[ExpectedOutput]],
     output_name: str,
-    drop_columns_when_actual_and_expected_are_equal: bool = False,
+    feature_tests_configuration: FeatureTestsConfiguration,
 ) -> None:
     actual_results, expected_results = actual_and_expected
 
@@ -41,11 +42,11 @@ def assert_output(
     assert_dataframe_and_schema(
         actual_result,
         expected_result,
+        feature_tests_configuration,
         ignore_decimal_precision=True,
         ignore_nullability=True,
         ignore_decimal_scale=True,
         columns_to_skip=columns_to_skip,
-        drop_columns_when_actual_and_expected_are_equal=drop_columns_when_actual_and_expected_are_equal,
     )
 
 
