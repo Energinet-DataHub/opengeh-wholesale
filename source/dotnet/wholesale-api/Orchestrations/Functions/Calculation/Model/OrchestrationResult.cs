@@ -12,14 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
-
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 
-/// <summary>
-/// An immutable input to start the calculation orchestration.
-/// </summary>
-public sealed record CalculationOrchestrationInput(
-    CalculationOrchestrationMonitorOptions OrchestrationMonitorOptions,
-    StartCalculationRequestDto StartCalculationRequestDto,
-    Guid RequestedByUserId);
+internal sealed record OrchestrationResult
+{
+    public bool IsSuccess { get; }
+
+    public string? ErrorSubject { get; }
+
+    public string? ErrorDescription { get; }
+
+    private OrchestrationResult(bool isSuccess, string? error, string? errorDescription)
+    {
+        IsSuccess = isSuccess;
+        ErrorSubject = error;
+        ErrorDescription = errorDescription;
+    }
+
+    internal static OrchestrationResult Success()
+    {
+        return new(true, null, null);
+    }
+
+    internal static OrchestrationResult Error(string error, string errorDescription)
+    {
+        return new(false, error, errorDescription);
+    }
+}

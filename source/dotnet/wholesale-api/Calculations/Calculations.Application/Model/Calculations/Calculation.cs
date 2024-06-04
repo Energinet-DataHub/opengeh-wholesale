@@ -147,9 +147,9 @@ public class Calculation
                 CalculationOrchestrationState.Calculating => [CalculationOrchestrationState.Calculated, CalculationOrchestrationState.CalculationFailed, CalculationOrchestrationState.Scheduled],
                 CalculationOrchestrationState.Calculated => [CalculationOrchestrationState.ActorMessagesEnqueuing],
                 CalculationOrchestrationState.CalculationFailed => [CalculationOrchestrationState.Scheduled],
-                CalculationOrchestrationState.ActorMessagesEnqueuing => [CalculationOrchestrationState.ActorMessagesEnqueued, CalculationOrchestrationState.MessagesEnqueuingFailed],
+                CalculationOrchestrationState.ActorMessagesEnqueuing => [CalculationOrchestrationState.ActorMessagesEnqueued, CalculationOrchestrationState.ActorMessagesEnqueuingFailed],
                 CalculationOrchestrationState.ActorMessagesEnqueued => [CalculationOrchestrationState.Completed],
-                CalculationOrchestrationState.MessagesEnqueuingFailed => [], // We do not support retries, so we are stuck in failed
+                CalculationOrchestrationState.ActorMessagesEnqueuingFailed => [], // We do not support retries, so we are stuck in failed
                 CalculationOrchestrationState.Completed => [],
                 _ => throw new ArgumentOutOfRangeException(nameof(_orchestrationState), _orchestrationState, "Unsupported CalculationOrchestrationState to get valid state transitions for"),
             };
@@ -315,15 +315,48 @@ public class Calculation
         OrchestrationState = CalculationOrchestrationState.ActorMessagesEnqueued;
     }
 
-    public void MarkAsMessagesEnqueuingFailed()
+    public void MarkAsActorMessagesEnqueuingFailed()
     {
-        OrchestrationState = CalculationOrchestrationState.MessagesEnqueuingFailed;
+        OrchestrationState = CalculationOrchestrationState.ActorMessagesEnqueuingFailed;
     }
 
     public void MarkAsCompleted(Instant completedAt)
     {
         OrchestrationState = CalculationOrchestrationState.Completed;
         CompletedTime = completedAt;
+    }
+
+    public void UpdateState(CalculationOrchestrationState newState, IClock clock)
+    {
+        switch (newState)
+        {
+            case CalculationOrchestrationState.Scheduled:
+                MarkAsScheduled();
+                break;
+            case CalculationOrchestrationState.Calculating:
+                MarkAsCalculating();
+                break;
+            case CalculationOrchestrationState.Calculated:
+                MarkAsCalculated(clock.GetCurrentInstant());
+                break;
+            case CalculationOrchestrationState.CalculationFailed:
+                MarkAsCalculationFailed();
+                break;
+            case CalculationOrchestrationState.ActorMessagesEnqueuing:
+                MarkAsActorMessagesEnqueuing(clock.GetCurrentInstant());
+                break;
+            case CalculationOrchestrationState.ActorMessagesEnqueued:
+                MarkAsActorMessagesEnqueued(clock.GetCurrentInstant());
+                break;
+            case CalculationOrchestrationState.ActorMessagesEnqueuingFailed:
+                MarkAsActorMessagesEnqueuingFailed();
+                break;
+            case CalculationOrchestrationState.Completed:
+                MarkAsCompleted(clock.GetCurrentInstant());
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(newState), newState, $"Unexpected orchestration state: {newState}.");
+        }
     }
 
     /// <summary>
