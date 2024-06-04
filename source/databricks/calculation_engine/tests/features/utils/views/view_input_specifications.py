@@ -12,17 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import package.calculation.basis_data.schemas as basis_data_schemas
-from features.utils.dataframes import (
-    create_energy_result_dataframe,
-    create_wholesale_result_dataframe,
-    create_total_monthly_amounts_dataframe,
-)
-from features.utils.dataframes.basis_data.calculations_dataframe import (
-    create_calculations,
-)
-from features.utils.dataframes.monthly_amounts_dataframe import (
-    create_monthly_amounts_dataframe,
-)
+
 from package.calculation.output.schemas import (
     energy_results_schema,
     wholesale_results_schema,
@@ -65,5 +55,4 @@ def get_input_specifications() -> dict[str, tuple]:
         "wholesale_output.wholesale_results.csv": (wholesale_results_schema,),
         "wholesale_output.total_monthly_amounts.csv": (total_monthly_amounts_schema,),
         "wholesale_output.monthly_amounts.csv": (monthly_amounts_schema,),
-        "wholesale_output.total_monthly_amounts.csv": (total_monthly_amounts_schema,),
     }
