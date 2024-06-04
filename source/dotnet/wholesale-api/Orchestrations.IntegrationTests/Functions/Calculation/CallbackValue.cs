@@ -12,9 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
+namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.Calculation;
 
-public sealed record SettlementReportMetadata
+public class CallbackValue<T>
 {
-    public string Progress { get; set; } = string.Empty;
+    private T? _value;
+
+    public CallbackValue(T? value)
+    {
+        _value = value;
+    }
+
+    public T? GetValue() => _value;
+
+    public void SetValue(T newValue) => _value = newValue;
 }
