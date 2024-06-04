@@ -36,9 +36,11 @@ public sealed class SettlementReportWholesaleRepository : ISettlementReportWhole
 
     public async IAsyncEnumerable<SettlementReportWholesaleResultRow> GetAsync(CalculationType calculationType, SettlementReportRequestFilterDto filter, int skip, int take)
     {
-        var rows = _settlementReportResultQueries.GetAsync(ParseFilter(calculationType, filter), skip, take);
+        var rows = _settlementReportResultQueries
+            .GetAsync(ParseFilter(calculationType, filter), skip, take)
+            .ConfigureAwait(false);
 
-        await foreach (var row in rows)
+        await foreach (var row in rows.ConfigureAwait(false))
         {
             yield return new SettlementReportWholesaleResultRow(
                 row.CalculationId,

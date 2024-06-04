@@ -12,17 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
-
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 
-public interface ISettlementReportDataRepository
+public static class SettlementReportDataRepositoryExceptions
 {
-    public const string DataSourceUnavailableExceptionMessage = "Call to Databricks SQL Warehouse failed. Server may be cold.";
-
-    /// <summary>
-    /// Streams the requested data from the data source.
-    /// If the data source is not ready, a TimeoutException with DataSourceUnavailableExceptionMessage is thrown.
-    /// </summary>
-    IAsyncEnumerable<SettlementReportEnergyResultRow> TryReadBalanceFixingResultsAsync(SettlementReportRequestFilterDto filter);
+    // TODO: Make Databricks Exception type public.
+    public const string DataSourceUnavailableExceptionMessage = "Unable to fetch result from Databricks";
 }

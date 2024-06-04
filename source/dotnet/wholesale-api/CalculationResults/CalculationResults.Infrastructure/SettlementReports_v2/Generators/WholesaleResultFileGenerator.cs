@@ -52,13 +52,15 @@ public sealed class WholesaleResultFileGenerator : ISettlementReportFileGenerato
 
         await using (csvHelper.ConfigureAwait(false))
         {
-            csvHelper.WriteHeader<SettlementReportWholesaleResultRowMap>();
-            await csvHelper.NextRecordAsync().ConfigureAwait(false);
+            if (chunkOffset == 0)
+            {
+                csvHelper.WriteHeader<SettlementReportWholesaleResultRow>();
+            }
 
             await foreach (var record in _dataSource.GetAsync(_calculationType, filter, chunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
             {
-                csvHelper.WriteRecord(record);
                 await csvHelper.NextRecordAsync().ConfigureAwait(false);
+                csvHelper.WriteRecord(record);
             }
         }
     }

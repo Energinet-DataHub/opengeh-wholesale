@@ -49,7 +49,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         _databricksSqlStatementApiFixture = databricksSqlStatementApiFixture;
         _settlementReportFileBlobStorageFixture = settlementReportFileBlobStorageFixture;
 
-        var settlementReportDataRepository = new LegacySettlementReportDataRepository(new SettlementReportResultQueries(
+        var settlementReportDataRepository = new LegacySettlementReportEnergyRepository(new SettlementReportResultQueries(
             databricksSqlStatementApiFixture.GetDatabricksExecutor(),
             databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions));
 

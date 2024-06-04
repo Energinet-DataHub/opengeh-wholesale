@@ -23,22 +23,18 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 /// <summary>
 /// This implementation redirects to the old SQL statement implementation.
 /// </summary>
-public sealed class LegacySettlementReportDataRepository : ISettlementReportDataRepository
+public sealed class LegacySettlementReportEnergyRepository : ISettlementReportEnergyRepository
 {
     private readonly ISettlementReportResultQueries _settlementReportResultQueries;
 
-    public LegacySettlementReportDataRepository(ISettlementReportResultQueries settlementReportResultQueries)
+    public LegacySettlementReportEnergyRepository(ISettlementReportResultQueries settlementReportResultQueries)
     {
         _settlementReportResultQueries = settlementReportResultQueries;
     }
 
-    public async IAsyncEnumerable<SettlementReportEnergyResultRow> TryReadBalanceFixingResultsAsync(SettlementReportRequestFilterDto filter)
+    public async IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportRequestFilterDto filter)
     {
-        IEnumerable<Interfaces.SettlementReports.Model.SettlementReportResultRow> rows;
-
-        try
-        {
-            rows = await _settlementReportResultQueries
+        var rows = await _settlementReportResultQueries
                 .GetRowsAsync(
                     filter.GridAreas.Select(calculation => calculation.Key).ToArray(),
                     CalculationType.BalanceFixing,
@@ -46,11 +42,6 @@ public sealed class LegacySettlementReportDataRepository : ISettlementReportData
                     filter.PeriodEnd.ToInstant(),
                     filter.EnergySupplier)
                 .ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            throw new TimeoutException(ISettlementReportDataRepository.DataSourceUnavailableExceptionMessage, ex);
-        }
 
         foreach (var row in rows)
         {

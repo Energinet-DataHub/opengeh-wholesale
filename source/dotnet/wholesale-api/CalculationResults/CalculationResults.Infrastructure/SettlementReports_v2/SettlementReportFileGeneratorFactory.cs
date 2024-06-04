@@ -21,12 +21,12 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public sealed class SettlementReportFileGeneratorFactory : ISettlementReportFileGeneratorFactory
 {
-    private readonly ISettlementReportDataRepository _settlementReportDataRepository;
+    private readonly ISettlementReportEnergyRepository _settlementReportEnergyRepository;
     private readonly ISettlementReportWholesaleRepository _settlementReportWholesaleRepository;
 
-    public SettlementReportFileGeneratorFactory(ISettlementReportDataRepository settlementReportDataRepository, ISettlementReportWholesaleRepository settlementReportWholesaleRepository)
+    public SettlementReportFileGeneratorFactory(ISettlementReportEnergyRepository settlementReportEnergyRepository, ISettlementReportWholesaleRepository settlementReportWholesaleRepository)
     {
-        _settlementReportDataRepository = settlementReportDataRepository;
+        _settlementReportEnergyRepository = settlementReportEnergyRepository;
         _settlementReportWholesaleRepository = settlementReportWholesaleRepository;
     }
 
@@ -35,9 +35,9 @@ public sealed class SettlementReportFileGeneratorFactory : ISettlementReportFile
         switch (fileContent)
         {
             case SettlementReportFileContent.EnergyResultLatestPerDay:
-                return new EnergyResultFileGenerator(_settlementReportDataRepository);
+                return new EnergyResultFileGenerator(_settlementReportEnergyRepository);
             case SettlementReportFileContent.EnergyResultForCalculationId:
-                return new EnergyResultFileGenerator(_settlementReportDataRepository);
+                return new EnergyResultFileGenerator(_settlementReportEnergyRepository);
             case SettlementReportFileContent.WholesaleResult:
                 return new WholesaleResultFileGenerator(_settlementReportWholesaleRepository, CalculationType.WholesaleFixing);
             case SettlementReportFileContent.FirstCorrectionResult:

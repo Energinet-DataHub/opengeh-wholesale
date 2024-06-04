@@ -24,11 +24,11 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public sealed class EnergyResultFileGenerator : ISettlementReportFileGenerator
 {
-    private readonly ISettlementReportDataRepository _dataSource;
+    private readonly ISettlementReportEnergyRepository _energySource;
 
-    public EnergyResultFileGenerator(ISettlementReportDataRepository dataSource)
+    public EnergyResultFileGenerator(ISettlementReportEnergyRepository energySource)
     {
-        _dataSource = dataSource;
+        _energySource = energySource;
     }
 
     public string FileExtension => ".csv";
@@ -47,10 +47,10 @@ public sealed class EnergyResultFileGenerator : ISettlementReportFileGenerator
         {
             if (chunkOffset == 0)
             {
-                csvHelper.WriteHeader<SettlementReportEnergyResultRowMap>();
+                csvHelper.WriteHeader<SettlementReportEnergyResultRow>();
             }
 
-            await foreach (var record in _dataSource.TryReadBalanceFixingResultsAsync(filter).ConfigureAwait(false))
+            await foreach (var record in _energySource.GetAsync(filter).ConfigureAwait(false))
             {
                 await csvHelper.NextRecordAsync().ConfigureAwait(false);
                 csvHelper.WriteRecord(record);
