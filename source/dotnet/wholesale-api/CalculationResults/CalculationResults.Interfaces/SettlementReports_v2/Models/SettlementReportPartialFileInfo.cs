@@ -14,4 +14,15 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
-public sealed record CalculationFilterDto(string CalculationId, string GridAreaCode);
+public sealed record SettlementReportPartialFileInfo
+{
+    public SettlementReportPartialFileInfo(string fileName)
+    {
+        FileName = fileName;
+        ChunkOffset = 0;
+    }
+
+    public string FileName { get; init; }
+
+    public int ChunkOffset { get; init; }
+}
