@@ -22,6 +22,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
+using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using NodaTime;
@@ -39,7 +40,7 @@ public sealed class GetSettlementReportsHandlerIntegrationTests : TestBase<GetSe
     private readonly SettlementReportRequestDto _mockedSettlementReportRequest = new(
         CalculationType.BalanceFixing,
         false,
-        new SettlementReportRequestFilterDto([], DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, null));
+        new SettlementReportRequestFilterDto(new Dictionary<string, CalculationId>(), DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, null));
 
     public GetSettlementReportsHandlerIntegrationTests(
         WholesaleDatabaseFixture<SettlementReportDatabaseContext> wholesaleDatabaseFixture,
@@ -88,25 +89,43 @@ public sealed class GetSettlementReportsHandlerIntegrationTests : TestBase<GetSe
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var targetUserId = Guid.NewGuid();
         var targetActorId = Guid.NewGuid();
+        var requestId2 = Guid.NewGuid();
+        var requestId3 = Guid.NewGuid();
+        var notUsersRequest1 = Guid.NewGuid();
+        var notUsersRequest2 = Guid.NewGuid();
 
         await using var dbContext = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
 
-        await dbContext.SettlementReports.AddAsync(CreateMockedSettlementReport(targetUserId, Guid.NewGuid(), new SettlementReportRequestId(Guid.NewGuid().ToString())));
-        await dbContext.SettlementReports.AddAsync(CreateMockedSettlementReport(targetUserId, Guid.NewGuid(), new SettlementReportRequestId(Guid.NewGuid().ToString())));
+        await dbContext.SettlementReports.AddAsync(CreateMockedSettlementReport(targetUserId, Guid.NewGuid(), new SettlementReportRequestId(notUsersRequest1.ToString())));
+        await dbContext.SettlementReports.AddAsync(CreateMockedSettlementReport(targetUserId, Guid.NewGuid(), new SettlementReportRequestId(notUsersRequest2.ToString())));
 
         await dbContext.SettlementReports.AddAsync(CreateMockedSettlementReport(targetUserId, targetActorId, requestId));
 
-        await dbContext.SettlementReports.AddAsync(CreateMockedSettlementReport(Guid.NewGuid(), targetActorId, new SettlementReportRequestId(Guid.NewGuid().ToString())));
-        await dbContext.SettlementReports.AddAsync(CreateMockedSettlementReport(Guid.NewGuid(), targetActorId, new SettlementReportRequestId(Guid.NewGuid().ToString())));
+        await dbContext.SettlementReports.AddAsync(CreateMockedSettlementReport(Guid.NewGuid(), targetActorId, new SettlementReportRequestId(requestId2.ToString())));
+        await dbContext.SettlementReports.AddAsync(CreateMockedSettlementReport(Guid.NewGuid(), targetActorId, new SettlementReportRequestId(requestId3.ToString())));
 
         await dbContext.SaveChangesAsync();
 
         // Act
-        var items = (await Sut.GetAsync(targetUserId, targetActorId)).ToList();
+        var items = (await Sut.GetAsync(targetActorId)).ToList();
 
         // Assert
-        Assert.Single(items);
-        Assert.Contains(items, item => item.RequestId == requestId);
+        Assert.Equal(3, items.Count);
+        items.Should().NotContain(item => item.RequestId == new SettlementReportRequestId(notUsersRequest1.ToString()));
+        items.Should().NotContain(item => item.RequestId == new SettlementReportRequestId(notUsersRequest2.ToString()));
+        Assert.Collection(
+            items,
+            item => Assert.Equal(targetActorId, item.RequestedByActorId),
+            item =>
+            {
+                Assert.Equal(targetActorId, item.RequestedByActorId);
+                Assert.Equal(requestId2.ToString(), item.RequestId.Id);
+            },
+            item =>
+            {
+                Assert.Equal(targetActorId, item.RequestedByActorId);
+                Assert.Equal(requestId3.ToString(), item.RequestId.Id);
+            });
     }
 
     [Fact]
@@ -162,7 +181,7 @@ public sealed class GetSettlementReportsHandlerIntegrationTests : TestBase<GetSe
 
         var generatedSettlementReportDto = new GeneratedSettlementReportDto(
             requestId,
-            new GeneratedSettlementReportFileDto(requestId, "TestFile.csv"),
+            "TestFile.csv",
             []);
 
         report.MarkAsCompleted(generatedSettlementReportDto);
@@ -172,7 +191,7 @@ public sealed class GetSettlementReportsHandlerIntegrationTests : TestBase<GetSe
         await dbContext.SaveChangesAsync();
 
         var blobClient = _settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
-        var blobName = $"settlement-reports/{requestId.Id}/{generatedSettlementReportDto.FinalReport.FileName}";
+        var blobName = $"settlement-reports/{requestId.Id}/{generatedSettlementReportDto.ReportFileName}";
         await blobClient.UploadBlobAsync(blobName, new BinaryData("data"));
 
         // Act

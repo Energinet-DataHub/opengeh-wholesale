@@ -15,7 +15,7 @@
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
 public sealed record SettlementReportRequestFilterDto(
-    IReadOnlyCollection<CalculationFilterDto> Calculations,
+    IReadOnlyDictionary<string, CalculationId> GridAreas, // NOTE: Cannot type key to GridAreaCode, as serializer is unable to process the type.
     DateTimeOffset PeriodStart,
     DateTimeOffset PeriodEnd,
     string? EnergySupplier,

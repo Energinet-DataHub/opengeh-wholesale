@@ -72,6 +72,7 @@ jobs:
             delta_migrations:
               - 'source/databricks/calculation_engine/package/datamigration/**'
               - 'source/databricks/calculation_engine/tests/datamigration/**'
+              - 'source/databricks/calculation_engine/tests/helpers/spark_sql_migration_helper.py'
             dotnet:
               - '.github/workflows/cd.yml'
               - '.github/workflows/ci-dotnet.yml'

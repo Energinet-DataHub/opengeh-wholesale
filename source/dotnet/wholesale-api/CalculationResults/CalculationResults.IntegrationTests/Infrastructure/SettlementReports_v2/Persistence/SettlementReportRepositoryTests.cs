@@ -40,8 +40,14 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
         await using var writeContext = _databaseManager.CreateDbContext();
         var target = new SettlementReportRepository(writeContext);
 
+        var calculationFilter = new Dictionary<string, CalculationId>
+        {
+            { "805", new CalculationId(Guid.Parse("D116DD8A-898E-48F1-8200-D31D12F82545")) },
+            { "806", new CalculationId(Guid.Parse("D116DD8A-898E-48F1-8200-D31D12F82545")) },
+        };
+
         var requestFilterDto = new SettlementReportRequestFilterDto(
-            [new CalculationFilterDto("D116DD8A-898E-48F1-8200-D31D12F82545", "805"), new CalculationFilterDto("D116DD8A-898E-48F1-8200-D31D12F82545", "806")],
+            calculationFilter,
             new DateTimeOffset(2024, 1, 1, 22, 0, 0, TimeSpan.Zero),
             new DateTimeOffset(2024, 2, 1, 22, 0, 0, TimeSpan.Zero),
             null,
@@ -80,8 +86,14 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
     public async Task DeleteAsync_GivenRequest_RequestIsDeleted()
     {
         // Arrange
+        var calculationFilter = new Dictionary<string, CalculationId>
+        {
+            { "805", new CalculationId(Guid.Parse("D116DD8A-898E-48F1-8200-D31D12F82545")) },
+            { "806", new CalculationId(Guid.Parse("D116DD8A-898E-48F1-8200-D31D12F82545")) },
+        };
+
         var requestFilterDto = new SettlementReportRequestFilterDto(
-            [new CalculationFilterDto("D116DD8A-898E-48F1-8200-D31D12F82545", "805"), new CalculationFilterDto("D116DD8A-898E-48F1-8200-D31D12F82545", "806")],
+            calculationFilter,
             new DateTimeOffset(2024, 1, 1, 22, 0, 0, TimeSpan.Zero),
             new DateTimeOffset(2024, 2, 1, 22, 0, 0, TimeSpan.Zero),
             null,
@@ -151,7 +163,7 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
     }
 
     [Fact]
-    public async Task GetAsync_UserIdActorIdMatches_ReturnsRequests()
+    public async Task GetAsync_ActorIdMatches_ReturnsRequests()
     {
         // arrange
         await PrepareNewRequestAsync();
@@ -163,7 +175,7 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
         var repository = new SettlementReportRepository(context);
 
         // act
-        var actual = (await repository.GetAsync(expectedRequest.UserId, expectedRequest.ActorId)).ToList();
+        var actual = (await repository.GetAsync(expectedRequest.ActorId)).ToList();
 
         // assert
         Assert.Single(actual);
@@ -175,8 +187,14 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
         await using var setupContext = _databaseManager.CreateDbContext();
         var setupRepository = new SettlementReportRepository(setupContext);
 
+        var calculationFilter = new Dictionary<string, CalculationId>
+        {
+            { "805", new CalculationId(Guid.Parse("D116DD8A-898E-48F1-8200-D31D12F82545")) },
+            { "806", new CalculationId(Guid.Parse("D116DD8A-898E-48F1-8200-D31D12F82545")) },
+        };
+
         var requestFilterDto = new SettlementReportRequestFilterDto(
-            [new CalculationFilterDto("D116DD8A-898E-48F1-8200-D31D12F82545", "805"), new CalculationFilterDto("D116DD8A-898E-48F1-8200-D31D12F82545", "806")],
+            calculationFilter,
             new DateTimeOffset(2024, 1, 1, 22, 0, 0, TimeSpan.Zero),
             new DateTimeOffset(2024, 2, 1, 22, 0, 0, TimeSpan.Zero),
             null,

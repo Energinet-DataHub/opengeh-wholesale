@@ -16,6 +16,7 @@ import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 
 from package.common import assert_schema
+from testsession_configuration import FeatureTestsConfiguration
 
 
 def set_column(
@@ -37,12 +38,12 @@ def assert_dataframes_equal(actual: DataFrame, expected: DataFrame) -> None:
 def assert_dataframe_and_schema(
     actual: DataFrame,
     expected: DataFrame,
+    feature_tests_configuration: FeatureTestsConfiguration,
     ignore_nullability: bool = False,
     ignore_column_order: bool = False,
     ignore_decimal_scale: bool = False,
     ignore_decimal_precision: bool = False,
     columns_to_skip: list[str] | None = None,
-    drop_columns_when_actual_and_expected_are_equal: bool = False,
 ) -> None:
     assert actual is not None, "Actual data frame is None"
     assert expected is not None, "Expected data frame is None"
@@ -71,11 +72,19 @@ def assert_dataframe_and_schema(
         expected.printSchema()
         raise
 
+    if feature_tests_configuration.show_actual_and_expected:
+        print("ACTUAL:")
+        actual.show(3000, False)
+        print("EXPECTED:")
+        expected.show(3000, False)
+
     try:
         assert_dataframes_equal(actual, expected)
     except AssertionError:
 
-        if drop_columns_when_actual_and_expected_are_equal:
+        if (
+            not feature_tests_configuration.show_columns_when_actual_and_expected_are_equal
+        ):
             actual, expected = drop_columns_if_the_same(actual, expected)
 
         print("DATA MISMATCH:")

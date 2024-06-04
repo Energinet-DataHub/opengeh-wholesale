@@ -20,7 +20,10 @@ using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.Depende
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry;
+using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Extensions.DependencyInjection;
+using Energinet.DataHub.Wholesale.Orchestrations.Extensions;
+using Energinet.DataHub.Wholesale.Orchestrations.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -44,8 +47,11 @@ var host = new HostBuilder()
         services.AddNodaTimeForApplication();
         services.AddDatabricksJobsForApplication(context.Configuration);
         services
-            .AddOptions<CalculationJobStatusMonitorOptions>()
-            .BindConfiguration(CalculationJobStatusMonitorOptions.SectionName);
+            .AddOptions<CalculationOrchestrationMonitorOptions>()
+            .BindConfiguration(CalculationOrchestrationMonitorOptions.SectionName);
+
+        // Handle Wholesale inbox messages
+        services.AddWholesaleInboxHandling(context.Configuration);
 
         // Modules
         services.AddCalculationsModule(context.Configuration);

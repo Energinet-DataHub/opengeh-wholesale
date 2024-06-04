@@ -16,18 +16,17 @@ import package.calculation.basis_data.schemas as basis_data_schemas
 from features.utils.dataframes import (
     create_energy_result_dataframe,
     create_wholesale_result_dataframe,
+    create_total_monthly_amounts_dataframe,
 )
 from features.utils.dataframes.basis_data.calculations_dataframe import (
-    create_calculations_dataframe,
+    create_calculations,
 )
-from features.utils.readers import BasisDataTableReader, EnergyResultViewReader
 from package.calculation.output.schemas import (
     energy_results_schema,
     wholesale_results_schema,
 )
-from package.infrastructure.paths import (
-    BASIS_DATA_DATABASE_NAME,
-    OUTPUT_DATABASE_NAME,
+from package.calculation.output.schemas.total_monthly_amounts_schema import (
+    total_monthly_amounts_schema,
 )
 
 
@@ -40,53 +39,41 @@ def get_input_specifications() -> dict[str, tuple]:
     """
     return {
         # basis data
-        "metering_point_periods.csv": (
+        "basis_data.metering_point_periods.csv": (
             basis_data_schemas.metering_point_period_schema,
-            BasisDataTableReader.read_metering_point_periods,
             basis_data_dataframes.create_metering_point_periods,
-            BASIS_DATA_DATABASE_NAME,
         ),
-        "time_series_points.csv": (
+        "basis_data.time_series_points.csv": (
             basis_data_schemas.time_series_point_schema,
-            BasisDataTableReader.read_time_series_points,
             basis_data_dataframes.create_time_series_points,
-            BASIS_DATA_DATABASE_NAME,
         ),
-        "calculations.csv": (
+        "basis_data.calculations.csv": (
             basis_data_schemas.calculations_schema,
-            BasisDataTableReader.read_calculations,
-            create_calculations_dataframe,
-            BASIS_DATA_DATABASE_NAME,
+            create_calculations,
         ),
-        "charge_price_information_periods.csv": (
-            basis_data_schemas.charge_master_data_periods_schema,
-            BasisDataTableReader.read_charge_price_information_periods,
+        "basis_data.charge_price_information_periods.csv": (
+            basis_data_schemas.charge_price_information_periods_schema,
             basis_data_dataframes.create_charge_price_information_periods,
-            BASIS_DATA_DATABASE_NAME,
         ),
-        "charge_link_periods.csv": (
+        "basis_data.charge_link_periods.csv": (
             basis_data_schemas.charge_link_periods_schema,
-            BasisDataTableReader.read_charge_link_periods,
             basis_data_dataframes.create_charge_link_periods,
-            BASIS_DATA_DATABASE_NAME,
         ),
-        "charge_price_points.csv": (
+        "basis_data.charge_price_points.csv": (
             basis_data_schemas.charge_price_points_schema,
-            BasisDataTableReader.read_charge_price_points,
-            basis_data_dataframes.create_charge_prices,
-            BASIS_DATA_DATABASE_NAME,
+            basis_data_dataframes.create_charge_price_points,
         ),
         # results
-        "energy_results.csv": (
+        "wholesale_output.energy_results.csv": (
             energy_results_schema,
-            EnergyResultViewReader.read_energy_results,
             create_energy_result_dataframe,
-            OUTPUT_DATABASE_NAME,
         ),
-        "wholesale_results.csv": (
+        "wholesale_output.wholesale_results.csv": (
             wholesale_results_schema,
-            EnergyResultViewReader.read_wholesale_results,
             create_wholesale_result_dataframe,
-            OUTPUT_DATABASE_NAME,
+        ),
+        "wholesale_output.total_monthly_amounts.csv": (
+            total_monthly_amounts_schema,
+            create_total_monthly_amounts_dataframe,
         ),
     }

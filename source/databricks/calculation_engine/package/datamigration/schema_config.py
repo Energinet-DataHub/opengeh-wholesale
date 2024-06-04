@@ -26,6 +26,9 @@ from package.calculation.output.schemas.energy_results_schema import (
 from package.calculation.output.schemas.total_monthly_amounts_schema import (
     total_monthly_amounts_schema,
 )
+from package.calculation.output.schemas.monthly_amounts_schema import (
+    monthly_amounts_schema,
+)
 
 # calculation_output
 from package.calculation.output.schemas.wholesale_results_schema import (
@@ -43,6 +46,10 @@ schema_config = [
             Table(
                 name=paths.ENERGY_RESULT_TABLE_NAME,
                 schema=energy_results_schema,
+            ),
+            Table(
+                name=paths.MONTHLY_AMOUNTS_TABLE_NAME,
+                schema=monthly_amounts_schema,
             ),
             Table(
                 name=paths.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
@@ -82,7 +89,7 @@ schema_config = [
             ),
             Table(
                 name=paths.CHARGE_MASTER_DATA_PERIODS_BASIS_DATA_TABLE_NAME,
-                schema=basis_data_schemas.charge_master_data_periods_schema,
+                schema=basis_data_schemas.charge_price_information_periods_schema,
             ),
             Table(
                 name=paths.CHARGE_PRICE_POINTS_BASIS_DATA_TABLE_NAME,
@@ -103,9 +110,12 @@ schema_config = [
         name=paths.SETTLEMENT_REPORT_DATABASE_NAME,
         tables=[],
         views=[
+            View(
+                name=paths.CURRENT_CALCULATION_TYPE_VERSIONS_SETTLEMENT_REPORT_VIEW_NAME_V1
+            ),
             View(name=paths.METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1),
             View(name=paths.METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME_V1),
-            View(name=paths.ENERGY_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1),
+            View(name=paths.ENERGY_RESULT_POINTS_PER_GA_SETTLEMENT_REPORT_VIEW_NAME_V1),
             View(name=paths.CHARGE_PRICES_SETTLEMENT_REPORT_VIEW_NAME_V1),
             View(name=paths.CHARGE_LINK_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1),
         ],
@@ -115,6 +125,8 @@ schema_config = [
         tables=[],
         views=[
             View(name=paths.EdiResults.ENERGY_RESULT_POINTS_PER_GA_V1_VIEW_NAME),
+            View(name=paths.EdiResults.ENERGY_RESULT_POINTS_PER_BRP_GA_V1_VIEW_NAME),
+            View(name=paths.EdiResults.ENERGY_RESULT_POINTS_PER_ES_BRP_GA_V1_VIEW_NAME),
         ],
     ),
 ]

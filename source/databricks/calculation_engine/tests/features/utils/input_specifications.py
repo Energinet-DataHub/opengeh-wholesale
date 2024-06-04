@@ -45,13 +45,13 @@ def get_data_input_specifications(table_reader: TableReader) -> dict[str, tuple]
             grid_loss_metering_points_schema,
             table_reader.read_grid_loss_metering_points,
         ),
-        "charge_master_data_periods.csv": (
+        "charge_price_information_periods.csv": (
             charge_master_data_periods_schema,
             table_reader.read_charge_master_data_periods,
         ),
         "charge_link_periods.csv": (
             charge_link_periods_schema,
-            table_reader.read_charge_links_periods,
+            table_reader.read_charge_link_periods,
         ),
         "charge_price_points.csv": (
             charge_price_points_schema,

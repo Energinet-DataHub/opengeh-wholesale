@@ -11,30 +11,31 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import pytest
+from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType
+
 from package.calculation.basis_data.schemas.charge_link_periods_schema import (
     charge_link_periods_schema,
 )
 from package.calculation.basis_data.schemas.charge_master_data_periods_schema import (
-    charge_master_data_periods_schema,
+    charge_price_information_periods_schema,
 )
 from package.calculation.basis_data.schemas.charge_price_points_schema import (
     charge_price_points_schema,
 )
-from package.calculation.basis_data.schemas.time_series_point_schema import (
-    time_series_point_schema,
+from package.calculation.basis_data.schemas.grid_loss_metering_points_schema import (
+    grid_loss_metering_points_schema,
 )
 from package.calculation.basis_data.schemas.metering_point_period_schema import (
     metering_point_period_schema,
 )
-from package.calculation.basis_data.schemas.grid_loss_metering_points_schema import (
-    grid_loss_metering_points_schema,
+from package.calculation.basis_data.schemas.time_series_point_schema import (
+    time_series_point_schema,
 )
 from tests.calculation.basis_data.basis_data_test_factory import (
     create_basis_data_factory,
 )
-import pytest
-from pyspark.sql import SparkSession
-from pyspark.sql.types import StructType
 
 
 @pytest.mark.parametrize(
@@ -48,12 +49,12 @@ from pyspark.sql.types import StructType
             "time_series_points",
             time_series_point_schema,
         ),
-        ("charge_links", charge_link_periods_schema),
+        ("charge_link_periods", charge_link_periods_schema),
         (
-            "charge_master_data",
-            charge_master_data_periods_schema,
+            "charge_price_information_periods",
+            charge_price_information_periods_schema,
         ),
-        ("charge_prices", charge_price_points_schema),
+        ("charge_price_points", charge_price_points_schema),
         (
             "grid_loss_metering_points",
             grid_loss_metering_points_schema,

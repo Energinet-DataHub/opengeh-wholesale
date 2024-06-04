@@ -18,6 +18,7 @@ from pyspark.sql.types import (
     StructType,
     ArrayType,
     DecimalType,
+    LongType,
 )
 
 from package.constants import TimeSeriesColname, MeteringPointPeriodColname
@@ -34,12 +35,13 @@ metering_point_time_series_v1_view_schema = StructType(
     [
         StructField(MeteringPointPeriodColname.calculation_id, StringType(), False),
         StructField(MeteringPointPeriodColname.calculation_type, StringType(), False),
+        StructField("calculation_version", LongType(), False),
         StructField(MeteringPointPeriodColname.metering_point_id, StringType(), False),
         StructField(
             MeteringPointPeriodColname.metering_point_type, StringType(), False
         ),
         StructField(MeteringPointPeriodColname.resolution, StringType(), False),
-        StructField(MeteringPointPeriodColname.grid_area, StringType(), False),
+        StructField(MeteringPointPeriodColname.grid_area_code, StringType(), False),
         StructField(MeteringPointPeriodColname.energy_supplier_id, StringType(), True),
         StructField(
             "start_date_time",

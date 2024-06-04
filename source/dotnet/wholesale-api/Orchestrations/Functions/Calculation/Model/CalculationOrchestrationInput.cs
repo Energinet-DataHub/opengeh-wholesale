@@ -20,6 +20,6 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model
 /// An immutable input to start the calculation orchestration.
 /// </summary>
 public sealed record CalculationOrchestrationInput(
-    CalculationJobStatusMonitorOptions JobStatusMonitorOptions,
+    CalculationOrchestrationMonitorOptions OrchestrationMonitorOptions,
     StartCalculationRequestDto StartCalculationRequestDto,
     Guid RequestedByUserId);
