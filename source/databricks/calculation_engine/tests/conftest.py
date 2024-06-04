@@ -91,13 +91,15 @@ def spark(
         .config("spark.sql.ui.retainedExecutions", "1")
         .config("spark.worker.ui.retainedExecutors", "1")
         .config("spark.worker.ui.retainedDrivers", "1")
-        .config("spark.default.parallelism", 1)
+        .config("spark.default.parallelism", 4)
         .config("spark.driver.memory", "2g")
         .config("spark.executor.memory", "2g")
         .config("spark.rdd.compress", False)
         .config("spark.shuffle.compress", False)
         .config("spark.shuffle.spill.compress", False)
-        .config("spark.sql.shuffle.partitions", 1)
+        .config("spark.sql.shuffle.partitions", 4)
+        .config("spark.driver.cores", 2)
+        .config("spark.executor.cores", 2)
         .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
         .config(
             "spark.sql.catalog.spark_catalog",
