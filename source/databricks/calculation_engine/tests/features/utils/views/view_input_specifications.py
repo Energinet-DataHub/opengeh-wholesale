@@ -21,9 +21,15 @@ from features.utils.dataframes import (
 from features.utils.dataframes.basis_data.calculations_dataframe import (
     create_calculations,
 )
+from features.utils.dataframes.monthly_amounts_dataframe import (
+    create_monthly_amounts_dataframe,
+)
 from package.calculation.output.schemas import (
     energy_results_schema,
     wholesale_results_schema,
+)
+from package.calculation.output.schemas.monthly_amounts_schema import (
+    monthly_amounts_schema,
 )
 from package.calculation.output.schemas.total_monthly_amounts_schema import (
     total_monthly_amounts_schema,
@@ -71,6 +77,10 @@ def get_input_specifications() -> dict[str, tuple]:
         "wholesale_output.wholesale_results.csv": (
             wholesale_results_schema,
             create_wholesale_result_dataframe,
+        ),
+        "wholesale_output.monthly_amounts.csv": (
+            monthly_amounts_schema,
+            create_monthly_amounts_dataframe,
         ),
         "wholesale_output.total_monthly_amounts.csv": (
             total_monthly_amounts_schema,
