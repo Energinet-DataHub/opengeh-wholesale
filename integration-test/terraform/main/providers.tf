@@ -16,7 +16,5 @@ provider "azurerm" {
 }
 
 provider "databricks" {
-  auth_type = "pat"
-  host      = "https://${azurerm_databricks_workspace.this.workspace_url}"
-  token     = data.external.databricks_token_integration_test.result.pat_token
+  host = "https://${azurerm_databricks_workspace.this.workspace_url}"
 }

@@ -22,83 +22,116 @@ resource "databricks_sql_global_config" "sql_global_config_integration_test" {
   }
 
   enable_serverless_compute = true # Will be removed in v1.14.0 of the databricks provider
+
+  depends_on = [azurerm_databricks_workspace.this, databricks_token.pat]
 }
 
 resource "databricks_git_credential" "ado_integration_test" {
   git_username          = var.github_username
   git_provider          = "gitHub"
   personal_access_token = var.github_personal_access_token
+
+  depends_on = [azurerm_databricks_workspace.this, databricks_token.pat]
 }
 
 resource "databricks_secret_scope" "migration_scope_integration_test" {
   name = "migration-scope"
+
+  depends_on = [azurerm_databricks_workspace.this, databricks_token.pat]
 }
 
 resource "databricks_secret" "spn_app_id_integration_test" {
   key          = "spn_app_id"
   string_value = azuread_application.app_ci.client_id
   scope        = databricks_secret_scope.migration_scope_integration_test.id
+
+  depends_on = [azurerm_databricks_workspace.this, databricks_token.pat]
 }
 
 resource "databricks_secret" "spn_app_secret_integration_test" {
   key          = "spn_app_secret"
   string_value = azuread_application_password.ap_spn_ci.value
   scope        = databricks_secret_scope.migration_scope_integration_test.id
+
+  depends_on = [azurerm_databricks_workspace.this, databricks_token.pat]
 }
 
 resource "databricks_secret" "appi_instrumentation_key_integration_test" {
   key          = "appi_instrumentation_key"
   string_value = azurerm_application_insights.this.instrumentation_key
   scope        = databricks_secret_scope.migration_scope_integration_test.id
+
+  depends_on = [azurerm_databricks_workspace.this, databricks_token.pat]
 }
 
 resource "databricks_secret" "st_dh2data_storage_account_integration_test" {
   key          = "st_dh2data_storage_account"
   string_value = azurerm_storage_account.this.name
   scope        = databricks_secret_scope.migration_scope_integration_test.id
+
+  depends_on = [azurerm_databricks_workspace.this, databricks_token.pat]
 }
 
 resource "databricks_secret" "st_shared_datalake_account_integration_test" {
   key          = "st_shared_datalake_account"
   string_value = azurerm_storage_account.this.name
   scope        = databricks_secret_scope.migration_scope_integration_test.id
+
+  depends_on = [azurerm_databricks_workspace.this, databricks_token.pat]
 }
 
 resource "databricks_secret" "st_migration_datalake_account_integration_test" {
   key          = "st_migration_datalake_account"
   string_value = azurerm_storage_account.this.name
   scope        = databricks_secret_scope.migration_scope_integration_test.id
+
+  depends_on = [azurerm_databricks_workspace.this, databricks_token.pat]
 }
 
 resource "databricks_secret" "tenant_id_integration_test" {
   key          = "tenant_id"
   string_value = data.azurerm_client_config.this.tenant_id
   scope        = databricks_secret_scope.migration_scope_integration_test.id
+
+  depends_on = [azurerm_databricks_workspace.this, databricks_token.pat]
 }
 
 resource "databricks_secret" "resource_group_name_integration_test" {
   key          = "resource_group_name"
   string_value = azurerm_resource_group.this.name
   scope        = databricks_secret_scope.migration_scope_integration_test.id
+
+  depends_on = [azurerm_databricks_workspace.this, databricks_token.pat]
 }
 
 resource "databricks_secret" "subscription_id_integration_test" {
   key          = "subscription_id"
   string_value = data.azurerm_client_config.this.subscription_id
   scope        = databricks_secret_scope.migration_scope_integration_test.id
+
+  depends_on = [azurerm_databricks_workspace.this, databricks_token.pat]
 }
 
 resource "databricks_secret" "location_integration_test" {
   key          = "location"
   string_value = azurerm_resource_group.this.location
   scope        = databricks_secret_scope.migration_scope_integration_test.id
+
+  depends_on = [azurerm_databricks_workspace.this, databricks_token.pat]
 }
 
-data "external" "databricks_token_integration_test" {
-  program = ["pwsh", "${path.cwd}/scripts/generate-pat-token.ps1", azurerm_databricks_workspace.this.id, "https://${azurerm_databricks_workspace.this.workspace_url}"]
-  depends_on = [
-    azurerm_databricks_workspace.this
-  ]
+resource "time_rotating" "this" {
+  rotation_days = 45
+}
+
+resource "databricks_token" "pat" {
+  comment = "Terraform (created: ${time_rotating.this.rfc3339})"
+
+  # Token is valid for 120 days but is rotated after 45 days.
+  # Run `terraform apply` within 120 days to refresh before it expires.
+  lifetime_seconds = 120 * 24 * 60 * 60
+
+  depends_on = [azurerm_databricks_workspace.this]
 }
 
 resource "databricks_instance_pool" "migration_pool_integration_test" {
@@ -108,7 +141,14 @@ resource "databricks_instance_pool" "migration_pool_integration_test" {
   node_type_id                          = "Standard_E4d_v4"
   idle_instance_autotermination_minutes = 60
   preloaded_spark_versions              = [local.databricks_runtime_version]
-  depends_on = [ azurerm_databricks_workspace.this ]
+  depends_on                            = [azurerm_databricks_workspace.this, databricks_token.pat]
+}
+
+# Fixes: waiting for organization to be ready
+resource "time_sleep" "wait_for_instance_pool" {
+  create_duration = "60s"
+
+  depends_on = [databricks_instance_pool.migration_pool_integration_test]
 }
 
 resource "databricks_job" "migration_workflow" {
@@ -154,7 +194,7 @@ resource "databricks_job" "migration_workflow" {
   }
 
   depends_on = [
-    databricks_instance_pool.migration_pool_integration_test
+    time_sleep.wait_for_instance_pool, azurerm_databricks_workspace.this, databricks_token.pat
   ]
 }
 
@@ -170,6 +210,8 @@ resource "databricks_sql_endpoint" "sql_endpoint_integration_test" {
   channel {
     name = "CHANNEL_NAME_PREVIEW"
   }
+
+  depends_on = [azurerm_databricks_workspace.this, databricks_token.pat]
 }
 
 resource "databricks_cluster" "shared_all_purpose_integration_test" {
@@ -193,6 +235,8 @@ resource "databricks_cluster" "shared_all_purpose_integration_test" {
     "DATALAKE_STORAGE_ACCOUNT"        = azurerm_storage_account.this.name
     "DATALAKE_SHARED_STORAGE_ACCOUNT" = azurerm_storage_account.this.name
   }
+
+  depends_on = [azurerm_databricks_workspace.this, databricks_token.pat]
 }
 
 resource "azurerm_key_vault_secret" "kvs_dbw_sql_endpoint_id" {
@@ -213,7 +257,7 @@ resource "azurerm_key_vault_secret" "kvs_dbw_sql_endpoint_id" {
 
 resource "azurerm_key_vault_secret" "kvs_databricks_dbw_domain_test_workspace_token" {
   name         = "dbw-domain-test-workspace-token"
-  value        = data.external.databricks_token_integration_test.result.pat_token
+  value        = databricks_token.pat.token_value
   key_vault_id = azurerm_key_vault.this.id
 
   lifecycle {
@@ -277,7 +321,7 @@ resource "azurerm_key_vault_secret" "kvs_databricks_dbw_domain_test_storage_acco
 
 resource "azurerm_key_vault_secret" "kvs_databricks_dbw_subsystem_test_workspace_token" {
   name         = "dbw-subsystem-test-workspace-token"
-  value        = data.external.databricks_token_integration_test.result.pat_token
+  value        = databricks_token.pat.token_value
   key_vault_id = azurerm_key_vault.this.id
 
   lifecycle {
