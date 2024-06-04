@@ -33,20 +33,27 @@ public sealed class EnergyResultFileGenerator : ISettlementReportFileGenerator
 
     public string FileExtension => ".csv";
 
-    public async Task WriteAsync(SettlementReportRequestFilterDto filter, StreamWriter destination)
+    public Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter)
+    {
+        return Task.FromResult(1);
+    }
+
+    public async Task WriteAsync(SettlementReportRequestFilterDto filter, int chunkOffset, StreamWriter destination)
     {
         var csvHelper = new CsvWriter(destination, new CultureInfo(filter.CsvFormatLocale ?? "en-US"));
         csvHelper.Context.RegisterClassMap<SettlementReportEnergyResultRowMap>();
 
         await using (csvHelper.ConfigureAwait(false))
         {
-            csvHelper.WriteHeader<SettlementReportEnergyResultRow>();
-            await csvHelper.NextRecordAsync().ConfigureAwait(false);
+            if (chunkOffset == 0)
+            {
+                csvHelper.WriteHeader<SettlementReportEnergyResultRowMap>();
+            }
 
             await foreach (var record in _dataSource.TryReadBalanceFixingResultsAsync(filter).ConfigureAwait(false))
             {
-                csvHelper.WriteRecord(record);
                 await csvHelper.NextRecordAsync().ConfigureAwait(false);
+                csvHelper.WriteRecord(record);
             }
         }
     }

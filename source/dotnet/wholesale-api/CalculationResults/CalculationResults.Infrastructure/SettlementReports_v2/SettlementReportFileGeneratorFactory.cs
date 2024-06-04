@@ -15,6 +15,7 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Generators;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 
@@ -31,8 +32,18 @@ public sealed class SettlementReportFileGeneratorFactory : ISettlementReportFile
     {
         switch (fileContent)
         {
-            case SettlementReportFileContent.BalanceFixingResult:
+            case SettlementReportFileContent.EnergyResultLatestPerDay:
                 return new EnergyResultFileGenerator(_dataRepository);
+            case SettlementReportFileContent.EnergyResultForCalculationId:
+                return new EnergyResultFileGenerator(_dataRepository);
+            case SettlementReportFileContent.WholesaleResult:
+                return new WholesaleResultFileGenerator(_dataRepository, CalculationType.WholesaleFixing);
+            case SettlementReportFileContent.FirstCorrectionResult:
+                return new WholesaleResultFileGenerator(_dataRepository, CalculationType.FirstCorrectionSettlement);
+            case SettlementReportFileContent.SecondCorrectionResult:
+                return new WholesaleResultFileGenerator(_dataRepository, CalculationType.SecondCorrectionSettlement);
+            case SettlementReportFileContent.ThirdCorrectionResult:
+                return new WholesaleResultFileGenerator(_dataRepository, CalculationType.ThirdCorrectionSettlement);
             default:
                 throw new ArgumentOutOfRangeException(nameof(fileContent), fileContent, null);
         }

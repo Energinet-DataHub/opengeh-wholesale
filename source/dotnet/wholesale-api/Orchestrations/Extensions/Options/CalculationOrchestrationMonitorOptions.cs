@@ -17,20 +17,25 @@ using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation;
 namespace Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
 
 /// <summary>
-/// Options for the CalculationJob status monitor implemented as part of the
+/// Options for the calculation orchestration monitor loops implemented as part of the
 /// <see cref="CalculationOrchestration"/>.
 /// </summary>
-public class CalculationJobStatusMonitorOptions
+public class CalculationOrchestrationMonitorOptions
 {
-    public const string SectionName = "CalculationJobStatusMonitor";
+    public const string SectionName = "CalculationOrchestrationMonitor";
 
     /// <summary>
-    /// Time between each call to get the job status.
+    /// Time between each call to get the calculation job status.
     /// </summary>
-    public int PollingIntervalInSeconds { get; set; } = 60;
+    public int CalculationJobStatusPollingIntervalInSeconds { get; set; } = 60; // 1 minute
 
     /// <summary>
-    /// Expiry time of the job status monitor (loop).
+    /// Expiry time of the calculation job status monitor (loop).
     /// </summary>
-    public int ExpiryTimeInSeconds { get; set; } = 3600 * 12;
+    public int CalculationJobStatusExpiryTimeInSeconds { get; set; } = 3600 * 12; // 1 hour * 12
+
+    /// <summary>
+    /// Expiry time of the actor messages enqueuing monitor.
+    /// </summary>
+    public int MessagesEnqueuingExpiryTimeInSeconds { get; set; } = 3600 * 12; // 1 hour * 12
 }

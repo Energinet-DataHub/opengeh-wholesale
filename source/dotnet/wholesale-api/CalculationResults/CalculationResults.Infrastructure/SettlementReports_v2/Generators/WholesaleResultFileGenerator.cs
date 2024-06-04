@@ -27,15 +27,22 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 public sealed class WholesaleResultFileGenerator : ISettlementReportFileGenerator
 {
     private readonly ISettlementReportDataRepository _dataSource;
+    private readonly CalculationType _calculationType;
 
-    public WholesaleResultFileGenerator(ISettlementReportDataRepository dataSource)
+    public WholesaleResultFileGenerator(ISettlementReportDataRepository dataSource, CalculationType calculationType)
     {
         _dataSource = dataSource;
+        _calculationType = calculationType;
     }
 
     public string FileExtension => ".csv";
 
-    public async Task WriteAsync(SettlementReportRequestFilterDto filter, StreamWriter destination)
+    public Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter)
+    {
+        return Task.FromResult(1);
+    }
+
+    public async Task WriteAsync(SettlementReportRequestFilterDto filter, int chunkOffset, StreamWriter destination)
     {
         var csvHelper = new CsvWriter(destination, new CultureInfo(filter.CsvFormatLocale ?? "en-US"));
         csvHelper.Context.RegisterClassMap<SettlementReportWholesaleResultRowMap>();

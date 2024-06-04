@@ -52,9 +52,12 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
 
         var actual = await Sut.CountAsync(
             new SettlementReportRequestFilterDto(
-                [
-                    new CalculationFilterDto("f8af5e30-3c65-439e-8fd0-1da0c40a26d3", "403"),
-                ],
+                new Dictionary<string, CalculationId>()
+                {
+                    {
+                        "403", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d3"))
+                    },
+                },
                 DateTimeOffset.Parse("2024-01-01T02:00:00.000+00:00"),
                 DateTimeOffset.Parse("2024-01-03T02:00:00.000+00:00"),
                 null,
@@ -76,9 +79,12 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
 
         var results = await Sut.GetAsync(
             new SettlementReportRequestFilterDto(
-                [
-                    new CalculationFilterDto("f8af5e30-3c65-439e-8fd0-1da0c40a26d3", "404"),
-                ],
+                new Dictionary<string, CalculationId>()
+                {
+                    {
+                        "404", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d3"))
+                    },
+                },
                 DateTimeOffset.Parse("2024-01-02T00:00:00.000+00:00"),
                 DateTimeOffset.Parse("2024-01-03T00:00:00.000+00:00"),
                 null,

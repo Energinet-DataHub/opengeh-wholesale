@@ -32,7 +32,12 @@ public sealed class ChargeLinkPeriodsFileGenerator : ISettlementReportFileGenera
 
     public string FileExtension => ".csv";
 
-    public async Task WriteAsync(SettlementReportRequestFilterDto filter, StreamWriter destination)
+    public Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter)
+    {
+        return Task.FromResult(1);
+    }
+
+    public async Task WriteAsync(SettlementReportRequestFilterDto filter, int chunkOffset, StreamWriter destination)
     {
         var csvHelper = new CsvWriter(destination, new CultureInfo(filter.CsvFormatLocale ?? "en-US"));
         csvHelper.Context.RegisterClassMap<SettlementReportChargeLinkPeriodsResultRowMap>();

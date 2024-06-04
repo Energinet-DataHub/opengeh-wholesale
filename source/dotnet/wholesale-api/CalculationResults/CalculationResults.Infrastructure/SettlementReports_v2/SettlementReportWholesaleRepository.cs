@@ -63,11 +63,11 @@ public sealed class SettlementReportWholesaleRepository : ISettlementReportWhole
 
     private static SettlementReportWholesaleResultQueryFilter ParseFilter(SettlementReportRequestFilterDto filter)
     {
-        var calculationFilter = filter.Calculations.Single();
+        var (gridAreaCode, calculationId) = filter.GridAreas.Single();
 
         return new SettlementReportWholesaleResultQueryFilter(
-            Guid.Parse(calculationFilter.CalculationId!),
-            calculationFilter.GridAreaCode,
+            calculationId.Id,
+            gridAreaCode,
             CalculationType.BalanceFixing,
             filter.PeriodStart.ToInstant(),
             filter.PeriodEnd.ToInstant());
