@@ -74,72 +74,51 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
         var dbContext = Fixture.DatabaseManager.CreateDbContext();
 
         // => Databricks Jobs API
-        var jobId = Random.Shared.Next(1, 1000);
-        var runId = Random.Shared.Next(1000, 2000);
-
         // The current databrick calculation state. Can be null, "PENDING", "RUNNING", "TERMINATED" (success)
         // The mock response will wait for the value to not be null before returning
         var calculationJobStateCallback = new CallbackValue<string?>(null);
-        Fixture.MockServer
-            .MockJobsList(jobId)
-            .MockJobsGet(jobId)
-            .MockJobsRunNow(runId)
-            // ReSharper disable once AccessToModifiedClosure -- We need to modify calculation job state in outer scope
-            .MockJobsRunsGet(runId, calculationJobStateCallback.GetValue);
+        Fixture.MockServer.MockJobRunStatusResponse(calculationJobStateCallback.GetValue);
 
         // => Databricks SQL Statement API
-        var chunkIndex = 0;
-        var statementId = Guid.NewGuid().ToString();
-        var path = "GetDatabricksDataPath";
-
         // This is the calculationId returned in the energyResult from the mocked databricks.
-        // It should match the ID returned by the http client calling 'api/StartCalculation'.
+        // It should be set to the ID returned by the http client calling 'api/StartCalculation'.
         // The mocked response waits for this to not be null before responding, so it must be updated
         // when we have the actual id.
-        Guid? calculationId = null;
-
-        Fixture.MockServer
-            .MockEnergySqlStatements(statementId, chunkIndex)
-            .MockEnergySqlStatementsResultChunks(statementId, chunkIndex, path)
-            // ReSharper disable once AccessToModifiedClosure -- We need to modify calculation id in outer scope
-            // when we get a response from 'api/StartCalculation'
-            .MockEnergySqlStatementsResultStream(path, () => calculationId);
+        var calculationIdCallback = new CallbackValue<Guid?>(null);
+        Fixture.MockServer.MockEnergyResultsResponse(calculationIdCallback.GetValue);
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;
-        using var startCalculationResponse = await Fixture.AppHostManager.StartCalculationAsync();
+        var calculationId = await Fixture.AppHostManager.StartCalculationAsync();
+        calculationIdCallback.SetValue(calculationId);
 
         // Assert
-        // => Verify endpoint response
-        startCalculationResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        calculationId = await startCalculationResponse.Content.ReadFromJsonAsync<Guid>();
-
         // => Verify expected behaviour by searching the orchestration history
         var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeOrchestrationCreated);
 
         // => Function has the expected calculation id
         var calculationMetadata = orchestrationStatus.CustomStatus.ToObject<CalculationMetadata>();
-        calculationMetadata!.Id.Should().Be(calculationId.Value);
+        calculationMetadata!.Id.Should().Be(calculationId);
 
         // => Calculation job hasn't started yet, state should be Scheduled
-        var isScheduledState = await dbContext.WaitForCalculationWithState(calculationId.Value, CalculationOrchestrationState.Scheduled, Fixture.TestLogger);
+        var isScheduledState = await dbContext.WaitForCalculationWithState(calculationId, CalculationOrchestrationState.Scheduled, Fixture.TestLogger);
         isScheduledState.ActualState.Should().Be(CalculationOrchestrationState.Scheduled);
 
         // => Calculation job is "PENDING", state should be Calculating
         calculationJobStateCallback.SetValue("PENDING");
-        var isStillScheduledCalculatingState = await dbContext.WaitForCalculationWithState(calculationId.Value, CalculationOrchestrationState.Scheduled, Fixture.TestLogger);
+        var isStillScheduledCalculatingState = await dbContext.WaitForCalculationWithState(calculationId, CalculationOrchestrationState.Scheduled, Fixture.TestLogger);
         isStillScheduledCalculatingState.ActualState.Should().Be(CalculationOrchestrationState.Scheduled);
 
         // => Calculation job is "RUNNING", state should be Calculating
         calculationJobStateCallback.SetValue("RUNNING");
-        var isCalculatingState = await dbContext.WaitForCalculationWithState(calculationId.Value, CalculationOrchestrationState.Calculating, Fixture.TestLogger);
+        var isCalculatingState = await dbContext.WaitForCalculationWithState(calculationId, CalculationOrchestrationState.Calculating, Fixture.TestLogger);
         isCalculatingState.ActualState.Should().Be(CalculationOrchestrationState.Calculating);
 
         // => Calculation job is "TERMINATED" (success), state should be Calculated or ActorMessagesEnqueuing
         // The state changes from Calculated to ActorMessagesEnqueuing immediately, so we need to check for both states.
         calculationJobStateCallback.SetValue("TERMINATED");
         var isCalculatedState = await dbContext.WaitForCalculationWithOneOfStates(
-            calculationId.Value,
+            calculationId,
             [CalculationOrchestrationState.Calculated, CalculationOrchestrationState.ActorMessagesEnqueuing],
             Fixture.TestLogger);
         isCalculatedState.ActualState.Should().BeOneOf(
@@ -149,7 +128,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
         // => When the calculation result is complete, state should be ActorMessagesEnqueuing
         // We need to wait for the state change from Calculated to ActorMessagesEnqueuing if it hasn't already
         // happened in previous step
-        var isActorMessagesEnqueuingState = await dbContext.WaitForCalculationWithState(calculationId.Value, CalculationOrchestrationState.ActorMessagesEnqueuing, Fixture.TestLogger);
+        var isActorMessagesEnqueuingState = await dbContext.WaitForCalculationWithState(calculationId, CalculationOrchestrationState.ActorMessagesEnqueuing, Fixture.TestLogger);
         isActorMessagesEnqueuingState.ActualState.Should().Be(CalculationOrchestrationState.ActorMessagesEnqueuing);
 
         // => Raise "ActorMessagesEnqueued" event to the orchestrator
@@ -160,12 +139,13 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
             {
                 CalculationId = calculationId.ToString(),
                 OrchestrationInstanceId = orchestrationStatus.InstanceId,
+                Success = true,
             });
 
         // => Orchestration is "ActorMessagesEnqueued" or "Completed", state should be ActorMessagesEnqueued or Completed
         // The state changes from ActorMessagesEnqueued to Completed immediately, so we need to check for both states.
         var isActorMessagesEnqueuedState = await dbContext.WaitForCalculationWithOneOfStates(
-            calculationId.Value,
+            calculationId,
             [CalculationOrchestrationState.ActorMessagesEnqueued, CalculationOrchestrationState.Completed],
             Fixture.TestLogger);
         isActorMessagesEnqueuedState.ActualState.Should().BeOneOf(
@@ -177,7 +157,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
         var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(
             orchestrationStatus.InstanceId,
             TimeSpan.FromMinutes(3));
-        var isCompletedState = await dbContext.WaitForCalculationWithState(calculationId.Value, CalculationOrchestrationState.Completed, Fixture.TestLogger);
+        var isCompletedState = await dbContext.WaitForCalculationWithState(calculationId, CalculationOrchestrationState.Completed, Fixture.TestLogger);
         isCompletedState.ActualState.Should().Be(CalculationOrchestrationState.Completed);
         completeOrchestrationStatus.Output.ToObject<string>().Should().Be("Success");
 
@@ -194,11 +174,77 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
 
                 // The current implementation takes the calculationId from the databricks row,
                 // which is mocked in this scenario. Giving us a "false" comparison here.
-                return calculationCompleted.CalculationId == calculationId.Value.ToString();
+                return calculationCompleted.CalculationId == calculationId.ToString();
             })
             .VerifyCountAsync(1);
 
         var wait = verifyServiceBusMessages.Wait(TimeSpan.FromMinutes(1));
         wait.Should().BeTrue("We did not send the expected message on the ServiceBus");
+    }
+
+    /// <summary>
+    /// Verifies that:
+    ///  - The calculation state is set to ActorMessagesEnqueuingFailed.
+    ///  - The orchestration can complete a full run.
+    ///  - The orchestrator completes with the expected error status.
+    /// </summary>
+    [Fact]
+    public async Task GivenActorMessagesEnqueuingFailed_WhenHandlingCalculationOrchestration_OrchestrationCompletesWithActorMessagesEnqueuingFailed()
+    {
+        // Arrange
+        var dbContext = Fixture.DatabaseManager.CreateDbContext();
+
+        // => Databricks Jobs API, mock job run as terminated (success)
+        Fixture.MockServer.MockJobRunStatusResponse("TERMINATED", "SUCCESS");
+
+        // The calculation id is a callback since we can only to set it after the calculation is started
+        // (we get the calculation id from the /api/StartCalculation response)
+        var calculationIdCallback = new CallbackValue<Guid?>(null);
+
+        // => Databricks SQL Statement API
+        Fixture.MockServer.MockEnergyResultsResponse(calculationIdCallback.GetValue);
+
+        // Act
+        var beforeOrchestrationCreated = DateTime.UtcNow;
+        var calculationId = await Fixture.AppHostManager.StartCalculationAsync();
+        calculationIdCallback.SetValue(calculationId);
+
+        // Assert
+        // => Get orchestration status for started orchestration
+        var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeOrchestrationCreated);
+
+        // => Wait for ActorMessagesEnqueuing state
+        await Fixture.DurableClient.WaitForCustomStatusAsync<CalculationMetadata>(
+                orchestrationStatus.InstanceId,
+                s => s.OrchestrationProgress == "ActorMessagesEnqueuing");
+
+        // => Raise "ActorMessagesEnqueued" failed event to the orchestrator
+        await Fixture.DurableClient.RaiseEventAsync(
+            orchestrationStatus.InstanceId,
+            ActorMessagesEnqueuedV1.EventName,
+            new ActorMessagesEnqueuedV1
+            {
+                CalculationId = calculationId.ToString(),
+                OrchestrationInstanceId = orchestrationStatus.InstanceId,
+                Success = false,
+            });
+
+        // => Wait for ActorMessagesEnqueuingFailed state
+        var isActorMessagesEnqueuingFailedState = await dbContext.WaitForCalculationWithState(
+            calculationId,
+            CalculationOrchestrationState.ActorMessagesEnqueuingFailed,
+            Fixture.TestLogger);
+        isActorMessagesEnqueuingFailedState.ActualState.Should().Be(CalculationOrchestrationState.ActorMessagesEnqueuingFailed);
+
+        // => Orchestration is completed, state should still be ActorMessagesEnqueuingFailed and orchestration output should be error
+        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(
+            orchestrationStatus.InstanceId,
+            TimeSpan.FromMinutes(3));
+        var isStillActorMessagesEnqueuingFailedState = await dbContext.WaitForCalculationWithState(
+                calculationId,
+                CalculationOrchestrationState.ActorMessagesEnqueuingFailed,
+                Fixture.TestLogger);
+        isStillActorMessagesEnqueuingFailedState.ActualState.Should().Be(CalculationOrchestrationState.ActorMessagesEnqueuingFailed);
+        completeOrchestrationStatus.Output.ToObject<string>().Should().Be("Error: ActorMessagesEnqueuedV1 event failed");
     }
 }

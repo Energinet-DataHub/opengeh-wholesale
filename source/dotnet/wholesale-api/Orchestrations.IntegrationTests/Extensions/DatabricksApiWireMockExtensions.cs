@@ -161,12 +161,21 @@ public static class DatabricksApiWireMockExtensions
     /// <summary>
     /// JobStatusLifeCycle goes through "Pending" -> "Running" -> "Completed".
     /// </summary>
-    public static WireMockServer MockJobsRunsGetLifeCycleScenario(this WireMockServer server, long runId)
+    public static WireMockServer MockJobsRunsGetLifeCycleScenario(this WireMockServer server, int? runId = null)
     {
+        var jobId = Random.Shared.Next(1, 1000);
+
+        runId ??= Random.Shared.Next(1000, 2000);
+
+        server
+            .MockJobsList(jobId)
+            .MockJobsGet(jobId)
+            .MockJobsRunNow(runId.Value);
+
         var request = Request
             .Create()
             .WithPath("/api/2.1/jobs/runs/get")
-            .WithParam("run_id", runId.ToString())
+            .WithParam("run_id", runId.Value.ToString())
             .UsingGet();
 
         // Pending
@@ -178,7 +187,7 @@ public static class DatabricksApiWireMockExtensions
                 .Create()
                 .WithStatusCode(HttpStatusCode.OK)
                 .WithHeader(HeaderNames.ContentType, "application/json")
-                .WithBody(BuildJobsRunsGetJson(runId, "PENDING", "EXCLUDED")));
+                .WithBody(BuildJobsRunsGetJson(runId.Value, "PENDING", "EXCLUDED")));
 
         // Running
         server
@@ -190,7 +199,7 @@ public static class DatabricksApiWireMockExtensions
                 .Create()
                 .WithStatusCode(HttpStatusCode.OK)
                 .WithHeader(HeaderNames.ContentType, "application/json")
-                .WithBody(BuildJobsRunsGetJson(runId, "RUNNING", "EXCLUDED")));
+                .WithBody(BuildJobsRunsGetJson(runId.Value, "RUNNING", "EXCLUDED")));
 
         // Completed
         server
@@ -202,7 +211,7 @@ public static class DatabricksApiWireMockExtensions
                 .Create()
                 .WithStatusCode(HttpStatusCode.OK)
                 .WithHeader(HeaderNames.ContentType, "application/json")
-                .WithBody(BuildJobsRunsGetJson(runId, "TERMINATED", "SUCCESS")));
+                .WithBody(BuildJobsRunsGetJson(runId.Value, "TERMINATED", "SUCCESS")));
 
         return server;
     }
@@ -296,6 +305,77 @@ public static class DatabricksApiWireMockExtensions
         server
             .Given(request)
             .RespondWith(response);
+        return server;
+    }
+
+    public static WireMockServer MockEnergyResultsResponse(
+        this WireMockServer server,
+        Guid? calculationId = null)
+    {
+        // => Databricks SQL Statement API
+        var chunkIndex = 0;
+        var statementId = Guid.NewGuid().ToString();
+        var path = "GetDatabricksDataPath";
+
+        server
+            .MockEnergySqlStatements(statementId, chunkIndex)
+            .MockEnergySqlStatementsResultChunks(statementId, chunkIndex, path)
+            .MockEnergySqlStatementsResultStream(path, calculationId);
+
+        return server;
+    }
+
+    public static WireMockServer MockEnergyResultsResponse(
+        this WireMockServer server,
+        Func<Guid?> getCalculationIdCallback)
+    {
+        // => Databricks SQL Statement API
+        var chunkIndex = 0;
+        var statementId = Guid.NewGuid().ToString();
+        var path = "GetDatabricksDataPath";
+
+        server
+            .MockEnergySqlStatements(statementId, chunkIndex)
+            .MockEnergySqlStatementsResultChunks(statementId, chunkIndex, path)
+            .MockEnergySqlStatementsResultStream(path, getCalculationIdCallback);
+
+        return server;
+    }
+
+    public static WireMockServer MockJobRunStatusResponse(
+        this WireMockServer server,
+        string jobRunState,
+        string resultState)
+    {
+        // => Databricks Jobs API
+        var jobId = Random.Shared.Next(1, 1000);
+        var runId = Random.Shared.Next(1000, 2000);
+
+        // => Mock job run as terminated (success)
+        server
+            .MockJobsList(jobId)
+            .MockJobsGet(jobId)
+            .MockJobsRunNow(runId)
+            .MockJobsRunsGet(runId, jobRunState, resultState);
+
+        return server;
+    }
+
+    public static WireMockServer MockJobRunStatusResponse(
+        this WireMockServer server,
+        Func<string?> jobRunStateCallback)
+    {
+        // => Databricks Jobs API
+        var jobId = Random.Shared.Next(1, 1000);
+        var runId = Random.Shared.Next(1000, 2000);
+
+        // => Mock job run as terminated (success)
+        server
+            .MockJobsList(jobId)
+            .MockJobsGet(jobId)
+            .MockJobsRunNow(runId)
+            .MockJobsRunsGet(runId, jobRunStateCallback);
+
         return server;
     }
 
