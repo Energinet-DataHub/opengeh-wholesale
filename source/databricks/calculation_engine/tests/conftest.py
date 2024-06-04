@@ -100,6 +100,7 @@ def spark(
         .config("spark.sql.shuffle.partitions", 4)
         .config("spark.driver.cores", 2)
         .config("spark.executor.cores", 2)
+        .config("spark.dynamicAllocation.enabled", "true")
         .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
         .config(
             "spark.sql.catalog.spark_catalog",
