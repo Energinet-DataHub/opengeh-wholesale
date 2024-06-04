@@ -89,8 +89,3 @@ class WholesaleResultsV1ColumnNames:
     charge_type = WholesaleResultColumnNames.charge_type
     charge_code = WholesaleResultColumnNames.charge_code
     charge_owner_id = WholesaleResultColumnNames.charge_owner_id
-
-
-class CurrentCalculationTypeVersionsV1ColumnNames:
-    calculation_type = CalculationsColumnName.calculation_type
-    version = CalculationsColumnName.version

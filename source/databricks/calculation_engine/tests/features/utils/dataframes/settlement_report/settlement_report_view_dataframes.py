@@ -235,16 +235,12 @@ def create_current_balance_fixing_calculation_version_v1_view(
     spark: SparkSession, df: DataFrame
 ) -> DataFrame:
 
-    from features.utils.dataframes.settlement_report.settlement_report_view_column_names import (
-        CurrentCalculationTypeVersionsV1ColumnNames,
-    )
-
     # Don't remove. Believed needed because this function is an argument to the setup function
     # and therefore the following packages are not automatically included.
 
     df = df.withColumn(
-        CurrentCalculationTypeVersionsV1ColumnNames.version,
-        col(CurrentCalculationTypeVersionsV1ColumnNames.version).cast(LongType()),
+        "calculation_version",
+        col("calculation_version").cast(LongType()),
     )
 
     return spark.createDataFrame(
