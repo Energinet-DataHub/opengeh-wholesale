@@ -37,35 +37,53 @@ public sealed class SettlementReportWholesaleResultQueryStatement : DatabricksSt
 
     protected override string GetSqlStatement()
     {
-        return $"""
-                    SELECT {string.Join(", ", [
-                        SettlementReportWholesaleViewColumns.CalculationId,
-                        SettlementReportWholesaleViewColumns.CalculationType,
-                        SettlementReportWholesaleViewColumns.GridArea,
-                        SettlementReportWholesaleViewColumns.EnergySupplierId,
-                        SettlementReportWholesaleViewColumns.StartDateTime,
-                        SettlementReportWholesaleViewColumns.ChargeType,
-                        SettlementReportWholesaleViewColumns.ChargeCode,
-                        SettlementReportWholesaleViewColumns.ChargeOwnerId,
-                        SettlementReportWholesaleViewColumns.Resolution,
-                        SettlementReportWholesaleViewColumns.QuantityUnit,
-                        SettlementReportWholesaleViewColumns.Currency,
-                        SettlementReportWholesaleViewColumns.Quantity,
-                        SettlementReportWholesaleViewColumns.Price,
-                        SettlementReportWholesaleViewColumns.Amount,
-                        SettlementReportWholesaleViewColumns.MeteringPointType,
-                        SettlementReportWholesaleViewColumns.SettlementMethod,
-                    ])}
-                    FROM
-                        {_deltaTableOptions.Value.SCHEMA_NAME}.{_deltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME}
-                    WHERE 
-                        {SettlementReportWholesaleViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
-                        {SettlementReportWholesaleViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND
-                        {SettlementReportWholesaleViewColumns.StartDateTime} >= '{_filter.PeriodStart}' AND
-                        {SettlementReportWholesaleViewColumns.StartDateTime} < '{_filter.PeriodEnd}' AND
-                        {SettlementReportWholesaleViewColumns.CalculationId} = '{_filter.CalculationId}'
-                    ORDER BY
-                        {SettlementReportWholesaleViewColumns.StartDateTime} LIMIT {_take} OFFSET {_skip}
-                """;
+        var calculationResult =
+            $"""
+                 SELECT DISTINCT({SettlementReportWholesaleViewColumns.ResultId})
+                 FROM
+                     {_deltaTableOptions.Value.SCHEMA_NAME}.{_deltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME}
+                 WHERE 
+                     {SettlementReportWholesaleViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
+                     {SettlementReportWholesaleViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND
+                     {SettlementReportWholesaleViewColumns.Time} >= '{_filter.PeriodStart}' AND
+                     {SettlementReportWholesaleViewColumns.Time} < '{_filter.PeriodEnd}' AND
+                     {SettlementReportWholesaleViewColumns.CalculationId} = '{_filter.CalculationId}'
+                 ORDER BY 
+                     {SettlementReportWholesaleViewColumns.ResultId} LIMIT {_take} OFFSET {_skip}
+             """.Replace(Environment.NewLine, " ");
+
+        var sqlStatement = $"""
+                                SELECT {string.Join(", ", [
+                                    SettlementReportWholesaleViewColumns.CalculationId,
+                                    SettlementReportWholesaleViewColumns.CalculationType,
+                                    "cr." + SettlementReportWholesaleViewColumns.ResultId,
+                                    SettlementReportWholesaleViewColumns.GridArea,
+                                    SettlementReportWholesaleViewColumns.EnergySupplierId,
+                                    SettlementReportWholesaleViewColumns.Time,
+                                    SettlementReportWholesaleViewColumns.ChargeType,
+                                    SettlementReportWholesaleViewColumns.ChargeCode,
+                                    SettlementReportWholesaleViewColumns.ChargeOwnerId,
+                                    SettlementReportWholesaleViewColumns.Resolution,
+                                    SettlementReportWholesaleViewColumns.QuantityUnit,
+                                    SettlementReportWholesaleViewColumns.Currency,
+                                    SettlementReportWholesaleViewColumns.Quantity,
+                                    SettlementReportWholesaleViewColumns.Price,
+                                    SettlementReportWholesaleViewColumns.Amount,
+                                    SettlementReportWholesaleViewColumns.MeteringPointType,
+                                    SettlementReportWholesaleViewColumns.SettlementMethod,
+                                ])}
+                                FROM
+                                    {_deltaTableOptions.Value.SCHEMA_NAME}.{_deltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME}
+                                JOIN 
+                                    ({calculationResult}) AS cr ON {_deltaTableOptions.Value.SCHEMA_NAME}.{_deltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME}.{SettlementReportWholesaleViewColumns.ResultId} = cr.{SettlementReportWholesaleViewColumns.ResultId}
+                                WHERE 
+                                    {SettlementReportWholesaleViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
+                                    {SettlementReportWholesaleViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND
+                                    {SettlementReportWholesaleViewColumns.Time} >= '{_filter.PeriodStart}' AND
+                                    {SettlementReportWholesaleViewColumns.Time} < '{_filter.PeriodEnd}' AND
+                                    {SettlementReportWholesaleViewColumns.CalculationId} = '{_filter.CalculationId}'
+                            """;
+        return
+            sqlStatement;
     }
 }

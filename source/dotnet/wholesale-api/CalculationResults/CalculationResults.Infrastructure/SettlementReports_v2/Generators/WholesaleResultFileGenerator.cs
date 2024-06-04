@@ -26,10 +26,12 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public sealed class WholesaleResultFileGenerator : ISettlementReportFileGenerator
 {
-    private readonly ISettlementReportDataRepository _dataSource;
+    private const int ChunkSize = 100;
+
+    private readonly ISettlementReportWholesaleRepository _dataSource;
     private readonly CalculationType _calculationType;
 
-    public WholesaleResultFileGenerator(ISettlementReportDataRepository dataSource, CalculationType calculationType)
+    public WholesaleResultFileGenerator(ISettlementReportWholesaleRepository dataSource, CalculationType calculationType)
     {
         _dataSource = dataSource;
         _calculationType = calculationType;
@@ -37,9 +39,10 @@ public sealed class WholesaleResultFileGenerator : ISettlementReportFileGenerato
 
     public string FileExtension => ".csv";
 
-    public Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter)
+    public async Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter)
     {
-        return Task.FromResult(1);
+        var count = await _dataSource.CountAsync(_calculationType, filter).ConfigureAwait(false);
+        return (int)Math.Ceiling(count / (double)ChunkSize);
     }
 
     public async Task WriteAsync(SettlementReportRequestFilterDto filter, int chunkOffset, StreamWriter destination)
@@ -52,8 +55,7 @@ public sealed class WholesaleResultFileGenerator : ISettlementReportFileGenerato
             csvHelper.WriteHeader<SettlementReportWholesaleResultRowMap>();
             await csvHelper.NextRecordAsync().ConfigureAwait(false);
 
-            // TODO: Fix data source.
-            await foreach (var record in _dataSource.TryReadBalanceFixingResultsAsync(filter).ConfigureAwait(false))
+            await foreach (var record in _dataSource.GetAsync(_calculationType, filter, chunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
             {
                 csvHelper.WriteRecord(record);
                 await csvHelper.NextRecordAsync().ConfigureAwait(false);

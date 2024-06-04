@@ -21,11 +21,13 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public sealed class SettlementReportFileGeneratorFactory : ISettlementReportFileGeneratorFactory
 {
-    private readonly ISettlementReportDataRepository _dataRepository;
+    private readonly ISettlementReportDataRepository _settlementReportDataRepository;
+    private readonly ISettlementReportWholesaleRepository _settlementReportWholesaleRepository;
 
-    public SettlementReportFileGeneratorFactory(ISettlementReportDataRepository dataRepository)
+    public SettlementReportFileGeneratorFactory(ISettlementReportDataRepository settlementReportDataRepository, ISettlementReportWholesaleRepository settlementReportWholesaleRepository)
     {
-        _dataRepository = dataRepository;
+        _settlementReportDataRepository = settlementReportDataRepository;
+        _settlementReportWholesaleRepository = settlementReportWholesaleRepository;
     }
 
     public ISettlementReportFileGenerator Create(SettlementReportFileContent fileContent)
@@ -33,17 +35,17 @@ public sealed class SettlementReportFileGeneratorFactory : ISettlementReportFile
         switch (fileContent)
         {
             case SettlementReportFileContent.EnergyResultLatestPerDay:
-                return new EnergyResultFileGenerator(_dataRepository);
+                return new EnergyResultFileGenerator(_settlementReportDataRepository);
             case SettlementReportFileContent.EnergyResultForCalculationId:
-                return new EnergyResultFileGenerator(_dataRepository);
+                return new EnergyResultFileGenerator(_settlementReportDataRepository);
             case SettlementReportFileContent.WholesaleResult:
-                return new WholesaleResultFileGenerator(_dataRepository, CalculationType.WholesaleFixing);
+                return new WholesaleResultFileGenerator(_settlementReportWholesaleRepository, CalculationType.WholesaleFixing);
             case SettlementReportFileContent.FirstCorrectionResult:
-                return new WholesaleResultFileGenerator(_dataRepository, CalculationType.FirstCorrectionSettlement);
+                return new WholesaleResultFileGenerator(_settlementReportWholesaleRepository, CalculationType.FirstCorrectionSettlement);
             case SettlementReportFileContent.SecondCorrectionResult:
-                return new WholesaleResultFileGenerator(_dataRepository, CalculationType.SecondCorrectionSettlement);
+                return new WholesaleResultFileGenerator(_settlementReportWholesaleRepository, CalculationType.SecondCorrectionSettlement);
             case SettlementReportFileContent.ThirdCorrectionResult:
-                return new WholesaleResultFileGenerator(_dataRepository, CalculationType.ThirdCorrectionSettlement);
+                return new WholesaleResultFileGenerator(_settlementReportWholesaleRepository, CalculationType.ThirdCorrectionSettlement);
             default:
                 throw new ArgumentOutOfRangeException(nameof(fileContent), fileContent, null);
         }

@@ -18,9 +18,10 @@ public class SettlementReportWholesaleViewColumns
 {
     public const string CalculationId = "calculation_id";
     public const string CalculationType = "calculation_type";
+    public const string ResultId = "result_id";
     public const string GridArea = "grid_area_code";
     public const string EnergySupplierId = "energy_supplier_id";
-    public const string StartDateTime = "start_date_time";
+    public const string Time = "time";
     public const string Resolution = "resolution";
     public const string MeteringPointType = "metering_point_type";
     public const string SettlementMethod = "settlement_method";
@@ -37,9 +38,10 @@ public class SettlementReportWholesaleViewColumns
     {
         { CalculationId, ("string", false) },
         { CalculationType, ("string", false) },
+        { ResultId, ("string", false) },
         { GridArea, ("string", false) },
         { EnergySupplierId, ("string", false) },
-        { StartDateTime, ("timestamp", false) },
+        { Time, ("timestamp", false) },
         { Resolution, ("string", false) },
         { MeteringPointType, ("string", false) },
         { SettlementMethod, ("string", false) },

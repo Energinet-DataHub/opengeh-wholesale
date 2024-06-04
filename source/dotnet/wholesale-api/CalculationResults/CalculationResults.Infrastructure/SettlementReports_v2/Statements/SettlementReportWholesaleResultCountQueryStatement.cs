@@ -34,14 +34,14 @@ public sealed class SettlementReportWholesaleResultCountQueryStatement : Databri
     protected override string GetSqlStatement()
     {
         return $"""
-                    SELECT COUNT({SettlementReportWholesaleViewColumns.CalculationId}) AS {Columns.Count}
+                    SELECT COUNT(DISTINCT({SettlementReportWholesaleViewColumns.ResultId})) AS {Columns.Count}
                     FROM
                         {_deltaTableOptions.Value.SCHEMA_NAME}.{_deltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME}
                     WHERE 
                         {SettlementReportWholesaleViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
                         {SettlementReportWholesaleViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND
-                        {SettlementReportWholesaleViewColumns.StartDateTime} >= '{_filter.PeriodStart}' AND
-                        {SettlementReportWholesaleViewColumns.StartDateTime} < '{_filter.PeriodEnd}' AND
+                        {SettlementReportWholesaleViewColumns.Time} >= '{_filter.PeriodStart}' AND
+                        {SettlementReportWholesaleViewColumns.Time} < '{_filter.PeriodEnd}' AND
                         {SettlementReportWholesaleViewColumns.CalculationId} = '{_filter.CalculationId}'
                 """;
     }

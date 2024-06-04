@@ -13,12 +13,13 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 
 public interface ISettlementReportWholesaleRepository
 {
-    Task<int> CountAsync(SettlementReportRequestFilterDto filter);
+    Task<int> CountAsync(CalculationType calculationType, SettlementReportRequestFilterDto filter);
 
-    IAsyncEnumerable<SettlementReportWholesaleResultRow> GetAsync(SettlementReportRequestFilterDto filter, int skip, int take);
+    IAsyncEnumerable<SettlementReportWholesaleResultRow> GetAsync(CalculationType calculationType, SettlementReportRequestFilterDto filter, int skip, int take);
 }

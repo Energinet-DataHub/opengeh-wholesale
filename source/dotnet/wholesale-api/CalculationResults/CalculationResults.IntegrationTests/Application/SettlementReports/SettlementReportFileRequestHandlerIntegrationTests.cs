@@ -20,8 +20,10 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementRe
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Extensions.Options;
+using Moq;
 using NodaTime;
 using Xunit;
 
@@ -47,11 +49,16 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         _databricksSqlStatementApiFixture = databricksSqlStatementApiFixture;
         _settlementReportFileBlobStorageFixture = settlementReportFileBlobStorageFixture;
 
-        var dataRepository = new LegacySettlementReportDataRepository(new SettlementReportResultQueries(
+        var settlementReportDataRepository = new LegacySettlementReportDataRepository(new SettlementReportResultQueries(
             databricksSqlStatementApiFixture.GetDatabricksExecutor(),
             databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions));
 
-        Fixture.Inject<ISettlementReportFileGeneratorFactory>(new SettlementReportFileGeneratorFactory(dataRepository));
+        var settlementReportWholesaleRepository = new SettlementReportWholesaleRepository(new SettlementReportWholesaleResultQueries(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions,
+            _databricksSqlStatementApiFixture.GetDatabricksExecutor(),
+            new Mock<ICalculationsClient>().Object));
+
+        Fixture.Inject<ISettlementReportFileGeneratorFactory>(new SettlementReportFileGeneratorFactory(settlementReportDataRepository, settlementReportWholesaleRepository));
 
         var blobContainerClient = settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
         Fixture.Inject<ISettlementReportFileRepository>(new SettlementReportFileBlobStorage(blobContainerClient));
@@ -129,11 +136,21 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
 
         // Calculation 4: Same as calculation 1, but newer and for Aggregation (exclude)
         const string quantity41 = "4.100"; // exclude because it's aggregation
-        const string quantity42 = "4.200";  // exclude because it's aggregation
+        const string quantity42 = "4.200"; // exclude because it's aggregation
         var calculation4Row1 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: june1, time: january1, calculationType: DeltaTableCalculationType.Aggregation, gridArea: GridAreaA, quantity: quantity41);
         var calculation4Row2 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: june1, time: january2, calculationType: DeltaTableCalculationType.Aggregation, gridArea: GridAreaA, quantity: quantity42);
 
-        var rows = new List<IReadOnlyCollection<string>> { calculation1Row1, calculation1Row2, calculation2Row1, calculation2Row2, calculation3Row1, calculation3Row2, calculation4Row1, calculation4Row2 };
+        var rows = new List<IReadOnlyCollection<string>>
+        {
+            calculation1Row1,
+            calculation1Row2,
+            calculation2Row1,
+            calculation2Row2,
+            calculation3Row1,
+            calculation3Row2,
+            calculation4Row1,
+            calculation4Row2,
+        };
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(options.Value.ENERGY_RESULTS_TABLE_NAME, rows);
     }
 }
