@@ -42,8 +42,8 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
 
         var calculationFilter = new Dictionary<string, CalculationId>
         {
-            { "805", new CalculationId("D116DD8A-898E-48F1-8200-D31D12F82545") },
-            { "806", new CalculationId("D116DD8A-898E-48F1-8200-D31D12F82545") },
+            { "805", new CalculationId(Guid.Parse("D116DD8A-898E-48F1-8200-D31D12F82545")) },
+            { "806", new CalculationId(Guid.Parse("D116DD8A-898E-48F1-8200-D31D12F82545")) },
         };
 
         var requestFilterDto = new SettlementReportRequestFilterDto(
@@ -88,8 +88,8 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
         // Arrange
         var calculationFilter = new Dictionary<string, CalculationId>
         {
-            { "805", new CalculationId("D116DD8A-898E-48F1-8200-D31D12F82545") },
-            { "806", new CalculationId("D116DD8A-898E-48F1-8200-D31D12F82545") },
+            { "805", new CalculationId(Guid.Parse("D116DD8A-898E-48F1-8200-D31D12F82545")) },
+            { "806", new CalculationId(Guid.Parse("D116DD8A-898E-48F1-8200-D31D12F82545")) },
         };
 
         var requestFilterDto = new SettlementReportRequestFilterDto(
@@ -189,8 +189,8 @@ public class SettlementReportRepositoryTests : IClassFixture<WholesaleDatabaseFi
 
         var calculationFilter = new Dictionary<string, CalculationId>
         {
-            { "805", new CalculationId("D116DD8A-898E-48F1-8200-D31D12F82545") },
-            { "806", new CalculationId("D116DD8A-898E-48F1-8200-D31D12F82545") },
+            { "805", new CalculationId(Guid.Parse("D116DD8A-898E-48F1-8200-D31D12F82545")) },
+            { "806", new CalculationId(Guid.Parse("D116DD8A-898E-48F1-8200-D31D12F82545")) },
         };
 
         var requestFilterDto = new SettlementReportRequestFilterDto(

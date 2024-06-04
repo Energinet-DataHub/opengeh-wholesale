@@ -45,7 +45,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         // Arrange
         var calculationFilter = new Dictionary<string, CalculationId>
         {
-            { "805", new CalculationId("45B9732A-49F8-450B-AA68-ED4661879D6F") },
+            { "805", new CalculationId(Guid.Parse("45B9732A-49F8-450B-AA68-ED4661879D6F")) },
         };
 
         var filter = new SettlementReportRequestFilterDto(
@@ -95,7 +95,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         // Arrange
         var calculationFilter = new Dictionary<string, CalculationId>
         {
-            { "805", new CalculationId("45B9732A-49F8-450B-AA68-ED4661879D6F") },
+            { "805", new CalculationId(Guid.Parse("45B9732A-49F8-450B-AA68-ED4661879D6F")) },
         };
 
         var filter = new SettlementReportRequestFilterDto(
@@ -129,8 +129,8 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         // Arrange
         var calculationFilter = new Dictionary<string, CalculationId>
         {
-            { "805", new CalculationId("45B9732A-49F8-450B-AA68-ED4661879D6F") },
-            { "806", new CalculationId("45B9732A-49F8-450B-AA68-ED4661879D6F") },
+            { "805", new CalculationId(Guid.Parse("45B9732A-49F8-450B-AA68-ED4661879D6F")) },
+            { "806", new CalculationId(Guid.Parse("45B9732A-49F8-450B-AA68-ED4661879D6F")) },
         };
 
         var filter = new SettlementReportRequestFilterDto(
@@ -170,7 +170,7 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         // Arrange
         var calculationFilter = new Dictionary<string, CalculationId>
         {
-            { "805", new CalculationId("45B9732A-49F8-450B-AA68-ED4661879D6F") },
+            { "805", new CalculationId(Guid.Parse("45B9732A-49F8-450B-AA68-ED4661879D6F")) },
         };
 
         var filter = new SettlementReportRequestFilterDto(
@@ -210,8 +210,8 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
         // Arrange
         var calculationFilter = new Dictionary<string, CalculationId>
         {
-            { "805", new CalculationId("45B9732A-49F8-450B-AA68-ED4661879D6F") },
-            { "806", new CalculationId("45B9732A-49F8-450B-AA68-ED4661879D6F") },
+            { "805", new CalculationId(Guid.Parse("45B9732A-49F8-450B-AA68-ED4661879D6F")) },
+            { "806", new CalculationId(Guid.Parse("45B9732A-49F8-450B-AA68-ED4661879D6F")) },
         };
 
         var filter = new SettlementReportRequestFilterDto(

@@ -79,7 +79,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
             new SettlementReportRequestFilterDto(
                 new Dictionary<string, CalculationId>
                 {
-                    { "042", new CalculationId("404F04A8-08A4-411E-9D69-358ADF88A2C7") },
+                    { "042", new CalculationId(Guid.Parse("404F04A8-08A4-411E-9D69-358ADF88A2C7")) },
                 },
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow,
@@ -138,8 +138,8 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
             new SettlementReportRequestFilterDto(
                 new Dictionary<string, CalculationId>
                 {
-                    { "042", new CalculationId("404F04A8-08A4-411E-9D69-358ADF88A2C7") },
-                    { "043", new CalculationId("404F04A8-08A4-411E-9D69-358ADF88A2C7") },
+                    { "042", new CalculationId(Guid.Parse("404F04A8-08A4-411E-9D69-358ADF88A2C7")) },
+                    { "043", new CalculationId(Guid.Parse("404F04A8-08A4-411E-9D69-358ADF88A2C7")) },
                 },
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow,
@@ -211,7 +211,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
             new SettlementReportRequestFilterDto(
                 new Dictionary<string, CalculationId>
                 {
-                    { "042", new CalculationId("404F04A8-08A4-411E-9D69-358ADF88A2C7") },
+                    { "042", new CalculationId(Guid.Parse("404F04A8-08A4-411E-9D69-358ADF88A2C7")) },
                 },
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow,
