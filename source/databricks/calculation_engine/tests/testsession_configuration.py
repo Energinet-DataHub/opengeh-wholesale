@@ -33,6 +33,11 @@ class FeatureTestsConfiguration:
 
 
 class TestSessionConfiguration:
+
+    # To avoid this class being treated as a Test class set the __test__ attribute to False.
+    # If treated as a Test class a warning will be given it has a constructor (__init__).
+    __test__ = False
+
     def __init__(self, configuration: dict):
         configuration.setdefault("migrations", {})
         configuration.setdefault("feature_tests", {})
