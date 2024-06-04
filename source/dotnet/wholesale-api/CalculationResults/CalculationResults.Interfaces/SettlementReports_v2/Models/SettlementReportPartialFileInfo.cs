@@ -14,12 +14,15 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
-public enum SettlementReportFileContent
+public sealed record SettlementReportPartialFileInfo
 {
-    EnergyResultLatestPerDay,
-    EnergyResultForCalculationId,
-    WholesaleResult,
-    FirstCorrectionResult,
-    SecondCorrectionResult,
-    ThirdCorrectionResult,
+    public SettlementReportPartialFileInfo(string fileName)
+    {
+        FileName = fileName;
+        ChunkOffset = 0;
+    }
+
+    public string FileName { get; init; }
+
+    public int ChunkOffset { get; init; }
 }

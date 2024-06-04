@@ -61,7 +61,7 @@ public sealed class SettlementReport
         ContainsBasisData = false;
         PeriodStart = request.Filter.PeriodStart.ToInstant();
         PeriodEnd = request.Filter.PeriodEnd.ToInstant();
-        GridAreaCount = request.Filter.Calculations.Count;
+        GridAreaCount = request.Filter.GridAreas.Count;
     }
 
     // EF Core Constructor.
@@ -73,7 +73,7 @@ public sealed class SettlementReport
     public void MarkAsCompleted(GeneratedSettlementReportDto generatedSettlementReport)
     {
         Status = SettlementReportStatus.Completed;
-        BlobFileName = generatedSettlementReport.FinalReport.FileName;
+        BlobFileName = generatedSettlementReport.ReportFileName;
     }
 
     public void MarkAsFailed()

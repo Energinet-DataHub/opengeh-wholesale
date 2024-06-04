@@ -12,14 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using System.Text.Json.Serialization;
 
-public enum SettlementReportFileContent
-{
-    EnergyResultLatestPerDay,
-    EnergyResultForCalculationId,
-    WholesaleResult,
-    FirstCorrectionResult,
-    SecondCorrectionResult,
-    ThirdCorrectionResult,
-}
+namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.Calculation;
+
+[method: JsonConstructor]
+public record OrchestrationHistoryItem(
+    string? EventType,
+    string? Name = null,
+    string? FunctionName = null);
