@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
+namespace Energinet.DataHub.Wholesale.WebApi.V3.SettlementReport;
 
-public sealed record FrontendUser(Guid UserId, bool MultiTenancy, FrontendActor Actor);
+public sealed record SettlementReportApplicableCalculationDto(
+    Guid CalculationId,
+    DateTimeOffset PeriodStart,
+    DateTimeOffset PeriodEnd,
+    string GridAreaCode);

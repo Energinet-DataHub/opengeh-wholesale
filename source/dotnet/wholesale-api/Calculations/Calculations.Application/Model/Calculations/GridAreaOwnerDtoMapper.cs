@@ -12,10 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.WebApi.V3.SettlementReport;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 
-public sealed record SettlementReportCalculationDto(
-    Guid CalculationId,
-    DateTimeOffset PeriodStart,
-    DateTimeOffset PeriodEnd,
-    string GridAreaCode);
+namespace Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
+
+public sealed class GridAreaOwnerDtoMapper : IGridAreaOwnerDtoMapper
+{
+    public GridAreaOwnerDto Map(GridAreaOwner gridAreaOwner)
+    {
+        return new GridAreaOwnerDto(gridAreaOwner.OwnerActorNumber);
+    }
+}

@@ -14,4 +14,18 @@
 
 namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 
-public sealed record FrontendUser(Guid UserId, bool MultiTenancy, FrontendActor Actor);
+public sealed record FrontendActor(
+    Guid ActorId,
+    string ActorNumber,
+    FrontendActorMarketRole MarketRole)
+{
+    public bool HasMarketRole(FrontendActorMarketRole marketRole)
+    {
+        return MarketRole == marketRole;
+    }
+
+    public bool HasActorNumber(string actorNumber)
+    {
+        return string.Equals(ActorNumber, actorNumber.Trim(), StringComparison.OrdinalIgnoreCase);
+    }
+}

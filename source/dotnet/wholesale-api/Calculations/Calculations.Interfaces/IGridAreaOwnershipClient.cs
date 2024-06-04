@@ -12,6 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 
-public sealed record FrontendUser(Guid UserId, bool MultiTenancy, FrontendActor Actor);
+namespace Energinet.DataHub.Wholesale.Calculations.Interfaces;
+
+public interface IGridAreaOwnershipClient
+{
+    Task<GridAreaOwnerDto?> GetAsync(string gridAreaCode);
+}

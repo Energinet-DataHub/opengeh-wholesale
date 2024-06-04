@@ -14,9 +14,11 @@
 
 using System.ComponentModel.DataAnnotations;
 using Asp.Versioning;
+using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Core.App.WebApp.Extensibility.Swashbuckle;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -31,30 +33,50 @@ public class SettlementReportController : V3ControllerBase
 {
     private readonly ISettlementReportClient _settlementReportClient;
     private readonly ICalculationsClient _calculationsClient;
+    private readonly IGridAreaOwnershipClient _gridAreaOwnershipClient;
+    private readonly IUserContext<FrontendUser> _userContext;
 
     public SettlementReportController(
         ISettlementReportClient settlementReportClient,
-        ICalculationsClient calculationsClient)
+        ICalculationsClient calculationsClient,
+        IGridAreaOwnershipClient gridAreaOwnershipClient,
+        IUserContext<FrontendUser> userContext)
     {
         _settlementReportClient = settlementReportClient;
         _calculationsClient = calculationsClient;
+        _gridAreaOwnershipClient = gridAreaOwnershipClient;
+        _userContext = userContext;
     }
 
     /// <summary>
     /// Returns a subset of calculations that are valid for use with settlement reports.
     /// Settlement reports must access only a subset of data about calculations, as settlement reports are used by actors.
     /// </summary>
-    [HttpGet(Name = "SearchCalculations")]
+    [HttpGet(Name = "GetApplicableCalculations")]
     [MapToApiVersion(Version)]
-    [Produces("application/json", Type = typeof(List<SettlementReportCalculationDto>))]
+    [Produces("application/json", Type = typeof(List<SettlementReportApplicableCalculationDto>))]
     [Authorize(Roles = Permissions.SettlementReportsManage)]
-    public async Task<IActionResult> SearchCalculationsAsync(
+    public async Task<IActionResult> GetApplicableCalculationsAsync(
         [FromQuery] CalculationType calculationType,
         [FromQuery] string[] gridAreaCodes,
         [FromQuery] DateTimeOffset periodStart,
         [FromQuery] DateTimeOffset periodEnd)
     {
-        // TODO: If user is part of Grid Access Provider, gridAreaCodes need to be checked for access.
+        if (_userContext.CurrentUser.Actor.HasMarketRole(FrontendActorMarketRole.GridAccessProvider))
+        {
+            foreach (var gridAreaCode in gridAreaCodes)
+            {
+                var gridAreaOwner = await _gridAreaOwnershipClient
+                    .GetAsync(gridAreaCode)
+                    .ConfigureAwait(false);
+
+                if (gridAreaOwner == null || !_userContext.CurrentUser.Actor.HasActorNumber(gridAreaOwner.ActorNumber))
+                {
+                    return Forbid();
+                }
+            }
+        }
+
         var calculations = await _calculationsClient
             .SearchAsync(
                 gridAreaCodes,
@@ -68,7 +90,7 @@ public class SettlementReportController : V3ControllerBase
             from calculation in calculations
             from gridAreaCode in calculation.GridAreaCodes
             where gridAreaCodes.Contains(gridAreaCode)
-            select new SettlementReportCalculationDto(
+            select new SettlementReportApplicableCalculationDto(
                 calculation.CalculationId,
                 calculation.PeriodStart,
                 calculation.PeriodEnd,

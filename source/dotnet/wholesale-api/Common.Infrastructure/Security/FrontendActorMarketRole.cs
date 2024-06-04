@@ -14,4 +14,11 @@
 
 namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 
-public sealed record FrontendUser(Guid UserId, bool MultiTenancy, FrontendActor Actor);
+public enum FrontendActorMarketRole
+{
+    /// <summary>
+    /// Other is used when a user's actor has a valid market role, but the role is currently irrelevant.
+    /// </summary>
+    Other,
+    GridAccessProvider,
+}
