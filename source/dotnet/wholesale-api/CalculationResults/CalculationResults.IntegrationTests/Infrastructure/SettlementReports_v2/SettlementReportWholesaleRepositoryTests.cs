@@ -34,7 +34,10 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
     {
         _databricksSqlStatementApiFixture = databricksSqlStatementApiFixture;
 
-        Fixture.Inject(_databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions);
+        var deltaTableOptions = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions;
+        deltaTableOptions.Value.SettlementReportSchemaName = deltaTableOptions.Value.SCHEMA_NAME;
+
+        Fixture.Inject(deltaTableOptions);
         Fixture.Inject(_databricksSqlStatementApiFixture.GetDatabricksExecutor());
         Fixture.Inject<ISettlementReportWholesaleResultQueries>(new SettlementReportWholesaleResultQueries(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions,
@@ -54,7 +57,7 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
         var actual = await Sut.CountAsync(
             CalculationType.WholesaleFixing,
             new SettlementReportRequestFilterDto(
-                new Dictionary<string, CalculationId>()
+                new Dictionary<string, CalculationId>
                 {
                     {
                         "403", new CalculationId(Guid.Parse("f8af5e30-3c65-439e-8fd0-1da0c40a26d3"))

@@ -41,7 +41,7 @@ public sealed class SettlementReportWholesaleResultQueryStatement : DatabricksSt
             $"""
                  SELECT DISTINCT({SettlementReportWholesaleViewColumns.ResultId})
                  FROM
-                     {_deltaTableOptions.Value.SCHEMA_NAME}.{_deltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME}
+                     {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME}
                  WHERE 
                      {SettlementReportWholesaleViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
                      {SettlementReportWholesaleViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND
@@ -73,9 +73,9 @@ public sealed class SettlementReportWholesaleResultQueryStatement : DatabricksSt
                                     SettlementReportWholesaleViewColumns.SettlementMethod,
                                 ])}
                                 FROM
-                                    {_deltaTableOptions.Value.SCHEMA_NAME}.{_deltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME}
+                                    {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME}
                                 JOIN 
-                                    ({calculationResult}) AS cr ON {_deltaTableOptions.Value.SCHEMA_NAME}.{_deltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME}.{SettlementReportWholesaleViewColumns.ResultId} = cr.{SettlementReportWholesaleViewColumns.ResultId}
+                                    ({calculationResult}) AS cr ON {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME}.{SettlementReportWholesaleViewColumns.ResultId} = cr.{SettlementReportWholesaleViewColumns.ResultId}
                                 WHERE 
                                     {SettlementReportWholesaleViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
                                     {SettlementReportWholesaleViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND

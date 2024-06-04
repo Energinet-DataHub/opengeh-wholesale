@@ -36,8 +36,8 @@ public sealed class SettlementReportWholesaleResultCountQueryStatement : Databri
         return $"""
                     SELECT COUNT(DISTINCT({SettlementReportWholesaleViewColumns.ResultId})) AS {Columns.Count}
                     FROM
-                        {_deltaTableOptions.Value.SCHEMA_NAME}.{_deltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME}
-                    WHERE 
+                        {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME}
+                    WHERE
                         {SettlementReportWholesaleViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
                         {SettlementReportWholesaleViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND
                         {SettlementReportWholesaleViewColumns.Time} >= '{_filter.PeriodStart}' AND
