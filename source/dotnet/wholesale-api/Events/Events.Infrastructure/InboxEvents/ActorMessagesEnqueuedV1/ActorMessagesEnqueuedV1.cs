@@ -12,6 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+// ReSharper disable once CheckNamespace -- Protobuf is in with another namespace
+namespace Energinet.DataHub.EnergySupplying.RequestResponse.InboxEvents;
 
-public sealed record CalculationFilterDto(string CalculationId, string GridAreaCode);
+public partial class ActorMessagesEnqueuedV1
+{
+    public const string EventName = "ActorMessagesEnqueuedV1";
+    public const int CurrentMinorVersion = 1;
+}

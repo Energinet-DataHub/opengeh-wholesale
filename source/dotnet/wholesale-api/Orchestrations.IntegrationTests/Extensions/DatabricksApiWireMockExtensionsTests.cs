@@ -18,6 +18,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
+using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.Calculation;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.Azure.Databricks.Client.Models;
@@ -110,6 +111,32 @@ public class DatabricksApiWireMockExtensionsTests : IClassFixture<WireMockExtens
         actualRunTuple.Item1.State.ResultState.Should().Be(RunResultState.SUCCESS);
     }
 
+    /// <summary>
+    /// Test calling MockJobsRunsGet with a callback, so it is possible to set/update the job lifecycle state
+    /// later in the test
+    /// </summary>
+    [Fact]
+    public async Task MockJobsRunsGet_WhenCallingJobsRunsGetWithStateCallback_CanDeserializeResponseFromMock()
+    {
+        // Arrange
+        var runId = Random.Shared.Next(0, 1000);
+        var lifeCycleStateCallback = new CallbackValue<string?>(null);
+        _fixture.MockServer
+            .MockJobsRunsGet(runId, lifeCycleStateCallback.GetValue);
+
+        // Set calculation job lifecycle state, so the API call can return a value
+        lifeCycleStateCallback.SetValue("TERMINATED");
+
+        // Act
+        var actualRunTuple = await _fixture.JobApiClient.Jobs.RunsGet(runId);
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        actualRunTuple.Item1.RunId.Should().Be(runId);
+        actualRunTuple.Item1.State.LifeCycleState.Should().Be(RunLifeCycleState.TERMINATED);
+        actualRunTuple.Item1.State.ResultState.Should().Be(RunResultState.SUCCESS);
+    }
+
     [Fact]
     public async Task MockJobsRunsGet_WhenCallingJobsRunsGetLifeCycleScenario_CanDeserializeResponseFromMockForEachState()
     {
@@ -146,7 +173,7 @@ public class DatabricksApiWireMockExtensionsTests : IClassFixture<WireMockExtens
     /// The second is tested by calling "CreateTimeSeriesPoint"
     /// </summary>
     [Fact]
-    public async Task MockDataBrickSql_WhenQueryForData_CanDeserializeResponseFromMock()
+    public async Task MockEnergySqlStatements_WhenQueryForData_CanDeserializeResponseFromMock()
     {
         // Arrange
         var statementId = "SomeIdMostLikelyGuid";
@@ -164,6 +191,42 @@ public class DatabricksApiWireMockExtensionsTests : IClassFixture<WireMockExtens
 
         // Act
         var actual = _fixture.DatabricksExecutor.ExecuteStatementAsync(query, Format.JsonArray).ConfigureAwait(false);
+
+        // Assert
+        await foreach (var row in actual)
+        {
+            var databricksSqlNextRow = new DatabricksSqlRow(row);
+            var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(databricksSqlNextRow);
+        }
+    }
+
+    /// <summary>
+    /// Test calling MockEnergySqlStatements with a callback, so it is possible to set/update the calculation id later
+    /// in a test (used because the calculation id is not known when the mock is initialized, only after the calculation
+    /// has been started as a part of the test)
+    /// </summary>
+    [Fact]
+    public async Task MockEnergySqlStatementsWithCalculationIdCallback_WhenQueryForData_CanDeserializeResponseFromMock()
+    {
+        // Arrange
+        var statementId = "SomeIdMostLikelyGuid";
+        var chunkIndex = 0;
+        var path = "GetDatabricksDataPath";
+        var calculationIdForEnergyResultsCallback = new CallbackValue<Guid?>(null);
+        _fixture.MockServer
+            .MockEnergySqlStatements(statementId, chunkIndex)
+            .MockEnergySqlStatementsResultChunks(statementId, chunkIndex, path)
+            .MockEnergySqlStatementsResultStream(path, calculationIdForEnergyResultsCallback.GetValue);
+
+        var query = new EnergyResultQueryStatement(
+            Guid.Empty,
+            new DeltaTableOptions() { SCHEMA_NAME = "empty", ENERGY_RESULTS_TABLE_NAME = "empty" });
+
+        // Act
+        var actual = _fixture.DatabricksExecutor.ExecuteStatementAsync(query, Format.JsonArray).ConfigureAwait(false);
+
+        // Set calculation id, so the statement can return
+        calculationIdForEnergyResultsCallback.SetValue(Guid.NewGuid());
 
         // Assert
         await foreach (var row in actual)
