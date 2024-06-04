@@ -93,22 +93,11 @@ def _calculate_fees(
         args.calculation_period_start_datetime,
     )
 
-    # TODO JVM: Change to only monthly_amounts_factory.create when monthly amounts is fully implemented
-    results.monthly_fee_per_ga_co_es = wholesale_results_factory.create(
-        args,
-        monthly_fee_per_ga_co_es,
-        AmountType.MONTHLY_AMOUNT_PER_CHARGE,
-    )
-
-    monthly_fee_per_ga_co_es_as_monthly_amount = MonthlyAmountPerCharge(
-        monthly_fee_per_ga_co_es.df
-    )
-
     results.monthly_fee_per_ga_co_es_as_monthly_amount = monthly_amounts_factory.create(
         args,
-        monthly_fee_per_ga_co_es_as_monthly_amount,
+        monthly_fee_per_ga_co_es,
     )
-    return monthly_fee_per_ga_co_es_as_monthly_amount
+    return monthly_fee_per_ga_co_es
 
 
 @logging_configuration.use_span("calculate_subscriptions")
@@ -132,25 +121,14 @@ def _calculate_subscriptions(
         args.calculation_period_start_datetime,
     )
 
-    # TODO JVM: Change to only monthly_amounts_factory.create when monthly amounts is fully implemented
-    results.monthly_subscription_per_ga_co_es = wholesale_results_factory.create(
-        args,
-        monthly_subscription_per_ga_co_es,
-        AmountType.MONTHLY_AMOUNT_PER_CHARGE,
-    )
-
-    monthly_subscription_per_ga_co_es_as_monthly_amount = MonthlyAmountPerCharge(
-        monthly_subscription_per_ga_co_es.df
-    )
-
     results.monthly_subscription_per_ga_co_es_as_monthly_amount = (
         monthly_amounts_factory.create(
             args,
-            monthly_subscription_per_ga_co_es_as_monthly_amount,
+            monthly_subscription_per_ga_co_es,
         )
     )
 
-    return monthly_subscription_per_ga_co_es_as_monthly_amount
+    return monthly_subscription_per_ga_co_es
 
 
 @logging_configuration.use_span("calculate_hourly_tariffs")
@@ -174,25 +152,14 @@ def _calculate_hourly_tariffs(
         args.calculation_period_start_datetime,
     )
 
-    # TODO JVM: Change to only monthly_amounts_factory.create when monthly amounts is fully implemented
-    results.monthly_tariff_from_hourly_per_ga_co_es = wholesale_results_factory.create(
-        args,
-        monthly_tariff_from_hourly_per_ga_co_es,
-        AmountType.MONTHLY_AMOUNT_PER_CHARGE,
-    )
-
-    monthly_tariff_from_hourly_per_ga_co_es_as_monthly_amount = MonthlyAmountPerCharge(
-        monthly_tariff_from_hourly_per_ga_co_es.df
-    )
-
     results.monthly_tariff_from_hourly_per_ga_co_es_as_monthly_amount = (
         monthly_amounts_factory.create(
             args,
-            monthly_tariff_from_hourly_per_ga_co_es_as_monthly_amount,
+            monthly_tariff_from_hourly_per_ga_co_es,
         )
     )
 
-    return monthly_tariff_from_hourly_per_ga_co_es_as_monthly_amount
+    return monthly_tariff_from_hourly_per_ga_co_es
 
 
 @logging_configuration.use_span("calculate_daily_tariffs")
@@ -217,25 +184,14 @@ def _calculate_daily_tariffs(
         args.calculation_period_start_datetime,
     )
 
-    # TODO JVM: Change to only monthly_amounts_factory.create when monthly amounts is fully implemented
-    results.monthly_tariff_from_daily_per_ga_co_es = wholesale_results_factory.create(
-        args,
-        monthly_tariff_from_daily_per_ga_co_es,
-        AmountType.MONTHLY_AMOUNT_PER_CHARGE,
-    )
-
-    monthly_tariff_from_daily_per_ga_co_es_as_monthly_amount = MonthlyAmountPerCharge(
-        monthly_tariff_from_daily_per_ga_co_es.df
-    )
-
     results.monthly_tariff_from_daily_per_ga_co_es_as_monthly_amount = (
         monthly_amounts_factory.create(
             args,
-            monthly_tariff_from_daily_per_ga_co_es_as_monthly_amount,
+            monthly_tariff_from_daily_per_ga_co_es,
         )
     )
 
-    return monthly_tariff_from_daily_per_ga_co_es_as_monthly_amount
+    return monthly_tariff_from_daily_per_ga_co_es
 
 
 @logging_configuration.use_span("calculate_total_monthly_amount")
