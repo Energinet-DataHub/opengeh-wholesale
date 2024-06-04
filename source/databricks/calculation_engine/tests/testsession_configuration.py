@@ -33,6 +33,11 @@ class FeatureTestsConfiguration:
 
 
 class TestSessionConfiguration:
+
+    # Pytest test classes will fire a warning if it has a constructor (__init__).
+    # To avoid a class being treated as a test class set the attribute __test__  to False.
+    __test__ = False
+
     def __init__(self, configuration: dict):
         configuration.setdefault("migrations", {})
         configuration.setdefault("feature_tests", {})

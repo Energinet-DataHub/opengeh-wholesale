@@ -22,13 +22,16 @@ using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Generators;
 
-public sealed class BalanceFixingResultFileGenerator : ISettlementReportFileGenerator
+// TODO: Will be replaced by WholesaleResultFileGenerator from next PR.
+public sealed class WholesaleFixingResultFileGenerator : ISettlementReportFileGenerator
 {
     private readonly ISettlementReportDataRepository _dataSource;
+    private readonly CalculationType _calculationType;
 
-    public BalanceFixingResultFileGenerator(ISettlementReportDataRepository dataSource)
+    public WholesaleFixingResultFileGenerator(ISettlementReportDataRepository dataSource, CalculationType calculationType)
     {
         _dataSource = dataSource;
+        _calculationType = calculationType;
     }
 
     public string FileExtension => ".csv";
