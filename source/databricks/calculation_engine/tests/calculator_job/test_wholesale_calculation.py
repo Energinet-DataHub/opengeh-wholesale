@@ -369,7 +369,7 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
         ),
         (
             f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.ENERGY_RESULT_POINTS_PER_ES_GA_SETTLEMENT_REPORT_VIEW_NAME_V1}",
-            True,
+            False,
         ),
         (
             f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.WHOLESALE_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1}",
