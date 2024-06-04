@@ -103,8 +103,3 @@ class EnergyResultPointsPerEsGaV1ColumnNames:
     settlement_method = Colname.settlement_method
     time = EnergyResultColumnNames.time
     quantity = EnergyResultColumnNames.quantity
-
-
-class CurrentCalculationTypeVersionsV1ColumnNames:
-    calculation_type = CalculationsColumnName.calculation_type
-    version = CalculationsColumnName.version
