@@ -56,11 +56,19 @@ ENERGY_RESULT_TYPES = {
     ),
     (
         TimeSeriesType.PRODUCTION.value,
+        AggregationLevel.ES_PER_BRP_PER_GA.value,
+    ),
+    (
+        TimeSeriesType.PRODUCTION.value,
         AggregationLevel.TOTAL_GA.value,
     ),
     (
         TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
         AggregationLevel.ES_PER_GA.value,
+    ),
+    (
+        TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
+        AggregationLevel.ES_PER_BRP_PER_GA.value,
     ),
     (
         TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
@@ -69,6 +77,10 @@ ENERGY_RESULT_TYPES = {
     (
         TimeSeriesType.FLEX_CONSUMPTION.value,
         AggregationLevel.ES_PER_GA.value,
+    ),
+    (
+        TimeSeriesType.FLEX_CONSUMPTION.value,
+        AggregationLevel.ES_PER_BRP_PER_GA.value,
     ),
     (
         TimeSeriesType.FLEX_CONSUMPTION.value,
@@ -345,7 +357,43 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
         ),
         (
             f"{paths.EdiResults.DATABASE_NAME}.{paths.EdiResults.ENERGY_RESULT_POINTS_PER_ES_BRP_GA_V1_VIEW_NAME}",
-            False,
+            True,
+        ),
+        (
+            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.CHARGE_PRICES_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.CHARGE_LINK_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.ENERGY_RESULT_POINTS_PER_GA_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.ENERGY_RESULT_POINTS_PER_ES_GA_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.WHOLESALE_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.CURRENT_BALANCE_FIXING_CALCULATION_VERSION_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.MONTHLY_AMOUNTS_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            True,
         ),
     ],
 )

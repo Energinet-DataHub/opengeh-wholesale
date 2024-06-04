@@ -20,5 +20,7 @@ public interface ISettlementReportFileGenerator
 {
     string FileExtension { get; }
 
-    Task WriteAsync(SettlementReportRequestFilterDto filter, StreamWriter destination);
+    Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter);
+
+    Task WriteAsync(SettlementReportRequestFilterDto filter, int chunkOffset, StreamWriter destination);
 }

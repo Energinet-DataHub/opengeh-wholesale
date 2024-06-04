@@ -16,5 +16,5 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementRe
 
 public sealed record GeneratedSettlementReportDto(
     SettlementReportRequestId RequestId,
-    GeneratedSettlementReportFileDto FinalReport,
+    string ReportFileName,
     IEnumerable<GeneratedSettlementReportFileDto> TemporaryFiles);
