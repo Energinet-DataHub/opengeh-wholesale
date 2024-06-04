@@ -26,3 +26,6 @@ from .wholesale_results_v1_view_schema import wholesale_results_v1_view_schema
 from .current_calculation_type_versions_v1_view_schema import (
     current_calculation_type_versions_v1_view_schema,
 )
+from .energy_result_points_per_es_ga_v1_view_schema import (
+    energy_result_points_per_es_ga_v1_view_schema,
+)
