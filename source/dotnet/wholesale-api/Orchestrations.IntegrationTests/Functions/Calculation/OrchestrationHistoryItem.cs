@@ -12,14 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
+using System.Text.Json.Serialization;
 
-namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
+namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.Calculation;
 
-/// <summary>
-/// An immutable input to start the calculation orchestration.
-/// </summary>
-public sealed record CalculationOrchestrationInput(
-    CalculationOrchestrationMonitorOptions OrchestrationMonitorOptions,
-    StartCalculationRequestDto StartCalculationRequestDto,
-    Guid RequestedByUserId);
+[method: JsonConstructor]
+public record OrchestrationHistoryItem(
+    string? EventType,
+    string? Name = null,
+    string? FunctionName = null);

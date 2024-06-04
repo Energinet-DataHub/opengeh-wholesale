@@ -19,6 +19,7 @@ using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
@@ -458,11 +459,8 @@ public class IntegrationEventProviderTests
     [InlineAutoMoqData]
     public async Task GetAsync_WhenMultipleUnpublishedCalculations_ReturnsMultipleCalculationCompletedIntegrationEvents(
         List<CompletedCalculation> anyCompletedCalculations,
-        IntegrationEvent[] anyIntegrationEvents,
-        IntegrationEvent calculationCompletedEvent,
         [Frozen] Mock<ICalculationCompletedEventProvider> calculationCompletedEventProvider,
         [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
-        [Frozen] Mock<IEnergyResultEventProvider> energyResultEventProviderMock,
         IntegrationEventProvider sut)
     {
         // Arrange
@@ -474,18 +472,20 @@ public class IntegrationEventProviderTests
 
         setupGetNextUnpublishedSequence.ReturnsAsync((CompletedCalculation)null!);
 
+        var calculationCompletedV1 = new IntegrationEvent(
+            Guid.NewGuid(),
+            CalculationCompletedV1.EventName,
+            CalculationCompletedV1.EventMinorVersion,
+            null!);
+
         calculationCompletedEventProvider
             .Setup(m => m.Get(It.IsAny<CompletedCalculation>()))
-            .Returns(calculationCompletedEvent);
-
-        energyResultEventProviderMock
-            .Setup(mock => mock.GetAsync(It.IsAny<CompletedCalculation>()))
-            .Returns(anyIntegrationEvents.ToAsyncEnumerable());
+            .Returns(calculationCompletedV1);
 
         // Act
         var actualEvents = await sut.GetAsync().ToListAsync();
 
-        actualEvents.Where(e => e == calculationCompletedEvent).Should().HaveSameCount(anyCompletedCalculations);
+        actualEvents.Should().HaveSameCount(anyCompletedCalculations);
     }
 
     private static async IAsyncEnumerable<IntegrationEvent> ThrowsExceptionAfterAllItems(IntegrationEvent[] integrationEvents)

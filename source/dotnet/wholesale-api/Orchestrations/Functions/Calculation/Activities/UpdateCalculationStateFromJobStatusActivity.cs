@@ -14,32 +14,38 @@
 
 using Energinet.DataHub.Wholesale.Calculations.Application;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
-using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.CalculationState;
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
 
 #pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
-internal class UpdateCalculationStatusActivity(
+internal class UpdateCalculationStateFromJobStatusActivity(
     IClock clock,
     IUnitOfWork calculationUnitOfWork,
-    ICalculationRepository calculationRepository)
+    ICalculationRepository calculationRepository,
+    ILogger<UpdateCalculationStateFromJobStatusActivity> logger)
 {
     private readonly IClock _clock = clock;
     private readonly IUnitOfWork _calculationUnitOfWork = calculationUnitOfWork;
     private readonly ICalculationRepository _calculationRepository = calculationRepository;
+    private readonly ILogger<UpdateCalculationStateFromJobStatusActivity> _logger = logger;
 
     /// <summary>
     /// Update calculation status record in SQL database.
     /// </summary>
-    [Function(nameof(UpdateCalculationStatusActivity))]
-    public async Task Run(
+    [Function(nameof(UpdateCalculationStateFromJobStatusActivity))]
+    public async Task<string> Run(
         [ActivityTrigger] CalculationMetadata calculationMetadata)
     {
+        _logger.LogInformation(
+            "Update calculation state from the calculation job status: {CalculationJobStatus}, calculation id: {CalculationId}",
+            calculationMetadata.JobStatus,
+            calculationMetadata.Id);
+
         var calculation = await _calculationRepository.GetAsync(calculationMetadata.Id);
 
         if (calculationMetadata.JobStatus == CalculationState.Canceled)
@@ -54,45 +60,24 @@ internal class UpdateCalculationStatusActivity(
 
             // If state wasn't changed, do nothing
             if (calculation.OrchestrationState == newState)
-                return;
+            {
+                _logger.LogInformation(
+                    "Did not update calculation state since it didn't change. Current state: {CurrentOrchestrationState}, calculation id: {CalculationId}",
+                    calculation.OrchestrationState,
+                    calculationMetadata.Id);
+                return "State didn't change from: " + calculation.OrchestrationState;
+            }
 
-            UpdateState(calculation, newState);
+            _logger.LogInformation(
+                "Set new calculation state to: {NewOrchestrationState}, current state: {CurrentOrchestrationState}, calculation id: {CalculationId}",
+                newState,
+                calculation.OrchestrationState,
+                calculationMetadata.Id);
+            calculation.UpdateState(newState, _clock);
         }
 
         await _calculationUnitOfWork.CommitAsync();
-    }
-
-    private void UpdateState(Calculations.Application.Model.Calculations.Calculation calculation, CalculationOrchestrationState newState)
-    {
-        switch (newState)
-        {
-            case CalculationOrchestrationState.Scheduled:
-                calculation.MarkAsScheduled();
-                break;
-            case CalculationOrchestrationState.Calculating:
-                calculation.MarkAsCalculating();
-                break;
-            case CalculationOrchestrationState.Calculated:
-                calculation.MarkAsCalculated(_clock.GetCurrentInstant());
-                break;
-            case CalculationOrchestrationState.CalculationFailed:
-                calculation.MarkAsCalculationFailed();
-                break;
-            case CalculationOrchestrationState.ActorMessagesEnqueuing:
-                calculation.MarkAsActorMessagesEnqueuing(_clock.GetCurrentInstant());
-                break;
-            case CalculationOrchestrationState.ActorMessagesEnqueued:
-                calculation.MarkAsActorMessagesEnqueued(_clock.GetCurrentInstant());
-                break;
-            case CalculationOrchestrationState.MessagesEnqueuingFailed:
-                calculation.MarkAsMessagesEnqueuingFailed();
-                break;
-            case CalculationOrchestrationState.Completed:
-                calculation.MarkAsCompleted(_clock.GetCurrentInstant());
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(newState), newState, $"Unexpected orchestration state: {newState}.");
-        }
+        return "Orchestration state updated to: " + calculation.OrchestrationState;
     }
 }
 #pragma warning restore CA2007 // Consider calling ConfigureAwait on the awaited task
