@@ -51,6 +51,10 @@ def get_output_specifications() -> dict[str, tuple]:
             settlement_reports.energy_result_points_per_ga_v1_view_schema,
             settlement_report_dataframes.create_energy_result_points_per_ga_v1_view,
         ),
+        "settlement_report.energy_result_points_per_es_ga_v1.csv": (
+            settlement_reports.energy_result_points_per_es_ga_v1_view_schema,
+            settlement_report_dataframes.create_energy_result_points_per_es_ga_v1_view,
+        ),
         "settlement_report.wholesale_results_v1.csv": (
             settlement_reports.wholesale_results_v1_view_schema,
             settlement_report_dataframes.create_wholesale_results_v1_view,
@@ -59,8 +63,8 @@ def get_output_specifications() -> dict[str, tuple]:
             settlement_reports.monthly_amounts_v1_view_schema,
             settlement_report_dataframes.create_monthly_amounts_v1_view,
         ),
-        "settlement_report.current_calculation_type_versions_v1.csv": (
-            settlement_reports.current_calculation_type_versions_v1_view_schema,
-            settlement_report_dataframes.create_current_calculation_type_versions_v1_view,
+        "settlement_report.current_balance_fixing_calculation_version_v1.csv": (
+            settlement_reports.current_balance_fixing_calculation_version_v1_view_schema,
+            settlement_report_dataframes.create_current_balance_fixing_calculation_version_v1_view,
         ),
     }
