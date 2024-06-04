@@ -192,6 +192,40 @@ def create_energy_result_points_per_ga_v1_view(
     return spark.createDataFrame(df.rdd, energy_result_points_per_ga_v1_view_schema)
 
 
+def create_energy_result_points_per_es_ga_v1_view(
+    spark: SparkSession, df: DataFrame
+) -> DataFrame:
+
+    # Don't remove. Believed needed because this function is an argument to the setup function
+    # and therefore the following packages are not automatically included.
+    from features.utils.dataframes.settlement_report.settlement_report_view_column_names import (
+        EnergyResultPointsPerEsGaV1ColumnNames,
+    )
+    from features.utils.dataframes.settlement_report.energy_result_points_per_es_ga_v1_view_schema import (
+        energy_result_points_per_es_ga_v1_view_schema,
+    )
+
+    df = df.withColumn(
+        EnergyResultPointsPerEsGaV1ColumnNames.calculation_version,
+        col(EnergyResultPointsPerEsGaV1ColumnNames.calculation_version).cast(
+            LongType()
+        ),
+    )
+
+    df = df.withColumn(
+        EnergyResultPointsPerEsGaV1ColumnNames.quantity,
+        col(EnergyResultPointsPerEsGaV1ColumnNames.quantity).cast(DecimalType(18, 3)),
+    )
+
+    df = df.withColumn(
+        EnergyResultPointsPerEsGaV1ColumnNames.time,
+        col(
+            EnergyResultPointsPerEsGaV1ColumnNames.time,
+        ).cast(TimestampType()),
+    )
+    return spark.createDataFrame(df.rdd, energy_result_points_per_es_ga_v1_view_schema)
+
+
 def create_wholesale_results_v1_view(spark: SparkSession, df: DataFrame) -> DataFrame:
 
     # Don't remove. Believed needed because this function is an argument to the setup function

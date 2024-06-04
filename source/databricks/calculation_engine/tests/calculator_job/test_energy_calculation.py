@@ -200,6 +200,26 @@ def test__when_energy_calculation__basis_data_is_stored(
             f"{paths.EdiResults.DATABASE_NAME}.{paths.EdiResults.ENERGY_RESULT_POINTS_PER_ES_BRP_GA_V1_VIEW_NAME}",
             True,
         ),
+        (
+            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.ENERGY_RESULT_POINTS_PER_GA_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.ENERGY_RESULT_POINTS_PER_ES_GA_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.CURRENT_CALCULATION_TYPE_VERSIONS_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            True,
+        ),
     ],
 )
 def test__when_balance_fixing__view_has_data_if_expected(
