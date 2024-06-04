@@ -7,6 +7,7 @@ module "mssqldb_wholesale" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=v14"
 
   name                 = "data"
+  enclave_type         = null
   location             = azurerm_resource_group.this.location
   project_name         = var.domain_name_short
   environment_short    = var.environment_short
