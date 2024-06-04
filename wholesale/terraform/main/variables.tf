@@ -88,11 +88,6 @@ variable "ip_restrictions" {
   default     = []
 }
 
-variable "databricks_group_id" {
-  type        = string
-  description = "The ID of the Databricks group containing Databricks users."
-}
-
 variable "databricks_developers_group_id" {
   type        = string
   description = "The ID of the Databricks group containing Databricks users synced from the OMADA group."

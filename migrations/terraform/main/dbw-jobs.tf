@@ -20,5 +20,5 @@ resource "databricks_permissions" "jobs" {
     permission_level = "CAN_MANAGE"
   }
 
-  depends_on = [module.dbw, null_resource.scim, null_resource.scim_developers]
+  depends_on = [module.dbw, null_resource.scim_developers]
 }
