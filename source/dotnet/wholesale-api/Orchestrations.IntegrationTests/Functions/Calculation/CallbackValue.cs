@@ -12,14 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
+namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.Calculation;
 
-namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
+public class CallbackValue<T>
+{
+    private T? _value;
 
-/// <summary>
-/// An immutable input to start the calculation orchestration.
-/// </summary>
-public sealed record CalculationOrchestrationInput(
-    CalculationOrchestrationMonitorOptions OrchestrationMonitorOptions,
-    StartCalculationRequestDto StartCalculationRequestDto,
-    Guid RequestedByUserId);
+    public CallbackValue(T? value)
+    {
+        _value = value;
+    }
+
+    public T? GetValue() => _value;
+
+    public void SetValue(T newValue) => _value = newValue;
+}
