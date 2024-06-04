@@ -23,6 +23,14 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <Protobuf Include="InboxEvents\ActorMessagesEnqueuedV1\ActorMessagesEnqueued.proto">
+      <GrpcServices>None</GrpcServices>
+      <Access>Public</Access>
+      <ProtoCompile>True</ProtoCompile>
+      <ProtoRoot>InboxEvents</ProtoRoot>
+      <CompileOutputs>True</CompileOutputs>
+      <Generator>MSBuild:Compile</Generator>
+    </Protobuf>
     <Protobuf Include="IntegrationEvents/Protos/*.proto">
       <GrpcServices>None</GrpcServices>
       <Access>Public</Access>

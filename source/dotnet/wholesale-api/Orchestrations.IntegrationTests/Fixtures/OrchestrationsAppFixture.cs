@@ -14,6 +14,10 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 using Azure.Storage.Blobs;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
@@ -27,10 +31,15 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Extensions.O
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
+using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.DurableTask;
 using Energinet.DataHub.Wholesale.Test.Core.Fixture.Database;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using NodaTime;
 using WireMock.Server;
 using Xunit.Abstractions;
 
@@ -87,11 +96,11 @@ public class OrchestrationsAppFixture : IAsyncLifetime
 
     public ServiceBusListenerMock ServiceBusListenerMock { get; }
 
+    public WholesaleDatabaseManager<DatabaseContext> DatabaseManager { get; }
+
     private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
 
     private AzuriteManager AzuriteManager { get; }
-
-    private WholesaleDatabaseManager<DatabaseContext> DatabaseManager { get; }
 
     private DurableTaskManager DurableTaskManager { get; }
 
@@ -266,10 +275,13 @@ public class OrchestrationsAppFixture : IAsyncLifetime
 
         // Override default CalculationJob status monitor configuration
         appHostSettings.ProcessEnvironmentVariables.Add(
-            $"{CalculationJobStatusMonitorOptions.SectionName}__{nameof(CalculationJobStatusMonitorOptions.PollingIntervalInSeconds)}",
+            $"{CalculationOrchestrationMonitorOptions.SectionName}__{nameof(CalculationOrchestrationMonitorOptions.CalculationJobStatusPollingIntervalInSeconds)}",
             "3");
         appHostSettings.ProcessEnvironmentVariables.Add(
-            $"{CalculationJobStatusMonitorOptions.SectionName}__{nameof(CalculationJobStatusMonitorOptions.ExpiryTimeInSeconds)}",
+            $"{CalculationOrchestrationMonitorOptions.SectionName}__{nameof(CalculationOrchestrationMonitorOptions.CalculationJobStatusExpiryTimeInSeconds)}",
+            "20");
+        appHostSettings.ProcessEnvironmentVariables.Add(
+            $"{CalculationOrchestrationMonitorOptions.SectionName}__{nameof(CalculationOrchestrationMonitorOptions.MessagesEnqueuingExpiryTimeInSeconds)}",
             "20");
 
         return appHostSettings;

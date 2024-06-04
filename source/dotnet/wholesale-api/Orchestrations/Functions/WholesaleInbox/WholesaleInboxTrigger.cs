@@ -16,20 +16,16 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Extensions.Options;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Extensions.Logging;
+using Microsoft.DurableTask.Client;
 
-namespace Energinet.DataHub.Wholesale.Orchestrations.Functions;
+namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.WholesaleInbox;
 
-internal class WholesaleInboxTrigger
+internal class WholesaleInboxTrigger(
+    WholesaleInboxHandler wholesaleInboxHandler,
+    DurableTaskClientAccessor durableTaskClientAccessor)
 {
-    private readonly ILogger<WholesaleInboxTrigger> _logger;
-    private readonly WholesaleInboxHandler _wholesaleInboxHandler;
-
-    public WholesaleInboxTrigger(ILogger<WholesaleInboxTrigger> logger, WholesaleInboxHandler wholesaleInboxHandler)
-    {
-        _logger = logger;
-        _wholesaleInboxHandler = wholesaleInboxHandler;
-    }
+    private readonly WholesaleInboxHandler _wholesaleInboxHandler = wholesaleInboxHandler;
+    private readonly DurableTaskClientAccessor _durableTaskClientAccessor = durableTaskClientAccessor;
 
     [Function(nameof(WholesaleInboxTrigger))]
     public Task ReceiveWholesaleInboxMessageAsync(
@@ -37,8 +33,10 @@ internal class WholesaleInboxTrigger
             $"%{WholesaleInboxQueueOptions.SectionName}:{nameof(WholesaleInboxQueueOptions.QueueName)}%",
             Connection = $"{ServiceBusNamespaceOptions.SectionName}:{nameof(ServiceBusNamespaceOptions.ConnectionString)}")]
         ServiceBusReceivedMessage inboxMessage,
+        [DurableClient] DurableTaskClient durableTaskClient,
         CancellationToken cancellationToken)
     {
+        _durableTaskClientAccessor.Set(durableTaskClient);
         return _wholesaleInboxHandler.ProcessAsync(inboxMessage, cancellationToken);
     }
 }

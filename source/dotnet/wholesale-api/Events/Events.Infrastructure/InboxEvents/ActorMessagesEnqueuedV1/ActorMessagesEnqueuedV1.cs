@@ -12,14 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
+// ReSharper disable once CheckNamespace -- Protobuf is in with another namespace
+namespace Energinet.DataHub.EnergySupplying.RequestResponse.InboxEvents;
 
-namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
-
-/// <summary>
-/// An immutable input to start the calculation orchestration.
-/// </summary>
-public sealed record CalculationOrchestrationInput(
-    CalculationOrchestrationMonitorOptions OrchestrationMonitorOptions,
-    StartCalculationRequestDto StartCalculationRequestDto,
-    Guid RequestedByUserId);
+public partial class ActorMessagesEnqueuedV1
+{
+    public const string EventName = "ActorMessagesEnqueuedV1";
+    public const int CurrentMinorVersion = 1;
+}
