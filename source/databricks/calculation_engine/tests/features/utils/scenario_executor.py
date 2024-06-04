@@ -22,12 +22,7 @@ from pyspark.sql import SparkSession, DataFrame
 from package.calculation.calculation_results import CalculationResultsContainer
 from package.calculation.calculator_args import CalculatorArgs
 from .calculation_args import create_calculation_args
-from .dataframes import (
-    create_energy_result_dataframe,
-    create_wholesale_result_dataframe,
-    create_basis_data_result_dataframe,
-    create_total_monthly_amounts_dataframe,
-)
+from .dataframes.typecasting import cast_column_types
 from .expected_output import ExpectedOutput
 from .input_specifications import get_data_input_specifications
 
@@ -117,16 +112,7 @@ class ScenarioExecutor:
 
         for result_file in expected_result_file_paths:
             raw_df = spark.read.csv(result_file[1], header=True, sep=";")
-            if "energy_results" in result_file[1]:
-                df = create_energy_result_dataframe(spark, raw_df)
-            elif "wholesale_results" in result_file[1]:
-                df = create_wholesale_result_dataframe(spark, raw_df)
-            elif "total_monthly_amounts" in result_file[1]:
-                df = create_total_monthly_amounts_dataframe(spark, raw_df)
-            elif "basis_data" in result_file[1]:
-                df = create_basis_data_result_dataframe(spark, raw_df, result_file[0])
-            else:
-                raise Exception(f"Unsupported result file '{result_file[0]}'")
+            df = cast_column_types(raw_df)
             expected_results.append(ExpectedOutput(name=result_file[0], df=df))
 
         return expected_results

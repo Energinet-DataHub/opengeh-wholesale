@@ -25,14 +25,10 @@ energy_result_points_per_ga_v1_view_schema = t.StructType(
         t.StructField("grid_area_code", t.StringType(), False),
         t.StructField("metering_point_type", t.StringType(), False),
         t.StructField("settlement_method", t.StringType(), True),
-        t.StructField(
-            "resolution", t.StringType(), True
-        ),  # TODO BJM: Should this be False?
+        t.StructField("resolution", t.StringType(), True),
         t.StructField("time", t.TimestampType(), False),
         t.StructField("quantity", t.DecimalType(18, 3), False),
         t.StructField("unit", t.StringType(), False),
-        t.StructField(
-            "quantity_qualities", t.ArrayType(t.StringType(), True), False
-        ),  # TODO BJM: Should this be False?
+        t.StructField("quantity_qualities", t.ArrayType(t.StringType(), True), False),
     ]
 )

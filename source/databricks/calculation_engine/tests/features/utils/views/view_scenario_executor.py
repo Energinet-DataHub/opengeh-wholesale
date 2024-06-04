@@ -16,6 +16,7 @@ from typing import Tuple
 from pyspark.sql import SparkSession
 
 from features.utils.csv_to_dataframe_parser import CsvToDataframeParser
+from features.utils.dataframes.typecasting import cast_column_types
 from features.utils.views.dataframe_wrapper import DataframeWrapper
 from features.utils.views.view_input_specifications import get_input_specifications
 from features.utils.views.view_output_specifications import get_output_specifications
@@ -40,7 +41,7 @@ class ViewScenarioExecutor:
         )
 
         input_dataframes_wrappers = self.correct_dataframe_types(
-            input_dataframes_wrappers, input_specifications
+            input_dataframes_wrappers
         )
         self._write_to_tables(input_dataframes_wrappers)
 
@@ -48,9 +49,7 @@ class ViewScenarioExecutor:
             f"{scenario_folder_path}/output", output_specifications
         )
 
-        expected = self.correct_dataframe_types(
-            output_dataframe_wrappers, output_specifications
-        )
+        expected = self.correct_dataframe_types(output_dataframe_wrappers)
 
         actual = self._read_from_views(output_dataframe_wrappers)
         return actual, expected
@@ -80,14 +79,12 @@ class ViewScenarioExecutor:
     def correct_dataframe_types(
         self,
         dataframe_wrappers: list[DataframeWrapper],
-        output_specifications: dict[str, tuple],
     ) -> list[DataframeWrapper]:
         wrappers = []
         for wrapper in dataframe_wrappers:
             if wrapper.df is None:
                 continue
-            correction_method = output_specifications[wrapper.key][1]
-            wrapper.df = correction_method(self.spark, wrapper.df)
+            wrapper.df = cast_column_types(wrapper.df)
             wrappers.append(wrapper)
 
         return wrappers
