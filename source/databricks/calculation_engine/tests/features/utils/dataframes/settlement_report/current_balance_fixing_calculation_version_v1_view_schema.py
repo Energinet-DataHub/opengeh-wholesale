@@ -18,8 +18,6 @@ from pyspark.sql.types import (
     LongType,
 )
 
-from package.constants.calculation_column_names import CalculationColumnNames
-
 current_balance_fixing_calculation_version_v1_view_schema = StructType(
     [
         StructField("calculation_version", LongType(), False),
