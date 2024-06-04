@@ -16,9 +16,12 @@ using System.ComponentModel.DataAnnotations;
 using Asp.Versioning;
 using Energinet.DataHub.Core.App.WebApp.Extensibility.Swashbuckle;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NodaTime.Extensions;
+using CalculationState = Energinet.DataHub.Wholesale.Calculations.Interfaces.Models.CalculationState;
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3.SettlementReport;
 
@@ -27,10 +30,51 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.SettlementReport;
 public class SettlementReportController : V3ControllerBase
 {
     private readonly ISettlementReportClient _settlementReportClient;
+    private readonly ICalculationsClient _calculationsClient;
 
-    public SettlementReportController(ISettlementReportClient settlementReportClient)
+    public SettlementReportController(
+        ISettlementReportClient settlementReportClient,
+        ICalculationsClient calculationsClient)
     {
         _settlementReportClient = settlementReportClient;
+        _calculationsClient = calculationsClient;
+    }
+
+    /// <summary>
+    /// Returns a subset of calculations that are valid for use with settlement reports.
+    /// Settlement reports must access only a subset of data about calculations, as settlement reports are used by actors.
+    /// </summary>
+    [HttpGet(Name = "SearchCalculations")]
+    [MapToApiVersion(Version)]
+    [Produces("application/json", Type = typeof(List<SettlementReportCalculationDto>))]
+    [Authorize(Roles = Permissions.SettlementReportsManage)]
+    public async Task<IActionResult> SearchCalculationsAsync(
+        [FromQuery] CalculationType calculationType,
+        [FromQuery] string[] gridAreaCodes,
+        [FromQuery] DateTimeOffset periodStart,
+        [FromQuery] DateTimeOffset periodEnd)
+    {
+        // TODO: If user is part of Grid Access Provider, gridAreaCodes need to be checked for access.
+        var calculations = await _calculationsClient
+            .SearchAsync(
+                gridAreaCodes,
+                CalculationState.Completed,
+                periodStart.ToInstant(),
+                periodEnd.ToInstant(),
+                CalculationTypeMapper.Map(calculationType))
+            .ConfigureAwait(false);
+
+        var calculationsForSettlementReports =
+            from calculation in calculations
+            from gridAreaCode in calculation.GridAreaCodes
+            where gridAreaCodes.Contains(gridAreaCode)
+            select new SettlementReportCalculationDto(
+                calculation.CalculationId,
+                calculation.PeriodStart,
+                calculation.PeriodEnd,
+                gridAreaCode);
+
+        return Ok(calculationsForSettlementReports.ToList());
     }
 
     /// <summary>
