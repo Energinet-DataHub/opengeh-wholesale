@@ -89,3 +89,17 @@ class WholesaleResultsV1ColumnNames:
     charge_type = WholesaleResultColumnNames.charge_type
     charge_code = WholesaleResultColumnNames.charge_code
     charge_owner_id = WholesaleResultColumnNames.charge_owner_id
+
+
+class EnergyResultPointsPerEsGaV1ColumnNames:
+    calculation_id = EnergyResultColumnNames.calculation_id
+    calculation_type = EnergyResultColumnNames.calculation_type
+    calculation_version = "calculation_version"
+    result_id = "result_id"
+    energy_supplier_id = EnergyResultColumnNames.energy_supplier_id
+    grid_area_code = EnergyResultColumnNames.grid_area_code
+    resolution = Colname.resolution
+    metering_point_type = "metering_point_type"
+    settlement_method = Colname.settlement_method
+    time = EnergyResultColumnNames.time
+    quantity = EnergyResultColumnNames.quantity

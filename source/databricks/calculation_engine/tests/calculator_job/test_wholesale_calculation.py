@@ -347,6 +347,42 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
             f"{paths.EdiResults.DATABASE_NAME}.{paths.EdiResults.ENERGY_RESULT_POINTS_PER_ES_BRP_GA_V1_VIEW_NAME}",
             False,
         ),
+        (
+            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.CHARGE_PRICES_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.CHARGE_LINK_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.ENERGY_RESULT_POINTS_PER_GA_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.ENERGY_RESULT_POINTS_PER_ES_GA_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            False,
+        ),
+        (
+            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.WHOLESALE_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.CURRENT_CALCULATION_TYPE_VERSIONS_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.MONTHLY_AMOUNTS_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            True,
+        ),
     ],
 )
 def test__when_wholesale_fixing__view_has_data_if_expected(
