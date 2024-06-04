@@ -59,7 +59,12 @@ class ViewScenarioExecutor:
         input_dataframe_wrappers: list[DataframeWrapper],
     ) -> None:
         for wrapper in input_dataframe_wrappers:
-            wrapper.df.write.format("delta").mode("overwrite").saveAsTable(wrapper.name)
+            try:
+                wrapper.df.write.format("delta").mode("overwrite").saveAsTable(
+                    wrapper.name
+                )
+            except Exception as e:
+                raise Exception(f"Failed to write to table {wrapper.name}") from e
 
     def _read_from_views(
         self,
@@ -84,7 +89,7 @@ class ViewScenarioExecutor:
         for wrapper in dataframe_wrappers:
             if wrapper.df is None:
                 continue
-            wrapper.df = cast_column_types(wrapper.df)
+            wrapper.df = cast_column_types(wrapper.df, table_or_view_name=wrapper.name)
             wrappers.append(wrapper)
 
         return wrappers

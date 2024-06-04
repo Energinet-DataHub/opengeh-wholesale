@@ -112,7 +112,7 @@ class ScenarioExecutor:
 
         for result_file in expected_result_file_paths:
             raw_df = spark.read.csv(result_file[1], header=True, sep=";")
-            df = cast_column_types(raw_df)
+            df = cast_column_types(raw_df, table_or_view_name=result_file[0])
             expected_results.append(ExpectedOutput(name=result_file[0], df=df))
 
         return expected_results

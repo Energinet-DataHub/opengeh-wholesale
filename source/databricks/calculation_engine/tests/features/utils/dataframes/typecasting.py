@@ -15,6 +15,7 @@ import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 from pyspark.sql.types import (
     BooleanType,
+    IntegerType,
 )
 from pyspark.sql.types import (
     StructField,
@@ -29,13 +30,16 @@ from pyspark.sql.types import (
 from package.constants import TimeSeriesColname
 
 
-def cast_column_types(df: DataFrame) -> DataFrame:
+def cast_column_types(df: DataFrame, table_or_view_name: str = "") -> DataFrame:
     for column in df.schema:
-        df = _cast_column(df, column.name)
+        df = _cast_column(df, column.name, table_or_view_name)
     return df
 
 
-def _cast_column(df: DataFrame, column_name: str) -> DataFrame:
+def _cast_column(df: DataFrame, column_name: str, table_or_view_name: str) -> DataFrame:
+    if column_name == "time_series_type":
+        return df
+
     if "time" in column_name or "period" in column_name or "date" in column_name:
         return df.withColumn(column_name, f.col(column_name).cast(TimestampType()))
 
@@ -43,8 +47,12 @@ def _cast_column(df: DataFrame, column_name: str) -> DataFrame:
         return df.withColumn(column_name, f.col(column_name).cast(LongType()))
 
     if column_name == "quantity":
-        # TODO BJM: This should be IntegerType() for charge links
-        return df.withColumn(column_name, f.col(column_name).cast(DecimalType(18, 3)))
+        if "charge" in table_or_view_name:
+            return df.withColumn(column_name, f.col(column_name).cast(IntegerType()))
+        else:
+            return df.withColumn(
+                column_name, f.col(column_name).cast(DecimalType(18, 3))
+            )
 
     if column_name == "quantities":
         """Settlement report quantities are stored as a string in the format "[{observation_time: timestamp, quantity: decimal}, ...]"."""
@@ -68,14 +76,14 @@ def _cast_column(df: DataFrame, column_name: str) -> DataFrame:
             ).cast(ArrayType(StringType())),
         )
 
-    if "price" in column_name or "amount" in column_name:
-        return df.withColumn(column_name, f.col(column_name).cast(DecimalType(18, 6)))
-
     if column_name == "price_points":
         df = df.withColumn(
             column_name,
             f.from_json(f.col(column_name), ArrayType(_price_point)),
         )
+
+    if "price" in column_name or column_name == "amount":
+        return df.withColumn(column_name, f.col(column_name).cast(DecimalType(18, 6)))
 
     if column_name == "is_tax":
         return df.withColumn(column_name, f.col(column_name).cast(BooleanType()))
@@ -94,7 +102,7 @@ _settlement_report_quantity_schema = StructType(
 
 _price_point = StructType(
     [
-        StructField("time", TimestampType(), False),
-        StructField("price", DecimalType(18, 6), False),
+        StructField("time", TimestampType(), True),
+        StructField("price", DecimalType(18, 6), True),
     ]
 )
