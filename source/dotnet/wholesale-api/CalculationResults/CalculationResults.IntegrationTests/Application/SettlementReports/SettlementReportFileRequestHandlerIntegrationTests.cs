@@ -62,7 +62,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
     {
         // Arrange
         var filter = new SettlementReportRequestFilterDto(
-            _gridAreaCodes.Select(code => new CalculationFilterDto("8E1E8B45-6101-426B-8A0A-B2AB0354A442", code)).ToList(),
+            _gridAreaCodes.ToDictionary(x => x, _ => new CalculationId(Guid.Parse("8E1E8B45-6101-426B-8A0A-B2AB0354A442"))),
             _january1St.ToDateTimeOffset(),
             _january5Th.ToDateTimeOffset(),
             null,
@@ -70,8 +70,8 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var fileRequest = new SettlementReportFileRequestDto(
-            SettlementReportFileContent.BalanceFixingResult,
-            Guid.NewGuid().ToString(),
+            SettlementReportFileContent.EnergyResultLatestPerDay,
+            new SettlementReportPartialFileInfo(Guid.NewGuid().ToString()),
             requestId,
             filter);
 
@@ -86,7 +86,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         Assert.Equal(requestId, actual.RequestId);
 
         var container = _settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
-        var generatedFileBlob = container.GetBlobClient($"settlement-reports/{requestId.Id}/{actual.FileName}");
+        var generatedFileBlob = container.GetBlobClient($"settlement-reports/{requestId.Id}/{actual.StorageFileName}");
         var generatedFile = await generatedFileBlob.DownloadContentAsync();
         var fileContents = generatedFile.Value.Content.ToString();
         var fileLines = fileContents.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
