@@ -567,6 +567,16 @@ dotnet_diagnostic.VSTHRD200.severity = none     # VSTHRD200: Use "Async" suffix 
 
 #
 # The intention of this section is to match c# code files
+# that is functions Middleware and which then might be
+# used in combination with Durable Functions.
+#
+[*Middleware.cs]
+
+dotnet_diagnostic.CA2007.severity = none        # CA2007: Consider calling ConfigureAwait on the awaited task
+dotnet_diagnostic.VSTHRD111.severity = none	    # VSTHRD111: [Similar to CA2007] Use ConfigureAwait(bool)
+
+#
+# The intention of this section is to match c# code files
 # that is either Durable Function Orchestrations or Activities.
 #
 [**/Orchestrations/Functions/**/*{Orchestration,Activity}.cs]
