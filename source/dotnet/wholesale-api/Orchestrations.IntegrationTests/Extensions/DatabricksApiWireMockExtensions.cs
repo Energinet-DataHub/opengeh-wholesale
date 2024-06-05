@@ -164,7 +164,6 @@ public static class DatabricksApiWireMockExtensions
     public static WireMockServer MockJobsRunsGetLifeCycleScenario(this WireMockServer server, int? runId = null)
     {
         var jobId = Random.Shared.Next(1, 1000);
-
         runId ??= Random.Shared.Next(1000, 2000);
 
         server
@@ -345,36 +344,38 @@ public static class DatabricksApiWireMockExtensions
     public static WireMockServer MockJobRunStatusResponse(
         this WireMockServer server,
         string jobRunState,
-        string resultState)
+        string resultState,
+        int? runId = null)
     {
         // => Databricks Jobs API
         var jobId = Random.Shared.Next(1, 1000);
-        var runId = Random.Shared.Next(1000, 2000);
+        runId ??= Random.Shared.Next(1000, 2000);
 
         // => Mock job run as terminated (success)
         server
             .MockJobsList(jobId)
             .MockJobsGet(jobId)
-            .MockJobsRunNow(runId)
-            .MockJobsRunsGet(runId, jobRunState, resultState);
+            .MockJobsRunNow(runId.Value)
+            .MockJobsRunsGet(runId.Value, jobRunState, resultState);
 
         return server;
     }
 
     public static WireMockServer MockJobRunStatusResponse(
         this WireMockServer server,
-        Func<string?> jobRunStateCallback)
+        Func<string?> jobRunStateCallback,
+        int? runId = null)
     {
         // => Databricks Jobs API
         var jobId = Random.Shared.Next(1, 1000);
-        var runId = Random.Shared.Next(1000, 2000);
+        runId ??= Random.Shared.Next(1000, 2000);
 
         // => Mock job run as terminated (success)
         server
             .MockJobsList(jobId)
             .MockJobsGet(jobId)
-            .MockJobsRunNow(runId)
-            .MockJobsRunsGet(runId, jobRunStateCallback);
+            .MockJobsRunNow(runId.Value)
+            .MockJobsRunsGet(runId.Value, jobRunStateCallback);
 
         return server;
     }

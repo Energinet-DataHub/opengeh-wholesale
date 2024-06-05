@@ -111,12 +111,53 @@ public class DatabricksApiWireMockExtensionsTests : IClassFixture<WireMockExtens
         actualRunTuple.Item1.State.ResultState.Should().Be(RunResultState.SUCCESS);
     }
 
+    [Fact]
+    public async Task MockJobRunStatusResponse_WhenCallingJobsRunsGet_CanDeserializeResponseFromMock()
+    {
+        // Arrange
+        var runId = Random.Shared.Next(0, 1000);
+        var lifeCycleState = "TERMINATED";
+        var resultState = "SUCCESS";
+        _fixture.MockServer
+            .MockJobRunStatusResponse(lifeCycleState, resultState, runId);
+
+        // Act
+        var actualRunTuple = await _fixture.JobApiClient.Jobs.RunsGet(runId);
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        actualRunTuple.Item1.RunId.Should().Be(runId);
+        actualRunTuple.Item1.State.LifeCycleState.Should().Be(RunLifeCycleState.TERMINATED);
+        actualRunTuple.Item1.State.ResultState.Should().Be(RunResultState.SUCCESS);
+    }
+
+    [Fact]
+    public async Task MockJobRunStatusResponseWithStateCallback_WhenCallingJobsRunsGet_CanDeserializeResponseFromMock()
+    {
+        // Arrange
+        var runId = Random.Shared.Next(0, 1000);
+        var lifeCycleStateCallback = new CallbackValue<string?>(null);
+        _fixture.MockServer
+            .MockJobRunStatusResponse(lifeCycleStateCallback.GetValue, runId);
+
+        // Act
+        var actualRunTupleTask = _fixture.JobApiClient.Jobs.RunsGet(runId);
+        lifeCycleStateCallback.SetValue("TERMINATED");
+        var actualRunTuple = await actualRunTupleTask;
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        actualRunTuple.Item1.RunId.Should().Be(runId);
+        actualRunTuple.Item1.State.LifeCycleState.Should().Be(RunLifeCycleState.TERMINATED);
+        actualRunTuple.Item1.State.ResultState.Should().Be(RunResultState.SUCCESS);
+    }
+
     /// <summary>
     /// Test calling MockJobsRunsGet with a callback, so it is possible to set/update the job lifecycle state
     /// later in the test
     /// </summary>
     [Fact]
-    public async Task MockJobsRunsGet_WhenCallingJobsRunsGetWithStateCallback_CanDeserializeResponseFromMock()
+    public async Task MockJobsRunsGetWithStateCallback_WhenCallingJobsRunsGet_CanDeserializeResponseFromMock()
     {
         // Arrange
         var runId = Random.Shared.Next(0, 1000);
@@ -191,6 +232,69 @@ public class DatabricksApiWireMockExtensionsTests : IClassFixture<WireMockExtens
 
         // Act
         var actual = _fixture.DatabricksExecutor.ExecuteStatementAsync(query, Format.JsonArray).ConfigureAwait(false);
+
+        // Assert
+        await foreach (var row in actual)
+        {
+            var databricksSqlNextRow = new DatabricksSqlRow(row);
+            var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(databricksSqlNextRow);
+        }
+    }
+
+    /// <summary>
+    /// The mocked data we're testing goes through multiple deserializations.
+    /// First we transform the json data to a "ExpandoObject" which will be mapped to a dictionary
+    /// Which is what "actual" contains in the test below
+    /// Afterwards we map this dictionary to an "EnergyTimeSeriesPoint", where we will deserialize the
+    /// attribute "QuantityQuality".
+    /// The first deserialization is being tested by calling "ExecuteStatementAsync"
+    /// The second is tested by calling "CreateTimeSeriesPoint"
+    /// </summary>
+    [Fact]
+    public async Task MockMockEnergyResultsResponse_WhenQueryForData_CanDeserializeResponseFromMock()
+    {
+        // Arrange
+        var calculationIdForEnergyResults = Guid.NewGuid();
+        _fixture.MockServer.MockEnergyResultsResponse(calculationIdForEnergyResults);
+
+        var query = new EnergyResultQueryStatement(
+            Guid.Empty,
+            new DeltaTableOptions() { SCHEMA_NAME = "empty", ENERGY_RESULTS_TABLE_NAME = "empty" });
+
+        // Act
+        var actual = _fixture.DatabricksExecutor.ExecuteStatementAsync(query, Format.JsonArray).ConfigureAwait(false);
+
+        // Assert
+        await foreach (var row in actual)
+        {
+            var databricksSqlNextRow = new DatabricksSqlRow(row);
+            var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(databricksSqlNextRow);
+        }
+    }
+
+    /// <summary>
+    /// The mocked data we're testing goes through multiple deserializations.
+    /// First we transform the json data to a "ExpandoObject" which will be mapped to a dictionary
+    /// Which is what "actual" contains in the test below
+    /// Afterwards we map this dictionary to an "EnergyTimeSeriesPoint", where we will deserialize the
+    /// attribute "QuantityQuality".
+    /// The first deserialization is being tested by calling "ExecuteStatementAsync"
+    /// The second is tested by calling "CreateTimeSeriesPoint"
+    /// </summary>
+    [Fact]
+    public async Task MockMockEnergyResultsResponseWithCalculationIdCallback_WhenQueryForData_CanDeserializeResponseFromMock()
+    {
+        // Arrange
+        var calculationIdCallback = new CallbackValue<Guid?>(null);
+        _fixture.MockServer.MockEnergyResultsResponse(() => calculationIdCallback.GetValue());
+
+        var query = new EnergyResultQueryStatement(
+            Guid.Empty,
+            new DeltaTableOptions() { SCHEMA_NAME = "empty", ENERGY_RESULTS_TABLE_NAME = "empty" });
+
+        // Act
+        var actual = _fixture.DatabricksExecutor.ExecuteStatementAsync(query, Format.JsonArray).ConfigureAwait(false);
+        calculationIdCallback.SetValue(Guid.NewGuid());
 
         // Assert
         await foreach (var row in actual)
