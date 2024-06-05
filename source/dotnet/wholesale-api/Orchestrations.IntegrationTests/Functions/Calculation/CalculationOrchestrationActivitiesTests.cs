@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Net;
-using System.Net.Http.Json;
 using Energinet.DataHub.EnergySupplying.RequestResponse.InboxEvents;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
@@ -22,6 +20,7 @@ using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using Microsoft.Azure.Databricks.Client.Models;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.Calculation;
@@ -67,43 +66,22 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
     {
         // Arrange
         // => Databricks Jobs API
-        var jobId = Random.Shared.Next(1, 1000);
-        var runId = Random.Shared.Next(1000, 2000);
-
-        Fixture.MockServer
-            .MockJobsList(jobId)
-            .MockJobsGet(jobId)
-            .MockJobsRunNow(runId)
-            .MockJobsRunsGet(runId, "TERMINATED", "SUCCESS");
+        Fixture.MockServer.MockCalculationJobStatusResponse(RunLifeCycleState.TERMINATED); // Terminated is success
 
         // => Databricks SQL Statement API
-        var chunkIndex = 0;
-        var statementId = Guid.NewGuid().ToString();
-        var path = "GetDatabricksDataPath";
-
         // This is the calculationId returned in the energyResult from the mocked databricks.
-        // It should match the ID returned by the http client calling 'api/StartCalculation'.
+        // It should be set to the ID returned by the http client calling 'api/StartCalculation'.
         // The mocked response waits for this to not be null before responding, so it must be updated
         // when we have the actual id.
         var calculationIdCallback = new CallbackValue<Guid?>(null);
-
-        Fixture.MockServer
-            .MockEnergySqlStatements(statementId, chunkIndex)
-            .MockEnergySqlStatementsResultChunks(statementId, chunkIndex, path)
-            // ReSharper disable once AccessToModifiedClosure -- We need to modify calculation id in outer scope
-            // when we get a response from 'api/StartCalculation'
-            .MockEnergySqlStatementsResultStream(path, calculationIdCallback.GetValue);
+        Fixture.MockServer.MockEnergyResultsResponse(calculationIdCallback.GetValue);
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;
-        using var startCalculationResponse = await Fixture.AppHostManager.StartCalculationAsync();
-
-        // Assert
-        // => Verify endpoint response
-        startCalculationResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        var calculationId = await startCalculationResponse.Content.ReadFromJsonAsync<Guid>();
+        var calculationId = await Fixture.AppHostManager.StartCalculationAsync();
         calculationIdCallback.SetValue(calculationId);
 
+        // Assert
         // => Verify expected behaviour by searching the orchestration history
         var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeOrchestrationCreated);
 
@@ -122,6 +100,7 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
             {
                 CalculationId = calculationId.ToString(),
                 OrchestrationInstanceId = orchestrationStatus.InstanceId,
+                Success = true,
             });
 
         // => Wait for completion, this should be fairly quick, since we have mocked databricks
@@ -169,34 +148,16 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
     {
         // Arrange
         // => Databricks Jobs API
-        var jobId = Random.Shared.Next(1, 1000);
-        var runId = Random.Shared.Next(1000, 2000);
-
-        Fixture.MockServer
-            .MockJobsList(jobId)
-            .MockJobsGet(jobId)
-            .MockJobsRunNow(runId)
-            .MockJobsRunsGetLifeCycleScenario(runId);
+        Fixture.MockServer.MockCalculationJobStatusResponsesWithLifecycle();
 
         // => Databricks SQL Statement API
-        var chunkIndex = 0;
-        var statementId = Guid.NewGuid().ToString();
-        var path = "GetDatabricksDataPath";
-
-        Fixture.MockServer
-            .MockEnergySqlStatements(statementId, chunkIndex)
-            .MockEnergySqlStatementsResultChunks(statementId, chunkIndex, path)
-            .MockEnergySqlStatementsResultStream(path);
+        Fixture.MockServer.MockEnergyResultsResponse();
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;
-        using var startCalculationResponse = await Fixture.AppHostManager.StartCalculationAsync();
+        var calculationId = await Fixture.AppHostManager.StartCalculationAsync();
 
         // Assert
-        // => Verify endpoint response
-        startCalculationResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        var calculationId = await startCalculationResponse.Content.ReadFromJsonAsync<Guid>();
-
         // => Verify expected behaviour by searching the orchestration history
         var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeOrchestrationCreated);
 
@@ -238,24 +199,13 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
     {
         // Arrange
         // => Databricks Jobs API
-        var jobId = Random.Shared.Next(1, 1000);
-        var runId = Random.Shared.Next(1000, 2000);
-
-        Fixture.MockServer
-            .MockJobsList(jobId)
-            .MockJobsGet(jobId)
-            .MockJobsRunNow(runId)
-            .MockJobsRunsGet(runId, "RUNNING", "EXCLUDED");
+        Fixture.MockServer.MockCalculationJobStatusResponse(RunLifeCycleState.RUNNING);
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;
-        using var startCalculationResponse = await Fixture.AppHostManager.StartCalculationAsync();
+        var calculationId = await Fixture.AppHostManager.StartCalculationAsync();
 
         // Assert
-        // => Verify endpoint response
-        startCalculationResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        var calculationId = await startCalculationResponse.Content.ReadFromJsonAsync<Guid>();
-
         // => Verify expected behaviour by searching the orchestration history
         var orchestrationStatus = await Fixture.DurableClient.FindOrchestationStatusAsync(createdTimeFrom: beforeOrchestrationCreated);
 
