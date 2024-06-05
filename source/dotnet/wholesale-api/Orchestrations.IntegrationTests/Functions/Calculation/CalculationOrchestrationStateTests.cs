@@ -122,23 +122,23 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
         calculationMetadata!.Id.Should().Be(calculationId.Value);
 
         // => Calculation job hasn't started yet, state should be Scheduled
-        var isScheduledState = await dbContext.WaitForCalculationWithState(calculationId.Value, CalculationOrchestrationState.Scheduled, Fixture.TestLogger);
+        var isScheduledState = await dbContext.WaitForCalculationWithStateAsync(calculationId.Value, CalculationOrchestrationState.Scheduled, Fixture.TestLogger);
         isScheduledState.ActualState.Should().Be(CalculationOrchestrationState.Scheduled);
 
         // => Calculation job is "PENDING", state should be Calculating
         calculationJobStateCallback.SetValue("PENDING");
-        var isStillScheduledCalculatingState = await dbContext.WaitForCalculationWithState(calculationId.Value, CalculationOrchestrationState.Scheduled, Fixture.TestLogger);
+        var isStillScheduledCalculatingState = await dbContext.WaitForCalculationWithStateAsync(calculationId.Value, CalculationOrchestrationState.Scheduled, Fixture.TestLogger);
         isStillScheduledCalculatingState.ActualState.Should().Be(CalculationOrchestrationState.Scheduled);
 
         // => Calculation job is "RUNNING", state should be Calculating
         calculationJobStateCallback.SetValue("RUNNING");
-        var isCalculatingState = await dbContext.WaitForCalculationWithState(calculationId.Value, CalculationOrchestrationState.Calculating, Fixture.TestLogger);
+        var isCalculatingState = await dbContext.WaitForCalculationWithStateAsync(calculationId.Value, CalculationOrchestrationState.Calculating, Fixture.TestLogger);
         isCalculatingState.ActualState.Should().Be(CalculationOrchestrationState.Calculating);
 
         // => Calculation job is "TERMINATED" (success), state should be Calculated or ActorMessagesEnqueuing
         // The state changes from Calculated to ActorMessagesEnqueuing immediately, so we need to check for both states.
         calculationJobStateCallback.SetValue("TERMINATED");
-        var isCalculatedState = await dbContext.WaitForCalculationWithOneOfStates(
+        var isCalculatedState = await dbContext.WaitForCalculationWithOneOfStatesAsync(
             calculationId.Value,
             [CalculationOrchestrationState.Calculated, CalculationOrchestrationState.ActorMessagesEnqueuing],
             Fixture.TestLogger);
@@ -149,7 +149,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
         // => When the calculation result is complete, state should be ActorMessagesEnqueuing
         // We need to wait for the state change from Calculated to ActorMessagesEnqueuing if it hasn't already
         // happened in previous step
-        var isActorMessagesEnqueuingState = await dbContext.WaitForCalculationWithState(calculationId.Value, CalculationOrchestrationState.ActorMessagesEnqueuing, Fixture.TestLogger);
+        var isActorMessagesEnqueuingState = await dbContext.WaitForCalculationWithStateAsync(calculationId.Value, CalculationOrchestrationState.ActorMessagesEnqueuing, Fixture.TestLogger);
         isActorMessagesEnqueuingState.ActualState.Should().Be(CalculationOrchestrationState.ActorMessagesEnqueuing);
 
         // => Raise "ActorMessagesEnqueued" event to the orchestrator
@@ -164,7 +164,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
 
         // => Orchestration is "ActorMessagesEnqueued" or "Completed", state should be ActorMessagesEnqueued or Completed
         // The state changes from ActorMessagesEnqueued to Completed immediately, so we need to check for both states.
-        var isActorMessagesEnqueuedState = await dbContext.WaitForCalculationWithOneOfStates(
+        var isActorMessagesEnqueuedState = await dbContext.WaitForCalculationWithOneOfStatesAsync(
             calculationId.Value,
             [CalculationOrchestrationState.ActorMessagesEnqueued, CalculationOrchestrationState.Completed],
             Fixture.TestLogger);
@@ -177,7 +177,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
         var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(
             orchestrationStatus.InstanceId,
             TimeSpan.FromMinutes(3));
-        var isCompletedState = await dbContext.WaitForCalculationWithState(calculationId.Value, CalculationOrchestrationState.Completed, Fixture.TestLogger);
+        var isCompletedState = await dbContext.WaitForCalculationWithStateAsync(calculationId.Value, CalculationOrchestrationState.Completed, Fixture.TestLogger);
         isCompletedState.ActualState.Should().Be(CalculationOrchestrationState.Completed);
         completeOrchestrationStatus.Output.ToObject<string>().Should().Be("Success");
 
