@@ -20,7 +20,6 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
 
-#pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
 internal class SendCalculationResultsActivity(
     IPublisher integrationEventsPublisher,
     ICalculationRepository calculationRepository,
@@ -41,9 +40,9 @@ internal class SendCalculationResultsActivity(
     public async Task Run(
         [ActivityTrigger] Guid calculationId)
     {
-        await _integrationEventsPublisher.PublishAsync(CancellationToken.None);
+        await _integrationEventsPublisher.PublishAsync(CancellationToken.None).ConfigureAwait(false);
 
-        var completedCalculation = await _completedCalculationRepository.GetAsync(calculationId);
+        var completedCalculation = await _completedCalculationRepository.GetAsync(calculationId).ConfigureAwait(false);
 
         if (completedCalculation.PublishFailed)
             throw new Exception($"Publish failed for completed calculation (id: {calculationId})");
@@ -51,10 +50,9 @@ internal class SendCalculationResultsActivity(
         if (!completedCalculation.IsPublished)
             throw new Exception($"Completed calculation (id: {calculationId}) was not published");
 
-        var calculation = await _calculationRepository.GetAsync(calculationId);
+        var calculation = await _calculationRepository.GetAsync(calculationId).ConfigureAwait(false);
         calculation.MarkAsActorMessagesEnqueuing(_clock.GetCurrentInstant());
 
-        await _calculationUnitOfWork.CommitAsync();
+        await _calculationUnitOfWork.CommitAsync().ConfigureAwait(false);
     }
 }
-#pragma warning restore CA2007 // Consider calling ConfigureAwait on the awaited task

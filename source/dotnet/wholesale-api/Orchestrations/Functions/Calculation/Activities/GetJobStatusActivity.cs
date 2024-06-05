@@ -18,7 +18,6 @@ using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
 
-#pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
 internal class GetJobStatusActivity(
     ICalculationEngineClient calculationEngineClient)
 {
@@ -31,9 +30,8 @@ internal class GetJobStatusActivity(
     public async Task<Calculations.Application.Model.CalculationState> Run(
         [ActivityTrigger] CalculationJobId jobId)
     {
-        var calculationState = await _calculationEngineClient.GetStatusAsync(jobId);
+        var calculationState = await _calculationEngineClient.GetStatusAsync(jobId).ConfigureAwait(false);
 
         return calculationState;
     }
 }
-#pragma warning restore CA2007 // Consider calling ConfigureAwait on the awaited task
