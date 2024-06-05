@@ -76,7 +76,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
         // The current databrick calculation state. Can be null, "PENDING", "RUNNING", "TERMINATED" (success)
         // The mock response will wait for the value to not be null before returning
         var calculationJobStateCallback = new CallbackValue<RunLifeCycleState?>(null);
-        Fixture.MockServer.MockCalculationJobRunStatusResponse(calculationJobStateCallback.GetValue);
+        Fixture.MockServer.MockCalculationJobStatusResponse(calculationJobStateCallback.GetValue);
 
         // => Databricks SQL Statement API
         // This is the calculationId returned in the energyResult from the mocked databricks.
@@ -194,7 +194,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
         var dbContext = Fixture.DatabaseManager.CreateDbContext();
 
         // => Databricks Jobs API, mock calculation job run as terminated (success)
-        Fixture.MockServer.MockCalculationJobRunStatusResponse(RunLifeCycleState.TERMINATED);
+        Fixture.MockServer.MockCalculationJobStatusResponse(RunLifeCycleState.TERMINATED);
 
         // The calculation id is a callback since we can only to set it after the calculation is started
         // (we get the calculation id from the /api/StartCalculation response)

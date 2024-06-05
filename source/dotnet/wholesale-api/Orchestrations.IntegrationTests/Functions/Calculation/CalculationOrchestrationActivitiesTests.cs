@@ -66,7 +66,7 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
     {
         // Arrange
         // => Databricks Jobs API
-        Fixture.MockServer.MockCalculationJobRunStatusResponse(RunLifeCycleState.TERMINATED); // Terminated is success
+        Fixture.MockServer.MockCalculationJobStatusResponse(RunLifeCycleState.TERMINATED); // Terminated is success
 
         // => Databricks SQL Statement API
         // This is the calculationId returned in the energyResult from the mocked databricks.
@@ -148,7 +148,7 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
     {
         // Arrange
         // => Databricks Jobs API
-        Fixture.MockServer.MockCalculationJobRunStatusLifecycleResponses();
+        Fixture.MockServer.MockCalculationJobStatusResponsesWithLifecycle();
 
         // => Databricks SQL Statement API
         Fixture.MockServer.MockEnergyResultsResponse();
@@ -199,7 +199,7 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
     {
         // Arrange
         // => Databricks Jobs API
-        Fixture.MockServer.MockCalculationJobRunStatusResponse(RunLifeCycleState.RUNNING);
+        Fixture.MockServer.MockCalculationJobStatusResponse(RunLifeCycleState.RUNNING);
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;

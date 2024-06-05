@@ -86,12 +86,12 @@ public class DatabricksAbstractionExtensionsTests : IClassFixture<WireMockExtens
     }
 
     [Fact]
-    public async Task MockCalculationJobRunStatusResponse_WhenCallingJobsRunsGet_CanDeserializeResponseFromMock()
+    public async Task MockCalculationJobStatusResponse_WhenCallingJobsRunsGet_CanDeserializeResponseFromMock()
     {
         // Arrange
         var runId = Random.Shared.Next(0, 1000);
         _fixture.MockServer
-            .MockCalculationJobRunStatusResponse(RunLifeCycleState.TERMINATED, runId);
+            .MockCalculationJobStatusResponse(RunLifeCycleState.TERMINATED, runId);
 
         // Act
         var actualRunTupleTask = _fixture.JobApiClient.Jobs.RunsGet(runId);
@@ -105,13 +105,13 @@ public class DatabricksAbstractionExtensionsTests : IClassFixture<WireMockExtens
     }
 
     [Fact]
-    public async Task MockCalculationJobRunStatusResponseWithStateCallback_WhenCallingJobsRunsGet_CanDeserializeResponseFromMock()
+    public async Task MockCalculationJobStatusResponseWithStateCallback_WhenCallingJobsRunsGet_CanDeserializeResponseFromMock()
     {
         // Arrange
         var runId = Random.Shared.Next(0, 1000);
         var lifeCycleStateCallback = new CallbackValue<RunLifeCycleState?>(null);
         _fixture.MockServer
-            .MockCalculationJobRunStatusResponse(lifeCycleStateCallback.GetValue, runId);
+            .MockCalculationJobStatusResponse(lifeCycleStateCallback.GetValue, runId);
 
         // Act
         var actualRunTupleTask = _fixture.JobApiClient.Jobs.RunsGet(runId);
@@ -126,12 +126,12 @@ public class DatabricksAbstractionExtensionsTests : IClassFixture<WireMockExtens
     }
 
     [Fact]
-    public async Task MockCalculationJobRunStatusLifecycleResponses_WhenCallingJobsRunsGet_CanDeserializeResponseFromMockForEachState()
+    public async Task MockCalculationJobStatusResponsesWithLifecycle_WhenCallingJobsRunsGet_CanDeserializeResponseFromMockForEachState()
     {
         // Arrange
         var runId = Random.Shared.Next(0, 1000);
         _fixture.MockServer
-            .MockCalculationJobRunStatusLifecycleResponses(runId);
+            .MockCalculationJobStatusResponsesWithLifecycle(runId);
 
         // Act
         var firstRunTuple = await _fixture.JobApiClient.Jobs.RunsGet(runId);

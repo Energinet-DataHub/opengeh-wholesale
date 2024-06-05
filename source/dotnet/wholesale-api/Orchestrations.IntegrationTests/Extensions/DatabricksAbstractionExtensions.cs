@@ -72,7 +72,7 @@ public static class DatabricksAbstractionExtensions
     /// Setup databrick api response mocks to be able to respond with the job state provided by <paramref name="state"/>
     /// Supports PENDING, RUNNING and TERMINATED (which resolves to SUCCESS resultState)
     /// </summary>
-    public static WireMockServer MockCalculationJobRunStatusResponse(
+    public static WireMockServer MockCalculationJobStatusResponse(
         this WireMockServer server,
         RunLifeCycleState state,
         int? runId = null)
@@ -103,7 +103,7 @@ public static class DatabricksAbstractionExtensions
     /// Setup databrick api response mocks to be able to respond with the job state provided by <paramref name="jobRunStateCallback"/>
     /// Supports PENDING, RUNNING and TERMINATED (which resolves to SUCCESS resultState)
     /// </summary>
-    public static WireMockServer MockCalculationJobRunStatusResponse(
+    public static WireMockServer MockCalculationJobStatusResponse(
         this WireMockServer server,
         Func<RunLifeCycleState?> jobRunStateCallback,
         int? runId = null)
@@ -140,7 +140,7 @@ public static class DatabricksAbstractionExtensions
     /// Setup databrick api response mocks to be able to respond with job run statuses that
     /// goes from "Pending" -> "Running" -> "Completed".
     /// </summary>
-    public static WireMockServer MockCalculationJobRunStatusLifecycleResponses(this WireMockServer server, int? runId = null)
+    public static WireMockServer MockCalculationJobStatusResponsesWithLifecycle(this WireMockServer server, int? runId = null)
     {
         var jobId = Random.Shared.Next(1, 1000);
         runId ??= Random.Shared.Next(1000, 2000);
