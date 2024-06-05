@@ -143,7 +143,7 @@ public class DatabricksApiWireMockExtensionsTests : IClassFixture<WireMockExtens
         // Arrange
         var runId = Random.Shared.Next(0, 1000);
         _fixture.MockServer
-            .MockJobsRunsGetLifeCycleScenario();
+            .MockJobsRunsGetLifeCycleScenario(runId);
 
         // Act
         var firstRunTuple = await _fixture.JobApiClient.Jobs.RunsGet(runId);
