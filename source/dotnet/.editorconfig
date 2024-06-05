@@ -33,7 +33,7 @@ indent_style = space
 indent_size = 2
 
 # Code files
-[*.{cs,csx,vb,vbx,proto,tf}]
+[*.{cs,csx,vb,vbx,proto}]
 indent_size = 4
 insert_final_newline = true
 charset = utf-8-bom
