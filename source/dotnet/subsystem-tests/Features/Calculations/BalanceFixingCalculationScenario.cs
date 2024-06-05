@@ -14,13 +14,13 @@
 
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
+using Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3;
 using Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtures;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Xunit;
-using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations;
 
@@ -51,6 +51,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
     {
         Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(EnergyResultProducedV2.EventName);
         Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(GridLossResultProducedV1.EventName);
+        Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(CalculationCompletedV1.EventName);
     }
 
     [ScenarioStep(2)]
@@ -116,6 +117,8 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
                 .OfType<AmountPerChargeResultProducedV1>().ToList();
             Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1 = actualReceivedIntegrationEvents
                 .OfType<MonthlyAmountPerChargeResultProducedV1>().ToList();
+            Fixture.ScenarioState.ReceivedCalculationCompletedV1 = actualReceivedIntegrationEvents
+                .OfType<CalculationCompletedV1>().ToList();
         }
 
         // Assert
@@ -123,10 +126,10 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
         // => Not empty
         Fixture.ScenarioState.ReceivedEnergyResultProducedV2.Should().NotBeEmpty();
         Fixture.ScenarioState.ReceivedGridLossProducedV1.Should().NotBeEmpty();
+        Fixture.ScenarioState.ReceivedCalculationCompletedV1.Should().NotBeEmpty();
         // => Empty
         Fixture.ScenarioState.ReceivedAmountPerChargeResultProducedV1.Should().BeEmpty();
         Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1.Should().BeEmpty();
-        // TODO: Assert CalculationCompletedV1 received
     }
 
     [ScenarioStep(6)]
@@ -266,5 +269,71 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
         // Assert
         Assert.Single(energyResults);
         energyResults.First().Should().BeEquivalentTo(expectedTimeSeriesPoints);
+    }
+
+    [ScenarioStep(13)]
+    [SubsystemFact]
+    public void AndThen_ReceivedCalculationCompletedV1EventContainsSingleEventWithInstanceId()
+    {
+        // Assert
+        var receivedCalculationCompletedEvent = Fixture.ScenarioState.ReceivedCalculationCompletedV1.Should().ContainSingle()
+            .Subject;
+
+        receivedCalculationCompletedEvent.InstanceId.Should().NotBeNullOrEmpty();
+        Fixture.ScenarioState.OrchestrationInstanceId = receivedCalculationCompletedEvent.InstanceId;
+    }
+
+    [ScenarioStep(14)]
+    [SubsystemFact]
+    public async Task AndThen_CalculationShouldBeInActorMessagesEnqueuingState()
+    {
+        // Wait for the calculation to reach the ActorMessagesEnqueuing state
+        // We need to watch for ActorMessagesEnqueued or Completed as well, since the EDI subsystem
+        // could have already handled the request and sent an ActorMessagesEnqueued message back to
+        // the Wholesale subsystem already
+        var (isSuccess, calculation) = await Fixture.WaitForOneOfCalculationStatesAsync(
+            Fixture.ScenarioState.CalculationId,
+            [
+                CalculationOrchestrationState.ActorMessagesEnqueuing,
+                CalculationOrchestrationState.ActorMessagesEnqueued,
+                CalculationOrchestrationState.Completed
+            ],
+            waitTimeLimit: TimeSpan.FromMinutes(1));
+
+        isSuccess.Should().BeTrue("because calculation should be in ActorMessagesEnqueuing state or later");
+        calculation.Should().NotBeNull();
+        calculation!.OrchestrationState.Should().BeOneOf(
+            [
+                CalculationOrchestrationState.ActorMessagesEnqueuing,
+                CalculationOrchestrationState.ActorMessagesEnqueued,
+                CalculationOrchestrationState.Completed
+            ],
+            "because calculation should be in ActorMessagesEnqueuing state or later");
+    }
+
+    [ScenarioStep(15)]
+    [SubsystemFact]
+    public async Task AndWhen_ActorMessagesEnqueuedMessageIsReceived()
+    {
+        // Send a ActorMessagesEnqueued message to the Wholesale subsystem
+        // This must not fail even if the message has already been received from the EDI subsystem
+        await Fixture.SendActorMessagesEnqueuedMessageAsync(
+            Fixture.ScenarioState.CalculationId,
+            Fixture.ScenarioState.OrchestrationInstanceId);
+    }
+
+    [ScenarioStep(16)]
+    [SubsystemFact]
+    public async Task Then_CalculationOrchestrationIsCompleted()
+    {
+        // Wait for the calculation to reach the Completed state
+        var (isSuccess, calculation) = await Fixture.WaitForOneOfCalculationStatesAsync(
+            Fixture.ScenarioState.CalculationId,
+            [CalculationOrchestrationState.Completed],
+            waitTimeLimit: TimeSpan.FromMinutes(1));
+
+        isSuccess.Should().BeTrue("because the calculation should be completed");
+        calculation.Should().NotBeNull();
+        calculation!.OrchestrationState.Should().Be(CalculationOrchestrationState.Completed);
     }
 }
