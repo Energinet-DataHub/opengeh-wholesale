@@ -103,7 +103,8 @@ def spark(
             "spark.sql.catalog.spark_catalog",
             "org.apache.spark.sql.delta.catalog.DeltaCatalog",
         )
-        # Enable Hive support for persistence across test sessions
+        .config("spark.sql.hive.metastorePartitionPruning", "true")
+        .config("spark.sql.hive.metastorePartitionPruning.inMemory", "true")
         .config("spark.sql.catalogImplementation", "in-memory")
         .config(
             "javax.jdo.option.ConnectionURL",
