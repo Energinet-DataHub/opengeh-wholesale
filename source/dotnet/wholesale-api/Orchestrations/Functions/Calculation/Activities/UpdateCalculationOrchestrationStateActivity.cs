@@ -21,7 +21,6 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
 
-#pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
 internal class UpdateCalculationOrchestrationStateActivity(
     IClock clock,
     IUnitOfWork calculationUnitOfWork,
@@ -40,7 +39,7 @@ internal class UpdateCalculationOrchestrationStateActivity(
     public async Task<string> Run(
         [ActivityTrigger] UpdateCalculationOrchestrationStateInput input)
     {
-        var calculation = await _calculationRepository.GetAsync(input.CalculationId);
+        var calculation = await _calculationRepository.GetAsync(input.CalculationId).ConfigureAwait(false);
 
         _logger.LogInformation(
             "Update calculation state to: {NewState}, current state: {CurrentState}, calculation id: {CalculationId}",
@@ -50,9 +49,8 @@ internal class UpdateCalculationOrchestrationStateActivity(
 
         calculation.UpdateState(input.State, _clock);
 
-        await _calculationUnitOfWork.CommitAsync();
+        await _calculationUnitOfWork.CommitAsync().ConfigureAwait(false);
 
         return $"Orchestration state updated to: {input.State}";
     }
 }
-#pragma warning restore CA2007 // Consider calling ConfigureAwait on the awaited task
