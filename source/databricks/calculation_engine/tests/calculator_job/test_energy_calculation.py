@@ -217,7 +217,7 @@ def test__when_energy_calculation__basis_data_is_stored(
             True,
         ),
         (
-            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.CURRENT_CALCULATION_TYPE_VERSIONS_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.CURRENT_BALANCE_FIXING_CALCULATION_VERSION_SETTLEMENT_REPORT_VIEW_NAME_V1}",
             True,
         ),
     ],
