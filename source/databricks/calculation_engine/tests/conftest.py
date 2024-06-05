@@ -91,6 +91,7 @@ def spark(
         .config("spark.sql.ui.retainedExecutions", "1")
         .config("spark.worker.ui.retainedExecutors", "1")
         .config("spark.worker.ui.retainedDrivers", "1")
+        .config("spark.driver.memory", "2g")
         .config("spark.default.parallelism", 1)
         .config("spark.rdd.compress", False)
         .config("spark.shuffle.compress", False)
@@ -103,7 +104,7 @@ def spark(
             "org.apache.spark.sql.delta.catalog.DeltaCatalog",
         )
         # Enable Hive support for persistence across test sessions
-        # .config("spark.sql.catalogImplementation", "hive")
+        .config("spark.sql.catalogImplementation", "in-memory")
         .config(
             "javax.jdo.option.ConnectionURL",
             "jdbc:derby:;databaseName=metastore_db;create=true",
