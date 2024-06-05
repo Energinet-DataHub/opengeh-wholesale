@@ -203,7 +203,7 @@ csharp_style_unused_value_assignment_preference = discard_variable:suggestion
 
 # Index and range preferences
 csharp_style_prefer_index_operator = true:suggestion
-csharp_style_prefer_range_operator = true::silent
+csharp_style_prefer_range_operator = true:silent
 
 # Misc. preferences
 csharp_style_deconstructed_variable_declaration = true:suggestion
