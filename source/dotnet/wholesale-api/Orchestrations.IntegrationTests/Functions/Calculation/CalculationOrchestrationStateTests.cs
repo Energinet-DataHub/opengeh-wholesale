@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Net;
-using System.Net.Http.Json;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.EnergySupplying.RequestResponse.InboxEvents;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
@@ -23,6 +21,7 @@ using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.DurableTask;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 using FluentAssertions;
+using Microsoft.Azure.Databricks.Client.Models;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.Calculation;
@@ -76,8 +75,8 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
         // => Databricks Jobs API
         // The current databrick calculation state. Can be null, "PENDING", "RUNNING", "TERMINATED" (success)
         // The mock response will wait for the value to not be null before returning
-        var calculationJobStateCallback = new CallbackValue<string?>(null);
-        Fixture.MockServer.MockJobRunStatusResponse(calculationJobStateCallback.GetValue);
+        var calculationJobStateCallback = new CallbackValue<RunLifeCycleState?>(null);
+        Fixture.MockServer.MockCalculationJobRunStatusResponse(calculationJobStateCallback.GetValue);
 
         // => Databricks SQL Statement API
         // This is the calculationId returned in the energyResult from the mocked databricks.
@@ -105,18 +104,18 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
         isScheduledState.ActualState.Should().Be(CalculationOrchestrationState.Scheduled);
 
         // => Calculation job is "PENDING", state should be Calculating
-        calculationJobStateCallback.SetValue("PENDING");
+        calculationJobStateCallback.SetValue(RunLifeCycleState.PENDING);
         var isStillScheduledCalculatingState = await dbContext.WaitForCalculationWithState(calculationId, CalculationOrchestrationState.Scheduled, Fixture.TestLogger);
         isStillScheduledCalculatingState.ActualState.Should().Be(CalculationOrchestrationState.Scheduled);
 
         // => Calculation job is "RUNNING", state should be Calculating
-        calculationJobStateCallback.SetValue("RUNNING");
+        calculationJobStateCallback.SetValue(RunLifeCycleState.RUNNING);
         var isCalculatingState = await dbContext.WaitForCalculationWithState(calculationId, CalculationOrchestrationState.Calculating, Fixture.TestLogger);
         isCalculatingState.ActualState.Should().Be(CalculationOrchestrationState.Calculating);
 
         // => Calculation job is "TERMINATED" (success), state should be Calculated or ActorMessagesEnqueuing
         // The state changes from Calculated to ActorMessagesEnqueuing immediately, so we need to check for both states.
-        calculationJobStateCallback.SetValue("TERMINATED");
+        calculationJobStateCallback.SetValue(RunLifeCycleState.TERMINATED);
         var isCalculatedState = await dbContext.WaitForCalculationWithOneOfStates(
             calculationId,
             [CalculationOrchestrationState.Calculated, CalculationOrchestrationState.ActorMessagesEnqueuing],
@@ -194,8 +193,8 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
         // Arrange
         var dbContext = Fixture.DatabaseManager.CreateDbContext();
 
-        // => Databricks Jobs API, mock job run as terminated (success)
-        Fixture.MockServer.MockJobRunStatusResponse("TERMINATED", "SUCCESS");
+        // => Databricks Jobs API, mock calculation job run as terminated (success)
+        Fixture.MockServer.MockCalculationJobRunStatusResponse(RunLifeCycleState.TERMINATED);
 
         // The calculation id is a callback since we can only to set it after the calculation is started
         // (we get the calculation id from the /api/StartCalculation response)

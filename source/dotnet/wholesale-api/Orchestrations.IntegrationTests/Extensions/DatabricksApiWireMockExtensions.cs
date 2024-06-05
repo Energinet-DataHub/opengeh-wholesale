@@ -161,20 +161,12 @@ public static class DatabricksApiWireMockExtensions
     /// <summary>
     /// JobStatusLifeCycle goes through "Pending" -> "Running" -> "Completed".
     /// </summary>
-    public static WireMockServer MockJobsRunsGetLifeCycleScenario(this WireMockServer server, int? runId = null)
+    public static WireMockServer MockJobsRunsGetLifeCycleScenario(this WireMockServer server, long runId)
     {
-        var jobId = Random.Shared.Next(1, 1000);
-        runId ??= Random.Shared.Next(1000, 2000);
-
-        server
-            .MockJobsList(jobId)
-            .MockJobsGet(jobId)
-            .MockJobsRunNow(runId.Value);
-
         var request = Request
             .Create()
             .WithPath("/api/2.1/jobs/runs/get")
-            .WithParam("run_id", runId.Value.ToString())
+            .WithParam("run_id", runId.ToString())
             .UsingGet();
 
         // Pending
@@ -186,7 +178,7 @@ public static class DatabricksApiWireMockExtensions
                 .Create()
                 .WithStatusCode(HttpStatusCode.OK)
                 .WithHeader(HeaderNames.ContentType, "application/json")
-                .WithBody(BuildJobsRunsGetJson(runId.Value, "PENDING", "EXCLUDED")));
+                .WithBody(BuildJobsRunsGetJson(runId, "PENDING", "EXCLUDED")));
 
         // Running
         server
@@ -198,7 +190,7 @@ public static class DatabricksApiWireMockExtensions
                 .Create()
                 .WithStatusCode(HttpStatusCode.OK)
                 .WithHeader(HeaderNames.ContentType, "application/json")
-                .WithBody(BuildJobsRunsGetJson(runId.Value, "RUNNING", "EXCLUDED")));
+                .WithBody(BuildJobsRunsGetJson(runId, "RUNNING", "EXCLUDED")));
 
         // Completed
         server
@@ -210,7 +202,7 @@ public static class DatabricksApiWireMockExtensions
                 .Create()
                 .WithStatusCode(HttpStatusCode.OK)
                 .WithHeader(HeaderNames.ContentType, "application/json")
-                .WithBody(BuildJobsRunsGetJson(runId.Value, "TERMINATED", "SUCCESS")));
+                .WithBody(BuildJobsRunsGetJson(runId, "TERMINATED", "SUCCESS")));
 
         return server;
     }
@@ -255,7 +247,7 @@ public static class DatabricksApiWireMockExtensions
         return server;
     }
 
-    public static WireMockServer MockEnergySqlStatementsResultStream(this WireMockServer server, string path, Guid? calculationId = null)
+    public static WireMockServer MockEnergySqlStatementsResultStream(this WireMockServer server, string path, Guid calculationId)
     {
         var request = Request
             .Create()
@@ -304,79 +296,6 @@ public static class DatabricksApiWireMockExtensions
         server
             .Given(request)
             .RespondWith(response);
-        return server;
-    }
-
-    public static WireMockServer MockEnergyResultsResponse(
-        this WireMockServer server,
-        Guid? calculationId = null)
-    {
-        // => Databricks SQL Statement API
-        var chunkIndex = 0;
-        var statementId = Guid.NewGuid().ToString();
-        var path = "GetDatabricksDataPath";
-
-        server
-            .MockEnergySqlStatements(statementId, chunkIndex)
-            .MockEnergySqlStatementsResultChunks(statementId, chunkIndex, path)
-            .MockEnergySqlStatementsResultStream(path, calculationId);
-
-        return server;
-    }
-
-    public static WireMockServer MockEnergyResultsResponse(
-        this WireMockServer server,
-        Func<Guid?> getCalculationIdCallback)
-    {
-        // => Databricks SQL Statement API
-        var chunkIndex = 0;
-        var statementId = Guid.NewGuid().ToString();
-        var path = "GetDatabricksDataPath";
-
-        server
-            .MockEnergySqlStatements(statementId, chunkIndex)
-            .MockEnergySqlStatementsResultChunks(statementId, chunkIndex, path)
-            .MockEnergySqlStatementsResultStream(path, getCalculationIdCallback);
-
-        return server;
-    }
-
-    public static WireMockServer MockJobRunStatusResponse(
-        this WireMockServer server,
-        string jobRunState,
-        string resultState,
-        int? runId = null)
-    {
-        // => Databricks Jobs API
-        var jobId = Random.Shared.Next(1, 1000);
-        runId ??= Random.Shared.Next(1000, 2000);
-
-        // => Mock job run as terminated (success)
-        server
-            .MockJobsList(jobId)
-            .MockJobsGet(jobId)
-            .MockJobsRunNow(runId.Value)
-            .MockJobsRunsGet(runId.Value, jobRunState, resultState);
-
-        return server;
-    }
-
-    public static WireMockServer MockJobRunStatusResponse(
-        this WireMockServer server,
-        Func<string?> jobRunStateCallback,
-        int? runId = null)
-    {
-        // => Databricks Jobs API
-        var jobId = Random.Shared.Next(1, 1000);
-        runId ??= Random.Shared.Next(1000, 2000);
-
-        // => Mock job run as terminated (success)
-        server
-            .MockJobsList(jobId)
-            .MockJobsGet(jobId)
-            .MockJobsRunNow(runId.Value)
-            .MockJobsRunsGet(runId.Value, jobRunStateCallback);
-
         return server;
     }
 
@@ -473,12 +392,12 @@ public static class DatabricksApiWireMockExtensions
     /// <remarks>
     /// Note that QuantityQualities is a string, containing a list of strings.
     /// </remarks>>
-    private static string DatabricksEnergyStatementRowMock(Guid? calculationId = null)
+    private static string DatabricksEnergyStatementRowMock(Guid calculationId)
     {
         // Make sure that the order of the data matches the order of the columns defined in 'DatabricksEnergyStatementResponseMock'
         var data = EnergyResultColumnNames.GetAllNames().Select(columnName => columnName switch
         {
-            EnergyResultColumnNames.CalculationId => $"\"{calculationId ?? Guid.NewGuid()}\"",
+            EnergyResultColumnNames.CalculationId => $"\"{calculationId}\"",
             EnergyResultColumnNames.CalculationExecutionTimeStart => "\"2022-03-11T03:00:00.000Z\"",
             EnergyResultColumnNames.CalculationType => $"\"{DeltaTableCalculationType.BalanceFixing}\"",
             EnergyResultColumnNames.CalculationResultId => "\"aaaaaaaa-1111-1111-1c1c-08d3b12d4511\"",

@@ -20,6 +20,7 @@ using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using Microsoft.Azure.Databricks.Client.Models;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.Calculation;
@@ -65,7 +66,7 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
     {
         // Arrange
         // => Databricks Jobs API
-        Fixture.MockServer.MockJobRunStatusResponse("TERMINATED", "SUCCESS");
+        Fixture.MockServer.MockCalculationJobRunStatusResponse(RunLifeCycleState.TERMINATED); // Terminated is success
 
         // => Databricks SQL Statement API
         // This is the calculationId returned in the energyResult from the mocked databricks.
@@ -147,7 +148,7 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
     {
         // Arrange
         // => Databricks Jobs API
-        Fixture.MockServer.MockJobsRunsGetLifeCycleScenario();
+        Fixture.MockServer.MockCalculationJobRunStatusLifecycleResponses();
 
         // => Databricks SQL Statement API
         Fixture.MockServer.MockEnergyResultsResponse();
@@ -198,7 +199,7 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
     {
         // Arrange
         // => Databricks Jobs API
-        Fixture.MockServer.MockJobRunStatusResponse("RUNNING", "EXCLUDED");
+        Fixture.MockServer.MockCalculationJobRunStatusResponse(RunLifeCycleState.RUNNING);
 
         // Act
         var beforeOrchestrationCreated = DateTime.UtcNow;
