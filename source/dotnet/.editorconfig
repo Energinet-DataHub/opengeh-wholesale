@@ -530,15 +530,7 @@ dotnet_diagnostic.SX1101.severity = error
 dotnet_diagnostic.SX1309.severity = error
 
 ##############################################################
-# Durable Functions Orchestration                            #
-##############################################################
-[**/Orchestrations/Functions/**/*Orchestration.cs]
-
-dotnet_diagnostic.CA2007.severity = none        # CA2007: Consider calling ConfigureAwait on the awaited task
-dotnet_diagnostic.VSTHRD111.severity = none	    # VSTHRD111: [Similar to CA2007] Use ConfigureAwait(bool)
-
-##############################################################
-# C# Test Conventions (overrides default configuration)      #
+# Overrides default configuration                            #
 ##############################################################
 
 # .NET Analyzers (CAxxxx)
@@ -546,6 +538,10 @@ dotnet_diagnostic.VSTHRD111.severity = none	    # VSTHRD111: [Similar to CA2007]
 #
 # VS Threading Analyzers (VSTHRDxxx)
 # See rules here: https://github.com/microsoft/vs-threading/blob/main/doc/analyzers/index.md
+
+###############################
+# C# Test Conventions         #
+###############################
 
 #
 # The intention of this section is to match c# code files
@@ -562,5 +558,26 @@ dotnet_diagnostic.VSTHRD111.severity = none	    # VSTHRD111: [Similar to CA2007]
 # that is part of a class that contains tests or scenarios.
 #
 [*{Tests,Scenario}.cs]
+
+dotnet_diagnostic.VSTHRD200.severity = none     # VSTHRD200: Use "Async" suffix for async methods
+
+###############################
+# Durable Functions           #
+###############################
+
+#
+# The intention of this section is to match c# code files
+# that is either Durable Function Orchestrations or Activities.
+#
+[**/Orchestrations/Functions/**/*{Orchestration,Activity}.cs]
+
+dotnet_diagnostic.CA2007.severity = none        # CA2007: Consider calling ConfigureAwait on the awaited task
+dotnet_diagnostic.VSTHRD111.severity = none	    # VSTHRD111: [Similar to CA2007] Use ConfigureAwait(bool)
+
+#
+# The intention of this section is to match c# code files
+# that is either function Triggers, Durable Function Orchestrations or Activities.
+#
+[**/Orchestrations/Functions/**/*{Orchestration,Activity,Trigger}.cs]
 
 dotnet_diagnostic.VSTHRD200.severity = none     # VSTHRD200: Use "Async" suffix for async methods
