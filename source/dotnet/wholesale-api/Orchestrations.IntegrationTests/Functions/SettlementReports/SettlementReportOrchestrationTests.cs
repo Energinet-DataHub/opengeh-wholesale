@@ -87,13 +87,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
                 null));
 
         // => Databricks SQL Statement API
-        var statementId = Guid.NewGuid().ToString();
-        var path = "GetDatabricksDataPath";
-
-        Fixture.MockServer
-            .MockEnergySqlStatements(statementId, 0)
-            .MockEnergySqlStatementsResultChunks(statementId, 0, path)
-            .MockEnergySqlStatementsResultStream(path);
+        Fixture.MockServer.MockEnergyResultsResponse();
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Post, "api/RequestSettlementReport");
@@ -147,13 +141,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
                 null));
 
         // => Databricks SQL Statement API
-        var statementId = Guid.NewGuid().ToString();
-        var path = "GetDatabricksDataPath";
-
-        Fixture.MockServer
-            .MockEnergySqlStatements(statementId, 0)
-            .MockEnergySqlStatementsResultChunks(statementId, 0, path)
-            .MockEnergySqlStatementsResultStream(path);
+        Fixture.MockServer.MockEnergyResultsResponse();
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Post, "api/RequestSettlementReport");
@@ -219,13 +207,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
                 null));
 
         // => Databricks SQL Statement API
-        var statementId = Guid.NewGuid().ToString();
-        var path = "GetDatabricksDataPath";
-
-        Fixture.MockServer
-            .MockEnergySqlStatements(statementId, 0)
-            .MockEnergySqlStatementsResultChunks(statementId, 0, path)
-            .MockEnergySqlStatementsResultStream(path);
+        Fixture.MockServer.MockEnergyResultsResponse();
 
         // Act A: Start generating report.
         using var requestReport = new HttpRequestMessage(HttpMethod.Post, "api/RequestSettlementReport");

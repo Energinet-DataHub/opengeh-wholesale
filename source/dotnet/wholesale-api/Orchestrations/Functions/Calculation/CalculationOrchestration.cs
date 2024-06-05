@@ -128,6 +128,10 @@ internal class CalculationOrchestration
         {
             calculationMetadata.OrchestrationProgress = waitForActorMessagesEnqueuedEventResult.ErrorSubject ?? "UnknownWaitForActorMessagesEnqueuedEventError";
             context.SetCustomStatus(calculationMetadata);
+            await UpdateCalculationOrchestrationStateAsync(
+                context,
+                calculationMetadata.Id,
+                CalculationOrchestrationState.ActorMessagesEnqueuingFailed);
             return $"Error: {waitForActorMessagesEnqueuedEventResult.ErrorDescription ?? "Unknown error waiting for actor messages enqueued event"}";
         }
 
@@ -176,6 +180,13 @@ internal class CalculationOrchestration
         var canParseCalculationId = Guid.TryParse(messagesEnqueuedEvent.CalculationId, out var messagesEnqueuedCalculationId);
         if (!canParseCalculationId || messagesEnqueuedCalculationId != calculationId)
             return OrchestrationResult.Error("ActorMessagesEnqueuedCalculationIdMismatch", $"Calculation id mismatch for actor messages enqueued event (expected: {calculationId}, actual: {messagesEnqueuedEvent.CalculationId})");
+
+        if (!messagesEnqueuedEvent.Success)
+        {
+            return OrchestrationResult.Error(
+                "ActorMessagesEnqueuingFailed",
+                "ActorMessagesEnqueuedV1 event failed");
+        }
 
         return OrchestrationResult.Success();
     }
