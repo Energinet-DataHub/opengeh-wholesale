@@ -14,6 +14,7 @@
 
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Net.Http.Json;
 using System.Text;
@@ -25,6 +26,7 @@ using Azure.Monitor.Query;
 using Azure.Monitor.Query.Models;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.TestCommon;
+using Energinet.DataHub.EnergySupplying.RequestResponse.InboxEvents;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
@@ -35,6 +37,7 @@ using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Configuration;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Extensions;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using Energinet.DataHub.Wholesale.Test.Core;
+using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -84,6 +87,11 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
     /// <summary>
     /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
     /// </summary>
+    private ServiceBusSender WholesaleInboxSender { get; set; } = null!;
+
+    /// <summary>
+    /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
+    /// </summary>
     private WholesaleClient_V3 WholesaleWebApiClient { get; set; } = null!;
 
     /// <summary>
@@ -94,7 +102,7 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
     /// <summary>
     /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
     /// </summary>
-    private ServiceBusReceiver Receiver { get; set; } = null!;
+    private ServiceBusReceiver IntegrationEventReceiver { get; set; } = null!;
 
     private WholesaleSubsystemConfiguration Configuration { get; }
 
@@ -147,6 +155,32 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
         return (isCompletedOrFailed, calculation);
     }
 
+    /// <summary>
+    /// Wait for the calculation to complete or fail.
+    /// </summary>
+    /// <returns>IsCompletedOrFailed: True if the calculation completed or failed; otherwise false.</returns>
+    public async Task<(bool IsSuccess, CalculationDto? Calculation)> WaitForOneOfCalculationStatesAsync(
+        Guid calculationId,
+        CalculationOrchestrationState[] states,
+        TimeSpan waitTimeLimit)
+    {
+        var delay = TimeSpan.FromSeconds(30);
+
+        CalculationDto? calculation = null;
+        var isSuccess = await Awaiter.TryWaitUntilConditionAsync(
+            async () =>
+            {
+                calculation = await WholesaleWebApiClient.GetCalculationAsync(calculationId);
+                return calculation != null && states.Contains(calculation.OrchestrationState);
+            },
+            waitTimeLimit,
+            delay);
+
+        DiagnosticMessageSink.WriteDiagnosticMessage($"Wait for calculation with id '{calculationId}' finished with '{nameof(calculation.OrchestrationState)}={calculation?.OrchestrationState}'.");
+
+        return (isSuccess, calculation);
+    }
+
     public async Task<IReadOnlyCollection<IEventMessage>> WaitForIntegrationEventsAsync(
         Guid calculationId,
         IReadOnlyCollection<string> integrationEventNames,
@@ -158,7 +192,7 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
         var collectedIntegrationEvents = new List<IEventMessage>();
         while (!cts.Token.IsCancellationRequested)
         {
-            var messageOrNull = await Receiver.ReceiveMessageAsync(maxWaitTime: TimeSpan.FromMinutes(1));
+            var messageOrNull = await IntegrationEventReceiver.ReceiveMessageAsync(maxWaitTime: TimeSpan.FromMinutes(1));
             if (messageOrNull?.Body == null)
             {
                 if (collectedIntegrationEvents.Count > 0)
@@ -175,17 +209,30 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
                 // We should always complete (delete) messages since we use a subscription
                 // and no other receiver is using the same, so we will never by mistake
                 // interfere with other scenarios or message receivers in the live environment.
-                await Receiver.CompleteMessageAsync(messageOrNull);
+                await IntegrationEventReceiver.CompleteMessageAsync(messageOrNull);
             }
         }
 
         stopwatch.Stop();
         DiagnosticMessageSink.WriteDiagnosticMessage($"""
             Message receiver loop for calculation with id '{calculationId}' took '{stopwatch.Elapsed}' to complete.
-            It was listening for messages on entity path '{Receiver.EntityPath}', and collected '{collectedIntegrationEvents.Count}' messages spanning various event types.
+            It was listening for messages on entity path '{IntegrationEventReceiver.EntityPath}', and collected '{collectedIntegrationEvents.Count}' messages spanning various event types.
             """);
 
         return collectedIntegrationEvents;
+    }
+
+    public async Task SendActorMessagesEnqueuedMessageAsync(Guid calculationId, string orchestrationInstanceId)
+    {
+        var actorMessagesEnqueuedMessage = new ActorMessagesEnqueuedV1
+        {
+            CalculationId = calculationId.ToString(),
+            OrchestrationInstanceId = orchestrationInstanceId,
+            Success = true,
+        };
+
+        // Act
+        await WholesaleInboxSender.SendMessageAsync(new ServiceBusMessage(actorMessagesEnqueuedMessage.ToByteArray()));
     }
 
     public async Task<Response<LogsQueryResult>> QueryLogAnalyticsAsync(string query, QueryTimeRange queryTimeRange)
@@ -266,7 +313,8 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
         WholesaleWebApiClient = await WholesaleClientFactory.CreateWebApiClientAsync(Configuration, useAuthentication: true);
         WholesaleOrchestrationsApiClient = await WholesaleClientFactory.CreateOrchestrationsApiClientAsync(Configuration, useAuthentication: true);
         await CreateTopicSubscriptionAsync();
-        Receiver = ServiceBusClient.CreateReceiver(Configuration.ServiceBus.SubsystemRelayTopicName, _subscriptionName);
+        IntegrationEventReceiver = ServiceBusClient.CreateReceiver(Configuration.ServiceBus.SubsystemRelayTopicName, _subscriptionName);
+        WholesaleInboxSender = ServiceBusClient.CreateSender(Configuration.ServiceBus.WholesaleInboxQueueName);
     }
 
     protected override async Task OnDisposeAsync()

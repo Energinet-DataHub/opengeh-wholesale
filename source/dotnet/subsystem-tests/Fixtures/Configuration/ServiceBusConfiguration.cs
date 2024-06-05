@@ -21,7 +21,11 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Configuration;
 /// </summary>
 public sealed class ServiceBusConfiguration
 {
-    private ServiceBusConfiguration(string fullyQualifiedNamespace, string connectionString, string subsystemRelayTopicName)
+    private ServiceBusConfiguration(
+        string fullyQualifiedNamespace,
+        string connectionString,
+        string subsystemRelayTopicName,
+        string wholesaleInboxQueueName)
     {
         if (string.IsNullOrWhiteSpace(fullyQualifiedNamespace))
             throw new ArgumentException("Cannot be null or whitespace.", nameof(fullyQualifiedNamespace));
@@ -29,11 +33,16 @@ public sealed class ServiceBusConfiguration
             throw new ArgumentException("Cannot be null or whitespace.", nameof(connectionString));
         if (string.IsNullOrWhiteSpace(subsystemRelayTopicName))
             throw new ArgumentException("Cannot be null or whitespace.", nameof(subsystemRelayTopicName));
+        if (string.IsNullOrWhiteSpace(wholesaleInboxQueueName))
+            throw new ArgumentException("Cannot be null or whitespace.", nameof(wholesaleInboxQueueName));
 
         FullyQualifiedNamespace = fullyQualifiedNamespace;
         ConnectionString = connectionString;
         SubsystemRelayTopicName = subsystemRelayTopicName;
+        WholesaleInboxQueueName = wholesaleInboxQueueName;
     }
+
+    public string WholesaleInboxQueueName { get; set; }
 
     /// <summary>
     /// Fully qualified namespace for the shared service bus.
@@ -61,6 +70,7 @@ public sealed class ServiceBusConfiguration
         return new ServiceBusConfiguration(
             $"{serviceBusNamespace}.servicebus.windows.net",
             secretsConfiguration.GetValue<string>("sb-domain-relay-listen-connection-string")!,
-            secretsConfiguration.GetValue<string>("sbt-shres-integrationevent-received-name")!);
+            secretsConfiguration.GetValue<string>("sbt-shres-integrationevent-received-name")!,
+            secretsConfiguration.GetValue<string>("sbq-wholesale-inbox-messagequeue-name")!);
     }
 }
