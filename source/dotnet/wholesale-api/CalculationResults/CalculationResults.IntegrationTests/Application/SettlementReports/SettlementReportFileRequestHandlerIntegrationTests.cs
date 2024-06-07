@@ -20,7 +20,9 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementRe
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Microsoft.Extensions.Options;
 using Moq;
 using NodaTime;
@@ -35,7 +37,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
     private const string GridAreaA = "018";
     private readonly string[] _gridAreaCodes = [GridAreaA];
     private readonly Instant _january1St = Instant.FromUtc(2022, 1, 1, 0, 0, 0);
-    private readonly Instant _january5Th = Instant.FromUtc(2022, 1, 5, 0, 0, 0);
+    private readonly Instant _january5Th = Instant.FromUtc(2022, 1, 31, 0, 0, 0);
 
     private readonly DatabricksSqlStatementApiFixture _databricksSqlStatementApiFixture;
     private readonly SettlementReportFileBlobStorageFixture _settlementReportFileBlobStorageFixture;
@@ -60,15 +62,22 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             TOTAL_MONTHLY_AMOUNTS_TABLE_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
         });
 
+        var calc = new CalculationDto(null, Guid.Empty, DateTimeOffset.Now, DateTimeOffset.Now, "a", "b", DateTimeOffset.Now, DateTimeOffset.Now, CalculationState.Completed, true, [], CalculationType.Aggregation, Guid.Empty, 1, CalculationOrchestrationState.Calculated);
+
+        var calculationsClientMock = new Mock<ICalculationsClient>();
+        calculationsClientMock
+            .Setup(x => x.GetAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(calc);
+
         var settlementReportDataRepository = new SettlementReportEnergyResultRepository(new SettlementReportEnergyResultQueries(
             mockedOptions.Object,
             databricksSqlStatementApiFixture.GetDatabricksExecutor(),
-            new Mock<ICalculationsClient>().Object));
+            calculationsClientMock.Object));
 
         var settlementReportWholesaleRepository = new SettlementReportWholesaleRepository(new SettlementReportWholesaleResultQueries(
             mockedOptions.Object,
             _databricksSqlStatementApiFixture.GetDatabricksExecutor(),
-            new Mock<ICalculationsClient>().Object));
+            calculationsClientMock.Object));
 
         Fixture.Inject<ISettlementReportFileGeneratorFactory>(new SettlementReportFileGeneratorFactory(settlementReportDataRepository, settlementReportWholesaleRepository));
 
