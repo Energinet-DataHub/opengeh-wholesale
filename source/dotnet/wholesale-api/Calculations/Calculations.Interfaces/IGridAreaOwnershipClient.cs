@@ -12,15 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NodaTime;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 
-namespace Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
+namespace Energinet.DataHub.Wholesale.Calculations.Interfaces;
 
-public interface IGridAreaOwnerRepository
+public interface IGridAreaOwnershipClient
 {
-    void Add(string code, string ownerActorNumber, Instant validFrom, int sequenceNumber);
-
     Task<IEnumerable<string>> GetOwnedByAsync(string actorNumber);
-
-    Task<GridAreaOwner?> GetCurrentOwnerAsync(string code, CancellationToken cancellationToken);
 }

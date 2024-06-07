@@ -20,15 +20,32 @@ namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 // ReSharper disable once ClassNeverInstantiated.Global
 public sealed class FrontendUserProvider : IUserProvider<FrontendUser>
 {
+    private const string ActorNumberClaim = "actornumber";
+    private const string MarketRolesClaim = "marketroles";
+
     public Task<FrontendUser?> ProvideUserAsync(
         Guid userId,
         Guid actorId,
         bool multiTenancy,
         IEnumerable<Claim> claims)
     {
-        return Task.FromResult<FrontendUser?>(new FrontendUser(
-            userId,
-            actorId,
-            multiTenancy));
+        var frontendActor = new FrontendActor(actorId, GetActorNumber(claims), GetMarketRole(claims));
+        var frontendUser = new FrontendUser(userId, multiTenancy, frontendActor);
+
+        return Task.FromResult<FrontendUser?>(frontendUser);
+    }
+
+    private static string GetActorNumber(IEnumerable<Claim> claims)
+    {
+        return claims.Single(claim => claim.Type == ActorNumberClaim).Value;
+    }
+
+    private static FrontendActorMarketRole GetMarketRole(IEnumerable<Claim> claims)
+    {
+        return claims.Single(claim => claim.Type == MarketRolesClaim).Value switch
+        {
+            "GridAccessProvider" => FrontendActorMarketRole.GridAccessProvider,
+            _ => FrontendActorMarketRole.Other,
+        };
     }
 }
