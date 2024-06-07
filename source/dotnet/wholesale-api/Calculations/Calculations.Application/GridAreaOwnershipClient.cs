@@ -19,7 +19,6 @@ using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.Calculations.Application;
 
-// TODO: Tests
 public sealed class GridAreaOwnershipClient : IGridAreaOwnershipClient
 {
     private readonly IGridAreaOwnerRepository _gridAreaOwnerRepository;
