@@ -14,18 +14,4 @@
 
 namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 
-public sealed class FrontendUser
-{
-    public FrontendUser(Guid userId, Guid actorId, bool multiTenancy)
-    {
-        UserId = userId;
-        ActorId = actorId;
-        MultiTenancy = multiTenancy;
-    }
-
-    public Guid UserId { get; }
-
-    public Guid ActorId { get; }
-
-    public bool MultiTenancy { get; }
-}
+public sealed record FrontendUser(Guid UserId, bool MultiTenancy, FrontendActor Actor);
