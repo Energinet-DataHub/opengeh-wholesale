@@ -739,12 +739,12 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
             actualPackage.CalculationType);
 
         var expectedPeriodStart = expectedPackage.Points.Min(x => x);
-        var expectedPeriodEnd = GetEndOfPeriod(
+        var expectedPeriodEnd = expectedPackage.Points.Max(x => x);
+        var expectedPeriodEndWithResolutionOffset = GetDateTimeWithResolutionOffset(
             expectedPackage.Resolution,
-            expectedPackage.Points.Max(x => x).ToDateTimeOffset(),
-            expectedPeriodStart.ToDateTimeOffset());
+            expectedPeriodEnd.ToDateTimeOffset());
         var expected = new PackageForComparision(
-            new Period(expectedPeriodStart, expectedPeriodEnd.ToInstant()),
+            new Period(expectedPeriodStart, expectedPeriodEndWithResolutionOffset.ToInstant()),
             expectedPackage.CalculationPeriod.CalculationVersion,
             expectedPackage.GridArea,
             expectedPackage.EnergySupplierId,
@@ -761,11 +761,11 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
         return actual == expected && actualPoints.SequenceEqual(expectedPoints);
     }
 
-    private DateTimeOffset GetEndOfPeriod(Resolution resolution, DateTimeOffset lastPointInPeriod, DateTimeOffset firstPointInPeriod) => resolution switch
+    private static DateTimeOffset GetDateTimeWithResolutionOffset(Resolution resolution, DateTimeOffset dateTime) => resolution switch
     {
-        Resolution.Hour => lastPointInPeriod.AddMinutes(60),
-        Resolution.Day => lastPointInPeriod.AddDays(1),
-        _ => firstPointInPeriod.AddMonths(1),
+        Resolution.Hour => dateTime.AddMinutes(60),
+        Resolution.Day => dateTime.AddDays(1),
+        _ => dateTime.AddMonths(1),
     };
 
     private List<IReadOnlyCollection<string?>> ExtractSqlRowsFromPackagesAndTheirPoints(List<WholesaleServicesPackage> packages)
