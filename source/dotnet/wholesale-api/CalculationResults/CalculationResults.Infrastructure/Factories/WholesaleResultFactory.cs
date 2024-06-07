@@ -26,8 +26,6 @@ public class WholesaleResultFactory
     public static WholesaleResult CreateWholesaleResult(
         DatabricksSqlRow databricksSqlRow,
         IReadOnlyCollection<WholesaleTimeSeriesPoint> wholesaleTimeSeriesPoints,
-        Instant periodStart,
-        Instant periodEnd,
         long version)
     {
         var id = databricksSqlRow[WholesaleResultColumnNames.CalculationResultId];
@@ -41,16 +39,16 @@ public class WholesaleResultFactory
         var chargeOwnerId = databricksSqlRow[WholesaleResultColumnNames.ChargeOwnerId];
         var isTax = databricksSqlRow[WholesaleResultColumnNames.IsTax];
         var quantityUnit = databricksSqlRow[WholesaleResultColumnNames.QuantityUnit];
-        var resolution = databricksSqlRow[WholesaleResultColumnNames.Resolution];
         var meteringPointType = databricksSqlRow[WholesaleResultColumnNames.MeteringPointType];
         var settlementMethod = databricksSqlRow[WholesaleResultColumnNames.SettlementMethod];
-
+        var resolution = ResolutionMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.Resolution]!);
+        var period = PeriodHelper.GetPeriod(wholesaleTimeSeriesPoints, resolution);
         return new WholesaleResult(
             SqlResultValueConverters.ToGuid(id!),
             SqlResultValueConverters.ToGuid(calculationId!),
             CalculationTypeMapper.FromDeltaTableValue(calculationType!),
-            periodStart,
-            periodEnd,
+            period.Start,
+            period.End,
             gridArea!,
             energySupplierId!,
             AmountTypeMapper.FromDeltaTableValue(amountType!),
@@ -59,7 +57,7 @@ public class WholesaleResultFactory
             chargeOwnerId!,
             SqlResultValueConverters.ToBool(isTax!),
             QuantityUnitMapper.FromDeltaTableValue(quantityUnit!),
-            ResolutionMapper.FromDeltaTableValue(resolution!),
+            resolution,
             MeteringPointTypeMapper.FromDeltaTableValue(meteringPointType),
             SettlementMethodMapper.FromDeltaTableValue(settlementMethod),
             wholesaleTimeSeriesPoints,
