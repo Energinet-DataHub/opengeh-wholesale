@@ -108,7 +108,7 @@ public sealed class WholesaleResultFileGenerator : ISettlementReportFileGenerato
                     MeteringPointType.Consumption => "E17",
                     MeteringPointType.Production => "E18",
                     MeteringPointType.Exchange => "E20",
-                    _ => throw new ArgumentOutOfRangeException(nameof(row)),
+                    _ => $"DBG:{row.Value.MeteringPointType}",
                 });
 
             Map(r => r.SettlementMethod)
