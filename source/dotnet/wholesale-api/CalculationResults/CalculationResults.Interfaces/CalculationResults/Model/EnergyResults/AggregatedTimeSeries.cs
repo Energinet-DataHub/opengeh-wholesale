@@ -44,6 +44,9 @@ public class AggregatedTimeSeries
 
     public string GridArea { get; init; }
 
+    /// <summary>
+    /// Time series points for the period excluding the end time
+    /// </summary>
     public EnergyTimeSeriesPoint[] TimeSeriesPoints { get; init; }
 
     public TimeSeriesType TimeSeriesType { get; init; }
@@ -52,6 +55,9 @@ public class AggregatedTimeSeries
 
     public Instant PeriodStart { get; init; }
 
+    /// <summary>
+    /// The point are exclusive the end time.
+    /// </summary>
     public Instant PeriodEnd { get; init; }
 
     public Resolution Resolution { get; }

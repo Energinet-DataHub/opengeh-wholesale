@@ -29,6 +29,7 @@ using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Moq;
+using NodaTime;
 using NodaTime.Extensions;
 using Xunit;
 
@@ -115,21 +116,24 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
         _databricksSqlWarehouseQueryExecutorMock
             .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>(), default))
             .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 1));
+        var expectedStartDate = SqlResultValueConverters.ToDateTimeOffset(_tableChunk[0, WholesaleResultColumnNames.Time])!.Value;
+        // End date is the first point in the next periode
+        var expectedEndDate = SqlResultValueConverters.ToDateTimeOffset(_tableChunk[0, WholesaleResultColumnNames.Time])!.Value.AddHours(1);
 
         // Act
-        var actual = await Sut.GetAsync(calculation.CalculationId).ToListAsync();
+        var actual = await Sut.GetAsync(calculation.CalculationId).SingleAsync();
 
         // Assert
         using var assertionScope = new AssertionScope();
-        actual.Single().Id.Should().Be(_calculationResultId0);
-        actual.Single().CalculationId.Should().Be(Guid.Parse(_row0CalculationId));
-        actual.Single().GridArea.Should().Be(_tableChunk[0, WholesaleResultColumnNames.GridArea]);
-        actual.Single().EnergySupplierId.Should().Be(_tableChunk[0, WholesaleResultColumnNames.EnergySupplierId]);
-        actual.Single().CalculationId.Should().Be(_tableChunk[0, WholesaleResultColumnNames.CalculationId]);
-        actual.Single().CalculationType.Should().Be(calculation.CalculationType);
-        actual.Single().PeriodStart.Should().Be(calculation.PeriodStart.ToInstant());
-        actual.Single().PeriodEnd.Should().Be(calculation.PeriodEnd.ToInstant());
-        var actualPoint = actual.Single().TimeSeriesPoints.Single();
+        actual.Id.Should().Be(_calculationResultId0);
+        actual.CalculationId.Should().Be(Guid.Parse(_row0CalculationId));
+        actual.GridArea.Should().Be(_tableChunk[0, WholesaleResultColumnNames.GridArea]);
+        actual.EnergySupplierId.Should().Be(_tableChunk[0, WholesaleResultColumnNames.EnergySupplierId]);
+        actual.CalculationId.Should().Be(_tableChunk[0, WholesaleResultColumnNames.CalculationId]);
+        actual.CalculationType.Should().Be(calculation.CalculationType);
+        actual.PeriodStart.Should().Be(expectedStartDate.ToInstant());
+        actual.PeriodEnd.Should().Be(expectedEndDate.ToInstant());
+        var actualPoint = actual.TimeSeriesPoints.Single();
         actualPoint.Time.Should().Be(new DateTimeOffset(2022, 5, 16, 22, 0, 0, TimeSpan.Zero));
         actualPoint.Quantity.Should().Be(1.111m);
         actualPoint.Qualities.Should().Contain(QuantityQuality.Measured);
@@ -182,5 +186,71 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
 
         // Assert
         actual.Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetAsync_WhenOnlyResultFromHalfTheRequestedPeriod_ReturnedPointsAreInCorrectPeriod(CalculationDto calculation)
+    {
+        // Business case example:
+        // When a new Energy Supplier is being made responsible for a metering point in the middle of the month
+        // and they do not already have a metering point in the grid area from the beginning of the month.
+        // The result is that the Energy Supplier will only have results for the last half of the month.
+
+        // Arrange
+        var calculationPeriodStart = Instant.FromUtc(2022, 1, 1, 0, 0);
+        var calculationPeriodEnd = Instant.FromUtc(2022, 2, 1, 0, 0);
+        calculation = calculation with
+        {
+            CalculationId = Guid.Parse(_row0CalculationId),
+            CalculationType = CalculationType.WholesaleFixing,
+            PeriodStart = calculationPeriodStart.ToDateTimeOffset(),
+            PeriodEnd = calculationPeriodEnd.ToDateTimeOffset(),
+        };
+
+        var calculationResults = new List<string?[]>();
+        var middleOfPeriod = calculationPeriodStart.Plus(Duration.FromDays(15));
+        var currentTime = middleOfPeriod;
+        while (currentTime < calculationPeriodEnd)
+        {
+            var row = new[]
+            {
+                calculation.CalculationId.ToString(), _calculationResultId0, DeltaTableCalculationType.WholesaleFixing, "200",
+                "1234567890000", "amount_per_charge", "consumption", "flex", "tariff", "somChargeCode",
+                "someOwnerId", "PT1H", "true", "kWh", currentTime.ToString(),
+                "1.111", "[\"measured\"]", "2.123456", "3.123456", null,
+            };
+
+            calculationResults.Add(row);
+            currentTime = currentTime.Plus(Duration.FromHours(1));
+        }
+
+        _calculationsClientMock
+            .Setup(client => client.GetAsync(calculation.CalculationId))
+            .ReturnsAsync(calculation);
+        _databricksSqlWarehouseQueryExecutorMock
+            .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>(), default))
+            .Returns(DatabricksTestHelper.GetRowsAsync(new TableChunk(WholesaleResultQueryStatement.SqlColumnNames, calculationResults), calculationResults.Count));
+
+        // Act
+        var actual = await Sut.GetAsync(calculation.CalculationId).SingleAsync();
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        actual.Id.Should().Be(_calculationResultId0);
+        actual.CalculationId.Should().Be(calculation.CalculationId);
+        actual.GridArea.Should().Be(_tableChunk[0, WholesaleResultColumnNames.GridArea]);
+        actual.EnergySupplierId.Should().Be(_tableChunk[0, WholesaleResultColumnNames.EnergySupplierId]);
+        actual.CalculationId.Should().Be(_tableChunk[0, WholesaleResultColumnNames.CalculationId]);
+        actual.CalculationType.Should().Be(calculation.CalculationType);
+        actual.PeriodStart.Should().Be(middleOfPeriod);
+        actual.PeriodEnd.Should().Be(calculation.PeriodEnd.ToInstant());
+        actual.TimeSeriesPoints.Should().HaveCount(calculationResults.Count);
+        var actualPoint = actual.TimeSeriesPoints.First();
+        actualPoint.Quantity.Should().Be(1.111m);
+        actualPoint.Qualities.Should().Contain(QuantityQuality.Measured);
+        actualPoint.Qualities.Should().HaveCount(1);
+        actualPoint.Price.Should().Be(2.123456m);
+        actualPoint.Amount.Should().Be(3.123456m);
     }
 }
