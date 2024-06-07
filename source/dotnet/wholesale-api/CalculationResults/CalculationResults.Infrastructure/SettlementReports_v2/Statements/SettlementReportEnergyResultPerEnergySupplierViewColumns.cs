@@ -14,7 +14,7 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
 
-public class SettlementReportEnergyResultViewColumns
+public class SettlementReportEnergyResultPerEnergySupplierViewColumns
 {
     public const string CalculationId = "calculation_id";
     public const string CalculationType = "calculation_type";
@@ -25,4 +25,5 @@ public class SettlementReportEnergyResultViewColumns
     public const string Resolution = "resolution";
     public const string Time = "time";
     public const string Quantity = "quantity";
+    public const string EnergySupplier = "energy_supplier_id";
 }

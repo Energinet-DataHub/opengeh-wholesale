@@ -20,23 +20,24 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 
-public static class SettlementReportEnergyResultRowFactory
+public static class SettlementReportEnergyResultPerEnergySupplierRowFactory
 {
     public static SettlementReportEnergyResultRow Create(DatabricksSqlRow databricksSqlRow, long version)
     {
-        var calculationType = databricksSqlRow[SettlementReportEnergyResultViewColumns.CalculationType];
-        var gridArea = databricksSqlRow[SettlementReportEnergyResultViewColumns.GridArea];
-        var startTime = databricksSqlRow[SettlementReportEnergyResultViewColumns.Time];
-        var resolution = databricksSqlRow[SettlementReportEnergyResultViewColumns.Resolution];
-        var quantity = databricksSqlRow[SettlementReportEnergyResultViewColumns.Quantity];
-        var meteringPointType = databricksSqlRow[SettlementReportEnergyResultViewColumns.MeteringPointType];
-        var settlementMethod = databricksSqlRow[SettlementReportEnergyResultViewColumns.SettlementMethod];
+        var calculationType = databricksSqlRow[SettlementReportEnergyResultPerEnergySupplierViewColumns.CalculationType];
+        var gridArea = databricksSqlRow[SettlementReportEnergyResultPerEnergySupplierViewColumns.GridArea];
+        var startTime = databricksSqlRow[SettlementReportEnergyResultPerEnergySupplierViewColumns.Time];
+        var resolution = databricksSqlRow[SettlementReportEnergyResultPerEnergySupplierViewColumns.Resolution];
+        var quantity = databricksSqlRow[SettlementReportEnergyResultPerEnergySupplierViewColumns.Quantity];
+        var meteringPointType = databricksSqlRow[SettlementReportEnergyResultPerEnergySupplierViewColumns.MeteringPointType];
+        var settlementMethod = databricksSqlRow[SettlementReportEnergyResultPerEnergySupplierViewColumns.SettlementMethod];
+        var energySupplierId = databricksSqlRow[SettlementReportEnergyResultPerEnergySupplierViewColumns.EnergySupplier];
 
         return new SettlementReportEnergyResultRow(
             CalculationTypeMapper.FromDeltaTableValue(calculationType!),
             SqlResultValueConverters.ToInstant(startTime!)!.Value,
             gridArea!,
-            null,
+            energySupplierId,
             ResolutionMapper.FromDeltaTableValue(resolution!),
             MeteringPointTypeMapper.FromDeltaTableValue(meteringPointType!)!,
             SettlementMethodMapper.FromDeltaTableValue(settlementMethod!)!,

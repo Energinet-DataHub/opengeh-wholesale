@@ -18,15 +18,15 @@ public class SettlementReportEnergyResultPerEnergySupplierViewSchemaDefinition
 {
     public static Dictionary<string, (string Type, bool Nullable)> SchemaDefinition { get; } = new()
     {
-        { SettlementReportEnergyResultViewColumns.CalculationId, ("string", false) },
-        { SettlementReportEnergyResultViewColumns.CalculationType, ("string", false) },
-        { SettlementReportEnergyResultViewColumns.ResultId, ("string", false) },
-        { SettlementReportEnergyResultViewColumns.GridArea, ("string", false) },
-        { SettlementReportEnergyResultViewColumns.MeteringPointType, ("string", false) },
-        { SettlementReportEnergyResultViewColumns.SettlementMethod, ("string", false) },
-        { SettlementReportEnergyResultViewColumns.Resolution, ("string", false) },
-        { SettlementReportEnergyResultViewColumns.Time, ("timestamp", false) },
-        { SettlementReportEnergyResultViewColumns.Quantity, ("decimal(18,3)", true) },
-        { SettlementReportEnergyResultViewColumns.EnergySupplier, ("string", false) },
+        { SettlementReportEnergyResultPerEnergySupplierViewColumns.CalculationId, ("string", false) },
+        { SettlementReportEnergyResultPerEnergySupplierViewColumns.CalculationType, ("string", false) },
+        { SettlementReportEnergyResultPerEnergySupplierViewColumns.ResultId, ("string", false) },
+        { SettlementReportEnergyResultPerEnergySupplierViewColumns.GridArea, ("string", false) },
+        { SettlementReportEnergyResultPerEnergySupplierViewColumns.MeteringPointType, ("string", false) },
+        { SettlementReportEnergyResultPerEnergySupplierViewColumns.SettlementMethod, ("string", false) },
+        { SettlementReportEnergyResultPerEnergySupplierViewColumns.Resolution, ("string", false) },
+        { SettlementReportEnergyResultPerEnergySupplierViewColumns.Time, ("timestamp", false) },
+        { SettlementReportEnergyResultPerEnergySupplierViewColumns.Quantity, ("decimal(18,3)", true) },
+        { SettlementReportEnergyResultPerEnergySupplierViewColumns.EnergySupplier, ("string", false) },
     };
 }

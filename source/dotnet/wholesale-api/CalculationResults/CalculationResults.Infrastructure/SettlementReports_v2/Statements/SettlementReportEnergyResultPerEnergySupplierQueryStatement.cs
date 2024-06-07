@@ -38,42 +38,42 @@ public sealed class SettlementReportEnergyResultPerEnergySupplierQueryStatement 
     {
         var calculationResult =
             $"""
-                     SELECT DISTINCT({SettlementReportEnergyResultViewColumns.ResultId})
+                     SELECT DISTINCT({SettlementReportEnergyResultPerEnergySupplierViewColumns.ResultId})
                      FROM
                          {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_ES_GA_V1_VIEW_NAME}
                      WHERE 
-                         {SettlementReportEnergyResultViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
-                         {SettlementReportEnergyResultViewColumns.Time} >= '{_filter.PeriodStart}' AND
-                         {SettlementReportEnergyResultViewColumns.Time} < '{_filter.PeriodEnd}' AND
-                         {SettlementReportEnergyResultViewColumns.CalculationId} = '{_filter.CalculationId}' AND
-                         {SettlementReportEnergyResultViewColumns.EnergySupplier} = '{_filter.EnergySupplier}'
+                         {SettlementReportEnergyResultPerEnergySupplierViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
+                         {SettlementReportEnergyResultPerEnergySupplierViewColumns.Time} >= '{_filter.PeriodStart}' AND
+                         {SettlementReportEnergyResultPerEnergySupplierViewColumns.Time} < '{_filter.PeriodEnd}' AND
+                         {SettlementReportEnergyResultPerEnergySupplierViewColumns.CalculationId} = '{_filter.CalculationId}' AND
+                         {SettlementReportEnergyResultPerEnergySupplierViewColumns.EnergySupplier} = '{_filter.EnergySupplier}'
                      ORDER BY 
-                         {SettlementReportEnergyResultViewColumns.ResultId} LIMIT {_take} OFFSET {_skip}
+                         {SettlementReportEnergyResultPerEnergySupplierViewColumns.ResultId} LIMIT {_take} OFFSET {_skip}
                  """.Replace(Environment.NewLine, " ");
 
         var sqlStatement = $"""
                                 SELECT {string.Join(", ", [
-                                    SettlementReportEnergyResultViewColumns.CalculationId,
-                                    SettlementReportEnergyResultViewColumns.CalculationType,
-                                    "cr." + SettlementReportEnergyResultViewColumns.ResultId,
-                                    SettlementReportEnergyResultViewColumns.GridArea,
-                                    SettlementReportEnergyResultViewColumns.Time,
-                                    SettlementReportEnergyResultViewColumns.Resolution,
-                                    SettlementReportEnergyResultViewColumns.Quantity,
-                                    SettlementReportEnergyResultViewColumns.MeteringPointType,
-                                    SettlementReportEnergyResultViewColumns.SettlementMethod,
-                                    SettlementReportEnergyResultViewColumns.EnergySupplier,
+                                    SettlementReportEnergyResultPerEnergySupplierViewColumns.CalculationId,
+                                    SettlementReportEnergyResultPerEnergySupplierViewColumns.CalculationType,
+                                    "cr." + SettlementReportEnergyResultPerEnergySupplierViewColumns.ResultId,
+                                    SettlementReportEnergyResultPerEnergySupplierViewColumns.GridArea,
+                                    SettlementReportEnergyResultPerEnergySupplierViewColumns.Time,
+                                    SettlementReportEnergyResultPerEnergySupplierViewColumns.Resolution,
+                                    SettlementReportEnergyResultPerEnergySupplierViewColumns.Quantity,
+                                    SettlementReportEnergyResultPerEnergySupplierViewColumns.MeteringPointType,
+                                    SettlementReportEnergyResultPerEnergySupplierViewColumns.SettlementMethod,
+                                    SettlementReportEnergyResultPerEnergySupplierViewColumns.EnergySupplier,
                                 ])}
                                 FROM
                                     {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_ES_GA_V1_VIEW_NAME}
                                 JOIN 
-                                    ({calculationResult}) AS cr ON {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_ES_GA_V1_VIEW_NAME}.{SettlementReportEnergyResultViewColumns.ResultId} = cr.{SettlementReportEnergyResultViewColumns.ResultId}
+                                    ({calculationResult}) AS cr ON {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_ES_GA_V1_VIEW_NAME}.{SettlementReportEnergyResultPerEnergySupplierViewColumns.ResultId} = cr.{SettlementReportEnergyResultPerEnergySupplierViewColumns.ResultId}
                                 WHERE 
-                                    {SettlementReportEnergyResultViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
-                                    {SettlementReportEnergyResultViewColumns.Time} >= '{_filter.PeriodStart}' AND
-                                    {SettlementReportEnergyResultViewColumns.Time} < '{_filter.PeriodEnd}' AND
-                                    {SettlementReportEnergyResultViewColumns.CalculationId} = '{_filter.CalculationId}' AND 
-                                    {SettlementReportEnergyResultViewColumns.EnergySupplier} = '{_filter.EnergySupplier}'
+                                    {SettlementReportEnergyResultPerEnergySupplierViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
+                                    {SettlementReportEnergyResultPerEnergySupplierViewColumns.Time} >= '{_filter.PeriodStart}' AND
+                                    {SettlementReportEnergyResultPerEnergySupplierViewColumns.Time} < '{_filter.PeriodEnd}' AND
+                                    {SettlementReportEnergyResultPerEnergySupplierViewColumns.CalculationId} = '{_filter.CalculationId}' AND 
+                                    {SettlementReportEnergyResultPerEnergySupplierViewColumns.EnergySupplier} = '{_filter.EnergySupplier}'
                             """;
         return sqlStatement;
     }
