@@ -12,30 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
-using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.Calculations.Application;
 
 public sealed class GridAreaOwnershipClient : IGridAreaOwnershipClient
 {
     private readonly IGridAreaOwnerRepository _gridAreaOwnerRepository;
-    private readonly IGridAreaOwnerDtoMapper _gridAreaOwnerDtoMapper;
 
-    public GridAreaOwnershipClient(IGridAreaOwnerRepository gridAreaOwnerRepository, IGridAreaOwnerDtoMapper gridAreaOwnerDtoMapper)
+    public GridAreaOwnershipClient(IGridAreaOwnerRepository gridAreaOwnerRepository)
     {
         _gridAreaOwnerRepository = gridAreaOwnerRepository;
-        _gridAreaOwnerDtoMapper = gridAreaOwnerDtoMapper;
     }
 
-    public async Task<GridAreaOwnerDto?> GetAsync(string gridAreaCode)
+    public Task<IEnumerable<string>> GetOwnedByAsync(string actorNumber)
     {
-        var owner = await _gridAreaOwnerRepository
-            .GetCurrentOwnerAsync(gridAreaCode, default)
-            .ConfigureAwait(false);
-
-        return owner != null ? _gridAreaOwnerDtoMapper.Map(owner) : null;
+        return _gridAreaOwnerRepository.GetOwnedByAsync(actorNumber);
     }
 }

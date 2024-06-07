@@ -18,5 +18,5 @@ namespace Energinet.DataHub.Wholesale.Calculations.Interfaces;
 
 public interface IGridAreaOwnershipClient
 {
-    Task<GridAreaOwnerDto?> GetAsync(string gridAreaCode);
+    Task<IEnumerable<string>> GetOwnedByAsync(string actorNumber);
 }

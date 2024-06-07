@@ -23,9 +23,4 @@ public sealed record FrontendActor(
     {
         return MarketRole == marketRole;
     }
-
-    public bool HasActorNumber(string actorNumber)
-    {
-        return string.Equals(ActorNumber, actorNumber.Trim(), StringComparison.OrdinalIgnoreCase);
-    }
 }

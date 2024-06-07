@@ -75,7 +75,6 @@ public static class CalculationsExtensions
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ICalculationDtoMapper, CalculationDtoMapper>();
 
-        services.AddScoped<IGridAreaOwnerDtoMapper, GridAreaOwnerDtoMapper>();
         services.AddScoped<IGridAreaOwnershipClient, GridAreaOwnershipClient>();
 
         services.AddScoped<ICreateCalculationHandler, CreateCalculationHandler>();

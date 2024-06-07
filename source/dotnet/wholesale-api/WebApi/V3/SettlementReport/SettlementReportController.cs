@@ -64,16 +64,13 @@ public class SettlementReportController : V3ControllerBase
     {
         if (_userContext.CurrentUser.Actor.HasMarketRole(FrontendActorMarketRole.GridAccessProvider))
         {
-            foreach (var gridAreaCode in gridAreaCodes)
-            {
-                var gridAreaOwner = await _gridAreaOwnershipClient
-                    .GetAsync(gridAreaCode)
-                    .ConfigureAwait(false);
+            var ownedGridAreas = await _gridAreaOwnershipClient
+                .GetOwnedByAsync(_userContext.CurrentUser.Actor.ActorNumber)
+                .ConfigureAwait(false);
 
-                if (gridAreaOwner == null || !_userContext.CurrentUser.Actor.HasActorNumber(gridAreaOwner.ActorNumber))
-                {
-                    return Forbid();
-                }
+            if (gridAreaCodes.Any(code => !ownedGridAreas.Contains(code)))
+            {
+                return Forbid();
             }
         }
 
