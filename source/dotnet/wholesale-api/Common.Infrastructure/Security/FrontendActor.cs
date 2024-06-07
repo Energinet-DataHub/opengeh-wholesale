@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NodaTime;
+namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 
-namespace Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
-
-public interface IGridAreaOwnerRepository
+public sealed record FrontendActor(
+    Guid ActorId,
+    string ActorNumber,
+    FrontendActorMarketRole MarketRole)
 {
-    void Add(string code, string ownerActorNumber, Instant validFrom, int sequenceNumber);
-
-    Task<IEnumerable<string>> GetOwnedByAsync(string actorNumber);
-
-    Task<GridAreaOwner?> GetCurrentOwnerAsync(string code, CancellationToken cancellationToken);
+    public bool HasMarketRole(FrontendActorMarketRole marketRole)
+    {
+        return MarketRole == marketRole;
+    }
 }

@@ -91,6 +91,52 @@ public class GridAreaOwnerRepositoryTests : IClassFixture<WholesaleDatabaseFixtu
     }
 
     [Fact]
+    public async Task GetOwnedByAsync_ReturnsOwnedGridAreas()
+    {
+        // Arrange
+        await using var writeContext = _databaseManager.CreateDbContext();
+        var expectedGridAreaOwner = new GridAreaOwner(
+            Id: Guid.NewGuid(),
+            OwnerActorNumber: "1234567891236",
+            GridAreaCode: "111",
+            ValidFrom: Instant.FromUtc(2023, 10, 1, 0, 0, 0),
+            SequenceNumber: 1);
+        var unexpectedGridAreaOwnerA = new GridAreaOwner(
+            Id: Guid.NewGuid(),
+            OwnerActorNumber: "1234567891236",
+            GridAreaCode: "112",
+            ValidFrom: Instant.FromUtc(3000, 10, 1, 0, 0, 0),
+            SequenceNumber: 1);
+        var unexpectedGridAreaOwnerB = new GridAreaOwner(
+            Id: Guid.NewGuid(),
+            OwnerActorNumber: "1234567891236",
+            GridAreaCode: "113",
+            ValidFrom: Instant.FromUtc(2023, 10, 1, 0, 0, 0),
+            SequenceNumber: 1);
+        var unexpectedGridAreaOwnerC = new GridAreaOwner(
+            Id: Guid.NewGuid(),
+            OwnerActorNumber: "0000000000000",
+            GridAreaCode: "113",
+            ValidFrom: Instant.FromUtc(2023, 11, 1, 0, 0, 0),
+            SequenceNumber: 2);
+        await writeContext.GridAreaOwners.AddAsync(expectedGridAreaOwner);
+        await writeContext.GridAreaOwners.AddAsync(unexpectedGridAreaOwnerA);
+        await writeContext.GridAreaOwners.AddAsync(unexpectedGridAreaOwnerB);
+        await writeContext.GridAreaOwners.AddAsync(unexpectedGridAreaOwnerC);
+        await writeContext.SaveChangesAsync();
+
+        await using var readContext = _databaseManager.CreateDbContext();
+        var sut = new GridAreaOwnerRepository(readContext);
+
+        // Act
+        var actual = (await sut.GetOwnedByAsync(expectedGridAreaOwner.OwnerActorNumber)).ToList();
+
+        // Assert
+        Assert.Single(actual);
+        Assert.Single(actual, gridAreaCode => gridAreaCode == expectedGridAreaOwner.GridAreaCode);
+    }
+
+    [Fact]
     public async Task GetCurrentOwner_ReturnsExpectedOwner()
     {
         // Arrange
