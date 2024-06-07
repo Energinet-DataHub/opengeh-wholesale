@@ -23,13 +23,6 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public sealed class ChargeLinkPeriodsFileGenerator : ISettlementReportFileGenerator
 {
-    private readonly ISettlementReportEnergyRepository _energySource;
-
-    public ChargeLinkPeriodsFileGenerator(ISettlementReportEnergyRepository energySource)
-    {
-        _energySource = energySource;
-    }
-
     public string FileExtension => ".csv";
 
     public Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter)
@@ -48,11 +41,11 @@ public sealed class ChargeLinkPeriodsFileGenerator : ISettlementReportFileGenera
             await csvHelper.NextRecordAsync().ConfigureAwait(false);
 
             // TODO: Fix data source.
-            await foreach (var record in _energySource.GetAsync(filter).ConfigureAwait(false))
-            {
-                csvHelper.WriteRecord(record);
-                await csvHelper.NextRecordAsync().ConfigureAwait(false);
-            }
+            // await foreach (var record in _dataSource.GetAsync(filter).ConfigureAwait(false))
+            // {
+            //     csvHelper.WriteRecord(record);
+            //     await csvHelper.NextRecordAsync().ConfigureAwait(false);
+            // }
         }
     }
 

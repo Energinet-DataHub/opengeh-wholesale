@@ -25,7 +25,6 @@ public static class SettlementReportWholesaleResultRowFactory
 {
     public static SettlementReportWholesaleResultRow Create(DatabricksSqlRow databricksSqlRow, long version)
     {
-        var calculationId = databricksSqlRow[SettlementReportWholesaleViewColumns.CalculationId];
         var calculationType = databricksSqlRow[SettlementReportWholesaleViewColumns.CalculationType];
         var gridArea = databricksSqlRow[SettlementReportWholesaleViewColumns.GridArea];
         var energySupplierId = databricksSqlRow[SettlementReportWholesaleViewColumns.EnergySupplierId];
@@ -42,7 +41,6 @@ public static class SettlementReportWholesaleResultRowFactory
         var settlementMethod = databricksSqlRow[SettlementReportWholesaleViewColumns.SettlementMethod];
 
         return new SettlementReportWholesaleResultRow(
-            SqlResultValueConverters.ToGuid(calculationId!),
             CalculationTypeMapper.FromDeltaTableValue(calculationType!),
             gridArea!,
             energySupplierId!,
@@ -57,7 +55,6 @@ public static class SettlementReportWholesaleResultRowFactory
             SqlResultValueConverters.ToDecimal(amount),
             ChargeTypeMapper.FromDeltaTableValue(chargeType!),
             chargeCode,
-            chargeOwnerId!,
-            version);
+            chargeOwnerId!);
     }
 }

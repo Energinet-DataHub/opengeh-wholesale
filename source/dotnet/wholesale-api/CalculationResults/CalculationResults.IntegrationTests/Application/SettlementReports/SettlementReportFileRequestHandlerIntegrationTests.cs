@@ -15,14 +15,11 @@
 using AutoFixture;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
-using Microsoft.Extensions.Options;
 using Moq;
 using NodaTime;
 using Xunit;
@@ -49,9 +46,10 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         _databricksSqlStatementApiFixture = databricksSqlStatementApiFixture;
         _settlementReportFileBlobStorageFixture = settlementReportFileBlobStorageFixture;
 
-        var settlementReportDataRepository = new LegacySettlementReportEnergyRepository(new SettlementReportResultQueries(
+        var settlementReportDataRepository = new SettlementReportEnergyResultRepository(new SettlementReportEnergyResultQueries(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions,
             databricksSqlStatementApiFixture.GetDatabricksExecutor(),
-            databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions));
+            new Mock<ICalculationsClient>().Object));
 
         var settlementReportWholesaleRepository = new SettlementReportWholesaleRepository(new SettlementReportWholesaleResultQueries(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions,
@@ -65,11 +63,12 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
     }
 
     [Fact]
-    public async Task RequestFileAsync_ForBalanceFixing_ReturnsExpectedCsv()
+    public async Task RequestFileAsync_ForWholesaleFixing_ReturnsExpectedCsv()
     {
         // Arrange
+        var calculationId = Guid.Parse("51d60f89-bbc5-4f7a-be98-6139aab1c1b2");
         var filter = new SettlementReportRequestFilterDto(
-            _gridAreaCodes.ToDictionary(x => x, _ => new CalculationId(Guid.Parse("8E1E8B45-6101-426B-8A0A-B2AB0354A442"))),
+            _gridAreaCodes.ToDictionary(x => x, _ => new CalculationId(calculationId)),
             _january1St.ToDateTimeOffset(),
             _january5Th.ToDateTimeOffset(),
             null,
@@ -77,14 +76,19 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var fileRequest = new SettlementReportFileRequestDto(
-            SettlementReportFileContent.EnergyResultLatestPerDay,
+            SettlementReportFileContent.EnergyResultForCalculationId,
             new SettlementReportPartialFileInfo(Guid.NewGuid().ToString()),
             requestId,
             filter);
 
-        await InsertRowsFromMultipleCalculationsAsync(_databricksSqlStatementApiFixture
-            .DatabricksSchemaManager
-            .DeltaTableOptions);
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportEnergyResultViewSchemaDefinition>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_GA_V1_VIEW_NAME,
+            [
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'26'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-10T03:15:00.000+00:00'", "'26.634'"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'26'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-11T18:30:00.000+00:00'", "'21.011'"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'26'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-12T23:15:00.000+00:00'", "'22.458'"],
+                ["'51d60f89-bbc5-4f7a-be98-6139aab1c1b2'", "'WholesaleFixing'", "'26'", "'47433af6-03c1-46bd-ab9b-dd0497035305'", "'018'", "'consumption'", "'non_profiled'", "'PT15M'", "'2022-01-13T12:00:00.000+00:00'", "'151.24'"],
+            ]);
 
         // Act
         var actual = await Sut.RequestFileAsync(fileRequest);
@@ -104,53 +108,5 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
         Assert.Equal("111,D04,2022-01-02T01:00:00Z,PT15M,E18,,2.200", fileLines[3]);
         Assert.Equal("805,D04,2022-01-02T01:00:00Z,PT15M,E18,,1.200", fileLines[4]);
         Assert.Equal("805,D04,2022-01-03T01:00:00Z,PT15M,E18,,3.200", fileLines[5]);
-    }
-
-    // NOTE: This will only work with LegacyRepo. When view arrives, this has to be redone.
-    private async Task InsertRowsFromMultipleCalculationsAsync(IOptions<DeltaTableOptions> options)
-    {
-        const string january1 = "2022-01-01T01:00:00.000Z";
-        const string january2 = "2022-01-02T01:00:00.000Z";
-        const string january3 = "2022-01-03T01:00:00.000Z";
-        const string april1 = "2022-04-01T01:00:00.000Z";
-        const string may1 = "2022-05-01T01:00:00.000Z";
-        const string june1 = "2022-06-01T01:00:00.000Z";
-
-        // Calculation 1: Balance fixing, ExecutionTime=june1st, Period: 01/01 to 02/01 (include)
-        const string quantity11 = "1.100"; // include
-        const string quantity12 = "1.200"; // include
-        var calculation1Row1 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: may1, time: january1, calculationType: DeltaTableCalculationType.BalanceFixing, gridArea: GridAreaA, quantity: quantity11);
-        var calculation1Row2 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: may1, time: january2, calculationType: DeltaTableCalculationType.BalanceFixing, gridArea: GridAreaA, quantity: quantity12);
-
-        // Calculation 2: Same as calculation 1, but for other grid area (include)
-        const string quantity21 = "2.100"; // include
-        const string quantity22 = "2.200"; // include
-        var calculation2Row1 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: may1, time: january1, calculationType: DeltaTableCalculationType.BalanceFixing, gridArea: GridAreaB, quantity: quantity21);
-        var calculation2Row2 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: may1, time: january2, calculationType: DeltaTableCalculationType.BalanceFixing, gridArea: GridAreaB, quantity: quantity22);
-
-        // Calculation 3: Same as calculation 1, but only partly covering the same period (include the uncovered part)
-        const string quantity31 = "3.100"; // exclude because it's an older calculation
-        const string quantity32 = "3.200"; // include because other calculations don't cover this date
-        var calculation3Row1 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: april1, time: january2, calculationType: DeltaTableCalculationType.BalanceFixing, gridArea: GridAreaA, quantity: quantity31);
-        var calculation3Row2 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: april1, time: january3, calculationType: DeltaTableCalculationType.BalanceFixing, gridArea: GridAreaA, quantity: quantity32);
-
-        // Calculation 4: Same as calculation 1, but newer and for Aggregation (exclude)
-        const string quantity41 = "4.100"; // exclude because it's aggregation
-        const string quantity42 = "4.200"; // exclude because it's aggregation
-        var calculation4Row1 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: june1, time: january1, calculationType: DeltaTableCalculationType.Aggregation, gridArea: GridAreaA, quantity: quantity41);
-        var calculation4Row2 = EnergyResultDeltaTableHelper.CreateRowValues(calculationExecutionTimeStart: june1, time: january2, calculationType: DeltaTableCalculationType.Aggregation, gridArea: GridAreaA, quantity: quantity42);
-
-        var rows = new List<IReadOnlyCollection<string>>
-        {
-            calculation1Row1,
-            calculation1Row2,
-            calculation2Row1,
-            calculation2Row2,
-            calculation3Row1,
-            calculation3Row2,
-            calculation4Row1,
-            calculation4Row2,
-        };
-        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(options.Value.ENERGY_RESULTS_TABLE_NAME, rows);
     }
 }

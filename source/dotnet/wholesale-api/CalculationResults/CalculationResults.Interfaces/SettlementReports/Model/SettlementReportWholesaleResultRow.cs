@@ -20,7 +20,6 @@ using NodaTime;
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 
 public sealed record SettlementReportWholesaleResultRow(
-    Guid CalculationId,
     CalculationType CalculationType,
     string GridArea,
     string EnergySupplierId,
@@ -35,5 +34,4 @@ public sealed record SettlementReportWholesaleResultRow(
     decimal? Amount,
     ChargeType ChargeType,
     string? ChargeCode,
-    string ChargeOwnerId,
-    long Version);
+    string ChargeOwnerId);

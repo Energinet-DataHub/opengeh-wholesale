@@ -21,12 +21,14 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public sealed class SettlementReportFileGeneratorFactory : ISettlementReportFileGeneratorFactory
 {
-    private readonly ISettlementReportEnergyRepository _settlementReportEnergyRepository;
+    private readonly ISettlementReportEnergyResultRepository _settlementReportEnergyResultRepository;
     private readonly ISettlementReportWholesaleRepository _settlementReportWholesaleRepository;
 
-    public SettlementReportFileGeneratorFactory(ISettlementReportEnergyRepository settlementReportEnergyRepository, ISettlementReportWholesaleRepository settlementReportWholesaleRepository)
+    public SettlementReportFileGeneratorFactory(
+        ISettlementReportEnergyResultRepository settlementReportEnergyResultRepository,
+        ISettlementReportWholesaleRepository settlementReportWholesaleRepository)
     {
-        _settlementReportEnergyRepository = settlementReportEnergyRepository;
+        _settlementReportEnergyResultRepository = settlementReportEnergyResultRepository;
         _settlementReportWholesaleRepository = settlementReportWholesaleRepository;
     }
 
@@ -35,9 +37,9 @@ public sealed class SettlementReportFileGeneratorFactory : ISettlementReportFile
         switch (fileContent)
         {
             case SettlementReportFileContent.EnergyResultLatestPerDay:
-                return new EnergyResultFileGenerator(_settlementReportEnergyRepository);
+                return new EnergyResultFileGenerator(_settlementReportEnergyResultRepository);
             case SettlementReportFileContent.EnergyResultForCalculationId:
-                return new EnergyResultFileGenerator(_settlementReportEnergyRepository);
+                return new EnergyResultFileGenerator(_settlementReportEnergyResultRepository);
             case SettlementReportFileContent.WholesaleResult:
                 return new WholesaleResultFileGenerator(_settlementReportWholesaleRepository, CalculationType.WholesaleFixing);
             case SettlementReportFileContent.FirstCorrectionResult:

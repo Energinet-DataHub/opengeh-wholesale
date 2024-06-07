@@ -60,7 +60,7 @@ public sealed class SettlementReportWholesaleResultQueries : ISettlementReportWh
 
         await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {
-            yield return SettlementReportWholesaleResultRowFactory.Create(new DatabricksSqlRow(nextRow), calculation?.Version ?? 1);
+            yield return SettlementReportWholesaleResultRowFactory.Create(new DatabricksSqlRow(nextRow), calculation.Version);
         }
     }
 }
