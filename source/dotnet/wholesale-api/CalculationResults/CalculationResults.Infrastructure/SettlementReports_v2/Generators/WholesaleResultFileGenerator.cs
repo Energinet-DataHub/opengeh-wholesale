@@ -142,7 +142,7 @@ public sealed class WholesaleResultFileGenerator : ISettlementReportFileGenerato
                 });
 
             Map(r => r.Quantity)
-                .Name("ENERGYCURRENCY")
+                .Name("ENERGYQUANTITY")
                 .Index(10)
                 .Data.TypeConverterOptions.Formats = ["#,##0"];
 
