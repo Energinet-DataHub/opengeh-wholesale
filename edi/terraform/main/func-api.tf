@@ -58,15 +58,15 @@ locals {
     "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Core" = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE
 
     # FeatureManagement
-    FeatureManagement__UseMonthlyAmountPerChargeResultProduced  = var.feature_management_use_monthly_amount_per_charge_result_produced
-    FeatureManagement__UseAmountPerChargeResultProduced         = var.feature_management_use_amount_per_charge_result_produced
-    FeatureManagement__UseRequestWholesaleSettlementReceiver    = var.feature_management_use_request_wholesale_settlement_receiver
-    FeatureManagement__UseMessageDelegation                     = var.feature_management_use_message_delegation
-    FeatureManagement__UsePeekMessages                          = var.feature_management_use_peek_messages
-    FeatureManagement__UseRequestMessages                       = var.feature_management_use_request_messages
-    FeatureManagement__UseEnergyResultProduced                  = var.feature_management_use_energy_result_produced
-    FeatureManagement__UseTotalMonthlyAmountResultProduced      = var.feature_management_use_total_monthly_amount_result_produced
-    FeatureManagement__UseCalculationCompletedEvent             = var.feature_management_use_calculation_completed_event
+    FeatureManagement__UseMonthlyAmountPerChargeResultProduced = var.feature_management_use_monthly_amount_per_charge_result_produced
+    FeatureManagement__UseAmountPerChargeResultProduced        = var.feature_management_use_amount_per_charge_result_produced
+    FeatureManagement__UseRequestWholesaleSettlementReceiver   = var.feature_management_use_request_wholesale_settlement_receiver
+    FeatureManagement__UseMessageDelegation                    = var.feature_management_use_message_delegation
+    FeatureManagement__UsePeekMessages                         = var.feature_management_use_peek_messages
+    FeatureManagement__UseRequestMessages                      = var.feature_management_use_request_messages
+    FeatureManagement__UseEnergyResultProduced                 = var.feature_management_use_energy_result_produced
+    FeatureManagement__UseTotalMonthlyAmountResultProduced     = var.feature_management_use_total_monthly_amount_result_produced
+    FeatureManagement__UseCalculationCompletedEvent            = var.feature_management_use_calculation_completed_event
 
     # Service Bus
     ServiceBus__ManageConnectionString = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-manage-connection-string)"
@@ -80,6 +80,11 @@ locals {
 
     IntegrationEvents__TopicName        = local.INTEGRATION_EVENTS_TOPIC_NAME
     IntegrationEvents__SubscriptionName = module.sbtsub_edi_integration_event_listener.name
+
+    # Databricks
+    WorkspaceToken = "FakeToken"
+    WorkspaceUrl   = "https://adb-1000.azuredatabricks.net/"
+    WarehouseId    = "2BFD89DB-729D-4330-AEFC-9E9634CC9B79"
 
     # Durable Functions Task Hub Name
     # See naming constraints: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-task-hubs?tabs=csharp#task-hub-names
