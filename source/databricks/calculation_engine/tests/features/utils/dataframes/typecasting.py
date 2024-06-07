@@ -37,6 +37,8 @@ def cast_column_types(df: DataFrame, table_or_view_name: str = "") -> DataFrame:
 
 
 def _cast_column(df: DataFrame, column_name: str, table_or_view_name: str) -> DataFrame:
+
+    # Needed to avoid "time_series_type" will be cast to a timestamp.
     if column_name == "time_series_type":
         return df
 
