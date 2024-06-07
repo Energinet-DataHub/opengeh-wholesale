@@ -22,7 +22,6 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
 
-#pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
 internal class UpdateCalculationStateFromJobStatusActivity(
     IClock clock,
     IUnitOfWork calculationUnitOfWork,
@@ -46,7 +45,7 @@ internal class UpdateCalculationStateFromJobStatusActivity(
             calculationMetadata.JobStatus,
             calculationMetadata.Id);
 
-        var calculation = await _calculationRepository.GetAsync(calculationMetadata.Id);
+        var calculation = await _calculationRepository.GetAsync(calculationMetadata.Id).ConfigureAwait(false);
 
         if (calculationMetadata.JobStatus == CalculationState.Canceled)
         {
@@ -76,8 +75,7 @@ internal class UpdateCalculationStateFromJobStatusActivity(
             calculation.UpdateState(newState, _clock);
         }
 
-        await _calculationUnitOfWork.CommitAsync();
+        await _calculationUnitOfWork.CommitAsync().ConfigureAwait(false);
         return "Orchestration state updated to: " + calculation.OrchestrationState;
     }
 }
-#pragma warning restore CA2007 // Consider calling ConfigureAwait on the awaited task
