@@ -45,7 +45,7 @@ public sealed class SettlementReportEnergyResultQueryStatement : DatabricksState
                          {SettlementReportEnergyResultViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
                          {SettlementReportEnergyResultViewColumns.Time} >= '{_filter.PeriodStart}' AND
                          {SettlementReportEnergyResultViewColumns.Time} < '{_filter.PeriodEnd}' AND
-                         {SettlementReportEnergyResultViewColumns.CalculationId} = '{_filter.CalculationId}' AND
+                         {SettlementReportEnergyResultViewColumns.CalculationId} = '{_filter.CalculationId}'
                      ORDER BY 
                          {SettlementReportEnergyResultViewColumns.ResultId} LIMIT {_take} OFFSET {_skip}
                  """.Replace(Environment.NewLine, " ");
