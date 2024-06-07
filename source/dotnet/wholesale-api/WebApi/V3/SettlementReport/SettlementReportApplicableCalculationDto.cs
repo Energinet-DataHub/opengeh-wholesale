@@ -16,6 +16,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.SettlementReport;
 
 public sealed record SettlementReportApplicableCalculationDto(
     Guid CalculationId,
+    DateTimeOffset CalculationTime,
     DateTimeOffset PeriodStart,
     DateTimeOffset PeriodEnd,
     string GridAreaCode);
