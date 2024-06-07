@@ -32,9 +32,8 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Applic
 public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBase<SettlementReportFileRequestHandler>,
     IClassFixture<DatabricksSqlStatementApiFixture>
 {
-    private const string GridAreaA = "805";
-    private const string GridAreaB = "111";
-    private readonly string[] _gridAreaCodes = [GridAreaA, GridAreaB];
+    private const string GridAreaA = "018";
+    private readonly string[] _gridAreaCodes = [GridAreaA];
     private readonly Instant _january1St = Instant.FromUtc(2022, 1, 1, 0, 0, 0);
     private readonly Instant _january5Th = Instant.FromUtc(2022, 1, 5, 0, 0, 0);
 
