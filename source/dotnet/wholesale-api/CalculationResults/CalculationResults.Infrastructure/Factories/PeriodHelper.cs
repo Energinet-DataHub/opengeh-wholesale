@@ -26,29 +26,31 @@ public static class PeriodHelper
     public static (Instant Start, Instant End) GetPeriod(IReadOnlyCollection<EnergyTimeSeriesPoint> timeSeriesPoints, EnergyResultsResolution resolution)
     {
         var start = timeSeriesPoints.Min(x => x.Time);
+        var end = timeSeriesPoints.Max(x => x.Time);
         // The end date is the start of the next period.
-        var end = GetEndOfPeriod(resolution, timeSeriesPoints.Max(x => x.Time));
-        return (start.ToInstant(), end.ToInstant());
+        var endWithResolutionOffset = GetDateTimeWithResolutionOffset(resolution, end);
+        return (start.ToInstant(), endWithResolutionOffset.ToInstant());
     }
 
     public static (Instant Start, Instant End) GetPeriod(IReadOnlyCollection<WholesaleTimeSeriesPoint> timeSeriesPoints, Interfaces.CalculationResults.Model.WholesaleResults.Resolution resolution)
     {
         var start = timeSeriesPoints.Min(x => x.Time);
+        var end = timeSeriesPoints.Max(x => x.Time);
         // The end date is the start of the next period.
-        var end = GetEndOfPeriod(resolution, timeSeriesPoints.Max(x => x.Time), start);
-        return (start.ToInstant(), end.ToInstant());
+        var endWithResolutionOffset = GetDateTimeWithResolutionOffset(resolution, end);
+        return (start.ToInstant(), endWithResolutionOffset.ToInstant());
     }
 
-    private static DateTimeOffset GetEndOfPeriod(EnergyResultsResolution resolution, DateTimeOffset lastPointInPeriod) => resolution switch
+    private static DateTimeOffset GetDateTimeWithResolutionOffset(EnergyResultsResolution resolution, DateTimeOffset dateTime) => resolution switch
     {
-        EnergyResultsResolution.Quarter => lastPointInPeriod.AddMinutes(15),
-        _ => lastPointInPeriod.AddMinutes(60),
+        EnergyResultsResolution.Quarter => dateTime.AddMinutes(15),
+        _ => dateTime.AddMinutes(60),
     };
 
-    private static DateTimeOffset GetEndOfPeriod(WholesaleResolution resolution, DateTimeOffset lastPointInPeriod, DateTimeOffset firstPointInPeriod) => resolution switch
+    private static DateTimeOffset GetDateTimeWithResolutionOffset(WholesaleResolution resolution, DateTimeOffset dateTime) => resolution switch
     {
-        WholesaleResolution.Hour => lastPointInPeriod.AddMinutes(60),
-        WholesaleResolution.Day => lastPointInPeriod.AddDays(1),
-        _ => firstPointInPeriod.AddMonths(1),
+        WholesaleResolution.Hour => dateTime.AddMinutes(60),
+        WholesaleResolution.Day => dateTime.AddDays(1),
+        _ => dateTime.AddMonths(1),
     };
 }
