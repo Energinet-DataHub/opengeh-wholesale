@@ -12,13 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
-
-public interface ISettlementReportFromFilesHandler
+public sealed record FrontendActor(
+    Guid ActorId,
+    string ActorNumber,
+    FrontendActorMarketRole MarketRole)
 {
-    Task<GeneratedSettlementReportDto> CombineAsync(
-        SettlementReportRequestId requestId,
-        IReadOnlyCollection<GeneratedSettlementReportFileDto> generatedFiles);
+    public bool HasMarketRole(FrontendActorMarketRole marketRole)
+    {
+        return MarketRole == marketRole;
+    }
 }

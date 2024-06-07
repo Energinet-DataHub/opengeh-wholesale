@@ -12,13 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
+namespace Energinet.DataHub.Wholesale.Calculations.Interfaces;
 
-public interface ISettlementReportFromFilesHandler
+public interface IGridAreaOwnershipClient
 {
-    Task<GeneratedSettlementReportDto> CombineAsync(
-        SettlementReportRequestId requestId,
-        IReadOnlyCollection<GeneratedSettlementReportFileDto> generatedFiles);
+    Task<IEnumerable<string>> GetOwnedByAsync(string actorNumber);
 }

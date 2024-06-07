@@ -37,9 +37,8 @@ internal sealed class SettlementReportOrchestration
             return "Error: No input specified.";
         }
 
-        var scatterInput = new ScatterSettlementReportFilesInput(
-            context.InstanceId,
-            settlementReportRequest);
+        var requestId = new SettlementReportRequestId(context.InstanceId);
+        var scatterInput = new ScatterSettlementReportFilesInput(requestId, settlementReportRequest);
 
         var dataSourceExceptionHandler = TaskOptions.FromRetryHandler(retryContext => HandleDataSourceExceptions(
                 retryContext,
@@ -61,7 +60,7 @@ internal sealed class SettlementReportOrchestration
 
         var generatedSettlementReport = await context.CallActivityAsync<GeneratedSettlementReportDto>(
             nameof(GatherSettlementReportFilesActivity),
-            generatedFiles);
+            new GatherSettlementReportFilesInput(requestId, generatedFiles));
 
         await context.CallActivityAsync(
             nameof(FinalizeSettlementReportActivity),
