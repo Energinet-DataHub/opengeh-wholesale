@@ -686,7 +686,7 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
             ChargeType.Fee,
             CalculationType.SecondCorrectionSettlement);
 
-        var rows = ExtractSqlRowsFromPackagesAndTheirPoints([package]); // A package creates 1 sql row per point (9 rows total in this case)
+        var rows = ExtractSqlRowsFromPackagesAndTheirPoints([package]); // A package creates 1 sql row per point (15 rows total in this case)
         await InsertData(rows);
 
         var parameters = CreateQueryParameters(
