@@ -13,14 +13,13 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 
 public sealed record SettlementReportEnergyResultRow(
-    Guid CalculationId,
     CalculationType CalculationType,
     Instant StartDateTime,
     string GridArea,
@@ -28,5 +27,4 @@ public sealed record SettlementReportEnergyResultRow(
     Resolution Resolution,
     MeteringPointType? MeteringPointType,
     SettlementMethod? SettlementMethod,
-    decimal Quantity,
-    long Version);
+    decimal Quantity);

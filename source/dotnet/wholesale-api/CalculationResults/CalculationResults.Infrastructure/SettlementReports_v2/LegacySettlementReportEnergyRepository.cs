@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
@@ -46,7 +47,7 @@ public sealed class LegacySettlementReportEnergyRepository : ISettlementReportEn
         foreach (var row in rows)
         {
             var resolution = row.Resolution == "PT15M"
-                ? Resolution.QuarterHour
+                ? Resolution.Quarter
                 : throw new InvalidOperationException($"Resolution {row.Resolution} is not supported in legacy mode.");
 
             yield return new SettlementReportEnergyResultRow(
@@ -56,7 +57,8 @@ public sealed class LegacySettlementReportEnergyRepository : ISettlementReportEn
                 resolution,
                 row.CalculationType,
                 row.MeteringPointType,
-                row.SettlementMethod);
+                row.SettlementMethod,
+                string.Empty);
         }
     }
 }

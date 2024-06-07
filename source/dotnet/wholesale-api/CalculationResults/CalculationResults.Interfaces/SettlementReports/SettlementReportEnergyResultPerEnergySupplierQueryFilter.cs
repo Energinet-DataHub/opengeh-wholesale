@@ -19,6 +19,6 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementRe
 public sealed record SettlementReportEnergyResultPerEnergySupplierQueryFilter(
     Guid CalculationId,
     string GridAreaCode,
-    string? EnergySupplier,
+    string EnergySupplier,
     Instant PeriodStart,
     Instant PeriodEnd);

@@ -17,8 +17,8 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Generators;
 
@@ -67,14 +67,9 @@ public sealed class EnergyResultFileGenerator : ISettlementReportFileGenerator
                 .Index(0)
                 .Convert(row => row.Value.GridAreaCode);
 
-            Map(r => r.CalculationType)
+            Map(r => r.EnergyBusinessProcess)
                 .Name("ENERGYBUSINESSPROCESS")
-                .Index(1)
-                .Convert(row => row.Value.CalculationType switch
-                {
-                    CalculationType.BalanceFixing => "D04",
-                    _ => throw new ArgumentOutOfRangeException(nameof(row.Value.CalculationType)),
-                });
+                .Index(1);
 
             Map(r => r.Time)
                 .Name("STARTDATETIME")
@@ -86,7 +81,7 @@ public sealed class EnergyResultFileGenerator : ISettlementReportFileGenerator
                 .Convert(row => row.Value.Resolution switch
                 {
                     Resolution.Hour => "PT1H",
-                    Resolution.QuarterHour => "PT15M",
+                    Resolution.Quarter => "PT15M",
                     _ => throw new ArgumentOutOfRangeException(nameof(row.Value.Resolution)),
                 });
 

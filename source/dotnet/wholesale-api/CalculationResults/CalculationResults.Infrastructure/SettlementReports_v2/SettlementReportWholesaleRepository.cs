@@ -43,7 +43,6 @@ public sealed class SettlementReportWholesaleRepository : ISettlementReportWhole
         await foreach (var row in rows.ConfigureAwait(false))
         {
             yield return new SettlementReportWholesaleResultRow(
-                row.CalculationId,
                 row.CalculationType,
                 row.GridArea,
                 row.EnergySupplierId,
@@ -58,8 +57,7 @@ public sealed class SettlementReportWholesaleRepository : ISettlementReportWhole
                 row.Amount,
                 row.ChargeType,
                 row.ChargeCode,
-                row.ChargeOwnerId,
-                row.Version);
+                row.ChargeOwnerId);
         }
     }
 

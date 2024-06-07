@@ -20,5 +20,5 @@ public interface ISettlementReportEnergyResultRepository
 {
     Task<int> CountAsync(SettlementReportRequestFilterDto filter);
 
-    IAsyncEnumerable<SettlementReportEnergyResultRowV2> GetAsync(SettlementReportRequestFilterDto filter, int skip, int take);
+    IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportRequestFilterDto filter, int skip, int take);
 }

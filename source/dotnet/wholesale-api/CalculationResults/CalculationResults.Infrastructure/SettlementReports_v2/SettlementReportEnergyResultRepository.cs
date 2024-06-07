@@ -35,26 +35,23 @@ public sealed class SettlementReportEnergyResultRepository : ISettlementReportEn
             : _settlementReportResultQueries.CountAsync(ParseEnergyFilter(filter));
     }
 
-    public async IAsyncEnumerable<SettlementReportEnergyResultRowV2> GetAsync(SettlementReportRequestFilterDto filter, int skip, int take)
+    public async IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportRequestFilterDto filter, int skip, int take)
     {
-        var rows = (filter.EnergySupplier is not null
+        var rows = filter.EnergySupplier is not null
                 ? _settlementReportResultQueries.GetAsync(ParseEnergyFilterWithEnergySupplier(filter), skip, take)
-                : _settlementReportResultQueries.GetAsync(ParseEnergyFilter(filter), skip, take))
-            .ConfigureAwait(false);
+                : _settlementReportResultQueries.GetAsync(ParseEnergyFilter(filter), skip, take);
 
         await foreach (var row in rows.ConfigureAwait(false))
         {
-            yield return new SettlementReportEnergyResultRowV2(
-                row.CalculationId,
+            yield return new SettlementReportEnergyResultRow(
                 row.StartDateTime,
                 row.Quantity,
                 row.GridArea,
-                row.EnergySupplierId,
                 row.Resolution,
                 row.CalculationType,
                 row.MeteringPointType,
                 row.SettlementMethod,
-                row.Version);
+                row.EnergySupplierId);
         }
     }
 
@@ -76,7 +73,7 @@ public sealed class SettlementReportEnergyResultRepository : ISettlementReportEn
         return new SettlementReportEnergyResultPerEnergySupplierQueryFilter(
             calculationId.Id,
             gridAreaCode,
-            filter.EnergySupplier,
+            filter.EnergySupplier!,
             filter.PeriodStart.ToInstant(),
             filter.PeriodEnd.ToInstant());
     }

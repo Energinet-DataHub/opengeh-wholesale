@@ -15,7 +15,7 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.EnergyResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
@@ -24,7 +24,6 @@ public static class SettlementReportEnergyResultRowFactory
 {
     public static SettlementReportEnergyResultRow Create(DatabricksSqlRow databricksSqlRow, long version)
     {
-        var calculationId = databricksSqlRow[SettlementReportEnergyResultViewColumns.CalculationId];
         var calculationType = databricksSqlRow[SettlementReportEnergyResultViewColumns.CalculationType];
         var gridArea = databricksSqlRow[SettlementReportEnergyResultViewColumns.GridArea];
         var startTime = databricksSqlRow[SettlementReportEnergyResultViewColumns.Time];
@@ -35,7 +34,6 @@ public static class SettlementReportEnergyResultRowFactory
         var energySupplierId = databricksSqlRow[SettlementReportEnergyResultViewColumns.EnergySupplier];
 
         return new SettlementReportEnergyResultRow(
-            SqlResultValueConverters.ToGuid(calculationId!),
             CalculationTypeMapper.FromDeltaTableValue(calculationType!),
             SqlResultValueConverters.ToInstant(startTime!)!.Value,
             gridArea!,
@@ -43,7 +41,6 @@ public static class SettlementReportEnergyResultRowFactory
             ResolutionMapper.FromDeltaTableValue(resolution!),
             MeteringPointTypeMapper.FromDeltaTableValue(meteringPointType!)!,
             SettlementMethodMapper.FromDeltaTableValue(settlementMethod!)!,
-            SqlResultValueConverters.ToDecimal(quantity)!.Value,
-            version);
+            SqlResultValueConverters.ToDecimal(quantity)!.Value);
     }
 }

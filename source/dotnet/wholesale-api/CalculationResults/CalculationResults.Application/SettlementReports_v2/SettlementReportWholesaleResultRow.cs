@@ -22,7 +22,6 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementR
 public sealed record SettlementReportWholesaleResultRow
 {
     public SettlementReportWholesaleResultRow(
-        Guid calculationId,
         CalculationType calculationType,
         string gridArea,
         string energySupplierId,
@@ -37,11 +36,8 @@ public sealed record SettlementReportWholesaleResultRow
         decimal? amount,
         ChargeType chargeType,
         string? chargeCode,
-        string chargeOwnerId,
-        long version)
+        string chargeOwnerId)
     {
-        CalculationId = calculationId;
-        CalculationType = calculationType;
         GridArea = gridArea;
         EnergySupplierId = energySupplierId;
         StartDateTime = startDateTime;
@@ -56,7 +52,6 @@ public sealed record SettlementReportWholesaleResultRow
         ChargeType = chargeType;
         ChargeCode = chargeCode;
         ChargeOwnerId = chargeOwnerId;
-        Version = version;
         EnergyBusinessProcess = calculationType switch
         {
             CalculationType.Aggregation => "D03",
@@ -78,10 +73,6 @@ public sealed record SettlementReportWholesaleResultRow
             _ => throw new ArgumentOutOfRangeException(nameof(calculationType)),
         };
     }
-
-    public Guid CalculationId { get; }
-
-    public CalculationType CalculationType { get; }
 
     public string GridArea { get; }
 
@@ -110,8 +101,6 @@ public sealed record SettlementReportWholesaleResultRow
     public string? ChargeCode { get; }
 
     public string ChargeOwnerId { get; }
-
-    public long Version { get; }
 
     public string EnergyBusinessProcess { get; }
 
