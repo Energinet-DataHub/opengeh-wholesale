@@ -47,8 +47,8 @@ var host = new HostBuilder()
         services.AddNodaTimeForApplication();
         services.AddDatabricksJobsForApplication(context.Configuration);
         services
-            .AddOptions<CalculationJobStatusMonitorOptions>()
-            .BindConfiguration(CalculationJobStatusMonitorOptions.SectionName);
+            .AddOptions<CalculationOrchestrationMonitorOptions>()
+            .BindConfiguration(CalculationOrchestrationMonitorOptions.SectionName);
 
         // Handle Wholesale inbox messages
         services.AddWholesaleInboxHandling(context.Configuration);

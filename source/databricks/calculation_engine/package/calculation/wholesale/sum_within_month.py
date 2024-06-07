@@ -24,6 +24,7 @@ from package.codelists import WholesaleResultResolution
 from package.constants import Colname
 
 
+# TODO JVM:This function should return MonthlyAmountsPerCharge, when monthly amounts is fully implemented
 def sum_within_month(
     wholesale_results: WholesaleResults,
     period_start_datetime: datetime,

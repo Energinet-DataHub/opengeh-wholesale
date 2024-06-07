@@ -38,7 +38,7 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
     private readonly SettlementReportRequestDto _mockedSettlementReportRequest = new(
         CalculationType.BalanceFixing,
         false,
-        new SettlementReportRequestFilterDto([], DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, null));
+        new SettlementReportRequestFilterDto(new Dictionary<string, CalculationId>(), DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null, null));
 
     public SettlementReportFinalizeHandlerIntegrationTests(
         WholesaleDatabaseFixture<SettlementReportDatabaseContext> wholesaleDatabaseFixture,
@@ -59,16 +59,16 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var inputFiles = new GeneratedSettlementReportFileDto[]
         {
-            new(requestId, "fileA.csv"),
-            new(requestId, "fileB.csv"),
-            new(requestId, "fileC.csv"),
+            new(requestId, new("fileA.csv"), "fileA_0.csv"),
+            new(requestId, new("fileB.csv"), "fileB_0.csv"),
+            new(requestId, new("fileC.csv"), "fileC_0.csv"),
         };
 
         await Task.WhenAll(inputFiles.Select(MakeTestFileAsync));
 
         var generatedSettlementReport = new GeneratedSettlementReportDto(
             requestId,
-            new GeneratedSettlementReportFileDto(requestId, "Report.zip"),
+            "Report.zip",
             inputFiles);
 
         await using var dbContext = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
@@ -83,7 +83,7 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
 
         foreach (var inputFile in inputFiles)
         {
-            var generatedFileBlob = container.GetBlobClient($"settlement-reports/{requestId.Id}/{inputFile.FileName}");
+            var generatedFileBlob = container.GetBlobClient($"settlement-reports/{requestId.Id}/{inputFile.StorageFileName}");
             Assert.False(await generatedFileBlob.ExistsAsync());
         }
     }
@@ -95,7 +95,7 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
 
         var generatedSettlementReport = new GeneratedSettlementReportDto(
             requestId,
-            new GeneratedSettlementReportFileDto(requestId, "Report.zip"),
+            "Report.zip",
             []);
 
         await using var dbContextArrange = _wholesaleDatabaseFixture.DatabaseManager.CreateDbContext();
@@ -114,7 +114,7 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
     private Task MakeTestFileAsync(GeneratedSettlementReportFileDto file)
     {
         var containerClient = _settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
-        var blobClient = containerClient.GetBlobClient($"settlement-reports/{file.RequestId.Id}/{file.FileName}");
-        return blobClient.UploadAsync(new BinaryData($"Content: {file.FileName}"));
+        var blobClient = containerClient.GetBlobClient($"settlement-reports/{file.RequestId.Id}/{file.StorageFileName}");
+        return blobClient.UploadAsync(new BinaryData($"Content: {file.FileInfo.FileName}"));
     }
 }

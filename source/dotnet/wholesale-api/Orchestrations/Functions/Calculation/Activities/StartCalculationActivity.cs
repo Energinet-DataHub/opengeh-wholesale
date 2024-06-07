@@ -19,7 +19,6 @@ using Microsoft.Azure.Functions.Worker;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
 
-#pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
 internal class StartCalculationActivity(
     IUnitOfWork calculationUnitOfWork,
     ICalculationRepository calculationRepository,
@@ -36,12 +35,11 @@ internal class StartCalculationActivity(
     public async Task<CalculationJobId> Run(
         [ActivityTrigger] Guid calculationdId)
     {
-        var calculation = await _calculationRepository.GetAsync(calculationdId);
-        var jobId = await _calculationEngineClient.StartAsync(calculation);
+        var calculation = await _calculationRepository.GetAsync(calculationdId).ConfigureAwait(false);
+        var jobId = await _calculationEngineClient.StartAsync(calculation).ConfigureAwait(false);
         calculation.MarkAsSubmitted(jobId);
-        await _calculationUnitOfWork.CommitAsync();
+        await _calculationUnitOfWork.CommitAsync().ConfigureAwait(false);
 
         return jobId;
     }
 }
-#pragma warning restore CA2007 // Consider calling ConfigureAwait on the awaited task

@@ -156,3 +156,17 @@ def wholesale_fixing_total_monthly_amounts(
     return results_df.where(
         F.col(ResultColumnNames.calculation_id) == C.executed_wholesale_calculation_id
     )
+
+
+@pytest.fixture(scope="session")
+def wholesale_fixing_monthly_amounts(
+    spark: SparkSession,
+    executed_wholesale_fixing: None,
+) -> DataFrame:
+    results_df = spark.read.table(
+        f"{paths.OUTPUT_DATABASE_NAME}.{paths.MONTHLY_AMOUNTS_TABLE_NAME}"
+    )
+    return results_df.where(
+        F.col(WholesaleResultColumnNames.calculation_id)
+        == C.executed_wholesale_calculation_id
+    )

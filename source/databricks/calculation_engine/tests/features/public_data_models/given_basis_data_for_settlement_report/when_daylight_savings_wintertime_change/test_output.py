@@ -19,6 +19,7 @@ import pytest
 from features.utils.scenario_output_files import get_output_names
 from features.utils.views.assertion import assert_output
 from features.utils.views.dataframe_wrapper import DataframeWrapper
+from testsession_configuration import TestSessionConfiguration
 
 
 # IMPORTANT:
@@ -30,5 +31,8 @@ def test__equals_expected(
     migrations_executed: None,
     actual_and_expected_views: Tuple[list[DataframeWrapper], list[DataframeWrapper]],
     output_name: str,
+    test_session_configuration: TestSessionConfiguration,
 ) -> None:
-    assert_output(actual_and_expected_views, output_name)
+    assert_output(
+        actual_and_expected_views, output_name, test_session_configuration.feature_tests
+    )

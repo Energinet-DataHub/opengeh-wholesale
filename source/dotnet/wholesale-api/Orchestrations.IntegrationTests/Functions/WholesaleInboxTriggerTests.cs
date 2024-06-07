@@ -17,6 +17,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.FunctionAppHost;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Edi.Requests;
 using Energinet.DataHub.Edi.Responses;
+using Energinet.DataHub.EnergySupplying.RequestResponse.InboxEvents;
 using Energinet.DataHub.Wholesale.Edi.Contracts;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 using FluentAssertions;
@@ -135,6 +136,31 @@ public class WholesaleInboxTriggerTests : IAsyncLifetime
             .Which
             .ApplicationProperties.Should().ContainKey("ReferenceId")
             .WhoseValue.Should().Be(referenceId);
+    }
+
+    [Fact]
+    public async Task GivenActorMessagesEnqueued_WhenEventIsHandled_FunctionCompletes()
+    {
+        // Arrange
+        var actorMessagesEnqueued = new ActorMessagesEnqueuedV1
+        {
+            CalculationId = "valid-calculation-id",
+            OrchestrationInstanceId = "valid-orchestration-id",
+        };
+
+        var referenceId = "valid-reference-id";
+        await SendMessageToWholesaleInbox(
+            subject: ActorMessagesEnqueuedV1.Descriptor.Name,
+            body: actorMessagesEnqueued.ToByteArray(),
+            referenceId: referenceId);
+
+        // Act
+        // => WholesaleInboxTrigger is running in the fixture and triggered by the given Wholesale inbox message
+
+        // Assert
+        // Handling a MessagesEnqueuedV1 should raise an event to the Durable Task client, which we cannot test without
+        // using some kind of mock, but we can atleast verify that the function completes.
+        await AssertWholesaleInboxTriggerIsCompleted();
     }
 
     [Fact]

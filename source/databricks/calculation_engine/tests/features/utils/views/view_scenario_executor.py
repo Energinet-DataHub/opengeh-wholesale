@@ -42,7 +42,7 @@ class ViewScenarioExecutor:
         input_dataframes_wrappers = self.correct_dataframe_types(
             input_dataframes_wrappers, input_specifications
         )
-        self._write_to_tables(input_dataframes_wrappers, input_specifications)
+        self._write_to_tables(input_dataframes_wrappers)
 
         output_dataframe_wrappers = self.parser.parse_csv_files_concurrently(
             f"{scenario_folder_path}/output", output_specifications
@@ -52,30 +52,24 @@ class ViewScenarioExecutor:
             output_dataframe_wrappers, output_specifications
         )
 
-        actual = self._read_from_views(output_specifications, output_dataframe_wrappers)
+        actual = self._read_from_views(output_dataframe_wrappers)
         return actual, expected
 
     @staticmethod
     def _write_to_tables(
         input_dataframe_wrappers: list[DataframeWrapper],
-        specifications: dict[str, tuple],
     ) -> None:
         for wrapper in input_dataframe_wrappers:
-            database_name = specifications[wrapper.key][3]
-            wrapper.df.write.format("delta").mode("overwrite").saveAsTable(
-                f"{database_name}.{wrapper.name}"
-            )
+            wrapper.df.write.format("delta").mode("overwrite").saveAsTable(wrapper.name)
 
     def _read_from_views(
         self,
-        output_specifications: dict[str, tuple],
         output_dataframe_wrappers: list[DataframeWrapper],
     ) -> list[DataframeWrapper]:
 
         wrappers = []
         for wrapper in output_dataframe_wrappers:
-            read_df_method = output_specifications[wrapper.key][1]
-            df = read_df_method(self.spark)
+            df = self.spark.read.format("delta").table(wrapper.name)
             dataframe_wrapper = DataframeWrapper(
                 key=wrapper.key, name=wrapper.name, df=df
             )
@@ -92,7 +86,7 @@ class ViewScenarioExecutor:
         for wrapper in dataframe_wrappers:
             if wrapper.df is None:
                 continue
-            correction_method = output_specifications[wrapper.key][2]
+            correction_method = output_specifications[wrapper.key][1]
             wrapper.df = correction_method(self.spark, wrapper.df)
             wrappers.append(wrapper)
 
