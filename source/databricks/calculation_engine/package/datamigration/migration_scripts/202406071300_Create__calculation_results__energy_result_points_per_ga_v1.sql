@@ -1,4 +1,4 @@
-CREATE VIEW IF NOT EXISTS {EDI_RESULTS_DATABASE_NAME}.energy_result_points_per_ga_v1 AS
+CREATE VIEW IF NOT EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.energy_result_points_per_ga_v1 AS
 SELECT calculation_id,
        calculation_type,
        calculation_period_start,
