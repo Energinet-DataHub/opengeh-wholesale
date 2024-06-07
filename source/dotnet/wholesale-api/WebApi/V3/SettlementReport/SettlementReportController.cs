@@ -89,7 +89,7 @@ public class SettlementReportController : V3ControllerBase
             where gridAreaCodes.Contains(gridAreaCode)
             select new SettlementReportApplicableCalculationDto(
                 calculation.CalculationId,
-                calculation.ExecutionTimeStart.Value,
+                calculation.ExecutionTimeStart!.Value,
                 calculation.PeriodStart,
                 calculation.PeriodEnd,
                 gridAreaCode);
