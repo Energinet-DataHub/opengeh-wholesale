@@ -77,7 +77,7 @@ def _cast_column(df: DataFrame, column_name: str, table_or_view_name: str) -> Da
         )
 
     if column_name == "price_points":
-        df = df.withColumn(
+        return df.withColumn(
             column_name,
             f.from_json(f.col(column_name), ArrayType(_price_point)),
         )
