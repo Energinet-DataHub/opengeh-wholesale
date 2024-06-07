@@ -116,7 +116,7 @@ public class DatabricksApiWireMockExtensionsTests : IClassFixture<WireMockExtens
     /// later in the test
     /// </summary>
     [Fact]
-    public async Task MockJobsRunsGet_WhenCallingJobsRunsGetWithStateCallback_CanDeserializeResponseFromMock()
+    public async Task MockJobsRunsGetWithStateCallback_WhenCallingJobsRunsGet_CanDeserializeResponseFromMock()
     {
         // Arrange
         var runId = Random.Shared.Next(0, 1000);
@@ -138,7 +138,7 @@ public class DatabricksApiWireMockExtensionsTests : IClassFixture<WireMockExtens
     }
 
     [Fact]
-    public async Task MockJobsRunsGet_WhenCallingJobsRunsGetLifeCycleScenario_CanDeserializeResponseFromMockForEachState()
+    public async Task MockJobsRunsGetLifeCycleScenario_WhenCallingJobsRunsGet_CanDeserializeResponseFromMockForEachState()
     {
         // Arrange
         var runId = Random.Shared.Next(0, 1000);
