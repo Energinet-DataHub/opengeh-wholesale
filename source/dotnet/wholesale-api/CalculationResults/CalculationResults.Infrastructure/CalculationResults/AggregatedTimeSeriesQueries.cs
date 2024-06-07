@@ -50,8 +50,6 @@ public class AggregatedTimeSeriesQueries(
     {
         return AggregatedTimeSeriesFactory.Create(
             rowData.Row,
-            rowData.CalculationPeriod.Period.Start,
-            rowData.CalculationPeriod.Period.End,
             timeSeriesPoints,
             rowData.CalculationPeriod.CalculationVersion);
     }
