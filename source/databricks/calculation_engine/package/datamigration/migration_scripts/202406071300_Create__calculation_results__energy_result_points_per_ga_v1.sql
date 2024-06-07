@@ -11,7 +11,7 @@ SELECT calculation_id,
        resolution,
        time,
        quantity,
-       quantity_unit,
+       unit as quantity_unit,
        quantity_qualities
 FROM {OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
 WHERE

@@ -28,4 +28,6 @@ def substitutions(migration_args: MigrationScriptArgs) -> dict[str, str]:
         "{BASIS_DATA_DATABASE_NAME}": paths.BASIS_DATA_DATABASE_NAME,
         "{CALCULATION_RESULTS_DATABASE_NAME}": paths.CalculationResultsPublicDataModel.DATABASE_NAME,
         "{SETTLEMENT_REPORT_DATABASE_NAME}": paths.SETTLEMENT_REPORT_DATABASE_NAME,
+        # Obsolete - but required if old scripts are executed in new environments
+        "{EDI_RESULTS_DATABASE_NAME}": "wholesale_edi_results",
     }

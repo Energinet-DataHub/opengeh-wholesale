@@ -76,6 +76,8 @@ def test__current_state_and_migration_scripts__should_give_same_result(
             "{OUTPUT_FOLDER}": f"{migration_scripts_prefix}migration_test",
             "{BASIS_DATA_FOLDER}": f"{migration_scripts_prefix}basis_folder",
             "{INPUT_FOLDER}": f"{migration_scripts_prefix}input_folder",
+            # Obsolete - but required if old scripts are executed in new environments
+            "{EDI_RESULTS_DATABASE_NAME}": f"{migration_scripts_prefix}wholesale_edi_results",
         },
     )
     spark_sql_migration_helper.configure_spark_sql_migration(
