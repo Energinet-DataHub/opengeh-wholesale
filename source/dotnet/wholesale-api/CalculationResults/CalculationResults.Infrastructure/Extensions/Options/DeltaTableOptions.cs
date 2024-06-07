@@ -50,7 +50,7 @@ public class DeltaTableOptions
 
     public string WHOLESALE_RESULTS_V1_VIEW_NAME { get; set; } = "wholesale_results_v1";
 
-    public string ENERGY_RESULTS_POINTS_GA_V1_VIEW_NAME { get; set; } = "energy_result_points_ga_v1";
+    public string ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME { get; set; } = "energy_result_points_per_ga_v1";
 
     public string ENERGY_RESULTS_POINTS_PER_ES_GA_V1_VIEW_NAME { get; set; } = "energy_result_points_per_es_ga_v1";
 }

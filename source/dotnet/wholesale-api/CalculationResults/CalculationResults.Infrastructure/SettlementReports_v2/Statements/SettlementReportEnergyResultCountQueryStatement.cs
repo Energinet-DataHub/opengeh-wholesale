@@ -35,7 +35,7 @@ public sealed class SettlementReportEnergyResultCountQueryStatement : Databricks
         return $"""
                     SELECT COUNT(DISTINCT({SettlementReportEnergyResultViewColumns.ResultId})) AS {SettlementReportEnergyResultCountColumns.Count}
                     FROM
-                        {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_GA_V1_VIEW_NAME}
+                        {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME}
                     WHERE
                         {SettlementReportEnergyResultViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
                         {SettlementReportEnergyResultViewColumns.Time} >= '{_filter.PeriodStart}' AND

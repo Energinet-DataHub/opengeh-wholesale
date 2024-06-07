@@ -40,7 +40,7 @@ public sealed class SettlementReportEnergyResultQueryStatement : DatabricksState
             $"""
                      SELECT DISTINCT({SettlementReportEnergyResultViewColumns.ResultId})
                      FROM
-                         {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_GA_V1_VIEW_NAME}
+                         {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME}
                      WHERE 
                          {SettlementReportEnergyResultViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
                          {SettlementReportEnergyResultViewColumns.Time} >= '{_filter.PeriodStart}' AND
@@ -63,9 +63,9 @@ public sealed class SettlementReportEnergyResultQueryStatement : DatabricksState
                                     SettlementReportEnergyResultViewColumns.SettlementMethod,
                                 ])}
                                 FROM
-                                    {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_GA_V1_VIEW_NAME}
+                                    {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME}
                                 JOIN 
-                                    ({calculationResult}) AS cr ON {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_GA_V1_VIEW_NAME}.{SettlementReportEnergyResultViewColumns.ResultId} = cr.{SettlementReportEnergyResultViewColumns.ResultId}
+                                    ({calculationResult}) AS cr ON {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME}.{SettlementReportEnergyResultViewColumns.ResultId} = cr.{SettlementReportEnergyResultViewColumns.ResultId}
                                 WHERE 
                                     {SettlementReportEnergyResultViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
                                     {SettlementReportEnergyResultViewColumns.Time} >= '{_filter.PeriodStart}' AND
