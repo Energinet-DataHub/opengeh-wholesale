@@ -185,10 +185,14 @@ jobs:
       matrix:
         # IMPORTANT: When adding a new folder here it should also be added in the `unit_test_check` job!
         tests_filter_expression:
-          - name: Migrations
-            paths: datamigration/!(test_migration.py)
-          - name: Current state migrations
-            paths: datamigration/test_migration.py
+          - name: Test All Scripts
+            paths: datamigration/all_scripts
+          - name: Current State Scripts
+            paths: datamigration/current_state
+          - name: Migration subsystem
+            paths: datamigration/subsystem
+          - name: Test Migration scripts
+            paths: datamigration/migration_scripts
     if: ${{ inputs.has_delta_migration_changes }}
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v13
     with:
@@ -238,8 +242,10 @@ jobs:
           common/
           infrastructure/
           entry_points/
-          datamigration/!(test_migration.py)
-          datamigration/test_migration.py
+          datamigration/all_scripts
+          datamigration/current_state
+          datamigration/subsystem
+          datamigration/migration_scripts
           contracts"
 
           IMAGE_TAG=${{ inputs.image_tag }} docker compose -f .devcontainer/docker-compose.yml run --rm -u root -w //workspaces/${repository_name} python-unit-test ./.devcontainer/check_test_count.sh $filter

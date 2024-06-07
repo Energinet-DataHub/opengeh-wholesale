@@ -11,7 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from package.constants import EnergyResultColumnNames, Colname, ChargeLinkPeriodsColname
+from package.constants import (
+    EnergyResultColumnNames,
+    Colname,
+    ChargeLinkPeriodsColname,
+    WholesaleResultColumnNames,
+)
 from package.constants.basis_data_colname import (
     CalculationsColumnName,
     MeteringPointPeriodColname,
@@ -51,9 +56,11 @@ class ChargeLinkPeriodsV1ColumnNames:
     energy_supplier_id = MeteringPointPeriodColname.energy_supplier_id
 
 
-class EnergyResultsV1ColumnNames:
+class EnergyResultPointsPerGaV1ColumnNames:
     calculation_id = EnergyResultColumnNames.calculation_id
     calculation_type = EnergyResultColumnNames.calculation_type
+    calculation_version = "calculation_version"
+    result_id = "result_id"
     energy_supplier_id = EnergyResultColumnNames.energy_supplier_id
     grid_area_code = EnergyResultColumnNames.grid_area_code
     time = EnergyResultColumnNames.time
@@ -61,9 +68,38 @@ class EnergyResultsV1ColumnNames:
     quantity = EnergyResultColumnNames.quantity
     resolution = Colname.resolution
     settlement_method = Colname.settlement_method
-    aggregation_level = EnergyResultColumnNames.aggregation_level
 
 
-class CurrentCalculationTypeVersionsV1ColumnNames:
-    calculation_type = CalculationsColumnName.calculation_type
-    version = CalculationsColumnName.version
+class WholesaleResultsV1ColumnNames:
+    calculation_id = WholesaleResultColumnNames.calculation_id
+    calculation_type = WholesaleResultColumnNames.calculation_type
+    calculation_version = "calculation_version"
+    result_id = "result_id"
+    grid_area_code = WholesaleResultColumnNames.grid_area_code
+    energy_supplier_id = WholesaleResultColumnNames.energy_supplier_id
+    time = WholesaleResultColumnNames.time
+    resolution = WholesaleResultColumnNames.resolution
+    metering_point_type = WholesaleResultColumnNames.metering_point_type
+    settlement_method = WholesaleResultColumnNames.settlement_method
+    quantity_unit = WholesaleResultColumnNames.quantity_unit
+    currency = Colname.currency
+    quantity = WholesaleResultColumnNames.quantity
+    price = WholesaleResultColumnNames.price
+    amount = WholesaleResultColumnNames.amount
+    charge_type = WholesaleResultColumnNames.charge_type
+    charge_code = WholesaleResultColumnNames.charge_code
+    charge_owner_id = WholesaleResultColumnNames.charge_owner_id
+
+
+class EnergyResultPointsPerEsGaV1ColumnNames:
+    calculation_id = EnergyResultColumnNames.calculation_id
+    calculation_type = EnergyResultColumnNames.calculation_type
+    calculation_version = "calculation_version"
+    result_id = "result_id"
+    energy_supplier_id = EnergyResultColumnNames.energy_supplier_id
+    grid_area_code = EnergyResultColumnNames.grid_area_code
+    resolution = Colname.resolution
+    metering_point_type = "metering_point_type"
+    settlement_method = Colname.settlement_method
+    time = EnergyResultColumnNames.time
+    quantity = EnergyResultColumnNames.quantity

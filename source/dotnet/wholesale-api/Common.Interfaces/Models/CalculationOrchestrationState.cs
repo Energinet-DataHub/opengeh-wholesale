@@ -26,6 +26,6 @@ public enum CalculationOrchestrationState
     CalculationFailed = 4, // Beregning fejlet
     ActorMessagesEnqueuing = 5, // Beskeder dannes
     ActorMessagesEnqueued = 6, // Beskeder dannet
-    MessagesEnqueuingFailed = 7, // Besked dannelse fejlet
+    ActorMessagesEnqueuingFailed = 7, // Besked dannelse fejlet
     Completed = 8, // Orchestration færdig
 }

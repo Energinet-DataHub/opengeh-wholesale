@@ -20,11 +20,15 @@ from pyspark.sql import DataFrame
 class DataframeWrapper:
 
     key: str
-    """The key of the wrapper."""
+    """
+    The key of the wrapper.
+    The name of the file (including the extension).
+    """
 
     name: str
     """
     The name of the dataframe.
+    The authoritative name of the view/table.
     """
 
     df: DataFrame | None
