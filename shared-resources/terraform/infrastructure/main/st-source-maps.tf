@@ -11,6 +11,7 @@ module "st_source_maps" {
   access_tier                = "Hot"
   private_endpoint_subnet_id = data.azurerm_subnet.snet_private_endpoints.id
   ip_rules                   = local.ip_restrictions_as_string
+  prevent_deletion           = true
   containers = [
     {
       name = "sourcemaps"
