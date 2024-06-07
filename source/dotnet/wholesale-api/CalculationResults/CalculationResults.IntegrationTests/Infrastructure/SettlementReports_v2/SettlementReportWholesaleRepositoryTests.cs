@@ -20,7 +20,9 @@ using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 
@@ -34,13 +36,24 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
     {
         _databricksSqlStatementApiFixture = databricksSqlStatementApiFixture;
 
-        var deltaTableOptions = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions;
-        deltaTableOptions.Value.SettlementReportSchemaName = deltaTableOptions.Value.SCHEMA_NAME;
+        var mockedOptions = new Mock<IOptions<DeltaTableOptions>>();
+        mockedOptions.Setup(x => x.Value).Returns(new DeltaTableOptions
+        {
+            SettlementReportSchemaName = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
+            WHOLESALE_RESULTS_V1_VIEW_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME,
+            ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_POINTS_PER_GA_V1_VIEW_NAME,
+            BasisDataSchemaName = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.BasisDataSchemaName,
+            SCHEMA_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.SCHEMA_NAME,
+            EdiResultsSchemaName = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.EdiResultsSchemaName,
+            ENERGY_RESULTS_TABLE_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME,
+            WHOLESALE_RESULTS_TABLE_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.WHOLESALE_RESULTS_TABLE_NAME,
+            TOTAL_MONTHLY_AMOUNTS_TABLE_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
+        });
 
-        Fixture.Inject(deltaTableOptions);
+        Fixture.Inject(mockedOptions);
         Fixture.Inject(_databricksSqlStatementApiFixture.GetDatabricksExecutor());
         Fixture.Inject<ISettlementReportWholesaleResultQueries>(new SettlementReportWholesaleResultQueries(
-            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions,
+            mockedOptions.Object,
             _databricksSqlStatementApiFixture.GetDatabricksExecutor(),
             new Mock<ICalculationsClient>().Object));
     }
