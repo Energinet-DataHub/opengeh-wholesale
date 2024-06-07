@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
+using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -27,7 +29,7 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions
 
 public static class AppHostManagerExtensions
 {
-    public static Task<HttpResponseMessage> StartCalculationAsync(this FunctionAppHostManager appHostManager)
+    public static async Task<Guid> StartCalculationAsync(this FunctionAppHostManager appHostManager)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, "api/StartCalculation");
 
@@ -52,7 +54,10 @@ public static class AppHostManagerExtensions
         var token = CreateFakeInternalToken();
         request.Headers.Add("Authorization", $"Bearer {token}");
 
-        return appHostManager.HttpClient.SendAsync(request);
+        using var startCalculationResponse = await appHostManager.HttpClient.SendAsync(request);
+        startCalculationResponse.EnsureSuccessStatusCode();
+
+        return await startCalculationResponse.Content.ReadFromJsonAsync<Guid>();
     }
 
     /// <summary>

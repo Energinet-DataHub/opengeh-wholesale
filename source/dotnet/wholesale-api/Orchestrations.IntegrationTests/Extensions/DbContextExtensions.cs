@@ -22,7 +22,7 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions
 
 public static class DbContextExtensions
 {
-    public static async Task<(bool Success, CalculationOrchestrationState ActualState)> WaitForCalculationWithOneOfStates(
+    public static async Task<(bool Success, CalculationOrchestrationState ActualState)> WaitForCalculationWithOneOfStatesAsync(
         this DatabaseContext dbContext,
         Guid id,
         CalculationOrchestrationState[] states,
@@ -54,10 +54,10 @@ public static class DbContextExtensions
         return (success, calculation.OrchestrationState);
     }
 
-    public static Task<(bool Success, CalculationOrchestrationState ActualState)> WaitForCalculationWithState(
+    public static Task<(bool Success, CalculationOrchestrationState ActualState)> WaitForCalculationWithStateAsync(
         this DatabaseContext dbContext,
         Guid id,
         CalculationOrchestrationState state,
         ITestDiagnosticsLogger logger,
-        TimeSpan? timeLimit = null) => WaitForCalculationWithOneOfStates(dbContext, id, [state], logger, timeLimit);
+        TimeSpan? timeLimit = null) => WaitForCalculationWithOneOfStatesAsync(dbContext, id, [state], logger, timeLimit);
 }
