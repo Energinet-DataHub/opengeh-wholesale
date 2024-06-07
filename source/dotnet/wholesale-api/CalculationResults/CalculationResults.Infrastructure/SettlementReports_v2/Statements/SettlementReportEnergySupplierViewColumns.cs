@@ -23,7 +23,7 @@ public class SettlementReportEnergyResultViewColumns
     public const string MeteringPointType = "metering_point_type";
     public const string SettlementMethod = "settlement_method";
     public const string Resolution = "resolution";
-    public const string Quantity = "quantity";
     public const string Time = "time";
+    public const string Quantity = "quantity";
     public const string EnergySupplier = "energy_supplier_id";
 }
