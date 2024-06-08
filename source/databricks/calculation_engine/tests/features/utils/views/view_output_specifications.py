@@ -27,7 +27,7 @@ def get_output_specifications() -> dict[str, tuple]:
     Contains the specifications for scenario outputs.
     """
     return {
-        "wholesale_edi_results.energy_result_points_per_ga_v1.csv": (
+        "wholesale_calculation_results.energy_result_points_per_ga_v1.csv": (
             edi_results.energy_result_points_per_ga_v1_view_schema,
             create_energy_result_points_per_ga_v1_view,
         ),

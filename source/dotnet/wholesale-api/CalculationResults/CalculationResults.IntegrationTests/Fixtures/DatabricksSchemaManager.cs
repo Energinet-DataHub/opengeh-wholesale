@@ -129,8 +129,6 @@ public class DatabricksSchemaManager
             .Replace("{SETTLEMENT_REPORT_DATABASE_NAME}", DeltaTableOptions.Value.SettlementReportSchemaName)
             .Replace("{CALCULATION_RESULTS_DATABASE_NAME}", DeltaTableOptions.Value.CalculationResultsSchemaName)
             .Replace("{TEST}", "--")
-            // Obsolete - but required if old scripts are executed in new environments
-            .Replace("{EDI_RESULTS_DATABASE_NAME}", "wholesale_edi_results");
     }
 
     private async Task ExecuteSqlAsync(string sqlStatement)
