@@ -11,79 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import features.utils.dataframes.basis_data.basis_data_dataframes as basis_data_dataframes
-import package.calculation.basis_data.schemas as basis_data_schemas
-from features.utils.dataframes import (
-    create_energy_result_dataframe,
-    create_wholesale_result_dataframe,
-    create_total_monthly_amounts_dataframe,
-)
-from features.utils.dataframes.basis_data.calculations_dataframe import (
-    create_calculations,
-)
-from features.utils.dataframes.monthly_amounts_dataframe import (
-    create_monthly_amounts_dataframe,
-)
-from package.calculation.output.schemas import (
-    energy_results_schema,
-    wholesale_results_schema,
-)
-from package.calculation.output.schemas.monthly_amounts_schema import (
-    monthly_amounts_schema,
-)
-from package.calculation.output.schemas.total_monthly_amounts_schema import (
-    total_monthly_amounts_schema,
-)
-
-
-def get_input_specifications() -> dict[str, tuple]:
-    """
-    Contains the specifications for view scenario inputs.
-    The key is the name of the file to be read.
-    The value is a tuple containing the schema, the name of the method that reads the data,
-    the method that to corrects the dataframe types, and the database name.
-    """
+def get_input_specifications() -> dict[str, None]:
     return {
         # basis data
-        "basis_data.metering_point_periods.csv": (
-            basis_data_schemas.metering_point_period_schema,
-            basis_data_dataframes.create_metering_point_periods,
-        ),
-        "basis_data.time_series_points.csv": (
-            basis_data_schemas.time_series_point_schema,
-            basis_data_dataframes.create_time_series_points,
-        ),
-        "basis_data.calculations.csv": (
-            basis_data_schemas.calculations_schema,
-            create_calculations,
-        ),
-        "basis_data.charge_price_information_periods.csv": (
-            basis_data_schemas.charge_price_information_periods_schema,
-            basis_data_dataframes.create_charge_price_information_periods,
-        ),
-        "basis_data.charge_link_periods.csv": (
-            basis_data_schemas.charge_link_periods_schema,
-            basis_data_dataframes.create_charge_link_periods,
-        ),
-        "basis_data.charge_price_points.csv": (
-            basis_data_schemas.charge_price_points_schema,
-            basis_data_dataframes.create_charge_price_points,
-        ),
+        "basis_data.metering_point_periods.csv": None,
+        "basis_data.time_series_points.csv": None,
+        "basis_data.calculations.csv": None,
+        "basis_data.charge_price_information_periods.csv": None,
+        "basis_data.charge_link_periods.csv": None,
+        "basis_data.charge_price_points.csv": None,
         # results
-        "wholesale_output.energy_results.csv": (
-            energy_results_schema,
-            create_energy_result_dataframe,
-        ),
-        "wholesale_output.wholesale_results.csv": (
-            wholesale_results_schema,
-            create_wholesale_result_dataframe,
-        ),
-        "wholesale_output.monthly_amounts.csv": (
-            monthly_amounts_schema,
-            create_monthly_amounts_dataframe,
-        ),
-        "wholesale_output.total_monthly_amounts.csv": (
-            total_monthly_amounts_schema,
-            create_total_monthly_amounts_dataframe,
-        ),
+        "wholesale_output.energy_results.csv": None,
+        "wholesale_output.wholesale_results.csv": None,
+        "wholesale_output.total_monthly_amounts.csv": None,
+        "wholesale_output.monthly_amounts.csv": None,
     }
