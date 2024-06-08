@@ -247,7 +247,7 @@ public static class DatabricksApiWireMockExtensions
         return server;
     }
 
-    public static WireMockServer MockEnergySqlStatementsResultStream(this WireMockServer server, string path, Guid? calculationId = null)
+    public static WireMockServer MockEnergySqlStatementsResultStream(this WireMockServer server, string path, Guid calculationId)
     {
         var request = Request
             .Create()
@@ -392,12 +392,12 @@ public static class DatabricksApiWireMockExtensions
     /// <remarks>
     /// Note that QuantityQualities is a string, containing a list of strings.
     /// </remarks>>
-    private static string DatabricksEnergyStatementRowMock(Guid? calculationId = null)
+    private static string DatabricksEnergyStatementRowMock(Guid calculationId)
     {
         // Make sure that the order of the data matches the order of the columns defined in 'DatabricksEnergyStatementResponseMock'
         var data = EnergyResultColumnNames.GetAllNames().Select(columnName => columnName switch
         {
-            EnergyResultColumnNames.CalculationId => $"\"{calculationId ?? Guid.NewGuid()}\"",
+            EnergyResultColumnNames.CalculationId => $"\"{calculationId}\"",
             EnergyResultColumnNames.CalculationExecutionTimeStart => "\"2022-03-11T03:00:00.000Z\"",
             EnergyResultColumnNames.CalculationType => $"\"{DeltaTableCalculationType.BalanceFixing}\"",
             EnergyResultColumnNames.CalculationResultId => "\"aaaaaaaa-1111-1111-1c1c-08d3b12d4511\"",

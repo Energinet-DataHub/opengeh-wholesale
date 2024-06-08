@@ -37,6 +37,31 @@ public class GridAreaOwnerRepository : IGridAreaOwnerRepository
             sequenceNumber));
     }
 
+    public async Task<IEnumerable<string>> GetOwnedByAsync(string actorNumber)
+    {
+        var now = SystemClock.Instance.GetCurrentInstant();
+
+        var latestGridAreaOwner =
+            from gridAreaOwner in _context.GridAreaOwners
+            where gridAreaOwner.ValidFrom <= now
+            group gridAreaOwner by gridAreaOwner.GridAreaCode into gridAreaGroup
+            select new
+            {
+                GridAreaCode = gridAreaGroup.Key,
+                SequenceNumber = gridAreaGroup.Max(gao => gao.SequenceNumber),
+            };
+
+        var ownedBy =
+            from gridAreaOwner in _context.GridAreaOwners
+            join latestGao in latestGridAreaOwner on new { gridAreaOwner.GridAreaCode, gridAreaOwner.SequenceNumber } equals new { latestGao.GridAreaCode, latestGao.SequenceNumber }
+            where gridAreaOwner.OwnerActorNumber == actorNumber
+            select gridAreaOwner.GridAreaCode;
+
+        return await ownedBy
+            .ToListAsync()
+            .ConfigureAwait(false);
+    }
+
     public Task<GridAreaOwner?> GetCurrentOwnerAsync(string code, CancellationToken cancellationToken)
     {
         var now = SystemClock.Instance.GetCurrentInstant();
