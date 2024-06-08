@@ -28,7 +28,7 @@ class DataframeWrapper:
     name: str
     """
     The name of the dataframe.
-    The authoritative name of the view/table.
+    The fully qualified name of the view/table.
     """
 
     df: DataFrame | None
