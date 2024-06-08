@@ -41,7 +41,7 @@ class CsvToDataframeParser:
         return DataframeWrapper(key=file_name, name=name, df=df)
 
     def parse_csv_files_concurrently(
-        self, path: str, specifications: dict[str, tuple]
+        self, path: str, specifications: dict[str, None]
     ) -> list[DataframeWrapper]:
         """
         Reads csv files concurrently and converts them to dataframes.
