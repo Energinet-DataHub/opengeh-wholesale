@@ -641,6 +641,68 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
             actual.Should().BeFalse();
     }
 
+    [Fact]
+    public async Task GetAsync_WhenOnlyResultFromHalfTheRequestedPeriod_ReturnedPointsAreInCorrectPeriod()
+    {
+        // Business case example:
+        // When a new Energy Supplier is being made responsible for a metering point in the middle of the month
+        // and they do not already have a metering point in the grid area from the beginning of the month.
+        // The result is that the Energy Supplier will only have results for the last half of the month.
+
+        // Arrange
+        await _fixture.DatabricksSchemaManager
+            .EmptyAsync(
+                _fixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME);
+
+        var calculationPeriodStart = Instant.FromUtc(2022, 1, 1, 0, 0);
+        var calculationPeriodEnd = Instant.FromUtc(2022, 2, 1, 0, 0);
+
+        var calculationId = Guid.NewGuid();
+        const int calculationVersion = 1;
+        var calculationForPeriod = new CalculationForPeriod(
+            new Period(calculationPeriodStart, calculationPeriodEnd),
+            calculationId,
+            calculationVersion);
+
+        // Created calculation results for the last half of the month
+        var pointsTime = new List<Instant>();
+        var middleOfPeriod = calculationPeriodStart.Plus(Duration.FromDays(15));
+        var currentTime = middleOfPeriod;
+        while (currentTime < calculationPeriodEnd)
+        {
+            pointsTime.Add(currentTime);
+            currentTime = currentTime.Plus(Duration.FromDays(1));
+        }
+
+        var package = new WholesaleServicesPackage(
+            CalculationPeriod: calculationForPeriod,
+            Points: pointsTime,
+            AmountType.AmountPerCharge,
+            Resolution.Day,
+            "111",
+            "1136552000028",
+            "2276543210000",
+            "3333",
+            ChargeType.Fee,
+            CalculationType.SecondCorrectionSettlement);
+
+        var rows = ExtractSqlRowsFromPackagesAndTheirPoints([package]); // A package creates 1 sql row per point (15 rows total in this case)
+        await InsertData(rows);
+
+        var parameters = CreateQueryParameters(
+            new List<CalculationForPeriod>() { calculationForPeriod });
+
+        // Act
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        var calculationResult = actual.Should().ContainSingle().Subject;
+        calculationResult.Period.Start.Should().Be(middleOfPeriod);
+        calculationResult.Period.End.Should().Be(calculationPeriodEnd);
+        calculationResult.TimeSeriesPoints.Should().HaveCount(pointsTime.Count);
+    }
+
     private WholesaleServicesPackage CreatePackageForFilter(
         CalculationForPeriod calculationPeriod,
         AmountType amountType = AmountType.AmountPerCharge,
@@ -676,8 +738,13 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
             actualPackage.Resolution,
             actualPackage.CalculationType);
 
+        var expectedPeriodStart = expectedPackage.Points.Min(x => x);
+        var expectedPeriodEnd = expectedPackage.Points.Max(x => x);
+        var expectedPeriodEndWithResolutionOffset = GetDateTimeWithResolutionOffset(
+            expectedPackage.Resolution,
+            expectedPeriodEnd.ToDateTimeOffset());
         var expected = new PackageForComparision(
-            expectedPackage.CalculationPeriod.Period,
+            new Period(expectedPeriodStart, expectedPeriodEndWithResolutionOffset.ToInstant()),
             expectedPackage.CalculationPeriod.CalculationVersion,
             expectedPackage.GridArea,
             expectedPackage.EnergySupplierId,
@@ -693,6 +760,13 @@ public sealed class WholesaleServicesQueriesTests : TestBase<WholesaleServicesQu
 
         return actual == expected && actualPoints.SequenceEqual(expectedPoints);
     }
+
+    private static DateTimeOffset GetDateTimeWithResolutionOffset(Resolution resolution, DateTimeOffset dateTime) => resolution switch
+    {
+        Resolution.Hour => dateTime.AddMinutes(60),
+        Resolution.Day => dateTime.AddDays(1),
+        _ => dateTime.AddMonths(1),
+    };
 
     private List<IReadOnlyCollection<string?>> ExtractSqlRowsFromPackagesAndTheirPoints(List<WholesaleServicesPackage> packages)
     {
