@@ -12,15 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NodaTime;
+namespace Energinet.DataHub.Wholesale.WebApi.V3.SettlementReport;
 
-namespace Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
-
-public interface IGridAreaOwnerRepository
-{
-    void Add(string code, string ownerActorNumber, Instant validFrom, int sequenceNumber);
-
-    Task<IEnumerable<string>> GetOwnedByAsync(string actorNumber);
-
-    Task<GridAreaOwner?> GetCurrentOwnerAsync(string code, CancellationToken cancellationToken);
-}
+public sealed record SettlementReportApplicableCalculationDto(
+    Guid CalculationId,
+    DateTimeOffset CalculationTime,
+    DateTimeOffset PeriodStart,
+    DateTimeOffset PeriodEnd,
+    string GridAreaCode);

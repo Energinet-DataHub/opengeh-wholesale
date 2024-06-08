@@ -26,8 +26,6 @@ public class EnergyResultFactory
     public static EnergyResult CreateEnergyResult(
         DatabricksSqlRow databricksSqlRow,
         List<EnergyTimeSeriesPoint> timeSeriesPoints,
-        Instant periodStart,
-        Instant periodEnd,
         long version)
     {
         var id = databricksSqlRow[EnergyResultColumnNames.CalculationResultId];
@@ -39,8 +37,8 @@ public class EnergyResultFactory
         var calculationType = databricksSqlRow[EnergyResultColumnNames.CalculationType];
         var fromGridArea = databricksSqlRow[EnergyResultColumnNames.FromGridArea];
         var meteringPointId = databricksSqlRow[EnergyResultColumnNames.MeteringPointId];
-        var resolution = databricksSqlRow[EnergyResultColumnNames.Resolution];
-
+        var resolution = ResolutionMapper.FromDeltaTableValue(databricksSqlRow[EnergyResultColumnNames.Resolution]!);
+        var period = PeriodHelper.GetPeriod(timeSeriesPoints, resolution);
         return new EnergyResult(
             SqlResultValueConverters.ToGuid(id!),
             Guid.Parse(calculationId!),
@@ -50,11 +48,11 @@ public class EnergyResultFactory
             balanceResponsibleId,
             timeSeriesPoints.ToArray(),
             CalculationTypeMapper.FromDeltaTableValue(calculationType!),
-            periodStart,
-            periodEnd,
+            period.Start,
+            period.End,
             fromGridArea,
             meteringPointId,
-            ResolutionMapper.FromDeltaTableValue(resolution!),
+            resolution,
             version);
     }
 }
