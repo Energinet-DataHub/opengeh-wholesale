@@ -128,7 +128,7 @@ public class DatabricksSchemaManager
             .Replace("{BASIS_DATA_DATABASE_NAME}", DeltaTableOptions.Value.BasisDataSchemaName)
             .Replace("{SETTLEMENT_REPORT_DATABASE_NAME}", DeltaTableOptions.Value.SettlementReportSchemaName)
             .Replace("{CALCULATION_RESULTS_DATABASE_NAME}", DeltaTableOptions.Value.CalculationResultsSchemaName)
-            .Replace("{TEST}", "--")
+            .Replace("{TEST}", "--");
     }
 
     private async Task ExecuteSqlAsync(string sqlStatement)
