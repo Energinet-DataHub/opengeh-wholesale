@@ -11,46 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import features.utils.dataframes.edi_results as edi_results
-import features.utils.dataframes.settlement_report as settlement_reports
-from features.utils.dataframes.edi_results.energy_result_points_per_ga_v1_view_schema import (
-    energy_result_points_per_ga_v1_view_schema,
-)
-
-
-def get_output_specifications() -> dict[str, tuple]:
-    """
-    Contains the specifications for scenario outputs.
-    """
+def get_output_specifications() -> dict[str, None]:
     return {
-        "wholesale_edi_results.energy_result_points_per_ga_v1.csv": (
-            edi_results.energy_result_points_per_ga_v1_view_schema,
-        ),
-        "settlement_report.metering_point_periods_v1.csv": (
-            settlement_reports.metering_point_period_v1_view_schema,
-        ),
-        "settlement_report.metering_point_time_series_v1.csv": (
-            settlement_reports.metering_point_time_series_v1_view_schema,
-        ),
-        "settlement_report.charge_link_periods_v1.csv": (
-            settlement_reports.charge_link_periods_v1_view_schema,
-        ),
-        "settlement_report.charge_prices_v1.csv": (
-            settlement_reports.charge_prices_v1_view_schema,
-        ),
-        "settlement_report.energy_result_points_per_ga_v1.csv": (
-            settlement_reports.energy_result_points_per_ga_v1_view_schema,
-        ),
-        "settlement_report.energy_result_points_per_es_ga_v1.csv": (
-            settlement_reports.energy_result_points_per_es_ga_v1_view_schema,
-        ),
-        "settlement_report.wholesale_results_v1.csv": (
-            settlement_reports.wholesale_results_v1_view_schema,
-        ),
-        "settlement_report.monthly_amounts_v1.csv": (
-            settlement_reports.monthly_amounts_v1_view_schema,
-        ),
-        "settlement_report.current_balance_fixing_calculation_version_v1.csv": (
-            settlement_reports.current_balance_fixing_calculation_version_v1_view_schema,
-        ),
+        "wholesale_edi_results.energy_result_points_per_ga_v1.csv": None,
+        "settlement_report.metering_point_periods_v1.csv": None,
+        "settlement_report.metering_point_time_series_v1.csv": None,
+        "settlement_report.charge_link_periods_v1.csv": None,
+        "settlement_report.charge_prices_v1.csv": None,
+        "settlement_report.energy_result_points_per_ga_v1.csv": None,
+        "settlement_report.energy_result_points_per_es_ga_v1.csv": None,
+        "settlement_report.wholesale_results_v1.csv": None,
+        "settlement_report.monthly_amounts_v1.csv": None,
+        "settlement_report.current_balance_fixing_calculation_version_v1.csv": None,
     }
