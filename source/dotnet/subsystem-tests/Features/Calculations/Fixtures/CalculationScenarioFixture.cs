@@ -150,7 +150,8 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
             waitTimeLimit,
             delay);
 
-        DiagnosticMessageSink.WriteDiagnosticMessage($"Wait for calculation with id '{calculationId}' completed with '{nameof(calculation.ExecutionState)}={calculation?.ExecutionState}'.");
+        DiagnosticMessageSink.WriteDiagnosticMessage(
+            $"Wait for calculation with id '{calculationId}' to be completed finished with '{nameof(isCompletedOrFailed)}={isCompletedOrFailed}', '{nameof(calculation.ExecutionState)}={calculation?.ExecutionState}'.");
 
         return (isCompletedOrFailed, calculation);
     }
@@ -176,7 +177,9 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
             waitTimeLimit,
             delay);
 
-        DiagnosticMessageSink.WriteDiagnosticMessage($"Wait for calculation with id '{calculationId}' finished with '{nameof(calculation.OrchestrationState)}={calculation?.OrchestrationState}'.");
+        var stateNames = string.Join(",", states);
+        DiagnosticMessageSink.WriteDiagnosticMessage(
+            $"Wait for calculation with id '{calculationId}' state to be one of [{stateNames}] finished with '{nameof(isSuccess)}={isSuccess}', '{nameof(calculation.OrchestrationState)}={calculation?.OrchestrationState}'.");
 
         return (isSuccess, calculation);
     }
