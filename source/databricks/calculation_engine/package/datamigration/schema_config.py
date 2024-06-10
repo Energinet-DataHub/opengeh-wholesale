@@ -126,12 +126,18 @@ schema_config = [
         ],
     ),
     Schema(
-        name=paths.EdiResults.DATABASE_NAME,
+        name=paths.CalculationResultsPublicDataModel.DATABASE_NAME,
         tables=[],
         views=[
-            View(name=paths.EdiResults.ENERGY_RESULT_POINTS_PER_GA_V1_VIEW_NAME),
-            View(name=paths.EdiResults.ENERGY_RESULT_POINTS_PER_BRP_GA_V1_VIEW_NAME),
-            View(name=paths.EdiResults.ENERGY_RESULT_POINTS_PER_ES_BRP_GA_V1_VIEW_NAME),
+            View(
+                name=paths.CalculationResultsPublicDataModel.ENERGY_RESULT_POINTS_PER_GA_V1_VIEW_NAME
+            ),
+            View(
+                name=paths.CalculationResultsPublicDataModel.ENERGY_RESULT_POINTS_PER_BRP_GA_V1_VIEW_NAME
+            ),
+            View(
+                name=paths.CalculationResultsPublicDataModel.ENERGY_RESULT_POINTS_PER_ES_BRP_GA_V1_VIEW_NAME
+            ),
         ],
     ),
 ]

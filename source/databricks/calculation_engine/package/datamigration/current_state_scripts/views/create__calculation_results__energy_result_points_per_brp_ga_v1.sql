@@ -1,4 +1,4 @@
-CREATE VIEW IF NOT EXISTS {EDI_RESULTS_DATABASE_NAME}.energy_result_points_per_brp_ga_v1 AS
+CREATE VIEW IF NOT EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.energy_result_points_per_brp_ga_v1 AS
 SELECT calculation_id,
        calculation_type,
        calculation_period_start,
@@ -12,7 +12,7 @@ SELECT calculation_id,
        resolution,
        time,
        quantity,
-       unit,
+       unit as quantity_unit,
        quantity_qualities
 FROM {OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
 WHERE
