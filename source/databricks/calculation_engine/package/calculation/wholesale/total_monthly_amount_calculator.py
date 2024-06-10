@@ -82,10 +82,10 @@ def calculate_per_ga_co_es(
 
 
 def calculate_per_ga_es(
-    total_monthly_amount_per_ga_co_es: TotalMonthlyAmount,
+    monthly_amounts_per_charge: MonthlyAmountPerCharge,
 ) -> TotalMonthlyAmount:
     total_monthly_amount_per_ga_es = (
-        total_monthly_amount_per_ga_co_es.df.groupBy(
+        monthly_amounts_per_charge.df.groupBy(
             Colname.grid_area_code, Colname.energy_supplier_id, Colname.charge_time
         )
         .agg(f.sum(Colname.total_amount).alias(Colname.total_amount))
