@@ -13,7 +13,7 @@
 # limitations under the License.
 def get_output_specifications() -> dict[str, None]:
     return {
-        "wholesale_edi_results.energy_result_points_per_ga_v1.csv": None,
+        "wholesale_calculation_results.energy_result_points_per_ga_v1.csv": None,
         "settlement_report.metering_point_periods_v1.csv": None,
         "settlement_report.metering_point_time_series_v1.csv": None,
         "settlement_report.charge_link_periods_v1.csv": None,
