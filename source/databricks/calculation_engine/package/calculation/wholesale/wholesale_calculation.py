@@ -262,7 +262,7 @@ def _calculate_total_monthly_amount(
 
     total_monthly_amounts_per_ga_es = (
         total_monthly_amount_calculator.calculate_per_ga_es(
-            total_monthly_amounts_per_ga_co_es,
+            all_monthly_amounts,
         )
     )
 

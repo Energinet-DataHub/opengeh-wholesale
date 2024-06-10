@@ -13,6 +13,7 @@
 # limitations under the License.
 import concurrent.futures
 import os
+from pathlib import Path
 
 from pyspark.sql import SparkSession
 
@@ -40,19 +41,19 @@ class CsvToDataframeParser:
 
         return DataframeWrapper(key=file_name, name=name, df=df)
 
-    def parse_csv_files_concurrently(
-        self, path: str, specifications: dict[str, tuple]
-    ) -> list[DataframeWrapper]:
+    def parse_csv_files_concurrently(self, path: str) -> list[DataframeWrapper]:
         """
         Reads csv files concurrently and converts them to dataframes.
         """
+        csv_files = [x.name for x in list(Path(path).rglob("*.csv"))]
+
         with concurrent.futures.ThreadPoolExecutor() as executor:
             dataframes = list(
                 executor.map(
                     self._read_file,
-                    [self.spark] * len(specifications.keys()),
-                    specifications.keys(),
-                    [path] * len(specifications.keys()),
+                    [self.spark] * len(csv_files),
+                    csv_files,
+                    [path] * len(csv_files),
                 )
             )
 
