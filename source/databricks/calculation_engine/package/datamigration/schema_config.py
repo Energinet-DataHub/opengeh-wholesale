@@ -120,7 +120,7 @@ schema_config = [
                 name=paths.SettlementReportPublicDataModel.METERING_POINT_TIME_SERIES_VIEW_NAME_V1
             ),
             View(
-                name=paths.SettlementReportPublicDataModel.ENERGY_RESULT_POINTS_PER_GA_SETTLEMENT_REPORT_VIEW_NAME_V1
+                name=paths.SettlementReportPublicDataModel.ENERGY_RESULT_POINTS_PER_GA_VIEW_NAME_V1
             ),
             View(
                 name=paths.SettlementReportPublicDataModel.ENERGY_RESULT_POINTS_PER_ES_GA_SETTLEMENT_REPORT_VIEW_NAME_V1
