@@ -16,32 +16,51 @@
 
 import package.infrastructure.environment_variables as env_vars
 
-# Input database and tables
-INPUT_DATABASE_NAME = "wholesale_input"
-METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods"
-TIME_SERIES_POINTS_TABLE_NAME = "time_series_points_v2"
-CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods"
-CHARGE_MASTER_DATA_PERIODS_TABLE_NAME = "charge_price_information_periods"
-CHARGE_PRICE_POINTS_TABLE_NAME = "charge_price_points"
-GRID_LOSS_METERING_POINTS_TABLE_NAME = "grid_loss_metering_points"
 
-# Output database and tables
-OUTPUT_DATABASE_NAME = "wholesale_output"
-ENERGY_RESULT_TABLE_NAME = "energy_results"
-WHOLESALE_RESULT_TABLE_NAME = "wholesale_results"
-MONTHLY_AMOUNTS_TABLE_NAME = "monthly_amounts"
-TOTAL_MONTHLY_AMOUNTS_TABLE_NAME = "total_monthly_amounts"
-SUCCEEDED_ENERGY_RESULTS_V1_VIEW_NAME = "succeeded_energy_results_v1"
+class InputDatabase:
+    DATABASE_NAME = "wholesale_input"
+    METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods"
+    TIME_SERIES_POINTS_TABLE_NAME = "time_series_points_v2"
+    CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods"
+    CHARGE_MASTER_DATA_PERIODS_TABLE_NAME = "charge_price_information_periods"
+    CHARGE_PRICE_POINTS_TABLE_NAME = "charge_price_points"
+    GRID_LOSS_METERING_POINTS_TABLE_NAME = "grid_loss_metering_points"
 
-# Basis data database and tables
-BASIS_DATA_DATABASE_NAME = "basis_data"
-METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME = "metering_point_periods"
-TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME = "time_series_points"
-CHARGE_LINK_PERIODS_BASIS_DATA_TABLE_NAME = "charge_link_periods"
-CHARGE_MASTER_DATA_PERIODS_BASIS_DATA_TABLE_NAME = "charge_price_information_periods"
-CHARGE_PRICE_POINTS_BASIS_DATA_TABLE_NAME = "charge_price_points"
-GRID_LOSS_METERING_POINTS_BASIS_DATA_TABLE_NAME = "grid_loss_metering_points"
-CALCULATIONS_TABLE_NAME = "calculations"
+
+class OutputDatabase:
+    FOLDER_NAME = "calculation-output"
+    """The folder in the storage account container"""
+
+    DATABASE_NAME = "wholesale_output"
+    ENERGY_RESULT_TABLE_NAME = "energy_results"
+    WHOLESALE_RESULT_TABLE_NAME = "wholesale_results"
+    MONTHLY_AMOUNTS_TABLE_NAME = "monthly_amounts"
+    TOTAL_MONTHLY_AMOUNTS_TABLE_NAME = "total_monthly_amounts"
+    SUCCEEDED_ENERGY_RESULTS_V1_VIEW_NAME = "succeeded_energy_results_v1"
+
+
+class BasisDataDatabase:
+    FOLDER_NAME = "basis_data"
+    """The folder in the storage account container"""
+
+    DATABASE_NAME = "basis_data"
+    METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods"
+    TIME_SERIES_POINTS_TABLE_NAME = "time_series_points"
+    CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods"
+    CHARGE_MASTER_DATA_PERIODS_TABLE_NAME = "charge_price_information_periods"
+    CHARGE_PRICE_POINTS_TABLE_NAME = "charge_price_points"
+    GRID_LOSS_METERING_POINTS_TABLE_NAME = "grid_loss_metering_points"
+    CALCULATIONS_TABLE_NAME = "calculations"
+
+    TABLE_NAMES = [
+        CALCULATIONS_TABLE_NAME,
+        METERING_POINT_PERIODS_TABLE_NAME,
+        TIME_SERIES_POINTS_TABLE_NAME,
+        CHARGE_LINK_PERIODS_TABLE_NAME,
+        CHARGE_MASTER_DATA_PERIODS_TABLE_NAME,
+        CHARGE_PRICE_POINTS_TABLE_NAME,
+        GRID_LOSS_METERING_POINTS_TABLE_NAME,
+    ]
 
 
 class CalculationResultsPublicDataModel:
@@ -53,42 +72,28 @@ class CalculationResultsPublicDataModel:
     )
 
 
-# Settlement report database and views
-SETTLEMENT_REPORT_DATABASE_NAME = "settlement_report"
-METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1 = "metering_point_periods_v1"
-METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME_V1 = (
-    "metering_point_time_series_v1"
-)
-CHARGE_LINK_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1 = "charge_link_periods_v1"
-CHARGE_PRICES_SETTLEMENT_REPORT_VIEW_NAME_V1 = "charge_prices_v1"
-ENERGY_RESULT_POINTS_PER_GA_SETTLEMENT_REPORT_VIEW_NAME_V1 = (
-    "energy_result_points_per_ga_v1"
-)
-ENERGY_RESULT_POINTS_PER_ES_GA_SETTLEMENT_REPORT_VIEW_NAME_V1 = (
-    "energy_result_points_per_es_ga_v1"
-)
-WHOLESALE_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1 = "wholesale_results_v1"
-CURRENT_BALANCE_FIXING_CALCULATION_VERSION_SETTLEMENT_REPORT_VIEW_NAME_V1 = (
-    "current_balance_fixing_calculation_version_v1"
-)
-MONTHLY_AMOUNTS_SETTLEMENT_REPORT_VIEW_NAME_V1 = "monthly_amounts_v1"
+class SettlementReportPublicDataModel:
+    DATABASE_NAME = "settlement_report"
+    METERING_POINT_PERIODS_VIEW_NAME_V1 = "metering_point_periods_v1"
+    METERING_POINT_TIME_SERIES_VIEW_NAME_V1 = "metering_point_time_series_v1"
+    CHARGE_LINK_PERIODS_VIEW_NAME_V1 = "charge_link_periods_v1"
+    CHARGE_PRICES_VIEW_NAME_V1 = "charge_prices_v1"
+    ENERGY_RESULT_POINTS_PER_GA_VIEW_NAME_V1 = "energy_result_points_per_ga_v1"
+    ENERGY_RESULT_POINTS_PER_ES_GA_SETTLEMENT_REPORT_VIEW_NAME_V1 = (
+        "energy_result_points_per_es_ga_v1"
+    )
+    WHOLESALE_RESULTS_VIEW_NAME_V1 = "wholesale_results_v1"
+    CURRENT_BALANCE_FIXING_CALCULATION_VERSION_VIEW_NAME_V1 = (
+        "current_balance_fixing_calculation_version_v1"
+    )
+    MONTHLY_AMOUNTS_VIEW_NAME_V1 = "monthly_amounts_v1"
+
 
 TEST = ""
+"""Used to differentiate behavior of SQL migrations in tests from behavior in production"""
 
-# Paths
 WHOLESALE_CONTAINER_NAME = "wholesale"
-OUTPUT_FOLDER = "calculation-output"
-BASIS_DATA_FOLDER = "basis_data"
-
-BASIS_DATA_TABLE_NAMES = [
-    CALCULATIONS_TABLE_NAME,
-    METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME,
-    TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME,
-    CHARGE_LINK_PERIODS_BASIS_DATA_TABLE_NAME,
-    CHARGE_MASTER_DATA_PERIODS_BASIS_DATA_TABLE_NAME,
-    CHARGE_PRICE_POINTS_BASIS_DATA_TABLE_NAME,
-    GRID_LOSS_METERING_POINTS_BASIS_DATA_TABLE_NAME,
-]
+"""The name of the container in the storage account"""
 
 
 def get_storage_account_url(storage_account_name: str) -> str:
