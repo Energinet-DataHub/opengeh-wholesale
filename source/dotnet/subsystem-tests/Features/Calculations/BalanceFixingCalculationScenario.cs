@@ -314,8 +314,16 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
 
     [ScenarioStep(15)]
     [SubsystemFact]
-    public async Task AndWhen_ActorMessagesEnqueuedMessageIsReceived()
+    public async Task AndThen_ActorMessagesEnqueuedMessageIsReceived()
     {
+        // OrchestrationInstanceId should have been set in the
+        // scenario step "AndThen_ReceivedCalculationCompletedV1EventContainsSingleEventWithInstanceId"
+        if (string.IsNullOrEmpty(Fixture.ScenarioState.OrchestrationInstanceId))
+        {
+            throw new InvalidOperationException(
+                "OrchestrationInstanceId is not set, it should have been set in a previous scenario step");
+        }
+
         // Send a ActorMessagesEnqueued message to the Wholesale subsystem
         // This must not fail even if the message has already been received from the EDI subsystem
         await Fixture.SendActorMessagesEnqueuedMessageAsync(
@@ -325,7 +333,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
 
     [ScenarioStep(16)]
     [SubsystemFact]
-    public async Task Then_CalculationOrchestrationIsCompleted()
+    public async Task AndThen_CalculationOrchestrationIsCompleted()
     {
         // Wait for the calculation to reach the Completed state
         var (isSuccess, calculation) = await Fixture.WaitForOneOfCalculationStatesAsync(
