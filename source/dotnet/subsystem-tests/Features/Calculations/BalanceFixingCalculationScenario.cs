@@ -300,6 +300,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
             ],
             waitTimeLimit: TimeSpan.FromMinutes(1));
 
+        using var assertionScope = new AssertionScope();
         isSuccess.Should().BeTrue("because calculation should be in ActorMessagesEnqueuing state or later");
         calculation.Should().NotBeNull();
         calculation!.OrchestrationState.Should().BeOneOf(
@@ -332,6 +333,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
             [CalculationOrchestrationState.Completed],
             waitTimeLimit: TimeSpan.FromMinutes(1));
 
+        using var assertionScope = new AssertionScope();
         isSuccess.Should().BeTrue("because the calculation should be completed");
         calculation.Should().NotBeNull();
         calculation!.OrchestrationState.Should().Be(CalculationOrchestrationState.Completed);

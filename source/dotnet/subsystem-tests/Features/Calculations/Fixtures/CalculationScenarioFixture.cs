@@ -496,6 +496,23 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
                     }
 
                     break;
+
+                case CalculationCompletedV1.EventName:
+                    var calculationCompleted = CalculationCompletedV1.Parser.ParseFrom(data);
+                    if (calculationCompleted.CalculationId == calculationId.ToString())
+                    {
+                        DiagnosticMessageSink.WriteDiagnosticMessage($"""
+                                                                      {nameof(CalculationCompletedV1)} received with values:
+                                                                          {nameof(calculationCompleted.CalculationId)}={calculationCompleted.CalculationId}
+                                                                          {nameof(calculationCompleted.CalculationType)}={calculationCompleted.CalculationType}
+                                                                          {nameof(calculationCompleted.InstanceId)}={calculationCompleted.InstanceId}
+                                                                          {nameof(calculationCompleted.CalculationVersion)}={calculationCompleted.CalculationVersion}
+                                                                      """);
+                        eventMessage = calculationCompleted;
+                        shouldCollect = true;
+                    }
+
+                    break;
             }
         }
 
