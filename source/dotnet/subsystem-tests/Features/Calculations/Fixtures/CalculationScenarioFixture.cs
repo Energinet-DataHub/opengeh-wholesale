@@ -231,8 +231,17 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
             Success = true,
         };
 
+        var serviceBusMessage = new ServiceBusMessage(actorMessagesEnqueuedMessage.ToByteArray())
+        {
+            Subject = ActorMessagesEnqueuedV1.EventName,
+            ApplicationProperties =
+            {
+                { "ReferenceId", Guid.Parse("00000000-0000-0000-0000-000000000001").ToString() },
+            },
+        };
+
         // Act
-        await WholesaleInboxSender.SendMessageAsync(new ServiceBusMessage(actorMessagesEnqueuedMessage.ToByteArray()));
+        await WholesaleInboxSender.SendMessageAsync(serviceBusMessage);
     }
 
     public async Task<Response<LogsQueryResult>> QueryLogAnalyticsAsync(string query, QueryTimeRange queryTimeRange)
