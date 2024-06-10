@@ -23,24 +23,28 @@ public class CalculationScenarioState
     public StartCalculationRequestDto? CalculationInput { get; set; }
 
     public IList<string> SubscribedIntegrationEventNames { get; }
-        = new List<string>();
+        = [];
 
     public Guid CalculationId { get; set; }
+
+    public string OrchestrationInstanceId { get; set; } = string.Empty;
 
     public CalculationDto? Calculation { get; set; }
 
     public IReadOnlyCollection<EnergyResultProducedV2> ReceivedEnergyResultProducedV2 { get; set; }
-        = new List<EnergyResultProducedV2>();
+        = [];
 
     public IReadOnlyCollection<GridLossResultProducedV1> ReceivedGridLossProducedV1 { get; set; }
-        = new List<GridLossResultProducedV1>();
+        = [];
 
     public IReadOnlyCollection<AmountPerChargeResultProducedV1> ReceivedAmountPerChargeResultProducedV1 { get; set; }
         = new List<AmountPerChargeResultProducedV1>();
 
     public IReadOnlyCollection<MonthlyAmountPerChargeResultProducedV1> ReceivedMonthlyAmountPerChargeResultProducedV1 { get; set; }
-        = new List<MonthlyAmountPerChargeResultProducedV1>();
+        = [];
 
     public IReadOnlyCollection<TotalMonthlyAmountResultProducedV1> ReceivedTotalMonthlyAmountResultProducedV1 { get; set; }
-        = new List<TotalMonthlyAmountResultProducedV1>();
+        = [];
+
+    public IReadOnlyCollection<CalculationCompletedV1> ReceivedCalculationCompletedV1 { get; set; } = [];
 }
