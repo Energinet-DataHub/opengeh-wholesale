@@ -151,15 +151,15 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
             delay);
 
         DiagnosticMessageSink.WriteDiagnosticMessage(
-            $"Wait for calculation with id '{calculationId}' to be completed finished with '{nameof(isCompletedOrFailed)}={isCompletedOrFailed}', '{nameof(calculation.ExecutionState)}={calculation?.ExecutionState}'.");
+            $"Wait for calculation with id '{calculationId}' to be completed/failed finished with '{nameof(isCompletedOrFailed)}={isCompletedOrFailed}', '{nameof(calculation.ExecutionState)}={calculation?.ExecutionState}'.");
 
         return (isCompletedOrFailed, calculation);
     }
 
     /// <summary>
-    /// Wait for the calculation to complete or fail.
+    /// Wait for the calculation orchestration state to be one of the given states
     /// </summary>
-    /// <returns>IsCompletedOrFailed: True if the calculation completed or failed; otherwise false.</returns>
+    /// <returns>IsSuccess: true if the calculation is in one of the given states; otherwise false.</returns>
     public async Task<(bool IsSuccess, CalculationDto? Calculation)> WaitForOneOfCalculationStatesAsync(
         Guid calculationId,
         CalculationOrchestrationState[] states,
@@ -514,12 +514,12 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
                     if (calculationCompleted.CalculationId == calculationId.ToString())
                     {
                         DiagnosticMessageSink.WriteDiagnosticMessage($"""
-                                                                      {nameof(CalculationCompletedV1)} received with values:
-                                                                          {nameof(calculationCompleted.CalculationId)}={calculationCompleted.CalculationId}
-                                                                          {nameof(calculationCompleted.CalculationType)}={calculationCompleted.CalculationType}
-                                                                          {nameof(calculationCompleted.InstanceId)}={calculationCompleted.InstanceId}
-                                                                          {nameof(calculationCompleted.CalculationVersion)}={calculationCompleted.CalculationVersion}
-                                                                      """);
+                            {nameof(CalculationCompletedV1)} received with values:
+                                {nameof(calculationCompleted.CalculationId)}={calculationCompleted.CalculationId}
+                                {nameof(calculationCompleted.CalculationType)}={calculationCompleted.CalculationType}
+                                {nameof(calculationCompleted.InstanceId)}={calculationCompleted.InstanceId}
+                                {nameof(calculationCompleted.CalculationVersion)}={calculationCompleted.CalculationVersion}
+                            """);
                         eventMessage = calculationCompleted;
                         shouldCollect = true;
                     }
