@@ -344,14 +344,14 @@ def test__calculate_per_ga_es__when_grid_area_and_energy_supplier_and_charge_tim
 ) -> None:
     # Arrange
     rows = [
-        total_monthly_amount_factory.create_row(
+        monthly_amount_per_charge_factory.create_row(
             grid_area=grid_area,
             energy_supplier_id=energy_supplier_id,
             total_amount=total_amount,
             charge_owner=charge_owner,
             charge_time=charge_time,
         ),
-        total_monthly_amount_factory.create_row(
+        monthly_amount_per_charge_factory.create_row(
             grid_area="123",
             energy_supplier_id="es_id_1",
             total_amount=Decimal("2"),
@@ -359,11 +359,11 @@ def test__calculate_per_ga_es__when_grid_area_and_energy_supplier_and_charge_tim
             charge_time=datetime(2021, 1, 1),
         ),
     ]
-    total_monthly_amount_per_ga_co_es = total_monthly_amount_factory.create(spark, rows)
+    monthly_amounts = monthly_amount_per_charge_factory.create(spark, rows)
 
     # Act
     actual = calculate_per_ga_es(
-        total_monthly_amount_per_ga_co_es,
+        monthly_amounts,
     )
 
     # Assert
