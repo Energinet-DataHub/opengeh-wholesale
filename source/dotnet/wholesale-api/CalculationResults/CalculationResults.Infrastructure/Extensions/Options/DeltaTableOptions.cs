@@ -46,5 +46,5 @@ public class DeltaTableOptions
     /// </summary>
     public string TOTAL_MONTHLY_AMOUNTS_TABLE_NAME { get; set; } = "total_monthly_amounts";
 
-    public string EdiResultsSchemaName { get; set; } = "wholesale_edi_results";
+    public string CalculationResultsSchemaName { get; set; } = "wholesale_calculation_results";
 }

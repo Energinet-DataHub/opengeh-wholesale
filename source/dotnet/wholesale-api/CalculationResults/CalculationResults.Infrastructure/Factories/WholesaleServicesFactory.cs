@@ -23,17 +23,19 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factorie
 
 public static class WholesaleServicesFactory
 {
-    public static WholesaleServices Create(DatabricksSqlRow databricksSqlRow, Period period, IReadOnlyCollection<WholesaleTimeSeriesPoint> timeSeriesPoints, long version)
+    public static WholesaleServices Create(DatabricksSqlRow databricksSqlRow, IReadOnlyCollection<WholesaleTimeSeriesPoint> timeSeriesPoints, long version)
     {
+        var resolution = ResolutionMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.Resolution]!);
+        var period = PeriodHelper.GetPeriod(timeSeriesPoints, resolution);
         return new WholesaleServices(
-            period,
+            new Period(period.Start, period.End),
             databricksSqlRow[WholesaleResultColumnNames.GridArea]!,
             databricksSqlRow[WholesaleResultColumnNames.EnergySupplierId]!,
             databricksSqlRow[WholesaleResultColumnNames.ChargeCode]!,
             ChargeTypeMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.ChargeType]!),
             databricksSqlRow[WholesaleResultColumnNames.ChargeOwnerId]!,
             AmountTypeMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.AmountType]!),
-            ResolutionMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.Resolution]!),
+            resolution,
             QuantityUnitMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.QuantityUnit]!),
             MeteringPointTypeMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.MeteringPointType]),
             SettlementMethodMapper.FromDeltaTableValue(databricksSqlRow[WholesaleResultColumnNames.SettlementMethod]),

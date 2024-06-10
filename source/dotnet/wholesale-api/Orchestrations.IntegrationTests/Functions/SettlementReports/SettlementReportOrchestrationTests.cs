@@ -87,13 +87,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
                 null));
 
         // => Databricks SQL Statement API
-        var statementId = Guid.NewGuid().ToString();
-        var path = "GetDatabricksDataPath";
-
-        Fixture.MockServer
-            .MockEnergySqlStatements(statementId, 0)
-            .MockEnergySqlStatementsResultChunks(statementId, 0, path)
-            .MockEnergySqlStatementsResultStream(path);
+        Fixture.MockServer.MockEnergyResultsResponse();
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Post, "api/RequestSettlementReport");
@@ -147,13 +141,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
                 null));
 
         // => Databricks SQL Statement API
-        var statementId = Guid.NewGuid().ToString();
-        var path = "GetDatabricksDataPath";
-
-        Fixture.MockServer
-            .MockEnergySqlStatements(statementId, 0)
-            .MockEnergySqlStatementsResultChunks(statementId, 0, path)
-            .MockEnergySqlStatementsResultStream(path);
+        Fixture.MockServer.MockEnergyResultsResponse();
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Post, "api/RequestSettlementReport");
@@ -219,13 +207,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
                 null));
 
         // => Databricks SQL Statement API
-        var statementId = Guid.NewGuid().ToString();
-        var path = "GetDatabricksDataPath";
-
-        Fixture.MockServer
-            .MockEnergySqlStatements(statementId, 0)
-            .MockEnergySqlStatementsResultChunks(statementId, 0, path)
-            .MockEnergySqlStatementsResultStream(path);
+        Fixture.MockServer.MockEnergyResultsResponse();
 
         // Act A: Start generating report.
         using var requestReport = new HttpRequestMessage(HttpMethod.Post, "api/RequestSettlementReport");
@@ -288,11 +270,13 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
 
         var userClaim = new Claim(JwtRegisteredClaimNames.Sub, "A1AAB954-136A-444A-94BD-E4B615CA4A78");
         var actorClaim = new Claim(JwtRegisteredClaimNames.Azp, "A1DEA55A-3507-4777-8CF3-F425A6EC2094");
+        var actorNumberClaim = new Claim("actornumber", "0000000000000");
+        var actorRoleClaim = new Claim("marketroles", "EnergySupplier");
 
         var internalToken = new JwtSecurityToken(
             issuer,
             audience,
-            [userClaim, actorClaim],
+            [userClaim, actorClaim, actorNumberClaim, actorRoleClaim],
             validFrom,
             validTo,
             new SigningCredentials(testKey, SecurityAlgorithms.RsaSha256));

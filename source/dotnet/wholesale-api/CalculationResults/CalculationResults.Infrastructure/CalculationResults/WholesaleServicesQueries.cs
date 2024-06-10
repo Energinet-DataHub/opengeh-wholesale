@@ -78,7 +78,6 @@ public class WholesaleServicesQueries(
     {
         return WholesaleServicesFactory.Create(
             rowData.Row,
-            rowData.CalculationPeriod.Period,
             timeSeriesPoints,
             rowData.CalculationPeriod.CalculationVersion);
     }

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -27,7 +28,7 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions
 
 public static class AppHostManagerExtensions
 {
-    public static Task<HttpResponseMessage> StartCalculationAsync(this FunctionAppHostManager appHostManager)
+    public static async Task<Guid> StartCalculationAsync(this FunctionAppHostManager appHostManager)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, "api/StartCalculation");
 
@@ -52,7 +53,10 @@ public static class AppHostManagerExtensions
         var token = CreateFakeInternalToken();
         request.Headers.Add("Authorization", $"Bearer {token}");
 
-        return appHostManager.HttpClient.SendAsync(request);
+        using var startCalculationResponse = await appHostManager.HttpClient.SendAsync(request);
+        startCalculationResponse.EnsureSuccessStatusCode();
+
+        return await startCalculationResponse.Content.ReadFromJsonAsync<Guid>();
     }
 
     /// <summary>
@@ -71,11 +75,13 @@ public static class AppHostManagerExtensions
 
         var userClaim = new Claim(JwtRegisteredClaimNames.Sub, "A1AAB954-136A-444A-94BD-E4B615CA4A78");
         var actorClaim = new Claim(JwtRegisteredClaimNames.Azp, "A1DEA55A-3507-4777-8CF3-F425A6EC2094");
+        var actorNumberClaim = new Claim("actornumber", "0000000000000");
+        var actorRoleClaim = new Claim("marketroles", "EnergySupplier");
 
         var internalToken = new JwtSecurityToken(
             issuer,
             audience,
-            new[] { userClaim, actorClaim },
+            [userClaim, actorClaim, actorNumberClaim, actorRoleClaim],
             validFrom,
             validTo,
             new SigningCredentials(testKey, SecurityAlgorithms.RsaSha256));

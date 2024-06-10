@@ -20,5 +20,7 @@ public interface IGridAreaOwnerRepository
 {
     void Add(string code, string ownerActorNumber, Instant validFrom, int sequenceNumber);
 
+    Task<IEnumerable<string>> GetOwnedByAsync(string actorNumber);
+
     Task<GridAreaOwner?> GetCurrentOwnerAsync(string code, CancellationToken cancellationToken);
 }
