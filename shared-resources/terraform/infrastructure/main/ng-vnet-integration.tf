@@ -3,6 +3,12 @@ resource "azurerm_public_ip_prefix" "vnet_integration_public_ip_prefix" {
   resource_group_name = azurerm_resource_group.this.name
   location            = azurerm_resource_group.this.location
   prefix_length       = 28
+
+  lifecycle {
+    ignore_changes = [
+      tags,
+    ]
+  }
 }
 
 resource "azurerm_nat_gateway" "nat_gateway" {
@@ -10,6 +16,12 @@ resource "azurerm_nat_gateway" "nat_gateway" {
   resource_group_name = azurerm_resource_group.this.name
   location            = azurerm_resource_group.this.location
   sku_name            = "Standard"
+
+  lifecycle {
+    ignore_changes = [
+      tags,
+    ]
+  }
 }
 
 resource "azurerm_nat_gateway_public_ip_prefix_association" "nat_gateway_public_ip_prefix_association" {

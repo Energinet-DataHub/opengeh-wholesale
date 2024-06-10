@@ -7,6 +7,12 @@ resource "azurerm_data_factory" "this" {
   identity {
     type = "SystemAssigned"
   }
+
+  lifecycle {
+    ignore_changes = [
+      tags,
+    ]
+  }
 }
 
 module "kvs_azure_data_factory_id" {

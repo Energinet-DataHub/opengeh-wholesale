@@ -3,6 +3,12 @@ resource "azurerm_relay_namespace" "this" {
   resource_group_name = azurerm_resource_group.this.name
   location            = azurerm_resource_group.this.location
   sku_name            = "Standard"
+
+  lifecycle {
+    ignore_changes = [
+      tags,
+    ]
+  }
 }
 
 module "kvs_relay_name" {

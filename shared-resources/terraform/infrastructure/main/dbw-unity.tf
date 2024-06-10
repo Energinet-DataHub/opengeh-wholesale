@@ -11,6 +11,12 @@ resource "azurerm_databricks_workspace" "this" {
   location                    = azurerm_resource_group.this.location
   sku                         = "premium"
   managed_resource_group_name = "rg-dbw-${local.resources_suffix}"
+
+  lifecycle {
+    ignore_changes = [
+      tags,
+    ]
+  }
 }
 
 # Wait for the workspace to create the access connector
