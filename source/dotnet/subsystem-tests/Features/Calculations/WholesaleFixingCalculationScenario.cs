@@ -374,7 +374,9 @@ AppDependencies
         var publicDataModelsAndTables = new List<(string ModelName, string TableName)>
         {
             new("settlement_report", "metering_point_periods_v1"),
-            new("wholesale_edi_results", "energy_result_points_per_ga_v1"),
+            new("wholesale_calculation_results", "energy_result_points_per_ga_v1"),
+            new("wholesale_calculation_results", "energy_result_points_per_brp_ga_v1"),
+            new("wholesale_calculation_results", "energy_result_points_per_es_brp_ga_v1"),
         };
 
         // Act
