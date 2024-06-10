@@ -83,6 +83,11 @@ def spark(
         SparkSession.builder.config("spark.sql.warehouse.dir", warehouse_location)
         .config("spark.driver.memory", "2g")
         .config("spark.dynamicAllocation.enabled", "true")
+        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
+        .config(
+            "spark.sql.catalog.spark_catalog",
+            "org.apache.spark.sql.delta.catalog.DeltaCatalog",
+        )
     ).getOrCreate()
 
     yield session
