@@ -279,7 +279,7 @@ public class BalanceFixingCalculationScenario : SubsystemTestsBase<CalculationSc
         var receivedCalculationCompletedEvent = Fixture.ScenarioState.ReceivedCalculationCompletedV1.Should().ContainSingle()
             .Subject;
 
-        receivedCalculationCompletedEvent.InstanceId.Should().NotBeNullOrEmpty();
+        receivedCalculationCompletedEvent.InstanceId.Should().NotBeNullOrWhiteSpace();
         Fixture.ScenarioState.OrchestrationInstanceId = receivedCalculationCompletedEvent.InstanceId;
     }
 

@@ -130,7 +130,7 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
         Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1.Should().NotBeEmpty();
         Fixture.ScenarioState.ReceivedTotalMonthlyAmountResultProducedV1.Should().NotBeEmpty();
         Fixture.ScenarioState.ReceivedGridLossProducedV1.Should().NotBeEmpty();
-        Fixture.ScenarioState.ReceivedCalculationCompletedV1.Should().NotBeEmpty();
+        Fixture.ScenarioState.ReceivedCalculationCompletedV1.Should().NotBeEmpty(); // TODO: Not received?
     }
 
     [ScenarioStep(6)]
@@ -400,7 +400,7 @@ AppDependencies
         var receivedCalculationCompletedEvent = Fixture.ScenarioState.ReceivedCalculationCompletedV1.Should().ContainSingle()
             .Subject;
 
-        receivedCalculationCompletedEvent.InstanceId.Should().NotBeNullOrEmpty();
+        receivedCalculationCompletedEvent.InstanceId.Should().NotBeNullOrWhiteSpace();
         Fixture.ScenarioState.OrchestrationInstanceId = receivedCalculationCompletedEvent.InstanceId;
     }
 
@@ -438,6 +438,7 @@ AppDependencies
     {
         // Send a ActorMessagesEnqueued message to the Wholesale subsystem
         // This must not fail even if the message has already been received from the EDI subsystem
+        // TODO: Need service bus send claims
         await Fixture.SendActorMessagesEnqueuedMessageAsync(
             Fixture.ScenarioState.CalculationId,
             Fixture.ScenarioState.OrchestrationInstanceId);
@@ -453,6 +454,7 @@ AppDependencies
             [CalculationOrchestrationState.Completed],
             waitTimeLimit: TimeSpan.FromMinutes(1));
 
+        using var assertionScope = new AssertionScope();
         isSuccess.Should().BeTrue("because the calculation should be completed");
         calculation.Should().NotBeNull();
         calculation!.OrchestrationState.Should().Be(CalculationOrchestrationState.Completed);

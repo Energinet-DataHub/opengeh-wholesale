@@ -69,7 +69,7 @@ public sealed class ServiceBusConfiguration
 
         return new ServiceBusConfiguration(
             $"{serviceBusNamespace}.servicebus.windows.net",
-            secretsConfiguration.GetValue<string>("sb-domain-relay-listen-connection-string")!,
+            secretsConfiguration.GetValue<string>("sb-domain-relay-transceiver-connection-string")!,
             secretsConfiguration.GetValue<string>("sbt-shres-integrationevent-received-name")!,
             secretsConfiguration.GetValue<string>("sbq-wholesale-inbox-messagequeue-name")!);
     }
