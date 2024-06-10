@@ -127,6 +127,17 @@ def _assert_data_type(
         )
         return
 
+    if isinstance(actual, StructType) and isinstance(expected, StructType):
+        for i, field in enumerate(actual):
+            _assert_data_type(
+                field.dataType,
+                expected.fields[i].dataType,
+                field.name,
+                ignore_decimal_precision,
+                ignore_decimal_scale,
+            )
+        return
+
     if not isinstance(actual, DecimalType) or not isinstance(expected, DecimalType):
         _raise(
             f"Expected column name '{column_name}' to have type {expected}, but got type {actual}"

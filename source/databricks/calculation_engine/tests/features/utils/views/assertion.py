@@ -16,7 +16,6 @@ from pyspark.sql import DataFrame
 
 from features.utils.views.dataframe_wrapper import DataframeWrapper
 from helpers.data_frame_utils import assert_dataframe_and_schema
-from package.constants.result_column_names import ResultColumnNames
 from testsession_configuration import FeatureTestsConfiguration
 
 
@@ -30,8 +29,6 @@ def assert_output(
     actual_result = _get_expected_for_output(actual_results, output_name)
     expected_result = _get_expected_for_output(expected_results, output_name)
 
-    columns_to_skip = []
-
     assert_dataframe_and_schema(
         actual_result,
         expected_result,
@@ -39,7 +36,6 @@ def assert_output(
         ignore_decimal_precision=True,
         ignore_nullability=True,
         ignore_decimal_scale=True,
-        columns_to_skip=columns_to_skip,
     )
 
 
