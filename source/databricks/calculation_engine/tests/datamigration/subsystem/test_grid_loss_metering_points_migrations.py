@@ -19,10 +19,7 @@ import pytest
 from helpers.data_frame_utils import set_column
 
 from package.calculation.input.schemas import grid_loss_metering_points_schema
-from package.infrastructure.paths import (
-    GRID_LOSS_METERING_POINTS_TABLE_NAME,
-    INPUT_DATABASE_NAME,
-)
+from package.infrastructure import paths
 
 
 def _create_df(spark: SparkSession) -> DataFrame:
@@ -53,7 +50,7 @@ def test__migrated_table_rejects_invalid_data(
     # Act
     with pytest.raises(Exception) as ex:
         invalid_df.write.format("delta").option("mergeSchema", "false").insertInto(
-            f"{INPUT_DATABASE_NAME}.{GRID_LOSS_METERING_POINTS_TABLE_NAME}",
+            f"{paths.InputDatabase.DATABASE_NAME}.{paths.InputDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME}",
             overwrite=False,
         )
 
@@ -82,7 +79,7 @@ def test__migrated_table_accepts_valid_data(
 
     # Act and assert: Expectation is that no exception is raised
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
-        f"{INPUT_DATABASE_NAME}.{GRID_LOSS_METERING_POINTS_TABLE_NAME}"
+        f"{paths.InputDatabase.DATABASE_NAME}.{paths.InputDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME}"
     )
 
 
@@ -93,9 +90,11 @@ def test__table__is_not_managed(spark: SparkSession, migrations_executed: None) 
     "To manage data life cycle independently of database, save data to a location that is not nested under any database locations."
     Thus we check whether the table is managed by comparing its location to the location of the database/schema.
     """
-    database_details = spark.sql(f"DESCRIBE DATABASE {INPUT_DATABASE_NAME}")
+    database_details = spark.sql(
+        f"DESCRIBE DATABASE {paths.InputDatabase.DATABASE_NAME}"
+    )
     table_details = spark.sql(
-        f"DESCRIBE DETAIL {INPUT_DATABASE_NAME}.{GRID_LOSS_METERING_POINTS_TABLE_NAME}"
+        f"DESCRIBE DETAIL {paths.InputDatabase.DATABASE_NAME}.{paths.InputDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME}"
     )
 
     database_location = database_details.where(

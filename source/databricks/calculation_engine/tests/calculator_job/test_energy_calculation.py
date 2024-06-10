@@ -163,9 +163,9 @@ def test__balance_fixing_result__has_expected_number_of_result_types(
 @pytest.mark.parametrize(
     "basis_data_table_name",
     [
-        paths.CALCULATIONS_TABLE_NAME,
-        paths.METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME,
-        paths.TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME,
+        paths.BasisDataDatabase.CALCULATIONS_TABLE_NAME,
+        paths.BasisDataDatabase.METERING_POINT_PERIODS_TABLE_NAME,
+        paths.BasisDataDatabase.TIME_SERIES_POINTS_TABLE_NAME,
     ],
 )
 def test__when_energy_calculation__basis_data_is_stored(
@@ -175,7 +175,7 @@ def test__when_energy_calculation__basis_data_is_stored(
 ) -> None:
     # Arrange
     actual = spark.read.table(
-        f"{paths.BASIS_DATA_DATABASE_NAME}.{basis_data_table_name}"
+        f"{paths.BasisDataDatabase.DATABASE_NAME}.{basis_data_table_name}"
     ).where(f.col("calculation_id") == c.executed_balance_fixing_calculation_id)
 
     # Act: Calculator job is executed just once per session.
@@ -201,23 +201,23 @@ def test__when_energy_calculation__basis_data_is_stored(
             True,
         ),
         (
-            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.METERING_POINT_PERIODS_VIEW_NAME_V1}",
             True,
         ),
         (
-            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.METERING_POINT_TIME_SERIES_VIEW_NAME_V1}",
             True,
         ),
         (
-            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.ENERGY_RESULT_POINTS_PER_GA_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.ENERGY_RESULT_POINTS_PER_GA_SETTLEMENT_REPORT_VIEW_NAME_V1}",
             True,
         ),
         (
-            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.ENERGY_RESULT_POINTS_PER_ES_GA_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.ENERGY_RESULT_POINTS_PER_ES_GA_SETTLEMENT_REPORT_VIEW_NAME_V1}",
             True,
         ),
         (
-            f"{paths.SETTLEMENT_REPORT_DATABASE_NAME}.{paths.CURRENT_BALANCE_FIXING_CALCULATION_VERSION_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.CURRENT_BALANCE_FIXING_CALCULATION_VERSION_VIEW_NAME_V1}",
             True,
         ),
     ],
