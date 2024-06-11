@@ -49,6 +49,7 @@ module "dbw" {
 #
 # Places Databricks secrets in internal key vault
 #
+
 module "kvs_databricks_workspace_id" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
 
@@ -75,16 +76,7 @@ module "kvs_databricks_dbw_workspace_token" {
 
 #
 # Places Databricks secrets in shared key vault so other subsystems can use data.
-# When Unity Catalogue is in place we should be able to remove these again.
 #
-
-module "kvs_shared_databricks_workspace_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
-
-  name         = "dbw-wholesale-workspace-id"
-  value        = module.dbw.id
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
 
 module "kvs_shared_databricks_workspace_url" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
