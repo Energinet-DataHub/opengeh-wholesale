@@ -102,7 +102,7 @@ def spark(
         .config("spark.sql.catalogImplementation", "hive")
         .config(
             "javax.jdo.option.ConnectionURL",
-            "jdbc:derby:;databaseName=metastore_db;create=true",
+            f"jdbc:derby:;databaseName={tests_path}/__metastore_db__;create=true",
         )
         .config(
             "javax.jdo.option.ConnectionDriverName",
