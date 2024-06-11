@@ -22,7 +22,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public static class SettlementReportEnergyResultRowFactory
 {
-    public static SettlementReportEnergyResultRow Create(DatabricksSqlRow databricksSqlRow, long version)
+    public static SettlementReportEnergyResultRow Create(DatabricksSqlRow databricksSqlRow, long version, bool isEnergySupplierIncluded)
     {
         var calculationType = databricksSqlRow[SettlementReportEnergyResultViewColumns.CalculationType];
         var gridArea = databricksSqlRow[SettlementReportEnergyResultViewColumns.GridArea];
@@ -31,7 +31,9 @@ public static class SettlementReportEnergyResultRowFactory
         var quantity = databricksSqlRow[SettlementReportEnergyResultViewColumns.Quantity];
         var meteringPointType = databricksSqlRow[SettlementReportEnergyResultViewColumns.MeteringPointType];
         var settlementMethod = databricksSqlRow[SettlementReportEnergyResultViewColumns.SettlementMethod];
-        var energySupplierId = databricksSqlRow[SettlementReportEnergyResultPerEnergySupplierViewColumns.EnergySupplier];
+        var energySupplierId = isEnergySupplierIncluded
+            ? databricksSqlRow[SettlementReportEnergyResultPerEnergySupplierViewColumns.EnergySupplier]
+            : null;
 
         return new SettlementReportEnergyResultRow(
             CalculationTypeMapper.FromDeltaTableValue(calculationType!),
