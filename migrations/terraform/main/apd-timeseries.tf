@@ -11,4 +11,6 @@ resource "azurerm_portal_dashboard" "timeseriesapi" {
       plan_services_id    = module.webapp_service_plan.id
       plan_services_name  = module.webapp_service_plan.name
   })
+
+  tags = local.tags
 }

@@ -10,6 +10,8 @@ resource "azurerm_eventhub_namespace" "this" {
       tags,
     ]
   }
+
+  tags = local.tags
 }
 
 resource "azurerm_key_vault_secret" "kvs_evhns_connection_string" {

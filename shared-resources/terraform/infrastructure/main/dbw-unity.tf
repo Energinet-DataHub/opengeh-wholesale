@@ -17,6 +17,8 @@ resource "azurerm_databricks_workspace" "this" {
       tags,
     ]
   }
+
+  tags = local.tags
 }
 
 # Wait for the workspace to create the access connector

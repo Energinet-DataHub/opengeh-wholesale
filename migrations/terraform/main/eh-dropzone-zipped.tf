@@ -8,6 +8,8 @@ resource "azurerm_eventhub_namespace" "eventhub_namespace_dropzone" {
   identity {
     type = "SystemAssigned"
   }
+
+  tags = local.tags
 }
 
 #---- Eventhub

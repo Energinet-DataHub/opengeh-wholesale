@@ -7,4 +7,6 @@ resource "azurerm_resource_group" "this" {
       tags,
     ]
   }
+
+  tags = local.tags
 }

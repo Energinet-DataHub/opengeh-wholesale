@@ -62,7 +62,7 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "this" {
       rule {
         rule_id = "932100"
         enabled = true
-        action = "Log"
+        action  = "Log"
       }
     }
   }
@@ -72,4 +72,6 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "this" {
     version = "1.0"
     action  = "Block"
   }
+
+  tags = local.tags
 }

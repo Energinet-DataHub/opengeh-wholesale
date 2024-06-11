@@ -13,4 +13,6 @@ resource "azurerm_portal_dashboard" "dropzoneunzipper" {
       plan_services_id      = module.func_service_plan.id
       plan_services_name    = module.func_service_plan.name
   })
+
+  tags = local.tags
 }

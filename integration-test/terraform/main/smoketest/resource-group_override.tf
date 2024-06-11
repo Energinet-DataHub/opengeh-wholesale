@@ -1,3 +1,3 @@
 resource "azurerm_resource_group" "this" {
-  tags     = { "project_name" = "tftest" }
+  tags = merge({ "project_name" = "tftest" }, local.tags)
 }

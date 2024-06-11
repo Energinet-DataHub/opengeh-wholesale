@@ -16,4 +16,9 @@ locals {
   LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_EDI  = "Information" # From opengeh-edi
   LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE = "Information" # From geh-core
   LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT                = "Information" # Everything else
+
+  tags = {
+    "BusinessServiceName"   = "Datahub",
+    "BusinessServiceNumber" = "BSN10136"
+  }
 }

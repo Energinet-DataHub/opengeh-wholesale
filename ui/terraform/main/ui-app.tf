@@ -12,6 +12,8 @@ resource "azurerm_static_site" "ui" {
       tags,
     ]
   }
+
+  tags = local.tags
 }
 
 module "kvs_stapp_ui_web_app_api_key" {

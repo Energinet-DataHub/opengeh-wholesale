@@ -11,6 +11,8 @@ resource "azurerm_mssql_server" "this" {
       tags,
     ]
   }
+
+  tags = local.tags
 }
 
 resource "random_password" "integration_mssql_administrator_login_password" {

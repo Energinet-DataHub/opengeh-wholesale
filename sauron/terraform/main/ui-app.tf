@@ -12,6 +12,8 @@ resource "azurerm_static_site" "this" {
       tags,
     ]
   }
+
+  tags = local.tags
 }
 
 resource "azurerm_static_site_custom_domain" "this" {

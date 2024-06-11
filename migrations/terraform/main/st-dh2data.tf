@@ -24,6 +24,8 @@ resource "azurerm_eventgrid_system_topic" "st_dh2data" {
   identity {
     type = "SystemAssigned"
   }
+
+  tags = local.tags
 }
 
 #---- Role assignments

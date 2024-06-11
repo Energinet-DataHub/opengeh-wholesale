@@ -7,6 +7,8 @@ resource "azurerm_dns_zone" "this" {
   lifecycle {
     prevent_destroy = true
   }
+
+  tags = local.tags
 }
 
 # If deleted the new DNS zone URLs will have to be changed with IT operations!

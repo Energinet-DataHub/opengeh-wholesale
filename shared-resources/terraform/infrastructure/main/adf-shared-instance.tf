@@ -13,6 +13,8 @@ resource "azurerm_data_factory" "this" {
       tags,
     ]
   }
+
+  tags = local.tags
 }
 
 module "kvs_azure_data_factory_id" {

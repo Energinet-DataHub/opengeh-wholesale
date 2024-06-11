@@ -12,6 +12,8 @@ resource "azurerm_storage_account" "this" {
       tags,
     ]
   }
+
+  tags = local.tags
 }
 
 #---- Roles

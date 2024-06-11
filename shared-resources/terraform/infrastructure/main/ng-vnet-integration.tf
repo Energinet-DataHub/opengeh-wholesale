@@ -9,6 +9,8 @@ resource "azurerm_public_ip_prefix" "vnet_integration_public_ip_prefix" {
       tags,
     ]
   }
+
+  tags = local.tags
 }
 
 resource "azurerm_nat_gateway" "nat_gateway" {
@@ -22,6 +24,8 @@ resource "azurerm_nat_gateway" "nat_gateway" {
       tags,
     ]
   }
+
+  tags = local.tags
 }
 
 resource "azurerm_nat_gateway_public_ip_prefix_association" "nat_gateway_public_ip_prefix_association" {

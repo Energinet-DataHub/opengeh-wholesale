@@ -9,6 +9,8 @@ resource "azurerm_data_factory" "this" {
   identity {
     type = "SystemAssigned"
   }
+
+  tags = local.tags
 }
 
 resource "azurerm_data_factory_pipeline" "this" {

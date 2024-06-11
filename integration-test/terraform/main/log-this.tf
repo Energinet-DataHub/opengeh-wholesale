@@ -10,6 +10,8 @@ resource "azurerm_log_analytics_workspace" "this" {
       tags,
     ]
   }
+
+  tags = local.tags
 }
 
 resource "azurerm_application_insights" "this" {
@@ -24,6 +26,8 @@ resource "azurerm_application_insights" "this" {
       tags,
     ]
   }
+
+  tags = local.tags
 }
 
 resource "azurerm_key_vault_secret" "kvs_log_workspace_id" {

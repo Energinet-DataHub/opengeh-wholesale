@@ -22,4 +22,6 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "waf_alert" {
     operator  = "GreaterThan"
     threshold = 0
   }
+
+  tags = local.tags
 }

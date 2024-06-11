@@ -4,4 +4,9 @@ locals {
   NAME_SUFFIX                             = "${lower(var.domain_name_short)}-${lower(var.environment_short)}-we-${lower(var.environment_instance)}"
   ip_restrictions_as_string               = join(",", [for rule in var.ip_restrictions : "${rule.ip_address}"])
   ENV_DESC                                = "${var.environment}_${var.environment_instance}"
+
+  tags = {
+    "BusinessServiceName"   = "Datahub",
+    "BusinessServiceNumber" = "BSN10136"
+  }
 }

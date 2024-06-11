@@ -5,4 +5,9 @@ locals {
   CONNECTION_STRING_DB_MIGRATIONS            = "Server=tcp:${data.azurerm_key_vault_secret.mssql_data_url.value},1433;Initial Catalog=${module.mssqldb_dh2_bridge.name};Persist Security Info=False;Authentication=Active Directory Default;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;"
   DH2BRIDGE_CERTIFICATE_THUMBPRINT           = "none"
   ip_restrictions_as_string                  = join(",", [for rule in var.ip_restrictions : "${rule.ip_address}"])
+
+  tags = {
+    "BusinessServiceName"   = "Datahub",
+    "BusinessServiceNumber" = "BSN10136"
+  }
 }

@@ -13,4 +13,6 @@ resource "azurerm_portal_dashboard" "timeseriessync" {
       sbns_shared_id      = data.azurerm_key_vault_secret.sb_domain_relay_namespace_id.value,
       sbns_shared_name    = data.azurerm_key_vault_secret.sb_domain_relay_namespace_name.value,
   })
+
+  tags = local.tags
 }

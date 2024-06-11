@@ -3,6 +3,8 @@ resource "azurerm_cdn_frontdoor_profile" "this" {
   name                = "afd-${local.resources_suffix}"
   resource_group_name = azurerm_resource_group.this.name
   sku_name            = "Premium_AzureFrontDoor"
+
+  tags = local.tags
 }
 
 # Add the WAF policy to the Front Door domains

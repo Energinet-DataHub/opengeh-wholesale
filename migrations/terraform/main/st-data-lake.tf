@@ -36,6 +36,8 @@ resource "azurerm_eventgrid_system_topic" "st_migrations" {
   identity {
     type = "SystemAssigned"
   }
+
+  tags = local.tags
 }
 
 

@@ -8,6 +8,8 @@ resource "azurerm_monitor_action_group" "esett_exchange" {
     email_address           = "it-dh-support@energinet.dk"
     use_common_alert_schema = true
   }
+
+  tags = local.tags
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "esett_exchange_aggregation_deadline_alert" {
@@ -49,8 +51,10 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "esett_exchange_aggreg
     threshold               = 1
   }
 
-  description    = "eSett Exchange alert for when no messages (aggregation) are sent before daily deadline."
-  enabled        = false
+  description = "eSett Exchange alert for when no messages (aggregation) are sent before daily deadline."
+  enabled     = false
+
+  tags = local.tags
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "esett_exchange_balancefixing_deadline_alert" {
@@ -92,6 +96,8 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "esett_exchange_balanc
     threshold               = 1
   }
 
-  description    = "eSett Exchange alert for when no messages (balance fixing) are sent before daily deadline."
-  enabled        = false
+  description = "eSett Exchange alert for when no messages (balance fixing) are sent before daily deadline."
+  enabled     = false
+
+  tags = local.tags
 }

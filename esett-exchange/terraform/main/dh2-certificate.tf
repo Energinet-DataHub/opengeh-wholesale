@@ -19,6 +19,8 @@ resource "azurerm_app_service_certificate" "esett_dh2_certificate_app" {
   location            = azurerm_resource_group.this.location
   pfx_blob            = data.azurerm_key_vault_secret.esett_dh2_certificate_secret.value
   app_service_plan_id = module.func_service_plan.id
+
+  tags = local.tags
 }
 
 module "esett_dh2_certificate_thumbprint" {

@@ -1,6 +1,8 @@
 resource "azurerm_resource_group" "this" {
   name     = "rg-${lower(var.domain_name_short)}-${lower(var.environment_short)}-we-${lower(var.environment_instance)}"
   location = "West Europe"
+
+  tags = local.tags
 }
 
 resource "azurerm_role_assignment" "omada_developer_teams" {

@@ -54,6 +54,8 @@ resource "azurerm_eventgrid_system_topic" "system_topic_dropzone_zipped" {
   identity {
     type = "SystemAssigned"
   }
+
+  tags = local.tags
 }
 
 #---- System topic event subscription for blob created events

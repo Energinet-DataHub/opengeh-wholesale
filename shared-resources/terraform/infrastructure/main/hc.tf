@@ -9,6 +9,8 @@ resource "azurerm_relay_namespace" "this" {
       tags,
     ]
   }
+
+  tags = local.tags
 }
 
 module "kvs_relay_name" {

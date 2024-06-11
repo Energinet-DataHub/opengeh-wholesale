@@ -9,6 +9,8 @@ resource "azurerm_databricks_workspace" "this" {
       tags,
     ]
   }
+
+  tags = local.tags
 }
 
 resource "databricks_sql_global_config" "sql_global_config_integration_test" {
