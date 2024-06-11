@@ -57,6 +57,7 @@ class TestWhenValidInput:
         result_row = energy_results_factories.create_row(
             observation_time=DEFAULT_OBSERVATION_TIME,
             energy_supplier_id="energy_supplier_id",
+            balance_responsible_id="balance_responsible_id",
             qualities=[QuantityQuality.CALCULATED],
         )
         result = energy_results_factories.create(spark, [result_row])
@@ -69,6 +70,7 @@ class TestWhenValidInput:
 
         grid_loss_responsible_row = grid_loss_responsible_factories.create_row(
             energy_supplier_id="energy_supplier_id",
+            balance_responsible_id="balance_responsible_id",
             metering_point_type=metering_point_type,
         )
         grid_loss_responsible = grid_loss_responsible_factories.create(
@@ -104,6 +106,7 @@ class TestWhenValidInput:
         result_row = energy_results_factories.create_row(
             observation_time=DEFAULT_OBSERVATION_TIME,
             energy_supplier_id="energy_supplier_id",
+            balance_responsible_id="balance_responsible_id",
             quantity=20,
         )
         result = energy_results_factories.create(spark, [result_row])
@@ -116,6 +119,7 @@ class TestWhenValidInput:
 
         grid_loss_responsible_row = grid_loss_responsible_factories.create_row(
             energy_supplier_id="energy_supplier_id",
+            balance_responsible_id="balance_responsible_id",
             metering_point_type=metering_point_type,
         )
         grid_loss_responsible = grid_loss_responsible_factories.create(
