@@ -33,7 +33,7 @@ def test__input_time_series_point_schema__matches_published_contract(
 
     # Assert
     actual_input_data = spark.read.table(
-        f"{paths.INPUT_DATABASE_NAME}.{paths.TIME_SERIES_POINTS_TABLE_NAME}"
+        f"{paths.InputDatabase.DATABASE_NAME}.{paths.InputDatabase.TIME_SERIES_POINTS_TABLE_NAME}"
     )
 
     # When asserting both that the calculator creates output, and it does it with input data that matches
@@ -50,7 +50,7 @@ def test__input_metering_point_period_schema__matches_published_contract(
 ) -> None:
     # Assert
     test_input_data = spark.read.table(
-        f"{paths.INPUT_DATABASE_NAME}.{paths.METERING_POINT_PERIODS_TABLE_NAME}"
+        f"{paths.InputDatabase.DATABASE_NAME}.{paths.InputDatabase.METERING_POINT_PERIODS_TABLE_NAME}"
     )
     _assert_is_equal(test_input_data.schema, metering_point_period_schema)
 
@@ -60,7 +60,7 @@ def test__input_charge_link_period_schema__matches_published_contract(
 ) -> None:
     # Assert
     test_input_data = spark.read.table(
-        f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_LINK_PERIODS_TABLE_NAME}"
+        f"{paths.InputDatabase.DATABASE_NAME}.{paths.InputDatabase.CHARGE_LINK_PERIODS_TABLE_NAME}"
     )
     _assert_is_equal(test_input_data.schema, charge_link_periods_schema)
 
@@ -70,7 +70,7 @@ def test__input_charge_price_points_schema__matches_published_contract(
 ) -> None:
     # Assert
     test_input_data = spark.read.table(
-        f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_PRICE_POINTS_TABLE_NAME}"
+        f"{paths.InputDatabase.DATABASE_NAME}.{paths.InputDatabase.CHARGE_PRICE_POINTS_TABLE_NAME}"
     )
     _assert_is_equal(test_input_data.schema, charge_price_points_schema)
 
@@ -80,7 +80,7 @@ def test__input_charge_master_data_periods_schema__matches_published_contract(
 ) -> None:
     # Assert
     test_input_data = spark.read.table(
-        f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}"
+        f"{paths.InputDatabase.DATABASE_NAME}.{paths.InputDatabase.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}"
     )
     _assert_is_equal(test_input_data.schema, charge_master_data_periods_schema)
 

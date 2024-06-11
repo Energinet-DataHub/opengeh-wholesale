@@ -22,7 +22,7 @@ import pyspark.sql.functions as f
 from package.calculation.input import TableReader
 from package.calculation.input.schemas import time_series_point_schema
 from package.constants import Colname
-from package.infrastructure import paths
+from package.infrastructure.paths import InputDatabase
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 
@@ -66,7 +66,7 @@ class TestWhenValidInput:
         # Arrange
         calculation_input_path = f"{str(tmp_path)}/{calculation_input_folder}"
         time_series_points_table_location = (
-            f"{calculation_input_path}/{paths.TIME_SERIES_POINTS_TABLE_NAME}"
+            f"{calculation_input_path}/{InputDatabase.TIME_SERIES_POINTS_TABLE_NAME}"
         )
         row = _create_time_series_point_row()
         df = spark.createDataFrame(data=[row], schema=time_series_point_schema)
@@ -74,7 +74,7 @@ class TestWhenValidInput:
             spark,
             df,
             "the_test_database",
-            paths.TIME_SERIES_POINTS_TABLE_NAME,
+            InputDatabase.TIME_SERIES_POINTS_TABLE_NAME,
             time_series_points_table_location,
             time_series_point_schema,
         )
