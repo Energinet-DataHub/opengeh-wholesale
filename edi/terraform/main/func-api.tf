@@ -58,15 +58,17 @@ locals {
     "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Core" = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE
 
     # FeatureManagement
-    FeatureManagement__UseMonthlyAmountPerChargeResultProduced = var.feature_management_use_monthly_amount_per_charge_result_produced
-    FeatureManagement__UseAmountPerChargeResultProduced        = var.feature_management_use_amount_per_charge_result_produced
-    FeatureManagement__UseRequestWholesaleSettlementReceiver   = var.feature_management_use_request_wholesale_settlement_receiver
-    FeatureManagement__UseMessageDelegation                    = var.feature_management_use_message_delegation
-    FeatureManagement__UsePeekMessages                         = var.feature_management_use_peek_messages
-    FeatureManagement__UseRequestMessages                      = var.feature_management_use_request_messages
-    FeatureManagement__UseEnergyResultProduced                 = var.feature_management_use_energy_result_produced
-    FeatureManagement__UseTotalMonthlyAmountResultProduced     = var.feature_management_use_total_monthly_amount_result_produced
-    FeatureManagement__UseCalculationCompletedEvent            = var.feature_management_use_calculation_completed_event
+    FeatureManagement__UseMonthlyAmountPerChargeResultProduced        = var.feature_management_use_monthly_amount_per_charge_result_produced
+    FeatureManagement__UseAmountPerChargeResultProduced               = var.feature_management_use_amount_per_charge_result_produced
+    FeatureManagement__UseRequestWholesaleSettlementReceiver          = var.feature_management_use_request_wholesale_settlement_receiver
+    FeatureManagement__UseMessageDelegation                           = var.feature_management_use_message_delegation
+    FeatureManagement__UsePeekMessages                                = var.feature_management_use_peek_messages
+    FeatureManagement__UseRequestMessages                             = var.feature_management_use_request_messages
+    FeatureManagement__UseEnergyResultProduced                        = var.feature_management_use_energy_result_produced
+    FeatureManagement__UseTotalMonthlyAmountResultProduced            = var.feature_management_use_total_monthly_amount_result_produced
+    FeatureManagement__UseCalculationCompletedEvent                   = var.feature_management_use_calculation_completed_event
+    FeatureManagement__UseCalculationCompletedEventForBalanceFixing   = var.feature_management_use_calculation_completed_event_for_balance_fixing
+    FeatureManagement__UseCalculationCompletedEventForWholesaleFixing = var.feature_management_use_calculation_completed_event_for_wholesale_fixing
 
     # Service Bus
     ServiceBus__ManageConnectionString = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-manage-connection-string)"
