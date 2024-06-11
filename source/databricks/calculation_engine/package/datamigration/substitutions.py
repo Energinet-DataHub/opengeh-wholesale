@@ -19,13 +19,13 @@ from .migration_script_args import MigrationScriptArgs
 def substitutions(migration_args: MigrationScriptArgs) -> dict[str, str]:
     return {
         "{CONTAINER_PATH}": migration_args.storage_container_path,
-        "{OUTPUT_DATABASE_NAME}": paths.OUTPUT_DATABASE_NAME,
-        "{INPUT_DATABASE_NAME}": paths.INPUT_DATABASE_NAME,
-        "{OUTPUT_FOLDER}": paths.OUTPUT_FOLDER,
+        "{OUTPUT_DATABASE_NAME}": paths.OutputDatabase.DATABASE_NAME,
+        "{INPUT_DATABASE_NAME}": paths.InputDatabase.DATABASE_NAME,
+        "{OUTPUT_FOLDER}": paths.OutputDatabase.FOLDER_NAME,
         "{INPUT_FOLDER}": migration_args.calculation_input_folder,
         "{TEST}": paths.TEST,
-        "{BASIS_DATA_FOLDER}": paths.BASIS_DATA_FOLDER,
-        "{BASIS_DATA_DATABASE_NAME}": paths.BASIS_DATA_DATABASE_NAME,
+        "{BASIS_DATA_FOLDER}": paths.BasisDataDatabase.FOLDER_NAME,
+        "{BASIS_DATA_DATABASE_NAME}": paths.BasisDataDatabase.DATABASE_NAME,
         "{CALCULATION_RESULTS_DATABASE_NAME}": paths.CalculationResultsPublicDataModel.DATABASE_NAME,
-        "{SETTLEMENT_REPORT_DATABASE_NAME}": paths.SETTLEMENT_REPORT_DATABASE_NAME,
+        "{SETTLEMENT_REPORT_DATABASE_NAME}": paths.SettlementReportPublicDataModel.DATABASE_NAME,
     }
