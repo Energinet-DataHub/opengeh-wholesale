@@ -50,7 +50,7 @@ public sealed class SettlementReportWholesaleResultQueries : ISettlementReportWh
             return SqlResultValueConverters.ToInt(rawValue)!.Value;
         }
 
-        return 0;
+        throw new InvalidOperationException("Could not count result for SettlementReportWholesaleResultQueries.");
     }
 
     public async IAsyncEnumerable<SettlementReportWholesaleResultRow> GetAsync(SettlementReportWholesaleResultQueryFilter filter, int skip, int take)
@@ -60,7 +60,7 @@ public sealed class SettlementReportWholesaleResultQueries : ISettlementReportWh
 
         await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {
-            yield return SettlementReportWholesaleResultRowFactory.Create(new DatabricksSqlRow(nextRow), calculation.Version);
+            yield return SettlementReportWholesaleResultRowFactory.Create(new DatabricksSqlRow(nextRow), calculation?.Version ?? 1);
         }
     }
 }
