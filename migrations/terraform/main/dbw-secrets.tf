@@ -72,3 +72,10 @@ resource "databricks_secret" "location" {
   string_value = azurerm_resource_group.this.location
   scope        = databricks_secret_scope.migration_scope.id
 }
+
+resource "databricks_secret" "dbw_catalog_name" {
+  provider     = databricks.dbw
+  key          = "dbw_catalog_name"
+  string_value = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
+  scope        = databricks_secret_scope.migration_scope.id
+}

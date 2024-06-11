@@ -3,6 +3,7 @@ resource "databricks_cluster" "shared_all_purpose" {
   cluster_name            = "Shared all-purpose"
   spark_version           = local.databricks_runtime_version
   node_type_id            = "Standard_DS5_v2"
+  data_security_mode      = "USER_ISOLATION"
   autotermination_minutes = 15
   num_workers             = 1
   spark_conf = {
@@ -24,12 +25,14 @@ resource "databricks_cluster" "shared_all_purpose" {
     "spark.databricks.delta.preview.enabled" : true
     "spark.databricks.io.cache.enabled" : true
     "spark.master" : "local[*, 4]"
+    "spark.databricks.sql.initial.catalog.name" : data.azurerm_key_vault_secret.shared_unity_catalog_name.value
   }
   spark_env_vars = {
     "APPI_INSTRUMENTATION_KEY"        = databricks_secret.appi_instrumentation_key.config_reference
     "LANDING_STORAGE_ACCOUNT"         = module.st_dh2data.name
     "DATALAKE_STORAGE_ACCOUNT"        = module.st_migrations.name
     "DATALAKE_SHARED_STORAGE_ACCOUNT" = data.azurerm_key_vault_secret.st_data_lake_name.value
+    "CATALOG_NAME"                    = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
   }
 }
 

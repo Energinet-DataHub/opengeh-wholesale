@@ -33,3 +33,9 @@ output "dbw_workspace_sql_endpoint_id" {
   value       = resource.databricks_sql_endpoint.migration_sql_endpoint.id
   sensitive   = true
 }
+
+output dbw_catalog_name {
+  description = "Databricks unity catalog name."
+  value       = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
+  sensitive   = true
+}
