@@ -35,12 +35,12 @@ public static class SettlementReportEnergyResultPerEnergySupplierRowFactory
 
         return new SettlementReportEnergyResultRow(
             CalculationTypeMapper.FromDeltaTableValue(calculationType!),
-            SqlResultValueConverters.ToInstant(startTime!)!.Value,
+            SqlResultValueConverters.ToInstant(startTime)!.Value,
             gridArea!,
             energySupplierId,
             ResolutionMapper.FromDeltaTableValue(resolution!),
-            MeteringPointTypeMapper.FromDeltaTableValue(meteringPointType!)!,
-            SettlementMethodMapper.FromDeltaTableValue(settlementMethod!)!,
+            MeteringPointTypeMapper.FromDeltaTableValue(meteringPointType)!,
+            SettlementMethodMapper.FromDeltaTableValue(settlementMethod)!,
             SqlResultValueConverters.ToDecimal(quantity)!.Value);
     }
 }

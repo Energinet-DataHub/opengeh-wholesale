@@ -52,20 +52,29 @@ public sealed class SettlementReportEnergyResultQueries : ISettlementReportEnerg
 
     public IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportEnergyResultQueryFilter filter, int skip, int take)
     {
-        return InternalGetAsync(filter.CalculationId, new SettlementReportEnergyResultQueryStatement(_deltaTableOptions, filter, skip, take));
+        return InternalGetAsync(
+            filter.CalculationId,
+            new SettlementReportEnergyResultQueryStatement(_deltaTableOptions, filter, skip, take),
+            SettlementReportEnergyResultRowFactory.Create);
     }
 
     public IAsyncEnumerable<SettlementReportEnergyResultRow> GetAsync(SettlementReportEnergyResultPerEnergySupplierQueryFilter filter, int skip, int take)
     {
-        return InternalGetAsync(filter.CalculationId, new SettlementReportEnergyResultPerEnergySupplierQueryStatement(_deltaTableOptions, filter, skip, take));
+        return InternalGetAsync(
+            filter.CalculationId,
+            new SettlementReportEnergyResultPerEnergySupplierQueryStatement(_deltaTableOptions, filter, skip, take),
+            SettlementReportEnergyResultPerEnergySupplierRowFactory.Create);
     }
 
-    private async IAsyncEnumerable<SettlementReportEnergyResultRow> InternalGetAsync(Guid calculationId, DatabricksStatement statement)
+    private async IAsyncEnumerable<SettlementReportEnergyResultRow> InternalGetAsync(
+        Guid calculationId,
+        DatabricksStatement statement,
+        Func<DatabricksSqlRow, long, SettlementReportEnergyResultRow> rowFactory)
     {
         // var calculation = await _calculationsClient.GetAsync(calculationId).ConfigureAwait(false);
         await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {
-            yield return SettlementReportEnergyResultRowFactory.Create(new DatabricksSqlRow(nextRow), 1);
+            yield return rowFactory(new DatabricksSqlRow(nextRow), 1);
         }
     }
 
