@@ -73,7 +73,7 @@ module "func_orchestrationsdf" {
 
     # Databricks
     WorkspaceToken = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-workspace-token)"
-    WorkspaceUrl   = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-workspace-url)"
+    WorkspaceUrl   = "https://${module.dbw.workspace_url}"
     WarehouseId    = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-databricks-sql-endpoint-id)"
 
     # Database
