@@ -66,6 +66,18 @@ public sealed class ChargeLinkPeriodsFileGenerator : ISettlementReportFileGenera
                     MeteringPointType.Consumption => "E17",
                     MeteringPointType.Production => "E18",
                     MeteringPointType.Exchange => "E20",
+                    MeteringPointType.VeProduction => "D01",
+                    MeteringPointType.NetProduction => "D05",
+                    MeteringPointType.SupplyToGrid => "D06",
+                    MeteringPointType.ConsumptionFromGrid => "D07",
+                    MeteringPointType.WholesaleServicesInformation => "D08",
+                    MeteringPointType.OwnProduction => "D09",
+                    MeteringPointType.NetFromGrid => "D10",
+                    MeteringPointType.NetToGrid => "D11",
+                    MeteringPointType.TotalConsumption => "D12",
+                    MeteringPointType.ElectricalHeating => "D14",
+                    MeteringPointType.NetConsumption => "D15",
+                    MeteringPointType.EffectSettlement => "D19",
                     _ => throw new ArgumentOutOfRangeException(nameof(row)),
                 });
 
