@@ -62,7 +62,7 @@ module "kvs_databricks_workspace_url" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
 
   name         = "dbw-workspace-url"
-  value        = module.dbw.workspace_url
+  value        = "https://${module.dbw.workspace_url}"
   key_vault_id = module.kv_internal.id
 }
 
@@ -82,7 +82,7 @@ module "kvs_shared_databricks_workspace_url" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
 
   name         = "dbw-wholesale-workspace-url"
-  value        = module.dbw.workspace_url
+  value        = "https://${module.dbw.workspace_url}"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
