@@ -14,11 +14,8 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
+namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
 
-public interface ISettlementReportFromFilesHandler
-{
-    Task<GeneratedSettlementReportDto> CombineAsync(
-        SettlementReportRequestId requestId,
-        IReadOnlyCollection<GeneratedSettlementReportFileDto> generatedFiles);
-}
+public sealed record GatherSettlementReportFilesInput(
+    SettlementReportRequestId RequestId,
+    IReadOnlyCollection<GeneratedSettlementReportFileDto> GeneratedFiles);
