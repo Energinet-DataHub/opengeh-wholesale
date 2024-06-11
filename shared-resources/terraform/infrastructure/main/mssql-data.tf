@@ -1,5 +1,5 @@
 module "mssql_data_additional" { # Needs to be a named like this or it would delete all databases
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-server?ref=14.16.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-server?ref=14.18.0"
 
   project_name         = var.domain_name_short
   environment_short    = var.environment_short
@@ -7,11 +7,10 @@ module "mssql_data_additional" { # Needs to be a named like this or it would del
   sql_version          = "12.0"
   resource_group_name  = azurerm_resource_group.this.name
   location             = azurerm_resource_group.this.location
-  # Commented out due to a broken state where we cannot deploy
-  # monitor_action_group = {
-  #   name                = module.ag_primary.name
-  #   resource_group_name = azurerm_resource_group.this.name
-  # }
+  monitor_action_group = {
+    id                  = module.ag_primary.id
+    resource_group_name = azurerm_resource_group.this.name
+  }
 
   ad_group_directory_reader = var.ad_group_directory_reader
 
