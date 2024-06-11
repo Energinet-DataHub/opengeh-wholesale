@@ -19,10 +19,7 @@ from package.calculation.calculation_results import (
     EnergyResultsContainer,
 )
 from package.infrastructure import logging_configuration
-from package.infrastructure.paths import (
-    OUTPUT_DATABASE_NAME,
-    ENERGY_RESULT_TABLE_NAME,
-)
+from package.infrastructure import paths
 
 
 @logging_configuration.use_span("calculation.write.energy")
@@ -40,4 +37,6 @@ def _write(name: str, df: DataFrame) -> None:
             return None
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
-        ).insertInto(f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}")
+        ).insertInto(
+            f"{paths.OutputDatabase.DATABASE_NAME}.{paths.OutputDatabase.ENERGY_RESULT_TABLE_NAME}"
+        )
