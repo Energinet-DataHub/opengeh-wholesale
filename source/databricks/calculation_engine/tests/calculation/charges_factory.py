@@ -14,14 +14,13 @@
 
 from datetime import datetime
 from decimal import Decimal
+
 from pyspark.sql import Row, SparkSession
 
+import package.codelists as e
 from package.calculation.preparation.data_structures.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
     charge_link_metering_point_periods_schema,
-)
-from tests.calculation.preparation.transformations import (
-    prepared_metering_point_time_series_factory,
 )
 from package.calculation.preparation.data_structures.charge_master_data import (
     ChargeMasterData,
@@ -33,8 +32,9 @@ from package.calculation.preparation.data_structures.charge_prices import (
 )
 from package.codelists import ChargeType
 from package.constants import Colname
-
-import package.codelists as e
+from tests.calculation.preparation.transformations import (
+    prepared_metering_point_time_series_factory,
+)
 
 
 class DefaultValues:
@@ -142,7 +142,7 @@ def create_charge_link_metering_point_periods_row(
         Colname.settlement_method: (
             settlement_method.value if settlement_method else None
         ),
-        Colname.grid_area: grid_area,
+        Colname.grid_area_code: grid_area,
         Colname.energy_supplier_id: energy_supplier_id,
     }
 

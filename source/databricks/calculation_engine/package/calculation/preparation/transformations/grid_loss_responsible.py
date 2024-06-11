@@ -19,10 +19,10 @@ defined in the geh_stream directory in our tests.
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
 
+from package.calculation.input import TableReader
 from package.calculation.preparation.data_structures.grid_loss_responsible import (
     GridLossResponsible,
 )
-from package.calculation.input import TableReader
 from package.codelists import MeteringPointType
 from package.constants import Colname
 
@@ -41,7 +41,7 @@ def get_grid_loss_responsible(
         )
         .select(
             col(Colname.metering_point_id),
-            col(Colname.grid_area),
+            col(Colname.grid_area_code),
             col(Colname.from_date),
             col(Colname.to_date),
             col(Colname.metering_point_type),
@@ -59,7 +59,7 @@ def _throw_if_no_grid_loss_responsible(
 ) -> None:
     for grid_area in grid_areas:
         current_grid_loss_metering_points = grid_loss_responsible_df.filter(
-            col(Colname.grid_area) == grid_area
+            col(Colname.grid_area_code) == grid_area
         )
         if (
             current_grid_loss_metering_points.filter(

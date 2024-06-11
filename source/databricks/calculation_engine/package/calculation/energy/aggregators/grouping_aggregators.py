@@ -21,7 +21,7 @@ from package.constants import Colname
 
 def aggregate_per_ga_and_es(df: EnergyResults) -> EnergyResults:
     group_by = [
-        Colname.grid_area,
+        Colname.grid_area_code,
         Colname.energy_supplier_id,
         Colname.observation_time,
     ]
@@ -30,7 +30,7 @@ def aggregate_per_ga_and_es(df: EnergyResults) -> EnergyResults:
 
 
 def aggregate_per_ga(df: EnergyResults) -> EnergyResults:
-    group_by = [Colname.grid_area, Colname.observation_time]
+    group_by = [Colname.grid_area_code, Colname.observation_time]
     result = aggregate_sum_quantity_and_qualities(df.df, group_by)
     return EnergyResults(result)
 
@@ -38,7 +38,7 @@ def aggregate_per_ga(df: EnergyResults) -> EnergyResults:
 def aggregate_per_ga_and_brp(df: EnergyResults) -> EnergyResults:
     """Function to aggregate sum per grid area and balance responsible party."""
     group_by = [
-        Colname.grid_area,
+        Colname.grid_area_code,
         Colname.balance_responsible_id,
         Colname.observation_time,
     ]

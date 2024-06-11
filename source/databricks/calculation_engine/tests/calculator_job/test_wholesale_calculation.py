@@ -56,11 +56,19 @@ ENERGY_RESULT_TYPES = {
     ),
     (
         TimeSeriesType.PRODUCTION.value,
+        AggregationLevel.ES_PER_BRP_PER_GA.value,
+    ),
+    (
+        TimeSeriesType.PRODUCTION.value,
         AggregationLevel.TOTAL_GA.value,
     ),
     (
         TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
         AggregationLevel.ES_PER_GA.value,
+    ),
+    (
+        TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
+        AggregationLevel.ES_PER_BRP_PER_GA.value,
     ),
     (
         TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
@@ -69,6 +77,10 @@ ENERGY_RESULT_TYPES = {
     (
         TimeSeriesType.FLEX_CONSUMPTION.value,
         AggregationLevel.ES_PER_GA.value,
+    ),
+    (
+        TimeSeriesType.FLEX_CONSUMPTION.value,
+        AggregationLevel.ES_PER_BRP_PER_GA.value,
     ),
     (
         TimeSeriesType.FLEX_CONSUMPTION.value,
@@ -257,9 +269,22 @@ def test__total_monthly_amounts__are_stored(
     assert wholesale_fixing_total_monthly_amounts.count() > 0
 
 
+def test__monthly_amounts__are_stored(
+    spark: SparkSession,
+    wholesale_fixing_monthly_amounts: DataFrame,
+) -> None:
+    # Arrange
+
+    # Act: Calculator job is executed just once per session.
+    #      See the fixtures `results_df` and `executed_wholesale_fixing`
+
+    # Assert: The result is created if there are rows
+    assert wholesale_fixing_monthly_amounts.count() > 0
+
+
 @pytest.mark.parametrize(
     "basis_data_table_name",
-    paths.BASIS_DATA_TABLE_NAMES,
+    paths.BasisDataDatabase.TABLE_NAMES,
 )
 def test__when_wholesale_calculation__basis_data_is_stored(
     spark: SparkSession,
@@ -268,7 +293,7 @@ def test__when_wholesale_calculation__basis_data_is_stored(
 ) -> None:
     # Arrange
     actual = spark.read.table(
-        f"{paths.BASIS_DATA_DATABASE_NAME}.{basis_data_table_name}"
+        f"{paths.BasisDataDatabase.DATABASE_NAME}.{basis_data_table_name}"
     ).where(f.col("calculation_id") == c.executed_wholesale_calculation_id)
 
     # Act: Calculator job is executed just once per session.
@@ -282,21 +307,27 @@ def test__when_wholesale_calculation__basis_data_is_stored(
     "basis_data_table_name, expected_schema",
     [
         (
-            paths.METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME,
+            paths.BasisDataDatabase.METERING_POINT_PERIODS_TABLE_NAME,
             metering_point_period_schema,
         ),
         (
-            paths.TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME,
+            paths.BasisDataDatabase.TIME_SERIES_POINTS_TABLE_NAME,
             time_series_point_schema,
         ),
-        (paths.CHARGE_LINK_PERIODS_BASIS_DATA_TABLE_NAME, charge_link_periods_schema),
         (
-            paths.CHARGE_MASTER_DATA_PERIODS_BASIS_DATA_TABLE_NAME,
+            paths.BasisDataDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
+            charge_link_periods_schema,
+        ),
+        (
+            paths.BasisDataDatabase.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME,
             charge_price_information_periods_schema,
         ),
-        (paths.CHARGE_PRICE_POINTS_BASIS_DATA_TABLE_NAME, charge_price_points_schema),
         (
-            paths.GRID_LOSS_METERING_POINTS_BASIS_DATA_TABLE_NAME,
+            paths.BasisDataDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
+            charge_price_points_schema,
+        ),
+        (
+            paths.BasisDataDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
             grid_loss_metering_points_schema,
         ),
     ],
@@ -309,7 +340,7 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
 ) -> None:
     # Arrange
     actual = spark.read.table(
-        f"{paths.BASIS_DATA_DATABASE_NAME}.{basis_data_table_name}"
+        f"{paths.BasisDataDatabase.DATABASE_NAME}.{basis_data_table_name}"
     )
 
     # Act: Calculator job is executed just once per session.
@@ -323,9 +354,53 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
     "view_name, has_data",
     [
         (
-            f"{paths.EdiResults.DATABASE_NAME}.energy_result_points_per_ga_v1",
+            f"{paths.CalculationResultsPublicDataModel.DATABASE_NAME}.{paths.CalculationResultsPublicDataModel.ENERGY_RESULT_POINTS_PER_GA_V1_VIEW_NAME}",
             True,
-        )
+        ),
+        (
+            f"{paths.CalculationResultsPublicDataModel.DATABASE_NAME}.{paths.CalculationResultsPublicDataModel.ENERGY_RESULT_POINTS_PER_BRP_GA_V1_VIEW_NAME}",
+            False,
+        ),
+        (
+            f"{paths.CalculationResultsPublicDataModel.DATABASE_NAME}.{paths.CalculationResultsPublicDataModel.ENERGY_RESULT_POINTS_PER_ES_BRP_GA_V1_VIEW_NAME}",
+            True,
+        ),
+        (
+            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.METERING_POINT_PERIODS_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.METERING_POINT_TIME_SERIES_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.CHARGE_PRICES_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.CHARGE_LINK_PERIODS_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.ENERGY_RESULT_POINTS_PER_GA_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.ENERGY_RESULT_POINTS_PER_ES_GA_SETTLEMENT_REPORT_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.WHOLESALE_RESULTS_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.CURRENT_BALANCE_FIXING_CALCULATION_VERSION_VIEW_NAME_V1}",
+            True,
+        ),
+        (
+            f"{paths.SettlementReportPublicDataModel.DATABASE_NAME}.{paths.SettlementReportPublicDataModel.MONTHLY_AMOUNTS_VIEW_NAME_V1}",
+            True,
+        ),
     ],
 )
 def test__when_wholesale_fixing__view_has_data_if_expected(

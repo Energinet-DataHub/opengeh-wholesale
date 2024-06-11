@@ -41,7 +41,7 @@ def create_row(
 ) -> Row:
     row = {
         Colname.metering_point_id: metering_point_id,
-        Colname.grid_area: grid_area,
+        Colname.grid_area_code: grid_area,
         Colname.from_date: from_date,
         Colname.to_date: to_date,
         Colname.metering_point_type: metering_point_type.value,

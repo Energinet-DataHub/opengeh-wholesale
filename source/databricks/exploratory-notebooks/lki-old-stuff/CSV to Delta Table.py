@@ -16,6 +16,7 @@
 
 # COMMAND ----------
 
+from pyspark.sql.functions import year, month, dayofmonth, col
 from pyspark.sql.types import (
     DecimalType,
     StructType,
@@ -24,7 +25,6 @@ from pyspark.sql.types import (
     TimestampType,
     BooleanType,
 )
-from pyspark.sql.functions import year, month, dayofmonth, col
 
 storage_account_name = (
     "datasharedresendku"  # this must be changed to your storage account name
@@ -80,7 +80,7 @@ class Colname:
     end_datetime = "end_datetime"
     energy_supplier_id = "energy_supplier_id"
     from_date = "from_date"
-    grid_area = "grid_area"
+    grid_area_code = "grid_area_code"
     grid_loss = "grid_loss"
     in_grid_area = "in_grid_area"
     is_grid_loss = "is_grid_loss"
@@ -166,7 +166,7 @@ mp_schema = StructType(
         StructField(Colname.metering_point_id, StringType(), False),
         StructField(Colname.metering_point_type, StringType(), False),
         StructField(Colname.settlement_method, StringType()),
-        StructField(Colname.grid_area, StringType(), False),
+        StructField(Colname.grid_area_code, StringType(), False),
         StructField(Colname.connection_state, StringType(), False),
         StructField(Colname.resolution, StringType(), False),
         StructField(Colname.in_grid_area, StringType()),
@@ -325,7 +325,7 @@ esbrp_schema = StructType(
     [
         StructField(Colname.energy_supplier_id, StringType(), False),
         StructField(Colname.balance_responsible_id, StringType(), False),
-        StructField(Colname.grid_area, StringType(), False),
+        StructField(Colname.grid_area_code, StringType(), False),
         StructField(Colname.metering_point_type, StringType(), False),
         StructField(Colname.from_date, TimestampType(), False),
         StructField(Colname.to_date, TimestampType(), False),
@@ -355,7 +355,7 @@ grsc_delta_path = f"{data_lake_path}/master-data/grid-loss-system-correction"
 grsc_schema = StructType(
     [
         StructField(Colname.metering_point_id, StringType(), False),
-        StructField(Colname.grid_area, StringType(), False),
+        StructField(Colname.grid_area_code, StringType(), False),
         StructField(Colname.energy_supplier_id, StringType(), False),
         StructField(Colname.is_grid_loss, BooleanType(), False),
         StructField(Colname.is_system_correction, BooleanType(), False),

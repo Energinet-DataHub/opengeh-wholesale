@@ -14,7 +14,7 @@
 from pyspark.sql import DataFrame, SparkSession
 
 from package.common import assert_schema
-from package.infrastructure import paths
+from package.infrastructure.paths import InputDatabase, BasisDataDatabase
 from .schemas import (
     charge_link_periods_schema,
     charge_master_data_periods_schema,
@@ -38,14 +38,15 @@ class TableReader:
         self._spark = spark
         self._calculation_input_path = calculation_input_path
         self._time_series_points_table_name = (
-            time_series_points_table_name or paths.TIME_SERIES_POINTS_TABLE_NAME
+            time_series_points_table_name or InputDatabase.TIME_SERIES_POINTS_TABLE_NAME
         )
         self._metering_point_periods_table_name = (
-            metering_point_periods_table_name or paths.METERING_POINT_PERIODS_TABLE_NAME
+            metering_point_periods_table_name
+            or InputDatabase.METERING_POINT_PERIODS_TABLE_NAME
         )
         self._grid_loss_metering_points_table_name = (
             grid_loss_metering_points_table_name
-            or paths.GRID_LOSS_METERING_POINTS_TABLE_NAME
+            or InputDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME
         )
 
     def read_metering_point_periods(
@@ -74,7 +75,7 @@ class TableReader:
         return df
 
     def read_charge_link_periods(self) -> DataFrame:
-        path = f"{self._calculation_input_path}/{paths.CHARGE_LINK_PERIODS_TABLE_NAME}"
+        path = f"{self._calculation_input_path}/{InputDatabase.CHARGE_LINK_PERIODS_TABLE_NAME}"
         df = self._spark.read.format("delta").load(path)
 
         assert_schema(df.schema, charge_link_periods_schema)
@@ -82,7 +83,7 @@ class TableReader:
         return df
 
     def read_charge_master_data_periods(self) -> DataFrame:
-        path = f"{self._calculation_input_path}/{paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}"
+        path = f"{self._calculation_input_path}/{InputDatabase.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}"
         df = self._spark.read.format("delta").load(path)
 
         assert_schema(df.schema, charge_master_data_periods_schema)
@@ -92,7 +93,7 @@ class TableReader:
     def read_charge_price_points(
         self,
     ) -> DataFrame:
-        path = f"{self._calculation_input_path}/{paths.CHARGE_PRICE_POINTS_TABLE_NAME}"
+        path = f"{self._calculation_input_path}/{InputDatabase.CHARGE_PRICE_POINTS_TABLE_NAME}"
         df = self._spark.read.format("delta").load(path)
 
         assert_schema(df.schema, charge_price_points_schema)
@@ -108,7 +109,7 @@ class TableReader:
         return df
 
     def read_calculations(self) -> DataFrame:
-        table_name = f"{paths.BASIS_DATA_DATABASE_NAME}.{paths.CALCULATIONS_TABLE_NAME}"
+        table_name = f"{BasisDataDatabase.DATABASE_NAME}.{BasisDataDatabase.CALCULATIONS_TABLE_NAME}"
         df = self._spark.read.format("delta").table(table_name)
 
         assert_schema(df.schema, calculations_schema)

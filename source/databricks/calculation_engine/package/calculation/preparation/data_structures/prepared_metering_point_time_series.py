@@ -41,9 +41,9 @@ class PreparedMeteringPointTimeSeries(DataFrameWrapper):
 # See comments to the `assert_schema()` invocation.
 prepared_metering_point_time_series_schema = t.StructType(
     [
-        t.StructField(Colname.grid_area, t.StringType(), False),
-        t.StructField(Colname.to_grid_area, t.StringType(), True),
-        t.StructField(Colname.from_grid_area, t.StringType(), True),
+        t.StructField(Colname.grid_area_code, t.StringType(), False),
+        t.StructField(Colname.to_grid_area_code, t.StringType(), True),
+        t.StructField(Colname.from_grid_area_code, t.StringType(), True),
         t.StructField(Colname.metering_point_id, t.StringType(), False),
         t.StructField(Colname.metering_point_type, t.StringType(), False),
         t.StructField(Colname.resolution, t.StringType(), False),

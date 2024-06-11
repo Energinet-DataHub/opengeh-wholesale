@@ -70,7 +70,7 @@ def create_row(
         Colname.metering_point_type: metering_point_type.value,
         Colname.settlement_method: settlement_method.value,
         Colname.metering_point_id: metering_point_id,
-        Colname.grid_area: grid_area,
+        Colname.grid_area_code: grid_area,
         Colname.energy_supplier_id: energy_supplier_id,
         Colname.resolution: WholesaleResultResolution.DAY.value,
     }

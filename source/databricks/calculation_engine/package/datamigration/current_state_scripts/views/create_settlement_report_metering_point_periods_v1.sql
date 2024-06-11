@@ -1,6 +1,7 @@
 CREATE VIEW IF NOT EXISTS {SETTLEMENT_REPORT_DATABASE_NAME}.metering_point_periods_v1 AS
 SELECT c.calculation_id,
        c.calculation_type,
+       c.version as calculation_version,
        m.metering_point_id,
        m.from_date,
        m.to_date,
@@ -12,4 +13,5 @@ SELECT c.calculation_id,
        m.energy_supplier_id
 FROM {BASIS_DATA_DATABASE_NAME}.metering_point_periods as m
 INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = m.calculation_id
+WHERE c.calculation_type IN ('BalanceFixing', 'WholesaleFixing', 'FirstCorrectionSettlement', 'SecondCorrectionSettlement', 'ThirdCorrectionSettlement')
 

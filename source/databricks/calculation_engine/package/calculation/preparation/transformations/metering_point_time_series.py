@@ -12,20 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
+from pyspark.sql import DataFrame
 from pyspark.sql.types import DecimalType
 
-from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
-    PreparedMeteringPointTimeSeries,
-)
-from package.constants import Colname
-from package.codelists import MeteringPointResolution, QuantityQuality
-from package.common import assert_schema
 from package.calculation.input.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
 )
+from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
+    PreparedMeteringPointTimeSeries,
+)
+from package.codelists import MeteringPointResolution, QuantityQuality
+from package.common import assert_schema
+from package.constants import Colname
 
 
 def get_metering_point_time_series(
@@ -58,7 +58,7 @@ def get_metering_point_time_series(
             Colname.metering_point_id,
             Colname.metering_point_type,
             Colname.resolution,
-            Colname.grid_area,
+            Colname.grid_area_code,
             Colname.from_date,
             Colname.to_date,
         )
@@ -71,7 +71,7 @@ def get_metering_point_time_series(
         )
         .select(
             Colname.metering_point_id,
-            Colname.grid_area,
+            Colname.grid_area_code,
             Colname.metering_point_type,
             Colname.resolution,
             f.explode("quarter_times").alias(Colname.observation_time),
@@ -83,7 +83,7 @@ def get_metering_point_time_series(
             Colname.metering_point_id,
             Colname.metering_point_type,
             Colname.resolution,
-            Colname.grid_area,
+            Colname.grid_area_code,
             Colname.from_date,
             Colname.to_date,
         )
@@ -96,7 +96,7 @@ def get_metering_point_time_series(
         )
         .select(
             Colname.metering_point_id,
-            Colname.grid_area,
+            Colname.grid_area_code,
             Colname.metering_point_type,
             Colname.resolution,
             f.explode("times").alias(Colname.observation_time),
@@ -119,7 +119,7 @@ def get_metering_point_time_series(
         .select(
             Colname.metering_point_id,
             Colname.observation_time,
-            Colname.grid_area,
+            Colname.grid_area_code,
             Colname.metering_point_type,
             Colname.resolution,
             f.coalesce(Colname.quantity, f.lit(0)).alias(Colname.quantity),
@@ -152,9 +152,9 @@ def get_metering_point_time_series(
             "left",
         )
         .select(
-            new_points_for_each_metering_point_df[Colname.grid_area],
-            Colname.to_grid_area,
-            Colname.from_grid_area,
+            new_points_for_each_metering_point_df[Colname.grid_area_code],
+            Colname.to_grid_area_code,
+            Colname.from_grid_area_code,
             new_points_for_each_metering_point_df[Colname.metering_point_id],
             new_points_for_each_metering_point_df[Colname.metering_point_type],
             new_points_for_each_metering_point_df[Colname.resolution],

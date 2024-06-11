@@ -50,10 +50,14 @@ def get_metering_point_periods_basis_data(
         f.col(Colname.settlement_method).alias(
             MeteringPointPeriodColname.settlement_method
         ),
-        f.col(Colname.grid_area).alias(MeteringPointPeriodColname.grid_area),
+        f.col(Colname.grid_area_code).alias(MeteringPointPeriodColname.grid_area_code),
         f.col(Colname.resolution).alias(MeteringPointPeriodColname.resolution),
-        f.col(Colname.from_grid_area).alias(MeteringPointPeriodColname.from_grid_area),
-        f.col(Colname.to_grid_area).alias(MeteringPointPeriodColname.to_grid_area),
+        f.col(Colname.from_grid_area_code).alias(
+            MeteringPointPeriodColname.from_grid_area_code
+        ),
+        f.col(Colname.to_grid_area_code).alias(
+            MeteringPointPeriodColname.to_grid_area_code
+        ),
         f.col(Colname.parent_metering_point_id).alias(
             MeteringPointPeriodColname.parent_metering_point_id
         ),

@@ -77,20 +77,17 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
             CalculationType.BalanceFixing,
             false,
             new SettlementReportRequestFilterDto(
-                [new CalculationFilterDto("404F04A8-08A4-411E-9D69-358ADF88A2C7", "042")],
+                new Dictionary<string, CalculationId>
+                {
+                    { "042", new CalculationId(Guid.Parse("404F04A8-08A4-411E-9D69-358ADF88A2C7")) },
+                },
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow,
                 null,
                 null));
 
         // => Databricks SQL Statement API
-        var statementId = Guid.NewGuid().ToString();
-        var path = "GetDatabricksDataPath";
-
-        Fixture.MockServer
-            .MockEnergySqlStatements(statementId, 0)
-            .MockEnergySqlStatementsResultChunks(statementId, 0, path)
-            .MockEnergySqlStatementsResultStream(path);
+        Fixture.MockServer.MockEnergyResultsResponse();
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Post, "api/RequestSettlementReport");
@@ -133,20 +130,18 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
             CalculationType.BalanceFixing,
             false,
             new SettlementReportRequestFilterDto(
-                [new CalculationFilterDto("404F04A8-08A4-411E-9D69-358ADF88A2C7", "042")],
+                new Dictionary<string, CalculationId>
+                {
+                    { "042", new CalculationId(Guid.Parse("404F04A8-08A4-411E-9D69-358ADF88A2C7")) },
+                    { "043", new CalculationId(Guid.Parse("404F04A8-08A4-411E-9D69-358ADF88A2C7")) },
+                },
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow,
                 null,
                 null));
 
         // => Databricks SQL Statement API
-        var statementId = Guid.NewGuid().ToString();
-        var path = "GetDatabricksDataPath";
-
-        Fixture.MockServer
-            .MockEnergySqlStatements(statementId, 0)
-            .MockEnergySqlStatementsResultChunks(statementId, 0, path)
-            .MockEnergySqlStatementsResultStream(path);
+        Fixture.MockServer.MockEnergyResultsResponse();
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Post, "api/RequestSettlementReport");
@@ -165,7 +160,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
         using var downloadRequest = new HttpRequestMessage(HttpMethod.Post, "api/SettlementReportDownload");
         downloadRequest.Headers.Add("Authorization", $"Bearer {CreateFakeInternalToken()}");
         downloadRequest.Content = new StringContent(
-            JsonConvert.SerializeObject(httpResponse!.RequestId),
+            JsonConvert.SerializeObject(httpResponse.RequestId),
             Encoding.UTF8,
             "application/json");
 
@@ -177,10 +172,18 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
 
         var httpStream = await actualDownloadResponse.Content.ReadAsStreamAsync();
         using var reader = new StreamReader(httpStream);
-        var zipStream = new MemoryStream();
+        using var zipStream = new MemoryStream();
         await httpStream.CopyToAsync(zipStream);
+
         using var archive = new ZipArchive(zipStream, ZipArchiveMode.Read);
         Assert.NotEmpty(archive.Entries);
+
+        foreach (var entry in archive.Entries)
+        {
+            using var streamReader = new StreamReader(entry.Open());
+            var contents = await streamReader.ReadToEndAsync();
+            Assert.NotEmpty(contents);
+        }
     }
 
     /// <summary>
@@ -194,20 +197,17 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
             CalculationType.BalanceFixing,
             false,
             new SettlementReportRequestFilterDto(
-                [new CalculationFilterDto("404F04A8-08A4-411E-9D69-358ADF88A2C7", "042")],
+                new Dictionary<string, CalculationId>
+                {
+                    { "042", new CalculationId(Guid.Parse("404F04A8-08A4-411E-9D69-358ADF88A2C7")) },
+                },
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow,
                 null,
                 null));
 
         // => Databricks SQL Statement API
-        var statementId = Guid.NewGuid().ToString();
-        var path = "GetDatabricksDataPath";
-
-        Fixture.MockServer
-            .MockEnergySqlStatements(statementId, 0)
-            .MockEnergySqlStatementsResultChunks(statementId, 0, path)
-            .MockEnergySqlStatementsResultStream(path);
+        Fixture.MockServer.MockEnergyResultsResponse();
 
         // Act A: Start generating report.
         using var requestReport = new HttpRequestMessage(HttpMethod.Post, "api/RequestSettlementReport");
@@ -270,11 +270,13 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
 
         var userClaim = new Claim(JwtRegisteredClaimNames.Sub, "A1AAB954-136A-444A-94BD-E4B615CA4A78");
         var actorClaim = new Claim(JwtRegisteredClaimNames.Azp, "A1DEA55A-3507-4777-8CF3-F425A6EC2094");
+        var actorNumberClaim = new Claim("actornumber", "0000000000000");
+        var actorRoleClaim = new Claim("marketroles", "EnergySupplier");
 
         var internalToken = new JwtSecurityToken(
             issuer,
             audience,
-            [userClaim, actorClaim],
+            [userClaim, actorClaim, actorNumberClaim, actorRoleClaim],
             validFrom,
             validTo,
             new SigningCredentials(testKey, SecurityAlgorithms.RsaSha256));

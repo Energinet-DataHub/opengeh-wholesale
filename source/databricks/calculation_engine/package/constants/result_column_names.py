@@ -19,6 +19,6 @@ class ResultColumnNames:
     calculation_type = "calculation_type"
     calculation_result_id = "calculation_result_id"
 
-    grid_area = "grid_area_code"
+    grid_area_code = "grid_area_code"
     energy_supplier_id = "energy_supplier_id"
     time = "time"

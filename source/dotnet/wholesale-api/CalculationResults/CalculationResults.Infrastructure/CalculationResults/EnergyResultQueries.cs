@@ -52,7 +52,7 @@ public class EnergyResultQueries : IEnergyResultQueries
     {
         var calculation = await _calculationsClient.GetAsync(calculationId).ConfigureAwait(false);
         var statement = new EnergyResultQueryStatement(calculationId, _deltaTableOptions);
-        await foreach (var calculationResult in GetInternalAsync(statement, calculation.PeriodStart.ToInstant(), calculation.PeriodEnd.ToInstant(), calculation.Version))
+        await foreach (var calculationResult in GetInternalAsync(statement, calculation.Version))
             yield return calculationResult;
         _logger.LogDebug("Fetched all energy results for calculation {calculation_id}", calculationId);
     }
@@ -62,7 +62,7 @@ public class EnergyResultQueries : IEnergyResultQueries
         return !row[EnergyResultColumnNames.CalculationResultId]!.Equals(otherRow[EnergyResultColumnNames.CalculationResultId]);
     }
 
-    private async IAsyncEnumerable<EnergyResult> GetInternalAsync(EnergyResultQueryStatement statement, Instant periodStart, Instant periodEnd, long version)
+    private async IAsyncEnumerable<EnergyResult> GetInternalAsync(EnergyResultQueryStatement statement, long version)
     {
         var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
         DatabricksSqlRow? currentRow = null;
@@ -75,7 +75,7 @@ public class EnergyResultQueries : IEnergyResultQueries
 
             if (currentRow != null && BelongsToDifferentResults(currentRow, databricksSqlNextRow))
             {
-                yield return EnergyResultFactory.CreateEnergyResult(currentRow!, timeSeriesPoints, periodStart, periodEnd, version);
+                yield return EnergyResultFactory.CreateEnergyResult(currentRow!, timeSeriesPoints, version);
                 resultCount++;
                 timeSeriesPoints = [];
             }
@@ -86,7 +86,7 @@ public class EnergyResultQueries : IEnergyResultQueries
 
         if (currentRow != null)
         {
-            yield return EnergyResultFactory.CreateEnergyResult(currentRow, timeSeriesPoints, periodStart, periodEnd, version);
+            yield return EnergyResultFactory.CreateEnergyResult(currentRow, timeSeriesPoints, version);
             resultCount++;
         }
 

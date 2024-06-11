@@ -37,6 +37,7 @@ from .output.calculations_storage_model_factory import create_calculation
 from .output.energy_results import write_energy_results
 from .output.total_monthly_amounts import write_total_monthly_amounts
 from .output.wholesale_results import write_wholesale_results
+from .output.monthly_amounts import write_monthly_amounts
 from .preparation import PreparedDataReader
 from .wholesale import wholesale_calculation
 from ..codelists.calculation_type import is_wholesale_calculation_type
@@ -167,6 +168,7 @@ def _write_output(
     write_energy_results(results.energy_results)
     if results.wholesale_results is not None:
         write_wholesale_results(results.wholesale_results)
+        write_monthly_amounts(results.wholesale_results)
         write_total_monthly_amounts(results.wholesale_results)
 
     # We write basis data at the end of the calculation to make it easier to analyze performance of the calculation part

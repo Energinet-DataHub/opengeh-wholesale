@@ -173,8 +173,8 @@ def check_aggregation_row(
     df: EnergyResults, grid_area: str, quantity: Decimal, time: datetime
 ) -> None:
     """Helper function that checks column values for the given row"""
-    gridfiltered = df.df.where(df.df[Colname.grid_area] == grid_area).select(
-        col(Colname.grid_area),
+    gridfiltered = df.df.where(df.df[Colname.grid_area_code] == grid_area).select(
+        col(Colname.grid_area_code),
         col(Colname.quantity),
         col(Colname.observation_time),
     )

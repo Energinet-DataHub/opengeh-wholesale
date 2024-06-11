@@ -13,8 +13,8 @@
 # limitations under the License.
 
 
-from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
+from pyspark.sql import DataFrame
 from pyspark.sql.types import ArrayType, StringType, DecimalType
 
 from package.codelists import ChargeType, ChargeUnit
@@ -31,7 +31,7 @@ def calculate_total_quantity_and_amount(
         Colname.charge_type,
         Colname.charge_code,
         Colname.charge_owner,
-        Colname.grid_area,
+        Colname.grid_area_code,
         Colname.energy_supplier_id,
         Colname.charge_time,
         Colname.metering_point_type,

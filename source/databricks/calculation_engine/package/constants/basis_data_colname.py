@@ -20,7 +20,7 @@ class MeteringPointPeriodColname:
     # Master data
     metering_point_id = "metering_point_id"
     metering_point_type = "metering_point_type"
-    grid_area = "grid_area_code"
+    grid_area_code = "grid_area_code"
     resolution = "resolution"
     settlement_method = "settlement_method"
     parent_metering_point_id = "parent_metering_point_id"
@@ -28,8 +28,8 @@ class MeteringPointPeriodColname:
     balance_responsible_id = "balance_responsible_id"
 
     # Exchange
-    from_grid_area = "from_grid_area_code"
-    to_grid_area = "to_grid_area_code"
+    from_grid_area_code = "from_grid_area_code"
+    to_grid_area_code = "to_grid_area_code"
 
     # Period
     from_date = "from_date"

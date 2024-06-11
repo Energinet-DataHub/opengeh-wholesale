@@ -43,7 +43,7 @@ def create_row(
 ) -> Row:
 
     row = {
-        Colname.grid_area: grid_area,
+        Colname.grid_area_code: grid_area,
         Colname.energy_supplier_id: energy_supplier_id,
         Colname.charge_time: charge_time,
         Colname.total_amount: total_amount,

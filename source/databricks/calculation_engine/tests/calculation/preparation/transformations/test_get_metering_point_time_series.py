@@ -12,28 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest
-from decimal import Decimal
 from datetime import datetime
+from decimal import Decimal
 
+import pytest
 from pyspark.sql import SparkSession
+from pyspark.sql.functions import col
 from pyspark.sql.types import Row
 
-from package.calculation.preparation.transformations import (
-    get_metering_point_time_series,
-)
-from package.constants import Colname
-
-from package.codelists import (
-    MeteringPointResolution,
-    QuantityQuality,
-)
-from pyspark.sql.functions import col
 from package.calculation.input.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
 )
-
+from package.calculation.preparation.transformations import (
+    get_metering_point_time_series,
+)
+from package.codelists import (
+    MeteringPointResolution,
+    QuantityQuality,
+)
+from package.constants import Colname
 
 DEFAULT_METERING_POINT_ID = "the-metering-point-id"
 
@@ -67,10 +65,10 @@ def metering_point_period_df_factory(spark, timestamp_factory):
             Colname.metering_point_type: "the_metering_point_type",
             Colname.calculation_type: "calculation-type",
             Colname.settlement_method: "D01",
-            Colname.grid_area: "805",
+            Colname.grid_area_code: "805",
             Colname.resolution: resolution,
-            Colname.from_grid_area: "",
-            Colname.to_grid_area: "",
+            Colname.from_grid_area_code: "",
+            Colname.to_grid_area_code: "",
             Colname.parent_metering_point_id: "parent-metering-point-id",
             Colname.energy_supplier_id: "someId",
             Colname.balance_responsible_id: "someId",

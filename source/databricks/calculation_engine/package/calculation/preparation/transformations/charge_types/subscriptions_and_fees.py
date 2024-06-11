@@ -186,7 +186,7 @@ def _join_with_links(
         charge_links[Colname.metering_point_type],
         charge_links[Colname.metering_point_id],
         charge_links[Colname.settlement_method],
-        charge_links[Colname.grid_area],
+        charge_links[Colname.grid_area_code],
         charge_links[Colname.energy_supplier_id],
     )
 

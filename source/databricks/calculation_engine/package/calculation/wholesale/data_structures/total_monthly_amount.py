@@ -45,7 +45,7 @@ class TotalMonthlyAmount(DataFrameWrapper):
 # See comments to the `assert_schema()` invocation.
 total_monthly_amount_schema = t.StructType(
     [
-        t.StructField(Colname.grid_area, t.StringType(), False),
+        t.StructField(Colname.grid_area_code, t.StringType(), False),
         t.StructField(Colname.energy_supplier_id, t.StringType(), True),
         t.StructField(Colname.charge_time, t.TimestampType(), False),
         t.StructField(Colname.total_amount, t.DecimalType(18, 6), True),

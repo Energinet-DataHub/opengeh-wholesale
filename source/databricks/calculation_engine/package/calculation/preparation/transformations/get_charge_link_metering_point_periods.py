@@ -51,7 +51,7 @@ def get_charge_link_metering_point_periods(
         .alias(Colname.to_date),
         metering_points[Colname.metering_point_type],
         metering_points[Colname.settlement_method],
-        metering_points[Colname.grid_area],
+        metering_points[Colname.grid_area_code],
         metering_points[Colname.energy_supplier_id],
     )
 

@@ -16,5 +16,10 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementRe
 
 public enum SettlementReportFileContent
 {
-    BalanceFixingResult,
+    EnergyResultLatestPerDay,
+    EnergyResultForCalculationId,
+    WholesaleResult,
+    FirstCorrectionResult,
+    SecondCorrectionResult,
+    ThirdCorrectionResult,
 }

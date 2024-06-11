@@ -17,7 +17,6 @@ from pyspark.sql import DataFrame
 
 from package.codelists import MeteringPointType
 from package.constants import Colname
-from package.infrastructure import logging_configuration
 
 
 def get_metering_point_periods_for_energy_basis_data(
@@ -140,10 +139,10 @@ def _get_child_metering_points_with_energy_suppliers(
         all_child_metering_points[Colname.metering_point_type],
         all_child_metering_points[Colname.calculation_type],
         all_child_metering_points[Colname.settlement_method],
-        all_child_metering_points[Colname.grid_area],
+        all_child_metering_points[Colname.grid_area_code],
         all_child_metering_points[Colname.resolution],
-        all_child_metering_points[Colname.from_grid_area],
-        all_child_metering_points[Colname.to_grid_area],
+        all_child_metering_points[Colname.from_grid_area_code],
+        all_child_metering_points[Colname.to_grid_area_code],
         all_child_metering_points[Colname.parent_metering_point_id],
         potential_parent_metering_points[es].alias(
             Colname.energy_supplier_id
