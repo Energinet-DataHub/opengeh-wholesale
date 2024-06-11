@@ -31,12 +31,13 @@ public static class SettlementReportEnergyResultRowFactory
         var quantity = databricksSqlRow[SettlementReportEnergyResultViewColumns.Quantity];
         var meteringPointType = databricksSqlRow[SettlementReportEnergyResultViewColumns.MeteringPointType];
         var settlementMethod = databricksSqlRow[SettlementReportEnergyResultViewColumns.SettlementMethod];
+        var energySupplierId = databricksSqlRow[SettlementReportEnergyResultPerEnergySupplierViewColumns.EnergySupplier];
 
         return new SettlementReportEnergyResultRow(
             CalculationTypeMapper.FromDeltaTableValue(calculationType!),
             SqlResultValueConverters.ToInstant(startTime)!.Value,
             gridArea!,
-            null,
+            energySupplierId,
             ResolutionMapper.FromDeltaTableValue(resolution!),
             MeteringPointTypeMapper.FromDeltaTableValue(meteringPointType)!,
             SettlementMethodMapper.FromDeltaTableValue(settlementMethod)!,
