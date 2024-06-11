@@ -17,4 +17,9 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 public static class SettlementReportEnergyResultCountColumns
 {
     public const string Count = "count";
+
+    public static string[] AllNames { get; } =
+    [
+        Count
+    ];
 }

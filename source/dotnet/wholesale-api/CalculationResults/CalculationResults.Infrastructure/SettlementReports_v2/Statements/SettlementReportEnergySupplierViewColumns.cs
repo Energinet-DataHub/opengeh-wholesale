@@ -25,4 +25,17 @@ public class SettlementReportEnergyResultViewColumns
     public const string Resolution = "resolution";
     public const string Time = "time";
     public const string Quantity = "quantity";
+
+    public static string[] AllNames { get; } =
+    [
+        CalculationId,
+        CalculationType,
+        ResultId,
+        GridArea,
+        MeteringPointType,
+        SettlementMethod,
+        Resolution,
+        Time,
+        Quantity
+    ];
 }

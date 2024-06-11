@@ -87,7 +87,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
                 null));
 
         // => Databricks SQL Statement API
-        Fixture.MockServer.MockEnergyResultsResponse();
+        Fixture.MockServer.MockEnergyResultsViewResponse();
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Post, "api/RequestSettlementReport");
@@ -141,7 +141,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
                 null));
 
         // => Databricks SQL Statement API
-        Fixture.MockServer.MockEnergyResultsResponse();
+        Fixture.MockServer.MockEnergyResultsViewResponse();
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Post, "api/RequestSettlementReport");
@@ -207,7 +207,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
                 null));
 
         // => Databricks SQL Statement API
-        Fixture.MockServer.MockEnergyResultsResponse();
+        Fixture.MockServer.MockEnergyResultsViewResponse();
 
         // Act A: Start generating report.
         using var requestReport = new HttpRequestMessage(HttpMethod.Post, "api/RequestSettlementReport");
