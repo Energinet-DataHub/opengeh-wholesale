@@ -76,6 +76,7 @@ locals {
     "HealthChecksUI__HealthChecks__028__Uri"  = "https://func-application-workers-esett-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
     "HealthChecksUI__HealthChecks__029__Name" = "opengeh-wholesale:::Orchestrations"
     "HealthChecksUI__HealthChecks__029__Uri"  = "https://func-orchestrationsdf-wholsal-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
+    # Note: 030 is taken by Sauron in test_002 and prod_001 overrides
 
     # Live - prefix with 2xx
     "HealthChecksUI__HealthChecks__200__Name" = "health-checks-ui:::Health Check UI - live"
@@ -128,6 +129,7 @@ locals {
     "HealthChecksUI__HealthChecks__228__Uri"  = "https://func-application-workers-esett-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
     "HealthChecksUI__HealthChecks__229__Name" = "opengeh-wholesale:::Orchestrations - live"
     "HealthChecksUI__HealthChecks__229__Uri"  = "https://func-orchestrationsdf-wholsal-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
+    # Note: 230 is taken by Sauron in test_002 and prod_001 overrides
 
     # Polling Interval
     "HealthChecksUI__EvaluationTimeinSeconds" = 600
