@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 
-public interface ISettlementReportFromFilesHandler
-{
-    Task<GeneratedSettlementReportDto> CombineAsync(
-        SettlementReportRequestId requestId,
-        IReadOnlyCollection<GeneratedSettlementReportFileDto> generatedFiles);
-}
+public sealed record SettlementReportEnergyResultQueryFilter(
+    Guid CalculationId,
+    string GridAreaCode,
+    Instant PeriodStart,
+    Instant PeriodEnd);

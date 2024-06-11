@@ -27,13 +27,11 @@ public sealed class SettlementReportFromFilesHandler : ISettlementReportFromFile
         _fileRepository = fileRepository;
     }
 
-    public async Task<GeneratedSettlementReportDto> CombineAsync(IReadOnlyCollection<GeneratedSettlementReportFileDto> generatedFiles)
+    public async Task<GeneratedSettlementReportDto> CombineAsync(
+        SettlementReportRequestId requestId,
+        IReadOnlyCollection<GeneratedSettlementReportFileDto> generatedFiles)
     {
         var reportFileName = "Report.zip";
-        var requestId = generatedFiles
-            .Select(file => file.RequestId)
-            .Distinct()
-            .Single();
 
         var compressedStream = await _fileRepository
             .OpenForWritingAsync(requestId, reportFileName)
