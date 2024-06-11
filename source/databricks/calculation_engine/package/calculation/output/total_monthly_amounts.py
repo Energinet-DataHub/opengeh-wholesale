@@ -17,10 +17,7 @@ from package.calculation.calculation_results import (
     WholesaleResultsContainer,
 )
 from package.infrastructure import logging_configuration
-from package.infrastructure.paths import (
-    OUTPUT_DATABASE_NAME,
-    TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
-)
+from package.infrastructure.paths import OutputDatabase
 
 
 @logging_configuration.use_span("calculation.write.wholesale")
@@ -41,4 +38,6 @@ def _write(name: str, df: DataFrame) -> None:
     with logging_configuration.start_span(name):
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
-        ).insertInto(f"{OUTPUT_DATABASE_NAME}.{TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}")
+        ).insertInto(
+            f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
+        )
