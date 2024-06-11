@@ -110,7 +110,12 @@ def drop_columns_if_the_same(df1: DataFrame, df2: DataFrame) -> (DataFrame, Data
 
 def _assert_skipped_columns(df: DataFrame, column_names: list[str]) -> None:
     # Construct a filter that checks if any column is not 'IGNORED'
-    condition = " OR ".join([f"{col_name} != 'IGNORED'" for col_name in column_names])
+    condition = " OR ".join(
+        [
+            f"({col_name} != 'IGNORED' OR {col_name} IS NULL)"
+            for col_name in column_names
+        ]
+    )
 
     non_ignored_df = df.filter(condition)
     count = non_ignored_df.count()

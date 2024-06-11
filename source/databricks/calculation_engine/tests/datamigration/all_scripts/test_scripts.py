@@ -16,11 +16,11 @@ from unittest.mock import Mock
 import spark_sql_migrations.schema_migration_pipeline as schema_migration_pipeline
 from pyspark.sql import SparkSession
 from package.infrastructure.paths import (
-    OUTPUT_DATABASE_NAME,
-    INPUT_DATABASE_NAME,
-    BASIS_DATA_DATABASE_NAME,
-    SETTLEMENT_REPORT_DATABASE_NAME,
-    EdiResults,
+    OutputDatabase,
+    InputDatabase,
+    BasisDataDatabase,
+    SettlementReportPublicDataModel,
+    CalculationResultsPublicDataModel,
 )
 import package.datamigration.migration as sut
 import package.datamigration.schema_config as schema_config
@@ -68,11 +68,11 @@ def test__current_state_and_migration_scripts__should_give_same_result(
     migration_scripts_substitutions = spark_sql_migration_helper.update_substitutions(
         spark_sql_migration_helper.get_migration_script_args(spark),
         {
-            "{OUTPUT_DATABASE_NAME}": f"{migration_scripts_prefix}{OUTPUT_DATABASE_NAME}",
-            "{INPUT_DATABASE_NAME}": f"{migration_scripts_prefix}{INPUT_DATABASE_NAME}",
-            "{BASIS_DATA_DATABASE_NAME}": f"{migration_scripts_prefix}{BASIS_DATA_DATABASE_NAME}",
-            "{EDI_RESULTS_DATABASE_NAME}": f"{migration_scripts_prefix}{EdiResults.DATABASE_NAME}",
-            "{SETTLEMENT_REPORT_DATABASE_NAME}": f"{migration_scripts_prefix}{SETTLEMENT_REPORT_DATABASE_NAME}",
+            "{OUTPUT_DATABASE_NAME}": f"{migration_scripts_prefix}{OutputDatabase.DATABASE_NAME}",
+            "{INPUT_DATABASE_NAME}": f"{migration_scripts_prefix}{InputDatabase.DATABASE_NAME}",
+            "{BASIS_DATA_DATABASE_NAME}": f"{migration_scripts_prefix}{BasisDataDatabase.DATABASE_NAME}",
+            "{CALCULATION_RESULTS_DATABASE_NAME}": f"{migration_scripts_prefix}{CalculationResultsPublicDataModel.DATABASE_NAME}",
+            "{SETTLEMENT_REPORT_DATABASE_NAME}": f"{migration_scripts_prefix}{SettlementReportPublicDataModel.DATABASE_NAME}",
             "{OUTPUT_FOLDER}": f"{migration_scripts_prefix}migration_test",
             "{BASIS_DATA_FOLDER}": f"{migration_scripts_prefix}basis_folder",
             "{INPUT_FOLDER}": f"{migration_scripts_prefix}input_folder",
@@ -91,10 +91,10 @@ def test__current_state_and_migration_scripts__should_give_same_result(
     substitutions = spark_sql_migration_helper.update_substitutions(
         spark_sql_migration_helper.get_migration_script_args(spark),
         {
-            "{OUTPUT_DATABASE_NAME}": f"{current_state_prefix}{OUTPUT_DATABASE_NAME}",
-            "{INPUT_DATABASE_NAME}": f"{current_state_prefix}{INPUT_DATABASE_NAME}",
-            "{BASIS_DATA_DATABASE_NAME}": f"{current_state_prefix}{BASIS_DATA_DATABASE_NAME}",
-            "{SETTLEMENT_REPORT_DATABASE_NAME}": f"{current_state_prefix}{SETTLEMENT_REPORT_DATABASE_NAME}",
+            "{OUTPUT_DATABASE_NAME}": f"{current_state_prefix}{OutputDatabase.DATABASE_NAME}",
+            "{INPUT_DATABASE_NAME}": f"{current_state_prefix}{InputDatabase.DATABASE_NAME}",
+            "{BASIS_DATA_DATABASE_NAME}": f"{current_state_prefix}{BasisDataDatabase.DATABASE_NAME}",
+            "{SETTLEMENT_REPORT_DATABASE_NAME}": f"{current_state_prefix}{SettlementReportPublicDataModel.DATABASE_NAME}",
             "{OUTPUT_FOLDER}": f"{current_state_prefix}migration_test",
             "{BASIS_DATA_FOLDER}": f"{current_state_prefix}basis_folder",
             "{INPUT_FOLDER}": f"{current_state_prefix}input_folder",
