@@ -2,7 +2,6 @@ CREATE VIEW IF NOT EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.exchange_per_neigh
 SELECT calculation_id,
        calculation_type,
        grid_area_code,
-       energy_supplier_id,
        calculation_period_start,
        calculation_period_end,
        calculation_version,
