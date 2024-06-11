@@ -120,7 +120,7 @@ public sealed class EnergyResultFileGenerator : ISettlementReportFileGenerator
                     null => string.Empty,
                     SettlementMethod.NonProfiled => "E02",
                     SettlementMethod.Flex => "D01",
-                    _ => throw new ArgumentOutOfRangeException(nameof(row)),
+                    _ => throw new ArgumentOutOfRangeException(nameof(row.Value.SettlementMethod)),
                 });
 
             Map(r => r.Quantity)

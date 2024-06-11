@@ -65,7 +65,7 @@ public sealed class SettlementReportEnergyResultQueries : ISettlementReportEnerg
         var calculation = await _calculationsClient.GetAsync(calculationId).ConfigureAwait(false);
         await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {
-            yield return SettlementReportEnergyResultRowFactory.Create(new DatabricksSqlRow(nextRow), calculation?.Version ?? 1);
+            yield return SettlementReportEnergyResultRowFactory.Create(new DatabricksSqlRow(nextRow), calculation.Version);
         }
     }
 

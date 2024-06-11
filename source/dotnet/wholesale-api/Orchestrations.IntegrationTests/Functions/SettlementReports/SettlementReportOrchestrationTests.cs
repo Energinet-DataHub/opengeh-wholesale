@@ -20,6 +20,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.DurableTask;
@@ -28,6 +29,8 @@ using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using NodaTime;
+using NodaTime.Extensions;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Functions.SettlementReports;
@@ -73,13 +76,28 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
     public async Task MockExternalDependencies_WhenCallingDurableFunctionEndpoint_OrchestrationCompletesWithReportPresent()
     {
         // Arrange
+        await using var dbContext = Fixture.DatabaseManager.CreateDbContext();
+        var calculationEntity = new Calculations.Application.Model.Calculations.Calculation(
+            SystemClock.Instance.GetCurrentInstant(),
+            CalculationType.BalanceFixing,
+            [new GridAreaCode("042")],
+            new DateTimeOffset(2020, 1, 1, 23, 0, 0, TimeSpan.Zero).ToInstant(),
+            new DateTimeOffset(2020, 1, 31, 23, 0, 0, TimeSpan.Zero).ToInstant(),
+            SystemClock.Instance.GetCurrentInstant(),
+            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
+            Guid.NewGuid(),
+            1);
+
+        dbContext.Calculations.Add(calculationEntity);
+        await dbContext.SaveChangesAsync();
+
         var settlementReportRequest = new SettlementReportRequestDto(
             CalculationType.BalanceFixing,
             false,
             new SettlementReportRequestFilterDto(
                 new Dictionary<string, CalculationId>
                 {
-                    { "042", new CalculationId(Guid.Parse("404F04A8-08A4-411E-9D69-358ADF88A2C7")) },
+                    { calculationEntity.GridAreaCodes.Single().Code, new CalculationId(calculationEntity.Id) },
                 },
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow,
@@ -87,7 +105,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
                 null));
 
         // => Databricks SQL Statement API
-        Fixture.MockServer.MockEnergyResultsViewResponse();
+        Fixture.MockServer.MockEnergyResultsViewResponse(calculationEntity.Id);
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Post, "api/RequestSettlementReport");
@@ -126,14 +144,28 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
     public async Task MockExternalDependencies_WhenCallingDurableFunctionEndpoint_OrchestrationCompletesWithReportPresent_CanDownload()
     {
         // Arrange
+        await using var dbContext = Fixture.DatabaseManager.CreateDbContext();
+        var calculationEntity = new Calculations.Application.Model.Calculations.Calculation(
+            SystemClock.Instance.GetCurrentInstant(),
+            CalculationType.BalanceFixing,
+            [new GridAreaCode("042")],
+            new DateTimeOffset(2020, 1, 1, 23, 0, 0, TimeSpan.Zero).ToInstant(),
+            new DateTimeOffset(2020, 1, 31, 23, 0, 0, TimeSpan.Zero).ToInstant(),
+            SystemClock.Instance.GetCurrentInstant(),
+            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
+            Guid.NewGuid(),
+            1);
+
+        dbContext.Calculations.Add(calculationEntity);
+        await dbContext.SaveChangesAsync();
+
         var settlementReportRequest = new SettlementReportRequestDto(
             CalculationType.BalanceFixing,
             false,
             new SettlementReportRequestFilterDto(
                 new Dictionary<string, CalculationId>
                 {
-                    { "042", new CalculationId(Guid.Parse("404F04A8-08A4-411E-9D69-358ADF88A2C7")) },
-                    { "043", new CalculationId(Guid.Parse("404F04A8-08A4-411E-9D69-358ADF88A2C7")) },
+                    { calculationEntity.GridAreaCodes.Single().Code, new CalculationId(calculationEntity.Id) },
                 },
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow,
@@ -141,7 +173,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
                 null));
 
         // => Databricks SQL Statement API
-        Fixture.MockServer.MockEnergyResultsViewResponse();
+        Fixture.MockServer.MockEnergyResultsViewResponse(calculationEntity.Id);
 
         // Act
         using var request = new HttpRequestMessage(HttpMethod.Post, "api/RequestSettlementReport");
@@ -193,13 +225,28 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
     public async Task MockExternalDependencies_WhenCallingListReportsFunctionEndpoint_StatusIsValid()
     {
         // Arrange
+        await using var dbContext = Fixture.DatabaseManager.CreateDbContext();
+        var calculationEntity = new Calculations.Application.Model.Calculations.Calculation(
+            SystemClock.Instance.GetCurrentInstant(),
+            CalculationType.BalanceFixing,
+            [new GridAreaCode("042")],
+            new DateTimeOffset(2020, 1, 1, 23, 0, 0, TimeSpan.Zero).ToInstant(),
+            new DateTimeOffset(2020, 1, 31, 23, 0, 0, TimeSpan.Zero).ToInstant(),
+            SystemClock.Instance.GetCurrentInstant(),
+            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
+            Guid.NewGuid(),
+            1);
+
+        dbContext.Calculations.Add(calculationEntity);
+        await dbContext.SaveChangesAsync();
+
         var settlementReportRequest = new SettlementReportRequestDto(
             CalculationType.BalanceFixing,
             false,
             new SettlementReportRequestFilterDto(
                 new Dictionary<string, CalculationId>
                 {
-                    { "042", new CalculationId(Guid.Parse("404F04A8-08A4-411E-9D69-358ADF88A2C7")) },
+                    { calculationEntity.GridAreaCodes.Single().Code, new CalculationId(calculationEntity.Id) },
                 },
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow,
@@ -207,7 +254,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
                 null));
 
         // => Databricks SQL Statement API
-        Fixture.MockServer.MockEnergyResultsViewResponse();
+        Fixture.MockServer.MockEnergyResultsViewResponse(calculationEntity.Id);
 
         // Act A: Start generating report.
         using var requestReport = new HttpRequestMessage(HttpMethod.Post, "api/RequestSettlementReport");

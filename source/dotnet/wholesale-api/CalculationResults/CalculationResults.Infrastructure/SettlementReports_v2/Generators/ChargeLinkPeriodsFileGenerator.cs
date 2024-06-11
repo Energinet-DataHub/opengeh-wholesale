@@ -78,7 +78,7 @@ public sealed class ChargeLinkPeriodsFileGenerator : ISettlementReportFileGenera
                     MeteringPointType.ElectricalHeating => "D14",
                     MeteringPointType.NetConsumption => "D15",
                     MeteringPointType.EffectSettlement => "D19",
-                    _ => throw new ArgumentOutOfRangeException(nameof(row)),
+                    _ => throw new ArgumentOutOfRangeException(nameof(row.Value.MeteringPointType)),
                 });
 
             Map(r => r.ChargeOwnerId)

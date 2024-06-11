@@ -96,7 +96,7 @@ public sealed class WholesaleResultFileGenerator : ISettlementReportFileGenerato
                 {
                     Resolution.Hour => "PT1H",
                     Resolution.Day => "P1D",
-                    _ => throw new ArgumentOutOfRangeException(nameof(row)),
+                    _ => throw new ArgumentOutOfRangeException(nameof(row.Value.Resolution)),
                 });
 
             Map(r => r.MeteringPointType)
@@ -120,7 +120,7 @@ public sealed class WholesaleResultFileGenerator : ISettlementReportFileGenerato
                     MeteringPointType.ElectricalHeating => "D14",
                     MeteringPointType.NetConsumption => "D15",
                     MeteringPointType.EffectSettlement => "D19",
-                    _ => throw new ArgumentOutOfRangeException(nameof(row)),
+                    _ => throw new ArgumentOutOfRangeException(nameof(row.Value.MeteringPointType)),
                 });
 
             Map(r => r.SettlementMethod)
@@ -131,7 +131,7 @@ public sealed class WholesaleResultFileGenerator : ISettlementReportFileGenerato
                     null => string.Empty,
                     SettlementMethod.NonProfiled => "E02",
                     SettlementMethod.Flex => "D01",
-                    _ => throw new ArgumentOutOfRangeException(nameof(row)),
+                    _ => throw new ArgumentOutOfRangeException(nameof(row.Value.SettlementMethod)),
                 });
 
             Map(r => r.QuantityUnit)
@@ -141,7 +141,7 @@ public sealed class WholesaleResultFileGenerator : ISettlementReportFileGenerato
                 {
                     QuantityUnit.Kwh => "KWH",
                     QuantityUnit.Pieces => "PCS",
-                    _ => throw new ArgumentOutOfRangeException(nameof(row)),
+                    _ => throw new ArgumentOutOfRangeException(nameof(row.Value.QuantityUnit)),
                 });
 
             Map(r => r.Currency)
@@ -150,7 +150,7 @@ public sealed class WholesaleResultFileGenerator : ISettlementReportFileGenerato
                 .Convert(row => row.Value.Currency switch
                 {
                     Currency.DKK => "DKK",
-                    _ => throw new ArgumentOutOfRangeException(nameof(row)),
+                    _ => throw new ArgumentOutOfRangeException(nameof(row.Value.Currency)),
                 });
 
             Map(r => r.Quantity)
@@ -176,7 +176,7 @@ public sealed class WholesaleResultFileGenerator : ISettlementReportFileGenerato
                     ChargeType.Tariff => "D03",
                     ChargeType.Fee => "D02",
                     ChargeType.Subscription => "D01",
-                    _ => throw new ArgumentOutOfRangeException(nameof(row)),
+                    _ => throw new ArgumentOutOfRangeException(nameof(row.Value.ChargeType)),
                 });
 
             Map(r => r.ChargeCode)
