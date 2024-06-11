@@ -9,10 +9,12 @@ module "func_orchestrationsdf" {
   location                               = azurerm_resource_group.this.location
   app_service_plan_id                    = module.func_service_plan.id
   application_insights_connection_string = data.azurerm_key_vault_secret.appi_shared_connection_string.value
-  health_check_alert = {
+
+  health_check_alert = length(module.monitor_action_group_wholesale) != 1 ? null : {
     enabled         = true
-    action_group_id = module.monitor_action_group_wholesale.id
+    action_group_id = module.monitor_action_group_wholesale[0].id
   }
+
   vnet_integration_subnet_id  = data.azurerm_key_vault_secret.snet_vnet_integration_id.value
   private_endpoint_subnet_id  = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   dotnet_framework_version    = "v8.0"

@@ -13,10 +13,10 @@ module "app_api" {
   private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   dotnet_framework_version               = "v8.0"
   health_check_path                      = "/monitor/ready"
-  monitor_action_group = {
-    id                  = module.monitor_action_group_wholesale.id
+  monitor_action_group = length(module.monitor_action_group_wholesale) == 1 ? {
+    id                  = module.monitor_action_group_wholesale[0].id
     resource_group_name = azurerm_resource_group.this.name
-  }
+  } : null
   ip_restrictions     = var.ip_restrictions
   scm_ip_restrictions = var.ip_restrictions
   role_assignments = [

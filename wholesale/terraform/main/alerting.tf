@@ -1,4 +1,5 @@
 module "monitor_action_group_wholesale" {
+  count  = var.alert_email_address != null ? 1 : 0
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/monitor-action-group-email?ref=v14"
 
   name                 = "default"
