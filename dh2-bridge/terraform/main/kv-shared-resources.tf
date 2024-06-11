@@ -13,8 +13,8 @@ data "azurerm_key_vault_secret" "log_shared_id" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "primary_action_group_id" {
-  name         = "ag-primary-id"
+data "azurerm_key_vault_secret" "appi_shared_id" {
+  name         = "appi-shared-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 

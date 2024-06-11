@@ -18,12 +18,6 @@ variable "domain_name_short" {
   description = "Shortest possible edition of the domain name."
 }
 
-variable "enable_health_check_alerts" {
-  type        = bool
-  description = "Specify if health check alerts for Azure Functions and App Services should be enabled. Defaults to `true`"
-  default     = true
-}
-
 variable "omada_developers_security_group_name" {
   type        = string
   description = "(Optional) Name of the Omada controlled security group containing developers to have access to the SQL database."
@@ -82,5 +76,11 @@ variable "dh2_bridge_sender_party_gln" {
 variable "dh2_endpoint" {
   type        = string
   description = "Endpoint for DH2"
+  default     = null
+}
+
+variable "alert_email_address" {
+  type        = string
+  description = "(Optional) The email address to which alerts are sent."
   default     = null
 }
