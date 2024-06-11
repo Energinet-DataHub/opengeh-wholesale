@@ -13,18 +13,19 @@
 # limitations under the License.
 from datetime import datetime
 
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession, DataFrame
 
+from features.utils.dataframes.column_names.view_column_names import ViewColumnNames
 from features.utils.dataframes.schemas.metering_point_period_v1_view_schema import (
     metering_point_period_v1_view_schema,
 )
-from features.utils.dataframes.view_column_names import ViewColumnNames
 
 
 def test__public_data_model_views_has_valid_column_names(
     # migrations_executed: None,
     spark: SparkSession,
 ) -> None:
+    """Verify that all columns in all views in all public view model databases match the expected column names and data types"""
 
     # Arrange
     data = [
@@ -44,21 +45,34 @@ def test__public_data_model_views_has_valid_column_names(
         ),
     ]
 
-    df = spark.createDataFrame(data, schema=metering_point_period_v1_view_schema)
-    # df = spark.read.format("delta").table("settlement_report.metering_point_periods_v1")
-    errors = []
     view_column_names = ViewColumnNames()
+    public_view_model_databases = [
+        "wholesale_settlement_report",
+        "wholesale_calculation_results",
+    ]
+    errors = []
+
+    for database_name in public_view_model_databases:
+        spark.catalog.setCurrentDatabase(database_name)
+        views = spark.catalog.listTables()
+
+        for view in views:
+            df = spark.read.format("delta").table(f"{database_name}.{view.name}")
+
+            for column in df.columns:
+                try:
+                    assert_name_and_data_type(column, df, view_column_names)
+                except Exception as e:
+                    errors.append(e)
+
+    df = spark.createDataFrame(data, schema=metering_point_period_v1_view_schema)
+    # Remove
+    # print(ViewColumnNames.calculation_id)
+    # print(ViewColumnNames.calculation_version)
 
     for column in df.columns:
         try:
-            column_schema = df.schema[column]
-            expected_column = view_column_names.get(column_schema.name)
-            assert expected_column is not None, f"Column {column} not found."
-
-            expected_type = expected_column["type"]
-            actual_type = column_schema.dataType
-            assert expected_type == actual_type, f"Column {column} has wrong type."
-
+            assert_name_and_data_type(column, df, view_column_names)
         except Exception as e:
             errors.append(e)
 
@@ -67,3 +81,14 @@ def test__public_data_model_views_has_valid_column_names(
             print(error)
 
         assert False, "One or more assertions failed."
+
+
+def assert_name_and_data_type(
+    column, df: DataFrame, view_column_names: ViewColumnNames
+) -> None:
+    actual_schema = df.schema[column]
+    expected_column = view_column_names.get(actual_schema.name)
+    assert expected_column is not None, f"Column {column} not found."
+    expected_type = expected_column.data_type
+    actual_type = actual_schema.dataType
+    assert expected_type == actual_type, f"Column {column} has wrong type."

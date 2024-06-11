@@ -11,32 +11,39 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import Union
 
-from pyspark.sql.types import StringType, TimestampType, LongType
+from pyspark.sql.types import StringType, LongType, TimestampType
+
+from features.utils.dataframes.column_names.column_name import ColumnName
 
 
 class ViewColumnNames:
 
-    calculation_id = "calculation_id"
-    calculation_type = "calculation_type"
+    def __init__(self) -> None:
+        self.column_classes = {
+            attr.name: attr
+            for attr in ViewColumnNames.__dict__.values()
+            if isinstance(attr, ColumnName)
+        }
 
-    _view_column_names = {
-        calculation_id: {"type": StringType()},
-        calculation_type: {"type": StringType()},
-        "calculation_version": {"type": LongType()},
-        "metering_point_id": {"type": StringType()},
-        "from_date": {"type": TimestampType()},
-        "to_date": {"type": TimestampType()},
-        "grid_area_code": {"type": StringType()},
-        "from_grid_area_code": {"type": StringType()},
-        "to_grid_area_code": {"type": StringType()},
-        "metering_point_type": {"type": StringType()},
-        "settlement_method": {"type": StringType()},
-        "energy_supplier_id": {"type": StringType()},
-    }
+    def get(self, column_name: str) -> Union[ColumnName, None]:
+        column = self.column_classes.get(column_name, None)
+        return column.get() if column else None
 
-    def get(self, column_name) -> dict:
-        return self._view_column_names.get(column_name)
+    # Column Names in alphabetical order
+    calculation_id = ColumnName("calculation_id", StringType())
+    calculation_type = ColumnName("calculation_type", StringType())
+    calculation_version = ColumnName("calculation_version", LongType())
+    energy_supplier_id = ColumnName("energy_supplier_id", StringType())
+    from_date = ColumnName("from_date", TimestampType())
+    from_grid_area_code = ColumnName("from_grid_area_code", StringType())
+    grid_area_code = ColumnName("grid_area_code", StringType())
+    metering_point_id = ColumnName("metering_point_id", StringType())
+    metering_point_type = ColumnName("metering_point_type", StringType())
+    settlement_method = ColumnName("settlement_method", StringType())
+    to_date = ColumnName("to_date", TimestampType())
+    to_grid_area_code = ColumnName("to_grid_area_code", StringType())
 
 
 # charge_count = "charge_count"
