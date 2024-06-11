@@ -16,4 +16,4 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport
 
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.SettlementReports.Model;
 
-public sealed record ScatterSettlementReportFilesInput(string InstanceId, SettlementReportRequestDto Request);
+public sealed record ScatterSettlementReportFilesInput(SettlementReportRequestId RequestId, SettlementReportRequestDto Request);

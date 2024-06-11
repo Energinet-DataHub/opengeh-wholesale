@@ -37,92 +37,104 @@ from package.calculation.output.schemas.wholesale_results_schema import (
 
 schema_config = [
     Schema(
-        name=paths.OUTPUT_DATABASE_NAME,
+        name=paths.OutputDatabase.DATABASE_NAME,
         tables=[
             Table(
-                name=paths.WHOLESALE_RESULT_TABLE_NAME,
+                name=paths.OutputDatabase.WHOLESALE_RESULT_TABLE_NAME,
                 schema=wholesale_results_schema,
             ),
             Table(
-                name=paths.ENERGY_RESULT_TABLE_NAME,
+                name=paths.OutputDatabase.ENERGY_RESULT_TABLE_NAME,
                 schema=energy_results_schema,
             ),
             Table(
-                name=paths.MONTHLY_AMOUNTS_TABLE_NAME,
+                name=paths.OutputDatabase.MONTHLY_AMOUNTS_TABLE_NAME,
                 schema=monthly_amounts_schema,
             ),
             Table(
-                name=paths.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
+                name=paths.OutputDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
                 schema=total_monthly_amounts_schema,
             ),
         ],
         views=[
-            View(name=paths.SUCCEEDED_ENERGY_RESULTS_V1_VIEW_NAME),
+            View(name=paths.OutputDatabase.SUCCEEDED_ENERGY_RESULTS_V1_VIEW_NAME),
         ],
     ),
     Schema(
         # Tables in this schema are externals and schemas are not defined in the SQL scripts.
         # This will be changed to Views in the future.
-        name=paths.INPUT_DATABASE_NAME,
+        name=paths.InputDatabase.DATABASE_NAME,
         tables=[
             Table(
-                name=paths.GRID_LOSS_METERING_POINTS_TABLE_NAME,
+                name=paths.InputDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
                 schema=grid_loss_metering_points_schema,
             )
         ],
         views=[],
     ),
     Schema(
-        name=paths.BASIS_DATA_DATABASE_NAME,
+        name=paths.BasisDataDatabase.DATABASE_NAME,
         tables=[
             Table(
-                name=paths.METERING_POINT_PERIODS_BASIS_DATA_TABLE_NAME,
+                name=paths.BasisDataDatabase.METERING_POINT_PERIODS_TABLE_NAME,
                 schema=basis_data_schemas.metering_point_period_schema,
             ),
             Table(
-                name=paths.TIME_SERIES_POINTS_BASIS_DATA_TABLE_NAME,
+                name=paths.BasisDataDatabase.TIME_SERIES_POINTS_TABLE_NAME,
                 schema=basis_data_schemas.time_series_point_schema,
             ),
             Table(
-                name=paths.CHARGE_LINK_PERIODS_BASIS_DATA_TABLE_NAME,
+                name=paths.BasisDataDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
                 schema=basis_data_schemas.charge_link_periods_schema,
             ),
             Table(
-                name=paths.CHARGE_MASTER_DATA_PERIODS_BASIS_DATA_TABLE_NAME,
+                name=paths.BasisDataDatabase.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME,
                 schema=basis_data_schemas.charge_price_information_periods_schema,
             ),
             Table(
-                name=paths.CHARGE_PRICE_POINTS_BASIS_DATA_TABLE_NAME,
+                name=paths.BasisDataDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
                 schema=basis_data_schemas.charge_price_points_schema,
             ),
             Table(
-                name=paths.GRID_LOSS_METERING_POINTS_TABLE_NAME,
+                name=paths.BasisDataDatabase.GRID_LOSS_METERING_POINTS_TABLE_NAME,
                 schema=basis_data_schemas.grid_loss_metering_points_schema,
             ),
             Table(
-                name=paths.CALCULATIONS_TABLE_NAME,
+                name=paths.BasisDataDatabase.CALCULATIONS_TABLE_NAME,
                 schema=basis_data_schemas.calculations_schema,
             ),
         ],
         views=[],
     ),
     Schema(
-        name=paths.SETTLEMENT_REPORT_DATABASE_NAME,
+        name=paths.SettlementReportPublicDataModel.DATABASE_NAME,
         tables=[],
         views=[
             View(
-                name=paths.CURRENT_BALANCE_FIXING_CALCULATION_VERSION_SETTLEMENT_REPORT_VIEW_NAME_V1
+                name=paths.SettlementReportPublicDataModel.CURRENT_BALANCE_FIXING_CALCULATION_VERSION_VIEW_NAME_V1
             ),
-            View(name=paths.METERING_POINT_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1),
-            View(name=paths.METERING_POINT_TIME_SERIES_SETTLEMENT_REPORT_VIEW_NAME_V1),
-            View(name=paths.ENERGY_RESULT_POINTS_PER_GA_SETTLEMENT_REPORT_VIEW_NAME_V1),
             View(
-                name=paths.ENERGY_RESULT_POINTS_PER_ES_GA_SETTLEMENT_REPORT_VIEW_NAME_V1
+                name=paths.SettlementReportPublicDataModel.METERING_POINT_PERIODS_VIEW_NAME_V1
             ),
-            View(name=paths.CHARGE_PRICES_SETTLEMENT_REPORT_VIEW_NAME_V1),
-            View(name=paths.CHARGE_LINK_PERIODS_SETTLEMENT_REPORT_VIEW_NAME_V1),
-            View(name=paths.MONTHLY_AMOUNTS_SETTLEMENT_REPORT_VIEW_NAME_V1),
-            View(name=paths.WHOLESALE_RESULTS_SETTLEMENT_REPORT_VIEW_NAME_V1),
+            View(
+                name=paths.SettlementReportPublicDataModel.METERING_POINT_TIME_SERIES_VIEW_NAME_V1
+            ),
+            View(
+                name=paths.SettlementReportPublicDataModel.ENERGY_RESULT_POINTS_PER_GA_VIEW_NAME_V1
+            ),
+            View(
+                name=paths.SettlementReportPublicDataModel.ENERGY_RESULT_POINTS_PER_ES_GA_SETTLEMENT_REPORT_VIEW_NAME_V1
+            ),
+            View(name=paths.SettlementReportPublicDataModel.CHARGE_PRICES_VIEW_NAME_V1),
+            View(
+                name=paths.SettlementReportPublicDataModel.CHARGE_LINK_PERIODS_VIEW_NAME_V1
+            ),
+            View(
+                name=paths.SettlementReportPublicDataModel.MONTHLY_AMOUNTS_VIEW_NAME_V1
+            ),
+            View(
+                name=paths.SettlementReportPublicDataModel.WHOLESALE_RESULTS_VIEW_NAME_V1
+            ),
         ],
     ),
     Schema(

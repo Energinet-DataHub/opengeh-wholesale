@@ -30,7 +30,7 @@ from package.calculation.energy.data_structures.energy_results import (
 )
 from package.calculation.output import energy_storage_model_factory as sut
 from package.constants import Colname, EnergyResultColumnNames
-from package.infrastructure.paths import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
+from package.infrastructure.paths import OutputDatabase
 from tests.contract_utils import (
     assert_contract_matches_schema,
     get_column_names_from_contract,
@@ -70,7 +70,7 @@ OTHER_METERING_POINT_TYPE = e.MeteringPointType.CONSUMPTION
 OTHER_SETTLEMENT_METHOD = e.SettlementMethod.NON_PROFILED
 
 
-TABLE_NAME = f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}"
+TABLE_NAME = f"{OutputDatabase.DATABASE_NAME}.{OutputDatabase.ENERGY_RESULT_TABLE_NAME}"
 
 
 @pytest.fixture(scope="module")
