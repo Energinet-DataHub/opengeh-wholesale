@@ -44,6 +44,26 @@ public class SqlResultValueConvertersTests
     }
 
     [Fact]
+    public void ToInt_WhenValueIsNull_ReturnsNull()
+    {
+        var actual = SqlResultValueConverters.ToInt(null);
+        actual.Should().BeNull();
+    }
+
+    [Fact]
+    public void ToInt_WhenValueIsValid_ReturnsInt()
+    {
+        // Arrange
+        var value = "123";
+
+        // Act
+        var actual = SqlResultValueConverters.ToInt(value);
+
+        // Assert
+        actual.Should().Be(123);
+    }
+
+    [Fact]
     public void ToDecimal_WhenValueIsNull_ReturnsNull()
     {
         var actual = SqlResultValueConverters.ToDecimal(null);

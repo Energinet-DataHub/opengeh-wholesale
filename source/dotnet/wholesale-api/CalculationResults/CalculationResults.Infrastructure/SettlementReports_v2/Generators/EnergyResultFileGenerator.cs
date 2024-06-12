@@ -17,43 +17,43 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Generators;
 
-// TODO: Will be replaced by WholesaleResultFileGenerator from next PR.
-public sealed class WholesaleFixingResultFileGenerator : ISettlementReportFileGenerator
+public sealed class EnergyResultFileGenerator : ISettlementReportFileGenerator
 {
-    private readonly ISettlementReportDataRepository _dataSource;
-    private readonly CalculationType _calculationType;
+    private const int ChunkSize = 100;
 
-    public WholesaleFixingResultFileGenerator(ISettlementReportDataRepository dataSource, CalculationType calculationType)
+    private readonly ISettlementReportEnergyResultRepository _dataSource;
+
+    public EnergyResultFileGenerator(ISettlementReportEnergyResultRepository dataSource)
     {
         _dataSource = dataSource;
-        _calculationType = calculationType;
     }
 
     public string FileExtension => ".csv";
 
-    public Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter)
+    public async Task<int> CountChunksAsync(SettlementReportRequestFilterDto filter)
     {
-        return Task.FromResult(1);
+        var count = await _dataSource.CountAsync(filter).ConfigureAwait(false);
+        return (int)Math.Ceiling(count / (double)ChunkSize);
     }
 
     public async Task WriteAsync(SettlementReportRequestFilterDto filter, int chunkOffset, StreamWriter destination)
     {
         var csvHelper = new CsvWriter(destination, new CultureInfo(filter.CsvFormatLocale ?? "en-US"));
-        csvHelper.Context.RegisterClassMap<SettlementReportResultRowMap>();
+        csvHelper.Context.RegisterClassMap<SettlementReportEnergyResultRowMap>();
 
         await using (csvHelper.ConfigureAwait(false))
         {
             if (chunkOffset == 0)
             {
-                csvHelper.WriteHeader<SettlementReportResultRow>();
+                csvHelper.WriteHeader<SettlementReportEnergyResultRow>();
             }
 
-            await foreach (var record in _dataSource.TryReadBalanceFixingResultsAsync(filter).ConfigureAwait(false))
+            await foreach (var record in _dataSource.GetAsync(filter, chunkOffset * ChunkSize, ChunkSize).ConfigureAwait(false))
             {
                 await csvHelper.NextRecordAsync().ConfigureAwait(false);
                 csvHelper.WriteRecord(record);
@@ -61,23 +61,18 @@ public sealed class WholesaleFixingResultFileGenerator : ISettlementReportFileGe
         }
     }
 
-    public sealed class SettlementReportResultRowMap : ClassMap<SettlementReportResultRow>
+    public sealed class SettlementReportEnergyResultRowMap : ClassMap<SettlementReportEnergyResultRow>
     {
-        public SettlementReportResultRowMap()
+        public SettlementReportEnergyResultRowMap()
         {
             Map(r => r.GridAreaCode)
                 .Name("METERINGGRIDAREAID")
                 .Index(0)
                 .Convert(row => row.Value.GridAreaCode);
 
-            Map(r => r.CalculationType)
+            Map(r => r.EnergyBusinessProcess)
                 .Name("ENERGYBUSINESSPROCESS")
-                .Index(1)
-                .Convert(row => row.Value.CalculationType switch
-                {
-                    CalculationType.BalanceFixing => "D04",
-                    _ => throw new ArgumentOutOfRangeException(nameof(row.Value.Resolution)),
-                });
+                .Index(1);
 
             Map(r => r.Time)
                 .Name("STARTDATETIME")
@@ -89,7 +84,7 @@ public sealed class WholesaleFixingResultFileGenerator : ISettlementReportFileGe
                 .Convert(row => row.Value.Resolution switch
                 {
                     Resolution.Hour => "PT1H",
-                    Resolution.QuarterHour => "PT15M",
+                    Resolution.Quarter => "PT15M",
                     _ => throw new ArgumentOutOfRangeException(nameof(row.Value.Resolution)),
                 });
 
@@ -102,6 +97,18 @@ public sealed class WholesaleFixingResultFileGenerator : ISettlementReportFileGe
                     MeteringPointType.Consumption => "E17",
                     MeteringPointType.Production => "E18",
                     MeteringPointType.Exchange => "E20",
+                    MeteringPointType.VeProduction => "D01",
+                    MeteringPointType.NetProduction => "D05",
+                    MeteringPointType.SupplyToGrid => "D06",
+                    MeteringPointType.ConsumptionFromGrid => "D07",
+                    MeteringPointType.WholesaleServicesInformation => "D08",
+                    MeteringPointType.OwnProduction => "D09",
+                    MeteringPointType.NetFromGrid => "D10",
+                    MeteringPointType.NetToGrid => "D11",
+                    MeteringPointType.TotalConsumption => "D12",
+                    MeteringPointType.ElectricalHeating => "D14",
+                    MeteringPointType.NetConsumption => "D15",
+                    MeteringPointType.EffectSettlement => "D19",
                     _ => throw new ArgumentOutOfRangeException(nameof(row.Value.MeteringPointType)),
                 });
 
@@ -113,7 +120,7 @@ public sealed class WholesaleFixingResultFileGenerator : ISettlementReportFileGe
                     null => string.Empty,
                     SettlementMethod.NonProfiled => "E02",
                     SettlementMethod.Flex => "D01",
-                    _ => throw new ArgumentOutOfRangeException(nameof(row)),
+                    _ => throw new ArgumentOutOfRangeException(nameof(row.Value.SettlementMethod)),
                 });
 
             Map(r => r.Quantity)
