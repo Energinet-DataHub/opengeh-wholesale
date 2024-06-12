@@ -26,7 +26,7 @@ from package.constants import (
     Colname,
     MeteringPointPeriodColname,
     TimeSeriesColname,
-    ChargeMasterDataPeriodsColname,
+    ChargePriceInformationPeriodsColname,
     ChargePricePointsColname,
     ChargeLinkPeriodsColname,
     GridLossMeteringPointsColName,
@@ -88,23 +88,33 @@ def get_time_series_points_basis_data(
     )
 
 
-@logging_configuration.use_span("get_charge_master_data_basis_data")
-def get_charge_master_data_basis_data(
+@logging_configuration.use_span("get_charge_price_information_basis_data")
+def get_charge_price_information_basis_data(
     calculation_id: str,
     input_charges_container: InputChargesContainer,
 ) -> DataFrame:
-    return input_charges_container.charge_master_data._df.select(
-        f.lit(calculation_id).alias(ChargeMasterDataPeriodsColname.calculation_id),
-        f.col(Colname.charge_key).alias(ChargeMasterDataPeriodsColname.charge_key),
-        f.col(Colname.charge_code).alias(ChargeMasterDataPeriodsColname.charge_code),
-        f.col(Colname.charge_type).alias(ChargeMasterDataPeriodsColname.charge_type),
-        f.col(Colname.charge_owner).alias(
-            ChargeMasterDataPeriodsColname.charge_owner_id,
+    return input_charges_container.charge_price_information._df.select(
+        f.lit(calculation_id).alias(
+            ChargePriceInformationPeriodsColname.calculation_id
         ),
-        f.col(Colname.resolution).alias(ChargeMasterDataPeriodsColname.resolution),
-        f.col(Colname.charge_tax).alias(ChargeMasterDataPeriodsColname.is_tax),
-        f.col(Colname.from_date).alias(ChargeMasterDataPeriodsColname.from_date),
-        f.col(Colname.to_date).alias(ChargeMasterDataPeriodsColname.to_date),
+        f.col(Colname.charge_key).alias(
+            ChargePriceInformationPeriodsColname.charge_key
+        ),
+        f.col(Colname.charge_code).alias(
+            ChargePriceInformationPeriodsColname.charge_code
+        ),
+        f.col(Colname.charge_type).alias(
+            ChargePriceInformationPeriodsColname.charge_type
+        ),
+        f.col(Colname.charge_owner).alias(
+            ChargePriceInformationPeriodsColname.charge_owner_id,
+        ),
+        f.col(Colname.resolution).alias(
+            ChargePriceInformationPeriodsColname.resolution
+        ),
+        f.col(Colname.charge_tax).alias(ChargePriceInformationPeriodsColname.is_tax),
+        f.col(Colname.from_date).alias(ChargePriceInformationPeriodsColname.from_date),
+        f.col(Colname.to_date).alias(ChargePriceInformationPeriodsColname.to_date),
     )
 
 
