@@ -49,39 +49,39 @@
                   "chart": {
                     "metrics": [
                       {
-                        "resourceMetadata": {
-                          "id": "${timeseriessync_id}"
-                        },
-                        "name": "MemoryWorkingSet",
                         "aggregationType": 4,
-                        "namespace": "microsoft.web/sites",
                         "metricVisualization": {
                           "displayName": "Memory working set",
                           "resourceDisplayName": "${timeseriessync_name}"
+                        },
+                        "name": "MemoryWorkingSet",
+                        "namespace": "microsoft.web/sites",
+                        "resourceMetadata": {
+                          "id": "${timeseriessync_id}"
                         }
                       }
                     ],
                     "title": "Avg Memory working set",
                     "titleKind": 2,
                     "visualization": {
-                      "chartType": 2,
-                      "legendVisualization": {
-                        "isVisible": true,
-                        "position": 2,
-                        "hideHoverCard": false,
-                        "hideLabelNames": true
-                      },
                       "axisVisualization": {
                         "x": {
-                          "isVisible": true,
-                          "axisType": 2
+                          "axisType": 2,
+                          "isVisible": true
                         },
                         "y": {
-                          "isVisible": true,
-                          "axisType": 1
+                          "axisType": 1,
+                          "isVisible": true
                         }
                       },
-                      "disablePinning": true
+                      "chartType": 2,
+                      "disablePinning": true,
+                      "legendVisualization": {
+                        "hideHoverCard": false,
+                        "hideLabelNames": true,
+                        "isVisible": true,
+                        "position": 2
+                      }
                     }
                   }
                 }
@@ -114,39 +114,39 @@
                   "chart": {
                     "metrics": [
                       {
-                        "resourceMetadata": {
-                          "id": "${timeseriessync_id}"
-                        },
-                        "name": "Handles",
                         "aggregationType": 4,
-                        "namespace": "microsoft.web/sites",
                         "metricVisualization": {
                           "displayName": "Handle Count",
                           "resourceDisplayName": "${timeseriessync_name}"
+                        },
+                        "name": "Handles",
+                        "namespace": "microsoft.web/sites",
+                        "resourceMetadata": {
+                          "id": "${timeseriessync_id}"
                         }
                       }
                     ],
                     "title": "Avg Handle Count",
                     "titleKind": 2,
                     "visualization": {
-                      "chartType": 2,
-                      "legendVisualization": {
-                        "isVisible": true,
-                        "position": 2,
-                        "hideHoverCard": false,
-                        "hideLabelNames": true
-                      },
                       "axisVisualization": {
                         "x": {
-                          "isVisible": true,
-                          "axisType": 2
+                          "axisType": 2,
+                          "isVisible": true
                         },
                         "y": {
-                          "isVisible": true,
-                          "axisType": 1
+                          "axisType": 1,
+                          "isVisible": true
                         }
                       },
-                      "disablePinning": true
+                      "chartType": 2,
+                      "disablePinning": true,
+                      "legendVisualization": {
+                        "hideHoverCard": false,
+                        "hideLabelNames": true,
+                        "isVisible": true,
+                        "position": 2
+                      }
                     }
                   }
                 }
@@ -179,51 +179,51 @@
                   "chart": {
                     "metrics": [
                       {
-                        "resourceMetadata": {
-                          "id": "${timeseriessync_id}"
-                        },
-                        "name": "BytesReceived",
                         "aggregationType": 1,
-                        "namespace": "microsoft.web/sites",
                         "metricVisualization": {
                           "displayName": "Data In",
                           "resourceDisplayName": "${timeseriessync_name}"
+                        },
+                        "name": "BytesReceived",
+                        "namespace": "microsoft.web/sites",
+                        "resourceMetadata": {
+                          "id": "${timeseriessync_id}"
                         }
                       },
                       {
-                        "resourceMetadata": {
-                          "id": "${timeseriessync_id}"
-                        },
-                        "name": "BytesSent",
                         "aggregationType": 1,
-                        "namespace": "microsoft.web/sites",
                         "metricVisualization": {
                           "displayName": "Data Out",
                           "resourceDisplayName": "${timeseriessync_name}"
+                        },
+                        "name": "BytesSent",
+                        "namespace": "microsoft.web/sites",
+                        "resourceMetadata": {
+                          "id": "${timeseriessync_id}"
                         }
                       }
                     ],
                     "title": "Sum Data In/Out",
                     "titleKind": 2,
                     "visualization": {
-                      "chartType": 2,
-                      "legendVisualization": {
-                        "isVisible": true,
-                        "position": 2,
-                        "hideHoverCard": false,
-                        "hideLabelNames": true
-                      },
                       "axisVisualization": {
                         "x": {
-                          "isVisible": true,
-                          "axisType": 2
+                          "axisType": 2,
+                          "isVisible": true
                         },
                         "y": {
-                          "isVisible": true,
-                          "axisType": 1
+                          "axisType": 1,
+                          "isVisible": true
                         }
                       },
-                      "disablePinning": true
+                      "chartType": 2,
+                      "disablePinning": true,
+                      "legendVisualization": {
+                        "hideHoverCard": false,
+                        "hideLabelNames": true,
+                        "isVisible": true,
+                        "position": 2
+                      }
                     }
                   }
                 }
@@ -256,51 +256,51 @@
                   "chart": {
                     "metrics": [
                       {
-                        "resourceMetadata": {
-                          "id": "${plan_services_id}"
-                        },
-                        "name": "MemoryPercentage",
                         "aggregationType": 4,
-                        "namespace": "microsoft.web/serverfarms",
                         "metricVisualization": {
                           "displayName": "Memory Percentage",
                           "resourceDisplayName": "${plan_services_name}"
+                        },
+                        "name": "MemoryPercentage",
+                        "namespace": "microsoft.web/serverfarms",
+                        "resourceMetadata": {
+                          "id": "${plan_services_id}"
                         }
                       },
                       {
-                        "resourceMetadata": {
-                          "id": "${plan_services_id}"
-                        },
-                        "name": "CpuPercentage",
                         "aggregationType": 4,
-                        "namespace": "microsoft.web/serverfarms",
                         "metricVisualization": {
                           "displayName": "CPU Percentage",
                           "resourceDisplayName": "${plan_services_name}"
+                        },
+                        "name": "CpuPercentage",
+                        "namespace": "microsoft.web/serverfarms",
+                        "resourceMetadata": {
+                          "id": "${plan_services_id}"
                         }
                       }
                     ],
                     "title": "Avg Memory/CPU % Plan",
                     "titleKind": 2,
                     "visualization": {
-                      "chartType": 2,
-                      "legendVisualization": {
-                        "isVisible": true,
-                        "position": 2,
-                        "hideHoverCard": false,
-                        "hideLabelNames": true
-                      },
                       "axisVisualization": {
                         "x": {
-                          "isVisible": true,
-                          "axisType": 2
+                          "axisType": 2,
+                          "isVisible": true
                         },
                         "y": {
-                          "isVisible": true,
-                          "axisType": 1
+                          "axisType": 1,
+                          "isVisible": true
                         }
                       },
-                      "disablePinning": true
+                      "chartType": 2,
+                      "disablePinning": true,
+                      "legendVisualization": {
+                        "hideHoverCard": false,
+                        "hideLabelNames": true,
+                        "isVisible": true,
+                        "position": 2
+                      }
                     }
                   }
                 }
@@ -333,39 +333,39 @@
                   "chart": {
                     "metrics": [
                       {
-                        "resourceMetadata": {
-                          "id": "${timeseriessync_id}"
-                        },
-                        "name": "HealthCheckStatus",
                         "aggregationType": 4,
-                        "namespace": "microsoft.web/sites",
                         "metricVisualization": {
                           "displayName": "Health check status",
                           "resourceDisplayName": "${timeseriessync_name}"
+                        },
+                        "name": "HealthCheckStatus",
+                        "namespace": "microsoft.web/sites",
+                        "resourceMetadata": {
+                          "id": "${timeseriessync_id}"
                         }
                       }
                     ],
                     "title": "Avg Health check status",
                     "titleKind": 2,
                     "visualization": {
-                      "chartType": 2,
-                      "legendVisualization": {
-                        "isVisible": true,
-                        "position": 2,
-                        "hideHoverCard": false,
-                        "hideLabelNames": true
-                      },
                       "axisVisualization": {
                         "x": {
-                          "isVisible": true,
-                          "axisType": 2
+                          "axisType": 2,
+                          "isVisible": true
                         },
                         "y": {
-                          "isVisible": true,
-                          "axisType": 1
+                          "axisType": 1,
+                          "isVisible": true
                         }
                       },
-                      "disablePinning": true
+                      "chartType": 2,
+                      "disablePinning": true,
+                      "legendVisualization": {
+                        "hideHoverCard": false,
+                        "hideLabelNames": true,
+                        "isVisible": true,
+                        "position": 2
+                      }
                     }
                   }
                 }
@@ -386,10 +386,10 @@
             "settings": {
               "content": {
                 "content": "## Custom metrics",
-                "title": "",
-                "subtitle": "",
                 "markdownSource": 1,
-                "markdownUri": {}
+                "markdownUri": {},
+                "subtitle": "",
+                "title": ""
               }
             }
           }
@@ -419,60 +419,60 @@
                   "chart": {
                     "metrics": [
                       {
-                        "resourceMetadata": {
-                          "id": "${appi_sharedres_id}"
-                        },
-                        "name": "customMetrics/PeekedTimeSeriesMessageSize",
                         "aggregationType": 4,
-                        "namespace": "microsoft.insights/components/kusto",
                         "metricVisualization": {
                           "displayName": "PeekedTimeSeriesMessageSize"
+                        },
+                        "name": "customMetrics/PeekedTimeSeriesMessageSize",
+                        "namespace": "microsoft.insights/components/kusto",
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
                         }
                       },
                       {
-                        "resourceMetadata": {
-                          "id": "${appi_sharedres_id}"
-                        },
-                        "name": "customMetrics/PeekedTimeSeriesMessageSize",
                         "aggregationType": 2,
-                        "namespace": "microsoft.insights/components/kusto",
                         "metricVisualization": {
                           "displayName": "PeekedTimeSeriesMessageSize"
+                        },
+                        "name": "customMetrics/PeekedTimeSeriesMessageSize",
+                        "namespace": "microsoft.insights/components/kusto",
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
                         }
                       },
                       {
-                        "resourceMetadata": {
-                          "id": "${appi_sharedres_id}"
-                        },
-                        "name": "customMetrics/PeekedTimeSeriesMessageSize",
                         "aggregationType": 3,
-                        "namespace": "microsoft.insights/components/kusto",
                         "metricVisualization": {
                           "displayName": "PeekedTimeSeriesMessageSize"
+                        },
+                        "name": "customMetrics/PeekedTimeSeriesMessageSize",
+                        "namespace": "microsoft.insights/components/kusto",
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
                         }
                       }
                     ],
                     "title": "Time series message size",
                     "titleKind": 2,
                     "visualization": {
-                      "chartType": 2,
-                      "legendVisualization": {
-                        "isVisible": true,
-                        "position": 2,
-                        "hideHoverCard": false,
-                        "hideLabelNames": true
-                      },
                       "axisVisualization": {
                         "x": {
-                          "isVisible": true,
-                          "axisType": 2
+                          "axisType": 2,
+                          "isVisible": true
                         },
                         "y": {
-                          "isVisible": true,
-                          "axisType": 1
+                          "axisType": 1,
+                          "isVisible": true
                         }
                       },
-                      "disablePinning": true
+                      "chartType": 2,
+                      "disablePinning": true,
+                      "legendVisualization": {
+                        "hideHoverCard": false,
+                        "hideLabelNames": true,
+                        "isVisible": true,
+                        "position": 2
+                      }
                     }
                   }
                 }
@@ -505,49 +505,42 @@
                   "chart": {
                     "metrics": [
                       {
-                        "resourceMetadata": {
-                          "id": "${appi_sharedres_id}"
-                        },
-                        "name": "customMetrics/TransformedTimeSeriesTransactions",
                         "aggregationType": 4,
-                        "namespace": "microsoft.insights/components/kusto",
                         "metricVisualization": {
                           "displayName": "TransformedTimeSeriesTransactions"
+                        },
+                        "name": "customMetrics/TransformedTimeSeriesTransactions",
+                        "namespace": "microsoft.insights/components/kusto",
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
                         }
                       },
                       {
-                        "resourceMetadata": {
-                          "id": "${appi_sharedres_id}"
-                        },
-                        "name": "customMetrics/TransformedTimeSeriesTransactions",
                         "aggregationType": 2,
-                        "namespace": "microsoft.insights/components/kusto",
                         "metricVisualization": {
                           "displayName": "TransformedTimeSeriesTransactions"
+                        },
+                        "name": "customMetrics/TransformedTimeSeriesTransactions",
+                        "namespace": "microsoft.insights/components/kusto",
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
                         }
                       },
                       {
-                        "resourceMetadata": {
-                          "id": "${appi_sharedres_id}"
-                        },
-                        "name": "customMetrics/TransformedTimeSeriesTransactions",
                         "aggregationType": 3,
-                        "namespace": "microsoft.insights/components/kusto",
                         "metricVisualization": {
                           "displayName": "TransformedTimeSeriesTransactions"
+                        },
+                        "name": "customMetrics/TransformedTimeSeriesTransactions",
+                        "namespace": "microsoft.insights/components/kusto",
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
                         }
                       }
                     ],
                     "title": "Transactions pr. message",
                     "titleKind": 2,
                     "visualization": {
-                      "chartType": 2,
-                      "legendVisualization": {
-                        "hideHoverCard": false,
-                        "hideLabelNames": true,
-                        "isVisible": true,
-                        "position": 2
-                      },
                       "axisVisualization": {
                         "x": {
                           "axisType": 2,
@@ -558,7 +551,14 @@
                           "isVisible": true
                         }
                       },
-                      "disablePinning": true
+                      "chartType": 2,
+                      "disablePinning": true,
+                      "legendVisualization": {
+                        "hideHoverCard": false,
+                        "hideLabelNames": true,
+                        "isVisible": true,
+                        "position": 2
+                      }
                     }
                   }
                 }
@@ -570,6 +570,404 @@
           "position": {
             "x": 12,
             "y": 8,
+            "colSpan": 5,
+            "rowSpan": 4
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "options",
+                "isOptional": true
+              },
+              {
+                "name": "sharedTimeRange",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+            "settings": {
+              "content": {
+                "options": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
+                        },
+                        "name": "customMetrics/ArchiveTimeSeriesMessageDuration",
+                        "aggregationType": 4,
+                        "namespace": "microsoft.insights/components/kusto",
+                        "metricVisualization": {
+                          "displayName": "ArchiveTimeSeriesMessageDuration"
+                        }
+                      },
+                      {
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
+                        },
+                        "name": "customMetrics/DequeueTimeSeriesMessageDuration",
+                        "aggregationType": 4,
+                        "namespace": "microsoft.insights/components/kusto",
+                        "metricVisualization": {
+                          "displayName": "DequeueTimeSeriesMessageDuration"
+                        }
+                      },
+                      {
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
+                        },
+                        "name": "customMetrics/SendTimeSeriesMessageDuration",
+                        "aggregationType": 4,
+                        "namespace": "microsoft.insights/components/kusto",
+                        "metricVisualization": {
+                          "displayName": "SendTimeSeriesMessageDuration"
+                        }
+                      }
+                    ],
+                    "title": "Avg ArchiveTimeSeriesMessageDuration, Avg DequeueTimeSeriesMessageDuration, and Avg SendTimeSeriesMessageDuration",
+                    "titleKind": 1,
+                    "visualization": {
+                      "chartType": 2,
+                      "legendVisualization": {
+                        "isVisible": true,
+                        "position": 2,
+                        "hideHoverCard": false,
+                        "hideLabelNames": true
+                      },
+                      "axisVisualization": {
+                        "x": {
+                          "isVisible": true,
+                          "axisType": 2
+                        },
+                        "y": {
+                          "isVisible": true,
+                          "axisType": 1
+                        }
+                      },
+                      "disablePinning": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "10": {
+          "position": {
+            "x": 17,
+            "y": 8,
+            "colSpan": 5,
+            "rowSpan": 4
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "options",
+                "isOptional": true
+              },
+              {
+                "name": "sharedTimeRange",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+            "settings": {
+              "content": {
+                "options": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
+                        },
+                        "name": "customMetrics/PeekedTimeSeriesMessageAge",
+                        "aggregationType": 4,
+                        "namespace": "microsoft.insights/components/kusto",
+                        "metricVisualization": {
+                          "displayName": "PeekedTimeSeriesMessageAge"
+                        }
+                      }
+                    ],
+                    "title": "Avg PeekedTimeSeriesMessageAge for ${appi_sharedres_name}",
+                    "titleKind": 1,
+                    "visualization": {
+                      "chartType": 2,
+                      "legendVisualization": {
+                        "isVisible": true,
+                        "position": 2,
+                        "hideHoverCard": false,
+                        "hideLabelNames": true
+                      },
+                      "axisVisualization": {
+                        "x": {
+                          "isVisible": true,
+                          "axisType": 2
+                        },
+                        "y": {
+                          "isVisible": true,
+                          "axisType": 1
+                        }
+                      },
+                      "disablePinning": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "11": {
+          "position": {
+            "x": 0,
+            "y": 12,
+            "colSpan": 2,
+            "rowSpan": 4
+          },
+          "metadata": {
+            "inputs": [],
+            "type": "Extension/HubsExtension/PartType/MarkdownPart",
+            "settings": {
+              "content": {
+                "content": "## Failures",
+                "markdownSource": 1,
+                "markdownUri": "",
+                "subtitle": "",
+                "title": ""
+              }
+            }
+          }
+        },
+        "12": {
+          "position": {
+            "x": 2,
+            "y": 12,
+            "colSpan": 5,
+            "rowSpan": 4
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "options",
+                "isOptional": true
+              },
+              {
+                "name": "sharedTimeRange",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+            "settings": {
+              "content": {
+                "options": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "aggregationType": 7,
+                        "metricVisualization": {
+                          "displayName": "Http 4xx",
+                          "resourceDisplayName": "${timeseriessync_name}"
+                        },
+                        "name": "Http4xx",
+                        "namespace": "microsoft.web/sites",
+                        "resourceMetadata": {
+                          "id": "${timeseriessync_id}"
+                        }
+                      },
+                      {
+                        "aggregationType": 7,
+                        "metricVisualization": {
+                          "displayName": "Http Server Errors",
+                          "resourceDisplayName": "${timeseriessync_name}"
+                        },
+                        "name": "Http5xx",
+                        "namespace": "microsoft.web/sites",
+                        "resourceMetadata": {
+                          "id": "${timeseriessync_id}"
+                        }
+                      }
+                    ],
+                    "title": "Count Http 4xx and 5xx",
+                    "titleKind": 2,
+                    "visualization": {
+                      "axisVisualization": {
+                        "x": {
+                          "axisType": 2,
+                          "isVisible": true
+                        },
+                        "y": {
+                          "axisType": 1,
+                          "isVisible": true
+                        }
+                      },
+                      "chartType": 2,
+                      "disablePinning": true,
+                      "legendVisualization": {
+                        "hideHoverCard": false,
+                        "hideLabelNames": true,
+                        "isVisible": true,
+                        "position": 2
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "13": {
+          "position": {
+            "x": 7,
+            "y": 12,
+            "colSpan": 5,
+            "rowSpan": 4
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "options",
+                "isOptional": true
+              },
+              {
+                "name": "sharedTimeRange",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+            "settings": {
+              "content": {
+                "options": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "aggregationType": 4,
+                        "metricVisualization": {
+                          "displayName": "Count of dead-lettered messages in a Queue/Topic.",
+                          "resourceDisplayName": "${sbns_shared_name}"
+                        },
+                        "name": "DeadletteredMessages",
+                        "namespace": "microsoft.servicebus/namespaces",
+                        "resourceMetadata": {
+                          "id": "${sbns_shared_id}"
+                        }
+                      }
+                    ],
+                    "title": "Dead-lettered messages in time series ServiceBus Queue",
+                    "titleKind": 2,
+                    "visualization": {
+                      "axisVisualization": {
+                        "x": {
+                          "axisType": 2,
+                          "isVisible": true
+                        },
+                        "y": {
+                          "axisType": 1,
+                          "isVisible": true
+                        }
+                      },
+                      "chartType": 2,
+                      "disablePinning": true,
+                      "legendVisualization": {
+                        "hideHoverCard": false,
+                        "hideLabelNames": true,
+                        "isVisible": true,
+                        "position": 2
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "filters": {
+              "EntityName": {
+                "model": {
+                  "operator": "equals",
+                  "values": [
+                    "sbt-mig-imported-time-series-messages"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "14": {
+          "position": {
+            "x": 12,
+            "y": 12,
+            "colSpan": 5,
+            "rowSpan": 4
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "options",
+                "isOptional": true
+              },
+              {
+                "name": "sharedTimeRange",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+            "settings": {
+              "content": {
+                "options": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "aggregationType": 7,
+                        "metricVisualization": {
+                          "displayName": "Exceptions",
+                          "resourceDisplayName": "${appi_sharedres_name}"
+                        },
+                        "name": "exceptions/count",
+                        "namespace": "microsoft.insights/components",
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
+                        }
+                      }
+                    ],
+                    "title": "Count Exceptions in TimeSeriesSynchronization App",
+                    "titleKind": 2,
+                    "visualization": {
+                      "axisVisualization": {
+                        "x": {
+                          "axisType": 2,
+                          "isVisible": true
+                        },
+                        "y": {
+                          "axisType": 1,
+                          "isVisible": true
+                        }
+                      },
+                      "chartType": 1,
+                      "disablePinning": true,
+                      "legendVisualization": {
+                        "hideHoverCard": false,
+                        "hideLabelNames": true,
+                        "isVisible": true,
+                        "position": 2
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "filters": {
+              "cloud/roleName": {
+                "model": {
+                  "operator": "equals",
+                  "values": [
+                    "${timeseriessync_name}"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "15": {
+          "position": {
+            "x": 17,
+            "y": 12,
             "colSpan": 5,
             "rowSpan": 4
           },
@@ -643,6 +1041,8 @@
               {
                 "name": "Dimensions",
                 "value": {
+                  "aggregation": "Sum",
+                  "splitBy": [],
                   "xAxis": {
                     "name": "type",
                     "type": "string"
@@ -652,9 +1052,7 @@
                       "name": "exceptionCount",
                       "type": "long"
                     }
-                  ],
-                  "splitBy": [],
-                  "aggregation": "Sum"
+                  ]
                 },
                 "isOptional": true
               },
@@ -676,254 +1074,6 @@
             "settings": {
               "content": {
                 "PartTitle": "Exceptions by type"
-              }
-            }
-          }
-        },
-        "10": {
-          "position": {
-            "x": 0,
-            "y": 12,
-            "colSpan": 2,
-            "rowSpan": 4
-          },
-          "metadata": {
-            "inputs": [],
-            "type": "Extension/HubsExtension/PartType/MarkdownPart",
-            "settings": {
-              "content": {
-                "content": "## Failures",
-                "title": "",
-                "subtitle": "",
-                "markdownSource": 1,
-                "markdownUri": ""
-              }
-            }
-          }
-        },
-        "11": {
-          "position": {
-            "x": 2,
-            "y": 12,
-            "colSpan": 5,
-            "rowSpan": 4
-          },
-          "metadata": {
-            "inputs": [
-              {
-                "name": "options",
-                "isOptional": true
-              },
-              {
-                "name": "sharedTimeRange",
-                "isOptional": true
-              }
-            ],
-            "type": "Extension/HubsExtension/PartType/MonitorChartPart",
-            "settings": {
-              "content": {
-                "options": {
-                  "chart": {
-                    "metrics": [
-                      {
-                        "resourceMetadata": {
-                          "id": "${timeseriessync_id}"
-                        },
-                        "name": "Http4xx",
-                        "aggregationType": 7,
-                        "namespace": "microsoft.web/sites",
-                        "metricVisualization": {
-                          "displayName": "Http 4xx",
-                          "resourceDisplayName": "${timeseriessync_name}"
-                        }
-                      },
-                      {
-                        "resourceMetadata": {
-                          "id": "${timeseriessync_id}"
-                        },
-                        "name": "Http5xx",
-                        "aggregationType": 7,
-                        "namespace": "microsoft.web/sites",
-                        "metricVisualization": {
-                          "displayName": "Http Server Errors",
-                          "resourceDisplayName": "${timeseriessync_name}"
-                        }
-                      }
-                    ],
-                    "title": "Count Http 4xx and 5xx",
-                    "titleKind": 2,
-                    "visualization": {
-                      "chartType": 2,
-                      "legendVisualization": {
-                        "isVisible": true,
-                        "position": 2,
-                        "hideHoverCard": false,
-                        "hideLabelNames": true
-                      },
-                      "axisVisualization": {
-                        "x": {
-                          "isVisible": true,
-                          "axisType": 2
-                        },
-                        "y": {
-                          "isVisible": true,
-                          "axisType": 1
-                        }
-                      },
-                      "disablePinning": true
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "12": {
-          "position": {
-            "x": 7,
-            "y": 12,
-            "colSpan": 5,
-            "rowSpan": 4
-          },
-          "metadata": {
-            "inputs": [
-              {
-                "name": "options",
-                "isOptional": true
-              },
-              {
-                "name": "sharedTimeRange",
-                "isOptional": true
-              }
-            ],
-            "type": "Extension/HubsExtension/PartType/MonitorChartPart",
-            "settings": {
-              "content": {
-                "options": {
-                  "chart": {
-                    "metrics": [
-                      {
-                        "resourceMetadata": {
-                          "id": "${sbns_shared_id}"
-                        },
-                        "name": "DeadletteredMessages",
-                        "aggregationType": 4,
-                        "namespace": "microsoft.servicebus/namespaces",
-                        "metricVisualization": {
-                          "displayName": "Count of dead-lettered messages in a Queue/Topic.",
-                          "resourceDisplayName": "${sbns_shared_name}"
-                        }
-                      }
-                    ],
-                    "title": "Dead-lettered messages in time series ServiceBus Queue",
-                    "titleKind": 2,
-                    "visualization": {
-                      "chartType": 2,
-                      "legendVisualization": {
-                        "isVisible": true,
-                        "position": 2,
-                        "hideHoverCard": false,
-                        "hideLabelNames": true
-                      },
-                      "axisVisualization": {
-                        "x": {
-                          "isVisible": true,
-                          "axisType": 2
-                        },
-                        "y": {
-                          "isVisible": true,
-                          "axisType": 1
-                        }
-                      },
-                      "disablePinning": true
-                    }
-                  }
-                }
-              }
-            },
-            "filters": {
-              "EntityName": {
-                "model": {
-                  "operator": "equals",
-                  "values": [
-                    "sbq-mig-imported-time-series-messages"
-                  ]
-                }
-              }
-            }
-          }
-        },
-        "13": {
-          "position": {
-            "x": 12,
-            "y": 12,
-            "colSpan": 5,
-            "rowSpan": 4
-          },
-          "metadata": {
-            "inputs": [
-              {
-                "name": "options",
-                "isOptional": true
-              },
-              {
-                "name": "sharedTimeRange",
-                "isOptional": true
-              }
-            ],
-            "type": "Extension/HubsExtension/PartType/MonitorChartPart",
-            "settings": {
-              "content": {
-                "options": {
-                  "chart": {
-                    "metrics": [
-                      {
-                        "resourceMetadata": {
-                          "id": "${appi_sharedres_id}"
-                        },
-                        "name": "exceptions/count",
-                        "aggregationType": 7,
-                        "namespace": "microsoft.insights/components",
-                        "metricVisualization": {
-                          "displayName": "Exceptions",
-                          "resourceDisplayName": "${appi_sharedres_name}"
-                        }
-                      }
-                    ],
-                    "title": "Count Exceptions in TimeSeriesSynchronization App",
-                    "titleKind": 2,
-                    "visualization": {
-                      "chartType": 1,
-                      "legendVisualization": {
-                        "isVisible": true,
-                        "position": 2,
-                        "hideHoverCard": false,
-                        "hideLabelNames": true
-                      },
-                      "axisVisualization": {
-                        "x": {
-                          "isVisible": true,
-                          "axisType": 2
-                        },
-                        "y": {
-                          "isVisible": true,
-                          "axisType": 1
-                        }
-                      },
-                      "disablePinning": true
-                    }
-                  }
-                }
-              }
-            },
-            "filters": {
-              "cloud/roleName": {
-                "model": {
-                  "operator": "equals",
-                  "values": [
-                    "${timeseriessync_name}"
-                  ]
-                }
               }
             }
           }
@@ -958,17 +1108,19 @@
               "value": "Past 24 hours"
             },
             "filteredPartIds": [
-              "StartboardPart-MonitorChartPart-9e5bff81-3a06-4f11-884d-d46dfa203125",
-              "StartboardPart-MonitorChartPart-9e5bff81-3a06-4f11-884d-d46dfa203127",
-              "StartboardPart-MonitorChartPart-9e5bff81-3a06-4f11-884d-d46dfa203129",
-              "StartboardPart-MonitorChartPart-9e5bff81-3a06-4f11-884d-d46dfa20312b",
-              "StartboardPart-MonitorChartPart-9e5bff81-3a06-4f11-884d-d46dfa20312d",
-              "StartboardPart-MonitorChartPart-9e5bff81-3a06-4f11-884d-d46dfa203131",
-              "StartboardPart-MonitorChartPart-9e5bff81-3a06-4f11-884d-d46dfa203133",
-              "StartboardPart-LogsDashboardPart-9e5bff81-3a06-4f11-884d-d46dfa203135",
-              "StartboardPart-MonitorChartPart-9e5bff81-3a06-4f11-884d-d46dfa203139",
-              "StartboardPart-MonitorChartPart-9e5bff81-3a06-4f11-884d-d46dfa20313b",
-              "StartboardPart-MonitorChartPart-9e5bff81-3a06-4f11-884d-d46dfa20313d"
+              "StartboardPart-MonitorChartPart-7a22d007-957e-478d-86cc-6fea417f0238",
+              "StartboardPart-MonitorChartPart-7a22d007-957e-478d-86cc-6fea417f023a",
+              "StartboardPart-MonitorChartPart-7a22d007-957e-478d-86cc-6fea417f023c",
+              "StartboardPart-MonitorChartPart-7a22d007-957e-478d-86cc-6fea417f023e",
+              "StartboardPart-MonitorChartPart-7a22d007-957e-478d-86cc-6fea417f0240",
+              "StartboardPart-MonitorChartPart-7a22d007-957e-478d-86cc-6fea417f0244",
+              "StartboardPart-MonitorChartPart-7a22d007-957e-478d-86cc-6fea417f0246",
+              "StartboardPart-LogsDashboardPart-7a22d007-957e-478d-86cc-6fea417f0248",
+              "StartboardPart-MonitorChartPart-7a22d007-957e-478d-86cc-6fea417f02a1",
+              "StartboardPart-MonitorChartPart-7a22d007-957e-478d-86cc-6fea417f024c",
+              "StartboardPart-MonitorChartPart-7a22d007-957e-478d-86cc-6fea417f024e",
+              "StartboardPart-MonitorChartPart-7a22d007-957e-478d-86cc-6fea417f0250",
+              "StartboardPart-MonitorChartPart-dc5fc6be-36cc-46c6-8512-10866aac01a1"
             ]
           }
         }
