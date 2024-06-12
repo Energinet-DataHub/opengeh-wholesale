@@ -1,5 +1,5 @@
 module "app_health_checks" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=14.7.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=14.19.1"
 
   name                                   = "healthchecks"
   project_name                           = var.domain_name_short

@@ -10,7 +10,7 @@ resource "databricks_sql_endpoint" "migration_sql_endpoint" {
 }
 
 module "kvs_databricks_sql_endpoint_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.19.1"
 
   name         = "dbw-databricks-sql-endpoint-id"
   value        = resource.databricks_sql_endpoint.migration_sql_endpoint.id

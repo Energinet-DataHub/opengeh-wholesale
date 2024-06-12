@@ -1,5 +1,5 @@
 module "st_dh2timeseries_intermediary" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=v14"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=14.19.1"
 
   name                       = "dh2tsinter"
   project_name               = var.domain_name_short

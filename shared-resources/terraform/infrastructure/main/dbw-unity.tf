@@ -93,7 +93,7 @@ resource "databricks_grant" "self_storage_credential" {
 }
 
 module "shared_unity_catalog_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.11.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.19.1"
 
   name         = "shared-unity-catalog-name"
   value        = databricks_catalog.shared.id # ID is the same as the name
@@ -101,7 +101,7 @@ module "shared_unity_catalog_name" {
 }
 
 module "unity_storage_credential_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.11.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.19.1"
 
   name         = "unity-storage-credential-id"
   value        = local.credential_name
@@ -109,7 +109,7 @@ module "unity_storage_credential_id" {
 }
 
 module "shared_access_connector_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.11.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=14.19.1"
 
   name         = "shared-access-connector-principal-id"
   value        = data.azurerm_databricks_access_connector.this.identity[0].principal_id

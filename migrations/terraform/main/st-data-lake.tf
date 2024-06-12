@@ -1,5 +1,5 @@
 module "st_migrations" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=v14"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=14.19.1"
 
   name                       = "migrations"
   project_name               = var.domain_name_short
