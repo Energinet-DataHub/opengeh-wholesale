@@ -121,7 +121,7 @@ class TestWhenValidInput:
             Colname.grid_area_code: "002",
             Colname.to_grid_area_code: None,
             Colname.from_grid_area_code: None,
-            Colname.balance_responsible_id: None,
+            Colname.balance_responsible_id: grid_loss_responsible_factories.DEFAULT_BALANCE_RESPONSIBLE_ID,
             Colname.energy_supplier_id: grid_loss_responsible_factories.DEFAULT_ENERGY_SUPPLIER_ID,
             Colname.observation_time: grid_loss_responsible_factories.DEFAULT_FROM_DATE.replace(
                 tzinfo=None
