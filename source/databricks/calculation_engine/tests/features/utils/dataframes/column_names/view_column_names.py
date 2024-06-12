@@ -13,7 +13,7 @@
 # limitations under the License.
 from typing import Union
 
-from pyspark.sql.types import StringType, LongType, TimestampType
+from pyspark.sql.types import StringType, LongType, TimestampType, DecimalType
 
 from features.utils.dataframes.column_names.column_name import ColumnName
 
@@ -34,6 +34,8 @@ class ViewColumnNames:
     # Column Names in alphabetical order
     calculation_id = ColumnName("calculation_id", StringType())
     calculation_type = ColumnName("calculation_type", StringType())
+    calculation_period_start = ColumnName("calculation_period_start", TimestampType())
+    calculation_period_end = ColumnName("calculation_period_end", TimestampType())
     calculation_version = ColumnName("calculation_version", LongType())
     energy_supplier_id = ColumnName("energy_supplier_id", StringType())
     from_date = ColumnName("from_date", TimestampType())
@@ -41,9 +43,15 @@ class ViewColumnNames:
     grid_area_code = ColumnName("grid_area_code", StringType())
     metering_point_id = ColumnName("metering_point_id", StringType())
     metering_point_type = ColumnName("metering_point_type", StringType())
+    quantity = ColumnName("quantity", DecimalType(18, 3))
+    quantity_qualities = ColumnName("quantity_qualities", StringType())
+    resolution = ColumnName("resolution", StringType())
+    result = ColumnName("result_id", StringType())
     settlement_method = ColumnName("settlement_method", StringType())
+    time = ColumnName("time", TimestampType())
     to_date = ColumnName("to_date", TimestampType())
     to_grid_area_code = ColumnName("to_grid_area_code", StringType())
+    unit = ColumnName("unit", StringType())
 
 
 # charge_count = "charge_count"
@@ -62,9 +70,7 @@ class ViewColumnNames:
 # from_date = "from_date"
 # from_grid_area_code = "from_grid_area_code"
 # "The grid area sending current"
-# grid_area_code = "grid_area_code"
 # metering_point_id = "metering_point_id"
-# metering_point_type = "type"
 # observation_time = "observation_time"
 # """When the production/consumption/exchange actually happened."""
 # parent_metering_point_id = "parent_metering_point_id"
