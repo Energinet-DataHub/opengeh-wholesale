@@ -25,7 +25,7 @@ from pyspark.sql.types import (
     IntegerType,
 )
 
-from features.utils.dataframes.column_names.column import Column
+from features.utils.dataframes.columns.column import Column
 
 
 class ViewColumns:

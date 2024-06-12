@@ -14,7 +14,7 @@
 import pytest
 from pyspark.sql import SparkSession, DataFrame
 
-from features.utils.dataframes.column_names.view_columns import ViewColumns
+from features.utils.dataframes.columns.view_columns import ViewColumns
 
 
 @pytest.mark.parametrize(
@@ -24,7 +24,7 @@ from features.utils.dataframes.column_names.view_columns import ViewColumns
         "wholesale_calculation_results",
     ],
 )
-def test__public_data_model_views_has_valid_column_names_and_types(
+def test__public_data_model_views_have_registered_column_names_and_types(
     migrations_executed: None,
     spark: SparkSession,
     database_name: str,
