@@ -75,14 +75,20 @@ public class DatabricksSchemaManager
 
     public async Task DropSchemaAsync()
     {
-        var sqlStatement = @$"DROP SCHEMA {SchemaName} CASCADE";
-        await ExecuteSqlAsync(sqlStatement);
+        try
+        {
+            var sqlStatement = @$"DROP SCHEMA {SchemaName} CASCADE";
+            await ExecuteSqlAsync(sqlStatement);
 
-        sqlStatement = @$"DROP SCHEMA {DeltaTableOptions.Value.BasisDataSchemaName} CASCADE";
-        await ExecuteSqlAsync(sqlStatement);
+            sqlStatement = @$"DROP SCHEMA {DeltaTableOptions.Value.BasisDataSchemaName} CASCADE";
+            await ExecuteSqlAsync(sqlStatement);
 
-        sqlStatement = @$"DROP SCHEMA {DeltaTableOptions.Value.SettlementReportSchemaName} CASCADE";
-        await ExecuteSqlAsync(sqlStatement);
+            sqlStatement = @$"DROP SCHEMA {DeltaTableOptions.Value.SettlementReportSchemaName} CASCADE";
+            await ExecuteSqlAsync(sqlStatement);
+        }
+        catch
+        {
+        }
     }
 
     /// <summary>
