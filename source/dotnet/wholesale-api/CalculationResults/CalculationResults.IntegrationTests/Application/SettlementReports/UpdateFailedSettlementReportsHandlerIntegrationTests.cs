@@ -43,13 +43,13 @@ public sealed class UpdateFailedSettlementReportsHandlerIntegrationTests : TestB
     {
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
         var settlementReportRequest = new SettlementReportRequestDto(
-            CalculationType.BalanceFixing,
             false,
             false,
             new SettlementReportRequestFilterDto(
                 new Dictionary<string, CalculationId>(),
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow,
+                CalculationType.BalanceFixing,
                 null,
                 null));
 

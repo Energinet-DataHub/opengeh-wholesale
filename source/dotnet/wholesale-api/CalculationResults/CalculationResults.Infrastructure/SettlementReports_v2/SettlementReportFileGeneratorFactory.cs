@@ -44,13 +44,10 @@ public sealed class SettlementReportFileGeneratorFactory : ISettlementReportFile
             case SettlementReportFileContent.EnergyResultForCalculationId:
                 return new EnergyResultFileGenerator(_settlementReportEnergyResultRepository);
             case SettlementReportFileContent.WholesaleResult:
-                return new WholesaleResultFileGenerator(_settlementReportWholesaleRepository, CalculationType.WholesaleFixing);
             case SettlementReportFileContent.FirstCorrectionResult:
-                return new WholesaleResultFileGenerator(_settlementReportWholesaleRepository, CalculationType.FirstCorrectionSettlement);
             case SettlementReportFileContent.SecondCorrectionResult:
-                return new WholesaleResultFileGenerator(_settlementReportWholesaleRepository, CalculationType.SecondCorrectionSettlement);
             case SettlementReportFileContent.ThirdCorrectionResult:
-                return new WholesaleResultFileGenerator(_settlementReportWholesaleRepository, CalculationType.ThirdCorrectionSettlement);
+                return new WholesaleResultFileGenerator(_settlementReportWholesaleRepository);
             case SettlementReportFileContent.ChargeLinksPeriods:
                 return new ChargeLinkPeriodsFileGenerator(_settlementReportChargeLinkPeriodsRepository);
             default:

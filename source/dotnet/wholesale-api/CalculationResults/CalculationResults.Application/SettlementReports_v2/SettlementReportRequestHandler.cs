@@ -33,7 +33,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
     {
         var setsOfFiles = new List<IAsyncEnumerable<SettlementReportFileRequestDto>>();
 
-        switch (reportRequest.CalculationType)
+        switch (reportRequest.Filter.CalculationType)
         {
             case CalculationType.BalanceFixing:
                 setsOfFiles.Add(RequestFilesForEnergyResultsAsync(true, requestId, reportRequest));
@@ -75,7 +75,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
 
                 break;
             default:
-                throw new InvalidOperationException($"Cannot generate report for calculation type {reportRequest.CalculationType}.");
+                throw new InvalidOperationException($"Cannot generate report for calculation type {reportRequest.Filter.CalculationType}.");
         }
 
         var filesToRequest = new List<SettlementReportFileRequestDto>();

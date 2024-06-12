@@ -29,11 +29,11 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SettlementReports_v2;
 
-public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementReportWholesaleRepository>, IClassFixture<DatabricksSqlStatementApiFixture>
+public class SettlementReportChargeLinkPeriodsRepositoryTests : TestBase<SettlementReportWholesaleRepository>, IClassFixture<DatabricksSqlStatementApiFixture>
 {
     private readonly DatabricksSqlStatementApiFixture _databricksSqlStatementApiFixture;
 
-    public SettlementReportWholesaleRepositoryTests(DatabricksSqlStatementApiFixture databricksSqlStatementApiFixture)
+    public SettlementReportChargeLinkPeriodsRepositoryTests(DatabricksSqlStatementApiFixture databricksSqlStatementApiFixture)
     {
         _databricksSqlStatementApiFixture = databricksSqlStatementApiFixture;
 
@@ -48,13 +48,14 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
             WHOLESALE_RESULTS_TABLE_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.WHOLESALE_RESULTS_TABLE_NAME,
             TOTAL_MONTHLY_AMOUNTS_TABLE_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
             CalculationResultsSchemaName = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CalculationResultsSchemaName,
+            CHARGE_LINK_PERIODS_V1_VIEW_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CHARGE_LINK_PERIODS_V1_VIEW_NAME,
         });
 
         Fixture.Inject(mockedOptions);
         Fixture.Inject(_databricksSqlStatementApiFixture.GetDatabricksExecutor());
         var calculationsClientMock = new Mock<ICalculationsClient>();
         calculationsClientMock.Setup(x => x.GetAsync(It.IsAny<Guid>())).ReturnsAsync(new CalculationDto(null, Guid.Empty, DateTimeOffset.Now, DateTimeOffset.Now, "a", "b", DateTimeOffset.Now, DateTimeOffset.Now, CalculationState.Completed, true, [], CalculationType.Aggregation, Guid.Empty, 1, CalculationOrchestrationState.Calculated));
-        Fixture.Inject<ISettlementReportWholesaleResultQueries>(new SettlementReportWholesaleResultQueries(
+        Fixture.Inject<ISettlementReportChargeLinkPeriodsQueries>(new SettlementReportChargeLinkPeriodsQueries(
             mockedOptions.Object,
             _databricksSqlStatementApiFixture.GetDatabricksExecutor(),
             calculationsClientMock.Object));
@@ -63,8 +64,8 @@ public class SettlementReportWholesaleRepositoryTests : TestBase<SettlementRepor
     [Fact]
     public async Task Count_ValidFilter_ReturnsCount()
     {
-        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportWholesaleViewColumns>(
-            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME,
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportChargeLinkPeriodsViewColumns>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CHARGE_LINK_PERIODS_V1_VIEW_NAME,
             [
                 ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'403'", "'8397670583196'", "'2024-01-02T02:00:00.000+00:00'", "'PT1H'", "'consumption'", "'flex'", "'kWh'", "'DKK'", "46.543", "0.712345", "32.123456", "'tariff'", "'40000'", "'6392825108998'"],
             ]);

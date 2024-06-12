@@ -36,13 +36,13 @@ public sealed class SettlementReportFinalizeHandlerIntegrationTests : TestBase<S
     private readonly SettlementReportFileBlobStorageFixture _settlementReportFileBlobStorageFixture;
 
     private readonly SettlementReportRequestDto _mockedSettlementReportRequest = new(
-        CalculationType.BalanceFixing,
         false,
         false,
         new SettlementReportRequestFilterDto(
             new Dictionary<string, CalculationId>(),
             DateTimeOffset.UtcNow,
             DateTimeOffset.UtcNow,
+            CalculationType.BalanceFixing,
             null,
             null));
 

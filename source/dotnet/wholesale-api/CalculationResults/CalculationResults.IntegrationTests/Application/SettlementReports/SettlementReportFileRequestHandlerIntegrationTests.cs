@@ -103,6 +103,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             _gridAreaCodes.ToDictionary(x => x, _ => new CalculationId(calculationId)),
             _january1St.ToDateTimeOffset(),
             _january5Th.ToDateTimeOffset(),
+            CalculationType.WholesaleFixing,
             null,
             null);
 

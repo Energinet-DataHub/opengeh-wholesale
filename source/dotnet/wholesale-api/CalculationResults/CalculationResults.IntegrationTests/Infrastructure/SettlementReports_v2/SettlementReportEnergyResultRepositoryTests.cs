@@ -21,6 +21,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
@@ -75,6 +76,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 },
                 DateTimeOffset.Parse("2022-01-10T03:00:00.000+00:00"),
                 DateTimeOffset.Parse("2022-01-10T03:30:00.000+00:00"),
+                CalculationType.BalanceFixing,
                 null,
                 "da-DK"));
 
@@ -100,6 +102,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 },
                 DateTimeOffset.Parse("2022-01-10T03:00:00.000+00:00"),
                 DateTimeOffset.Parse("2022-01-10T03:30:00.000+00:00"),
+                CalculationType.BalanceFixing,
                 "8236015961810",
                 "da-DK"));
 
@@ -127,6 +130,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 },
                 DateTimeOffset.Parse("2022-01-10T02:00:00.000+00:00"),
                 DateTimeOffset.Parse("2022-01-10T03:00:00.000+00:00"),
+                CalculationType.BalanceFixing,
                 null,
                 "da-DK"));
 
@@ -154,6 +158,7 @@ public class SettlementReportEnergyResultRepositoryTests : TestBase<SettlementRe
                 },
                 DateTimeOffset.Parse("2022-01-10T02:00:00.000+00:00"),
                 DateTimeOffset.Parse("2022-01-10T03:00:00.000+00:00"),
+                CalculationType.BalanceFixing,
                 "8236015961810",
                 "da-DK"));
 

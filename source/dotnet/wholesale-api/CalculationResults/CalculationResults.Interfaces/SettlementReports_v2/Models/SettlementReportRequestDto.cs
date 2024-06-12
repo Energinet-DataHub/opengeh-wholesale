@@ -17,7 +17,6 @@ using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
 public sealed record SettlementReportRequestDto(
-    CalculationType CalculationType,
     bool SplitReportPerGridArea,
     bool IncludeBasisData,
     SettlementReportRequestFilterDto Filter);

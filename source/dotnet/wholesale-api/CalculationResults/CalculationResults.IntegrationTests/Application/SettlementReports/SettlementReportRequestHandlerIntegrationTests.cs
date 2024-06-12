@@ -52,11 +52,12 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             calculationFilter,
             DateTimeOffset.UtcNow.Date,
             DateTimeOffset.UtcNow.Date.AddDays(2),
+            CalculationType.BalanceFixing,
             null,
             null);
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
-        var reportRequest = new SettlementReportRequestDto(CalculationType.BalanceFixing, false, false, filter);
+        var reportRequest = new SettlementReportRequestDto(false, false, filter);
 
         var mockedGenerator = new Mock<ISettlementReportFileGenerator>();
         mockedGenerator
@@ -102,11 +103,12 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             calculationFilter,
             DateTimeOffset.UtcNow.Date,
             DateTimeOffset.UtcNow.Date.AddDays(2),
+            CalculationType.BalanceFixing,
             null,
             null);
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
-        var reportRequest = new SettlementReportRequestDto(CalculationType.BalanceFixing, false, false, filter);
+        var reportRequest = new SettlementReportRequestDto(false, false, filter);
 
         // Act
         var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
@@ -137,11 +139,12 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             calculationFilter,
             DateTimeOffset.UtcNow.Date,
             DateTimeOffset.UtcNow.Date.AddDays(2),
+            CalculationType.BalanceFixing,
             null,
             null);
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
-        var reportRequest = new SettlementReportRequestDto(CalculationType.BalanceFixing, true, false, filter);
+        var reportRequest = new SettlementReportRequestDto(true, false, filter);
 
         // Act
         var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
@@ -177,11 +180,12 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             calculationFilter,
             DateTimeOffset.UtcNow.Date,
             DateTimeOffset.UtcNow.Date.AddDays(2),
+            calculationType,
             null,
             null);
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
-        var reportRequest = new SettlementReportRequestDto(calculationType, false, false, filter);
+        var reportRequest = new SettlementReportRequestDto(false, false, filter);
 
         // Act
         var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
@@ -218,11 +222,12 @@ public sealed class SettlementReportRequestHandlerIntegrationTests : TestBase<Se
             calculationFilter,
             DateTimeOffset.UtcNow.Date,
             DateTimeOffset.UtcNow.Date.AddDays(2),
+            calculationType,
             null,
             null);
 
         var requestId = new SettlementReportRequestId(Guid.NewGuid().ToString());
-        var reportRequest = new SettlementReportRequestDto(calculationType, true, false, filter);
+        var reportRequest = new SettlementReportRequestDto(true, false, filter);
 
         // Act
         var actual = (await Sut.RequestReportAsync(requestId, reportRequest)).ToList();
