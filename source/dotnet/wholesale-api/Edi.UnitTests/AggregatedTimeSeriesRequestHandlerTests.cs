@@ -251,6 +251,75 @@ public class AggregatedTimeSeriesRequestHandlerTests
                     It.Is<AggregatedTimeSeriesQueryParameters>(x => x.GridAreaCodes.Count == 0)))
             .Returns(() => aggregatedTimeSeries.ToAsyncEnumerable());
 
+        completedCalculationRetriever.Setup(c => c.GetLatestCompletedCalculationsForPeriodAsync(
+                It.IsAny<IReadOnlyCollection<string>>(),
+                It.IsAny<Energinet.DataHub.Wholesale.Edi.Models.Period>(),
+                It.IsAny<RequestedCalculationType>()))
+            .ReturnsAsync(new List<CalculationForPeriod>
+            {
+                new(
+                    new Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.Period(
+                        start,
+                        end),
+                    Guid.NewGuid(),
+                    1),
+            }.AsReadOnly());
+
+        var sut = new AggregatedTimeSeriesRequestHandler(
+            senderMock.Object,
+            validator.Object,
+            aggregatedTimeSeriesQueries.Object,
+            logger.Object,
+            completedCalculationRetriever.Object);
+
+        // Act
+        await sut.ProcessAsync(
+            serviceBusReceivedMessage,
+            expectedReferenceId,
+            CancellationToken.None);
+
+        // Assert
+        senderMock.Verify(
+            bus => bus.SendAsync(
+            It.Is<ServiceBusMessage>(message =>
+                message.Subject.Equals(expectedRejectedSubject)
+                && message.WithErrorCode(_noDataForRequestedGridArea.ErrorCode)
+                && message.ApplicationProperties.ContainsKey("ReferenceId")
+                && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
+            It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task ProcessAsync_WhenNoCalculations_SendsRejectedEdiMessage(
+        [Frozen] Mock<IAggregatedTimeSeriesQueries> aggregatedTimeSeriesQueries,
+        [Frozen] Mock<IEdiClient> senderMock,
+        [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
+        [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> logger,
+        [Frozen] Mock<CompletedCalculationRetriever> completedCalculationRetriever)
+    {
+        // Arrange
+        const string expectedRejectedSubject = nameof(AggregatedTimeSeriesRequestRejected);
+        var expectedReferenceId = Guid.NewGuid().ToString();
+        var request = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithRequestedByActorRole(DataHubNames.ActorRole.EnergySupplier)
+            .WithGridArea("303")
+            .Build();
+        var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
+            properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
+            body: new BinaryData(request.ToByteArray()));
+
+        var start = DateTimeOffset.Parse("2022-01-01T00:00Z").ToInstant();
+        var end = DateTimeOffset.Parse("2022-01-01T00:15Z").ToInstant();
+        var aggregatedTimeSeries = CreateAggregatedTimeSeries(start, end);
+        aggregatedTimeSeriesQueries
+            .Setup(parameters =>
+                parameters.GetAsync(
+                    It.Is<AggregatedTimeSeriesQueryParameters>(x => x.GridAreaCodes.Count == 0)))
+            .Returns(() => aggregatedTimeSeries.ToAsyncEnumerable());
+
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
             validator.Object,
