@@ -13,16 +13,13 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 
-public interface ISettlementReportDataRepository
+public interface ISettlementReportWholesaleRepository
 {
-    public const string DataSourceUnavailableExceptionMessage = "Call to Databricks SQL Warehouse failed. Server may be cold.";
+    Task<int> CountAsync(CalculationType calculationType, SettlementReportRequestFilterDto filter);
 
-    /// <summary>
-    /// Streams the requested data from the data source.
-    /// If the data source is not ready, a TimeoutException with DataSourceUnavailableExceptionMessage is thrown.
-    /// </summary>
-    IAsyncEnumerable<SettlementReportResultRow> TryReadBalanceFixingResultsAsync(SettlementReportRequestFilterDto filter);
+    IAsyncEnumerable<SettlementReportWholesaleResultRow> GetAsync(CalculationType calculationType, SettlementReportRequestFilterDto filter, int skip, int take);
 }
