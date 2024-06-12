@@ -11,46 +11,41 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import pytest
 from pyspark.sql import SparkSession, DataFrame
 
 from features.utils.dataframes.column_names.view_columns import ViewColumns
 
 
+@pytest.mark.parametrize(
+    "database_name",
+    [
+        "settlement_report",
+        "wholesale_calculation_results",
+    ],
+)
 def test__public_data_model_views_has_valid_column_names_and_types(
     migrations_executed: None,
     spark: SparkSession,
+    database_name: str,
 ) -> None:
-    """Verify that all columns in all views in all public view model databases match the expected column names and data types"""
+    """Verify that all columns in all views in all public view models match the expected column names and data types"""
 
-    # Arrange
     view_columns = ViewColumns()
-    public_view_model_databases = [
-        "settlement_report",
-        "wholesale_calculation_results",
-    ]
     errors = []
+    spark.catalog.setCurrentDatabase(database_name)
+    views = spark.catalog.listTables()
 
-    for database_name in public_view_model_databases:
-        spark.catalog.setCurrentDatabase(database_name)
-        views = spark.catalog.listTables()
+    for view in views:
+        df = spark.read.format("delta").table(f"{database_name}.{view.name}")
 
-        for view in views:
-            df = spark.read.format("delta").table(f"{database_name}.{view.name}")
+        for column in df.columns:
+            try:
+                assert_name_and_data_type(column, df, view_columns)
+            except Exception as e:
+                errors.append(f"{view.name}: {e}")
 
-            for column in df.columns:
-                try:
-                    assert_name_and_data_type(column, df, view_columns)
-                except Exception as e:
-                    errors.append(f"{view.name}: {e}")
-
-    if len(errors) > 0:
-        for error in errors:
-            print(error)
-
-        assert False, "One or more assertions failed."
-    else:
-        assert True
+    assert not errors, "\n".join(errors) if errors else "All assertions passed."
 
 
 def assert_name_and_data_type(

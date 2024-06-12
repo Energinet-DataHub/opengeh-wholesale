@@ -49,6 +49,7 @@ class ViewColumns:
 
     # Column names in alphabetical order
     amount = Column("amount", DecimalType(18, 6))
+    balance_responsible_party_id = Column("balance_responsible_party_id", StringType())
     calculation_id = Column("calculation_id", StringType())
     calculation_type = Column("calculation_type", StringType())
     calculation_period_start = Column("calculation_period_start", TimestampType())
@@ -73,14 +74,25 @@ class ViewColumns:
                 [
                     StructField("time", TimestampType(), False),
                     StructField("price", DecimalType(18, 6), False),
-                ]
+                ],
             ),
             False,
         ),
     )
-    quantities = Column("quantities", DecimalType(18, 3))
+    quantities = Column(
+        "quantities",
+        ArrayType(
+            StructType(
+                [
+                    StructField("observation_time", TimestampType(), False),
+                    StructField("quantity", DecimalType(18, 3), False),
+                ],
+            ),
+            False,
+        ),
+    )
     quantity = Column("quantity", DecimalType(18, 3))
-    quantity_qualities = Column("quantity_qualities", StringType())
+    quantity_qualities = Column("quantity_qualities", ArrayType(StringType(), True))
     quantity_unit = Column("quantity_unit", StringType())
     resolution = Column("resolution", StringType())
     result = Column("result_id", StringType())
