@@ -94,6 +94,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
         var settlementReportRequest = new SettlementReportRequestDto(
             CalculationType.BalanceFixing,
             false,
+            false,
             new SettlementReportRequestFilterDto(
                 new Dictionary<string, CalculationId>
                 {
@@ -161,6 +162,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
 
         var settlementReportRequest = new SettlementReportRequestDto(
             CalculationType.BalanceFixing,
+            false,
             false,
             new SettlementReportRequestFilterDto(
                 new Dictionary<string, CalculationId>
@@ -242,6 +244,7 @@ public class SettlementReportOrchestrationTests : IAsyncLifetime
 
         var settlementReportRequest = new SettlementReportRequestDto(
             CalculationType.BalanceFixing,
+            false,
             false,
             new SettlementReportRequestFilterDto(
                 new Dictionary<string, CalculationId>

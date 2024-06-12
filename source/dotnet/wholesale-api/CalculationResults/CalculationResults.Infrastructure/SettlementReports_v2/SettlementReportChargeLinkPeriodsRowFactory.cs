@@ -12,28 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports_v2;
 
-public static class SettlementReportChargeLinkPeriodsResultRowFactory
+public static class SettlementReportChargeLinkPeriodsRowFactory
 {
-    public static SettlementReportChargeLinkPeriodsResultRow Create(DatabricksSqlRow databricksSqlRow, long version)
+    public static SettlementReportChargeLinkPeriodsRow Create(DatabricksSqlRow databricksSqlRow, long version)
     {
-        var periodStart = databricksSqlRow[SettlementReportChargeLinkPeriodsResultQueryStatement.ColumnNames.PeriodStart];
-        var periodEnd = databricksSqlRow[SettlementReportChargeLinkPeriodsResultQueryStatement.ColumnNames.PeriodEnd];
-        var quantity = databricksSqlRow[SettlementReportChargeLinkPeriodsResultQueryStatement.ColumnNames.Quantity];
-        var chargeType = databricksSqlRow[SettlementReportChargeLinkPeriodsResultQueryStatement.ColumnNames.ChargeType];
-        var chargeCode = databricksSqlRow[SettlementReportChargeLinkPeriodsResultQueryStatement.ColumnNames.ChargeCode];
-        var chargeOwnerId = databricksSqlRow[SettlementReportChargeLinkPeriodsResultQueryStatement.ColumnNames.ChargeOwnerId];
-        var meteringPointId = databricksSqlRow[SettlementReportChargeLinkPeriodsResultQueryStatement.ColumnNames.MeteringPointId];
-        var meteringPointType = databricksSqlRow[SettlementReportChargeLinkPeriodsResultQueryStatement.ColumnNames.MeteringPointType];
+        var periodStart = databricksSqlRow[SettlementReportChargeLinkPeriodsViewColumns.FromDate];
+        var periodEnd = databricksSqlRow[SettlementReportChargeLinkPeriodsViewColumns.ToDate];
+        var quantity = databricksSqlRow[SettlementReportChargeLinkPeriodsViewColumns.Quantity];
+        var chargeType = databricksSqlRow[SettlementReportChargeLinkPeriodsViewColumns.ChargeType];
+        var chargeCode = databricksSqlRow[SettlementReportChargeLinkPeriodsViewColumns.ChargeCode];
+        var chargeOwnerId = databricksSqlRow[SettlementReportChargeLinkPeriodsViewColumns.ChargeOwnerId];
+        var meteringPointId = databricksSqlRow[SettlementReportChargeLinkPeriodsViewColumns.MeteringPointId];
+        var meteringPointType = databricksSqlRow[SettlementReportChargeLinkPeriodsViewColumns.MeteringPointType];
 
-        return new SettlementReportChargeLinkPeriodsResultRow(
+        return new SettlementReportChargeLinkPeriodsRow(
             meteringPointId!,
             MeteringPointTypeMapper.FromDeltaTableValue(meteringPointType),
             ChargeTypeMapper.FromDeltaTableValue(chargeType!),

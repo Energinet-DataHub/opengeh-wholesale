@@ -60,6 +60,7 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             WHOLESALE_RESULTS_TABLE_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.WHOLESALE_RESULTS_TABLE_NAME,
             TOTAL_MONTHLY_AMOUNTS_TABLE_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
             CalculationResultsSchemaName = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CalculationResultsSchemaName,
+            CHARGE_LINK_PERIODS_V1_VIEW_NAME = _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CHARGE_LINK_PERIODS_V1_VIEW_NAME,
         });
 
         var calc = new CalculationDto(null, Guid.Empty, DateTimeOffset.Now, DateTimeOffset.Now, "a", "b", DateTimeOffset.Now, DateTimeOffset.Now, CalculationState.Completed, true, [], CalculationType.Aggregation, Guid.Empty, 1, CalculationOrchestrationState.Calculated);
@@ -79,7 +80,15 @@ public sealed class SettlementReportFileRequestHandlerIntegrationTests : TestBas
             _databricksSqlStatementApiFixture.GetDatabricksExecutor(),
             calculationsClientMock.Object));
 
-        Fixture.Inject<ISettlementReportFileGeneratorFactory>(new SettlementReportFileGeneratorFactory(settlementReportDataRepository, settlementReportWholesaleRepository));
+        var settlementReportChargeLinkPeriodsRepository = new SettlementReportChargeLinkPeriodsRepository(new SettlementReportChargeLinkPeriodsQueries(
+            mockedOptions.Object,
+            _databricksSqlStatementApiFixture.GetDatabricksExecutor(),
+            calculationsClientMock.Object));
+
+        Fixture.Inject<ISettlementReportFileGeneratorFactory>(new SettlementReportFileGeneratorFactory(
+            settlementReportDataRepository,
+            settlementReportWholesaleRepository,
+            settlementReportChargeLinkPeriodsRepository));
 
         var blobContainerClient = settlementReportFileBlobStorageFixture.CreateBlobContainerClient();
         Fixture.Inject<ISettlementReportFileRepository>(new SettlementReportFileBlobStorage(blobContainerClient));

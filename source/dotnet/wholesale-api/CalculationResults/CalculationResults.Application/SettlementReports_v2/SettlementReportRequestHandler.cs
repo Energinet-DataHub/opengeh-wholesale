@@ -41,6 +41,11 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
             case CalculationType.WholesaleFixing:
                 setsOfFiles.Add(RequestFilesForEnergyResultsAsync(false, requestId, reportRequest));
                 setsOfFiles.Add(RequestFilesForWholesaleResultsAsync(SettlementReportFileContent.WholesaleResult, requestId, reportRequest));
+                if (reportRequest.IncludeBasisData)
+                {
+                    setsOfFiles.Add(RequestFilesForChargeLinkPeriodsAsync(SettlementReportFileContent.ChargeLinksPeriods, requestId, reportRequest));
+                }
+
                 break;
             case CalculationType.FirstCorrectionSettlement:
                 setsOfFiles.Add(RequestFilesForEnergyResultsAsync(false, requestId, reportRequest));
@@ -104,6 +109,23 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
                 reportRequest.Filter);
 
         await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(resultWholesale, reportRequest.SplitReportPerGridArea).ConfigureAwait(false))
+        {
+            yield return splitFileRequest;
+        }
+    }
+
+    private async IAsyncEnumerable<SettlementReportFileRequestDto> RequestFilesForChargeLinkPeriodsAsync(
+        SettlementReportFileContent fileContent,
+        SettlementReportRequestId requestId,
+        SettlementReportRequestDto reportRequest)
+    {
+        var resultWholesale = new SettlementReportFileRequestDto(
+            fileContent,
+            new SettlementReportPartialFileInfo("Charge links on metering points"),
+            requestId,
+            reportRequest.Filter);
+
+        await foreach (var splitFileRequest in SplitFileRequestPerGridAreaAsync(resultWholesale, true).ConfigureAwait(false))
         {
             yield return splitFileRequest;
         }

@@ -23,13 +23,16 @@ public sealed class SettlementReportFileGeneratorFactory : ISettlementReportFile
 {
     private readonly ISettlementReportEnergyResultRepository _settlementReportEnergyResultRepository;
     private readonly ISettlementReportWholesaleRepository _settlementReportWholesaleRepository;
+    private readonly ISettlementReportChargeLinkPeriodsRepository _settlementReportChargeLinkPeriodsRepository;
 
     public SettlementReportFileGeneratorFactory(
         ISettlementReportEnergyResultRepository settlementReportEnergyResultRepository,
-        ISettlementReportWholesaleRepository settlementReportWholesaleRepository)
+        ISettlementReportWholesaleRepository settlementReportWholesaleRepository,
+        ISettlementReportChargeLinkPeriodsRepository settlementReportChargeLinkPeriodsRepository)
     {
         _settlementReportEnergyResultRepository = settlementReportEnergyResultRepository;
         _settlementReportWholesaleRepository = settlementReportWholesaleRepository;
+        _settlementReportChargeLinkPeriodsRepository = settlementReportChargeLinkPeriodsRepository;
     }
 
     public ISettlementReportFileGenerator Create(SettlementReportFileContent fileContent)
@@ -48,6 +51,8 @@ public sealed class SettlementReportFileGeneratorFactory : ISettlementReportFile
                 return new WholesaleResultFileGenerator(_settlementReportWholesaleRepository, CalculationType.SecondCorrectionSettlement);
             case SettlementReportFileContent.ThirdCorrectionResult:
                 return new WholesaleResultFileGenerator(_settlementReportWholesaleRepository, CalculationType.ThirdCorrectionSettlement);
+            case SettlementReportFileContent.ChargeLinksPeriods:
+                return new ChargeLinkPeriodsFileGenerator(_settlementReportChargeLinkPeriodsRepository);
             default:
                 throw new ArgumentOutOfRangeException(nameof(fileContent), fileContent, null);
         }
