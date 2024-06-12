@@ -33,7 +33,7 @@ from tests.helpers.data_frame_utils import set_column
 def _create_df(spark: SparkSession) -> DataFrame:
     row = {
         TotalMonthlyAmountsColumnNames.calculation_id: "9252d7a0-4363-42cc-a2d6-e04c026523f8",
-        TotalMonthlyAmountsColumnNames.calculation_type: "WholesaleFixing",
+        TotalMonthlyAmountsColumnNames.calculation_type: "wholesale_fixing",
         TotalMonthlyAmountsColumnNames.calculation_execution_time_start: datetime(
             2020, 1, 1, 0, 0
         ),
@@ -127,7 +127,7 @@ actor_eic = "1234567890123456"
             TotalMonthlyAmountsColumnNames.calculation_id,
             "9252d7a0-4363-42cc-a2d6-e04c026523f8",
         ),
-        (TotalMonthlyAmountsColumnNames.calculation_type, "WholesaleFixing"),
+        (TotalMonthlyAmountsColumnNames.calculation_type, "wholesale_fixing"),
         (
             TotalMonthlyAmountsColumnNames.calculation_result_id,
             "9252d7a0-4363-42cc-a2d6-e04c026523f8",

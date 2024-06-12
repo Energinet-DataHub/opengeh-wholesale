@@ -32,7 +32,7 @@ from package.infrastructure.paths import OutputDatabase
 def _create_df(spark: SparkSession) -> DataFrame:
     row = {
         MonthlyAmountsColumnNames.calculation_id: "9252d7a0-4363-42cc-a2d6-e04c026523f8",
-        MonthlyAmountsColumnNames.calculation_type: "WholesaleFixing",
+        MonthlyAmountsColumnNames.calculation_type: "wholesale_fixing",
         MonthlyAmountsColumnNames.calculation_execution_time_start: datetime(
             2020, 1, 1, 0, 0
         ),
@@ -158,7 +158,7 @@ actor_eic = "1234567890123456"
             MonthlyAmountsColumnNames.calculation_id,
             "9252d7a0-4363-42cc-a2d6-e04c026523f8",
         ),
-        (MonthlyAmountsColumnNames.calculation_type, "WholesaleFixing"),
+        (MonthlyAmountsColumnNames.calculation_type, "wholesale_fixing"),
         (
             MonthlyAmountsColumnNames.calculation_result_id,
             "9252d7a0-4363-42cc-a2d6-e04c026523f8",
