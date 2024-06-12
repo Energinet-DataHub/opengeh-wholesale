@@ -52,7 +52,7 @@ public sealed class SettlementReportFromFilesHandlerIntegrationTests : TestBase<
         await Task.WhenAll(inputFiles.Select(MakeTestFileAsync));
 
         // Act
-        var actual = await Sut.CombineAsync(inputFiles);
+        var actual = await Sut.CombineAsync(requestId, inputFiles);
 
         // Assert
         Assert.Equal(requestId, actual.RequestId);
@@ -90,7 +90,7 @@ public sealed class SettlementReportFromFilesHandlerIntegrationTests : TestBase<
         await Task.WhenAll(inputFiles.Select(MakeTestFileAsync));
 
         // Act
-        var actual = await Sut.CombineAsync(inputFiles);
+        var actual = await Sut.CombineAsync(requestId, inputFiles);
 
         // Assert
         Assert.Equal(requestId, actual.RequestId);
