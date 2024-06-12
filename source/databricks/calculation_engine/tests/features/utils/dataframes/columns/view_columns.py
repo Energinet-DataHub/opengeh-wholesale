@@ -65,9 +65,11 @@ class ViewColumns:
     from_date = Column("from_date", TimestampType())
     from_grid_area_code = Column("from_grid_area_code", StringType())
     grid_area_code = Column("grid_area_code", StringType())
+    in_grid_area_code = Column("in_grid_area_code", StringType())
     is_tax = Column("is_tax", BooleanType())
     metering_point_id = Column("metering_point_id", StringType())
     metering_point_type = Column("metering_point_type", StringType())
+    out_grid_area_code = Column("out_grid_area_code", StringType())
     price = Column("price", DecimalType(18, 6))
     price_points = Column(
         "price_points",
