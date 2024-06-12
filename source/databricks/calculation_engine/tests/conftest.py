@@ -37,7 +37,7 @@ from package.calculation.input.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
     grid_loss_metering_points_schema,
-    charge_master_data_periods_schema,
+    charge_price_information_periods_schema,
     charge_price_points_schema,
     charge_link_periods_schema,
 )
@@ -61,9 +61,9 @@ def test_files_folder_path(tests_path: str) -> str:
 def spark(
     test_session_configuration: TestSessionConfiguration,
     tests_path: str,
-    metastore_path: str,
 ) -> SparkSession:
     warehouse_location = f"{tests_path}/__spark-warehouse__"
+    metastore_path = f"{tests_path}/__metastore_db__"
 
     if (
         test_session_configuration.migrations.execute.value
@@ -89,6 +89,8 @@ def spark(
         .config("spark.worker.ui.retainedExecutors", "1")
         .config("spark.worker.ui.retainedDrivers", "1")
         .config("spark.default.parallelism", 1)
+        .config("spark.driver.memory", "2g")
+        .config("spark.executor.memory", "2g")
         .config("spark.rdd.compress", False)
         .config("spark.shuffle.compress", False)
         .config("spark.shuffle.spill.compress", False)
@@ -102,7 +104,7 @@ def spark(
         .config("spark.sql.catalogImplementation", "hive")
         .config(
             "javax.jdo.option.ConnectionURL",
-            "jdbc:derby:;databaseName=metastore_db;create=true",
+            f"jdbc:derby:;databaseName={metastore_path};create=true",
         )
         .config(
             "javax.jdo.option.ConnectionDriverName",
@@ -224,15 +226,9 @@ def calculation_output_path(data_lake_path: str) -> str:
 
 
 @pytest.fixture(scope="session")
-def metastore_path(tests_path: str) -> str:
-    return f"{tests_path}/metastore_db"
-
-
-@pytest.fixture(scope="session")
 def migrations_executed(
     spark: SparkSession,
     calculation_output_path: str,
-    metastore_path: str,
     energy_input_data_written_to_delta: None,
     test_session_configuration: TestSessionConfiguration,
 ) -> None:
@@ -434,10 +430,10 @@ def energy_input_data_written_to_delta(
 
     _write_input_test_data_to_table(
         spark,
-        file_name=f"{test_files_folder_path}/ChargeMasterDataPeriods.csv",
-        table_name=paths.InputDatabase.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME,
-        schema=charge_master_data_periods_schema,
-        table_location=f"{calculation_input_path}/{paths.InputDatabase.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}",
+        file_name=f"{test_files_folder_path}/ChargePriceInformationPeriods.csv",
+        table_name=paths.InputDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
+        schema=charge_price_information_periods_schema,
+        table_location=f"{calculation_input_path}/{paths.InputDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME}",
     )
 
     _write_input_test_data_to_table(
@@ -467,9 +463,9 @@ def price_input_data_written_to_delta(
     # Charge master data periods
     _write_input_test_data_to_table(
         spark,
-        file_name=f"{test_files_folder_path}/ChargeMasterDataPeriods.csv",
-        table_name=paths.InputDatabase.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME,
-        schema=charge_master_data_periods_schema,
+        file_name=f"{test_files_folder_path}/ChargePriceInformationPeriods.csv",
+        table_name=paths.InputDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
+        schema=charge_price_information_periods_schema,
         table_location=f"{calculation_input_path}/charge_price_information_periods",
     )
 

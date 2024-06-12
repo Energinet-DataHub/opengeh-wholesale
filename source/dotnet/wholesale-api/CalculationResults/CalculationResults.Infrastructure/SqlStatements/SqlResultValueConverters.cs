@@ -30,6 +30,13 @@ public static class SqlResultValueConverters
         return InstantPattern.ExtendedIso.Parse(value).Value;
     }
 
+    public static int? ToInt(string? value)
+    {
+        if (value == null)
+            return null;
+        return int.Parse(value, CultureInfo.InvariantCulture);
+    }
+
     public static decimal? ToDecimal(string? value)
     {
         if (value == null) return null;
