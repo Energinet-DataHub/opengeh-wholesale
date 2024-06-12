@@ -75,7 +75,7 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValida
 
         MustBeWithin3YearsAnd2Months(startInstant.Value, errors);
 
-        if (periodValidationHelper.PeriodStartIsPrecisely3YearsAnd2MonthsAgo(startInstant.Value))
+        if (periodValidationHelper.PeriodStartIs3YearsAnd2MonthsAgo(startInstant.Value))
         {
             var startUtc = startInstant.Value.ToDateTimeUtc();
             var endUtc = endInstant.Value.ToDateTimeUtc();
