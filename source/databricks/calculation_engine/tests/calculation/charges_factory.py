@@ -22,9 +22,9 @@ from package.calculation.preparation.data_structures.charge_link_metering_point_
     ChargeLinkMeteringPointPeriods,
     charge_link_metering_point_periods_schema,
 )
-from package.calculation.preparation.data_structures.charge_master_data import (
-    ChargeMasterData,
-    charge_master_data_schema,
+from package.calculation.preparation.data_structures.charge_price_information import (
+    ChargePriceInformation,
+    charge_price_information_schema,
 )
 from package.calculation.preparation.data_structures.charge_prices import (
     ChargePrices,
@@ -70,7 +70,7 @@ def create_time_series_row(
     )
 
 
-def create_charge_master_data_row(
+def create_charge_price_information_row(
     charge_code: str = DefaultValues.CHARGE_CODE,
     charge_type: ChargeType = DefaultValues.CHARGE_TYPE,
     charge_owner: str = DefaultValues.CHARGE_OWNER,
@@ -149,15 +149,15 @@ def create_charge_link_metering_point_periods_row(
     return Row(**row)
 
 
-def create_charge_master_data(
+def create_charge_price_information(
     spark: SparkSession, data: None | Row | list[Row] = None
-) -> ChargeMasterData:
+) -> ChargePriceInformation:
     if data is None:
-        data = [create_charge_master_data_row()]
+        data = [create_charge_price_information_row()]
     elif isinstance(data, Row):
         data = [data]
-    df = spark.createDataFrame(data, charge_master_data_schema)
-    return ChargeMasterData(df)
+    df = spark.createDataFrame(data, charge_price_information_schema)
+    return ChargePriceInformation(df)
 
 
 def create_charge_prices(

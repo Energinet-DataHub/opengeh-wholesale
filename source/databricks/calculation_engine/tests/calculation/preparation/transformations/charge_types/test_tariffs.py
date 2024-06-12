@@ -85,12 +85,12 @@ def test__get_prepared_tariffs__filters_on_resolution(
     """
     # Arrange
     time_series_rows = [factory.create_time_series_row()]
-    charge_master_data_rows = [
-        factory.create_charge_master_data_row(
+    charge_price_information_rows = [
+        factory.create_charge_price_information_row(
             charge_code="code_hour",
             resolution=e.ChargeResolution.HOUR,
         ),
-        factory.create_charge_master_data_row(
+        factory.create_charge_price_information_row(
             charge_code="code_day",
             resolution=e.ChargeResolution.DAY,
         ),
@@ -116,15 +116,15 @@ def test__get_prepared_tariffs__filters_on_resolution(
     time_series = prepared_metering_point_time_series_factory.create(
         spark, time_series_rows
     )
-    charge_master_data = factory.create_charge_master_data(
-        spark, charge_master_data_rows
+    charge_price_information = factory.create_charge_price_information(
+        spark, charge_price_information_rows
     )
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
     actual = get_prepared_tariffs(
         time_series,
-        charge_master_data,
+        charge_price_information,
         charge_prices,
         charge_link_metering_point_periods,
         charge_resolution,
@@ -155,12 +155,12 @@ def test__get_prepared_tariffs__filters_on_tariff_charge_type(
         ),
     ]
     time_series_rows = [factory.create_time_series_row()]
-    charge_master_data_rows = [
-        factory.create_charge_master_data_row(),
-        factory.create_charge_master_data_row(
+    charge_price_information_rows = [
+        factory.create_charge_price_information_row(),
+        factory.create_charge_price_information_row(
             charge_type=e.ChargeType.FEE, resolution=e.ChargeResolution.MONTH
         ),
-        factory.create_charge_master_data_row(
+        factory.create_charge_price_information_row(
             charge_type=e.ChargeType.SUBSCRIPTION, resolution=e.ChargeResolution.MONTH
         ),
     ]
@@ -179,15 +179,15 @@ def test__get_prepared_tariffs__filters_on_tariff_charge_type(
     time_series = prepared_metering_point_time_series_factory.create(
         spark, time_series_rows
     )
-    charge_master_data = factory.create_charge_master_data(
-        spark, charge_master_data_rows
+    charge_price_information = factory.create_charge_price_information(
+        spark, charge_price_information_rows
     )
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
     actual_tariff = get_prepared_tariffs(
         time_series,
-        charge_master_data,
+        charge_price_information,
         charge_prices,
         charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
@@ -235,8 +235,8 @@ def test__get_prepared_tariffs__only_accepts_charges_in_metering_point_period(
     time_series_rows = [
         factory.create_time_series_row(observation_time=from_date),
     ]
-    charge_master_data_rows = [
-        factory.create_charge_master_data_row(
+    charge_price_information_rows = [
+        factory.create_charge_price_information_row(
             from_date=from_date,
             to_date=to_date,
         )
@@ -255,15 +255,15 @@ def test__get_prepared_tariffs__only_accepts_charges_in_metering_point_period(
     time_series = prepared_metering_point_time_series_factory.create(
         spark, time_series_rows
     )
-    charge_master_data = factory.create_charge_master_data(
-        spark, charge_master_data_rows
+    charge_price_information = factory.create_charge_price_information(
+        spark, charge_price_information_rows
     )
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
     actual = get_prepared_tariffs(
         time_series,
-        charge_master_data,
+        charge_price_information,
         charge_prices,
         charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
@@ -291,7 +291,7 @@ def test__get_prepared_tariffs__when_same_metering_point_and_resolution__sums_qu
         factory.create_time_series_row(),
         factory.create_time_series_row(),
     ]
-    charge_master_data_rows = [factory.create_charge_master_data_row()]
+    charge_price_information_rows = [factory.create_charge_price_information_row()]
     charge_prices_rows = [factory.create_charge_prices_row()]
 
     charge_link_metering_point_periods = (
@@ -302,15 +302,15 @@ def test__get_prepared_tariffs__when_same_metering_point_and_resolution__sums_qu
     time_series = prepared_metering_point_time_series_factory.create(
         spark, time_series_rows
     )
-    charge_master_data = factory.create_charge_master_data(
-        spark, charge_master_data_rows
+    charge_price_information = factory.create_charge_price_information(
+        spark, charge_price_information_rows
     )
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
     actual = get_prepared_tariffs(
         time_series,
-        charge_master_data,
+        charge_price_information,
         charge_prices,
         charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
@@ -328,8 +328,8 @@ def test__get_prepared_tariffs__when_no_matching_charge_resolution__returns_empt
 ) -> None:
     # Arrange
     time_series_rows = [factory.create_time_series_row()]
-    charge_master_data_rows = [
-        factory.create_charge_master_data_row(resolution=e.ChargeResolution.DAY)
+    charge_price_information_rows = [
+        factory.create_charge_price_information_row(resolution=e.ChargeResolution.DAY)
     ]
     charge_prices_rows = [factory.create_charge_prices_row()]
     charge_link_metering_points_rows = [
@@ -346,15 +346,15 @@ def test__get_prepared_tariffs__when_no_matching_charge_resolution__returns_empt
             spark, charge_link_metering_points_rows
         )
     )
-    charge_master_data = factory.create_charge_master_data(
-        spark, charge_master_data_rows
+    charge_price_information = factory.create_charge_price_information(
+        spark, charge_price_information_rows
     )
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
     actual = get_prepared_tariffs(
         time_series,
-        charge_master_data,
+        charge_price_information,
         charge_prices,
         charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
@@ -370,9 +370,9 @@ def test__get_prepared_tariffs__when_two_tariff_overlap__returns_both_tariffs(
 ) -> None:
     # Arrange
     time_series_rows = [factory.create_time_series_row()]
-    charge_master_data_rows = [
-        factory.create_charge_master_data_row(charge_code="4000"),
-        factory.create_charge_master_data_row(charge_code="3000"),
+    charge_price_information_rows = [
+        factory.create_charge_price_information_row(charge_code="4000"),
+        factory.create_charge_price_information_row(charge_code="3000"),
     ]
     charge_prices_rows = [
         factory.create_charge_prices_row(charge_code="4000"),
@@ -390,8 +390,8 @@ def test__get_prepared_tariffs__when_two_tariff_overlap__returns_both_tariffs(
     time_series = prepared_metering_point_time_series_factory.create(
         spark, time_series_rows
     )
-    charge_master_data = factory.create_charge_master_data(
-        spark, charge_master_data_rows
+    charge_price_information = factory.create_charge_price_information(
+        spark, charge_price_information_rows
     )
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
     charge_link_metering_point_periods = (
@@ -403,7 +403,7 @@ def test__get_prepared_tariffs__when_two_tariff_overlap__returns_both_tariffs(
     # Act
     actual = get_prepared_tariffs(
         time_series,
-        charge_master_data,
+        charge_price_information,
         charge_prices,
         charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
@@ -425,7 +425,7 @@ def test__get_prepared_tariffs__returns_expected_tariff_values(
         factory.create_time_series_row(quality=e.QuantityQuality.CALCULATED),
         factory.create_time_series_row(quality=e.QuantityQuality.ESTIMATED),
     ]
-    charge_master_data_rows = [factory.create_charge_master_data_row()]
+    charge_price_information_rows = [factory.create_charge_price_information_row()]
     charge_prices_rows = [factory.create_charge_prices_row()]
 
     charge_link_metering_point_periods = (
@@ -436,8 +436,8 @@ def test__get_prepared_tariffs__returns_expected_tariff_values(
     time_series = prepared_metering_point_time_series_factory.create(
         spark, time_series_rows
     )
-    charge_master_data = factory.create_charge_master_data(
-        spark, charge_master_data_rows
+    charge_price_information = factory.create_charge_price_information(
+        spark, charge_price_information_rows
     )
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
     expected_row = [
@@ -450,7 +450,7 @@ def test__get_prepared_tariffs__returns_expected_tariff_values(
     # Act
     actual = get_prepared_tariffs(
         time_series,
-        charge_master_data,
+        charge_price_information,
         charge_prices,
         charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
@@ -494,10 +494,10 @@ def test__get_prepared_tariffs__when_charges_with_specific_charge_resolution_and
         )
     ]
     time_series_rows = []
-    charge_master_data_rows = []
+    charge_price_information_rows = []
     charge_prices_rows = []
-    charge_master_data_rows.append(
-        factory.create_charge_master_data_row(
+    charge_price_information_rows.append(
+        factory.create_charge_price_information_row(
             resolution=charge_resolution,
             from_date=datetime(2020, 1, 1, 23),
             to_date=datetime(2020, 1, 3, 23),
@@ -524,15 +524,15 @@ def test__get_prepared_tariffs__when_charges_with_specific_charge_resolution_and
     time_series = prepared_metering_point_time_series_factory.create(
         spark, time_series_rows
     )
-    charge_master_data = factory.create_charge_master_data(
-        spark, charge_master_data_rows
+    charge_price_information = factory.create_charge_price_information(
+        spark, charge_price_information_rows
     )
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
     actual = get_prepared_tariffs(
         time_series,
-        charge_master_data,
+        charge_price_information,
         charge_prices,
         charge_link_metering_point_periods,
         charge_resolution,
@@ -577,10 +577,10 @@ def test__get_prepared_tariffs__when_specific_charge_resolution_and_time_series_
         )
     ]
     time_series_rows = []
-    charge_master_data_rows = []
+    charge_price_information_rows = []
     charge_prices_rows = []
-    charge_master_data_rows.append(
-        factory.create_charge_master_data_row(
+    charge_price_information_rows.append(
+        factory.create_charge_price_information_row(
             resolution=charge_resolution,
             from_date=datetime(2020, 1, 1, 23),
             to_date=datetime(2020, 1, 3, 23),
@@ -608,15 +608,15 @@ def test__get_prepared_tariffs__when_specific_charge_resolution_and_time_series_
     time_series = prepared_metering_point_time_series_factory.create(
         spark, time_series_rows
     )
-    charge_master_data = factory.create_charge_master_data(
-        spark, charge_master_data_rows
+    charge_price_information = factory.create_charge_price_information(
+        spark, charge_price_information_rows
     )
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
     # Act
     actual = get_prepared_tariffs(
         time_series,
-        charge_master_data,
+        charge_price_information,
         charge_prices,
         charge_link_metering_point_periods,
         charge_resolution,
@@ -691,8 +691,8 @@ def test__get_prepared_tariffs__per_day_only_accepts_time_series_and_change_time
         ),
         factory.create_time_series_row(observation_time=date_time_2),
     ]
-    charge_master_data_rows = [
-        factory.create_charge_master_data_row(
+    charge_price_information_rows = [
+        factory.create_charge_price_information_row(
             resolution=e.ChargeResolution.DAY,
             from_date=datetime(2019, 12, 31, 23),
             to_date=datetime(2020, 1, 5, 23),
@@ -715,14 +715,14 @@ def test__get_prepared_tariffs__per_day_only_accepts_time_series_and_change_time
     time_series = prepared_metering_point_time_series_factory.create(
         spark, time_series_rows
     )
-    charge_master_data = factory.create_charge_master_data(
-        spark, charge_master_data_rows
+    charge_price_information = factory.create_charge_price_information(
+        spark, charge_price_information_rows
     )
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
     # Act
     actual = get_prepared_tariffs(
         time_series,
-        charge_master_data,
+        charge_price_information,
         charge_prices,
         charge_link_metering_point_periods,
         e.ChargeResolution.DAY,
@@ -741,8 +741,8 @@ def test__get_prepared_tariffs__can_handle_missing_charge_prices(
         factory.create_time_series_row(observation_time=datetime(2019, 12, 31, 23)),
         factory.create_time_series_row(observation_time=datetime(2020, 1, 1, 0)),
     ]
-    charge_master_data_rows = [
-        factory.create_charge_master_data_row(
+    charge_price_information_rows = [
+        factory.create_charge_price_information_row(
             from_date=datetime(2019, 12, 31, 23), to_date=datetime(2020, 1, 1, 0)
         ),
     ]
@@ -758,8 +758,8 @@ def test__get_prepared_tariffs__can_handle_missing_charge_prices(
     time_series = prepared_metering_point_time_series_factory.create(
         spark, time_series_rows
     )
-    charge_master_data = factory.create_charge_master_data(
-        spark, charge_master_data_rows
+    charge_price_information = factory.create_charge_price_information(
+        spark, charge_price_information_rows
     )
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
     charge_link_metering_point_periods = (
@@ -771,7 +771,7 @@ def test__get_prepared_tariffs__can_handle_missing_charge_prices(
     # Act
     actual = get_prepared_tariffs(
         time_series,
-        charge_master_data,
+        charge_price_information,
         charge_prices,
         charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
@@ -797,8 +797,8 @@ def test__get_prepared_tariffs__can_handle_missing_all_charges_prices(
         factory.create_time_series_row(observation_time=datetime(2019, 12, 31, 23)),
         factory.create_time_series_row(observation_time=datetime(2020, 1, 1, 0)),
     ]
-    charge_master_data_rows = [
-        factory.create_charge_master_data_row(
+    charge_price_information_rows = [
+        factory.create_charge_price_information_row(
             from_date=datetime(2019, 12, 31, 23), to_date=datetime(2020, 1, 1, 0)
         ),
     ]
@@ -811,8 +811,8 @@ def test__get_prepared_tariffs__can_handle_missing_all_charges_prices(
     time_series = prepared_metering_point_time_series_factory.create(
         spark, time_series_rows
     )
-    charge_master_data = factory.create_charge_master_data(
-        spark, charge_master_data_rows
+    charge_price_information = factory.create_charge_price_information(
+        spark, charge_price_information_rows
     )
     charge_prices = factory.create_charge_prices(spark, [])
     charge_link_metering_point_periods = (
@@ -824,7 +824,7 @@ def test__get_prepared_tariffs__can_handle_missing_all_charges_prices(
     # Act
     actual = get_prepared_tariffs(
         time_series,
-        charge_master_data,
+        charge_price_information,
         charge_prices,
         charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
@@ -846,8 +846,8 @@ def test__get_prepared_tariffs__can_handle_missing_charge_links(
         factory.create_time_series_row(observation_time=datetime(2020, 1, 1, 0)),
         factory.create_time_series_row(observation_time=datetime(2020, 1, 1, 1)),
     ]
-    charge_master_data_rows = [
-        factory.create_charge_master_data_row(
+    charge_price_information_rows = [
+        factory.create_charge_price_information_row(
             from_date=datetime(2019, 12, 31, 23), to_date=datetime(2020, 1, 1, 1)
         ),
     ]
@@ -867,8 +867,8 @@ def test__get_prepared_tariffs__can_handle_missing_charge_links(
     time_series = prepared_metering_point_time_series_factory.create(
         spark, time_series_rows
     )
-    charge_master_data = factory.create_charge_master_data(
-        spark, charge_master_data_rows
+    charge_price_information = factory.create_charge_price_information(
+        spark, charge_price_information_rows
     )
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
     charge_link_metering_point_periods = (
@@ -880,7 +880,7 @@ def test__get_prepared_tariffs__can_handle_missing_charge_links(
     # Act
     actual = get_prepared_tariffs(
         time_series,
-        charge_master_data,
+        charge_price_information,
         charge_prices,
         charge_link_metering_point_periods,
         e.ChargeResolution.HOUR,
@@ -914,8 +914,8 @@ def test__get_prepared_tariffs__can_handle_daylight_saving_time(
         factory.create_time_series_row(observation_time=date_time_1),
         factory.create_time_series_row(observation_time=date_time_2),
     ]
-    charge_master_data_rows = [
-        factory.create_charge_master_data_row(
+    charge_price_information_rows = [
+        factory.create_charge_price_information_row(
             from_date=date_time_1,
             to_date=date_time_2,
             resolution=e.ChargeResolution.DAY,
@@ -939,8 +939,8 @@ def test__get_prepared_tariffs__can_handle_daylight_saving_time(
     time_series = prepared_metering_point_time_series_factory.create(
         spark, time_series_rows
     )
-    charge_master_data = factory.create_charge_master_data(
-        spark, charge_master_data_rows
+    charge_price_information = factory.create_charge_price_information(
+        spark, charge_price_information_rows
     )
     charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
     charge_link_metering_point_periods = (
@@ -952,7 +952,7 @@ def test__get_prepared_tariffs__can_handle_daylight_saving_time(
     # Act
     actual = get_prepared_tariffs(
         time_series,
-        charge_master_data,
+        charge_price_information,
         charge_prices,
         charge_link_metering_point_periods,
         e.ChargeResolution.DAY,

@@ -88,7 +88,7 @@ schema_config = [
                 schema=basis_data_schemas.charge_link_periods_schema,
             ),
             Table(
-                name=paths.BasisDataDatabase.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME,
+                name=paths.BasisDataDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
                 schema=basis_data_schemas.charge_price_information_periods_schema,
             ),
             Table(

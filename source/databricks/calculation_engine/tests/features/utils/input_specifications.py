@@ -17,7 +17,7 @@ from package.calculation.input.schemas import (
     metering_point_period_schema,
     time_series_point_schema,
     grid_loss_metering_points_schema,
-    charge_master_data_periods_schema,
+    charge_price_information_periods_schema,
     charge_link_periods_schema,
     charge_price_points_schema,
 )
@@ -46,8 +46,8 @@ def get_data_input_specifications(table_reader: TableReader) -> dict[str, tuple]
             table_reader.read_grid_loss_metering_points,
         ),
         "charge_price_information_periods.csv": (
-            charge_master_data_periods_schema,
-            table_reader.read_charge_master_data_periods,
+            charge_price_information_periods_schema,
+            table_reader.read_charge_price_information_periods,
         ),
         "charge_link_periods.csv": (
             charge_link_periods_schema,
