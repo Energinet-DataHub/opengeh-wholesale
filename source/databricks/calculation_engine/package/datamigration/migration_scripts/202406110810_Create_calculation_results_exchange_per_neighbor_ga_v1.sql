@@ -1,10 +1,11 @@
 CREATE VIEW IF NOT EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.exchange_per_neighbor_ga_v1 as
 SELECT calculation_id,
        calculation_type,
-       grid_area_code,
        calculation_period_start,
        calculation_period_end,
        calculation_version,
+       grid_area_code as in_grid_area_code,
+       out_grid_area_code,
        resolution,
        time,
        quantity,
