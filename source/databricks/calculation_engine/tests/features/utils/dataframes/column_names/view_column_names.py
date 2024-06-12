@@ -36,6 +36,8 @@ class ViewColumnNames:
     calculation_type = ColumnName("calculation_type", StringType())
     calculation_period_start = ColumnName("calculation_period_start", TimestampType())
     calculation_period_end = ColumnName("calculation_period_end", TimestampType())
+
+    # Deprecated
     calculation_version = ColumnName("calculation_version", LongType())
     energy_supplier_id = ColumnName("energy_supplier_id", StringType())
     from_date = ColumnName("from_date", TimestampType())
