@@ -23,13 +23,13 @@ from pyspark.sql.types import (
 """
 Schema for charge master data.
 
-Charge  master data is only used in settlement.
+Charge price information is only used in settlement.
 
 Data must be stored in a Delta table.
 
 The table data must always contain current data.
 """
-charge_master_data_periods_schema = StructType(
+charge_price_information_periods_schema = StructType(
     [
         # ID of the charge
         # The ID is only guaranteed to be unique for a specific actor and charge type.

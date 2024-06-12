@@ -20,7 +20,7 @@ from pyspark.sql.types import StructType
 from package.calculation.basis_data.schemas.charge_link_periods_schema import (
     charge_link_periods_schema,
 )
-from package.calculation.basis_data.schemas.charge_master_data_periods_schema import (
+from package.calculation.basis_data.schemas.charge_price_information_periods_schema import (
     charge_price_information_periods_schema,
 )
 from package.calculation.basis_data.schemas.charge_price_points_schema import (
@@ -207,7 +207,7 @@ def test__wholesale_result__amount_per_charge_is_created(
     ["40000", "41000"],
     # charge_code 40000 is for hourly charge resolution
     # charge_code 41000 is for daily charge resolution
-    # see "test_files/ChargeMasterDataPeriods.csv"
+    # see "test_files/ChargePriceInformationPeriods.csv"
 )
 def test__monthly_amount_for_tariffs__is_created(
     spark: SparkSession,
@@ -309,7 +309,7 @@ def test__when_wholesale_calculation__basis_data_is_stored(
             charge_link_periods_schema,
         ),
         (
-            paths.BasisDataDatabase.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME,
+            paths.BasisDataDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
             charge_price_information_periods_schema,
         ),
         (
