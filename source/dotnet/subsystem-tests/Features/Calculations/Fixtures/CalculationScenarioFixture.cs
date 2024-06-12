@@ -25,7 +25,6 @@ using Azure.Messaging.ServiceBus.Administration;
 using Azure.Monitor.Query;
 using Azure.Monitor.Query.Models;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.EnergySupplying.RequestResponse.InboxEvents;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
@@ -295,7 +294,7 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
             try
             {
                 var statement = DatabricksStatement.FromRawSql($"SELECT * FROM {item.ModelName}.{item.TableName} LIMIT 1");
-                var queryResult = DatabricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement.Build(), Format.JsonArray);
+                var queryResult = DatabricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement.Build());
                 var list = await queryResult.ToListAsync();
                 if (list.Count == 0)
                 {
