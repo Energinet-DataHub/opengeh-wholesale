@@ -87,7 +87,7 @@ class PreparedDataReader:
         period_start_datetime: datetime,
         period_end_datetime: datetime,
     ) -> InputChargesContainer:
-        charge_master_data = T.read_charge_master_data(
+        charge_price_information = T.read_charge_price_information(
             self._table_reader, period_start_datetime, period_end_datetime
         )
 
@@ -100,7 +100,7 @@ class PreparedDataReader:
         )
 
         return InputChargesContainer(
-            charge_master_data=charge_master_data,
+            charge_price_information=charge_price_information,
             charge_prices=charge_prices,
             charge_links=charge_links,
         )
@@ -118,7 +118,7 @@ class PreparedDataReader:
 
         hourly_tariffs = T.get_prepared_tariffs(
             time_series,
-            input_charges.charge_master_data,
+            input_charges.charge_price_information,
             input_charges.charge_prices,
             charge_link_metering_point_periods,
             ChargeResolution.HOUR,
@@ -127,7 +127,7 @@ class PreparedDataReader:
 
         daily_tariffs = T.get_prepared_tariffs(
             time_series,
-            input_charges.charge_master_data,
+            input_charges.charge_price_information,
             input_charges.charge_prices,
             charge_link_metering_point_periods,
             ChargeResolution.DAY,
@@ -135,14 +135,14 @@ class PreparedDataReader:
         )
 
         subscriptions = T.get_prepared_subscriptions(
-            input_charges.charge_master_data,
+            input_charges.charge_price_information,
             input_charges.charge_prices,
             charge_link_metering_point_periods,
             time_zone,
         )
 
         fees = T.get_prepared_fees(
-            input_charges.charge_master_data,
+            input_charges.charge_price_information,
             input_charges.charge_prices,
             charge_link_metering_point_periods,
             time_zone,

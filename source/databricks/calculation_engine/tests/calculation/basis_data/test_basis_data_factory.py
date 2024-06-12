@@ -18,7 +18,7 @@ from pyspark.sql.types import StructType
 from package.calculation.basis_data.schemas.charge_link_periods_schema import (
     charge_link_periods_schema,
 )
-from package.calculation.basis_data.schemas.charge_master_data_periods_schema import (
+from package.calculation.basis_data.schemas.charge_price_information_periods_schema import (
     charge_price_information_periods_schema,
 )
 from package.calculation.basis_data.schemas.charge_price_points_schema import (

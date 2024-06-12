@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from .charge_link_metering_point_periods import ChargeLinkMeteringPointPeriods
-from .charge_master_data import ChargeMasterData
+from .charge_price_information import ChargePriceInformation
 from .charge_prices import ChargePrices
 from .grid_loss_responsible import GridLossResponsible
 from .prepared_metering_point_time_series import PreparedMeteringPointTimeSeries

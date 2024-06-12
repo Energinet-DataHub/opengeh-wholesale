@@ -16,7 +16,7 @@ from .metering_point_periods import get_metering_point_periods_df
 from .grid_loss_responsible import get_grid_loss_responsible
 from .charges_reader import (
     read_charge_links,
-    read_charge_master_data,
+    read_charge_price_information,
     read_charge_prices,
 )
 

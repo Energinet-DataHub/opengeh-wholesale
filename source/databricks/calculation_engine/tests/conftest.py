@@ -37,7 +37,7 @@ from package.calculation.input.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
     grid_loss_metering_points_schema,
-    charge_master_data_periods_schema,
+    charge_price_information_periods_schema,
     charge_price_points_schema,
     charge_link_periods_schema,
 )
@@ -436,10 +436,10 @@ def energy_input_data_written_to_delta(
 
     _write_input_test_data_to_table(
         spark,
-        file_name=f"{test_files_folder_path}/ChargeMasterDataPeriods.csv",
-        table_name=paths.InputDatabase.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME,
-        schema=charge_master_data_periods_schema,
-        table_location=f"{calculation_input_path}/{paths.InputDatabase.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}",
+        file_name=f"{test_files_folder_path}/ChargePriceInformationPeriods.csv",
+        table_name=paths.InputDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
+        schema=charge_price_information_periods_schema,
+        table_location=f"{calculation_input_path}/{paths.InputDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME}",
     )
 
     _write_input_test_data_to_table(
@@ -469,9 +469,9 @@ def price_input_data_written_to_delta(
     # Charge master data periods
     _write_input_test_data_to_table(
         spark,
-        file_name=f"{test_files_folder_path}/ChargeMasterDataPeriods.csv",
-        table_name=paths.InputDatabase.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME,
-        schema=charge_master_data_periods_schema,
+        file_name=f"{test_files_folder_path}/ChargePriceInformationPeriods.csv",
+        table_name=paths.InputDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
+        schema=charge_price_information_periods_schema,
         table_location=f"{calculation_input_path}/charge_price_information_periods",
     )
 
