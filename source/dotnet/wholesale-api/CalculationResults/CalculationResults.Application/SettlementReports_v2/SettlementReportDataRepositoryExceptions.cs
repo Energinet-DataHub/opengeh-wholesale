@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports_v2;
 
-public enum Resolution
+public static class SettlementReportDataRepositoryExceptions
 {
-    QuarterHour,
-    Hour,
+    // TODO: Make Databricks Exception type public.
+    public const string DataSourceUnavailableExceptionMessage = "Unable to fetch result from Databricks";
 }
