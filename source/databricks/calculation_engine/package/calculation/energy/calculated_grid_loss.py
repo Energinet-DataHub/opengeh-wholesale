@@ -20,6 +20,7 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
 from package.codelists import (
     MeteringPointType,
     SettlementMethod,
+    MeteringPointResolution,
     QuantityQuality,
 )
 from package.constants import Colname
@@ -53,7 +54,9 @@ def add_calculated_grid_loss_to_metering_point_times_series(
             f.col(Colname.from_grid_area_code),
             f.col(Colname.metering_point_id),
             f.col(Colname.metering_point_type),
-            f.lit(Colname.resolution),
+            f.lit(MeteringPointResolution.QUARTER.value).alias(
+                Colname.resolution
+            ),  # This will change when we must support HOURLY for calculations before 1st of May 2023
             f.col(Colname.observation_time),
             f.col(Colname.quantity).alias(Colname.quantity),
             f.lit(QuantityQuality.CALCULATED.value).alias(Colname.quality),
