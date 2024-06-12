@@ -61,9 +61,9 @@ def test_files_folder_path(tests_path: str) -> str:
 def spark(
     test_session_configuration: TestSessionConfiguration,
     tests_path: str,
-    metastore_path: str,
 ) -> SparkSession:
     warehouse_location = f"{tests_path}/__spark-warehouse__"
+    metastore_path = f"{tests_path}/__metastore_db__"
 
     if (
         test_session_configuration.migrations.execute.value
@@ -104,7 +104,7 @@ def spark(
         .config("spark.sql.catalogImplementation", "hive")
         .config(
             "javax.jdo.option.ConnectionURL",
-            f"jdbc:derby:;databaseName={tests_path}/__metastore_db__;create=true",
+            f"jdbc:derby:;databaseName={metastore_path};create=true",
         )
         .config(
             "javax.jdo.option.ConnectionDriverName",
@@ -226,15 +226,9 @@ def calculation_output_path(data_lake_path: str) -> str:
 
 
 @pytest.fixture(scope="session")
-def metastore_path(tests_path: str) -> str:
-    return f"{tests_path}/metastore_db"
-
-
-@pytest.fixture(scope="session")
 def migrations_executed(
     spark: SparkSession,
     calculation_output_path: str,
-    metastore_path: str,
     energy_input_data_written_to_delta: None,
     test_session_configuration: TestSessionConfiguration,
 ) -> None:
