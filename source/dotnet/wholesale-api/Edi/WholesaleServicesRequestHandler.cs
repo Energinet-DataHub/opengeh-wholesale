@@ -24,6 +24,9 @@ using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.Edi.Validation;
 using Energinet.DataHub.Wholesale.Events.Interfaces;
 using Microsoft.Extensions.Logging;
+using NodaTime;
+using NodaTime.Extensions;
+using NodaTime.Text;
 
 namespace Energinet.DataHub.Wholesale.Edi;
 
@@ -72,6 +75,12 @@ public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
             _logger.LogWarning("Validation errors for WholesaleServicesRequest message with reference id {reference_id}", referenceId);
             await SendRejectedMessageAsync(validationErrors.ToList(), referenceId, cancellationToken).ConfigureAwait(false);
             return;
+        }
+
+        var incomingStart = InstantPattern.General.Parse(incomingRequest.PeriodStart).Value.ToDateTimeUtc();
+        if (incomingStart.Day != 1)
+        {
+            incomingRequest.PeriodStart = incomingStart.AddDays(-incomingStart.Day + 1).ToInstant().ToString();
         }
 
         var request = _wholesaleServicesRequestMapper.Map(incomingRequest);

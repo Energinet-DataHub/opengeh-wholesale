@@ -18,7 +18,7 @@ using NodaTime.Text;
 
 namespace Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules;
 
-public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValidationHelper periodValidationHelper)
+public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValidationHelper periodValidationHelper, IClock clock)
     : IValidationRule<DataHub.Edi.Requests.WholesaleServicesRequest>
 {
     private static readonly ValidationError _invalidDateFormat =
@@ -74,6 +74,11 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValida
         MustBeMidnight(endInstant.Value, "Period End", errors);
 
         MustBeWithin3YearsAnd2Months(startInstant.Value, errors);
+        if (PeriodStartIsPrecisely3YearsAnd2MonthsAgo(startInstant.Value))
+        {
+            if()
+        }
+
         MustBeAWholeMonth(startInstant.Value, endInstant.Value, errors);
 
         return Task.FromResult<IList<ValidationError>>(errors);
@@ -128,5 +133,13 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValida
         errors.Add(zonedDateTime.IsDaylightSavingTime()
             ? _invalidSummerMidnightFormat.WithPropertyName(propertyName)
             : _invalidWinterMidnightFormat.WithPropertyName(propertyName));
+    }
+
+    private bool PeriodStartIsPrecisely3YearsAnd2MonthsAgo(Instant periodStart)
+    {
+        var zonedDateTime = new ZonedDateTime(periodStart, dateTimeZone);
+        var zonedCurrentDataTime = new ZonedDateTime(clock.GetCurrentInstant(), dateTimeZone);
+        return zonedDateTime.LocalDateTime.Month == zonedCurrentDataTime.LocalDateTime.Month - 2
+               && zonedDateTime.LocalDateTime.Year == zonedCurrentDataTime.LocalDateTime.Year - 3;
     }
 }
