@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.IO.Compression;
+using System.Text;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports_v2.Models;
 
@@ -20,6 +21,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementR
 
 public sealed class SettlementReportFromFilesHandler : ISettlementReportFromFilesHandler
 {
+    private const int LargeTextFileThreshold = 1_000_000;
     private readonly ISettlementReportFileRepository _fileRepository;
 
     public SettlementReportFromFilesHandler(ISettlementReportFileRepository fileRepository)
@@ -43,26 +45,99 @@ public sealed class SettlementReportFromFilesHandler : ISettlementReportFromFile
 
             foreach (var chunks in generatedFiles.GroupBy(x => x.FileInfo.FileName))
             {
-                var entry = archive.CreateEntry(chunks.Key);
-                var entryStream = entry.Open();
-
-                await using (entryStream.ConfigureAwait(false))
+                if (chunks.Any(c => c.FileInfo.PreventLargeTextFiles))
                 {
-                    foreach (var chunk in chunks.OrderBy(c => c.FileInfo.ChunkOffset))
-                    {
-                        var readStream = await _fileRepository
-                            .OpenForReadingAsync(requestId, chunk.StorageFileName)
-                            .ConfigureAwait(false);
-
-                        await using (readStream.ConfigureAwait(false))
-                        {
-                            await readStream.CopyToAsync(entryStream).ConfigureAwait(false);
-                        }
-                    }
+                    await CombineChunksLimitSizeAsync(archive, chunks.Key, chunks).ConfigureAwait(false);
+                }
+                else
+                {
+                    await CombineChunksAsync(archive, chunks.Key, chunks).ConfigureAwait(false);
                 }
             }
         }
 
         return new GeneratedSettlementReportDto(requestId, reportFileName, generatedFiles);
+    }
+
+    private async Task CombineChunksAsync(ZipArchive archive, string entryName, IEnumerable<GeneratedSettlementReportFileDto> chunks)
+    {
+        var entry = archive.CreateEntry(entryName);
+        var entryStream = entry.Open();
+
+        await using (entryStream.ConfigureAwait(false))
+        {
+            foreach (var chunk in chunks.OrderBy(c => c.FileInfo.ChunkOffset))
+            {
+                var readStream = await _fileRepository
+                    .OpenForReadingAsync(chunk.RequestId, chunk.StorageFileName)
+                    .ConfigureAwait(false);
+
+                await using (readStream.ConfigureAwait(false))
+                {
+                    await readStream.CopyToAsync(entryStream).ConfigureAwait(false);
+                }
+            }
+        }
+    }
+
+    private async Task CombineChunksLimitSizeAsync(ZipArchive archive, string entryName, IEnumerable<GeneratedSettlementReportFileDto> chunks)
+    {
+        var fileCount = 0;
+        var rowCount = 0;
+
+        var entryStream = StreamWriter.Null;
+        var header = string.Empty;
+
+        foreach (var chunk in chunks.OrderBy(c => c.FileInfo.ChunkOffset))
+        {
+            var readStream = await _fileRepository
+                .OpenForReadingAsync(chunk.RequestId, chunk.StorageFileName)
+                .ConfigureAwait(false);
+
+            using var streamReader = new StreamReader(readStream, Encoding.UTF8, leaveOpen: false);
+
+            while (!streamReader.EndOfStream)
+            {
+                var nextLine = await streamReader
+                    .ReadLineAsync()
+                    .ConfigureAwait(false);
+
+                if (fileCount == 0 && rowCount == 0)
+                    header = nextLine;
+
+                if (entryStream == StreamWriter.Null || rowCount == LargeTextFileThreshold)
+                {
+                    await entryStream.DisposeAsync().ConfigureAwait(false);
+
+                    var name = GenerateSplitFileName(entryName, fileCount);
+                    var entry = archive.CreateEntry(name);
+
+                    entryStream = new StreamWriter(entry.Open(), Encoding.UTF8, leaveOpen: false);
+                    rowCount = 0;
+
+                    if (fileCount != 0)
+                    {
+                        await entryStream.WriteLineAsync(header).ConfigureAwait(false);
+                        rowCount++;
+                    }
+
+                    fileCount++;
+                }
+
+                await entryStream.WriteLineAsync(nextLine).ConfigureAwait(false);
+                rowCount++;
+            }
+        }
+    }
+
+    private static string GenerateSplitFileName(string entryName, int fileCount)
+    {
+        if (fileCount == 0)
+            return entryName;
+
+        var ext = Path.GetExtension(entryName);
+        var name = Path.GetFileNameWithoutExtension(entryName);
+
+        return $"{name} - {fileCount + 1}{ext}";
     }
 }
