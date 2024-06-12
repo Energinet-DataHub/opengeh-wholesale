@@ -16,12 +16,12 @@ from enum import Enum
 
 
 class CalculationType(Enum):
-    BALANCE_FIXING = "BalanceFixing"
-    AGGREGATION = "Aggregation"
-    WHOLESALE_FIXING = "WholesaleFixing"
-    FIRST_CORRECTION_SETTLEMENT = "FirstCorrectionSettlement"
-    SECOND_CORRECTION_SETTLEMENT = "SecondCorrectionSettlement"
-    THIRD_CORRECTION_SETTLEMENT = "ThirdCorrectionSettlement"
+    BALANCE_FIXING = "balance_fixing"
+    AGGREGATION = "aggregation"
+    WHOLESALE_FIXING = "wholesale_fixing"
+    FIRST_CORRECTION_SETTLEMENT = "first_correction_settlement"
+    SECOND_CORRECTION_SETTLEMENT = "second_correction_settlement"
+    THIRD_CORRECTION_SETTLEMENT = "third_correction_settlement"
 
 
 def is_wholesale_calculation_type(calculation_type: CalculationType) -> bool:

@@ -23,7 +23,7 @@ USING DELTA
 TBLPROPERTIES (
     delta.deletedFileRetentionDuration = 'interval 30 days',
     delta.constraints.calculation_id_chk = "LENGTH ( calculation_id ) = 36",
-    delta.constraints.calculation_type_chk = "calculation_type IN ( 'WholesaleFixing', 'FirstCorrectionSettlement', 'SecondCorrectionSettlement', 'ThirdCorrectionSettlement' )",
+    delta.constraints.calculation_type_chk = "calculation_type IN ( 'wholesale_fixing', 'first_correction_settlement', 'second_correction_settlement', 'third_correction_settlement' )",
     delta.constraints.calculation_result_id_chk = "LENGTH ( calculation_result_id ) = 36",
     delta.constraints.grid_area_code_chk = "LENGTH ( grid_area_code ) = 3",
     delta.constraints.energy_supplier_id_chk = "LENGTH ( energy_supplier_id ) = 13 OR LENGTH ( energy_supplier_id ) = 16",
