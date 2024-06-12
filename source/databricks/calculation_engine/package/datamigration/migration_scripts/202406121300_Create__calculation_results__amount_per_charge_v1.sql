@@ -1,0 +1,24 @@
+CREATE VIEW IF NOT EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.amount_per_charge_v1 AS
+SELECT c.calculation_id,
+       c.calculation_type,
+       c.calculation_version,
+       wr.result_id,
+       wr.grid_area_code,
+       wr.energy_supplier_id,
+       wr.charge_code,
+       wr.charge_type,
+       wr.charge_owner_id,
+       wr.resolution,
+       wr.quantity_unit,
+       wr.metering_point_type,
+       wr.settlement_method,
+       wr.is_tax,
+       "DKK" as currency,
+       time,
+       quantity,
+       quantity_qualities,
+       price,
+       amount
+FROM {OUTPUT_DATABASE_NAME}.wholesale_results as wr
+INNER JOIN {BASIS_DATA_DATABASE_NAME}.calculations AS c ON c.calculation_id = e.calculation_id
+WHERE wr.amount_type = "amount_per_charge"
