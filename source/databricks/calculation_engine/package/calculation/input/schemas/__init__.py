@@ -13,7 +13,9 @@
 # limitations under the License.
 
 from .charge_link_periods_schema import charge_link_periods_schema
-from .charge_master_data_periods_schema import charge_master_data_periods_schema
+from .charge_price_information_periods_schema import (
+    charge_price_information_periods_schema,
+)
 from .charge_price_points_schema import charge_price_points_schema
 from .imbalance_price_schema import imbalance_price_schema
 from .metering_point_period_schema import metering_point_period_schema
