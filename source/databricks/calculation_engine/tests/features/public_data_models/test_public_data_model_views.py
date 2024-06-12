@@ -16,9 +16,6 @@ from datetime import datetime
 from pyspark.sql import SparkSession, DataFrame
 
 from features.utils.dataframes.column_names.view_column_names import ViewColumnNames
-from features.utils.dataframes.schemas.metering_point_period_v1_view_schema import (
-    metering_point_period_v1_view_schema,
-)
 
 
 def test__public_data_model_views_has_valid_column_names(
@@ -65,14 +62,15 @@ def test__public_data_model_views_has_valid_column_names(
     #             except Exception as e:
     #                 errors.append(e)
 
-    df = spark.createDataFrame(data, schema=metering_point_period_v1_view_schema)
+    # df = spark.createDataFrame(data, schema=metering_point_period_v1_view_schema)
+    df = spark.read.format("delta").table("settlement_report.metering_point_periods_v1")
     # Remove
     # print(ViewColumnNames.calculation_id)
     # print(ViewColumnNames.calculation_version)
 
-    for column in df.columns:
+    for column_name in df.columns:
         try:
-            assert_name_and_data_type(column, df, view_column_names)
+            assert_name_and_data_type(column_name, df, view_column_names)
         except Exception as e:
             errors.append(e)
 
@@ -84,11 +82,11 @@ def test__public_data_model_views_has_valid_column_names(
 
 
 def assert_name_and_data_type(
-    column, df: DataFrame, view_column_names: ViewColumnNames
+    column_name: str, df: DataFrame, view_column_names: ViewColumnNames
 ) -> None:
-    actual_schema = df.schema[column]
+    actual_schema = df.schema[column_name]
     expected_column = view_column_names.get(actual_schema.name)
-    assert expected_column is not None, f"Column {column} not found."
+    assert expected_column is not None, f"Column {column_name} not found."
     expected_type = expected_column.data_type
     actual_type = actual_schema.dataType
-    assert expected_type == actual_type, f"Column {column} has wrong type."
+    assert expected_type == actual_type, f"Column {column_name} has wrong type."
