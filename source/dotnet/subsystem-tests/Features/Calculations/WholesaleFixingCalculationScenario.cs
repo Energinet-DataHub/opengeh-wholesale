@@ -386,9 +386,7 @@ AppDependencies
             new("settlement_report", "energy_result_points_per_es_ga_v1"),
             new("settlement_report", "wholesale_results_v1"),
             new("settlement_report", "monthly_amounts_v1"),
-            new("wholesale_calculation_results", "energy_result_points_per_ga_v1"),
-            new("wholesale_calculation_results", "energy_result_points_per_brp_ga_v1"),
-            new("wholesale_calculation_results", "energy_result_points_per_es_brp_ga_v1"),
+            new("wholesale_calculation_results", "energy_per_ga_v1"),
         };
 
         // Act
