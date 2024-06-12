@@ -1,7 +1,7 @@
 CREATE VIEW IF NOT EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.amount_per_charge_v1 AS
 SELECT c.calculation_id,
        c.calculation_type,
-       c.calculation_version,
+       c.version as calculation_version,
        wr.result_id,
        wr.grid_area_code,
        wr.energy_supplier_id,
