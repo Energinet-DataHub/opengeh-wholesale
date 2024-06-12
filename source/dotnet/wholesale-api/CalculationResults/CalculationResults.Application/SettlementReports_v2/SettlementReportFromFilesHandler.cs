@@ -128,6 +128,8 @@ public sealed class SettlementReportFromFilesHandler : ISettlementReportFromFile
                 rowCount++;
             }
         }
+
+        await entryStream.DisposeAsync().ConfigureAwait(false);
     }
 
     private static string GenerateSplitFileName(string entryName, int fileCount)
