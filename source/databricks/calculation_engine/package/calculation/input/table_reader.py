@@ -17,7 +17,7 @@ from package.common import assert_schema
 from package.infrastructure.paths import InputDatabase, BasisDataDatabase
 from .schemas import (
     charge_link_periods_schema,
-    charge_master_data_periods_schema,
+    charge_price_information_periods_schema,
     charge_price_points_schema,
     metering_point_period_schema,
     time_series_point_schema,
@@ -82,11 +82,11 @@ class TableReader:
 
         return df
 
-    def read_charge_master_data_periods(self) -> DataFrame:
-        path = f"{self._calculation_input_path}/{InputDatabase.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}"
+    def read_charge_price_information_periods(self) -> DataFrame:
+        path = f"{self._calculation_input_path}/{InputDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME}"
         df = self._spark.read.format("delta").load(path)
 
-        assert_schema(df.schema, charge_master_data_periods_schema)
+        assert_schema(df.schema, charge_price_information_periods_schema)
 
         return df
 

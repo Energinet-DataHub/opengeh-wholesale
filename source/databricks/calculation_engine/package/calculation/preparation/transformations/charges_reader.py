@@ -17,21 +17,21 @@ from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, concat_ws
 
 from package.calculation.input import TableReader
-from package.calculation.preparation.data_structures.charge_master_data import (
-    ChargeMasterData,
+from package.calculation.preparation.data_structures.charge_price_information import (
+    ChargePriceInformation,
 )
 from package.calculation.preparation.data_structures.charge_prices import ChargePrices
 from package.calculation.preparation.transformations.clamp_period import clamp_period
 from package.constants import Colname
 
 
-def read_charge_master_data(
+def read_charge_price_information(
     table_reader: TableReader,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
-) -> ChargeMasterData:
-    charge_master_data_periods = (
-        table_reader.read_charge_master_data_periods()
+) -> ChargePriceInformation:
+    charge_price_information_periods = (
+        table_reader.read_charge_price_information_periods()
         .where(col(Colname.from_date) < period_end_datetime)
         .where(
             col(Colname.to_date).isNull()
@@ -39,16 +39,18 @@ def read_charge_master_data(
         )
     )
 
-    charge_master_data_periods = clamp_period(
-        charge_master_data_periods,
+    charge_price_information_periods = clamp_period(
+        charge_price_information_periods,
         period_start_datetime,
         period_end_datetime,
         Colname.from_date,
         Colname.to_date,
     )
 
-    charge_master_data_periods = _add_charge_key_column(charge_master_data_periods)
-    return ChargeMasterData(charge_master_data_periods)
+    charge_price_information_periods = _add_charge_key_column(
+        charge_price_information_periods
+    )
+    return ChargePriceInformation(charge_price_information_periods)
 
 
 def read_charge_prices(

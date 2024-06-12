@@ -21,7 +21,7 @@ from package.constants.basis_data_colname import (
     CalculationsColumnName,
     MeteringPointPeriodColname,
     ChargePricePointsColname,
-    ChargeMasterDataPeriodsColname,
+    ChargePriceInformationPeriodsColname,
 )
 
 
@@ -32,8 +32,8 @@ class ChargePricesV1ColumnNames:
     charge_type = ChargePricePointsColname.charge_type
     charge_owner_id = ChargePricePointsColname.charge_owner_id
     charge_code = ChargePricePointsColname.charge_code
-    resolution = ChargeMasterDataPeriodsColname.resolution
-    is_tax = ChargeMasterDataPeriodsColname.is_tax
+    resolution = ChargePriceInformationPeriodsColname.resolution
+    is_tax = ChargePriceInformationPeriodsColname.is_tax
     start_date_time = "start_date_time"
     price_points = "price_points"
     grid_area_code = MeteringPointPeriodColname.grid_area_code

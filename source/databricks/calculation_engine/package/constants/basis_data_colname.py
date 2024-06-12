@@ -44,7 +44,7 @@ class TimeSeriesColname:
     quality = "quality"
 
 
-class ChargeMasterDataPeriodsColname:
+class ChargePriceInformationPeriodsColname:
     calculation_id = "calculation_id"
     charge_key = "charge_key"
     charge_code = "charge_code"

@@ -22,7 +22,7 @@ class InputDatabase:
     METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods"
     TIME_SERIES_POINTS_TABLE_NAME = "time_series_points_v2"
     CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods"
-    CHARGE_MASTER_DATA_PERIODS_TABLE_NAME = "charge_price_information_periods"
+    CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME = "charge_price_information_periods"
     CHARGE_PRICE_POINTS_TABLE_NAME = "charge_price_points"
     GRID_LOSS_METERING_POINTS_TABLE_NAME = "grid_loss_metering_points"
 
@@ -47,7 +47,7 @@ class BasisDataDatabase:
     METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods"
     TIME_SERIES_POINTS_TABLE_NAME = "time_series_points"
     CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods"
-    CHARGE_MASTER_DATA_PERIODS_TABLE_NAME = "charge_price_information_periods"
+    CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME = "charge_price_information_periods"
     CHARGE_PRICE_POINTS_TABLE_NAME = "charge_price_points"
     GRID_LOSS_METERING_POINTS_TABLE_NAME = "grid_loss_metering_points"
     CALCULATIONS_TABLE_NAME = "calculations"
@@ -57,7 +57,7 @@ class BasisDataDatabase:
         METERING_POINT_PERIODS_TABLE_NAME,
         TIME_SERIES_POINTS_TABLE_NAME,
         CHARGE_LINK_PERIODS_TABLE_NAME,
-        CHARGE_MASTER_DATA_PERIODS_TABLE_NAME,
+        CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
         CHARGE_PRICE_POINTS_TABLE_NAME,
         GRID_LOSS_METERING_POINTS_TABLE_NAME,
     ]
@@ -65,11 +65,9 @@ class BasisDataDatabase:
 
 class CalculationResultsPublicDataModel:
     DATABASE_NAME = "wholesale_calculation_results"
-    ENERGY_RESULT_POINTS_PER_GA_V1_VIEW_NAME = "energy_result_points_per_ga_v1"
-    ENERGY_RESULT_POINTS_PER_BRP_GA_V1_VIEW_NAME = "energy_result_points_per_brp_ga_v1"
-    ENERGY_RESULT_POINTS_PER_ES_BRP_GA_V1_VIEW_NAME = (
-        "energy_result_points_per_es_brp_ga_v1"
-    )
+    ENERGY_RESULT_POINTS_PER_GA_V1_VIEW_NAME = "energy_per_ga_v1"
+    ENERGY_RESULT_POINTS_PER_BRP_GA_V1_VIEW_NAME = "energy_per_brp_ga_v1"
+    ENERGY_RESULT_POINTS_PER_ES_BRP_GA_V1_VIEW_NAME = "energy_per_es_brp_ga_v1"
 
 
 class SettlementReportPublicDataModel:

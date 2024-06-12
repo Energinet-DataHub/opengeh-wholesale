@@ -20,7 +20,7 @@ from package.common import DataFrameWrapper
 from package.constants import Colname
 
 
-class ChargeMasterData(DataFrameWrapper):
+class ChargePriceInformation(DataFrameWrapper):
     """
     Represents the charge master data.
     All periods are clamped to least common period of the metering point and the charge master data period.
@@ -29,7 +29,7 @@ class ChargeMasterData(DataFrameWrapper):
     def __init__(self, df: DataFrame):
         super().__init__(
             df,
-            charge_master_data_schema,
+            charge_price_information_schema,
             # We ignore_nullability because it has turned out to be too hard and even possibly
             # introducing more errors than solving in order to stay in exact sync with the
             # logically correct schema.
@@ -38,14 +38,16 @@ class ChargeMasterData(DataFrameWrapper):
             ignore_decimal_precision=True,
         )
 
-    def filter_by_charge_type(self, charge_type: ChargeType) -> "ChargeMasterData":
+    def filter_by_charge_type(
+        self, charge_type: ChargeType
+    ) -> "ChargePriceInformation":
         df = self._df.filter(self._df[Colname.charge_type] == charge_type.value)
-        return ChargeMasterData(df)
+        return ChargePriceInformation(df)
 
 
 # The nullability and decimal types are not precisely representative of the actual data frame schema at runtime,
 # See comments to the `assert_schema()` invocation.
-charge_master_data_schema = t.StructType(
+charge_price_information_schema = t.StructType(
     [
         t.StructField(Colname.charge_key, t.StringType(), False),
         t.StructField(Colname.charge_code, t.StringType(), False),

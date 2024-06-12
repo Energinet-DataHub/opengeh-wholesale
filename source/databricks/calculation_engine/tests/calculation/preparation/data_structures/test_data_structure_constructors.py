@@ -26,7 +26,7 @@ import package.calculation.preparation.data_structures as d
         d.PreparedTariffs,
         d.PreparedMeteringPointTimeSeries,
         d.ChargePrices,
-        d.ChargeMasterData,
+        d.ChargePriceInformation,
         d.ChargeLinkMeteringPointPeriods,
         d.GridLossResponsible,
     ],
