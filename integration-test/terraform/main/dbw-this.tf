@@ -167,6 +167,7 @@ resource "databricks_job" "migration_workflow" {
         "fs.azure.account.oauth.provider.type.${azurerm_storage_account.this.name}.dfs.core.windows.net" : "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
         "fs.azure.account.oauth2.client.id.${azurerm_storage_account.this.name}.dfs.core.windows.net" : databricks_secret.spn_app_id_integration_test.config_reference
         "fs.azure.account.oauth2.client.secret.${azurerm_storage_account.this.name}.dfs.core.windows.net" : databricks_secret.spn_app_secret_integration_test.config_reference
+        "spark.databricks.sql.initial.catalog.name" : "hive_metastore"
         "spark.databricks.delta.preview.enabled" : true
         "spark.databricks.io.cache.enabled" : true
         "spark.master" : "local[*, 4]"
@@ -176,6 +177,7 @@ resource "databricks_job" "migration_workflow" {
         "LANDING_STORAGE_ACCOUNT"         = azurerm_storage_account.this.name
         "DATALAKE_STORAGE_ACCOUNT"        = azurerm_storage_account.this.name
         "DATALAKE_SHARED_STORAGE_ACCOUNT" = azurerm_storage_account.this.name
+        "CATALOG_NAME"                    = "hive_metastore"
       }
     }
   }
