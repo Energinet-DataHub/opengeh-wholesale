@@ -1,4 +1,7 @@
-CREATE VIEW IF NOT EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.energy_result_points_per_ga_v1 AS
+DROP VIEW IF EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.energy_result_points_per_es_brp_ga_v1
+GO
+
+CREATE VIEW IF NOT EXISTS {CALCULATION_RESULTS_DATABASE_NAME}.energy_per_es_brp_ga_v1 AS
 SELECT calculation_id,
        calculation_type,
        calculation_period_start,
@@ -6,6 +9,8 @@ SELECT calculation_id,
        calculation_version,
        result_id,
        grid_area_code,
+       energy_supplier_id,
+       balance_responsible_party_id,
        metering_point_type,
        settlement_method,
        resolution,
@@ -15,7 +20,5 @@ SELECT calculation_id,
        quantity_qualities
 FROM {OUTPUT_DATABASE_NAME}.succeeded_energy_results_v1
 WHERE
-    -- Only include results that must be sent to the actors
-    time_series_type in ('production', 'non_profiled_consumption', 'net_exchange_per_ga', 'flex_consumption', 'total_consumption')
-    -- Only include results that are aggregated per grid area
-    AND aggregation_level = 'total_ga'
+    aggregation_level = 'es_brp_ga'
+    AND time_series_type in ('production', 'non_profiled_consumption', 'flex_consumption')
