@@ -32,7 +32,7 @@ namespace Energinet.DataHub.Wholesale.Edi;
 /// </summary>
 public class WholesaleServicesRequestHandler : IWholesaleInboxRequestHandler
 {
-    // TODO: Is this the correct error code?
+    // TODO XEDKN: Is this the correct error code?
     private static readonly ValidationError _noDataAvailable = new("Ingen data tilgængelig / No data available", "E0H");
     private static readonly ValidationError _noDataForRequestedGridArea = new("Forkert netområde / invalid grid area", "D46");
 
