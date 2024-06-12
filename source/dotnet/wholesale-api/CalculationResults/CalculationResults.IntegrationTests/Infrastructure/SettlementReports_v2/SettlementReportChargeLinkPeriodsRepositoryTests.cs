@@ -29,7 +29,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SettlementReports_v2;
 
-public class SettlementReportChargeLinkPeriodsRepositoryTests : TestBase<SettlementReportWholesaleRepository>, IClassFixture<DatabricksSqlStatementApiFixture>
+public class SettlementReportChargeLinkPeriodsRepositoryTests : TestBase<SettlementReportChargeLinkPeriodsRepository>, IClassFixture<DatabricksSqlStatementApiFixture>
 {
     private readonly DatabricksSqlStatementApiFixture _databricksSqlStatementApiFixture;
 
@@ -67,7 +67,7 @@ public class SettlementReportChargeLinkPeriodsRepositoryTests : TestBase<Settlem
         await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportChargeLinkPeriodsViewColumns>(
             _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CHARGE_LINK_PERIODS_V1_VIEW_NAME,
             [
-                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'403'", "'8397670583196'", "'2024-01-02T02:00:00.000+00:00'", "'PT1H'", "'consumption'", "'flex'", "'kWh'", "'DKK'", "46.543", "0.712345", "32.123456", "'tariff'", "'40000'", "'6392825108998'"],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'consumption'", "'tariff'", "'40000'", "'6392825108998'", "46", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-03T02:00:00.000+00:00'", "'403'", "'8397670583196'"],
             ]);
 
         var actual = await Sut.CountAsync(
@@ -90,12 +90,12 @@ public class SettlementReportChargeLinkPeriodsRepositoryTests : TestBase<Settlem
     [Fact]
     public async Task Get_SkipTake_ReturnsExpectedRows()
     {
-        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportWholesaleViewColumns>(
-            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.WHOLESALE_RESULTS_V1_VIEW_NAME,
+        await _databricksSqlStatementApiFixture.DatabricksSchemaManager.InsertAsync<SettlementReportChargeLinkPeriodsViewColumns>(
+            _databricksSqlStatementApiFixture.DatabricksSchemaManager.DeltaTableOptions.Value.CHARGE_LINK_PERIODS_V1_VIEW_NAME,
             [
-                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'404'", "'8397670583196'", "'2024-01-02T02:00:00.000+00:00'", "'PT1H'", "'consumption'", "'flex'", "'kWh'", "'DKK'", "46.543", "0.712345", "32.123456", "'tariff'", "'40000'", "'6392825108998'"],
-                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9ea'", "'404'", "'8397670583196'", "'2024-01-02T03:00:00.000+00:00'", "'PT1H'", "'consumption'", "'flex'", "'kWh'", "'DKK'", "46.543", "0.712345", "32.123456", "'tariff'", "'40000'", "'6392825108998'"],
-                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9ec'", "'404'", "'8397670583196'", "'2024-01-02T04:00:00.000+00:00'", "'PT1H'", "'consumption'", "'flex'", "'kWh'", "'DKK'", "46.543", "0.712345", "32.123456", "'tariff'", "'40000'", "'6392825108998'"],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'consumption'", "'tariff'", "'40000'", "'6392825108998'", "46", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-31T02:00:00.000+00:00'", "'403'", "'8397670583196'"],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'consumption'", "'tariff'", "'40000'", "'6392825108998'", "46", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-31T02:00:00.000+00:00'", "'403'", "'8397670583196'"],
+                ["'f8af5e30-3c65-439e-8fd0-1da0c40a26d3'", "'WholesaleFixing'", "'15cba911-b91e-4786-bed4-f0d28418a9eb'", "'consumption'", "'tariff'", "'40000'", "'6392825108998'", "46", "'2024-01-02T02:00:00.000+00:00'", "'2024-01-31T02:00:00.000+00:00'", "'403'", "'8397670583196'"],
             ]);
 
         var results = await Sut.GetAsync(
@@ -115,6 +115,6 @@ public class SettlementReportChargeLinkPeriodsRepositoryTests : TestBase<Settlem
             take: 1).ToListAsync();
 
         Assert.Single(results);
-        Assert.Equal(4, results[0].StartDateTime.ToDateTimeOffset().Hour);
+        Assert.Equal(4, results[0].PeriodStart.ToDateTimeOffset().Hour);
     }
 }
