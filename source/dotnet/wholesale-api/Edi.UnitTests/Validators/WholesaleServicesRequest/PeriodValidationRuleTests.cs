@@ -469,6 +469,34 @@ public class PeriodValidationRuleTests
     }
 
     [Fact]
+    public async Task Validate_WhenPeriodDoesNotStartOnTheFirstOfAMonth____3YearsAnd2Months_ReturnsNoValidationError()
+    {
+        // Arrange
+        var periodStartDate = new LocalDateTime(2019, 3, 15, 0, 0, 0)
+            .InZoneStrictly(_dateTimeZone!)
+            .ToInstant();
+
+        var periodEndDate = new LocalDateTime(2019, 4, 1, 0, 0, 0)
+            .InZoneStrictly(_dateTimeZone!)
+            .ToInstant();
+
+        _now = new LocalDateTime(2022, 5, 15, 0, 0, 0)
+            .InZoneStrictly(_dateTimeZone!)
+            .ToInstant();
+
+        var message = new WholesaleServicesRequestBuilder()
+            .WithPeriodStart(periodStartDate.ToString())
+            .WithPeriodEnd(periodEndDate.ToString())
+            .Build();
+
+        // Act
+        var errors = await _sut.ValidateAsync(message);
+
+        // Assert
+        errors.Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task Validate_WhenPeriodDoesNotEndOnTheLastDayOfAMonth_ReturnsExpectedValidationError()
     {
         // Arrange
@@ -524,6 +552,36 @@ public class PeriodValidationRuleTests
 
         // Assert
         errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Validate_WhenPeriodExactlyTwoMonth_ReturnsExpectedValidationError()
+    {
+        // Arrange
+        var periodStartDate = new LocalDateTime(2021, 3, 1, 0, 0, 0)
+            .InZoneStrictly(_dateTimeZone!)
+            .ToInstant();
+
+        var periodEndDate = new LocalDateTime(2021, 5, 1, 0, 0, 0)
+            .InZoneStrictly(_dateTimeZone!)
+            .ToInstant();
+
+        _now = new LocalDateTime(2022, 5, 1, 0, 0, 0)
+            .InZoneStrictly(_dateTimeZone!)
+            .ToInstant();
+
+        var message = new WholesaleServicesRequestBuilder()
+            .WithPeriodStart(periodStartDate.ToString())
+            .WithPeriodEnd(periodEndDate.ToString())
+            .Build();
+
+        // Act
+        var errors = await _sut.ValidateAsync(message);
+
+        // Assert
+        errors.Should().ContainSingle();
+        errors.Single().ErrorCode.Should().Be(_invalidPeriodAcrossMonths.ErrorCode);
+        errors.Single().Message.Should().Be(_invalidPeriodAcrossMonths.Message);
     }
 
     private sealed class MockClock(Func<Instant> getInstant) : IClock

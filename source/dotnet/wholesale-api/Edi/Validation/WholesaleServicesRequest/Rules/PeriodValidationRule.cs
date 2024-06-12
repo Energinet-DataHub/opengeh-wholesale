@@ -18,7 +18,7 @@ using NodaTime.Text;
 
 namespace Energinet.DataHub.Wholesale.Edi.Validation.WholesaleServicesRequest.Rules;
 
-public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValidationHelper periodValidationHelper, IClock clock)
+public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValidationHelper periodValidationHelper)
     : IValidationRule<DataHub.Edi.Requests.WholesaleServicesRequest>
 {
     private static readonly ValidationError _invalidDateFormat =
@@ -74,9 +74,18 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValida
         MustBeMidnight(endInstant.Value, "Period End", errors);
 
         MustBeWithin3YearsAnd2Months(startInstant.Value, errors);
-        if (PeriodStartIsPrecisely3YearsAnd2MonthsAgo(startInstant.Value))
+
+        if (periodValidationHelper.PeriodStartIsPrecisely3YearsAnd2MonthsAgo(startInstant.Value))
         {
-            if()
+            var startUtc = startInstant.Value.ToDateTimeUtc();
+            var endUtc = endInstant.Value.ToDateTimeUtc();
+
+            // If the start date is 3 years and 2 months ago, the end date must be the last day of the month
+            if (endUtc.Month == startUtc.Month
+                && endUtc.AddDays(1).Month != endUtc.Month)
+            {
+                return Task.FromResult<IList<ValidationError>>(errors);
+            }
         }
 
         MustBeAWholeMonth(startInstant.Value, endInstant.Value, errors);
@@ -122,7 +131,11 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValida
             || zonedEndDateTime.LocalDateTime.Day != 1)
         {
             errors.Add(_invalidPeriodLength);
+            return;
         }
+
+        if (zonedEndDateTime.LocalDateTime.Month - zonedStartDateTime.LocalDateTime.Month != 1)
+            errors.Add(_invalidPeriodAcrossMonths);
     }
 
     private void MustBeMidnight(Instant instant, string propertyName, ICollection<ValidationError> errors)
@@ -133,13 +146,5 @@ public sealed class PeriodValidationRule(DateTimeZone dateTimeZone, PeriodValida
         errors.Add(zonedDateTime.IsDaylightSavingTime()
             ? _invalidSummerMidnightFormat.WithPropertyName(propertyName)
             : _invalidWinterMidnightFormat.WithPropertyName(propertyName));
-    }
-
-    private bool PeriodStartIsPrecisely3YearsAnd2MonthsAgo(Instant periodStart)
-    {
-        var zonedDateTime = new ZonedDateTime(periodStart, dateTimeZone);
-        var zonedCurrentDataTime = new ZonedDateTime(clock.GetCurrentInstant(), dateTimeZone);
-        return zonedDateTime.LocalDateTime.Month == zonedCurrentDataTime.LocalDateTime.Month - 2
-               && zonedDateTime.LocalDateTime.Year == zonedCurrentDataTime.LocalDateTime.Year - 3;
     }
 }
