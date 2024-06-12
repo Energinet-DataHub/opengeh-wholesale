@@ -40,11 +40,11 @@ def write_basis_data(basis_data: BasisDataContainer) -> None:
         )
 
     if basis_data.charge_price_information_periods:
-        with logging_configuration.start_span("charge_master_data"):
+        with logging_configuration.start_span("charge_price_information_periods"):
             basis_data.charge_price_information_periods.write.format("delta").mode(
                 "append"
             ).option("mergeSchema", "false").insertInto(
-                f"{BasisDataDatabase.DATABASE_NAME}.{BasisDataDatabase.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}"
+                f"{BasisDataDatabase.DATABASE_NAME}.{BasisDataDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME}"
             )
 
     if basis_data.charge_price_points:

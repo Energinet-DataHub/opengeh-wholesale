@@ -19,8 +19,8 @@ import package.calculation.energy.aggregators.transformations as t
 from package.calculation.preparation.data_structures.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
 )
-from package.calculation.preparation.data_structures.charge_master_data import (
-    ChargeMasterData,
+from package.calculation.preparation.data_structures.charge_price_information import (
+    ChargePriceInformation,
 )
 from package.calculation.preparation.data_structures.charge_prices import ChargePrices
 from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
@@ -35,7 +35,7 @@ from package.constants import Colname
 
 def get_prepared_tariffs(
     metering_point_time_series: PreparedMeteringPointTimeSeries,
-    charge_master_data: ChargeMasterData,
+    charge_price_information: ChargePriceInformation,
     charge_prices: ChargePrices,
     charge_link_metering_points: ChargeLinkMeteringPointPeriods,
     resolution: ChargeResolution,
@@ -45,7 +45,9 @@ def get_prepared_tariffs(
     metering_point_time_series always hava a row for each resolution time in the given period.
     """
     tariff_links = charge_link_metering_points.filter_by_charge_type(ChargeType.TARIFF)
-    tariff_master_data = charge_master_data.filter_by_charge_type(ChargeType.TARIFF)
+    tariff_master_data = charge_price_information.filter_by_charge_type(
+        ChargeType.TARIFF
+    )
     tariff_prices = charge_prices.filter_by_charge_type(ChargeType.TARIFF)
 
     tariffs = _join_master_data_and_prices_add_missing_prices(
@@ -68,16 +70,16 @@ def get_prepared_tariffs(
 
 
 def _join_master_data_and_prices_add_missing_prices(
-    charge_master_data: ChargeMasterData,
+    charge_price_information: ChargePriceInformation,
     charge_prices: ChargePrices,
     resolution: ChargeResolution,
     time_zone: str,
 ) -> DataFrame:
     charge_prices = charge_prices.df
-    charge_master_data_filtered = charge_master_data.df.filter(
+    charge_price_information_filtered = charge_price_information.df.filter(
         f.col(Colname.resolution) == resolution.value
     )
-    charges_with_no_prices = charge_master_data_filtered.withColumn(
+    charges_with_no_prices = charge_price_information_filtered.withColumn(
         Colname.charge_time,
         f.explode(
             f.sequence(
