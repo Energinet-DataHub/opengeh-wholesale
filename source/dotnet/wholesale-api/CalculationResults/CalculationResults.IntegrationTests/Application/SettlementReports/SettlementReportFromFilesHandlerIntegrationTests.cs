@@ -49,7 +49,7 @@ public sealed class SettlementReportFromFilesHandlerIntegrationTests : TestBase<
             new(requestId, new("fileC.csv", false), "fileC_0.csv"),
         };
 
-        await Task.WhenAll(inputFiles.Select(file => MakeTestFileAsync(file, true)));
+        await Task.WhenAll(inputFiles.Select(file => MakeTestFileAsync(file, false)));
 
         // Act
         var actual = await Sut.CombineAsync(requestId, inputFiles);
@@ -87,7 +87,7 @@ public sealed class SettlementReportFromFilesHandlerIntegrationTests : TestBase<
             new(requestId, new("target_file.csv", false) { ChunkOffset = 2 }, "fileA_2.csv"),
         };
 
-        await Task.WhenAll(inputFiles.Select(file => MakeTestFileAsync(file, true)));
+        await Task.WhenAll(inputFiles.Select(file => MakeTestFileAsync(file, false)));
 
         // Act
         var actual = await Sut.CombineAsync(requestId, inputFiles);

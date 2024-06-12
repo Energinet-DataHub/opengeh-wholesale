@@ -82,11 +82,7 @@ public sealed class SettlementReportFromFilesHandler : ISettlementReportFromFile
 
     private async Task CombineChunksLimitSizeAsync(ZipArchive archive, string entryName, IEnumerable<GeneratedSettlementReportFileDto> chunks)
     {
-        var fileCount = 0;
-        var rowCount = 0;
-
-        var entryStream = StreamWriter.Null;
-        var header = string.Empty;
+        var limitedFileWriter = new SizeLimitedEntry(archive, entryName);
 
         foreach (var chunk in chunks.OrderBy(c => c.FileInfo.ChunkOffset))
         {
@@ -94,52 +90,112 @@ public sealed class SettlementReportFromFilesHandler : ISettlementReportFromFile
                 .OpenForReadingAsync(chunk.RequestId, chunk.StorageFileName)
                 .ConfigureAwait(false);
 
-            using var streamReader = new StreamReader(readStream, Encoding.UTF8, leaveOpen: false);
+            using var source = new LargeTextFileSource(readStream);
 
-            while (!streamReader.EndOfStream)
+            while (!source.IsEmpty)
             {
-                var nextLine = await streamReader
-                    .ReadLineAsync()
-                    .ConfigureAwait(false);
-
-                if (fileCount == 0 && rowCount == 0)
-                    header = nextLine;
-
-                if (entryStream == StreamWriter.Null || rowCount == LargeTextFileThreshold)
+                if (limitedFileWriter.IsFull)
                 {
-                    await entryStream.DisposeAsync().ConfigureAwait(false);
-
-                    var name = GenerateSplitFileName(entryName, fileCount);
-                    var entry = archive.CreateEntry(name);
-
-                    entryStream = new StreamWriter(entry.Open(), Encoding.UTF8, leaveOpen: false);
-                    rowCount = 0;
-
-                    if (fileCount != 0)
-                    {
-                        await entryStream.WriteLineAsync(header).ConfigureAwait(false);
-                        rowCount++;
-                    }
-
-                    fileCount++;
+                    limitedFileWriter.Dispose();
+                    limitedFileWriter = limitedFileWriter.CreateNextEntry();
                 }
 
-                await entryStream.WriteLineAsync(nextLine).ConfigureAwait(false);
-                rowCount++;
+                while (!limitedFileWriter.IsFull && !source.IsEmpty)
+                {
+                    await source.WriteToAsync(limitedFileWriter).ConfigureAwait(false);
+                }
             }
         }
 
-        await entryStream.DisposeAsync().ConfigureAwait(false);
+        limitedFileWriter.Dispose();
     }
 
-    private static string GenerateSplitFileName(string entryName, int fileCount)
+    private sealed class SizeLimitedEntry : IDisposable
     {
-        if (fileCount == 0)
-            return entryName;
+        private readonly ZipArchive _archive;
+        private readonly string _entryBaseName;
 
-        var ext = Path.GetExtension(entryName);
-        var name = Path.GetFileNameWithoutExtension(entryName);
+        private int _rows;
+        private int _entrySequenceNumber;
 
-        return $"{name} - {fileCount + 1}{ext}";
+        private string _header = string.Empty;
+        private StreamWriter _entryStream = StreamWriter.Null;
+
+        public SizeLimitedEntry(ZipArchive archive, string entryName)
+        {
+            _archive = archive;
+            _entryBaseName = entryName;
+        }
+
+        public bool IsFull => _rows == LargeTextFileThreshold;
+
+        public async ValueTask AppendAsync(string line)
+        {
+            if (_rows == 0 && _entrySequenceNumber == 0)
+                _header = line;
+
+            if (_entryStream == StreamWriter.Null)
+            {
+                var entry = _archive.CreateEntry(GenerateFileName());
+                _entryStream = new StreamWriter(entry.Open(), Encoding.UTF8, leaveOpen: false);
+
+                if (_entrySequenceNumber != 0)
+                {
+                    await _entryStream.WriteLineAsync(_header).ConfigureAwait(false);
+                    _rows++;
+                }
+            }
+
+            await _entryStream.WriteLineAsync(line).ConfigureAwait(false);
+
+            _rows++;
+        }
+
+        public SizeLimitedEntry CreateNextEntry()
+        {
+            return new SizeLimitedEntry(_archive, _entryBaseName) { _header = _header, _entrySequenceNumber = _entrySequenceNumber + 1 };
+        }
+
+        public void Dispose()
+        {
+            _entryStream.Dispose();
+        }
+
+        private string GenerateFileName()
+        {
+            if (_entrySequenceNumber == 0)
+                return _entryBaseName;
+
+            var ext = Path.GetExtension(_entryBaseName);
+            var name = Path.GetFileNameWithoutExtension(_entryBaseName);
+
+            return $"{name} - {_entrySequenceNumber + 1}{ext}";
+        }
+    }
+
+    private sealed class LargeTextFileSource : IDisposable
+    {
+        private readonly StreamReader _reader;
+
+        public LargeTextFileSource(Stream dataSource)
+        {
+            _reader = new StreamReader(dataSource, Encoding.UTF8, leaveOpen: false);
+        }
+
+        public bool IsEmpty => _reader.EndOfStream;
+
+        public async ValueTask WriteToAsync(SizeLimitedEntry sizeLimitedEntry)
+        {
+            var nextLine = await _reader.ReadLineAsync().ConfigureAwait(false);
+            if (nextLine != null)
+            {
+                await sizeLimitedEntry.AppendAsync(nextLine).ConfigureAwait(false);
+            }
+        }
+
+        public void Dispose()
+        {
+            _reader.Dispose();
+        }
     }
 }
