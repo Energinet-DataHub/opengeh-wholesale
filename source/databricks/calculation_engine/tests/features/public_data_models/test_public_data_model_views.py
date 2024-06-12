@@ -14,20 +14,20 @@
 
 from pyspark.sql import SparkSession, DataFrame
 
-from features.utils.dataframes.column_names.view_column_names import ViewColumnNames
+from features.utils.dataframes.column_names.view_columns import ViewColumns
 
 
-def test__public_data_model_views_has_valid_column_names(
+def test__public_data_model_views_has_valid_column_names_and_types(
     migrations_executed: None,
     spark: SparkSession,
 ) -> None:
     """Verify that all columns in all views in all public view model databases match the expected column names and data types"""
 
     # Arrange
-    view_column_names = ViewColumnNames()
+    view_columns = ViewColumns()
     public_view_model_databases = [
         "settlement_report",
-        # "wholesale_calculation_results",
+        "wholesale_calculation_results",
     ]
     errors = []
 
@@ -40,37 +40,21 @@ def test__public_data_model_views_has_valid_column_names(
 
             for column in df.columns:
                 try:
-                    assert_name_and_data_type(column, df, view_column_names)
+                    assert_name_and_data_type(column, df, view_columns)
                 except Exception as e:
-                    errors.append(e)
+                    errors.append(f"{view.name}: {e}")
 
     if len(errors) > 0:
         for error in errors:
             print(error)
 
-    assert False, "One or more assertions failed."
-
-    # df = spark.createDataFrame(data, schema=metering_point_period_v1_view_schema)
-    # df = spark.read.format("delta").table("settlement_report.metering_point_periods_v1")
-    # Remove
-    # print(ViewColumnNames.calculation_id)
-    # print(ViewColumnNames.calculation_version)
-
-    # for column_name in df.columns:
-    #     try:
-    #         assert_name_and_data_type(column_name, df, view_column_names)
-    #     except Exception as e:
-    #         errors.append(e)
-    #
-    # if len(errors) > 0:
-    #     for error in errors:
-    #         print(error)
-    #
-    #     assert False, "One or more assertions failed."
+        assert False, "One or more assertions failed."
+    else:
+        assert True
 
 
 def assert_name_and_data_type(
-    column_name: str, df: DataFrame, view_column_names: ViewColumnNames
+    column_name: str, df: DataFrame, view_column_names: ViewColumns
 ) -> None:
     actual_schema = df.schema[column_name]
     expected_column = view_column_names.get(actual_schema.name)

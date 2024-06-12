@@ -11,23 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Any
 
 from pyspark.sql.types import DataType
 
 
-class ColumnName:
-    def __init__(self, name: str, data_type: DataType, deprecated: bool = False):
+class Column:
+    def __init__(self, name: str, data_type: DataType):
         self.name = name
         self.data_type = data_type
-        self.deprecated = deprecated
-
-    def get(self) -> Any:
-        if self.deprecated:
-            raise Warning(
-                f"Column name '{self.name}' is deprecated and should not be used."
-            )
-        return self
-
-    def __get__(self, instance: str, owner: str) -> Any:
-        return self.name
