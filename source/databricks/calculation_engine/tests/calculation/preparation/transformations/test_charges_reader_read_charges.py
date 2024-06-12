@@ -22,9 +22,9 @@ from pyspark.sql import SparkSession
 
 from package.calculation.preparation.transformations import (
     read_charge_prices,
-    read_charge_master_data,
+    read_charge_price_information,
 )
-from package.calculation.input.schemas import charge_master_data_periods_schema
+from package.calculation.input.schemas import charge_price_information_periods_schema
 
 from package.calculation import input
 from package.calculation.input import TableReader
@@ -45,7 +45,7 @@ DEFAULT_TO_DATE = datetime(2020, 2, 1, 0, 0)
 DEFAULT_CHARGE_TIME = datetime(2020, 1, 1, 0, 0)
 
 
-def _create_charge_master_data_row(
+def _create_charge_price_information_row(
     charge_code: str = DEFAULT_CHARGE_CODE,
     charge_owner: str = DEFAULT_CHARGE_OWNER,
     charge_type: str = DEFAULT_CHARGE_TYPE,
@@ -87,16 +87,16 @@ def _create_charges_price_points_row(
 
 class TestWhenValidInput:
     @patch.object(input, TableReader.__name__)
-    def test_read_charge_master_data_returns_expected_row_values(
+    def test_read_charge_price_information_returns_expected_row_values(
         self, table_reader_mock: TableReader, spark: SparkSession
     ) -> None:
         # Arrange
-        table_reader_mock.read_charge_master_data_periods.return_value = (
-            spark.createDataFrame(data=[_create_charge_master_data_row()])
+        table_reader_mock.read_charge_price_information_periods.return_value = (
+            spark.createDataFrame(data=[_create_charge_price_information_row()])
         )
 
         # Act
-        actual = read_charge_master_data(
+        actual = read_charge_price_information(
             table_reader_mock, DEFAULT_FROM_DATE, DEFAULT_TO_DATE
         ).df
 
@@ -259,20 +259,20 @@ class TestWhenChargePeriodExceedsCalculationPeriod:
         # Arrange
         calculation_from_date = datetime(2020, 1, 2, 0, 0)
         calculation_to_date = datetime(2020, 1, 3, 0, 0)
-        table_reader_mock.read_charge_master_data_periods.return_value = (
+        table_reader_mock.read_charge_price_information_periods.return_value = (
             spark.createDataFrame(
                 data=[
-                    _create_charge_master_data_row(
+                    _create_charge_price_information_row(
                         from_date=charge_from_date,
                         to_date=charge_to_date,
                     )
                 ],
-                schema=charge_master_data_periods_schema,
+                schema=charge_price_information_periods_schema,
             )
         )
 
         # Act
-        actual = read_charge_master_data(
+        actual = read_charge_price_information(
             table_reader_mock, calculation_from_date, calculation_to_date
         ).df
 

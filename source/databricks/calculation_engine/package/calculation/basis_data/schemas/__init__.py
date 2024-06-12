@@ -14,7 +14,9 @@
 
 from .calculations_schema import calculations_schema
 from .charge_link_periods_schema import charge_link_periods_schema
-from .charge_master_data_periods_schema import charge_price_information_periods_schema
+from .charge_price_information_periods_schema import (
+    charge_price_information_periods_schema,
+)
 from .charge_price_points_schema import charge_price_points_schema
 from .grid_loss_metering_points_schema import (
     grid_loss_metering_points_schema,
