@@ -82,7 +82,7 @@ public sealed class SettlementReportFromFilesHandler : ISettlementReportFromFile
 
     private async Task CombineChunksLimitSizeAsync(ZipArchive archive, string entryName, IEnumerable<GeneratedSettlementReportFileDto> chunks)
     {
-        var limitedFileWriter = new SizeLimitedEntry(archive, entryName);
+        var sizeLimitedEntry = new SizeLimitedEntry(archive, entryName);
 
         foreach (var chunk in chunks.OrderBy(c => c.FileInfo.ChunkOffset))
         {
@@ -94,20 +94,20 @@ public sealed class SettlementReportFromFilesHandler : ISettlementReportFromFile
 
             while (!source.IsEmpty)
             {
-                if (limitedFileWriter.IsFull)
+                if (sizeLimitedEntry.IsFull)
                 {
-                    limitedFileWriter.Dispose();
-                    limitedFileWriter = limitedFileWriter.CreateNextEntry();
+                    sizeLimitedEntry.Dispose();
+                    sizeLimitedEntry = sizeLimitedEntry.CreateNextEntry();
                 }
 
-                while (!limitedFileWriter.IsFull && !source.IsEmpty)
+                while (!sizeLimitedEntry.IsFull && !source.IsEmpty)
                 {
-                    await source.WriteToAsync(limitedFileWriter).ConfigureAwait(false);
+                    await source.WriteToAsync(sizeLimitedEntry).ConfigureAwait(false);
                 }
             }
         }
 
-        limitedFileWriter.Dispose();
+        sizeLimitedEntry.Dispose();
     }
 
     private sealed class SizeLimitedEntry : IDisposable
