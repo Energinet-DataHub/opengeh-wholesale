@@ -2,27 +2,27 @@
   "literals": [
     {
       "name": "BALANCE_FIXING",
-      "value": "BalanceFixing"
+      "value": "balance_fixing"
     },
     {
       "name": "AGGREGATION",
-      "value": "Aggregation"
+      "value": "aggregation"
     },
     {
       "name": "WHOLESALE_FIXING",
-      "value": "WholesaleFixing"
+      "value": "wholesale_fixing"
     },
     {
       "name": "FIRST_CORRECTION_SETTLEMENT",
-      "value": "FirstCorrectionSettlement"
+      "value": "first_correction_settlement"
     },
     {
       "name": "SECOND_CORRECTION_SETTLEMENT",
-      "value": "SecondCorrectionSettlement"
+      "value": "second_correction_settlement"
     },
     {
       "name": "THIRD_CORRECTION_SETTLEMENT",
-      "value": "ThirdCorrectionSettlement"
+      "value": "third_correction_settlement"
     }
   ]
 }
