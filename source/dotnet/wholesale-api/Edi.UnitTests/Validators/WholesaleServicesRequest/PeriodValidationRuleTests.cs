@@ -469,7 +469,7 @@ public class PeriodValidationRuleTests
     }
 
     [Fact]
-    public async Task Validate_WhenPeriodDoesNotStartOnTheFirstOfAMonth____3YearsAnd2Months_ReturnsNoValidationError()
+    public async Task Validate_WhenPeriodDoesNotStartOnTheFirstOfAMonthButIs3YearsAnd2Months_ReturnsNoValidationError()
     {
         // Arrange
         var periodStartDate = new LocalDateTime(2019, 3, 15, 0, 0, 0)
