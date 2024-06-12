@@ -22,6 +22,7 @@ from pyspark.sql.types import (
     ArrayType,
     StructType,
     StructField,
+    IntegerType,
 )
 
 from features.utils.dataframes.column_names.column import Column
@@ -57,6 +58,7 @@ class ViewColumns:
     calculation_version = Column("calculation_version", LongType())
     charge_code = Column("charge_code", StringType())
     charge_type = Column("charge_type", StringType())
+    charge_link_quantity = Column("charge_link_quantity", IntegerType())
     charge_owner_id = Column("charge_owner_id", StringType())
     currency = Column("currency", StringType())
     energy_supplier_id = Column("energy_supplier_id", StringType())
