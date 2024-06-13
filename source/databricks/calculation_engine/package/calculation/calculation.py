@@ -105,6 +105,7 @@ def _execute(
     # which is used in the wholesale calculation and the basis data
     metering_point_time_series = (
         add_calculated_grid_loss_to_metering_point_times_series(
+            args,
             metering_point_time_series,
             positive_grid_loss,
             negative_grid_loss,
