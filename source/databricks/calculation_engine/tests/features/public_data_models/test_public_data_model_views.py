@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import List
+
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.catalog import Database
 
@@ -24,7 +26,7 @@ def test__public_data_model_views_have_registered_column_names_and_types(
     """Verify that all columns in all views in all public view models match the expected column names and data types"""
 
     # Arrange
-    databases = get_positive_databases(spark)
+    databases = get_view_databases(spark)
     errors = []
 
     # Act & Assert
@@ -43,22 +45,18 @@ def test__public_data_model_views_have_registered_column_names_and_types(
     assert not errors, "\n".join(errors) if errors else "All assertions passed."
 
 
-def get_positive_databases(spark: SparkSession) -> list[Database]:
+def get_view_databases(spark: SparkSession) -> List[Database]:
     """
-    Get all positive databases.
+    Get all view databases.
     """
-    databases = spark.catalog.listDatabases()
-    negative_databases = [
-        "default",
-        "wholesale_output",
-        "wholesale_input",
-    ]
-
+    negative_databases = {"default", "wholesale_output", "wholesale_input"}
     databases = [
-        database for database in databases if database.name not in negative_databases
+        db for db in spark.catalog.listDatabases() if db.name not in negative_databases
     ]
 
-    assert databases, f"No databases found in database."
+    if not databases:
+        raise ValueError("No databases found.")
+
     return databases
 
 
