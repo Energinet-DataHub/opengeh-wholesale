@@ -21,5 +21,10 @@ edi/terraform/**/app-*.config*.tf @Energinet-DataHub/team-mosaic @Energinet-Data
 edi/terraform/**/func-*.config*.tf @Energinet-DataHub/team-mosaic @Energinet-DataHub/TheOutlaws
 edi/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-mosaic @Energinet-DataHub/TheOutlaws
 
+# grid-loss-imbalance-prices configurations
+grid-loss-imbalance-prices/terraform/**/app-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
+grid-loss-imbalance-prices/terraform/**/func-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
+grid-loss-imbalance-prices/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
+
 # migrations job names
 migrations/terraform/main/dbw-job-names.tf @Energinet-DataHub/volt @Energinet-DataHub/TheOutlaws
