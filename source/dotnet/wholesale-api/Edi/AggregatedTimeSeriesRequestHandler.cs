@@ -131,6 +131,8 @@ public class AggregatedTimeSeriesRequestHandler : IWholesaleInboxRequestHandler
             var newRequest = aggregatedTimeSeriesRequestMessage with { AggregationPerRoleAndGridArea = newAggregationLevel };
             var parameters = await CreateAggregatedTimeSeriesQueryParametersWithoutCalculationTypeAsync(newRequest).ConfigureAwait(false);
 
+            if (!parameters.LatestCalculationForPeriod.Any()) return false;
+
             var results = _aggregatedTimeSeriesQueries.GetAsync(
                     parameters)
                 .ConfigureAwait(false);
