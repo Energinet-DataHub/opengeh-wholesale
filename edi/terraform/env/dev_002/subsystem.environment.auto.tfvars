@@ -8,4 +8,5 @@ feature_management_use_peek_messages                                  = true
 feature_management_use_request_messages                               = true
 feature_management_use_energy_result_produced                         = true
 feature_management_use_total_monthly_amount_result_produced           = true
+feature_management_use_calculation_completed_event                    = true
 feature_management_use_calculation_completed_event_for_balance_fixing = true
