@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Edi.Requests;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.GridArea;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.GridArea;
@@ -129,5 +130,23 @@ public sealed class WholesaleServicesRequestValidatorTests
         // Assert
         validationErrors.Should().ContainSingle()
             .Which.ErrorCode.Should().Be("D23");
+    }
+
+    [Fact]
+    public async Task Validate_WhenChargeIdIsToLong_ReturnsUnsuccessfulValidation()
+    {
+        // Arrange
+        var chargeTypeInRequest = new ChargeType() { ChargeCode = "123", ChargeType_ = "ThisIsMoreThan10CharsLong", };
+
+        var request = new WholesaleServicesRequestBuilder()
+            .WithChargeTypes(chargeTypeInRequest)
+            .Build();
+
+        // Act
+        var validationErrors = await _sut.ValidateAsync(request);
+
+        // Assert
+        validationErrors.Should().ContainSingle()
+            .Which.ErrorCode.Should().Be("D14");
     }
 }
