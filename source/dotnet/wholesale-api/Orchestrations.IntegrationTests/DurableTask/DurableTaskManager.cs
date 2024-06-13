@@ -33,7 +33,7 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.DurableTas
 /// </summary>
 public class DurableTaskManager : IDisposable
 {
-    // TODO:
+    // TODO MWO:
     // We should move this class to TestCommon, maybe to a new project named DurableFunctionApp.TestCommon.
     // It should recide in the namespace "DurableTask" like it does here.
     // When it has been moved we should remove our current dependency to the NuGet package "Microsoft.Azure.WebJobs.Extensions.DurableTask".
