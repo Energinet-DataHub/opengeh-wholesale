@@ -279,8 +279,8 @@ display(timeseries_df.where(col("GsrnNumber") == "577996546429822830"))
 
 # COMMAND ----------
 
-# TODO: Use range join optimization: This query has a join condition that can benefit from range join optimization. To improve performance, consider adding a range join hint.
-#       https://docs.microsoft.com/azure/databricks/delta/join-performance/range-join
+# CONSIDER: Use range join optimization: This query has a join condition that can benefit from range join optimization. To improve performance, consider adding a range join hint.
+#           https://docs.microsoft.com/azure/databricks/delta/join-performance/range-join
 enriched_time_series_point_df = timeseries_df.join(
     metering_point_periods_df,
     (metering_point_periods_df["GsrnNumber"] == timeseries_df["GsrnNumber"])
@@ -299,8 +299,8 @@ display(timeseriesWithMeteringPoint)
 
 # COMMAND ----------
 
-# TODO: Use range join optimization: This query has a join condition that can benefit from range join optimization. To improve performance, consider adding a range join hint.
-#       https://docs.microsoft.com/azure/databricks/delta/join-performance/range-join
+# CONSIDER: Use range join optimization: This query has a join condition that can benefit from range join optimization. To improve performance, consider adding a range join hint.
+#           https://docs.microsoft.com/azure/databricks/delta/join-performance/range-join
 
 # Total production in batch grid areas with quarterly resolution as json file per grid area
 result_df = (
@@ -336,8 +336,8 @@ display(result_df)
 
 window = Window.partitionBy("grid_area").orderBy(col("quarter_time"))
 
-# TODO: Use range join optimization: This query has a join condition that can benefit from range join optimization. To improve performance, consider adding a range join hint.
-#       https://docs.microsoft.com/azure/databricks/delta/join-performance/range-join
+# CONSIDER: Use range join optimization: This query has a join condition that can benefit from range join optimization. To improve performance, consider adding a range join hint.
+#           https://docs.microsoft.com/azure/databricks/delta/join-performance/range-join
 
 # Points may be missing in result time series if all metering points are missing a point at a certain moment.
 # According to PO and SME we can for now assume that full time series have been submitted for the processes/tests in question.
