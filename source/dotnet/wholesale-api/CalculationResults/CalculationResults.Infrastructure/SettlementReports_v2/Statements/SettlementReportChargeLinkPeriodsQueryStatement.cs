@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Extensions.Options;
@@ -51,9 +52,10 @@ public sealed class SettlementReportChargeLinkPeriodsQueryStatement : Databricks
                     {_deltaTableOptions.Value.SettlementReportSchemaName}.{_deltaTableOptions.Value.CHARGE_LINK_PERIODS_V1_VIEW_NAME}
                 WHERE 
                         {SettlementReportChargeLinkPeriodsViewColumns.GridArea} = '{_filter.GridAreaCode}' AND
+                        {SettlementReportChargeLinkPeriodsViewColumns.CalculationType} = '{CalculationTypeMapper.ToDeltaTableValue(_filter.CalculationType)}' AND
                         {SettlementReportChargeLinkPeriodsViewColumns.FromDate} >= '{_filter.PeriodStart}' AND
                         {SettlementReportChargeLinkPeriodsViewColumns.ToDate} < '{_filter.PeriodEnd}' AND
-                        {SettlementReportChargeLinkPeriodsViewColumns.CalculationId} = '{_filter.CalculationId}' ||
+                        {SettlementReportChargeLinkPeriodsViewColumns.CalculationId} = '{_filter.CalculationId}'
                 ORDER BY 
                        {SettlementReportChargeLinkPeriodsViewColumns.CalculationId} LIMIT {_take} OFFSET {_skip}
                 """;

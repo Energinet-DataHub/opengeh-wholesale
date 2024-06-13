@@ -136,7 +136,7 @@ public sealed class SettlementReportRequestHandler : ISettlementReportRequestHan
     {
         var resultWholesale = new SettlementReportFileRequestDto(
             fileContent,
-            new SettlementReportPartialFileInfo("Charge links on metering points"),
+            new SettlementReportPartialFileInfo("Charge links on metering points", true),
             requestId,
             reportRequest.Filter);
 

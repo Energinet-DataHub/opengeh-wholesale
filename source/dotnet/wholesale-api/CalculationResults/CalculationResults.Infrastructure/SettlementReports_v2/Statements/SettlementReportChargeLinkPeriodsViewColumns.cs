@@ -38,7 +38,7 @@ public class SettlementReportChargeLinkPeriodsViewColumns
         { ChargeType, ("string", false) },
         { ChargeCode, ("string", true) },
         { ChargeOwnerId, ("string", false) },
-        { Quantity, ("decimal(18,3)", true) },
+        { Quantity, ("int", true) },
         { FromDate, ("timestamp", false) },
         { ToDate, ("timestamp", false) },
         { GridArea, ("string", false) },
