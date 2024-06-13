@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Union
+from typing import Union, Any
 
 from pyspark.sql.types import (
     StringType,
@@ -34,19 +34,25 @@ class ViewColumns:
     If the column is deprecated, postfix the respective column with "_deprecated".
     """
 
-    def __init__(self) -> None:
-        self.column_classes = {
-            attr.name: attr
-            for attr in ViewColumns.__dict__.values()
-            if isinstance(attr, Column)
-        }
+    columns: Any = {}
 
-    def get(self, column_name: str) -> Union[Column, None]:
+    @staticmethod
+    def _init() -> None:
+        if not ViewColumns.columns:
+            ViewColumns.columns = {
+                attr.name: attr
+                for attr in ViewColumns.__dict__.values()
+                if isinstance(attr, Column)
+            }
+
+    @staticmethod
+    def get(column_name: str) -> Union[Column, None]:
         """
         Get the column object for the given column name.
         """
-        column = self.column_classes.get(column_name, None)
-        return column if column else None
+        ViewColumns._init()
+
+        return ViewColumns.columns.get(column_name)
 
     # Column names and types in alphabetical order
     amount = Column("amount", DecimalType(18, 6))
